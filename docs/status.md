@@ -3,8 +3,10 @@
 Active branch: `feature/nbt-codec`, based on tested `main` commit
 `293ed9923ad7797bc5b97f473a08c5c62d68c6ff`. Active issue:
 [#9](https://github.com/frankischilling/minecraft-c/issues/9), under M2.
-No PR is open for this increment yet. The current changes record original
-NBT evidence; the codec and its original-class differential are not implemented.
+No PR is open for this increment yet. The raw codec, modified UTF-8 helper,
+public tests and actual original-class differential are implemented. The
+current worktree checks pass; an exact committed result is being recorded
+before PR integration.
 Inspect the live worktree, PRs and exact-head checks before relying on this note.
 
 ## Integrated foundation
@@ -33,13 +35,17 @@ and `.local/server-smoke-8de9d81/`. These results do not establish gameplay pari
 
 ## Next work
 
-Implement issue #9's bounded retained NBT trees and lossless modified UTF strings
-using `docs/reference/nbt.md`. Preserve IDs 0..10, named/unnamed boundaries,
-empty-list normalization and duplicate-name behavior. Probe actual untouched
-client/server classes in isolated processes; never use recompiled decompiler
-output as the oracle. Keep gzip/regions/world writes as separate follow-ups.
-Use matching system/subsystem folders and `.clang-format`, then extend public
-and local-reference tests before opening a cohesive implementation PR.
+Finish issue #9's exact-commit checks and PR lifecycle. The C implementation
+preserves IDs 0..10, named/unnamed boundaries, UTF-16 units, empty-list
+normalization, last-wins duplicate names and retained unknown application fields.
+Public checks: 596848 text and 394978 NBT assertions. Native MSVC and WSL GCC/Clang
+sanitizer suites pass. Original comparisons execute untouched JAR classes in
+isolated processes: per side 194 reads, 40 writes, 12 packet controls, 157 transfers
+and 435 re-reads. Four negative-list departures and 20 order-only byte differences
+are explicit. Review corrected MSVC alignment, Java11 prerequisites, alias
+preconditions, stale report handling and overly broad compound normalization.
+Keep gzip/regions/world writes and the broad inventory open. After this scoped
+merge, select the next evidence-backed compression/region increment under M2.
 
 ## Access limits and decisions
 

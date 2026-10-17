@@ -1,9 +1,9 @@
 # Original NBT and Java string evidence
 
 Research for [issue #9](https://github.com/frankischilling/minecraft-c/issues/9),
-recorded 2026-10-17. This is bytecode research, not an implemented codec or a
-world save compatibility result. No NBT oracle classes were executed for this research.
-The proposed original-class differential below still needs to be built and run.
+recorded 2026-10-17. The C raw codec and original-class differential are
+implemented. The observations and comparisons below cover raw tags and Java
+string behavior, not complete world save compatibility.
 
 ## References and reproduction
 
@@ -128,20 +128,24 @@ payloads with level.dat-style gzip wrappers.
 ## Implementation scope
 
 The codec acceptance criteria are tracked in [issue #9](https://github.com/frankischilling/minecraft-c/issues/9).
-The C implementation and original-class differential are not started. Raw NBT,
-compression, region storage and complete world writes are separate boundaries.
-No original-compatible world save or round-trip claim follows from these notes.
+The C implementation is `src/storage/nbt/nbt.c`, with lossless text helpers in
+`src/core/text/mutf8.c`. Public tests are under `tests/storage/nbt/` and
+`tests/core/text/`. [The API guide](../storage/nbt.md) describes ownership,
+limits, retained unknown fields and error behavior. Raw NBT, compression,
+region storage and complete world writes are separate boundaries. No
+original-compatible world save or round-trip claim follows from these notes.
 
-## Original-class differential design (not yet executed)
+## Original-class differential
 
-Write one project-owned Java harness, not a copy of decompiled implementations.
-Verify the expected side's JAR SHA-256 before loading. Use a separate process per
-side (simplest) or a dedicated URLClassLoader with the platform class loader as
-parent; never put both obfuscated JARs on one application class path. The NBT
-classes inspected reference Java data/collection classes, so loading these
-families does not require initializing Minecraft or a server listener.
+The project-owned `tests/reference/nbt/NbtProbe.java` invokes the untouched JAR
+classes reflectively. It contains no copied decompiled implementation.
+`scripts/reference/nbt/compare_nbt.py` verifies each side's SHA-256 before loading.
+Each original side runs in separate JVM processes with a dedicated class loader
+whose parent is the platform loader. Both obfuscated JARs are never put on one
+application class path. Loading the inspected NBT families requires no Minecraft
+startup, display, account or server listener.
 
-Reflect exact signatures: C `Class.forName("ij", true, loader)` / S `fo`;
+The harness reflects exact signatures: C `Class.forName("ij", true, loader)` / S `fo`;
 `getDeclaredMethod("b", DataInput.class)` for generic named read; and static
 `getDeclaredMethod("a", baseClass, DataOutput.class)` for named write. Pass
 DataInputStream/DataOutputStream over byte arrays using the interface-specific
@@ -150,7 +154,7 @@ method selection. Use `getDeclaredMethod("a", DataInput.class)` and
 payload-only tests on factory-created tags. Match the return descriptors above;
 do not select overloaded methods solely by name.
 
-For compound-root helpers select `as`/`ag` with DataInput.class explicitly;
+For compound-root helpers it selects `as`/`ag` with DataInput.class explicitly;
 select InputStream.class only for the gzip variant. Overload ambiguity is easy
 because DataInputStream is both InputStream and DataInput. Record reflected
 class/method, runtime version/fingerprints, original JAR hash, input hex, consumed
@@ -160,15 +164,68 @@ reflection on private list/Map fields can inspect wire element typing and tree
 contents without altering them. Do not replace original readers with a second
 home-written Java parser as the oracle.
 
-Fixtures should cover UTF-16 units 0,1,7F,80,7FF,800,FFFF, lone high/low surrogates,
-paired supplementary values, zero-length and encoded-length 65535/65536 boundary;
-NBT name and string payload independently. Add packet-string controls with the
-same strings to prove distinct wire formats. For each tag, test parse->inspect,
-original construct->write, parse->write and C->original->logical-tree. Small
-malformed cases distinguish negative list and byte-array lengths, unsupported
-type IDs, malformed/truncated modified UTF, noncompound roots, early End and
-duplicate keys. Avoid giant lengths or deliberate stack-exhaustion executions.
-For compounds use controlled single-key fixtures for byte-exact comparison,
-then multikey/nested cases with explicit order-insensitive logical comparison.
-Separate failures from Java memory/stack exhaustion; do not treat a crash as an
-expected compatibility outcome for the bounded C codec.
+Generated fixtures cover UTF-16 units 0,1,7F,80,7FF,800,FFFF, lone high/low
+surrogates, paired supplementary values, empty strings and the encoded-length
+65535/65536 boundary. Names and payload strings are exercised independently.
+Packet controls demonstrate distinct framing. Small malformed cases cover
+negative list/byte-array lengths, unsupported IDs, bad/truncated modified UTF,
+noncompound roots, early End and duplicate keys. The harness does not execute
+giant allocations or stack-exhaustion probes.
+
+Initial parsed trees retain raw floating bits on both sides. Original
+constructed writes independently establish canonical NaN output; comparisons
+across a write boundary explicitly expect that transformation. No blanket NaN
+normalization is applied to the initial parse comparison.
+
+Compound logical trees sort children by exact UTF-16 name solely for comparing
+map state; type, name, values, nested state, list order and floating bits remain
+checked. Differing compound wire bytes are accepted only if recursively
+sorting compound child byte records makes the wires identical. This comparison
+keeps every other byte unchanged, including encoded names/strings, lengths,
+types, primitive payloads, list order and trailing bytes. A duplicate-key
+emission or noncanonical text encoding cannot pass as a mere ordering change.
+Complete original and C outputs are retained in the local report.
+
+## Observed scenarios and reproduction
+
+The first integrated Windows/MSVC comparison with Temurin 17.0.17+10 passed
+these per-side scenarios against both supplied JARs:
+
+| Operation | Per-side count |
+| --- | ---: |
+| Original raw reads, including expected errors | 194 |
+| Original constructed object writes, including length failures | 40 |
+| Original packet-string controls | 12 |
+| Original-produced byte streams parsed by C | 157 |
+| Original re-reads of original/C output | 435 |
+
+Four negative-list rejections across the two sides are recorded as malformed
+input departures, not parity passes. Twenty byte differences across comparison
+phases are recorded as compound child-order differences. The C writer preserves
+retained order, while the tested JVM's original writer iterates `HashMap`.
+These results do not establish arbitrary compound wire identity, gzip/region
+compatibility, schema completeness or any original-created/rewrite-created
+world round trip. The selected current JVMs are not an original-era JVM claim.
+
+The optional harness requires JDK 11 or newer and compiles with `--release 11`.
+Run from the repository root after building `mc_nbt_probe`:
+
+```powershell
+python scripts/reference/nbt/compare_nbt.py --executable build-windows/mc_nbt_probe.exe --client b1.7.3.jar --server b1.7.3_server.jar --work-dir .local/reference/nbt
+```
+
+Use `--java` and `--javac` to pin tool paths, and `--tested-commit` with the
+exact 40-character source commit. Linux uses its own executable/JAR/tool paths.
+The report records JAR, tool, source, compiled harness and C executable hashes,
+runtime versions, full request/response artifacts, timestamps, scope and the
+caller-supplied tested commit. An omitted commit is explicitly unrecorded.
+Local reports belong in ignored directories, not source or release artifacts.
+
+CTest can enable the same comparison with `MC_ENABLE_NBT_REFERENCE_TESTS=ON`,
+`MC_REFERENCE_CLIENT_JAR`, `MC_REFERENCE_SERVER_JAR` and
+`MC_REFERENCE_TESTED_COMMIT`. Public CI keeps this option off and downloads no
+reference files. Missing or mismatched inputs, missing tools and unsupported
+Java versions report `UNAVAILABLE`, exit 77; CTest marks that skipped. Execution
+errors and mismatches return 1. A fresh running/unavailable/fail report replaces
+prior results so an interrupted or missing-input run cannot leave a stale pass.
+The exact final tested commit and native results are in [the resume note](../status.md).

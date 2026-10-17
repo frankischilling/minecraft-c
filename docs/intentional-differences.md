@@ -7,9 +7,19 @@
 There are no other approved gameplay exceptions. The MIT license choice covers
 new project work and does not grant rights to distribute original resources.
 
-Malformed input must be parsed with bounded memory and defined C behavior. Any
-necessary departure from original malformed-input behavior will be documented
-separately when that parser is implemented. It is not permission to alter valid
-gameplay behavior. Legacy online-resource behavior, including unavailable skin
+Malformed input uses bounded memory and defined C behavior. Necessary
+departures from original malformed-input behavior are recorded separately
+with the parser evidence. Valid gameplay behavior remains in scope.
+Legacy online-resource behavior, including unavailable skin
 services, remains unresolved and needs an owner decision before being declared
 complete.
+
+## Bounded malformed-input handling
+
+The raw NBT parser rejects negative list lengths rather than reproducing the
+original reader's empty-loop result. It enforces explicit byte, allocation,
+tag, element and nesting limits; caller-constructed heterogeneous lists are
+rejected rather than written as malformed streams. These are parser safety
+and API constraints, not approved changes to normal gameplay. See
+[the codec's bounds](storage/nbt.md#bounds-and-failure-behavior) and
+[original observations](reference/nbt.md).
