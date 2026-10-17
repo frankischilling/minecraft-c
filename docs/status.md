@@ -2,7 +2,7 @@
 
 In progress: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29)
 on `feature/math-lookup`. Exact source
-`cbed19f8cf2b860887693dc0ff8250ec119ada39` passes all 27 local CTests on native
+`d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27 local CTests on native
 Windows/MSVC and WSL GCC/Clang without skips. All 65536 table entries and 366
 scalar calls match independently between C/client, C/server and client/server,
 including fresh Temurin17/OpenJDK21 original executions. Public CI and
@@ -153,7 +153,7 @@ The exact PR head also passed before merge.
 
 ## Local acceptance
 
-Float lookup/floor source: `cbed19f8cf2b860887693dc0ff8250ec119ada39`. All three
+Float lookup/floor source: `d6665e7f3e1b57c16e9e12c14983abd2ba227441`. All three
 toolchains pass eighteen public tests, the numerical Java oracle and eight
 original comparisons. All 24 manifests under
 `build-math-*/reference-*/manifest.json` record this source, pass status and empty
@@ -165,11 +165,15 @@ for all nine participants. Original table identity/content and C table content
 remain unchanged across calls.
 
 Fresh Windows comparisons use Temurin17; WSL comparisons use OpenJDK21. Public
-math tests pass 903 checks. All nine helper guards, including parser controls,
-filesystem links and completed-mismatch precedence, run without skips. Reports
+math tests pass 903 checks. All ten helper guards, including parser controls,
+filesystem aliases/links and completed-mismatch precedence, run without skips. Reports
 verify source/executable/JAR/tool/runtime inputs before/after, compiled classes
 and published artifacts. Source hashes also match the tested Git blobs.
 Independent runtime, fixture and protocol reviews found no outstanding issues.
+The initial Windows CI head exposed an aliased path in a generated test
+fixture. Its paths are now canonicalized, with an explicit alias regression;
+runtime code and numerical data are unchanged. All 27 local tests were repeated
+at the corrected exact source.
 Clang-format18 checks all 41 C/header files; all three libraries build with
 testing off and no Python/Java discovery. These numerical results establish the
 documented math prerequisite, with sampled scalar inputs and measured backends.

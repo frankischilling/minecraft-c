@@ -186,7 +186,7 @@ contraction are excluded from the accepted build contract.
 
 ### Exact-source local acceptance
 
-At source `cbed19f8cf2b860887693dc0ff8250ec119ada39`, fresh comparisons passed
+At source `d6665e7f3e1b57c16e9e12c14983abd2ba227441`, fresh comparisons passed
 all 65,536 table entries and all 366 calls independently for C/client,
 C/server and client/server on these measured x86-64 environments:
 
@@ -216,9 +216,10 @@ Each toolchain's complete 27-test log has 27 passes and no skips. The public
 observed float/floor cases, 37 selected table entries, independent table
 objects, reinitialization and read preservation. Its complete-table FNV1a
 fingerprint is `74c4d1bb1bf96b54`; this supplements live entry-by-entry
-validation. All nine [public helper guards](../../tests/tools/math/test_reference.py)
-also pass on each toolchain. Public tests and prerequisite guards use no
-original JARs or JDK. These are local acceptance results; CI and broader
+validation. All ten [public helper guards](../../tests/tools/math/test_reference.py),
+including the fixture with a directory alias, also pass on each toolchain.
+Public tests and prerequisite guards use no original JARs or JDK. These are
+local acceptance results; CI and broader
 integration results are recorded separately in the [status note](../status.md).
 
 ## Observation and comparison protocol

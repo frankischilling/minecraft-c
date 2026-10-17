@@ -24,7 +24,7 @@ comparisons remain local.
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.density_reference` | 6 generated prerequisite/hash/report/path/link and mismatch-before-unavailable regressions | No original classes run; link cases skip only if unsupported |
 | `tools.surface_reference` | 6 generated prerequisite/hash/report/path/link and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
-| `tools.math_reference` | 9 generated prerequisite/hash/report/path/link, parser and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
+| `tools.math_reference` | 10 generated prerequisite/hash/report/path/alias/link, parser and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
@@ -108,7 +108,7 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
-Float lookup/floor source `cbed19f8cf2b860887693dc0ff8250ec119ada39` passes all 27
+Float lookup/floor source `d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27
 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
 eighteen public tests, the numerical Java oracle and eight original comparisons.
 All 24 original manifests identify this source and pass with empty errors;
@@ -116,7 +116,10 @@ every probe hash matches. Fresh math comparisons match all 65536 table entries
 and 366 scalar calls independently for C/client, C/server and client/server,
 including actual initialized original tables on Temurin17 and OpenJDK21.
 
-Public math tests pass 903 checks and all nine helper guards run without skips.
+Public math tests pass 903 checks and all ten helper guards run without skips.
+The alias regression reaches the completed comparison through a directory
+alias, covering the fixture-path failure exposed by Windows CI. Runtime code
+and fixed numerical data are unchanged; all 27 tests were repeated at this source.
 The complete-table fingerprint, 37 selected entries, 132 float pairs and 102
 floor cases were independently traced to both original-only captures. Source
 Git-blob, executable, class, artifact and input-preservation checks agree.
