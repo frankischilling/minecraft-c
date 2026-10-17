@@ -38,9 +38,11 @@ Surface replacement and chunk seeding are integrated under closed
 [#26](https://github.com/frankischilling/minecraft-c/issues/26), with
 [recorded scope and results](reference/surface.md) and native public CI in
 [PR #31](https://github.com/frankischilling/minecraft-c/pull/31).
-The next prerequisite is
-[float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
-followed by [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
+The float lookup/floor prerequisite is integrated under closed
+[#29](https://github.com/frankischilling/minecraft-c/issues/29), with
+[complete table and sampled scalar comparisons](reference/math.md) and native
+public CI in [PR #33](https://github.com/frankischilling/minecraft-c/pull/33).
+Continue with [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
 Complete raw chunks, population, lighting and protocol framing remain separate
 required work. Create their scoped issues from original class/method evidence
 before coding. Further

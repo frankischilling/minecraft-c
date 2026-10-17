@@ -1,15 +1,17 @@
 # Development status
 
-In progress: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29)
-on `feature/math-lookup`. Exact source
+Latest implementation: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
+merged in [PR #33](https://github.com/frankischilling/minecraft-c/pull/33) at
+`077300380a81596da82fbf67ea1cb625e3215436`. Exact source
 `d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27 local CTests on native
 Windows/MSVC and WSL GCC/Clang without skips. All 65536 table entries and 366
 scalar calls match independently between C/client, C/server and client/server,
-including fresh Temurin17/OpenJDK21 original executions. Public CI and
-integration remain pending; the surface checkpoint below is integrated.
-Inspect the live worktree before resuming.
+including fresh Temurin17/OpenJDK21 original executions. Public CI passes
+nineteen tests per compiler plus formatting on the exact PR head and resulting
+main. This documentation checkpoint uses
+`docs/math-integration`; inspect the live worktree before resuming.
 
-Latest implementation: normal surface replacement and chunk seeding,
+Previous integrated implementation: normal surface replacement and chunk seeding,
 [issue #26](https://github.com/frankischilling/minecraft-c/issues/26), merged in
 [PR #31](https://github.com/frankischilling/minecraft-c/pull/31) at
 `1394928cebbcbe31700db3d280d0faa071ea6a34`. Exact source
@@ -96,13 +98,26 @@ and milestones M2 through M5 remain open.
 | [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) | Seeded climate blending, float-built biome lookup, bounded retained arrays and exact both-side numerical/state comparisons; closes #21 |
 | [PR #27](https://github.com/frankischilling/minecraft-c/pull/27) | Allocation-free normal density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures; closes #24 |
 | [PR #31](https://github.com/frankischilling/minecraft-c/pull/31) | Allocation-free normal surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons; closes #26 |
+| [PR #33](https://github.com/frankischilling/minecraft-c/pull/33) | Caller-owned float trig table and exact lookup/floor helpers, full-table original comparisons and public path-alias regressions; closes #29 |
 
-All nine listed PRs are merged and their feature branches removed. M1 is complete.
+All ten listed PRs are merged and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `1394928cebbcbe31700db3d280d0faa071ea6a34`,
+Latest tested runtime integration: `077300380a81596da82fbf67ea1cb625e3215436`,
+[main run39038169561](https://github.com/frankischilling/minecraft-c/actions/runs/39038169561),
+passes all nineteen tests on native Windows MSVC/Linux GCC/Clang, plus
+formatting. Exact PR head
+`1a217c3b79156d9f5fa28d9bd371ef856a40938e` passes
+[run39037988919](https://github.com/frankischilling/minecraft-c/actions/runs/39037988919):
+all nineteen tests on native Windows MSVC/Linux GCC/Clang, plus formatting.
+The initial Windows head exposed an aliased generated source path in a guard;
+the corrected fixture and explicit directory-alias regression pass. Runtime
+code and numerical data are unchanged. All 27 local tests were repeated at the
+corrected source. The locally tested source and integration differ only in Markdown.
+
+Previous tested surface runtime integration: `1394928cebbcbe31700db3d280d0faa071ea6a34`,
 [main run39036083441](https://github.com/frankischilling/minecraft-c/actions/runs/39036083441),
 passes all seventeen tests on native Windows MSVC/Linux GCC/Clang, plus
 formatting. Exact PR head
@@ -333,9 +348,10 @@ as separate interfaces, use explicit limits and retain unknown application field
 Normal density/base terrain is integrated under closed
 [#24](https://github.com/frankischilling/minecraft-c/issues/24), as are surface
 replacement and chunk seeding under closed
-[#26](https://github.com/frankischilling/minecraft-c/issues/26). The next numerical
-prerequisite is [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
-followed by [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
+[#26](https://github.com/frankischilling/minecraft-c/issues/26). The float
+lookup/floor prerequisite is integrated under closed
+[#29](https://github.com/frankischilling/minecraft-c/issues/29). Continue with
+[normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
 Continue exact chunk comparisons alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.
@@ -348,10 +364,11 @@ pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
 The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
-`700630874d2045b10cf5ae41fd8da6e9fc8029e3`. All five page blobs match the versioned
-surface sources at `1394928cebbcbe31700db3d280d0faa071ea6a34`. Home, build/tests, architecture and storage/reference each
-returned HTTP200 with expected content. Updated pages include normal surface
-replacement, explicit live Random/material inputs and its comparison option.
+`02f1118429e1f2885ead3a61baa13e814d268cde`. All five page blobs match the versioned
+math sources at `077300380a81596da82fbf67ea1cb625e3215436`. Home, build/tests,
+architecture and storage/reference each returned HTTP200 with expected content.
+Updated pages include the caller-owned float table, lookup/floor helpers and
+their pure original comparison option.
 The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
