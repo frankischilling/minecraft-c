@@ -9,9 +9,10 @@ the input space of any method.
 
 An isolated C strategy experiment reproduced the complete frozen table and
 all 366 results with MSVC, GCC and Clang on the measured x86-64 hosts. It used
-the captured original results. Fresh production comparisons with the actual
-C module, probe and originals on each toolchain/JDK remain pending. This note
-does not establish cave, complete chunk or full-game parity. The
+the captured original results. Fresh production comparisons now match the
+actual C module and both originals on native Windows and WSL Linux. All 27
+local CTests pass without skips on each of three toolchains. This note does
+not establish cave, complete chunk or full-game parity. The
 [status note](../status.md) records broader acceptance.
 
 ## Reference identity
@@ -172,22 +173,53 @@ The selected initializer strategy preserves the ordered double operations,
 calls host double `sin`, then explicitly narrows to float. The strategy
 experiment matched every final float table entry and every sampled call with
 native MSVC and GCC/Clang builds, including their sanitizer runs. These are
-comparisons against the frozen native Temurin 17 baseline. They are not fresh
-original executions under each compiler's accompanying runtime environment,
-nor acceptance of the production [math module](../../src/core/math/math.c).
+comparisons against the frozen native Temurin 17 baseline. The subsequent
+production acceptance below uses the [math module](../../src/core/math/math.c)
+and fresh original executions under each recorded runtime.
 
 This backend is scoped to the measured x86-64 implementations. A future
 library, architecture or compiler change must pass the complete table check;
-the experiment does not establish universal agreement between C `sin` and
+these observations do not establish universal agreement between C `sin` and
 Java `Math.sin`. Lookup arithmetic also requires binary32 multiply/add and
 the exact Java conversion/mask sequence. Fast math, reassociation and FMA
 contraction are excluded from the accepted build contract.
 
-Required [unit coverage](../../tests/core/math/test_math.c) includes all observed
-float and floor cases, selected table entries and a complete-table fingerprint. The
-fingerprint supplements the live reference comparison; it does not replace
-entry-by-entry validation. Public tests and helper prerequisite checks do not
-require the original JARs or a JDK.
+### Exact-source local acceptance
+
+At source `cbed19f8cf2b860887693dc0ff8250ec119ada39`, fresh comparisons passed
+all 65,536 table entries and all 366 calls independently for C/client,
+C/server and client/server on these measured x86-64 environments:
+
+| Environment / C math backend | C compiler | Java runtime/compiler | C sanitizers |
+| --- | --- | --- | --- |
+| Native Windows 10 / MSVC runtime | MSVC 19.51.36260.0 | Temurin 17.0.17+10 | Off |
+| WSL Linux / glibc 2.39 | GCC 13.3.0 | OpenJDK 21.0.12.1 | Address / undefined behavior |
+| WSL Linux / glibc 2.39 | Clang 18.1.3 | OpenJDK 21.0.12.1 | Address / undefined behavior |
+
+Both original runtimes and all three C builds produce table SHA-256
+`87a67a39fff59636acb04edcda4ef622831037291f11fb61586c57596771dac2`.
+Each participant records 132 sine, 132 cosine and 102 floor calls. Every
+ordered numerical record agrees across all nine participants, including all
+589,824 table values and 3,294 sampled calls across the three runs.
+
+Each manifest reports pass with an empty error list. All 13 source hashes,
+13 artifact hashes and 20 before/after input hashes per run were independently
+checked, including actual probes, both JARs, runtime/compiler executables,
+runtime modules/release, requests and fresh compiled Java classes. The class
+hash is unchanged across each run; different Java compilers can produce
+different class bytes from the same pinned observer source. Original table
+before/after hashes match every observed entry; all three C probes report
+`TABLE_UNCHANGED=1`.
+
+Each toolchain's complete 27-test log has 27 passes and no skips. The public
+[unit](../../tests/core/math/test_math.c) reports 903 checks, including all
+observed float/floor cases, 37 selected table entries, independent table
+objects, reinitialization and read preservation. Its complete-table FNV1a
+fingerprint is `74c4d1bb1bf96b54`; this supplements live entry-by-entry
+validation. All nine [public helper guards](../../tests/tools/math/test_reference.py)
+also pass on each toolchain. Public tests and prerequisite guards use no
+original JARs or JDK. These are local acceptance results; CI and broader
+integration results are recorded separately in the [status note](../status.md).
 
 ## Observation and comparison protocol
 
@@ -224,8 +256,9 @@ outputs, fixtures, original class/JAR identities and runtime/modules hashes
 are retained with its record. JAR hashes and the table's identity/content had
 explicit before/after checks. Other baseline source/tool/request hashes are
 post-capture attribution, not evidence that those files were checked before
-execution. The fresh canonical helper must record its own exact tested
-inputs and preservation checks.
+execution. The production helper records its own exact tested source/tool/
+runtime/probe inputs before execution, checks them afterward, checks the
+compiled observer before/after, and rechecks all published artifacts.
 
 Baseline child processes were limited to 15 seconds and 128 MiB heap.
 Requests were bounded to 768 lines, 32 characters per line and 32,768 file
@@ -234,11 +267,17 @@ sizes against 4 MiB after each child completed; that was a post-child size
 check, not a hard disk-write cap. The selected initializer itself has a fixed
 65,536-iteration loop.
 
-The accepted comparison protocol requires fresh classes and report artifacts,
-pinned JARs, source/class/tool/runtime/probe/request/output hashes, and input
-preservation. Missing prerequisites are unavailable; numerical execution,
-schema, comparison or preservation failures are failures. A completed-side
-mismatch must remain a failure if a later side becomes unavailable. The
+The production helper compiles fresh classes and writes fresh running,
+unavailable, fail or pass reports with a new run identity. Reports contain
+pinned JAR identities, source/class/tool/runtime/probe/request/output hashes
+and input-preservation checks. Missing prerequisites return unavailable 77;
+numerical execution, schema, timeout, comparison or preservation errors return
+failure 1. A completed-side mismatch remains a failure if a later side becomes
+unavailable. Each child has a 15-second timeout, with 128 MiB JVM heaps;
+retained stdout/stderr is limited to 4 MiB per stream after checking full
+stream sizes. Temporary disk writes while the child runs have no hard cap.
+The 768-request, 32-character and 32,768-byte limits also apply to production
+requests. The
 [testing guide](../testing.md) owns invocation and acceptance details.
 
 This evidence supports the observed table, lookup and floor behavior only.

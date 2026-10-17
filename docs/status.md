@@ -1,11 +1,13 @@
 # Development status
 
 In progress: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29)
-on `feature/math-lookup`. The original-only baseline has all 65536 table
-entries and 366 scalar calls matching between sides. An isolated C strategy
-experiment matches those observations on MSVC/GCC/Clang. Production exact-source
-acceptance, public CI and integration remain pending; the surface checkpoint
-below is integrated. Inspect the live worktree before resuming.
+on `feature/math-lookup`. Exact source
+`cbed19f8cf2b860887693dc0ff8250ec119ada39` passes all 27 local CTests on native
+Windows/MSVC and WSL GCC/Clang without skips. All 65536 table entries and 366
+scalar calls match independently between C/client, C/server and client/server,
+including fresh Temurin17/OpenJDK21 original executions. Public CI and
+integration remain pending; the surface checkpoint below is integrated.
+Inspect the live worktree before resuming.
 
 Latest implementation: normal surface replacement and chunk seeding,
 [issue #26](https://github.com/frankischilling/minecraft-c/issues/26), merged in
@@ -150,6 +152,29 @@ passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBS
 The exact PR head also passed before merge.
 
 ## Local acceptance
+
+Float lookup/floor source: `cbed19f8cf2b860887693dc0ff8250ec119ada39`. All three
+toolchains pass eighteen public tests, the numerical Java oracle and eight
+original comparisons. All 24 manifests under
+`build-math-*/reference-*/manifest.json` record this source, pass status and empty
+errors, with matching current probe hashes. Each math report compares every one
+of 65536 initialized float entries and 366 scalar calls in all three pairings.
+The table's big-endian raw-bit SHA-256 is
+`87a67a39fff59636acb04edcda4ef622831037291f11fb61586c57596771dac2`
+for all nine participants. Original table identity/content and C table content
+remain unchanged across calls.
+
+Fresh Windows comparisons use Temurin17; WSL comparisons use OpenJDK21. Public
+math tests pass 903 checks. All nine helper guards, including parser controls,
+filesystem links and completed-mismatch precedence, run without skips. Reports
+verify source/executable/JAR/tool/runtime inputs before/after, compiled classes
+and published artifacts. Source hashes also match the tested Git blobs.
+Independent runtime, fixture and protocol reviews found no outstanding issues.
+Clang-format18 checks all 41 C/header files; all three libraries build with
+testing off and no Python/Java discovery. These numerical results establish the
+documented math prerequisite, with sampled scalar inputs and measured backends.
+
+Previous surface increment:
 
 Normal surface source: `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360`. All three
 toolchains pass sixteen public tests, the numerical Java oracle and seven

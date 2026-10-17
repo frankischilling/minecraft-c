@@ -108,10 +108,24 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
-The float lookup/floor increment is in progress. Its original-only baseline and
-isolated three-compiler strategy experiment agree; production exact-source
-acceptance is recorded separately when completed. See
-[math evidence](reference/math.md) and [current status](status.md).
+Float lookup/floor source `cbed19f8cf2b860887693dc0ff8250ec119ada39` passes all 27
+configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
+eighteen public tests, the numerical Java oracle and eight original comparisons.
+All 24 original manifests identify this source and pass with empty errors;
+every probe hash matches. Fresh math comparisons match all 65536 table entries
+and 366 scalar calls independently for C/client, C/server and client/server,
+including actual initialized original tables on Temurin17 and OpenJDK21.
+
+Public math tests pass 903 checks and all nine helper guards run without skips.
+The complete-table fingerprint, 37 selected entries, 132 float pairs and 102
+floor cases were independently traced to both original-only captures. Source
+Git-blob, executable, class, artifact and input-preservation checks agree.
+Clang-format18 checks 41 C/header files; all three libraries build with testing
+off and no Python/Java discovery. Public CI runs nineteen tests per compiler
+without private files; exact-head and integration results belong in
+[status](status.md). These results cover the documented numerical prerequisite.
+
+Previous surface increment:
 
 Normal surface source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24
 configured CTests on native Windows/MSVC and WSL GCC/Clang without skips:
@@ -179,9 +193,9 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 24 CTests pass at the surface source, with explicit Temurin17 |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 24 CTests pass at the surface source with JDK21 |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 24 CTests pass at the surface source with JDK21 |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 27 CTests pass at the math source, with explicit Temurin17 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 27 CTests pass at the math source with JDK21 |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 27 CTests pass at the math source with JDK21 |
 
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
 selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the
