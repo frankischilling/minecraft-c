@@ -29,7 +29,7 @@ comparisons remain local.
 | `reference.noise` (local opt-in) | Per side 783 requests, 140218 exact double values, 399872 permutation entries and 3132 following Random longs; three separate pair comparisons | Scoped procedural noise; no chunks, population or lighting |
 | `reference.simplex` (local opt-in) | Per side 812 requests, 204923 exact double values, 348160 permutation entries and 3248 following Random longs; actual short/extended overload and factor/suffix controls | Scoped 2D numerical methods; consumer-like inputs do not establish biome results |
 | `reference.biome` (local opt-in) | Actual catalogue/table, direct float and quantized double selectors, processed temperature and biome grids with stateful buffer sequences | Explicit-seed numerical fixture; no executed world constructors or terrain |
-| `reference.density` (local opt-in) | Genuine original world contexts, all 82 constructor layers, climate inputs, density/scratch bits and base bytes | Normal dimension only; no surface, caves, population or complete chunk parity |
+| `reference.density` (local opt-in) | 150 exact snapshots per side, 82 original density/scratch recomputation checks; all constructor, climate, density and base state across three pairings | Normal dimension only; no surface, caves, population or complete chunk parity |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -93,6 +93,21 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 `BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
 
 ## Local environments
+
+Normal density/base implementation source `02e18641dc5910a8d3e6e419dfea3f6757467707` passed
+all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
+fourteen public checks, the numerical Java oracle and six original comparisons.
+All eighteen original manifests identify that source, pass status and empty
+errors, with matching executable hashes. Density's 150 snapshots match in all
+three pairings, including 341732 binary64 values, 1427456 permutation entries,
+600 continuation longs, 4358904 block bytes and 31744 biome identities per side.
+All state/equivalence/preservation/suffix controls and 82 original q/scratch
+checks agree. Public tests include 535746 terrain checks and six density helper
+regressions; filesystem link cases ran without skips. Public CI runs fifteen
+checks per compiler without private files; exact-head results are recorded in
+[status](status.md). The three runtime libraries also build with testing off.
+
+Previous climate/biome increment:
 
 Climate/biome implementation source `6607b3650410bac2707276dd07769cda85215a6a`
 passed all 18 configured tests on native Windows/MSVC and WSL GCC/Clang without

@@ -2,11 +2,11 @@
 
 In progress: normal-dimension density composition and base-block interpolation,
 [issue #24](https://github.com/frankischilling/minecraft-c/issues/24), on
-`feature/normal-terrain`. Genuine original client/server contexts now produce
-matching constructor, climate, density and base-block observations, including
-warm water and cold-sea ice. Fixed regressions and the repeatable comparison
-suite are being completed. Exact-source acceptance and integration remain pending.
-These observations do not establish complete chunks or playable game operation.
+`feature/normal-terrain`. Exact implementation source `02e18641dc5910a8d3e6e419dfea3f6757467707`
+passed all 21 configured CTests on native Windows/MSVC and WSL GCC/Clang without
+skips. All 18 original-comparison manifests pass with empty errors and identify
+that source. Independent reviews are clear. Public CI and integration are pending.
+Surfaces, caves, population, lighting and playable game operation remain separate.
 
 Latest implementation: original climate blending and biome classification, issue
 [#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
@@ -104,6 +104,32 @@ passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBS
 The exact PR head also passed before merge.
 
 ## Local acceptance
+
+Normal density/base source: `02e18641dc5910a8d3e6e419dfea3f6757467707`. All three toolchains
+passed fourteen public tests, the numerical Java oracle and six original
+NBT/compression/Perlin/simplex/biome/density comparisons. All eighteen manifests
+under `build-density-*/reference-*/manifest.json` record this source, pass status
+and empty errors; current executable hashes match every recorded C probe.
+
+All 150 density snapshots match C/client, C/server and client/server, including
+341732 binary64 values, 1427456 permutation entries, 600 continuation longs,
+4358904 block bytes and 31744 biome identities per side. Each original completes
+82 internal-density/full-scratch recomputation checks. Every side also passes
+49 equivalence, 346 preserved-field, 141 unchanged-Random and 25 constructor-state
+controls, plus exact suffix, retention and block-domain checks. Each platform's
+nine client setup roots contain no files; nine server roots contain only
+8-byte session locks plus directories. These are numerical generation contexts,
+not complete game/server startup or save compatibility.
+
+Public terrain tests pass 535746 checks. All six density helper regressions,
+including completed-mismatch versus later-unavailable precedence and filesystem
+links, run without skips on all three toolchains. Independent reviews traced all
+three complete fixed fixtures to both untouched originals and checked runtime,
+Java bindings, controls, reporting and source attribution. Clang-format18 checks
+all 30 C files; the three runtime libraries build with testing off and no
+Python/Java discovery. Exact-head public CI and integration remain pending.
+
+Previous climate/biome increment:
 
 Climate/biome source: `6607b3650410bac2707276dd07769cda85215a6a`. All three
 toolchains passed twelve public tests, the numerical Java oracle and five

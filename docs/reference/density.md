@@ -2,10 +2,10 @@
 
 This note records bytecode evidence for Beta 1.7.3 density composition and the
 following base-block interpolation. Genuine original setup and three fixed
-numerical cases succeeded on both sides with Temurin 17.0.17+10. Initial C
-comparisons match the full corpus; final exact-source acceptance is pending.
-The [status note](../status.md) records
-tested source and environments. Surface replacement, caves, population,
+numerical cases succeeded on both sides with Temurin 17.0.17+10. Exact-source
+comparisons match C, client and server across the full corpus on Windows and
+Linux. The [status note](../status.md) records tested source and environments.
+Surface replacement, caves, population,
 lighting and complete terrain remain outside this pass.
 
 ## Reference identity
@@ -283,7 +283,7 @@ Earlier catalogue initialization reaches statistics, recipes, achievements and
 bundled translation resources, as recorded in the
 [climate setup evidence](biome.md#setup-and-remaining-scope). This first capture
 does not establish all transitive initialization behavior or broader density
-coverage. The full original corpus and initial C comparisons are described below.
+coverage. The full original corpus and C comparisons are described below.
 
 The paired original observations also include a cold sea-surface case and a
 warm water case. Their complete records matched between sides before fixed C
@@ -361,16 +361,68 @@ conditions, including standalone/composed results, wrapped origins, constructor
 state, Random continuation and untouched inputs/outputs. The saved manifest
 pins both JARs, JDK runtime/compiler/modules, exact helper source/class,
 requests, fixture source and captures; all eleven artifact hashes were checked.
-These are original-only results. Final C/client, C/server and cross-platform
-comparisons require their own executable/source manifests and results.
+These results establish the original-only baseline. The following acceptance
+uses fresh original executions and separately built C probes.
 
-Initial C probes built with native MSVC and WSL GCC/Clang each matched all 150
-captured snapshots as parsed JSON, including constructor state, climate, span
-contents and retention masks. The initial executable/output hashes and captures
-were independently checked. These executables were built from uncommitted
-source; this establishes an initial comparison baseline. Final acceptance
-requires the finished comparison helper and exact source attribution for each
-platform run.
+## C comparison and reproduction
+
+At source `02e18641dc5910a8d3e6e419dfea3f6757467707`, the finished helper passed
+native MSVC with Temurin 17 and WSL GCC/Clang with OpenJDK 21. Each run matched
+all 150 records for C/client, C/server and client/server independently, with
+empty error lists and no skipped comparison. The three manifests' source,
+executable, compiled-class, request, output and input-preservation hashes were
+independently checked; their complete parsed snapshots agree.
+
+Each participant in each 150-snapshot run contained these recorded values,
+including repeated state, retained buffers and fixture prefills:
+
+| Recorded data | Count |
+| --- | ---: |
+| Binary64 values | 341,732 |
+| Permutation entries | 1,427,456 |
+| Random continuation longs | 600 |
+| Block bytes | 4,358,904 |
+| Biome identities | 31,744 |
+
+All C/client/server control totals agree: 49 equivalences, 346 preserved-field
+checks, 141 unchanged-Random checks and 25 unchanged-constructor checks, with
+the additional state, suffix and input controls. Each original side also
+completed 82 exact `q`/full-scratch recomputation checks. Every run inventoried
+nine genuine setups per side; client roots contained no files and server roots
+contained nine eight-byte session locks plus directories. These results cover
+the specified density/base pass, not surface replacement or complete terrain.
+
+Enable `MC_ENABLE_DENSITY_REFERENCE_TESTS` with both pinned local JAR paths,
+JDK 11+ runtime/compiler paths and `MC_REFERENCE_TESTED_COMMIT` identifying the
+source used to build `mc_terrain_probe`. Run:
+
+```powershell
+ctest --test-dir build -R '^reference.density$' --output-on-failure
+```
+
+Add `-C Debug` for a multi-configuration Windows build. The standalone helper
+is [compare_density.py](../../scripts/reference/density/compare_density.py).
+Its required `--executable` selects the built C probe; `--client`, `--server`,
+`--java`, `--javac` and `--work-dir` select inputs and the report directory.
+`--tested-commit` accepts a full 40-hex source identity and is explicitly
+recorded as caller-supplied. Rebuild from that source before comparing; the
+report also hashes the actual executable and numerical sources.
+
+Each invocation writes a fresh running/unavailable/fail/pass manifest with a
+new run identity, fresh Java compilation and captured requests/stdout/stderr.
+Reports record artifact hashes, runtime/compiler information, complete input
+preservation, per-side comparisons and controls, and bounded owned-world file
+inventories. Original worlds use new unique roots and are retained after
+success or failure. A completed mismatch remains a failure even if a later
+setup is unavailable. Missing prerequisites/setup return 77; numerical,
+transport, assertion and comparison errors remain failures. Child runs have a
+60-second limit and retain at most 64 MiB per output stream.
+
+The six [public helper guards](../../tests/tools/density/test_reference.py)
+use generated placeholders and process results. They verify prerequisite
+report replacement, input-preserving output handling and mismatch precedence
+without running original classes, a JVM or a C probe. Exact platform results
+and the wider test suite remain recorded in the [status note](../status.md).
 
 Reproduce the static observations without starting a world:
 
