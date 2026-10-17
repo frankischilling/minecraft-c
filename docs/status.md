@@ -1,15 +1,17 @@
 # Development status
 
-Active implementation: `feature/biome-climate` from
-`7fdfe358a79399ca9081c23548406fc95a43513f`, issue
-[#21](https://github.com/frankischilling/minecraft-c/issues/21). The C module,
-public tests and optional original comparison are implemented. Exact source
+Latest implementation: original climate blending and biome classification, issue
+[#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
+[PR #23](https://github.com/frankischilling/minecraft-c/pull/23) at
+`b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620` on `main`. Exact source
 `6607b3650410bac2707276dd07769cda85215a6a` passed all 18 configured CTests on
-native Windows/MSVC and WSL GCC/Clang without skips. Inspect exact-head public
-CI, integration and wiki publication in the linked issue before resuming.
-Original world startup and full terrain are not established by this fixture.
+native Windows/MSVC and WSL GCC/Clang without skips. Exact PR and resulting
+runtime CI passed all thirteen public tests on each compiler plus formatting.
+This documentation checkpoint uses `docs/biome-integration`. Inspect the live
+worktree and linked issue before resuming. The numerical fixture establishes
+neither original world startup nor full terrain generation.
 
-Latest integrated implementation: original 2D simplex/octave noise, issue
+Previous integrated implementation: original 2D simplex/octave noise, issue
 [#19](https://github.com/frankischilling/minecraft-c/issues/19), merged in
 [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) at
 `00aabbd522f78a29ec55ee42ce8d92bfc0400f8b` on `main`.
@@ -55,13 +57,21 @@ and milestones M2 through M5 remain open.
 | [PR #12](https://github.com/frankischilling/minecraft-c/pull/12) | Bounded gzip/zlib memory module, pinned static zlib, public/original interoperability and detailed documentation; closes #11 |
 | [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions; closes #16 |
 | [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) | Caller-owned 2D simplex/octave primitives, observed original constants, exact both-side numerical comparisons and public regressions; closes #19 |
+| [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) | Seeded climate blending, float-built biome lookup, bounded retained arrays and exact both-side numerical/state comparisons; closes #21 |
 
-All six implementation PRs are merged and their feature branches removed. M1 is complete.
+All seven listed PRs are merged and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `00aabbd522f78a29ec55ee42ce8d92bfc0400f8b`,
+Latest tested runtime integration: `b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620`,
+[main run39031285945](https://github.com/frankischilling/minecraft-c/actions/runs/39031285945).
+All thirteen tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
+Exact PR head `b1d28d89fdcec3950c31830625b0401df746c86c` passed
+[run39031194746](https://github.com/frankischilling/minecraft-c/actions/runs/39031194746).
+The locally tested source and runtime integration differ only in Markdown.
+
+Previous tested simplex integration: `00aabbd522f78a29ec55ee42ce8d92bfc0400f8b`,
 [main run39029339629](https://github.com/frankischilling/minecraft-c/actions/runs/39029339629).
 All eleven tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
 The first Windows configure rejected a dependency download with a checksum mismatch.
@@ -184,9 +194,9 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
-Finish exact-head integration for climate blending and classification under
-[#21](https://github.com/frankischilling/minecraft-c/issues/21), then continue
-terrain density/surfaces and exact chunk comparisons, alongside storage schemas
+Continue normal-dimension density and base terrain under
+[#24](https://github.com/frankischilling/minecraft-c/issues/24), then surfaces
+and exact chunk comparisons, alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.
 
@@ -197,12 +207,11 @@ occurred. The original-client/server baseline and all four interoperability
 pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
-The previous [wiki](https://github.com/frankischilling/minecraft-c/wiki) publication is
-`09ef533dda4f021328ab408e5325f41b8a8d90c1`. All five page blobs match the versioned
-`docs/wiki/` sources of the integrated simplex increment. Home, build/tests, architecture and storage/reference each
-returned HTTP200 with the expected content; updated pages include both noise
-modules and their comparison options. The clone remains at `.local/wiki/`.
-The current climate changes to versioned wiki pages still need publication after integration.
+The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
+`3c70516044bf66a339274b4565c95c227a08fd06`. All five page blobs match the versioned
+`docs/wiki/` sources. Home, build/tests, architecture and storage/reference each
+returned HTTP200 with expected content. Updated pages include climate/biome
+classification and its comparison option. The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant
