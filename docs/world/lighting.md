@@ -45,7 +45,8 @@ Null inputs, invalid queue metadata and invalid request kinds fail without
 mutation. Live entry kinds and storage validity are caller invariants. A request
 may alias a live entry; enqueue copies its value before changing storage.
 
-World admission, static recursion state, height queries, chunk insertion,
-finishing dirty effects, queue draining and light propagation remain separate
+World admission, shared recursion state, height queries and finishing dirty
+effects compose this queue through the [finishing boundary](finishing.md).
+Full cache lifecycle, queue draining and light propagation remain separate
 work. See the [original evidence](../reference/lighting.md) and
 [parity matrix](../parity.md).

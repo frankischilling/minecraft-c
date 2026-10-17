@@ -90,6 +90,15 @@ requests and a separate actual million-entry overflow experiment. The C module
 implements storage after admission. World-height tracing, full finishing and
 propagation remain open.
 
+[Full finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md)
+adds actual JDI entry/exit traces of all 1024 height queries per pass, dirty state
+and complete ordered queues. Each fixed case runs twice in the same genuine
+world and matches a separate untouched control across complete snapshots.
+Suspended marker inventories record thread roles and original-loader frames;
+they establish finite headless conditions rather than general scheduling.
+The C cache supports lookup and the explicit map/list publication phase.
+Full loading, lifecycle, population and light propagation remain open.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib

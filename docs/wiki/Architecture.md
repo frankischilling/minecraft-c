@@ -15,8 +15,9 @@ rather than empty placeholders.
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 | `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
-| `world/chunk` | Packed voxel arrays, column heights and direct skylight | Caller-owned data, borrowed blocks and immutable opacity input |
-| `world/lighting` | Original region merging and ordered queue storage after world admission | Shared Java arithmetic, caller-owned storage |
+| `world/chunk` | Packed voxel arrays, heights, direct skylight and normal finishing | Caller-owned data, borrowed blocks/opacity and explicit world context |
+| `world/cache` | Packed-key lookup and explicit post-generation publication | Caller-owned map entries, stable chunk identities and insertion list |
+| `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -73,6 +74,14 @@ preserves the newest five-entry search, in-place merges and original wrapped
 volume arithmetic. Caller-owned storage reports a smaller capacity failure and
 the original million-entry abort separately. World admission and propagation
 remain outside this module.
+
+The [finishing contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/finishing.md)
+composes local height/direct sky rebuilding with all 1024 ordered world-height
+queries, admitted sky intervals and the final dirty effect. Cache lookup retains
+the original packed coordinate collisions and unsigned height bytes. Explicit
+publication replaces the map value and appends the same identity to a separate
+insertion list. Loading, generation callbacks, unloading, population and light
+propagation remain unimplemented.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

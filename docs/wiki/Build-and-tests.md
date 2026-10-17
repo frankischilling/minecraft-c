@@ -67,16 +67,24 @@ separate million-entry experiment observes the original automatic abort.
 Public C tests replay recorded complete queues and storage contracts without
 original files or Java. See the
 [queue evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md).
+`MC_ENABLE_FINISH_REFERENCE_TESTS` adds full normal finishing with JDK17+ and
+`jdk.jdi`. It observes actual ordered height entries/returns over two consecutive
+passes in each of six fresh cases. A separate untouched control must match
+complete snapshots exactly. The debugger uses loopback only. Public fixtures
+compare all decoded bytes, queues and queries without Java; see
+[finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md).
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
 
-The recorded queue source passes 33 local tests per compiler on native
-Windows/MSVC and WSL GCC/Clang, including original queue, chunk and nibble
-comparisons. Public CI runs 30 tests per compiler and formatting for 66 C/header
-files. Exact tested commits, manifest hashes and integration results live in
-the development status and linked evidence pages.
+The recorded finishing source passes 37 local tests per compiler on native
+Windows/MSVC and WSL GCC/Clang, including original finishing, queue, chunk and
+nibble comparisons. The Linux builds use ASan/UBSan. All six finishing cases
+match independently in three pairings; complete untouched controls agree.
+Public CI passes 33 tests per compiler and formatting for 75 C/header files.
+Exact tested commits, manifest hashes and integration results live in the
+development status and linked evidence pages.
 
 Original resources are never bundled. The
 [resource guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/resources.md)
