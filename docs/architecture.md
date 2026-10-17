@@ -84,10 +84,8 @@ As implementation proceeds, the intended boundaries are:
 | Client | Menus, input sampling, single-player and multiplayer sessions | Render frequency must not change simulation state |
 | Dedicated server | Headless configuration, administration, save and shutdown | No display, OpenGL context, or client audio dependency |
 
-Beyond the compatibility, storage and noise modules, these are design directions
-rather than
-implemented game systems. Add interfaces when a reference-backed behavior needs
-them. CMake build options apply strict diagnostics
+Add interfaces as reference-backed game behavior is implemented.
+CMake build options apply strict diagnostics
 and floating-point rules to project code; future dependencies need their own
 licensing and build review. SDL3 is a candidate, and its current APIs must be
 verified before use. Storage uses pinned static zlib; its

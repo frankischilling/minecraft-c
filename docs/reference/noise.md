@@ -1,9 +1,9 @@
 # Improved Perlin and octave noise
 
 This note records numerical bytecode observations from the supplied Beta 1.7.3
-binaries. The live comparison against their actual noise classes is being
-implemented; no passing numerical differential is claimed here. Noise results
-alone do not establish terrain or chunk parity.
+binaries. The opt-in comparison executes their actual noise classes and compares
+exact numerical/state records with C. The [status note](../status.md) pins tested
+source and environments. Noise results alone do not establish terrain or chunk parity.
 
 ## Reference identity
 
@@ -66,8 +66,8 @@ X/Y/Z sizes, X/Y/Z scales, and an amplitude divisor.
 
 The cache therefore retains more than permutation hashes. Replacing general
 bulk with independent scalar calls is not equivalent when samples share a Y
-cell. This is a deduction from the retained gradient operands and branch; the
-live differential must supply concrete numerical regression cases. The special
+cell. Concrete original numerical observations in the public regression test
+check this consequence of the retained gradient operands and branch. The special
 Y-size-1 branch also differs from the scalar two-argument plane.
 
 On client `uf` and server `mp`, scalar octave method `a(DD)D` starts factor 1,
@@ -103,9 +103,24 @@ javap -classpath b1.7.3.jar -c -s -p am uf yf qn jd
 javap -classpath b1.7.3_server.jar -c -s -p ab mp pk ka gb
 ```
 
-The pending comparison must cover constructor permutations/offsets and following
-Random state, scalar and both bulk paths, in-cell Y reuse, buffer accumulation
-versus clearing, ignored arguments, negative/large coordinates and exact double
-bits. Separate simplex noise (`cc`/`bi`), biome selection, density combination,
+The live corpus has 783 requests per original side: 80 state, 105 scalar-3D,
+168 scalar-octave, 61 additive grids and 369 octave grids. It compares 140218
+returned double bit patterns, 399872 permutation entries and 3132 following
+Random longs per side, with separate client/C, server/C and client/server results.
+Cases cover seeded construction, shared-generator order, zero layers, both bulk
+paths, in-cell Y reuse, accumulation versus clearing, negative/large coordinates,
+adjacent cell boundaries and caller-buffer suffixes. Fourteen original-only
+observations independently supply the public fixed vectors; their constants were
+checked against both originals. No C-derived output is its own expected value.
+
+Enable `MC_ENABLE_NOISE_REFERENCE_TESTS` with both supplied JAR paths and
+`MC_REFERENCE_TESTED_COMMIT`, as described in [testing](../testing.md). The helper
+records executable/tool/source/JAR hashes and exact request/output artifacts.
+It replaces reports at running/unavailable/final states, uses fresh compiled
+classes, and rejects output paths overlapping inputs. Missing or mismatched
+prerequisites return77; execution or comparison failures return1. Public tests
+verify prerequisite reporting and input preservation without running originals.
+
+Separate simplex noise (`cc`/`bi`), biome selection, density combination,
 surface replacement, caves, features/population, lighting, chunks and full
 world-generation ordering remain outside this numerical increment.

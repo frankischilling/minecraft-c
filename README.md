@@ -6,8 +6,8 @@ headless server, reproducing the original behavior with locally selected
 usernames and no account authentication.
 
 There is no playable C client or server yet. Current code provides numerical
-and text compatibility, bounded NBT/gzip/zlib, [seeded terrain noise](docs/world/noise.md), tests, reference
-tools, and a local resource importer. The [parity matrix](docs/parity.md) records
+and text compatibility, bounded NBT/gzip/zlib, [seeded terrain noise](docs/world/noise.md),
+tests, reference tools, and a local resource importer. The [parity matrix](docs/parity.md) records
 verified scenarios and outstanding work.
 
 ## Build
