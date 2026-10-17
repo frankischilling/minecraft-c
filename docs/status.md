@@ -1,14 +1,19 @@
 # Development status
 
-In progress: normal-dimension density composition and base-block interpolation,
-[issue #24](https://github.com/frankischilling/minecraft-c/issues/24), on
-`feature/normal-terrain`. Exact implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`
-passed all 21 configured CTests on native Windows/MSVC and WSL GCC/Clang without
-skips. All 18 original-comparison manifests pass with empty errors and identify
-that source. Independent reviews are clear. Public CI and integration are pending.
-Surfaces, caves, population, lighting and playable game operation remain separate.
+Latest implementation: normal-dimension density and base-block interpolation,
+issue [#24](https://github.com/frankischilling/minecraft-c/issues/24), merged in
+[PR #27](https://github.com/frankischilling/minecraft-c/pull/27) at
+`6a98ab37457e9df342d366e9e336805e111b3c0d` on `main`. Exact source
+`1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passes all 21 local CTests on
+native Windows/MSVC and WSL GCC/Clang without skips. Public CI passes all fifteen
+tests per compiler plus formatting on the exact PR head and resulting main.
+This documentation checkpoint uses `docs/terrain-integration`; inspect the live
+worktree and [next surface issue #26](https://github.com/frankischilling/minecraft-c/issues/26)
+before resuming. Surface draft work and seven paired original observations are
+still separate from integrated density/base behavior. Caves, population,
+lighting, save compatibility and playable client/server operation remain open.
 
-Latest implementation: original climate blending and biome classification, issue
+Previous integrated implementation: original climate blending and biome classification, issue
 [#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
 [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) at
 `b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620` on `main`. Exact source
@@ -67,13 +72,24 @@ and milestones M2 through M5 remain open.
 | [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions; closes #16 |
 | [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) | Caller-owned 2D simplex/octave primitives, observed original constants, exact both-side numerical comparisons and public regressions; closes #19 |
 | [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) | Seeded climate blending, float-built biome lookup, bounded retained arrays and exact both-side numerical/state comparisons; closes #21 |
+| [PR #27](https://github.com/frankischilling/minecraft-c/pull/27) | Allocation-free normal density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures; closes #24 |
 
-All seven listed PRs are merged and their feature branches removed. M1 is complete.
+All eight listed PRs are merged and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620`,
+Latest tested runtime integration: `6a98ab37457e9df342d366e9e336805e111b3c0d`,
+[main run39034545973](https://github.com/frankischilling/minecraft-c/actions/runs/39034545973).
+All fifteen tests pass on native Windows MSVC/Linux GCC/Clang, plus formatting.
+Exact PR head `ebee25a9e64aa09cbe00a99b225d58a805fc1713` passes
+[run39034316595](https://github.com/frankischilling/minecraft-c/actions/runs/39034316595).
+The first head exposed an older-MSVC constant-condition warning in a test;
+the assertion is now checked at compile time. Runtime code and fixed vectors
+were unchanged. All 21 local tests were repeated at the corrected exact source.
+The locally tested source and runtime integration differ only in Markdown.
+
+Previous tested climate/biome integration: `b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620`,
 [main run39031285945](https://github.com/frankischilling/minecraft-c/actions/runs/39031285945).
 All thirteen tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
 Exact PR head `b1d28d89fdcec3950c31830625b0401df746c86c` passed
@@ -127,7 +143,7 @@ links, run without skips on all three toolchains. Independent reviews traced all
 three complete fixed fixtures to both untouched originals and checked runtime,
 Java bindings, controls, reporting and source attribution. Clang-format18 checks
 all 30 C files; the three runtime libraries build with testing off and no
-Python/Java discovery. Exact-head public CI and integration remain pending.
+Python/Java discovery. Exact-head public CI and runtime integration pass as linked above.
 
 Previous climate/biome increment:
 
@@ -229,8 +245,8 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
-Continue normal-dimension density and base terrain under
-[#24](https://github.com/frankischilling/minecraft-c/issues/24), then surface replacement
+Normal density/base terrain is integrated under closed
+[#24](https://github.com/frankischilling/minecraft-c/issues/24). Continue surface replacement
 and chunk seeding under [#26](https://github.com/frankischilling/minecraft-c/issues/26),
 and exact chunk comparisons, alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
@@ -244,10 +260,10 @@ pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
 The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
-`3c70516044bf66a339274b4565c95c227a08fd06`. All five page blobs match the versioned
+`90e4f9bb505e22ba099da7e2fccffb2ef2e749d3`. All five page blobs match the versioned
 `docs/wiki/` sources. Home, build/tests, architecture and storage/reference each
-returned HTTP200 with expected content. Updated pages include climate/biome
-classification and its comparison option. The clone remains at `.local/wiki/`.
+returned HTTP200 with expected content. Updated pages include normal density/base
+terrain and its comparison option. The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant
