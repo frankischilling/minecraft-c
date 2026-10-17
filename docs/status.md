@@ -1,16 +1,23 @@
 # Development status
 
-Latest implementation: fresh chunk arrays, packed nibble access, heightmaps and
-direct skylight on `feature/chunk-data`. Exact runtime/reference source
+Latest integrated implementation: fresh chunk arrays, packed nibble access,
+heightmaps and direct skylight at
+`16ceea3c254b636cd6d24bb56f0bfa2dd88d8e01` on `main`. Runtime/reference source
 `67c928db7c0d87e599f16228833b0234fba4bc24` passes all 30 local CTests on native
 MSVC and WSL GCC/Clang without skips. Both original comparisons pass on every
 build, including all five fresh/repeated chunk cases in three independent
 pairings. The six manifests pass 660 fingerprint checks; public fixtures match
 800 complete arrays from the original-only capture and three fresh runs.
-Clang-format18 passes for 61 C/header files. See [chunk evidence](reference/chunk.md)
+Clang-format 18 passes for 61 C/header files. See [chunk evidence](reference/chunk.md)
 for exact hashes and [the C contract](world/chunk.md) for ownership and scope.
-Public CI, integration and wiki publication are pending. Next implementation
-work covers world-height/cache queries and queued-light finishing behavior.
+
+The published branch and resulting main checks pass all 28 public/numerical
+CTests per compiler plus formatting. The synthetic nibble fixture also covers
+temporary-path aliases; all 18 guards pass on native Python 3.14 and WSL
+Python 3.12. The five published wiki pages match their committed source blobs.
+Resume from `main` and inspect the live worktree before making changes.
+Next implementation work covers world-height/cache queries, ordered light
+queues and dirty effects during chunk finishing; propagation remains separate.
 The graphical client, dedicated server and complete rewrite remain unfinished.
 
 Previous integrated implementation: normal caves, integrated at
@@ -20,12 +27,12 @@ MSVC and WSL GCC/Clang without skips. All ten natural cases and 44 protected
 room/path controls match in C/client, C/server and client/server comparisons.
 All 30 original-reference manifests pass; independent review checks source,
 executables, complete records, table, classes, inputs and inventories.
-Exact-head [public CI](https://github.com/frankischilling/minecraft-c/actions/runs/39043911065)
+Branch [public CI](https://github.com/frankischilling/minecraft-c/actions/runs/39043911065)
 passes 23 tests per compiler and formatting for 50 C/header files. The
 [resulting-main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578)
-also pass. This documentation checkpoint uses
-`docs/caves-integration`; inspect the live worktree and [evidence](reference/caves.md)
-before resuming. The full client/server game remains unfinished.
+also pass. Its documentation checkpoint is integrated at
+`0145f6d83ee25179204f812bb895df8f1b04319a`, with passing
+[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044963945).
 
 Previous integrated implementation: float lookup/floor, integrated at
 `077300380a81596da82fbf67ea1cb625e3215436`. Exact source
@@ -120,15 +127,31 @@ remain incomplete.
 | Surface replacement | Allocation-free normal surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons |
 | Float lookup and floor | Caller-owned float trig table and exact lookup/floor helpers, full-table original comparisons and public path-alias regressions |
 | Normal cave scheduling and carving | Complete natural and protected original comparisons, explicit Random/state preservation and public full-buffer fixtures |
+| Local chunk data and packed access | Caller-owned voxel/nibble arrays, exact height/direct-skylight behavior, complete original comparisons and public full-array fixtures |
 
-All eleven listed increments are integrated and their feature branches removed. M1 is complete.
+All twelve listed increments are integrated and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: normal caves at
-`49f87ef9c803909ca8d89c8efe67a32da648cca1`, with passing
-[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578).
+Latest tested runtime integration: local chunk data at
+`16ceea3c254b636cd6d24bb56f0bfa2dd88d8e01`, with passing
+[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39059389712).
+Exact branch commit `dc1320db05161f87c4e3b8733e1e9262f9beb477` passes
+[branch checks](https://github.com/frankischilling/minecraft-c/actions/runs/39059210013).
+Both runs pass all 28 public/numerical CTests on native Windows MSVC and Linux
+GCC/Clang, plus formatting. The integrated tree matches the tested branch tree.
+
+The first Windows run exposed a synthetic fixture comparing unresolved
+temporary paths against canonical file records. The correction resolves the
+fixture root once and adds a portable alias regression. Direct Windows short-path
+and `child/..` checks reproduce the old failure and pass after correction,
+including both successful and unavailable observations. C runtime, comparison
+drivers, original observers and fixed arrays are unchanged from the recorded
+30-test source; the later changes are Markdown and this synthetic fixture.
+
+Previous tested cave runtime integration: `49f87ef9c803909ca8d89c8efe67a32da648cca1`,
+with passing [main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578).
 All 23 public/numerical tests pass per compiler, along with formatting.
 
 Previous tested math runtime integration: `077300380a81596da82fbf67ea1cb625e3215436`,
@@ -386,10 +409,13 @@ its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
 Normal density/base terrain, surface replacement and chunk seeding are integrated.
 The float lookup/floor prerequisite and normal cave runtime are integrated.
-Continue with [fresh chunk data, heightmaps and direct skylight](world/chunk.md).
-Continue exact chunk comparisons alongside storage schemas
-and both-direction copied-world round trips. Client/server runtimes and the
-full remaining inventory stay open.
+[Fresh chunk data, heightmaps and direct skylight](world/chunk.md) are integrated
+for the local array contract. Continue with original world-height/cache queries,
+chunk visibility, ordered light queues and dirty effects. Record genuine setup
+state because the server's spawn Random makes the cache/queue baseline variable.
+Full propagation, storage schemas and both-direction copied-world round trips
+still need separate comparisons. Client/server runtimes and the full remaining
+inventory stay open.
 
 The original server passed a fresh seed 17 offline loopback startup/save/stop
 smoke during foundation work. It did not involve a client or C server. Ordinary
@@ -399,11 +425,11 @@ pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
 The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
-`be88d6e8231d171c224cdb470199c7af7b41f43a`. All five page blobs match the versioned
-cave sources at `49f87ef9c803909ca8d89c8efe67a32da648cca1`. Home, build/tests,
-architecture and storage/reference each returned HTTP200 with expected content.
-Updated pages include normal cave ownership, scheduling, private geometry,
-natural/protected comparisons and their explicit limits.
+`7b149b37b6518e86bc91c491bcd235fcea86d000`. The remote head is verified and all
+five page blobs match the versioned sources at
+`16ceea3c254b636cd6d24bb56f0bfa2dd88d8e01`. Updated home, build/tests,
+architecture and storage/reference pages describe chunk ownership, packed
+access, height/skylight comparisons and the remaining world-finishing scope.
 The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
