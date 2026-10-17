@@ -31,6 +31,11 @@ reports. The C runtime has no JVM dependency. Missing prerequisites remain
 unavailable results. Rewritten components agreeing with each other alone do not
 establish original compatibility.
 
+[Float lookup/floor evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/math.md)
+records the complete initialized table and raw-bit scalar calls. These pure
+numerical observations need no world or cave setup. They establish the tested
+math prerequisite separately from cave geometry and complete chunks.
+
 Reproduction and exact bytecode anchors live in
 [NBT evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/nbt.md)
 and [compression evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/compression.md).

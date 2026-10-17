@@ -4,12 +4,13 @@ CTest separates public unit/tool tests from explicitly requested reference
 comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
 The numerical Java oracle is a standard-library probe and can run in public CI
-without original game files. Original-class storage, noise, climate and terrain
+without original game files. Original-class math, storage, noise, climate and terrain
 comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
 | `core.java` | 146 fixed arithmetic/cast/Random edge and captured-oracle checks | No game simulation or game random-consumption ordering |
+| `core.math` | 903 checks: all observed lookup/floor cases, complete-table fingerprint, 37 exact entries, repeated initialization and immutable reads | Float table and cast/compare floor only; sampled scalar inputs, measured native backends |
 | `core.mutf8` | 596848 checks, including every UTF-16 unit, accepted byte forms, malformed input and unchanged outputs | Payload codec only; NBT and packet framing are distinct |
 | `storage.nbt` | 394978 checks for all original tag types, boundaries, retained state, ownership, budgets, errors and deterministic mutations | Raw tags only; no world schema or compression |
 | `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
@@ -23,9 +24,11 @@ comparisons remain local.
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.density_reference` | 6 generated prerequisite/hash/report/path/link and mismatch-before-unavailable regressions | No original classes run; link cases skip only if unsupported |
 | `tools.surface_reference` | 6 generated prerequisite/hash/report/path/link and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
+| `tools.math_reference` | 10 generated prerequisite/hash/report/path/alias/link, parser and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
+| `reference.math` (local opt-in) | All 65536 raw table entries and 366 scalar calls in three independent pairings; table preservation controls | Original math methods only; no world setup, cave geometry or full input-space claim |
 | `reference.nbt` (local opt-in) | Per original side: 194 reads, 40 original writes, 12 packet controls, 157 original-to-C and 435 original re-reads | Selected JDK; 4 malformed negative-list departures and 20 order-only differences recorded separately |
 | `reference.compression` (local opt-in) | 80 containers, 22 C encodes; per side 181 baseline records, 65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference transfers | 36 explicit malformed-container departure records; no copied-world compatibility claim |
 | `reference.noise` (local opt-in) | Per side 783 requests, 140218 exact double values, 399872 permutation entries and 3132 following Random longs; three separate pair comparisons | Scoped procedural noise; no chunks, population or lighting |
@@ -105,6 +108,28 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
+Float lookup/floor source `d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27
+configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
+eighteen public tests, the numerical Java oracle and eight original comparisons.
+All 24 original manifests identify this source and pass with empty errors;
+every probe hash matches. Fresh math comparisons match all 65536 table entries
+and 366 scalar calls independently for C/client, C/server and client/server,
+including actual initialized original tables on Temurin17 and OpenJDK21.
+
+Public math tests pass 903 checks and all ten helper guards run without skips.
+The alias regression reaches the completed comparison through a directory
+alias, covering the fixture-path failure exposed by Windows CI. Runtime code
+and fixed numerical data are unchanged; all 27 tests were repeated at this source.
+The complete-table fingerprint, 37 selected entries, 132 float pairs and 102
+floor cases were independently traced to both original-only captures. Source
+Git-blob, executable, class, artifact and input-preservation checks agree.
+Clang-format18 checks 41 C/header files; all three libraries build with testing
+off and no Python/Java discovery. Public CI runs nineteen tests per compiler
+without private files; exact-head and integration results belong in
+[status](status.md). These results cover the documented numerical prerequisite.
+
+Previous surface increment:
+
 Normal surface source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24
 configured CTests on native Windows/MSVC and WSL GCC/Clang without skips:
 sixteen public tests, the numerical Java oracle and seven original comparisons.
@@ -171,9 +196,9 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 24 CTests pass at the surface source, with explicit Temurin17 |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 24 CTests pass at the surface source with JDK21 |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 24 CTests pass at the surface source with JDK21 |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 27 CTests pass at the math source, with explicit Temurin17 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 27 CTests pass at the math source with JDK21 |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 27 CTests pass at the math source with JDK21 |
 
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
 selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the
