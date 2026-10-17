@@ -213,3 +213,11 @@ Native Windows and Linux GCC/Clang hosted checks pass all 33 public/numerical
 tests and formatting for 75 C/header files on that source in
 [run39075690802](https://github.com/frankischilling/minecraft-c/actions/runs/39075690802).
 These results establish the declared fixed scenarios and ownership contracts.
+
+The runtime is integrated at `fa17e3d8885632ca0baecf71bdf9551e47be68eb`.
+Final branch source `7c82b4a861e742e717b6ea8fd9646c5611211dba` and the resulting
+main both pass all 33 hosted public/numerical tests per compiler and formatting
+for 75 C/header files. The integration tree equals the tested branch tree; its
+runtime/reference sources remain identical to the locally tested source. See
+[branch checks](https://github.com/frankischilling/minecraft-c/actions/runs/39076093215)
+and [main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39076208781).
