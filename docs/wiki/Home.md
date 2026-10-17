@@ -8,7 +8,8 @@ There is no playable C client or server yet. Current code provides numerical/tex
 compatibility, float lookup/floor helpers, raw NBT, bounded gzip/zlib memory
 compression, seeded Perlin/octave noise, 2D simplex/octave noise,
 climate/biome classification, normal density/base
-terrain, surface replacement, normal cave carving, local resource import and native builds.
+terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
+local resource import and native builds.
 The [repository README](https://github.com/frankischilling/minecraft-c#readme),
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
 and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)

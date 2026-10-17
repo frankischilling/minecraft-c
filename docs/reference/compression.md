@@ -1,7 +1,6 @@
 # Original compression evidence and local comparison
 
-The memory gzip/zlib adapters and original-class comparison are tracked in
-[issue #11](https://github.com/frankischilling/minecraft-c/issues/11). These checks
+The memory gzip/zlib adapters and original-class comparison checks
 cover compressed containers and separate raw NBT compound parsing. They do not
 establish region storage, complete world saves, or historical JVM behavior.
 

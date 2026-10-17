@@ -79,6 +79,15 @@ then checks the separate cave Random and complete retained state. A separate
 on 44 owned-buffer controls without constructing worlds. See the
 [cave contract](world/caves.md) and [evidence](reference/caves.md).
 
+`MC_ENABLE_NIBBLES_REFERENCE_TESTS=ON` compares the original packed-array
+constructors, complete getter sweeps and setter snapshots.
+`MC_ENABLE_CHUNK_REFERENCE_TESTS=ON` compares fresh and repeated chunk-local
+height/skylight results with both originals in separately owned world contexts.
+Both use the supplied JAR/JDK/source-commit settings. The full chunk corpus also
+requires the frozen original post-cave inputs described in
+[chunk reproduction](reference/chunk.md). Public chunk tests use recorded
+fixtures and require no original files or Java.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

@@ -1,6 +1,5 @@
 # Java numeric and random primitives
 
-This is the first increment for [issue #2](https://github.com/frankischilling/minecraft-c/issues/2).
 `include/mc/core/java/java.h` and `src/core/java/java.c` implement defined C17 operations needed
 when translating Java bytecode. The tests establish the listed primitive results;
 they do not establish Minecraft simulation, terrain, or random-consumption order.

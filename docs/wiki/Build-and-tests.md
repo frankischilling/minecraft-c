@@ -24,7 +24,8 @@ explains offline source overrides and license notices.
 
 Public checks cover numerical/text semantics, raw NBT, compression, both noise
 families, climate/biome classification, normal density/base blocks, surface
-replacement, normal cave carving and the local resource importer.
+replacement, normal cave carving, packed chunk arrays, height/skylight data
+and the local resource importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -55,10 +56,21 @@ in genuine base/surface contexts and protected room/path controls over owned
 buffers. These need a JDK containing `java`, `javac` and `javap`. Both compare
 complete buffers, Random continuations and preservation controls independently
 between C/client, C/server and client/server.
+`MC_ENABLE_NIBBLES_REFERENCE_TESTS` checks original packed-array constructors,
+getter sweeps and setter snapshots. `MC_ENABLE_CHUNK_REFERENCE_TESTS` checks
+fresh/repeated local chunk arrays and heights in genuine original world contexts.
+The full corpus also needs frozen original post-cave inputs; see
+[chunk reproduction](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/chunk.md).
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
+
+The recorded chunk source passes 30 local tests per compiler on native
+Windows/MSVC and WSL GCC/Clang, including both original comparisons. Public CI
+runs 28 tests per compiler and formatting for 61 C/header files. Exact tested
+commits, manifest hashes and integration results live in the development status
+and linked evidence pages.
 
 Original resources are never bundled. The
 [resource guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/resources.md)

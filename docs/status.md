@@ -1,7 +1,19 @@
 # Development status
 
-Latest implementation: [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30),
-merged in [PR #35](https://github.com/frankischilling/minecraft-c/pull/35) at
+Latest implementation: fresh chunk arrays, packed nibble access, heightmaps and
+direct skylight on `feature/chunk-data`. Exact runtime/reference source
+`67c928db7c0d87e599f16228833b0234fba4bc24` passes all 30 local CTests on native
+MSVC and WSL GCC/Clang without skips. Both original comparisons pass on every
+build, including all five fresh/repeated chunk cases in three independent
+pairings. The six manifests pass 660 fingerprint checks; public fixtures match
+800 complete arrays from the original-only capture and three fresh runs.
+Clang-format18 passes for 61 C/header files. See [chunk evidence](reference/chunk.md)
+for exact hashes and [the C contract](world/chunk.md) for ownership and scope.
+Public CI, integration and wiki publication are pending. Next implementation
+work covers world-height/cache queries and queued-light finishing behavior.
+The graphical client, dedicated server and complete rewrite remain unfinished.
+
+Previous integrated implementation: normal caves, integrated at
 `49f87ef9c803909ca8d89c8efe67a32da648cca1`. Exact source
 `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33 local CTests on native
 MSVC and WSL GCC/Clang without skips. All ten natural cases and 44 protected
@@ -15,115 +27,114 @@ also pass. This documentation checkpoint uses
 `docs/caves-integration`; inspect the live worktree and [evidence](reference/caves.md)
 before resuming. The full client/server game remains unfinished.
 
-Previous integrated implementation: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
-merged in [PR #33](https://github.com/frankischilling/minecraft-c/pull/33) at
+Previous integrated implementation: float lookup/floor, integrated at
 `077300380a81596da82fbf67ea1cb625e3215436`. Exact source
 `d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27 local CTests on native
 Windows/MSVC and WSL GCC/Clang without skips. All 65536 table entries and 366
 scalar calls match independently between C/client, C/server and client/server,
 including fresh Temurin17/OpenJDK21 original executions. Public CI passes
-nineteen tests per compiler plus formatting on the exact PR head and resulting
+nineteen tests per compiler plus formatting on the exact branch commit and resulting
 main. This documentation checkpoint uses
 `docs/math-integration`; inspect the live worktree before resuming.
 
 Previous integrated implementation: normal surface replacement and chunk seeding,
-[issue #26](https://github.com/frankischilling/minecraft-c/issues/26), merged in
-[PR #31](https://github.com/frankischilling/minecraft-c/pull/31) at
+integrated at
 `1394928cebbcbe31700db3d280d0faa071ea6a34`. Exact source
 `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24 local CTests on native
 Windows/MSVC and WSL GCC/Clang without skips. All 290 surface snapshots match
 in C/client, C/server and client/server comparisons. Public CI passes seventeen
-tests per compiler plus formatting on the exact PR head and resulting main.
-Its documentation checkpoint is integrated in
-[PR #32](https://github.com/frankischilling/minecraft-c/pull/32) at
+tests per compiler plus formatting on the exact branch commit and resulting main.
+Its documentation checkpoint is integrated at
 `d8e6fca665a9e881a5ab1711413b9b84e9e20116`; the resulting
 [main CI](https://github.com/frankischilling/minecraft-c/actions/runs/39036383364)
 also passes. Inspect the live worktree before resuming.
 
 Previous integrated implementation: normal-dimension density and base-block interpolation,
-issue [#24](https://github.com/frankischilling/minecraft-c/issues/24), merged in
-[PR #27](https://github.com/frankischilling/minecraft-c/pull/27) at
+integrated at
 `6a98ab37457e9df342d366e9e336805e111b3c0d` on `main`. Exact source
 `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passes all 21 local CTests on
 native Windows/MSVC and WSL GCC/Clang without skips. Public CI passes all fifteen
-tests per compiler plus formatting on the exact PR head and resulting main.
-Its documentation checkpoint is integrated in
-[PR #28](https://github.com/frankischilling/minecraft-c/pull/28) at
+tests per compiler plus formatting on the exact branch commit and resulting main.
+Its documentation checkpoint is integrated at
 `de9722abe0449e6ba32e1da78bd2e4582cd556a1`. Caves, population, lighting,
 save compatibility and playable client/server operation remain open.
 
-Previous integrated implementation: original climate blending and biome classification, issue
-[#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
-[PR #23](https://github.com/frankischilling/minecraft-c/pull/23) at
+Previous integrated implementation: original climate blending and biome classification,
+integrated at
 `b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620` on `main`. Exact source
 `6607b3650410bac2707276dd07769cda85215a6a` passed all 18 configured CTests on
-native Windows/MSVC and WSL GCC/Clang without skips. Exact PR and resulting
-runtime CI passed all thirteen public tests on each compiler plus formatting.
-Documentation checkpoint [PR #25](https://github.com/frankischilling/minecraft-c/pull/25)
-is integrated at `7349e8334207f12cc1ee719cf489377e631a96d7`; its exact head and
-resulting main CI passed. Inspect the live worktree and linked issue before resuming. The numerical fixture establishes
-neither original world startup nor full terrain generation.
+native Windows/MSVC and WSL GCC/Clang without skips. CI for the tested branch
+commit and resulting runtime integration passed all thirteen public tests on
+each compiler plus formatting. The documentation checkpoint is integrated at
+`7349e8334207f12cc1ee719cf489377e631a96d7`; its exact head and resulting main CI
+passed. Inspect the live worktree and recorded evidence before resuming. The
+numerical fixture establishes neither original world startup nor full terrain
+generation.
 
-Previous integrated implementation: original 2D simplex/octave noise, issue
-[#19](https://github.com/frankischilling/minecraft-c/issues/19), merged in
-[PR #20](https://github.com/frankischilling/minecraft-c/pull/20) at
+Previous integrated implementation: original 2D simplex/octave noise,
+integrated at
 `00aabbd522f78a29ec55ee42ce8d92bfc0400f8b` on `main`.
 Original constant bits were captured on both sides before selecting C literals.
 Exact source `ec92cbf3774b4be154d6c2894324b6fe33ebceac` passed all 15 configured
 tests on native Windows/MSVC and WSL GCC/Clang, without skips. Public CI passed
-on exact PR head `0626eaffffa328ba575c4325243865638e16be0f` and the resulting
+on exact branch commit `0626eaffffa328ba575c4325243865638e16be0f` and the resulting
 runtime integration. This documentation checkpoint uses `docs/simplex-integration`.
 Inspect the live worktree and exact-head checks before resuming.
 
-Previous implementation increment: original Perlin/octave noise, issue
-[#16](https://github.com/frankischilling/minecraft-c/issues/16), merged in
-[PR #17](https://github.com/frankischilling/minecraft-c/pull/17) at
+Previous implementation increment: original Perlin/octave noise,
+integrated at
 `c6cac5d01e2750461f54482f66ea8d5b27d8a56b` on `main`.
 Implementation commit `1188da0f126db8d623a45d801638d645df054c76` passed all 12
 configured CTests on native Windows/MSVC and WSL GCC/Clang, without skips.
-Public CI passed on exact PR head `05592a347d7ac8d237c201337c61f2649f963666`
+Public CI passed on exact branch commit `05592a347d7ac8d237c201337c61f2649f963666`
 and the resulting runtime integration.
 
-Read-only region inspection remains in [draft PR #15](https://github.com/frankischilling/minecraft-c/pull/15)
+Read-only region inspection remains a draft implementation
 at `8ab5f5e8f26a1dc12443dffe1f9f68993d9dd7d6`. All ten public CI tests passed
 on Windows/Linux GCC/Clang, plus formatting, in
 [run39026570248](https://github.com/frankischilling/minecraft-c/actions/runs/39026570248).
 Its 32 recorded observations do not satisfy the pending live original-region
-comparison. Preserve that branch and keep issue #14 open.
+comparison. Preserve that branch; live validation remains pending.
 
 Raw NBT, modified UTF-8 and bounded gzip/zlib compression are integrated. The
 README is a short overview and quick start; detailed setup lives in
 [building.md](building.md), with published [wiki pages](https://github.com/frankischilling/minecraft-c/wiki).
-Inspect the live worktree, issues, PRs and exact-head checks before resuming.
+Inspect the live worktree and checks for the tested commits before resuming.
 
 There is no playable C client/server, writable-world support or successful
-client interoperability test. Full parity issue [#4](https://github.com/frankischilling/minecraft-c/issues/4)
-and milestones M2 through M5 remain open.
+client interoperability test. Full parity and milestones M2 through M5
+remain incomplete.
 
 ## Integrated work
 
 | Increment | Result |
 | --- | --- |
-| [PR #6](https://github.com/frankischilling/minecraft-c/pull/6) | C17 numerical/Random helpers, local asset import, reference tooling, initial inventory, formatting and subsystem folders |
-| [PR #8](https://github.com/frankischilling/minecraft-c/pull/8) | Repository text preferences and pinned current official CI actions |
-| [PR #10](https://github.com/frankischilling/minecraft-c/pull/10) | Owned raw NBT, lossless modified UTF-8 and original-class comparisons; closes #9 |
-| [PR #12](https://github.com/frankischilling/minecraft-c/pull/12) | Bounded gzip/zlib memory module, pinned static zlib, public/original interoperability and detailed documentation; closes #11 |
-| [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions; closes #16 |
-| [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) | Caller-owned 2D simplex/octave primitives, observed original constants, exact both-side numerical comparisons and public regressions; closes #19 |
-| [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) | Seeded climate blending, float-built biome lookup, bounded retained arrays and exact both-side numerical/state comparisons; closes #21 |
-| [PR #27](https://github.com/frankischilling/minecraft-c/pull/27) | Allocation-free normal density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures; closes #24 |
-| [PR #31](https://github.com/frankischilling/minecraft-c/pull/31) | Allocation-free normal surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons; closes #26 |
-| [PR #33](https://github.com/frankischilling/minecraft-c/pull/33) | Caller-owned float trig table and exact lookup/floor helpers, full-table original comparisons and public path-alias regressions; closes #29 |
+| Deterministic core and tooling | C17 numerical/Random helpers, local asset import, reference tooling, initial inventory, formatting and subsystem folders |
+| Repository conventions and CI | Repository text preferences and pinned current official CI actions |
+| Raw NBT and modified UTF-8 | Owned raw NBT, lossless modified UTF-8 and original-class comparisons |
+| Memory compression | Bounded gzip/zlib memory module, pinned static zlib, public/original interoperability and detailed documentation |
+| Perlin and octave noise | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions |
+| 2D simplex and octave noise | Caller-owned 2D simplex/octave primitives, observed original constants, exact both-side numerical comparisons and public regressions |
+| Climate and biome lookup | Seeded climate blending, float-built biome lookup, bounded retained arrays and exact both-side numerical/state comparisons |
+| Density and base terrain | Allocation-free normal density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures |
+| Surface replacement | Allocation-free normal surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons |
+| Float lookup and floor | Caller-owned float trig table and exact lookup/floor helpers, full-table original comparisons and public path-alias regressions |
+| Normal cave scheduling and carving | Complete natural and protected original comparisons, explicit Random/state preservation and public full-buffer fixtures |
 
-All ten listed PRs are merged and their feature branches removed. M1 is complete.
+All eleven listed increments are integrated and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `077300380a81596da82fbf67ea1cb625e3215436`,
+Latest tested runtime integration: normal caves at
+`49f87ef9c803909ca8d89c8efe67a32da648cca1`, with passing
+[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578).
+All 23 public/numerical tests pass per compiler, along with formatting.
+
+Previous tested math runtime integration: `077300380a81596da82fbf67ea1cb625e3215436`,
 [main run39038169561](https://github.com/frankischilling/minecraft-c/actions/runs/39038169561),
 passes all nineteen tests on native Windows MSVC/Linux GCC/Clang, plus
-formatting. Exact PR head
+formatting. Exact branch commit
 `1a217c3b79156d9f5fa28d9bd371ef856a40938e` passes
 [run39037988919](https://github.com/frankischilling/minecraft-c/actions/runs/39037988919):
 all nineteen tests on native Windows MSVC/Linux GCC/Clang, plus formatting.
@@ -135,7 +146,7 @@ corrected source. The locally tested source and integration differ only in Markd
 Previous tested surface runtime integration: `1394928cebbcbe31700db3d280d0faa071ea6a34`,
 [main run39036083441](https://github.com/frankischilling/minecraft-c/actions/runs/39036083441),
 passes all seventeen tests on native Windows MSVC/Linux GCC/Clang, plus
-formatting. Exact PR head
+formatting. Exact branch commit
 `36d82aaa284b755ada3be5ab0d0c789a5d340868` passes
 [run39035989117](https://github.com/frankischilling/minecraft-c/actions/runs/39035989117):
 all seventeen tests on native Windows MSVC/Linux GCC/Clang, plus formatting.
@@ -144,7 +155,7 @@ The locally tested source and runtime integration differ only in Markdown.
 Previous tested density/base runtime integration: `6a98ab37457e9df342d366e9e336805e111b3c0d`,
 [main run39034545973](https://github.com/frankischilling/minecraft-c/actions/runs/39034545973).
 All fifteen tests pass on native Windows MSVC/Linux GCC/Clang, plus formatting.
-Exact PR head `ebee25a9e64aa09cbe00a99b225d58a805fc1713` passes
+Exact branch commit `ebee25a9e64aa09cbe00a99b225d58a805fc1713` passes
 [run39034316595](https://github.com/frankischilling/minecraft-c/actions/runs/39034316595).
 The first head exposed an older-MSVC constant-condition warning in a test;
 the assertion is now checked at compile time. Runtime code and fixed vectors
@@ -154,7 +165,7 @@ The locally tested source and runtime integration differ only in Markdown.
 Previous tested climate/biome integration: `b62de3e8742d1b2099b0f4f4d09a0b4d7cb98620`,
 [main run39031285945](https://github.com/frankischilling/minecraft-c/actions/runs/39031285945).
 All thirteen tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
-Exact PR head `b1d28d89fdcec3950c31830625b0401df746c86c` passed
+Exact branch commit `b1d28d89fdcec3950c31830625b0401df746c86c` passed
 [run39031194746](https://github.com/frankischilling/minecraft-c/actions/runs/39031194746).
 The locally tested source and runtime integration differ only in Markdown.
 
@@ -164,7 +175,7 @@ All eleven tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
 The first Windows configure rejected a dependency download with a checksum mismatch.
 A fresh official archive matched the existing pin; only the failed job was
 rerun, and attempt 2 passed without changing source, pin or assertions. The exact
-PR head passed [run39029195752](https://github.com/frankischilling/minecraft-c/actions/runs/39029195752).
+branch commit passed [run39029195752](https://github.com/frankischilling/minecraft-c/actions/runs/39029195752).
 The tested implementation source and this runtime integration differ only in Markdown.
 
 Previous tested Perlin integration: `c6cac5d01e2750461f54482f66ea8d5b27d8a56b`,
@@ -173,15 +184,28 @@ All nine tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
 The first Clang configure rejected a dependency download with a checksum mismatch.
 A fresh official download matched the existing pin; only the failed job was
 rerun, and attempt 2 passed without changing source, pin or assertions. The exact
-PR head passed [run39027782875](https://github.com/frankischilling/minecraft-c/actions/runs/39027782875).
+branch commit passed [run39027782875](https://github.com/frankischilling/minecraft-c/actions/runs/39027782875).
 
 Earlier tested storage integration: `b4b0af1b1a54af8a7abb7c494992a853fa41b64e`,
 [default-branch run39024379065](https://github.com/frankischilling/minecraft-c/actions/runs/39024379065).
 Formatting and native Windows MSVC/Linux GCC/Clang jobs passed. Each compiler
 passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBSan.
-The exact PR head also passed before merge.
+The tested branch commit also passed before integration.
 
 ## Local acceptance
+
+Chunk source: `67c928db7c0d87e599f16228833b0234fba4bc24`. All three toolchains
+pass 27 public tests, the numerical Java oracle and two original comparisons.
+No tests are skipped. Complete local arrays, opacity preservation, packed
+getter sweeps and setter snapshots match independently in all three pairings.
+The [chunk evidence](reference/chunk.md) records six manifest hashes, source
+and artifact verification, paired fixture provenance and actual observation
+budgets. Runtime review covers C ownership, bounds and defined arithmetic;
+direct source/fixture audits cover the observer fixes and complete captured
+bytes.
+World-height/cache queries, lighting queues and propagation remain separate.
+
+Previous float lookup/floor increment:
 
 Float lookup/floor source: `d6665e7f3e1b57c16e9e12c14983abd2ba227441`. All three
 toolchains pass eighteen public tests, the numerical Java oracle and eight
@@ -199,7 +223,7 @@ math tests pass 903 checks. All ten helper guards, including parser controls,
 filesystem aliases/links and completed-mismatch precedence, run without skips. Reports
 verify source/executable/JAR/tool/runtime inputs before/after, compiled classes
 and published artifacts. Source hashes also match the tested Git blobs.
-Independent runtime, fixture and protocol reviews found no outstanding issues.
+Independent runtime, fixture and protocol reviews found no outstanding defects.
 The initial Windows CI head exposed an aliased path in a generated test
 fixture. Its paths are now canonicalized, with an explicit alias regression;
 runtime code and numerical data are unchanged. All 27 local tests were repeated
@@ -357,17 +381,12 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 
 ## Next work and access
 
-Read-only region inspection is implemented in draft PR #15 under issue #14;
+Read-only region inspection remains a draft implementation;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
-Normal density/base terrain is integrated under closed
-[#24](https://github.com/frankischilling/minecraft-c/issues/24), as are surface
-replacement and chunk seeding under closed
-[#26](https://github.com/frankischilling/minecraft-c/issues/26). The float
-lookup/floor prerequisite is integrated under closed
-[#29](https://github.com/frankischilling/minecraft-c/issues/29). The normal cave
-runtime is integrated under [#30](https://github.com/frankischilling/minecraft-c/issues/30).
-Continue with [fresh chunk data, heightmaps and direct skylight #36](https://github.com/frankischilling/minecraft-c/issues/36).
+Normal density/base terrain, surface replacement and chunk seeding are integrated.
+The float lookup/floor prerequisite and normal cave runtime are integrated.
+Continue with [fresh chunk data, heightmaps and direct skylight](world/chunk.md).
 Continue exact chunk comparisons alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.

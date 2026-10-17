@@ -21,6 +21,9 @@ comparisons remain local.
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |
 | `world.caves` | 2021631 checks: ten complete paired-original fixtures and 30 captured passes, reseeding, owner isolation, suffix/table preservation and C argument/coordinate controls | Normal cave pass; protected geometry controls have separate evidence |
 | `world.caves_geometry` | 2917405 checks: 44 paired-original protected cases with full buffers and Random continuations, raw bits, draw-count inference, suffixes, canaries and independent owners | Private valid room/path domain only; no public scheduler coverage |
+| `world.chunk_data` | 101534 checks for fresh/repeated initialization, unchanged rejected outputs, capacity suffixes, packed-coordinate bounds and extreme-opacity preservation | C ownership/argument contracts; original local-state comparisons are separate |
+| `world.chunk_nibbles` | 414 checks against 16 observed setters, complete retained packed bytes and two capacity variants | Packed-array access and preservation; no chunk lifecycle |
+| `world.chunk_reference_data` | 335 checks across five paired-original fixtures, 20 stages, 100 complete arrays and ten rebuilds | Local voxel state only; full finishing world effects are separate |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
@@ -29,6 +32,8 @@ comparisons remain local.
 | `tools.math_reference` | 10 generated prerequisite/hash/report/path/alias/link, parser and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_reference` | 18 generated schema/table/report/path/link and failure-precedence guards, including ordinary-file and hardlink inventories and renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_geometry_reference` | 18 schema/pattern/continuation/table/report/path/link and failure-precedence guards, including renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
+| `tools.nibbles_reference` | 18 source/protocol/array/path/prerequisite and failure-precedence guards, including aliased temporary directories | Synthetic protocol checks; original methods are not executed |
+| `tools.chunk_data_reference` | 12 schema, array, cache/queue growth, preservation, path, source-attribution, compiler-option and completed-measurement guards | Synthetic protocol checks; original methods are not executed |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
@@ -42,6 +47,8 @@ comparisons remain local.
 | `reference.surface` (local opt-in) | 290 exact snapshots per side, 105 original state/material/density/suffix controls and 20 apply-field controls | Measured base/surface contexts; no complete chunk/cave/finishing compatibility claim |
 | `reference.caves` (local opt-in) | Ten complete cases, 30 calls and 50 snapshots per participant; all state, blocks and Random observations in three pairings | Three pairings pass on MSVC/GCC/Clang at the recorded source; no complete chunk claim |
 | `reference.caves_geometry` (local opt-in) | 44 separately labeled room/path controls, full input/output buffers, Random continuations, table and suffix controls; shared-draw consumption inferred by unique continuation matching | Three pairings pass on MSVC/GCC/Clang at the recorded source; valid private geometry domain only |
+| `reference.nibbles` (local opt-in) | Original constructors, two complete getter sweeps and 16 setter snapshots compared independently in three pairings | Valid local packed-array access; explicit C invalid-argument behavior has separate tests |
+| `reference.chunk_data` (local opt-in) | Five fresh/repeated input pairs, complete local arrays/heights, opacity and retained-object controls | Genuine original cache/queue diagnostics are retained separately; no C world lifecycle or propagation claim |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -124,12 +131,47 @@ buffers and observed Random continuations compare independently in all three
 pairings. Public helper tests reject renamed executing scripts before report
 creation so recorded source attribution identifies the helper actually run.
 
+Packed-array and chunk comparisons use `MC_ENABLE_NIBBLES_REFERENCE_TESTS`
+and `MC_ENABLE_CHUNK_REFERENCE_TESTS` respectively, with both supplied JARs,
+JDK11+ and the exact source commit used for the C probes. The chunk corpus
+includes air/stone transitions, asymmetric boundary/material controls and
+two frozen original post-cave buffers. It records complete world-height/cache
+and queued-light diagnostics without draining lighting. Read the additional
+input requirements and commands in [chunk reproduction](reference/chunk.md).
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
 `BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
 
 ## Local environments
+
+Chunk source `67c928db7c0d87e599f16228833b0234fba4bc24` passes all 30 configured
+tests on native Windows/MSVC and WSL GCC/Clang without skips: 27 public tests,
+the standard Java numerical oracle and two original chunk comparisons. Both
+WSL builds enable ASan/UBSan. All six original manifests identify that source,
+pass with empty error/unavailable lists and retain matching file fingerprints.
+Fresh observations use Temurin17 on both platforms.
+
+All five fresh/repeated chunk cases and complete packed-array observations
+match separately between C/client, C/server and client/server. The fixture
+audit compares 800 complete arrays to retained original records, including all
+three fresh runs. The report audit verifies 660 fingerprints and the tested
+source snapshot. See [chunk evidence](reference/chunk.md) for hashes and scope.
+
+Chunk contract, nibble and full-fixture units pass 101534, 414 and 335 checks.
+The chunk-data helper has 12 public guards, including renamed-source and
+injected-compiler-option regressions. The nibble helper has 18 after adding a
+temporary-directory alias regression. Canonicalizing the synthetic fixture
+root fixes the Windows short-path mismatch; both successful and unavailable
+captures preserve their expected results. All 18 guards pass on native
+Python 3.14 and WSL Python 3.12, with Windows short paths also checked directly.
+The C and comparison sources are unchanged from the recorded original runs.
+Clang-format18 checks 61 C/header files. Public CI runs 28 tests per compiler,
+without private JARs or world captures. Integration results belong in
+[status](status.md).
+
+Previous normal cave increment:
 
 Normal cave source `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33
 configured tests on native MSVC and WSL GCC/Clang without skips: 22 public
@@ -229,7 +271,7 @@ Previous Perlin implementation source `1188da0f126db8d623a45d801638d645df054c76`
 public checks, the numerical Java comparison and three original NBT/compression/
 noise comparisons. All nine original-comparison manifests record that commit,
 pass status and empty errors. Public CI runs nine tests without private game
-files; see [status](status.md) and the linked issue for exact-head CI/integration.
+files; see [status](status.md) for CI and integration results at the tested commits.
 All four helper regression tests ran on each local platform without skips.
 The three runtime libraries also build with testing off and no Python/Java discovery.
 

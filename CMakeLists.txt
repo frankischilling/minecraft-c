@@ -16,6 +16,8 @@ option(MC_ENABLE_BIOME_REFERENCE_TESTS "Compare climate and biomes with original
 option(MC_ENABLE_DENSITY_REFERENCE_TESTS "Compare normal density and base terrain with originals" OFF)
 option(MC_ENABLE_SURFACE_REFERENCE_TESTS "Compare normal surface replacement with originals" OFF)
 option(MC_ENABLE_CAVES_REFERENCE_TESTS "Compare normal cave scheduling and carving with originals" OFF)
+option(MC_ENABLE_NIBBLES_REFERENCE_TESTS "Compare packed nibble access with original classes" OFF)
+option(MC_ENABLE_CHUNK_REFERENCE_TESTS "Compare local chunk initialization with original methods" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -69,6 +71,8 @@ add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/comp
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
 
 add_library(mc_world STATIC
+    src/world/chunk/data.c
+    src/world/chunk/nibbles.c
     src/world/noise/noise.c
     src/world/noise/simplex.c
     src/world/biome/biome.c
@@ -112,6 +116,27 @@ if(BUILD_TESTING)
 
     add_executable(mc_compression_probe tests/storage/compression/compression_probe.c)
     target_link_libraries(mc_compression_probe PRIVATE mc_storage mc_build_options)
+
+    add_executable(mc_test_chunk_data tests/world/chunk/test_data.c)
+    target_link_libraries(mc_test_chunk_data PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_data COMMAND mc_test_chunk_data)
+    set_tests_properties(world.chunk_data PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_test_chunk_nibbles tests/world/chunk/test_nibbles.c)
+    target_link_libraries(mc_test_chunk_nibbles PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_nibbles COMMAND mc_test_chunk_nibbles)
+    set_tests_properties(world.chunk_nibbles PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_test_chunk_reference_data tests/world/chunk/test_reference_data.c)
+    target_link_libraries(mc_test_chunk_reference_data PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_reference_data COMMAND mc_test_chunk_reference_data)
+    set_tests_properties(world.chunk_reference_data PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_chunk_data_probe tests/world/chunk/data_probe.c)
+    target_link_libraries(mc_chunk_data_probe PRIVATE mc_world mc_build_options)
+
+    add_executable(mc_chunk_nibbles_probe tests/world/chunk/nibbles_probe.c)
+    target_link_libraries(mc_chunk_nibbles_probe PRIVATE mc_world mc_build_options)
 
     add_executable(mc_test_noise tests/world/noise/test_noise.c)
     target_link_libraries(mc_test_noise PRIVATE mc_world mc_build_options)
@@ -240,6 +265,52 @@ if(BUILD_TESTING)
     set_tests_properties(tools.caves_geometry_reference PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         LABELS "public;tools" TIMEOUT 60)
+
+    add_test(NAME tools.nibbles_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/chunk" -p test_nibbles_reference.py)
+    set_tests_properties(tools.nibbles_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 60)
+
+    add_test(NAME tools.chunk_data_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/chunk" -p test_data_reference.py)
+    set_tests_properties(tools.chunk_data_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 60)
+
+    if(MC_ENABLE_NIBBLES_REFERENCE_TESTS)
+        find_package(Java 11 QUIET COMPONENTS Runtime Development)
+        add_test(NAME reference.nibbles
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/chunk/compare_nibbles.py"
+            --executable "$<TARGET_FILE:mc_chunk_nibbles_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-nibbles"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.nibbles PROPERTIES
+            LABELS "reference;original;chunk" TIMEOUT 180 SKIP_RETURN_CODE 77)
+    endif()
+
+    if(MC_ENABLE_CHUNK_REFERENCE_TESTS)
+        find_package(Java 11 QUIET COMPONENTS Runtime Development)
+        add_test(NAME reference.chunk_data
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/chunk/compare_chunk.py"
+            --executable "$<TARGET_FILE:mc_chunk_data_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-chunk-data"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.chunk_data PROPERTIES
+            LABELS "reference;original;chunk" TIMEOUT 600 SKIP_RETURN_CODE 77)
+    endif()
 
     if(MC_ENABLE_JAVA_REFERENCE_TESTS)
         find_package(Java 8 REQUIRED COMPONENTS Runtime Development)

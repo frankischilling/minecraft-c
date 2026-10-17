@@ -39,6 +39,12 @@ schedule, ordered local path Randoms, geometry and selective material changes.
 Checked preflight precedes mutation; successful calls allocate nothing.
 Private room/path helpers serve both normal runtime and focused reference adapters.
 
+The [chunk voxel-data module](world/chunk.md) borrows the block buffer and embeds
+independent packed metadata/light arrays plus column heights. It provides bounded
+nibble access and local height/direct-skylight rebuilding without allocation.
+World cache queries, lighting queues, dirty state and chunk lifecycle remain
+separate responsibilities.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -117,6 +123,11 @@ tests/world/terrain/test_caves.c
 tests/world/terrain/caves_probe.c
 tests/reference/caves/CavesObservation.java
 scripts/reference/caves/compare_caves.py
+include/mc/world/chunk/data.h
+include/mc/world/chunk/nibbles.h
+src/world/chunk/data.c
+src/world/chunk/nibbles.c
+tests/world/chunk/test_data.c
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py
@@ -128,8 +139,7 @@ scripts/reference/nbt/compare_nbt.py
 scripts/reference/server/run_smoke.py
 ```
 
-The source layout and `.clang-format` are tracked by
-[#5](https://github.com/frankischilling/minecraft-c/issues/5). Formatting is
+Formatting follows the repository `.clang-format` and is
 repeatable through `scripts/development/format_code.py` and checked in CI with
 clang-format 18. The formatter scans project C headers/sources only, keeping
 ignored decompiled research outside its input set.

@@ -1,7 +1,7 @@
 # Local client resource inventory
 
-This note supports [issue #3](https://github.com/frankischilling/minecraft-c/issues/3).
-It records archive inspection, client bytecode, and a local import on 2026-10-17.
+This note records archive inspection, client bytecode, and a local import on
+2026-10-17.
 It does not establish rendered or audible parity.
 
 ## Reference identity and observations
@@ -139,5 +139,5 @@ fixtures; the production command has no hash-bypass option.
 There is no runnable C asset consumer yet. The intended native consumer will use
 the imported directory without a JAR or Java runtime. That behavior remains to be
 implemented and verified, as do rendering, audio, resource reloads, and parity
-against controlled original-runtime observations. Issue #3 remains broader than
-this local import increment.
+against controlled original-runtime observations. These requirements extend
+beyond this local import increment.

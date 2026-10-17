@@ -3,8 +3,7 @@
 The `mc_storage` library exposes the original Beta tag format through
 [`nbt.h`](../../include/mc/storage/nbt/nbt.h). It depends on `mc_core`, with no
 graphics, audio, Java, assets, sockets, compression or file initialization.
-The [original evidence](../reference/nbt.md) and
-[issue #9](https://github.com/frankischilling/minecraft-c/issues/9) define the
+The [original evidence](../reference/nbt.md) defines the
 implemented codec scope. Complete world compatibility remains a separate task.
 
 ## Decode and ownership

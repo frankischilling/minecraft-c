@@ -1,6 +1,5 @@
 # Local reference launch observations
 
-Issue: [#1](https://github.com/frankischilling/minecraft-c/issues/1).
 Observed 2026-10-17 on Windows 10 Home 10.0.19045, x86-64, Intel Core i9-10900F.
 Binary fingerprints are in [the audit](binaries.md).
 

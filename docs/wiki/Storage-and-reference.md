@@ -66,6 +66,22 @@ grass repair and ineligible bytes. Branching is inferred by unique Random
 continuation matching, with the inference recorded explicitly. Cave comparisons
 do not establish chunk finishing, population, lighting or save compatibility.
 
+[Chunk evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/chunk.md)
+covers fresh voxel arrays, packed nibble access, column heights and direct sky.
+Original full finishing calls run in separately owned genuine worlds. Complete
+local arrays compare independently between C/client, C/server and client/server;
+world cache membership and ordered queued-light bounds remain separate records.
+The local C component preserves the original Y127 height exclusion, Y0 sky
+exclusion and retained sky values across repeated passes. It does not implement
+world-height queries, lighting propagation or chunk lifecycle.
+
+All five fresh/repeated local chunk cases and the complete packed-access
+observations match on MSVC/GCC/Clang in all three pairings. Public fixtures also
+match the complete original bytes in a separate expansion audit. The chunk
+evidence page records exact source, manifest fingerprints, reproduction inputs
+and observation limits. Queue and cache diagnostics remain evidence for the
+next finishing stage.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib

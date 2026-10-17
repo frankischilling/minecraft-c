@@ -15,6 +15,7 @@ rather than empty placeholders.
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 | `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
+| `world/chunk` | Packed voxel arrays, column heights and direct skylight | Caller-owned data, borrowed blocks and immutable opacity input |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -58,6 +59,13 @@ It preserves the original range-8 neighbor schedule, local path draw order,
 water screening, selective carving, lava and grass repair. Checked preflight
 precedes mutation; successful calls allocate nothing. Private room/path helpers
 are shared by normal runtime and focused reference adapters.
+
+The [chunk data interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/chunk.md)
+keeps blocks borrowed and embeds separate metadata, sky, block-light and height
+arrays. Checked nibble access preserves the opposite four-bit value. Local
+height/direct-skylight rebuilding retains the original boundary and repeat-pass
+behavior without allocating memory. World-height queries, lighting queues,
+dirty state and full chunk lifecycle remain separate work.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol
