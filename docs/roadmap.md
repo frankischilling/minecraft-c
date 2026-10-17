@@ -26,7 +26,9 @@ inspection remains in [draft PR #15](https://github.com/frankischilling/minecraf
 under [#14](https://github.com/frankischilling/minecraft-c/issues/14), with live
 original-region validation pending. The original seeded Perlin/octave module
 is implemented under [#16](https://github.com/frankischilling/minecraft-c/issues/16).
-Simplex biome noise, density combination, raw chunks, population, lighting and
+The separate 2D simplex/octave primitives are implemented under
+[#19](https://github.com/frankischilling/minecraft-c/issues/19), with exact-source
+acceptance being recorded. Complete biome climate/classification, density combination, raw chunks, population, lighting and
 protocol framing remain separate required work. Create their scoped issues from the
 original class/method evidence before coding. Further
 splits must retain the full original requirements rather than replacing them

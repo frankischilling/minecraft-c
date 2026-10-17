@@ -38,3 +38,8 @@ caller spans before writing. It uses defined Java casts/wrapping instead of C
 signed overflow or out-of-range casts. These are bounded C call contracts, not
 changes to valid terrain-generation scenarios; exact nonfinite NaN payloads are
 not promised. See [the noise interface](world/noise.md).
+
+The [simplex interface](world/simplex.md) applies the same checked-span policy
+without reproducing Java array failures. Valid numerical calls retain the
+original floor/cell-wrap behavior and output accumulation/clearing. Nonfinite
+NaN payload identity is outside the exact comparison contract.

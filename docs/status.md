@@ -1,5 +1,12 @@
 # Development status
 
+Active implementation: `feature/simplex-noise` from
+`706f4cafcda04071fd53c8a30f18e8f594f5cb05`, issue
+[#19](https://github.com/frankischilling/minecraft-c/issues/19). The C module,
+public tests and live original numerical comparison are being assembled.
+Original constant bits were captured on both sides before selecting C literals.
+Exact-source acceptance, PR checks and integration remain to be recorded.
+
 Latest implementation increment: original Perlin/octave noise, issue
 [#16](https://github.com/frankischilling/minecraft-c/issues/16), merged in
 [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) at
