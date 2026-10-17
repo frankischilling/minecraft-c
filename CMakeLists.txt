@@ -9,6 +9,7 @@ option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" O
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numerical helpers with a local JDK" OFF)
 option(MC_ENABLE_NBT_REFERENCE_TESTS "Compare NBT with locally supplied original JARs" OFF)
 option(MC_ENABLE_COMPRESSION_REFERENCE_TESTS "Compare compression with original helpers" OFF)
+option(MC_ENABLE_NOISE_REFERENCE_TESTS "Compare terrain noise with original samplers" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -55,6 +56,9 @@ target_link_libraries(mc_core PRIVATE mc_build_options)
 add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/compression.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
 
+add_library(mc_world STATIC src/world/noise/noise.c)
+target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
+
 include(CTest)
 if(BUILD_TESTING)
     add_executable(mc_test_java tests/core/java/test_java.c)
@@ -83,6 +87,14 @@ if(BUILD_TESTING)
     add_executable(mc_compression_probe tests/storage/compression/compression_probe.c)
     target_link_libraries(mc_compression_probe PRIVATE mc_storage mc_build_options)
 
+    add_executable(mc_test_noise tests/world/noise/test_noise.c)
+    target_link_libraries(mc_test_noise PRIVATE mc_world mc_build_options)
+    add_test(NAME world.noise COMMAND mc_test_noise)
+    set_tests_properties(world.noise PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_noise_probe tests/world/noise/noise_probe.c)
+    target_link_libraries(mc_noise_probe PRIVATE mc_world mc_build_options)
+
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
     add_test(NAME tools.import_assets
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
@@ -96,6 +108,13 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/compression/test_interop.py"
         --executable "$<TARGET_FILE:mc_compression_probe>")
     set_tests_properties(tools.compression_interop PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.noise_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/noise" -p test_reference.py)
+    set_tests_properties(tools.noise_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 60)
 
     if(MC_ENABLE_JAVA_REFERENCE_TESTS)
         find_package(Java 8 REQUIRED COMPONENTS Runtime Development)
@@ -140,5 +159,21 @@ if(BUILD_TESTING)
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
         set_tests_properties(reference.compression PROPERTIES
             LABELS "reference;original;compression" TIMEOUT 180 SKIP_RETURN_CODE 77)
+    endif()
+
+    if(MC_ENABLE_NOISE_REFERENCE_TESTS)
+        find_package(Java 11 QUIET COMPONENTS Runtime Development)
+        add_test(NAME reference.noise
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/noise/compare_noise.py"
+            --executable "$<TARGET_FILE:mc_noise_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-noise"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.noise PROPERTIES
+            LABELS "reference;original;noise" TIMEOUT 180 SKIP_RETURN_CODE 77)
     endif()
 endif()

@@ -1,5 +1,18 @@
 # Development status
 
+Active increment: `feature/world-noise`, based on
+`2cd7c04db5cc231c3ba865d5dc4e174a400248ca`, issue
+[#16](https://github.com/frankischilling/minecraft-c/issues/16). Seeded original
+Perlin/octave sampling, public tests and a live numerical comparison are being
+implemented. Exact-source acceptance and integration remain to be recorded.
+
+Read-only region inspection remains in [draft PR #15](https://github.com/frankischilling/minecraft-c/pull/15)
+at `8ab5f5e8f26a1dc12443dffe1f9f68993d9dd7d6`. All ten public CI tests passed
+on Windows/Linux GCC/Clang, plus formatting, in
+[run39026570248](https://github.com/frankischilling/minecraft-c/actions/runs/39026570248).
+Its 32 recorded observations do not satisfy the pending live original-region
+comparison. Preserve that branch and keep issue #14 open.
+
 Raw NBT, modified UTF-8 and bounded gzip/zlib compression are integrated. The
 README is a short overview and quick start; detailed setup lives in
 [building.md](building.md), with published [wiki pages](https://github.com/frankischilling/minecraft-c/wiki).
