@@ -2,7 +2,7 @@
 
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility
 and allocation-free modified UTF-8 text helpers. `mc_storage` depends on it and
-contains the raw NBT reader/writer. Neither library initializes display,
+contains the raw NBT reader/writer and gzip/zlib memory compression. Neither library initializes display,
 graphics, audio, networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
@@ -15,8 +15,9 @@ coverage and the remaining semantics audit.
 The [NBT boundary](storage/nbt.md) owns retained decoded trees and budgets their
 allocations. It accepts bytes and produces bytes without compression, streams
 or world schemas. Strings preserve UTF-16 code units, and parser failures leave
-caller result outputs unchanged. Compression and region adapters will build on
-this boundary rather than entering the raw parser implicitly.
+caller result outputs unchanged. The separate compression module owns its
+decoded bytes and validates whole member checksums. Callers compose these
+interfaces; neither implicitly selects a world schema or opens a file.
 
 ## System and subsystem folders
 
@@ -36,6 +37,10 @@ include/mc/storage/nbt/nbt.h
 src/storage/nbt/nbt.c
 tests/storage/nbt/test_nbt.c
 tests/storage/nbt/nbt_probe.c
+include/mc/storage/compression/compression.h
+src/storage/compression/compression.c
+tests/storage/compression/test_compression.c
+tests/storage/compression/compression_probe.c
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py
@@ -73,7 +78,8 @@ implemented game systems. Add interfaces when a reference-backed behavior needs
 them. CMake build options apply strict diagnostics
 and floating-point rules to project code; future dependencies need their own
 licensing and build review. SDL3 is a candidate, and its current APIs must be
-verified before use. No runtime third-party library has been added yet.
+verified before use. Storage uses pinned static zlib; its
+[license and build configuration](dependencies.md) remain separate from project code.
 
 Use checked allocation, bounded buffers, and explicit ownership/cleanup paths.
 Begin with reproducible simulation order. Parallel research/build tasks do not

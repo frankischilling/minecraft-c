@@ -1,11 +1,11 @@
 # Resume note
 
-Active branch: `feature/nbt-codec`, based on tested `main` commit
-`293ed9923ad7797bc5b97f473a08c5c62d68c6ff`. Active issue:
-[#9](https://github.com/frankischilling/minecraft-c/issues/9), under M2.
-The raw codec, modified UTF-8 helper, public tests and actual original-class
-differential are implemented. Local acceptance is recorded below; inspect the
-live PR and exact-head checks before integration.
+Active branch: `feature/compression-codec`, based on tested `main` commit
+`aa4640231cac9e8b356de07715a97d2260bd155d`. Active issue:
+[#11](https://github.com/frankischilling/minecraft-c/issues/11), under M2.
+The raw codec and modified UTF-8 increment is merged. Bounded memory gzip/zlib
+compression, public interoperability and original-class comparisons are implemented.
+Pre-commit checks pass; exact-source acceptance and PR checks remain before integration.
 Inspect the live worktree, PRs and exact-head checks before relying on this note.
 
 ## Integrated foundation
@@ -15,15 +15,18 @@ numerical/cast/Random helpers, local resource import, pinned reference tooling,
 the initial full-scope inventory, formatting and subsystem folders.
 [PR #8](https://github.com/frankischilling/minecraft-c/pull/8) applied the owner's
 repository text preferences and updated CI to pinned current official actions.
-Both are merged; their branches were removed. The first scoped milestone is
+[PR #10](https://github.com/frankischilling/minecraft-c/pull/10) added raw NBT,
+lossless modified UTF-8 and original-class comparisons, closing issue #9.
+All three are merged; their branches were removed. The first scoped milestone is
 complete. The full parity inventory in issue #4 remains open; there is no playable
 C client/server, writable save support, or successful client interoperability test.
 
-Exact tested default-branch commit: `293ed9923ad7797bc5b97f473a08c5c62d68c6ff`,
-[run39021606705](https://github.com/frankischilling/minecraft-c/actions/runs/39021606705).
+Exact tested default-branch commit: `aa4640231cac9e8b356de07715a97d2260bd155d`,
+[run39023237616](https://github.com/frankischilling/minecraft-c/actions/runs/39023237616).
 All four jobs passed: format, native Windows MSVC, native Linux GCC and Clang.
-Each compiler passed all three CTests with no reference skips. Coverage is 146
-public numerical checks, 16 generated asset tests and 135768 exact Java/C records.
+Each compiler passed all five CTests with no reference skips. Coverage includes
+146 numerical, 596848 text and 394978 NBT checks, 16 generated asset tests,
+and 135768 exact Java/C records.
 GCC/Clang use ASan/UBSan. A public-only Linux build also passed without Java discovery.
 
 Local implementation commit `8de9d81d317847c9bf25b58790e6baf261c8a199` passed
@@ -44,7 +47,7 @@ passed. No skipped result is counted as original parity. Reports under each
 binary hashes, raw records and scope. Both C libraries also built with
 `BUILD_TESTING=OFF`, without Python or Java discovery. Format18 checks pass.
 
-Finish issue #9's exact-commit checks and PR lifecycle. The C implementation
+The merged C implementation
 preserves IDs 0..10, named/unnamed boundaries, UTF-16 units, empty-list
 normalization, last-wins duplicate names and retained unknown application fields.
 Public checks: 596848 text and 394978 NBT assertions. Native MSVC and WSL GCC/Clang
@@ -53,8 +56,25 @@ isolated processes: per side 194 reads, 40 writes, 12 packet controls, 157 trans
 and 435 re-reads. Four negative-list departures and 20 order-only byte differences
 are explicit. Review corrected MSVC alignment, Java11 prerequisites, alias
 preconditions, stale report handling and overly broad compound normalization.
-Keep gzip/regions/world writes and the broad inventory open. After this scoped
-merge, select the next evidence-backed compression/region increment under M2.
+The current increment is issue #11: a bounded gzip/zlib memory module with pinned
+static zlib, public cross-reader checks and opt-in original wrapper comparisons.
+Original research produced 183 records per side/runtime on JDK17 and JDK21;
+all four sets agree. A whole-member decoder must record its deliberate rejection
+of corrupt or missing trailers that the original root-early wrapper may leave
+unread. Original region selectors are researched, but region files and world
+write compatibility remain separate work. Full inventory issue #4 stays open.
+
+Compression pre-commit validation: native Windows/MSVC, WSL GCC and Clang
+sanitizer builds passed all seven public/numerical CTests. The 2351 C checks
+include exact and failing allocation-growth budgets; Python cross-reader checks
+pass 127 records on Windows zlib-ng and Linux zlib. The original comparison
+passes 80 containers and 22 C encodes; each side executes 181 baseline records,
+65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference
+transfers. It records 36 explicit malformed-container departures. Both libraries
+also build with testing off, without Python/Java discovery; upstream zlib passed
+13 Windows and 16 Linux tests separately. Reviews found no remaining issues.
+The README now contains a short overview/quick start; detailed setup is in
+`docs/building.md`, with matching wiki sources in `docs/wiki/`.
 
 ## Access limits and decisions
 
@@ -62,8 +82,10 @@ Ordinary Minecraft Launcher capture timed out twice; no Play action or account
 file access occurred. Retry when capture works. The original-client/server
 baseline and all four interoperability pairings remain untested.
 
-The wiki Git endpoint returned `Repository not found`; publishable pages remain
-prepared in `docs/wiki/`, with no successful hosted update claimed.
+The wiki is now initialized and its Git endpoint is accessible. The clone at
+`.local/wiki/` contains the existing welcome page. Publish the reviewed
+`docs/wiki/` pages after this increment is integrated, then verify the hosted
+commit and rendered pages; publication has not yet been claimed.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant

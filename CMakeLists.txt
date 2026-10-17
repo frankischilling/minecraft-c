@@ -8,12 +8,15 @@ set(CMAKE_C_EXTENSIONS OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numerical helpers with a local JDK" OFF)
 option(MC_ENABLE_NBT_REFERENCE_TESTS "Compare NBT with locally supplied original JARs" OFF)
+option(MC_ENABLE_COMPRESSION_REFERENCE_TESTS "Compare compression with original helpers" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
 
-# These options apply to project-owned code, not to future dependencies.
+# Strict diagnostics apply to project-owned code; dependencies share sanitizers only.
 add_library(mc_build_options INTERFACE)
+add_library(mc_sanitizers INTERFACE)
+target_link_libraries(mc_build_options INTERFACE mc_sanitizers)
 if(MSVC)
     target_compile_options(mc_build_options INTERFACE /W4 /WX /fp:strict)
 else()
@@ -25,18 +28,32 @@ if(MC_ENABLE_SANITIZERS)
     if(NOT CMAKE_C_COMPILER_ID MATCHES "GNU|Clang" OR MSVC)
         message(FATAL_ERROR "MC_ENABLE_SANITIZERS requires GCC or Clang with ASan/UBSan")
     endif()
-    target_compile_options(mc_build_options INTERFACE
+    target_compile_options(mc_sanitizers INTERFACE
         -fsanitize=address,undefined -fno-omit-frame-pointer)
-    target_link_options(mc_build_options INTERFACE -fsanitize=address,undefined)
+    target_link_options(mc_sanitizers INTERFACE -fsanitize=address,undefined)
 endif()
+
+# Official C source archive, verified against the release site's SHA-256.
+# For offline builds set FETCHCONTENT_SOURCE_DIR_MC_ZLIB to an unpacked copy.
+include(FetchContent)
+set(ZLIB_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(ZLIB_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(ZLIB_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(ZLIB_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(mc_zlib
+    URL https://zlib.net/fossils/zlib-1.3.2.tar.gz
+    URL_HASH SHA256=bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(mc_zlib)
+target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 
 # The shared core has no window, graphics, audio, JDK, or asset dependencies.
 add_library(mc_core STATIC src/core/java/java.c src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_build_options)
 
-add_library(mc_storage STATIC src/storage/nbt/nbt.c)
-target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options)
+add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/compression.c)
+target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -58,6 +75,14 @@ if(BUILD_TESTING)
     add_executable(mc_nbt_probe tests/storage/nbt/nbt_probe.c)
     target_link_libraries(mc_nbt_probe PRIVATE mc_storage mc_build_options)
 
+    add_executable(mc_test_compression tests/storage/compression/test_compression.c)
+    target_link_libraries(mc_test_compression PRIVATE mc_storage mc_build_options)
+    add_test(NAME storage.compression COMMAND mc_test_compression)
+    set_tests_properties(storage.compression PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_compression_probe tests/storage/compression/compression_probe.c)
+    target_link_libraries(mc_compression_probe PRIVATE mc_storage mc_build_options)
+
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
     add_test(NAME tools.import_assets
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
@@ -65,6 +90,12 @@ if(BUILD_TESTING)
     set_tests_properties(tools.import_assets PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         LABELS "public;tools" TIMEOUT 60)
+
+    add_test(NAME tools.compression_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/compression/test_interop.py"
+        --executable "$<TARGET_FILE:mc_compression_probe>")
+    set_tests_properties(tools.compression_interop PROPERTIES LABELS "public;tools" TIMEOUT 90)
 
     if(MC_ENABLE_JAVA_REFERENCE_TESTS)
         find_package(Java 8 REQUIRED COMPONENTS Runtime Development)
@@ -93,5 +124,21 @@ if(BUILD_TESTING)
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
         set_tests_properties(reference.nbt PROPERTIES
             LABELS "reference;original;nbt" TIMEOUT 180 SKIP_RETURN_CODE 77)
+    endif()
+
+    if(MC_ENABLE_COMPRESSION_REFERENCE_TESTS)
+        find_package(Java 11 QUIET COMPONENTS Runtime Development)
+        add_test(NAME reference.compression
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/compression/compare_compression.py"
+            --executable "$<TARGET_FILE:mc_compression_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-compression"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.compression PROPERTIES
+            LABELS "reference;original;compression" TIMEOUT 180 SKIP_RETURN_CODE 77)
     endif()
 endif()

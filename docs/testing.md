@@ -4,16 +4,19 @@ CTest separates public unit/tool tests from explicitly requested reference
 comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
 The numerical Java oracle is a standard-library probe and can run in public CI
-without original game files. Original-class NBT comparisons remain local.
+without original game files. Original-class NBT/compression comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
 | `core.java` | 146 fixed arithmetic/cast/Random edge and captured-oracle checks | No game simulation or game random-consumption ordering |
 | `core.mutf8` | 596848 checks, including every UTF-16 unit, accepted byte forms, malformed input and unchanged outputs | Payload codec only; NBT and packet framing are distinct |
 | `storage.nbt` | 394978 checks for all original tag types, boundaries, retained state, ownership, budgets, errors and deterministic mutations | Raw tags only; no world schema or compression |
+| `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
+| `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
 | `reference.nbt` (local opt-in) | Per original side: 194 reads, 40 original writes, 12 packet controls, 157 original-to-C and 435 original re-reads | Selected JDK; 4 malformed negative-list departures and 20 order-only differences recorded separately |
+| `reference.compression` (local opt-in) | 80 containers, 22 C encodes; per side 181 baseline records, 65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference transfers | 36 explicit malformed-container departure records; no copied-world compatibility claim |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -35,10 +38,16 @@ an omitted commit as unrecorded. Comparison execution errors return 1. Reports
 replace old running/unavailable/fail results; output paths containing inputs or
 sources are refused. See [the original-class procedure](reference/nbt.md).
 
+Compression comparisons use the same supplied-JAR paths, JDK11 requirement and
+commit field. Enable `MC_ENABLE_COMPRESSION_REFERENCE_TESTS` separately. The
+[compression procedure](reference/compression.md) records original wrapper
+behavior and distinguishes NBT success from full container validation. Public
+cross-reader tests use only generated fixtures and Python's standard library.
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
-`BUILD_TESTING=OFF` builds both C libraries without Python or Java discovery.
+`BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
 
 ## Local environments
 
@@ -62,12 +71,14 @@ Native GitHub runner results and the exact integrated commit are recorded in
 on Windows2022, plus a format job. The workflow fetches no private JARs/assets or
 launcher data. It has read-only repository permissions and produces no releases.
 The actions use verified official release commit IDs. Checkout credentials are
-not persisted. There are currently no runtime dependencies to bundle.
+not persisted. Storage statically links zlib; retain its
+[license notice](dependencies.md) with future packages.
 
 ## Private reference checks
 
 Follow [binary setup](reference/binaries.md), [resource import](reference/resources.md),
 and [launch smoke](reference/launch.md), plus [NBT comparisons](reference/nbt.md).
+Compression comparisons are described [separately](reference/compression.md).
 Keep complete disassemblies, generated
 vectors, logs, imported assets and worlds in ignored directories. Record
 `git rev-parse HEAD` alongside local results. A local result without a commit
