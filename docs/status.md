@@ -12,11 +12,23 @@ abort. Actual original observations cover 48 cases with 72 merge requests,
 43 world requests per side and the real overflow clear. Public fixtures replay
 complete queues from both observed baselines.
 
-Native Windows/MSVC and WSL GCC13/Clang18 builds succeed. Initial Windows
-checks pass the new original queue comparison and public fixtures. Exact-source
-local tests, independent review, hosted checks and wiki publication are pending.
-The prior local chunk comparison requires a full tested-source label, which will
-be set after committing the implementation.
+Exact source `900369d2bdea598324e5faf61e9a97d9a1aabd70` passes all 33 local
+CTests on native Windows/MSVC19.51 and WSL GCC13.3/Clang18.1 without skips.
+Each build runs 29 public tests, the numerical Java oracle and actual original
+queue, chunk and nibble comparisons. GCC/Clang use ASan/UBSan. Queue comparisons
+use Temurin17 on Windows and OpenJDK21 on WSL.
+
+The public queue test passes 2001560 checks. Each original side contributes
+72 merge results, 43 complete queue snapshots and a real million-entry abort.
+C/client and C/server replay each match 112 records. The three manifests retain
+identical before/after input and helper fingerprints. Different setup baselines
+remain explicit. Independent source/fixture review found no remaining defects;
+all 86 original queue states reconstruct exactly from the public fixture deltas.
+Clang-format18 passes all 66 C/header files.
+
+Hosted checks and wiki publication are pending. The exact source is published
+on `feature/light-queue`; merge only after native hosted checks pass. The
+versioned wiki pages already describe this increment.
 
 The repository has `.clang-format`, matching system/subsystem folders and
 separate public/local reference tests. README stays a short overview; details
@@ -37,7 +49,7 @@ comparison remains pending. Preserve that branch.
 
 ## Next work
 
-Complete exact-source queue verification and integration. Then continue original
+Complete hosted queue verification and integration. Then continue original
 world-height query tracing, cache insertion/visibility, world admission and
 finishing dirty effects. Retain all 1024 ordered height queries and compare
 traced calls with untouched controls. Queue propagation, population, save round

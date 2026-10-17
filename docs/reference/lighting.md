@@ -92,3 +92,23 @@ million-entry policy without Java or original files.
 This evidence does not establish world admission in C, full chunk finishing,
 dirty state, height-query tracing, cache lifecycle, propagation or gameplay.
 Exact tested source and platform results belong in [status](../status.md).
+
+## Recorded results
+
+Source `900369d2bdea598324e5faf61e9a97d9a1aabd70` passes all 33 local tests
+on native Windows/MSVC19.51 and WSL GCC13.3/Clang18.1, without skips. The Linux
+builds use ASan/UBSan. Actual original observations use Temurin17 on Windows
+and OpenJDK21 on WSL. Public queue tests pass 2001560 checks.
+
+Each comparison replays 112 complete records per original side: 72 merge
+results, one starting queue and 39 admitted enqueue results. Four requests with
+missing midpoint chunks preserve the preceding complete queue. All three local
+builds match both sides. These fresh runs also have identical starting queues
+and requests, so complete client/server queue comparisons pass directly. The
+frozen fixture capture retains additional actual server baseline entries.
+Merge results agree directly between both originals.
+
+All three reports identify that source, successful comparisons, no errors and
+unchanged before/after input/helper fingerprints. Independent fixture review
+reconstructed all 86 complete queue states from the generated baseline/delta
+records and matched every kind and bound to the original-only capture.
