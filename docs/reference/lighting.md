@@ -112,3 +112,18 @@ All three reports identify that source, successful comparisons, no errors and
 unchanged before/after input/helper fingerprints. Independent fixture review
 reconstructed all 86 complete queue states from the generated baseline/delta
 records and matched every kind and bound to the original-only capture.
+
+Reports remain under each `build-light-*/reference-light-queue/capture-*/` folder:
+
+| Build | Capture identifier | Manifest SHA-256 |
+| --- | --- | --- |
+| Windows/MSVC | `541321276f344f6991e9b9b4a4927f88` | `a119bf9a99bedf2aaa8b33ee24ce0432c1695c5382df7e3c3c23c791f8dee224` |
+| WSL/GCC | `3e2748b30d66460abc3a9c7fc5829765` | `849d9223e3531958ef9825adce2dbc7653474827d1735d8247686091b66065c2` |
+| WSL/Clang | `9e4a170a5c7a44658e94c90687b0e987` | `79ab9a822d6730f1209bc8bd697addf2c05e72666348a29af4bbb8c03bacf860` |
+
+The runtime is integrated at `fe83e6fe67f287698312bd32136b83a7f0cd31f2`.
+Native Windows/MSVC and Linux GCC/Clang each pass all 30 public/numerical tests,
+plus formatting for 66 C/header files, on the exact branch source and resulting
+main. The integration tree matches the tested branch tree; see
+[branch checks](https://github.com/frankischilling/minecraft-c/actions/runs/39071978648)
+and [main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39072086470).
