@@ -1,7 +1,7 @@
 # Development status
 
-Current branch: `feature/chunk-finishing`, based on main
-`75a7eb48488a90558e76e14bfc145a49a35a38ea`.
+Latest runtime integration: `fa17e3d8885632ca0baecf71bdf9551e47be68eb` on
+`main`. Continue from `main` and inspect the live worktree.
 Full normal finishing now connects local heights/direct sky, packed cached-world
 queries, original light admission, ordered queue storage and dirty state.
 The complete rewrite remains unfinished.
@@ -38,14 +38,33 @@ observations do not establish general game scheduling.
 ## Scope and next work
 
 Independent source and fixture review finds no remaining defects in this
-scope. The implementation is committed; integrate after the final branch head
-passes hosted checks, then publish the matching versioned wiki pages.
+scope. Final branch source `7c82b4a861e742e717b6ea8fd9646c5611211dba` passes
+all 33 hosted tests per compiler plus formatting in
+[run39076093215](https://github.com/frankischilling/minecraft-c/actions/runs/39076093215).
+The integration tree matches that tested tree. Resulting
+[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39076208781)
+also pass all 33 tests per compiler and formatting. The implementation branch
+has been removed.
+
+The wiki is published at `4e4a9f3853ac8db012bca9aaf179d956e288a686`; remote
+head verification succeeds. All five page blobs match versioned sources at the
+runtime integration. README remains unchanged.
 
 The cache supports nonnull lookup and the post-generation map/list publication
 phase. Full load/generate reentrancy, pending unloads, lifecycle/population,
 light propagation, complete generation and save compatibility remain open.
 See [the contract](world/finishing.md), [evidence](reference/finishing.md),
 [testing](testing.md) and [parity matrix](parity.md).
+
+Next, promote the existing cave-probe composition into a persistent normal
+generator with explicit current biome materials and finishing before return.
+Ignored research under `.local/cache-lifecycle-research/` verifies six genuine
+direct generations, 114 stage events and exact untouched controls. Direct biome
+sampling owns generator `v` and leaves manager `d` unchanged; surface alone
+advances generator Random after reseeding. Coordinate/domain and allocation
+contracts need explicit handling. Separate seven-operation cache research
+observes finish before map/list publication and natural population on a 2x2
+square; successful disk loads, fallback and reentrancy remain unverified.
 
 The previous light-queue integration and earlier exact platform evidence are
 preserved in [history](history.md). M1 is complete; M2 through M5 remain open.

@@ -162,6 +162,17 @@ loopback debugger, captured state and remaining cache/propagation work.
 
 ## Local environments
 
+Finishing source `a18615f0d9d90758f0ea95b0218cec97733d2adf` passes all 37
+configured tests on native MSVC19.51 and WSL GCC13.3/Clang18.1 without skips.
+The Linux builds enable ASan/UBSan. Each suite runs 32 public tests, the numerical
+Java oracle and four actual-original comparisons: finishing, queues, chunks and
+nibbles. Original finishing uses Temurin17 on Windows and OpenJDK21 on WSL.
+All six cases match in three independent pairings; all untouched controls and
+marker inventories pass. See [exact finishing results](reference/finishing.md)
+for source audits and manifest hashes. Native public CI passes all 33 configured
+tests per compiler plus formatting for 75 C/header files on the final branch
+source and runtime integration.
+
 Chunk source `67c928db7c0d87e599f16228833b0234fba4bc24` passes all 30 configured
 tests on native Windows/MSVC and WSL GCC/Clang without skips: 27 public tests,
 the standard Java numerical oracle and two original chunk comparisons. Both
