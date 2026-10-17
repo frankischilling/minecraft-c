@@ -73,9 +73,28 @@ raw signed-zero inputs. Shared draw counts and forks are inferred by unique
 primitive-Random continuation matches; they are not local branch traces.
 Both canonical comparison helpers preserve complete bytes and continuations
 and measure the C table bits before comparing against the originals. Their
-public transport suites each have 18 asset-independent guards. Final
-committed-source integrated acceptance remains pending; see the
-[evidence record](../reference/caves.md) for scope and artifact hashes.
+public transport suites each have 18 asset-independent guards; the
+[evidence record](../reference/caves.md) preserves the original-only scope and
+artifact hashes.
+
+## Local acceptance
+
+Exact source [`a507f59d756acf2d035ac7d4ea2da7171f60ad2f`](https://github.com/frankischilling/minecraft-c/commit/a507f59d756acf2d035ac7d4ea2da7171f60ad2f)
+passed all 33 configured CTests without skips on native MSVC and on WSL
+GCC/Clang with ASan/UBSan. All 30 original comparison manifests passed for that
+source.
+The natural ten-case and protected 44-case comparisons each passed C/client,
+C/server and client/server pairings on all three toolchains, using fresh
+Temurin 17/OpenJDK 21 original executions and measured table bits. Natural and
+protected unit suites passed 2021631/2917405 checks per toolchain; both helper
+suites passed 18 asset-independent guards each. See the
+[integrated local evidence](../reference/caves.md#integrated-local-acceptance)
+for preserved input/class/artifact identities and the acceptance-record hash.
+
+The runtime is integrated in [PR #35](https://github.com/frankischilling/minecraft-c/pull/35).
+Exact-head and resulting-main public CI pass 23 tests per compiler and formatting
+for all 50 C/header files; the published wiki matches the versioned cave pages.
+The [evidence record](../reference/caves.md#public-integration) pins those results.
 
 [Issue 30](https://github.com/frankischilling/minecraft-c/issues/30) covers this
 normal cave stage and its focused controls. Complete chunk finishing, lighting,

@@ -40,8 +40,8 @@ comparisons remain local.
 | `reference.biome` (local opt-in) | Actual catalogue/table, direct float and quantized double selectors, processed temperature and biome grids with stateful buffer sequences | Explicit-seed numerical fixture; no executed world constructors or terrain |
 | `reference.density` (local opt-in) | 150 exact snapshots per side, 82 original density/scratch recomputation checks; all constructor, climate, density and base state across three pairings | Normal dimension only; no surface, caves, population or complete chunk parity |
 | `reference.surface` (local opt-in) | 290 exact snapshots per side, 105 original state/material/density/suffix controls and 20 apply-field controls | Measured base/surface contexts; no complete chunk/cave/finishing compatibility claim |
-| `reference.caves` (local opt-in) | Ten complete cases, 30 calls and 50 snapshots per participant; all state, blocks and Random observations in three pairings | Initial integrated Windows run passes; final committed-source matrix pending |
-| `reference.caves_geometry` (local opt-in) | 44 separately labeled room/path controls, full input/output buffers, Random continuations, table and suffix controls; shared-draw consumption inferred by unique continuation matching | Original-only capture passes; final committed-source C comparison pending |
+| `reference.caves` (local opt-in) | Ten complete cases, 30 calls and 50 snapshots per participant; all state, blocks and Random observations in three pairings | Three pairings pass on MSVC/GCC/Clang at the recorded source; no complete chunk claim |
+| `reference.caves_geometry` (local opt-in) | 44 separately labeled room/path controls, full input/output buffers, Random continuations, table and suffix controls; shared-draw consumption inferred by unique continuation matching | Three pairings pass on MSVC/GCC/Clang at the recorded source; valid private geometry domain only |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -131,6 +131,24 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
+Normal cave source `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33
+configured tests on native MSVC and WSL GCC/Clang without skips: 22 public
+tests, the standard Java numerical comparison and ten original comparisons.
+All 30 original manifests identify that source and pass with empty errors.
+Natural ten-case and protected 44-case records match independently between
+C/client, C/server and client/server, including full arrays, Random continuation,
+measured tables, preserved generator state, classes, inputs and artifacts.
+Independent review also verifies the source Git objects and 634 current file
+hashes across the six new reports. See [cave evidence](reference/caves.md).
+
+The natural/protected units pass 2021631/2917405 checks and both helper suites
+pass 18 guards per toolchain. Isolated native MSVC AddressSanitizer runs also
+pass. Clang-format18 checks 50 C/header files; the native testing-disabled build
+produces the three libraries without Python or Java discovery. Public CI runs
+23 tests per compiler; integration results belong in [status](status.md).
+
+Previous float lookup/floor increment:
+
 Float lookup/floor source `d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27
 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
 eighteen public tests, the numerical Java oracle and eight original comparisons.
@@ -219,9 +237,9 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 27 CTests pass at the math source, with explicit Temurin17 |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 27 CTests pass at the math source with JDK21 |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 27 CTests pass at the math source with JDK21 |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 33 CTests pass at the cave source, with explicit Temurin17 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 33 CTests pass at the cave source with JDK21 |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 33 CTests pass at the cave source with JDK21 |
 
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
 selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the

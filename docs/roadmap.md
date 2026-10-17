@@ -42,9 +42,10 @@ The float lookup/floor prerequisite is integrated under closed
 [#29](https://github.com/frankischilling/minecraft-c/issues/29), with
 [complete table and sampled scalar comparisons](reference/math.md) and native
 public CI in [PR #33](https://github.com/frankischilling/minecraft-c/pull/33).
-Continue with [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
-The current increment has paired original natural and protected observations;
-its [runtime and comparison acceptance](reference/caves.md) is in progress.
+The [normal cave runtime #30](https://github.com/frankischilling/minecraft-c/issues/30)
+is integrated in [PR #35](https://github.com/frankischilling/minecraft-c/pull/35),
+with [natural and protected comparisons](reference/caves.md). Continue with
+[fresh chunk data, heightmaps and direct skylight #36](https://github.com/frankischilling/minecraft-c/issues/36).
 Complete raw chunks, population, lighting and protocol framing remain separate
 required work. Create their scoped issues from original class/method evidence
 before coding. Further
