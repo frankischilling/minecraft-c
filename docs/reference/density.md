@@ -366,7 +366,7 @@ uses fresh original executions and separately built C probes.
 
 ## C comparison and reproduction
 
-At source `02e18641dc5910a8d3e6e419dfea3f6757467707`, the finished helper passed
+At source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`, the finished helper passed
 native MSVC with Temurin 17 and WSL GCC/Clang with OpenJDK 21. Each run matched
 all 150 records for C/client, C/server and client/server independently, with
 empty error lists and no skipped comparison. The three manifests' source,

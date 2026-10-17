@@ -2,7 +2,7 @@
 
 In progress: normal-dimension density composition and base-block interpolation,
 [issue #24](https://github.com/frankischilling/minecraft-c/issues/24), on
-`feature/normal-terrain`. Exact implementation source `02e18641dc5910a8d3e6e419dfea3f6757467707`
+`feature/normal-terrain`. Exact implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`
 passed all 21 configured CTests on native Windows/MSVC and WSL GCC/Clang without
 skips. All 18 original-comparison manifests pass with empty errors and identify
 that source. Independent reviews are clear. Public CI and integration are pending.
@@ -105,7 +105,7 @@ The exact PR head also passed before merge.
 
 ## Local acceptance
 
-Normal density/base source: `02e18641dc5910a8d3e6e419dfea3f6757467707`. All three toolchains
+Normal density/base source: `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`. All three toolchains
 passed fourteen public tests, the numerical Java oracle and six original
 NBT/compression/Perlin/simplex/biome/density comparisons. All eighteen manifests
 under `build-density-*/reference-*/manifest.json` record this source, pass status

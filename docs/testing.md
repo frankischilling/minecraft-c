@@ -94,7 +94,7 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
-Normal density/base implementation source `02e18641dc5910a8d3e6e419dfea3f6757467707` passed
+Normal density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passed
 all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
 fourteen public checks, the numerical Java oracle and six original comparisons.
 All eighteen original manifests identify that source, pass status and empty
