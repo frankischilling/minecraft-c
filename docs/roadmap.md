@@ -34,9 +34,10 @@ with [actual both-side numerical methods and state comparisons](reference/biome.
 Normal-dimension density/base interpolation is integrated under
 [#24](https://github.com/frankischilling/minecraft-c/issues/24), with
 [actual both-side context and numerical comparisons](reference/density.md).
-Surface replacement and chunk seeding are locally verified under
+Surface replacement and chunk seeding are integrated under closed
 [#26](https://github.com/frankischilling/minecraft-c/issues/26), with
-[recorded scope and results](reference/surface.md); public CI/integration are pending.
+[recorded scope and results](reference/surface.md) and native public CI in
+[PR #31](https://github.com/frankischilling/minecraft-c/pull/31).
 The next prerequisite is
 [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
 followed by [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
