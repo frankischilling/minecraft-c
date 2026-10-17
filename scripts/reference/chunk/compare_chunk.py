@@ -536,7 +536,13 @@ def main(argv=None):
     args = parser.parse_args(argv)
     require(re.fullmatch(r"[0-9a-f]{40}", args.tested_commit) is not None, "full lowercase tested object ID required")
     require(args.capture_only or args.executable, "--executable required for comparison")
-    root = Path(__file__).resolve().parents[3]
+    script = Path(__file__).resolve(strict=True)
+    root = script.parents[3]
+    require(script == root / "scripts/reference/chunk/compare_chunk.py",
+            "executing driver must be scripts/reference/chunk/compare_chunk.py")
+    require(not any(os.environ.get(name) for name in
+                    ("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVAC_OPTIONS", "CLASSPATH")),
+            "unattributed injected Java options")
     work = Path(args.work_dir).absolute()
     helper, shared_sources = shared_helper(root)
     sources = source_paths(root)
@@ -570,8 +576,6 @@ def main(argv=None):
     protected = {}
     compiled = None
     try:
-        require(not any(os.environ.get(name) for name in ("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS")),
-                "unattributed injected Java options")
         java = helper.find_tool(args.java, "java")
         javac = helper.find_tool(args.javac, "javac")
         require(java.parent.parent == javac.parent.parent, "java and javac must belong to one JDK")

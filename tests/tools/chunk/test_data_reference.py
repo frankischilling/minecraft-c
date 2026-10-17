@@ -280,6 +280,35 @@ class ChunkReferenceGuards(unittest.TestCase):
         self.assertEqual(subject.VALUE, 29)
         self.assertNotEqual(attributed["sha256"], new_attribution["sha256"])
 
+    def test_renamed_driver_cannot_attribute_the_canonical_source(self):
+        renamed = self.directory / "project/scripts/reference/chunk/renamed.py"
+        renamed.parent.mkdir(parents=True)
+        renamed.write_bytes(SOURCE.read_bytes())
+        renamed.with_name("compare_chunk.py").write_text("UNEXECUTED = True\n", encoding="utf-8")
+        subject = types.ModuleType("_renamed_chunk_driver")
+        subject.__file__ = str(renamed)
+        exec(compile(renamed.read_bytes(), str(renamed), "exec"), subject.__dict__)
+        output = self.directory / "output"
+        argv = ["--capture-only", "--smoke", "--client", str(self.directory / "client.jar"),
+                "--server", str(self.directory / "server.jar"), "--work-dir", str(output),
+                "--tested-commit", "0" * 40]
+        with self.assertRaisesRegex(subject.Failure, "executing driver must be"):
+            subject.main(argv)
+        self.assertFalse(output.exists())
+
+    def test_injected_compiler_options_are_rejected_before_output_creation(self):
+        output = self.directory / "output"
+        argv = ["--capture-only", "--smoke", "--client", str(self.directory / "client.jar"),
+                "--server", str(self.directory / "server.jar"), "--work-dir", str(output),
+                "--tested-commit", "0" * 40]
+        environment = dict.fromkeys(("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS",
+                                     "JDK_JAVAC_OPTIONS", "CLASSPATH"), "")
+        for name, value in (("JDK_JAVAC_OPTIONS", "-g:none"), ("CLASSPATH", "unattributed-classes")):
+            with self.subTest(variable=name), mock.patch.dict(os.environ, environment | {name: value}):
+                with self.assertRaisesRegex(self.helper.Failure, "unattributed injected Java options"):
+                    self.helper.main(argv)
+                self.assertFalse(output.exists())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

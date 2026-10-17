@@ -121,3 +121,9 @@ capture artifacts are bounded to 512 MiB. Setup beyond the observation budget
 is unavailable; an over-budget measured stage or completed mismatch fails.
 The parser continues to reject missing terminators, duplicate records and
 incomplete arrays. Bounds are independent of exact local-byte comparisons.
+
+The driver rejects renamed entry points and injected Java runtime, compiler or
+classpath options before creating output. It records the canonical driver and
+the exact bytes loaded for shared helpers. The commit field is a caller-supplied
+label; acceptance also checks source and executable fingerprints against the
+tested checkout.

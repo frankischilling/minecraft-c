@@ -33,7 +33,7 @@ comparisons remain local.
 | `tools.caves_reference` | 18 generated schema/table/report/path/link and failure-precedence guards, including ordinary-file and hardlink inventories and renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_geometry_reference` | 18 schema/pattern/continuation/table/report/path/link and failure-precedence guards, including renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.nibbles_reference` | 17 source/protocol/array/path/prerequisite and failure-precedence guards | Synthetic protocol checks; original methods are not executed |
-| `tools.chunk_data_reference` | Ten schema, array, cache/queue growth, preservation, path and completed-measurement guards | Synthetic protocol checks; original methods are not executed |
+| `tools.chunk_data_reference` | 12 schema, array, cache/queue growth, preservation, path, source-attribution, compiler-option and completed-measurement guards | Synthetic protocol checks; original methods are not executed |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
