@@ -1,12 +1,14 @@
 # Development status
 
 Latest implementation increment: original Perlin/octave noise, issue
-[#16](https://github.com/frankischilling/minecraft-c/issues/16), developed on
-`feature/world-noise` from `2cd7c04db5cc231c3ba865d5dc4e174a400248ca`.
+[#16](https://github.com/frankischilling/minecraft-c/issues/16), merged in
+[PR #17](https://github.com/frankischilling/minecraft-c/pull/17) at
+`c6cac5d01e2750461f54482f66ea8d5b27d8a56b` on `main`.
 Implementation commit `1188da0f126db8d623a45d801638d645df054c76` passed all 12
 configured CTests on native Windows/MSVC and WSL GCC/Clang, without skips.
-The linked issue records the PR, exact-head CI and integration state; inspect
-the live worktree and remote state before resuming.
+Public CI passed on exact PR head `05592a347d7ac8d237c201337c61f2649f963666`
+and the resulting runtime integration. Inspect the live worktree and remote
+state before resuming. This documentation checkpoint uses `docs/noise-integration`.
 
 Read-only region inspection remains in [draft PR #15](https://github.com/frankischilling/minecraft-c/pull/15)
 at `8ab5f5e8f26a1dc12443dffe1f9f68993d9dd7d6`. All ten public CI tests passed
@@ -32,11 +34,20 @@ and milestones M2 through M5 remain open.
 | [PR #8](https://github.com/frankischilling/minecraft-c/pull/8) | Repository text preferences and pinned current official CI actions |
 | [PR #10](https://github.com/frankischilling/minecraft-c/pull/10) | Owned raw NBT, lossless modified UTF-8 and original-class comparisons; closes #9 |
 | [PR #12](https://github.com/frankischilling/minecraft-c/pull/12) | Bounded gzip/zlib memory module, pinned static zlib, public/original interoperability and detailed documentation; closes #11 |
+| [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions; closes #16 |
 
-All four PRs are merged and their feature branches removed. M1 is complete.
+All five PRs are merged and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
+
+Latest tested runtime integration: `c6cac5d01e2750461f54482f66ea8d5b27d8a56b`,
+[main run39027900248](https://github.com/frankischilling/minecraft-c/actions/runs/39027900248).
+All nine tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
+The first Clang configure rejected a dependency download with a checksum mismatch.
+A fresh official download matched the existing pin; only the failed job was
+rerun, and attempt 2 passed without changing source, pin or assertions. The exact
+PR head passed [run39027782875](https://github.com/frankischilling/minecraft-c/actions/runs/39027782875).
 
 Earlier tested storage integration: `b4b0af1b1a54af8a7abb7c494992a853fa41b64e`,
 [default-branch run39024379065](https://github.com/frankischilling/minecraft-c/actions/runs/39024379065).
@@ -111,12 +122,11 @@ occurred. The original-client/server baseline and all four interoperability
 pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
-The previous [wiki](https://github.com/frankischilling/minecraft-c/wiki) publication was
-commit `1a45ac218c49d2abb899e4591ce401b9b0d7df17`, from the versioned `docs/wiki/`
-sources. Home, build/tests, architecture and storage/reference pages were checked
-through public HTTP and each returned the expected content. The clone remains
-at `.local/wiki/`. Updated noise pages are versioned in this increment. Check
-the linked issue for their publication verification after integration.
+The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
+`15aba6335f35178260dde0a97fa15412ec83dbaf`. All five page blobs match the versioned
+`docs/wiki/` sources. Home, build/tests, architecture and storage/reference each
+returned HTTP200 with the expected content; updated pages include the noise
+module and comparison option. The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant
