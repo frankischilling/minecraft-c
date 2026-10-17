@@ -94,7 +94,8 @@ ten 8-byte session locks. No existing worlds were opened or reused.
 Lossless natural fixtures retain 40 complete array references and 120 continuation
 longs. Their 15 unique arrays contain 25776 runs. Independent decoding of the C
 initializers matched every byte against both originals, separately from the
-extractor. Final committed-source integrated acceptance remains pending.
+extractor. The committed-source local acceptance below uses these independently
+captured expectations.
 
 ## Original-only protected capture
 
@@ -149,8 +150,9 @@ smoke/full evidence, paired complete records, ordered controls, three helper
 classes, preserved inputs and empty working-directory inventories. Its report
 SHA-256 is
 `17d2e92753ba982bbf0e4e801abf976c6f85a06fe0f7c158423828444d87ba0f`.
-These are original-only observations. Final committed-source C comparison
-acceptance is separate and remains pending.
+These remain original-only observations. The integrated local comparisons below
+use fresh original executions; this earlier capture remains an independent
+baseline.
 
 Lossless protected fixtures retain 88 full array references, 47 unique arrays,
 11548 runs and 352 continuation longs. Independent decoding of the C
@@ -212,6 +214,63 @@ The public suites have 18 asset-independent guards each. They cover schema and
 table controls, exact source attribution, stale-report replacement, input/work
 aliases and actual renamed-script rejection. Natural inventory guards include
 the Windows `DirEntry.stat` regression: no-follow `os.stat` accepts an ordinary
-file and rejects a verified actual hard link. These transport checks do not
-establish numerical C parity. Final committed-source integrated public and
-original comparison acceptance remains pending.
+file and rejects a verified actual hard link. Numerical acceptance uses the
+separate original comparisons below.
+
+
+## Integrated local acceptance
+
+Exact source [`a507f59d756acf2d035ac7d4ea2da7171f60ad2f`](https://github.com/frankischilling/minecraft-c/commit/a507f59d756acf2d035ac7d4ea2da7171f60ad2f)
+passed all 33 configured CTests on each toolchain without skips. All 30 original
+comparison manifests, ten per toolchain including prior modules and both cave
+comparisons, passed for that same source.
+
+| Local toolchain | CTests | Original JVM | Natural cases | Protected cases |
+| --- | ---: | --- | ---: | ---: |
+| Native MSVC | 33/33 | Temurin 17 | 10/10 | 44/44 |
+| WSL GCC, ASan/UBSan | 33/33 | OpenJDK 21 | 10/10 | 44/44 |
+| WSL Clang, ASan/UBSan | 33/33 | OpenJDK 21 | 10/10 | 44/44 |
+
+Every cave comparison passed all three independent pairings: C/client, C/server
+and client/server. Fresh original runs retained complete records and controls;
+all measured C tables matched the accepted raw digest. The manifests record
+preserved source/tool inputs, generated requests, helper classes and artifacts.
+The acceptance audit checked the source, probe executables, class files and
+artifact identities against those records.
+
+Natural and protected unit suites passed 2021631 and 2917405 checks respectively
+on every toolchain. Both public helper suites passed their 18 asset-independent
+guards without skips on all three platforms. Formatting passed for all 50 checked
+C/header files. A native library build with `BUILD_TESTING=OFF` also passed.
+
+The retained consolidated record is `.local/caves-acceptance.json`, SHA-256
+`50c03126e6a55089cf9108ff1562745821bbc4661790915dfb6fd6e71cbe39b9`.
+It identifies the exact accepted source and hashes all 30 reference manifests.
+The original-only baseline hashes above remain unchanged and separate from this
+later C acceptance.
+
+These results cover the bounded normal cave stage, its finite protected adapters
+and the configured regression suite. Complete chunk finishing, lighting,
+population, other dimensions and save integration remain separate work in the
+[broader parity inventory](../parity.md).
+
+## Public integration
+
+[PR #35](https://github.com/frankischilling/minecraft-c/pull/35) integrates the
+accepted source at `49f87ef9c803909ca8d89c8efe67a32da648cca1`.
+[Exact-head CI](https://github.com/frankischilling/minecraft-c/actions/runs/39043911065)
+and [resulting-main CI](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578)
+each pass 23 tests on native Windows MSVC and Linux GCC/Clang, without skips,
+plus formatting for all 50 C/header files. CI uses no supplied game files.
+
+The independent six-report acceptance audit checks all raw pairings, committed
+source objects, 634 current file hashes, process controls and owned inventories.
+Its SHA-256 is
+`5ef7423834b4b365bb28d2bdbb60bbe07565d1805c787e6b804f096494ef8f34`.
+Windows CRLF and Linux LF account for raw stream-size differences; decoded
+response content is exact, without numerical normalization.
+
+The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
+`be88d6e8231d171c224cdb470199c7af7b41f43a`. All five page blobs match the
+versioned wiki sources at the runtime integration. Home, architecture,
+build/tests and storage/reference each return HTTP200 with the current cave content.

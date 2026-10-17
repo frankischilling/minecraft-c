@@ -1,14 +1,21 @@
 # Development status
 
-Active increment: [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30)
-on `feature/normal-caves`. The public runtime, natural fixtures and separate
-protected room/path adapters are implemented. Both untouched originals agree
-on ten natural cases and 44 protected controls; the natural preliminary native
-C comparison passes. Final committed-source tests, public CI and integration
-remain pending. Inspect the live worktree and [evidence](reference/caves.md)
+Latest implementation: [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30),
+merged in [PR #35](https://github.com/frankischilling/minecraft-c/pull/35) at
+`49f87ef9c803909ca8d89c8efe67a32da648cca1`. Exact source
+`a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33 local CTests on native
+MSVC and WSL GCC/Clang without skips. All ten natural cases and 44 protected
+room/path controls match in C/client, C/server and client/server comparisons.
+All 30 original-reference manifests pass; independent review checks source,
+executables, complete records, table, classes, inputs and inventories.
+Exact-head [public CI](https://github.com/frankischilling/minecraft-c/actions/runs/39043911065)
+passes 23 tests per compiler and formatting for 50 C/header files. The
+[resulting-main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578)
+also pass. This documentation checkpoint uses
+`docs/caves-integration`; inspect the live worktree and [evidence](reference/caves.md)
 before resuming. The full client/server game remains unfinished.
 
-Latest implementation: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
+Previous integrated implementation: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
 merged in [PR #33](https://github.com/frankischilling/minecraft-c/pull/33) at
 `077300380a81596da82fbf67ea1cb625e3215436`. Exact source
 `d6665e7f3e1b57c16e9e12c14983abd2ba227441` passes all 27 local CTests on native
@@ -358,8 +365,9 @@ Normal density/base terrain is integrated under closed
 replacement and chunk seeding under closed
 [#26](https://github.com/frankischilling/minecraft-c/issues/26). The float
 lookup/floor prerequisite is integrated under closed
-[#29](https://github.com/frankischilling/minecraft-c/issues/29). Continue with
-[normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
+[#29](https://github.com/frankischilling/minecraft-c/issues/29). The normal cave
+runtime is integrated under [#30](https://github.com/frankischilling/minecraft-c/issues/30).
+Continue with [fresh chunk data, heightmaps and direct skylight #36](https://github.com/frankischilling/minecraft-c/issues/36).
 Continue exact chunk comparisons alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.
@@ -372,11 +380,11 @@ pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
 The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
-`02f1118429e1f2885ead3a61baa13e814d268cde`. All five page blobs match the versioned
-math sources at `077300380a81596da82fbf67ea1cb625e3215436`. Home, build/tests,
+`be88d6e8231d171c224cdb470199c7af7b41f43a`. All five page blobs match the versioned
+cave sources at `49f87ef9c803909ca8d89c8efe67a32da648cca1`. Home, build/tests,
 architecture and storage/reference each returned HTTP200 with expected content.
-Updated pages include the caller-owned float table, lookup/floor helpers and
-their pure original comparison option.
+Updated pages include normal cave ownership, scheduling, private geometry,
+natural/protected comparisons and their explicit limits.
 The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
