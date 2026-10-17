@@ -5,7 +5,7 @@ Active branch: `feature/compression-codec`, based on tested `main` commit
 [#11](https://github.com/frankischilling/minecraft-c/issues/11), under M2.
 The raw codec and modified UTF-8 increment is merged. Bounded memory gzip/zlib
 compression, public interoperability and original-class comparisons are implemented.
-Pre-commit checks pass; exact-source acceptance and PR checks remain before integration.
+Exact-source local checks pass; inspect the PR's final-head checks before integration.
 Inspect the live worktree, PRs and exact-head checks before relying on this note.
 
 ## Integrated foundation
@@ -64,8 +64,12 @@ of corrupt or missing trailers that the original root-early wrapper may leave
 unread. Original region selectors are researched, but region files and world
 write compatibility remain separate work. Full inventory issue #4 stays open.
 
-Compression pre-commit validation: native Windows/MSVC, WSL GCC and Clang
-sanitizer builds passed all seven public/numerical CTests. The 2351 C checks
+Exact compression implementation commit: `50e5b7f5cd84091d05b9e5d373308a9c422414c2`.
+Native Windows/MSVC with Temurin17 and WSL GCC/Clang ASan/UBSan with JDK21
+passed all nine CTests, including both actual original-class NBT and compression
+comparisons, with no skips. All six local original-comparison manifests under
+`build-compression-*/reference-{nbt,compression}/manifest.json` record this commit,
+status pass and empty errors. The 2351 compression C checks
 include exact and failing allocation-growth budgets; Python cross-reader checks
 pass 127 records on Windows zlib-ng and Linux zlib. The original comparison
 passes 80 containers and 22 C encodes; each side executes 181 baseline records,
