@@ -39,6 +39,10 @@ heightmaps, direct skylight and packed access now have
 Continue with original world-height/cache queries and queued-light finishing
 effects, retaining the distinction between a fresh measured chunk and cached
 world chunks. Full propagation needs its own ordered state comparisons.
+Light-region merging and ordered queue storage now have a separate
+[contract and original observations](reference/lighting.md). The C module
+starts after world admission. Continue the height/cache tracing, admission and
+dirty effects before claiming complete chunk finishing.
 Complete raw chunks, population, lighting and protocol framing remain separate
 required work. Define their scoped implementations from original class/method
 evidence before coding. Further splits must retain the full original requirements

@@ -9,6 +9,9 @@ comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
+| `world.light_queue` | 72 observed merges, complete live queues across 43 requests per original side, storage/alias/failure contracts and the million-entry abort | C queue storage after admission; no C world admission or propagation |
+| `tools.light_reference` | Five parser, ordering, rejected-request preservation and old-JDK prerequisite guards | No original methods run |
+| `reference.light_queue` (local opt-in) | Actual original merge methods and world queue overloads, complete ordered queues, unchanged world/cache state and actual million-entry abort | Replays each observed baseline/admission result; full world finishing remains open |
 | `core.java` | 146 fixed arithmetic/cast/Random edge and captured-oracle checks | No game simulation or game random-consumption ordering |
 | `core.math` | 903 checks: all observed lookup/floor cases, complete-table fingerprint, 37 exact entries, repeated initialization and immutable reads | Float table and cast/compare floor only; sampled scalar inputs, measured native backends |
 | `core.mutf8` | 596848 checks, including every UTF-16 unit, accepted byte forms, malformed input and unchanged outputs | Payload codec only; NBT and packet framing are distinct |

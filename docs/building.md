@@ -88,6 +88,12 @@ requires the frozen original post-cave inputs described in
 [chunk reproduction](reference/chunk.md). Public chunk tests use recorded
 fixtures and require no original files or Java.
 
+`MC_ENABLE_LIGHT_REFERENCE_TESTS=ON` compares original light-region merges and
+ordered queue storage in genuine fresh worlds. It preserves each setup baseline
+and separately observes the original million-entry abort. C storage begins
+after world admission; full finishing and propagation remain open. See the
+[queue contract](world/lighting.md) and [evidence](reference/lighting.md).
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

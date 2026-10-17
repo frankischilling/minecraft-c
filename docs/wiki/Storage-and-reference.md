@@ -82,6 +82,14 @@ evidence page records exact source, manifest fingerprints, reproduction inputs
 and observation limits. Queue and cache diagnostics remain evidence for the
 next finishing stage.
 
+[Light-region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md)
+adds actual untouched merge and world-queue calls. It retains each real setup
+baseline and compares complete ordered queues with C after observed admission.
+Forty-eight cases contain 72 merge requests; each side also runs 43 world
+requests and a separate actual million-entry overflow experiment. The C module
+implements storage after admission. World-height tracing, full finishing and
+propagation remain open.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib
