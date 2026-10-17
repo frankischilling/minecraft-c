@@ -101,6 +101,20 @@ class ReferenceGuards(unittest.TestCase):
             self.assertIn("output", result.stderr.lower())
 
     def test_completed_mismatch_survives_later_unavailable(self):
+        self.exercise_completed_mismatch(self.root / "generated-workspace")
+
+    def test_aliased_workspace_reaches_completed_mismatch(self):
+        generated = self.root / "real-workspace"
+        generated.mkdir()
+        alias = self.root / "workspace-alias"
+        try:
+            alias.symlink_to(generated, target_is_directory=True)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest("filesystem directory symlinks unavailable: " + str(error))
+        self.exercise_completed_mismatch(alias)
+
+    def exercise_completed_mismatch(self, generated):
+        generated = generated.resolve()
         spec = importlib.util.spec_from_file_location("math_guard_helper", HELPER)
         helper = importlib.util.module_from_spec(spec)
         with mock.patch.dict(sys.modules):
@@ -113,7 +127,6 @@ class ReferenceGuards(unittest.TestCase):
                 sys.path.pop(0)
             # All processes and original inputs are generated. A separate
             # workspace keeps this test from writing any repository source.
-            generated = self.root / "generated-workspace"
             module_path = generated / "scripts/reference/math/compare_math.py"
             source = generated / "tests/reference/math/TrigMathObservation.java"
             source.parent.mkdir(parents=True)
@@ -159,6 +172,7 @@ class ReferenceGuards(unittest.TestCase):
             report = json.loads((self.work / "manifest.json").read_text())
             self.assertEqual(result, 1)
             self.assertEqual(report["status"], "fail")
+            self.assertIn("matched_records", report, report["errors"])
             self.assertEqual(report["matched_records"]["client_to_c"], {"table_entries": 65535, "calls": 1})
             self.assertTrue(any("table[65535]" in error for error in report["errors"]))
 
