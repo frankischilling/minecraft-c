@@ -105,6 +105,25 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
+Normal surface source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24
+configured CTests on native Windows/MSVC and WSL GCC/Clang without skips:
+sixteen public tests, the numerical Java oracle and seven original comparisons.
+All 21 original manifests identify this source and pass with empty errors;
+every current probe hash matches its report. Surface's 290 snapshots match
+independently in all three pairings, including complete fields, blocks,
+materials, climate, constructor state and live Random continuation. All
+equivalence, preservation, suffix and retained-apply controls agree.
+
+Public surface tests pass 1114102 checks and all six helper guards, including
+filesystem links and completed-mismatch precedence, run without skips. Seven
+fixed fixtures are traced to paired untouched originals; constructed C controls
+separately exercise state-machine boundaries. Clang-format18 checks 36 C/header
+files. The three libraries build with testing off and no Python/Java discovery.
+Public CI runs seventeen tests per compiler without private files; current
+results and integration state are recorded in [status](status.md).
+
+Previous density/base increment:
+
 Normal density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passed
 all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
 fourteen public checks, the numerical Java oracle and six original comparisons.
@@ -152,9 +171,9 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All nine CTests passed, including original NBT/compression with explicit Temurin17 |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All nine CTests passed with JDK21 |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All nine CTests passed with JDK21 |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 24 CTests pass at the surface source, with explicit Temurin17 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 24 CTests pass at the surface source with JDK21 |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 24 CTests pass at the surface source with JDK21 |
 
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
 selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the

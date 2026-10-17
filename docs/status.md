@@ -2,11 +2,12 @@
 
 In progress: normal surface replacement and chunk seeding,
 [issue #26](https://github.com/frankischilling/minecraft-c/issues/26), on
-`feature/normal-surface`. Seven paired original fixtures and the 290-snapshot
-original corpus are audited. Preliminary C probes match all records on MSVC,
-GCC and Clang; surface unit tests pass 1114102 checks. Full exact-source
-acceptance, public CI and integration remain pending. The density/base
-checkpoint below is integrated; inspect the live branch before resuming.
+`feature/normal-surface`. Exact source
+`f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24 local CTests on
+native Windows/MSVC and WSL GCC/Clang without skips. All 290 surface snapshots
+match in C/client, C/server and client/server comparisons. Public CI and
+integration remain pending. The density/base checkpoint below is integrated;
+inspect the live branch before resuming.
 
 Latest implementation: normal-dimension density and base-block interpolation,
 issue [#24](https://github.com/frankischilling/minecraft-c/issues/24), merged in
@@ -15,11 +16,10 @@ issue [#24](https://github.com/frankischilling/minecraft-c/issues/24), merged in
 `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passes all 21 local CTests on
 native Windows/MSVC and WSL GCC/Clang without skips. Public CI passes all fifteen
 tests per compiler plus formatting on the exact PR head and resulting main.
-This documentation checkpoint uses `docs/terrain-integration`; inspect the live
-worktree and [next surface issue #26](https://github.com/frankischilling/minecraft-c/issues/26)
-before resuming. Surface draft work and seven paired original observations are
-still separate from integrated density/base behavior. Caves, population,
-lighting, save compatibility and playable client/server operation remain open.
+Its documentation checkpoint is integrated in
+[PR #28](https://github.com/frankischilling/minecraft-c/pull/28) at
+`de9722abe0449e6ba32e1da78bd2e4582cd556a1`. Caves, population, lighting,
+save compatibility and playable client/server operation remain open.
 
 Previous integrated implementation: original climate blending and biome classification, issue
 [#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
@@ -128,6 +128,32 @@ passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBS
 The exact PR head also passed before merge.
 
 ## Local acceptance
+
+Normal surface source: `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360`. All three
+toolchains pass sixteen public tests, the numerical Java oracle and seven
+original comparisons. All 21 manifests under
+`build-surface-*/reference-*/manifest.json` record this source, pass status and
+empty errors; current executable hashes match every recorded C probe.
+
+Surface's 290 snapshots match all three pairings, including 554948 binary64
+values, 1511424 permutation entries, 1160 live and 1160 constructor continuation
+longs, 8914866 block bytes, 67072 biome identities and 134144 material bytes per
+participant. Each participant passes 50 equivalence, 1861 preserved-field,
+105 live-Random advance and 114 live-Random preservation controls. Each original
+also completes 105 internal surface-state and 20 retained-apply field checks.
+The ten fresh client setup roots per platform contain no files; ten server
+roots contain only eight-byte session locks plus directories. Genuine server
+setup can generate chunks before the fresh measured generator is created.
+
+Public surface tests pass 1114102 checks; existing terrain tests pass 535745.
+All six surface helper guards run without skips, including completed-mismatch
+precedence. Independent reviews traced the seven complete fixed fixtures and
+full corpus to both originals and checked runtime, adapters and reports.
+Clang-format18 checks all 36 C/header files. The three runtime libraries build
+with testing off and no Python/Java discovery. See the
+[surface evidence](reference/surface.md) for scope and reproducibility.
+
+Previous density/base increment:
 
 Normal density/base source: `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`. All three toolchains
 passed fourteen public tests, the numerical Java oracle and six original
@@ -254,9 +280,12 @@ Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
 Normal density/base terrain is integrated under closed
-[#24](https://github.com/frankischilling/minecraft-c/issues/24). Continue surface replacement
-and chunk seeding under [#26](https://github.com/frankischilling/minecraft-c/issues/26),
-and exact chunk comparisons, alongside storage schemas
+[#24](https://github.com/frankischilling/minecraft-c/issues/24). Finish integration
+of surface replacement and chunk seeding under
+[#26](https://github.com/frankischilling/minecraft-c/issues/26). The next numerical
+prerequisite is [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
+followed by [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
+Continue exact chunk comparisons alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.
 

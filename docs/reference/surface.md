@@ -3,9 +3,9 @@
 This note records Beta 1.7.3's normal surface pass after
 [density and base interpolation](density.md). Both supplied binaries produced
 the same 290 numerical snapshots, including seven independently captured
-fixed cases. Preliminary C comparisons have matched the corpus with GCC and
-Clang. Final acceptance at a recorded source revision, the complete test suite
-and CI are pending; the [status note](../status.md) records accepted results.
+fixed cases. Exact-source local comparisons match C, client and server with
+native MSVC and WSL GCC/Clang. All 24 local CTests passed without skips on each
+toolchain. The [status note](../status.md) records broader acceptance and CI.
 Caves, population, lighting, chunk finishing and save compatibility remain
 separate work.
 
@@ -287,10 +287,39 @@ Random states and 105 advances.
 | Explicit chunk-seed observations | 225 |
 
 All source/class/tool/JAR/request/fixture/output hashes and actual owned-world
-inventories were independently checked. This is the original baseline;
-preliminary C matches do not replace final acceptance at recorded source.
+inventories were independently checked. This original-only baseline preceded
+the fresh original executions and separately built C probes below.
 
-## Reproduction and report guarantees
+## Local C acceptance and reproduction
+
+At source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360`, the finished helper passed
+all 290 records independently for C/client, C/server and client/server on:
+
+| Environment | C compiler | Java runtime/compiler | C sanitizers |
+| --- | --- | --- | --- |
+| Native Windows 10 | MSVC 19.51.36260.0 | Temurin 17.0.17+10 | Off |
+| WSL Linux | GCC 13.3.0 | OpenJDK 21.0.12.1 | Address / undefined behavior |
+| WSL Linux | Clang 18.1.3 | OpenJDK 21.0.12.1 | Address / undefined behavior |
+
+Each surface manifest reports pass with no errors. Its 17 source hashes,
+13 artifact hashes and 24 preserved-input hashes were independently checked,
+including actual executable, compiled Java class, both JARs and JDK
+runtime/compiler/modules. Every complete parsed snapshot agrees across all
+nine participants; cardinalities match the table above.
+
+All C/client/server controls agree, including 50 equivalences, 1,861 preserved
+fields, 114 unchanged live-Random states, 105 advances, 255 cleared scratch
+suffix checks, 174 retained block suffix checks and 20 apply-field checks.
+Each original side also completes 105 surface-state assertions and 20
+recomputed-field assertions. Each run's actual inventory matches its report:
+ten client seed directories with no files, and ten eight-byte server session
+locks plus directories. Server directory counts vary with genuine setup;
+these records do not establish full-world equality.
+
+Each toolchain's complete 24-test log has 24 passes and no skips, including all
+seven optional original comparisons. The surface unit reports 1,114,102
+checks and the six public surface helper guards pass on each. These are local
+exact-source results; CI status is recorded separately.
 
 Enable `MC_ENABLE_SURFACE_REFERENCE_TESTS` with both pinned JAR paths,
 JDK 11+ runtime/compiler paths and `MC_REFERENCE_TESTED_COMMIT` identifying
@@ -329,7 +358,7 @@ retained output is limited to 64 MiB per stream, with 512 MiB JVM heaps.
 The six [public helper guards](../../tests/tools/surface/test_reference.py)
 use generated placeholders/process results to check prerequisite reports,
 input-preserving output handling and mismatch precedence. They run no original
-classes, JVM or C probe. Final exact-source platform results remain pending.
+classes, JVM or C probe.
 
 Reproduce the static evidence without starting a world:
 

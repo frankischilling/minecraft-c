@@ -37,7 +37,7 @@ The [normal terrain module](https://github.com/frankischilling/minecraft-c/blob/
 constructs all 82 original Perlin layers in order, consumes caller-supplied
 processed climate and interpolates a fixed density grid into base blocks.
 Constructor state is immutable after initialization; workspace and outputs are
-borrowed. Surface replacement, caves, population and lighting remain later work.
+borrowed. Caves, population and lighting remain later work.
 
 The [surface interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/surface.md)
 uses those existing layers with current material byte pairs and a separate
