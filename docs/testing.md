@@ -70,6 +70,14 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 | Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All nine CTests passed with JDK21 |
 | Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All nine CTests passed with JDK21 |
 
+That table records the integrated NBT/compression increment. The active region
+branch passed all 13 configured CTests on these same three toolchains at source
+`836a3b4afc64ba7f4b09111bd372dc61335fa722`, without skips: nine public checks,
+the numerical Java comparison, two existing original NBT/compression checks
+and the recorded-region comparison. Public CI runs ten tests and does not
+fetch private references or recorded observations. Live original-region
+validation remains pending. See [status.md](status.md) for the draft increment.
+
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
 selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the
 installed Windows Oracle JDK21.0.10. The Temurin17 numerical comparison passes

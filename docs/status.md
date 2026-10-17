@@ -4,7 +4,10 @@ Active increment: `feature/region-inspector`, based on
 `2cd7c04db5cc231c3ba865d5dc4e174a400248ca`, issue
 [#14](https://github.com/frankischilling/minecraft-c/issues/14). The read-only
 region module, CLI, public tests and offline captured-observation comparison
-are implemented. Exact-source acceptance and draft PR checks are being recorded.
+are implemented. Implementation commit
+`836a3b4afc64ba7f4b09111bd372dc61335fa722` passed all 13 configured CTests on
+native Windows/MSVC and WSL GCC/Clang, without skips. Inspect public PR checks
+on the exact branch head before integration.
 Live original-region validation remains pending; keep #14 open and do not merge
 this increment on the strength of captured observations alone.
 
@@ -39,6 +42,22 @@ The exact PR head also passed before merge.
 
 ## Local acceptance
 
+The active region increment was tested at
+`836a3b4afc64ba7f4b09111bd372dc61335fa722` on the same three toolchains below.
+Each passed nine public tests, the numerical Java comparison, both existing
+original NBT/compression comparisons and the recorded-region check. All nine
+local manifests record that source commit, pass status and empty errors.
+The 32 recorded-region observations do not satisfy live original-region
+validation. All six capture-helper regressions ran without skips, including
+symlink and hard-link input preservation. Clang-format 18 checked all 19 C
+source/header files. The libraries and inspector also build with testing off.
+
+Independent review covered the region module, CLI, unit/probe coverage and
+offline helper. Fixes added exact multi-sector bounds, malformed-report shape
+checks, canonical output-path checks and atomic report replacement. The latter
+preserves input contents when a preexisting artifact is a hard link.
+
+The following results describe the previously integrated compression increment.
 Exact runtime implementation source: `50e5b7f5cd84091d05b9e5d373308a9c422414c2`.
 Native Windows/MSVC 19.51 with Temurin 17 and Ubuntu WSL GCC 13.3/Clang 18.1 with
 JDK 21 passed all nine CTests, including actual original-class NBT and compression
