@@ -13,8 +13,8 @@ There is no hidden global initializer or Java dependency in this module.
 
 `mc_world` depends on `mc_core` and implements the original seeded
 Perlin/octave [noise module](world/noise.md) and the separate
-[2D simplex/octave family](world/simplex.md). It owns no allocations or platform
-services. Caller-supplied layer arrays keep construction and shared-Random order
+[2D simplex/octave family](world/simplex.md). The noise primitives own no allocations
+or platform services. Caller-supplied layer arrays keep construction and shared-Random order
 explicit. Bulk sampling preserves the original height-one path and Y-cell cache.
 
 The [climate and biome module](world/biome.md) composes independently seeded
@@ -32,6 +32,12 @@ The [normal surface pass](world/surface.md) reuses immutable terrain layers,
 accepts current top/filler byte pairs and advances a separate caller-owned
 Random. Field sampling and material application remain usable independently;
 composed calls validate all borrowed storage before any mutation.
+
+The [normal cave pass](world/caves.md) uses a separate caller-owned Random,
+immutable math table and existing block prefix. It owns the fixed neighbor
+schedule, ordered local path Randoms, geometry and selective material changes.
+Checked preflight precedes mutation; successful calls allocate nothing.
+Private room/path helpers serve both normal runtime and focused reference adapters.
 
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
@@ -104,6 +110,13 @@ tests/world/terrain/test_surface.c
 tests/world/terrain/surface_probe.c
 tests/reference/surface/SurfaceProbe.java
 scripts/reference/surface/compare_surface.py
+include/mc/world/terrain/caves.h
+src/world/terrain/caves.c
+src/world/terrain/caves_internal.h
+tests/world/terrain/test_caves.c
+tests/world/terrain/caves_probe.c
+tests/reference/caves/CavesObservation.java
+scripts/reference/caves/compare_caves.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py

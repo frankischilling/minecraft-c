@@ -71,6 +71,14 @@ settings. It creates fresh original contexts and records live Random separately
 from constructor state. See the [interface](world/surface.md) and
 [reference notes](reference/surface.md); complete chunks remain outside this pass.
 
+`MC_ENABLE_CAVES_REFERENCE_TESTS=ON` compares the normal cave stage with the same
+JAR/source settings and a JDK containing `java`, `javac` and `javap`. The natural
+comparison prepares actual base/surface inputs in fresh original contexts,
+then checks the separate cave Random and complete retained state. A separate
+`reference.caves_geometry` test invokes the actual protected room/path helpers
+on 44 owned-buffer controls without constructing worlds. See the
+[cave contract](world/caves.md) and [evidence](reference/caves.md).
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column
