@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+_Static_assert(MC_TERRAIN_NORMAL_LAYERS == 82, "normal constructor layer count");
+
 static unsigned int checks;
 
 #define CHECK(condition)                                                                           \
@@ -3870,7 +3872,6 @@ static int test_constructor_order(void)
 {
     static const int64_t seeds[] = {0, 1, -1, INT64_MIN, INT64_MAX};
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
-    CHECK(MC_TERRAIN_NORMAL_LAYERS == 82);
     CHECK(!mc_terrain_normal_init(NULL, 0));
     for (size_t i = 0; i < sizeof(seeds) / sizeof(seeds[0]); ++i) {
         CHECK(mc_terrain_normal_init(&state, seeds[i]));

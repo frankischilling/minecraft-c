@@ -16,7 +16,7 @@ comparisons remain local.
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
-| `world.terrain` | 535746 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
+| `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
@@ -102,7 +102,7 @@ errors, with matching executable hashes. Density's 150 snapshots match in all
 three pairings, including 341732 binary64 values, 1427456 permutation entries,
 600 continuation longs, 4358904 block bytes and 31744 biome identities per side.
 All state/equivalence/preservation/suffix controls and 82 original q/scratch
-checks agree. Public tests include 535746 terrain checks and six density helper
+checks agree. Public tests include 535745 terrain checks and six density helper
 regressions; filesystem link cases ran without skips. Public CI runs fifteen
 checks per compiler without private files; exact-head results are recorded in
 [status](status.md). The three runtime libraries also build with testing off.

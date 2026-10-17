@@ -121,7 +121,7 @@ nine client setup roots contain no files; nine server roots contain only
 8-byte session locks plus directories. These are numerical generation contexts,
 not complete game/server startup or save compatibility.
 
-Public terrain tests pass 535746 checks. All six density helper regressions,
+Public terrain tests pass 535745 checks. All six density helper regressions,
 including completed-mismatch versus later-unavailable precedence and filesystem
 links, run without skips on all three toolchains. Independent reviews traced all
 three complete fixed fixtures to both untouched originals and checked runtime,
