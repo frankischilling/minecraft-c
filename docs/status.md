@@ -1,23 +1,24 @@
 # Development status
 
-Implementation branch: `feature/simplex-noise` from
-`706f4cafcda04071fd53c8a30f18e8f594f5cb05`, issue
-[#19](https://github.com/frankischilling/minecraft-c/issues/19). The C module,
-public tests and live original numerical comparison are implemented.
+Latest implementation increment: original 2D simplex/octave noise, issue
+[#19](https://github.com/frankischilling/minecraft-c/issues/19), merged in
+[PR #20](https://github.com/frankischilling/minecraft-c/pull/20) at
+`00aabbd522f78a29ec55ee42ce8d92bfc0400f8b` on `main`.
 Original constant bits were captured on both sides before selecting C literals.
 Exact source `ec92cbf3774b4be154d6c2894324b6fe33ebceac` passed all 15 configured
-tests on native Windows/MSVC and WSL GCC/Clang, without skips. Inspect exact-head
-public CI and integration state in the linked issue before resuming.
+tests on native Windows/MSVC and WSL GCC/Clang, without skips. Public CI passed
+on exact PR head `0626eaffffa328ba575c4325243865638e16be0f` and the resulting
+runtime integration. This documentation checkpoint uses `docs/simplex-integration`.
+Inspect the live worktree and exact-head checks before resuming.
 
-Latest implementation increment: original Perlin/octave noise, issue
+Previous implementation increment: original Perlin/octave noise, issue
 [#16](https://github.com/frankischilling/minecraft-c/issues/16), merged in
 [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) at
 `c6cac5d01e2750461f54482f66ea8d5b27d8a56b` on `main`.
 Implementation commit `1188da0f126db8d623a45d801638d645df054c76` passed all 12
 configured CTests on native Windows/MSVC and WSL GCC/Clang, without skips.
 Public CI passed on exact PR head `05592a347d7ac8d237c201337c61f2649f963666`
-and the resulting runtime integration. Inspect the live worktree and remote
-state before resuming. This documentation checkpoint uses `docs/noise-integration`.
+and the resulting runtime integration.
 
 Read-only region inspection remains in [draft PR #15](https://github.com/frankischilling/minecraft-c/pull/15)
 at `8ab5f5e8f26a1dc12443dffe1f9f68993d9dd7d6`. All ten public CI tests passed
@@ -44,13 +45,23 @@ and milestones M2 through M5 remain open.
 | [PR #10](https://github.com/frankischilling/minecraft-c/pull/10) | Owned raw NBT, lossless modified UTF-8 and original-class comparisons; closes #9 |
 | [PR #12](https://github.com/frankischilling/minecraft-c/pull/12) | Bounded gzip/zlib memory module, pinned static zlib, public/original interoperability and detailed documentation; closes #11 |
 | [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions; closes #16 |
+| [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) | Caller-owned 2D simplex/octave primitives, observed original constants, exact both-side numerical comparisons and public regressions; closes #19 |
 
-All five PRs are merged and their feature branches removed. M1 is complete.
+All six implementation PRs are merged and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `c6cac5d01e2750461f54482f66ea8d5b27d8a56b`,
+Latest tested runtime integration: `00aabbd522f78a29ec55ee42ce8d92bfc0400f8b`,
+[main run39029339629](https://github.com/frankischilling/minecraft-c/actions/runs/39029339629).
+All eleven tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
+The first Windows configure rejected a dependency download with a checksum mismatch.
+A fresh official archive matched the existing pin; only the failed job was
+rerun, and attempt 2 passed without changing source, pin or assertions. The exact
+PR head passed [run39029195752](https://github.com/frankischilling/minecraft-c/actions/runs/39029195752).
+The tested implementation source and this runtime integration differ only in Markdown.
+
+Previous tested Perlin integration: `c6cac5d01e2750461f54482f66ea8d5b27d8a56b`,
 [main run39027900248](https://github.com/frankischilling/minecraft-c/actions/runs/39027900248).
 All nine tests passed on native Windows MSVC/Linux GCC/Clang, plus formatting.
 The first Clang configure rejected a dependency download with a checksum mismatch.
@@ -141,9 +152,13 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
-Continue simplex biome noise, terrain density/surfaces and exact chunk comparisons,
-alongside storage schemas and both-direction copied-world round trips. Client/server
-runtimes and the full remaining inventory stay open.
+Continue climate blending and biome classification under
+[#21](https://github.com/frankischilling/minecraft-c/issues/21), then terrain
+density/surfaces and exact chunk comparisons, alongside storage schemas and
+both-direction copied-world round trips. Static manager/classifier evidence and
+bounded acceptance are recorded in that issue; untouched-class setup and live
+climate/classifier observations are still pending. Client/server runtimes and
+the full remaining inventory stay open.
 
 The original server passed a fresh seed 17 offline loopback startup/save/stop
 smoke during foundation work. It did not involve a client or C server. Ordinary
@@ -153,10 +168,10 @@ pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
 The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
-`15aba6335f35178260dde0a97fa15412ec83dbaf`. All five page blobs match the versioned
+`09ef533dda4f021328ab408e5325f41b8a8d90c1`. All five page blobs match the versioned
 `docs/wiki/` sources. Home, build/tests, architecture and storage/reference each
-returned HTTP200 with the expected content; updated pages include the noise
-module and comparison option. The clone remains at `.local/wiki/`.
+returned HTTP200 with the expected content; updated pages include both noise
+modules and their comparison options. The clone remains at `.local/wiki/`.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant
