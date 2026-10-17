@@ -5,10 +5,10 @@ The target is a graphical single-player/multiplayer client and a dedicated
 headless server, reproducing the original behavior with locally selected
 usernames and no account authentication.
 
-There is no playable C client or server yet. Current code provides numerical
-and text compatibility, bounded NBT/gzip/zlib, [seeded terrain noise](docs/world/noise.md),
-tests, reference tools, and a local resource importer. The [parity matrix](docs/parity.md) records
-verified scenarios and outstanding work.
+There is no playable C client or server yet. Shared libraries cover numerical
+and text compatibility, NBT/compression, and terrain-generation components.
+Tests, reference tools and a local resource importer support development.
+The [parity matrix](docs/parity.md) records verified scenarios and outstanding work.
 
 ## Build
 

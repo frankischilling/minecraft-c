@@ -21,6 +21,9 @@ comparisons remain local.
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |
 | `world.caves` | 2021631 checks: ten complete paired-original fixtures and 30 captured passes, reseeding, owner isolation, suffix/table preservation and C argument/coordinate controls | Normal cave pass; protected geometry controls have separate evidence |
 | `world.caves_geometry` | 2917405 checks: 44 paired-original protected cases with full buffers and Random continuations, raw bits, draw-count inference, suffixes, canaries and independent owners | Private valid room/path domain only; no public scheduler coverage |
+| `world.chunk_data` | 101534 checks for fresh/repeated initialization, unchanged rejected outputs, capacity suffixes, packed-coordinate bounds and extreme-opacity preservation | C ownership/argument contracts; original local-state comparisons are separate |
+| `world.chunk_nibbles` | 414 checks against 16 observed setters, complete retained packed bytes and two capacity variants | Packed-array access and preservation; no chunk lifecycle |
+| `world.chunk_reference_data` | 335 checks across five paired-original fixtures, 20 stages, 100 complete arrays and ten rebuilds | Local voxel state only; full finishing world effects are separate |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
@@ -29,6 +32,8 @@ comparisons remain local.
 | `tools.math_reference` | 10 generated prerequisite/hash/report/path/alias/link, parser and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_reference` | 18 generated schema/table/report/path/link and failure-precedence guards, including ordinary-file and hardlink inventories and renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_geometry_reference` | 18 schema/pattern/continuation/table/report/path/link and failure-precedence guards, including renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
+| `tools.nibbles_reference` | 17 source/protocol/array/path/prerequisite and failure-precedence guards | Synthetic protocol checks; original methods are not executed |
+| `tools.chunk_data_reference` | Nine schema, array, cache/queue, preservation, path and completed-measurement guards | Synthetic protocol checks; original methods are not executed |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
@@ -42,6 +47,8 @@ comparisons remain local.
 | `reference.surface` (local opt-in) | 290 exact snapshots per side, 105 original state/material/density/suffix controls and 20 apply-field controls | Measured base/surface contexts; no complete chunk/cave/finishing compatibility claim |
 | `reference.caves` (local opt-in) | Ten complete cases, 30 calls and 50 snapshots per participant; all state, blocks and Random observations in three pairings | Three pairings pass on MSVC/GCC/Clang at the recorded source; no complete chunk claim |
 | `reference.caves_geometry` (local opt-in) | 44 separately labeled room/path controls, full input/output buffers, Random continuations, table and suffix controls; shared-draw consumption inferred by unique continuation matching | Three pairings pass on MSVC/GCC/Clang at the recorded source; valid private geometry domain only |
+| `reference.nibbles` (local opt-in) | Original constructors, two complete getter sweeps and 16 setter snapshots compared independently in three pairings | Valid local packed-array access; explicit C invalid-argument behavior has separate tests |
+| `reference.chunk_data` (local opt-in) | Five fresh/repeated input pairs, complete local arrays/heights, opacity and retained-object controls | Genuine original cache/queue diagnostics are retained separately; no C world lifecycle or propagation claim |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -123,6 +130,14 @@ addressed-Y boundaries, grass repair, rooms and inferred branching. Complete
 buffers and observed Random continuations compare independently in all three
 pairings. Public helper tests reject renamed executing scripts before report
 creation so recorded source attribution identifies the helper actually run.
+
+Packed-array and chunk comparisons use `MC_ENABLE_NIBBLES_REFERENCE_TESTS`
+and `MC_ENABLE_CHUNK_REFERENCE_TESTS` respectively, with both supplied JARs,
+JDK11+ and the exact source commit used for the C probes. The chunk corpus
+includes air/stone transitions, asymmetric boundary/material controls and
+two frozen original post-cave buffers. It records complete world-height/cache
+and queued-light diagnostics without draining lighting. Read the additional
+input requirements and commands in [chunk reproduction](reference/chunk.md).
 
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
@@ -229,7 +244,7 @@ Previous Perlin implementation source `1188da0f126db8d623a45d801638d645df054c76`
 public checks, the numerical Java comparison and three original NBT/compression/
 noise comparisons. All nine original-comparison manifests record that commit,
 pass status and empty errors. Public CI runs nine tests without private game
-files; see [status](status.md) and the linked issue for exact-head CI/integration.
+files; see [status](status.md) for CI and integration results at the tested commits.
 All four helper regression tests ran on each local platform without skips.
 The three runtime libraries also build with testing off and no Python/Java discovery.
 

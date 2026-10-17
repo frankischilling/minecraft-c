@@ -1,6 +1,6 @@
 # Normal cave evidence
 
-[Issue 30](https://github.com/frankischilling/minecraft-c/issues/30) covers the normal
+These observations cover the normal
 cave stage after surface replacement. The [C interface](../world/caves.md) uses
 the [accepted lookup/floor helpers](math.md). Whole chunk finishing, lighting,
 population, other dimensions and full game parity remain separate requirements.
@@ -256,8 +256,7 @@ population, other dimensions and save integration remain separate work in the
 
 ## Public integration
 
-[PR #35](https://github.com/frankischilling/minecraft-c/pull/35) integrates the
-accepted source at `49f87ef9c803909ca8d89c8efe67a32da648cca1`.
+The accepted source is integrated at `49f87ef9c803909ca8d89c8efe67a32da648cca1`.
 [Exact-head CI](https://github.com/frankischilling/minecraft-c/actions/runs/39043911065)
 and [resulting-main CI](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578)
 each pass 23 tests on native Windows MSVC and Linux GCC/Clang, without skips,

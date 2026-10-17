@@ -1,10 +1,10 @@
 # Original feature inventory
 
-Tracking issue: [#4](https://github.com/frankischilling/minecraft-c/issues/4).
 This is the initial discovery inventory for the supplied Beta 1.7.3 binaries,
 not a completed feature census. Each row keeps its unresearched behavior in
-scope. Split child issues from these checklists as their acceptance tests and
-reference evidence become concrete. Do not close #4 after a playable subset.
+scope. Define smaller implementation tasks from these checklists as their
+acceptance tests and reference evidence become concrete. A playable subset
+leaves the full inventory incomplete.
 
 ## Evidence and state
 
@@ -94,7 +94,8 @@ claims above depend on successful recompilation of decompiled Java.
 
 Next discovery work must enumerate each registry entry and reachable recipe,
 feature, entity/spawn rule, packet and save field; map each meaningful behavior
-to an issue and controlled reference test; and compare client/server differences.
+to a scoped implementation task and controlled reference test; and compare
+client/server differences.
 Inspect additional bytecode or another decompiler where CFR cannot structure a
 method or its interpretation is uncertain. The Sky provider, legacy/inaccessible
 entries, and external services require explicit reachability or availability

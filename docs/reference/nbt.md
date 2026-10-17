@@ -1,7 +1,6 @@
 # Original NBT and Java string evidence
 
-Research for [issue #9](https://github.com/frankischilling/minecraft-c/issues/9),
-recorded 2026-10-17. The C raw codec and original-class differential are
+Research recorded 2026-10-17. The C raw codec and original-class differential are
 implemented. The observations and comparisons below cover raw tags and Java
 string behavior, not complete world save compatibility.
 
@@ -127,7 +126,6 @@ payloads with level.dat-style gzip wrappers.
 
 ## Implementation scope
 
-The codec acceptance criteria are tracked in [issue #9](https://github.com/frankischilling/minecraft-c/issues/9).
 The C implementation is `src/storage/nbt/nbt.c`, with lossless text helpers in
 `src/core/text/mutf8.c`. Public tests are under `tests/storage/nbt/` and
 `tests/core/text/`. [The API guide](../storage/nbt.md) describes ownership,

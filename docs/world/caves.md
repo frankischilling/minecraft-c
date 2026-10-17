@@ -91,12 +91,12 @@ suites passed 18 asset-independent guards each. See the
 [integrated local evidence](../reference/caves.md#integrated-local-acceptance)
 for preserved input/class/artifact identities and the acceptance-record hash.
 
-The runtime is integrated in [PR #35](https://github.com/frankischilling/minecraft-c/pull/35).
+The runtime is integrated.
 Exact-head and resulting-main public CI pass 23 tests per compiler and formatting
 for all 50 C/header files; the published wiki matches the versioned cave pages.
 The [evidence record](../reference/caves.md#public-integration) pins those results.
 
-[Issue 30](https://github.com/frankischilling/minecraft-c/issues/30) covers this
+This implementation covers the
 normal cave stage and its focused controls. Complete chunk finishing, lighting,
 population, other dimensions and save integration remain separate work in the
 [broader parity inventory](../parity.md).

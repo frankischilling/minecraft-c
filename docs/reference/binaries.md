@@ -1,6 +1,5 @@
 # Supplied binary audit
 
-Issue: [#1](https://github.com/frankischilling/minecraft-c/issues/1).
 Observed on Windows on 2026-10-17. These identifiers pin the local references;
 they do not establish gameplay parity or runtime interoperability.
 

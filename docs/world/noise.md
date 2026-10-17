@@ -1,6 +1,6 @@
 # Seeded terrain noise
 
-Issue [#16](https://github.com/frankischilling/minecraft-c/issues/16) implements
+This module implements
 the original improved-Perlin and octave family. See the [reference notes](../reference/noise.md).
 The separate [2D simplex family](simplex.md) supplies other noise primitives.
 Biome climate/classification, terrain density, block filling, surfaces, caves,

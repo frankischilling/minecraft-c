@@ -45,5 +45,4 @@ round-to-nearest and strict floating-point rules with contraction disabled.
 The implementation checks expression evaluation width at compile time. Tests
 preserve raw input encodings and compare returned bit patterns. Passing these
 helpers establishes a cave prerequisite; normal cave scheduling and geometry
-remain tracked separately in
-[#30](https://github.com/frankischilling/minecraft-c/issues/30).
+remain documented separately in the [cave runtime](../world/caves.md).

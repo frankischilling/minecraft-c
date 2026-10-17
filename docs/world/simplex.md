@@ -1,6 +1,6 @@
 # Seeded 2D simplex noise
 
-Issue [#19](https://github.com/frankischilling/minecraft-c/issues/19) implements
+This module implements
 the original simplex and octave family used by biome climate inputs. Its
 [reference notes](../reference/simplex.md) identify both original classes and
 their operation order. Climate blending, biome classification/caches, dimensions,
