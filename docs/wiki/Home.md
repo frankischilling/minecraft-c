@@ -1,6 +1,6 @@
 # minecraft-c
 
-The project targets Minecraft Beta1.7.3 in C17, with a graphical single-player
+The project targets Minecraft Beta 1.7.3 in C17, with a graphical single-player
 and multiplayer client plus a dedicated headless server. Players select local
 usernames; account authentication is excluded.
 

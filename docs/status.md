@@ -1,7 +1,7 @@
 # Resume note
 
-Current branch: `feature/reference-foundations`, based on `main` commit
-`8453dfb`. The first implementation PR is being prepared. Before resuming, inspect
+Current branch: `feature/reference-foundations`, [PR #6](https://github.com/frankischilling/minecraft-c/pull/6),
+based on `main` commit `8453dfb`. Before resuming, inspect
 the live branch, open PRs, and exact-head CI rather than assuming this note is current.
 
 Completed work in this increment:
@@ -17,10 +17,17 @@ Completed work in this increment:
 - MIT approved by owner. Only account authentication is an approved gameplay
   exception. Original materials remain ignored/external.
 
-The source relocation/formatting is being revalidated before the first tested
-implementation commit is recorded here. CI is defined but has not yet run on
-the implementation head. This note does not identify the initial bootstrap
-commit as a tested implementation.
+Exact locally tested implementation commit: `8de9d81d317847c9bf25b58790e6baf261c8a199`.
+After relocation and formatting, all three CTests passed with native MSVC and
+with GCC/Clang WSL plus ASan/UBSan. Format checks passed with versions 18 and 22.
+The supplied-JAR inspection, real 409-resource import, and original fresh-world
+loopback save/stop smoke also passed at that commit. Local outputs are under
+`.local/reference/`, `.local/assets-validation-8de9d81/` and
+`.local/server-smoke-8de9d81/`. No gameplay comparison follows from these results.
+
+Both independent reviews finished. The missing-reference exit77 CTest handling
+and a stale relocated test command were corrected before the implementation
+commit. Hosted CI is now pending on PR #6; inspect its final head before merge.
 
 Outstanding access limits:
 
@@ -32,9 +39,8 @@ Outstanding access limits:
   has not succeeded. The hosted wiki may need its first page created through
   GitHub before its Git repository is available.
 
-Next actions: finish independent review, rerun relocated/formatted tests, inspect
-staged material exclusions, commit/open PR for issues1/2/3/5, inspect exact-head
-native CI, merge only after scoped acceptance, verify default-branch CI, and
+Next actions: inspect exact-head native CI on PR #6, resolve any failures,
+merge only after scoped acceptance, verify default-branch CI, and
 close only completed scoped issues. Keep issue4 and all unimplemented parity
 areas open. Then select a reference-backed NBT/text/storage increment under M2.
 
