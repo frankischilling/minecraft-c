@@ -1,5 +1,13 @@
 # Development status
 
+In progress: normal surface replacement and chunk seeding,
+[issue #26](https://github.com/frankischilling/minecraft-c/issues/26), on
+`feature/normal-surface`. Seven paired original fixtures and the 290-snapshot
+original corpus are audited. Preliminary C probes match all records on MSVC,
+GCC and Clang; surface unit tests pass 1114102 checks. Full exact-source
+acceptance, public CI and integration remain pending. The density/base
+checkpoint below is integrated; inspect the live branch before resuming.
+
 Latest implementation: normal-dimension density and base-block interpolation,
 issue [#24](https://github.com/frankischilling/minecraft-c/issues/24), merged in
 [PR #27](https://github.com/frankischilling/minecraft-c/pull/27) at

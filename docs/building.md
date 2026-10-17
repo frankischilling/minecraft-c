@@ -59,6 +59,12 @@ directories; the server path can create a session lock and directories during
 normal setup. See [the interface](world/terrain.md) and
 [setup/evidence](reference/density.md). Public tests need no original setup.
 
+`MC_ENABLE_SURFACE_REFERENCE_TESTS=ON` compares original normal surface
+replacement and explicit chunk-reseed contexts with the same JAR/JDK/source
+settings. It creates fresh original contexts and records live Random separately
+from constructor state. See the [interface](world/surface.md) and
+[reference notes](reference/surface.md); complete chunks remain outside this pass.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

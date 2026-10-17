@@ -13,6 +13,7 @@ option(MC_ENABLE_NOISE_REFERENCE_TESTS "Compare terrain noise with original samp
 option(MC_ENABLE_SIMPLEX_REFERENCE_TESTS "Compare 2D simplex noise with original samplers" OFF)
 option(MC_ENABLE_BIOME_REFERENCE_TESTS "Compare climate and biomes with original methods" OFF)
 option(MC_ENABLE_DENSITY_REFERENCE_TESTS "Compare normal density and base terrain with originals" OFF)
+option(MC_ENABLE_SURFACE_REFERENCE_TESTS "Compare normal surface replacement with originals" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -63,7 +64,8 @@ add_library(mc_world STATIC
     src/world/noise/noise.c
     src/world/noise/simplex.c
     src/world/biome/biome.c
-    src/world/terrain/terrain.c)
+    src/world/terrain/terrain.c
+    src/world/terrain/surface.c)
 target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
 include(CTest)
@@ -126,6 +128,14 @@ if(BUILD_TESTING)
     add_executable(mc_terrain_probe tests/world/terrain/terrain_probe.c)
     target_link_libraries(mc_terrain_probe PRIVATE mc_world mc_build_options)
 
+    add_executable(mc_test_surface tests/world/terrain/test_surface.c)
+    target_link_libraries(mc_test_surface PRIVATE mc_world mc_build_options)
+    add_test(NAME world.surface COMMAND mc_test_surface)
+    set_tests_properties(world.surface PROPERTIES LABELS "public;unit" TIMEOUT 90)
+
+    add_executable(mc_surface_probe tests/world/terrain/surface_probe.c)
+    target_link_libraries(mc_surface_probe PRIVATE mc_world mc_build_options)
+
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
     add_test(NAME tools.import_assets
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
@@ -165,6 +175,13 @@ if(BUILD_TESTING)
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/density" -p test_reference.py)
     set_tests_properties(tools.density_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 60)
+
+    add_test(NAME tools.surface_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/surface" -p test_reference.py)
+    set_tests_properties(tools.surface_reference PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         LABELS "public;tools" TIMEOUT 60)
 
@@ -275,5 +292,21 @@ if(BUILD_TESTING)
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
         set_tests_properties(reference.density PROPERTIES
             LABELS "reference;original;density" TIMEOUT 300 SKIP_RETURN_CODE 77)
+    endif()
+
+    if(MC_ENABLE_SURFACE_REFERENCE_TESTS)
+        find_package(Java 11 QUIET COMPONENTS Runtime Development)
+        add_test(NAME reference.surface
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/surface/compare_surface.py"
+            --executable "$<TARGET_FILE:mc_surface_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-surface"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.surface PROPERTIES
+            LABELS "reference;original;surface" TIMEOUT 300 SKIP_RETURN_CODE 77)
     endif()
 endif()

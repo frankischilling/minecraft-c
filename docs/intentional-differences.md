@@ -54,3 +54,8 @@ The [normal terrain interface](world/terrain.md) accepts the fixed5×17×5 densi
 and16×128×16 base-block shapes used by the original normal consumer. Explicit
 span validation replaces original short-array failures. This is an interface
 scope and memory contract; complete generation and valid gameplay remain required.
+
+The [surface interface](world/surface.md) accepts fixed normal prefixes and
+explicit current material bytes/Random rather than a world object. Complete
+span validation replaces original short-array failures; mutable aliasing remains
+a caller precondition. This is a bounded C interface, not a gameplay exception.
