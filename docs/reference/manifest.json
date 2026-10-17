@@ -1,0 +1,82 @@
+{
+  "inputs": {
+    "client": {
+      "class_file_versions": [
+        {
+          "count": 747,
+          "major": 49,
+          "minor": 0
+        }
+      ],
+      "class_validation": "magic and version headers only; not JVM verification",
+      "classes": 747,
+      "directories": 0,
+      "entries": 834,
+      "expanded_bytes": 2177352,
+      "filename": "b1.7.3.jar",
+      "files": 834,
+      "manifest_main_attributes": {
+        "Created-By": "1.6.0_22 (Sun Microsystems Inc.)",
+        "Manifest-Version": "1.0"
+      },
+      "resource_suffix_counts": {
+        ".dsa": 1,
+        ".lang": 2,
+        ".mf": 1,
+        ".png": 77,
+        ".sf": 1,
+        ".txt": 4,
+        "[no short suffix]": 1
+      },
+      "resources_including_manifest_and_signatures": 87,
+      "sha1": "43db9b498cb67058d2e12d394e6507722e71bb45",
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+      "signature_metadata": {
+        "cryptographic_verification": "not performed by this inspector",
+        "signature_block_count": 1,
+        "signature_file_count": 1
+      },
+      "size_bytes": 1465375,
+      "zip_crc": "passed for every file"
+    },
+    "server": {
+      "class_file_versions": [
+        {
+          "count": 444,
+          "major": 49,
+          "minor": 0
+        }
+      ],
+      "class_validation": "magic and version headers only; not JVM verification",
+      "classes": 444,
+      "directories": 0,
+      "entries": 450,
+      "expanded_bytes": 851235,
+      "filename": "b1.7.3_server.jar",
+      "files": 450,
+      "manifest_main_attributes": {
+        "Created-By": "1.6.0",
+        "Main-Class": "net.minecraft.server.MinecraftServer",
+        "Manifest-Version": "1.0"
+      },
+      "resource_suffix_counts": {
+        ".lang": 2,
+        ".mf": 1,
+        ".txt": 2,
+        "[no short suffix]": 1
+      },
+      "resources_including_manifest_and_signatures": 6,
+      "sha1": "2f90dc1cb5ca7e9d71786801b307390a67fcf954",
+      "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+      "signature_metadata": {
+        "cryptographic_verification": "not performed by this inspector",
+        "signature_block_count": 0,
+        "signature_file_count": 0
+      },
+      "size_bytes": 503100,
+      "zip_crc": "passed for every file"
+    }
+  },
+  "schema_version": 1,
+  "scope": "local binary metadata; no runtime or interoperability verification"
+}

@@ -8,6 +8,13 @@ dedicated server. Account authentication is the only approved gameplay exception
 Project-owned runtime code uses C17. Java is permitted only for local reference
 probes and must not be required by the finished executables.
 
+Organize source by system and subsystem: `src/<system>/<subsystem>/`, with
+matching public headers under `include/mc/<system>/<subsystem>/` and tests under
+`tests/<system>/<subsystem>/`. Group tools under `scripts/<system>/...`.
+Add new subsystem directories with their implementation, rather than collecting
+unrelated code into flat source folders. Apply `.clang-format` through
+`scripts/development/format_code.py`; CI uses clang-format 18.
+
 Before changing behavior, establish evidence from the original binary or a
 controlled original-runtime observation. Track side, JAR hash, class, descriptor,
 and bytecode offsets in `docs/reference/`; distinguish inference from observation.

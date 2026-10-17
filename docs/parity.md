@@ -1,0 +1,54 @@
+# Parity matrix
+
+The original target and full feature scope are tracked by
+[#4](https://github.com/frankischilling/minecraft-c/issues/4) and
+[the evidence-backed inventory](inventory.md). A row marked verified applies
+only to the specified scenario. Neither primitive tests nor a completed scoped
+issue proves whole-subsystem parity. Account authentication is the only
+[approved gameplay difference](intentional-differences.md).
+
+Statuses: Not started; Under research; Partially implemented; Implemented but
+unverified; Verified for specified scenarios; Blocked (with a named dependency).
+The inventory expands the broad gameplay rows into concrete child behaviors.
+
+| Feature / issue | Evidence | Implementation | Verification and result | Status / limits |
+| --- | --- | --- | --- | --- |
+| Reference fingerprints and bytecode tooling [#1](https://github.com/frankischilling/minecraft-c/issues/1) | [Binary audit](reference/binaries.md), [manifest](reference/manifest.json) | `scripts/reference/binaries/inspect_jars.py` | Supplied-input inspector passed; both JARs decompiled locally; targeted `javap` checks | Verified for specified scenarios; server publisher provenance not independently pinned to official manifest |
+| Java integer arithmetic, casts, explicit Random [#2](https://github.com/frankischilling/minecraft-c/issues/2) | [Java evidence](reference/java-semantics.md); actual JDK oracle, original Random callsite anchors | `include/mc/core/java/java.h`, `src/core/java/java.c` | `core.java`: 146 checks; opt-in `reference.java_semantics`: 135768 exact records | Verified for specified scenarios; no game random-consumption/order claim; text, collections and further numerical behaviors remain |
+| Local asset import [#3](https://github.com/frankischilling/minecraft-c/issues/3) | [Resource routes and availability](reference/resources.md) | `scripts/resources/import_assets.py` | `tools.import_assets`: 16 synthetic tests; real import 409 resources, hashes reread | Verified for specified scenarios; external canonical audio set and native consumption unverified |
+| Original headless server availability [#1](https://github.com/frankischilling/minecraft-c/issues/1) | [Launch observation](reference/launch.md) | `scripts/reference/server/run_smoke.py` (research only) | Fresh seed17; loopback offline startup, save-all, stop: pass | Verified for specified scenario; no C server or client join |
+| Original client graphical launch [#1](https://github.com/frankischilling/minecraft-c/issues/1) | [Launch limitation](reference/launch.md) | None | Launcher window found; two capture timeouts; no Play action | Blocked: current UI capture cannot observe launcher; headless work continues |
+| Startup, menus, settings, input, GUI scaling, achievements [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Original matched scenes and input traces still needed | Under research |
+| Movement, collision, targeting, actions, health, inventory [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Controlled input/tick/state comparisons still needed | Under research |
+| Blocks/items, recipes, smelting, tools/drops, containers/farming [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Full registries and reference transitions still needed | Under research |
+| Generation, noise, biomes, features, chunks, dimensions [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | Numerical prerequisites only | Exact raw/populated/lit chunk comparisons still needed | Under research; dormant Sky provider reachability unresolved |
+| Lighting, fluids, fire, weather/time, redstone/pistons/order [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Fixed-tick interaction regressions still needed | Under research |
+| Entities, spawning, behavior, vehicles/projectiles/pickups [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Per-entity deterministic scenarios and persistence still needed | Under research |
+| Rendering, animation, particles, sky/fog, graphics options [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Matched original captures with justified tolerances still needed | Under research |
+| Sounds/music, timing, pitch/volume/spatial behavior [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Resources](reference/resources.md), [inventory](inventory.md) | Import only | Event/timing/property comparisons still needed | Under research |
+| Original-compatible saves, unknown fields, restart/round trips [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Both-direction copied-world round trips still needed | Under research; no rewrite save writes supported |
+| Protocol, synchronization, administration and server operation [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Login bytecode](reference/binaries.md), [inventory](inventory.md) | None | Full four-way matrix below still needed | Under research |
+| Native client/server runtime and performance coverage [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Testing scope](testing.md) | Shared-core build only | MSVC Windows; GCC/Clang WSL checks; native CI pending integration | Partially implemented; no playable/native game validation or performance claim |
+
+## Multiplayer interoperability
+
+All scenarios must pin both binaries, configuration, platform, copied world,
+username, actions, and restart results. Use loopback and offline configuration
+where appropriate. Matching protocol integers are insufficient.
+
+| Client | Server | Result |
+| --- | --- | --- |
+| Original | Original | Not tested; original server smoke passes without a client |
+| C | C | Not started; both runtimes absent |
+| C | Original offline | Not started; C client absent |
+| Original | C | Not started; C server absent |
+
+## Completion evidence still required
+
+Every inventory behavior needs implementation plus original comparisons; this
+table must expand as research discovers distinctions. Required end-state evidence
+includes native Linux/Windows graphical sessions and headless operation, exact
+world generation checks, both save round-trip directions, all four multiplayer
+pairings, extended state-drift runs, and presentation/input/audio comparisons.
+Missing prerequisites are unavailable results, never passes. Public tests contain
+no original binaries, assets, source, or launcher data.
