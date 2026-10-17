@@ -38,6 +38,13 @@ The [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/doc
 and [development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
 record current validation scope and outstanding work.
 
+[Normal density evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/density.md)
+also documents genuine original world construction for numerical observations.
+Each run owns fresh ignored directories; normal server construction can create
+a session lock and directories. Tests never open an existing personal world.
+These density/base comparisons do not establish copied-world save compatibility
+or complete generation.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib

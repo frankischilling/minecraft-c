@@ -52,6 +52,13 @@ JAR/JDK/commit settings. See its [interface](world/biome.md) and
 [reference evidence](reference/biome.md). These numerical fixtures do not start
 an original world or establish terrain generation.
 
+`MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
+base-block methods with the same supplied-JAR/JDK/source settings. Its local
+fixture constructs genuine original world contexts in newly owned ignored
+directories; the server path can create a session lock and directories during
+normal setup. See [the interface](world/terrain.md) and
+[setup/evidence](reference/density.md). Public tests need no original setup.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

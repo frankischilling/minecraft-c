@@ -4,7 +4,8 @@ CTest separates public unit/tool tests from explicitly requested reference
 comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
 The numerical Java oracle is a standard-library probe and can run in public CI
-without original game files. Original-class storage and noise comparisons remain local.
+without original game files. Original-class storage, noise, climate and terrain
+comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
@@ -15,9 +16,11 @@ without original game files. Original-class storage and noise comparisons remain
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
+| `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
+| `tools.density_reference` | 6 generated prerequisite/hash/report/path/link and mismatch-before-unavailable regressions | No original classes run; link cases skip only if unsupported |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
@@ -26,6 +29,7 @@ without original game files. Original-class storage and noise comparisons remain
 | `reference.noise` (local opt-in) | Per side 783 requests, 140218 exact double values, 399872 permutation entries and 3132 following Random longs; three separate pair comparisons | Scoped procedural noise; no chunks, population or lighting |
 | `reference.simplex` (local opt-in) | Per side 812 requests, 204923 exact double values, 348160 permutation entries and 3248 following Random longs; actual short/extended overload and factor/suffix controls | Scoped 2D numerical methods; consumer-like inputs do not establish biome results |
 | `reference.biome` (local opt-in) | Actual catalogue/table, direct float and quantized double selectors, processed temperature and biome grids with stateful buffer sequences | Explicit-seed numerical fixture; no executed world constructors or terrain |
+| `reference.density` (local opt-in) | 150 exact snapshots per side, 82 original density/scratch recomputation checks; all constructor, climate, density and base state across three pairings | Normal dimension only; no surface, caves, population or complete chunk parity |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -74,12 +78,36 @@ from protocol output. Client-only raw temperature is compared separately from
 the shared client/server cases. See [biome evidence](reference/biome.md) and
 [ownership and limits](world/biome.md).
 
+Normal density/base comparisons use `MC_ENABLE_DENSITY_REFERENCE_TESTS` with
+those same supplied-JAR/JDK/commit settings. The helper constructs real untouched
+original world contexts in fresh ignored directories, then fresh normal generators.
+It refreshes each original manager's 16?16 processed climate before sampling.
+Full constructor state, retained spans, exact double bits and base bytes must
+agree between C/client, C/server and client/server. The internal original base
+pass density is checked against the separately observed density. See
+[density evidence](reference/density.md) and the [terrain interface](world/terrain.md).
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
 `BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
 
 ## Local environments
+
+Normal density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passed
+all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
+fourteen public checks, the numerical Java oracle and six original comparisons.
+All eighteen original manifests identify that source, pass status and empty
+errors, with matching executable hashes. Density's 150 snapshots match in all
+three pairings, including 341732 binary64 values, 1427456 permutation entries,
+600 continuation longs, 4358904 block bytes and 31744 biome identities per side.
+All state/equivalence/preservation/suffix controls and 82 original q/scratch
+checks agree. Public tests include 535745 terrain checks and six density helper
+regressions; filesystem link cases ran without skips. Public CI runs fifteen
+checks per compiler without private files; exact-head results are recorded in
+[status](status.md). The three runtime libraries also build with testing off.
+
+Previous climate/biome increment:
 
 Climate/biome implementation source `6607b3650410bac2707276dd07769cda85215a6a`
 passed all 18 configured tests on native Windows/MSVC and WSL GCC/Clang without

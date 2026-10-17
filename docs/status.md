@@ -1,5 +1,13 @@
 # Development status
 
+In progress: normal-dimension density composition and base-block interpolation,
+[issue #24](https://github.com/frankischilling/minecraft-c/issues/24), on
+`feature/normal-terrain`. Exact implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`
+passed all 21 configured CTests on native Windows/MSVC and WSL GCC/Clang without
+skips. All 18 original-comparison manifests pass with empty errors and identify
+that source. Independent reviews are clear. Public CI and integration are pending.
+Surfaces, caves, population, lighting and playable game operation remain separate.
+
 Latest implementation: original climate blending and biome classification, issue
 [#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
 [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) at
@@ -7,8 +15,9 @@ Latest implementation: original climate blending and biome classification, issue
 `6607b3650410bac2707276dd07769cda85215a6a` passed all 18 configured CTests on
 native Windows/MSVC and WSL GCC/Clang without skips. Exact PR and resulting
 runtime CI passed all thirteen public tests on each compiler plus formatting.
-This documentation checkpoint uses `docs/biome-integration`. Inspect the live
-worktree and linked issue before resuming. The numerical fixture establishes
+Documentation checkpoint [PR #25](https://github.com/frankischilling/minecraft-c/pull/25)
+is integrated at `7349e8334207f12cc1ee719cf489377e631a96d7`; its exact head and
+resulting main CI passed. Inspect the live worktree and linked issue before resuming. The numerical fixture establishes
 neither original world startup nor full terrain generation.
 
 Previous integrated implementation: original 2D simplex/octave noise, issue
@@ -95,6 +104,32 @@ passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBS
 The exact PR head also passed before merge.
 
 ## Local acceptance
+
+Normal density/base source: `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`. All three toolchains
+passed fourteen public tests, the numerical Java oracle and six original
+NBT/compression/Perlin/simplex/biome/density comparisons. All eighteen manifests
+under `build-density-*/reference-*/manifest.json` record this source, pass status
+and empty errors; current executable hashes match every recorded C probe.
+
+All 150 density snapshots match C/client, C/server and client/server, including
+341732 binary64 values, 1427456 permutation entries, 600 continuation longs,
+4358904 block bytes and 31744 biome identities per side. Each original completes
+82 internal-density/full-scratch recomputation checks. Every side also passes
+49 equivalence, 346 preserved-field, 141 unchanged-Random and 25 constructor-state
+controls, plus exact suffix, retention and block-domain checks. Each platform's
+nine client setup roots contain no files; nine server roots contain only
+8-byte session locks plus directories. These are numerical generation contexts,
+not complete game/server startup or save compatibility.
+
+Public terrain tests pass 535745 checks. All six density helper regressions,
+including completed-mismatch versus later-unavailable precedence and filesystem
+links, run without skips on all three toolchains. Independent reviews traced all
+three complete fixed fixtures to both untouched originals and checked runtime,
+Java bindings, controls, reporting and source attribution. Clang-format18 checks
+all 30 C files; the three runtime libraries build with testing off and no
+Python/Java discovery. Exact-head public CI and integration remain pending.
+
+Previous climate/biome increment:
 
 Climate/biome source: `6607b3650410bac2707276dd07769cda85215a6a`. All three
 toolchains passed twelve public tests, the numerical Java oracle and five
@@ -195,7 +230,8 @@ Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
 Continue normal-dimension density and base terrain under
-[#24](https://github.com/frankischilling/minecraft-c/issues/24), then surfaces
+[#24](https://github.com/frankischilling/minecraft-c/issues/24), then surface replacement
+and chunk seeding under [#26](https://github.com/frankischilling/minecraft-c/issues/26),
 and exact chunk comparisons, alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.
