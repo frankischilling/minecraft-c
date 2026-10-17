@@ -1,5 +1,13 @@
 # Development status
 
+Active increment: [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30)
+on `feature/normal-caves`. The public runtime, natural fixtures and separate
+protected room/path adapters are implemented. Both untouched originals agree
+on ten natural cases and 44 protected controls; the natural preliminary native
+C comparison passes. Final committed-source tests, public CI and integration
+remain pending. Inspect the live worktree and [evidence](reference/caves.md)
+before resuming. The full client/server game remains unfinished.
+
 Latest implementation: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
 merged in [PR #33](https://github.com/frankischilling/minecraft-c/pull/33) at
 `077300380a81596da82fbf67ea1cb625e3215436`. Exact source

@@ -24,7 +24,7 @@ explains offline source overrides and license notices.
 
 Public checks cover numerical/text semantics, raw NBT, compression, both noise
 families, climate/biome classification, normal density/base blocks, surface
-replacement and the local resource importer.
+replacement, normal cave carving and the local resource importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -50,6 +50,11 @@ checks exact constructor state, climate, density, scratch and block values.
 `MC_ENABLE_SURFACE_REFERENCE_TESTS` checks the untouched surface pass in
 constructor-Random and explicit chunk-reseed contexts, including current
 material bytes, complete fields/blocks, suffixes and live Random continuation.
+`MC_ENABLE_CAVES_REFERENCE_TESTS` adds two comparisons: the public cave scheduler
+in genuine base/surface contexts and protected room/path controls over owned
+buffers. These need a JDK containing `java`, `javac` and `javap`. Both compare
+complete buffers, Random continuations and preservation controls independently
+between C/client, C/server and client/server.
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)

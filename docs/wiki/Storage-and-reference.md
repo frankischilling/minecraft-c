@@ -57,6 +57,15 @@ before a fresh measured generator is created; the later observed pass calls
 base/surface directly. These observations do not establish complete chunks,
 caves, finishing, population, lighting or save compatibility.
 
+[Normal cave evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/caves.md)
+separates ten genuine natural contexts from 44 protected room/path controls.
+The natural pass starts after actual base/surface generation and retains all
+generator, climate, material and Random state. Focused controls construct no
+worlds and observe full buffers, interior/shell water, lava at stored Y10,
+grass repair and ineligible bytes. Branching is inferred by unique Random
+continuation matching, with the inference recorded explicitly. Cave comparisons
+do not establish chunk finishing, population, lighting or save compatibility.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib
