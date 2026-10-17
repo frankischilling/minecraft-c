@@ -78,11 +78,13 @@ source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
 
-The recorded queue source passes 33 local tests per compiler on native
-Windows/MSVC and WSL GCC/Clang, including original queue, chunk and nibble
-comparisons. Public CI runs 30 tests per compiler and formatting for 66 C/header
-files. Exact tested commits, manifest hashes and integration results live in
-the development status and linked evidence pages.
+The recorded finishing source passes 37 local tests per compiler on native
+Windows/MSVC and WSL GCC/Clang, including original finishing, queue, chunk and
+nibble comparisons. The Linux builds use ASan/UBSan. All six finishing cases
+match independently in three pairings; complete untouched controls agree.
+Public CI passes 33 tests per compiler and formatting for 75 C/header files.
+Exact tested commits, manifest hashes and integration results live in the
+development status and linked evidence pages.
 
 Original resources are never bundled. The
 [resource guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/resources.md)

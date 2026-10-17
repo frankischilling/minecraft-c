@@ -15,10 +15,20 @@ untouched control. All complete traced/control snapshot files match byte-for-byt
 The resulting public fixture passes C replay of 12 original inputs, 24576 exact
 height-query records and 48 complete local/queue stages on native Windows.
 
-Native MSVC19.51 and WSL GCC13.3/Clang18.1 compile the new modules. Constructed
-finishing tests pass 3259 checks; seven helper guards pass. Clang-format18 checks
-all 75 C/header files. Full exact-source platform comparisons and hosted checks
-are pending. No pending check is a parity pass.
+Source `a18615f0d9d90758f0ea95b0218cec97733d2adf` passes all 37 configured
+CTests on native MSVC19.51 and WSL GCC13.3/Clang18.1, without skips. Both Linux
+builds enable ASan/UBSan. Each build runs 32 public tests, the numerical Java
+oracle and original finishing, queue, chunk and nibble comparisons.
+All six finishing cases match in three independent pairings. The twelve
+untouched controls and 48 marker inventories pass per build. The manifests
+retain matching before/after fingerprints for 54 inputs and six helper classes;
+all 44 recorded project source files independently match the exact commit.
+See [finishing evidence](reference/finishing.md) for manifest hashes.
+
+Constructed finishing tests pass 3259 checks; seven helper guards pass.
+Native Windows and Linux GCC/Clang each pass all 33 hosted public/numerical
+tests plus formatting for 75 C/header files in
+[run39075690802](https://github.com/frankischilling/minecraft-c/actions/runs/39075690802).
 
 The tracing helper has run on native Temurin17 and WSL OpenJDK21. Its four
 suspended marker inventories require the measured non-daemon main thread plus
@@ -27,10 +37,9 @@ observations do not establish general game scheduling.
 
 ## Scope and next work
 
-Finish review fixes, commit the implementation, then run the complete configured
-suite and both-original comparisons on all three toolchains. Record exact
-source and manifest fingerprints, integrate after successful checks and publish
-the matching versioned wiki pages.
+Independent source and fixture review finds no remaining defects in this
+scope. The implementation is committed; integrate after the final branch head
+passes hosted checks, then publish the matching versioned wiki pages.
 
 The cache supports nonnull lookup and the post-generation map/list publication
 phase. Full load/generate reentrancy, pending unloads, lifecycle/population,

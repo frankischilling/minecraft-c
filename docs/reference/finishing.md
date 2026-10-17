@@ -185,3 +185,31 @@ visibility. They complement actual original observations and do not independentl
 prove original parity. Neither the fixed corpus nor its public fixtures
 establish cache lifecycle, arbitrary provider behavior, propagation, complete
 normal generation or playable client/server parity.
+
+## Exact-source results
+
+Source `a18615f0d9d90758f0ea95b0218cec97733d2adf` passes all 37 configured
+CTests on native MSVC19.51 and WSL GCC13.3/Clang18.1, without skips. Both Linux
+builds enable ASan/UBSan. The suite contains 32 public tests, the numerical Java
+oracle and four actual-original comparisons: finishing, queue, chunk and nibble.
+Original finishing uses Temurin17 on Windows and OpenJDK21 on WSL.
+
+Every build matches all six cases separately between C/client, C/server and
+client/server. Each compares 24576 query records and 48 complete data/queue
+stages. All twelve untouched controls and 48 marker inventories pass per build.
+Each manifest has no errors and retains identical before/after fingerprints for
+54 inputs and six helper classes. An independent audit matches all 44 recorded
+project source files byte-for-byte to that commit.
+
+Reports remain beneath each build's `reference-chunk-finish/` directory:
+
+| Build | Capture identifier | Manifest SHA-256 |
+| --- | --- | --- |
+| Windows/MSVC | `a60059037dcc430e919c6d1ac60962b0` | `e316ad859cecb8e85bd428bc1573f56a46c2ca031f97ccae09508158ed8e7b42` |
+| WSL/GCC | `b1e77a256714431fa167f4a9ad74fc28` | `4bb63d2c38176c8a4202be1d7cc32c055dfc691a87f639dee649536c4e38a7c5` |
+| WSL/Clang | `4f7a4f7d9621417a844a1d88ef9a1a4b` | `b082aee9a9fe386b4d705941add7709f9836d8a9a20d0f8cf9cd3f5411beecf1` |
+
+Native Windows and Linux GCC/Clang hosted checks pass all 33 public/numerical
+tests and formatting for 75 C/header files on that source in
+[run39075690802](https://github.com/frankischilling/minecraft-c/actions/runs/39075690802).
+These results establish the declared fixed scenarios and ownership contracts.
