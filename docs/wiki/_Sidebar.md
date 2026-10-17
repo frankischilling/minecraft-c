@@ -1,5 +1,6 @@
 - [Home](Home)
 - [Build and tests](Build-and-tests)
 - [Systems and subsystems](Architecture)
+- [Normal generator API](Architecture#normal-generator)
 - [Storage and original references](Storage-and-reference)
 - [Source repository](https://github.com/frankischilling/minecraft-c)

@@ -103,6 +103,32 @@ snapshots must match. Public fixtures replay the full captured records without
 Java. See the [finishing contract](world/finishing.md) and
 [reproduction procedure](reference/finishing.md).
 
+`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
+for the complete unpublished normal generator entry. Build target
+`mc_normal_generation_probe` replays imported original world/cache/manager
+baselines through the production C API. The comparison requires both supplied
+JARs, JDK17+ with `java`, `javac`, `javap` and `jdk.jdi`, and the exact source
+commit setting. It uses loopback debugging, fresh original worlds and separate
+untouched controls. The acceptance corpus has seeds 23, 24, 26 and 51,
+with nine sequential calls per retained generator. Earlier prototype agreement
+does not establish a completed production four-seed result; see
+[generation evidence](reference/generation.md) and the
+[ownership and failure contract](world/generation.md).
+
+After configuring the JAR paths and source commit, the production commands are:
+
+```sh
+cmake --build build --target mc_normal_generation_probe
+ctest --test-dir build -R '^tools\.normal_(reference|interop)$' --output-on-failure
+ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
+```
+
+Add `-C Debug` for a multi-configuration build. The two public tool checks use
+synthetic guards and retained fixtures respectively; they need no original
+JARs or Java. The opt-in comparison and fixture integration are being completed,
+so these commands describe the intended production checks rather than a
+recorded successful run. `mc_world` itself has no Java or original-file dependency.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

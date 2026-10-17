@@ -20,6 +20,7 @@ option(MC_ENABLE_NIBBLES_REFERENCE_TESTS "Compare packed nibble access with orig
 option(MC_ENABLE_CHUNK_REFERENCE_TESTS "Compare local chunk initialization with original methods" OFF)
 option(MC_ENABLE_LIGHT_REFERENCE_TESTS "Compare light regions and ordered queues with originals" OFF)
 option(MC_ENABLE_FINISH_REFERENCE_TESTS "Compare full normal chunk finishing with original traces" OFF)
+option(MC_ENABLE_GENERATION_REFERENCE_TESTS "Compare complete normal generation with original traces" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -73,6 +74,7 @@ add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/comp
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
 
 add_library(mc_world STATIC
+    src/world/generation/normal.c
     src/world/cache/cache.c
     src/world/chunk/finish.c
     src/world/lighting/world.c
@@ -89,6 +91,14 @@ target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_normal_generator tests/world/generation/test_normal.c)
+    target_link_libraries(mc_test_normal_generator PRIVATE mc_world mc_build_options)
+    add_test(NAME world.normal_generator COMMAND mc_test_normal_generator)
+    set_tests_properties(world.normal_generator PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_normal_generation_probe tests/world/generation/normal_probe.c)
+    target_link_libraries(mc_normal_generation_probe PRIVATE mc_world mc_build_options)
+
     add_executable(mc_test_chunk_finish tests/world/chunk/test_finish.c)
     target_link_libraries(mc_test_chunk_finish PRIVATE mc_world mc_build_options)
     add_test(NAME world.chunk_finish COMMAND mc_test_chunk_finish)
@@ -219,6 +229,37 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME tools.normal_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation" -p test_normal_reference.py)
+    set_tests_properties(tools.normal_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 30)
+
+    add_test(NAME tools.normal_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation/test_normal_interop.py"
+        --executable "$<TARGET_FILE:mc_normal_generation_probe>")
+    set_tests_properties(tools.normal_interop PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    if(MC_ENABLE_GENERATION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        get_filename_component(MC_GENERATION_JAVA_BIN "${Java_JAVA_EXECUTABLE}" DIRECTORY)
+        add_test(NAME reference.normal_generation
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/generation/compare_normal.py"
+            --executable "$<TARGET_FILE:mc_normal_generation_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --javap "${MC_GENERATION_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-normal-generation"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.normal_generation PROPERTIES
+            LABELS "reference;original;generation" TIMEOUT 1900 SKIP_RETURN_CODE 77)
+    endif()
+
     add_test(NAME tools.finish_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/chunk" -p test_finish_reference.py)

@@ -58,6 +58,20 @@ already cached. Fresh generated chunks finish before explicit publication.
 Publication covers map replacement and insertion-list append only; loading,
 unloading, lifecycle callbacks, population and light propagation remain separate.
 
+The [normal generation module](world/generation.md) composes fresh chunk data,
+direct climate/biome sampling, base terrain, surface, caves and full finishing.
+`mc_normal_generator_init` binds the world seed, the world's initialized biome
+manager and immutable trig data. Each `mc_normal_generator_generate` call receives
+that same world's lighting context. The generator retains all 82 terrain layers,
+fixed scratch and separate generator/cave Randoms. Its separately owned biome
+output uses the manager's allocation owner; `mc_normal_generator_free` releases
+only that output. Direct sampling updates `a/b/c`
+while preserving `d`. Each call receives all 13 current biome material pairs
+and current opacity explicitly. Fresh caller-owned results remain unpublished;
+both coordinates must lie in `INT32_MIN + 8` through `INT32_MAX - 9`, the finite
+ordinary cave-scheduler domain. Checked resource/allocation failures preserve
+state; defensive downstream invariant failures report an unusable result.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -136,6 +150,14 @@ tests/world/terrain/test_caves.c
 tests/world/terrain/caves_probe.c
 tests/reference/caves/CavesObservation.java
 scripts/reference/caves/compare_caves.py
+include/mc/world/generation/normal.h
+src/world/generation/normal.c
+tests/world/generation/test_normal.c
+tests/world/generation/normal_probe.c
+tests/reference/generation/NormalGenerationObservation.java
+tests/reference/generation/NormalGenerationController.java
+scripts/reference/generation/compare_normal.py
+scripts/reference/generation/export_normal.py
 include/mc/world/chunk/data.h
 include/mc/world/chunk/nibbles.h
 src/world/chunk/data.c

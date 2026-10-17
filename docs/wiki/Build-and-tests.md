@@ -25,7 +25,7 @@ explains offline source overrides and license notices.
 Public checks cover numerical/text semantics, raw NBT, compression, both noise
 families, climate/biome classification, normal density/base blocks, surface
 replacement, normal cave carving, packed chunk arrays, height/skylight data
-and the local resource importer.
+and full finishing, unpublished normal generation and the local resource importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -73,6 +73,43 @@ passes in each of six fresh cases. A separate untouched control must match
 complete snapshots exactly. The debugger uses loopback only. Public fixtures
 compare all decoded bytes, queues and queries without Java; see
 [finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md).
+
+## Normal generation checks
+
+`world.normal_generator` passes 99073 public contract checks on native MSVC and
+WSL GCC/Clang; sanitizer checks also pass. They cover borrowed ownership,
+unpublished identities, repeated outputs, current materials, finite-coordinate
+preflight and allocation-failure preservation. Four-seed original capture and
+lossless public C replay pass eight inputs, 72 complete chunks and 73728 exact
+height queries. Full exact-source platform verification remains pending.
+
+`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
+with JDK17+ and `jdk.jdi`, both supplied JARs and the exact source commit setting.
+It uses fresh actual original contexts, loopback debugging and separate
+untouched controls. The corpus uses seeds 23, 24, 26 and 51, retaining
+one generator across nine calls per side. It includes repeated, negative,
+packed-key-alias, world-border and accepted cave-domain endpoint coordinates.
+Complete data, queues, climate/scratch, 82 layers, separate Random continuations
+and all 1024 height queries per call form the comparison boundary.
+
+After configuring the reference inputs, use these production commands:
+
+```sh
+cmake --build build --target mc_normal_generation_probe
+ctest --test-dir build -R '^tools\.normal_(reference|interop)$' --output-on-failure
+ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
+```
+
+Add `-C Debug` for multi-configuration builds. The public
+`tools.normal_reference` and `tools.normal_interop` checks use synthetic guards
+and retained original fixtures respectively, without Java or private inputs.
+Their production integration is being completed; these commands record the
+intended checks rather than a successful acceptance run. The planned suite has
+35 public tests, 36 with the numerical Java oracle, or 41 with the selected
+original finishing, queue, chunk, nibble and generation comparisons. See the
+[generation contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
+and [evidence boundary](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md).
+
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)

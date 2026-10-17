@@ -45,9 +45,25 @@ fixed fresh-world cases with two passes per side. Retain the distinction between
 the unpublished measured chunk and the existing cached chunks. Complete cache
 load/generate/lifecycle behavior, population and light propagation need their
 own ordered state comparisons.
-Complete raw chunks, population, lighting and protocol framing remain separate
-required work. Define their scoped implementations from original class/method
-evidence before coding. Further splits must retain the full original requirements
+
+The [direct normal generator composition](world/generation.md) is implemented:
+fresh data, direct climate/biomes, density/base, current-material surface,
+separately seeded caves and full finishing, with fresh unpublished results.
+It borrows the same world's existing biome manager, uses a separate biome
+buffer while preserving manager `d`, and accepts all 13 current material pairs
+and opacity explicitly. Its accepted coordinates retain the finite ordinary
+cave-scheduler domain. The 99073 public contract checks pass on MSVC/GCC/Clang,
+including sanitizer checks. The [production capture](reference/generation.md)
+for seeds 23, 24, 26 and 51 passes with complete untouched controls. Lossless
+public C replay passes eight original inputs, 72 complete chunks and 73728
+queries. Exact-source platform acceptance remains pending. `MC_ENABLE_GENERATION_REFERENCE_TESTS` selects
+the original comparison; public helper and fixture checks are named
+`tools.normal_reference` and `tools.normal_interop`.
+
+Complete cache acquisition/lifecycle, population, light propagation, other
+dimensions and protocol framing remain separate required work. Define their
+scoped implementations from original class/method evidence before coding.
+Further splits must retain the full original requirements
 rather than replacing them with a simpler private save format or rewritten-only
 network protocol.
 

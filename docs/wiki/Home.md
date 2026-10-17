@@ -10,7 +10,10 @@ compression, seeded Perlin/octave noise, 2D simplex/octave noise,
 climate/biome classification, normal density/base
 terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
-local resource import and native builds.
+unpublished normal generator composition, local resource import and native builds.
+The [normal generator API](Architecture#normal-generator) composes the existing
+stages through finishing with borrowed world resources. Four-seed original capture and lossless public C replay pass; full
+current-source platform verification remains pending.
 The [repository README](https://github.com/frankischilling/minecraft-c#readme),
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
 and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)

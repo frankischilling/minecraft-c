@@ -1,10 +1,19 @@
 # Development status
 
 Latest runtime integration: `fa17e3d8885632ca0baecf71bdf9551e47be68eb` on
-`main`. Continue from `main` and inspect the live worktree.
+`main`. Active work is on `feature/normal-chunk-generator`, based on
+`491962cfc0cce03e2572432b4ff3a00b5f2fc905`. Inspect the live worktree before continuing.
 Full normal finishing now connects local heights/direct sky, packed cached-world
 queries, original light admission, ordered queue storage and dirty state.
 The complete rewrite remains unfinished.
+
+The active increment composes a persistent normal generator through full
+finishing before return. Its 99073 constructed contract checks pass on native
+MSVC19.51 and WSL GCC13.3/Clang18.1 with ASan/UBSan on both Linux builds.
+The full four-seed production capture passes, including eight complete
+untouched controls. Public C replay passes eight continuous nine-call inputs,
+72 complete chunks and 73728 exact height-query pairs. Exact-source platform
+comparisons and integration remain pending.
 
 ## Current evidence
 
@@ -52,12 +61,13 @@ runtime integration. README remains unchanged.
 
 The cache supports nonnull lookup and the post-generation map/list publication
 phase. Full load/generate reentrancy, pending unloads, lifecycle/population,
-light propagation, complete generation and save compatibility remain open.
+light propagation, cache-managed generation and save compatibility remain open.
 See [the contract](world/finishing.md), [evidence](reference/finishing.md),
 [testing](testing.md) and [parity matrix](parity.md).
 
-Next, promote the existing cave-probe composition into a persistent normal
-generator with explicit current biome materials and finishing before return.
+Continue validating the persistent normal generator with explicit current
+biome materials and finishing before return. See [the new contract](world/generation.md)
+and [generation evidence](reference/generation.md).
 Ignored research under `.local/cache-lifecycle-research/` verifies six genuine
 direct generations, 114 stage events and exact untouched controls. Direct biome
 sampling owns generator `v` and leaves manager `d` unchanged; surface alone

@@ -18,6 +18,7 @@ rather than empty placeholders.
 | `world/chunk` | Packed voxel arrays, heights, direct skylight and normal finishing | Caller-owned data, borrowed blocks/opacity and explicit world context |
 | `world/cache` | Packed-key lookup and explicit post-generation publication | Caller-owned map entries, stable chunk identities and insertion list |
 | `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
+| `world/generation` | Complete unpublished normal generator entry through finishing | Same-world borrowed biome manager, immutable trig, current materials/opacity and existing lighting context |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -82,6 +83,32 @@ the original packed coordinate collisions and unsigned height bytes. Explicit
 publication replaces the map value and appends the same identity to a separate
 insertion list. Loading, generation callbacks, unloading, population and light
 propagation remain unimplemented.
+
+## Normal generator
+
+The [normal generator API](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
+composes fresh chunk data, direct climate/biome sampling, density/base terrain,
+surface replacement, caves and full finishing. `mc_normal_generator_init`
+borrows the world's already initialized biome manager and immutable trig table.
+The generator retains all 82 terrain layers, fixed scratch and separate
+generator/cave Random states. Its separate biome output uses the manager's
+allocation owner; direct sampling updates `a/b/c` while preserving manager `d`.
+`mc_normal_generator_free` releases only the separate biome output.
+
+Each `mc_normal_generator_generate` call receives that same world's stable
+lighting/cache context, all 13 current biome top/filler pairs and current
+opacity. Materials remain mutable world inputs; the generator supplies no
+default table. The caller owns each fresh result wrapper and block buffer,
+including its retained capacity suffix. Results finish before publication, so
+world queries see the existing cache. Both coordinates must lie in
+`INT32_MIN + 8` through `INT32_MAX - 9`, the finite ordinary cave-scheduler
+domain. Checked resource/allocation failures preserve state; a defensive
+downstream invariant failure reports an unusable result.
+
+The API implements this unpopulated entry. The
+[four-seed capture and public replay](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
+pass; full exact-source platform acceptance remains pending. Cache acquisition callbacks,
+population, light propagation and other dimensions retain their separate scope.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

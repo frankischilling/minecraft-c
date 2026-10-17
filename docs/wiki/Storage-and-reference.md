@@ -99,6 +99,28 @@ they establish finite headless conditions rather than general scheduling.
 The C cache supports lookup and the explicit map/list publication phase.
 Full loading, lifecycle, population and light propagation remain open.
 
+[Direct normal generation evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
+records original stage handoffs and genuine setup qualification for seeds 23,
+24, 26 and 51. The C composition is implemented through full finishing with
+fresh unpublished chunks, a borrowed world biome manager, separate biome
+output preserving manager `d`, and all 13 current material pairs supplied
+explicitly. Its public contract unit passes 99073 checks on MSVC/GCC/Clang,
+including sanitizer checks. Four-seed original capture and lossless public C
+replay pass eight inputs, 72 complete chunks and 73728 exact height queries.
+Full exact-source platform verification remains pending.
+
+The `reference.normal_generation` comparison observes actual direct
+generator calls in fresh worlds and requires complete byte-equal untouched
+controls. It retains complete local/world state, current materials and opacity,
+climate/scratch, all 82 layers, separate Random continuations and 1024 ordered
+height queries per call. Repeated, negative, packed-key-alias, world-border and
+finite cave-domain endpoint calls exercise one retained generator. Public
+`tools.normal_reference` and `tools.normal_interop` checks provide synthetic
+guards and lossless retained-fixture replay; see
+[build commands](Build-and-tests#normal-generation-checks). Generation remains
+separate from cache acquisition/publication, population, propagation, other
+dimensions and save compatibility.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib
