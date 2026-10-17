@@ -45,6 +45,13 @@ a session lock and directories. Tests never open an existing personal world.
 These density/base comparisons do not establish copied-world save compatibility
 or complete generation.
 
+[Surface evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/surface.md)
+separates immutable constructor state from live Random and current material
+attributes. Genuine server constructor spawn may generate complete chunks
+before a fresh measured generator is created; the later observed pass calls
+base/surface directly. These observations do not establish complete chunks,
+caves, finishing, population, lighting or save compatibility.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib

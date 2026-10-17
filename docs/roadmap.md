@@ -31,11 +31,18 @@ The separate 2D simplex/octave primitives are implemented under
 acceptance recorded in [status](status.md). Climate blending and biome classification
 are implemented under [#21](https://github.com/frankischilling/minecraft-c/issues/21),
 with [actual both-side numerical methods and state comparisons](reference/biome.md).
-Normal-dimension density/base interpolation is tracked in
-[#24](https://github.com/frankischilling/minecraft-c/issues/24), with static
-method evidence and live setup/comparisons pending. Surfaces, complete raw chunks,
-population, lighting and protocol framing remain separate required work. Create their scoped issues from the
-original class/method evidence before coding. Further
+Normal-dimension density/base interpolation is integrated under
+[#24](https://github.com/frankischilling/minecraft-c/issues/24), with
+[actual both-side context and numerical comparisons](reference/density.md).
+Surface replacement and chunk seeding are locally verified under
+[#26](https://github.com/frankischilling/minecraft-c/issues/26), with
+[recorded scope and results](reference/surface.md); public CI/integration are pending.
+The next prerequisite is
+[float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29),
+followed by [normal caves #30](https://github.com/frankischilling/minecraft-c/issues/30).
+Complete raw chunks, population, lighting and protocol framing remain separate
+required work. Create their scoped issues from original class/method evidence
+before coding. Further
 splits must retain the full original requirements rather than replacing them
 with a simpler private save format or rewritten-only network protocol.
 

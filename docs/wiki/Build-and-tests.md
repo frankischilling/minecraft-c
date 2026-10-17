@@ -23,8 +23,8 @@ contains complete setup and formatting commands; the
 explains offline source overrides and license notices.
 
 Public checks cover numerical/text semantics, raw NBT, compression, both noise
-families, climate/biome classification, normal density/base blocks and the local
-resource importer.
+families, climate/biome classification, normal density/base blocks, surface
+replacement and the local resource importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -43,6 +43,9 @@ raw temperature tested separately.
 `MC_ENABLE_DENSITY_REFERENCE_TESTS` compares normal density/base methods in
 genuine original world contexts created under fresh ignored directories. It
 checks exact constructor state, climate, density, scratch and block values.
+`MC_ENABLE_SURFACE_REFERENCE_TESTS` checks the untouched surface pass in
+constructor-Random and explicit chunk-reseed contexts, including current
+material bytes, complete fields/blocks, suffixes and live Random continuation.
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)

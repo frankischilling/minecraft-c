@@ -17,10 +17,12 @@ comparisons remain local.
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
+| `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.density_reference` | 6 generated prerequisite/hash/report/path/link and mismatch-before-unavailable regressions | No original classes run; link cases skip only if unsupported |
+| `tools.surface_reference` | 6 generated prerequisite/hash/report/path/link and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
@@ -30,6 +32,7 @@ comparisons remain local.
 | `reference.simplex` (local opt-in) | Per side 812 requests, 204923 exact double values, 348160 permutation entries and 3248 following Random longs; actual short/extended overload and factor/suffix controls | Scoped 2D numerical methods; consumer-like inputs do not establish biome results |
 | `reference.biome` (local opt-in) | Actual catalogue/table, direct float and quantized double selectors, processed temperature and biome grids with stateful buffer sequences | Explicit-seed numerical fixture; no executed world constructors or terrain |
 | `reference.density` (local opt-in) | 150 exact snapshots per side, 82 original density/scratch recomputation checks; all constructor, climate, density and base state across three pairings | Normal dimension only; no surface, caves, population or complete chunk parity |
+| `reference.surface` (local opt-in) | 290 exact snapshots per side, 105 original state/material/density/suffix controls and 20 apply-field controls | Measured base/surface contexts; no complete chunk/cave/finishing compatibility claim |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -87,12 +90,39 @@ agree between C/client, C/server and client/server. The internal original base
 pass density is checked against the separately observed density. See
 [density evidence](reference/density.md) and the [terrain interface](world/terrain.md).
 
+Normal surface comparisons use `MC_ENABLE_SURFACE_REFERENCE_TESTS` with the
+same private inputs and source settings. They distinguish actual constructor
+continuation from mutable live Random, compare prepared chunk-reseed contexts,
+and check current material attributes, complete fields/blocks and suffixes.
+Genuine server constructor setup can itself generate chunks; measured calls
+use a fresh generator afterward. See [surface evidence](reference/surface.md)
+and [ownership/operations](world/surface.md).
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
 `BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
 
 ## Local environments
+
+Normal surface source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24
+configured CTests on native Windows/MSVC and WSL GCC/Clang without skips:
+sixteen public tests, the numerical Java oracle and seven original comparisons.
+All 21 original manifests identify this source and pass with empty errors;
+every current probe hash matches its report. Surface's 290 snapshots match
+independently in all three pairings, including complete fields, blocks,
+materials, climate, constructor state and live Random continuation. All
+equivalence, preservation, suffix and retained-apply controls agree.
+
+Public surface tests pass 1114102 checks and all six helper guards, including
+filesystem links and completed-mismatch precedence, run without skips. Seven
+fixed fixtures are traced to paired untouched originals; constructed C controls
+separately exercise state-machine boundaries. Clang-format18 checks 36 C/header
+files. The three libraries build with testing off and no Python/Java discovery.
+Public CI runs seventeen tests per compiler without private files; current
+results and integration state are recorded in [status](status.md).
+
+Previous density/base increment:
 
 Normal density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passed
 all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
@@ -141,9 +171,9 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All nine CTests passed, including original NBT/compression with explicit Temurin17 |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All nine CTests passed with JDK21 |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All nine CTests passed with JDK21 |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 24 CTests pass at the surface source, with explicit Temurin17 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 24 CTests pass at the surface source with JDK21 |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 24 CTests pass at the surface source with JDK21 |
 
 Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
 selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the

@@ -13,7 +13,7 @@ rather than empty placeholders.
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
-| `world/terrain` | Normal-dimension density and base-block interpolation | Shared core/noise, immutable state and borrowed spans |
+| `world/terrain` | Normal density, base interpolation and surface material replacement | Shared core/noise, immutable layers, explicit Random and borrowed spans |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -37,7 +37,13 @@ The [normal terrain module](https://github.com/frankischilling/minecraft-c/blob/
 constructs all 82 original Perlin layers in order, consumes caller-supplied
 processed climate and interpolates a fixed density grid into base blocks.
 Constructor state is immutable after initialization; workspace and outputs are
-borrowed. Surface replacement, caves, population and lighting remain later work.
+borrowed. Caves, population and lighting remain later work.
+
+The [surface interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/surface.md)
+uses those existing layers with current material byte pairs and a separate
+mutable Random. It preserves Z/X/Y traversal, unconditional bedrock draws and
+sea/sandstone state transitions. Field sampling and prepared-field application
+can also run independently. Caves and complete chunk generation remain open.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

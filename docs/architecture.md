@@ -23,6 +23,11 @@ Perlin groups into density, then interpolates base blocks. Immutable constructor
 state is separate from borrowed workspace/output spans and processed climate.
 Its fixed normal shape retains original flat layouts and buffer suffix behavior.
 
+The [normal surface pass](world/surface.md) reuses immutable terrain layers,
+accepts current top/filler byte pairs and advances a separate caller-owned
+Random. Field sampling and material application remain usable independently;
+composed calls validate all borrowed storage before any mutation.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -82,6 +87,12 @@ tests/world/terrain/test_terrain.c
 tests/world/terrain/terrain_probe.c
 tests/reference/density/DensityProbe.java
 scripts/reference/density/compare_density.py
+include/mc/world/terrain/surface.h
+src/world/terrain/surface.c
+tests/world/terrain/test_surface.c
+tests/world/terrain/surface_probe.c
+tests/reference/surface/SurfaceProbe.java
+scripts/reference/surface/compare_surface.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py
