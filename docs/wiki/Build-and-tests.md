@@ -61,16 +61,22 @@ getter sweeps and setter snapshots. `MC_ENABLE_CHUNK_REFERENCE_TESTS` checks
 fresh/repeated local chunk arrays and heights in genuine original world contexts.
 The full corpus also needs frozen original post-cave inputs; see
 [chunk reproduction](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/chunk.md).
+`MC_ENABLE_LIGHT_REFERENCE_TESTS` checks actual original light-region merges
+and world queues in genuine fresh worlds, preserving each starting queue. The
+separate million-entry experiment observes the original automatic abort.
+Public C tests replay recorded complete queues and storage contracts without
+original files or Java. See the
+[queue evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md).
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
 
-The recorded chunk source passes 30 local tests per compiler on native
-Windows/MSVC and WSL GCC/Clang, including both original comparisons. Public CI
-runs 28 tests per compiler and formatting for 61 C/header files. Exact tested
-commits, manifest hashes and integration results live in the development status
-and linked evidence pages.
+The recorded queue source passes 33 local tests per compiler on native
+Windows/MSVC and WSL GCC/Clang, including original queue, chunk and nibble
+comparisons. Public CI runs 30 tests per compiler and formatting for 66 C/header
+files. Exact tested commits, manifest hashes and integration results live in
+the development status and linked evidence pages.
 
 Original resources are never bundled. The
 [resource guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/resources.md)

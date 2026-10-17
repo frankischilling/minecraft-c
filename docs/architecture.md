@@ -45,6 +45,12 @@ nibble access and local height/direct-skylight rebuilding without allocation.
 World cache queries, lighting queues, dirty state and chunk lifecycle remain
 separate responsibilities.
 
+The [light-region queue](world/lighting.md) owns ordered storage and original
+region merging after world admission. Caller-owned capacity makes allocation
+explicit. Shared Java helpers preserve wrapped coordinate/volume arithmetic.
+The newest five-entry search, in-place merges and million-entry abort policy
+remain distinct from world admission and lighting propagation.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
