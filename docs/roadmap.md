@@ -20,9 +20,10 @@ agents may research independent behavior, but shared interfaces, builds, Git
 operations and integration need explicit ownership.
 
 The raw NBT and modified UTF increment [#9](https://github.com/frankischilling/minecraft-c/issues/9)
-is merged. The selected increment is [bounded gzip/zlib, issue #11](https://github.com/frankischilling/minecraft-c/issues/11),
-with [both-side evidence](reference/compression.md). Region inspection,
-deterministic noise/chunk generation and protocol framing follow. Create their scoped issues from the
+is merged, as is [bounded gzip/zlib, issue #11](https://github.com/frankischilling/minecraft-c/issues/11),
+with [both-side evidence](reference/compression.md). Read-only original region
+inspection is under research; deterministic noise/chunk generation and protocol
+framing follow. Create their scoped issues from the
 original class/method evidence before coding. Further
 splits must retain the full original requirements rather than replacing them
 with a simpler private save format or rewritten-only network protocol.
