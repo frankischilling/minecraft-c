@@ -49,7 +49,8 @@ Native GitHub runner results and the exact integrated commit are recorded in
 `.github/workflows/ci.yml` builds/tests with GCC and Clang on Ubuntu24.04 and MSVC
 on Windows2022, plus a format job. The workflow fetches no private JARs/assets or
 launcher data. It has read-only repository permissions and produces no releases.
-There are currently no runtime dependencies to bundle.
+The actions use verified official release commit IDs. Checkout credentials are
+not persisted. There are currently no runtime dependencies to bundle.
 
 ## Private reference checks
 
