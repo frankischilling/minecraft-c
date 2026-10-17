@@ -1,8 +1,10 @@
 # Resume note
 
-Current branch: `feature/reference-foundations`, [PR #6](https://github.com/frankischilling/minecraft-c/pull/6),
-based on `main` commit `8453dfb`. Before resuming, inspect
-the live branch, open PRs, and exact-head CI rather than assuming this note is current.
+Current branch: `chore/project-conventions`, based on `main` commit
+`ed67a55d831372c208bcf87c2cc3c6b75a1b8029`. The active scoped task is
+[#7](https://github.com/frankischilling/minecraft-c/issues/7): repository text
+preferences and current pinned CI actions. Inspect the live branch, PRs and
+exact-head CI before relying on this note.
 
 Completed work in this increment:
 
@@ -27,7 +29,15 @@ loopback save/stop smoke also passed at that commit. Local outputs are under
 
 Both independent reviews finished. The missing-reference exit77 CTest handling
 and a stale relocated test command were corrected before the implementation
-commit. Hosted CI is now pending on PR #6; inspect its final head before merge.
+commit. [PR #6](https://github.com/frankischilling/minecraft-c/pull/6) is merged.
+Its final head `6980164b218e9139f667393950d0f3ed6dc5ff76` passed all four jobs in
+[run39021245762](https://github.com/frankischilling/minecraft-c/actions/runs/39021245762).
+The resulting `main` commit `ed67a55d831372c208bcf87c2cc3c6b75a1b8029` also passed
+all four jobs in [run39021329782](https://github.com/frankischilling/minecraft-c/actions/runs/39021329782).
+Native Windows MSVC19.44 and native Linux GCC13.3/Clang18.1.3 each passed all
+three CTests, with no reference skips. The default public-only Linux build
+also passed both tests without Java discovery. Deprecation annotations in the
+first workflow motivated the pinned-action update in issue7.
 
 Outstanding access limits:
 
@@ -39,10 +49,14 @@ Outstanding access limits:
   has not succeeded. The hosted wiki may need its first page created through
   GitHub before its Git repository is available.
 
-Next actions: inspect exact-head native CI on PR #6, resolve any failures,
-merge only after scoped acceptance, verify default-branch CI, and
-close only completed scoped issues. Keep issue4 and all unimplemented parity
-areas open. Then select a reference-backed NBT/text/storage increment under M2.
+Next actions: review and validate issue7's workflow/text changes, merge only
+after exact-head CI, verify default-branch CI, and close the scoped milestone.
+Keep issue4 and all unimplemented parity areas open. Then implement the first
+NBT/text/storage increment under M2; the ignored `.local/nbt-next.md` records
+both-side bytecode findings for the codec issue, including modified UTF-8,
+IDs0..10, empty-list behavior and original-class differential design. That
+differential has not yet been executed. Carry publishable findings into the
+next reviewed code increment; no original source should be published.
 
 Unanswered behavior questions: canonical external audio provenance, unavailable
 legacy skin/resource services, and dormant Sky-provider reachability require

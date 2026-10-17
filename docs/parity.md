@@ -28,7 +28,7 @@ The inventory expands the broad gameplay rows into concrete child behaviors.
 | Sounds/music, timing, pitch/volume/spatial behavior [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Resources](reference/resources.md), [inventory](inventory.md) | Import only | Event/timing/property comparisons still needed | Under research |
 | Original-compatible saves, unknown fields, restart/round trips [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Inventory anchors](inventory.md) | None | Both-direction copied-world round trips still needed | Under research; no rewrite save writes supported |
 | Protocol, synchronization, administration and server operation [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Login bytecode](reference/binaries.md), [inventory](inventory.md) | None | Full four-way matrix below still needed | Under research |
-| Native client/server runtime and performance coverage [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Testing scope](testing.md) | Shared-core build only | MSVC Windows; GCC/Clang WSL checks; native CI pending integration | Partially implemented; no playable/native game validation or performance claim |
+| Native client/server runtime and performance coverage [#4](https://github.com/frankischilling/minecraft-c/issues/4) | [Testing scope](testing.md) | Shared-core build only | MSVC Windows and GCC/Clang WSL locally; native Windows/Linux CI passed on PR6 and resulting main | Partially implemented; no playable/native game validation or performance claim |
 
 ## Multiplayer interoperability
 
