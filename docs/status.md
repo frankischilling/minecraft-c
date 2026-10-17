@@ -1,5 +1,12 @@
 # Development status
 
+In progress: [float lookup/floor #29](https://github.com/frankischilling/minecraft-c/issues/29)
+on `feature/math-lookup`. The original-only baseline has all 65536 table
+entries and 366 scalar calls matching between sides. An isolated C strategy
+experiment matches those observations on MSVC/GCC/Clang. Production exact-source
+acceptance, public CI and integration remain pending; the surface checkpoint
+below is integrated. Inspect the live worktree before resuming.
+
 Latest implementation: normal surface replacement and chunk seeding,
 [issue #26](https://github.com/frankischilling/minecraft-c/issues/26), merged in
 [PR #31](https://github.com/frankischilling/minecraft-c/pull/31) at
@@ -8,8 +15,11 @@ Latest implementation: normal surface replacement and chunk seeding,
 Windows/MSVC and WSL GCC/Clang without skips. All 290 surface snapshots match
 in C/client, C/server and client/server comparisons. Public CI passes seventeen
 tests per compiler plus formatting on the exact PR head and resulting main.
-This documentation checkpoint uses
-`docs/surface-integration`; inspect the live worktree before resuming.
+Its documentation checkpoint is integrated in
+[PR #32](https://github.com/frankischilling/minecraft-c/pull/32) at
+`d8e6fca665a9e881a5ab1711413b9b84e9e20116`; the resulting
+[main CI](https://github.com/frankischilling/minecraft-c/actions/runs/39036383364)
+also passes. Inspect the live worktree before resuming.
 
 Previous integrated implementation: normal-dimension density and base-block interpolation,
 issue [#24](https://github.com/frankischilling/minecraft-c/issues/24), merged in
@@ -310,7 +320,7 @@ unavailable; see [launch notes](reference/launch.md).
 
 The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
 `700630874d2045b10cf5ae41fd8da6e9fc8029e3`. All five page blobs match the versioned
-`docs/wiki/` sources. Home, build/tests, architecture and storage/reference each
+surface sources at `1394928cebbcbe31700db3d280d0faa071ea6a34`. Home, build/tests, architecture and storage/reference each
 returned HTTP200 with expected content. Updated pages include normal surface
 replacement, explicit live Random/material inputs and its comparison option.
 The clone remains at `.local/wiki/`.

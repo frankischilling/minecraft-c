@@ -7,6 +7,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numerical helpers with a local JDK" OFF)
+option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
 option(MC_ENABLE_NBT_REFERENCE_TESTS "Compare NBT with locally supplied original JARs" OFF)
 option(MC_ENABLE_COMPRESSION_REFERENCE_TESTS "Compare compression with original helpers" OFF)
 option(MC_ENABLE_NOISE_REFERENCE_TESTS "Compare terrain noise with original samplers" OFF)
@@ -53,9 +54,15 @@ FetchContent_MakeAvailable(mc_zlib)
 target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 
 # The shared core has no window, graphics, audio, JDK, or asset dependencies.
-add_library(mc_core STATIC src/core/java/java.c src/core/text/mutf8.c)
+add_library(mc_core STATIC
+    src/core/java/java.c
+    src/core/math/math.c
+    src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_build_options)
+if(UNIX)
+    target_link_libraries(mc_core PRIVATE m)
+endif()
 
 add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/compression.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
@@ -74,6 +81,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_java PRIVATE mc_core mc_build_options)
     add_test(NAME core.java COMMAND mc_test_java)
     set_tests_properties(core.java PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_test_math tests/core/math/test_math.c)
+    target_link_libraries(mc_test_math PRIVATE mc_core mc_build_options)
+    add_test(NAME core.math COMMAND mc_test_math)
+    set_tests_properties(core.math PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_math_probe tests/core/math/math_probe.c)
+    target_link_libraries(mc_math_probe PRIVATE mc_core mc_build_options)
 
     add_executable(mc_test_mutf8 tests/core/text/test_mutf8.c)
     target_link_libraries(mc_test_mutf8 PRIVATE mc_core mc_build_options)
@@ -185,6 +200,13 @@ if(BUILD_TESTING)
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         LABELS "public;tools" TIMEOUT 60)
 
+    add_test(NAME tools.math_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/math" -p test_reference.py)
+    set_tests_properties(tools.math_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 60)
+
     if(MC_ENABLE_JAVA_REFERENCE_TESTS)
         find_package(Java 8 REQUIRED COMPONENTS Runtime Development)
         add_test(NAME reference.java_semantics
@@ -212,6 +234,22 @@ if(BUILD_TESTING)
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
         set_tests_properties(reference.nbt PROPERTIES
             LABELS "reference;original;nbt" TIMEOUT 180 SKIP_RETURN_CODE 77)
+    endif()
+
+    if(MC_ENABLE_MATH_REFERENCE_TESTS)
+        find_package(Java 11 QUIET COMPONENTS Runtime Development)
+        add_test(NAME reference.math
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/math/compare_math.py"
+            --executable "$<TARGET_FILE:mc_math_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-math"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.math PROPERTIES
+            LABELS "reference;original;math" TIMEOUT 180 SKIP_RETURN_CODE 77)
     endif()
 
     if(MC_ENABLE_COMPRESSION_REFERENCE_TESTS)

@@ -6,6 +6,11 @@ contains the raw NBT reader/writer and gzip/zlib memory compression. Neither lib
 graphics, audio, networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
+The [float lookup/floor module](core/math.md) uses a caller-owned 65536-float
+table initialized once with the measured system double-sine backend. Later
+lookups share it as const data; the Java cast/compare floor needs no table.
+There is no hidden global initializer or Java dependency in this module.
+
 `mc_world` depends on `mc_core` and implements the original seeded
 Perlin/octave [noise module](world/noise.md) and the separate
 [2D simplex/octave family](world/simplex.md). It owns no allocations or platform
@@ -52,6 +57,12 @@ Create new folders with actual implementations rather than empty placeholders.
 include/mc/core/java/java.h
 src/core/java/java.c
 tests/core/java/test_java.c
+include/mc/core/math/math.h
+src/core/math/math.c
+tests/core/math/test_math.c
+tests/core/math/math_probe.c
+tests/reference/math/TrigMathObservation.java
+scripts/reference/math/compare_math.py
 include/mc/core/text/mutf8.h
 src/core/text/mutf8.c
 tests/core/text/test_mutf8.c

@@ -8,6 +8,7 @@ rather than empty placeholders.
 | Current module | Responsibility | Runtime dependencies |
 | --- | --- | --- |
 | `core/java` | Defined integer/cast/Random behavior | C runtime |
+| `core/math` | Initialized float trig lookup and Java cast/compare double floor | Caller-owned table, system double sine during initialization |
 | `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
@@ -22,6 +23,12 @@ Noise sampling preserves original constructor ordering and bulk-specific
 behavior; [its interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/noise.md)
 and [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/noise.md)
 describe the exact tested scope. Complete terrain generation remains open.
+
+The [math interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/core/math.md)
+keeps the 256 KiB table caller-owned and immutable after exclusive initialization.
+Lookup methods retain float multiply/phase/conversion order, and the separate
+floor helper retains Java narrowing and wrapping. Complete table comparisons
+scope the measured native math backends; this is a cave prerequisite.
 The separate [simplex interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/simplex.md)
 preserves its own floor, wrapped cell sum and independent octave factors. Its
 numerical tests do not establish complete biome climate or classification.

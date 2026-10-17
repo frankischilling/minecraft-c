@@ -36,6 +36,12 @@ verified supplied JARs. See [testing](testing.md), [NBT reproduction](reference/
 and [compression reproduction](reference/compression.md). Missing private
 references produce unavailable results, not successful comparisons.
 
+`MC_ENABLE_MATH_REFERENCE_TESTS=ON` compares the complete initialized float
+lookup table and sampled sine/cosine/double-floor calls with both supplied
+originals. It uses the same JAR/JDK/source-commit settings and initializes no
+worlds. See [math evidence](reference/math.md) and its
+[ownership/interface](core/math.md). Ordinary math tests require no Java.
+
 `MC_ENABLE_NOISE_REFERENCE_TESTS=ON` separately enables the original Perlin/octave
 comparison with the same JAR/JDK/commit settings. See [noise evidence](reference/noise.md)
 and its [interface](world/noise.md). The `mc_world` runtime library needs neither
