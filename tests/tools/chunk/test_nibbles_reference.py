@@ -244,6 +244,7 @@ class DriverTests(unittest.TestCase):
 
     def run_synthetic_capture(self, folder, *, mismatch=False, client_unavailable=False, change_input=False):
         """Exercise supervision and status handling with no Java or C process."""
+        folder = folder.resolve(strict=True)
         jars = {side: folder / (side + ".jar") for side in protocol.JARS}
         for jar in jars.values():
             jar.write_bytes(b"synthetic archive marker")
@@ -307,7 +308,7 @@ class DriverTests(unittest.TestCase):
     def test_synthetic_capture_retains_complete_pair_and_vectors(self):
         with tempfile.TemporaryDirectory() as temporary:
             code, report = self.run_synthetic_capture(Path(temporary))
-            self.assertEqual(code, 0)
+            self.assertEqual(code, 0, report["errors"])
             self.assertEqual(report["status"], "pass")
             self.assertTrue(report["completed"])
             self.assertTrue(report["inputs_preserved"])
@@ -317,6 +318,17 @@ class DriverTests(unittest.TestCase):
             self.assertEqual(report["sides"]["server"]["records"], 1)
             self.assertEqual(len(report["comparisons"]), 1)
             self.assertIn("reference_vectors_artifact", report)
+
+    def test_synthetic_capture_with_aliased_temporary_directory(self):
+        for unavailable in (False, True):
+            with self.subTest(unavailable=unavailable), tempfile.TemporaryDirectory() as temporary:
+                child = Path(temporary) / "unused-child"
+                child.mkdir()
+                code, report = self.run_synthetic_capture(child / "..", client_unavailable=unavailable)
+                self.assertEqual(code, 77 if unavailable else 0, report["errors"])
+                self.assertEqual(report["status"], "unavailable" if unavailable else "pass")
+                self.assertTrue(report["inputs_preserved"])
+                self.assertTrue(report["original_members_preserved"])
 
     def test_numeric_mismatch_precedes_later_exit77(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -332,7 +344,7 @@ class DriverTests(unittest.TestCase):
             with self.subTest(changed=changed), tempfile.TemporaryDirectory() as temporary:
                 code, report = self.run_synthetic_capture(Path(temporary), client_unavailable=True,
                                                          change_input=changed)
-                self.assertEqual(code, 1 if changed else 77)
+                self.assertEqual(code, 1 if changed else 77, report["errors"])
                 self.assertEqual(report["status"], "fail" if changed else "unavailable")
                 self.assertFalse(report["completed"])
 

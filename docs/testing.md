@@ -32,7 +32,7 @@ comparisons remain local.
 | `tools.math_reference` | 10 generated prerequisite/hash/report/path/alias/link, parser and failure-precedence regressions | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_reference` | 18 generated schema/table/report/path/link and failure-precedence guards, including ordinary-file and hardlink inventories and renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
 | `tools.caves_geometry_reference` | 18 schema/pattern/continuation/table/report/path/link and failure-precedence guards, including renamed-script rejection | No JVM/C/original process runs; link cases skip only if unsupported |
-| `tools.nibbles_reference` | 17 source/protocol/array/path/prerequisite and failure-precedence guards | Synthetic protocol checks; original methods are not executed |
+| `tools.nibbles_reference` | 18 source/protocol/array/path/prerequisite and failure-precedence guards, including aliased temporary directories | Synthetic protocol checks; original methods are not executed |
 | `tools.chunk_data_reference` | 12 schema, array, cache/queue growth, preservation, path, source-attribution, compiler-option and completed-measurement guards | Synthetic protocol checks; original methods are not executed |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
@@ -160,10 +160,16 @@ three fresh runs. The report audit verifies 660 fingerprints and the tested
 source snapshot. See [chunk evidence](reference/chunk.md) for hashes and scope.
 
 Chunk contract, nibble and full-fixture units pass 101534, 414 and 335 checks.
-The nibble helper has 17 public guards; the chunk-data helper has 12, including
-renamed-source and injected-compiler-option regressions. Clang-format18 checks
-61 C/header files. Public CI runs 28 tests per compiler, without private JARs
-or world captures. Integration results belong in [status](status.md).
+The chunk-data helper has 12 public guards, including renamed-source and
+injected-compiler-option regressions. The nibble helper has 18 after adding a
+temporary-directory alias regression. Canonicalizing the synthetic fixture
+root fixes the Windows short-path mismatch; both successful and unavailable
+captures preserve their expected results. All 18 guards pass on native
+Python 3.14 and WSL Python 3.12, with Windows short paths also checked directly.
+The C and comparison sources are unchanged from the recorded original runs.
+Clang-format18 checks 61 C/header files. Public CI runs 28 tests per compiler,
+without private JARs or world captures. Integration results belong in
+[status](status.md).
 
 Previous normal cave increment:
 
