@@ -1,5 +1,13 @@
 # Development status
 
+Active implementation: `feature/biome-climate` from
+`7fdfe358a79399ca9081c23548406fc95a43513f`, issue
+[#21](https://github.com/frankischilling/minecraft-c/issues/21). The C module,
+public tests and optional original comparison are in progress. Isolated
+original classifier/manager setup passed on both pinned JARs with native JDK17;
+the observed table and initial shared numerical sequences agree. No current
+C comparison or world-startup result is claimed yet.
+
 Latest implementation increment: original 2D simplex/octave noise, issue
 [#19](https://github.com/frankischilling/minecraft-c/issues/19), merged in
 [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) at

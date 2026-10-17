@@ -12,6 +12,12 @@ Perlin/octave [noise module](world/noise.md) and the separate
 services. Caller-supplied layer arrays keep construction and shared-Random order
 explicit. Bulk sampling preserves the original height-one path and Y-cell cache.
 
+The [climate and biome module](world/biome.md) composes independently seeded
+simplex channels with original climate processing and float-table lookup.
+Caller-owned managers retain mutable climate/biome buffers under an explicit
+allocation budget. External temperature/direct biome outputs stay separate
+from those retained fields; calls stage growth before publishing changes.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -59,6 +65,12 @@ tests/world/noise/test_simplex.c
 tests/world/noise/simplex_probe.c
 tests/reference/simplex/SimplexProbe.java
 scripts/reference/simplex/compare_simplex.py
+include/mc/world/biome/biome.h
+src/world/biome/biome.c
+tests/world/biome/test_biome.c
+tests/world/biome/biome_probe.c
+tests/reference/biome/BiomeProbe.java
+scripts/reference/biome/compare_biome.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py

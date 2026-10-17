@@ -43,3 +43,9 @@ The [simplex interface](world/simplex.md) applies the same checked-span policy
 without reproducing Java array failures. Valid numerical calls retain the
 original floor/cell-wrap behavior and output accumulation/clearing. Nonfinite
 NaN payload identity is outside the exact comparison contract.
+
+The [climate/biome interface](world/biome.md) uses bounded transactional buffer
+growth and explicit ownership. Classifier inputs must be finite and within
+[0,1], temperature grids may be rectangular, and biome grids are square. The
+original rectangular biome width/width call pattern remains documented evidence,
+not a supported comparison domain or an approved gameplay exception.
