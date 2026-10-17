@@ -33,8 +33,12 @@ Surface replacement and chunk seeding are integrated, with
 The float lookup/floor prerequisite is integrated, with
 [complete table and sampled scalar comparisons](reference/math.md) and native
 public CI. The normal cave runtime is integrated, with
-[natural and protected comparisons](reference/caves.md). Continue with
-[fresh chunk data, heightmaps and direct skylight](world/chunk.md).
+[natural and protected comparisons](reference/caves.md). Fresh chunk data,
+heightmaps, direct skylight and packed access now have
+[exact original comparisons](reference/chunk.md) for their local-state scope.
+Continue with original world-height/cache queries and queued-light finishing
+effects, retaining the distinction between a fresh measured chunk and cached
+world chunks. Full propagation needs its own ordered state comparisons.
 Complete raw chunks, population, lighting and protocol framing remain separate
 required work. Define their scoped implementations from original class/method
 evidence before coding. Further splits must retain the full original requirements

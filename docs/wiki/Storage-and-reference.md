@@ -75,6 +75,13 @@ The local C component preserves the original Y127 height exclusion, Y0 sky
 exclusion and retained sky values across repeated passes. It does not implement
 world-height queries, lighting propagation or chunk lifecycle.
 
+All five fresh/repeated local chunk cases and the complete packed-access
+observations match on MSVC/GCC/Clang in all three pairings. Public fixtures also
+match the complete original bytes in a separate expansion audit. The chunk
+evidence page records exact source, manifest fingerprints, reproduction inputs
+and observation limits. Queue and cache diagnostics remain evidence for the
+next finishing stage.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib

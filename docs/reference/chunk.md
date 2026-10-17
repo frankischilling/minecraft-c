@@ -70,6 +70,61 @@ arithmetic. Those C contract cases are distinct from original gameplay claims.
 Current exact-source results belong in the [development status](../status.md)
 and [parity matrix](../parity.md).
 
+## Recorded acceptance
+
+Runtime and reference source `67c928db7c0d87e599f16228833b0234fba4bc24`
+passes all 30 configured CTests on native Windows/MSVC and WSL GCC13/Clang18,
+without skips. Each build runs 27 public checks, the standard Java numerical
+oracle and both chunk reference comparisons. GCC and Clang use ASan/UBSan.
+Fresh original comparisons use Temurin17 and the pinned supplied JARs.
+
+All five chunk cases match independently in C/client, C/server and client/server
+comparisons. They cover air-to-stone, stone-to-air, mixed columns with a roof edit,
+and two frozen natural post-cave buffers with roof edits. Each participant retains
+four complete local snapshots around the constructor and two finishing calls.
+The nibble comparison checks both 32768-value getter sweeps, all 16 setter calls
+and every retained packed byte in each of its three pairings.
+
+The public chunk fixture comes from the successful original-only capture at
+`.local/reference/chunk-data-budget-audit/manifest.json`, SHA-256
+`204e2e2da796ac96b4d47b3ee8326900c21cdc956564d8c98eb11833021f7220`.
+Its historical source fingerprints and paired record hashes match the fixture
+header. A separate byte-expansion audit decoded all 18 buffers from 16509 RLE
+runs and matched 800 complete arrays, 160 minimum heights and 160 complete
+opacity tables across that capture and the three fresh original runs. This
+audit computes no height or lighting rule.
+
+The nibble fixture's original manifest SHA-256 is
+`874e6cfb8c4ceb319d0547ca225b87e1db55165a9e1f6162fbdbd642347557a7`.
+Its manifest and both complete record hashes match the header. Expanding all
+15 captured byte deltas reproduces every packed snapshot on both sides: 32
+complete setter snapshots, four full getter sweeps and all 96 sampled getter
+values match the fixture's attribution and values.
+
+All six fresh manifests pass with empty error/unavailable lists. A separate
+audit verifies 660 recorded source, input, executable, runtime, class, world-file
+and artifact fingerprints. The recorded runtime and reference sources also
+match the tested source snapshot.
+
+| Local build | Comparison | Manifest SHA-256 |
+| --- | --- | --- |
+| `build/current-windows` | Chunk data | `5d2ab4c0c7f9b286ad2b0815e2a99ca772894e13a6bd8953cfc68ab1740cfd7f` |
+| `build/current-windows` | Nibbles | `c1ceec1dd48cadf86ea42655d94e136f5edf8caba39679622d1a6fd079e0b801` |
+| `build/current-gcc` | Chunk data | `10c2ef202d647942e507cadeaa225e73f5777671ff86abb9d025ba92546299c0` |
+| `build/current-gcc` | Nibbles | `95fc94b426d7f2e152e0075ef854c0bb09639a5ac4499862173d64fc27bf559b` |
+| `build/current-clang` | Chunk data | `858419227ffb6e725f994a421df43244ec79c483032f6cba3ee1e262ecd00f65` |
+| `build/current-clang` | Nibbles | `7dcb821b42e29cb9b1e4541fc0e56fb7ca893cee0923ab647e683e58df3653ad` |
+
+Chunk manifests are retained beneath `reference-chunk-data`, including a copy
+inside each owned capture directory. Nibble manifests live inside owned
+`reference-nibbles/capture-*` directories. Select historical reports by source
+and manifest hash; a later run can replace the top-level chunk manifest.
+
+These results establish the declared local arrays and packed access. Genuine
+world cache/queue observations remain diagnostic evidence for later work.
+They do not establish C world-height queries, queued-light behavior, propagation,
+complete chunk generation, other dimensions, persistence or playable operation.
+
 ## Local reproduction
 
 Build the committed C source with both local JAR paths and the full commit ID

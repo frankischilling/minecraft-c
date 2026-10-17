@@ -146,6 +146,27 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
+Chunk source `67c928db7c0d87e599f16228833b0234fba4bc24` passes all 30 configured
+tests on native Windows/MSVC and WSL GCC/Clang without skips: 27 public tests,
+the standard Java numerical oracle and two original chunk comparisons. Both
+WSL builds enable ASan/UBSan. All six original manifests identify that source,
+pass with empty error/unavailable lists and retain matching file fingerprints.
+Fresh observations use Temurin17 on both platforms.
+
+All five fresh/repeated chunk cases and complete packed-array observations
+match separately between C/client, C/server and client/server. The fixture
+audit compares 800 complete arrays to retained original records, including all
+three fresh runs. The report audit verifies 660 fingerprints and the tested
+source snapshot. See [chunk evidence](reference/chunk.md) for hashes and scope.
+
+Chunk contract, nibble and full-fixture units pass 101534, 414 and 335 checks.
+The nibble helper has 17 public guards; the chunk-data helper has 12, including
+renamed-source and injected-compiler-option regressions. Clang-format18 checks
+61 C/header files. Public CI runs 28 tests per compiler, without private JARs
+or world captures. Integration results belong in [status](status.md).
+
+Previous normal cave increment:
+
 Normal cave source `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33
 configured tests on native MSVC and WSL GCC/Clang without skips: 22 public
 tests, the standard Java numerical comparison and ten original comparisons.

@@ -1,6 +1,19 @@
 # Development status
 
-Latest implementation: normal caves, integrated at
+Latest implementation: fresh chunk arrays, packed nibble access, heightmaps and
+direct skylight on `feature/chunk-data`. Exact runtime/reference source
+`67c928db7c0d87e599f16228833b0234fba4bc24` passes all 30 local CTests on native
+MSVC and WSL GCC/Clang without skips. Both original comparisons pass on every
+build, including all five fresh/repeated chunk cases in three independent
+pairings. The six manifests pass 660 fingerprint checks; public fixtures match
+800 complete arrays from the original-only capture and three fresh runs.
+Clang-format18 passes for 61 C/header files. See [chunk evidence](reference/chunk.md)
+for exact hashes and [the C contract](world/chunk.md) for ownership and scope.
+Public CI, integration and wiki publication are pending. Next implementation
+work covers world-height/cache queries and queued-light finishing behavior.
+The graphical client, dedicated server and complete rewrite remain unfinished.
+
+Previous integrated implementation: normal caves, integrated at
 `49f87ef9c803909ca8d89c8efe67a32da648cca1`. Exact source
 `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33 local CTests on native
 MSVC and WSL GCC/Clang without skips. All ten natural cases and 44 protected
@@ -106,13 +119,19 @@ remain incomplete.
 | Density and base terrain | Allocation-free normal density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures |
 | Surface replacement | Allocation-free normal surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons |
 | Float lookup and floor | Caller-owned float trig table and exact lookup/floor helpers, full-table original comparisons and public path-alias regressions |
+| Normal cave scheduling and carving | Complete natural and protected original comparisons, explicit Random/state preservation and public full-buffer fixtures |
 
-All ten listed increments are integrated and their feature branches removed. M1 is complete.
+All eleven listed increments are integrated and their feature branches removed. M1 is complete.
 The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `077300380a81596da82fbf67ea1cb625e3215436`,
+Latest tested runtime integration: normal caves at
+`49f87ef9c803909ca8d89c8efe67a32da648cca1`, with passing
+[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39044349578).
+All 23 public/numerical tests pass per compiler, along with formatting.
+
+Previous tested math runtime integration: `077300380a81596da82fbf67ea1cb625e3215436`,
 [main run39038169561](https://github.com/frankischilling/minecraft-c/actions/runs/39038169561),
 passes all nineteen tests on native Windows MSVC/Linux GCC/Clang, plus
 formatting. Exact branch commit
@@ -174,6 +193,19 @@ passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBS
 The tested branch commit also passed before integration.
 
 ## Local acceptance
+
+Chunk source: `67c928db7c0d87e599f16228833b0234fba4bc24`. All three toolchains
+pass 27 public tests, the numerical Java oracle and two original comparisons.
+No tests are skipped. Complete local arrays, opacity preservation, packed
+getter sweeps and setter snapshots match independently in all three pairings.
+The [chunk evidence](reference/chunk.md) records six manifest hashes, source
+and artifact verification, paired fixture provenance and actual observation
+budgets. Runtime review covers C ownership, bounds and defined arithmetic;
+direct source/fixture audits cover the observer fixes and complete captured
+bytes.
+World-height/cache queries, lighting queues and propagation remain separate.
+
+Previous float lookup/floor increment:
 
 Float lookup/floor source: `d6665e7f3e1b57c16e9e12c14983abd2ba227441`. All three
 toolchains pass eighteen public tests, the numerical Java oracle and eight

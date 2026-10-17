@@ -66,6 +66,12 @@ source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
 
+The recorded chunk source passes 30 local tests per compiler on native
+Windows/MSVC and WSL GCC/Clang, including both original comparisons. Public CI
+runs 28 tests per compiler and formatting for 61 C/header files. Exact tested
+commits, manifest hashes and integration results live in the development status
+and linked evidence pages.
+
 Original resources are never bundled. The
 [resource guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/resources.md)
 describes local import into a fresh ignored directory and its current limits.
