@@ -1,5 +1,14 @@
 # Development status
 
+Implementation branch: `feature/simplex-noise` from
+`706f4cafcda04071fd53c8a30f18e8f594f5cb05`, issue
+[#19](https://github.com/frankischilling/minecraft-c/issues/19). The C module,
+public tests and live original numerical comparison are implemented.
+Original constant bits were captured on both sides before selecting C literals.
+Exact source `ec92cbf3774b4be154d6c2894324b6fe33ebceac` passed all 15 configured
+tests on native Windows/MSVC and WSL GCC/Clang, without skips. Inspect exact-head
+public CI and integration state in the linked issue before resuming.
+
 Latest implementation increment: original Perlin/octave noise, issue
 [#16](https://github.com/frankischilling/minecraft-c/issues/16), merged in
 [PR #17](https://github.com/frankischilling/minecraft-c/pull/17) at
@@ -57,6 +66,27 @@ The exact PR head also passed before merge.
 
 ## Local acceptance
 
+Simplex source: `ec92cbf3774b4be154d6c2894324b6fe33ebceac`. All three toolchains
+passed ten public tests, the numerical Java oracle and four original
+NBT/compression/Perlin/simplex comparisons. All twelve original manifests under
+`build-simplex-*/reference-{nbt,compression,noise,simplex}/manifest.json` identify
+that source, pass status and empty errors. Public tests passed 5005 simplex
+checks and five helper guards, including filesystem link cases without skips.
+All 812 requests matched in the three simplex pairings: 204923 double values,
+348160 permutation entries and 3248 continuation longs per side. Constants and
+all equivalence/factor/suffix/zero-layer controls agree. Clang-format 18 checked
+all 22 C source/header files; native testing-off builds include all three libraries.
+
+Independent reviews checked source against both-side bytecode, the reflective
+helper/controls, and fixed-vector provenance plus public test/probe coverage.
+One protocol discrepancy was corrected before this source commit: constants
+requests require zero seed in both probes. The built C probe's rejection was
+checked separately. The original-only fourteen-case capture is ignored under
+`.local/reference/simplex-fixed-vectors/`; no original source/assets entered commits.
+Complete biome climate/classification, consumer array quirks, density combination,
+terrain, population, lighting and playable client/server runtimes remain open.
+
+Previous Perlin/octave increment:
 Noise source: `1188da0f126db8d623a45d801638d645df054c76`. All three toolchains
 passed eight public checks, the numerical Java oracle and three original
 NBT/compression/noise comparisons. The nine manifests under

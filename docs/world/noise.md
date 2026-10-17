@@ -2,8 +2,9 @@
 
 Issue [#16](https://github.com/frankischilling/minecraft-c/issues/16) implements
 the original improved-Perlin and octave family. See the [reference notes](../reference/noise.md).
-Simplex biome noise, terrain density, block filling, surfaces, caves, population
-and lighting remain separate work.
+The separate [2D simplex family](simplex.md) supplies other noise primitives.
+Biome climate/classification, terrain density, block filling, surfaces, caves,
+population and lighting remain separate work.
 
 The allocation-free `mc_world` library depends only on `mc_core`. Callers own
 each sampler and supply its octave layer array. Initialize with a seeded

@@ -41,6 +41,11 @@ comparison with the same JAR/JDK/commit settings. See [noise evidence](reference
 and its [interface](world/noise.md). The `mc_world` runtime library needs neither
 Java nor original files.
 
+`MC_ENABLE_SIMPLEX_REFERENCE_TESTS=ON` adds the separate original 2D simplex
+comparison, using the same supplied JAR/JDK/commit settings. Its
+[interface](world/simplex.md) and [reference notes](reference/simplex.md) keep
+noise primitives separate from complete biome and terrain generation.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

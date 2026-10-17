@@ -11,7 +11,7 @@ rather than empty placeholders.
 | `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
-| `world/noise` | Original seeded Perlin/octave scalar and bulk sampling | Shared core, caller-owned layers |
+| `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -20,6 +20,9 @@ Noise sampling preserves original constructor ordering and bulk-specific
 behavior; [its interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/noise.md)
 and [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/noise.md)
 describe the exact tested scope. Complete terrain generation remains open.
+The separate [simplex interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/simplex.md)
+preserves its own floor, wrapped cell sum and independent octave factors. Its
+numerical tests do not establish complete biome climate or classification.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

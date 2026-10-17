@@ -7,7 +7,8 @@ graphics, audio, networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
 `mc_world` depends on `mc_core` and implements the original seeded
-Perlin/octave [noise module](world/noise.md). It owns no allocations or platform
+Perlin/octave [noise module](world/noise.md) and the separate
+[2D simplex/octave family](world/simplex.md). It owns no allocations or platform
 services. Caller-supplied layer arrays keep construction and shared-Random order
 explicit. Bulk sampling preserves the original height-one path and Y-cell cache.
 
@@ -52,6 +53,12 @@ tests/world/noise/test_noise.c
 tests/world/noise/noise_probe.c
 tests/reference/noise/NoiseProbe.java
 scripts/reference/noise/compare_noise.py
+include/mc/world/noise/simplex.h
+src/world/noise/simplex.c
+tests/world/noise/test_simplex.c
+tests/world/noise/simplex_probe.c
+tests/reference/simplex/SimplexProbe.java
+scripts/reference/simplex/compare_simplex.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py
