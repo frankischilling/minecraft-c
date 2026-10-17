@@ -3,10 +3,9 @@
 Active branch: `feature/nbt-codec`, based on tested `main` commit
 `293ed9923ad7797bc5b97f473a08c5c62d68c6ff`. Active issue:
 [#9](https://github.com/frankischilling/minecraft-c/issues/9), under M2.
-No PR is open for this increment yet. The raw codec, modified UTF-8 helper,
-public tests and actual original-class differential are implemented. The
-current worktree checks pass; an exact committed result is being recorded
-before PR integration.
+The raw codec, modified UTF-8 helper, public tests and actual original-class
+differential are implemented. Local acceptance is recorded below; inspect the
+live PR and exact-head checks before integration.
 Inspect the live worktree, PRs and exact-head checks before relying on this note.
 
 ## Integrated foundation
@@ -34,6 +33,16 @@ Results remain under `.local/reference/`, `.local/assets-validation-8de9d81/`
 and `.local/server-smoke-8de9d81/`. These results do not establish gameplay parity.
 
 ## Next work
+
+Exact tested codec commit: `453fc56d80cb0e7f74b6a0a75e0849e78420195a`.
+All six checks passed on native Windows/MSVC with Temurin17, and the five
+public/numerical checks plus original NBT check passed under GCC/Clang WSL
+ASan/UBSan with JDK21. The Linux original-check invocation initially had truncated
+JAR arguments and correctly reported unavailable; corrected explicit paths
+passed. No skipped result is counted as original parity. Reports under each
+`build-*/reference-nbt/manifest.json` record this exact commit, source/JAR/tool/C
+binary hashes, raw records and scope. Both C libraries also built with
+`BUILD_TESTING=OFF`, without Python or Java discovery. Format18 checks pass.
 
 Finish issue #9's exact-commit checks and PR lifecycle. The C implementation
 preserves IDs 0..10, named/unnamed boundaries, UTF-16 units, empty-list
