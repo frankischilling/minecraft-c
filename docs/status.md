@@ -3,12 +3,13 @@
 Active implementation: `feature/biome-climate` from
 `7fdfe358a79399ca9081c23548406fc95a43513f`, issue
 [#21](https://github.com/frankischilling/minecraft-c/issues/21). The C module,
-public tests and optional original comparison are in progress. Isolated
-original classifier/manager setup passed on both pinned JARs with native JDK17;
-the observed table and initial shared numerical sequences agree. No current
-C comparison or world-startup result is claimed yet.
+public tests and optional original comparison are implemented. Exact source
+`6607b3650410bac2707276dd07769cda85215a6a` passed all 18 configured CTests on
+native Windows/MSVC and WSL GCC/Clang without skips. Inspect exact-head public
+CI, integration and wiki publication in the linked issue before resuming.
+Original world startup and full terrain are not established by this fixture.
 
-Latest implementation increment: original 2D simplex/octave noise, issue
+Latest integrated implementation: original 2D simplex/octave noise, issue
 [#19](https://github.com/frankischilling/minecraft-c/issues/19), merged in
 [PR #20](https://github.com/frankischilling/minecraft-c/pull/20) at
 `00aabbd522f78a29ec55ee42ce8d92bfc0400f8b` on `main`.
@@ -85,6 +86,29 @@ The exact PR head also passed before merge.
 
 ## Local acceptance
 
+Climate/biome source: `6607b3650410bac2707276dd07769cda85215a6a`. All three
+toolchains passed twelve public tests, the numerical Java oracle and five
+original NBT/compression/Perlin/simplex/biome comparisons. All fifteen original
+manifests under `build-biome-*/reference-{nbt,compression,noise,simplex,biome}/manifest.json`
+identify that source, pass status and empty errors. Executable hashes match the
+tested probes. All 2879 common snapshots matched C/client, C/server and
+client/server; all 32 client-only snapshots matched C/client. The 4096-entry
+initialized table, thirteen names, exact array bits, lengths and all identity
+masks agree on every platform.
+
+Each common side passed 72 equivalence, one selector distinction, 1512 preserved
+field, 36 temperature-path and 144 point/cache controls. Each client-only side
+passed four equivalence, 76 preserved-field and four point/cache controls.
+Public tests passed 33155 biome checks and five helper guards, including link
+cases without skips. Independent reviews traced all 4096 fixed table entries,
+212 float cases, 79 double cases and four seeded climate sequences to both
+original captures, and checked source, original bindings and comparison controls.
+The probe captures integer addresses before replacement for retention checks.
+Clang-format 18 checked all 26 C files; all three native libraries build with
+testing off and no Python/Java discovery. Complete biome gameplay, terrain,
+storage round trips and playable client/server operation remain open.
+
+Previous simplex increment:
 Simplex source: `ec92cbf3774b4be154d6c2894324b6fe33ebceac`. All three toolchains
 passed ten public tests, the numerical Java oracle and four original
 NBT/compression/Perlin/simplex comparisons. All twelve original manifests under
@@ -102,7 +126,7 @@ One protocol discrepancy was corrected before this source commit: constants
 requests require zero seed in both probes. The built C probe's rejection was
 checked separately. The original-only fourteen-case capture is ignored under
 `.local/reference/simplex-fixed-vectors/`; no original source/assets entered commits.
-Complete biome climate/classification, consumer array quirks, density combination,
+Complete biome gameplay, density combination,
 terrain, population, lighting and playable client/server runtimes remain open.
 
 Previous Perlin/octave increment:
@@ -160,13 +184,11 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
-Continue climate blending and biome classification under
-[#21](https://github.com/frankischilling/minecraft-c/issues/21), then terrain
-density/surfaces and exact chunk comparisons, alongside storage schemas and
-both-direction copied-world round trips. Static manager/classifier evidence and
-bounded acceptance are recorded in that issue; untouched-class setup and live
-climate/classifier observations are still pending. Client/server runtimes and
-the full remaining inventory stay open.
+Finish exact-head integration for climate blending and classification under
+[#21](https://github.com/frankischilling/minecraft-c/issues/21), then continue
+terrain density/surfaces and exact chunk comparisons, alongside storage schemas
+and both-direction copied-world round trips. Client/server runtimes and the
+full remaining inventory stay open.
 
 The original server passed a fresh seed 17 offline loopback startup/save/stop
 smoke during foundation work. It did not involve a client or C server. Ordinary
@@ -175,11 +197,12 @@ occurred. The original-client/server baseline and all four interoperability
 pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
-The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
+The previous [wiki](https://github.com/frankischilling/minecraft-c/wiki) publication is
 `09ef533dda4f021328ab408e5325f41b8a8d90c1`. All five page blobs match the versioned
-`docs/wiki/` sources. Home, build/tests, architecture and storage/reference each
+`docs/wiki/` sources of the integrated simplex increment. Home, build/tests, architecture and storage/reference each
 returned HTTP200 with the expected content; updated pages include both noise
 modules and their comparison options. The clone remains at `.local/wiki/`.
+The current climate changes to versioned wiki pages still need publication after integration.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant

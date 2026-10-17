@@ -14,7 +14,7 @@ without original game files. Original-class storage and noise comparisons remain
 | `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
-| `world.biome` | Original classifier table/threshold observations, climate vectors, mutable buffer growth/suffixes, bounded allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
+| `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
@@ -81,12 +81,23 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
+Climate/biome implementation source `6607b3650410bac2707276dd07769cda85215a6a`
+passed all 18 configured tests on native Windows/MSVC and WSL GCC/Clang without
+skips: twelve public checks, the numerical Java oracle and five original
+storage/noise/climate comparisons. All fifteen original manifests identify that
+source and pass with empty errors. Biome checks match 2879 common snapshots in
+three pairings and 32 separate client-only snapshots; all table, field-preservation,
+repeat, temperature-path and point/cache controls agree. Public helper link
+cases ran without skips on all three toolchains. Native public CI runs thirteen
+tests without private references. The three libraries also build with testing off.
+
+Previous simplex increment:
 Simplex implementation source `ec92cbf3774b4be154d6c2894324b6fe33ebceac` passed
 all 15 configured tests on the same native Windows/MSVC and WSL GCC/Clang
 toolchains below, without skips: ten public checks, the numerical Java oracle
 and four original storage/noise comparisons. All twelve original manifests pin
 that source and pass with empty errors. Five simplex helper regressions ran on
-each platform without skips. Native public CI runs eleven tests without private
+each platform without skips. That increment's public CI ran eleven tests without private
 references. The three C libraries also build with testing off.
 
 Previous Perlin implementation source `1188da0f126db8d623a45d801638d645df054c76` passed all
