@@ -97,11 +97,12 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 
 ## Next work and access
 
-Read-only original McRegion addressing/inspection is under research. Derive a
-scoped issue from both original classes before implementation. Preserve raw NBT
-and compression as separate interfaces, use explicit limits and retain unknown
-application fields. Region files, schemas, writable-world round trips, generation,
-client/server runtimes and all remaining inventory behavior stay open.
+Read-only region inspection is implemented in draft PR #15 under issue #14;
+its live original comparison is still pending. Preserve raw NBT and compression
+as separate interfaces, use explicit limits and retain unknown application fields.
+Continue simplex biome noise, terrain density/surfaces and exact chunk comparisons,
+alongside storage schemas and both-direction copied-world round trips. Client/server
+runtimes and the full remaining inventory stay open.
 
 The original server passed a fresh seed 17 offline loopback startup/save/stop
 smoke during foundation work. It did not involve a client or C server. Ordinary
