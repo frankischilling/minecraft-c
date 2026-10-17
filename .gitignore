@@ -1,0 +1,19 @@
+# Supplied references and local research must never enter a public artifact.
+*.jar
+*.class
+*.zip
+/b1.7.3.json
+/minecraft-c-development-prompt.txt
+/.local/
+/research-local/
+/assets-local/
+/worlds-local/
+/build*/
+/out/
+/.vs/
+__pycache__/
+*.pyc
+*.log
+*.jfr
+*.dmp
+CMakeUserPresets.json
