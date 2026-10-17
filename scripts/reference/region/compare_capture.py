@@ -103,8 +103,21 @@ def main():
               "tested_commit": args.tested_commit.lower() or None,
               "started_utc": datetime.now(timezone.utc).isoformat(), "errors": []}
 
+    def artifact(name, content):
+        # Replace the directory entry instead of writing through a preexisting
+        # hard link. Canonical-path checks above separately reject input symlinks.
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(dir=work, prefix=".capture-", delete=False) as stream:
+                temporary = Path(stream.name)
+                stream.write(content)
+            temporary.replace(work / name)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
     def save():
-        (work / "manifest.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        artifact("manifest.json", (json.dumps(report, indent=2) + "\n").encode("utf-8"))
 
     try:
         work.mkdir(parents=True, exist_ok=True)
@@ -173,7 +186,7 @@ def main():
         if len(plans) > 1024:
             raise ValueError("too many selected observations")
         requests = "".join(f"{path}\t{row['x']}\t{row['z']}\n" for _, row, path, _, _, _ in plans)
-        (work / "requests.txt").write_text(requests, encoding="utf-8", newline="\n")
+        artifact("requests.txt", requests.encode("utf-8"))
         with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
             result = subprocess.run([str(executable)], input=requests, text=True, encoding="utf-8",
                                     stdout=out, stderr=err, timeout=90, check=False)
@@ -182,8 +195,8 @@ def main():
             stdout, stderr = out.read(CAP + 1), err.read(CAP + 1)
         if len(stdout) > CAP or len(stderr) > CAP:
             raise ValueError("C probe output exceeds limit")
-        (work / "stdout.txt").write_bytes(stdout)
-        (work / "stderr.txt").write_bytes(stderr)
+        artifact("stdout.txt", stdout)
+        artifact("stderr.txt", stderr)
         if result.returncode:
             raise ValueError(f"C probe exited {result.returncode}: {stderr[:500]!r}")
         responses = [json.loads(line) for line in stdout.decode("utf-8").splitlines()]

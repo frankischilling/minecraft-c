@@ -113,6 +113,19 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual(self.snapshot(), before)
         self.assertFalse((self.capture.parent / "manifest.json").exists())
 
+    def test_preexisting_hard_link_artifact_does_not_modify_input(self):
+        self.capture.write_text(json.dumps(self.generated_capture()), encoding="utf-8")
+        self.work.mkdir()
+        victim = self.capture.parent / "fixtures/temurin17/client/generated-0-0.fixture"
+        try:
+            (self.work / "manifest.json").hardlink_to(victim)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest("filesystem hard links unavailable: " + str(error))
+        before = self.snapshot()
+        self.run_helper(0)
+        self.assertEqual(self.snapshot(), before)
+        self.assertEqual(json.loads((self.work / "manifest.json").read_text())["status"], "pass")
+
     def test_symlinked_fixture_root_cannot_be_overwritten_by_output_symlink(self):
         actual = self.root / "actual-fixtures"
         actual.mkdir()

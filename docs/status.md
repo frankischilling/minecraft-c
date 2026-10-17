@@ -71,7 +71,7 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 ## Next work and access
 
 Read-only original region inspection is implemented on the active branch, with
-49771 C checks, 19 CLI tests, 5 capture-helper regressions and 32 recorded
+49771 C checks, 19 CLI tests, 6 capture-helper regressions and 32 recorded
 observations. Current local Windows/MSVC and WSL GCC/Clang sanitizer checks pass.
 The captured check starts only the C probe, retains mode `recorded_observations`
 and leaves live original-region checking pending. It does not invoke Java or
