@@ -36,13 +36,15 @@ public CI. The normal cave runtime is integrated, with
 [natural and protected comparisons](reference/caves.md). Fresh chunk data,
 heightmaps, direct skylight and packed access now have
 [exact original comparisons](reference/chunk.md) for their local-state scope.
-Continue with original world-height/cache queries and queued-light finishing
-effects, retaining the distinction between a fresh measured chunk and cached
-world chunks. Full propagation needs its own ordered state comparisons.
 Light-region merging and ordered queue storage now have a separate
 [contract and original observations](reference/lighting.md). The C module
-starts after world admission. Continue the height/cache tracing, admission and
-dirty effects before claiming complete chunk finishing.
+starts after world admission. The [normal finishing boundary](world/finishing.md)
+composes those stages with cached heights, admission and dirty effects.
+[Actual height traces and untouched controls](reference/finishing.md) cover six
+fixed fresh-world cases with two passes per side. Retain the distinction between
+the unpublished measured chunk and the existing cached chunks. Complete cache
+load/generate/lifecycle behavior, population and light propagation need their
+own ordered state comparisons.
 Complete raw chunks, population, lighting and protocol framing remain separate
 required work. Define their scoped implementations from original class/method
 evidence before coding. Further splits must retain the full original requirements

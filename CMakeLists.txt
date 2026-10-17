@@ -19,6 +19,7 @@ option(MC_ENABLE_CAVES_REFERENCE_TESTS "Compare normal cave scheduling and carvi
 option(MC_ENABLE_NIBBLES_REFERENCE_TESTS "Compare packed nibble access with original classes" OFF)
 option(MC_ENABLE_CHUNK_REFERENCE_TESTS "Compare local chunk initialization with original methods" OFF)
 option(MC_ENABLE_LIGHT_REFERENCE_TESTS "Compare light regions and ordered queues with originals" OFF)
+option(MC_ENABLE_FINISH_REFERENCE_TESTS "Compare full normal chunk finishing with original traces" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -72,6 +73,9 @@ add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/comp
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
 
 add_library(mc_world STATIC
+    src/world/cache/cache.c
+    src/world/chunk/finish.c
+    src/world/lighting/world.c
     src/world/lighting/queue.c
     src/world/chunk/data.c
     src/world/chunk/nibbles.c
@@ -85,6 +89,14 @@ target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_chunk_finish tests/world/chunk/test_finish.c)
+    target_link_libraries(mc_test_chunk_finish PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_finish COMMAND mc_test_chunk_finish)
+    set_tests_properties(world.chunk_finish PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_chunk_finish_probe tests/world/chunk/finish_probe.c)
+    target_link_libraries(mc_chunk_finish_probe PRIVATE mc_world mc_build_options)
+
     add_executable(mc_test_light_queue tests/world/lighting/test_queue.c)
     target_link_libraries(mc_test_light_queue PRIVATE mc_world mc_build_options)
     add_test(NAME world.light_queue COMMAND mc_test_light_queue)
@@ -207,6 +219,36 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME tools.finish_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/chunk" -p test_finish_reference.py)
+    set_tests_properties(tools.finish_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 30)
+
+    add_test(NAME tools.finish_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/chunk/test_finish_interop.py"
+        --executable "$<TARGET_FILE:mc_chunk_finish_probe>")
+    set_tests_properties(tools.finish_interop PROPERTIES LABELS "public;tools" TIMEOUT 60)
+
+    if(MC_ENABLE_FINISH_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        get_filename_component(MC_FINISH_JAVA_BIN "${Java_JAVA_EXECUTABLE}" DIRECTORY)
+        add_test(NAME reference.chunk_finish
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/chunk/compare_finish.py"
+            --executable "$<TARGET_FILE:mc_chunk_finish_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --javap "${MC_FINISH_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-chunk-finish"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.chunk_finish PROPERTIES
+            LABELS "reference;original;chunk" TIMEOUT 600 SKIP_RETURN_CODE 77)
+    endif()
     add_test(NAME tools.light_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/lighting" -p test_reference.py)

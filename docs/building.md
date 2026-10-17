@@ -94,6 +94,15 @@ and separately observes the original million-entry abort. C storage begins
 after world admission; full finishing and propagation remain open. See the
 [queue contract](world/lighting.md) and [evidence](reference/lighting.md).
 
+`MC_ENABLE_FINISH_REFERENCE_TESTS=ON` compares full normal finishing, all 1024
+ordered height queries per pass, dirty state and complete queues with both
+untouched originals. It requires JDK17+ with `jdk.jdi` and the same supplied
+JAR/source settings. JDWP binds to loopback only. Each of six cases has a fresh
+world, two consecutive passes and a separate untouched control whose complete
+snapshots must match. Public fixtures replay the full captured records without
+Java. See the [finishing contract](world/finishing.md) and
+[reproduction procedure](reference/finishing.md).
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

@@ -9,6 +9,10 @@ comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
+| `world.chunk_finish` | 3259 constructed checks for packed cache aliases, publication visibility, unsigned heights, original admission, query order, dirty effects and rejected-call preservation | Valid nonnull cache state; no loader, generator or population lifecycle |
+| `tools.finish_reference` | Corpus, packed-key, wrapped-query, boundary and fixture omission guards | Synthetic helper checks; no original methods run |
+| `tools.finish_interop` | Twelve captured original inputs, 24576 exact query records and 48 complete data/queue stages | Six fixed fresh-world cases with two passes; no propagation or complete cache lifecycle |
+| `reference.chunk_finish` (local opt-in) | Actual original entry/exit traces, complete retained local/cache/queue snapshots and untouched controls, independently compared in three pairings | Finite headless marker inventories; normal finishing on the fixed corpus only |
 | `world.light_queue` | 72 observed merges, complete live queues across 43 requests per original side, storage/alias/failure contracts and the million-entry abort | C queue storage after admission; no C world admission or propagation |
 | `tools.light_reference` | Five parser, ordering, rejected-request preservation and old-JDK prerequisite guards | No original methods run |
 | `reference.light_queue` (local opt-in) | Actual original merge methods and world queue overloads, complete ordered queues, unchanged world/cache state and actual million-entry abort | Replays each observed baseline/admission result; full world finishing remains open |
@@ -146,6 +150,15 @@ Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
 `BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
+
+Full normal finishing uses `MC_ENABLE_FINISH_REFERENCE_TESTS`, JDK17+ with
+`jdk.jdi`, both supplied JARs and the exact source commit field. The controller
+observes actual world-height entries and matching return values during two
+consecutive passes. Four suspended marker inventories check thread roles and
+original-loader frames; these are finite headless observations. Each traced
+run must match a separate untouched control byte-for-byte across complete
+snapshots. See [finishing evidence](reference/finishing.md) for the corpus,
+loopback debugger, captured state and remaining cache/propagation work.
 
 ## Local environments
 

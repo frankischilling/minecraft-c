@@ -9,7 +9,8 @@ compatibility, float lookup/floor helpers, raw NBT, bounded gzip/zlib memory
 compression, seeded Perlin/octave noise, 2D simplex/octave noise,
 climate/biome classification, normal density/base
 terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
-ordered light-region storage, local resource import and native builds.
+ordered light-region storage, cached height queries, normal chunk finishing,
+local resource import and native builds.
 The [repository README](https://github.com/frankischilling/minecraft-c#readme),
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
 and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)

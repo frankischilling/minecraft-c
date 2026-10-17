@@ -51,6 +51,13 @@ explicit. Shared Java helpers preserve wrapped coordinate/volume arithmetic.
 The newest five-entry search, in-place merges and million-entry abort policy
 remain distinct from world admission and lighting propagation.
 
+The [finishing boundary](world/finishing.md) adds a caller-owned packed-key cache,
+world-height lookup, light-request admission and complete normal finishing.
+Stable chunk identities let queries see rebuilt heights when that identity is
+already cached. Fresh generated chunks finish before explicit publication.
+Publication covers map replacement and insertion-list append only; loading,
+unloading, lifecycle callbacks, population and light propagation remain separate.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
