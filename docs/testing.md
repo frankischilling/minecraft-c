@@ -14,8 +14,10 @@ without original game files. Original-class storage and noise comparisons remain
 | `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
+| `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
 | `tools.noise_reference` | 4 generated prerequisite/report/path/symlink/hard-link regressions | No original classes run; filesystem link cases skip only if unsupported |
 | `tools.simplex_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
+| `tools.biome_reference` | 5 generated prerequisite/hash/report/path/link regressions | No original classes run; link cases skip only if unsupported |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
@@ -23,6 +25,7 @@ without original game files. Original-class storage and noise comparisons remain
 | `reference.compression` (local opt-in) | 80 containers, 22 C encodes; per side 181 baseline records, 65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference transfers | 36 explicit malformed-container departure records; no copied-world compatibility claim |
 | `reference.noise` (local opt-in) | Per side 783 requests, 140218 exact double values, 399872 permutation entries and 3132 following Random longs; three separate pair comparisons | Scoped procedural noise; no chunks, population or lighting |
 | `reference.simplex` (local opt-in) | Per side 812 requests, 204923 exact double values, 348160 permutation entries and 3248 following Random longs; actual short/extended overload and factor/suffix controls | Scoped 2D numerical methods; consumer-like inputs do not establish biome results |
+| `reference.biome` (local opt-in) | Actual catalogue/table, direct float and quantized double selectors, processed temperature and biome grids with stateful buffer sequences | Explicit-seed numerical fixture; no executed world constructors or terrain |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -62,6 +65,15 @@ record initialized constants and compare exact state/results without a finite-bi
 tolerance. Mixed Perlin/simplex prefixes test subsequent Random consumption.
 See [simplex evidence](reference/simplex.md) and its [interface](world/simplex.md).
 
+Climate/biome comparisons use `MC_ENABLE_BIOME_REFERENCE_TESTS` and the same
+supplied-JAR/JDK/commit settings. The fixture invokes actual original protected
+manager constructors and original seeded octave objects, then untouched valid
+sampling methods. It records exact numerical arrays, object labels and buffer
+retention/alias state. Class initialization diagnostics are retained separately
+from protocol output. Client-only raw temperature is compared separately from
+the shared client/server cases. See [biome evidence](reference/biome.md) and
+[ownership and limits](world/biome.md).
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
@@ -69,12 +81,23 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
+Climate/biome implementation source `6607b3650410bac2707276dd07769cda85215a6a`
+passed all 18 configured tests on native Windows/MSVC and WSL GCC/Clang without
+skips: twelve public checks, the numerical Java oracle and five original
+storage/noise/climate comparisons. All fifteen original manifests identify that
+source and pass with empty errors. Biome checks match 2879 common snapshots in
+three pairings and 32 separate client-only snapshots; all table, field-preservation,
+repeat, temperature-path and point/cache controls agree. Public helper link
+cases ran without skips on all three toolchains. Native public CI runs thirteen
+tests without private references. The three libraries also build with testing off.
+
+Previous simplex increment:
 Simplex implementation source `ec92cbf3774b4be154d6c2894324b6fe33ebceac` passed
 all 15 configured tests on the same native Windows/MSVC and WSL GCC/Clang
 toolchains below, without skips: ten public checks, the numerical Java oracle
 and four original storage/noise comparisons. All twelve original manifests pin
 that source and pass with empty errors. Five simplex helper regressions ran on
-each platform without skips. Native public CI runs eleven tests without private
+each platform without skips. That increment's public CI ran eleven tests without private
 references. The three C libraries also build with testing off.
 
 Previous Perlin implementation source `1188da0f126db8d623a45d801638d645df054c76` passed all

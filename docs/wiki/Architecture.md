@@ -12,6 +12,7 @@ rather than empty placeholders.
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
+| `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -23,6 +24,13 @@ describe the exact tested scope. Complete terrain generation remains open.
 The separate [simplex interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/simplex.md)
 preserves its own floor, wrapped cell sum and independent octave factors. Its
 numerical tests do not establish complete biome climate or classification.
+
+The separate [climate/biome module](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/biome.md)
+combines three independent seeded simplex channels with original processing and
+table lookup. Mutable managers preserve array growth, clear numeric suffixes
+and retain biome suffixes under a caller-selected allocation budget. Its
+[reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome.md)
+separates numerical fixtures from world startup, terrain and full biome behavior.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

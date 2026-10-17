@@ -46,6 +46,12 @@ comparison, using the same supplied JAR/JDK/commit settings. Its
 [interface](world/simplex.md) and [reference notes](reference/simplex.md) keep
 noise primitives separate from complete biome and terrain generation.
 
+`MC_ENABLE_BIOME_REFERENCE_TESTS=ON` compares actual original climate methods,
+the initialized biome table and mutable buffer sequences using the same local
+JAR/JDK/commit settings. See its [interface](world/biome.md) and
+[reference evidence](reference/biome.md). These numerical fixtures do not start
+an original world or establish terrain generation.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

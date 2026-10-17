@@ -29,8 +29,8 @@ is implemented under [#16](https://github.com/frankischilling/minecraft-c/issues
 The separate 2D simplex/octave primitives are implemented under
 [#19](https://github.com/frankischilling/minecraft-c/issues/19), with exact-source
 acceptance recorded in [status](status.md). Climate blending and biome classification
-are tracked in [#21](https://github.com/frankischilling/minecraft-c/issues/21), with
-static both-side evidence and live setup/comparisons still pending.
+are implemented under [#21](https://github.com/frankischilling/minecraft-c/issues/21),
+with [actual both-side numerical methods and state comparisons](reference/biome.md).
 Density combination, raw chunks, population, lighting and
 protocol framing remain separate required work. Create their scoped issues from the
 original class/method evidence before coding. Further
