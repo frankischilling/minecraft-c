@@ -7,7 +7,8 @@ usernames and no account authentication.
 
 There is no playable C client or server yet. Current code provides numerical
 and text compatibility, bounded NBT and gzip/zlib modules, tests, reference
-tools, and a local resource importer. The [parity matrix](docs/parity.md) records
+tools, a read-only [region inspector](docs/storage/region.md), and a local
+resource importer. The [parity matrix](docs/parity.md) records
 verified scenarios and outstanding work.
 
 ## Build

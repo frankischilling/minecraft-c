@@ -32,3 +32,10 @@ valid even when an earlier member contains a complete root. Reserved gzip header
 flags are rejected where the selected Java readers accept them. These are
 malformed-container departures, with [specific original observations](reference/compression.md),
 not a change to valid gameplay or a save-compatibility claim.
+
+Read-only region inspection retains raw metadata and rejects inconsistent
+locations, overlap and record lengths before returning a payload. Both local
+coordinates are checked. It reports partial sectors without repair and opens
+files only for reading. These inspection/parser constraints are documented in
+[the region interface](storage/region.md); they do not implement original save
+repair or authorize a change to normal gameplay.

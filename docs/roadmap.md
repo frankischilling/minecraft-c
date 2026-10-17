@@ -22,7 +22,9 @@ operations and integration need explicit ownership.
 The raw NBT and modified UTF increment [#9](https://github.com/frankischilling/minecraft-c/issues/9)
 is merged, as is [bounded gzip/zlib, issue #11](https://github.com/frankischilling/minecraft-c/issues/11),
 with [both-side evidence](reference/compression.md). Read-only original region
-inspection is under research; deterministic noise/chunk generation and protocol
+inspection is implemented on `feature/region-inspector` under
+[#14](https://github.com/frankischilling/minecraft-c/issues/14), with live
+original-reader validation still pending. Deterministic noise/chunk generation and protocol
 framing follow. Create their scoped issues from the
 original class/method evidence before coding. Further
 splits must retain the full original requirements rather than replacing them

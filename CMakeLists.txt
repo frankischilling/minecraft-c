@@ -9,9 +9,11 @@ option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" O
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numerical helpers with a local JDK" OFF)
 option(MC_ENABLE_NBT_REFERENCE_TESTS "Compare NBT with locally supplied original JARs" OFF)
 option(MC_ENABLE_COMPRESSION_REFERENCE_TESTS "Compare compression with original helpers" OFF)
+option(MC_ENABLE_REGION_CAPTURE_TESTS "Compare region reader with recorded observations" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
+set(MC_REGION_CAPTURE_MANIFEST "" CACHE FILEPATH "Local recorded region observation manifest")
 
 # Strict diagnostics apply to project-owned code; dependencies share sanitizers only.
 add_library(mc_build_options INTERFACE)
@@ -52,8 +54,17 @@ add_library(mc_core STATIC src/core/java/java.c src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_build_options)
 
-add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/compression.c)
+add_library(mc_storage STATIC
+    src/storage/nbt/nbt.c
+    src/storage/compression/compression.c
+    src/storage/region/region.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
+
+add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
+target_link_libraries(mc_region_inspect PRIVATE mc_storage mc_build_options)
+if(MINGW)
+    target_link_options(mc_region_inspect PRIVATE -municode)
+endif()
 
 include(CTest)
 if(BUILD_TESTING)
@@ -83,6 +94,14 @@ if(BUILD_TESTING)
     add_executable(mc_compression_probe tests/storage/compression/compression_probe.c)
     target_link_libraries(mc_compression_probe PRIVATE mc_storage mc_build_options)
 
+    add_executable(mc_test_region tests/storage/region/test_region.c)
+    target_link_libraries(mc_test_region PRIVATE mc_storage mc_build_options)
+    add_test(NAME storage.region COMMAND mc_test_region)
+    set_tests_properties(storage.region PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_region_probe tests/storage/region/region_probe.c)
+    target_link_libraries(mc_region_probe PRIVATE mc_storage mc_build_options)
+
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
     add_test(NAME tools.import_assets
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
@@ -96,6 +115,30 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/compression/test_interop.py"
         --executable "$<TARGET_FILE:mc_compression_probe>")
     set_tests_properties(tools.compression_interop PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.region_inspect
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region/test_inspect.py"
+        --executable "$<TARGET_FILE:mc_region_inspect>")
+    set_tests_properties(tools.region_inspect PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.region_capture
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region/test_capture.py"
+        --executable "$<TARGET_FILE:mc_region_probe>")
+    set_tests_properties(tools.region_capture PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    if(MC_ENABLE_REGION_CAPTURE_TESTS)
+        add_test(NAME reference.region_capture
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/region/compare_capture.py"
+            --executable "$<TARGET_FILE:mc_region_probe>"
+            --capture "${MC_REGION_CAPTURE_MANIFEST}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-region-capture"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.region_capture PROPERTIES
+            LABELS "reference;captured;region" TIMEOUT 120 SKIP_RETURN_CODE 77)
+    endif()
 
     if(MC_ENABLE_JAVA_REFERENCE_TESTS)
         find_package(Java 8 REQUIRED COMPONENTS Runtime Development)

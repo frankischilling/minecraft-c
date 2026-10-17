@@ -1,5 +1,13 @@
 # Development status
 
+Active increment: `feature/region-inspector`, based on
+`2cd7c04db5cc231c3ba865d5dc4e174a400248ca`, issue
+[#14](https://github.com/frankischilling/minecraft-c/issues/14). The read-only
+region module, CLI, public tests and offline captured-observation comparison
+are implemented. Exact-source acceptance and draft PR checks are being recorded.
+Live original-region validation remains pending; keep #14 open and do not merge
+this increment on the strength of captured observations alone.
+
 Raw NBT, modified UTF-8 and bounded gzip/zlib compression are integrated. The
 README is a short overview and quick start; detailed setup lives in
 [building.md](building.md), with published [wiki pages](https://github.com/frankischilling/minecraft-c/wiki).
@@ -62,8 +70,13 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 
 ## Next work and access
 
-Read-only original McRegion addressing/inspection is under research. Derive a
-scoped issue from both original classes before implementation. Preserve raw NBT
+Read-only original region inspection is implemented on the active branch, with
+49771 C checks, 19 CLI tests, 5 capture-helper regressions and 32 recorded
+observations. Current local Windows/MSVC and WSL GCC/Clang sanitizer checks pass.
+The captured check starts only the C probe, retains mode `recorded_observations`
+and leaves live original-region checking pending. It does not invoke Java or
+the capture producer. Public/private validation counts must stay distinct.
+Preserve raw NBT
 and compression as separate interfaces, use explicit limits and retain unknown
 application fields. Region files, schemas, writable-world round trips, generation,
 client/server runtimes and all remaining inventory behavior stay open.

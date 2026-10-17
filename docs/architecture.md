@@ -2,7 +2,8 @@
 
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility
 and allocation-free modified UTF-8 text helpers. `mc_storage` depends on it and
-contains the raw NBT reader/writer and gzip/zlib memory compression. Neither library initializes display,
+contains raw NBT, gzip/zlib memory compression and borrowed region record views.
+Neither library initializes display,
 graphics, audio, networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
@@ -18,6 +19,8 @@ or world schemas. Strings preserve UTF-16 code units, and parser failures leave
 caller result outputs unchanged. The separate compression module owns its
 decoded bytes and validates whole member checksums. Callers compose these
 interfaces; neither implicitly selects a world schema or opens a file.
+The separate `mc_region_inspect` executable opens files only for reading and
+composes region, compression and NBT modules for selected local records.
 
 ## System and subsystem folders
 
@@ -41,6 +44,12 @@ include/mc/storage/compression/compression.h
 src/storage/compression/compression.c
 tests/storage/compression/test_compression.c
 tests/storage/compression/compression_probe.c
+include/mc/storage/region/region.h
+src/storage/region/region.c
+tests/storage/region/test_region.c
+tests/storage/region/region_probe.c
+src/tools/storage/region_inspect.c
+tests/tools/region/test_inspect.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py

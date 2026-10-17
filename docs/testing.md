@@ -12,11 +12,15 @@ without original game files. Original-class NBT/compression comparisons remain l
 | `core.mutf8` | 596848 checks, including every UTF-16 unit, accepted byte forms, malformed input and unchanged outputs | Payload codec only; NBT and packet framing are distinct |
 | `storage.nbt` | 394978 checks for all original tag types, boundaries, retained state, ownership, budgets, errors and deterministic mutations | Raw tags only; no world schema or compression |
 | `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
+| `storage.region` | 49771 checks for raw metadata, both coordinate bounds, overlap, multi-sector lengths, payload spans, limits and mutations | Borrowed region spans; no world schema or writes |
+| `tools.region_inspect` | 19 generated-fixture tests covering 37 CLI invocations, JSON composition, Unicode/read-only paths, diagnostics, budgets, summaries and unchanged files | Inspection only; metadata mode does not decode containers |
+| `tools.region_capture` | 5 regressions for reporting, malformed object shapes, missing inputs, read-only data and symlink/path preservation | Generated simulated observations test the helper; they are not original evidence |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
 | `reference.nbt` (local opt-in) | Per original side: 194 reads, 40 original writes, 12 packet controls, 157 original-to-C and 435 original re-reads | Selected JDK; 4 malformed negative-list departures and 20 order-only differences recorded separately |
 | `reference.compression` (local opt-in) | 80 containers, 22 C encodes; per side 181 baseline records, 65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference transfers | 36 explicit malformed-container departure records; no copied-world compatibility claim |
+| `reference.region_capture` (local opt-in) | 32 previously recorded observations; raw payloads, metadata and roots; 16 compound-order-only differences | Recorded evidence; live original-region comparison remains pending |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -44,10 +48,17 @@ commit field. Enable `MC_ENABLE_COMPRESSION_REFERENCE_TESTS` separately. The
 behavior and distinguishes NBT success from full container validation. Public
 cross-reader tests use only generated fixtures and Python's standard library.
 
+The region capture check uses `MC_ENABLE_REGION_CAPTURE_TESTS` with an explicit
+`MC_REGION_CAPTURE_MANIFEST`. It starts only the C probe and is labeled
+`captured`. See [recorded-region validation](reference/region.md) for input
+fingerprints, independent file preflight and exact comparison rules. It does
+not satisfy the pending live original-region acceptance item in issue #14.
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
-`BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
+`BUILD_TESTING=OFF` builds the C libraries, pinned zlib and region inspection
+command without Python or Java discovery.
 
 ## Local environments
 

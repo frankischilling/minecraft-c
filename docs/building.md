@@ -27,7 +27,8 @@ ctest --test-dir build -C Debug --output-on-failure
 Choose a separate build directory when changing generators or compilers.
 For GCC/Clang sanitizers, configure `-DMC_ENABLE_SANITIZERS=ON`; instrumentation
 covers project code and its zlib dependency. Strict diagnostics apply to project
-source. Set `-DBUILD_TESTING=OFF` to build libraries without Python/Java discovery.
+source. Set `-DBUILD_TESTING=OFF` to build the libraries and region inspection
+command without Python/Java discovery.
 
 Enable `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON` for the standard-library numerical
 oracle; it requires JDK8+ and uses no Minecraft files. The NBT and compression
@@ -62,6 +63,10 @@ directory and reports missing resources. See [resource evidence](reference/resou
 and [binary setup](reference/binaries.md). No native asset consumer is implemented
 yet. Keep originals, launcher files, credentials, recordings, logs and worlds in
 ignored local directories. Copy a world before any writable reference test.
+
+The read-only [region inspection command](storage/region.md) can enumerate sector
+metadata and decode a selected local record. It does not implement a playable
+world loader or compatible save writer.
 
 Current compiler/platform results and remaining graphical access limits are in
 [the resume note](status.md). Client controls, compatible world writes and hosting
