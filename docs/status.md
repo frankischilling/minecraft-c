@@ -1,8 +1,9 @@
 # Development status
 
-Active branch: `feature/light-queue`. The next increment implements original
-light-region merging and ordered queue storage after world admission. Full
-chunk finishing and the complete rewrite remain unfinished.
+Latest runtime integration: original light-region merging and ordered queue
+storage at `fe83e6fe67f287698312bd32136b83a7f0cd31f2` on `main`. Continue
+from `main` and inspect the live worktree. Full chunk finishing and the complete
+rewrite remain unfinished.
 
 ## Current work
 
@@ -26,9 +27,18 @@ remain explicit. Independent source/fixture review found no remaining defects;
 all 86 original queue states reconstruct exactly from the public fixture deltas.
 Clang-format18 passes all 66 C/header files.
 
-Hosted checks and wiki publication are pending. The exact source is published
-on `feature/light-queue`; merge only after native hosted checks pass. The
-versioned wiki pages already describe this increment.
+Branch source `d9f065bb3d9dcaa462e08d6afcbaf0d1e8fc658f` passes all 30 hosted
+public/numerical tests per compiler plus formatting in
+[run39071978648](https://github.com/frankischilling/minecraft-c/actions/runs/39071978648).
+The runtime integration tree matches that tested tree. The resulting
+[main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39072086470)
+also pass all 30 tests per compiler and formatting. The implementation branch
+has been removed.
+
+The wiki is published at `d373a098ada79390e0719dca5ab6c8d82f62f7ef`; remote
+head verification succeeds. All five page blobs match versioned sources at the
+runtime integration. README remains unchanged. Earlier detailed integration
+results moved to [history](history.md), keeping this resume note short.
 
 The repository has `.clang-format`, matching system/subsystem folders and
 separate public/local reference tests. README stays a short overview; details
@@ -36,11 +46,11 @@ live in [building](building.md), [architecture](architecture.md), the
 [parity matrix](parity.md), [queue contract](world/lighting.md) and
 [original queue evidence](reference/lighting.md).
 
-## Integrated baseline
+## Earlier foundations
 
 Local chunk arrays, packed access, heights and direct skylight are integrated at
-`16ceea3c254b636cd6d24bb56f0bfa2dd88d8e01`. The latest baseline is
-`c98ffc4`, including its evidence checkpoint. Previous detailed results are
+`16ceea3c254b636cd6d24bb56f0bfa2dd88d8e01`. Its evidence checkpoint is
+`c98ffc4`. Previous detailed results are
 preserved in [integration history](history.md).
 
 M1 is complete. M2 through M5 remain open. The read-only region inspector is
@@ -49,11 +59,17 @@ comparison remains pending. Preserve that branch.
 
 ## Next work
 
-Complete hosted queue verification and integration. Then continue original
-world-height query tracing, cache insertion/visibility, world admission and
+Continue original world-height query tracing, cache insertion/visibility, world admission and
 finishing dirty effects. Retain all 1024 ordered height queries and compare
 traced calls with untouched controls. Queue propagation, population, save round
 trips, client/server runtimes and the full gameplay inventory remain required.
+
+Existing chunk records retain complete cache/queue baselines but contain no
+dynamic query events. Evaluate JDI entry/exit tracing of actual `fd.d(II)I` and
+`dj.d(II)I` during the measured finishing calls. Verify return-value capability,
+single-threaded mutation and bounded complete traces before relying on it.
+Retain the original packed cache-key behavior, including coordinate collisions.
+This tracing approach is statically supported; runtime feasibility is unverified.
 
 There is no playable C client or server, writable-world support or successful
 client interoperability test. The original server passed an offline loopback
