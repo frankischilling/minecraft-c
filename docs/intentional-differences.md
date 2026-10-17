@@ -23,3 +23,12 @@ rejected rather than written as malformed streams. These are parser safety
 and API constraints, not approved changes to normal gameplay. See
 [the codec's bounds](storage/nbt.md#bounds-and-failure-behavior) and
 [original observations](reference/nbt.md).
+
+Memory gzip/zlib decoding validates complete member checksums/trailers and
+enforces input, output, allocation and member budgets. The original gzip NBT
+helper can return a root before reading a missing or corrupt trailer; the C
+module rejects those containers. Recognized later gzip members must also be
+valid even when an earlier member contains a complete root. Reserved gzip header
+flags are rejected where the selected Java readers accept them. These are
+malformed-container departures, with [specific original observations](reference/compression.md),
+not a change to valid gameplay or a save-compatibility claim.
