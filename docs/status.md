@@ -1,64 +1,57 @@
 # Resume note
 
-Current branch: `chore/project-conventions`, based on `main` commit
-`ed67a55d831372c208bcf87c2cc3c6b75a1b8029`. The active scoped task is
-[#7](https://github.com/frankischilling/minecraft-c/issues/7): repository text
-preferences and current pinned CI actions. Inspect the live branch, PRs and
-exact-head CI before relying on this note.
+Active branch: `feature/nbt-codec`, based on tested `main` commit
+`293ed9923ad7797bc5b97f473a08c5c62d68c6ff`. Active issue:
+[#9](https://github.com/frankischilling/minecraft-c/issues/9), under M2.
+No PR is open for this increment yet. The current changes record original
+NBT evidence; the codec and its original-class differential are not implemented.
+Inspect the live worktree, PRs and exact-head checks before relying on this note.
 
-Completed work in this increment:
+## Integrated foundation
 
-- Verified supplied JAR fingerprints; pinned CFR0.152; decompiled both sides
-  locally; bytecode anchors and an initial full-scope feature inventory recorded.
-- Implemented C17 Java numerical/cast/Random helpers: 146 public checks and
-  135768 exact Java/C records pass. Native MSVC and GCC/Clang WSL tests pass.
-- Implemented local import with 16 synthetic tests; real import of 409 resources
-  with hashes verified. Added system/subsystem folders and `.clang-format`.
-- Original loopback server seed17 startup/save/stop passed. Original-client
-  joins and the entire four-way multiplayer matrix remain untested.
-- MIT approved by owner. Only account authentication is an approved gameplay
-  exception. Original materials remain ignored/external.
+[PR #6](https://github.com/frankischilling/minecraft-c/pull/6) added C17 Java
+numerical/cast/Random helpers, local resource import, pinned reference tooling,
+the initial full-scope inventory, formatting and subsystem folders.
+[PR #8](https://github.com/frankischilling/minecraft-c/pull/8) applied the owner's
+repository text preferences and updated CI to pinned current official actions.
+Both are merged; their branches were removed. The first scoped milestone is
+complete. The full parity inventory in issue #4 remains open; there is no playable
+C client/server, writable save support, or successful client interoperability test.
 
-Exact locally tested implementation commit: `8de9d81d317847c9bf25b58790e6baf261c8a199`.
-After relocation and formatting, all three CTests passed with native MSVC and
-with GCC/Clang WSL plus ASan/UBSan. Format checks passed with versions 18 and 22.
-The supplied-JAR inspection, real 409-resource import, and original fresh-world
-loopback save/stop smoke also passed at that commit. Local outputs are under
-`.local/reference/`, `.local/assets-validation-8de9d81/` and
-`.local/server-smoke-8de9d81/`. No gameplay comparison follows from these results.
+Exact tested default-branch commit: `293ed9923ad7797bc5b97f473a08c5c62d68c6ff`,
+[run39021606705](https://github.com/frankischilling/minecraft-c/actions/runs/39021606705).
+All four jobs passed: format, native Windows MSVC, native Linux GCC and Clang.
+Each compiler passed all three CTests with no reference skips. Coverage is 146
+public numerical checks, 16 generated asset tests and 135768 exact Java/C records.
+GCC/Clang use ASan/UBSan. A public-only Linux build also passed without Java discovery.
 
-Both independent reviews finished. The missing-reference exit77 CTest handling
-and a stale relocated test command were corrected before the implementation
-commit. [PR #6](https://github.com/frankischilling/minecraft-c/pull/6) is merged.
-Its final head `6980164b218e9139f667393950d0f3ed6dc5ff76` passed all four jobs in
-[run39021245762](https://github.com/frankischilling/minecraft-c/actions/runs/39021245762).
-The resulting `main` commit `ed67a55d831372c208bcf87c2cc3c6b75a1b8029` also passed
-all four jobs in [run39021329782](https://github.com/frankischilling/minecraft-c/actions/runs/39021329782).
-Native Windows MSVC19.44 and native Linux GCC13.3/Clang18.1.3 each passed all
-three CTests, with no reference skips. The default public-only Linux build
-also passed both tests without Java discovery. Deprecation annotations in the
-first workflow motivated the pinned-action update in issue7.
+Local implementation commit `8de9d81d317847c9bf25b58790e6baf261c8a199` passed
+native MSVC and GCC/Clang WSL tests, supplied-JAR inspection, a real 409-resource
+import with every hash reread, and original offline loopback seed 17 startup/save/stop.
+Results remain under `.local/reference/`, `.local/assets-validation-8de9d81/`
+and `.local/server-smoke-8de9d81/`. These results do not establish gameplay parity.
 
-Outstanding access limits:
+## Next work
 
-- Ordinary Minecraft Launcher window capture timed out twice; no Play action
-  or credential-file access occurred. Retry graphical reference testing when
-  the capture tool works; this does not block storage/simulation implementation.
-- `git ls-remote https://github.com/frankischilling/minecraft-c.wiki.git` returned
-  `Repository not found`. Wiki pages are prepared under `docs/wiki/`; publication
-  has not succeeded. The hosted wiki may need its first page created through
-  GitHub before its Git repository is available.
+Implement issue #9's bounded retained NBT trees and lossless modified UTF strings
+using `docs/reference/nbt.md`. Preserve IDs 0..10, named/unnamed boundaries,
+empty-list normalization and duplicate-name behavior. Probe actual untouched
+client/server classes in isolated processes; never use recompiled decompiler
+output as the oracle. Keep gzip/regions/world writes as separate follow-ups.
+Use matching system/subsystem folders and `.clang-format`, then extend public
+and local-reference tests before opening a cohesive implementation PR.
 
-Next actions: review and validate issue7's workflow/text changes, merge only
-after exact-head CI, verify default-branch CI, and close the scoped milestone.
-Keep issue4 and all unimplemented parity areas open. Then implement the first
-NBT/text/storage increment under M2; the ignored `.local/nbt-next.md` records
-both-side bytecode findings for the codec issue, including modified UTF-8,
-IDs0..10, empty-list behavior and original-class differential design. That
-differential has not yet been executed. Carry publishable findings into the
-next reviewed code increment; no original source should be published.
+## Access limits and decisions
 
-Unanswered behavior questions: canonical external audio provenance, unavailable
-legacy skin/resource services, and dormant Sky-provider reachability require
-research. Ask the owner for an exception only when unavailability is established
-and it affects completion. No other owner decision currently blocks coding.
+Ordinary Minecraft Launcher capture timed out twice; no Play action or account
+file access occurred. Retry when capture works. The original-client/server
+baseline and all four interoperability pairings remain untested.
+
+The wiki Git endpoint returned `Repository not found`; publishable pages remain
+prepared in `docs/wiki/`, with no successful hosted update claimed.
+
+MIT is owner-approved. Account authentication is the only approved gameplay
+exception. Canonical external audio, unavailable legacy services and dormant
+Sky-provider reachability need further research. No owner answer currently
+blocks coding; ask about exceptions only when established unavailability affects
+completion.
