@@ -1,8 +1,9 @@
 # Simplex and octave noise
 
 This note records numerical observations from the supplied Beta 1.7.3 binaries.
-The live comparison with C is being implemented; no passing comparison is claimed
-here. Full biome selection, terrain generation and chunks remain separate work.
+The opt-in comparison invokes the actual original numerical classes and compares
+exact C results and state. The [status note](../status.md) pins tested source and
+environments. Full biome selection, terrain generation and chunks remain separate work.
 
 ## Reference identity
 
@@ -113,6 +114,28 @@ The C interface uses caller-owned state and buffers. It bounds dimensions,
 products and capacities before writes, rather than reproducing Java allocation
 or array failures. These checks do not establish equivalence for malformed
 original calls.
+
+## Live comparisons
+
+The corpus contains 812 requests per side: one constants record, 144 state
+records, 117 additive grids, 374 explicit-factor fills and 176 calls through the
+actual short overload. It compares 204923 returned double bit patterns, 348160
+permutation entries and 3248 subsequent Random longs. C/client, C/server and
+client/server comparisons are separate. Initialized constants match exactly.
+
+Each implementation also passes 177 equivalence controls, three distinct-factor
+controls, 667 suffix checks, 104 zero-layer checks and a constants-without-draws
+control. These distinguish default from explicit 0.5, independent octave factors,
+mixed Perlin/simplex construction, accumulation and full-span clearing.
+Fourteen targeted original-only observations supply all public fixed vectors;
+every value was traced to both agreeing originals, independently of C output.
+
+Enable `MC_ENABLE_SIMPLEX_REFERENCE_TESTS` with both supplied JARs and an exact
+`MC_REFERENCE_TESTED_COMMIT`, as described in [testing](../testing.md). The helper
+records source/executable/tool/JAR hashes and request/result artifacts, uses
+fresh compiled classes, and atomically replaces current reports. Missing or
+mismatched prerequisites return77; execution/comparison errors return1. Public
+generated tests cover unavailable reports and input-preserving output paths.
 
 ## Consumers and remaining scope
 

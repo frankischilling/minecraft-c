@@ -22,8 +22,8 @@ contains complete setup and formatting commands; the
 [dependency guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/dependencies.md)
 explains offline source overrides and license notices.
 
-Public checks cover numerical/text semantics, raw NBT, compression, Perlin/octave noise and the local
-resource importer. GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
+Public checks cover numerical/text semantics, raw NBT, compression, both noise
+families and the local resource importer. GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 

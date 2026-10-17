@@ -69,7 +69,15 @@ checks. For multi-configuration Windows builds add `-C Debug`.
 
 ## Local environments
 
-Noise implementation source `1188da0f126db8d623a45d801638d645df054c76` passed all
+Simplex implementation source `ec92cbf3774b4be154d6c2894324b6fe33ebceac` passed
+all 15 configured tests on the same native Windows/MSVC and WSL GCC/Clang
+toolchains below, without skips: ten public checks, the numerical Java oracle
+and four original storage/noise comparisons. All twelve original manifests pin
+that source and pass with empty errors. Five simplex helper regressions ran on
+each platform without skips. Native public CI runs eleven tests without private
+references. The three C libraries also build with testing off.
+
+Previous Perlin implementation source `1188da0f126db8d623a45d801638d645df054c76` passed all
 12 configured CTests without skips on the same three toolchains below: eight
 public checks, the numerical Java comparison and three original NBT/compression/
 noise comparisons. All nine original-comparison manifests record that commit,

@@ -28,7 +28,8 @@ original-region validation pending. The original seeded Perlin/octave module
 is implemented under [#16](https://github.com/frankischilling/minecraft-c/issues/16).
 The separate 2D simplex/octave primitives are implemented under
 [#19](https://github.com/frankischilling/minecraft-c/issues/19), with exact-source
-acceptance being recorded. Complete biome climate/classification, density combination, raw chunks, population, lighting and
+acceptance recorded in [status](status.md). Complete biome climate/classification,
+density combination, raw chunks, population, lighting and
 protocol framing remain separate required work. Create their scoped issues from the
 original class/method evidence before coding. Further
 splits must retain the full original requirements rather than replacing them
