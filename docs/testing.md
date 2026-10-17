@@ -1,16 +1,19 @@
 # Test scope and reproduction
 
-CTest separates public unit/tool tests from explicitly requested numerical
-reference comparisons. Public tests do not require Minecraft files, Java, a
+CTest separates public unit/tool tests from explicitly requested reference
+comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
-The Java oracle is a standard-library probe and can run in public CI without
-original game files.
+The numerical Java oracle is a standard-library probe and can run in public CI
+without original game files. Original-class NBT comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
 | `core.java` | 146 fixed arithmetic/cast/Random edge and captured-oracle checks | No game simulation or game random-consumption ordering |
+| `core.mutf8` | 596848 checks, including every UTF-16 unit, accepted byte forms, malformed input and unchanged outputs | Payload codec only; NBT and packet framing are distinct |
+| `storage.nbt` | 394978 checks for all original tag types, boundaries, retained state, ownership, budgets, errors and deterministic mutations | Raw tags only; no world schema or compression |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
+| `reference.nbt` (local opt-in) | Per original side: 194 reads, 40 original writes, 12 packet controls, 157 original-to-C and 435 original re-reads | Selected JDK; 4 malformed negative-list departures and 20 order-only differences recorded separately |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -23,10 +26,19 @@ The standalone helper also returns77 for missing tools or its C executable, and
 returns1 for execution errors or mismatches. It only normalizes platform text
 newlines; numeric records and floating bit patterns must agree exactly.
 
+NBT comparisons require JDK 11 or newer and both pinned supplied JARs. Enable
+`MC_ENABLE_NBT_REFERENCE_TESTS` and set `MC_REFERENCE_CLIENT_JAR`,
+`MC_REFERENCE_SERVER_JAR` and `MC_REFERENCE_TESTED_COMMIT` to the exact source
+commit used to build the C probe. Missing, mismatched or unsupported prerequisites
+produce exit 77 and skipped status, not parity success. The manifest records
+an omitted commit as unrecorded. Comparison execution errors return 1. Reports
+replace old running/unavailable/fail results; output paths containing inputs or
+sources are refused. See [the original-class procedure](reference/nbt.md).
+
 Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
-`BUILD_TESTING=OFF` builds the C library without Python or Java discovery.
+`BUILD_TESTING=OFF` builds both C libraries without Python or Java discovery.
 
 ## Local environments
 
@@ -34,9 +46,9 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All three CTests passed |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All three CTests passed |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All three CTests passed |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | Five CTests passed; original NBT comparison also passed separately |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | Five CTests passed; original NBT comparison also passed separately |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | Five CTests passed |
 
 Windows CMake selected an installed Oracle JDK21.0.10; Linux selected Ubuntu
 OpenJDK21.0.12. A separate explicit Windows Temurin17.0.17 comparison also passed
@@ -55,7 +67,8 @@ not persisted. There are currently no runtime dependencies to bundle.
 ## Private reference checks
 
 Follow [binary setup](reference/binaries.md), [resource import](reference/resources.md),
-and [launch smoke](reference/launch.md). Keep complete disassemblies, generated
+and [launch smoke](reference/launch.md), plus [NBT comparisons](reference/nbt.md).
+Keep complete disassemblies, generated
 vectors, logs, imported assets and worlds in ignored directories. Record
 `git rev-parse HEAD` alongside local results. A local result without a commit
 identifier must not be treated as a result for a later source revision.

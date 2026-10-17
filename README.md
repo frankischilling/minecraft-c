@@ -6,8 +6,9 @@ and a dedicated headless server. Account authentication is excluded; players wil
 select local usernames.
 
 There is no playable C client or server yet. The current implementation contains
-a shared numerical compatibility module, public tests, local reference tools,
-and an asset importer. [The parity matrix](docs/parity.md) records verified
+shared numerical and text compatibility modules, a bounded raw NBT codec,
+public tests, local reference tools, and an asset importer.
+[The parity matrix](docs/parity.md) records verified
 scenarios and outstanding work. The full target remains a 1:1 rewrite.
 
 Original Minecraft binaries, assets, decompiled source, launcher data, and worlds
@@ -48,6 +49,13 @@ checks. Enable `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON` to add the numerical
 differential against an installed JDK 8 or newer. Requested Java tests fail
 configuration when the JDK is missing. They do not use Minecraft files or prove
 gameplay parity. Normal C executables have no JVM dependency.
+
+The [raw NBT library](docs/storage/nbt.md) retains original tag trees and unknown
+application fields without applying a world schema. Its optional original-class
+comparison needs locally supplied client/server JARs and JDK 11 or newer; it is
+separate from public tests and CI. See [NBT evidence and reproduction](docs/reference/nbt.md).
+Gzip, region files, complete save writes and original-world round trips remain
+unimplemented.
 
 Code is grouped by system and subsystem, with matching headers and tests:
 `src/core/java/`, `include/mc/core/java/`, and `tests/core/java/` are the current

@@ -19,9 +19,10 @@ do not postpone original comparisons until a whole milestone is built. Parallel
 agents may research independent behavior, but shared interfaces, builds, Git
 operations and integration need explicit ownership.
 
-The next implementation candidates are original NBT and its Java text encoding,
-then deterministic noise/chunk generation and protocol framing. Create their
-scoped issues from the original class/method evidence before coding. Further
+The next selected increment is [original NBT and modified UTF strings, issue #9](https://github.com/frankischilling/minecraft-c/issues/9),
+with [both-side bytecode evidence](reference/nbt.md). Deterministic noise/chunk
+generation and protocol framing follow. Create their scoped issues from the
+original class/method evidence before coding. Further
 splits must retain the full original requirements rather than replacing them
 with a simpler private save format or rewritten-only network protocol.
 
