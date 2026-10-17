@@ -69,3 +69,55 @@ including unchanged outputs, capacity suffixes and defined extreme-opacity
 arithmetic. Those C contract cases are distinct from original gameplay claims.
 Current exact-source results belong in the [development status](../status.md)
 and [parity matrix](../parity.md).
+
+## Local reproduction
+
+Build the committed C source with both local JAR paths and the full commit ID
+recorded in `MC_REFERENCE_TESTED_COMMIT`. Enable
+`MC_ENABLE_NIBBLES_REFERENCE_TESTS` and `MC_ENABLE_CHUNK_REFERENCE_TESTS`.
+Both require JDK11+ with `java` and `javac` from the same installation. Set
+`Java_JAVA_EXECUTABLE` and `Java_JAVAC_EXECUTABLE` explicitly when several JDKs
+are installed. Use the native paths for the process running CMake; Windows
+paths and WSL paths are different.
+
+After configuring and building, run:
+
+```sh
+ctest --test-dir build -R '^reference\.(nibbles|chunk_data)$' --output-on-failure
+```
+
+Add `-C Debug` for a Visual Studio build. Nibble comparisons need only the
+committed sources, probe, JDK and supplied JARs. The full chunk corpus also
+uses the earlier frozen original cave capture under
+`.local/reference/caves-setup/capture-ea3e2caa3e134ed998a7394406a633e5/`.
+Its manifest SHA-256 is
+`bab5f6aad4890ba7bbdcc74384f9274a60855bcbd47230199e2b6188e79d14f8`.
+Keep its manifest and paired `client-case-002.json`, `server-case-002.json`,
+`client-case-006.json` and `server-case-006.json` together. The driver validates
+their full fingerprints and exact 32768-byte post-cave prefixes. Its
+`--natural-root` option accepts another location containing those same files.
+Missing frozen inputs produce an unavailable result. They are not downloaded
+by a build or supplied by public CI.
+
+`scripts/reference/chunk/compare_chunk.py --capture-only` records fresh original
+observations without running C. `--smoke` limits the corpus to air-to-stone and
+does not need the frozen cave capture; a smoke result does not satisfy the full
+five-case corpus. Reports and complete output records live under a newly owned
+capture directory beneath the requested work directory. Fresh original world
+roots remain under `.local/reference/chunk-data-setup/`.
+
+The original server constructor initializes `dj.r` with `Random()` at bytecode
+offsets 169 through 176, and spawn selection `dj.c()V` uses that generator.
+A fixed world seed therefore does not fix the setup cache or pending-light
+queue. Setup is recorded before the measured constructor. The observer admits
+up to 512 cached entries and 16384 setup light regions; it then allows at most
+1024 additional regions per finishing call, measured from the preceding actual
+queue size. The intervening raw block edit must preserve the complete queue.
+No queue is drained, truncated or replaced to fit those limits.
+
+Each JVM has a 512 MiB heap limit and a 30-second process limit. A complete
+UTF-8 JSON record, including its final newline, is bounded to 32 MiB. Aggregate
+capture artifacts are bounded to 512 MiB. Setup beyond the observation budget
+is unavailable; an over-budget measured stage or completed mismatch fails.
+The parser continues to reject missing terminators, duplicate records and
+incomplete arrays. Bounds are independent of exact local-byte comparisons.

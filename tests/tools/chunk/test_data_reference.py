@@ -112,6 +112,8 @@ class ChunkReferenceGuards(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(self.helper.Failure):
                 self.helper.strict_json(text)
         path = self.directory / "output"
+        path.write_bytes(b'{"value":"complete"}\n')
+        self.assertEqual(self.helper.read_output(path), {"value": "complete"})
         for payload in (b"{}", b"{}\n{}\n", b"{\n}\n"):
             path.write_bytes(payload)
             with self.subTest(payload=payload), self.assertRaises(self.helper.Failure):
@@ -181,6 +183,32 @@ class ChunkReferenceGuards(unittest.TestCase):
                 self.helper.validate_original(changed, case, "client")
             changed = copy.deepcopy(value)
             changed["repeat_after"]["local"]["identities"]["roles_retained"][-1] = False
+            with self.assertRaises(self.helper.Failure):
+                self.helper.validate_original(changed, case, "client")
+
+    def test_queue_growth_uses_actual_setup_and_raw_edits_preserve_regions(self):
+        value, case = synthetic_original(self.helper)
+        regions = [dict(ordinal=index, object=reference(f"r{100 + index}", "st"),
+                        kind=dict(identity="a", name="Sky", ordinal=0, default=15),
+                        bounds=[-1, 0, 0, 0, 127, 0]) for index in range(1024)]
+        for stage in ("after", "repeat_before", "repeat_after"):
+            value[stage]["world"]["queue"]["entries"] = copy.deepcopy(regions)
+        synthetic_sha = hashlib.sha256(bytes(1024)).hexdigest()
+        with mock.patch.object(self.helper, "OPACITY_SHA", synthetic_sha):
+            self.helper.validate_original(value, case, "client")
+            changed = copy.deepcopy(value)
+            extra = copy.deepcopy(regions[-1])
+            extra["ordinal"] = 1024
+            extra["object"]["ref"] = "r1124"
+            changed["after"]["world"]["queue"]["entries"].append(extra)
+            with self.assertRaises(self.helper.Failure):
+                self.helper.validate_original(changed, case, "client")
+            changed, _ = synthetic_original(self.helper)
+            changed["repeat_after"]["world"]["queue"]["entries"] = copy.deepcopy(regions) + [extra]
+            with self.assertRaises(self.helper.Failure):
+                self.helper.validate_original(changed, case, "client")
+            changed = copy.deepcopy(value)
+            changed["repeat_before"]["world"]["queue"]["entries"][0]["bounds"][1] = 1
             with self.assertRaises(self.helper.Failure):
                 self.helper.validate_original(changed, case, "client")
 

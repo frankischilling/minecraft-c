@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -25,7 +26,9 @@ import java.util.Set;
  */
 public final class ChunkObservation {
     private static final int BLOCK_BYTES = 32768;
-    private static final int MAX_RECORD_BYTES = 8 * 1024 * 1024;
+    private static final int MAX_RECORD_BYTES = 32 * 1024 * 1024;
+    private static final int MAX_SETUP_REGIONS = 16384;
+    private static final int MAX_REGIONS_PER_PASS = 1024;
     private static final String OPACITY_SHA =
             "f15de154e2937ae549a09e588e04ae8b4e5c21a99b3649cbf45aa2e067fe63ce";
     private static boolean measuring;
@@ -442,7 +445,8 @@ public final class ChunkObservation {
             System.err.println("SETUP_BEGIN");
             setup(root, seed);
             // Capture complete real setup context before the measured constructor.
-            Map<String, Object> setupWorld = worldSnapshot(x, z, 4096);
+            Map<String, Object> setupWorld = worldSnapshot(x, z, MAX_SETUP_REGIONS);
+            int setupQueueSize = ((List<?>) get("world.C", world)).size();
             System.err.println("SETUP_DONE");
             measuring = true;
             System.err.println("MEASUREMENT_BEGIN");
@@ -450,14 +454,15 @@ public final class ChunkObservation {
             chunk = chunkConstructor.newInstance(world, blocks, x, z);
             require(chunk.getClass() == chunkType, "actual measured chunk class");
             localIdentities = identities(chunk);
-            Map<String, Object> before = snapshot(x, z, 4096);
+            Map<String, Object> before = snapshot(x, z, setupQueueSize);
             invoke(finishMethod, chunk);
-            Map<String, Object> after = snapshot(x, z, 5120);
+            Map<String, Object> after = snapshot(x, z, setupQueueSize + MAX_REGIONS_PER_PASS);
+            int afterQueueSize = ((List<?>) get("world.C", world)).size();
             boolean initialRetained = Arrays.equals(blocks, input);
             System.arraycopy(repeated, 0, blocks, 0, BLOCK_BYTES);
-            Map<String, Object> repeatBefore = snapshot(x, z, 5120);
+            Map<String, Object> repeatBefore = snapshot(x, z, afterQueueSize);
             invoke(finishMethod, chunk);
-            Map<String, Object> repeatAfter = snapshot(x, z, 6144);
+            Map<String, Object> repeatAfter = snapshot(x, z, afterQueueSize + MAX_REGIONS_PER_PASS);
             boolean repeatRetained = Arrays.equals(blocks, repeated);
             boolean opacityRetained = opacityField.get(null) == opacity && Arrays.equals(opacity, initialOpacity);
             boolean staticUnchanged = true;
@@ -523,9 +528,9 @@ public final class ChunkObservation {
                     }
                     throw failure;
                 }
-                String encoded = json(record);
-                require(encoded.length() <= MAX_RECORD_BYTES, "complete record output budget");
-                protocol.print(encoded);
+                byte[] encoded = (json(record) + "\n").getBytes(StandardCharsets.UTF_8);
+                require(encoded.length <= MAX_RECORD_BYTES, "complete record output budget");
+                protocol.write(encoded, 0, encoded.length);
                 protocol.flush();
                 require(!protocol.checkError(), "protocol output failed");
                 status = 0;

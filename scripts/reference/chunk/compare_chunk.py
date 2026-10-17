@@ -37,8 +37,10 @@ STAGES = ("before", "after", "repeat_before", "repeat_after")
 ARRAY_LENGTHS = dict(blocks=32768, metadata=16384, skylight=16384, block_light=16384, heightmap=256)
 HEX = re.compile(r"[0-9a-f]*\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
-MAX_RECORD = 8 * 1024 * 1024
-MAX_ARTIFACTS = 192 * 1024 * 1024
+MAX_RECORD = 32 * 1024 * 1024
+MAX_ARTIFACTS = 512 * 1024 * 1024
+MAX_SETUP_REGIONS = 16384
+MAX_REGIONS_PER_PASS = 1024
 CLASS_NAMES = {"ChunkObservation.class", "ChunkObservation$Model.class", "ChunkObservation$SetupUnavailable.class"}
 
 
@@ -284,11 +286,15 @@ def validate_original(value, case, side):
     keys(value["controls"], ("initial_blocks_unchanged", "repeat_blocks_unchanged", "opacity_unchanged",
                             "chunk_static_a_unchanged"), "original controls")
     require(all(item is True for item in value["controls"].values()), "original control failure")
-    validate_world(value["setup_world"], 4096, "setup world")
-    for stage, limit in zip(STAGES, (4096, 5120, 5120, 6144)):
+    validate_world(value["setup_world"], MAX_SETUP_REGIONS, "setup world")
+    previous_queue_size = len(value["setup_world"]["queue"]["entries"])
+    for stage in STAGES:
         snapshot = value[stage]
         keys(snapshot, ("local", "world", "opacity", "opacity_identity_retained"), stage)
-        validate_world(snapshot["world"], limit, stage + ": world")
+        additions = MAX_REGIONS_PER_PASS if stage in ("after", "repeat_after") else 0
+        validate_world(snapshot["world"], previous_queue_size + additions,
+                       stage + ": world")
+        previous_queue_size = len(snapshot["world"]["queue"]["entries"])
         opacity = blob(snapshot["opacity"], 1024, stage + ": opacity")
         require(hashlib.sha256(opacity).hexdigest() == OPACITY_SHA, "actual complete opacity changed")
         require(snapshot["opacity_identity_retained"] is True, "opacity identity changed")
@@ -318,6 +324,8 @@ def validate_original(value, case, side):
         require(blob(local["data"]["blocks"], 32768, stage) == expected, "original borrowed bytes changed")
     before, after, repeat_before, repeat_after = [value[stage]["local"] for stage in STAGES]
     require(value["setup_world"] == value["before"]["world"], "constructor changed original world")
+    require(value["after"]["world"]["queue"] == value["repeat_before"]["world"]["queue"],
+            "raw repeat block edit changed queued lighting")
     for stage in STAGES[1:]:
         require(cache_projection(value[stage]["world"]) == cache_projection(value["before"]["world"]),
                 "original cache boundary changed; full diagnostic retained")
