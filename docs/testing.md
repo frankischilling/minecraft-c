@@ -55,12 +55,13 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | Five CTests passed; original NBT comparison also passed separately |
-| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | Five CTests passed; original NBT comparison also passed separately |
-| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | Five CTests passed |
+| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All nine CTests passed, including original NBT/compression with explicit Temurin17 |
+| Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All nine CTests passed with JDK21 |
+| Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All nine CTests passed with JDK21 |
 
-Windows CMake selected an installed Oracle JDK21.0.10; Linux selected Ubuntu
-OpenJDK21.0.12. A separate explicit Windows Temurin17.0.17 comparison also passed
+Current exact-source Windows checks explicitly select Temurin17.0.17; Linux
+selects Ubuntu OpenJDK21.0.12. The numerical foundation also passed with the
+installed Windows Oracle JDK21.0.10. The Temurin17 numerical comparison passes
 135768 records with vector SHA-256
 `6e267821b006c8219a806e69ac82f8d46bd208c24ebdfcaf02af89d8d6139c82`.
 This agreement does not substitute for historical game execution.
