@@ -18,6 +18,11 @@ Caller-owned managers retain mutable climate/biome buffers under an explicit
 allocation budget. External temperature/direct biome outputs stay separate
 from those retained fields; calls stage growth before publishing changes.
 
+The [normal terrain module](world/terrain.md) composes all original seeded
+Perlin groups into density, then interpolates base blocks. Immutable constructor
+state is separate from borrowed workspace/output spans and processed climate.
+Its fixed normal shape retains original flat layouts and buffer suffix behavior.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -71,6 +76,12 @@ tests/world/biome/test_biome.c
 tests/world/biome/biome_probe.c
 tests/reference/biome/BiomeProbe.java
 scripts/reference/biome/compare_biome.py
+include/mc/world/terrain/terrain.h
+src/world/terrain/terrain.c
+tests/world/terrain/test_terrain.c
+tests/world/terrain/terrain_probe.c
+tests/reference/density/DensityProbe.java
+scripts/reference/density/compare_density.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py

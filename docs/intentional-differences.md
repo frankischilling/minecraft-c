@@ -49,3 +49,8 @@ growth and explicit ownership. Classifier inputs must be finite and within
 [0,1], temperature grids may be rectangular, and biome grids are square. The
 original rectangular biome width/width call pattern remains documented evidence,
 not a supported comparison domain or an approved gameplay exception.
+
+The [normal terrain interface](world/terrain.md) accepts the fixed5×17×5 density
+and16×128×16 base-block shapes used by the original normal consumer. Explicit
+span validation replaces original short-array failures. This is an interface
+scope and memory contract; complete generation and valid gameplay remain required.

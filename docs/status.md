@@ -1,5 +1,13 @@
 # Development status
 
+In progress: normal-dimension density composition and base-block interpolation,
+[issue #24](https://github.com/frankischilling/minecraft-c/issues/24), on
+`feature/normal-terrain`. Genuine original client/server contexts now produce
+matching constructor, climate, density and base-block observations, including
+warm water and cold-sea ice. Fixed regressions and the repeatable comparison
+suite are being completed. Exact-source acceptance and integration remain pending.
+These observations do not establish complete chunks or playable game operation.
+
 Latest implementation: original climate blending and biome classification, issue
 [#21](https://github.com/frankischilling/minecraft-c/issues/21), merged in
 [PR #23](https://github.com/frankischilling/minecraft-c/pull/23) at
@@ -7,8 +15,9 @@ Latest implementation: original climate blending and biome classification, issue
 `6607b3650410bac2707276dd07769cda85215a6a` passed all 18 configured CTests on
 native Windows/MSVC and WSL GCC/Clang without skips. Exact PR and resulting
 runtime CI passed all thirteen public tests on each compiler plus formatting.
-This documentation checkpoint uses `docs/biome-integration`. Inspect the live
-worktree and linked issue before resuming. The numerical fixture establishes
+Documentation checkpoint [PR #25](https://github.com/frankischilling/minecraft-c/pull/25)
+is integrated at `7349e8334207f12cc1ee719cf489377e631a96d7`; its exact head and
+resulting main CI passed. Inspect the live worktree and linked issue before resuming. The numerical fixture establishes
 neither original world startup nor full terrain generation.
 
 Previous integrated implementation: original 2D simplex/octave noise, issue
@@ -195,7 +204,8 @@ Read-only region inspection is implemented in draft PR #15 under issue #14;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
 Continue normal-dimension density and base terrain under
-[#24](https://github.com/frankischilling/minecraft-c/issues/24), then surfaces
+[#24](https://github.com/frankischilling/minecraft-c/issues/24), then surface replacement
+and chunk seeding under [#26](https://github.com/frankischilling/minecraft-c/issues/26),
 and exact chunk comparisons, alongside storage schemas
 and both-direction copied-world round trips. Client/server runtimes and the
 full remaining inventory stay open.

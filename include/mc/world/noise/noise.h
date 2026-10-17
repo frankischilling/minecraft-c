@@ -30,7 +30,7 @@ typedef struct mc_noise_grid {
 
 /* The caller retains the layer array. Do not change layers/count after init. */
 typedef struct mc_noise_octaves {
-    mc_noise_perlin *layers;
+    const mc_noise_perlin *layers;
     size_t count;
 } mc_noise_octaves;
 

@@ -13,6 +13,7 @@ rather than empty placeholders.
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
+| `world/terrain` | Normal-dimension density and base-block interpolation | Shared core/noise, immutable state and borrowed spans |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -31,6 +32,12 @@ table lookup. Mutable managers preserve array growth, clear numeric suffixes
 and retain biome suffixes under a caller-selected allocation budget. Its
 [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome.md)
 separates numerical fixtures from world startup, terrain and full biome behavior.
+
+The [normal terrain module](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/terrain.md)
+constructs all 82 original Perlin layers in order, consumes caller-supplied
+processed climate and interpolates a fixed density grid into base blocks.
+Constructor state is immutable after initialization; workspace and outputs are
+borrowed. Surface replacement, caves, population and lighting remain later work.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol
