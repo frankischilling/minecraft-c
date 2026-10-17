@@ -22,8 +22,12 @@ operations and integration need explicit ownership.
 The raw NBT and modified UTF increment [#9](https://github.com/frankischilling/minecraft-c/issues/9)
 is merged, as is [bounded gzip/zlib, issue #11](https://github.com/frankischilling/minecraft-c/issues/11),
 with [both-side evidence](reference/compression.md). Read-only original region
-inspection is under research; deterministic noise/chunk generation and protocol
-framing follow. Create their scoped issues from the
+inspection remains in [draft PR #15](https://github.com/frankischilling/minecraft-c/pull/15)
+under [#14](https://github.com/frankischilling/minecraft-c/issues/14), with live
+original-region validation pending. The original seeded Perlin/octave module
+is implemented under [#16](https://github.com/frankischilling/minecraft-c/issues/16).
+Simplex biome noise, density combination, raw chunks, population, lighting and
+protocol framing remain separate required work. Create their scoped issues from the
 original class/method evidence before coding. Further
 splits must retain the full original requirements rather than replacing them
 with a simpler private save format or rewritten-only network protocol.

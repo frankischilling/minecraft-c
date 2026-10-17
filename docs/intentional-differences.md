@@ -32,3 +32,9 @@ valid even when an earlier member contains a complete root. Reserved gzip header
 flags are rejected where the selected Java readers accept them. These are
 malformed-container departures, with [specific original observations](reference/compression.md),
 not a change to valid gameplay or a save-compatibility claim.
+
+The noise interface rejects dimensions/products above `INT32_MAX` and insufficient
+caller spans before writing. It uses defined Java casts/wrapping instead of C
+signed overflow or out-of-range casts. These are bounded C call contracts, not
+changes to valid terrain-generation scenarios; exact nonfinite NaN payloads are
+not promised. See [the noise interface](world/noise.md).

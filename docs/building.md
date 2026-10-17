@@ -36,6 +36,11 @@ verified supplied JARs. See [testing](testing.md), [NBT reproduction](reference/
 and [compression reproduction](reference/compression.md). Missing private
 references produce unavailable results, not successful comparisons.
 
+`MC_ENABLE_NOISE_REFERENCE_TESTS=ON` separately enables the original Perlin/octave
+comparison with the same JAR/JDK/commit settings. See [noise evidence](reference/noise.md)
+and its [interface](world/noise.md). The `mc_world` runtime library needs neither
+Java nor original files.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

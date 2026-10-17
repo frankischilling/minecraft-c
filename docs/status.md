@@ -1,5 +1,20 @@
 # Development status
 
+Latest implementation increment: original Perlin/octave noise, issue
+[#16](https://github.com/frankischilling/minecraft-c/issues/16), developed on
+`feature/world-noise` from `2cd7c04db5cc231c3ba865d5dc4e174a400248ca`.
+Implementation commit `1188da0f126db8d623a45d801638d645df054c76` passed all 12
+configured CTests on native Windows/MSVC and WSL GCC/Clang, without skips.
+The linked issue records the PR, exact-head CI and integration state; inspect
+the live worktree and remote state before resuming.
+
+Read-only region inspection remains in [draft PR #15](https://github.com/frankischilling/minecraft-c/pull/15)
+at `8ab5f5e8f26a1dc12443dffe1f9f68993d9dd7d6`. All ten public CI tests passed
+on Windows/Linux GCC/Clang, plus formatting, in
+[run39026570248](https://github.com/frankischilling/minecraft-c/actions/runs/39026570248).
+Its 32 recorded observations do not satisfy the pending live original-region
+comparison. Preserve that branch and keep issue #14 open.
+
 Raw NBT, modified UTF-8 and bounded gzip/zlib compression are integrated. The
 README is a short overview and quick start; detailed setup lives in
 [building.md](building.md), with published [wiki pages](https://github.com/frankischilling/minecraft-c/wiki).
@@ -23,7 +38,7 @@ The implementation uses system/subsystem folders with matching headers/tests,
 plus repository clang-format 18 checks. No original binaries, assets, decompiled
 source, launcher data or worlds entered the commits.
 
-Latest tested runtime integration: `b4b0af1b1a54af8a7abb7c494992a853fa41b64e`,
+Earlier tested storage integration: `b4b0af1b1a54af8a7abb7c494992a853fa41b64e`,
 [default-branch run39024379065](https://github.com/frankischilling/minecraft-c/actions/runs/39024379065).
 Formatting and native Windows MSVC/Linux GCC/Clang jobs passed. Each compiler
 passed all seven asset-independent CTests, with no skips; GCC/Clang use ASan/UBSan.
@@ -31,6 +46,26 @@ The exact PR head also passed before merge.
 
 ## Local acceptance
 
+Noise source: `1188da0f126db8d623a45d801638d645df054c76`. All three toolchains
+passed eight public checks, the numerical Java oracle and three original
+NBT/compression/noise comparisons. The nine manifests under
+`build-noise-*/reference-{nbt,compression,noise}/manifest.json` identify that
+commit, pass status and empty errors. The noise comparison matched all 783
+requests in each of its client/C, server/C and client/server comparisons:
+140218 double values, 399872 permutation entries and 3132 continuation longs
+per side. Public tests passed 4850 noise checks and four helper regressions;
+symlink/hard-link cases ran without skips. All 18 C source/header files pass
+clang-format 18. Native testing-off builds include all three runtime libraries.
+
+Independent reviews checked the source against bytecode, the reflective
+comparison and input/report guards, and the public test/probe coverage. Every
+fixed numerical vector was traced to both originals; the 14-case original-only
+capture is ignored under `.local/reference/noise-fixed-vectors/`. Full terrain,
+simplex biomes, density/surfaces, caves, population, lighting and game runtimes
+remain open. Continue those requirements rather than expanding primitive-noise
+results into a full-world claim.
+
+The following results describe the previously integrated compression increment.
 Exact runtime implementation source: `50e5b7f5cd84091d05b9e5d373308a9c422414c2`.
 Native Windows/MSVC 19.51 with Temurin 17 and Ubuntu WSL GCC 13.3/Clang 18.1 with
 JDK 21 passed all nine CTests, including actual original-class NBT and compression
@@ -62,11 +97,12 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 
 ## Next work and access
 
-Read-only original McRegion addressing/inspection is under research. Derive a
-scoped issue from both original classes before implementation. Preserve raw NBT
-and compression as separate interfaces, use explicit limits and retain unknown
-application fields. Region files, schemas, writable-world round trips, generation,
-client/server runtimes and all remaining inventory behavior stay open.
+Read-only region inspection is implemented in draft PR #15 under issue #14;
+its live original comparison is still pending. Preserve raw NBT and compression
+as separate interfaces, use explicit limits and retain unknown application fields.
+Continue simplex biome noise, terrain density/surfaces and exact chunk comparisons,
+alongside storage schemas and both-direction copied-world round trips. Client/server
+runtimes and the full remaining inventory stay open.
 
 The original server passed a fresh seed 17 offline loopback startup/save/stop
 smoke during foundation work. It did not involve a client or C server. Ordinary
@@ -75,11 +111,12 @@ occurred. The original-client/server baseline and all four interoperability
 pairings remain untested. Continue headless work while graphical observation is
 unavailable; see [launch notes](reference/launch.md).
 
-The [wiki](https://github.com/frankischilling/minecraft-c/wiki) is published at
+The previous [wiki](https://github.com/frankischilling/minecraft-c/wiki) publication was
 commit `1a45ac218c49d2abb899e4591ce401b9b0d7df17`, from the versioned `docs/wiki/`
 sources. Home, build/tests, architecture and storage/reference pages were checked
 through public HTTP and each returned the expected content. The clone remains
-at `.local/wiki/`; preserve source/wiki synchronization when editing them.
+at `.local/wiki/`. Updated noise pages are versioned in this increment. Check
+the linked issue for their publication verification after integration.
 
 MIT is owner-approved. Account authentication is the only approved gameplay
 exception. Canonical external audio, unavailable legacy services and dormant

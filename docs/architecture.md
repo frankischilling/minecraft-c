@@ -6,6 +6,11 @@ contains the raw NBT reader/writer and gzip/zlib memory compression. Neither lib
 graphics, audio, networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
+`mc_world` depends on `mc_core` and implements the original seeded
+Perlin/octave [noise module](world/noise.md). It owns no allocations or platform
+services. Caller-supplied layer arrays keep construction and shared-Random order
+explicit. Bulk sampling preserves the original height-one path and Y-cell cache.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -41,6 +46,12 @@ include/mc/storage/compression/compression.h
 src/storage/compression/compression.c
 tests/storage/compression/test_compression.c
 tests/storage/compression/compression_probe.c
+include/mc/world/noise/noise.h
+src/world/noise/noise.c
+tests/world/noise/test_noise.c
+tests/world/noise/noise_probe.c
+tests/reference/noise/NoiseProbe.java
+scripts/reference/noise/compare_noise.py
 tests/reference/java/JavaSemanticsProbe.java
 tests/reference/nbt/NbtProbe.java
 tests/tools/resources/test_import_assets.py
@@ -73,9 +84,8 @@ As implementation proceeds, the intended boundaries are:
 | Client | Menus, input sampling, single-player and multiplayer sessions | Render frequency must not change simulation state |
 | Dedicated server | Headless configuration, administration, save and shutdown | No display, OpenGL context, or client audio dependency |
 
-Beyond the core and raw NBT boundary, these are design directions rather than
-implemented game systems. Add interfaces when a reference-backed behavior needs
-them. CMake build options apply strict diagnostics
+Add interfaces as reference-backed game behavior is implemented.
+CMake build options apply strict diagnostics
 and floating-point rules to project code; future dependencies need their own
 licensing and build review. SDL3 is a candidate, and its current APIs must be
 verified before use. Storage uses pinned static zlib; its

@@ -22,7 +22,7 @@ contains complete setup and formatting commands; the
 [dependency guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/dependencies.md)
 explains offline source overrides and license notices.
 
-Public checks cover numerical/text semantics, raw NBT, compression and the local
+Public checks cover numerical/text semantics, raw NBT, compression, Perlin/octave noise and the local
 resource importer. GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -31,6 +31,8 @@ clang-format18. No original JARs/assets are downloaded by CI.
 with JDK8+. Original-class NBT/compression comparisons require JDK11+ and the
 locally supplied verified client/server JARs, enabled separately through
 `MC_ENABLE_NBT_REFERENCE_TESTS` and `MC_ENABLE_COMPRESSION_REFERENCE_TESTS`.
+`MC_ENABLE_NOISE_REFERENCE_TESTS` adds exact original client/server noise
+comparisons with the same supplied-file/JDK/source-commit requirements.
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
