@@ -10,7 +10,22 @@ compression, seeded Perlin/octave noise, 2D simplex/octave noise,
 climate/biome classification, normal density/base
 terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
-local resource import and native builds.
+unpublished normal generator composition, synchronous cache acquisition,
+read-only region inspection, local resource import and native builds.
+The [normal generator API](Architecture#normal-generator) composes the existing
+stages through finishing with borrowed world resources. At exact source
+`a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass
+on MSVC/GCC/Clang without skips, including four-seed original comparisons and
+complete untouched controls. Hosted checks pass 36 public/numerical tests per
+compiler and formatting for 79 C/header files. See the
+[generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
+for evidence and its finite scope.
+The expanded generation/cache/region checkpoint at
+`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected local tests
+without skips on those toolchains, with Linux sanitizers and independent audit.
+Hosted checks pass 48 tests per compiler and formatting for 89 C/header files.
+See [cache and region evidence](Storage-and-reference#cache-and-region-checks)
+for successful original loads, population callbacks and their remaining scope.
 The [repository README](https://github.com/frankischilling/minecraft-c#readme),
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
 and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)
@@ -24,3 +39,6 @@ Detailed pages cover [systems and subsystems](Architecture) and
 [storage and original-reference checks](Storage-and-reference). The
 [development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
 records the current branch, tested commits and remaining work.
+
+These pages are versioned under `docs/wiki/`. Exact tested sources, retained
+evidence and remaining work are recorded in the linked development documents.

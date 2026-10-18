@@ -12,12 +12,14 @@ rather than empty placeholders.
 | `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
+| `storage/region` | Read-only local record framing and diagnostics | Borrowed immutable span; explicit compression/NBT composition |
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 | `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
 | `world/chunk` | Packed voxel arrays, heights, direct skylight and normal finishing | Caller-owned data, borrowed blocks/opacity and explicit world context |
-| `world/cache` | Packed-key lookup and explicit post-generation publication | Caller-owned map entries, stable chunk identities and insertion list |
+| `world/cache` | Packed-key lookup, publication and synchronous acquisition callbacks | Caller-owned entries/list/pending, stable chunk identities and explicit live world state |
 | `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
+| `world/generation` | Complete unpublished normal generator entry through finishing | Same-world borrowed biome manager, immutable trig, current materials/opacity and existing lighting context |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -25,7 +27,8 @@ callers explicitly compose them. No file write or world schema is implicit.
 Noise sampling preserves original constructor ordering and bulk-specific
 behavior; [its interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/noise.md)
 and [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/noise.md)
-describe the exact tested scope. Complete terrain generation remains open.
+describe the exact tested scope. Normal composition is documented below;
+population, propagation and other dimensions remain open.
 
 The [math interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/core/math.md)
 keeps the 256 KiB table caller-owned and immutable after exclusive initialization.
@@ -47,13 +50,13 @@ The [normal terrain module](https://github.com/frankischilling/minecraft-c/blob/
 constructs all 82 original Perlin layers in order, consumes caller-supplied
 processed climate and interpolates a fixed density grid into base blocks.
 Constructor state is immutable after initialization; workspace and outputs are
-borrowed. Population, lighting and whole chunk integration remain later work.
+borrowed. Population and light propagation remain separate from this stage.
 
 The [surface interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/surface.md)
 uses those existing layers with current material byte pairs and a separate
 mutable Random. It preserves Z/X/Y traversal, unconditional bedrock draws and
 sea/sandstone state transitions. Field sampling and prepared-field application
-can also run independently. Complete chunk generation remains open.
+can also run independently. The normal generator below composes this pass.
 
 The [normal cave interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/caves.md)
 borrows an immutable math table, existing block prefix and separate cave Random.
@@ -66,8 +69,9 @@ The [chunk data interface](https://github.com/frankischilling/minecraft-c/blob/m
 keeps blocks borrowed and embeds separate metadata, sky, block-light and height
 arrays. Checked nibble access preserves the opposite four-bit value. Local
 height/direct-skylight rebuilding retains the original boundary and repeat-pass
-behavior without allocating memory. World-height queries, lighting queues,
-dirty state and full chunk lifecycle remain separate work.
+behavior without allocating memory. The finishing boundary below adds
+world-height queries, lighting admission and dirty state; full lifecycle
+remains open.
 
 The [light-region queue](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/lighting.md)
 preserves the newest five-entry search, in-place merges and original wrapped
@@ -80,8 +84,51 @@ composes local height/direct sky rebuilding with all 1024 ordered world-height
 queries, admitted sky intervals and the final dirty effect. Cache lookup retains
 the original packed coordinate collisions and unsigned height bytes. Explicit
 publication replaces the map value and appends the same identity to a separate
-insertion list. Loading, generation callbacks, unloading, population and light
-propagation remain unimplemented.
+insertion list. The separate
+[acquisition coordinator](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/cache.md)
+adds load/generation callbacks, active registration and live population gates.
+Disk decoding, terrain-feature bodies, unloading and light propagation remain open.
+
+## Normal generator
+
+The [normal generator API](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
+composes fresh chunk data, direct climate/biome sampling, density/base terrain,
+surface replacement, caves and full finishing. `mc_normal_generator_init`
+borrows the world's already initialized biome manager and immutable trig table.
+The generator retains all 82 terrain layers, fixed scratch and separate
+generator/cave Random states. Its separate biome output uses the manager's
+allocation owner; direct sampling updates `a/b/c` while preserving manager `d`.
+`mc_normal_generator_free` releases only the separate biome output.
+
+Each `mc_normal_generator_generate` call receives that same world's stable
+lighting/cache context, all 13 current biome top/filler pairs and current
+opacity. Materials remain mutable world inputs; the generator supplies no
+default table. The caller owns each fresh result wrapper and block buffer,
+including its retained capacity suffix. Results finish before publication, so
+world queries see the existing cache. Both coordinates must lie in
+`INT32_MIN + 8` through `INT32_MAX - 9`, the finite ordinary cave-scheduler
+domain. Checked resource/allocation failures preserve state; a defensive
+downstream invariant failure reports an unusable result.
+
+The API is verified for the measured unpopulated entry at
+`a08c12056a06261ed01d9f66999459f7ce9543b4`. All 41 selected local tests pass
+without skips on MSVC/GCC/Clang, including four-seed comparisons in all three
+pairings and complete untouched controls. Linux builds use ASan/UBSan. The
+[evidence page](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
+records exact manifest/source fingerprints and finite observation conditions.
+
+These observations use client base world `fd`/cache `ok` and server base world
+`dj`/cache `jb`. Actual `MinecraftServer` construction uses `dp`/`he`.
+The separate retained-provider acquisition comparison observes actual persistent
+client and dedicated-owner construction. Its finite constructor/API corpus passes
+exact-source MSVC/GCC/Clang checks at `9a50ac67997082c89dbc43cf4274fba1427c1565`.
+[Callback evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+adds genuine successful loads and natural population in base worlds, retaining
+observed effects within the cache/world boundary while C computes transitions.
+Expanded exact source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56
+selected tests without skips on MSVC/GCC/Clang, with Linux sanitizers, independent
+audit and hosted 48-test/89-file checks. Full persistence, terrain-feature
+bodies, propagation, other dimensions and running-server integration remain open.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

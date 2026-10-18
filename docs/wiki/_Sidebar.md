@@ -1,5 +1,8 @@
 - [Home](Home)
 - [Build and tests](Build-and-tests)
 - [Systems and subsystems](Architecture)
+- [Normal generator API](Architecture#normal-generator)
+- [Verified generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
+- [Cache and region checks](Storage-and-reference#cache-and-region-checks)
 - [Storage and original references](Storage-and-reference)
 - [Source repository](https://github.com/frankischilling/minecraft-c)

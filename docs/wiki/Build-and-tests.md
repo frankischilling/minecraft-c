@@ -25,7 +25,7 @@ explains offline source overrides and license notices.
 Public checks cover numerical/text semantics, raw NBT, compression, both noise
 families, climate/biome classification, normal density/base blocks, surface
 replacement, normal cave carving, packed chunk arrays, height/skylight data
-and the local resource importer.
+and full finishing, unpublished normal generation and the local resource importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -73,16 +73,93 @@ passes in each of six fresh cases. A separate untouched control must match
 complete snapshots exactly. The debugger uses loopback only. Public fixtures
 compare all decoded bytes, queues and queries without Java; see
 [finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md).
+
+## Normal generation checks
+
+`world.normal_generator` passes 99073 public contract checks on native MSVC and
+WSL GCC/Clang; sanitizer checks also pass. They cover borrowed ownership,
+unpublished identities, repeated outputs, current materials, finite-coordinate
+preflight and allocation-failure preservation. Four-seed original capture and
+lossless public C replay pass eight inputs, 72 complete chunks and 73728 exact
+height queries. Exact source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
+all 41 selected local tests without skips on those toolchains. Each generation
+comparison retains 1224 stage events, 144 marker inventories and eight complete
+byte-equal untouched controls, with all three pairings passing independently.
+
+`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
+with JDK17+ and `jdk.jdi`, both supplied JARs and the exact source commit setting.
+It uses fresh actual original contexts, loopback debugging and separate
+untouched controls. The corpus uses seeds 23, 24, 26 and 51, retaining
+one generator across nine calls per side. It includes repeated, negative,
+packed-key-alias, world-border and accepted cave-domain endpoint coordinates.
+Complete data, queues, climate/scratch, 82 layers, separate Random continuations
+and all 1024 height queries per call form the comparison boundary.
+
+After configuring the reference inputs, use these production commands:
+
+```sh
+cmake --build build --target mc_normal_generation_probe
+ctest --test-dir build -R '^tools\.normal_(reference|interop)$' --output-on-failure
+ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
+```
+
+Add `-C Debug` for multi-configuration builds. The public
+`tools.normal_reference` and `tools.normal_interop` checks use synthetic guards
+and retained original fixtures respectively, without Java or private inputs.
+At the a08 checkpoint, the suite has 35 public tests, 36 with the numerical
+Java oracle, or 41 with the selected original finishing, queue, chunk, nibble
+and generation comparisons. [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass all 36 public/numerical tests per compiler on native Windows MSVC and Linux
+GCC/Clang, plus formatting for 79 C/header files. These counts identify that
+exact checkpoint; later cache/region additions need separate acceptance. See the
+[generation contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
+and [evidence boundary](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md).
+
+## Acquisition and region checks
+
+The cache coordinator adds 838 public contract checks. Its retained-provider
+fixture replays three continuous original contexts, 20 operations, five generated
+chunks and 5120 exact height queries. The public protocol and fixture checks need
+neither Java nor original archives. `MC_ENABLE_CACHE_REFERENCE_TESTS=ON` enables
+`reference.chunk_acquire` and `reference.chunk_callbacks` with JDK17+, `jdk.jdi`,
+`jdk.jdwp.agent`, both supplied archives and the exact source commit setting.
+The callback fixture adds four contexts, 12 calls, 394 lifecycle events and 24
+inventories. Public checks cover 34 guards, four genuine C replays, four
+constructed cases and 28 additional C guards. These replay observed cache/world
+effects while C computes coordinator transitions. Exact source
+`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected tests without
+skips on MSVC/GCC/Clang with Linux sanitizers and independent audit. Hosted checks
+pass 48 tests per compiler and formatting for 89 C/header files. See the
+[cache evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md).
+The separate [callback evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+records saved-world preparation, ownership and explicit external-effect limits.
+
+The read-only region reader has 49771 public checks. At source
+`092301ae8282d50a734df9018f791925aa9be99b`, `reference.region` passes on native
+MSVC and WSL GCC/Clang with Linux sanitizers. Each capture retains 36 fixtures,
+49 queries per side and two byte-equal untouched controls. Eight queries are
+compatible; 41 retain explicit bounded diagnostic departures.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39082649705)
+pass 42 public/numerical tests per compiler and formatting for 87 C/header files.
+See the [region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md).
+
+Expanded source `9a50ac67997082c89dbc43cf4274fba1427c1565` passes all 52
+selected local tests without skips on MSVC/GCC/Clang with Linux sanitizers and
+independent exact-source audit. The suite contains 44 public tests, the numerical
+Java oracle and seven selected original comparisons.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39085300876)
+pass 45 tests per compiler and formatting for 88 C/header files.
+
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
 
-The recorded finishing source passes 37 local tests per compiler on native
+The prior finishing checkpoint passes 37 local tests per compiler on native
 Windows/MSVC and WSL GCC/Clang, including original finishing, queue, chunk and
 nibble comparisons. The Linux builds use ASan/UBSan. All six finishing cases
 match independently in three pairings; complete untouched controls agree.
-Public CI passes 33 tests per compiler and formatting for 75 C/header files.
+Its public CI passes 33 tests per compiler and formatting for 75 C/header files.
 Exact tested commits, manifest hashes and integration results live in the
 development status and linked evidence pages.
 

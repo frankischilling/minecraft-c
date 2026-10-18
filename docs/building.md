@@ -103,6 +103,54 @@ snapshots must match. Public fixtures replay the full captured records without
 Java. See the [finishing contract](world/finishing.md) and
 [reproduction procedure](reference/finishing.md).
 
+`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
+for the complete unpublished normal generator entry. Build target
+`mc_normal_generation_probe` replays imported original world/cache/manager
+baselines through the production C API. The comparison requires both supplied
+JARs, JDK17+ with `java`, `javac`, `javap` and `jdk.jdi`, and the exact source
+commit setting. It uses loopback debugging, fresh original worlds and separate
+untouched controls. The acceptance corpus has seeds 23, 24, 26 and 51,
+with nine sequential calls per retained generator. Complete exact-source
+comparisons pass at
+`a08c12056a06261ed01d9f66999459f7ce9543b4`; see
+[generation evidence](reference/generation.md) and the
+[ownership and failure contract](world/generation.md).
+
+After configuring the JAR paths and source commit, the production commands are:
+
+```sh
+cmake --build build --target mc_normal_generation_probe
+ctest --test-dir build -R '^tools\.normal_(reference|interop)$' --output-on-failure
+ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
+```
+
+Add `-C Debug` for a multi-configuration build. The two public tool checks use
+synthetic guards and retained fixtures respectively; they need no original
+JARs or Java. At the a08 checkpoint, all 41 selected local tests pass without
+skips on native MSVC and WSL GCC/Clang, with ASan/UBSan on both Linux builds.
+That suite contains 35 public tests, the numerical Java oracle and five
+original comparisons. [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass 36 public/numerical tests per compiler and formatting for 79 C/header
+files. Later cache/region work on the active branch requires separate results;
+these counts identify the verified checkpoint. `mc_world` itself has no Java
+or original-file dependency.
+
+Cache acquisition adds `tools.acquire_reference`, `tools.acquire_fixture` and
+`tools.acquire_interop`; all three pass on MSVC/GCC/Clang without Java or original
+files. They retain 20 continuous calls and 5120 original query results. The
+separate `mc_chunk_callback_probe` and `tools.callbacks_*` tests cover successful
+loading and natural population at explicit callback seams. Enable
+`MC_ENABLE_CACHE_REFERENCE_TESTS` for both live `reference.chunk_acquire` and
+`reference.chunk_callbacks`. See [cache evidence](reference/cache.md) and
+[callback boundaries](reference/cache-callbacks.md) for constructor routes,
+limits, opaque callback effects and exact-source acceptance status.
+
+The normal build includes `mc_region_inspect`. Enable
+`MC_ENABLE_REGION_REFERENCE_TESTS` for `reference.region`; exact source
+092301ae passes all 49 queries per side and untouched controls on all three
+toolchains. [Region evidence](reference/region.md) records the eight compatible
+cases, 41 diagnostic departures, independent audit and hosted checks.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

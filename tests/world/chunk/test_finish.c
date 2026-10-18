@@ -40,9 +40,9 @@ static int reset_fixture(void)
     for (size_t i = 0; i < 2u; ++i) {
         memset(f.blocks[i] + MC_CHUNK_BLOCKS, 0xa7, 3u);
         CHECK(mc_chunk_data_init(&f.data[i], f.blocks[i], sizeof(f.blocks[i])));
-        f.chunks[i] = (mc_chunk_state){&f.data[i], 0, 0, false, false};
+        f.chunks[i] = (mc_chunk_state){.data = &f.data[i]};
     }
-    f.chunks[2] = (mc_chunk_state){NULL, 99, -99, true, false};
+    f.chunks[2] = (mc_chunk_state){.x = 99, .z = -99, .blank = true};
     CHECK(mc_chunk_cache_init(&f.cache, f.entries, 8u, f.insertions, 16u));
     CHECK(mc_light_queue_init(&f.queue, f.regions, 2048u));
     f.world = (mc_world_lighting){&f.cache, &f.queue, &f.depth, false};

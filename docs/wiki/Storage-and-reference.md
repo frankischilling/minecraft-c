@@ -1,8 +1,8 @@
 # Storage and original references
 
-Storage currently provides raw NBT plus gzip/zlib memory compression. It does
-not implement region addressing, world schemas, writable-world compatibility,
-or copied-world round trips. Do not use this increment as a world save writer.
+Storage provides raw NBT, gzip/zlib memory compression and read-only local
+region-record inspection. Global chunk-to-file mapping, world schemas, writable
+world compatibility and copied-world round trips remain unimplemented.
 
 The raw NBT codec handles the original tag IDs 0..10 with named roots, lists,
 compounds, byte arrays and lossless UTF-16 string units. Decoded documents own
@@ -87,8 +87,8 @@ adds actual untouched merge and world-queue calls. It retains each real setup
 baseline and compares complete ordered queues with C after observed admission.
 Forty-eight cases contain 72 merge requests; each side also runs 43 world
 requests and a separate actual million-entry overflow experiment. The C module
-implements storage after admission. World-height tracing, full finishing and
-propagation remain open.
+implements storage after admission. Full finishing has separate evidence below;
+propagation remains open.
 
 [Full finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md)
 adds actual JDI entry/exit traces of all 1024 height queries per pass, dirty state
@@ -96,8 +96,74 @@ and complete ordered queues. Each fixed case runs twice in the same genuine
 world and matches a separate untouched control across complete snapshots.
 Suspended marker inventories record thread roles and original-loader frames;
 they establish finite headless conditions rather than general scheduling.
-The C cache supports lookup and the explicit map/list publication phase.
-Full loading, lifecycle, population and light propagation remain open.
+The C cache supports lookup, explicit map/list publication and a synchronous
+acquisition coordinator. Separate callback observations below cover successful
+loading and natural population; full persistence and light propagation remain open.
+
+## Normal generation checkpoint
+
+[Direct normal generation evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
+records original stage handoffs and genuine setup qualification for seeds 23,
+24, 26 and 51. The C composition is implemented through full finishing with
+fresh unpublished chunks, a borrowed world biome manager, separate biome
+output preserving manager `d`, and all 13 current material pairs supplied
+explicitly. Its public contract unit passes 99073 checks on MSVC/GCC/Clang,
+including sanitizer checks. Four-seed original capture and lossless public C
+replay pass eight inputs, 72 complete chunks and 73728 exact height queries.
+At exact source `a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected
+local tests pass on native MSVC and WSL GCC/Clang without skips, with ASan/UBSan
+on Linux. All three pairings pass independently. Each build retains 1224 stage
+events, 144 complete marker inventories and eight byte-equal untouched controls.
+Independent audit verifies 47 exact-commit project sources, 57 stable attributed
+inputs, eight unchanged helper classes and all record/control/world-file hashes.
+The evidence page records all three manifest hashes and the audit fingerprint.
+
+The `reference.normal_generation` comparison observes actual direct
+generator calls in fresh worlds and requires complete byte-equal untouched
+controls. It retains complete local/world state, current materials and opacity,
+climate/scratch, all 82 layers, separate Random continuations and 1024 ordered
+height queries per call. Repeated, negative, packed-key-alias, world-border and
+finite cave-domain endpoint calls exercise one retained generator. Public
+`tools.normal_reference` and `tools.normal_interop` checks provide synthetic
+guards and lossless retained-fixture replay; see
+[build commands](Build-and-tests#normal-generation-checks). Generation remains
+separate from cache acquisition/publication, population, propagation, other
+dimensions and save compatibility.
+
+The measured contexts use base worlds `fd`/`dj` and caches `ok`/`jb`. The actual
+`MinecraftServer` constructs `dp` with `he`; its cache lifecycle is not covered
+by the base-world generation observation. The suspended inventories
+establish finite headless conditions, not general concurrency behavior. Hosted
+[a08 checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass 36 public/numerical tests per compiler and formatting for 79 C/header files.
+
+## Cache and region checks
+
+[Cache acquisition evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md)
+records actual persistent client and dedicated-owner constructors with retained
+providers. Three original-only contexts retain 20 operations, five generations,
+5120 ordered queries, 252 lifecycle events, 40 inventories and three complete
+byte-equal controls. At exact source `9a50ac67997082c89dbc43cf4274fba1427c1565`,
+all 52 selected tests pass without skips on MSVC and WSL GCC/Clang with Linux
+sanitizers and independent audit. Hosted checks pass 45 tests per compiler and
+formatting for 88 C/header files.
+
+[Callback boundary evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+adds four original contexts for successful loading and naturally triggered
+population: 12 calls, 394 lifecycle events, 24 inventories and four complete
+byte-equal controls. Public replay imports observed cache/world effects while C
+computes coordinator transitions. At exact source
+`28a55b52c001c4c114a11ca7df844fc1f286d328`, all 56 selected tests pass without
+skips on MSVC/GCC/Clang, with Linux sanitizers and independent audit. Hosted
+checks pass 48 tests per compiler and formatting for 89 C/header files.
+No running-server or terrain-feature parity follows.
+
+[Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md)
+at exact 092301ae passes all 49 queries per original side, with byte-equal
+controls and independent source/artifact audit, on MSVC/GCC/Clang. Eight cases
+are compatible and 41 retain explicit diagnostic departures. Hosted checks pass
+42 tests per compiler and formatting for 87 C/header files. This establishes
+finite local read inspection, not a world schema, global addressing or writes.
 
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
