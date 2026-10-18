@@ -36,9 +36,9 @@ clang-format18. No original JARs/assets are downloaded by CI.
 `MC_ENABLE_MATH_REFERENCE_TESTS` checks every initialized table entry and
 sampled scalar calls from both supplied originals; it needs no world setup.
 
-`MC_ENABLE_JAVA_REFERENCE_TESTS=ON` adds the standard-library numerical oracle
-with JDK8+. Original-class NBT/compression comparisons require JDK11+ and the
-locally supplied verified client/server JARs, enabled separately through
+`MC_ENABLE_JAVA_REFERENCE_TESTS=ON` adds standard-library numerical and collection
+oracles with JDK17+. Original-class NBT/compression comparisons require JDK11+
+and the locally supplied verified client/server JARs, enabled separately through
 `MC_ENABLE_NBT_REFERENCE_TESTS` and `MC_ENABLE_COMPRESSION_REFERENCE_TESTS`.
 `MC_ENABLE_NOISE_REFERENCE_TESTS` adds exact original client/server noise
 comparisons with the same supplied-file/JDK/source-commit requirements.

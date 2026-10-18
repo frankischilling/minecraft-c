@@ -16,14 +16,16 @@ eligibility instead compares current and last-save times. Active/populated do
 not gate saving; blank eligibility is false.
 
 Saving traverses the live indexed insertion list. Forced extra-save precedes
-eligibility. A present loader stamps the current clock before main save. A
-returning wrapper clears dirty and counts an eligible attempt, including caught
-I/O or absent loader. Incremental attempt 24 returns false even at the last entry.
+eligibility unless `never_save` is set. A present loader stamps the current clock
+before main save. A returning wrapper clears dirty and counts an eligible
+attempt, including caught I/O or an absent loader. Incremental attempt 24 returns
+false even at the last entry.
 A completed forced traversal flushes once. Callbacks may append, remove, replace
 or recursively process live objects; there is no shadow graph or rollback.
 
-Maintenance makes 100 fresh pending selections. It retains the selected key and
-mapped identity through active=false, tile invalidation, eight deferred entity
+Maintenance uses a 100-iteration loop, selecting at most 100 pending keys.
+It retains each selected key and mapped identity through active=false, tile
+invalidation, eight deferred entity
 slices, main save and extra save. It removes that key from pending and the
 current map, then only the first matching retained identity from the list.
 Replacement at the selected key is still removed. Duplicate/list-only or

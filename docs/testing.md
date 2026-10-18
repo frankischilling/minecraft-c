@@ -3,9 +3,9 @@
 CTest separates public unit/tool tests from explicitly requested reference
 comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
-The numerical Java oracle is a standard-library probe and can run in public CI
-without original game files. Original-class math, storage, noise, climate and terrain
-comparisons remain local.
+The numerical and collection Java oracles use only the standard library and can
+run in public CI without original game files. Original-class math, storage,
+noise, climate and terrain comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
@@ -74,6 +74,7 @@ comparisons remain local.
 | `tools.world_storage_reference` | 74 Java-free constructed disk, full-state, clock, opaque-data and capture-lifecycle guards | Validation of the comparison harness; fresh original execution is separate |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
+| `reference.java_int_set` (opt-in) | Seven standard-library Integer/HashSet histories compared with native collection and pending-set replay | Selected modern JDK behavior; no historical Java6 claim |
 | `reference.math` (local opt-in) | All 65536 raw table entries and 366 scalar calls in three independent pairings; table preservation controls | Original math methods only; no world setup, cave geometry or full input-space claim |
 | `reference.nbt` (local opt-in) | Per original side: 194 reads, 40 original writes, 12 packet controls, 157 original-to-C and 435 original re-reads | Selected JDK; 4 malformed negative-list departures and 20 order-only differences recorded separately |
 | `reference.compression` (local opt-in) | 80 containers, 22 C encodes; per side 181 baseline records, 65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference transfers | 36 explicit malformed-container departure records; no copied-world compatibility claim |
@@ -94,13 +95,14 @@ comparisons remain local.
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
 
-Enable the Java check at configuration with `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON`.
-If requested and no JDK is discoverable, configuration fails clearly. If a
-prerequisite disappears before execution, the probe reports `UNAVAILABLE`, exit77,
+Enable both Java checks with `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON`; this profile
+requires JDK17 or newer. If requested and no suitable JDK is discoverable,
+configuration fails clearly. If a prerequisite disappears before execution,
+the probe reports `UNAVAILABLE`, exit77,
 which CTest marks skipped. Inspect skips separately from passing comparisons.
-The standalone helper also returns77 for missing tools or its C executable, and
-returns1 for execution errors or mismatches. It only normalizes platform text
-newlines; numeric records and floating bit patterns must agree exactly.
+The standalone numerical helper also returns77 for missing tools or its C
+executable, and returns1 for execution errors or mismatches. It only normalizes
+platform text newlines; numeric records and floating bit patterns must agree exactly.
 
 NBT comparisons require JDK 11 or newer and both pinned supplied JARs. Enable
 `MC_ENABLE_NBT_REFERENCE_TESTS` and set `MC_REFERENCE_CLIENT_JAR`,

@@ -17,9 +17,9 @@ observed/control copies. Original APIs create the expected values; C never does.
 
 | Profile | Context | Operations | Watched events | Purpose |
 | --- | --- | ---: | ---: | --- |
-| `cohort` | client | 160 | 6021 | 25 eligible identities, incremental/forced and client/world routes, unload/reload, fatal cache-session conflict |
+| `cohort` | client | 160 | 6021 | 25 eligible identities, incremental/forced and client/world routes, empty maintenance, fatal cache-session conflict |
 | `cohort` | base server | 134 | 4982 | Base policy, metadata-first saves and fatal cache-session conflict |
-| `cohort` | dedicated owner | 137 | 5198 | Dedicated gates, real far-drop producer and maintenance |
+| `cohort` | dedicated owner | 137 | 5198 | Default dedicated policy, real far-drop producer, unload/reload and maintenance |
 | `session-world` | each context | 6 | 59 each | Actual competing handler constructor, then outer world-save session failure |
 | `unload101` | dedicated owner | 7 | 11298 | 101 acquisitions/drops, first 100 unloads, final one and fresh reloads |
 | `detach-owned` | client/base | 3 each | 75 each | Actual Boat/Sign load/activation and direct chunk detachment |
@@ -27,6 +27,8 @@ observed/control copies. Original APIs create the expected values; C never does.
 
 These are finite schedules. They establish neither arbitrary runtime histories
 nor entity simulation, terrain features, world ticking or crash recovery.
+Dedicated saving-off has constructed C coverage; the genuine cohort retains
+the default saving policy.
 
 ## Boundaries and controls
 
@@ -76,7 +78,7 @@ The generic callback probe imports the raw decoder result and computes only
 coordinator transitions. Boat/Sign decoding, registration, invalidation and
 serialization bodies are external. In the dedicated save, the original
 serializer temporarily clears entity eligibility and sets it again for the
-Boat; the generic coordinator must preserve the actual callback return value.
+Boat; the generic coordinator must preserve the actual `q` state at callback return.
 The empty native runtime separately refuses this activation before publication.
 Its copied files must remain byte-exact after failed loading and EOF.
 
@@ -99,10 +101,13 @@ comparison. Run reports preserve failed attempts and measured input bytes.
 
 Enable `MC_ENABLE_LIFECYCLE_REFERENCE_TESTS` and set
 `MC_REFERENCE_CLIENT_JAR`, `MC_REFERENCE_SERVER_JAR`, `Java_JAVA_EXECUTABLE` and
-`Java_JAVAC_EXECUTABLE` to supplied archives and one JDK17-or-newer installation.
+`Java_JAVAC_EXECUTABLE` to supplied archives and a pinned JDK17 or JDK21 installation.
+Set `MC_REFERENCE_TESTED_COMMIT` to the full tested commit; source qualification
+must separately verify this caller label against the actual tree.
 Build the test targets, then run `ctest --test-dir <build> -C Debug -R
 '^reference.lifecycle_' --output-on-failure`. Ten opt-in profiles run serially;
-missing prerequisites report unavailable. The Java-free public
+missing prerequisites report unavailable with exit77. A skipped profile does
+not qualify as a passing comparison. The Java-free public
 `world.lifecycle_callbacks_replay` uses the pinned fixture.
 
 The producer measures selected JDK executables/runtime inputs, helper sources
@@ -112,6 +117,13 @@ uses the actual loaded Windows DLL or Linux mapping; embedded Linux Python
 records no interpreter library. This is a declared provenance boundary, not a
 transitive operating-system dependency closure. Raw project support code is
 compiled from its measured source rather than accepted from a timestamp cache.
+
+Session-failure traces retain the original finally catch and the catch of its
+rethrow. The pinned JDK17 observation reaches the observation helper; the pinned
+JDK21 observation reaches `jdk.internal.reflect.DirectMethodHandleAccessor.invoke`
+at PC82. Validation binds that bridge to the measured `java.base.jmod` class
+version, method bytes and exception table, alongside the original fatal object,
+message and handler identity.
 
 Owned process groups/jobs include the JDI child. Successful captures require
 clean exit/reaping without emergency termination; final stream hashes follow
