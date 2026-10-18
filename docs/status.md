@@ -34,9 +34,17 @@ dimension roots and the real acquisition loader seam. All 57 public tests pass
 without skips on native MSVC and WSL GCC/Clang with Linux sanitizers: 156.38,
 257.44 and 257.84 seconds respectively. Formatting passes for 111 C/header files.
 These are development results without tested-commit attribution.
-Copied-world round trips, full platform acceptance at an exact source commit and hosted
+Final copied-world acceptance, full platform acceptance at an exact source commit and hosted
 integration remain pending. The new work does not establish gameplay
 save/unload scheduling, entity/player simulation or a playable client/server.
+
+The draft head's [hosted development checks](https://github.com/frankischilling/minecraft-c/actions/runs/39098990744)
+pass 58 public/numerical tests per compiler and formatting for 111 C/header
+files. Older hosted MSVC exposed two constant runtime-check conditions; they
+now use C17 static assertions, retaining strict warnings. Fresh native Windows
+and WSL/GCC whole-world development smokes pass with both originals and nonempty
+Boat/Sign transport. All 69 Java-free world-harness guards pass on both hosts.
+Complete exact-source MSVC/GCC/Clang acceptance remains pending.
 
 ## Verified combined checkpoint
 

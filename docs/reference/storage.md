@@ -2,9 +2,9 @@
 
 Status: **DEVELOPMENT**. Static mapping and three original-only reference
 packages are complete. Public C replays and native owner tests exercise their
-declared boundaries; final exact-source acceptance and the complete owned
-copied-world original/C roundtrip proof remain pending. None of the producer
-hashes below establishes acceptance of the current working tree.
+declared boundaries. Native Windows and WSL/GCC copied-world development
+comparisons pass; full acceptance at an exact source commit remains pending.
+None of the producer hashes below establishes acceptance of the current working tree.
 
 All observations use the client and server pinned in [binaries.md](binaries.md).
 Obfuscated names are side-specific. Original bytecode, disassemblies, class
@@ -225,6 +225,50 @@ original-to-C-to-original and C-to-original-to-C acceptance proof. Player/entity
 simulation, scheduled-data interpretation, unload/save scheduling and terrain-feature bodies
 remain outside these storage boundaries.
 
+## Copied-world comparison in development
+
+`reference.world_storage` composes the native store with fresh genuine original
+worlds. One supplied C executable runs on the same host as Python and the JDK;
+Linux runs do not depend on Windows-to-WSL process bridges. Fresh native Windows
+and WSL/GCC development smokes pass, with JDK17 and JDK21 respectively. All 69
+Java-free harness guards pass on both hosts without skips. Exact-source full
+MSVC/GCC/Clang acceptance remains pending.
+
+All contexts use seed 23. The basic profile uses eight slots in each of roots
+0 and -1: six isolated
+ordinary coordinates plus two signed-extreme storage records. The latter clone
+original-generated chunk data through the original schema; they do not exercise
+terrain generation at extreme coordinates. The profile copies original-created
+worlds into C, then opens C's results in the original and reloads them in a fresh
+C owner. Separately, C creates metadata and region containers from original
+input arrays, and both originals open/save those copies before fresh C reloads.
+
+Checks compare all five arrays, stage-specific flags/time stamps, cache
+identities, metadata fields, explicit region timestamps and physical growth.
+Every known saved metadata field and type is bound to the pre-save live state,
+allowing only the sampled LastPlayed and documented save version.
+Raw written Blocks compare against the source map applied once; reading those
+bytes through normalization again would conceal invalid IDs. Readback preserves
+every non-session file. Writer checks retain unrelated header cells and every
+preexisting byte outside the new record prefixes, including padding and dead
+payload suffixes. Container compression bytes
+need not be identical.
+
+A separate copied-world profile passes the original-derived nonempty Boat/Sign
+record through generic C load/write, then invokes actual original factories and
+serialization. C retains unknown root/Level and opaque record data; specific
+unknown-field drops by the original serializer remain explicit observations.
+The metadata profile first uses the original generic NBT writer to establish
+canonical NaN/empty-list encoding, then checks C Player/unknown-data retention.
+Known weather booleans serialize from interpreted state as Byte 0 or 1.
+
+The original full-save route writes metadata before saving cached chunks, so
+its first saved SizeOnDisk can lag live region growth. A second explicit save
+records the updated value. C exposes metadata save and chunk transport
+separately; the comparison does not substitute that transport for the complete
+gameplay scheduler. Explicit-provider base/Nether contexts have independent
+metadata owners here and do not establish gameplay dimension-transition sharing.
+
 ## Reproduction
 
 Run from the repository root. Live observations require the pinned archives and
@@ -233,11 +277,15 @@ installation. Java is reference tooling, not a native executable dependency.
 The level/chunk drivers accept `--java`, `--javac`, `--javap`; region-write
 accepts `--java`, `--javac`. Injected Java option/classpath environments are
 rejected. Work roots must be owned, isolated paths; never supply a personal world.
+Inside the checkout, use `.local`, `build` or a `build-*` directory. The four
+drivers reject source directories, link/reparse components and output paths
+containing supplied inputs or selected tools before creating a capture.
 
 ```sh
 python scripts/reference/storage/compare_level.py --client <client.jar> --server <server.jar> --executable <mc_level_probe> --work-dir .local/reference-level --tested-commit <40-hex-commit>
 python scripts/reference/storage/compare_region_write.py --client <client.jar> --server <server.jar> --executable <mc_region_writer_probe> --work-dir .local/reference-region-write --tested-commit <40-hex-commit>
 python scripts/reference/storage/compare_chunk_storage.py --client <client.jar> --server <server.jar> --executable <mc_stored_chunk_probe> --work-dir .local/reference-chunk-storage --tested-commit <40-hex-commit>
+python scripts/reference/storage/compare_world_storage.py --client <client.jar> --server <server.jar> --executable <mc_world_store_probe> --work-dir .local/reference-world-storage --tested-commit <40-hex-commit>
 ```
 
 For original-only producers, omit `--executable` and add `--capture-only` to
@@ -260,19 +308,21 @@ python tests/tools/storage/test_regions.py --executable <mc_world_regions_probe>
 python tests/tools/storage/test_store.py --executable <mc_world_store_probe>
 ```
 
-CTest registers these public tool checks plus the C units `storage.level`,
-`storage.region_writer` and `world.stored_chunk`. To add the three live original
+CTest also registers Java-free `tools.world_storage_reference` guards and the C
+units `storage.level`, `storage.region_writer` and `world.stored_chunk`.
+To add the four live original
 tests, configure `MC_ENABLE_STORAGE_REFERENCE_TESTS=ON`, set
 `MC_REFERENCE_CLIENT_JAR`, `MC_REFERENCE_SERVER_JAR` and
 `MC_REFERENCE_TESTED_COMMIT`, then build the probes and run:
 
 ```sh
 cmake --build build --target mc_level_probe mc_region_writer_probe mc_stored_chunk_probe mc_world_regions_probe mc_world_store_probe
-ctest --test-dir build -R '^reference\.(level|region_write|chunk_storage)$' --output-on-failure
+ctest --test-dir build -R '^reference\.(level|region_write|chunk_storage|world_storage)$' --output-on-failure
 ```
 
 Use `-C Debug` for a multi-configuration build. Original JVM children have
-90-second deadlines; level uses a 128 MiB heap, region/chunk use 512 MiB.
+90-second deadlines for level/region/chunk and 120 seconds for whole-world
+comparisons; level uses a 128 MiB heap, region/chunk/world use 512 MiB.
 Captured streams and owned inventories are bounded and monitored, without an
 OS process-tree/filesystem quota claim. Missing environment prerequisites can
 return 77 before measurement. Wrong archives/bindings, measured child failures

@@ -2,7 +2,7 @@
 """Observe paired original level metadata codecs and handlers on fresh files.
 
 C comparisons cover the pure codec. Original handler fallback, file rotation and
-session locks are retained observations until a native owner implements them.
+session locks are retained separately from native world-owner comparisons.
 """
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ import os
 import platform
 import re
 import shutil
+import stat
 import struct
 import sys
 import time
@@ -711,6 +712,33 @@ def validate_clock_window(value, process):
     walk(value)
 
 
+def validate_work_dir(work_dir, protected=()):
+    """Refuse redirected/public output trees before creating any artifacts."""
+    work = Path(os.path.abspath(work_dir))
+    for component in reversed((work, *work.parents)):
+        try:
+            info = component.lstat()
+        except FileNotFoundError:
+            continue
+        require(not stat.S_ISLNK(info.st_mode) and not (getattr(info, 'st_file_attributes', 0) & 0x400),
+                'output link/reparse component refused')
+        require(stat.S_ISDIR(info.st_mode), 'output must have ordinary directory components')
+    resolved = work.resolve()
+    if resolved.is_relative_to(ROOT):
+        parts = resolved.relative_to(ROOT).parts
+        require(parts and (parts[0] in ('.local', 'build') or parts[0].startswith('build-')),
+                'output inside public source/input layout refused')
+    for selected in protected:
+        if selected is None:
+            continue
+        path = Path(selected).resolve()
+        require(resolved != path and resolved not in path.parents,
+                'output would contain/alias an attributed input')
+        if work.exists() and path.exists():
+            require(not os.path.samefile(work, path), 'output aliases an input')
+    return work
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('client', 'server', 'work-dir'):
@@ -721,7 +749,8 @@ def main(argv=None):
     for name in ('java', 'javac', 'javap'):
         parser.add_argument('--'+name)
     args = parser.parse_args(argv)
-    output, report, common, inputs = None, None, None, {}
+    output, common, inputs = None, None, {}
+    report = {'schema': 1, 'status': 'running', 'tested_commit': args.tested_commit or None, 'inputs_before': inputs, 'errors': []}
     status, executing = 1, False
     try:
         common, executed = helpers()
@@ -730,23 +759,9 @@ def main(argv=None):
         require(args.capture_only or args.executable is not None, '--executable required for live C comparison')
         java_source = ROOT/'tests/reference/storage/LevelObservation.java'
         attributed = [Path(__file__).resolve(), java_source, Path(sys.executable).resolve(), ROOT/'CMakeLists.txt', ROOT/'tests/storage/level/level_probe.c']
-        attributed += list((ROOT/'src').rglob('*.c')) + list((ROOT/'include').rglob('*.h'))
+        attributed += list((ROOT/'src').rglob('*.c')) + list((ROOT/'src').rglob('*.h')) + list((ROOT/'include').rglob('*.h'))
         attributed += [Path(row['path']) for row in executed]
-        protected = attributed+[args.client, args.server]+([args.executable] if args.executable else [])
-        work = common.no_link_components(args.work_dir)
-        common.samefile_or_ancestor(work, protected)
-        work.mkdir(parents=True, exist_ok=True)
-        output = work/('capture-'+uuid.uuid4().hex)
-        output.mkdir()
-        output = output.resolve()
-        report = {'schema': 1, 'status': 'running', 'mode': 'original-only' if args.capture_only else 'live-original-C',
-                  'tested_commit': args.tested_commit or None, 'source_label': 'Caller label; actual source, executable and helper bytes are attributed independently.',
-                  'started_utc': common.utc_now(), 'artifact_root': str(output), 'python': sys.version,
-                  'platform': platform.platform(), 'executed_source_modules': executed, 'runs': [], 'c_records': [], 'errors': [],
-                  'limits': {'child_seconds': 90, 'heap_mib': 128, 'stream_bytes': MAX_RECORD, 'owned_entries': 256, 'owned_bytes': 32*1024*1024,
-                             'policy': 'Bounded children and monitored complete inventories, not an OS process-tree or filesystem quota.'},
-                  'scope': 'Pure metadata codec parity only. Genuine handler fallback, two-save rotation and session-lock observations are retained without a native handler equivalence claim. Unknown root/Data preservation is a separate C safety policy.'}
-        common.write_json(output/'manifest.json', report)
+        work = validate_work_dir(args.work_dir, attributed+[args.client, args.server, args.executable, args.java, args.javac, args.javap])
         tools = common.runtime_tools(args)
         release = tools['jdk_release'].read_text(encoding='utf-8')
         match = re.search(r'(?m)^JAVA_VERSION="([0-9]+)(?:\.[^"]*)?"', release)
@@ -770,7 +785,20 @@ def main(argv=None):
             inputs[str(path.resolve())] = common.file_record(path, byte_limit=512*1024*1024)
         for row in executed:
             require(inputs[str(Path(row['path']).resolve())]['sha256'] == row['sha256'], 'executed helper source attribution')
+        work = validate_work_dir(work, attributed)
+        work.mkdir(parents=True, exist_ok=True)
+        candidate = work/('capture-'+uuid.uuid4().hex)
+        candidate.mkdir()
+        output = candidate.resolve()
+        report = {'schema': 1, 'status': 'running', 'mode': 'original-only' if args.capture_only else 'live-original-C',
+                  'tested_commit': args.tested_commit or None, 'source_label': 'Caller label; actual source, executable and helper bytes are attributed independently.',
+                  'started_utc': common.utc_now(), 'artifact_root': str(output), 'python': sys.version,
+                  'platform': platform.platform(), 'executed_source_modules': executed, 'runs': [], 'c_records': [], 'errors': [],
+                  'limits': {'child_seconds': 90, 'heap_mib': 128, 'stream_bytes': MAX_RECORD, 'owned_entries': 256, 'owned_bytes': 32*1024*1024,
+                             'policy': 'Bounded children and monitored complete inventories, not an OS process-tree or filesystem quota.'},
+                  'scope': 'Pure metadata codec parity only. Genuine handler fallback, two-save rotation and session-lock observations are retained without a native handler equivalence claim. Unknown root/Data preservation is a separate C safety policy.'}
         report['inputs_before'] = inputs
+        common.write_json(output/'manifest.json', report)
         for name in ('source', 'classes', 'empty'):
             (output/name).mkdir()
         (output/'source'/java_source.name).write_bytes(java_source.read_bytes())
@@ -836,7 +864,8 @@ def main(argv=None):
         if report is not None:
             report['status'] = 'unavailable' if unavailable else 'fail'
             report['errors'].append(str(error))
-        print(('UNAVAILABLE: ' if unavailable else 'FAILURE: ')+str(error), file=sys.stderr)
+        if output is not None:
+            print(('UNAVAILABLE: ' if unavailable else 'FAILURE: ')+str(error), file=sys.stderr)
     finally:
         if report is not None:
             report['inputs_after'] = {}
@@ -856,9 +885,18 @@ def main(argv=None):
                 except Exception as error:
                     report['status'], status = 'fail', 1
                     report['errors'].append(str(error))
-            report['finished_utc'] = common.utc_now()
-            common.write_json(output/'manifest.json', report)
-            print(report['status'].upper()+': '+str(output/'manifest.json'))
+            if common is not None:
+                report['finished_utc'] = common.utc_now()
+            if output is None:
+                print(json.dumps(report), file=sys.stderr)
+            else:
+                try:
+                    common.write_json(output/'manifest.json', report)
+                    print(report['status'].upper()+': '+str(output/'manifest.json'))
+                except Exception as error:
+                    report['status'], status = 'fail', 1
+                    report['errors'].append('cannot retain outcome manifest: '+str(error))
+                    print(json.dumps(report), file=sys.stderr)
     return status
 
 

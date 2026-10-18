@@ -16,8 +16,10 @@ world-file ownership, local resource import and native builds.
 The storage foundation is implemented through `mc_persistence` and its cache
 acquisition adapter, with acceptance still in DEVELOPMENT. All 57 public tests
 pass without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan;
-clang-format18 passes for 111 C/header files. Exact-source full and fresh live
-reference runs, both-direction copied-world checks and hosted CI remain pending. See the
+clang-format18 passes for 111 C/header files. Hosted development checks pass 58
+public/numerical tests per compiler. Fresh native Windows and WSL/GCC whole-world
+development smokes and 69 Java-free harness guards per host pass. Exact-source
+full MSVC/GCC/Clang acceptance remains pending. See the
 [storage foundation](Storage-and-reference#storage-foundation-in-development),
 [ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
 and [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md).

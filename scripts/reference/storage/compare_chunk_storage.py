@@ -574,7 +574,8 @@ def main(argv=None):
     for name in ('java', 'javac', 'javap'):
         parser.add_argument('--'+name)
     args = parser.parse_args(argv)
-    output, report, common, inputs = None, None, None, {}
+    output, common, inputs = None, None, {}
+    report = {'schema': 1, 'status': 'running', 'tested_commit': args.tested_commit or None, 'inputs_before': inputs, 'errors': []}
     executing, status = False, 1
     try:
         common, old, executed = helpers()
@@ -583,19 +584,8 @@ def main(argv=None):
         require(args.capture_only or args.executable is not None, '--executable required for C comparison')
         source_paths = [ROOT/name for name in SOURCES]
         attributed = [Path(__file__).resolve(), Path(sys.executable).resolve(), ROOT/'CMakeLists.txt', ROOT/'tests/world/storage/chunk_probe.c', *source_paths]
-        attributed += list((ROOT/'src').rglob('*.c')) + list((ROOT/'include').rglob('*.h')) + [Path(row['path']) for row in executed]
-        work = common.no_link_components(args.work_dir)
-        common.samefile_or_ancestor(work, attributed+[args.client, args.server]+([args.executable] if args.executable else []))
-        work.mkdir(parents=True, exist_ok=True)
-        output = work/('capture-'+uuid.uuid4().hex); output.mkdir(); output = output.resolve()
-        report = {'schema': 1, 'status': 'running', 'scope': 'chunk-storage-codec', 'mode': 'original-only' if args.capture_only else 'live-original-C',
-                  'tested_commit': args.tested_commit or None, 'source_label': 'Caller label; actual executing source, tools/classes and binary bytes are attributed independently.',
-                  'started_utc': common.utc_now(), 'artifact_root': str(output), 'python': sys.version, 'platform': platform.platform(),
-                  'executed_source_modules': executed, 'preparations': {}, 'runs': [], 'c_records': [], 'errors': [],
-                  'limits': {'child_seconds': 90, 'heap_mib': 512, 'stream_bytes': MAX_RECORD, 'world_entries': 256, 'world_bytes': MAX_RECORD,
-                             'policy': 'Bounded children and monitored complete inventories, not an OS process-tree/filesystem quota.'},
-                  'qualifications': 'C fixed-array shape validation and opaque/unknown retention are explicit safety departures. C does not run entity/tile factories or attachment, nor own world filesystem save/lock/rotation/cache operations.'}
-        common.write_json(output/'manifest.json', report)
+        attributed += list((ROOT/'src').rglob('*.c')) + list((ROOT/'src').rglob('*.h')) + list((ROOT/'include').rglob('*.h')) + [Path(row['path']) for row in executed]
+        work = level.validate_work_dir(args.work_dir, attributed+[args.client, args.server, args.executable, args.java, args.javac, args.javap])
         tools = common.runtime_tools(args)
         release = tools['jdk_release'].read_text(encoding='utf-8')
         match = re.search(r'(?m)^JAVA_VERSION="([0-9]+)(?:\.[^"]*)?"', release)
@@ -612,13 +602,25 @@ def main(argv=None):
                 raise common.Unavailable('missing C chunk storage executable')
             attributed.append(args.executable.resolve())
         attributed += list(jars.values())+list(tools.values())
-        common.samefile_or_ancestor(work, attributed)
         for path in attributed:
             common.no_link_components(path)
             inputs[str(path.resolve())] = common.file_record(path, byte_limit=512*1024*1024)
         for row in executed:
             require(inputs[str(Path(row['path']).resolve())]['sha256'] == row['sha256'], 'executed helper source attribution')
+        work = level.validate_work_dir(work, attributed)
+        work.mkdir(parents=True, exist_ok=True)
+        candidate = work/('capture-'+uuid.uuid4().hex)
+        candidate.mkdir()
+        output = candidate.resolve()
+        report = {'schema': 1, 'status': 'running', 'scope': 'chunk-storage-codec', 'mode': 'original-only' if args.capture_only else 'live-original-C',
+                  'tested_commit': args.tested_commit or None, 'source_label': 'Caller label; actual executing source, tools/classes and binary bytes are attributed independently.',
+                  'started_utc': common.utc_now(), 'artifact_root': str(output), 'python': sys.version, 'platform': platform.platform(),
+                  'executed_source_modules': executed, 'preparations': {}, 'runs': [], 'c_records': [], 'errors': [],
+                  'limits': {'child_seconds': 90, 'heap_mib': 512, 'stream_bytes': MAX_RECORD, 'world_entries': 256, 'world_bytes': MAX_RECORD,
+                             'policy': 'Bounded children and monitored complete inventories, not an OS process-tree/filesystem quota.'},
+                  'qualifications': 'C fixed-array shape validation and opaque/unknown retention are explicit safety departures. C does not run entity/tile factories or attachment, nor own world filesystem save/lock/rotation/cache operations.'}
         report['inputs_before'] = inputs
+        common.write_json(output/'manifest.json', report)
         for name in ('source', 'classes', 'empty'):
             (output/name).mkdir()
         for path in source_paths+[Path(__file__).resolve()]:
@@ -700,7 +702,8 @@ def main(argv=None):
         status = 77 if unavailable else 1
         if report is not None:
             report['status'] = 'unavailable' if unavailable else 'fail'; report['errors'].append(str(error))
-        print(('UNAVAILABLE: ' if unavailable else 'FAILURE: ')+str(error), file=sys.stderr)
+        if output is not None:
+            print(('UNAVAILABLE: ' if unavailable else 'FAILURE: ')+str(error), file=sys.stderr)
     finally:
         if report is not None:
             report['inputs_after'] = {}
@@ -716,8 +719,18 @@ def main(argv=None):
                     report['classes_after'] = current; require(current == report['classes_before'], 'compiled helper inventory/bytes retained')
                 except Exception as error:
                     report['status'], status = 'fail', 1; report['errors'].append(str(error))
-            report['finished_utc'] = common.utc_now(); common.write_json(output/'manifest.json', report)
-            print(report['status'].upper()+': '+str(output/'manifest.json'))
+            if common is not None:
+                report['finished_utc'] = common.utc_now()
+            if output is None:
+                print(json.dumps(report), file=sys.stderr)
+            else:
+                try:
+                    common.write_json(output/'manifest.json', report)
+                    print(report['status'].upper()+': '+str(output/'manifest.json'))
+                except Exception as error:
+                    report['status'], status = 'fail', 1
+                    report['errors'].append('cannot retain outcome manifest: '+str(error))
+                    print(json.dumps(report), file=sys.stderr)
     return status
 
 

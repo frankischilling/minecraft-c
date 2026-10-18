@@ -17,6 +17,7 @@ from pathlib import Path
 import platform
 import re
 import shutil
+import stat
 import struct
 import subprocess
 import sys
@@ -750,7 +751,34 @@ def read_record(directory, side, mode, jar):
     return value, summary
 
 
-def run(args, directory, report):
+def validate_work_dir(work_dir, protected=()):
+    """Validate output ownership without importing another driver."""
+    work = Path(os.path.abspath(work_dir))
+    for component in reversed((work, *work.parents)):
+        try:
+            info = component.lstat()
+        except FileNotFoundError:
+            continue
+        check(not stat.S_ISLNK(info.st_mode) and not (getattr(info, "st_file_attributes", 0) & 0x400),
+              "output link/reparse component refused")
+        check(stat.S_ISDIR(info.st_mode), "output must have ordinary directory components")
+    resolved = work.resolve()
+    if resolved.is_relative_to(ROOT):
+        parts = resolved.relative_to(ROOT).parts
+        check(parts and (parts[0] in (".local", "build") or parts[0].startswith("build-")),
+              "output inside public source/input layout refused")
+    for selected in protected:
+        if selected is None:
+            continue
+        path = Path(selected).resolve()
+        check(resolved != path and resolved not in path.parents,
+              "output would contain/alias an attributed input")
+        if work.exists() and path.exists():
+            check(not os.path.samefile(work, path), "output aliases an input")
+    return work
+
+
+def prepare(args, report):
     check(Path(__file__).resolve() == (ROOT / "scripts/reference/storage/compare_region_write.py").resolve(), "canonical executing driver source identity")
     sources = {name: fingerprint(ROOT/name,2*1024*1024) for name in SOURCES}
     report["inputs_before"] = {str(ROOT/name):value for name,value in sources.items()}
@@ -775,6 +803,11 @@ def run(args, directory, report):
     inputs = [*(ROOT/name for name in SOURCES),*jars.values(),java,javac,Path(sys.executable).resolve()]
     if executable is not None: inputs.append(executable)
     report["inputs_before"].update({str(path):fingerprint(path,128*1024*1024) for path in inputs})
+    return sources, jars, executable, java, javac
+
+
+def run(args, directory, report, prepared):
+    sources, jars, executable, java, javac = prepared
     report["original_classes"] = {side:class_records(path,side) for side,path in jars.items()}
     report["tools"] = {}
     for name,path in (("java",java),("javac",javac)):
@@ -831,8 +864,7 @@ def main(argv=None):
     parser.add_argument("--work-dir",type=Path,default=ROOT/".local/reference-region-write")
     parser.add_argument("--tested-commit")
     args=parser.parse_args(argv)
-    args.work_dir.mkdir(parents=True,exist_ok=True)
-    directory=(args.work_dir/("capture-"+uuid.uuid4().hex)).resolve();directory.mkdir()
+    directory = None
     report={"schema":1,"scope":"region-memory-write","mode":args.mode,"status":"running","tested_commit":args.tested_commit,
             "source_label":"Caller label only; exact sources/helpers/tools are fingerprinted.","python":platform.python_version(),"platform":platform.platform(),
             "original_runs":[],"controls":[],"cases":[],"errors":[],
@@ -841,7 +873,16 @@ def main(argv=None):
     code=1
     try:
         check(args.tested_commit is None or re.fullmatch(r"[0-9a-f]{40}",args.tested_commit),"explicit40hex tested source label")
-        run(args,directory,report);report["status"]="pass";code=0
+        protected = [*(ROOT/name for name in SOURCES), Path(sys.executable),
+                     args.client, args.server, args.executable, args.java, args.javac]
+        work = validate_work_dir(args.work_dir, protected)
+        prepared = prepare(args, report)
+        work = validate_work_dir(work, report["inputs_before"])
+        work.mkdir(parents=True, exist_ok=True)
+        candidate = work/("capture-"+uuid.uuid4().hex)
+        candidate.mkdir()
+        directory = candidate.resolve()
+        run(args,directory,report,prepared);report["status"]="pass";code=0
     except Unavailable as failure:
         report["status"]="unavailable";report["unavailable_reason"]=str(failure);code=77
     except (Failure,OSError,ValueError,KeyError,TypeError,subprocess.SubprocessError,zipfile.BadZipFile) as failure:
@@ -856,8 +897,16 @@ def main(argv=None):
                     check(report["classes_after"]==report["classes_before"],"helper preservation after any outcome")
             except (Failure,OSError) as failure:
                 report["status"]="fail";report["errors"].append(str(failure));code=1
-        (directory/"manifest.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf8")
-        print(directory/"manifest.json")
+        if directory is None:
+            print(json.dumps(report), file=sys.stderr)
+        else:
+            try:
+                (directory/"manifest.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf8")
+                print(directory/"manifest.json")
+            except OSError as failure:
+                report["status"]="fail";code=1
+                report["errors"].append("cannot retain outcome manifest: "+str(failure))
+                print(json.dumps(report), file=sys.stderr)
     return code
 
 

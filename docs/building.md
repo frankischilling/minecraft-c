@@ -154,7 +154,8 @@ cases, 41 diagnostic departures, independent audit and hosted checks.
 The normal build also includes `mc_persistence`, composing native world files,
 metadata, stable chunk owners and region transport. Its public tests need no
 original files or Java. `MC_ENABLE_STORAGE_REFERENCE_TESTS=ON` adds
-`reference.level`, `reference.region_write` and `reference.chunk_storage` with
+`reference.level`, `reference.region_write`, `reference.chunk_storage` and
+`reference.world_storage` with
 both supplied JARs, JDK17+ and `MC_REFERENCE_TESTED_COMMIT`. Use fresh owned or
 copied test worlds. Development checks pass on MSVC/GCC/Clang; copied-world and
 exact-source acceptance remain pending. See [storage evidence](reference/storage.md)

@@ -356,6 +356,72 @@ class LevelExecutionGuards(unittest.TestCase):
              contextlib.redirect_stderr(io.StringIO()), contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(level.main(self.argv), 77)
 
+    def output_preflight(self, work, *, missing=False, overrides=False):
+        self.original_record = self.common.file_record
+        args = self.argv.copy(); args[args.index('--work-dir')+1] = str(work)
+        if overrides:
+            for name in ('java', 'javac', 'javap'):
+                args += ['--'+name, str(self.tools[name])]
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with patch.dict(os.environ, {name: '' for name in level.JAVA_ENVIRONMENT}), \
+             patch.object(level, 'helpers', return_value=(self.common, self.executed)), \
+             patch.object(self.common, 'runtime_tools', side_effect=self.common.Unavailable('missing synthetic JDK') if missing else None, return_value=self.tools), \
+             patch.object(self.common, 'file_record', side_effect=self.record), \
+             patch.object(self.common, 'run_live') as child, \
+             patch.object(self.common, 'tool_versions') as versions, \
+             contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            code = level.main(args)
+        child.assert_not_called(); versions.assert_not_called()
+        self.assertEqual(stdout.getvalue(), '')
+        return code, level.strict_json(stderr.getvalue().encode('utf8'))
+
+    def test_public_new_descendant_is_refused_before_output_creation(self):
+        project = self.root/'project'; work = project/'src/new-reference-output'
+        with patch.object(level, 'ROOT', project):
+            code, report = self.output_preflight(work)
+        self.assertEqual((code, report['status']), (1, 'fail'))
+        self.assertIn('public source/input layout', report['errors'][0])
+        self.assertFalse(project.exists())
+
+    def test_default_and_override_tool_roots_are_protected_before_mkdir(self):
+        for overrides in (False, True):
+            before = sorted(path.relative_to(self.root/'jdk').as_posix() for path in (self.root/'jdk').rglob('*'))
+            code, report = self.output_preflight(self.root/'jdk', overrides=overrides)
+            self.assertEqual((code, report['status']), (1, 'fail'))
+            self.assertTrue(any('attributed input' in value for value in report['errors']))
+            self.assertEqual(before, sorted(path.relative_to(self.root/'jdk').as_posix() for path in (self.root/'jdk').rglob('*')))
+
+    def test_input_file_output_and_missing_prerequisite_emit_json_without_captures(self):
+        original = self.jars['client'].read_bytes()
+        code, report = self.output_preflight(self.jars['client'])
+        self.assertEqual((code, report['status']), (1, 'fail'))
+        self.assertEqual(self.jars['client'].read_bytes(), original)
+        work = self.root/'missing-captures'
+        code, report = self.output_preflight(work, missing=True)
+        self.assertEqual((code, report['status']), (77, 'unavailable'))
+        self.assertFalse(work.exists())
+
+    def test_static_link_or_junction_output_is_refused(self):
+        target, link = self.root/'owned-target', self.root/'linked-output'
+        target.mkdir()
+        try:
+            link.symlink_to(target, target_is_directory=True)
+        except OSError:
+            if os.name != 'nt':
+                self.skipTest('directory links are unavailable')
+            import _winapi
+            create = getattr(_winapi, 'CreateJunction', None)
+            if create is None:
+                self.skipTest('directory links and junctions are unavailable')
+            try:
+                create(str(target), str(link))
+            except OSError:
+                self.skipTest('directory links and junctions are unavailable')
+        code, report = self.output_preflight(link/'nested')
+        self.assertEqual((code, report['status']), (1, 'fail'))
+        self.assertIn('link/reparse', report['errors'][0])
+        self.assertEqual(list(target.iterdir()), [])
+
     def test_post_start_unavailable_and_child77_are_failures(self):
         def unavailable(*_):
             raise self.common.Unavailable('synthetic measured unavailable')

@@ -82,11 +82,13 @@ The normal build includes `mc_persistence`, the metadata codec, stored-chunk
 owner, region image writer, native region cache and world store. Public checks
 include `storage.level`, `storage.region_writer`, `world.stored_chunk`, the
 `tools.level_*`, `tools.region_write_*`, `tools.chunk_storage_*` and
-`tools.regions_*` checks, and `tools.world_store_interop`. They use retained
+`tools.regions_*` checks, `tools.world_store_interop` and
+`tools.world_storage_reference`. They use retained
 observations and constructed C contracts without original archives or Java.
 
 `MC_ENABLE_STORAGE_REFERENCE_TESTS=ON` enables `reference.level`,
-`reference.region_write` and `reference.chunk_storage`. These require both
+`reference.region_write`, `reference.chunk_storage` and `reference.world_storage`.
+These require both
 locally supplied verified JARs, JDK17+ and `MC_REFERENCE_TESTED_COMMIT`. Keep
 reference worlds in fresh owned or copied directories. The
 [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
@@ -97,9 +99,12 @@ describes lifetimes, limits and unsupported operations.
 
 Current storage acceptance is DEVELOPMENT. All 57 public tests pass without
 skips on strict native MSVC and WSL GCC/Clang builds, with Linux ASan/UBSan.
-Clang-format18 passes for 111 C/header files. Exact-source full and fresh live
-reference runs, both-direction copied-world checks and hosted CI remain pending. The completed checkpoint counts below retain
-their original source and scope.
+Clang-format18 passes for 111 C/header files. Hosted development checks pass 58
+public/numerical tests per compiler. Fresh native Windows and WSL/GCC whole-world
+development smokes pass both round-trip directions and opaque Boat/Sign
+transport; 69 Java-free harness guards pass on each host. Exact-source full
+MSVC/GCC/Clang acceptance remains pending. The completed checkpoint counts below
+retain their original source and scope.
 
 ## Normal generation checks
 

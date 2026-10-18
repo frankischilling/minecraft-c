@@ -24,7 +24,7 @@ option(MC_ENABLE_GENERATION_REFERENCE_TESTS "Compare complete normal generation 
 option(MC_ENABLE_REGION_CAPTURE_TESTS "Compare region reader with recorded observations" OFF)
 option(MC_ENABLE_REGION_REFERENCE_TESTS "Compare region inspection with untouched original readers" OFF)
 option(MC_ENABLE_CACHE_REFERENCE_TESTS "Compare synchronous acquisition with retained original providers" OFF)
-option(MC_ENABLE_STORAGE_REFERENCE_TESTS "Compare persistence codecs and region writes with originals" OFF)
+option(MC_ENABLE_STORAGE_REFERENCE_TESTS "Compare world persistence with original storage methods" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -304,6 +304,13 @@ if(BUILD_TESTING)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
 
+    add_test(NAME tools.world_storage_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage" -p test_world_storage.py)
+    set_tests_properties(tools.world_storage_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 180)
+
     add_test(NAME tools.world_store_interop
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_store.py"
@@ -405,6 +412,19 @@ if(BUILD_TESTING)
             ${MC_STORAGE_SOURCE_ARGUMENTS})
         set_tests_properties(reference.chunk_storage PROPERTIES
             LABELS "reference;original;storage" TIMEOUT 600 SKIP_RETURN_CODE 77)
+
+        add_test(NAME reference.world_storage
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/storage/compare_world_storage.py"
+            --executable "$<TARGET_FILE:mc_world_store_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-world-storage"
+            ${MC_STORAGE_SOURCE_ARGUMENTS})
+        set_tests_properties(reference.world_storage PROPERTIES
+            LABELS "reference;original;storage" TIMEOUT 900 SKIP_RETURN_CODE 77)
     endif()
     add_test(NAME tools.acquire_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover

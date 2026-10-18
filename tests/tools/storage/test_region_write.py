@@ -288,9 +288,14 @@ class ExecutionTests(unittest.TestCase):
             if scenario=="renamed_source": patches.append(mock.patch.object(region,"__file__",str(root/"renamed.py")))
             with contextlib.ExitStack() as stack:
                 for patch in patches: stack.enter_context(patch)
-                with contextlib.redirect_stdout(io.StringIO()): code=region.main(args)
-            reports=list((root/"work").glob("capture-*/manifest.json"));self.assertEqual(len(reports),1)
-            return code,json.loads(reports[0].read_bytes())
+                errors=io.StringIO()
+                with contextlib.redirect_stdout(io.StringIO()),contextlib.redirect_stderr(errors): code=region.main(args)
+            reports=list((root/"work").glob("capture-*/manifest.json"))
+            if reports:
+                self.assertEqual(len(reports),1)
+                return code,json.loads(reports[0].read_bytes())
+            self.assertFalse((root/"work").exists())
+            return code,json.loads(errors.getvalue())
 
     def test_missing_prerequisite_is_unavailable(self):
         code,row=self.guard("missing_tool");self.assertEqual(code,77);self.assertEqual(row["status"],"unavailable")
@@ -319,6 +324,70 @@ class ExecutionTests(unittest.TestCase):
         code,row=self.guard("compiler_numeric_alias");self.assertEqual(code,1);self.assertEqual(row["status"],"fail")
         self.assertTrue(any("fingerprint bytes" in e for e in row["errors"]))
         self.assertNotIn("classes_before",row)
+
+
+class OutputPathTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory(prefix="mc-region-output-");self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name);self.tools={};self.jars={}
+        for name in ("java","javac"):
+            path=self.root/"jdk/bin"/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b"synthetic tool");self.tools[name]=path
+        for side in region.JAR_HASHES:
+            path=self.root/(side+".jar");path.write_bytes(b"synthetic archive");self.jars[side]=path
+
+    def preflight(self,work,*,missing=False,overrides=False):
+        original=region.fingerprint
+        def fingerprint(path,limit=region.MAX_RECORD):
+            value=original(path,limit)
+            for side,jar in self.jars.items():
+                if Path(path).resolve()==jar.resolve():value["sha256"]=region.JAR_HASHES[side]
+            return value
+        def tool(selected,name):
+            if missing:raise region.Unavailable("missing synthetic JDK")
+            return self.tools[name]
+        args=["--mode","original-only","--client",str(self.jars["client"]),"--server",str(self.jars["server"]),"--work-dir",str(work)]
+        if overrides:
+            for name,path in self.tools.items():args += ["--"+name,str(path)]
+        stdout,stderr=io.StringIO(),io.StringIO()
+        env={k:v for k,v in os.environ.items() if k not in region.JAVA_ENVIRONMENT}
+        with mock.patch.dict(os.environ,env,clear=True),mock.patch.object(region,"fingerprint",side_effect=fingerprint), \
+             mock.patch.object(region,"tool_path",side_effect=tool),mock.patch.object(region,"process") as child, \
+             contextlib.redirect_stdout(stdout),contextlib.redirect_stderr(stderr):
+            code=region.main(args)
+        child.assert_not_called();self.assertEqual(stdout.getvalue(),"")
+        return code,json.loads(stderr.getvalue())
+
+    def test_public_new_descendant_is_refused_before_output_creation(self):
+        project=self.root/"project";work=project/"src/new-reference-output"
+        with mock.patch.object(region,"ROOT",project):code,report=self.preflight(work)
+        self.assertEqual((code,report["status"]),(1,"fail"));self.assertIn("public source/input layout",report["errors"][0])
+        self.assertFalse(project.exists())
+
+    def test_default_and_override_tool_roots_are_protected_before_mkdir(self):
+        for overrides in (False,True):
+            before=sorted(path.relative_to(self.root/"jdk").as_posix() for path in (self.root/"jdk").rglob("*"))
+            code,report=self.preflight(self.root/"jdk",overrides=overrides)
+            self.assertEqual((code,report["status"]),(1,"fail"));self.assertTrue(any("attributed input" in value for value in report["errors"]))
+            self.assertEqual(before,sorted(path.relative_to(self.root/"jdk").as_posix() for path in (self.root/"jdk").rglob("*")))
+
+    def test_input_file_output_and_missing_prerequisite_emit_json_without_captures(self):
+        original=self.jars["client"].read_bytes();code,report=self.preflight(self.jars["client"])
+        self.assertEqual((code,report["status"]),(1,"fail"));self.assertEqual(self.jars["client"].read_bytes(),original)
+        work=self.root/"missing-captures";code,report=self.preflight(work,missing=True)
+        self.assertEqual((code,report["status"]),(77,"unavailable"));self.assertFalse(work.exists())
+
+    def test_static_link_or_junction_output_is_refused(self):
+        target,link=self.root/"owned-target",self.root/"linked-output";target.mkdir()
+        try:link.symlink_to(target,target_is_directory=True)
+        except OSError:
+            if os.name!="nt":self.skipTest("directory links are unavailable")
+            import _winapi
+            create=getattr(_winapi,"CreateJunction",None)
+            if create is None:self.skipTest("directory links and junctions are unavailable")
+            try:create(str(target),str(link))
+            except OSError:self.skipTest("directory links and junctions are unavailable")
+        code,report=self.preflight(link/"nested")
+        self.assertEqual((code,report["status"]),(1,"fail"));self.assertIn("link/reparse",report["errors"][0]);self.assertEqual(list(target.iterdir()),[])
 
 
 def run_probe(executable,raw):

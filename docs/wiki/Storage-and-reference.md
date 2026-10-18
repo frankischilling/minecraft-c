@@ -3,8 +3,9 @@
 Storage provides raw NBT, gzip/zlib memory compression, metadata codecs,
 region inspection and writing, stable stored chunks, native region transport
 and world-store ownership through `mc_persistence`. The foundation is implemented
-and remains in DEVELOPMENT acceptance. Exact-source full/live runs,
-both-direction copied-world round trips and hosted acceptance remain pending.
+and remains in DEVELOPMENT acceptance. Native Windows and WSL/GCC copied-world
+development comparisons pass; exact-source full/live and hosted acceptance
+remain pending.
 See [current storage scope](#storage-foundation-in-development) below.
 
 The raw NBT codec handles the original tag IDs 0..10 with named roots, lists,
@@ -203,8 +204,12 @@ original GC timing, general concurrent mutation or failed-I/O durability.
 
 All 57 public development tests pass without skips on strict native MSVC and
 WSL GCC/Clang builds, with Linux ASan/UBSan. Clang-format18 passes for 111
-C/header files. Exact-source full and fresh live reference runs, both-direction
-copied-world acceptance and hosted CI remain pending. Full entity/player behavior, save/unload scheduling, light
+C/header files. Hosted development checks pass 58 public/numerical tests per
+compiler. Fresh native Windows and WSL/GCC `reference.world_storage` development
+smokes pass original-created and C-created containers in both directions,
+including opaque Boat/Sign transport; 69 Java-free harness guards pass per host.
+Final exact-source MSVC/GCC/Clang acceptance remains pending. Full entity/player
+behavior, save/unload scheduling, light
 propagation and game integration remain open. Earlier checkpoint counts above
 continue to describe only their recorded sources.
 
