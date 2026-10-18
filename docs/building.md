@@ -137,10 +137,13 @@ or original-file dependency.
 
 Cache acquisition adds `tools.acquire_reference`, `tools.acquire_fixture` and
 `tools.acquire_interop`; all three pass on MSVC/GCC/Clang without Java or original
-files. They retain 20 continuous calls and 5120 original query results. Enable
-`MC_ENABLE_CACHE_REFERENCE_TESTS` for the live `reference.chunk_acquire` oracle.
-See [cache evidence](reference/cache.md) for actual constructor routes, limits
-and the remaining successful-load/population callback comparisons.
+files. They retain 20 continuous calls and 5120 original query results. The
+separate `mc_chunk_callback_probe` and `tools.callbacks_*` tests cover successful
+loading and natural population at explicit callback seams. Enable
+`MC_ENABLE_CACHE_REFERENCE_TESTS` for both live `reference.chunk_acquire` and
+`reference.chunk_callbacks`. See [cache evidence](reference/cache.md) and
+[callback boundaries](reference/cache-callbacks.md) for constructor routes,
+limits, opaque callback effects and exact-source acceptance status.
 
 The normal build includes `mc_region_inspect`. Enable
 `MC_ENABLE_REGION_REFERENCE_TESTS` for `reference.region`; exact source

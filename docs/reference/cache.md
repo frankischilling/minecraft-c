@@ -93,12 +93,14 @@ Map and pending projections sort signed keys for membership comparison only;
 raw original bucket orders remain in the capture. Insertion and queue order
 remain exact. Blank dispatch state is separate from unused backing arrays.
 
-Genuine copied-world reload research separately confirms successful client `ld`
+Copied-world reload research separately confirms successful client `ld`
 and server `hb` loads without generation: all five saved arrays are unchanged,
 but the loaded minimum-height field remains zero rather than the generated 66.
-This prevents treating deserialization as another height rebuild. Those private
-observations do not establish a C disk decoder or writable-world compatibility.
-The current production acquisition corpus does not trigger terrain population,
+This prevents treating deserialization as another height rebuild. The separate
+[callback boundary comparison](cache-callbacks.md) turns those observations and
+natural population into reproducible original controls and C seam replays.
+It does not establish a C disk decoder or writable-world compatibility.
+The retained-provider acquisition corpus above does not trigger terrain population,
 save/unload or recursive generation. Constructed callback tests cover the
 coordinator's live population gates, partial failures and deliberate recursion;
 they do not assert those injected callbacks occur during gameplay.

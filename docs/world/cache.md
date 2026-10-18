@@ -77,8 +77,10 @@ oracle and lossless public replay. Their [reference evidence](../reference/cache
 separates genuine observations from injected callback tests. At source
 `9a50ac67997082c89dbc43cf4274fba1427c1565`, all 52 selected local tests pass on
 MSVC/GCC/Clang without skips, with Linux sanitizers, independent exact-source
-audit and hosted checks. Successful-load and natural population callback
-comparisons remain separate acceptance work.
+audit and hosted checks. A separate [callback boundary comparison](../reference/cache-callbacks.md)
+adds successful original loads, nonzero time stamping and naturally triggered
+population. It replays complete external callback effects while C computes
+coordinator transitions. Its final exact-source platform acceptance is pending.
 
 This boundary does not decode disk chunks, populate terrain features, save or
 unload objects, drain light queues or reproduce Java collection iteration.

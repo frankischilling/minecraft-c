@@ -113,6 +113,9 @@ if(BUILD_TESTING)
     add_executable(mc_chunk_acquire_probe tests/world/cache/acquire_probe.c)
     target_link_libraries(mc_chunk_acquire_probe PRIVATE mc_world mc_build_options)
 
+    add_executable(mc_chunk_callback_probe tests/world/cache/callback_probe.c)
+    target_link_libraries(mc_chunk_callback_probe PRIVATE mc_world mc_build_options)
+
     add_executable(mc_test_region tests/storage/region/test_region.c)
     target_link_libraries(mc_test_region PRIVATE mc_storage mc_build_options)
     add_test(NAME storage.region COMMAND mc_test_region)
@@ -279,6 +282,26 @@ if(BUILD_TESTING)
         --executable "$<TARGET_FILE:mc_chunk_acquire_probe>")
     set_tests_properties(tools.acquire_interop PROPERTIES LABELS "public;tools" TIMEOUT 120)
 
+    add_test(NAME tools.callbacks_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/cache" -p test_callbacks_reference.py)
+    set_tests_properties(tools.callbacks_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.callbacks_fixture
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/cache" -p test_callbacks_interop.py)
+    set_tests_properties(tools.callbacks_fixture PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.callbacks_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/cache/test_callbacks_interop.py"
+        --executable "$<TARGET_FILE:mc_chunk_callback_probe>")
+    set_tests_properties(tools.callbacks_interop PROPERTIES LABELS "public;tools" TIMEOUT 120)
+
     if(MC_ENABLE_CACHE_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
         get_filename_component(MC_CACHE_JAVA_BIN "${Java_JAVA_EXECUTABLE}" DIRECTORY)
@@ -294,6 +317,20 @@ if(BUILD_TESTING)
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-chunk-acquire"
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
         set_tests_properties(reference.chunk_acquire PROPERTIES
+            LABELS "reference;original;cache" TIMEOUT 900 SKIP_RETURN_CODE 77)
+
+        add_test(NAME reference.chunk_callbacks
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/cache/compare_callbacks.py"
+            --executable "$<TARGET_FILE:mc_chunk_callback_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --javap "${MC_CACHE_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-chunk-callbacks"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.chunk_callbacks PROPERTIES
             LABELS "reference;original;cache" TIMEOUT 900 SKIP_RETURN_CODE 77)
     endif()
 

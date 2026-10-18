@@ -21,6 +21,9 @@ import zlib
 
 
 ROOT = Path(__file__).resolve().parents[3]
+SPEC = importlib.util.spec_from_file_location("acquire_interop_subject", ROOT / "scripts/reference/cache/compare_acquire.py")
+ACQUIRE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(ACQUIRE)
 FIXTURE = ROOT / "tests/reference/cache/acquire_fixtures.json"
 MAX_INPUT = 4 * 1024 * 1024
 MAX_ORIGINAL = 32 * 1024 * 1024
@@ -469,7 +472,7 @@ def load_fixture(path):
                 ["tool:java", "helper:classes", "supplied:" + row["side"], "case:world", "case:snapshots.json"],
                 "logical original command provenance")
         decoded.append((row, data, expected))
-    require(decoded[0][2] == decoded[1][2], "complete shared client/server original equivalence")
+    require(ACQUIRE.same_json(decoded[0][2], decoded[1][2]), "complete shared client/server original equivalence")
     return value, decoded
 
 
@@ -554,6 +557,19 @@ class AcquisitionFixtureTests(unittest.TestCase):
         for raw in (b'{"x":1,"x":2}', b'{"x":NaN}', b'{"x":Infinity}', b'{"x":1e999}'):
             with self.assertRaises(ValueError):
                 strict_json(raw)
+        actual = strict_json(b'{"states":[null,true,false,1,1.0,"1",{"queue":[[0,1,-1]]}],"empty":{}}')
+        expected = {"empty": {}, "states": [None, True, False, 1, 1.0, "1", {"queue": [[0, 1, -1]]}]}
+        self.assertTrue(ACQUIRE.same_json(actual, expected))
+        mismatches = ((True, 1), (False, 0), (1, 1.0), (0, -0.0), (None, False), ("1", 1),
+                      ({"flags": {"active": True}}, {"flags": {"active": 1}}),
+                      ({"queue": [[0, 1, -1]]}, {"queue": [[0, 1.0, -1]]}),
+                      ({"queue": [[0, 1], [1, 0]]}, {"queue": [[1, 0], [0, 1]]}),
+                      ({"queue": []}, {}), ({"queue": []}, {"queue": [], "extra": None}),
+                      ([1, 2], [1]), ({}, []))
+        for left, right in mismatches:
+            with self.subTest(actual=left, expected=right):
+                self.assertFalse(ACQUIRE.same_json(left, right))
+                self.assertFalse(ACQUIRE.same_json(right, left))
 
     def test_input_complete_fixed_schedule_and_imports(self):
         _, rows = load_fixture(FIXTURE)
@@ -639,7 +655,7 @@ def main(argv=None):
     _, rows = load_fixture(args.fixtures)
     executable = args.executable.resolve(strict=True)
     for row, data, expected in rows:
-        require(replay(executable, data) == expected, "complete original/C acquisition mismatch: case " + str(row["index"]))
+        require(ACQUIRE.same_json(replay(executable, data), expected), "complete original/C acquisition mismatch: case " + str(row["index"]))
     row, data, _ = rows[0]
     offset = validate_input(data, row)["operations_offset"]
     for changed in (b"BAD1" + data[4:], data[:-1], data + b"x", data[:12] + b"\x02" + data[13:],

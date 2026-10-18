@@ -121,10 +121,16 @@ The cache coordinator adds 838 public contract checks. Its retained-provider
 fixture replays three continuous original contexts, 20 operations, five generated
 chunks and 5120 exact height queries. The public protocol and fixture checks need
 neither Java nor original archives. `MC_ENABLE_CACHE_REFERENCE_TESTS=ON` enables
-`reference.chunk_acquire` with JDK17+, `jdk.jdi`, `jdk.jdwp.agent`, both supplied
-archives and the exact source commit setting. Successful loading and natural
-population callback comparisons remain pending. See the
+`reference.chunk_acquire` and `reference.chunk_callbacks` with JDK17+, `jdk.jdi`,
+`jdk.jdwp.agent`, both supplied archives and the exact source commit setting.
+The callback fixture adds four contexts, 12 calls, 394 lifecycle events and 24
+inventories. Public checks cover 34 guards, four genuine C replays, four
+constructed cases and 28 additional C guards. These replay external body effects
+while C computes coordinator transitions. Final exact-source platform acceptance
+for the callback expansion is pending. See the
 [cache evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md).
+The separate [callback evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+records saved-world preparation, ownership and explicit external-effect limits.
 
 The read-only region reader has 49771 public checks. At source
 `092301ae8282d50a734df9018f791925aa9be99b`, `reference.region` passes on native

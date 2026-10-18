@@ -35,6 +35,19 @@ def require(condition, message):
         raise Failure(message)
 
 
+def same_json(actual, expected):
+    """Compare JSON values without Python's bool/int/float coercion."""
+    if type(actual) is not type(expected):
+        return False
+    if type(actual) is dict:
+        return actual.keys() == expected.keys() and all(
+            type(key) is str and same_json(value, expected[key]) for key, value in actual.items())
+    if type(actual) is list:
+        return len(actual) == len(expected) and all(
+            same_json(left, right) for left, right in zip(actual, expected))
+    return type(actual) in (str, int, float, bool, type(None)) and actual == expected
+
+
 def keys(value, expected, context):
     require(type(value) is dict and set(value) == set(expected), context + ": complete keys")
 
@@ -862,7 +875,7 @@ def main(argv=None):
                 row["c_process"] = asdict(process)
                 success(process, "C composed acquisition")
                 actual = common.strict_json((directory / "c-out.txt").read_bytes())
-                require(actual == expected, "C/" + side + " complete composed acquisition differs")
+                require(same_json(actual, expected), "C/" + side + " complete composed acquisition differs")
                 row["comparisons"]["C/" + side] = "pass"
                 row["c_record"] = common.file_record(directory / "c-out.txt", byte_limit=MAX_C_BYTES)
             require(common.file_record(replay, byte_limit=4 * 1024 * 1024) == row["replay_input"], "immutable C replay input changed")
@@ -873,7 +886,7 @@ def main(argv=None):
                 shared[side] = expected
             common.write_json(output / "manifest.json", report)
         if set(shared) == {"client", "server"}:
-            require(shared["client"] == shared["server"], "complete common client/server acquisition differs")
+            require(same_json(shared["client"], shared["server"]), "complete common client/server acquisition differs")
             report["client/server"] = "pass"
         else:
             report["client/server"] = "not selected; no cross-context result claimed"

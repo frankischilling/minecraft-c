@@ -82,21 +82,24 @@ before unpublished return. Both coordinates stay within `INT32_MIN + 8` through
 `INT32_MAX - 9`. Measurements cover fresh finite headless worlds and complete
 controls; they do not establish concurrent simulation or general scheduling.
 
-Current production observations use client base world `fd`/cache `ok` and
-server base world `dj`/cache `jb`. Actual `MinecraftServer` construction uses
-world `dp` with cache `he`. Research must treat base-world acquisition separately
-from the running dedicated-server path and observe genuine `ie` loads. Retain
-pending-removal order, load/fallback behavior, generator reentrancy, publication,
-ordered insertion, lifecycle hooks and natural population as distinct effects.
+Production observations cover persistent client `fd`/`ok`, base server `dj`/`jb`
+and actual `MinecraftServer` construction with `dp`/`he`. Successful reloads
+use genuine `hi`/`ie` save handlers and `ld`/`hb` loaders in the base-world
+contexts. The dedicated constructor/API corpus covers force gates separately
+from a running server. Pending removal, load/fallback selection, publication,
+ordered insertion, activation and natural population remain distinct effects;
+constructed recursion checks do not establish gameplay reentrancy.
 The C cache now also has a [synchronous acquisition coordinator](world/cache.md).
 Its 838 constructed contract checks pass on MSVC, GCC and Clang. Independent
 review matches all 231 acquisition instructions across `ok`/`jb`/`he`.
 The combined retained-provider corpus now has three original-only contexts,
 20 operations, five generated chunks, 5120 exact query pairs, 252 lifecycle
 events, 40 inventories and three byte-equal untouched controls. Lossless public
-replay and 28 Java-free guards pass on MSVC/GCC/Clang. Successful original loads
-through the C callback seam and one natural population callback boundary remain
-required before expanding this verified acquisition profile. Source
+replay and 28 Java-free guards pass on MSVC/GCC/Clang. A separate four-context
+[callback comparison](reference/cache-callbacks.md) now passes original controls
+and development C replays for successful loads and natural population. Its
+public fixture retains 12 calls, 394 lifecycle events and 24 inventories; final
+exact-source platform acceptance remains pending. Source
 `9a50ac67997082c89dbc43cf4274fba1427c1565` passes all 52 selected tests without
 skips on MSVC/GCC/Clang, including seven original comparisons and Linux
 sanitizers. Independent audit verifies all 53 source objects, 63 stable inputs,
@@ -106,11 +109,9 @@ per compiler and formatting for 88 C/header files. See the
 These finite checks
 do not establish a running server or complete cache lifecycle parity.
 
-Earlier seven-operation cache research observes finishing before publication
-and natural population on a 2x2 square. It does not verify successful disk
-loads, fallback or reentrancy. New private genuine persistent client and server
-reload observations distinguish a successful disk load from generation: saved
-arrays return unchanged, while the loaded minimum-height field remains zero.
+Successful original reloads return saved arrays unchanged while the loaded
+minimum-height field remains zero. Their callback comparison preserves that
+result without implementing a C disk decoder.
 The [read-only region inspector](reference/region.md) has a guarded development
 comparison covering all 49 queries per original side, with byte-equal controls,
 eight compatible cases and 41 explicit diagnostic departures. Exact source
@@ -120,7 +121,7 @@ See [region evidence](reference/region.md#verified-source-checkpoint).
 No region result follows from a08 alone, and the combined branch is not yet
 integrated into `main`.
 
-Cache-managed generation, complete lifecycle/population, light propagation,
+Save/unload lifecycle, terrain-feature population bodies, light propagation,
 other dimensions, compatible persistence and protocol remain open. See the
 [roadmap](roadmap.md), [testing](testing.md) and [parity matrix](parity.md).
 Earlier integrations remain in [history](history.md). M1 is complete; M2 through

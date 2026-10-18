@@ -1,8 +1,8 @@
 # Storage and original references
 
-Storage currently provides raw NBT plus gzip/zlib memory compression. It does
-not implement region addressing, world schemas, writable-world compatibility,
-or copied-world round trips. Do not use this increment as a world save writer.
+Storage provides raw NBT, gzip/zlib memory compression and read-only local
+region-record inspection. Global chunk-to-file mapping, world schemas, writable
+world compatibility and copied-world round trips remain unimplemented.
 
 The raw NBT codec handles the original tag IDs 0..10 with named roots, lists,
 compounds, byte arrays and lossless UTF-16 string units. Decoded documents own
@@ -97,8 +97,8 @@ world and matches a separate untouched control across complete snapshots.
 Suspended marker inventories record thread roles and original-loader frames;
 they establish finite headless conditions rather than general scheduling.
 The C cache supports lookup, explicit map/list publication and a synchronous
-acquisition coordinator. Successful-load and natural-population callback
-comparisons remain open alongside full persistence and light propagation.
+acquisition coordinator. Separate callback observations below cover successful
+loading and natural population; full persistence and light propagation remain open.
 
 ## Normal generation checkpoint
 
@@ -143,10 +143,17 @@ pass 36 public/numerical tests per compiler and formatting for 79 C/header files
 records actual persistent client and dedicated-owner constructors with retained
 providers. Three original-only contexts retain 20 operations, five generations,
 5120 ordered queries, 252 lifecycle events, 40 inventories and three complete
-byte-equal controls. Public C replay and 28 Java-free guards pass on MSVC and
-Linux GCC/Clang. Expanded exact-source validation and successful-load/natural-
-population callback comparisons remain pending. No running-server or terrain-
-feature parity follows from these finite callback experiments.
+byte-equal controls. At exact source `9a50ac67997082c89dbc43cf4274fba1427c1565`,
+all 52 selected tests pass without skips on MSVC and WSL GCC/Clang with Linux
+sanitizers and independent audit. Hosted checks pass 45 tests per compiler and
+formatting for 88 C/header files.
+
+[Callback boundary evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+adds four original contexts for successful loading and naturally triggered
+population: 12 calls, 394 lifecycle events, 24 inventories and four complete
+byte-equal controls. Public replay imports the complete observed external body
+effects while C computes coordinator transitions. Final exact-source platform
+acceptance is pending. No running-server or terrain-feature parity follows.
 
 [Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md)
 at exact 092301ae passes all 49 queries per original side, with byte-equal
