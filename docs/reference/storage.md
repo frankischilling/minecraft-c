@@ -247,8 +247,20 @@ Corrections retain failed child metadata before validation, distinguish live
 file deletion from strict final inventories, preserve a classified failure
 report on serialization errors, and canonicalize Windows test fixture roots.
 The failed attempts and their source snapshots remain retained. The next Linux
-runs will use owned native Linux build directories with unchanged limits; moving
+runs use owned native Linux build directories with unchanged limits; moving
 those writes does not establish why the earlier observation was interrupted.
+
+The second exact-source attempt at
+`23924ccda086511cf89e5bc9d18778b46f5da00e` also does not qualify. Windows ran all
+71 selected tests with 63 passing. Eight original comparisons failed because a
+shared inventory adapter did not forward the new live-polling argument. The
+whole-world comparison passed, but that result does not qualify the full
+platform. Both Linux attempts were stopped after the shared defect was found.
+The adapter now forwards the argument with the same 256-entry/32 MiB limits.
+Fourteen chunk-harness guards include a real composed-helper child and exact
+entry/byte boundaries. They pass on both hosts. Fresh native Windows/JDK21 and
+WSL/GCC/JDK21 level comparisons also pass as unattributed development checks.
+A new exact-source full matrix is required.
 
 All contexts use seed 23. The basic profile uses eight slots in each of roots
 0 and -1: six isolated

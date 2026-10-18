@@ -38,12 +38,16 @@ Final copied-world acceptance, full platform acceptance at an exact source commi
 integration remain pending. The new work does not establish gameplay
 save/unload scheduling, entity/player simulation or a playable client/server.
 
-The draft head's [hosted development checks](https://github.com/frankischilling/minecraft-c/actions/runs/39098990744)
-pass 58 public/numerical tests per compiler and formatting for 111 C/header
+The [hosted development checks at 23924cc](https://github.com/frankischilling/minecraft-c/actions/runs/39103944639)
+pass 59 public/numerical tests per compiler and formatting for 111 C/header
 files. Older hosted MSVC exposed two constant runtime-check conditions; they
 now use C17 static assertions, retaining strict warnings. Fresh native Windows
 and WSL/GCC whole-world development smokes pass with both originals and nonempty
 Boat/Sign transport. All 74 Java-free world-harness guards pass on both hosts.
+The two [exact-source attempts](reference/storage.md#copied-world-comparison-in-development)
+remain rejected. The second Windows run passed 63 of 71 tests; eight comparisons
+hit a shared helper's missing argument. The corrected adapter passes composed
+child and limit guards plus fresh original level comparisons on both hosts.
 Complete exact-source MSVC/GCC/Clang acceptance remains pending.
 
 ## Verified combined checkpoint
