@@ -2,7 +2,7 @@
 
 This is the initial discovery inventory for the supplied Beta 1.7.3 binaries,
 not a completed feature census. Each row keeps its unresearched behavior in
-scope. Define smaller implementation tasks from these checklists as their
+scope. Define related implementation work from these checklists as its
 acceptance tests and reference evidence become concrete. A playable subset
 leaves the full inventory incomplete.
 
@@ -27,6 +27,19 @@ verification for these checklists are **not started** unless a narrower entry in
 [parity.md](parity.md) records otherwise. Compatibility primitives alone do not
 complete simulation, world generation, saving, or networking. Unmeasured timing,
 ordering, constants, failure handling, and side differences remain requirements.
+
+The following narrower boundaries have production implementations and original
+comparisons. They do not complete their parent checklists:
+
+| Parent checklist | Implemented boundary | Remaining behavior |
+| --- | --- | --- |
+| Terrain, biomes and population | [Unpublished normal generation](reference/generation.md), including climate, base terrain, surface, caves and finishing | Terrain-feature population bodies, other dimensions and general load-order effects |
+| Chunks and lighting | [Cached heights and finishing](reference/finishing.md); [retained-provider acquisition](reference/cache.md), with successful-load/natural-population [callback evidence](reference/cache-callbacks.md) passing exact-source MSVC/GCC/Clang acceptance | Disk decoding, save/unload, propagation, simulation updates and complete entity/tile activation |
+| Saves and recovery | [Raw NBT](reference/nbt.md), [compression](reference/compression.md) and [read-only local region inspection](reference/region.md) | Global region-file mapping, world schemas, write/recovery paths, unknown-field round trips and restart compatibility |
+
+The [parity matrix](parity.md) records exact tested sources, narrower statuses
+and evidence limits. Callback replay imports observed effects within the recorded
+cache/world boundary; it does not implement the C disk decoder or terrain features.
 
 ## Subsystem checklist
 
@@ -70,7 +83,7 @@ specific original features or representations; they do not verify the C rewrite.
 | C `jc.<clinit>()V` | 42, 213, 240 | Registry contains Arrow, Wolf and Minecart names. Other entries were inspected for the entity checklist; spawn reachability is a separate task. |
 | C `as.a(Ljava/io/InputStream;)Lnu;`; `as.a(Lnu;Ljava/io/OutputStream;)V` | 4, 9 in each | Constructs gzip input/output wrappers. Exception/close paths and raw NBT behavior require separate fixtures. |
 | C `to.a(Llm;Lfd;Lnu;)V` | 35, 205 | Writes `Blocks` and `Entities` fields; `SkyLight` is present at offset 58. Field completeness, sizes and unknown-field behavior remain unverified. |
-| C `rj.a(Ljava/io/File;II)Lqj;` | 45 | Uses the `.mcr` suffix. Full region format, compression and recovery remain unverified. |
+| C `rj.a(Ljava/io/File;II)Lqj;` | 45 | Uses the `.mcr` suffix. Global filename/cache mapping and recovery remain unverified; finite local record framing has separate [region evidence](reference/region.md). |
 | C `yo.c()V` | 103, 118, 126 | Calls background-music source creation, volume and playback. Exact timing and resource availability remain unverified. |
 | C/S login | See [binary audit](reference/binaries.md#bytecode-observations) | Both use login protocol integer 14 and packet integer 1. This does not establish a successful original/rewrite connection. |
 

@@ -84,8 +84,10 @@ composes local height/direct sky rebuilding with all 1024 ordered world-height
 queries, admitted sky intervals and the final dirty effect. Cache lookup retains
 the original packed coordinate collisions and unsigned height bytes. Explicit
 publication replaces the map value and appends the same identity to a separate
-insertion list. Loading, generation callbacks, unloading, population and light
-propagation remain unimplemented.
+insertion list. The separate
+[acquisition coordinator](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/cache.md)
+adds load/generation callbacks, active registration and live population gates.
+Disk decoding, terrain-feature bodies, unloading and light propagation remain open.
 
 ## Normal generator
 
@@ -117,10 +119,16 @@ records exact manifest/source fingerprints and finite observation conditions.
 
 These observations use client base world `fd`/cache `ok` and server base world
 `dj`/cache `jb`. Actual `MinecraftServer` construction uses `dp`/`he`.
-Acquisition/lifecycle and genuine `ie` load research must distinguish those
-paths. Cache-managed generation, population, light propagation, persistence
-and other dimensions remain open; the active branch continues into cache and
-related read-only region work.
+The separate retained-provider acquisition comparison observes actual persistent
+client and dedicated-owner construction. Its finite constructor/API corpus passes
+exact-source MSVC/GCC/Clang checks at `9a50ac67997082c89dbc43cf4274fba1427c1565`.
+[Callback evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+adds genuine successful loads and natural population in base worlds, retaining
+observed effects within the cache/world boundary while C computes transitions.
+Expanded exact source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56
+selected tests without skips on MSVC/GCC/Clang, with Linux sanitizers, independent
+audit and hosted 48-test/89-file checks. Full persistence, terrain-feature
+bodies, propagation, other dimensions and running-server integration remain open.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

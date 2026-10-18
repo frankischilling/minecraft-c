@@ -81,8 +81,12 @@ This checkpoint uses base worlds `fd`/`dj` and caches `ok`/`jb`. Actual
 `MinecraftServer` construction uses `dp`/`he`. The separate
 [acquisition coordinator](world/cache.md) now has a retained-provider comparison
 using the actual persistent client and dedicated-owner constructor routes.
-[Cache evidence](reference/cache.md) distinguishes this finite API context,
-callback contracts and successful-load/population comparisons still required.
+[Cache evidence](reference/cache.md) distinguishes this finite API context from
+running-server behavior. Separate [callback evidence](reference/cache-callbacks.md)
+covers successful original loading and natural population, replaying observed
+cache/world effects around C coordinator transitions. Expanded exact source
+`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected tests without
+skips on MSVC/GCC/Clang, with Linux sanitizers, independent audit and hosted checks.
 The [read-only region reader](storage/region.md) retains bounded framing,
 compression and raw NBT composition, with exact-source finite acceptance at
 `092301ae8282d50a734df9018f791925aa9be99b`. It does not establish a world schema

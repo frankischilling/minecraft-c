@@ -125,9 +125,11 @@ neither Java nor original archives. `MC_ENABLE_CACHE_REFERENCE_TESTS=ON` enables
 `jdk.jdwp.agent`, both supplied archives and the exact source commit setting.
 The callback fixture adds four contexts, 12 calls, 394 lifecycle events and 24
 inventories. Public checks cover 34 guards, four genuine C replays, four
-constructed cases and 28 additional C guards. These replay external body effects
-while C computes coordinator transitions. Final exact-source platform acceptance
-for the callback expansion is pending. See the
+constructed cases and 28 additional C guards. These replay observed cache/world
+effects while C computes coordinator transitions. Exact source
+`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected tests without
+skips on MSVC/GCC/Clang with Linux sanitizers and independent audit. Hosted checks
+pass 48 tests per compiler and formatting for 89 C/header files. See the
 [cache evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md).
 The separate [callback evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
 records saved-world preparation, ownership and explicit external-effect limits.

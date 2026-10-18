@@ -151,9 +151,12 @@ formatting for 88 C/header files.
 [Callback boundary evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
 adds four original contexts for successful loading and naturally triggered
 population: 12 calls, 394 lifecycle events, 24 inventories and four complete
-byte-equal controls. Public replay imports the complete observed external body
-effects while C computes coordinator transitions. Final exact-source platform
-acceptance is pending. No running-server or terrain-feature parity follows.
+byte-equal controls. Public replay imports observed cache/world effects while C
+computes coordinator transitions. At exact source
+`28a55b52c001c4c114a11ca7df844fc1f286d328`, all 56 selected tests pass without
+skips on MSVC/GCC/Clang, with Linux sanitizers and independent audit. Hosted
+checks pass 48 tests per compiler and formatting for 89 C/header files.
+No running-server or terrain-feature parity follows.
 
 [Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md)
 at exact 092301ae passes all 49 queries per original side, with byte-equal

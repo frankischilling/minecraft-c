@@ -20,9 +20,10 @@ and integration need explicit ownership.
 
 The raw NBT and modified UTF increment is integrated, as is bounded gzip/zlib,
 with [both-side evidence](reference/compression.md). Read-only original region
-inspection is being brought into the active generation/cache branch from its
-preserved draft; live original-region validation remains pending. The original
-seeded Perlin/octave module is implemented.
+inspection passes [exact-source original comparisons](reference/region.md) on
+MSVC/GCC/Clang and hosted checks. Its finite local record scope excludes global
+file mapping, world schemas and writes. The original seeded Perlin/octave module
+is implemented.
 The separate 2D simplex/octave primitives are implemented, with exact-source
 acceptance recorded in [status](status.md). Climate blending and biome classification
 are implemented, with
@@ -43,9 +44,10 @@ starts after world admission. The [normal finishing boundary](world/finishing.md
 composes those stages with cached heights, admission and dirty effects.
 [Actual height traces and untouched controls](reference/finishing.md) cover six
 fixed fresh-world cases with two passes per side. Retain the distinction between
-the unpublished measured chunk and the existing cached chunks. Complete cache
-load/generate/lifecycle behavior, population and light propagation need their
-own ordered state comparisons.
+the unpublished measured chunk and the existing cached chunks. The separate
+acquisition coordinator below adds cache load/generate selection and callback
+lifecycle order. Terrain-feature bodies, save/unload and light propagation remain
+separate required implementations.
 
 The [direct normal generator composition](world/generation.md) is implemented:
 fresh data, direct climate/biomes, density/base, current-material surface,
@@ -63,21 +65,29 @@ All three original pairings and complete untouched controls pass per build;
 independent audit verifies 47 exact-commit sources, 57 stable inputs and eight
 helper classes. [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
 pass 36 public/numerical tests per compiler and formatting for 79 C/header
-files. These are checkpoint results on the continuing branch.
+files. These results identify the a08 checkpoint; later acquisition acceptance
+is recorded separately below.
 `MC_ENABLE_GENERATION_REFERENCE_TESTS` selects
 the original comparison; public helper and fixture checks are named
 `tools.normal_reference` and `tools.normal_interop`.
 
-Next, research client base-world cache `ok` and server base-world `jb` separately
-from actual dedicated world `dp`/cache `he`, which `MinecraftServer` constructs.
-The current production corpus uses base worlds `fd`/`dj`; it does not establish
-the dedicated-server path. Genuine `ie` loading and related region evidence
-must precede load/fallback and persistence acceptance. Cache acquisition and
-read-only region inspection can share an integration when those original
-comparisons pass.
+The [cache coordinator](world/cache.md) composes retained C generation and
+finishing with pending removal, ordered publication, activation and live
+population gates. Its [retained-provider comparison](reference/cache.md) observes
+actual persistent client and dedicated-owner constructors. All 52 selected tests
+pass at exact source `9a50ac67997082c89dbc43cf4274fba1427c1565` on MSVC/GCC/Clang
+with Linux sanitizers, independent audit and hosted checks.
 
-Complete cache acquisition/lifecycle, population, light propagation, other
-dimensions and protocol framing remain separate required work. Define their
+Separate [callback observations](reference/cache-callbacks.md) add actual
+successful `ld`/`hb` loads and natural population in `fd`/`ok` and `dj`/`jb`
+base worlds. Observed effects within the recorded cache/world boundary are
+replayed while C computes cache transitions. Exact source
+`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected local tests
+without skips on MSVC/GCC/Clang with Linux sanitizers and independent audit.
+Hosted checks pass 48 tests per compiler and formatting for 89 C/header files.
+
+Save/unload lifecycle, terrain-feature population bodies, light propagation,
+other dimensions and protocol framing remain separate required work. Define their
 scoped implementations from original class/method evidence before coding.
 Further splits must retain the full original requirements
 rather than replacing them with a simpler private save format or rewritten-only

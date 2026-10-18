@@ -20,6 +20,12 @@ complete untouched controls. Hosted checks pass 36 public/numerical tests per
 compiler and formatting for 79 C/header files. See the
 [generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
 for evidence and its finite scope.
+The expanded generation/cache/region checkpoint at
+`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected local tests
+without skips on those toolchains, with Linux sanitizers and independent audit.
+Hosted checks pass 48 tests per compiler and formatting for 89 C/header files.
+See [cache and region evidence](Storage-and-reference#cache-and-region-checks)
+for successful original loads, population callbacks and their remaining scope.
 The [repository README](https://github.com/frankischilling/minecraft-c#readme),
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
 and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)
@@ -34,6 +40,5 @@ Detailed pages cover [systems and subsystems](Architecture) and
 [development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
 records the current branch, tested commits and remaining work.
 
-These versioned pages await combined integration of the continuing generation
-and cache work. The published wiki remains at finishing checkpoint
-`4e4a9f3853ac8db012bca9aaf179d956e288a686`; these updates are not yet published.
+These pages are versioned under `docs/wiki/`. Exact tested sources, retained
+evidence and remaining work are recorded in the linked development documents.

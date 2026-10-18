@@ -194,6 +194,6 @@ full test logs, process exit codes of zero and zero skips. The audit report SHA-
 [Hosted checks at this source](https://github.com/frankischilling/minecraft-c/actions/runs/39085300876)
 pass 45 public/numerical tests per compiler and clang-format18 for 88 C/header
 files. This checkpoint verifies the finite constructor/API corpus above;
-successful-load and natural population callback comparisons remain separate
-acceptance work. It does not establish a running dedicated server, disk decoding,
+successful-load and natural population have a
+[separate callback comparison](cache-callbacks.md). It does not establish a running dedicated server, disk decoding,
 terrain features, save/unload, light propagation or complete cache lifecycle.

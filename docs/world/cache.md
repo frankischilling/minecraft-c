@@ -79,8 +79,10 @@ separates genuine observations from injected callback tests. At source
 MSVC/GCC/Clang without skips, with Linux sanitizers, independent exact-source
 audit and hosted checks. A separate [callback boundary comparison](../reference/cache-callbacks.md)
 adds successful original loads, nonzero time stamping and naturally triggered
-population. It replays complete external callback effects while C computes
-coordinator transitions. Its final exact-source platform acceptance is pending.
+population. It replays observed effects within the recorded cache/world boundary
+while C computes transitions. At `28a55b52c001c4c114a11ca7df844fc1f286d328`,
+all 56 selected tests pass without skips on MSVC/GCC/Clang with Linux sanitizers,
+independent audit and hosted checks.
 
 This boundary does not decode disk chunks, populate terrain features, save or
 unload objects, drain light queues or reproduce Java collection iteration.

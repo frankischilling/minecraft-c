@@ -17,8 +17,8 @@ comparisons remain local.
 | `reference.chunk_acquire` (local opt-in) | At 9a50ac6, genuine persistent client and dedicated-owner constructors, retained providers, loader misses, 20 operations, 5120 query pairs, 252 lifecycle events, 40 inventories and three complete untouched controls pass on MSVC/GCC/Clang | Finite seed23 constructor/API corpus; successful-load and natural population callback comparisons remain separate |
 | `tools.callbacks_reference` | 24 Java-free execution and original-protocol guards, including setup-only unavailable proofs, full events/state/owners, loaded-time and population boundaries | Retained four-context original evidence; no original execution |
 | `tools.callbacks_fixture` | Ten bounded fixture, provenance, preparation, complete MCC1/expected projection and strict JSON guards | Original-only expectations; fingerprint-only public method proofs |
-| `tools.callbacks_interop` | Four genuine continuous inputs, 12 operations and 16 external callbacks, plus four constructed cases and 28 malformed/state/owner guards | C computes coordinator transitions; complete loader/generator/feature body effects are explicitly replayed |
-| `reference.chunk_callbacks` (local opt-in) | Genuine successful loads and natural population in persistent base worlds; 394 lifecycle events, 24 inventories, preserved saved baselines and four complete untouched controls | Development comparisons pass; final exact-source platform acceptance pending; no C decoder or terrain-feature body implementation |
+| `tools.callbacks_interop` | Four genuine continuous inputs, 12 operations and 16 external callbacks, plus four constructed cases and 28 malformed/state/owner guards | C computes coordinator transitions; observed external effects within the cache/world boundary are explicitly replayed |
+| `reference.chunk_callbacks` (local opt-in) | Genuine successful loads and natural population in persistent base worlds; 394 lifecycle events, 24 inventories, preserved saved baselines and four complete untouched controls | At 28a55b5, all three local toolchains and independent acceptance audit pass; no C decoder or terrain-feature body implementation |
 | `storage.region`, `tools.region_inspect`, `tools.region_capture`, `tools.region_live`, `tools.region_probe` | Read-only storage/CLI, historical replay guards, 17 live-protocol guards and real Unicode stdin paths | Local record inspection; no world schema, global addressing or writes |
 | `reference.region` (local opt-in) | All 49 queries per side with fresh copies, exact controls, complete metadata and bounded diagnostic differences; exact 092301ae MSVC/GCC/Clang checks and independent audit pass | Eight compatible cases and 41 explicit malformed/diagnostic departures; no original error-parity claim |
 | `tools.normal_reference` | Production helper schema, source/provenance, prerequisite and preservation guards | Synthetic checks; no original methods run |
@@ -197,6 +197,18 @@ cache/region additions on the active branch need their own validation.
 
 ## Local environments
 
+Expanded source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56
+selected tests without skips on native MSVC19.51 and WSL GCC13.3/Clang18.1,
+with Linux ASan/UBSan. The suite has 47 public tests, the numerical Java oracle
+and eight original comparisons. Independent audit verifies 168 actual passed
+rows, complete callback projections/controls, exact callback source objects,
+source attribution for all 24 original manifests and the archived logs.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39089309334)
+pass 48 tests per compiler and formatting for 89 C/header files. The
+[callback evidence](reference/cache-callbacks.md#exact-source-platform-checkpoint)
+records manifest/audit hashes, timings and the excluded initial Windows
+setup-unavailable attempt before its complete zero-skip retry.
+
 Expanded acquisition source `9a50ac67997082c89dbc43cf4274fba1427c1565` passes
 all 52 selected tests without skips on native MSVC19.51 and WSL
 GCC13.3/Clang18.1, with Linux ASan/UBSan. Each suite runs 44 public tests, the
@@ -208,8 +220,7 @@ pass 45 tests per compiler and formatting for 88 C/header files. See the
 [cache evidence](reference/cache.md#exact-source-platform-checkpoint) for exact
 manifest hashes and observation bounds. The separate
 [callback expansion](reference/cache-callbacks.md) adds three public tests and
-one original comparison, for 56 selected tests. Its final exact-source platform
-acceptance remains pending.
+one original comparison, yielding the separately accepted 56-test checkpoint above.
 
 Normal composition source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
 all 41 configured tests without skips on native MSVC19.51 and WSL

@@ -54,13 +54,13 @@ before the provider call, with the actual provider receiver and cache-provider
 argument checked. The provider returns at offset 2906; the helper resumes at 43, invokes
 the original dirty method at offsets 0/5, then reaches 46. Thus the provider call
 finishes before the coordinator's dirty call. Generated chunks are already
-dirty in this genuine scenario. Constructed checks starting with dirty false separately
-make the final dirty assignment observable.
+dirty in this genuine scenario. Constructed checks starting with dirty false
+separately make the final dirty assignment observable.
 
-The complete feature-body effects are retained, including changed normal chunk
-arrays and the final 1777 queued regions. No nested acquisition or generation
-occurs inside this observed body. The final repeated hit preserves the complete
-post-population state. This establishes the callback boundary and the observed
+The recorded feature effects cover complete normal chunk arrays and the final
+1777 queued regions within the observed cache/world boundary. No nested
+acquisition or generation occurs inside this observed body. The final repeated
+hit preserves the complete post-population state. This establishes the callback boundary and the observed
 live gate order; terrain-feature implementations remain separate work.
 
 ## C replay and ownership
@@ -79,13 +79,16 @@ Output labels every imported load/generation/population effect
 `observed-original-replay`; registration effects are labeled `coordinator`.
 No imported feature or generation result is reported as independently computed
 by this adapter. The real normal generator retains its separate composition and
-original comparisons.
+original comparisons. Provider numerical buffers are outside this adapter's C
+projection; raw Random owners and seeds remain separately observed in the
+original.
 
 Original observations retain complete map/list/pending/queue contents, all five
 normal arrays, flags, time and stable context identities. The debugger links
 normal arrays, wrappers, world, tile map and eight entity slices to helper
-references. Eight explicit fallback backing tags bind the blank ownership chain
-as well. Blank backing-array values remain outside the C blank dispatch payload.
+references. Eight explicit fallback backing tags bind the blank array chain.
+Blank tile/entity owners and queue-item identities retain JDI observations
+without reflected helper anchors. Blank backing-array values remain outside the C blank dispatch payload.
 Registration collections are genuinely empty in this finite corpus.
 
 Every begin/end inventory suspends all threads and requires exactly the two
@@ -144,9 +147,64 @@ Live validation still requires and rehashes the complete privately captured
 method bytes. Public fingerprint-only mode is explicit and rejects raw-byte
 extras. No original classes, assets, world files or process logs are published.
 
+A separate standard-library fixture audit independently decodes all 18 packed
+streams and rederives every MCC1 input, all 104 C callback records and complete
+strict JSON projections from original snapshots and event seams. It verifies
+the four byte-equal controls, 55 source fingerprints, 64 stable inputs, eight
+classes and all 44 method bindings parsed directly from the original classfiles.
+The report SHA-256 is
+`aa46836e34bdf3637588066fcda3dd0825cfb26788bf9f7a70fcdc8a3cc0f4d3`.
+This audit executes neither Java nor C and makes no platform acceptance claim.
+
 Public checks pass 34 unit methods and all four genuine C replays, alongside
-four constructed cases and 28 malformed/state/owner guards. Exact-source native
-Windows/Linux reference suites, hosted checks and independent acceptance audit
-for the expanded callback composition are pending. Full persistence, terrain
-features, other dimensions, light propagation and playable integration retain
-their separate scope.
+four constructed cases and 28 malformed/state/owner guards.
+
+## Exact-source platform checkpoint
+
+Source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 configured
+CTests without skips on each toolchain. Each suite contains 47 public tests,
+the numerical Java oracle and eight selected original comparisons.
+
+| Environment | Full suite | Callback comparison |
+| --- | --- | --- |
+| Native Windows, MSVC19.51, Temurin17.0.17 | 529.51 s | 40.71 s |
+| WSL GCC13.3, OpenJDK21.0.12.1, ASan/UBSan | 1044.42 s | 82.14 s |
+| WSL Clang18.1, OpenJDK21.0.12.1, ASan/UBSan | 1044.86 s | 81.95 s |
+
+Each callback capture passes C/client, C/server and client/server independently
+for both loading and population. It retains 12 operations, 16 external callbacks,
+394 lifecycle events, 24 inventories and four complete byte-equal controls.
+All 65 attributed inputs and eight helper classes remain unchanged.
+
+- Windows manifest:
+  `build-generation-windows/reference-chunk-callbacks/capture-6fe8531e96a840efb0a1ad6615850e6a/manifest.json`;
+  SHA-256 `2503ceb8aa9fd70be437407d784d3ffbc8db145f860d136ac9bc26bc345e282a`.
+- GCC manifest:
+  `build-generation-gcc/reference-chunk-callbacks/capture-95f890109d9746e1aee9a3535fad458a/manifest.json`;
+  SHA-256 `2155860086069e1f742b31a28c520279702bd336989ea4466a5986cc54cf6c0d`.
+- Clang manifest:
+  `build-generation-clang/reference-chunk-callbacks/capture-49b0fb2d5fe141ad81a60e5ef9f59f49/manifest.json`;
+  SHA-256 `1be63dab4d8ff19d862702ed4aaa9edf263f5bf41c1c2d69db4fcbf4e58ddd85`.
+
+The first Windows full-suite attempt retained one unavailable original chunk
+setup: its unseeded spawn search produced 28636 queued regions, exceeding that
+older observer's unchanged 16384-entry cap. That attempt is preserved and
+excluded from acceptance. A fresh complete 56-test retry passes without skips.
+These results describe qualified finite original contexts, not every possible
+constructor state.
+
+[Hosted checks at this source](https://github.com/frankischilling/minecraft-c/actions/runs/39089309334)
+pass 48 public/numerical tests per compiler and clang-format18 for 89 C/header
+files.
+
+A separate standard-library acceptance audit verifies all 55 callback source
+files against exact Git objects on each platform, unchanged inputs/classes,
+original controls and seams, complete MCC1 inputs and strict actual C outputs.
+It checks source attribution and successful completion for all 24 selected
+original manifests, binds them to the final archived CTest outputs, and verifies
+168 actual passed rows, zero skips and process exit codes of zero. The exact-head
+hosted checks are verified separately. The report SHA-256 is
+`ef597d13ffa27582e223bd95f692cc890e4ac48f6d4ce61d8f95c77313932b2e`.
+
+Full persistence, terrain features, other dimensions, light propagation and
+playable integration retain their separate scope.
