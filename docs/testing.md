@@ -12,7 +12,7 @@ comparisons remain local.
 | `world.normal_generator` | 99073 public checks for composed generation, borrowed ownership, unpublished identities, mutable materials, repeated results, coordinate/resource preflight and allocation-failure preservation | Finite ordinary normal generator; no cache acquisition, population or propagation |
 | `tools.normal_reference` | Production helper schema, source/provenance, prerequisite and preservation guards | Synthetic checks; no original methods run |
 | `tools.normal_interop` | Lossless retained original baselines and complete sequential C generation replay | Fixed four-seed corpus; eight continuous nine-call inputs pass |
-| `reference.normal_generation` (local opt-in; acceptance pending) | Actual direct generator calls, stage/height traces, complete local/world state and untouched controls for four seeds and nine calls per side | Unpublished normal entry within the finite cave-scheduler domain; no full cache lifecycle or population |
+| `reference.normal_generation` (local opt-in) | All four seeds and nine calls per side match in three pairings on MSVC/GCC/Clang at a08c120; complete local/world state, 73728 ordered query pairs, 1224 stage events, 144 inventories and eight untouched controls per build | Fresh finite headless base-world contexts; unpublished normal entry within the finite cave-scheduler domain; no dedicated-server cache lifecycle or population |
 | `world.chunk_finish` | 3259 constructed checks for packed cache aliases, publication visibility, unsigned heights, original admission, query order, dirty effects and rejected-call preservation | Valid nonnull cache state; no loader, generator or population lifecycle |
 | `tools.finish_reference` | Corpus, packed-key, wrapped-query, boundary and fixture omission guards | Synthetic helper checks; no original methods run |
 | `tools.finish_interop` | Twelve captured original inputs, 24576 exact query records and 48 complete data/queue stages | Six fixed fresh-world cases with two passes; no propagation or complete cache lifecycle |
@@ -167,27 +167,43 @@ loopback debugger, captured state and remaining cache/propagation work.
 Complete unpublished normal generation uses `MC_ENABLE_GENERATION_REFERENCE_TESTS`
 and the same JDK17+/`jdk.jdi`, supplied-JAR and exact-source settings. Its C target
 is `mc_normal_generation_probe`; the opt-in test is `reference.normal_generation`.
-The intended corpus retains one fresh generator through nine ordered calls for
+The verified corpus retains one fresh generator through nine ordered calls for
 each seed 23, 24, 26 and 51, including repeated, negative, packed-key-alias,
 world-border and accepted cave-domain endpoint coordinates. It compares complete
 data, queues, climate/scratch, all 82 terrain layers and separate Random
 continuations, plus 1024 ordered height queries per call. Each original traced
 run needs a byte-equal untouched control. See [generation evidence](reference/generation.md)
-and the [generation contract](world/generation.md); completed stage comparisons
-remain separate evidence from the full exact-source production comparison.
+and the [generation contract](world/generation.md) for exact capture hashes,
+source attribution and observation bounds. The measured server context is base
+world `dj`/cache `jb`; actual `MinecraftServer` construction uses `dp`/`he`.
+The current results do not cover a running dedicated server's cache lifecycle.
 
-The planned integrated suite contains 35 public tests, or 36 with the numerical
-Java oracle. Enabling the selected original finishing, light queue, chunk,
-nibble and normal generation comparisons brings that configuration to 41 tests.
-These are intended suite counts, not a completed acceptance-run result.
+At source `a08c12056a06261ed01d9f66999459f7ce9543b4`, the suite contains 35
+public tests, or 36 with the numerical Java oracle. The selected original
+finishing, light queue, chunk, nibble and normal generation comparisons bring
+that configuration to 41 tests. These are exact-checkpoint counts; later
+cache/region additions on the active branch need their own validation.
 
 ## Local environments
 
-The current normal generator unit passes 99073 checks on native MSVC and WSL
-GCC/Clang; sanitizer runs also pass. The original-only four-seed capture passes with
-eight complete byte-equal untouched controls. Public C replay passes eight
-inputs, 72 complete chunks and 73728 exact queries. Full exact-source platform
-acceptance remains pending; no result is implied for a later source revision.
+Normal composition source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
+all 41 configured tests without skips on native MSVC19.51 and WSL
+GCC13.3/Clang18.1, with ASan/UBSan on both Linux builds. The generator unit
+passes 99073 checks; all nine public schema/continuation/stage/preservation
+guards and retained-fixture replay pass. Each build compares all four seeds in
+C/client, C/server and client/server pairings, retaining eight byte-equal
+untouched controls, 72 generations, 73728 queries, 1224 stages and 144 complete
+marker inventories. Windows uses Temurin17.0.17 and WSL OpenJDK21.0.12.
+
+Independent audit verifies all 47 project source files against the exact Git
+objects, 57 unchanged attributed inputs, eight unchanged helper classes and
+every retained record/control/world-file hash per build. Actual 41-test logs,
+zero CTest exits and all selected original pass manifests establish the
+no-skip result. [Generation evidence](reference/generation.md#exact-source-platform-checkpoint)
+records the three manifest hashes and audit fingerprint.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass all 36 public/numerical tests per compiler and formatting for 79 C/header
+files. These results apply to a08; later branch changes require separate evidence.
 
 Finishing source `a18615f0d9d90758f0ea95b0218cec97733d2adf` passes all 37
 configured tests on native MSVC19.51 and WSL GCC13.3/Clang18.1 without skips.

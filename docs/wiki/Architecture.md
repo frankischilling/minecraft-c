@@ -26,7 +26,8 @@ callers explicitly compose them. No file write or world schema is implicit.
 Noise sampling preserves original constructor ordering and bulk-specific
 behavior; [its interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/noise.md)
 and [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/noise.md)
-describe the exact tested scope. Complete terrain generation remains open.
+describe the exact tested scope. Normal composition is documented below;
+population, propagation and other dimensions remain open.
 
 The [math interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/core/math.md)
 keeps the 256 KiB table caller-owned and immutable after exclusive initialization.
@@ -48,13 +49,13 @@ The [normal terrain module](https://github.com/frankischilling/minecraft-c/blob/
 constructs all 82 original Perlin layers in order, consumes caller-supplied
 processed climate and interpolates a fixed density grid into base blocks.
 Constructor state is immutable after initialization; workspace and outputs are
-borrowed. Population, lighting and whole chunk integration remain later work.
+borrowed. Population and light propagation remain separate from this stage.
 
 The [surface interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/surface.md)
 uses those existing layers with current material byte pairs and a separate
 mutable Random. It preserves Z/X/Y traversal, unconditional bedrock draws and
 sea/sandstone state transitions. Field sampling and prepared-field application
-can also run independently. Complete chunk generation remains open.
+can also run independently. The normal generator below composes this pass.
 
 The [normal cave interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/caves.md)
 borrows an immutable math table, existing block prefix and separate cave Random.
@@ -67,8 +68,9 @@ The [chunk data interface](https://github.com/frankischilling/minecraft-c/blob/m
 keeps blocks borrowed and embeds separate metadata, sky, block-light and height
 arrays. Checked nibble access preserves the opposite four-bit value. Local
 height/direct-skylight rebuilding retains the original boundary and repeat-pass
-behavior without allocating memory. World-height queries, lighting queues,
-dirty state and full chunk lifecycle remain separate work.
+behavior without allocating memory. The finishing boundary below adds
+world-height queries, lighting admission and dirty state; full lifecycle
+remains open.
 
 The [light-region queue](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/lighting.md)
 preserves the newest five-entry search, in-place merges and original wrapped
@@ -105,10 +107,19 @@ world queries see the existing cache. Both coordinates must lie in
 domain. Checked resource/allocation failures preserve state; a defensive
 downstream invariant failure reports an unusable result.
 
-The API implements this unpopulated entry. The
-[four-seed capture and public replay](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
-pass; full exact-source platform acceptance remains pending. Cache acquisition callbacks,
-population, light propagation and other dimensions retain their separate scope.
+The API is verified for the measured unpopulated entry at
+`a08c12056a06261ed01d9f66999459f7ce9543b4`. All 41 selected local tests pass
+without skips on MSVC/GCC/Clang, including four-seed comparisons in all three
+pairings and complete untouched controls. Linux builds use ASan/UBSan. The
+[evidence page](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
+records exact manifest/source fingerprints and finite observation conditions.
+
+These observations use client base world `fd`/cache `ok` and server base world
+`dj`/cache `jb`. Actual `MinecraftServer` construction uses `dp`/`he`.
+Acquisition/lifecycle and genuine `ie` load research must distinguish those
+paths. Cache-managed generation, population, light propagation, persistence
+and other dimensions remain open; the active branch continues into cache and
+related read-only region work.
 
 The planned game systems include ordered world/simulation updates, platform
 files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol

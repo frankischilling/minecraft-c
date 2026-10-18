@@ -6,9 +6,11 @@ replacement, caves, then full finishing. A successful result is a new normal
 chunk that has not been published to the cache. This interface belongs to
 `mc_world` and initializes no display, audio, files or Java runtime.
 
-The [reference notes](../reference/generation.md) record the four-seed original
-capture and lossless public C replay. Exact-source full platform comparisons
-remain pending; separate stage comparisons do not establish gameplay parity.
+The [reference notes](../reference/generation.md) record the verified
+`a08c12056a06261ed01d9f66999459f7ce9543b4` checkpoint: all 41 local tests pass
+on native MSVC and WSL GCC/Clang without skips, with four-seed original
+comparisons, untouched controls and lossless public C replay. This finite
+unpublished entry does not establish gameplay parity.
 
 ## Generator and world ownership
 
@@ -149,3 +151,10 @@ pending-set removal, loading, fallback, lifecycle hooks or population. This
 generator entry performs none of those operations, queue draining, light
 propagation, persistence or I/O. Other dimensions and complete playable world
 generation remain separate requirements.
+
+The production corpus uses client base world `fd`/cache `ok` and server base
+world `dj`/cache `jb`. Actual `MinecraftServer` construction uses `dp`/`he`.
+Cache acquisition and genuine `ie` load research must preserve that distinction;
+the current comparison does not cover a running dedicated server. The active
+branch continues from this verified normal-composition checkpoint toward those
+cache boundaries.

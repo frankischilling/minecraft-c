@@ -14,7 +14,16 @@ typedef struct mc_chunk_state {
     mc_chunk_data *data;
     int32_t x, z;
     bool blank;
+    /* Original normal-chunk o/c/n/p/q/r: dirty, active, terrain population,
+     * save suppression, entity save eligibility and last-save world time.
+     * The coordinator changes only the fields named by its operation contract.
+     * Blank virtual methods can leave these fields unchanged. */
     bool dirty;
+    bool active;
+    bool terrain_populated;
+    bool never_save;
+    bool has_entities;
+    int64_t last_save_time;
 } mc_chunk_state;
 
 #endif

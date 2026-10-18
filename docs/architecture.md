@@ -72,6 +72,17 @@ both coordinates must lie in `INT32_MIN + 8` through `INT32_MAX - 9`, the finite
 ordinary cave-scheduler domain. Checked resource/allocation failures preserve
 state; defensive downstream invariant failures report an unusable result.
 
+Normal composition is verified at
+`a08c12056a06261ed01d9f66999459f7ce9543b4`: all 41 selected local tests pass
+without skips on MSVC/GCC/Clang, including four-seed original comparisons and
+complete untouched controls. [Generation evidence](reference/generation.md)
+records the exact sources, manifest hashes and finite headless conditions.
+This checkpoint uses base worlds `fd`/`dj` and caches `ok`/`jb`. Actual
+`MinecraftServer` construction uses `dp`/`he`; its cache lifecycle and genuine
+`ie` loading remain separate research. The active branch continues into cache
+acquisition and related read-only region work, with original acceptance still
+required for those additions.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior

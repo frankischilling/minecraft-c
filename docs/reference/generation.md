@@ -3,8 +3,11 @@
 This increment targets client `yf.b(II)Llm;` and server `pk.b(II)Lhi;`: direct
 unpopulated normal chunk generation through full finishing, before cache
 publication. The [C contract](../world/generation.md) describes ownership and
-resource behavior. The four-seed original-only production capture and public
-C replay pass; exact-source platform comparisons are being prepared.
+resource behavior. Source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
+the complete four-seed comparison on native MSVC and WSL GCC/Clang, including
+all three independent pairings and byte-equal untouched controls. This is a
+verified checkpoint on `feature/normal-chunk-generator`; combined cache and
+generation integration remains in progress.
 
 ## Original bindings and stage boundaries
 
@@ -35,6 +38,13 @@ returned identity at offset 95 and appends it to the insertion list at 107.
 Direct generation performs neither publication nor population. A full cache
 acquisition implementation must also preserve pending removal, load/fallback,
 lifecycle and population behavior; this composition does not provide it.
+
+These observations use client base world `fd` with cache `ok` and server base
+world `dj` with cache `jb`. The actual `MinecraftServer` constructs world `dp`
+with cache `he`. A server-JAR comparison in `dj` is therefore evidence for the
+measured base-world path, not the running dedicated server's cache lifecycle.
+Research must distinguish those paths and observe genuine `ie` loading before
+extending cache acquisition or persistence claims.
 
 ## Constructor state, climate ownership and materials
 
@@ -200,8 +210,8 @@ The lossless public fixture `tests/reference/generation/normal_fixtures.json`
 is 2032841 bytes, SHA-256
 `cd712382a736a394e6d30a11e776b9b585b051faecf32da4bc0a96bd7492b000`.
 It contains eight exact MCG1 inputs and four complete original projections,
-compressed with zlib/base64. Native Windows C replay passes all eight continuous
-nine-call inputs, comparing full chunk arrays, constructor noise, scratch,
+compressed with zlib/base64. C replay passes all eight continuous nine-call
+inputs on MSVC/GCC/Clang, comparing full chunk arrays, constructor noise, scratch,
 biomes, selected materials, manager arrays, raw Random states/continuations,
 queues and queries. No expected output is produced by C during export.
 The original records and untouched controls remain ignored local artifacts.
@@ -209,7 +219,68 @@ The original records and untouched controls remain ignored local artifacts.
 Constructed API tests pass 99073 checks on native MSVC19.51 and WSL
 GCC13.3/Clang18.1 with ASan/UBSan on Linux. They include allocation rollback,
 retained owners/results, explicit distinct material pairs and no-sky behavior.
-Exact-source full platform comparisons and hosted checks remain pending.
+
+## Exact-source platform checkpoint
+
+All 41 configured CTests pass without skips at
+`a08c12056a06261ed01d9f66999459f7ce9543b4` on native Windows/MSVC19.51 and WSL
+GCC13.3/Clang18.1. Both Linux builds use ASan/UBSan. Each suite contains 35 public
+tests, the numerical Java oracle, and actual-original finishing, queue, chunk,
+nibble and generation comparisons. Windows selects Temurin17.0.17; WSL selects
+OpenJDK21.0.12.
+
+Each generation manifest below records all four seeds, both original sides and
+nine sequential calls per retained generator. C/client, C/server and
+client/server comparisons pass independently. Per build, the retained records
+contain 72 complete generations, 73728 ordered height-query pairs, 1224 stage
+events, 144 suspended marker inventories and eight complete byte-equal
+untouched controls.
+
+The paths are under `<build>/reference-normal-generation/`:
+
+| Build | Capture directory | Manifest SHA-256 |
+| --- | --- | --- |
+| `build-generation-windows` | `capture-af71ecb37997453aabdf5cf02aacf082` | `b1c6b42a5ce756276141a4a06f3681a3d951f6ce2ad6b6022f6323536738dc78` |
+| `build-generation-gcc` | `capture-cf35fb1a273141a0bfa1facd6ba1c0ea` | `21edb961e19a1e3e075ad9da4595d73810cfdaa3d2ff874937478722eddedf53` |
+| `build-generation-clang` | `capture-57bc5de13f6d42c19bafa794ee3b1ce5` | `638713f0696c113d39dc02331862f11e9185e4d37a3f2ac96b4846c2dcfa30ee` |
+
+Each manifest's 57 attributed inputs and eight compiled helper classes are
+unchanged before and after execution. Independent audit compares all 47
+recorded project source files to the exact Git objects, normalizing Windows
+and WSL path spellings. It independently reconstructs the complete comparison
+projections, validates raw48 Random continuation and stage bindings, and checks
+all record, class, control and world-file hashes. It also verifies actual
+41-test logs, zero CTest exits and every selected original comparison's pass
+manifest. It imports neither the comparison driver nor the fixture exporter.
+
+The ignored `.local/normal-final-audit.json` passes with zero errors, SHA-256
+`9acbf7d9865b4f9817bf1125d33078895df592d7e0bae5a973f88ff62ec80843`.
+The independent public-fixture audit also checks all eight MCG1 inputs and
+complete original projections, including 152 raw48/serialized Random controls.
+No expected behavior is computed during fixture export.
+
+[Hosted checks at this source](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass 36 public/numerical CTests per compiler on native Windows MSVC and Linux
+GCC/Clang, plus clang-format18 for 79 C/header files. Hosted checks use no
+private JARs or original worlds.
+
+## Observation limits
+
+The production helper uses owned fresh world roots, 512 MiB JVM heaps,
+loopback JDWP, a 180-second debuggee/controller deadline and a 220-second outer
+controller bound. Complete snapshots, traces and streams have 32 MiB bounds.
+Each suspended inventory records at most 64 threads and 64 frames per thread;
+the measured main thread is non-daemon, and other observed threads must be
+daemon threads without original-loader frames. These inventories establish
+the recorded finite headless conditions, not general scheduling or concurrent
+world mutation. Process and record bounds are not operating-system quotas.
+
+Exit77 denotes unavailable setup only before any measurement evidence and
+without a snapshot. Once markers, bindings, stage/query events or other
+measurement evidence exists, errors and incomplete records fail. Four retained
+classification controls cover genuine setup unavailability, post-begin exit77,
+snapshot-plus-exit77 and a measured exception; only the first is unavailable.
+
 The existing [density](density.md), [surface](surface.md), [cave](caves.md) and
 [finishing](finishing.md) evidence covers their specified stages; it does not
 replace a composition comparison or establish cache lifecycle, population,

@@ -110,8 +110,9 @@ baselines through the production C API. The comparison requires both supplied
 JARs, JDK17+ with `java`, `javac`, `javap` and `jdk.jdi`, and the exact source
 commit setting. It uses loopback debugging, fresh original worlds and separate
 untouched controls. The acceptance corpus has seeds 23, 24, 26 and 51,
-with nine sequential calls per retained generator. Earlier prototype agreement
-does not establish a completed production four-seed result; see
+with nine sequential calls per retained generator. Complete exact-source
+comparisons pass at
+`a08c12056a06261ed01d9f66999459f7ce9543b4`; see
 [generation evidence](reference/generation.md) and the
 [ownership and failure contract](world/generation.md).
 
@@ -125,9 +126,14 @@ ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
 
 Add `-C Debug` for a multi-configuration build. The two public tool checks use
 synthetic guards and retained fixtures respectively; they need no original
-JARs or Java. The opt-in comparison and fixture integration are being completed,
-so these commands describe the intended production checks rather than a
-recorded successful run. `mc_world` itself has no Java or original-file dependency.
+JARs or Java. At the a08 checkpoint, all 41 selected local tests pass without
+skips on native MSVC and WSL GCC/Clang, with ASan/UBSan on both Linux builds.
+That suite contains 35 public tests, the numerical Java oracle and five
+original comparisons. [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass 36 public/numerical tests per compiler and formatting for 79 C/header
+files. Later cache/region work on the active branch requires separate results;
+these counts identify the verified checkpoint. `mc_world` itself has no Java
+or original-file dependency.
 
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)

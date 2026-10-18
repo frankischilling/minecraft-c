@@ -87,8 +87,8 @@ adds actual untouched merge and world-queue calls. It retains each real setup
 baseline and compares complete ordered queues with C after observed admission.
 Forty-eight cases contain 72 merge requests; each side also runs 43 world
 requests and a separate actual million-entry overflow experiment. The C module
-implements storage after admission. World-height tracing, full finishing and
-propagation remain open.
+implements storage after admission. Full finishing has separate evidence below;
+propagation remains open.
 
 [Full finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md)
 adds actual JDI entry/exit traces of all 1024 height queries per pass, dirty state
@@ -99,6 +99,8 @@ they establish finite headless conditions rather than general scheduling.
 The C cache supports lookup and the explicit map/list publication phase.
 Full loading, lifecycle, population and light propagation remain open.
 
+## Normal generation checkpoint
+
 [Direct normal generation evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
 records original stage handoffs and genuine setup qualification for seeds 23,
 24, 26 and 51. The C composition is implemented through full finishing with
@@ -107,7 +109,13 @@ output preserving manager `d`, and all 13 current material pairs supplied
 explicitly. Its public contract unit passes 99073 checks on MSVC/GCC/Clang,
 including sanitizer checks. Four-seed original capture and lossless public C
 replay pass eight inputs, 72 complete chunks and 73728 exact height queries.
-Full exact-source platform verification remains pending.
+At exact source `a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected
+local tests pass on native MSVC and WSL GCC/Clang without skips, with ASan/UBSan
+on Linux. All three pairings pass independently. Each build retains 1224 stage
+events, 144 complete marker inventories and eight byte-equal untouched controls.
+Independent audit verifies 47 exact-commit project sources, 57 stable attributed
+inputs, eight unchanged helper classes and all record/control/world-file hashes.
+The evidence page records all three manifest hashes and the audit fingerprint.
 
 The `reference.normal_generation` comparison observes actual direct
 generator calls in fresh worlds and requires complete byte-equal untouched
@@ -120,6 +128,14 @@ guards and lossless retained-fixture replay; see
 [build commands](Build-and-tests#normal-generation-checks). Generation remains
 separate from cache acquisition/publication, population, propagation, other
 dimensions and save compatibility.
+
+The measured contexts use base worlds `fd`/`dj` and caches `ok`/`jb`. The actual
+`MinecraftServer` constructs `dp` with `he`; its cache lifecycle is not covered
+by the current base-world observation. Genuine `ie` loading and related region
+acceptance remain research on the continuing branch. The suspended inventories
+establish finite headless conditions, not general concurrency behavior. Hosted
+[a08 checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass 36 public/numerical tests per compiler and formatting for 79 C/header files.
 
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy

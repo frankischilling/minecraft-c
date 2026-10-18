@@ -184,7 +184,7 @@ mc_normal_generator_generate(mc_normal_generator *generator, int32_t chunk_x, in
         generator->materials[i] = resources->materials->by_biome[(size_t)id - 1u];
     }
     result->data = staged_data;
-    result->chunk = (mc_chunk_state){&result->data, chunk_x, chunk_z, false, false};
+    result->chunk = (mc_chunk_state){.data = &result->data, .x = chunk_x, .z = chunk_z};
     memset(blocks, 0, MC_CHUNK_BLOCKS);
     mc_terrain_normal_workspace work = {{generator->mix, 425},
                                         {generator->low, 425},

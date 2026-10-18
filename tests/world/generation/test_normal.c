@@ -157,9 +157,9 @@ static int test_unpublished_identity(void)
     for (unsigned location = 0; location < 3u; ++location) {
         CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
         CHECK(mc_chunk_data_init(&f.results[0].data, f.blocks[0], sizeof(f.blocks[0])));
-        f.results[0].chunk = (mc_chunk_state){&f.results[0].data, 0, 0, false, false};
+        f.results[0].chunk = (mc_chunk_state){.data = &f.results[0].data};
         CHECK(mc_chunk_data_init(&f.results[1].data, f.blocks[1], sizeof(f.blocks[1])));
-        f.results[1].chunk = (mc_chunk_state){&f.results[1].data, 0, 0, false, false};
+        f.results[1].chunk = (mc_chunk_state){.data = &f.results[1].data};
         if (location == 1u) {
             /* Different state, same data: a result cannot overwrite cached data. */
             f.results[1].chunk.data = &f.results[0].data;
@@ -187,6 +187,9 @@ static int test_repeated_generation_and_borrowed_owners(void)
     CHECK(generate(0, 1, 0) == MC_NORMAL_GENERATOR_OK);
     CHECK(f.results[0].chunk.data == &f.results[0].data && f.results[0].chunk.dirty &&
           !f.results[0].chunk.blank && f.results[0].chunk.x == 1 && f.results[0].chunk.z == 0);
+    CHECK(!f.results[0].chunk.active && !f.results[0].chunk.terrain_populated &&
+          !f.results[0].chunk.never_save && !f.results[0].chunk.has_entities &&
+          f.results[0].chunk.last_save_time == 0);
     CHECK(f.results[0].data.blocks == f.blocks[0]);
     CHECK(f.results[0].data.blocks_capacity == sizeof(f.blocks[0]));
     CHECK(f.trace.count == MC_CHUNK_FINISH_QUERIES && f.aborts == 0 && f.queue.count == 0);

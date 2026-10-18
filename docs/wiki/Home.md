@@ -12,8 +12,13 @@ terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
 unpublished normal generator composition, local resource import and native builds.
 The [normal generator API](Architecture#normal-generator) composes the existing
-stages through finishing with borrowed world resources. Four-seed original capture and lossless public C replay pass; full
-current-source platform verification remains pending.
+stages through finishing with borrowed world resources. At exact source
+`a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass
+on MSVC/GCC/Clang without skips, including four-seed original comparisons and
+complete untouched controls. Hosted checks pass 36 public/numerical tests per
+compiler and formatting for 79 C/header files. See the
+[generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
+for evidence and its finite scope.
 The [repository README](https://github.com/frankischilling/minecraft-c#readme),
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
 and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)
@@ -27,3 +32,7 @@ Detailed pages cover [systems and subsystems](Architecture) and
 [storage and original-reference checks](Storage-and-reference). The
 [development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
 records the current branch, tested commits and remaining work.
+
+These versioned pages await combined integration of the continuing generation
+and cache work. The published wiki remains at finishing checkpoint
+`4e4a9f3853ac8db012bca9aaf179d956e288a686`; these updates are not yet published.

@@ -21,9 +21,12 @@ option(MC_ENABLE_CHUNK_REFERENCE_TESTS "Compare local chunk initialization with 
 option(MC_ENABLE_LIGHT_REFERENCE_TESTS "Compare light regions and ordered queues with originals" OFF)
 option(MC_ENABLE_FINISH_REFERENCE_TESTS "Compare full normal chunk finishing with original traces" OFF)
 option(MC_ENABLE_GENERATION_REFERENCE_TESTS "Compare complete normal generation with original traces" OFF)
+option(MC_ENABLE_REGION_CAPTURE_TESTS "Compare region reader with recorded observations" OFF)
+option(MC_ENABLE_REGION_REFERENCE_TESTS "Compare region inspection with untouched original readers" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
+set(MC_REGION_CAPTURE_MANIFEST "" CACHE FILEPATH "Local recorded region observation manifest")
 
 # Strict diagnostics apply to project-owned code; dependencies share sanitizers only.
 add_library(mc_build_options INTERFACE)
@@ -70,12 +73,22 @@ if(UNIX)
     target_link_libraries(mc_core PRIVATE m)
 endif()
 
-add_library(mc_storage STATIC src/storage/nbt/nbt.c src/storage/compression/compression.c)
+add_library(mc_storage STATIC
+    src/storage/nbt/nbt.c
+    src/storage/compression/compression.c
+    src/storage/region/region.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
+
+add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
+target_link_libraries(mc_region_inspect PRIVATE mc_storage mc_build_options)
+if(MINGW)
+    target_link_options(mc_region_inspect PRIVATE -municode)
+endif()
 
 add_library(mc_world STATIC
     src/world/generation/normal.c
     src/world/cache/cache.c
+    src/world/cache/acquire.c
     src/world/chunk/finish.c
     src/world/lighting/world.c
     src/world/lighting/queue.c
@@ -91,6 +104,19 @@ target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_chunk_acquire tests/world/cache/test_acquire.c)
+    target_link_libraries(mc_test_chunk_acquire PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_acquire COMMAND mc_test_chunk_acquire)
+    set_tests_properties(world.chunk_acquire PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_test_region tests/storage/region/test_region.c)
+    target_link_libraries(mc_test_region PRIVATE mc_storage mc_build_options)
+    add_test(NAME storage.region COMMAND mc_test_region)
+    set_tests_properties(storage.region PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_region_probe tests/storage/region/region_probe.c)
+    target_link_libraries(mc_region_probe PRIVATE mc_storage mc_build_options)
+
     add_executable(mc_test_normal_generator tests/world/generation/test_normal.c)
     target_link_libraries(mc_test_normal_generator PRIVATE mc_world mc_build_options)
     add_test(NAME world.normal_generator COMMAND mc_test_normal_generator)
@@ -229,6 +255,61 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME tools.region_inspect
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region/test_inspect.py"
+        --executable "$<TARGET_FILE:mc_region_inspect>")
+    set_tests_properties(tools.region_inspect PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.region_capture
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region/test_capture.py"
+        --executable "$<TARGET_FILE:mc_region_probe>")
+    set_tests_properties(tools.region_capture PROPERTIES LABELS "public;tools" TIMEOUT 90)
+
+    add_test(NAME tools.region_probe
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region/test_probe.py"
+        --executable "$<TARGET_FILE:mc_region_probe>")
+    set_tests_properties(tools.region_probe PROPERTIES LABELS "public;tools" TIMEOUT 30)
+
+    add_test(NAME tools.region_live
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region" -p test_live.py)
+    set_tests_properties(tools.region_live PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools" TIMEOUT 30)
+
+    if(MC_ENABLE_REGION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        get_filename_component(MC_REGION_JAVA_BIN "${Java_JAVA_EXECUTABLE}" DIRECTORY)
+        add_test(NAME reference.region
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/region/compare_region.py"
+            --executable "$<TARGET_FILE:mc_region_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --javap "${MC_REGION_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-region"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.region PROPERTIES
+            LABELS "reference;original;region" TIMEOUT 180 SKIP_RETURN_CODE 77)
+    endif()
+
+    if(MC_ENABLE_REGION_CAPTURE_TESTS)
+        add_test(NAME reference.region_capture
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/region/compare_capture.py"
+            --executable "$<TARGET_FILE:mc_region_probe>"
+            --capture "${MC_REGION_CAPTURE_MANIFEST}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-region-capture"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.region_capture PROPERTIES
+            LABELS "reference;captured;region" TIMEOUT 120 SKIP_RETURN_CODE 77)
+    endif()
+
     add_test(NAME tools.normal_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation" -p test_normal_reference.py)

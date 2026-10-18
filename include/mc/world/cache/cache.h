@@ -13,7 +13,8 @@ typedef struct mc_chunk_cache_entry {
  * The insertion list can contain repeated identities and overwritten values.
  * Directly restored baselines must pass validate before use. NULL map values
  * are unsupported: original lookups can then load/generate and mutate state.
- * This module does not implement that loading or the remaining cache lifecycle.
+ * This storage interface does not load or run lifecycle callbacks; acquire.h
+ * provides the separate synchronous nonnull acquisition coordinator.
  */
 typedef struct mc_chunk_cache {
     mc_chunk_cache_entry *entries;

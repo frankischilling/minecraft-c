@@ -20,8 +20,9 @@ and integration need explicit ownership.
 
 The raw NBT and modified UTF increment is integrated, as is bounded gzip/zlib,
 with [both-side evidence](reference/compression.md). Read-only original region
-inspection remains a draft implementation, with live original-region validation
-pending. The original seeded Perlin/octave module is implemented.
+inspection is being brought into the active generation/cache branch from its
+preserved draft; live original-region validation remains pending. The original
+seeded Perlin/octave module is implemented.
 The separate 2D simplex/octave primitives are implemented, with exact-source
 acceptance recorded in [status](status.md). Climate blending and biome classification
 are implemented, with
@@ -56,9 +57,24 @@ cave-scheduler domain. The 99073 public contract checks pass on MSVC/GCC/Clang,
 including sanitizer checks. The [production capture](reference/generation.md)
 for seeds 23, 24, 26 and 51 passes with complete untouched controls. Lossless
 public C replay passes eight original inputs, 72 complete chunks and 73728
-queries. Exact-source platform acceptance remains pending. `MC_ENABLE_GENERATION_REFERENCE_TESTS` selects
+queries. Exact source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes all 41
+selected local tests on MSVC/GCC/Clang without skips, with Linux ASan/UBSan.
+All three original pairings and complete untouched controls pass per build;
+independent audit verifies 47 exact-commit sources, 57 stable inputs and eight
+helper classes. [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass 36 public/numerical tests per compiler and formatting for 79 C/header
+files. These are checkpoint results on the continuing branch.
+`MC_ENABLE_GENERATION_REFERENCE_TESTS` selects
 the original comparison; public helper and fixture checks are named
 `tools.normal_reference` and `tools.normal_interop`.
+
+Next, research client base-world cache `ok` and server base-world `jb` separately
+from actual dedicated world `dp`/cache `he`, which `MinecraftServer` constructs.
+The current production corpus uses base worlds `fd`/`dj`; it does not establish
+the dedicated-server path. Genuine `ie` loading and related region evidence
+must precede load/fallback and persistence acceptance. Cache acquisition and
+read-only region inspection can share an integration when those original
+comparisons pass.
 
 Complete cache acquisition/lifecycle, population, light propagation, other
 dimensions and protocol framing remain separate required work. Define their

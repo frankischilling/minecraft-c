@@ -81,7 +81,10 @@ WSL GCC/Clang; sanitizer checks also pass. They cover borrowed ownership,
 unpublished identities, repeated outputs, current materials, finite-coordinate
 preflight and allocation-failure preservation. Four-seed original capture and
 lossless public C replay pass eight inputs, 72 complete chunks and 73728 exact
-height queries. Full exact-source platform verification remains pending.
+height queries. Exact source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
+all 41 selected local tests without skips on those toolchains. Each generation
+comparison retains 1224 stage events, 144 marker inventories and eight complete
+byte-equal untouched controls, with all three pairings passing independently.
 
 `MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
 with JDK17+ and `jdk.jdi`, both supplied JARs and the exact source commit setting.
@@ -103,10 +106,12 @@ ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
 Add `-C Debug` for multi-configuration builds. The public
 `tools.normal_reference` and `tools.normal_interop` checks use synthetic guards
 and retained original fixtures respectively, without Java or private inputs.
-Their production integration is being completed; these commands record the
-intended checks rather than a successful acceptance run. The planned suite has
-35 public tests, 36 with the numerical Java oracle, or 41 with the selected
-original finishing, queue, chunk, nibble and generation comparisons. See the
+At the a08 checkpoint, the suite has 35 public tests, 36 with the numerical
+Java oracle, or 41 with the selected original finishing, queue, chunk, nibble
+and generation comparisons. [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
+pass all 36 public/numerical tests per compiler on native Windows MSVC and Linux
+GCC/Clang, plus formatting for 79 C/header files. These counts identify that
+exact checkpoint; later cache/region additions need separate acceptance. See the
 [generation contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
 and [evidence boundary](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md).
 
@@ -115,11 +120,11 @@ source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
 and [storage/reference overview](Storage-and-reference).
 
-The recorded finishing source passes 37 local tests per compiler on native
+The prior finishing checkpoint passes 37 local tests per compiler on native
 Windows/MSVC and WSL GCC/Clang, including original finishing, queue, chunk and
 nibble comparisons. The Linux builds use ASan/UBSan. All six finishing cases
 match independently in three pairings; complete untouched controls agree.
-Public CI passes 33 tests per compiler and formatting for 75 C/header files.
+Its public CI passes 33 tests per compiler and formatting for 75 C/header files.
 Exact tested commits, manifest hashes and integration results live in the
 development status and linked evidence pages.
 
