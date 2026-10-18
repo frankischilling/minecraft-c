@@ -11,7 +11,17 @@ climate/biome classification, normal density/base
 terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
 unpublished normal generator composition, synchronous cache acquisition,
-read-only region inspection, local resource import and native builds.
+region inspection and writing, world metadata, stable stored chunks, native
+world-file ownership, local resource import and native builds.
+The storage foundation is implemented through `mc_persistence` and its cache
+acquisition adapter, with acceptance still in DEVELOPMENT. All 57 public tests
+pass without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan;
+clang-format18 passes for 111 C/header files. Exact-source full and fresh live
+reference runs, both-direction copied-world checks and hosted CI remain pending. See the
+[storage foundation](Storage-and-reference#storage-foundation-in-development),
+[ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
+and [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md).
+
 The [normal generator API](Architecture#normal-generator) composes the existing
 stages through finishing with borrowed world resources. At exact source
 `a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass

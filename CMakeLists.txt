@@ -24,6 +24,7 @@ option(MC_ENABLE_GENERATION_REFERENCE_TESTS "Compare complete normal generation 
 option(MC_ENABLE_REGION_CAPTURE_TESTS "Compare region reader with recorded observations" OFF)
 option(MC_ENABLE_REGION_REFERENCE_TESTS "Compare region inspection with untouched original readers" OFF)
 option(MC_ENABLE_CACHE_REFERENCE_TESTS "Compare synchronous acquisition with retained original providers" OFF)
+option(MC_ENABLE_STORAGE_REFERENCE_TESTS "Compare persistence codecs and region writes with originals" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -76,8 +77,10 @@ endif()
 
 add_library(mc_storage STATIC
     src/storage/nbt/nbt.c
+    src/storage/level/level.c
     src/storage/compression/compression.c
-    src/storage/region/region.c)
+    src/storage/region/region.c
+    src/storage/region/writer.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
 
 add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
@@ -103,8 +106,46 @@ add_library(mc_world STATIC
     src/world/terrain/caves.c)
 target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
+add_library(mc_persistence STATIC
+    src/world/storage/status.c
+    src/world/storage/files.c
+    src/world/storage/regions.c
+    src/world/storage/store.c
+    src/world/storage/chunk.c)
+target_link_libraries(mc_persistence PUBLIC mc_world mc_storage PRIVATE mc_build_options)
+
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_stored_chunk tests/world/storage/test_chunk.c)
+    target_link_libraries(mc_test_stored_chunk PRIVATE mc_persistence mc_build_options)
+    add_test(NAME world.stored_chunk COMMAND mc_test_stored_chunk)
+    set_tests_properties(world.stored_chunk PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_stored_chunk_probe tests/world/storage/chunk_probe.c)
+    target_link_libraries(mc_stored_chunk_probe PRIVATE mc_persistence mc_build_options)
+
+    add_executable(mc_world_regions_probe tests/world/storage/regions_probe.c)
+    target_link_libraries(mc_world_regions_probe PRIVATE mc_persistence mc_build_options)
+
+    add_executable(mc_world_store_probe tests/world/storage/store_probe.c)
+    target_link_libraries(mc_world_store_probe PRIVATE mc_persistence mc_build_options)
+
+    add_executable(mc_level_probe tests/storage/level/level_probe.c)
+    target_link_libraries(mc_level_probe PRIVATE mc_storage mc_build_options)
+
+    add_executable(mc_test_level tests/storage/level/test_level.c)
+    target_link_libraries(mc_test_level PRIVATE mc_storage mc_build_options)
+    add_test(NAME storage.level COMMAND mc_test_level)
+    set_tests_properties(storage.level PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_region_writer_probe tests/storage/region/writer_probe.c)
+    target_link_libraries(mc_region_writer_probe PRIVATE mc_storage mc_build_options)
+
+    add_executable(mc_test_region_writer tests/storage/region/test_writer.c)
+    target_link_libraries(mc_test_region_writer PRIVATE mc_storage mc_build_options)
+    add_test(NAME storage.region_writer COMMAND mc_test_region_writer)
+    set_tests_properties(storage.region_writer PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
     add_executable(mc_test_chunk_acquire tests/world/cache/test_acquire.c)
     target_link_libraries(mc_test_chunk_acquire PRIVATE mc_world mc_build_options)
     add_test(NAME world.chunk_acquire COMMAND mc_test_chunk_acquire)
@@ -262,6 +303,109 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME tools.world_store_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_store.py"
+        --executable "$<TARGET_FILE:mc_world_store_probe>")
+    set_tests_properties(tools.world_store_interop PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 180)
+
+    add_test(NAME tools.regions_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage" -p test_regions.py)
+    set_tests_properties(tools.regions_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 120)
+
+    add_test(NAME tools.regions_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_regions.py"
+        --executable "$<TARGET_FILE:mc_world_regions_probe>")
+    set_tests_properties(tools.regions_interop PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 120)
+
+    add_test(NAME tools.chunk_storage_reference
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_chunk_storage.py"
+        --executable "$<TARGET_FILE:mc_stored_chunk_probe>")
+    set_tests_properties(tools.chunk_storage_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 180)
+
+    add_test(NAME tools.level_reference
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_level.py"
+        --executable "$<TARGET_FILE:mc_level_probe>")
+    set_tests_properties(tools.level_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 120)
+
+    add_test(NAME tools.region_write_reference
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage" -p test_region_write.py)
+    set_tests_properties(tools.region_write_reference PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 120)
+
+    add_test(NAME tools.region_write_interop
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_region_write.py"
+        --executable "$<TARGET_FILE:mc_region_writer_probe>")
+    set_tests_properties(tools.region_write_interop PROPERTIES
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        LABELS "public;tools;storage" TIMEOUT 120)
+
+    if(MC_ENABLE_STORAGE_REFERENCE_TESTS)
+        find_package(Java 17 QUIET COMPONENTS Runtime Development)
+        get_filename_component(MC_STORAGE_JAVA_BIN "${Java_JAVA_EXECUTABLE}" DIRECTORY)
+        set(MC_STORAGE_SOURCE_ARGUMENTS)
+        if(NOT MC_REFERENCE_TESTED_COMMIT STREQUAL "")
+            list(APPEND MC_STORAGE_SOURCE_ARGUMENTS --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        endif()
+        add_test(NAME reference.level
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/storage/compare_level.py"
+            --executable "$<TARGET_FILE:mc_level_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --javap "${MC_STORAGE_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-level"
+            ${MC_STORAGE_SOURCE_ARGUMENTS})
+        set_tests_properties(reference.level PROPERTIES
+            LABELS "reference;original;storage" TIMEOUT 300 SKIP_RETURN_CODE 77)
+
+        add_test(NAME reference.region_write
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/storage/compare_region_write.py"
+            --executable "$<TARGET_FILE:mc_region_writer_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-region-write"
+            ${MC_STORAGE_SOURCE_ARGUMENTS})
+        set_tests_properties(reference.region_write PROPERTIES
+            LABELS "reference;original;storage" TIMEOUT 300 SKIP_RETURN_CODE 77)
+
+        add_test(NAME reference.chunk_storage
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/storage/compare_chunk_storage.py"
+            --executable "$<TARGET_FILE:mc_stored_chunk_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --javap "${MC_STORAGE_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-chunk-storage"
+            ${MC_STORAGE_SOURCE_ARGUMENTS})
+        set_tests_properties(reference.chunk_storage PROPERTIES
+            LABELS "reference;original;storage" TIMEOUT 600 SKIP_RETURN_CODE 77)
+    endif()
     add_test(NAME tools.acquire_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/cache" -p test_acquire_reference.py)

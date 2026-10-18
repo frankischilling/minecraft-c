@@ -1,8 +1,11 @@
 # Storage and original references
 
-Storage provides raw NBT, gzip/zlib memory compression and read-only local
-region-record inspection. Global chunk-to-file mapping, world schemas, writable
-world compatibility and copied-world round trips remain unimplemented.
+Storage provides raw NBT, gzip/zlib memory compression, metadata codecs,
+region inspection and writing, stable stored chunks, native region transport
+and world-store ownership through `mc_persistence`. The foundation is implemented
+and remains in DEVELOPMENT acceptance. Exact-source full/live runs,
+both-direction copied-world round trips and hosted acceptance remain pending.
+See [current storage scope](#storage-foundation-in-development) below.
 
 The raw NBT codec handles the original tag IDs 0..10 with named roots, lists,
 compounds, byte arrays and lossless UTF-16 string units. Decoded documents own
@@ -98,7 +101,8 @@ Suspended marker inventories record thread roles and original-loader frames;
 they establish finite headless conditions rather than general scheduling.
 The C cache supports lookup, explicit map/list publication and a synchronous
 acquisition coordinator. Separate callback observations below cover successful
-loading and natural population; full persistence and light propagation remain open.
+loading and natural population. The storage foundation below adds native
+persistence operations; full persistence acceptance and light propagation remain open.
 
 ## Normal generation checkpoint
 
@@ -162,8 +166,47 @@ No running-server or terrain-feature parity follows.
 at exact 092301ae passes all 49 queries per original side, with byte-equal
 controls and independent source/artifact audit, on MSVC/GCC/Clang. Eight cases
 are compatible and 41 retain explicit diagnostic departures. Hosted checks pass
-42 tests per compiler and formatting for 87 C/header files. This establishes
-finite local read inspection, not a world schema, global addressing or writes.
+42 tests per compiler and formatting for 87 C/header files. That checkpoint
+establishes finite local read inspection; later schema, global mapping and write
+work has separate evidence below.
+
+## Storage foundation in development
+
+The [storage evidence overview](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
+records the implemented foundation and its acceptance limits. The
+[metadata codec](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/level.md)
+interprets exact known types/defaults and builds independent NBT with an explicit
+save clock. The
+[region image writer](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/region-writer.md)
+owns allocation, retained bytes and growth in memory. The
+[world storage owner](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
+adds stable chunk lifetimes, native files and cache ownership, metadata fallback,
+session checks and rotation, dimension paths, accounting and the real
+acquisition load adapter.
+
+Original metadata and chunk observations support the public codec/schema
+replays. Unknown root/metadata fields, opaque Player data and entity/tile
+compounds have a separate C preservation policy. Original serializers can drop
+such fields or reconstruct objects through factories. Opaque retention and
+edit refusal do not establish player/entity simulation, subtype persistence or
+complete gameplay save behavior. Fixed array/type restrictions also remain
+explicit C malformed-input departures.
+
+The region-write fixture retains 34 memory-image write attempts across four
+profiles. Its allocation/growth and complete images are separate from native
+filesystem replacement. Only independently bounded original timestamp fields
+become explicit C clock inputs. Separate original global-cache observations
+retain 341 actions per run and nine filename/open mappings. Those nine global
+mappings are original-derived; C local-slot mask cases and the remaining native
+transport scenarios are constructed contracts. These checks do not establish
+original GC timing, general concurrent mutation or failed-I/O durability.
+
+All 57 public development tests pass without skips on strict native MSVC and
+WSL GCC/Clang builds, with Linux ASan/UBSan. Clang-format18 passes for 111
+C/header files. Exact-source full and fresh live reference runs, both-direction
+copied-world acceptance and hosted CI remain pending. Full entity/player behavior, save/unload scheduling, light
+propagation and game integration remain open. Earlier checkpoint counts above
+continue to describe only their recorded sources.
 
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy

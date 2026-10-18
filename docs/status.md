@@ -1,11 +1,42 @@
 # Development status
 
-Source checkpoint `28a55b52c001c4c114a11ca7df844fc1f286d328` combines normal
+Integrated main checkpoint `b7b33d4b66e027a6de18d04018cd0ba34dd87f0b`
+combines normal
 generation, synchronous cache acquisition and read-only region inspection.
+Its tree matches final documentation checkpoint
+`d0dde15a095424a2103dd755db546a9be2ab3c30`; implementation acceptance is at
+`28a55b52c001c4c114a11ca7df844fc1f286d328`.
 All 56 selected local tests pass without skips on native MSVC and WSL GCC/Clang,
 with Linux ASan/UBSan and independent acceptance audit. Hosted checks pass 48
 public/numerical tests per compiler and formatting for 89 C/header files.
 Inspect the live worktree before continuing. The complete rewrite remains unfinished.
+
+The [resulting-main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39091121154)
+pass all four jobs. The initial Clang configuration rejected a dependency
+download with the wrong hash, before compilation. Three fresh local downloads
+matched the unchanged official checksum; the failed job passed on an unchanged
+source retry. The failing response bytes were unavailable, so the precise
+delivery failure is unknown. The published five-page wiki checkpoint is
+`c4ecb344bffae2d5bd293f2678063b6bcc985025`, with all five remote page blobs
+verified against `docs/wiki/`.
+
+## Persistence work in progress
+
+The storage work adds an [owned region image writer](storage/region-writer.md),
+the [level metadata codec](storage/level.md), stable owned chunk NBT and
+[native region transport](world/storage.md). Development comparisons exercise
+both original serializers/loaders and full region allocation images. Public
+fixtures retain original observations; unsupported entity/tile/player bodies
+remain opaque and unsafe edits are refused.
+
+The native world owner connects session checks, metadata fallback and rollover,
+dimension roots and the real acquisition loader seam. All 57 public tests pass
+without skips on native MSVC and WSL GCC/Clang with Linux sanitizers: 156.38,
+257.44 and 257.84 seconds respectively. Formatting passes for 111 C/header files.
+These are development results without tested-commit attribution.
+Copied-world round trips, full platform acceptance at an exact source commit and hosted
+integration remain pending. The new work does not establish gameplay
+save/unload scheduling, entity/player simulation or a playable client/server.
 
 ## Verified combined checkpoint
 

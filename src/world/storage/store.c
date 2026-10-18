@@ -1,0 +1,591 @@
+#include "mc/world/storage/store.h"
+
+#include "files.h"
+#include "mc/core/java/java.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct store_chunk {
+    mc_stored_chunk *owner;
+    int32_t dimension;
+    struct store_chunk *next;
+} store_chunk;
+
+struct mc_world_store {
+    mc_world_regions *regions;
+    mc_world_store_limits limits;
+    char *root;
+    char *nether;
+    char *session;
+    char *metadata_paths[3]; /* current, old, new */
+    int64_t session_token;
+    uint8_t block_map[256];
+    mc_nbt_document *metadata;
+    mc_level_info info;
+    bool has_info;
+    store_chunk *chunks, *last_chunk;
+    size_t chunk_count;
+};
+
+static mc_world_storage_status store_error(mc_world_storage_error *error,
+                                           mc_world_storage_status status, const char *operation)
+{
+    if (error != NULL)
+        *error = (mc_world_storage_error){status, operation, 0};
+    return status;
+}
+
+static mc_world_storage_status store_nbt_error(mc_world_storage_error *error, mc_nbt_status status)
+{
+    mc_world_storage_status result =
+        status == MC_NBT_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_NBT_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_NBT_INVALID_ARGUMENT  ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                             : MC_WORLD_STORAGE_INVALID_DATA;
+    return store_error(error, result, mc_nbt_status_string(status));
+}
+
+static mc_world_storage_status store_level_error(mc_world_storage_error *error,
+                                                 mc_level_status status,
+                                                 const mc_level_error *detail)
+{
+    mc_world_storage_status result =
+        status == MC_LEVEL_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_LEVEL_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_LEVEL_INVALID_ARGUMENT  ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                               : MC_WORLD_STORAGE_INVALID_DATA;
+    return store_error(error, result,
+                       detail->field == NULL ? mc_level_status_string(status) : detail->field);
+}
+
+static mc_world_storage_status store_compression_error(mc_world_storage_error *error,
+                                                       mc_compression_status status)
+{
+    mc_world_storage_status result =
+        status == MC_COMPRESSION_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_COMPRESSION_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_COMPRESSION_INVALID_ARGUMENT  ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                                     : MC_WORLD_STORAGE_INVALID_DATA;
+    return store_error(error, result, mc_compression_status_string(status));
+}
+
+static mc_world_storage_status store_chunk_error(mc_world_storage_error *error,
+                                                 mc_stored_chunk_status status,
+                                                 const mc_stored_chunk_error *detail)
+{
+    mc_world_storage_status result =
+        status == MC_STORED_CHUNK_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_STORED_CHUNK_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_STORED_CHUNK_INVALID_ARGUMENT  ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+        : status == MC_STORED_CHUNK_UNSUPPORTED_EDIT  ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                      : MC_WORLD_STORAGE_INVALID_DATA;
+    return store_error(error, result,
+                       detail->field == NULL ? mc_stored_chunk_status_string(status)
+                                             : detail->field);
+}
+
+mc_world_store_limits mc_world_store_default_limits(void)
+{
+    const mc_world_store_limits limits = {512, mc_nbt_default_limits(),
+                                          mc_compression_default_limits()};
+    return limits;
+}
+
+static void store_token(int64_t value, uint8_t bytes[8])
+{
+    uint64_t bits = (uint64_t)value;
+    for (size_t i = 0; i < 8; ++i)
+        bytes[i] = (uint8_t)(bits >> (56u - 8u * i));
+}
+
+mc_world_storage_status mc_world_store_open(const char *root, mc_world_regions *regions,
+                                            const mc_world_store_options *options,
+                                            mc_world_store **out, mc_world_storage_error *error)
+{
+    if (regions == NULL || options == NULL || out == NULL || options->block_map == NULL ||
+        options->block_map_length < 256 || options->limits.nbt.max_depth == 0 ||
+        options->limits.nbt.max_depth > 128 || options->limits.compression.max_members == 0)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "world store arguments");
+    for (size_t i = 0; i < 256; ++i) {
+        if (options->block_map[i] != 0 && options->block_map[i] != (uint8_t)i)
+            return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "frozen block map");
+    }
+    char *data = NULL, *players = NULL;
+    mc_world_storage_status status = mc_ws_path_join(root, "data", &data, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_world_store *store = calloc(1, sizeof(*store));
+    if (store == NULL) {
+        free(data);
+        return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "world store owner");
+    }
+    store->regions = regions;
+    store->limits = options->limits;
+    store->session_token = options->session_token;
+    memcpy(store->block_map, options->block_map, sizeof(store->block_map));
+    size_t root_length = strlen(root); /* path_join validated the bounded root. */
+    store->root = malloc(root_length + 1u);
+    if (store->root == NULL)
+        status = store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "world root path");
+    else
+        memcpy(store->root, root, root_length + 1u);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_path_join(root, "DIM-1", &store->nether, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_path_join(root, "session.lock", &store->session, error);
+    static const char *const names[] = {"level.dat", "level.dat_old", "level.dat_new"};
+    for (size_t i = 0; status == MC_WORLD_STORAGE_OK && i < 3; ++i)
+        status = mc_ws_path_join(root, names[i], &store->metadata_paths[i], error);
+    if (status == MC_WORLD_STORAGE_OK && options->create_players)
+        status = mc_ws_path_join(root, "players", &players, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_mkdirs(data, error);
+    if (status == MC_WORLD_STORAGE_OK && players != NULL)
+        status = mc_ws_mkdirs(players, error);
+    if (status == MC_WORLD_STORAGE_OK) {
+        uint8_t token[8];
+        store_token(store->session_token, token);
+        status = mc_ws_write_file(store->session, token, sizeof(token), false, error);
+    }
+    free(data);
+    free(players);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_store_free(store);
+        return status;
+    }
+    *out = store;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_check_session(const mc_world_store *store,
+                                                     mc_world_storage_error *error)
+{
+    if (store == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "session store");
+    uint8_t actual[8], expected[8];
+    mc_world_storage_error detail;
+    mc_world_storage_status status =
+        mc_ws_read_prefix(store->session, actual, sizeof(actual), &detail);
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (status != MC_WORLD_STORAGE_INVALID_ARGUMENT && status != MC_WORLD_STORAGE_LIMIT &&
+            status != MC_WORLD_STORAGE_ALLOCATION_FAILED) {
+            status = MC_WORLD_STORAGE_SESSION_MISMATCH;
+            detail.status = status;
+        }
+        if (error != NULL)
+            *error = detail;
+        return status;
+    }
+    store_token(store->session_token, expected);
+    if (memcmp(actual, expected, sizeof(actual)) != 0)
+        return store_error(error, MC_WORLD_STORAGE_SESSION_MISMATCH, "session token");
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static mc_world_storage_status store_read_info(const mc_world_store *store, const char *path,
+                                               mc_nbt_document **out, mc_level_info *info,
+                                               mc_world_storage_error *error)
+{
+    size_t max_bytes = store->limits.compression.max_input_bytes;
+    if (max_bytes > MC_WS_FILE_MAX_BYTES)
+        max_bytes = MC_WS_FILE_MAX_BYTES;
+    mc_ws_file_bytes file = {0};
+    mc_world_storage_status status = mc_ws_read_file(path, max_bytes, &file, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_compression_buffer decoded = {0};
+    mc_compression_status compression = mc_compression_decode(
+        MC_COMPRESSION_GZIP, file.data, file.length, &store->limits.compression, &decoded, NULL);
+    mc_ws_free_file_bytes(&file);
+    if (compression != MC_COMPRESSION_OK)
+        return store_compression_error(error, compression);
+    mc_nbt_document *document = NULL;
+    mc_nbt_status nbt = mc_nbt_read_compound(decoded.data, decoded.length, &store->limits.nbt,
+                                             &document, NULL, NULL);
+    mc_compression_buffer_free(&decoded);
+    if (nbt != MC_NBT_OK)
+        return store_nbt_error(error, nbt);
+    mc_level_error detail;
+    mc_level_status level = mc_level_decode(mc_nbt_document_root(document), info, &detail);
+    if (level != MC_LEVEL_OK) {
+        mc_nbt_document_free(document);
+        return store_level_error(error, level, &detail);
+    }
+    *out = document;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static bool store_fallback_status(mc_world_storage_status status)
+{
+    return status == MC_WORLD_STORAGE_MISSING || status == MC_WORLD_STORAGE_IO_ERROR ||
+           status == MC_WORLD_STORAGE_INVALID_DATA;
+}
+
+mc_world_storage_status mc_world_store_load_info(mc_world_store *store,
+                                                 mc_world_storage_error *error)
+{
+    if (store == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "metadata store");
+    mc_nbt_document *document = NULL;
+    mc_level_info info;
+    mc_world_storage_error detail, primary;
+    mc_world_storage_status status =
+        store_read_info(store, store->metadata_paths[0], &document, &info, &primary);
+    detail = primary;
+    if (store_fallback_status(status) && status != MC_WORLD_STORAGE_OK) {
+        status = store_read_info(store, store->metadata_paths[1], &document, &info, &detail);
+        if (status == MC_WORLD_STORAGE_MISSING && primary.status != MC_WORLD_STORAGE_MISSING) {
+            status = primary.status;
+            detail = primary;
+        }
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (error != NULL)
+            *error = detail;
+        return status;
+    }
+    mc_nbt_document *previous = store->metadata;
+    store->metadata = document;
+    store->info = info;
+    store->has_info = true;
+    mc_nbt_document_free(previous);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+const mc_level_info *mc_world_store_info(const mc_world_store *store)
+{
+    return store == NULL || !store->has_info ? NULL : &store->info;
+}
+
+const mc_nbt_tag *mc_world_store_metadata_root(const mc_world_store *store)
+{
+    return store == NULL ? NULL : mc_nbt_document_root(store->metadata);
+}
+
+const char *mc_world_store_root(const mc_world_store *store)
+{
+    return store == NULL ? NULL : store->root;
+}
+
+static mc_world_storage_status store_encode_nbt(const mc_nbt_tag *root, const mc_nbt_limits *limits,
+                                                mc_ws_file_bytes *out,
+                                                mc_world_storage_error *error)
+{
+    size_t length = 0;
+    mc_nbt_status nbt = mc_nbt_measure(root, limits, &length, NULL);
+    if (nbt != MC_NBT_OK)
+        return store_nbt_error(error, nbt);
+    if (length > limits->max_allocation_bytes)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "NBT serialization buffer");
+    uint8_t *bytes = malloc(length);
+    if (bytes == NULL)
+        return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "NBT serialization buffer");
+    mc_nbt_limits remaining = *limits;
+    remaining.max_allocation_bytes -= length;
+    size_t written = 0;
+    nbt = mc_nbt_write(root, &remaining, bytes, length, &written, NULL);
+    if (nbt != MC_NBT_OK) {
+        free(bytes);
+        return store_nbt_error(error, nbt);
+    }
+    *out = (mc_ws_file_bytes){bytes, written};
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status store_existing_file(const char *path, bool *exists,
+                                                   mc_world_storage_error *error)
+{
+    mc_world_storage_status status = mc_ws_read_prefix(path, NULL, 0, error);
+    if (status == MC_WORLD_STORAGE_MISSING) {
+        *exists = false;
+        return MC_WORLD_STORAGE_OK;
+    }
+    if (status == MC_WORLD_STORAGE_OK)
+        *exists = true;
+    return status;
+}
+
+static mc_world_storage_status store_rotate(mc_world_store *store, const uint8_t *bytes,
+                                            size_t length, mc_world_storage_error *error)
+{
+    mc_world_storage_status status =
+        mc_ws_write_file(store->metadata_paths[2], bytes, length, false, error);
+    bool current = false, old = false;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_existing_file(store->metadata_paths[0], &current, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_existing_file(store->metadata_paths[1], &old, error);
+    if (status == MC_WORLD_STORAGE_OK && old)
+        status = mc_ws_remove_file(store->metadata_paths[1], false, error);
+    if (status == MC_WORLD_STORAGE_OK && current)
+        status = mc_ws_replace_file(store->metadata_paths[0], store->metadata_paths[1], error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_replace_file(store->metadata_paths[2], store->metadata_paths[0], error);
+    return status;
+}
+
+mc_world_storage_status mc_world_store_save_info(mc_world_store *store, const mc_level_info *info,
+                                                 int64_t saved_at_ms, mc_world_storage_error *error)
+{
+    if (store == NULL || info == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "metadata save arguments");
+    if (info->player != (store->has_info ? store->info.player : NULL))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "opaque Player replacement");
+    mc_world_storage_status status = mc_world_store_check_session(store, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_level_info requested = *info;
+    requested.version = 19132;
+    mc_nbt_document *document = NULL;
+    mc_level_error detail;
+    mc_level_status level = mc_level_build(&requested, mc_world_store_metadata_root(store),
+                                           saved_at_ms, &store->limits.nbt, &document, &detail);
+    if (level != MC_LEVEL_OK)
+        return store_level_error(error, level, &detail);
+    mc_level_info rebound;
+    level = mc_level_decode(mc_nbt_document_root(document), &rebound, &detail);
+    if (level != MC_LEVEL_OK) {
+        mc_nbt_document_free(document);
+        return store_level_error(error, level, &detail);
+    }
+    rebound.last_played = requested.last_played;
+    mc_ws_file_bytes raw = {0};
+    status = store_encode_nbt(mc_nbt_document_root(document), &store->limits.nbt, &raw, error);
+    mc_compression_buffer compressed = {0};
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_compression_status encoded = mc_compression_encode(
+            MC_COMPRESSION_GZIP, raw.data, raw.length, &store->limits.compression, &compressed);
+        if (encoded != MC_COMPRESSION_OK)
+            status = store_compression_error(error, encoded);
+    }
+    mc_ws_free_file_bytes(&raw);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_rotate(store, compressed.data, compressed.length, error);
+    mc_compression_buffer_free(&compressed);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_nbt_document_free(document);
+        return status;
+    }
+    mc_nbt_document *previous = store->metadata;
+    store->metadata = document;
+    store->info = rebound;
+    store->has_info = true;
+    mc_nbt_document_free(previous);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static mc_world_storage_status store_dimension(const mc_world_store *store, int32_t dimension,
+                                               const char **out, mc_world_storage_error *error)
+{
+    if (dimension == 0)
+        *out = store->root;
+    else if (dimension == -1)
+        *out = store->nether;
+    else
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "world dimension");
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status store_new_chunk(mc_world_store *store, store_chunk **out,
+                                               mc_world_storage_error *error)
+{
+    if (store->chunk_count >= store->limits.max_loaded_chunks || store->chunk_count == SIZE_MAX)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "retained chunk count");
+    store_chunk *entry = calloc(1, sizeof(*entry));
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "retained chunk link");
+    *out = entry;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32_t dimension,
+                                mc_chunk_state **out)
+{
+    entry->dimension = dimension;
+    if (store->last_chunk == NULL)
+        store->chunks = entry;
+    else
+        store->last_chunk->next = entry;
+    store->last_chunk = entry;
+    ++store->chunk_count;
+    *out = mc_stored_chunk_state(entry->owner);
+}
+
+static const mc_nbt_tag *store_get(const mc_nbt_tag *parent, const char *name)
+{
+    uint16_t units[16];
+    size_t length = strlen(name);
+    for (size_t i = 0; i < length; ++i)
+        units[i] = (uint16_t)(unsigned char)name[i];
+    return mc_nbt_compound_get(parent, units, length);
+}
+
+static bool store_opaque(const mc_stored_chunk *chunk)
+{
+    const mc_nbt_tag *level = store_get(mc_stored_chunk_root(chunk), "Level");
+    const mc_nbt_tag *entities = store_get(level, "Entities");
+    const mc_nbt_tag *tiles = store_get(level, "TileEntities");
+    return (entities != NULL && entities->value.list.length != 0) ||
+           (tiles != NULL && tiles->value.list.length != 0);
+}
+
+static mc_world_storage_status store_load_chunk(mc_world_store *store, int32_t dimension, int32_t x,
+                                                int32_t z, bool activation, mc_chunk_state **out,
+                                                mc_world_storage_error *error)
+{
+    if (store == NULL || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk load arguments");
+    const char *root = NULL;
+    mc_world_storage_status status = store_dimension(store, dimension, &root, error);
+    store_chunk *entry = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_new_chunk(store, &entry, error);
+    mc_compression_buffer raw = {0};
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_world_regions_read(store->regions, root, x, z, &raw, error);
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_stored_chunk_error detail;
+        mc_stored_chunk_status decoded = mc_stored_chunk_decode(
+            raw.data, raw.length, &store->limits.nbt, &entry->owner, NULL, &detail);
+        if (decoded != MC_STORED_CHUNK_OK)
+            status = store_chunk_error(error, decoded, &detail);
+    }
+    mc_compression_buffer_free(&raw);
+    if (status == MC_WORLD_STORAGE_OK && activation && store_opaque(entry->owner))
+        status = store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "opaque entity or tile activation");
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_stored_chunk_status normalized =
+            mc_stored_chunk_normalize(entry->owner, store->block_map, sizeof(store->block_map));
+        if (normalized != MC_STORED_CHUNK_OK)
+            status = store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "postload normalization");
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (entry != NULL)
+            mc_stored_chunk_free(entry->owner);
+        free(entry);
+        return status;
+    }
+    store_publish_chunk(store, entry, dimension, out);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_load_chunk(mc_world_store *store, int32_t dimension,
+                                                  int32_t x, int32_t z, mc_chunk_state **out,
+                                                  mc_world_storage_error *error)
+{
+    return store_load_chunk(store, dimension, x, z, false, out, error);
+}
+
+mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32_t dimension,
+                                                    const mc_chunk_state *chunk,
+                                                    mc_chunk_state **out,
+                                                    mc_world_storage_error *error)
+{
+    if (store == NULL || chunk == NULL || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk retain arguments");
+    const char *root = NULL;
+    mc_world_storage_status status = store_dimension(store, dimension, &root, error);
+    (void)root;
+    store_chunk *entry = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_new_chunk(store, &entry, error);
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_stored_chunk_error detail;
+        mc_stored_chunk_status copied =
+            mc_stored_chunk_create(chunk, &store->limits.nbt, &entry->owner, &detail);
+        if (copied != MC_STORED_CHUNK_OK)
+            status = store_chunk_error(error, copied, &detail);
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        free(entry);
+        return status;
+    }
+    store_publish_chunk(store, entry, dimension, out);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chunk_state *chunk,
+                                                   int64_t world_time, uint32_t timestamp,
+                                                   uint32_t *growth, mc_world_storage_error *error)
+{
+    if (store == NULL || chunk == NULL || growth == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk write arguments");
+    store_chunk *entry = store->chunks;
+    while (entry != NULL && mc_stored_chunk_state(entry->owner) != chunk)
+        entry = entry->next;
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (!store->has_info)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "chunk write requires metadata");
+    mc_world_storage_status status = mc_world_store_check_session(store, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_nbt_document *document = NULL;
+    mc_stored_chunk_error detail;
+    mc_stored_chunk_status built =
+        mc_stored_chunk_build(entry->owner, world_time, &store->limits.nbt, &document, &detail);
+    if (built != MC_STORED_CHUNK_OK)
+        return store_chunk_error(error, built, &detail);
+    mc_ws_file_bytes raw = {0};
+    status = store_encode_nbt(mc_nbt_document_root(document), &store->limits.nbt, &raw, error);
+    uint32_t appended = 0;
+    const char *root = entry->dimension == 0 ? store->root : store->nether;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_world_regions_write(store->regions, root, chunk->x, chunk->z, raw.data,
+                                        raw.length, timestamp, &appended, error);
+    mc_ws_free_file_bytes(&raw);
+    mc_nbt_document_free(document);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    store->info.size_on_disk =
+        mc_java_i64_add(store->info.size_on_disk, (int64_t)mc_java_i32_narrow((int64_t)appended));
+    *growth = appended;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+size_t mc_world_store_chunk_count(const mc_world_store *store)
+{
+    return store == NULL ? 0 : store->chunk_count;
+}
+
+mc_chunk_load_result mc_world_store_load_callback(void *loader,
+                                                  const mc_chunk_acquire_context *context,
+                                                  int32_t x, int32_t z, mc_chunk_state **out)
+{
+    mc_world_store_loader *binding = loader;
+    if (binding == NULL)
+        return MC_CHUNK_LOAD_FATAL;
+    if (binding->store == NULL || context == NULL || out == NULL) {
+        (void)store_error(&binding->last_error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                          "store loader arguments");
+        return MC_CHUNK_LOAD_FATAL;
+    }
+    mc_world_storage_status status =
+        store_load_chunk(binding->store, binding->dimension, x, z, true, out, &binding->last_error);
+    return status == MC_WORLD_STORAGE_OK        ? MC_CHUNK_LOAD_LOADED
+           : status == MC_WORLD_STORAGE_MISSING ? MC_CHUNK_LOAD_MISS
+                                                : MC_CHUNK_LOAD_FATAL;
+}
+
+void mc_world_store_free(mc_world_store *store)
+{
+    if (store == NULL)
+        return;
+    store_chunk *entry = store->chunks;
+    while (entry != NULL) {
+        store_chunk *next = entry->next;
+        mc_stored_chunk_free(entry->owner);
+        free(entry);
+        entry = next;
+    }
+    mc_nbt_document_free(store->metadata);
+    free(store->root);
+    free(store->nether);
+    free(store->session);
+    for (size_t i = 0; i < 3; ++i)
+        free(store->metadata_paths[i]);
+    free(store);
+}

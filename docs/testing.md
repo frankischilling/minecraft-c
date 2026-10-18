@@ -36,6 +36,9 @@ comparisons remain local.
 | `core.mutf8` | 596848 checks, including every UTF-16 unit, accepted byte forms, malformed input and unchanged outputs | Payload codec only; NBT and packet framing are distinct |
 | `storage.nbt` | 394978 checks for all original tag types, boundaries, retained state, ownership, budgets, errors and deterministic mutations | Raw tags only; no world schema or compression |
 | `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
+| `storage.level` | 1055 checks for exact metadata types/defaults, UTF-16 ownership, explicit clocks, opaque fields and bounded failure preservation | Metadata codec; filesystem behavior is separate |
+| `storage.region_writer` | 433 checks for owned image allocation/reuse, exact-boundary sector counts, retained bytes, growth and failure atomicity | Memory images only; no native file replacement or clock source |
+| `world.stored_chunk` | 67681 checks for stable state/array ownership, fixed schema shape, transient defaults, normalization and opaque edit guards | No entity/tile factories, registration or subtype simulation |
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
@@ -57,6 +60,11 @@ comparisons remain local.
 | `tools.nibbles_reference` | 18 source/protocol/array/path/prerequisite and failure-precedence guards, including aliased temporary directories | Synthetic protocol checks; original methods are not executed |
 | `tools.chunk_data_reference` | 12 schema, array, cache/queue growth, preservation, path, source-attribution, compiler-option and completed-measurement guards | Synthetic protocol checks; original methods are not executed |
 | `tools.compression_interop` | 127 exact payload/framing records between C and Python gzip/zlib, including all optional header field combinations | Container interoperability, not original gameplay |
+| `tools.level_reference` | 26 guard methods, 80 original-derived codec comparisons and 6 separate C preservation-policy checks | Frozen original observations; fresh handler/native-world acceptance is separate |
+| `tools.region_write_reference` / `tools.region_write_interop` | 23 guard methods and four complete original-derived image profiles with 34 write attempts | Raw images and explicit observed clock inputs; no original GC timing or failed-I/O parity |
+| `tools.chunk_storage_reference` | 28 guard methods and 268 C records: 196 original-derived comparisons/departures plus 72 preservation/refusal checks | Fixed-shape supported records; opaque retained data is not live entity simulation |
+| `tools.regions_reference` / `tools.regions_interop` | Four guard methods and seven native filesystem scenarios, including 16 malformed/bounded protocol controls | Nine global mappings are original-derived; remaining scenarios check constructed C contracts |
+| `tools.world_store_interop` | Seven scenario groups using 52 paired-original metadata inputs, 56 paired chunk imports and constructed session/rollover/acquisition controls | Development integration; both-direction copied-world and exact-source full acceptance pending |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
 | `reference.math` (local opt-in) | All 65536 raw table entries and 366 scalar calls in three independent pairings; table preservation controls | Original math methods only; no world setup, cave geometry or full input-space claim |
@@ -71,6 +79,9 @@ comparisons remain local.
 | `reference.caves_geometry` (local opt-in) | 44 separately labeled room/path controls, full input/output buffers, Random continuations, table and suffix controls; shared-draw consumption inferred by unique continuation matching | Three pairings pass on MSVC/GCC/Clang at the recorded source; valid private geometry domain only |
 | `reference.nibbles` (local opt-in) | Original constructors, two complete getter sweeps and 16 setter snapshots compared independently in three pairings | Valid local packed-array access; explicit C invalid-argument behavior has separate tests |
 | `reference.chunk_data` (local opt-in) | Five fresh/repeated input pairs, complete local arrays/heights, opacity and retained-object controls | Genuine original cache/queue diagnostics are retained separately; no C world lifecycle or propagation claim |
+| `reference.level` (local opt-in) | Actual original info codecs and metadata handlers, exact types, fallback, clocks, rotation and session observations | Native world-owner acceptance is separate; current results are development evidence |
+| `reference.region_write` (local opt-in) | Actual original region image writes, full images, allocation/growth and independently bounded timestamp fields | Global filename/cache observations do not prove original global read/write local-slot mapping |
+| `reference.chunk_storage` (local opt-in) | Actual original raw chunk codecs, region loaders and serializers in genuine worlds, with complete arrays and typed opaque data | C activation of nonempty entity/tile data remains refused |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
@@ -165,6 +176,14 @@ Use `ctest --test-dir build -L public --output-on-failure` for public tests.
 Use `ctest --test-dir build -L reference --output-on-failure` for enabled Java
 checks. For multi-configuration Windows builds add `-C Debug`.
 `BUILD_TESTING=OFF` builds the C libraries and pinned zlib without Python or Java discovery.
+
+`MC_ENABLE_STORAGE_REFERENCE_TESTS` enables the three persistence comparisons
+above with JDK17+, both pinned supplied JARs and the exact-source commit field.
+The public storage checks replay original-only fixtures and constructed C
+policies without Java. Read [storage evidence](reference/storage.md) for raw
+producer attribution, full-state comparison boundaries and deliberate malformed
+input restrictions. Fresh reference worlds and copied-world experiments stay
+under owned ignored directories; no personal world is used as writable input.
 
 Full normal finishing uses `MC_ENABLE_FINISH_REFERENCE_TESTS`, JDK17+ with
 `jdk.jdi`, both supplied JARs and the exact source commit field. The controller
