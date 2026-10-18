@@ -3,14 +3,20 @@
 CTest separates public unit/tool tests from explicitly requested reference
 comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
-The numerical Java oracle is a standard-library probe and can run in public CI
-without original game files. Original-class math, storage, noise, climate and terrain
-comparisons remain local.
+The numerical and collection Java oracles use only the standard library and can
+run in public CI without original game files. Original-class math, storage,
+noise, climate and terrain comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
 | `world.normal_generator` | 99074 public checks for composed generation, fresh lifecycle flags, borrowed ownership, unpublished identities, mutable materials, repeated results, coordinate/resource preflight and allocation-failure preservation | Finite ordinary normal generator; no cache acquisition, population or propagation |
-| `world.chunk_acquire` | 838 constructed checks for load/generate/fallback, dedicated gates, pending membership, publication, nine activation callbacks, four live population gates, deliberate recursion and partial failures | Callback coordinator; injected effects are separate from genuine gameplay reachability |
+| `world.chunk_acquire` | 3945 constructed checks recorded in development for load/generate/fallback, gates, pending membership, publication, activation, population gates, recursion, local leases and partial failures | Lifecycle additions pass the complete exact-source suites; injected effects remain separate from genuine gameplay reachability |
+| `core.java_int_set` / `world.chunk_pending` | 6913747 / 35495 constructed checks for bounded history, tree bins, removal and mediated pending mutations | Modern-JDK history domain; no historical Java6 claim |
+| `core.java_int_set_replay` / `world.chunk_pending_replay` | Seven captured JDK histories, 574 operations, 588 complete responses and seven rejection controls per replay | Actual public Integer/HashSet APIs; game unload selection has separate original evidence |
+| `world.chunk_lifecycle` | 12371 constructed checks for eligibility, 24/25 cutoff, live/reentrant traversal, detachment, 100/101 unloads, failures and leases | Development count; callback bodies are explicit external contracts |
+| `world.runtime_*` / `world.lifecycle_protocol` | Fresh native owned worlds, retirement/capacity recovery, generated retention, session errors and 67659 protocol checks | Constructed values; native fatal storage policy and empty runtime records are explicit restrictions |
+| `world.lifecycle_callbacks_replay` | Three original-derived finite cases, 61 callback pairs, full arrays/headers, 39 response mutations and seven native input rejections | Original raw decoder output is imported; Boat/Sign bodies and world deferred cleanup are external |
+| `reference.lifecycle_*` (local opt-in) | Ten fresh paired original/control profiles with strict class-file/clock/provenance validation and native comparison; nonempty native activation refusal also preserves copied files | All ten profiles pass in the qualified Windows v10/GCC v9/Clang v9 suites; see [exact-source ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint) |
 | `tools.acquire_reference` | 23 original-protocol and execution guards covering complete events, object ownership, intermediate cache contents, query order, Random states and unavailable/failure classification | Java-free fixed three-context protocol corpus |
 | `tools.acquire_fixture` | Five lossless corpus, provenance, compression, MCA1 import and original-only export guards | Retained original expectations; no original execution |
 | `tools.acquire_interop` | Three continuous C inputs, 20 operations, five generated chunks and 5120 exact queries; malformed binary rejection | Actual retained-provider composition with fresh-world load misses; no population body or disk decoder |
@@ -68,6 +74,7 @@ comparisons remain local.
 | `tools.world_storage_reference` | 74 Java-free constructed disk, full-state, clock, opaque-data and capture-lifecycle guards | Validation of the comparison harness; fresh original execution is separate |
 | `tools.import_assets` | 16 generated-fixture tests for copy/manifest, missing/hash/path/link/size/overwrite checks | No original assets in fixtures; canonical sound contents unverified |
 | `reference.java_semantics` (opt-in) | 135768 exact C versus Java records, including float bit patterns | Current installed JVM primitives; not original-client/server game-state parity |
+| `reference.java_int_set` (opt-in) | Seven standard-library Integer/HashSet histories compared with native collection and pending-set replay | Selected modern JDK behavior; no historical Java6 claim |
 | `reference.math` (local opt-in) | All 65536 raw table entries and 366 scalar calls in three independent pairings; table preservation controls | Original math methods only; no world setup, cave geometry or full input-space claim |
 | `reference.nbt` (local opt-in) | Per original side: 194 reads, 40 original writes, 12 packet controls, 157 original-to-C and 435 original re-reads | Selected JDK; 4 malformed negative-list departures and 20 order-only differences recorded separately |
 | `reference.compression` (local opt-in) | 80 containers, 22 C encodes; per side 181 baseline records, 65 original gzip reads, 8 original writes, 35 original-to-C and 38 C-to-reference transfers | 36 explicit malformed-container departure records; no copied-world compatibility claim |
@@ -88,13 +95,42 @@ comparisons remain local.
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
 | Original server smoke (local) | Fresh-world loopback offline startup/save/stop | No client joins or C server implementation |
 
-Enable the Java check at configuration with `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON`.
-If requested and no JDK is discoverable, configuration fails clearly. If a
-prerequisite disappears before execution, the probe reports `UNAVAILABLE`, exit77,
+Enable both Java checks with `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON`; this profile
+requires JDK17 or newer. If requested and no suitable JDK is discoverable,
+configuration fails clearly. If a prerequisite disappears before execution,
+the probe reports `UNAVAILABLE`, exit77,
 which CTest marks skipped. Inspect skips separately from passing comparisons.
-The standalone helper also returns77 for missing tools or its C executable, and
-returns1 for execution errors or mismatches. It only normalizes platform text
-newlines; numeric records and floating bit patterns must agree exactly.
+The standalone numerical helper also returns77 for missing tools or its C
+executable, and returns1 for execution errors or mismatches. It only normalizes
+platform text newlines; numeric records and floating bit patterns must agree exactly.
+
+The separate debugger identity regression uses JDK17+ with `jdk.jdi` and synthetic
+target objects. It needs no original archives or assets:
+
+```sh
+python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
+```
+
+It exercises the lifecycle controller's actual serialization and identity-marker
+methods across debugger collection, including objects observed before their
+helper labels arrive. Passing requires completed debugger disposal of separate
+control mirrors, stable recorded identities, bounded mirror retention and
+duplicate-label rejection. Each run retains its reports and protocol trace in a
+fresh capture directory. CI runs this command separately from CTest; missing
+tools, inconclusive collection and mismatches fail the command.
+
+The lifecycle interval regression needs only Python and no original assets:
+
+```sh
+python tests/tools/cache/check_lifecycle_intervals.py
+```
+
+It compiles the validator's actual interval checks and verifies their operation,
+role and profile bindings. The observed dedicated 101-chunk profile permits a
+600-second helper interval, matching its controller budget. Other profiles and
+control, preparation and constructor intervals retain their 180-second bound.
+The check also rejects events outside their own sampled interval. CI runs it
+separately from CTest; full original capture validation remains required.
 
 NBT comparisons require JDK 11 or newer and both pinned supplied JARs. Enable
 `MC_ENABLE_NBT_REFERENCE_TESTS` and set `MC_REFERENCE_CLIENT_JAR`,
@@ -223,6 +259,69 @@ public tests, or 36 with the numerical Java oracle. The selected original
 finishing, light queue, chunk, nibble and normal generation comparisons bring
 that configuration to 41 tests. These are exact-checkpoint counts; later
 cache/region additions on the active branch need their own validation.
+
+## Lifecycle reproduction and qualification
+
+The public tests exercise Integer-set and mediated pending history, live
+acquisition/save/detach/unload contracts, native runtime ownership and the
+original-only nonempty callback fixture. Constructed failures/reentry and JDK-only
+histories remain distinct from genuine game observations. Boat/Sign callback
+replay imports observed decoder data and callback effects while C computes
+coordinator transitions. Native activation of those nonempty records must refuse
+without changing copied files.
+
+Set `MC_ENABLE_LIFECYCLE_REFERENCE_TESTS=ON`, both supplied JAR paths,
+`Java_JAVA_EXECUTABLE`, `Java_JAVAC_EXECUTABLE` from the same supported JDK17/21
+installation, and `MC_REFERENCE_TESTED_COMMIT`. Build the test targets and run:
+
+```sh
+ctest --test-dir <build> -C Debug -R '^reference.lifecycle_' --output-on-failure
+```
+
+Ten serial profiles use fresh preparation/observed/control worlds and strict
+original class-file, graph, clock, process and file checks before native
+comparison. Missing prerequisites return77 and count as unavailable/skipped.
+Public `world.lifecycle_callbacks_replay` needs no Java or original archives.
+`MC_ENABLE_JAVA_REFERENCE_TESTS=ON` separately enables the JDK-only numerical
+and Integer-set checks.
+
+At `46546d8322de52beb6c3a51f30e827c0260d2b30`, complete Windows v10, GCC v9
+and Clang v9 suites each passed 92 tests with zero failures/skips, in 1940.77s,
+2969.23s and 2961.75s respectively. Independent source/semantic audits, storage
+rechecks and all 22 capture roots per platform also pass. The finite qualification
+includes Linux ASan/UBSan and unchanged measured sources, tools and executables.
+The [lifecycle ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+binds actual CTest rows, manifests, inputs, native build/executable bytes,
+sanitizer flags, independent audits and hosted results to the source.
+
+Dedicated `unload101` alone has a 600-second controller/660-second exporter
+allowance. Other observed profiles retain 300/360 seconds, with unchanged
+180-second control/preparation process limits. Complete evidence and every other
+bound remain required. A timeout is failed observation, never native parity.
+
+The controller now retains each serialized JDI object mirror through the session,
+with a 32768-mirror bound. The standalone regression above passed both marker and
+pre-label observation cases on Windows JDK17 and Linux JDK21, including proved
+disposal of 128 separate control mirrors and capacity/duplicate-label checks.
+The preceding v7 matrix remains excluded: Windows passed 92 tests; GCC passed 91
+and failed 1; Clang passed 90, failed 1 and skipped 1. Its failures are recorded in
+the [v7 history](reference/lifecycle.md#excluded-v7-attempt). The v8 matrix also
+remains excluded: Windows passed 92 tests; GCC and Clang each passed 91 and failed
+1, with zero skips. Their Linux dedicated101 helper epochs exceeded the old
+validator cap before C comparison. Retained semantic and native development
+diagnostics pass without qualifying those failed captures. See the
+[v8 history](reference/lifecycle.md#excluded-v8-attempt). Windows v9 at the current
+source is also excluded: 91 passed, 1 skipped and none failed. The original
+chunk-data setup queue exceeded its observation bound before measurement. The
+[Windows v9 history](reference/lifecycle.md#excluded-windows-v9-attempt) records
+that refusal. The fresh complete Windows v10 suite supplies every selected row
+and capture independently.
+
+The interval regression above failed both actual checks on the retained Linux
+operands before the fix, then passed 556 positive and 2011 negative cases on
+native Windows and Linux. Its clock-policy checks do not replace fresh
+original/control captures or independent exact-source audits.
+
 
 ## Local environments
 

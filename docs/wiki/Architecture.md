@@ -7,7 +7,7 @@ rather than empty placeholders.
 
 | Current module | Responsibility | Runtime dependencies |
 | --- | --- | --- |
-| `core/java` | Defined integer/cast/Random behavior | C runtime |
+| `core/java` | Defined integer/cast/Random behavior and bounded Integer-set history | C runtime |
 | `core/math` | Initialized float trig lookup and Java cast/compare double floor | Caller-owned table, system double sine during initialization |
 | `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
@@ -18,10 +18,11 @@ rather than empty placeholders.
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 | `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
 | `world/chunk` | Packed voxel arrays, heights, direct skylight and normal finishing | Caller-owned data, borrowed blocks/opacity and explicit world context |
-| `world/cache` | Packed-key lookup, publication and synchronous acquisition callbacks | Caller-owned entries/list/pending, stable chunk identities and explicit live world state |
+| `world/cache` | Packed-key lookup, acquisition, live save/detach/unload coordination | Caller-owned map/list/pending, stable identities, clock and explicit callback/reference bindings |
 | `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
 | `world/generation` | Complete unpublished normal generator entry through finishing | Same-world borrowed biome manager, immutable trig, current materials/opacity and existing lighting context |
-| `world/storage` | Stable stored chunks, native region cache, metadata/session ownership and acquisition adapter | `mc_persistence`; explicit filesystem roots, borrowed region owner and live world context |
+| `world/storage` | Stable stored chunks, native files, metadata/session ownership, reservations, leases and individual retirement | `mc_persistence`; explicit roots, borrowed region owner and registered cache/fallback views |
+| `world/runtime` | Acquisition/generation/storage/lifecycle composition with stable live world scalars | `mc_persistence`; borrowed store/cache/ordered pending and explicit callback owners |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
@@ -74,8 +75,8 @@ keeps blocks borrowed and embeds separate metadata, sky, block-light and height
 arrays. Checked nibble access preserves the opposite four-bit value. Local
 height/direct-skylight rebuilding retains the original boundary and repeat-pass
 behavior without allocating memory. The finishing boundary below adds
-world-height queries, lighting admission and dirty state; full lifecycle
-remains open.
+world-height queries, lighting admission and dirty state; lifecycle composition
+has the separate boundary below.
 
 The [light-region queue](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/lighting.md)
 preserves the newest five-entry search, in-place merges and original wrapped
@@ -91,8 +92,9 @@ publication replaces the map value and appends the same identity to a separate
 insertion list. The separate
 [acquisition coordinator](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/cache.md)
 adds load/generation callbacks, active registration and live population gates.
-The storage adapter below supplies disk decoding. Terrain-feature bodies,
-save/unload scheduling and light propagation remain open.
+The storage adapter below supplies disk decoding. The lifecycle section adds
+synchronous saving/unloads; terrain-feature bodies, tick-driven scheduling and
+light propagation remain open.
 
 ## Storage foundation
 
@@ -128,6 +130,41 @@ transport; 74 Java-free world-harness guards pass in every suite. See the
 [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
 and [wiki checkpoint](Storage-and-reference#storage-foundation-checkpoint) for
 exact manifests, evidence limits and the remaining simulation/scheduler work.
+
+## Save, unload and retirement
+
+The [lifecycle contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/lifecycle.md)
+borrows live cache/list/pending state and explicit callback owners. Forced saving
+performs extra-save before eligibility, incremental attempt 24 returns false,
+and completed forced saving flushes. Unload selects at most 100 actual pending
+keys, detaches and saves retained identities, then removes the retained key and
+first matching list occurrence. Provider maintenance returns its own Boolean.
+
+The bounded Integer set preserves the pinned modern JDKs' bucket/tree mutation
+history. Membership or insertion order cannot restore its traversal. Native
+retirement rescans registered map/list/fallback references and refuses active or
+leased chunks. Unpublication alone never frees. External deferred owners need
+leases, and callers must end every untracked borrowed view before retirement.
+
+The runtime holds time/spawn in stable storage and overlays fresh metadata for
+each save, preserving live SizeOnDisk and loaded last_played. Metadata-first
+size lag and serialized LastPlayed remain distinct. The runtime's generation
+adapter reserves a slot before running and returns a stable copy owned by the
+store. Acquisition later publishes that identity in the cache; loaded NBT stays
+intact.
+Runtime free refuses nonempty state or active calls/leases and performs no save.
+Empty entity/tile bodies are native; nonempty bodies remain explicit external
+seams. See [qualification and limits](Storage-and-reference#lifecycle-qualification).
+
+The reference controller retains at most 32768 target mirrors from their first
+serialized IDs through a session. Its standalone JDI regression covers debugger
+disposal, pre-label records, capacity and duplicate rejection. This verification
+machinery does not change native owner retirement or establish Java GC lifetime.
+The observed dedicated101 helper intervals include JDI stop time and permit
+600 seconds at both validator call sites, matching the controller budget. Other
+profiles and control/preparation/constructor intervals retain 180 seconds; each
+event still belongs to its own interval. The asset-independent interval
+regression exercises these actual checks separately from capture qualification.
 
 ## Normal generator
 

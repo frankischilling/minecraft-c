@@ -1,5 +1,27 @@
 # Development status
 
+The C runtime now composes chunk acquisition, saving, pending unloads and explicit
+owner retirement. It preserves live callback order, a stable world clock,
+metadata-first accounting and retained identities through reentry. Empty native
+entity/tile collections are supported; nonempty Boat/Sign behavior remains an
+external callback seam.
+
+Exact-source lifecycle qualification passes at
+`46546d8322de52beb6c3a51f30e827c0260d2b30`. Complete Windows v10, GCC v9 and
+Clang v9 suites each passed 92 tests without failures or skips: 1940.77s,
+2969.23s and 2961.75s respectively. Independent source/provenance and lifecycle
+semantic audits, unchanged storage rechecks and all 22 capture roots per platform
+also pass, with Linux ASan/UBSan and stable measured inputs. The controller retains bounded
+JDI mirrors from their first recorded IDs; its separate debugger regression
+passes on Windows JDK17 and Linux JDK21. The helper interval correction
+permits 600 seconds only for observed dedicated101 operations; its separate
+Python regression passes on both native hosts. The preceding v7 and v8 matrices
+remain excluded. Windows v9 is also excluded after a premeasurement original
+setup refusal; its successful rows do not count toward the fresh Windows v10
+suite. See the
+[lifecycle checkpoint](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+for its evidence ledger and retained failed attempts.
+
 The persistence foundation passes exact-source acceptance at
 `9ad690d83592f127b9bb39d7233e8eef06fd0029`. All 71 selected local tests pass
 without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan and
@@ -162,7 +184,8 @@ from a running server. Pending removal, load/fallback selection, publication,
 ordered insertion, activation and natural population remain distinct effects;
 constructed recursion checks do not establish gameplay reentrancy.
 The C cache now also has a [synchronous acquisition coordinator](world/cache.md).
-Its 838 constructed contract checks pass on MSVC, GCC and Clang. Independent
+The extended suite contains 3945 constructed checks recorded in development;
+its exact-source qualification is recorded above. Independent
 review matches all 231 acquisition instructions across `ok`/`jb`/`he`.
 The combined retained-provider corpus now has three original-only contexts,
 20 operations, five generated chunks, 5120 exact query pairs, 252 lifecycle
@@ -193,13 +216,15 @@ See [region evidence](reference/region.md#verified-source-checkpoint).
 No region result follows from a08 alone; its acceptance uses the separately
 recorded exact source.
 
-Save/unload lifecycle, terrain-feature population bodies, light propagation,
-other dimensions, compatible persistence and protocol remain open. See the
+Terrain-feature population bodies, light propagation, other dimensions,
+general tick-driven saving/unloading, gameplay restart/recovery and protocol
+remain open. The synchronous lifecycle above does not complete these systems. See the
 [roadmap](roadmap.md), [testing](testing.md) and [parity matrix](parity.md).
 Earlier integrations remain in [history](history.md). M1 is complete; M2 through
 M5 remain open.
 
-There is no playable C client/server or supported world writer. All four
+There is no playable C client/server or supported gameplay world-loading
+workflow. Native library writes have only the finite scope recorded above. All four
 multiplayer pairings, native graphical play, controls and presentation/audio
 comparisons remain required. Original offline loopback server startup/save/stop
 passed without a client. Graphical Launcher capture remains unavailable.

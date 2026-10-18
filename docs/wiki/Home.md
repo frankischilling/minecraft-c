@@ -12,7 +12,8 @@ terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
 unpublished normal generator composition, synchronous cache acquisition,
 region inspection and writing, world metadata, stable stored chunks, native
-world-file ownership, local resource import and native builds.
+world-file ownership, synchronous save/unload coordination, tracked retirement,
+native world-runtime composition, local resource import and native builds.
 The storage foundation is implemented through `mc_persistence` and its cache
 acquisition adapter. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71
 selected tests pass without skips on native MSVC and WSL GCC/Clang, with Linux
@@ -24,6 +25,22 @@ entity/player simulation, gameplay save/unload or running-server persistence.
 See the [storage checkpoint](Storage-and-reference#storage-foundation-checkpoint),
 [ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
 and [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md).
+
+The [lifecycle boundary](Architecture#save-unload-and-retirement) adds live
+ordered saving, pending-key history, metadata-first accounting and safe owner
+retirement/reload. The [finite qualification](Storage-and-reference#lifecycle-qualification)
+for source `46546d8322de52beb6c3a51f30e827c0260d2b30` selects the complete
+Windows v10, GCC v9 and Clang v9 suites. Each passed 92 tests without failures
+or skips; independent source/semantic audits, storage rechecks and complete
+capture preservation also pass, with Linux ASan/UBSan. Empty entity/tile records are native;
+Boat/Sign bodies remain external callback evidence. General deferred cleanup,
+terrain-feature bodies, world ticking, gameplay dimension transitions,
+running-server persistence and crash recovery remain open. The v7 and v8
+matrices are excluded. Windows v9 is also excluded after an original setup
+skip; its successful rows are not carried into the fresh Windows v10 suite.
+The bounded debugger-mirror and scoped helper-interval
+corrections have separate Windows/Linux regression passes alongside the
+qualified full suites above.
 
 The [normal generator API](Architecture#normal-generator) composes the existing
 stages through finishing with borrowed world resources. At exact source

@@ -164,6 +164,30 @@ ASan/UBSan and independent copied-world/platform audits. See
 and the [world ownership contract](world/storage.md). These library operations
 do not provide a playable world loader or complete gameplay save scheduling.
 
+The lifecycle comparison is selected by `MC_ENABLE_LIFECYCLE_REFERENCE_TESTS=ON`.
+It uses both supplied JAR paths and `Java_JAVA_EXECUTABLE` /
+`Java_JAVAC_EXECUTABLE` from the same JDK17+ installation. Ten serial
+`reference.lifecycle_*` tests create fresh preparation/observed/control worlds,
+validate original captures and run the native comparison. The normal build's
+`world.lifecycle_callbacks_replay` needs no Java or original archives. See
+[lifecycle evidence](reference/lifecycle.md) for profiles, limits and source
+qualification. The accepted source, full matrix, independent audits and hosted
+results are recorded in the [lifecycle ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint).
+Dedicated `unload101` alone permits 600 seconds in the controller and 660 seconds
+in the exporter; other profile and data bounds remain unchanged. These tests do
+not start a gameplay server.
+
+The separate controller mirror regression needs JDK17+ with `jdk.jdi` and no
+original archives or assets:
+
+```sh
+python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
+```
+
+It fails for missing tools, inconclusive collection or unstable recorded IDs and
+runs separately from CTest. See [testing](testing.md) for its disposal, capacity
+and duplicate-label controls.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

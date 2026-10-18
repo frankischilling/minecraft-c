@@ -12,7 +12,8 @@ typedef enum mc_world_storage_status {
     MC_WORLD_STORAGE_UNSUPPORTED_STATE,
     MC_WORLD_STORAGE_SESSION_MISMATCH,
     MC_WORLD_STORAGE_LIMIT,
-    MC_WORLD_STORAGE_ALLOCATION_FAILED
+    MC_WORLD_STORAGE_ALLOCATION_FAILED,
+    MC_WORLD_STORAGE_BUSY
 } mc_world_storage_status;
 
 typedef struct mc_world_storage_error {

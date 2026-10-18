@@ -659,7 +659,54 @@ def load_fixture(path):
     return validate_fixture_value(strict_json(checked_bytes(path,MAX_FIXTURE)))
 
 
-def inventory(root, hashes=False, count_limit=10000, byte_limit=192 * 1024 * 1024):
+def _live_inventory(root, count_limit, byte_limit):
+    """Sample resources while the owned child can remove ordinary entries.
+
+    Missing entries still consume the traversal budget. This is no final-state
+    evidence; default inventory remains the quiescent strict path.
+    """
+    root = Path(root)
+    result, total, enumerated, pending = {}, 0, 0, [root]
+    while pending:
+        directory = pending.pop()
+        try:
+            info = os.stat(directory, follow_symlinks=False)
+        except FileNotFoundError:
+            continue
+        check(not stat.S_ISLNK(info.st_mode) and
+              not (getattr(info, "st_file_attributes", 0) & 0x400),
+              "owned artifacts have no symbolic links/reparse points")
+        check(stat.S_ISDIR(info.st_mode), "ordinary artifact directory")
+        try:
+            with os.scandir(directory) as entries:
+                for entry in entries:
+                    check(enumerated < count_limit, "bounded live artifact traversal")
+                    enumerated += 1
+                    try:
+                        info = os.stat(entry.path, follow_symlinks=False)
+                    except FileNotFoundError:
+                        continue
+                    check(not stat.S_ISLNK(info.st_mode) and
+                          not (getattr(info, "st_file_attributes", 0) & 0x400),
+                          "owned artifacts have no symbolic links/reparse points")
+                    if stat.S_ISDIR(info.st_mode):
+                        pending.append(Path(entry.path))
+                    else:
+                        check(stat.S_ISREG(info.st_mode), "ordinary artifact entries")
+                        total += info.st_size
+                        check(total <= byte_limit, "bounded complete artifact inventory")
+                        result[Path(entry.path).relative_to(root).as_posix()] = {"bytes": info.st_size}
+        except FileNotFoundError:
+            # Queued directories can disappear before opening or during iteration.
+            continue
+    return result
+
+
+def inventory(root, hashes=False, count_limit=10000, byte_limit=192 * 1024 * 1024,
+              *, live_poll=False):
+    if live_poll:
+        check(not hashes, "live artifact polling cannot hash final state")
+        return _live_inventory(root, count_limit, byte_limit)
     result, total = {}, 0
     if not root.exists(): return result
     for path in sorted(root.rglob("*")):
@@ -693,9 +740,10 @@ def process(command, directory, label, timeout=90, stdin=None, stdout_limit=3276
                         stopped="stream bound"; child.kill(); break
                     if int(elapsed) != last_inventory:
                         polls += 1
-                        inventory(directory,count_limit=6000,byte_limit=160*1024*1024); last_inventory=int(elapsed)
+                        inventory(directory,count_limit=6000,byte_limit=160*1024*1024,live_poll=True); last_inventory=int(elapsed)
                     time.sleep(.05)
                 child.wait(timeout=10)
+                inventory(directory,count_limit=6000,byte_limit=160*1024*1024)
             except BaseException as failure:
                 supervision_error = {'class': type(failure).__name__, 'message': str(failure)[:4096]}
                 child.kill(); child.wait(timeout=10); raise

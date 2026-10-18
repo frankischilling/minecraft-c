@@ -9,8 +9,20 @@
 typedef struct store_chunk {
     mc_stored_chunk *owner;
     int32_t dimension;
+    size_t leases;
     struct store_chunk *next;
 } store_chunk;
+
+typedef struct store_cache {
+    const mc_chunk_cache *cache;
+    mc_chunk_state *const *fallback;
+    struct store_cache *next;
+} store_cache;
+
+struct mc_world_store_reservation {
+    store_chunk *entry;
+    struct mc_world_store_reservation *next;
+};
 
 struct mc_world_store {
     mc_world_regions *regions;
@@ -26,6 +38,10 @@ struct mc_world_store {
     bool has_info;
     store_chunk *chunks, *last_chunk;
     size_t chunk_count;
+    store_cache *caches;
+    size_t cache_count;
+    mc_world_store_reservation *reservations;
+    size_t reservation_count;
 };
 
 static mc_world_storage_status store_error(mc_world_storage_error *error,
@@ -390,13 +406,24 @@ static mc_world_storage_status store_dimension(const mc_world_store *store, int3
 static mc_world_storage_status store_new_chunk(mc_world_store *store, store_chunk **out,
                                                mc_world_storage_error *error)
 {
-    if (store->chunk_count >= store->limits.max_loaded_chunks || store->chunk_count == SIZE_MAX)
+    if (store->chunk_count >= store->limits.max_loaded_chunks ||
+        store->reservation_count >= store->limits.max_loaded_chunks - store->chunk_count)
         return store_error(error, MC_WORLD_STORAGE_LIMIT, "retained chunk count");
     store_chunk *entry = calloc(1, sizeof(*entry));
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "retained chunk link");
     *out = entry;
     return MC_WORLD_STORAGE_OK;
+}
+
+static store_chunk *store_find_chunk(const mc_world_store *store, const mc_chunk_state *chunk)
+{
+    if (store == NULL || chunk == NULL)
+        return NULL;
+    store_chunk *entry = store->chunks;
+    while (entry != NULL && mc_stored_chunk_state(entry->owner) != chunk)
+        entry = entry->next;
+    return entry;
 }
 
 static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32_t dimension,
@@ -506,15 +533,14 @@ mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chunk_state *chunk,
-                                                   int64_t world_time, uint32_t timestamp,
-                                                   uint32_t *growth, mc_world_storage_error *error)
+static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk_state *chunk,
+                                                 int64_t world_time, uint32_t timestamp,
+                                                 uint32_t *growth, bool runtime,
+                                                 mc_world_storage_error *error)
 {
     if (store == NULL || chunk == NULL || growth == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk write arguments");
-    store_chunk *entry = store->chunks;
-    while (entry != NULL && mc_stored_chunk_state(entry->owner) != chunk)
-        entry = entry->next;
+    store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
     if (!store->has_info)
@@ -523,6 +549,12 @@ mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chu
     mc_world_storage_status status = mc_world_store_check_session(store, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
+    if (runtime) {
+        if (store_opaque(entry->owner))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "opaque entity or tile runtime save");
+        chunk->has_entities = false;
+    }
     mc_nbt_document *document = NULL;
     mc_stored_chunk_error detail;
     mc_stored_chunk_status built =
@@ -546,9 +578,228 @@ mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chu
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
+mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chunk_state *chunk,
+                                                   int64_t world_time, uint32_t timestamp,
+                                                   uint32_t *growth, mc_world_storage_error *error)
+{
+    return store_write_chunk(store, chunk, world_time, timestamp, growth, false, error);
+}
+
+mc_world_storage_status mc_world_store_write_runtime_chunk(mc_world_store *store,
+                                                           mc_chunk_state *chunk,
+                                                           int64_t world_time, uint32_t timestamp,
+                                                           uint32_t *growth,
+                                                           mc_world_storage_error *error)
+{
+    return store_write_chunk(store, chunk, world_time, timestamp, growth, true, error);
+}
+
 size_t mc_world_store_chunk_count(const mc_world_store *store)
 {
     return store == NULL ? 0 : store->chunk_count;
+}
+
+bool mc_world_store_owns_chunk(const mc_world_store *store, const mc_chunk_state *chunk)
+{
+    return store_find_chunk(store, chunk) != NULL;
+}
+
+mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
+                                                   const mc_chunk_state *chunk,
+                                                   mc_world_storage_error *error)
+{
+    store_chunk *entry = store_find_chunk(store, chunk);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (entry->leases == SIZE_MAX)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "chunk lease count");
+    ++entry->leases;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_release_chunk(mc_world_store *store,
+                                                     const mc_chunk_state *chunk,
+                                                     mc_world_storage_error *error)
+{
+    store_chunk *entry = store_find_chunk(store, chunk);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (entry->leases == 0)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "unbalanced chunk lease");
+    --entry->leases;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static bool store_cache_valid(const mc_chunk_cache *cache, mc_chunk_state *const *fallback)
+{
+    if (cache == NULL || cache->capacity > SIZE_MAX / sizeof(*cache->entries) ||
+        cache->insertion_capacity > SIZE_MAX / sizeof(*cache->insertions) ||
+        !mc_chunk_cache_validate(cache))
+        return false;
+    return fallback == NULL ||
+           (*fallback != NULL && ((*fallback)->blank || (*fallback)->data != NULL));
+}
+
+mc_world_storage_status mc_world_store_register_cache(mc_world_store *store,
+                                                      const mc_chunk_cache *cache,
+                                                      mc_chunk_state *const *fallback,
+                                                      mc_world_storage_error *error)
+{
+    if (store == NULL || !store_cache_valid(cache, fallback))
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "registered cache metadata");
+    for (store_cache *entry = store->caches; entry != NULL; entry = entry->next) {
+        if (entry->cache == cache) {
+            if (entry->fallback != fallback)
+                return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                   "different registered fallback slot");
+            return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+        }
+    }
+    if (store->cache_count == MC_WORLD_STORE_MAX_REGISTERED_CACHES)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "registered cache count");
+    store_cache *entry = malloc(sizeof(*entry));
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "registered cache link");
+    *entry = (store_cache){cache, fallback, store->caches};
+    store->caches = entry;
+    ++store->cache_count;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_unregister_cache(mc_world_store *store,
+                                                        const mc_chunk_cache *cache,
+                                                        mc_world_storage_error *error)
+{
+    if (store == NULL || cache == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "cache unregister arguments");
+    store_cache **link = &store->caches;
+    while (*link != NULL && (*link)->cache != cache)
+        link = &(*link)->next;
+    if (*link == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "unregistered cache");
+    store_cache *entry = *link;
+    *link = entry->next;
+    --store->cache_count;
+    free(entry);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_chunk_state *chunk,
+                                                    mc_world_storage_error *error)
+{
+    if (store == NULL || chunk == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk retire arguments");
+    store_chunk **link = &store->chunks;
+    store_chunk *previous = NULL;
+    while (*link != NULL && mc_stored_chunk_state((*link)->owner) != chunk) {
+        previous = *link;
+        link = &(*link)->next;
+    }
+    if (*link == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    bool referenced = false;
+    for (store_cache *entry = store->caches; entry != NULL; entry = entry->next) {
+        if (!store_cache_valid(entry->cache, entry->fallback))
+            return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                               "registered cache metadata");
+        for (size_t i = 0; i < entry->cache->count; ++i)
+            referenced = referenced || entry->cache->entries[i].chunk == chunk;
+        for (size_t i = 0; i < entry->cache->insertion_count; ++i)
+            referenced = referenced || entry->cache->insertions[i] == chunk;
+        if (entry->fallback != NULL)
+            referenced = referenced || *entry->fallback == chunk;
+    }
+    store_chunk *entry = *link;
+    if (entry->leases != 0 || chunk->active || referenced)
+        return store_error(error, MC_WORLD_STORAGE_BUSY, "chunk identity still referenced");
+    *link = entry->next;
+    if (store->last_chunk == entry)
+        store->last_chunk = previous;
+    --store->chunk_count;
+    mc_stored_chunk_free(entry->owner);
+    free(entry);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static mc_world_store_reservation **store_find_reservation(mc_world_store *store,
+                                                           mc_world_store_reservation *reservation)
+{
+    mc_world_store_reservation **link = &store->reservations;
+    while (*link != NULL && *link != reservation)
+        link = &(*link)->next;
+    return link;
+}
+
+mc_world_storage_status mc_world_store_reserve_chunk(mc_world_store *store, int32_t dimension,
+                                                     mc_world_store_reservation **out,
+                                                     mc_world_storage_error *error)
+{
+    if (store == NULL || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk reservation arguments");
+    const char *root = NULL;
+    mc_world_storage_status status = store_dimension(store, dimension, &root, error);
+    (void)root;
+    store_chunk *entry = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_new_chunk(store, &entry, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_world_store_reservation *reservation = malloc(sizeof(*reservation));
+    if (reservation == NULL) {
+        free(entry);
+        return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "chunk reservation token");
+    }
+    entry->dimension = dimension;
+    *reservation = (mc_world_store_reservation){entry, store->reservations};
+    store->reservations = reservation;
+    ++store->reservation_count;
+    *out = reservation;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_cancel_reservation(mc_world_store *store,
+                                                          mc_world_store_reservation *reservation,
+                                                          mc_world_storage_error *error)
+{
+    if (store == NULL || reservation == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk reservation arguments");
+    mc_world_store_reservation **link = store_find_reservation(store, reservation);
+    if (*link == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk reservation");
+    *link = reservation->next;
+    --store->reservation_count;
+    free(reservation->entry);
+    free(reservation);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_retain_reserved(mc_world_store *store,
+                                                       mc_world_store_reservation *reservation,
+                                                       const mc_chunk_state *chunk,
+                                                       mc_chunk_state **out,
+                                                       mc_world_storage_error *error)
+{
+    if (store == NULL || reservation == NULL || chunk == NULL || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "reserved retain arguments");
+    mc_world_store_reservation **link = store_find_reservation(store, reservation);
+    if (*link == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk reservation");
+    store_chunk *entry = reservation->entry;
+    mc_stored_chunk_error detail;
+    mc_stored_chunk_status copied =
+        mc_stored_chunk_create(chunk, &store->limits.nbt, &entry->owner, &detail);
+    if (copied != MC_STORED_CHUNK_OK)
+        return store_chunk_error(error, copied, &detail);
+    *link = reservation->next;
+    --store->reservation_count;
+    store_publish_chunk(store, entry, entry->dimension, out);
+    free(reservation);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+size_t mc_world_store_reservation_count(const mc_world_store *store)
+{
+    return store == NULL ? 0 : store->reservation_count;
 }
 
 mc_chunk_load_result mc_world_store_load_callback(void *loader,
@@ -580,6 +831,19 @@ void mc_world_store_free(mc_world_store *store)
         mc_stored_chunk_free(entry->owner);
         free(entry);
         entry = next;
+    }
+    store_cache *registration = store->caches;
+    while (registration != NULL) {
+        store_cache *next = registration->next;
+        free(registration);
+        registration = next;
+    }
+    mc_world_store_reservation *reservation = store->reservations;
+    while (reservation != NULL) {
+        mc_world_store_reservation *next = reservation->next;
+        free(reservation->entry);
+        free(reservation);
+        reservation = next;
     }
     mc_nbt_document_free(store->metadata);
     free(store->root);

@@ -304,6 +304,36 @@ class ProcessStreamGuards(unittest.TestCase):
             with self.subTest(changes=changes), self.assertRaises(world.Failure):
                 self.validate(self.process | changes)
 
+    def test_run_retains_the_failed_supervision_observation(self):
+        report = {"processes": []}
+        observation = {"label": "java", "command": self.command, "returncode": -9,
+                       "supervision_error": {"class": "Failure", "message": "ordinary artifact entries"}}
+
+        def failed(*args, **kwargs):
+            world.r._latest_process = observation
+            raise world.Failure("ordinary artifact entries")
+
+        with patch.object(world, "REPORT", report, create=True), \
+             patch.object(world.r, "_latest_process", None), \
+             patch.object(world.r, "process", side_effect=failed):
+            with self.assertRaisesRegex(world.Failure, "ordinary artifact entries"):
+                world.run("java", self.command, self.root)
+        self.assertEqual(report["processes"], [])
+        self.assertEqual(report.get("failed_process"), observation)
+        observation["supervision_error"]["message"] = "later observation"
+        self.assertEqual(report["failed_process"]["supervision_error"]["message"], "ordinary artifact entries")
+
+    def test_failed_launch_cannot_reuse_a_previous_process_observation(self):
+        report = {"processes": []}
+        with patch.object(world, "REPORT", report, create=True), \
+             patch.object(world.r, "_latest_process", {"label": "earlier-child"}), \
+             patch.object(world.r, "process", side_effect=OSError("owned launch failed")):
+            with self.assertRaisesRegex(OSError, "owned launch failed"):
+                world.run("java", self.command, self.root)
+            self.assertIsNone(world.r._latest_process)
+        self.assertEqual(report["processes"], [])
+        self.assertNotIn("failed_process", report)
+
 
 class ExecutionGuards(unittest.TestCase):
     def guard(self, scenario):
