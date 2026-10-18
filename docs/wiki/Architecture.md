@@ -12,11 +12,12 @@ rather than empty placeholders.
 | `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
+| `storage/region` | Read-only local record framing and diagnostics | Borrowed immutable span; explicit compression/NBT composition |
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 | `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
 | `world/chunk` | Packed voxel arrays, heights, direct skylight and normal finishing | Caller-owned data, borrowed blocks/opacity and explicit world context |
-| `world/cache` | Packed-key lookup and explicit post-generation publication | Caller-owned map entries, stable chunk identities and insertion list |
+| `world/cache` | Packed-key lookup, publication and synchronous acquisition callbacks | Caller-owned entries/list/pending, stable chunk identities and explicit live world state |
 | `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
 | `world/generation` | Complete unpublished normal generator entry through finishing | Same-world borrowed biome manager, immutable trig, current materials/opacity and existing lighting context |
 

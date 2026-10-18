@@ -91,8 +91,14 @@ ordered insertion, lifecycle hooks and natural population as distinct effects.
 The C cache now also has a [synchronous acquisition coordinator](world/cache.md).
 Its 838 constructed contract checks pass on MSVC, GCC and Clang. Independent
 review matches all 231 acquisition instructions across `ok`/`jb`/`he`.
-The combined retained-provider production comparison remains under development;
-these contract checks do not establish complete cache lifecycle parity.
+The combined retained-provider corpus now has three original-only contexts,
+20 operations, five generated chunks, 5120 exact query pairs, 252 lifecycle
+events, 40 inventories and three byte-equal untouched controls. Lossless public
+replay and 28 Java-free guards pass on MSVC/GCC/Clang. Successful original loads
+through the C callback seam and one natural population callback boundary remain
+required before expanding this verified acquisition profile. Final exact-source
+platform checks for the combined composition are pending. These finite checks
+do not establish a running server or complete cache lifecycle parity.
 
 Earlier seven-operation cache research observes finishing before publication
 and natural population on a 2x2 square. It does not verify successful disk
@@ -101,8 +107,12 @@ reload observations distinguish a successful disk load from generation: saved
 arrays return unchanged, while the loaded minimum-height field remains zero.
 The [read-only region inspector](reference/region.md) has a guarded development
 comparison covering all 49 queries per original side, with byte-equal controls,
-eight compatible cases and 41 explicit diagnostic departures. Final exact-source
-platform acceptance remains pending. No region result follows from a08 alone.
+eight compatible cases and 41 explicit diagnostic departures. Exact source
+`092301ae8282d50a734df9018f791925aa9be99b` passes the original comparison on all
+three platforms; independent audit and hosted 42-test/87-file checks pass.
+See [region evidence](reference/region.md#verified-source-checkpoint).
+No region result follows from a08 alone, and the combined branch is not yet
+integrated into `main`.
 
 Cache-managed generation, complete lifecycle/population, light propagation,
 other dimensions, compatible persistence and protocol remain open. See the

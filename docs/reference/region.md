@@ -137,19 +137,49 @@ execution is a failure. Final input/class preservation errors also force failure
 they cannot become an unavailable result. CTest marks unavailable reference
 runs skipped, never successful comparisons.
 
-## Development result
+## Verified source checkpoint
 
-The guarded development run at
-`.local/region-live-guarded-check/capture-2bd55c8deeec45119b6065152dfc69bb/manifest.json`
-passes with no errors, SHA-256
-`8d273bbd822d05a1eab57c6b6f6e55aed98e98dd6bac634e4d0917eefe62f7e6`.
-It records both sides' 49-query observations, two complete byte-equal controls,
-eight compatible queries and 41 diagnostic departures. All 36 C inputs remain
-unchanged; 62 attributed inputs and seven compiled helper classes retain their
-before/after hashes. Its source commit label is unrecorded. This is a working
-development result, not final exact-source/platform acceptance or integration.
-Cache acquisition, region filename/global-coordinate mapping, world schemas,
-save writes, allocation/reuse and restart compatibility require separate evidence.
+Commit `092301ae8282d50a734df9018f791925aa9be99b` passed the live
+`reference.region` comparison on native MSVC and WSL GCC/Clang, without skips.
+The archived test times are 10.82, 88.13 and 88.00 seconds respectively. Each
+capture retains all 36 fixture definitions and 49 ordered queries, both
+originals, two complete byte-equal controls, eight compatible queries and
+41 diagnostic departures. All 36 pristine C inputs remain unchanged.
+
+The exact local manifests are:
+
+| Build | Manifest | SHA-256 |
+| --- | --- | --- |
+| MSVC | `build-generation-windows/reference-region/capture-afbcf131bea940babb42f5fce3a1ac92/manifest.json` | `9b6c9697aaaee869c588a267085cf347eb4c56e08623519add7a4e8a293c5e31` |
+| GCC | `build-generation-gcc/reference-region/capture-112a50f9774d49bfa06fbbdf5e317119/manifest.json` | `c03b0bbaef4373b9e117722bc9ab54f07f7be0c1a80225847bc60df491db1b18` |
+| Clang | `build-generation-clang/reference-region/capture-cbfff5b5a80242868a885281516fd27d/manifest.json` | `935bb9009bc22a051783d352ebf03df3dbef93ada37f0b4ab529175a1bce7fd2` |
+
+An independent standard-library audit, `.local/region-exact-audit.py`, imports
+no production validator and starts no JVM or C probe. Its report
+`.local/region-exact-audit.json` has SHA-256
+`3f706a1fefd55325ed789ae2d83a248ca4833e1c702301e926ff0538bce4ca89`.
+For each build it verifies 52 project source fingerprints against immutable
+Git objects at the checkpoint, all 62 attributed inputs and seven compiled
+classes before/after, complete copy inventories, all 196 original records and
+client/server equality. It reconstructs all fixture bytes independently under
+the corresponding Windows/Linux Python runtime, retaining valid differences
+between zlib encoders. It also checks 180,224 original and 44,032 C
+location/timestamp pairs against file bytes, complete original controls and
+the C diagnostic classifications. The three region test logs were archived
+before later test runs. Subsequent CMake development is recorded separately
+from the immutable checkpoint inputs.
+
+[Hosted validation at the same commit](https://github.com/frankischilling/minecraft-c/actions/runs/39082649705)
+passed 42 tests on each of Windows, GCC and Clang. Its formatting job checked
+87 C source/header files. Those hosted checks and the local live-original
+comparisons provide separate evidence; hosted runners do not receive the
+supplied original archives.
+
+This completes the finite read-only region checkpoint on the development
+branch. It does not establish main-branch integration. Region filename/global
+coordinate mapping, world schemas, save writes, allocation/reuse and restart
+compatibility remain outside this module's evidence. Cache acquisition has its
+own [contract and evidence](../world/cache.md).
 
 ## Recorded-observation check
 

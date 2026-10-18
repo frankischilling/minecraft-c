@@ -109,9 +109,19 @@ directory/file names, complete header/data JSON and unchanged inputs; it passes
 on MSVC and WSL GCC/Clang. The standalone CLI's wide Windows arguments remain
 a separate tested entry point.
 
-A guarded live development run passes the finite corpus and controls. Final
-exact-source/platform acceptance and integration remain outstanding for this
-worktree. Historical `reference.region_capture` replay remains a distinct
+The finite read-only checkpoint at
+`092301ae8282d50a734df9018f791925aa9be99b` passed `reference.region` on
+native MSVC and WSL GCC/Clang without skips. An independent audit verified all
+three captures against immutable checkpoint source, before/after input and
+class hashes, complete original controls, every fixture/query and all available
+1024-entry headers. The [checkpoint record](../reference/region.md#verified-source-checkpoint)
+lists the three local manifest paths and hashes, audit hash and exact counts.
+[Hosted checks at that commit](https://github.com/frankischilling/minecraft-c/actions/runs/39082649705)
+passed 42 tests per compiler and formatting for 87 C source/header files.
+
+These are completed development-branch checks; main-branch integration remains
+separate. Historical `reference.region_capture` replay is a distinct
 recorded-observation check that executes no Java. Neither route implements
-region allocation/writes, world schemas, cache lifecycle or save round trips.
-The [test guide](../testing.md) records the wider project validation scope.
+region allocation/writes, world schemas or save round trips. Cache lifecycle
+has a separate [contract](../world/cache.md). The [test guide](../testing.md)
+records the wider project validation scope.

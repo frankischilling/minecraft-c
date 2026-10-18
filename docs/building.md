@@ -135,6 +135,19 @@ files. Later cache/region work on the active branch requires separate results;
 these counts identify the verified checkpoint. `mc_world` itself has no Java
 or original-file dependency.
 
+Cache acquisition adds `tools.acquire_reference`, `tools.acquire_fixture` and
+`tools.acquire_interop`; all three pass on MSVC/GCC/Clang without Java or original
+files. They retain 20 continuous calls and 5120 original query results. Enable
+`MC_ENABLE_CACHE_REFERENCE_TESTS` for the live `reference.chunk_acquire` oracle.
+See [cache evidence](reference/cache.md) for actual constructor routes, limits
+and the remaining successful-load/population callback comparisons.
+
+The normal build includes `mc_region_inspect`. Enable
+`MC_ENABLE_REGION_REFERENCE_TESTS` for `reference.region`; exact source
+092301ae passes all 49 queries per side and untouched controls on all three
+toolchains. [Region evidence](reference/region.md) records the eight compatible
+cases, 41 diagnostic departures, independent audit and hosted checks.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

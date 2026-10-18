@@ -10,7 +10,8 @@ compression, seeded Perlin/octave noise, 2D simplex/octave noise,
 climate/biome classification, normal density/base
 terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
-unpublished normal generator composition, local resource import and native builds.
+unpublished normal generator composition, synchronous cache acquisition,
+read-only region inspection, local resource import and native builds.
 The [normal generator API](Architecture#normal-generator) composes the existing
 stages through finishing with borrowed world resources. At exact source
 `a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass

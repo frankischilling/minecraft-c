@@ -96,8 +96,9 @@ and complete ordered queues. Each fixed case runs twice in the same genuine
 world and matches a separate untouched control across complete snapshots.
 Suspended marker inventories record thread roles and original-loader frames;
 they establish finite headless conditions rather than general scheduling.
-The C cache supports lookup and the explicit map/list publication phase.
-Full loading, lifecycle, population and light propagation remain open.
+The C cache supports lookup, explicit map/list publication and a synchronous
+acquisition coordinator. Successful-load and natural-population callback
+comparisons remain open alongside full persistence and light propagation.
 
 ## Normal generation checkpoint
 
@@ -131,11 +132,28 @@ dimensions and save compatibility.
 
 The measured contexts use base worlds `fd`/`dj` and caches `ok`/`jb`. The actual
 `MinecraftServer` constructs `dp` with `he`; its cache lifecycle is not covered
-by the current base-world observation. Genuine `ie` loading and related region
-acceptance remain research on the continuing branch. The suspended inventories
+by the base-world generation observation. The suspended inventories
 establish finite headless conditions, not general concurrency behavior. Hosted
 [a08 checks](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
 pass 36 public/numerical tests per compiler and formatting for 79 C/header files.
+
+## Cache and region checks
+
+[Cache acquisition evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md)
+records actual persistent client and dedicated-owner constructors with retained
+providers. Three original-only contexts retain 20 operations, five generations,
+5120 ordered queries, 252 lifecycle events, 40 inventories and three complete
+byte-equal controls. Public C replay and 28 Java-free guards pass on MSVC and
+Linux GCC/Clang. Expanded exact-source validation and successful-load/natural-
+population callback comparisons remain pending. No running-server or terrain-
+feature parity follows from these finite callback experiments.
+
+[Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md)
+at exact 092301ae passes all 49 queries per original side, with byte-equal
+controls and independent source/artifact audit, on MSVC/GCC/Clang. Eight cases
+are compatible and 41 retain explicit diagnostic departures. Hosted checks pass
+42 tests per compiler and formatting for 87 C/header files. This establishes
+finite local read inspection, not a world schema, global addressing or writes.
 
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy

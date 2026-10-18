@@ -78,10 +78,15 @@ without skips on MSVC/GCC/Clang, including four-seed original comparisons and
 complete untouched controls. [Generation evidence](reference/generation.md)
 records the exact sources, manifest hashes and finite headless conditions.
 This checkpoint uses base worlds `fd`/`dj` and caches `ok`/`jb`. Actual
-`MinecraftServer` construction uses `dp`/`he`; its cache lifecycle and genuine
-`ie` loading remain separate research. The active branch continues into cache
-acquisition and related read-only region work, with original acceptance still
-required for those additions.
+`MinecraftServer` construction uses `dp`/`he`. The separate
+[acquisition coordinator](world/cache.md) now has a retained-provider comparison
+using the actual persistent client and dedicated-owner constructor routes.
+[Cache evidence](reference/cache.md) distinguishes this finite API context,
+callback contracts and successful-load/population comparisons still required.
+The [read-only region reader](storage/region.md) retains bounded framing,
+compression and raw NBT composition, with exact-source finite acceptance at
+`092301ae8282d50a734df9018f791925aa9be99b`. It does not establish a world schema
+or a disk chunk decoder.
 
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure

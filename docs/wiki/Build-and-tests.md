@@ -115,6 +115,30 @@ exact checkpoint; later cache/region additions need separate acceptance. See the
 [generation contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/generation.md)
 and [evidence boundary](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md).
 
+## Acquisition and region checks
+
+The cache coordinator adds 838 public contract checks. Its retained-provider
+fixture replays three continuous original contexts, 20 operations, five generated
+chunks and 5120 exact height queries. The public protocol and fixture checks need
+neither Java nor original archives. `MC_ENABLE_CACHE_REFERENCE_TESTS=ON` enables
+`reference.chunk_acquire` with JDK17+, `jdk.jdi`, `jdk.jdwp.agent`, both supplied
+archives and the exact source commit setting. Successful loading and natural
+population callback comparisons remain pending. See the
+[cache evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md).
+
+The read-only region reader has 49771 public checks. At source
+`092301ae8282d50a734df9018f791925aa9be99b`, `reference.region` passes on native
+MSVC and WSL GCC/Clang with Linux sanitizers. Each capture retains 36 fixtures,
+49 queries per side and two byte-equal untouched controls. Eight queries are
+compatible; 41 retain explicit bounded diagnostic departures.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39082649705)
+pass 42 public/numerical tests per compiler and formatting for 87 C/header files.
+See the [region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md).
+
+The expanded acquisition source currently configures 44 public tests, 45 with
+the numerical Java oracle, or 52 with the selected original comparisons.
+These counts describe the configured suite; final platform acceptance is pending.
+
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the
 [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
