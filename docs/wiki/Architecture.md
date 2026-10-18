@@ -12,7 +12,8 @@ rather than empty placeholders.
 | `core/text` | Modified UTF-8 with explicit UTF-16 units | C runtime |
 | `storage/nbt` | Owned raw tag trees, original IDs 0..10, bounded read/write | Shared core |
 | `storage/compression` | Owned gzip/zlib memory output, explicit limits and checksums | Static zlib |
-| `storage/region` | Read-only local record framing and diagnostics | Borrowed immutable span; explicit compression/NBT composition |
+| `storage/level` | Exact metadata types/defaults and independent NBT construction | Explicit source tree and save clock; no file access |
+| `storage/region` | Read-only diagnostics and owned mutable region images | Explicit compressed bytes, timestamps and allocation limits |
 | `world/noise` | Original seeded Perlin/octave and 2D simplex/octave sampling | Shared core, caller-owned layers |
 | `world/biome` | Original climate processing, float-table biome lookup and retained arrays | Shared core/noise, explicit allocation budget |
 | `world/terrain` | Normal density, base interpolation, surface replacement and cave carving | Shared core/noise/math, immutable layers/table, explicit Random and borrowed spans |
@@ -20,15 +21,18 @@ rather than empty placeholders.
 | `world/cache` | Packed-key lookup, publication and synchronous acquisition callbacks | Caller-owned entries/list/pending, stable chunk identities and explicit live world state |
 | `world/lighting` | Original region merging, ordered queue storage and world admission | Shared Java arithmetic, caller-owned cache/queue/depth |
 | `world/generation` | Complete unpublished normal generator entry through finishing | Same-world borrowed biome manager, immutable trig, current materials/opacity and existing lighting context |
+| `world/storage` | Stable stored chunks, native region cache, metadata/session ownership and acquisition adapter | `mc_persistence`; explicit filesystem roots, borrowed region owner and live world context |
 
 The shared libraries initialize no window, graphics, audio, networking, assets,
 or Java. The raw NBT parser and compression module remain separate interfaces;
-callers explicitly compose them. No file write or world schema is implicit.
+callers explicitly compose them. Their raw interfaces imply no world schema
+or file write. `mc_persistence` adds the explicit storage composition described
+below, depending on the shared storage and world libraries.
 Noise sampling preserves original constructor ordering and bulk-specific
 behavior; [its interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/noise.md)
 and [reference evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/noise.md)
 describe the exact tested scope. Normal composition is documented below;
-population, propagation and other dimensions remain open.
+terrain-feature population, propagation and other-dimension generation remain open.
 
 The [math interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/core/math.md)
 keeps the 256 KiB table caller-owned and immutable after exclusive initialization.
@@ -87,7 +91,43 @@ publication replaces the map value and appends the same identity to a separate
 insertion list. The separate
 [acquisition coordinator](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/cache.md)
 adds load/generation callbacks, active registration and live population gates.
-Disk decoding, terrain-feature bodies, unloading and light propagation remain open.
+The storage adapter below supplies disk decoding. Terrain-feature bodies,
+save/unload scheduling and light propagation remain open.
+
+## Storage foundation
+
+The [world storage contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
+defines `mc_persistence` ownership. A stored chunk owns five fixed arrays,
+runtime state and retained NBT at stable addresses. Cache maps and insertion
+lists borrow its identity; every borrowed reference must be retired before
+freeing the owner. Decode enforces exact known types and fixed array shapes.
+Normalization uses an explicit frozen registry map and changes only blocks.
+
+The region image writer owns allocation and retained bytes in memory. A separate
+native region owner maps signed chunk coordinates to files and local slots,
+retains a bounded cache, compresses records and stages checked file replacement.
+One world store owns metadata and loaded chunks while borrowing that region
+owner. It handles primary/backup metadata loading, session-token checks,
+metadata rotation, dimension roots and committed growth accounting. Its adapter
+connects real disk loads to the acquisition coordinator; generation is allowed
+only for missing records. Corrupt records and opaque entities/tiles cannot be
+silently activated.
+
+Unknown metadata and chunk fields remain opaque. This is a C preservation
+policy, stronger than some original serializers; it does not implement entity
+or player factories. Unsupported edits to opaque records are refused. These
+APIs do not provide crash durability, concurrent-writer protection or complete
+save/unload scheduling.
+
+At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, the finite storage foundation
+passes all 71 selected tests without skips on native MSVC and WSL GCC/Clang,
+with Linux ASan/UBSan. Independent platform, source/provenance and copied-world
+semantic audits pass. Hosted checks pass 59 tests per compiler and formatting
+for 111 C/header files. Both copied-world directions include opaque Boat/Sign
+transport; 74 Java-free world-harness guards pass in every suite. See the
+[storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
+and [wiki checkpoint](Storage-and-reference#storage-foundation-checkpoint) for
+exact manifests, evidence limits and the remaining simulation/scheduler work.
 
 ## Normal generator
 
@@ -127,13 +167,14 @@ adds genuine successful loads and natural population in base worlds, retaining
 observed effects within the cache/world boundary while C computes transitions.
 Expanded exact source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56
 selected tests without skips on MSVC/GCC/Clang, with Linux sanitizers, independent
-audit and hosted 48-test/89-file checks. Full persistence, terrain-feature
-bodies, propagation, other dimensions and running-server integration remain open.
+audit and hosted 48-test/89-file checks. That checkpoint predates the storage
+foundation above. Full persistence acceptance, terrain-feature bodies,
+propagation, other-dimension generation and running-server integration remain open.
 
-The planned game systems include ordered world/simulation updates, platform
-files/sockets/clock/input services, OpenGL 3.3 rendering, audio, original protocol
-networking, client sessions, and a dedicated server. Those game systems are not
-implemented yet. The server must remain independent of client display/audio
+The planned game systems include ordered world/simulation updates, remaining
+platform sockets/clock/input services, OpenGL 3.3 rendering, audio, original
+protocol networking, client sessions, and a dedicated server. Native storage
+file helpers exist; these broader game systems are not implemented yet. The server must remain independent of client display/audio
 initialization, and shared simulation must retain evidenced original side
 differences.
 

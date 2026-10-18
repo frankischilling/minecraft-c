@@ -117,8 +117,9 @@ def shared_helper(root):
             sys.modules["fixtures"] = old
     inventory = helper.world_inventory
 
-    def bounded_inventory(path, hashes=False):
-        return inventory(path, hashes=hashes, max_entries=256, max_bytes=32 * 1024 * 1024)
+    def bounded_inventory(path, hashes=False, *, live_poll=False):
+        return inventory(path, hashes=hashes, max_entries=256, max_bytes=32 * 1024 * 1024,
+                         live_poll=live_poll)
 
     # Adapt bounds only in this isolated copy of the reviewed helper module.
     helper.world_inventory = bounded_inventory

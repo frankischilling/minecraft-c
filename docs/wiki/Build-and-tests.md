@@ -25,7 +25,9 @@ explains offline source overrides and license notices.
 Public checks cover numerical/text semantics, raw NBT, compression, both noise
 families, climate/biome classification, normal density/base blocks, surface
 replacement, normal cave carving, packed chunk arrays, height/skylight data
-and full finishing, unpublished normal generation and the local resource importer.
+and full finishing, unpublished normal generation, metadata/schema ownership,
+region image writing, native region transport, world-store acquisition and the
+local resource importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -73,6 +75,40 @@ passes in each of six fresh cases. A separate untouched control must match
 complete snapshots exactly. The debugger uses loopback only. Public fixtures
 compare all decoded bytes, queues and queries without Java; see
 [finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md).
+
+## Storage foundation checks
+
+The normal build includes `mc_persistence`, the metadata codec, stored-chunk
+owner, region image writer, native region cache and world store. Public checks
+include `storage.level`, `storage.region_writer`, `world.stored_chunk`, the
+`tools.level_*`, `tools.region_write_*`, `tools.chunk_storage_*` and
+`tools.regions_*` checks, `tools.world_store_interop` and
+`tools.world_storage_reference`. They use retained
+observations and constructed C contracts without original archives or Java.
+
+`MC_ENABLE_STORAGE_REFERENCE_TESTS=ON` enables `reference.level`,
+`reference.region_write`, `reference.chunk_storage` and `reference.world_storage`.
+These require both
+locally supplied verified JARs, JDK17+ and `MC_REFERENCE_TESTED_COMMIT`. Keep
+reference worlds in fresh owned or copied directories. The
+[storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
+distinguishes codec/image comparisons from native ownership and copied-world
+acceptance; the
+[ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
+describes lifetimes, limits and unsupported operations.
+
+At storage checkpoint `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected
+local tests pass without skips on native MSVC and WSL GCC/Clang, with Linux
+ASan/UBSan. The suite includes 58 public tests, 12 original comparisons and the
+numerical Java oracle. Times are 744.00, 1255.43 and 1256.05 seconds respectively.
+Independent audits bind source, tools, executables/build inputs, original
+captures and complete supported copied-world state/control/byte projections.
+All 74 Java-free world-harness guards pass. Hosted checks pass 59 tests per
+compiler and clang-format18 for 111 C/header files. See the
+[exact evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md#exact-source-storage-checkpoint)
+for capture/report hashes and excluded attempts. These finite profiles do not
+establish gameplay save/unload scheduling, subtype simulation or a running C
+server. Older checkpoint counts below retain their original source and scope.
 
 ## Normal generation checks
 
@@ -167,6 +203,8 @@ Original resources are never bundled. The
 [resource guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/resources.md)
 describes local import into a fresh ignored directory and its current limits.
 
-There is currently no C game executable, supported save writer, or C server to
-host. Client controls, original-compatible save workflows, and Linux/Windows
-hosting/backup/shutdown instructions will be added with verified implementations.
+There is currently no C game executable or C server to host. The storage
+library's explicit save operations pass the finite storage comparisons above;
+complete original-compatible gameplay save workflows remain unverified. Client controls
+and Linux/Windows hosting, backup and shutdown instructions will be added with
+verified game implementations.

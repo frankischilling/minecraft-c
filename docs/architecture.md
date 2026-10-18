@@ -2,8 +2,10 @@
 
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility
 and allocation-free modified UTF-8 text helpers. `mc_storage` depends on it and
-contains the raw NBT reader/writer and gzip/zlib memory compression. Neither library initializes display,
-graphics, audio, networking, assets or Java. Tests and research helpers are
+contains raw NBT, gzip/zlib memory compression, level metadata and region images.
+`mc_persistence` composes storage with the C world model and explicit native
+filesystem ownership. These libraries initialize no display, graphics, audio,
+networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
 The [float lookup/floor module](core/math.md) uses a caller-owned 65536-float
@@ -92,6 +94,19 @@ compression and raw NBT composition, with exact-source finite acceptance at
 `092301ae8282d50a734df9018f791925aa9be99b`. It does not establish a world schema
 or a disk chunk decoder.
 
+The newer [world storage module](world/storage.md) owns stable decoded chunks,
+native region transport and the world-store composition. Its
+[image writer](storage/region-writer.md) accepts explicit compressed bytes and
+timestamps; the [metadata codec](storage/level.md) owns schema interpretation
+separately from gzip, fallback and file rotation. Storage loads preserve opaque
+state; the acquisition adapter refuses unsupported entity/tile activation.
+At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected tests pass without
+skips on native MSVC/GCC/Clang, with Linux sanitizers and independent provenance
+and copied-world semantic audits. The
+[storage checkpoint](reference/storage.md#exact-source-storage-checkpoint)
+defines its finite original-to-C and C-to-original scenarios. This work does not add save/unload
+scheduling or live entity/player serializers.
+
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
 without changing outputs or consuming randomness; game-specific exception behavior
@@ -133,6 +148,20 @@ include/mc/storage/compression/compression.h
 src/storage/compression/compression.c
 tests/storage/compression/test_compression.c
 tests/storage/compression/compression_probe.c
+include/mc/storage/level/level.h
+src/storage/level/level.c
+tests/storage/level/test_level.c
+include/mc/storage/region/writer.h
+src/storage/region/writer.c
+tests/storage/region/test_writer.c
+include/mc/world/storage/chunk.h
+include/mc/world/storage/regions.h
+include/mc/world/storage/store.h
+src/world/storage/chunk.c
+src/world/storage/regions.c
+src/world/storage/store.c
+src/world/storage/files.c
+tests/world/storage/test_chunk.c
 include/mc/world/noise/noise.h
 src/world/noise/noise.c
 tests/world/noise/test_noise.c

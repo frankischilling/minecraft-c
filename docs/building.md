@@ -151,6 +151,19 @@ The normal build includes `mc_region_inspect`. Enable
 toolchains. [Region evidence](reference/region.md) records the eight compatible
 cases, 41 diagnostic departures, independent audit and hosted checks.
 
+The normal build also includes `mc_persistence`, composing native world files,
+metadata, stable chunk owners and region transport. Its public tests need no
+original files or Java. `MC_ENABLE_STORAGE_REFERENCE_TESTS=ON` adds
+`reference.level`, `reference.region_write`, `reference.chunk_storage` and
+`reference.world_storage` with
+both supplied JARs, JDK17+ and `MC_REFERENCE_TESTED_COMMIT`. Use fresh owned or
+copied test worlds. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71
+selected tests pass without skips on native MSVC/GCC/Clang, with Linux
+ASan/UBSan and independent copied-world/platform audits. See
+[storage evidence](reference/storage.md#exact-source-storage-checkpoint)
+and the [world ownership contract](world/storage.md). These library operations
+do not provide a playable world loader or complete gameplay save scheduling.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column
@@ -179,5 +192,5 @@ yet. Keep originals, launcher files, credentials, recordings, logs and worlds in
 ignored local directories. Copy a world before any writable reference test.
 
 Current compiler/platform results and remaining graphical access limits are in
-[the resume note](status.md). Client controls, compatible world writes and hosting
+[the resume note](status.md). Client controls, gameplay save support and hosting
 instructions will accompany actual implementations.

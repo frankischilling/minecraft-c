@@ -11,7 +11,20 @@ climate/biome classification, normal density/base
 terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
 ordered light-region storage, cached height queries, normal chunk finishing,
 unpublished normal generator composition, synchronous cache acquisition,
-read-only region inspection, local resource import and native builds.
+region inspection and writing, world metadata, stable stored chunks, native
+world-file ownership, local resource import and native builds.
+The storage foundation is implemented through `mc_persistence` and its cache
+acquisition adapter. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71
+selected tests pass without skips on native MSVC and WSL GCC/Clang, with Linux
+ASan/UBSan. Independent platform, source/provenance and copied-world semantic
+audits pass. Hosted checks pass 59 public/numerical tests per compiler and
+clang-format18 for 111 C/header files. Both copied-world directions include
+opaque Boat/Sign transport. These finite storage results do not implement
+entity/player simulation, gameplay save/unload or running-server persistence.
+See the [storage checkpoint](Storage-and-reference#storage-foundation-checkpoint),
+[ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
+and [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md).
+
 The [normal generator API](Architecture#normal-generator) composes the existing
 stages through finishing with borrowed world resources. At exact source
 `a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass

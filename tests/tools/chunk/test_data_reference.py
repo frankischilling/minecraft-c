@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
 import types
 import unittest
@@ -106,6 +107,57 @@ class ChunkReferenceGuards(unittest.TestCase):
             changed["minimum_height"] = value
             with self.subTest(value=value), self.assertRaises(self.helper.Failure):
                 self.helper.validate_data(changed, "bad minimum")
+
+    def test_shared_helper_runs_owned_child_with_live_inventory_and_strict_final_hashes(self):
+        helper, _ = self.helper.shared_helper(ROOT)
+        world = self.directory / "shared-owned-world"
+        world.mkdir()
+        (world / "before.bin").write_bytes(b"owned before")
+        stdout, stderr = self.directory / "child.stdout", self.directory / "child.stderr"
+        command = [sys.executable, "-c",
+                   "from pathlib import Path; import sys; "
+                   "Path(sys.argv[1]).joinpath('after.bin').write_bytes(b'owned after'); "
+                   "sys.stdout.buffer.write(b'owned shared helper\\n')", str(world)]
+        result = helper.run_live(command, stdout, stderr, self.directory, seconds=5, world_root=world)
+        self.assertEqual((result.returncode, result.timed_out, result.stop_reason), (0, False, None))
+        self.assertGreaterEqual(result.inventory_polls, 1)
+        self.assertEqual(stdout.read_bytes(), b"owned shared helper\n")
+        self.assertEqual(stderr.read_bytes(), b"")
+        final = helper.world_inventory(world, hashes=True)
+        self.assertTrue(final["complete"], final)
+        self.assertIsNone(final["error"])
+        self.assertEqual(final["entries"], [
+            {"path": name, "kind": "file", "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+            for name, raw in (("after.bin", b"owned after"), ("before.bin", b"owned before"))])
+        self.assertIn("cannot hash final state", helper.world_inventory(world, hashes=True, live_poll=True)["error"])
+
+    def test_shared_helper_keeps_entry_and_byte_caps_in_both_inventory_modes(self):
+        helper, _ = self.helper.shared_helper(ROOT)
+        world = self.directory / "bounded-owned-world"
+        world.mkdir()
+        for index in range(256):
+            (world / str(index)).write_bytes(b"")
+        for live_poll in (False, True):
+            self.assertTrue(helper.world_inventory(world, live_poll=live_poll)["complete"])
+        extra = world / "overflow"
+        extra.write_bytes(b"")
+        for live_poll in (False, True):
+            result = helper.world_inventory(world, live_poll=live_poll)
+            self.assertFalse(result["complete"])
+            self.assertIn("entry limit", result["error"])
+        for path in world.iterdir():
+            path.unlink()
+        large = world / "bounded.bin"
+        with large.open("wb") as output:
+            output.truncate(32 * 1024 * 1024)
+        for live_poll in (False, True):
+            self.assertTrue(helper.world_inventory(world, live_poll=live_poll)["complete"])
+        with large.open("ab") as output:
+            output.write(b"x")
+        for live_poll in (False, True):
+            result = helper.world_inventory(world, live_poll=live_poll)
+            self.assertFalse(result["complete"])
+            self.assertIn("byte limit", result["error"])
 
     def test_duplicate_json_nonfinite_and_partial_records_rejected(self):
         for text in ('{"x":0,"x":1}', '{"x":NaN}', '{"x":Infinity}', '{"x":'):

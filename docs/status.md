@@ -1,11 +1,55 @@
 # Development status
 
-Source checkpoint `28a55b52c001c4c114a11ca7df844fc1f286d328` combines normal
+The persistence foundation passes exact-source acceptance at
+`9ad690d83592f127b9bb39d7233e8eef06fd0029`. All 71 selected local tests pass
+without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan and
+independent platform, provenance and copied-world semantic audits. The complete
+rewrite remains unfinished. See the [storage checkpoint](reference/storage.md#exact-source-storage-checkpoint).
+
+The preceding integrated main checkpoint `b7b33d4b66e027a6de18d04018cd0ba34dd87f0b`
+combines normal
 generation, synchronous cache acquisition and read-only region inspection.
+Its tree matches final documentation checkpoint
+`d0dde15a095424a2103dd755db546a9be2ab3c30`; implementation acceptance is at
+`28a55b52c001c4c114a11ca7df844fc1f286d328`.
 All 56 selected local tests pass without skips on native MSVC and WSL GCC/Clang,
 with Linux ASan/UBSan and independent acceptance audit. Hosted checks pass 48
 public/numerical tests per compiler and formatting for 89 C/header files.
 Inspect the live worktree before continuing. The complete rewrite remains unfinished.
+
+The [resulting-main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39091121154)
+pass all four jobs. The initial Clang configuration rejected a dependency
+download with the wrong hash, before compilation. Three fresh local downloads
+matched the unchanged official checksum; the failed job passed on an unchanged
+source retry. The failing response bytes were unavailable, so the precise
+delivery failure is unknown. The published five-page wiki checkpoint is
+`c4ecb344bffae2d5bd293f2678063b6bcc985025`, with all five remote page blobs
+verified against `docs/wiki/`.
+
+## Persistence foundation checkpoint
+
+The [region image writer](storage/region-writer.md), [level metadata codec](storage/level.md),
+stable stored chunks and [native world storage](world/storage.md) now have
+finite original-to-C-to-original and C-to-original-to-C acceptance. Metadata
+fallback/rotation, session checks, both explicit dimension roots, shared region
+ownership and the actual acquisition loader are covered by original observations,
+paired inputs and separately identified C failure policies.
+
+At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, MSVC/GCC/Clang each pass 71
+selected tests without skips: 744.00, 1255.43 and 1256.05 seconds respectively.
+Independent audits bind all 290 tracked files, native tools/executables/build
+inputs and all 36 original manifests. Separate audits check deep new-profile
+provenance and complete supported world-state/control/preservation projections.
+The three original-only fixtures remain unchanged. The
+[hosted code checks](https://github.com/frankischilling/minecraft-c/actions/runs/39104921389)
+pass 59 public/numerical tests per compiler and formatting for 111 C/header files.
+
+The [evidence](reference/storage.md#exact-source-storage-checkpoint) retains
+exact capture/report hashes, clocks, limitations and excluded earlier attempts.
+These results cover seed23, eight storage slots and explicit dimensions 0/-1.
+Opaque transport does not implement entity/player simulation or every subtype
+serializer. Gameplay save/unload scheduling, dimension transitions,
+running-server persistence and crash recovery remain open.
 
 ## Verified combined checkpoint
 
