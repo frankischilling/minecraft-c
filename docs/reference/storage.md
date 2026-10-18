@@ -1,10 +1,11 @@
 # Persistence reference evidence
 
-Status: **DEVELOPMENT**. Static mapping and three original-only reference
-packages are complete. Public C replays and native owner tests exercise their
-declared boundaries. Native Windows and WSL/GCC copied-world development
-comparisons pass; full acceptance at an exact source commit remains pending.
-None of the producer hashes below establishes acceptance of the current working tree.
+Status: **Verified for the specified storage-foundation scenarios** at
+`9ad690d83592f127b9bb39d7233e8eef06fd0029`. Native MSVC, GCC and Clang each pass
+all 71 selected tests without skips; Linux runs use ASan/UBSan. Independent
+platform, source/provenance and whole-world semantic audits pass. The exact
+checkpoint below records its finite scope. This does not establish complete
+gameplay persistence or acceptance of arbitrary later source changes.
 
 All observations use the client and server pinned in [binaries.md](binaries.md).
 Obfuscated names are side-specific. Original bytecode, disassemblies, class
@@ -220,19 +221,107 @@ The public native owner checks use fresh temporary roots and recorded inputs.
 They cover 52 paired original-derived metadata inputs, 56 paired chunk imports,
 both dimensions and signed extremes, stable ownership, real loaded acquisition
 with empty registration callbacks, checked failures and transport byte limits.
-These C-created and C-reloaded files are not yet the complete copied-world
-original-to-C-to-original and C-to-original-to-C acceptance proof. Player/entity
+These native owner checks are separate from the accepted copied-world
+original-to-C-to-original and C-to-original-to-C comparisons below. Player/entity
 simulation, scheduled-data interpretation, unload/save scheduling and terrain-feature bodies
 remain outside these storage boundaries.
 
-## Copied-world comparison in development
+## Exact-source storage checkpoint
+
+Implementation acceptance is at `9ad690d83592f127b9bb39d7233e8eef06fd0029`.
+Each native suite runs 58 public tests, 12 live original comparisons and the
+numerical Java oracle. All 213 actual test rows pass, with zero skips, failures
+or timeouts. Compiler warnings remain strict; Linux uses ASan/UBSan.
+
+| Native platform | CTest seconds | Reference JVM |
+| --- | ---: | --- |
+| MSVC 19.51, Debug | 744.00 | Oracle 21.0.10+8-LTS-217 |
+| GCC 13.3, Debug | 1255.43 | Ubuntu OpenJDK 21.0.12.1+1-1-24.04.4-Ubuntu |
+| Clang 18.1, Debug | 1256.05 | Ubuntu OpenJDK 21.0.12.1+1-1-24.04.4-Ubuntu |
+
+Python is 3.14.3 on Windows and 3.12.3 on Linux. The four new storage profiles'
+project-owned helpers compile with Java release 17. Linux builds and live capture roots use fresh owned
+native ext4 directories. No child deadline, heap, stream, inventory or
+comparison limit was relaxed. The
+[code-checkpoint hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39104921389)
+pass all four jobs: 59 public/numerical tests per compiler and clang-format18
+for 111 C/header files.
+
+The independent platform audit binds all 290 tracked files before and after
+each run to actual Git blob objects, plus configured tools, 47 binaries,
+build metadata and all 254 files in the supplied pinned zlib source. It verifies
+all 36 live original manifests at the nonnull checkpoint. Its earlier-profile
+checks cover 24 captures, 426 outer process records and 87 full untouched
+controls. This does not attest every transitive system library or continuous
+immutability between the retained snapshots.
+
+Separate low-level audits bind 64 level, 11 region-write and 67 chunk-storage
+source files per host, including the relevant private headers. The minimal
+region profile records Java executable bytes and version output; wider JDK
+release/module fingerprints come from the other profiles on the same host.
+Each world profile independently binds 92 archived sources, three helper
+classes, 53 original classes and its exact native executable to the completed
+platform runner. These provenance checks are distinct from semantic checks.
+
+The independent world semantic reader checks 357 exact successful C responses,
+249 complete C chunk states, 303 live metadata states and their separate raw
+NBT views, 476 original snapshots and 178 typed disk chunk trees per host.
+Checks include every known saved metadata field/type, individually bounded
+clocks, all five arrays, stage flags, growth, eight whole-file control pairings,
+48 strict region-prefix preservation checks and six readback-preservation
+checks. Six positive and 14 negative controls per host discriminate array,
+scalar-type, state/time, timestamp and unrelated/padding-byte corruption.
+Controls still exclude the declared intermediate chunks/roots/region images;
+complete intermediate runtime-state equality is not claimed.
+
+The ignored report root is `.local/storage-final-9ad690d/`. The catalog records
+native artifact paths, exact tool inputs and the twelve new manifests below.
+Native Linux reference trees also have separately verified retained copies;
+copy reports bind source-before, source-after and copied file bytes. Each Linux
+copy retains 8,338 files across all twelve original profile work roots and the
+numerical oracle. The GCC copy report SHA-256 is
+`5040a2e339d7f608c1ba2266e0025fcaaa326ce45ed689032a1ae6607223df6a`;
+Clang is `ec3bb9d94a48380e1ef66f7dc00769ac9fa406ba15b1a492b568e227d6cfc047`.
+
+| Independent report | SHA-256 |
+| --- | --- |
+| Platform, build and eight earlier profiles (`platform-older-audit-summary.json`) | `ef8b140419c34f5da308cf688ec924d6a6aa537af3dd480dc65f89bc6ef21b14` |
+| Level, region and chunk provenance (`lowlevel-source-audits-summary.json`) | `3b0f172ae9c589e750a3379bd619afb75151fdf91e62bfad15c032b5d0ff9589` |
+| Whole-world provenance (`world-source-provenance-summary.json`) | `53880f555b17fb518d43f49464bbc58825ccb4c7d1c0b07b7a8489ddfc656f37` |
+| Whole-world semantics and negative controls (`world-semantic-summary.json`) | `7ebe1e43e61015ce947c881caad04ef369734ea7f124c0335a4826c4024f4387` |
+
+| Native host | Profile | Capture identity | Manifest SHA-256 |
+| --- | --- | --- | --- |
+| windows | `level` | `capture-afcddab12eb04078861c143d2f022fc9` | `9ba3b48bcbfedb88784963d2fc03f0228cbde9cf327de5449dc2cae4783f0779` |
+| windows | `region_write` | `capture-fd8d255c5c9241f4ac77bc5cc89f2b7e` | `1058fcb3f715d235420b80d01ac73879340fa658fc50f2c082c4e43f2315eb59` |
+| windows | `chunk_storage` | `capture-6ecdf6bc23f545a6acf4f3d7eadf7672` | `98bf11c6e2487263e5ed4f015aee3d0efc293f9c2a2a419d80f9667b2cdceb2e` |
+| windows | `world_storage` | `capture-e762e85b2ba9401188163ab994c8f1f9` | `119f06c30a2b48eb697b241f1bfc1112cbae052d39442a10a4ec1e0c12d0146c` |
+| gcc | `level` | `capture-800dd41beaa64ef89d20ca64ed119c61` | `295443e0a3bfc007390326af11ea6cd33374f82741767907454c2487961fa608` |
+| gcc | `region_write` | `capture-0afcc8ddd1c946e58167a771154eed9e` | `f1e8a9ca34e7c09a1b9e1289cf12f33d101de74b7e0075794da296f82ded3f80` |
+| gcc | `chunk_storage` | `capture-5db7a969998f4350acb841931b34af70` | `90fcbd78f8fc30cedc7c7111aecfe4332ed9f4f674e47e29758df395e40caeae` |
+| gcc | `world_storage` | `capture-93442fb24a314a0991ecad1301258f4c` | `892f4eea6e0e01a02003aa6badfafd6bc8ad9bf98eb3af70574e9204cfde0624` |
+| clang | `level` | `capture-94e6865104e0448c85ef077be80b0314` | `27c93b069e21de47be260791729d46a3352eb34851d59256a01450c6728aeb64` |
+| clang | `region_write` | `capture-228d2f48598745358894f652a4ee443f` | `86c3eb25c247fda350b1505b8f1c974bb407b83c9fdf347fc0cd92c9fcde4a68` |
+| clang | `chunk_storage` | `capture-55231f47b17d47cfb1f107eb0af4b0bb` | `e1d6aefdadccef6b284d91b563e17737735c3498667d2edde99e99d0d0c83a36` |
+| clang | `world_storage` | `capture-e6dbb276bf4f41879eb59c2a7cd10190` | `7e1090f7c20e28491dcbeeee6eb5ba0ee5d96fe8cb1b5b44fe2df2f1f0bcc711` |
+
+The three original-only fixtures above remain byte-identical. Their historical
+producer labels remain null; acceptance comes from these fresh source-bound
+captures and independent checks. Opaque transport does not implement entity,
+tile or player simulation. Every subtype serializer, gameplay save/unload
+scheduling, running-server persistence, dimension-transition sharing and crash
+recovery remain separate requirements.
+
+## Copied-world comparison
 
 `reference.world_storage` composes the native store with fresh genuine original
 worlds. One supplied C executable runs on the same host as Python and the JDK;
-Linux runs do not depend on Windows-to-WSL process bridges. Earlier native Windows
-and WSL/GCC development smokes pass, with JDK17 and JDK21 respectively. All 74
-Java-free harness guards pass on both hosts without skips. Exact-source full
-MSVC/GCC/Clang acceptance remains pending.
+Linux runs do not depend on Windows-to-WSL process bridges. All three native
+source-bound profiles pass at the checkpoint above. The 74 Java-free world
+harness guards also pass in every full suite. Earlier Windows/JDK17 and
+WSL/JDK21 development smokes remain historical evidence.
+
+### Rejected earlier attempts
 
 The first exact-source attempt at
 `e6a8bd930e6c348b5917bf67fbceb64fa04eaa4a` does not qualify. Windows ran all 71
@@ -246,7 +335,7 @@ child's process metadata was missing, so its cause remains unproven.
 Corrections retain failed child metadata before validation, distinguish live
 file deletion from strict final inventories, preserve a classified failure
 report on serialization errors, and canonicalize Windows test fixture roots.
-The failed attempts and their source snapshots remain retained. The next Linux
+Failed runner records and source snapshots remain retained. The next Linux
 runs use owned native Linux build directories with unchanged limits; moving
 those writes does not establish why the earlier observation was interrupted.
 
@@ -256,11 +345,15 @@ The second exact-source attempt at
 shared inventory adapter did not forward the new live-polling argument. The
 whole-world comparison passed, but that result does not qualify the full
 platform. Both Linux attempts were stopped after the shared defect was found.
-The adapter now forwards the argument with the same 256-entry/32 MiB limits.
+Their `/tmp` build trees later became unavailable; the reason is unproven.
+Retained runner logs and source/binary archives do not reconstruct every lost
+child artifact, and these attempts remain excluded. The adapter now forwards the argument with the same 256-entry/32 MiB limits.
 Fourteen chunk-harness guards include a real composed-helper child and exact
 entry/byte boundaries. They pass on both hosts. Fresh native Windows/JDK21 and
 WSL/GCC/JDK21 level comparisons also pass as unattributed development checks.
-A new exact-source full matrix is required.
+The fresh accepted matrix above follows these corrections.
+
+### Scenario boundaries
 
 All contexts use seed 23. The basic profile uses eight slots in each of roots
 0 and -1: six isolated

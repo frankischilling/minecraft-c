@@ -119,15 +119,15 @@ or player factories. Unsupported edits to opaque records are refused. These
 APIs do not provide crash durability, concurrent-writer protection or complete
 save/unload scheduling.
 
-The foundation remains in DEVELOPMENT acceptance. All 57 public tests pass
-without skips on strict native MSVC and WSL GCC/Clang builds, with Linux
-ASan/UBSan. Hosted development checks pass 58 public/numerical tests per compiler.
-Fresh native Windows and WSL/GCC whole-world development smokes pass both
-round-trip directions and opaque Boat/Sign transport; 74 Java-free harness
-guards pass on each host. Exact-source full MSVC/GCC/Clang acceptance remains
-pending. See
+At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, the finite storage foundation
+passes all 71 selected tests without skips on native MSVC and WSL GCC/Clang,
+with Linux ASan/UBSan. Independent platform, source/provenance and copied-world
+semantic audits pass. Hosted checks pass 59 tests per compiler and formatting
+for 111 C/header files. Both copied-world directions include opaque Boat/Sign
+transport; 74 Java-free world-harness guards pass in every suite. See the
 [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
-and the [wiki evidence boundary](Storage-and-reference#storage-foundation-in-development).
+and [wiki checkpoint](Storage-and-reference#storage-foundation-checkpoint) for
+exact manifests, evidence limits and the remaining simulation/scheduler work.
 
 ## Normal generator
 

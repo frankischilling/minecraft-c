@@ -2,11 +2,10 @@
 
 Storage provides raw NBT, gzip/zlib memory compression, metadata codecs,
 region inspection and writing, stable stored chunks, native region transport
-and world-store ownership through `mc_persistence`. The foundation is implemented
-and remains in DEVELOPMENT acceptance. Native Windows and WSL/GCC copied-world
-development comparisons pass; exact-source full/live and hosted acceptance
-remain pending.
-See [current storage scope](#storage-foundation-in-development) below.
+and world-store ownership through `mc_persistence`. The finite storage foundation
+passes exact-source native MSVC/GCC/Clang acceptance and independent audits at
+`9ad690d83592f127b9bb39d7233e8eef06fd0029`; hosted checks pass as well.
+See the [storage checkpoint](#storage-foundation-checkpoint) below for its scope.
 
 The raw NBT codec handles the original tag IDs 0..10 with named roots, lists,
 compounds, byte arrays and lossless UTF-16 string units. Decoded documents own
@@ -171,7 +170,7 @@ are compatible and 41 retain explicit diagnostic departures. Hosted checks pass
 establishes finite local read inspection; later schema, global mapping and write
 work has separate evidence below.
 
-## Storage foundation in development
+## Storage foundation checkpoint
 
 The [storage evidence overview](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
 records the implemented foundation and its acceptance limits. The
@@ -202,16 +201,24 @@ mappings are original-derived; C local-slot mask cases and the remaining native
 transport scenarios are constructed contracts. These checks do not establish
 original GC timing, general concurrent mutation or failed-I/O durability.
 
-All 57 public development tests pass without skips on strict native MSVC and
-WSL GCC/Clang builds, with Linux ASan/UBSan. Clang-format18 passes for 111
-C/header files. Hosted development checks pass 58 public/numerical tests per
-compiler. Fresh native Windows and WSL/GCC `reference.world_storage` development
-smokes pass original-created and C-created containers in both directions,
-including opaque Boat/Sign transport; 74 Java-free harness guards pass per host.
-Final exact-source MSVC/GCC/Clang acceptance remains pending. Full entity/player
-behavior, save/unload scheduling, light
-propagation and game integration remain open. Earlier checkpoint counts above
-continue to describe only their recorded sources.
+At exact source `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected
+tests pass without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan.
+Times are 744.00, 1255.43 and 1256.05 seconds. Hosted checks pass 59
+public/numerical tests per compiler and formatting for 111 C/header files.
+Independent platform audits bind all 290 tracked files and every original
+manifest to the source checkpoint, with tools, build inputs and executable
+bytes preserved. Separate source/provenance and semantic audits pass for all
+new profiles. Copied-world tests cover original-created and C-created
+containers in both directions, explicit roots 0/-1, signed storage boundaries
+and opaque Boat/Sign transport. All 74 world-harness guards pass.
+
+The [exact storage checkpoint](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md#exact-source-storage-checkpoint)
+records twelve new capture hashes, audit hashes, full-state/control/clock
+checks, unchanged original-only fixtures and excluded earlier attempts.
+These are finite seed23/API contexts. Entity/player and every subtype body,
+gameplay save/unload scheduling, dimension-transition sharing, running-server
+persistence, crash recovery and full game integration remain open. Earlier
+checkpoint counts above describe only their recorded sources.
 
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy

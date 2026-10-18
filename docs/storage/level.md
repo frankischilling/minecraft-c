@@ -61,4 +61,6 @@ under `MC_ENABLE_STORAGE_REFERENCE_TESTS`.
 
 Original handler observations additionally retain primary/backup precedence,
 rotation, constructor flags and lock checks. Those observations alone do not
-verify the native world owner. Source-bound acceptance remains in progress.
+verify the native world owner. The separate
+[source-bound storage checkpoint](../reference/storage.md#exact-source-storage-checkpoint)
+records the accepted finite native-owner and copied-world comparisons.

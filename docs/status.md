@@ -1,6 +1,12 @@
 # Development status
 
-Integrated main checkpoint `b7b33d4b66e027a6de18d04018cd0ba34dd87f0b`
+The persistence foundation passes exact-source acceptance at
+`9ad690d83592f127b9bb39d7233e8eef06fd0029`. All 71 selected local tests pass
+without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan and
+independent platform, provenance and copied-world semantic audits. The complete
+rewrite remains unfinished. See the [storage checkpoint](reference/storage.md#exact-source-storage-checkpoint).
+
+The preceding integrated main checkpoint `b7b33d4b66e027a6de18d04018cd0ba34dd87f0b`
 combines normal
 generation, synchronous cache acquisition and read-only region inspection.
 Its tree matches final documentation checkpoint
@@ -20,35 +26,30 @@ delivery failure is unknown. The published five-page wiki checkpoint is
 `c4ecb344bffae2d5bd293f2678063b6bcc985025`, with all five remote page blobs
 verified against `docs/wiki/`.
 
-## Persistence work in progress
+## Persistence foundation checkpoint
 
-The storage work adds an [owned region image writer](storage/region-writer.md),
-the [level metadata codec](storage/level.md), stable owned chunk NBT and
-[native region transport](world/storage.md). Development comparisons exercise
-both original serializers/loaders and full region allocation images. Public
-fixtures retain original observations; unsupported entity/tile/player bodies
-remain opaque and unsafe edits are refused.
+The [region image writer](storage/region-writer.md), [level metadata codec](storage/level.md),
+stable stored chunks and [native world storage](world/storage.md) now have
+finite original-to-C-to-original and C-to-original-to-C acceptance. Metadata
+fallback/rotation, session checks, both explicit dimension roots, shared region
+ownership and the actual acquisition loader are covered by original observations,
+paired inputs and separately identified C failure policies.
 
-The native world owner connects session checks, metadata fallback and rollover,
-dimension roots and the real acquisition loader seam. All 57 public tests pass
-without skips on native MSVC and WSL GCC/Clang with Linux sanitizers: 156.38,
-257.44 and 257.84 seconds respectively. Formatting passes for 111 C/header files.
-These are development results without tested-commit attribution.
-Final copied-world acceptance, full platform acceptance at an exact source commit and hosted
-integration remain pending. The new work does not establish gameplay
-save/unload scheduling, entity/player simulation or a playable client/server.
+At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, MSVC/GCC/Clang each pass 71
+selected tests without skips: 744.00, 1255.43 and 1256.05 seconds respectively.
+Independent audits bind all 290 tracked files, native tools/executables/build
+inputs and all 36 original manifests. Separate audits check deep new-profile
+provenance and complete supported world-state/control/preservation projections.
+The three original-only fixtures remain unchanged. The
+[hosted code checks](https://github.com/frankischilling/minecraft-c/actions/runs/39104921389)
+pass 59 public/numerical tests per compiler and formatting for 111 C/header files.
 
-The [hosted development checks at 23924cc](https://github.com/frankischilling/minecraft-c/actions/runs/39103944639)
-pass 59 public/numerical tests per compiler and formatting for 111 C/header
-files. Older hosted MSVC exposed two constant runtime-check conditions; they
-now use C17 static assertions, retaining strict warnings. Fresh native Windows
-and WSL/GCC whole-world development smokes pass with both originals and nonempty
-Boat/Sign transport. All 74 Java-free world-harness guards pass on both hosts.
-The two [exact-source attempts](reference/storage.md#copied-world-comparison-in-development)
-remain rejected. The second Windows run passed 63 of 71 tests; eight comparisons
-hit a shared helper's missing argument. The corrected adapter passes composed
-child and limit guards plus fresh original level comparisons on both hosts.
-Complete exact-source MSVC/GCC/Clang acceptance remains pending.
+The [evidence](reference/storage.md#exact-source-storage-checkpoint) retains
+exact capture/report hashes, clocks, limitations and excluded earlier attempts.
+These results cover seed23, eight storage slots and explicit dimensions 0/-1.
+Opaque transport does not implement entity/player simulation or every subtype
+serializer. Gameplay save/unload scheduling, dimension transitions,
+running-server persistence and crash recovery remain open.
 
 ## Verified combined checkpoint
 

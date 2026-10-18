@@ -157,8 +157,10 @@ original files or Java. `MC_ENABLE_STORAGE_REFERENCE_TESTS=ON` adds
 `reference.level`, `reference.region_write`, `reference.chunk_storage` and
 `reference.world_storage` with
 both supplied JARs, JDK17+ and `MC_REFERENCE_TESTED_COMMIT`. Use fresh owned or
-copied test worlds. Development checks pass on MSVC/GCC/Clang; copied-world and
-exact-source acceptance remain pending. See [storage evidence](reference/storage.md)
+copied test worlds. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71
+selected tests pass without skips on native MSVC/GCC/Clang, with Linux
+ASan/UBSan and independent copied-world/platform audits. See
+[storage evidence](reference/storage.md#exact-source-storage-checkpoint)
 and the [world ownership contract](world/storage.md). These library operations
 do not provide a playable world loader or complete gameplay save scheduling.
 

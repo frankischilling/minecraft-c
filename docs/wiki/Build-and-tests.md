@@ -97,14 +97,18 @@ acceptance; the
 [ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
 describes lifetimes, limits and unsupported operations.
 
-Current storage acceptance is DEVELOPMENT. All 57 public tests pass without
-skips on strict native MSVC and WSL GCC/Clang builds, with Linux ASan/UBSan.
-Clang-format18 passes for 111 C/header files. Hosted development checks pass 58
-public/numerical tests per compiler. Fresh native Windows and WSL/GCC whole-world
-development smokes pass both round-trip directions and opaque Boat/Sign
-transport; 74 Java-free harness guards pass on each host. Exact-source full
-MSVC/GCC/Clang acceptance remains pending. The completed checkpoint counts below
-retain their original source and scope.
+At storage checkpoint `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected
+local tests pass without skips on native MSVC and WSL GCC/Clang, with Linux
+ASan/UBSan. The suite includes 58 public tests, 12 original comparisons and the
+numerical Java oracle. Times are 744.00, 1255.43 and 1256.05 seconds respectively.
+Independent audits bind source, tools, executables/build inputs, original
+captures and complete supported copied-world state/control/byte projections.
+All 74 Java-free world-harness guards pass. Hosted checks pass 59 tests per
+compiler and clang-format18 for 111 C/header files. See the
+[exact evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md#exact-source-storage-checkpoint)
+for capture/report hashes and excluded attempts. These finite profiles do not
+establish gameplay save/unload scheduling, subtype simulation or a running C
+server. Older checkpoint counts below retain their original source and scope.
 
 ## Normal generation checks
 
@@ -200,7 +204,7 @@ Original resources are never bundled. The
 describes local import into a fresh ignored directory and its current limits.
 
 There is currently no C game executable or C server to host. The storage
-library implements explicit save operations under DEVELOPMENT acceptance;
-original-compatible gameplay save workflows remain unverified. Client controls
+library's explicit save operations pass the finite storage comparisons above;
+complete original-compatible gameplay save workflows remain unverified. Client controls
 and Linux/Windows hosting, backup and shutdown instructions will be added with
 verified game implementations.

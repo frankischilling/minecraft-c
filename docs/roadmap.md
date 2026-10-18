@@ -88,8 +88,11 @@ Hosted checks pass 48 tests per compiler and formatting for 89 C/header files.
 
 The [world storage foundation](world/storage.md) now has native metadata and
 session ownership, stable decoded chunks, dimension roots and bounded region
-writes. Original-derived development comparisons and constructed native checks
-pass; both-direction copied-world and exact-source acceptance remain pending.
+writes. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected tests
+pass without skips on native MSVC/GCC/Clang, with Linux sanitizers and
+independent platform/provenance/semantic audits. Both finite copied-world
+directions pass; [storage evidence](reference/storage.md#exact-source-storage-checkpoint)
+records their exact source, captures and limits.
 Opaque entity, tile and Player bodies are retained with unsupported edits
 refused. This does not implement their simulation or complete save scheduling.
 

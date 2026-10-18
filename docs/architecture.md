@@ -100,8 +100,11 @@ native region transport and the world-store composition. Its
 timestamps; the [metadata codec](storage/level.md) owns schema interpretation
 separately from gzip, fallback and file rotation. Storage loads preserve opaque
 state; the acquisition adapter refuses unsupported entity/tile activation.
-Development codec and transport checks pass, while complete copied-world and
-source acceptance remain in progress. This work does not add save/unload
+At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected tests pass without
+skips on native MSVC/GCC/Clang, with Linux sanitizers and independent provenance
+and copied-world semantic audits. The
+[storage checkpoint](reference/storage.md#exact-source-storage-checkpoint)
+defines its finite original-to-C and C-to-original scenarios. This work does not add save/unload
 scheduling or live entity/player serializers.
 
 The public header is the boundary for Java arithmetic and explicitly seeded

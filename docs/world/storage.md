@@ -2,8 +2,10 @@
 
 `mc_persistence` composes the shared C world and storage libraries. It has no
 Java, graphics, audio or socket dependency. The world-store implementation is
-connected to the acquisition coordinator. Copied-world and exact-source
-acceptance remain in progress; current results are development checks.
+connected to the acquisition coordinator. Native MSVC/GCC/Clang copied-world
+and exact-source acceptance passes for the finite foundation scenarios at
+`9ad690d83592f127b9bb39d7233e8eef06fd0029`. See the
+[checkpoint evidence](../reference/storage.md#exact-source-storage-checkpoint).
 
 ## Stable chunks
 
@@ -119,14 +121,17 @@ original GC timing, concurrent mutation or failed-I/O durability.
 
 `tools.world_store_interop` exercises native ownership, fallback, sessions,
 rotation, dimensions, accounting and the actual load callback using paired
-original-derived inputs and separately constructed C policies. These checks
-pass in development builds on MSVC/GCC/Clang with Linux sanitizers.
-Both-direction copied-world acceptance and source-bound full runs remain
-pending. Entity/player simulation and complete save/unload scheduling remain
-separate required behavior after this storage foundation.
+original-derived inputs and separately constructed C policies. At the accepted source checkpoint, all 71 selected tests pass without skips
+on each of MSVC/GCC/Clang, with Linux ASan/UBSan. The separate
+`reference.world_storage` profile opens original-created copies in C, opens
+C-created containers in both originals and reloads both routes in fresh C
+owners. It covers explicit dimensions 0/-1, signed storage boundaries and
+opaque Boat/Sign transport. Independent source/provenance, typed-state,
+clock/control and byte-preservation audits pass on all three hosts; all 74
+Java-free world-harness guards pass as well.
 
-The new `reference.world_storage` comparison composes genuine original-created
-copies, C-created containers and fresh reloads in both directions. Fresh native
-Windows and WSL/GCC development smokes pass, including opaque Boat/Sign
-transport; 74 Java-free harness guards pass on both hosts. Final exact-source
-MSVC/GCC/Clang acceptance remains pending. See [storage evidence](../reference/storage.md).
+These are finite seed23/API-context results. Entity/player simulation,
+every subtype serializer, gameplay save/unload scheduling, dimension-transition
+sharing, running-server persistence and crash recovery remain separate required
+behavior. See [storage evidence](../reference/storage.md) for exact manifests,
+controls, deliberate departures and excluded attempts.
