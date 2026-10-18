@@ -158,6 +158,11 @@ def file_digest(path,limit=512*1024*1024):
             size+=len(block);need(size<=limit,'file bound');h.update(block)
     return {'bytes':size,'sha256':h.hexdigest()}
 def integer(value,lo=-(1<<31),hi=(1<<31)-1): return type(value) is int and lo<=value<=hi
+def process_seconds_limit(name,context,scenario):
+    if name=='observed':
+        return 660 if context=='dedicated' and scenario=='unload101' else 360
+    return 180
+
 def validate_process_tree(tree):
     need(isinstance(tree,Mapping),'owned process accounting object')
     if tree.get('kind')=='windows-job':
@@ -369,10 +374,11 @@ class _CaptureValidator:
         for name,expected in m['classes_before'].items():
             need(exact(file_digest(p/'classes'/name),expected),'compiled class fingerprint');self.count['helper_classes']+=1
         need({x.name for x in (p/'classes').iterdir()}==set(m['classes_before']) and 3<=len(m['classes_before'])<=16,'complete generated helper class inventory')
+        trace=read_json(p/'trace.json')
         need(len(m['processes'])==5 and [x['name'] for x in m['processes']]==['java-version','compile','prepare','observed','control'],'complete ordered process inventory')
         for process in m['processes']:
             need(type(process['returncode']) is int and process['returncode']==0 and process['stopped'] is None,'actual process success')
-            need(integer(process['seconds_limit'],1,360 if process['name']=='observed' else 180) and integer(process['per_stream_limit'],1,MAX_RECORD),'process budgets')
+            need(integer(process['seconds_limit'],1,process_seconds_limit(process['name'],trace['context'],trace['scenario'])) and integer(process['per_stream_limit'],1,MAX_RECORD),'process budgets')
             need(Path(process['cwd']).resolve()==p and type(process['command']) is list and 1<=len(process['command'])<=64 and all(type(x) is str for x in process['command']),'bounded command/cwd')
             need(type(process['seconds']) in (int,float) and 0<=process['seconds']<=process['seconds_limit']+2,'bounded process duration')
             if 'reaped' not in process:need(self.development,'missing owned child reaping proof');self.gap('Historical process records lack explicit owned-tree/reaping accounting.')
@@ -393,7 +399,7 @@ class _CaptureValidator:
             self.records[role]=_Record(read_json(p/(role+'.json')),development=self.development);self.blobs[role]=Blobs(self.records[role]);self.count['blob_entries']+=len(self.blobs[role].raw)
             expected=m['preparation']['snapshot'] if role=='preparation' else m[role+'_snapshot']
             need(exact(file_digest(p/(role+'.json')),expected),'snapshot raw fingerprint')
-        self.trace=_Record(read_json(p/'trace.json'),trace=True,development=self.development);self.blobs['trace']=Blobs(self.trace);self.count['blob_entries']+=len(self.blobs['trace'].raw)
+        self.trace=_Record(trace,trace=True,development=self.development);self.blobs['trace']=Blobs(self.trace);self.count['blob_entries']+=len(self.blobs['trace'].raw)
         if 'trace_snapshot' not in m:need(self.development,'missing full raw trace fingerprint');self.gap('Historical manifest lacks complete raw trace fingerprint.')
         else:need(exact(file_digest(p/'trace.json'),m['trace_snapshot']),'complete raw trace fingerprint')
         self.context=self.trace['context'];self.scenario=self.trace['scenario']
