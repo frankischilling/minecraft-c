@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+_Static_assert(MC_REGION_WRITER_MAX_IMAGE_BYTES == UINT32_C(0x7ffff000), "region image limit");
+_Static_assert(MC_REGION_WRITER_MAX_ZLIB_BYTES == 1044474u, "region compressed record limit");
+
 static unsigned int checks;
 
 #define CHECK(condition)                                                                           \
@@ -95,8 +98,6 @@ static int test_creation_nulls_and_status(void)
     mc_region_writer_limits limits = mc_region_writer_default_limits();
     CHECK(limits.max_image_bytes == 64u * 1024u * 1024u);
     CHECK(limits.max_allocation_bytes == 128u * 1024u * 1024u);
-    CHECK(MC_REGION_WRITER_MAX_IMAGE_BYTES == UINT32_C(0x7ffff000));
-    CHECK(MC_REGION_WRITER_MAX_ZLIB_BYTES == 1044474u);
     static const struct {
         mc_region_writer_status status;
         const char *text;
