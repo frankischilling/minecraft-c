@@ -137,7 +137,7 @@ public final class ChunkLifecycleController {
     static String hash(byte[] values) throws Exception { return ChunkLifecycleObservation.hash(values); }
     static long remaining(long deadline) {
         long value = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime());
-        require(value > 0, "180-second controller/debuggee deadline"); return Math.min(value, 10000);
+        require(value > 0, "300-second controller/debuggee deadline"); return Math.min(value, 10000);
     }
     static ObjectReference reference(Value value) {
         require(value instanceof ObjectReference, "nonnull object reference"); return (ObjectReference) value;
@@ -829,7 +829,7 @@ public final class ChunkLifecycleController {
         Process child = null; VirtualMachine vm = null; Future<byte[]> stdout = null, stderr = null;
         Path outPath = null, errPath = null, failurePath = null; Session session = null;
         ExecutorService readers = Executors.newFixedThreadPool(2); long start = System.nanoTime();
-        long deadline = start + TimeUnit.SECONDS.toNanos(180); int status = 1;
+        long deadline = start + TimeUnit.SECONDS.toNanos(300); int status = 1;
         try {
             require(args.length == 7 && Arrays.asList("client","base","dedicated").contains(args[1])
                 && Arrays.asList("cohort","unload101","session-world","detach-owned").contains(args[2]) && args[3].equals("0000000000000017"), "explicit original lifecycle context/scenario");

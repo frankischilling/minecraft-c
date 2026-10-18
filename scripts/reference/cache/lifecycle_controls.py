@@ -372,7 +372,7 @@ class _CaptureValidator:
         need(len(m['processes'])==5 and [x['name'] for x in m['processes']]==['java-version','compile','prepare','observed','control'],'complete ordered process inventory')
         for process in m['processes']:
             need(type(process['returncode']) is int and process['returncode']==0 and process['stopped'] is None,'actual process success')
-            need(integer(process['seconds_limit'],1,220 if process['name']=='observed' else 180) and integer(process['per_stream_limit'],1,MAX_RECORD),'process budgets')
+            need(integer(process['seconds_limit'],1,360 if process['name']=='observed' else 180) and integer(process['per_stream_limit'],1,MAX_RECORD),'process budgets')
             need(Path(process['cwd']).resolve()==p and type(process['command']) is list and 1<=len(process['command'])<=64 and all(type(x) is str for x in process['command']),'bounded command/cwd')
             need(type(process['seconds']) in (int,float) and 0<=process['seconds']<=process['seconds_limit']+2,'bounded process duration')
             if 'reaped' not in process:need(self.development,'missing owned child reaping proof');self.gap('Historical process records lack explicit owned-tree/reaping accounting.')

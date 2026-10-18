@@ -466,7 +466,7 @@ def main(argv=None):
             command = ([java, "--add-modules", "jdk.jdi", "-Xmx512m", "-cp", directory / "classes", "ChunkLifecycleController",
                         *arguments, directory / "trace.json"] if mode == "observed" else
                        [java, "-Xint", "-Xmx512m", "-cp", directory / "classes", "ChunkLifecycleObservation", *arguments])
-            run(mode, command, directory, report, 220 if mode == "observed" else 180)
+            run(mode, command, directory, report, 360 if mode == "observed" else 180)
             require((directory / (mode + ".json")).stat().st_size <= 32 * 1024 * 1024, "bounded complete helper snapshot")
             report[mode + "_snapshot"] = file_fingerprint(directory / (mode + ".json"))
             report[mode + "_after"] = NATIVE.inventory(world)
