@@ -1,11 +1,19 @@
 # Chunk save, unload and owner retirement
 
-This implementation is in development. Constructed contracts and modern-JDK
-pending-set replay pass on MSVC and sanitized GCC/Clang working-tree builds.
-Fresh original/control captures and strict native comparisons now pass selected
-profiles. Exact-commit acceptance and hosted checks remain pending. The accepted
-[persistence foundation](../reference/storage.md#exact-source-storage-checkpoint)
-remains a separate checkpoint.
+The lifecycle coordinator and native world runtime compose saving, detachment,
+ordered pending unloads and explicit owner retirement. Their interfaces and
+failure policies are described below. Source
+`46546d8322de52beb6c3a51f30e827c0260d2b30` passes finite qualification at the
+[lifecycle checkpoint](../reference/lifecycle.md#exact-source-lifecycle-checkpoint).
+The accepted [persistence foundation](../reference/storage.md#exact-source-storage-checkpoint)
+remains a separate historical checkpoint. The v7 and v8 matrices are excluded
+from this checkpoint. Complete Windows v10, GCC v9 and Clang v9 suites each
+passed all 92 tests without failures or skips. Independent audits, storage
+rechecks and complete capture preservation also pass. Windows v9 is excluded
+after an original setup skip.
+The reference controller retains bounded JDI mirrors from
+first serialization. Its identity regression and the profile-scoped helper
+interval regression have separate Windows/Linux passes.
 
 ## Saving and unloading
 
@@ -96,7 +104,7 @@ transport preserves its existing policy. Native storage failures escape as
 fatal outcomes with retained diagnostics; this safer policy differs from
 swallowed original I/O failures.
 
-## Development evidence
+## Test domains
 
 Constructed tests cover flag/overflow eligibility, 23/24/25 cutoffs, live mutation,
 recursive lease depths, retained-key removal, 100/101 unloads and dedicated gates.
@@ -104,7 +112,8 @@ Owned-file tests cover registry/reservation bounds, retirement/reload, session
 conflict before q-reset, metadata accounting, generated-copy independence and
 failed retention after generation. These are contracts, not original-game oracle
 values. The actual-runtime [JDK corpus](../reference/java-semantics.md#integer-set-history)
-is separate evidence. Full game lifecycle comparison remains required.
+is separate evidence. Tick-driven scheduling, general deferred cleanup,
+entity/player bodies and running-game restart comparisons remain required.
 
 The native protocol integration has 67,659 constructed checks on MSVC and
 sanitized GCC/Clang working-tree builds. A separate development replay matches
@@ -126,5 +135,7 @@ also pass on Windows JDK17 and Linux JDK21. The refusal preserves all copied
 file bytes through failed loading and EOF. Boat/Sign bodies remain external.
 
 See [lifecycle reference evidence](../reference/lifecycle.md) for capture,
-comparison, clocks and ownership limits. No working-tree result substitutes for
-exact-source acceptance, independent final audits or hosted qualification.
+comparison, clocks and ownership limits. These development counts identify their
+own finite runs. The [exact-source checkpoint](../reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+records the complete qualified matrix and audits; no working-tree pass
+substitutes for source, executable and complete-result qualification.

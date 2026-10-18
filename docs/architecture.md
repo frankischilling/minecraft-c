@@ -107,11 +107,27 @@ and copied-world semantic audits. The
 defines its finite original-to-C and C-to-original scenarios. That checkpoint does not add save/unload
 scheduling or live entity/player serializers.
 
-The [developing lifecycle module](world/lifecycle.md) adds live save/unload
-coordination, ordered pending history, explicit leases/retirement and native
-world-owner composition. Its [fresh original/control profiles](reference/lifecycle.md)
-and working-tree native checks remain separate from the accepted storage
-checkpoint; exact-source and hosted qualification remain open.
+The [lifecycle module](world/lifecycle.md) traverses the live insertion list,
+saves eligible chunks and selects pending unloads through the bounded Integer
+set's actual mutation history. The store registers borrowed cache/fallback
+bindings and counts explicit leases. Unpublication never frees an owner;
+individual retirement refuses active, mapped, listed, fallback or leased
+identities and recovers capacity only after those references end.
+
+`world/runtime` belongs to `mc_persistence`. It binds acquisition, generation
+retention, storage and lifecycle callbacks to one stable world clock and fresh
+metadata views. Generation reserves an owner slot before running and returns a
+stable retained copy; later payload-allocation failure preserves generation's
+completed effects. Loaded chunks preserve their source NBT. Runtime destruction
+refuses live calls, leases or nonempty cache/list/pending state and does not
+save or free store chunks. Empty entity/tile records are native; other bodies
+remain explicit external seams. Its [qualification ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+is separate from the accepted storage checkpoint.
+
+The reference controller retains at most 32768 target object mirrors from their
+first serialized IDs through a capture session. A separate synthetic JDI check
+covers debugger disposal, late helper labels, capacity and duplicate rejection.
+This reference-tool ownership is independent of native chunk retirement.
 
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure
@@ -136,7 +152,10 @@ Create new folders with actual implementations rather than empty placeholders.
 ```text
 include/mc/core/java/java.h
 src/core/java/java.c
+include/mc/core/java/int_set.h
+src/core/java/int_set.c
 tests/core/java/test_java.c
+tests/core/java/test_int_set.c
 include/mc/core/math/math.h
 src/core/math/math.c
 tests/core/math/test_math.c
@@ -167,6 +186,13 @@ src/world/storage/chunk.c
 src/world/storage/regions.c
 src/world/storage/store.c
 src/world/storage/files.c
+include/mc/world/chunk/references.h
+include/mc/world/cache/lifecycle.h
+src/world/cache/lifecycle.c
+tests/world/cache/test_lifecycle.c
+include/mc/world/runtime/runtime.h
+src/world/runtime/runtime.c
+tests/world/runtime/test_runtime.c
 tests/world/storage/test_chunk.c
 include/mc/world/noise/noise.h
 src/world/noise/noise.c

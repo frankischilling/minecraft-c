@@ -78,7 +78,7 @@ that failure domain is outside the nonnull cache contract. Caught loader errors
 continue to generation, with diagnostics owned by the loader. Fatal loader
 failures stop.
 
-`world.chunk_acquire` exercises 838 constructed checks on MSVC, GCC and Clang,
+`world.chunk_acquire` contains 3945 constructed checks recorded in development,
 including callback order, loaded-time sampling, live population gates, blank
 methods, aliases, wrapping, recursion and failure preservation. Independent
 bytecode review matches all 231 acquisition instructions across client `ok`,
@@ -99,7 +99,8 @@ independent audit and hosted checks.
 This acquisition boundary does not itself decode disk chunks, populate terrain
 features, save/unload objects or drain light queues. The separate lifecycle and
 runtime modules compose represented storage, saving and owner retirement;
-their new original-game acceptance remains in development.
+their exact-source qualification is recorded separately in the
+[lifecycle ledger](../reference/lifecycle.md#exact-source-lifecycle-checkpoint).
 Read-only [region inspection](../storage/region.md), unpublished
 [normal generation](generation.md) and [full finishing](finishing.md) retain
 their own contracts and evidence.

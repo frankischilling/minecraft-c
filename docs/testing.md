@@ -10,13 +10,13 @@ noise, climate and terrain comparisons remain local.
 | Check | Coverage | Limits |
 | --- | --- | --- |
 | `world.normal_generator` | 99074 public checks for composed generation, fresh lifecycle flags, borrowed ownership, unpublished identities, mutable materials, repeated results, coordinate/resource preflight and allocation-failure preservation | Finite ordinary normal generator; no cache acquisition, population or propagation |
-| `world.chunk_acquire` | 3945 working-tree constructed checks for load/generate/fallback, gates, pending membership, publication, activation, population gates, recursion, local leases and partial failures | New lifecycle additions await exact-source qualification; injected effects are separate from genuine gameplay reachability |
+| `world.chunk_acquire` | 3945 constructed checks recorded in development for load/generate/fallback, gates, pending membership, publication, activation, population gates, recursion, local leases and partial failures | Lifecycle additions pass the complete exact-source suites; injected effects remain separate from genuine gameplay reachability |
 | `core.java_int_set` / `world.chunk_pending` | 6913747 / 35495 constructed checks for bounded history, tree bins, removal and mediated pending mutations | Modern-JDK history domain; no historical Java6 claim |
 | `core.java_int_set_replay` / `world.chunk_pending_replay` | Seven captured JDK histories, 574 operations, 588 complete responses and seven rejection controls per replay | Actual public Integer/HashSet APIs; game unload selection has separate original evidence |
-| `world.chunk_lifecycle` | 12371 constructed checks for eligibility, 24/25 cutoff, live/reentrant traversal, detachment, 100/101 unloads, failures and leases | Working-tree counts; callback bodies are explicit external contracts |
+| `world.chunk_lifecycle` | 12371 constructed checks for eligibility, 24/25 cutoff, live/reentrant traversal, detachment, 100/101 unloads, failures and leases | Development count; callback bodies are explicit external contracts |
 | `world.runtime_*` / `world.lifecycle_protocol` | Fresh native owned worlds, retirement/capacity recovery, generated retention, session errors and 67659 protocol checks | Constructed values; native fatal storage policy and empty runtime records are explicit restrictions |
 | `world.lifecycle_callbacks_replay` | Three original-derived finite cases, 61 callback pairs, full arrays/headers, 39 response mutations and seven native input rejections | Original raw decoder output is imported; Boat/Sign bodies and world deferred cleanup are external |
-| `reference.lifecycle_*` (local opt-in) | Ten fresh paired original/control profiles with strict class-file/clock/provenance validation and native comparison; nonempty native activation refusal also preserves copied files | Selected working-tree profiles pass; exact-source acceptance and hosted qualification remain pending; see [evidence](reference/lifecycle.md) |
+| `reference.lifecycle_*` (local opt-in) | Ten fresh paired original/control profiles with strict class-file/clock/provenance validation and native comparison; nonempty native activation refusal also preserves copied files | All ten profiles pass in the qualified Windows v10/GCC v9/Clang v9 suites; see [exact-source ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint) |
 | `tools.acquire_reference` | 23 original-protocol and execution guards covering complete events, object ownership, intermediate cache contents, query order, Random states and unavailable/failure classification | Java-free fixed three-context protocol corpus |
 | `tools.acquire_fixture` | Five lossless corpus, provenance, compression, MCA1 import and original-only export guards | Retained original expectations; no original execution |
 | `tools.acquire_interop` | Three continuous C inputs, 20 operations, five generated chunks and 5120 exact queries; malformed binary rejection | Actual retained-provider composition with fresh-world load misses; no population body or disk decoder |
@@ -259,6 +259,69 @@ public tests, or 36 with the numerical Java oracle. The selected original
 finishing, light queue, chunk, nibble and normal generation comparisons bring
 that configuration to 41 tests. These are exact-checkpoint counts; later
 cache/region additions on the active branch need their own validation.
+
+## Lifecycle reproduction and qualification
+
+The public tests exercise Integer-set and mediated pending history, live
+acquisition/save/detach/unload contracts, native runtime ownership and the
+original-only nonempty callback fixture. Constructed failures/reentry and JDK-only
+histories remain distinct from genuine game observations. Boat/Sign callback
+replay imports observed decoder data and callback effects while C computes
+coordinator transitions. Native activation of those nonempty records must refuse
+without changing copied files.
+
+Set `MC_ENABLE_LIFECYCLE_REFERENCE_TESTS=ON`, both supplied JAR paths,
+`Java_JAVA_EXECUTABLE`, `Java_JAVAC_EXECUTABLE` from the same supported JDK17/21
+installation, and `MC_REFERENCE_TESTED_COMMIT`. Build the test targets and run:
+
+```sh
+ctest --test-dir <build> -C Debug -R '^reference.lifecycle_' --output-on-failure
+```
+
+Ten serial profiles use fresh preparation/observed/control worlds and strict
+original class-file, graph, clock, process and file checks before native
+comparison. Missing prerequisites return77 and count as unavailable/skipped.
+Public `world.lifecycle_callbacks_replay` needs no Java or original archives.
+`MC_ENABLE_JAVA_REFERENCE_TESTS=ON` separately enables the JDK-only numerical
+and Integer-set checks.
+
+At `46546d8322de52beb6c3a51f30e827c0260d2b30`, complete Windows v10, GCC v9
+and Clang v9 suites each passed 92 tests with zero failures/skips, in 1940.77s,
+2969.23s and 2961.75s respectively. Independent source/semantic audits, storage
+rechecks and all 22 capture roots per platform also pass. The finite qualification
+includes Linux ASan/UBSan and unchanged measured sources, tools and executables.
+The [lifecycle ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+binds actual CTest rows, manifests, inputs, native build/executable bytes,
+sanitizer flags, independent audits and hosted results to the source.
+
+Dedicated `unload101` alone has a 600-second controller/660-second exporter
+allowance. Other observed profiles retain 300/360 seconds, with unchanged
+180-second control/preparation process limits. Complete evidence and every other
+bound remain required. A timeout is failed observation, never native parity.
+
+The controller now retains each serialized JDI object mirror through the session,
+with a 32768-mirror bound. The standalone regression above passed both marker and
+pre-label observation cases on Windows JDK17 and Linux JDK21, including proved
+disposal of 128 separate control mirrors and capacity/duplicate-label checks.
+The preceding v7 matrix remains excluded: Windows passed 92 tests; GCC passed 91
+and failed 1; Clang passed 90, failed 1 and skipped 1. Its failures are recorded in
+the [v7 history](reference/lifecycle.md#excluded-v7-attempt). The v8 matrix also
+remains excluded: Windows passed 92 tests; GCC and Clang each passed 91 and failed
+1, with zero skips. Their Linux dedicated101 helper epochs exceeded the old
+validator cap before C comparison. Retained semantic and native development
+diagnostics pass without qualifying those failed captures. See the
+[v8 history](reference/lifecycle.md#excluded-v8-attempt). Windows v9 at the current
+source is also excluded: 91 passed, 1 skipped and none failed. The original
+chunk-data setup queue exceeded its observation bound before measurement. The
+[Windows v9 history](reference/lifecycle.md#excluded-windows-v9-attempt) records
+that refusal. The fresh complete Windows v10 suite supplies every selected row
+and capture independently.
+
+The interval regression above failed both actual checks on the retained Linux
+operands before the fix, then passed 556 positive and 2011 negative cases on
+native Windows and Linux. Its clock-policy checks do not replace fresh
+original/control captures or independent exact-source audits.
+
 
 ## Local environments
 

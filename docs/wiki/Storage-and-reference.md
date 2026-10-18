@@ -220,6 +220,73 @@ gameplay save/unload scheduling, dimension-transition sharing, running-server
 persistence, crash recovery and full game integration remain open. Earlier
 checkpoint counts above describe only their recorded sources.
 
+## Lifecycle qualification
+
+The [lifecycle evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md)
+adds finite seed23 client, base-server and dedicated-owner constructor/API
+schedules for incremental/forced and metadata-first saving, actual far-drop,
+100/101 unloads, detach, reload and session failure. Dedicated construction does
+not start the server tick loop. Original APIs supply expected values; C never
+does. Full arrays/headers, metadata, pending/insertion history, supported typed
+files, untouched bytes, clocks and measured input/class/process provenance are
+separate required projections.
+
+At source `46546d8322de52beb6c3a51f30e827c0260d2b30`, complete Windows v10,
+GCC v9 and Clang v9 suites each passed 92 tests without failures or skips.
+Independent source/semantic audits, storage rechecks and complete capture
+preservation also pass, with Linux ASan/UBSan and stable measured inputs. The
+[canonical ledger](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+retains exact result/manifest hashes, the three audit-v3 report sets and
+excluded incomplete attempts. Each platform preserves all 22 original-profile
+roots; no successful Windows v9 row is reused.
+The profile-specific 600/660-second dedicated101 allowance changes no captured
+state, graph scope or proof requirement.
+
+The current-source Windows v9 attempt is excluded in full: 91 passed, 1
+skipped and none failed. Original chunk-data setup returned unavailable before
+measurement when its queue contained 42964 entries against the 16384 bound.
+The fresh Windows v10 suite uses unchanged source and bounds; every test, capture
+and audit passes independently. Its rows are never supplemented from Windows
+v9. See the
+[excluded Windows v9 history](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#excluded-windows-v9-attempt).
+
+The preceding v7 source `e5dc551a901a84fcec1568fac9e0d62fc5a6ee14` remains
+excluded: Windows passed 92 tests, GCC passed 91 and failed 1, and Clang passed 90,
+failed 1 and skipped 1. Both Linux dedicated101 captures failed trace identity
+validation before C comparison; Clang's chunk-data skip occurred during unseeded
+original-constructor setup. The Windows result remains historical to that source.
+
+The v8 source `96bd35b4a0138383478a936465a9c69be99a2547` is also excluded:
+Windows passed 92 tests, while GCC and Clang each passed 91 and failed 1, with
+zero skips. Linux dedicated101 Java execution completed, then helper epoch
+validation failed before C comparison. Retained full semantic and native
+`--development` comparisons pass as diagnostics only; the failed manifests
+remain unchanged. Exact times and scope are in the
+[v8 history](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#excluded-v8-attempt).
+
+The new controller retains bounded mirrors from each first serialized ID. The
+old-controller Linux marker control proved128 live objects received new IDs after
+debugger disposal. The corrected standalone regression passed both marker and
+pre-label cases on Windows JDK17 and Linux JDK21, with 128 disposed controls,
+stable anchors and capacity/duplicate-label checks. These tool checks do not
+qualify those earlier failed cohorts. The accepted Windows v10/Linux v9
+selection uses fresh complete suites and independent audits. The current helper interval
+policy permits 600000ms only for observed dedicated101 operations at both
+validator call sites. Preparation, constructors, controls and other profiles
+retain 180000ms, and events remain bracketed by their own interval. The actual
+call-site regression went red before this fix and passed 556 positive/2011
+negative checks on native Windows and Linux afterward.
+
+Keep four evidence domains separate: static original mappings, JDK-only
+collection histories, constructed C reentry/error/ownership contracts, and
+genuine original game observations. Nonempty Boat/Sign replay observes external
+feature bodies; native runtime activation refuses those records and must
+preserve copied file bytes. Native empty-runtime serialization is implemented;
+entity/player bodies, general deferred cleanup, terrain population, propagation,
+world ticking, gameplay dimension transitions, running-server persistence and
+crash recovery remain required. Explicit C retirement does not reproduce Java
+GC lifetime, and pinned modern-JDK order makes no Java6 claim.
+
 Original binaries, assets, raw decompiled source, launcher files, credentials,
 recordings and personal worlds remain outside public source and releases. Copy
 worlds before any writable reference experiment. Project code uses MIT; zlib

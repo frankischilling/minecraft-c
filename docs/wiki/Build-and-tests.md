@@ -26,8 +26,9 @@ Public checks cover numerical/text semantics, raw NBT, compression, both noise
 families, climate/biome classification, normal density/base blocks, surface
 replacement, normal cave carving, packed chunk arrays, height/skylight data
 and full finishing, unpublished normal generation, metadata/schema ownership,
-region image writing, native region transport, world-store acquisition and the
-local resource importer.
+region image writing, native region transport, world-store acquisition,
+Integer-set/pending history, lifecycle/runtime ownership and the local resource
+importer.
 GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
@@ -109,6 +110,61 @@ compiler and clang-format18 for 111 C/header files. See the
 for capture/report hashes and excluded attempts. These finite profiles do not
 establish gameplay save/unload scheduling, subtype simulation or a running C
 server. Older checkpoint counts below retain their original source and scope.
+
+## Lifecycle checks
+
+`MC_ENABLE_LIFECYCLE_REFERENCE_TESTS=ON` selects ten serial fresh
+original/control profiles and native comparisons. Supply both verified JARs,
+`Java_JAVA_EXECUTABLE` and `Java_JAVAC_EXECUTABLE` from one supported JDK17/21
+installation, plus `MC_REFERENCE_TESTED_COMMIT`. After building, run:
+
+```sh
+ctest --test-dir <build> -C Debug -R '^reference.lifecycle_' --output-on-failure
+```
+
+Public `world.lifecycle_callbacks_replay` needs no original archives or Java.
+Other public contracts cover flags/cutoffs, live mutation, history-sensitive
+pending selection, leases, retirement, generation retention and capacity recovery.
+The standard-library Integer-set oracle is enabled separately by
+`MC_ENABLE_JAVA_REFERENCE_TESTS=ON`. Its expectations do not establish Java6 or
+original game behavior.
+
+A separate JDK17+ regression uses synthetic rooted objects and no original assets:
+
+```sh
+python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
+```
+
+Both marker and pre-label cases pass on Windows JDK17 and Linux JDK21. Required
+controls prove disposal of 128 discarded mirrors, stable anchor IDs, bounded
+retention and duplicate-label rejection. Missing tools and inconclusive
+collection fail this command. CI runs it separately from CTest.
+
+The Python-only interval regression also needs no original assets:
+
+```sh
+python tests/tools/cache/check_lifecycle_intervals.py
+```
+
+It compiles the actual validator checks and verifies their role/profile and
+operation bindings. Both native hosts pass 556 positive/2011 negative cases,
+including the retained operands that failed both old checks. Only observed
+dedicated101 intervals permit 600 seconds; other profiles, controls, preparation
+and constructors retain 180 seconds. Events must remain inside their own
+sampled interval. CI runs this regression separately from CTest.
+
+The exact qualified selection is the complete Windows v10, GCC v9 and Clang v9
+suites at source `46546d8`. Each passed 92 tests without failures or skips:
+1940.77s on MSVC, 2969.23s on GCC and 2961.75s on Clang. Windows v9
+is excluded after its original chunk-data setup refusal; its rows cannot fill
+any gap in the fresh Windows v10 suite. Independent source/semantic audits,
+storage rechecks and capture preservation also pass, with Linux ASan/UBSan.
+Exact source, report hashes and scope are recorded in the
+[lifecycle ledger](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#exact-source-lifecycle-checkpoint).
+Dedicated `unload101` alone has 600/660-second controller/exporter allowances.
+Other observed profiles retain 300/360 seconds and control/preparation processes
+retain 180 seconds. Graph, data, process and comparison requirements remain
+unchanged. Timeouts and skipped prerequisites are never passing parity results.
 
 ## Normal generation checks
 

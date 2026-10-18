@@ -5,5 +5,7 @@
 - [Verified generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
 - [Cache and region checks](Storage-and-reference#cache-and-region-checks)
 - [Storage foundation checkpoint](Storage-and-reference#storage-foundation-checkpoint)
+- [Save, unload and retirement](Architecture#save-unload-and-retirement)
+- [Lifecycle qualification](Storage-and-reference#lifecycle-qualification)
 - [Storage and original references](Storage-and-reference)
 - [Source repository](https://github.com/frankischilling/minecraft-c)

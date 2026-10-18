@@ -46,8 +46,9 @@ composes those stages with cached heights, admission and dirty effects.
 fixed fresh-world cases with two passes per side. Retain the distinction between
 the unpublished measured chunk and the existing cached chunks. The separate
 acquisition coordinator below adds cache load/generate selection and callback
-lifecycle order. Terrain-feature bodies, save/unload and light propagation remain
-separate required implementations.
+lifecycle order. The synchronous save/unload composition below adds that
+boundary; terrain-feature bodies, light propagation and tick-driven scheduling
+remain required.
 
 The [direct normal generator composition](world/generation.md) is implemented:
 fresh data, direct climate/biomes, density/base, current-material surface,
@@ -96,9 +97,21 @@ records their exact source, captures and limits.
 Opaque entity, tile and Player bodies are retained with unsupported edits
 refused. This does not implement their simulation or complete save scheduling.
 
-Save/unload lifecycle, terrain-feature population bodies, light propagation,
-other dimension generation and protocol framing remain separate required work. Define their
-scoped implementations from original class/method evidence before coding.
+The [synchronous lifecycle](world/lifecycle.md) composes acquisition, save/drop,
+unload, explicit retirement and reload. Its [finite qualification](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+passes at `46546d8`: all 92 tests pass on MSVC/GCC/Clang without skips, with
+Linux sanitizers, independent audits and retained capture/storage evidence.
+This extends the accepted storage foundation. Finite constructor/API
+observations do not establish a running dedicated server.
+
+Complete normal terrain-feature population is the next cohesive generation
+boundary: lakes, dungeons and their payloads, clay/ores, all original tree and
+vegetation families, springs and snow, with the world mutation and RNG/update
+order they invoke. Callback replay does not implement these bodies. Light
+propagation, general deferred cleanup, entity/player simulation, tick-driven
+save/unload scheduling, other-dimension generation, protocol framing and gameplay
+restart/recovery remain required. Define their complete acceptance from original
+class/method evidence before coding.
 Further splits must retain the full original requirements
 rather than replacing them with a simpler private save format or rewritten-only
 network protocol.

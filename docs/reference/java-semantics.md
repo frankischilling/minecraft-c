@@ -161,8 +161,23 @@ This is not a transitive OS-library or historical-runtime reconstruction.
 
 Native contract tests separately exercise byte/entry bounds, failed mutations,
 clear retention and synchronized pending ownership. Clear and constructed
-failure tests are not additional JDK observations. Working-tree MSVC and
-sanitized GCC/Clang development runs pass; exact-commit subsystem acceptance is
-still pending. Java 6 uses different collection mechanics and has no pinned
-executed profile here. No historical-JVM or original-game lifecycle parity is
-inferred from this finite JDK-only corpus.
+failure tests are not additional JDK observations. Development runs pass on
+MSVC and sanitized GCC/Clang; accepted exact-source qualification is recorded
+separately in the [lifecycle ledger](lifecycle.md#exact-source-lifecycle-checkpoint).
+The collection corpus supplies expectations only for its pinned modern JDKs.
+Genuine game pending-key selection, callback order and unloads have separate
+[lifecycle observations](lifecycle.md). Java6 uses different collection mechanics
+and has no pinned executed profile here. Neither historical-JVM behavior nor
+original game lifecycle parity follows from this finite JDK-only corpus.
+
+## Debugger mirror identity
+
+The lifecycle reference controller retains each target object mirror when its
+ID first enters a serialized record, including records created before helper
+labels. The bounded table permits 32768 distinct mirrors. This prevents debugger
+mirror disposal from invalidating recorded IDs for still-live target objects.
+The asset-independent [standalone regression](../testing.md) passed marker and
+pre-label cases on Windows JDK17 and Linux JDK21, with 128 discarded control
+mirrors proving that debugger collection/disposal occurred. It also checks
+capacity and duplicate labels. This is reference-tool identity lifetime evidence;
+the lifecycle boundary still makes no Java GC or Java6 collection claim.
