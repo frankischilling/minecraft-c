@@ -14,7 +14,7 @@ comparisons remain local.
 | `tools.acquire_reference` | 23 original-protocol and execution guards covering complete events, object ownership, intermediate cache contents, query order, Random states and unavailable/failure classification | Java-free fixed three-context protocol corpus |
 | `tools.acquire_fixture` | Five lossless corpus, provenance, compression, MCA1 import and original-only export guards | Retained original expectations; no original execution |
 | `tools.acquire_interop` | Three continuous C inputs, 20 operations, five generated chunks and 5120 exact queries; malformed binary rejection | Actual retained-provider composition with fresh-world load misses; no population body or disk decoder |
-| `reference.chunk_acquire` (local opt-in) | Genuine persistent client and dedicated-owner constructors, retained providers, actual loader misses, full lifecycle/query traces and complete untouched controls | Finite seed23 constructor/API corpus; final exact-source platform acceptance pending |
+| `reference.chunk_acquire` (local opt-in) | At 9a50ac6, genuine persistent client and dedicated-owner constructors, retained providers, loader misses, 20 operations, 5120 query pairs, 252 lifecycle events, 40 inventories and three complete untouched controls pass on MSVC/GCC/Clang | Finite seed23 constructor/API corpus; successful-load and natural population callback comparisons remain separate |
 | `storage.region`, `tools.region_inspect`, `tools.region_capture`, `tools.region_live`, `tools.region_probe` | Read-only storage/CLI, historical replay guards, 17 live-protocol guards and real Unicode stdin paths | Local record inspection; no world schema, global addressing or writes |
 | `reference.region` (local opt-in) | All 49 queries per side with fresh copies, exact controls, complete metadata and bounded diagnostic differences; exact 092301ae MSVC/GCC/Clang checks and independent audit pass | Eight compatible cases and 41 explicit malformed/diagnostic departures; no original error-parity claim |
 | `tools.normal_reference` | Production helper schema, source/provenance, prerequisite and preservation guards | Synthetic checks; no original methods run |
@@ -192,6 +192,17 @@ that configuration to 41 tests. These are exact-checkpoint counts; later
 cache/region additions on the active branch need their own validation.
 
 ## Local environments
+
+Expanded acquisition source `9a50ac67997082c89dbc43cf4274fba1427c1565` passes
+all 52 selected tests without skips on native MSVC19.51 and WSL
+GCC13.3/Clang18.1, with Linux ASan/UBSan. Each suite runs 44 public tests, the
+numerical Java oracle and seven selected original comparisons. Independent audit
+verifies all 53 project sources, 63 stable inputs, nine helper classes, complete
+records and all 156 passed test rows across the three builds.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39085300876)
+pass 45 tests per compiler and formatting for 88 C/header files. See the
+[cache evidence](reference/cache.md#exact-source-platform-checkpoint) for exact
+manifest hashes, observation bounds and remaining callback comparisons.
 
 Normal composition source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
 all 41 configured tests without skips on native MSVC19.51 and WSL

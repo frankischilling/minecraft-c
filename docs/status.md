@@ -96,8 +96,14 @@ The combined retained-provider corpus now has three original-only contexts,
 events, 40 inventories and three byte-equal untouched controls. Lossless public
 replay and 28 Java-free guards pass on MSVC/GCC/Clang. Successful original loads
 through the C callback seam and one natural population callback boundary remain
-required before expanding this verified acquisition profile. Final exact-source
-platform checks for the combined composition are pending. These finite checks
+required before expanding this verified acquisition profile. Source
+`9a50ac67997082c89dbc43cf4274fba1427c1565` passes all 52 selected tests without
+skips on MSVC/GCC/Clang, including seven original comparisons and Linux
+sanitizers. Independent audit verifies all 53 source objects, 63 stable inputs,
+nine helper classes and complete records per build; hosted checks pass 45 tests
+per compiler and formatting for 88 C/header files. See the
+[cache checkpoint](reference/cache.md#exact-source-platform-checkpoint).
+These finite checks
 do not establish a running server or complete cache lifecycle parity.
 
 Earlier seven-operation cache research observes finishing before publication

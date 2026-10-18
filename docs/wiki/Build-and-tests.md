@@ -135,9 +135,12 @@ compatible; 41 retain explicit bounded diagnostic departures.
 pass 42 public/numerical tests per compiler and formatting for 87 C/header files.
 See the [region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md).
 
-The expanded acquisition source currently configures 44 public tests, 45 with
-the numerical Java oracle, or 52 with the selected original comparisons.
-These counts describe the configured suite; final platform acceptance is pending.
+Expanded source `9a50ac67997082c89dbc43cf4274fba1427c1565` passes all 52
+selected local tests without skips on MSVC/GCC/Clang with Linux sanitizers and
+independent exact-source audit. The suite contains 44 public tests, the numerical
+Java oracle and seven selected original comparisons.
+[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39085300876)
+pass 45 tests per compiler and formatting for 88 C/header files.
 
 Missing references are unavailable/skipped results, never parity passes. Pin the
 source commit when recording comparisons. See the

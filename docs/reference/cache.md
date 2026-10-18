@@ -153,5 +153,45 @@ report SHA-256 is
 `tools.acquire_reference` runs 23 Java-free protocol/execution guards;
 `tools.acquire_fixture` runs five corpus, provenance, compression and export
 guards. `tools.acquire_interop` replays all three inputs and checks malformed
-binary input rejection. Final exact-source native Windows/Linux and hosted
-checks for the expanded composition are still pending.
+binary input rejection.
+
+## Exact-source platform checkpoint
+
+Source `9a50ac67997082c89dbc43cf4274fba1427c1565` passes all 52 configured
+CTests without skips on native MSVC19.51 and WSL GCC13.3/Clang18.1. Both Linux
+builds use ASan/UBSan. The configuration contains 44 public tests, the numerical
+Java oracle and seven selected original comparisons. Full-suite times are
+431.61, 891.25 and 892.22 seconds respectively; acquisition comparison times
+are 54.29, 91.08 and 91.19 seconds. Windows uses Temurin17.0.17 and both Linux
+builds use OpenJDK21.0.12.1.
+
+Each acquisition capture independently passes C/client, C/server and the shared
+client/server comparison, plus the separate dedicated-gates C/server case.
+It retains 20 operations, five generations, 5120 ordered height-query pairs,
+252 lifecycle events, 40 inventories and three complete byte-equal untouched
+controls. All 63 attributed inputs and nine helper classes stay unchanged.
+
+- Windows manifest:
+  `build-generation-windows/reference-chunk-acquire/capture-81770ac1e7d7462989e5ef4af48bc1b4/manifest.json`;
+  SHA-256 `6545fc3b5242b9ce3eef915a066b1375d09ce3d28353e53eed0ec4e6d5d57e53`.
+- GCC manifest:
+  `build-generation-gcc/reference-chunk-acquire/capture-03e42ed50d58449fb13f653c5b6f41ef/manifest.json`;
+  SHA-256 `2abcb7284d37ad120edc4278aabd2dace14c5970d6b679a1fa921e4d4b79f98a`.
+- Clang manifest:
+  `build-generation-clang/reference-chunk-acquire/capture-7b66a23d9c2243de8c90b7174cffac9b/manifest.json`;
+  SHA-256 `26a467c3b5ad0f69a8588e6d82708f3661d6ecfa025b72d52c7899878916711b`.
+
+A separate standard-library audit verifies all 53 project source files against
+the exact Git objects, independently derives complete expected projections and
+MCA1 imports from the original records, and checks strict JSON types, full
+protocol identity graphs, query visibility, Random continuations, controls and
+world inventories. It verifies all 156 actual passed CTest rows, the archived
+full test logs, process exit codes of zero and zero skips. The audit report SHA-256 is
+`09b5c938205ccb40ed4f58e7b6e698dbe9be1797eea49c7064cad0453e4e118b`.
+
+[Hosted checks at this source](https://github.com/frankischilling/minecraft-c/actions/runs/39085300876)
+pass 45 public/numerical tests per compiler and clang-format18 for 88 C/header
+files. This checkpoint verifies the finite constructor/API corpus above;
+successful-load and natural population callback comparisons remain separate
+acceptance work. It does not establish a running dedicated server, disk decoding,
+terrain features, save/unload, light propagation or complete cache lifecycle.

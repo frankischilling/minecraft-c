@@ -74,8 +74,11 @@ base server `jb` and dedicated `he`. Public contract checks and genuine original
 observations remain separate evidence. Production comparisons of this combined
 coordinator and retained normal generation now have a three-context production
 oracle and lossless public replay. Their [reference evidence](../reference/cache.md)
-separates genuine observations from injected callback tests. Final exact-source
-platform validation of the expanded composition remains pending.
+separates genuine observations from injected callback tests. At source
+`9a50ac67997082c89dbc43cf4274fba1427c1565`, all 52 selected local tests pass on
+MSVC/GCC/Clang without skips, with Linux sanitizers, independent exact-source
+audit and hosted checks. Successful-load and natural population callback
+comparisons remain separate acceptance work.
 
 This boundary does not decode disk chunks, populate terrain features, save or
 unload objects, drain light queues or reproduce Java collection iteration.
