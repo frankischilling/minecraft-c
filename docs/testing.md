@@ -104,6 +104,21 @@ The standalone numerical helper also returns77 for missing tools or its C
 executable, and returns1 for execution errors or mismatches. It only normalizes
 platform text newlines; numeric records and floating bit patterns must agree exactly.
 
+The separate debugger identity regression uses JDK17+ with `jdk.jdi` and synthetic
+target objects. It needs no original archives or assets:
+
+```sh
+python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
+```
+
+It exercises the lifecycle controller's actual serialization and identity-marker
+methods across debugger collection, including objects observed before their
+helper labels arrive. Passing requires completed debugger disposal of separate
+control mirrors, stable recorded identities, bounded mirror retention and
+duplicate-label rejection. Each run retains its reports and protocol trace in a
+fresh capture directory. CI runs this command separately from CTest; missing
+tools, inconclusive collection and mismatches fail the command.
+
 NBT comparisons require JDK 11 or newer and both pinned supplied JARs. Enable
 `MC_ENABLE_NBT_REFERENCE_TESTS` and set `MC_REFERENCE_CLIENT_JAR`,
 `MC_REFERENCE_SERVER_JAR` and `MC_REFERENCE_TESTED_COMMIT` to the exact source

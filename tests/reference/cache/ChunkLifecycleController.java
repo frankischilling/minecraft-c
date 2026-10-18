@@ -154,19 +154,6 @@ public final class ChunkLifecycleController {
         require(member != null && member.declaringType().classLoader() == null && member.signature().equals(signature), "bootstrap field " + name);
         return value.getValue(member);
     }
-    static Object scalar(Value value) {
-        if (value == null) return null;
-        if (value instanceof VoidValue) return null;
-        if (value instanceof BooleanValue item) return item.value();
-        if (value instanceof IntegerValue item) return item.value();
-        if (value instanceof LongValue item) return ChunkLifecycleObservation.hex(item.value());
-        if (value instanceof StringReference item) return item.value();
-        if (value instanceof ByteValue item) return item.value();
-        if (value instanceof DoubleValue item) return ChunkLifecycleObservation.hex(Double.doubleToRawLongBits(item.value()));
-        if (value instanceof FloatValue item) return String.format(java.util.Locale.ROOT, "%08x", Float.floatToRawIntBits(item.value()));
-        if (value instanceof ObjectReference item) return object("object_id", item.uniqueID(), "class", item.referenceType().name());
-        throw new IllegalStateException("unsupported JDI scalar");
-    }
     static byte[] capture(InputStream source, CompletableFuture<String> startup, AtomicLong total) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream(), line = startup == null ? null : new ByteArrayOutputStream();
         byte[] block = new byte[8192];
@@ -249,6 +236,8 @@ public final class ChunkLifecycleController {
         final Map<String,byte[]> blobBytes = new LinkedHashMap<>();
         final Map<Long,String> arrayHashes = new LinkedHashMap<>();
         final Map<Integer,Long> identityIDs = new LinkedHashMap<>();
+        // Retain recorded mirrors so debugger GC cannot dispose their JDWP IDs.
+        final Map<Long,ObjectReference> identityMirrors = new LinkedHashMap<>();
         final Map<Long,ObjectReference> chunkObjects = new LinkedHashMap<>();
         final List<Object> operations = new ArrayList<>(), setupInventories = new ArrayList<>();
         final List<MethodExitRequest> exits = new ArrayList<>();
@@ -277,6 +266,24 @@ public final class ChunkLifecycleController {
         boolean setupSeen, installed, maintenance, exitsEnabled;
         String action;
         long decodedBlobBytes;
+        long id(ObjectReference value) {
+            long number = value.uniqueID();
+            require(identityMirrors.containsKey(number) || identityMirrors.size() < 32768, "recorded JDI identity mirror bound");
+            identityMirrors.putIfAbsent(number, value); return number;
+        }
+        Object scalar(Value value) {
+            if (value == null) return null;
+            if (value instanceof VoidValue) return null;
+            if (value instanceof BooleanValue item) return item.value();
+            if (value instanceof IntegerValue item) return item.value();
+            if (value instanceof LongValue item) return ChunkLifecycleObservation.hex(item.value());
+            if (value instanceof StringReference item) return item.value();
+            if (value instanceof ByteValue item) return item.value();
+            if (value instanceof DoubleValue item) return ChunkLifecycleObservation.hex(Double.doubleToRawLongBits(item.value()));
+            if (value instanceof FloatValue item) return String.format(java.util.Locale.ROOT, "%08x", Float.floatToRawIntBits(item.value()));
+            if (value instanceof ObjectReference item) return object("object_id", id(item), "class", item.referenceType().name());
+            throw new IllegalStateException("unsupported JDI scalar");
+        }
         Session(VirtualMachine vm, String context, String scenario) {
             this.vm = vm; this.context = context; this.scenario = scenario;
             client = context.equals("client"); dedicated = context.equals("dedicated"); manager = vm.eventRequestManager();
@@ -415,7 +422,7 @@ public final class ChunkLifecycleController {
             chunkObjects.putIfAbsent(value.uniqueID(), value); Map<String,Object> flags = object();
             if (boundaryHeaders != null && boundaryHeaders.containsKey(value.uniqueID())) return boundaryHeaders.get(value.uniqueID());
             for (String name : new String[] {"c","n","o","p","q"}) flags.put(name, scalar(get(value, chunkType, name)));
-            Object result = object("id", value.uniqueID(), "class", value.referenceType().name(), "world", reference(get(value, chunkType, "d")).uniqueID(),
+            Object result = object("id", id(value), "class", value.referenceType().name(), "world", id(reference(get(value, chunkType, "d"))),
                 "coordinates", Arrays.asList(integer(get(value, chunkType, "j")), integer(get(value, chunkType, "k"))),
                 "flags", flags, "minimum", scalar(get(value, chunkType, "i")), "last_save", scalar(get(value, chunkType, "r")));
             String key = new String(ChunkLifecycleObservation.encoded(result), StandardCharsets.US_ASCII);
@@ -432,7 +439,7 @@ public final class ChunkLifecycleController {
             List<Value> values = array.getValues();
             for (int i = 0; i < length; i++) { require(values.get(i) instanceof ByteValue, "actual byte array"); raw[i] = ((ByteValue) values.get(i)).value(); }
             String known = arrayHashes.get(array.uniqueID());
-            if (known != null && Arrays.equals(blobBytes.get(known), raw)) return object("id", array.uniqueID(), "bytes", length, "sha256", known);
+            if (known != null && Arrays.equals(blobBytes.get(known), raw)) return object("id", id(array), "bytes", length, "sha256", known);
             String sha = hash(raw); byte[] old = blobBytes.get(sha);
             if (old == null) {
                 require(blobs.size() < 4096 && decodedBlobBytes <= 64L * 1024 * 1024 - raw.length, "trace blob/decoded bytes bound");
@@ -440,7 +447,7 @@ public final class ChunkLifecycleController {
                 blobs.put(sha, object("bytes", length, "hex", HexFormat.of().formatHex(raw)));
             } else require(Arrays.equals(old, raw), "trace blob collision");
             arrayHashes.put(array.uniqueID(), sha);
-            return object("id", array.uniqueID(), "bytes", length, "sha256", sha);
+            return object("id", id(array), "bytes", length, "sha256", sha);
         }
         Object fullChunk(ObjectReference value) throws Exception {
             String[] names = {"b","e","f","g","h"}, roles = {"blocks","metadata","skylight","block_light","heightmap"};
@@ -448,7 +455,7 @@ public final class ChunkLifecycleController {
             for (int i = 0; i < 5; i++) {
                 ObjectReference field = reference(get(value, chunkType, names[i]));
                 ArrayReference array = i > 0 && i < 4 ? (ArrayReference) get(field, type(client ? "wi" : "ob"), "a") : (ArrayReference) field;
-                arrays.put(roles[i], object("owner", field.uniqueID(), "data", blob(array, lengths[i])));
+                arrays.put(roles[i], object("owner", id(field), "data", blob(array, lengths[i])));
             }
             ObjectReference tiles = reference(get(value, chunkType, "l"));
             int tileCount = integer(boot(tiles, "size", "I"));
@@ -461,16 +468,16 @@ public final class ChunkLifecycleController {
                 for (Field member : key.referenceType().fields()) if (!member.isStatic()) {
                     require(member.signature().equals("I"), "finite integer tile key"); keyFields.put(member.name(), scalar(get(key, key.referenceType(), member.name())));
                 }
-                tileEntries.add(object("key", key.uniqueID(), "key_class", key.referenceType().name(), "key_fields", keyFields, "value", tile.uniqueID()));
+                tileEntries.add(object("key", id(key), "key_class", key.referenceType().name(), "key_fields", keyFields, "value", id(tile)));
             }
             ArrayReference slices = (ArrayReference) get(value, chunkType, "m"); require(slices.length() == 8, "eight entity slices");
             List<Object> entities = new ArrayList<>(); for (Value slice : slices.getValues()) {
                 ObjectReference actual = reference(slice);
                 if (scenario.equals("detach-owned")) for (ObjectReference member : listObjects(actual)) retainExternal(member);
-                entities.add(object("id", actual.uniqueID(), "members", list(actual, false)));
+                entities.add(object("id", id(actual), "members", list(actual, false)));
             }
-            Object result = object("chunk", header(value), "arrays", arrays, "tiles", scenario.equals("detach-owned") ? object("id", tiles.uniqueID(), "size", tileCount, "entries", tileEntries) : object("id", tiles.uniqueID(), "size", 0),
-                          "slices_owner", slices.uniqueID(), "entities", entities);
+            Object result = object("chunk", header(value), "arrays", arrays, "tiles", scenario.equals("detach-owned") ? object("id", id(tiles), "size", tileCount, "entries", tileEntries) : object("id", id(tiles), "size", 0),
+                          "slices_owner", id(slices), "entities", entities);
             String key = new String(ChunkLifecycleObservation.encoded(result), StandardCharsets.US_ASCII);
             Integer index = chunkStateIndices.get(key);
             if (index == null) {
@@ -500,12 +507,12 @@ public final class ChunkLifecycleController {
             for (String name : new String[] {"C","b","c","d","e","D","G"}) {
                 ObjectReference actual = reference(get(world, worldType, name));
                 if (scenario.equals("detach-owned") && !name.equals("C")) for (ObjectReference member : listObjects(actual)) retainExternal(member);
-                registrations.put(name, object("id", actual.uniqueID(), "values", list(actual, false)));
+                registrations.put(name, object("id", id(actual), "values", list(actual, false)));
             }
             Map<String,Object> result = object("snapshot_kind", full ? "all-retained-chunks-full" : "all-headers-and-target-full",
-                "world_id", world.uniqueID(), "cache_id", cache.uniqueID(), "storage_id", storage.uniqueID(), "info_id", info.uniqueID(),
-                "map", object("id", values.uniqueID(), "entries", entries), "insertions", object("id", ordered.uniqueID(), "values", insertions),
-                "pending", object("id", pending.uniqueID(), "map_id", underlying.uniqueID(), "values", pendingKeys),
+                "world_id", id(world), "cache_id", id(cache), "storage_id", id(storage), "info_id", id(info),
+                "map", object("id", id(values), "entries", entries), "insertions", object("id", id(ordered), "values", insertions),
+                "pending", object("id", id(pending), "map_id", id(underlying), "values", pendingKeys),
                 "chunks", locals, "metadata", metadata, "registrations", registrations,
                 "handler", handler(storage), "competing_handler", competingStorage == null ? null : handler(competingStorage),
                 "world_force_load", scalar(get(world, worldType, "y")), "save_off", dedicated ? scalar(get(world, type("dp"), "E")) : false,
@@ -551,13 +558,13 @@ public final class ChunkLifecycleController {
             if (value instanceof FloatValue item) return object("binary32", String.format(java.util.Locale.ROOT, "%08x", Float.floatToRawIntBits(item.value())));
             if (value instanceof StringReference item) return item.value();
             ObjectReference item = reference(value); String name = item.referenceType().name();
-            if (item.equals(world) || item.equals(cache) || item.equals(storage)) return object("borrowed", item.uniqueID());
+            if (item.equals(world) || item.equals(cache) || item.equals(storage)) return object("borrowed", id(item));
             if (item.referenceType().classLoader() == null && Arrays.asList("java.lang.Byte", "java.lang.Short", "java.lang.Character", "java.lang.Integer", "java.lang.Long", "java.lang.Float", "java.lang.Double", "java.lang.Boolean").contains(name)) {
                 Field member = item.referenceType().fieldByName("value"); return externalValue(boundaryValue(item, member.declaringType(), member), seen, depth + 1);
             }
             require(depth <= 12 && (seen.contains(item.uniqueID()) || seen.size() < 128), "bounded complete external ownership graph");
-            if (!seen.add(item.uniqueID())) return object("reference", item.uniqueID());
-            Map<String,Object> result = object("id", item.uniqueID(), "class", name);
+            if (!seen.add(id(item))) return object("reference", id(item));
+            Map<String,Object> result = object("id", id(item), "class", name);
             if (item instanceof ArrayReference array) {
                 require(array.length() <= 256, "external array bound"); List<Object> values = new ArrayList<>();
                 for (Value element : array.getValues()) values.add(externalValue(element, seen, depth + 1)); result.put("values", values); return result;
@@ -574,7 +581,7 @@ public final class ChunkLifecycleController {
             }
             if (name.equals("java.util.Random")) {
                 ObjectReference seed = reference(boot(item, "seed", "Ljava/util/concurrent/atomic/AtomicLong;"));
-                Object state = object("seed_owner", seed.uniqueID(), "seed", externalValue(boot(seed, "value", "J"), seen, depth + 1),
+                Object state = object("seed_owner", id(seed), "seed", externalValue(boot(seed, "value", "J"), seen, depth + 1),
                     "have_next_gaussian", externalValue(boot(item, "haveNextNextGaussian", "Z"), seen, depth + 1),
                     "next_gaussian", externalValue(boot(item, "nextNextGaussian", "D"), seen, depth + 1));
                 Object previous = externalRandomStates.putIfAbsent(item.uniqueID(), state);
@@ -597,7 +604,7 @@ public final class ChunkLifecycleController {
             require(ChunkLifecycleObservation.encoded(result).length <= 256 * 1024, "bounded complete external graph bytes"); return result;
         }
         Object handler(ObjectReference value) {
-            ReferenceType declaring = type(client ? "fm" : "dq"); Map<String,Object> result = object("id", value.uniqueID(), "class", value.referenceType().name(),
+            ReferenceType declaring = type(client ? "fm" : "dq"); Map<String,Object> result = object("id", id(value), "class", value.referenceType().name(),
                 "token", scalar(get(value, declaring, "e")));
             String[] names = {"b","c","d"}, roles = {"world_root","players_root","data_root"};
             for (int i = 0; i < names.length; i++) {
@@ -630,7 +637,7 @@ public final class ChunkLifecycleController {
                 boolean isDaemon = daemon(thread);
                 if (original) { require(isDaemon && sleeping, "inert dedicated daemon asleep"); inert++; }
                 else if (!isDaemon) { require(thread.equals(measuredThread), "only measured main non-daemon"); mains++; }
-                result.add(object("id", thread.uniqueID(), "name", thread.name(), "daemon", isDaemon, "status", thread.status(), "frames", frames));
+                result.add(object("id", id(thread), "name", thread.name(), "daemon", isDaemon, "status", thread.status(), "frames", frames));
             }
             require(mains == 1 && inert == (dedicated ? 1 : 0), "exact measured/inert thread inventory"); return result;
         }
@@ -646,13 +653,13 @@ public final class ChunkLifecycleController {
             if (value.referenceType().name().equals("java.util.ArrayList")) {
                 int size = integer(boot(value, "size", "I")); ArrayReference data = (ArrayReference) boot(value, "elementData", "[Ljava/lang/Object;");
                 require(size == 0 && data != null && data.length() <= 1024, "fresh empty ArrayList proof");
-                return object("id", value.uniqueID(), "class", value.referenceType().name(), "size", size,
-                    "backing_id", data.uniqueID(), "backing_length", data.length());
+                return object("id", id(value), "class", value.referenceType().name(), "size", size,
+                    "backing_id", id(data), "backing_length", data.length());
             }
             require(value.referenceType().name().equals("java.util.HashMap$Values"), "finite empty map-values collection");
             ObjectReference map = reference(boot(value, "this$0", "Ljava/util/HashMap;"));
             int size = integer(boot(map, "size", "I")); require(size == 0, "fresh empty map-values proof");
-            return object("id", value.uniqueID(), "class", value.referenceType().name(), "size", size, "map_id", map.uniqueID());
+            return object("id", id(value), "class", value.referenceType().name(), "size", size, "map_id", id(map));
         }
         Object sparseState(String role, String edge, Method method, StackFrame frame, ObjectReference target) throws Exception {
             if (!scenario.equals("unload101")) return null;
@@ -660,7 +667,7 @@ public final class ChunkLifecycleController {
             String reason = null; Map<String,Object> proof = object();
             if (role.equals("world_time_get") && (entry && pc == 0 || exit && pc == 7)) {
                 reason = "world-time-getter"; ObjectReference info = reference(get(world, worldType, "x"));
-                proof.put("world_id", world.uniqueID()); proof.put("info_id", info.uniqueID());
+                proof.put("world_id", id(world)); proof.put("info_id", id(info));
                 proof.put("time", scalar(get(info, type(client ? "ei" : "ct"), "e")));
             } else if ((role.equals("register_tiles") && (entry && pc == 0 || exit && pc == 32))
                     || (role.equals("register_entities") && (entry && pc == 0 || exit && pc == 43))
@@ -674,7 +681,7 @@ public final class ChunkLifecycleController {
                 reason = "empty-detach-slice-loop"; require(target != null, "actual detach target");
                 ArrayReference slices = (ArrayReference) get(target, chunkType, "m"); require(slices.length() == 8, "eight actual detach slices");
                 List<Object> empty = new ArrayList<>(); for (Value value : slices.getValues()) empty.add(emptyCollection(reference(value)));
-                proof.put("slices_owner", slices.uniqueID()); proof.put("slices", empty);
+                proof.put("slices_owner", id(slices)); proof.put("slices", empty);
             } else if (entry && ((role.equals("activate") && pc == 51) || (role.equals("main_wrapper") && pc == 41)
                     || (role.equals("extra_wrapper") && pc == 30) || (role.equals("load") && pc == 277)
                     || (role.equals("write") && pc == 105) || (role.equals("region_write") && pc == 444)
@@ -701,7 +708,7 @@ public final class ChunkLifecycleController {
             for (StackFrame entry : measuredThread.frames()) {
                 Location site = entry.location(); if (gameLoader.equals(site.declaringType().classLoader()))
                     frames.add(object("class", site.declaringType().name(), "method", site.method().name(), "signature", site.method().signature(),
-                                      "code_index", site.codeIndex(), "receiver", entry.thisObject() == null ? null : entry.thisObject().uniqueID()));
+                                      "code_index", site.codeIndex(), "receiver", entry.thisObject() == null ? null : id(entry.thisObject())));
             }
             Object snapshot = sparseState(role, edge, method, frame, target);
             if (snapshot == null) snapshot = state(false, target);
@@ -716,7 +723,7 @@ public final class ChunkLifecycleController {
             }
             Map<String,Object> row = object("ordinal", events.size(), "role", role, "edge", edge, "class", method.declaringType().name(),
                 "method", method.name(), "signature", method.signature(), "code_index", frame.location().codeIndex(),
-                "thread_id", measuredThread.uniqueID(), "receiver", frame.thisObject() == null ? null : frame.thisObject().uniqueID(),
+                "thread_id", id(measuredThread), "receiver", frame.thisObject() == null ? null : id(frame.thisObject()),
                 "exit_request_class_filter", edge.equals("return") ? method.declaringType().name() : null,
                 "arguments", args, "result", scalar(result), "clock_ms", System.currentTimeMillis(), "original_frames", frames,
                 "session_handler", sessionHandler, "exception_message", exceptionMessage,
@@ -735,7 +742,7 @@ public final class ChunkLifecycleController {
             if (role.equals("identity")) {
                 require(setupSeen && event.thread().equals(measuredThread) && ++identityMarkers <= 16384, "bounded helper identity markers");
                 ObjectReference value = reference(args.get(0)); int key = integer(args.get(1));
-                require(key > 0 && !identityIDs.containsValue(value.uniqueID()) && identityIDs.putIfAbsent(key, value.uniqueID()) == null, "bijective helper identity label");
+                require(key > 0 && !identityIDs.containsValue(id(value)) && identityIDs.putIfAbsent(key, id(value)) == null, "bijective helper identity label");
                 return;
             }
             if (role.equals("begin")) {
@@ -806,7 +813,7 @@ public final class ChunkLifecycleController {
             Location site = event.location();
             require(site.declaringType().equals(type(client ? "fm" : "dq")) && site.method().name().equals("b") && site.method().signature().equals("()V")
                     && (site.codeIndex() == 51 || site.codeIndex() == 65) && event.exception().referenceType().equals(type(client ? "us" : "my")), "exact original session mismatch throw/rethrow");
-            require(exceptionIDs.size() < 4, "bounded original session throws"); exceptionIDs.add(event.exception().uniqueID()); exceptionEventCount++;
+            require(exceptionIDs.size() < 4, "bounded original session throws"); exceptionIDs.add(id(event.exception())); exceptionEventCount++;
             Map<String,Object> row = record("session_exception", "throw", site.method(), event.exception());
             Location caught = event.catchLocation();
             if (caught != null) {
@@ -818,7 +825,7 @@ public final class ChunkLifecycleController {
         }
         boolean beforeMeasurement() {
             return !setupSeen && !installed && active == -1 && beginCount == 0 && endCount == 0 && identityMarkers == 0
-                && operations.isEmpty() && bindings.isEmpty() && fields.isEmpty() && identityIDs.isEmpty() && chunkObjects.isEmpty()
+                && operations.isEmpty() && bindings.isEmpty() && fields.isEmpty() && identityIDs.isEmpty() && identityMirrors.isEmpty() && chunkObjects.isEmpty()
                 && setupInventories.isEmpty() && originalRequests == 0 && !maintenance && iteratorExits == null
                 && !exitsEnabled && exitEnableCount == 0 && exitDisableCount == 0 && chunkHeaders.isEmpty() && headerIndices.isEmpty()
                 && chunkStates.isEmpty() && chunkStateIndices.isEmpty() && action == null && competingStorage == null
