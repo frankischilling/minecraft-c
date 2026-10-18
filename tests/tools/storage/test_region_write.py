@@ -342,6 +342,164 @@ class ProcessObservationTests(unittest.TestCase):
         child.wait.side_effect = lambda **kwargs: child.returncode
         return child
 
+    def test_live_inventory_disappearance_at_real_process_callsite(self):
+        victim = self.root / "disappearing"
+        victim.write_bytes(b"owned temporary artifact")
+        child = self.fake_child(0)
+        child.poll.side_effect = [None, 0]
+        real_stat, real_inventory = os.stat, region.inventory
+        removed, phases = [], []
+
+        def disappearing_stat(path, *args, **kwargs):
+            if Path(path) == victim and not removed:
+                victim.unlink()
+                removed.append(True)
+            return real_stat(path, *args, **kwargs)
+
+        def inventory(*args, **kwargs):
+            phases.append((kwargs.get("live_poll", False), child.wait.called))
+            return real_inventory(*args, **kwargs)
+
+        with mock.patch.object(region.subprocess, "Popen", return_value=child), \
+             mock.patch.object(region.time, "sleep"), \
+             mock.patch.object(region.os, "stat", side_effect=disappearing_stat), \
+             mock.patch.object(region, "inventory", side_effect=inventory):
+            result = region.process(["constructed-owned-child"], self.root, "disappearing")
+        self.assertEqual(result["returncode"], 0)
+        self.assertEqual(removed, [True])
+        self.assertEqual(phases, [(True, False), (False, True)])
+        child.kill.assert_not_called()
+        child.wait.assert_called_once_with(timeout=10)
+        self.assertIsNone(region._latest_process["supervision_error"])
+
+    def test_live_inventory_never_hashes_or_hides_nonmissing_errors(self):
+        with self.assertRaisesRegex(region.Failure, "cannot hash final state"):
+            region.inventory(self.root, hashes=True, live_poll=True)
+        bad = self.root / "entry"
+        bad.write_bytes(b"x")
+        real_stat = os.stat
+        for kind in ("permission", "not-directory", "symlink", "reparse", "special"):
+            child = self.fake_child(-9, running=True)
+
+            def invalid_stat(path, *args, **kwargs):
+                if Path(path) != bad:
+                    return real_stat(path, *args, **kwargs)
+                if kind == "permission":
+                    raise PermissionError("controlled denied stat")
+                if kind == "not-directory":
+                    raise NotADirectoryError("controlled replaced directory")
+                actual = real_stat(path, *args, **kwargs)
+                if kind != "reparse":
+                    class Typed:
+                        st_mode = 0o120000 if kind == "symlink" else 0o010000
+                        st_size, st_file_attributes = actual.st_size, 0
+                    return Typed()
+                class Reparse:
+                    st_mode, st_size, st_file_attributes = actual.st_mode, actual.st_size, 0x400
+                return Reparse()
+
+            error = PermissionError if kind == "permission" else NotADirectoryError if kind == "not-directory" else region.Failure
+            with self.subTest(kind=kind), \
+                 mock.patch.object(region.subprocess, "Popen", return_value=child), \
+                 mock.patch.object(region.os, "stat", side_effect=invalid_stat):
+                with self.assertRaises(error):
+                    region.process(["constructed-owned-child"], self.root, kind)
+            child.kill.assert_called_once()
+            child.wait.assert_called_once_with(timeout=10)
+            self.assertEqual(region._latest_process["returncode"], -9)
+            self.assertIsNotNone(region._latest_process["supervision_error"])
+
+    def test_live_inventory_budget_counts_disappeared_entries_and_bytes(self):
+        bad = self.root / "large"
+        bad.write_bytes(b"x")
+        real_stat, real_scandir = os.stat, os.scandir
+
+        class Entries:
+            def __enter__(self):
+                return self
+            def __exit__(self, *unused):
+                return False
+            def __iter__(self):
+                for index in range(6001):
+                    class Entry:
+                        path = str(bad.parent / ("missing-" + str(index)))
+                    yield Entry()
+
+        for kind in ("missing-count", "bytes"):
+            child = self.fake_child(-9, running=True)
+
+            def resource_stat(path, *args, **kwargs):
+                path = Path(path)
+                if kind == "missing-count" and path.name.startswith("missing-") and path.name[8:].isdigit():
+                    raise FileNotFoundError("controlled disappeared entry")
+                info = real_stat(path, *args, **kwargs)
+                if kind == "bytes" and path == bad:
+                    class Large:
+                        st_mode, st_size, st_file_attributes = info.st_mode, 160 * 1024 * 1024 + 1, 0
+                    return Large()
+                return info
+
+            def entries(path):
+                return Entries() if kind == "missing-count" and Path(path) == self.root else real_scandir(path)
+
+            with self.subTest(kind=kind), \
+                 mock.patch.object(region.subprocess, "Popen", return_value=child), \
+                 mock.patch.object(region.os, "stat", side_effect=resource_stat), \
+                 mock.patch.object(region.os, "scandir", side_effect=entries):
+                with self.assertRaisesRegex(region.Failure, "bounded"):
+                    region.process(["constructed-owned-child"], self.root, kind)
+            child.kill.assert_called_once()
+            child.wait.assert_called_once_with(timeout=10)
+            self.assertEqual(region._latest_process["returncode"], -9)
+
+    def test_strict_final_inventory_after_reap_rejects_types_errors_and_byte_limit(self):
+        real_file, real_dir, real_link, real_stat = Path.is_file, Path.is_dir, Path.is_symlink, Path.stat
+        for kind in ("special", "link", "permission", "bytes"):
+            case = self.root / kind
+            case.mkdir()
+            bad = case / "final-entry"
+            child = self.fake_child(0)
+            count = [0]
+
+            def poll():
+                count[0] += 1
+                if count[0] == 1:
+                    return None
+                bad.write_bytes(b"appears only as child exits")
+                return 0
+
+            child.poll.side_effect = poll
+            def is_file(path):
+                return False if Path(path) == bad and kind == "special" else real_file(path)
+            def is_dir(path):
+                return False if Path(path) == bad and kind == "special" else real_dir(path)
+            def is_link(path):
+                return True if Path(path) == bad and kind == "link" else real_link(path)
+            def final_stat(path, *args, **kwargs):
+                if Path(path) == bad and kind == "permission":
+                    raise PermissionError("controlled final inventory failure")
+                info = real_stat(path, *args, **kwargs)
+                if Path(path) == bad and kind == "bytes":
+                    values = list(info)
+                    values[6] = 160 * 1024 * 1024 + 1
+                    return os.stat_result(values)
+                return info
+
+            expected = PermissionError if kind == "permission" else region.Failure
+            with self.subTest(kind=kind), \
+                 mock.patch.object(region.subprocess, "Popen", return_value=child), \
+                 mock.patch.object(region.time, "sleep"), \
+                 mock.patch.object(Path, "is_file", is_file), \
+                 mock.patch.object(Path, "is_dir", is_dir), \
+                 mock.patch.object(Path, "is_symlink", is_link), \
+                 mock.patch.object(Path, "stat", final_stat):
+                with self.assertRaises(expected):
+                    region.process(["constructed-owned-child"], case, "final")
+            self.assertTrue(child.wait.called)
+            self.assertEqual(region._latest_process["returncode"], 0)
+            self.assertIsNotNone(region._latest_process["supervision_error"])
+
+
     def test_actual_child_result_survives_timeout_and_stream_validation(self):
         for name, code, running in (("nonzero", 7, False), ("timeout", -9, True)):
             child = self.fake_child(code, running=running)

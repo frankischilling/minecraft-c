@@ -1074,11 +1074,17 @@ def check_child_streams(directory, process, expected_command, label="original", 
 
 def run(label, command, directory, stdin=None, cap=128*1024*1024):
     directory.mkdir(parents=True,exist_ok=True)
-    result=r.process(command,directory,label,120,stdin,cap)
-    REPORT["processes"].append({"label":label,"process":result,
-                                 "stdin":None if stdin is None else fp(read(directory/(label+".stdin")))})
-    check_child_streams(directory,result,command,label,cap)
-    return read(directory/result["stdout_file"],cap)
+    r._latest_process=None
+    try:
+        result=r.process(command,directory,label,120,stdin,cap)
+        REPORT["processes"].append({"label":label,"process":result,
+                                     "stdin":None if stdin is None else fp(read(directory/(label+".stdin")))})
+        check_child_streams(directory,result,command,label,cap)
+        return read(directory/result["stdout_file"],cap)
+    except BaseException:
+        if r._latest_process is not None:
+            REPORT["failed_process"]=copy.deepcopy(r._latest_process)
+        raise
 
 
 def c_batch(target, parent, commands, label):
