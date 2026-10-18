@@ -119,6 +119,19 @@ duplicate-label rejection. Each run retains its reports and protocol trace in a
 fresh capture directory. CI runs this command separately from CTest; missing
 tools, inconclusive collection and mismatches fail the command.
 
+The lifecycle interval regression needs only Python and no original assets:
+
+```sh
+python tests/tools/cache/check_lifecycle_intervals.py
+```
+
+It compiles the validator's actual interval checks and verifies their operation,
+role and profile bindings. The observed dedicated 101-chunk profile permits a
+600-second helper interval, matching its controller budget. Other profiles and
+control, preparation and constructor intervals retain their 180-second bound.
+The check also rejects events outside their own sampled interval. CI runs it
+separately from CTest; full original capture validation remains required.
+
 NBT comparisons require JDK 11 or newer and both pinned supplied JARs. Enable
 `MC_ENABLE_NBT_REFERENCE_TESTS` and set `MC_REFERENCE_CLIENT_JAR`,
 `MC_REFERENCE_SERVER_JAR` and `MC_REFERENCE_TESTED_COMMIT` to the exact source

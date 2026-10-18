@@ -52,6 +52,8 @@ jobs:
         run: ctest --test-dir build --output-on-failure
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
+      - name: Check lifecycle interval bounds
+        run: python tests/tools/cache/check_lifecycle_intervals.py
 
   windows:
     runs-on: windows-2022
@@ -76,3 +78,5 @@ jobs:
         run: ctest --test-dir build -C Debug --output-on-failure
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
+      - name: Check lifecycle interval bounds
+        run: python tests/tools/cache/check_lifecycle_intervals.py

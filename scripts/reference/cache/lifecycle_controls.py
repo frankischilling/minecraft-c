@@ -163,6 +163,11 @@ def process_seconds_limit(name,context,scenario):
         return 660 if context=='dedicated' and scenario=='unload101' else 360
     return 180
 
+def helper_epoch_limit_ms(role,context,scenario):
+    # JDI stops count toward helper wall time; this observed profile has a 600-second controller budget.
+    return 600000 if role=='observed' and context=='dedicated' and scenario=='unload101' else 180000
+
+
 def validate_process_tree(tree):
     need(isinstance(tree,Mapping),'owned process accounting object')
     if tree.get('kind')=='windows-job':
@@ -1054,7 +1059,7 @@ class _CaptureValidator:
             else:need(exact(op['result'],helper['result']),'actual helper/JDI void result')
             fatal=helper['exception'] is not None;throws=[]
             active_write=None;active_region=None;pending_iterator=None;writes=[];metadata=0;top_entries=[];top_returns=[]
-            low,high=helper['interval_ms'];need(integer(low,0,1<<63) and integer(high,low,low+180000),'bounded helper epoch interval')
+            low,high=helper['interval_ms'];need(integer(low,0,1<<63) and integer(high,low,low+helper_epoch_limit_ms('observed',self.context,self.scenario)),'bounded helper epoch interval')
             for ordinal,event in enumerate(op['events']):
                 need(type(event['ordinal']) is int and event['ordinal']==ordinal and event['role'] in self.methods and type(event['thread_id']) is int and event['thread_id']==1,'exact event ordinal/role/thread')
                 need(integer(event['clock_ms'],low,high),'event inside own helper interval')
@@ -1490,7 +1495,7 @@ class _CaptureValidator:
         need(exact(d['initial'],d['operations'][0]['before']) and exact(d['final'],d['operations'][-1]['after']),'complete endpoints')
         for index,op in enumerate(d['operations']):
             need(op['index']==index and (index==0 or exact(op['before'],d['operations'][index-1]['after'])),'complete state continuity')
-            low,high=op['interval_ms'];need(integer(low,0,1<<63) and integer(high,low,low+180000),'bounded exact integer epoch interval')
+            low,high=op['interval_ms'];need(integer(low,0,1<<63) and integer(high,low,low+helper_epoch_limit_ms(role,self.context,self.scenario)),'bounded exact integer epoch interval')
             before,after=self.blob_files(role,op['before']),self.blob_files(role,op['after'])
             need(before.keys()==after.keys() and (before['session.lock']==after['session.lock'] or op['action']=='competing_handler_constructor'),'full file paths/stable session')
             if self.metadata_saves[index]:
