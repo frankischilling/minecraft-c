@@ -117,3 +117,52 @@ The normalized vector SHA-256 was
 `6e267821b006c8219a806e69ac82f8d46bd208c24ebdfcaf02af89d8d6139c82`.
 The exact integrated commit and native platform/CI results belong in
 `docs/status.md`; a vector digest alone does not identify a tested commit.
+
+## Integer-set history
+
+`mc/core/java/int_set.h` owns a bounded Integer set matching the pinned modern
+JDK profiles' observed traversal histories. Lazy construction, bucket chains,
+growth, signed spread-hash tree ordering, root movement, tree removal and clear
+capacity retention are represented. Default limits are 65536 entries, 8 MiB
+retained storage and 16 MiB peak live allocations. Failed mutations preserve
+logical history and outputs. General Object/null keys, concurrent access,
+fail-fast iterators and other JDK profiles are outside this interface.
+
+The project-owned `HashSetIntegerObservation.java` reads only public JDK APIs.
+Its helper SHA-256 is
+`cb09229091962557a8c00b24fdc3b05440779a67c257455713ccd9582d29a351`.
+The lossless fixture `tests/reference/java/int_set_fixtures.json` preserves seven
+cases and 574 operations, each with full before/after iteration, size, fresh-first
+selection and return value. All six captured JDK streams reproduce the canonical
+276109-byte trace SHA-256
+`b59da560a7a0d230976e43269349a71ebb9efb9bd57cbc6aea7cd1574eefecb5`.
+Profiles are Windows Temurin 17.0.17+10, Windows Oracle 21.0.10+8-LTS-217 and
+Ubuntu 21.0.12.1+1-1-24.04.4-Ubuntu, each with a fresh identical control. These
+controls establish repeatability; they do not prove internal table fields or
+instrumentation equivalence. The helper uses no reflection or game classes.
+
+Recorded cases discriminate fresh versus grown survivors 16/32, duplicate/remove/
+readd history, collision trees, signed hashes, tree splits and two 100-step fresh
+iterator-plus-Set.remove batches. Capacity/tree interpretations additionally use
+private static JDK inspection; they were not reflected runtime observations.
+The historical producer has no invented tested commit. Fixture provenance
+separates historical fingerprints from later native input revalidation.
+
+Public replay compares 588 complete C responses with these immutable values,
+both directly and through mediated chunk-pending mutations. Strict JSON rejects
+duplicate fields and Boolean/integer aliases. Seven rejection controls exercise
+order, first, size, result, before-state and raw JSON parsing. Optional live
+comparison compiles the unchanged helper with release 17 and isolated lookups,
+runs observed/control, and compares both complete streams with the captured
+oracle. Bounded children retain failed streams, actual exits and reaping records.
+Fresh owned captures archive project inputs and fingerprint selected JDK runtime
+modules/native libraries, release/ct.sym, tools and generated classes before/after.
+This is not a transitive OS-library or historical-runtime reconstruction.
+
+Native contract tests separately exercise byte/entry bounds, failed mutations,
+clear retention and synchronized pending ownership. Clear and constructed
+failure tests are not additional JDK observations. Working-tree MSVC and
+sanitized GCC/Clang development runs pass; exact-commit subsystem acceptance is
+still pending. Java 6 uses different collection mechanics and has no pinned
+executed profile here. No historical-JVM or original-game lifecycle parity is
+inferred from this finite JDK-only corpus.

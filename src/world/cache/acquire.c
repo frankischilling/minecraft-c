@@ -19,6 +19,8 @@ const char *mc_chunk_acquire_status_string(mc_chunk_acquire_status status)
             return "callback failed after partial effects";
         case MC_CHUNK_ACQUIRE_STATE_ERROR:
             return "downstream state error";
+        case MC_CHUNK_ACQUIRE_EMPTY:
+            return "empty pending set";
     }
     return "unknown chunk acquisition status";
 }
@@ -34,7 +36,18 @@ bool mc_chunk_pending_init(mc_chunk_pending *pending, int32_t *keys, size_t capa
     if (pending == NULL || capacity > SIZE_MAX / sizeof(*keys) || (capacity != 0 && keys == NULL)) {
         return false;
     }
-    *pending = (mc_chunk_pending){keys, capacity, 0};
+    *pending = (mc_chunk_pending){.keys = keys, .capacity = capacity};
+    return true;
+}
+
+bool mc_chunk_pending_init_ordered(mc_chunk_pending *pending, int32_t *keys, size_t capacity,
+                                   mc_java_int_set *history)
+{
+    if (pending == NULL || history == NULL || mc_java_int_set_size(history) != 0 ||
+        capacity > SIZE_MAX / sizeof(*keys) || (capacity != 0 && keys == NULL)) {
+        return false;
+    }
+    *pending = (mc_chunk_pending){.keys = keys, .capacity = capacity, .history = history};
     return true;
 }
 
@@ -42,7 +55,12 @@ bool mc_chunk_pending_validate(const mc_chunk_pending *pending)
 {
     if (!pending_metadata_valid(pending))
         return false;
+    if (pending->history != NULL && mc_java_int_set_size(pending->history) != pending->count)
+        return false;
     for (size_t i = 0; i < pending->count; ++i) {
+        if (pending->history != NULL &&
+            !mc_java_int_set_contains(pending->history, pending->keys[i]))
+            return false;
         for (size_t j = 0; j < i; ++j) {
             if (pending->keys[i] == pending->keys[j])
                 return false;
@@ -62,16 +80,72 @@ bool mc_chunk_pending_contains(const mc_chunk_pending *pending, int32_t key)
     return false;
 }
 
-static void pending_remove(mc_chunk_pending *pending, int32_t key)
+mc_chunk_acquire_status mc_chunk_pending_add(mc_chunk_pending *pending, int32_t key, bool *changed)
 {
+    if (changed == NULL || !mc_chunk_pending_validate(pending))
+        return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    if (mc_chunk_pending_contains(pending, key)) {
+        *changed = false;
+        return MC_CHUNK_ACQUIRE_OK;
+    }
+    if (pending->count == pending->capacity)
+        return MC_CHUNK_ACQUIRE_LIMIT;
+    if (pending->history != NULL) {
+        bool inserted;
+        mc_java_int_set_status status = mc_java_int_set_add(pending->history, key, &inserted);
+        if (status == MC_JAVA_INT_SET_LIMIT || status == MC_JAVA_INT_SET_ALLOCATION_FAILED)
+            return MC_CHUNK_ACQUIRE_LIMIT;
+        if (status != MC_JAVA_INT_SET_OK || !inserted)
+            return MC_CHUNK_ACQUIRE_STATE_ERROR;
+    }
+    pending->keys[pending->count++] = key;
+    *changed = true;
+    return MC_CHUNK_ACQUIRE_OK;
+}
+
+mc_chunk_acquire_status mc_chunk_pending_remove(mc_chunk_pending *pending, int32_t key,
+                                                bool *changed)
+{
+    if (changed == NULL || !mc_chunk_pending_validate(pending))
+        return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     for (size_t i = 0; i < pending->count; ++i) {
         if (pending->keys[i] == key) {
+            if (pending->history != NULL) {
+                bool removed;
+                mc_java_int_set_status status =
+                    mc_java_int_set_remove(pending->history, key, &removed);
+                if (status != MC_JAVA_INT_SET_OK || !removed)
+                    return MC_CHUNK_ACQUIRE_STATE_ERROR;
+            }
             memmove(pending->keys + i, pending->keys + i + 1,
                     (pending->count - i - 1u) * sizeof(*pending->keys));
             --pending->count;
-            return;
+            *changed = true;
+            return MC_CHUNK_ACQUIRE_OK;
         }
     }
+    *changed = false;
+    return MC_CHUNK_ACQUIRE_OK;
+}
+
+mc_chunk_acquire_status mc_chunk_pending_first(const mc_chunk_pending *pending, int32_t *key)
+{
+    if (key == NULL || !mc_chunk_pending_validate(pending) || pending->history == NULL)
+        return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    mc_java_int_set_status status = mc_java_int_set_first(pending->history, key);
+    if (status == MC_JAVA_INT_SET_EMPTY)
+        return MC_CHUNK_ACQUIRE_EMPTY;
+    return status == MC_JAVA_INT_SET_OK ? MC_CHUNK_ACQUIRE_OK : MC_CHUNK_ACQUIRE_STATE_ERROR;
+}
+
+mc_chunk_acquire_status mc_chunk_pending_clear(mc_chunk_pending *pending)
+{
+    if (!mc_chunk_pending_validate(pending))
+        return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    if (pending->history != NULL)
+        mc_java_int_set_clear(pending->history);
+    pending->count = 0;
+    return MC_CHUNK_ACQUIRE_OK;
 }
 
 static bool chunk_valid(const mc_chunk_state *chunk)
@@ -90,11 +164,26 @@ bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context)
         (context->generate == NULL) != (context->populate == NULL)) {
         return false;
     }
+    if (context->references != NULL &&
+        (context->references->retain == NULL || context->references->release == NULL))
+        return false;
     if (context->policy == MC_CHUNK_ACQUIRE_DEDICATED) {
         return context->world_force_load != NULL && context->provider_force_load != NULL &&
                context->spawn_x != NULL && context->spawn_z != NULL;
     }
     return context->policy == MC_CHUNK_ACQUIRE_BASE;
+}
+
+static bool chunk_hold(const mc_chunk_acquire_context *context, mc_chunk_state *chunk)
+{
+    return context->references == NULL ||
+           context->references->retain(context->references->owner, chunk);
+}
+
+static void chunk_release(const mc_chunk_acquire_context *context, mc_chunk_state *chunk)
+{
+    if (context->references != NULL)
+        context->references->release(context->references->owner, chunk);
 }
 
 static size_t entry_index(const mc_chunk_cache *cache, int32_t key)
@@ -167,15 +256,18 @@ mc_chunk_acquire_status mc_chunk_acquire_populate(const mc_chunk_acquire_context
     mc_chunk_acquire_status status = mc_chunk_acquire_get(context, x, z, &chunk);
     if (status != MC_CHUNK_ACQUIRE_OK || chunk->terrain_populated)
         return status;
+    if (!chunk_hold(context, chunk))
+        return MC_CHUNK_ACQUIRE_PARTIAL_LIMIT;
     chunk->terrain_populated = true;
-    if (context->populate == NULL)
+    if (context->populate == NULL) {
+        chunk_release(context, chunk);
         return MC_CHUNK_ACQUIRE_OK;
+    }
     status = callback_result(context, context->populate(context->provider, context, x, z));
-    if (status != MC_CHUNK_ACQUIRE_OK)
-        return status;
-    if (!chunk->blank)
+    if (status == MC_CHUNK_ACQUIRE_OK && !chunk->blank)
         chunk->dirty = true;
-    return MC_CHUNK_ACQUIRE_OK;
+    chunk_release(context, chunk);
+    return status;
 }
 
 static mc_chunk_acquire_status population_gates(const mc_chunk_acquire_context *context,
@@ -242,7 +334,9 @@ mc_chunk_acquire_status mc_chunk_acquire(const mc_chunk_acquire_context *context
     size_t index = entry_index(context->cache, key);
     if (index == context->cache->count && !publication_room(context->cache, key))
         return MC_CHUNK_ACQUIRE_LIMIT;
-    pending_remove(context->pending, key);
+    bool pending_removed;
+    if (mc_chunk_pending_remove(context->pending, key, &pending_removed) != MC_CHUNK_ACQUIRE_OK)
+        return MC_CHUNK_ACQUIRE_STATE_ERROR;
     if (index < context->cache->count) {
         *out = context->cache->entries[index].chunk;
         return MC_CHUNK_ACQUIRE_OK;
@@ -281,8 +375,12 @@ mc_chunk_acquire_status mc_chunk_acquire(const mc_chunk_acquire_context *context
                 return MC_CHUNK_ACQUIRE_STATE_ERROR;
         }
     }
-    if (!publication_room(context->cache, key))
+    if (!chunk_hold(context, chunk))
         return MC_CHUNK_ACQUIRE_PARTIAL_LIMIT;
+    if (!publication_room(context->cache, key)) {
+        chunk_release(context, chunk);
+        return MC_CHUNK_ACQUIRE_PARTIAL_LIMIT;
+    }
     /* Callback reentrancy may have inserted this same key. Retain the outer
      * result and replace unconditionally; keep every intervening list append. */
     index = entry_index(context->cache, key);
@@ -291,9 +389,9 @@ mc_chunk_acquire_status mc_chunk_acquire(const mc_chunk_acquire_context *context
         ++context->cache->count;
     context->cache->insertions[context->cache->insertion_count++] = chunk;
     mc_chunk_acquire_status status = activate(context, chunk);
-    if (status != MC_CHUNK_ACQUIRE_OK)
-        return status;
-    status = population_gates(context, chunk, x, z);
+    if (status == MC_CHUNK_ACQUIRE_OK)
+        status = population_gates(context, chunk, x, z);
+    chunk_release(context, chunk);
     if (status == MC_CHUNK_ACQUIRE_LIMIT)
         return MC_CHUNK_ACQUIRE_PARTIAL_LIMIT;
     if (status == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT)
@@ -314,10 +412,6 @@ mc_chunk_acquire_status mc_chunk_acquire_mark_drop(const mc_chunk_acquire_contex
     if (dx >= -128 && dx <= 128 && dz >= -128 && dz <= 128)
         return MC_CHUNK_ACQUIRE_OK;
     int32_t key = mc_chunk_cache_key(x, z);
-    if (mc_chunk_pending_contains(context->pending, key))
-        return MC_CHUNK_ACQUIRE_OK;
-    if (context->pending->count == context->pending->capacity)
-        return MC_CHUNK_ACQUIRE_LIMIT;
-    context->pending->keys[context->pending->count++] = key;
-    return MC_CHUNK_ACQUIRE_OK;
+    bool added;
+    return mc_chunk_pending_add(context->pending, key, &added);
 }

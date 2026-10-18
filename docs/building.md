@@ -164,6 +164,15 @@ ASan/UBSan and independent copied-world/platform audits. See
 and the [world ownership contract](world/storage.md). These library operations
 do not provide a playable world loader or complete gameplay save scheduling.
 
+The developing lifecycle boundary adds `MC_ENABLE_LIFECYCLE_REFERENCE_TESTS=ON`.
+It uses both supplied JAR paths and `Java_JAVA_EXECUTABLE` /
+`Java_JAVAC_EXECUTABLE` from the same JDK17+ installation. Ten serial
+`reference.lifecycle_*` tests create fresh preparation/observed/control worlds,
+validate original captures and run the native comparison. The normal build's
+`world.lifecycle_callbacks_replay` needs no Java or original archives. See
+[lifecycle evidence](reference/lifecycle.md) for profiles, limits and source
+qualification. These tests do not start a gameplay server.
+
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column

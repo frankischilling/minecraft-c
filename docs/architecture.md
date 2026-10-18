@@ -104,8 +104,14 @@ At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected tests pass withou
 skips on native MSVC/GCC/Clang, with Linux sanitizers and independent provenance
 and copied-world semantic audits. The
 [storage checkpoint](reference/storage.md#exact-source-storage-checkpoint)
-defines its finite original-to-C and C-to-original scenarios. This work does not add save/unload
+defines its finite original-to-C and C-to-original scenarios. That checkpoint does not add save/unload
 scheduling or live entity/player serializers.
+
+The [developing lifecycle module](world/lifecycle.md) adds live save/unload
+coordination, ordered pending history, explicit leases/retirement and native
+world-owner composition. Its [fresh original/control profiles](reference/lifecycle.md)
+and working-tree native checks remain separate from the accepted storage
+checkpoint; exact-source and hosted qualification remain open.
 
 The public header is the boundary for Java arithmetic and explicitly seeded
 `Random`. Callers own each generator. Invalid divisors and bounds return failure

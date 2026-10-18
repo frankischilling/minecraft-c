@@ -21,6 +21,8 @@ const char *mc_world_storage_status_string(mc_world_storage_status status)
             return "resource limit";
         case MC_WORLD_STORAGE_ALLOCATION_FAILED:
             return "allocation failed";
+        case MC_WORLD_STORAGE_BUSY:
+            return "chunk still referenced";
     }
     return "unknown world storage status";
 }

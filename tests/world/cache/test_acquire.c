@@ -63,6 +63,36 @@ typedef struct fixture {
 /* Large payload owners and snapshots stay off the MSVC default stack. */
 static fixture f, saved;
 
+typedef struct lease_count {
+    size_t attempts, retained, released, depth, maximum;
+} lease_count;
+typedef struct lease_observation {
+    char kind;
+    mc_chunk_state *chunk;
+    size_t slice, depth, outer_depth;
+    bool mapped, listed, populated, dirty;
+} lease_observation;
+typedef enum lease_action {
+    LEASE_PLAIN,
+    LEASE_NEST_POPULATION,
+    LEASE_REPLACE_DURING_TILES,
+    LEASE_REPLACE_DURING_POPULATION
+} lease_action;
+typedef struct lease_fixture {
+    mc_chunk_references hooks;
+    lease_count chunks[CHUNKS];
+    mc_chunk_state *outer;
+    lease_observation observations[128];
+    size_t observation_count, attempts, fail_attempt, maximum_total, recursion_depth;
+    size_t fail_population_call;
+    lease_action action;
+    char invalidate_kind;
+    size_t invalidate_slice;
+    bool unreferenced_outer_observed;
+} lease_fixture;
+
+static lease_fixture leases;
+
 static bool callback_check(bool condition)
 {
     ++checks;
@@ -202,6 +232,202 @@ static bool populate_chunk(void *owner, const mc_chunk_acquire_context *context,
         }
     }
     return f.populate_ok;
+}
+
+static size_t chunk_index(const mc_chunk_state *chunk)
+{
+    for (size_t i = 0; i < CHUNKS; ++i) {
+        if (chunk == &f.chunks[i])
+            return i;
+    }
+    return SIZE_MAX;
+}
+
+static bool retain_chunk(void *owner, mc_chunk_state *chunk)
+{
+    size_t index = chunk_index(chunk);
+    if (!callback_check(owner == &leases && index < CHUNKS))
+        return false;
+    lease_count *count = &leases.chunks[index];
+    ++leases.attempts;
+    ++count->attempts;
+    if (leases.attempts == leases.fail_attempt)
+        return false;
+    ++count->retained;
+    ++count->depth;
+    if (count->depth > count->maximum)
+        count->maximum = count->depth;
+    size_t total = 0;
+    for (size_t i = 0; i < CHUNKS; ++i)
+        total += leases.chunks[i].depth;
+    if (total > leases.maximum_total)
+        leases.maximum_total = total;
+    return true;
+}
+
+static void release_chunk(void *owner, mc_chunk_state *chunk)
+{
+    size_t index = chunk_index(chunk);
+    if (!callback_check(owner == &leases && index < CHUNKS))
+        return;
+    lease_count *count = &leases.chunks[index];
+    if (!callback_check(count->depth != 0u))
+        return;
+    --count->depth;
+    ++count->released;
+}
+
+static bool observe_lease(char kind, mc_chunk_state *chunk, size_t slice)
+{
+    size_t index = chunk_index(chunk);
+    size_t outer = chunk_index(leases.outer);
+    if (!callback_check(
+            index < CHUNKS && leases.chunks[index].depth != 0u &&
+            (leases.outer == NULL || (outer < CHUNKS && leases.chunks[outer].depth != 0u)) &&
+            leases.observation_count <
+                sizeof(leases.observations) / sizeof(leases.observations[0])))
+        return false;
+    lease_observation *entry = &leases.observations[leases.observation_count++];
+    *entry = (lease_observation){.kind = kind,
+                                 .chunk = chunk,
+                                 .slice = slice,
+                                 .depth = leases.chunks[index].depth,
+                                 .outer_depth = outer < CHUNKS ? leases.chunks[outer].depth : 0u,
+                                 .populated = chunk->terrain_populated,
+                                 .dirty = chunk->dirty};
+    for (size_t i = 0; i < f.cache.count; ++i)
+        entry->mapped |= f.entries[i].chunk == chunk;
+    for (size_t i = 0; i < f.cache.insertion_count; ++i)
+        entry->listed |= f.insertions[i] == chunk;
+    return true;
+}
+
+static bool graph_references(const mc_chunk_state *chunk)
+{
+    for (size_t i = 0; i < f.cache.count; ++i) {
+        if (f.entries[i].chunk == chunk)
+            return true;
+    }
+    for (size_t i = 0; i < f.cache.insertion_count; ++i) {
+        if (f.insertions[i] == chunk)
+            return true;
+    }
+    return f.context.fallback == chunk;
+}
+
+static bool replace_held_outer(const mc_chunk_acquire_context *context, mc_chunk_state *chunk)
+{
+    size_t index = chunk_index(chunk);
+    if (!callback_check(chunk == leases.outer && index < CHUNKS &&
+                        leases.chunks[index].depth != 0u && remove_mapping(context->cache, 0, 0)))
+        return false;
+    size_t retained = 0;
+    for (size_t i = 0; i < f.cache.insertion_count; ++i) {
+        if (f.insertions[i] != chunk)
+            f.insertions[retained++] = f.insertions[i];
+    }
+    f.cache.insertion_count = retained;
+    if (!callback_check(!graph_references(chunk)))
+        return false;
+    leases.unreferenced_outer_observed = true;
+    mc_chunk_state *old_generated = f.generated;
+    int32_t old_key = f.requested_key;
+    f.generated = &f.chunks[10];
+    ++leases.recursion_depth;
+    f.recursive_result = &f.chunks[14];
+    f.recursive_status = mc_chunk_acquire(context, 32768, 0, &f.recursive_result);
+    --leases.recursion_depth;
+    f.generated = old_generated;
+    f.requested_key = old_key;
+    return callback_check(f.recursive_status == MC_CHUNK_ACQUIRE_OK &&
+                          f.recursive_result == &f.chunks[10] && leases.chunks[index].depth != 0u &&
+                          !graph_references(chunk));
+}
+
+static bool leased_tiles(void *owner, const mc_chunk_acquire_context *context,
+                         mc_chunk_state *chunk)
+{
+    if (!observe_lease('T', chunk, 0) || !register_tiles(owner, context, chunk))
+        return false;
+    if (leases.action == LEASE_REPLACE_DURING_TILES && chunk == leases.outer &&
+        leases.recursion_depth == 0u && !replace_held_outer(context, chunk))
+        return false;
+    if (leases.invalidate_kind == 'T')
+        f.cache.count = f.cache.capacity + 1u;
+    return true;
+}
+
+static bool leased_entities(void *owner, const mc_chunk_acquire_context *context,
+                            mc_chunk_state *chunk, size_t slice)
+{
+    if (!observe_lease('E', chunk, slice) || !register_entities(owner, context, chunk, slice))
+        return false;
+    if (leases.invalidate_kind == 'E' && leases.invalidate_slice == slice)
+        f.cache.count = f.cache.capacity + 1u;
+    return true;
+}
+
+static bool leased_population(void *owner, const mc_chunk_acquire_context *context, int32_t x,
+                              int32_t z)
+{
+    mc_chunk_state *chunk = NULL;
+    if (!callback_check(mc_chunk_cache_lookup(context->cache, x, z, &chunk)) ||
+        !observe_lease('P', chunk, 0) || !populate_chunk(owner, context, x, z))
+        return false;
+    if (f.population_calls == leases.fail_population_call)
+        return false;
+    if (chunk == leases.outer && leases.recursion_depth == 0u) {
+        if (leases.action == LEASE_NEST_POPULATION) {
+            /* Deliberate provider state mutation makes a second population of
+             * this same identity eligible while the first call still holds it. */
+            chunk->terrain_populated = false;
+            ++leases.recursion_depth;
+            f.recursive_status = mc_chunk_acquire_populate(context, x, z);
+            --leases.recursion_depth;
+            if (!callback_check(f.recursive_status == MC_CHUNK_ACQUIRE_OK))
+                return false;
+        }
+        if (leases.action == LEASE_REPLACE_DURING_POPULATION && !replace_held_outer(context, chunk))
+            return false;
+    }
+    if (leases.invalidate_kind == 'P')
+        f.cache.count = f.cache.capacity + 1u;
+    return true;
+}
+
+static void enable_references(void)
+{
+    memset(&leases, 0, sizeof(leases));
+    leases.hooks =
+        (mc_chunk_references){.owner = &leases, .retain = retain_chunk, .release = release_chunk};
+    f.context.references = &leases.hooks;
+    f.context.register_tiles = leased_tiles;
+    f.context.register_entities = leased_entities;
+    if (f.context.populate != NULL)
+        f.context.populate = leased_population;
+}
+
+static int expect_lease_count(size_t index, size_t attempts, size_t retained, size_t maximum)
+{
+    const lease_count *count = &leases.chunks[index];
+    CHECK(count->attempts == attempts && count->retained == retained &&
+          count->released == retained && count->depth == 0u && count->maximum == maximum);
+    return 0;
+}
+
+static int expect_leases_balanced(size_t attempts, size_t retained)
+{
+    size_t total_attempts = 0, total_retained = 0;
+    for (size_t i = 0; i < CHUNKS; ++i) {
+        const lease_count *count = &leases.chunks[i];
+        CHECK(count->depth == 0u && count->retained == count->released &&
+              count->attempts >= count->retained);
+        total_attempts += count->attempts;
+        total_retained += count->retained;
+    }
+    CHECK(total_attempts == attempts && leases.attempts == attempts && total_retained == retained &&
+          !f.callback_error);
+    return 0;
 }
 
 static int reset_fixture(void)
@@ -657,12 +883,420 @@ static int test_invalid_resources(void)
     return 0;
 }
 
+static int test_reference_validation_and_bypasses(void)
+{
+    mc_chunk_state *out = &f.chunks[14];
+    for (int missing = 0; missing < 2; ++missing) {
+        CHECK(reset_fixture() == 0);
+        enable_references();
+        if (missing == 0)
+            leases.hooks.retain = NULL;
+        else
+            leases.hooks.release = NULL;
+        memcpy(&saved, &f, sizeof(f));
+        CHECK(!mc_chunk_acquire_validate(&f.context));
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT);
+        CHECK(mc_chunk_acquire_get(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT);
+        CHECK(mc_chunk_acquire_populate(&f.context, 0, 0) == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT);
+        CHECK(out == &f.chunks[14] && memcmp(&saved, &f, sizeof(f)) == 0);
+        CHECK(expect_leases_balanced(0u, 0u) == 0);
+    }
+    CHECK(reset_fixture() == 0);
+    enable_references();
+    CHECK(mc_chunk_acquire_validate(&f.context));
+    f.cache.capacity = 0u;
+    add_pending(0, 0);
+    memcpy(&saved, &f, sizeof(f));
+    CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_LIMIT);
+    CHECK(out == &f.chunks[14] && memcmp(&saved, &f, sizeof(f)) == 0);
+    CHECK(expect_leases_balanced(0u, 0u) == 0);
+
+    CHECK(reset_fixture() == 0);
+    enable_references();
+    leases.fail_attempt = 1u;
+    CHECK(mc_chunk_cache_publish(&f.cache, 0, 0, &f.chunks[0]));
+    add_pending(0, 0);
+    CHECK(mc_chunk_acquire_get(&f.context, 32768, 0, &out) == MC_CHUNK_ACQUIRE_OK);
+    CHECK(out == &f.chunks[0] && f.pending.count == 1u);
+    CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_OK);
+    CHECK(out == &f.chunks[0] && f.pending.count == 0u);
+    f.chunks[0].terrain_populated = true;
+    memcpy(&saved, &f, sizeof(f));
+    CHECK(mc_chunk_acquire_populate(&f.context, 32768, 0) == MC_CHUNK_ACQUIRE_OK);
+    CHECK(memcmp(&saved, &f, sizeof(f)) == 0 && f.event_count == 0u);
+    CHECK(expect_leases_balanced(0u, 0u) == 0);
+
+    CHECK(reset_fixture() == 0);
+    enable_references();
+    f.context.policy = MC_CHUNK_ACQUIRE_DEDICATED;
+    add_pending(9, 0);
+    memcpy(&saved, &f, sizeof(f));
+    CHECK(mc_chunk_acquire_get(&f.context, 9, 0, &out) == MC_CHUNK_ACQUIRE_OK);
+    CHECK(out == &f.chunks[15] && memcmp(&saved, &f, sizeof(f)) == 0);
+    CHECK(expect_leases_balanced(0u, 0u) == 0);
+    /* The denied b result is borrowed, but a population local is held even
+     * when it resolves to the uninserted blank and has no provider body. */
+    f.context.generate = NULL;
+    f.context.populate = NULL;
+    CHECK(mc_chunk_acquire_populate(&f.context, 9, 0) == MC_CHUNK_ACQUIRE_OK);
+    CHECK(f.cache.count == 0u && f.cache.insertion_count == 0u && f.pending.count == 1u &&
+          f.chunks[15].terrain_populated && !f.chunks[15].active && !f.chunks[15].dirty);
+    CHECK(expect_lease_count(15u, 1u, 1u, 1u) == 0);
+    CHECK(expect_leases_balanced(1u, 1u) == 0);
+    return 0;
+}
+
+static int test_reference_acquisition_routes(void)
+{
+    static const int32_t all[][2] = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}};
+    for (int route = 0; route < 4; ++route) {
+        CHECK(reset_fixture() == 0);
+        CHECK(build_grid() == 0);
+        size_t outer = route == 2 ? 15u : route == 3 ? 10u : 0u;
+        if (route == 0) {
+            f.context.load = load_chunk;
+            f.load_result = MC_CHUNK_LOAD_LOADED;
+            f.loaded = &f.chunks[outer];
+            f.bump_time = true;
+        } else if (route >= 2) {
+            f.context.generate = NULL;
+            f.context.populate = NULL;
+            f.context.fallback = &f.chunks[outer];
+        }
+        f.chunks[outer].dirty = false;
+        int64_t original_time = f.chunks[outer].last_save_time;
+        enable_references();
+        leases.outer = &f.chunks[outer];
+        add_pending(0, 0);
+        memcpy(&saved, &f, sizeof(f));
+        mc_chunk_state *out = &f.chunks[14];
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_OK);
+        CHECK(out == &f.chunks[outer] && f.pending.count == 0u && f.cache.count == 9u &&
+              f.cache.insertion_count == 9u);
+        CHECK(out->last_save_time == (route == 0 ? 777 : original_time));
+        CHECK(f.generate_calls == (route == 1 ? 1u : 0u));
+        CHECK(out->active == !out->blank && out->terrain_populated && out->dirty == (route < 2));
+        CHECK(memcmp(f.data, saved.data, sizeof(f.data)) == 0 &&
+              memcmp(f.blocks, saved.blocks, sizeof(f.blocks)) == 0);
+        CHECK(expect_lease_count(outer, 2u, 2u, 2u) == 0);
+        CHECK(expect_lease_count(4u, 1u, 1u, 1u) == 0);
+        CHECK(expect_lease_count(2u, 1u, 1u, 1u) == 0);
+        CHECK(expect_lease_count(1u, 1u, 1u, 1u) == 0);
+        CHECK(expect_leases_balanced(5u, 5u) == 0 && leases.maximum_total == 2u);
+        if (!out->blank) {
+            CHECK(expect_activation(route < 2 ? 1u : 0u, out, 9u) == 0);
+            for (size_t i = 0; i < 9u; ++i) {
+                const lease_observation *entry = &leases.observations[i];
+                CHECK(entry->chunk == out && entry->depth == 1u && entry->outer_depth == 1u &&
+                      entry->mapped && entry->listed);
+            }
+        }
+        if (route < 2) {
+            CHECK(expect_population(all, 4u) == 0 && f.population_calls == 4u);
+            CHECK(leases.observation_count == 13u);
+            const lease_observation *self = &leases.observations[9];
+            CHECK(self->kind == 'P' && self->chunk == out && self->depth == 2u &&
+                  self->outer_depth == 2u && self->populated && !self->dirty);
+            for (size_t i = 10u; i < 13u; ++i) {
+                const lease_observation *entry = &leases.observations[i];
+                CHECK(entry->kind == 'P' && entry->chunk != out && entry->depth == 1u &&
+                      entry->outer_depth == 1u && entry->populated);
+            }
+        } else {
+            CHECK(f.population_calls == 0u && leases.observation_count == (out->blank ? 0u : 9u));
+            CHECK(f.chunks[1].terrain_populated && !f.chunks[1].dirty &&
+                  f.chunks[2].terrain_populated && !f.chunks[2].dirty &&
+                  f.chunks[4].terrain_populated && !f.chunks[4].dirty);
+        }
+    }
+    return 0;
+}
+
+static int test_reference_nested_population(void)
+{
+    for (int nested = 0; nested < 2; ++nested) {
+        CHECK(reset_fixture() == 0);
+        CHECK(build_grid() == 0);
+        f.chunks[0].dirty = false;
+        if (nested == 0)
+            f.population_action = POPULATE_RECURSE;
+        enable_references();
+        leases.outer = &f.chunks[0];
+        if (nested != 0)
+            leases.action = LEASE_NEST_POPULATION;
+        mc_chunk_state *out = &f.chunks[14];
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_OK);
+        CHECK(out == &f.chunks[0] && out->dirty && out->terrain_populated &&
+              f.recursive_status == MC_CHUNK_ACQUIRE_OK);
+        CHECK(f.population_calls == (nested == 0 ? 4u : 5u));
+        CHECK(leases.observations[9].chunk == out && leases.observations[9].depth == 2u);
+        if (nested != 0)
+            CHECK(leases.observations[10].kind == 'P' && leases.observations[10].chunk == out &&
+                  leases.observations[10].depth == 3u && leases.observations[10].outer_depth == 3u);
+        CHECK(expect_lease_count(0u, nested == 0 ? 2u : 3u, nested == 0 ? 2u : 3u,
+                                 nested == 0 ? 2u : 3u) == 0);
+        CHECK(expect_lease_count(1u, 1u, 1u, 1u) == 0);
+        CHECK(expect_lease_count(2u, 1u, 1u, 1u) == 0);
+        CHECK(expect_lease_count(4u, 1u, 1u, 1u) == 0);
+        CHECK(expect_leases_balanced(nested == 0 ? 5u : 6u, nested == 0 ? 5u : 6u) == 0);
+        CHECK(leases.maximum_total == (nested == 0 ? 2u : 3u));
+    }
+    return 0;
+}
+
+static int test_reference_replaced_outer(void)
+{
+    for (int during_population = 0; during_population < 2; ++during_population) {
+        CHECK(reset_fixture() == 0);
+        if (during_population != 0)
+            CHECK(build_grid() == 0);
+        f.chunks[0].dirty = false;
+        enable_references();
+        leases.outer = &f.chunks[0];
+        leases.action =
+            during_population == 0 ? LEASE_REPLACE_DURING_TILES : LEASE_REPLACE_DURING_POPULATION;
+        add_pending(0, 0);
+        mc_chunk_state *out = &f.chunks[14];
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_OK);
+        mc_chunk_state *mapped = NULL;
+        CHECK(mc_chunk_cache_lookup(&f.cache, 0, 0, &mapped) && mapped == &f.chunks[10]);
+        CHECK(out == &f.chunks[0] && f.recursive_result == &f.chunks[10] &&
+              f.generate_calls == 2u && f.pending.count == 0u);
+        CHECK(leases.unreferenced_outer_observed && !graph_references(out));
+        CHECK(out->active && out->dirty == (during_population != 0) && f.chunks[10].active &&
+              f.cache.count == (during_population == 0 ? 1u : 9u) &&
+              f.cache.insertion_count == f.cache.count);
+        size_t holds = during_population == 0 ? 1u : 2u;
+        CHECK(expect_lease_count(0u, holds, holds, holds) == 0);
+        CHECK(expect_lease_count(10u, holds, holds, holds) == 0);
+        CHECK(expect_leases_balanced(during_population == 0 ? 2u : 7u,
+                                     during_population == 0 ? 2u : 7u) == 0);
+        CHECK(leases.maximum_total == (during_population == 0 ? 2u : 4u));
+        if (during_population == 0) {
+            size_t slices = 0;
+            for (size_t i = 0; i < leases.observation_count; ++i) {
+                const lease_observation *entry = &leases.observations[i];
+                if (entry->kind == 'E' && entry->chunk == out) {
+                    CHECK(entry->slice == slices && entry->depth == 1u &&
+                          entry->outer_depth == 1u && !entry->mapped && !entry->listed);
+                    ++slices;
+                }
+            }
+            CHECK(slices == 8u && f.population_calls == 0u);
+        } else {
+            CHECK(f.population_calls == 5u && out->terrain_populated &&
+                  f.chunks[10].terrain_populated);
+            CHECK(expect_lease_count(1u, 1u, 1u, 1u) == 0);
+            CHECK(expect_lease_count(2u, 1u, 1u, 1u) == 0);
+            CHECK(expect_lease_count(4u, 1u, 1u, 1u) == 0);
+        }
+    }
+    return 0;
+}
+
+static int test_reference_hook_failures(void)
+{
+    mc_chunk_state *out = &f.chunks[14];
+    for (int route = 0; route < 3; ++route) {
+        CHECK(reset_fixture() == 0);
+        size_t outer = route == 2 ? 15u : 0u;
+        if (route == 0) {
+            f.context.load = load_chunk;
+            f.load_result = MC_CHUNK_LOAD_LOADED;
+            f.loaded = &f.chunks[0];
+            f.bump_time = true;
+        } else if (route == 2) {
+            f.context.generate = NULL;
+            f.context.populate = NULL;
+        }
+        int64_t original_time = f.chunks[outer].last_save_time;
+        enable_references();
+        leases.fail_attempt = 1u;
+        add_pending(0, 0);
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT);
+        CHECK(out == &f.chunks[14] && f.pending.count == 0u && f.cache.count == 0u &&
+              f.cache.insertion_count == 0u && !f.chunks[outer].active &&
+              !f.chunks[outer].terrain_populated);
+        CHECK(f.chunks[outer].last_save_time == (route == 0 ? 777 : original_time));
+        CHECK(f.generate_calls == (route == 1 ? 1u : 0u) &&
+              f.event_count == (route == 2 ? 0u : 1u) && leases.observation_count == 0u);
+        CHECK(expect_lease_count(outer, 1u, 0u, 0u) == 0);
+        CHECK(expect_leases_balanced(1u, 0u) == 0);
+    }
+    CHECK(reset_fixture() == 0);
+    f.chunks[0].dirty = false;
+    CHECK(mc_chunk_cache_publish(&f.cache, 0, 0, &f.chunks[0]));
+    add_pending(0, 0);
+    enable_references();
+    leases.fail_attempt = 1u;
+    CHECK(mc_chunk_acquire_populate(&f.context, 0, 0) == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT);
+    CHECK(f.pending.count == 1u && !f.chunks[0].terrain_populated && !f.chunks[0].dirty &&
+          f.population_calls == 0u && f.event_count == 0u);
+    CHECK(expect_lease_count(0u, 1u, 0u, 0u) == 0);
+    CHECK(expect_leases_balanced(1u, 0u) == 0);
+
+    static const size_t targets[] = {0u, 4u, 2u, 1u};
+    for (size_t gate = 0; gate < 4u; ++gate) {
+        CHECK(reset_fixture() == 0);
+        CHECK(build_grid() == 0);
+        f.context.load = load_chunk;
+        f.load_result = MC_CHUNK_LOAD_LOADED;
+        f.loaded = &f.chunks[0];
+        f.bump_time = true;
+        f.chunks[0].dirty = false;
+        enable_references();
+        leases.outer = &f.chunks[0];
+        leases.fail_attempt = gate + 2u;
+        add_pending(0, 0);
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT);
+        CHECK(out == &f.chunks[14] && f.pending.count == 0u && f.cache.count == 9u &&
+              f.cache.insertion_count == 9u && f.chunks[0].active &&
+              f.chunks[0].last_save_time == 777);
+        CHECK(f.population_calls == gate && f.event_count == 10u + gate &&
+              leases.observation_count == 9u + gate);
+        CHECK(f.chunks[0].terrain_populated == (gate != 0u) && f.chunks[0].dirty == (gate != 0u));
+        CHECK(expect_lease_count(0u, 2u, gate == 0u ? 1u : 2u, gate == 0u ? 1u : 2u) == 0);
+        for (size_t candidate = 1u; candidate < 4u; ++candidate) {
+            size_t attempts = candidate <= gate ? 1u : 0u;
+            size_t retained = candidate < gate ? 1u : 0u;
+            CHECK(expect_lease_count(targets[candidate], attempts, retained, retained) == 0);
+            CHECK(f.chunks[targets[candidate]].terrain_populated == (candidate < gate));
+        }
+        CHECK(expect_leases_balanced(gate + 2u, gate + 1u) == 0);
+        CHECK(leases.maximum_total == (gate == 0u ? 1u : 2u));
+    }
+    return 0;
+}
+
+static int test_reference_failure_releases(void)
+{
+    mc_chunk_state *out = &f.chunks[14];
+    /* Every registration boundary and the provider boundary can fail either
+     * explicitly or by returning invalid cache metadata. Both unwind leases. */
+    for (int invalid_metadata = 0; invalid_metadata < 2; ++invalid_metadata) {
+        for (size_t boundary = 0; boundary < 10u; ++boundary) {
+            CHECK(reset_fixture() == 0);
+            bool population = boundary == 9u;
+            if (population) {
+                CHECK(build_grid() == 0);
+                f.context.load = load_chunk;
+                f.load_result = MC_CHUNK_LOAD_LOADED;
+                f.loaded = &f.chunks[0];
+                f.bump_time = true;
+            }
+            f.chunks[0].dirty = false;
+            enable_references();
+            leases.outer = &f.chunks[0];
+            char kind = boundary == 0u ? 'T' : population ? 'P' : 'E';
+            if (invalid_metadata != 0) {
+                leases.invalidate_kind = kind;
+                leases.invalidate_slice = boundary - 1u;
+            } else if (kind == 'T')
+                f.tiles_ok = false;
+            else if (kind == 'E')
+                f.fail_slice = boundary - 1u;
+            else
+                f.populate_ok = false;
+            add_pending(0, 0);
+            mc_chunk_acquire_status expected = invalid_metadata != 0
+                                                   ? MC_CHUNK_ACQUIRE_STATE_ERROR
+                                                   : MC_CHUNK_ACQUIRE_CALLBACK_FAILED;
+            CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == expected);
+            CHECK(out == &f.chunks[14] && f.pending.count == 0u && f.chunks[0].active &&
+                  f.cache.insertion_count == (population ? 9u : 1u));
+            CHECK(f.cache.count == (invalid_metadata != 0 ? f.cache.capacity + 1u
+                                    : population          ? 9u
+                                                          : 1u));
+            CHECK(f.event_count == boundary + 2u && leases.observation_count == boundary + 1u &&
+                  f.population_calls == (population ? 1u : 0u));
+            CHECK(f.chunks[0].terrain_populated == population && !f.chunks[0].dirty);
+            if (population) {
+                CHECK(f.chunks[0].last_save_time == 777);
+                CHECK(leases.observations[9].depth == 2u &&
+                      leases.observations[9].outer_depth == 2u);
+            }
+            size_t retained = population ? 2u : 1u;
+            CHECK(expect_lease_count(0u, retained, retained, retained) == 0);
+            CHECK(expect_leases_balanced(retained, retained) == 0);
+        }
+    }
+    for (int limit = 0; limit < 2; ++limit) {
+        CHECK(reset_fixture() == 0);
+        enable_references();
+        leases.outer = &f.chunks[0];
+        f.generate_action = GENERATE_FILL;
+        if (limit == 0)
+            f.cache.capacity = 1u;
+        else
+            f.cache.insertion_capacity = 1u;
+        add_pending(0, 0);
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT);
+        CHECK(out == &f.chunks[14] && f.pending.count == 0u && f.cache.count == 1u &&
+              f.cache.insertion_count == 1u && f.entries[0].chunk == &f.chunks[2] &&
+              !f.chunks[0].active && leases.observation_count == 0u);
+        CHECK(expect_lease_count(0u, 1u, 1u, 1u) == 0);
+        CHECK(expect_leases_balanced(1u, 1u) == 0);
+    }
+    static const size_t targets[] = {0u, 4u, 2u, 1u};
+    for (size_t failed = 1u; failed < 4u; ++failed) {
+        CHECK(reset_fixture() == 0);
+        CHECK(build_grid() == 0);
+        f.context.load = load_chunk;
+        f.load_result = MC_CHUNK_LOAD_LOADED;
+        f.loaded = &f.chunks[0];
+        f.bump_time = true;
+        f.chunks[0].dirty = false;
+        enable_references();
+        leases.outer = &f.chunks[0];
+        leases.fail_population_call = failed + 1u;
+        add_pending(0, 0);
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) == MC_CHUNK_ACQUIRE_CALLBACK_FAILED);
+        CHECK(out == &f.chunks[14] && f.pending.count == 0u && f.chunks[0].last_save_time == 777 &&
+              f.cache.count == 9u && f.cache.insertion_count == 9u);
+        CHECK(f.population_calls == failed + 1u && f.event_count == failed + 11u &&
+              leases.observation_count == failed + 10u);
+        CHECK(expect_lease_count(0u, 2u, 2u, 2u) == 0);
+        for (size_t target = 0; target < 4u; ++target) {
+            CHECK(f.chunks[targets[target]].terrain_populated == (target <= failed) &&
+                  f.chunks[targets[target]].dirty == (target < failed));
+            if (target != 0u) {
+                size_t retained = target <= failed ? 1u : 0u;
+                CHECK(expect_lease_count(targets[target], retained, retained, retained) == 0);
+            }
+        }
+        CHECK(expect_leases_balanced(failed + 2u, failed + 2u) == 0);
+        CHECK(leases.maximum_total == 2u);
+    }
+    for (int failure = 0; failure < 4; ++failure) {
+        CHECK(reset_fixture() == 0);
+        enable_references();
+        add_pending(0, 0);
+        if (failure == 0) {
+            f.context.load = load_chunk;
+            f.load_result = MC_CHUNK_LOAD_FATAL;
+        } else if (failure == 1)
+            f.generate_ok = false;
+        else if (failure == 2)
+            f.generated = NULL;
+        else
+            f.invalidate_cache = true;
+        CHECK(mc_chunk_acquire(&f.context, 0, 0, &out) ==
+              (failure < 2 ? MC_CHUNK_ACQUIRE_CALLBACK_FAILED : MC_CHUNK_ACQUIRE_STATE_ERROR));
+        CHECK(out == &f.chunks[14] && f.pending.count == 0u && leases.observation_count == 0u);
+        CHECK(expect_leases_balanced(0u, 0u) == 0);
+    }
+    return 0;
+}
+
 int main(void)
 {
     if (test_dedicated_gate_and_hit_pending() || test_pending_and_drop_arithmetic() ||
         test_load_generate_and_activation() || test_live_population_gates() ||
         test_population_flags_virtuals_and_reentry() || test_recursive_outer_publication() ||
-        test_limits_and_callback_failures() || test_invalid_resources())
+        test_limits_and_callback_failures() || test_invalid_resources() ||
+        test_reference_validation_and_bypasses() || test_reference_acquisition_routes() ||
+        test_reference_nested_population() || test_reference_replaced_outer() ||
+        test_reference_hook_failures() || test_reference_failure_releases())
         return 1;
     printf("chunk acquisition contracts: %u checks\n", checks);
     return 0;

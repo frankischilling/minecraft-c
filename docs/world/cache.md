@@ -4,7 +4,9 @@
 loader, generator, activation and population callbacks. The coordinator owns no
 storage or game objects. Callers supply stable cache entries, an insertion list,
 a unique pending-key set, a fallback identity and live world values. Callback
-owners are borrowed opaque pointers. There is no file I/O or hidden allocator.
+owners are borrowed opaque pointers. There is no file I/O. Legacy pending arrays
+allocate nothing; optional ordered pending history allocates through its explicit
+bounded owner.
 
 The ordinary entry `mc_chunk_acquire` removes the requested pending key before
 lookup, including on a hit. On a miss it tries the loader, then the optional
@@ -36,8 +38,12 @@ exact fallback without publication, activation or pending removal.
 `mc_chunk_acquire_mark_drop` implements the dedicated pending producer. It uses
 Java-wrapped `chunk*16+8-spawn` on each axis and adds the packed key when either
 distance lies outside inclusive `[-128,128]`. It does not require a mapped chunk.
-The pending set supplies membership and stable array removal; it does not supply
-Java HashSet iteration order or an unload schedule.
+Legacy pending arrays supply membership and stable array removal. Ordered mode
+also borrows a bounded [Integer set](../reference/java-semantics.md#integer-set-history).
+All acquisition/drop changes use the paired mutation functions, preserving its
+actual add/remove history. Restoring current array membership alone cannot restore
+selection order. The separate [lifecycle coordinator](lifecycle.md) supplies the
+unload schedule.
 
 ## Ownership, recursion and failures
 
@@ -58,6 +64,12 @@ callback effects and pending removal; there is no rollback. Callback failures
 and invalid downstream state can also leave published or partially activated
 objects. The output pointer is assigned only on success. Callers must handle
 these statuses rather than treating partial state as a completed acquisition.
+
+Optional reference hooks retain the resolved outer identity through activation
+and all population gates, and each population target through its callback.
+Successful holds receive one release on every exit. A failed hold after work has
+begun reports `PARTIAL_LIMIT`; loaded time or pending removal may already have
+changed. Returned pointers remain borrowed after these local leases end.
 
 Present-null imported map values fail entry validation with `INVALID_ARGUMENT`.
 A successful loader or generator returning null produces `STATE_ERROR` before
@@ -84,8 +96,10 @@ while C computes transitions. At `28a55b52c001c4c114a11ca7df844fc1f286d328`,
 all 56 selected tests pass without skips on MSVC/GCC/Clang with Linux sanitizers,
 independent audit and hosted checks.
 
-This boundary does not decode disk chunks, populate terrain features, save or
-unload objects, drain light queues or reproduce Java collection iteration.
+This acquisition boundary does not itself decode disk chunks, populate terrain
+features, save/unload objects or drain light queues. The separate lifecycle and
+runtime modules compose represented storage, saving and owner retirement;
+their new original-game acceptance remains in development.
 Read-only [region inspection](../storage/region.md), unpublished
 [normal generation](generation.md) and [full finishing](finishing.md) retain
 their own contracts and evidence.

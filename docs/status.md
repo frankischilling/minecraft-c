@@ -1,5 +1,15 @@
 # Development status
 
+Chunk save/unload and owner retirement are under active implementation. Native
+constructed contracts and the modern-JDK pending corpus have development passes;
+the first genuine dedicated API/file replay also has development passes on all
+three native compilers. Ten fresh original/control profiles now pass strict
+validation. Nonempty callback replay passes on all three compilers; fresh base
+detach pipelines and separate native refusal/file-preservation checks pass on
+Windows JDK17 and Linux JDK21. Exact-commit acceptance remains pending.
+See the [lifecycle boundary](world/lifecycle.md). No completed whole-game claim is
+implied by this work.
+
 The persistence foundation passes exact-source acceptance at
 `9ad690d83592f127b9bb39d7233e8eef06fd0029`. All 71 selected local tests pass
 without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan and

@@ -42,6 +42,13 @@ and evidence limits. Callback replay imports observed effects within the recorde
 cache/world boundary; that replay itself does not implement a disk decoder or
 terrain features. The native storage work has [separate accepted finite copied-world scenarios](reference/storage.md#exact-source-storage-checkpoint); it does not complete gameplay saving.
 
+The [developing lifecycle boundary](reference/lifecycle.md) adds save/unload
+coordination, history-sensitive pending selection and explicit C retirement.
+Ten fresh original/control profiles validate; selected native and external
+callback comparisons pass in working-tree builds. Exact-source acceptance and
+hosted checks remain pending. Entity/tile simulation, general deferred cleanup,
+terrain-feature bodies, world ticking and gameplay restart/recovery stay open.
+
 ## Subsystem checklist
 
 | Area | Concrete behavior to research and reproduce | Verified symbol anchors; checklist state |

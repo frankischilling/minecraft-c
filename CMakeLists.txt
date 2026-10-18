@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
-option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numerical helpers with a local JDK" OFF)
+option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
 option(MC_ENABLE_NBT_REFERENCE_TESTS "Compare NBT with locally supplied original JARs" OFF)
 option(MC_ENABLE_COMPRESSION_REFERENCE_TESTS "Compare compression with original helpers" OFF)
@@ -25,6 +25,7 @@ option(MC_ENABLE_REGION_CAPTURE_TESTS "Compare region reader with recorded obser
 option(MC_ENABLE_REGION_REFERENCE_TESTS "Compare region inspection with untouched original readers" OFF)
 option(MC_ENABLE_CACHE_REFERENCE_TESTS "Compare synchronous acquisition with retained original providers" OFF)
 option(MC_ENABLE_STORAGE_REFERENCE_TESTS "Compare world persistence with original storage methods" OFF)
+option(MC_ENABLE_LIFECYCLE_REFERENCE_TESTS "Compare copied-world save/unload lifecycle with original controls" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -66,6 +67,7 @@ target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 
 # The shared core has no window, graphics, audio, JDK, or asset dependencies.
 add_library(mc_core STATIC
+    src/core/java/int_set.c
     src/core/java/java.c
     src/core/math/math.c
     src/core/text/mutf8.c)
@@ -93,6 +95,7 @@ add_library(mc_world STATIC
     src/world/generation/normal.c
     src/world/cache/cache.c
     src/world/cache/acquire.c
+    src/world/cache/lifecycle.c
     src/world/chunk/finish.c
     src/world/lighting/world.c
     src/world/lighting/queue.c
@@ -107,6 +110,7 @@ add_library(mc_world STATIC
 target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
 add_library(mc_persistence STATIC
+    src/world/runtime/runtime.c
     src/world/storage/status.c
     src/world/storage/files.c
     src/world/storage/regions.c
@@ -129,6 +133,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_world_store_probe tests/world/storage/store_probe.c)
     target_link_libraries(mc_world_store_probe PRIVATE mc_persistence mc_build_options)
+
+    add_executable(mc_test_world_runtime tests/world/runtime/test_runtime.c)
+    target_link_libraries(mc_test_world_runtime PRIVATE mc_persistence mc_build_options)
+
+    add_executable(mc_world_lifecycle_probe tests/world/runtime/lifecycle_probe.c)
+    target_link_libraries(mc_world_lifecycle_probe PRIVATE mc_persistence mc_build_options)
 
     add_executable(mc_level_probe tests/storage/level/level_probe.c)
     target_link_libraries(mc_level_probe PRIVATE mc_storage mc_build_options)
@@ -156,6 +166,19 @@ if(BUILD_TESTING)
 
     add_executable(mc_chunk_callback_probe tests/world/cache/callback_probe.c)
     target_link_libraries(mc_chunk_callback_probe PRIVATE mc_world mc_build_options)
+
+    add_executable(mc_chunk_lifecycle_callbacks_probe tests/world/cache/lifecycle_callbacks_probe.c)
+    target_link_libraries(mc_chunk_lifecycle_callbacks_probe PRIVATE mc_world mc_build_options)
+
+    add_executable(mc_test_chunk_lifecycle tests/world/cache/test_lifecycle.c)
+    target_link_libraries(mc_test_chunk_lifecycle PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_lifecycle COMMAND mc_test_chunk_lifecycle)
+    set_tests_properties(world.chunk_lifecycle PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_chunk_pending tests/world/cache/test_pending.c)
+    target_link_libraries(mc_test_chunk_pending PRIVATE mc_world mc_build_options)
+    add_test(NAME world.chunk_pending COMMAND mc_test_chunk_pending)
+    set_tests_properties(world.chunk_pending PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
     add_executable(mc_test_region tests/storage/region/test_region.c)
     target_link_libraries(mc_test_region PRIVATE mc_storage mc_build_options)
@@ -193,6 +216,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_java PRIVATE mc_core mc_build_options)
     add_test(NAME core.java COMMAND mc_test_java)
     set_tests_properties(core.java PROPERTIES LABELS "public;unit" TIMEOUT 30)
+
+    add_executable(mc_test_java_int_set tests/core/java/test_int_set.c)
+    target_link_libraries(mc_test_java_int_set PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_int_set COMMAND mc_test_java_int_set)
+    set_tests_properties(core.java_int_set PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_java_int_set_probe tests/core/java/int_set_probe.c)
+    target_link_libraries(mc_java_int_set_probe PRIVATE mc_world mc_build_options)
 
     add_executable(mc_test_math tests/core/math/test_math.c)
     target_link_libraries(mc_test_math PRIVATE mc_core mc_build_options)
@@ -303,6 +334,50 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    foreach(MC_RUNTIME_CASE ownership-and-runtime generation generation-copy-limit)
+        add_test(NAME world.runtime_${MC_RUNTIME_CASE}
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+            --executable "$<TARGET_FILE:mc_test_world_runtime>"
+            --scenario "${MC_RUNTIME_CASE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/runtime-contracts")
+        set_tests_properties(world.runtime_${MC_RUNTIME_CASE} PROPERTIES
+            LABELS "public;integration;storage" TIMEOUT 90)
+    endforeach()
+
+    add_test(NAME world.lifecycle_protocol
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_lifecycle_probe.py"
+        --executable "$<TARGET_FILE:mc_world_lifecycle_probe>"
+        --prepare-executable "$<TARGET_FILE:mc_test_world_runtime>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lifecycle-protocol-contracts")
+    set_tests_properties(world.lifecycle_protocol PROPERTIES
+        LABELS "public;integration;storage" TIMEOUT 180)
+
+    add_test(NAME world.lifecycle_callbacks_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/cache/compare_lifecycle_callbacks.py"
+        --executable "$<TARGET_FILE:mc_chunk_lifecycle_callbacks_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lifecycle-callbacks-replay")
+    set_tests_properties(world.lifecycle_callbacks_replay PROPERTIES
+        LABELS "public;fixture;cache" TIMEOUT 420)
+
+    add_test(NAME core.java_int_set_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_int_set.py"
+        --executable "$<TARGET_FILE:mc_java_int_set_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-java-int-set-replay")
+    set_tests_properties(core.java_int_set_replay PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 90)
+
+    add_test(NAME world.chunk_pending_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_int_set.py"
+        --executable "$<TARGET_FILE:mc_java_int_set_probe>" --pending
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-chunk-pending-replay")
+    set_tests_properties(world.chunk_pending_replay PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 90)
 
     add_test(NAME tools.world_storage_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
@@ -426,6 +501,47 @@ if(BUILD_TESTING)
         set_tests_properties(reference.world_storage PROPERTIES
             LABELS "reference;original;storage" TIMEOUT 900 SKIP_RETURN_CODE 77)
     endif()
+
+    if(MC_ENABLE_LIFECYCLE_REFERENCE_TESTS)
+        find_package(Java 17 QUIET COMPONENTS Runtime Development)
+        set(MC_LIFECYCLE_SOURCE_ARGUMENTS)
+        if(NOT MC_REFERENCE_TESTED_COMMIT STREQUAL "")
+            list(APPEND MC_LIFECYCLE_SOURCE_ARGUMENTS --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        endif()
+        foreach(MC_LIFECYCLE_CONTEXT client base dedicated)
+            foreach(MC_LIFECYCLE_SCENARIO cohort session-world detach-owned)
+                add_test(NAME reference.lifecycle_${MC_LIFECYCLE_CONTEXT}_${MC_LIFECYCLE_SCENARIO}
+                    COMMAND "${Python3_EXECUTABLE}"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/cache/run_lifecycle.py"
+                    --executable "$<TARGET_FILE:mc_world_lifecycle_probe>"
+                    --callback-executable "$<TARGET_FILE:mc_chunk_lifecycle_callbacks_probe>"
+                    --client "${MC_REFERENCE_CLIENT_JAR}"
+                    --server "${MC_REFERENCE_SERVER_JAR}"
+                    --java "${Java_JAVA_EXECUTABLE}"
+                    --javac "${Java_JAVAC_EXECUTABLE}"
+                    --context "${MC_LIFECYCLE_CONTEXT}" --scenario "${MC_LIFECYCLE_SCENARIO}"
+                    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-lifecycle-${MC_LIFECYCLE_CONTEXT}-${MC_LIFECYCLE_SCENARIO}"
+                    ${MC_LIFECYCLE_SOURCE_ARGUMENTS})
+                set_tests_properties(reference.lifecycle_${MC_LIFECYCLE_CONTEXT}_${MC_LIFECYCLE_SCENARIO} PROPERTIES
+                    LABELS "reference;original;lifecycle" TIMEOUT 1800 RUN_SERIAL TRUE SKIP_RETURN_CODE 77)
+            endforeach()
+        endforeach()
+        add_test(NAME reference.lifecycle_dedicated_unload101
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/cache/run_lifecycle.py"
+            --executable "$<TARGET_FILE:mc_world_lifecycle_probe>"
+            --callback-executable "$<TARGET_FILE:mc_chunk_lifecycle_callbacks_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --context dedicated --scenario unload101
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-lifecycle-dedicated-unload101"
+            ${MC_LIFECYCLE_SOURCE_ARGUMENTS})
+        set_tests_properties(reference.lifecycle_dedicated_unload101 PROPERTIES
+            LABELS "reference;original;lifecycle" TIMEOUT 1800 RUN_SERIAL TRUE SKIP_RETURN_CODE 77)
+    endif()
+
     add_test(NAME tools.acquire_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/cache" -p test_acquire_reference.py)
@@ -764,6 +880,17 @@ if(BUILD_TESTING)
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-java")
         set_tests_properties(reference.java_semantics PROPERTIES
             LABELS "reference;java" TIMEOUT 90 SKIP_RETURN_CODE 77)
+
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.java_int_set
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_int_set.py"
+            --executable "$<TARGET_FILE:mc_java_int_set_probe>"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-java-int-set")
+        set_tests_properties(reference.java_int_set PROPERTIES
+            LABELS "reference;java" TIMEOUT 180 SKIP_RETURN_CODE 77)
     endif()
 
     if(MC_ENABLE_NBT_REFERENCE_TESTS)
