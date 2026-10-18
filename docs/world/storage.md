@@ -128,5 +128,5 @@ separate required behavior after this storage foundation.
 The new `reference.world_storage` comparison composes genuine original-created
 copies, C-created containers and fresh reloads in both directions. Fresh native
 Windows and WSL/GCC development smokes pass, including opaque Boat/Sign
-transport; 69 Java-free harness guards pass on both hosts. Final exact-source
+transport; 74 Java-free harness guards pass on both hosts. Final exact-source
 MSVC/GCC/Clang acceptance remains pending. See [storage evidence](../reference/storage.md).

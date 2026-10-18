@@ -306,48 +306,71 @@ def no_link_components(path):
     return path
 
 
-def world_inventory(root, hashes=False, max_entries=MAX_ENTRIES, max_bytes=MAX_WORLD_BYTES):
-    """Bound traversal/storage; polling cannot impose a kernel disk quota."""
+def world_inventory(root, hashes=False, max_entries=MAX_ENTRIES, max_bytes=MAX_WORLD_BYTES,
+                    *, live_poll=False):
+    """Bound traversal/storage; live polls may miss entries removed by the child."""
     root = Path(root)
     result = {"root": str(root), "exists": False, "entries": [], "files": 0,
               "directories": 0, "bytes": 0, "complete": False, "error": None}
     try:
+        require(not (live_poll and hashes), "live inventory polling cannot hash final state")
         no_link_components(root)
-        if not root.exists():
-            result["complete"] = True
-            return result
-        require(root.is_dir(), "world root is not a directory")
+        if live_poll:
+            try:
+                root_info = os.stat(root, follow_symlinks=False)
+            except FileNotFoundError:
+                result["complete"] = True
+                return result
+            require(not is_link(root_info), "world link/reparse root: " + str(root))
+            require(stat.S_ISDIR(root_info.st_mode), "world root is not a directory")
+        else:
+            if not root.exists():
+                result["complete"] = True
+                return result
+            require(root.is_dir(), "world root is not a directory")
         result["exists"] = True
-        pending = [root]
+        pending, enumerated = [root], 0
         while pending:
             directory = pending.pop()
-            with os.scandir(directory) as entries:
-                for entry in entries:
-                    require(len(result["entries"]) < max_entries, "world inventory entry limit")
-                    # DirEntry.stat reports zero identity/link fields on Windows.
-                    # os.stat supplies the actual hard-link count without following links.
-                    info = os.stat(entry.path, follow_symlinks=False)
-                    require(not is_link(info), "world link/reparse entry: " + entry.path)
-                    relative = Path(entry.path).relative_to(root)
-                    require(len(relative.parts) <= 64 and len(str(relative)) <= 4096,
-                            "world inventory path/depth limit")
-                    record = {"path": relative.as_posix()}
-                    if stat.S_ISDIR(info.st_mode):
-                        record["kind"] = "directory"
-                        result["directories"] += 1
-                        pending.append(Path(entry.path))
-                    else:
-                        require(stat.S_ISREG(info.st_mode), "non-regular world entry: " + entry.path)
-                        require(info.st_nlink == 1, "hard-linked world file: " + entry.path)
-                        require(info.st_size <= max_bytes - result["bytes"], "world inventory byte limit")
-                        record.update(kind="file", bytes=info.st_size)
-                        result["files"] += 1
-                        result["bytes"] += info.st_size
-                        if hashes:
-                            current = file_record(Path(entry.path), byte_limit=info.st_size)
-                            require(current["bytes"] == info.st_size, "world file changed during inventory")
-                            record["sha256"] = current["sha256"]
-                    result["entries"].append(record)
+            try:
+                with os.scandir(directory) as entries:
+                    for entry in entries:
+                        # Disappearing entries still consume the traversal budget.
+                        require(enumerated < max_entries, "world inventory entry limit")
+                        enumerated += 1
+                        relative = Path(entry.path).relative_to(root)
+                        require(len(relative.parts) <= 64 and len(str(relative)) <= 4096,
+                                "world inventory path/depth limit")
+                        # DirEntry.stat reports zero identity/link fields on Windows.
+                        # os.stat supplies actual link counts without following links.
+                        try:
+                            info = os.stat(entry.path, follow_symlinks=False)
+                        except FileNotFoundError:
+                            if live_poll:
+                                continue
+                            raise
+                        require(not is_link(info), "world link/reparse entry: " + entry.path)
+                        record = {"path": relative.as_posix()}
+                        if stat.S_ISDIR(info.st_mode):
+                            record["kind"] = "directory"
+                            result["directories"] += 1
+                            pending.append(Path(entry.path))
+                        else:
+                            require(stat.S_ISREG(info.st_mode), "non-regular world entry: " + entry.path)
+                            require(info.st_nlink == 1, "hard-linked world file: " + entry.path)
+                            require(info.st_size <= max_bytes - result["bytes"], "world inventory byte limit")
+                            record.update(kind="file", bytes=info.st_size)
+                            result["files"] += 1
+                            result["bytes"] += info.st_size
+                            if hashes:
+                                current = file_record(Path(entry.path), byte_limit=info.st_size)
+                                require(current["bytes"] == info.st_size, "world file changed during inventory")
+                                record["sha256"] = current["sha256"]
+                        result["entries"].append(record)
+            except FileNotFoundError:
+                # A directory can vanish after it was queued, or during iteration.
+                if not live_poll:
+                    raise
         result["entries"].sort(key=lambda entry: entry["path"])
         result["complete"] = True
     except (OSError, Failure) as error:
@@ -423,7 +446,7 @@ def run_live(command, stdout_path, stderr_path, cwd, *, seconds=CHILD_SECONDS,
                     timed_out = True
                     kill("child timeout")
                 if world_root is not None and now >= next_poll:
-                    inventory = world_inventory(world_root)
+                    inventory = world_inventory(world_root, live_poll=True)
                     polls += 1
                     if inventory["error"]:
                         kill("world inventory: " + inventory["error"])

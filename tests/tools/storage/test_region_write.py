@@ -298,7 +298,9 @@ class ExecutionTests(unittest.TestCase):
             return code,json.loads(errors.getvalue())
 
     def test_missing_prerequisite_is_unavailable(self):
+        region._latest_process = {"stale": "prior invocation"}
         code,row=self.guard("missing_tool");self.assertEqual(code,77);self.assertEqual(row["status"],"unavailable")
+        self.assertIsNone(region._latest_process);self.assertNotIn("failed_process",row)
     def test_failed_tool_process_is_not_unavailable(self):
         code,row=self.guard("version77");self.assertEqual(code,1);self.assertEqual(row["status"],"fail")
     def test_compile77_is_failure(self):
@@ -326,10 +328,98 @@ class ExecutionTests(unittest.TestCase):
         self.assertNotIn("classes_before",row)
 
 
+class ProcessObservationTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix="mc-region-process-")
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name).resolve()
+
+    def fake_child(self, returncode, *, running=False):
+        child = mock.Mock()
+        child.returncode = None if running else returncode
+        child.poll.side_effect = lambda: child.returncode
+        child.kill.side_effect = lambda: setattr(child, "returncode", returncode)
+        child.wait.side_effect = lambda **kwargs: child.returncode
+        return child
+
+    def test_actual_child_result_survives_timeout_and_stream_validation(self):
+        for name, code, running in (("nonzero", 7, False), ("timeout", -9, True)):
+            child = self.fake_child(code, running=running)
+            with mock.patch.object(region.subprocess, "Popen", return_value=child), \
+                 mock.patch.object(region.time, "monotonic", side_effect=iter(range(10))):
+                result = region.process(["owned-child"], self.root, name, timeout=.1)
+            observed = region._latest_process
+            self.assertEqual((observed["returncode"], observed["timed_out"], observed["stop_reason"]),
+                             (code, running, "deadline" if running else None))
+            self.assertEqual((observed["stdout_observed"], observed["stderr_observed"]), (0, 0))
+            self.assertEqual(observed["command"], ["owned-child"])
+            self.assertNotIn("failed_process", result)
+            with self.assertRaisesRegex(region.Failure, "complete successful process"):
+                region.successful(result)
+        child = self.fake_child(0)
+        with mock.patch.object(region.subprocess, "Popen", return_value=child), \
+             mock.patch.object(region, "fingerprint", side_effect=OSError("owned hashing failure")):
+            with self.assertRaisesRegex(OSError, "hashing failure"):
+                region.process(["owned-child"], self.root, "hashing")
+        self.assertEqual(region._latest_process["returncode"], 0)
+        self.assertEqual(region._latest_process["label"], "hashing")
+        def oversized(*args, **kwargs):
+            kwargs['stdout'].write(b'oversized')
+            kwargs['stdout'].flush()
+            return self.fake_child(0)
+        with mock.patch.object(region.subprocess, "Popen", side_effect=oversized):
+            with self.assertRaisesRegex(region.Failure, "bounded complete child streams"):
+                region.process(["owned-child"], self.root, "oversized", stdout_limit=4)
+        self.assertEqual(region._latest_process["returncode"], 0)
+        self.assertEqual(region._latest_process["stdout_observed"], 9)
+
+    def test_supervision_exception_is_observed_after_reaping(self):
+        child = self.fake_child(-9, running=True)
+        with mock.patch.object(region.subprocess, "Popen", return_value=child), \
+             mock.patch.object(region, "inventory", side_effect=region.Failure("owned inventory failure")):
+            with self.assertRaisesRegex(region.Failure, "owned inventory failure"):
+                region.process(["owned-child"], self.root, "supervision")
+        child.kill.assert_called_once()
+        child.wait.assert_called_once_with(timeout=10)
+        observed = region._latest_process
+        self.assertEqual(observed["returncode"], -9)
+        self.assertEqual(observed["inventory_polls"], 1)
+        self.assertEqual(observed["supervision_error"],
+                         {"class": "Failure", "message": "owned inventory failure"})
+
+    def test_main_retains_failure_only_and_resets_each_invocation(self):
+        def prepare(args, report):
+            report["inputs_before"] = {}
+            return ()
+        def run(args, directory, report, prepared):
+            result = region.process(["owned-child"], directory, "child")
+            region.successful(result)
+        args = ["--mode", "original-only", "--work-dir", str(self.root/"captures")]
+        for code in (7, 0):
+            before = set((self.root/"captures").glob("capture-*/manifest.json"))
+            with mock.patch.object(region, "prepare", side_effect=prepare), \
+                 mock.patch.object(region, "run", side_effect=run), \
+                 mock.patch.object(region.subprocess, "Popen", return_value=self.fake_child(code)), \
+                 contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(region.main(args), 1 if code else 0)
+            path, = set((self.root/"captures").glob("capture-*/manifest.json")) - before
+            report = json.loads(path.read_bytes())
+            self.assertEqual("failed_process" in report, bool(code))
+            if code:
+                self.assertEqual(report["failed_process"]["returncode"], code)
+                self.assertEqual(report["failed_process"]["label"], "child")
+        stderr = io.StringIO()
+        with mock.patch.object(region, "prepare", side_effect=region.Unavailable("owned missing JDK")), \
+             contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(stderr):
+            self.assertEqual(region.main(args), 77)
+        self.assertNotIn("failed_process", json.loads(stderr.getvalue()))
+        self.assertIsNone(region._latest_process)
+
+
 class OutputPathTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix="mc-region-output-");self.addCleanup(self.temp.cleanup)
-        self.root=Path(self.temp.name);self.tools={};self.jars={}
+        self.root=Path(self.temp.name).resolve();self.tools={};self.jars={}
         for name in ("java","javac"):
             path=self.root/"jdk/bin"/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b"synthetic tool");self.tools[name]=path
         for side in region.JAR_HASHES:

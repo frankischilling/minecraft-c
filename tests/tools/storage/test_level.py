@@ -311,7 +311,7 @@ class LevelExecutionGuards(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='mc-level-preflight-')
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.common, self.executed = level.helpers()
         self.java = self.root/'jdk/bin/java'
         self.java.parent.mkdir(parents=True)
@@ -351,10 +351,51 @@ class LevelExecutionGuards(unittest.TestCase):
             return level.main(self.argv)
 
     def test_true_missing_preflight_tool_is_unavailable(self):
+        level._latest_process = {'stale': 'prior invocation'}
         with patch.object(level, 'helpers', return_value=(self.common, self.executed)), \
              patch.object(self.common, 'runtime_tools', side_effect=self.common.Unavailable('missing synthetic JDK')), \
              contextlib.redirect_stderr(io.StringIO()), contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(level.main(self.argv), 77)
+        self.assertIsNone(level._latest_process)
+
+    def test_failed_child_result_is_observed_before_stream_hashing(self):
+        result = self.common.ProcessResult(['owned-child'], 9, .01, False,
+                                           'world inventory: owned failure', 3, 5, 3, 5, 2)
+        with patch.object(self.common, 'run_live', return_value=result), \
+             patch.object(self.common, 'file_record', side_effect=OSError('owned hashing failure')):
+            with self.assertRaisesRegex(OSError, 'hashing failure'):
+                level.checked_process(self.common, result.command, self.root, 'original')
+        observed = level._latest_process
+        self.assertEqual(observed['label'], 'original')
+        self.assertEqual(observed['directory'], str(self.root))
+        for name, value in vars(result).items():
+            self.assertEqual(observed[name], value)
+
+    def test_failure_manifests_retain_actual_child_result_only(self):
+        def versions(tools, output, report):
+            report['versions'] = {name: {'major': 17} for name in ('java', 'javac', 'javap')}
+        for returncode, timed_out, reason in ((7, False, None), (-9, True, 'child timeout'),
+                                             (-9, False, 'world inventory: owned failure')):
+            def child(command, stdout, stderr, cwd, **kwargs):
+                stdout.write_bytes(b''); stderr.write_bytes(b'owned diagnostic')
+                return self.common.ProcessResult(list(map(str, command)), returncode, .01, timed_out,
+                                                 reason, 0, 16, 0, 16, 3)
+            before = set((self.root/'captures').glob('capture-*/manifest.json'))
+            self.assertEqual(self.run_main(versions, child), 1)
+            path, = set((self.root/'captures').glob('capture-*/manifest.json')) - before
+            report = level.strict_json(path.read_bytes())
+            observed = report['failed_process']
+            self.assertEqual((report['status'], observed['returncode'], observed['timed_out'],
+                              observed['stop_reason']), ('fail', returncode, timed_out, reason))
+            self.assertEqual((observed['stdout_observed'], observed['stderr_observed'],
+                              observed['inventory_polls']), (0, 16, 3))
+        def success(command, stdout, stderr, cwd, **kwargs):
+            stdout.write_bytes(b''); stderr.write_bytes(b'')
+            return self.common.ProcessResult(list(map(str, command)), 0, .01, False, None, 0, 0, 0, 0, 1)
+        with patch.object(self.common, 'run_live', side_effect=success):
+            record = level.checked_process(self.common, ['owned-success'], self.root, 'success')
+        self.assertNotIn('failed_process', record)
+        level.observed_process(record, paths=True)
 
     def output_preflight(self, work, *, missing=False, overrides=False):
         self.original_record = self.common.file_record

@@ -229,10 +229,26 @@ remain outside these storage boundaries.
 
 `reference.world_storage` composes the native store with fresh genuine original
 worlds. One supplied C executable runs on the same host as Python and the JDK;
-Linux runs do not depend on Windows-to-WSL process bridges. Fresh native Windows
-and WSL/GCC development smokes pass, with JDK17 and JDK21 respectively. All 69
+Linux runs do not depend on Windows-to-WSL process bridges. Earlier native Windows
+and WSL/GCC development smokes pass, with JDK17 and JDK21 respectively. All 74
 Java-free harness guards pass on both hosts without skips. Exact-source full
 MSVC/GCC/Clang acceptance remains pending.
+
+The first exact-source attempt at
+`e6a8bd930e6c348b5917bf67fbceb64fa04eaa4a` does not qualify. Windows ran all 71
+selected tests with 70 passing; the world report could not serialize its Git
+process record. The Linux attempts retained an incomplete metadata child
+capture and an interrupted region observation, then were stopped after the
+shared report defect was established. A separate owned-child regression
+reproduced a live polling race during lock-file deletion; the original failed
+child's process metadata was missing, so its cause remains unproven.
+
+Corrections retain failed child metadata before validation, distinguish live
+file deletion from strict final inventories, preserve a classified failure
+report on serialization errors, and canonicalize Windows test fixture roots.
+The failed attempts and their source snapshots remain retained. The next Linux
+runs will use owned native Linux build directories with unchanged limits; moving
+those writes does not establish why the earlier observation was interrupted.
 
 All contexts use seed 23. The basic profile uses eight slots in each of roots
 0 and -1: six isolated

@@ -37,6 +37,7 @@ MAX_RECORD = 2*1024*1024
 MAX_FILE = 65536
 MAX_CAPTURE = 32*1024*1024
 MARKER = b"fresh metadata reference fixture\n"
+_latest_process = None
 
 class Failure(Exception):
     pass
@@ -686,10 +687,14 @@ def observed_process(process, *, paths=False):
 
 
 def checked_process(common, command, directory, name, *, world=None, stdin=None, seconds=90):
+    global _latest_process
     start = int(time.time()*1000)
     out, err = directory/(name+'-out.txt'), directory/(name+'-err.txt')
     result = common.run_live([str(x) for x in command], out, err, directory, seconds=seconds,
                              stdout_limit=MAX_RECORD, stderr_limit=MAX_RECORD, world_root=world, stdin_path=stdin)
+    # One host-produced result survives later stream/schema validation failures.
+    _latest_process = {'label': name, 'directory': str(directory), **asdict(result),
+                       'clock_before': start, 'clock_after': int(time.time()*1000)}
     record = {**asdict(result), 'clock_before': start, 'clock_after': int(time.time()*1000),
               'stdout': common.file_record(out, byte_limit=MAX_RECORD), 'stderr': common.file_record(err, byte_limit=MAX_RECORD)}
     observed_process(record, paths=True)
@@ -740,6 +745,8 @@ def validate_work_dir(work_dir, protected=()):
 
 
 def main(argv=None):
+    global _latest_process
+    _latest_process = None
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('client', 'server', 'work-dir'):
         parser.add_argument('--'+name, type=Path, required=True)
@@ -887,6 +894,8 @@ def main(argv=None):
                     report['errors'].append(str(error))
             if common is not None:
                 report['finished_utc'] = common.utc_now()
+            if report['status'] == 'fail' and _latest_process is not None:
+                report['failed_process'] = _latest_process
             if output is None:
                 print(json.dumps(report), file=sys.stderr)
             else:
@@ -896,6 +905,8 @@ def main(argv=None):
                 except Exception as error:
                     report['status'], status = 'fail', 1
                     report['errors'].append('cannot retain outcome manifest: '+str(error))
+                    if _latest_process is not None:
+                        report['failed_process'] = _latest_process
                     print(json.dumps(report), file=sys.stderr)
     return status
 

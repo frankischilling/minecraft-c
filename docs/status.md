@@ -43,7 +43,7 @@ pass 58 public/numerical tests per compiler and formatting for 111 C/header
 files. Older hosted MSVC exposed two constant runtime-check conditions; they
 now use C17 static assertions, retaining strict warnings. Fresh native Windows
 and WSL/GCC whole-world development smokes pass with both originals and nonempty
-Boat/Sign transport. All 69 Java-free world-harness guards pass on both hosts.
+Boat/Sign transport. All 74 Java-free world-harness guards pass on both hosts.
 Complete exact-source MSVC/GCC/Clang acceptance remains pending.
 
 ## Verified combined checkpoint

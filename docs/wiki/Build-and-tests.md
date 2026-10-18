@@ -102,7 +102,7 @@ skips on strict native MSVC and WSL GCC/Clang builds, with Linux ASan/UBSan.
 Clang-format18 passes for 111 C/header files. Hosted development checks pass 58
 public/numerical tests per compiler. Fresh native Windows and WSL/GCC whole-world
 development smokes pass both round-trip directions and opaque Boat/Sign
-transport; 69 Java-free harness guards pass on each host. Exact-source full
+transport; 74 Java-free harness guards pass on each host. Exact-source full
 MSVC/GCC/Clang acceptance remains pending. The completed checkpoint counts below
 retain their original source and scope.
 

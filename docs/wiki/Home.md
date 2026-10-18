@@ -18,7 +18,7 @@ acquisition adapter, with acceptance still in DEVELOPMENT. All 57 public tests
 pass without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan;
 clang-format18 passes for 111 C/header files. Hosted development checks pass 58
 public/numerical tests per compiler. Fresh native Windows and WSL/GCC whole-world
-development smokes and 69 Java-free harness guards per host pass. Exact-source
+development smokes and 74 Java-free harness guards per host pass. Exact-source
 full MSVC/GCC/Clang acceptance remains pending. See the
 [storage foundation](Storage-and-reference#storage-foundation-in-development),
 [ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)

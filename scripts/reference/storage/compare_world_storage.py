@@ -1125,18 +1125,18 @@ def prepare_sources(args, directory, report):
     if args.tested_commit is not None:
         check(type(args.tested_commit) is str and re.fullmatch(r"[0-9a-f]{40}",args.tested_commit) is not None,"explicit full40 tested commit")
         command=["git","cat-file","-t",args.tested_commit]
-        kind=r.process(command,directory,"git-kind",20,stdout_limit=32768);check_child_streams(directory,kind,command,"git-kind")
+        kind_process=r.process(command,directory,"git-kind",20,stdout_limit=32768);check_child_streams(directory,kind_process,command,"git-kind")
         check(read(directory/"git-kind.stdout",32768)==b"commit\n","tested source object must be an actual Git commit")
         result=r.process(["git","ls-tree","-r","-z",args.tested_commit],directory,"git-source",20,stdout_limit=4*1024*1024)
         check_child_streams(directory,result,["git","ls-tree","-r","-z",args.tested_commit],"git-source",4*1024*1024)
         tree={}
         for entry in read(directory/"git-source.stdout",4*1024*1024).split(b"\0"):
             if not entry:continue
-            header,name=entry.split(b"\t",1);mode,kind,digest=header.split(b" ");tree[name.decode("utf8")]=(mode,kind,digest.decode("ascii"))
+            header,name=entry.split(b"\t",1);mode,object_kind,digest=header.split(b" ");tree[name.decode("utf8")]=(mode,object_kind,digest.decode("ascii"))
         for name in sources:
             raw=read(ROOT/name,8*1024*1024);expected=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
             check(name in tree and tree[name][0] in (b"100644",b"100755") and tree[name][1]==b"blob" and tree[name][2]==expected,"every executing source/fixture bound to tested Git tree: "+name)
-        report["git_source_binding"]={"commit":args.tested_commit,"files":len(sources),"all_blob_bytes_match":True,"kind_process":kind,"process":result}
+        report["git_source_binding"]={"commit":args.tested_commit,"files":len(sources),"all_blob_bytes_match":True,"kind_process":kind_process,"process":result}
     return sources
 
 
@@ -1232,6 +1232,53 @@ def validate_work_dir(work_dir, protected=()):
     return work
 
 
+MAX_MANIFEST_BYTES = 8*1024*1024
+
+
+def encode_manifest(report):
+    """Strict report or a bounded explicit failure envelope, never byte coercion."""
+    def encoded(value):
+        raw=(json.dumps(value,indent=2,allow_nan=False)+"\n").encode("utf8")
+        check(len(raw)<=MAX_MANIFEST_BYTES,"bounded manifest serialization")
+        return raw
+    errors=(TypeError,ValueError,OverflowError,RecursionError,Failure)
+    try:return encoded(report),False
+    except errors as error:
+        primary=[];primary_complete=True;primary_budget=32*1024
+        if type(report.get("errors")) is list:
+            primary_complete=len(report["errors"])<=32
+            for value in report["errors"][:32]:
+                if type(value) is not str:primary_complete=False;continue
+                size=len(json.dumps(value).encode("utf8"))
+                if size>primary_budget:primary_complete=False;continue
+                primary.append(value);primary_budget-=size
+        else:primary_complete=False
+        primary.append("manifest serialization failed: "+type(error).__name__+": "+str(error)[:1024])
+        retained={};excluded=[];budget=MAX_MANIFEST_BYTES-128*1024
+        controlled={"schema","scope","status","errors","tested_commit","measurement_started"}
+        for index,(name,value) in enumerate(report.items()):
+            if type(name) is str and name in controlled:continue
+            if index>=128:
+                excluded.append({"name":None,"type":"remaining-fields","reason":"bounded diagnostic field count"});break
+            reason=None
+            if type(name) is not str or len(name)>256:reason="invalid diagnostic field name"
+            else:
+                try:
+                    raw=encoded({name:value})
+                    if len(raw)>budget:reason="bounded retained evidence budget"
+                except errors as field_error:reason=type(field_error).__name__+": "+str(field_error)[:256]
+            if reason is not None:
+                excluded.append({"name":name if type(name) is str and len(name)<=256 else None,"type":type(value).__name__,"reason":reason})
+            else:retained[name]=value;budget-=len(raw)
+        label=report.get("tested_commit")
+        fallback={"schema":1,"scope":"whole-world-storage-boundary","status":"fail",
+                  "tested_commit":label if type(label) is str and re.fullmatch(r"[0-9a-f]{40}",label) else None,
+                  "measurement_started":report.get("measurement_started") is True,"errors":primary,
+                  "report_serialization_failure":{"type":type(error).__name__,"message":str(error)[:1024],"primary_errors_complete":primary_complete,"excluded_fields":excluded},
+                  "retained_report":retained}
+        return encoded(fallback),True
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client",type=Path);parser.add_argument("--server",type=Path)
@@ -1268,14 +1315,16 @@ def main(argv=None):
                 report["classes_after"]=compiled_classes(CLASSES);check(t.same(report["classes_before"],report["classes_after"]),"all compiled project helpers preserved")
         except (Failure,AssertionError,OSError) as error:
             report["status"]="fail";report["errors"].append(str(error));code=1
+        manifest,serialization_failed=encode_manifest(report)
+        if serialization_failed:code=1
         if directory is not None:
             try:
-                (directory/"manifest.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf8")
+                (directory/"manifest.json").write_bytes(manifest)
                 print(directory/"manifest.json")
             except OSError as error:
                 report["status"]="fail";report["errors"].append("cannot retain manifest: "+str(error));code=1
-                print(json.dumps(report),file=sys.stderr)
-        else:print(json.dumps(report),file=sys.stderr)
+                manifest,_=encode_manifest(report);print(manifest.decode("utf8"),file=sys.stderr,end="")
+        else:print(manifest.decode("utf8"),file=sys.stderr,end="")
     return code
 
 

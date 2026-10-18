@@ -207,7 +207,7 @@ WSL GCC/Clang builds, with Linux ASan/UBSan. Clang-format18 passes for 111
 C/header files. Hosted development checks pass 58 public/numerical tests per
 compiler. Fresh native Windows and WSL/GCC `reference.world_storage` development
 smokes pass original-created and C-created containers in both directions,
-including opaque Boat/Sign transport; 69 Java-free harness guards pass per host.
+including opaque Boat/Sign transport; 74 Java-free harness guards pass per host.
 Final exact-source MSVC/GCC/Clang acceptance remains pending. Full entity/player
 behavior, save/unload scheduling, light
 propagation and game integration remain open. Earlier checkpoint counts above

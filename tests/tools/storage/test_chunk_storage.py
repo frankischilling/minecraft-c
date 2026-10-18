@@ -383,7 +383,7 @@ class ChunkExporterStreamGuards(unittest.TestCase):
 class ChunkExecutionGuards(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='mc-chunk-storage-preflight-'); self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name); self.common, self.old, self.executed = chunks.helpers()
+        self.root = Path(self.temp.name).resolve(); self.common, self.old, self.executed = chunks.helpers()
         self.tools = {}
         for name in ('java', 'javac', 'javap'):
             path = self.root/'jdk/bin'/name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(b'synthetic tool'); self.tools[name] = path
@@ -413,10 +413,54 @@ class ChunkExecutionGuards(unittest.TestCase):
             return chunks.main(self.argv)
 
     def test_missing_preflight_is_only_unavailable_case(self):
+        chunks._latest_process = {'stale': 'prior invocation'}
         with patch.object(chunks, 'helpers', return_value=(self.common, self.old, self.executed)), \
              patch.object(self.common, 'runtime_tools', side_effect=self.common.Unavailable('missing synthetic JDK')), \
              contextlib.redirect_stderr(io.StringIO()), contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(chunks.main(self.argv), 77)
+        self.assertIsNone(chunks._latest_process)
+
+    def test_failed_child_result_is_observed_before_validation(self):
+        result = self.common.ProcessResult(['owned-child'], 9, .01, False,
+                                           'world inventory: owned failure', 3, 5, 3, 5, 2)
+        with patch.object(self.common, 'run_live', return_value=result):
+            with self.assertRaisesRegex(chunks.Failure, 'successful complete bounded child'):
+                chunks.checked_process(self.common, result.command, self.root, 'original')
+        self.assertEqual(chunks._latest_process, {'label': 'original', 'directory': str(self.root),
+                                                **vars(result)})
+        successful = self.common.ProcessResult(['owned-child'], 0, .01, False, None, 0, 0, 0, 0, 2)
+        with patch.object(self.common, 'run_live', return_value=successful), \
+             patch.object(self.common, 'file_record', side_effect=OSError('owned hashing failure')):
+            with self.assertRaisesRegex(OSError, 'hashing failure'):
+                chunks.checked_process(self.common, successful.command, self.root, 'hashing')
+        self.assertEqual(chunks._latest_process, {'label': 'hashing', 'directory': str(self.root),
+                                                **vars(successful)})
+
+    def test_failure_manifests_retain_actual_child_result_only(self):
+        def versions(tools, output, report):
+            report['versions'] = {name: {'major': 17} for name in ('java', 'javac', 'javap')}
+        for returncode, timed_out, reason in ((7, False, None), (-9, True, 'child timeout'),
+                                             (-9, False, 'world inventory: owned failure')):
+            def child(command, stdout, stderr, cwd, **kwargs):
+                stdout.write_bytes(b''); stderr.write_bytes(b'owned diagnostic')
+                return self.common.ProcessResult(list(map(str, command)), returncode, .01, timed_out,
+                                                 reason, 0, 16, 0, 16, 3)
+            before = set((self.root/'captures').glob('capture-*/manifest.json'))
+            self.assertEqual(self.mocked(versions, child), 1)
+            path, = set((self.root/'captures').glob('capture-*/manifest.json')) - before
+            report = chunks.strict_json(path.read_bytes())
+            observed = report['failed_process']
+            self.assertEqual((report['status'], observed['returncode'], observed['timed_out'],
+                              observed['stop_reason']), ('fail', returncode, timed_out, reason))
+            self.assertEqual((observed['stdout_observed'], observed['stderr_observed'],
+                              observed['inventory_polls']), (0, 16, 3))
+        def success(command, stdout, stderr, cwd, **kwargs):
+            stdout.write_bytes(b''); stderr.write_bytes(b'')
+            return self.common.ProcessResult(list(map(str, command)), 0, .01, False, None, 0, 0, 0, 0, 1)
+        with patch.object(self.common, 'run_live', side_effect=success):
+            record = chunks.checked_process(self.common, ['owned-success'], self.root, 'success')
+        self.assertNotIn('failed_process', record)
+        self.assertEqual(set(record), set(vars(self.common.ProcessResult([], 0, 0, False, None, 0, 0, 0, 0, 0))) | {'stdout', 'stderr'})
 
     def output_preflight(self, work, *, missing=False, overrides=False):
         self.original_record = self.common.file_record

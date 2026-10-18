@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[3]
 MAX_RECORD = 32*1024*1024
 MAX_NBT = 1024*1024
 MARKER = b"fresh chunk storage reference\n"
+_latest_process = None
 SOURCES = ("tests/reference/storage/ChunkStorageObservation.java", "tests/reference/chunk/ChunkObservation.java", "tests/reference/cache/CacheCallbacksObservation.java")
 CLASS_NAMES = {'CacheCallbacksObservation.class', 'CacheCallbacksObservation$Observer.class', 'CacheCallbacksObservation$SetupUnavailable.class',
                'ChunkObservation.class', 'ChunkObservation$Model.class', 'ChunkObservation$SetupUnavailable.class',
@@ -554,8 +555,10 @@ def original_signature(value, files):
 
 
 def checked_process(common, command, directory, name, *, world=None, stdin=None, seconds=90):
+    global _latest_process
     result = common.run_live(list(map(str, command)), directory/(name+'-out.txt'), directory/(name+'-err.txt'), directory,
                              seconds=seconds, stdout_limit=MAX_RECORD, stderr_limit=4*1024*1024, world_root=world, stdin_path=stdin)
+    _latest_process = {'label': name, 'directory': str(directory), **asdict(result)}
     require(type(result.returncode) is int and result.returncode == 0 and result.timed_out is False and result.stop_reason is None and result.stdout_observed == result.stdout_retained and
             result.stderr_observed == result.stderr_retained, 'successful complete bounded child; child77 is failure')
     for count in (result.stdout_observed, result.stdout_retained, result.stderr_observed, result.stderr_retained, result.inventory_polls):
@@ -565,6 +568,8 @@ def checked_process(common, command, directory, name, *, world=None, stdin=None,
 
 
 def main(argv=None):
+    global _latest_process
+    _latest_process = None
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('client', 'server', 'work-dir'):
         parser.add_argument('--'+name, type=Path, required=True)
@@ -721,6 +726,8 @@ def main(argv=None):
                     report['status'], status = 'fail', 1; report['errors'].append(str(error))
             if common is not None:
                 report['finished_utc'] = common.utc_now()
+            if report['status'] == 'fail' and _latest_process is not None:
+                report['failed_process'] = _latest_process
             if output is None:
                 print(json.dumps(report), file=sys.stderr)
             else:
@@ -730,6 +737,8 @@ def main(argv=None):
                 except Exception as error:
                     report['status'], status = 'fail', 1
                     report['errors'].append('cannot retain outcome manifest: '+str(error))
+                    if _latest_process is not None:
+                        report['failed_process'] = _latest_process
                     print(json.dumps(report), file=sys.stderr)
     return status
 

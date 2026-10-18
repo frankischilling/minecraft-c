@@ -11,6 +11,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -217,6 +218,167 @@ class ProtocolGuards(unittest.TestCase):
         result = self.helper.world_inventory(self.root, hashes=True)
         self.assertFalse(result['complete'])
         self.assertIn('hard-linked', result['error'])
+
+
+    def test_live_poll_only_tolerates_disappearing_entries_without_hashes(self):
+        path = self.root / 'session.lock'
+        actual_stat = os.stat
+        for live_poll in (False, True):
+            path.write_bytes(b'owned lock')
+            def disappearing(selected, *args, **kwargs):
+                if Path(selected) == path and kwargs.get('follow_symlinks') is False:
+                    path.unlink()
+                return actual_stat(selected, *args, **kwargs)
+            with mock.patch.object(self.helper.os, 'stat', side_effect=disappearing):
+                result = self.helper.world_inventory(self.root, live_poll=live_poll)
+            self.assertEqual(result['complete'], live_poll, result)
+            self.assertEqual(result['error'] is None, live_poll, result)
+        self.assertIn('cannot hash final state',
+                      self.helper.world_inventory(self.root, hashes=True, live_poll=True)['error'])
+        path.write_bytes(b'final lock')
+        final = self.helper.world_inventory(self.root, hashes=True)
+        self.assertTrue(final['complete'], final)
+        self.assertEqual(final['entries'][0]['sha256'], hashlib.sha256(b'final lock').hexdigest())
+
+    def test_live_poll_tolerates_only_disappearing_pending_directory(self):
+        directory = self.root / 'temporary-region'
+        actual_scandir = os.scandir
+        for live_poll in (False, True):
+            directory.mkdir()
+            def disappearing(selected):
+                if Path(selected) == directory:
+                    directory.rmdir()
+                return actual_scandir(selected)
+            with mock.patch.object(self.helper.os, 'scandir', side_effect=disappearing):
+                result = self.helper.world_inventory(self.root, live_poll=live_poll)
+            self.assertEqual(result['complete'], live_poll, result)
+            self.assertEqual(result['error'] is None, live_poll, result)
+
+    def test_disappearing_entries_still_consume_live_entry_budget(self):
+        actual_stat = os.stat
+        for maximum, succeeds in ((1, False), (2, True)):
+            paths = [self.root / name for name in ('first.tmp', 'second.tmp')]
+            for path in paths:
+                path.write_bytes(b'owned temporary entry')
+            def disappearing(selected, *args, **kwargs):
+                path = Path(selected)
+                if path in paths and kwargs.get('follow_symlinks') is False:
+                    path.unlink()
+                return actual_stat(selected, *args, **kwargs)
+            with mock.patch.object(self.helper.os, 'stat', side_effect=disappearing):
+                result = self.helper.world_inventory(self.root, max_entries=maximum, live_poll=True)
+            self.assertEqual(result['complete'], succeeds, result)
+            if not succeeds:
+                self.assertIn('entry limit', result['error'])
+            for path in paths:
+                path.unlink(missing_ok=True)
+
+    def test_live_poll_retains_permission_link_type_and_storage_guards(self):
+        path = self.root / 'guarded.bin'
+        path.write_bytes(b'owned payload')
+        actual_stat = os.stat
+        original = actual_stat(path, follow_symlinks=False)
+        def altered(**changes):
+            fields = dict(st_mode=original.st_mode, st_nlink=original.st_nlink,
+                          st_size=original.st_size, st_file_attributes=0)
+            fields.update(changes)
+            return type('InventoryStat', (), fields)()
+        cases = [(PermissionError('owned permission guard'), 'permission'),
+                 (altered(st_file_attributes=0x400), 'link/reparse'),
+                 (altered(st_mode=0o120777), 'link/reparse'),
+                 (altered(st_nlink=2), 'hard-linked'),
+                 (altered(st_mode=0o010600), 'non-regular')]
+        for replacement, expected in cases:
+            def guarded(selected, *args, **kwargs):
+                if Path(selected) == path and kwargs.get('follow_symlinks') is False:
+                    if isinstance(replacement, Exception):
+                        raise replacement
+                    return replacement
+                return actual_stat(selected, *args, **kwargs)
+            with self.subTest(expected=expected), mock.patch.object(self.helper.os, 'stat', side_effect=guarded):
+                result = self.helper.world_inventory(self.root, live_poll=True)
+                self.assertFalse(result['complete'], result)
+                self.assertIn(expected, result['error'])
+        result = self.helper.world_inventory(self.root, live_poll=True, max_bytes=0)
+        self.assertIn('byte limit', result['error'])
+        entries = mock.MagicMock()
+        entries.__enter__.return_value = iter([type('Entry', (), {
+            'path': str(self.root.joinpath(*(['deep'] * 65)))})()])
+        with mock.patch.object(self.helper.os, 'scandir', return_value=entries):
+            result = self.helper.world_inventory(self.root, live_poll=True)
+        self.assertIn('path/depth', result['error'])
+
+    def rotation_child(self, rotate):
+        # The child owns deletion/recreation. The stat wrapper only pauses it at
+        # a deterministic enumeration/stat boundary; both runs have the same end.
+        directory = self.root / ('rotation' if rotate else 'control')
+        directory.mkdir()
+        world = directory / 'world'
+        world.mkdir()
+        lock = world / 'session.lock'
+        lock.write_bytes(b'initial-lock')
+        script = directory / 'owned_child.py'
+        script.write_text("""from pathlib import Path
+import sys, time
+root = Path(sys.argv[1])
+def wait(name):
+    deadline = time.monotonic() + 5
+    while not (root / name).exists():
+        if time.monotonic() >= deadline: raise RuntimeError('owned handshake timeout')
+        time.sleep(.002)
+wait('go')
+if sys.argv[2] == 'rotate': (root / 'world/session.lock').unlink()
+(root / 'paused').write_bytes(b'paused')
+wait('resume')
+(root / 'world/session.lock').write_bytes(b'final-lock')
+print('owned-rotation-complete', end='', flush=True)
+""", encoding='ascii')
+        actual_stat, hits = os.stat, []
+        def synchronized(selected, *args, **kwargs):
+            if Path(selected) == lock and kwargs.get('follow_symlinks') is False and not hits:
+                hits.append(True)
+                (directory / 'go').write_bytes(b'go')
+                deadline = time.monotonic() + 5
+                while not (directory / 'paused').exists():
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError('parent owned handshake timeout')
+                    time.sleep(.002)
+                try:
+                    return actual_stat(selected, *args, **kwargs)
+                finally:
+                    (directory / 'resume').write_bytes(b'resume')
+            return actual_stat(selected, *args, **kwargs)
+        out, err = directory / 'stdout', directory / 'stderr'
+        with mock.patch.object(self.helper.os, 'stat', side_effect=synchronized):
+            result = self.helper.run_live([sys.executable, str(script), str(directory),
+                                           'rotate' if rotate else 'control'],
+                                          out, err, directory, seconds=10, world_root=world)
+        self.assertEqual(len(hits), 1)
+        self.assertEqual(result.returncode, 0, (result, err.read_bytes()))
+        self.assertIsNone(result.stop_reason, result)
+        self.assertFalse(result.timed_out)
+        self.assertGreaterEqual(result.inventory_polls, 1)
+        self.assertEqual(out.read_bytes(), b'owned-rotation-complete')
+        self.assertEqual(err.read_bytes(), b'')
+        final = self.helper.world_inventory(world, hashes=True)
+        self.assertTrue(final['complete'], final)
+        self.assertEqual(final['entries'], [{'path': 'session.lock', 'kind': 'file',
+                                            'bytes': 10, 'sha256': hashlib.sha256(b'final-lock').hexdigest()}])
+        return out.read_bytes(), final['entries']
+
+    def test_live_monitor_accepts_owned_lock_rotation_and_unchanged_control(self):
+        self.assertEqual(self.rotation_child(True), self.rotation_child(False))
+
+    def test_live_monitor_retains_timeout_and_stream_limits(self):
+        for name, source, seconds, limit, expected in (
+                ('timeout', 'import time; time.sleep(5)', .2, 1024, 'child timeout'),
+                ('stream', 'print("x" * 4096, flush=True)', 5, 16, 'stdout live byte limit')):
+            out, err = self.root / (name + '.out'), self.root / (name + '.err')
+            result = self.helper.run_live([sys.executable, '-c', source], out, err, self.root,
+                                          seconds=seconds, stdout_limit=limit, world_root=self.root)
+            self.assertIn(expected, result.stop_reason)
+            self.assertLessEqual(result.stdout_retained, limit)
+            self.assertLessEqual(out.stat().st_size, limit)
 
 
 class MainGuards(unittest.TestCase):

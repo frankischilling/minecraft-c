@@ -123,7 +123,7 @@ The foundation remains in DEVELOPMENT acceptance. All 57 public tests pass
 without skips on strict native MSVC and WSL GCC/Clang builds, with Linux
 ASan/UBSan. Hosted development checks pass 58 public/numerical tests per compiler.
 Fresh native Windows and WSL/GCC whole-world development smokes pass both
-round-trip directions and opaque Boat/Sign transport; 69 Java-free harness
+round-trip directions and opaque Boat/Sign transport; 74 Java-free harness
 guards pass on each host. Exact-source full MSVC/GCC/Clang acceptance remains
 pending. See
 [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)

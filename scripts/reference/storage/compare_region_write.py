@@ -46,6 +46,7 @@ LABELS = ("A-first-stream", "B-exact-two", "C-three", "B-shrink-gap", "D-reuse-g
           "C-grow-four", "E-reuse-two", "F-below-multiple", "G-exact-grow-two", "reject-256-new", "reject-256-existing")
 IMAGE_PATH = "allocation/region/r.0.0.mcr"
 CASE_LAYOUT = (("client", "fresh"), ("client", "import-copy"), ("server", "fresh"), ("server", "import-copy"))
+_latest_process = None
 
 class Failure(Exception):
     pass
@@ -672,12 +673,14 @@ def inventory(root, hashes=False, count_limit=10000, byte_limit=192 * 1024 * 102
 
 
 def process(command, directory, label, timeout=90, stdin=None, stdout_limit=32768):
+    global _latest_process
     output, errors = directory / (label + ".stdout"), directory / (label + ".stderr")
     input_file = None
     if stdin is not None:
         check(type(stdin) is bytes and len(stdin) <= MAX_RECORD, "bounded process input")
         input_file = directory / (label + ".stdin"); input_file.write_bytes(stdin)
     started = time.monotonic(); timed_out, stopped = False, None
+    polls, supervision_error = 0, None
     with output.open("xb") as stdout, errors.open("xb") as stderr:
         with input_file.open("rb") if input_file else open(os.devnull,"rb") as stream:
             child = subprocess.Popen(list(map(str,command)),cwd=ROOT,stdin=stream,stdout=stdout,stderr=stderr)
@@ -689,11 +692,27 @@ def process(command, directory, label, timeout=90, stdin=None, stdout_limit=3276
                     if output.stat().st_size > stdout_limit or errors.stat().st_size > 32768:
                         stopped="stream bound"; child.kill(); break
                     if int(elapsed) != last_inventory:
+                        polls += 1
                         inventory(directory,count_limit=6000,byte_limit=160*1024*1024); last_inventory=int(elapsed)
                     time.sleep(.05)
                 child.wait(timeout=10)
-            except BaseException:
+            except BaseException as failure:
+                supervision_error = {'class': type(failure).__name__, 'message': str(failure)[:4096]}
                 child.kill(); child.wait(timeout=10); raise
+            finally:
+                # Observe after reaping, before hashing or success validation.
+                # Sizes describe actual direct-file output, including overshoot.
+                def observed_size(stream):
+                    try:
+                        return os.fstat(stream.fileno()).st_size
+                    except (OSError, ValueError):
+                        return None
+                _latest_process = {'label': label, 'directory': str(directory), 'command': list(map(str, command)),
+                                   'returncode': child.returncode, 'timed_out': timed_out, 'stop_reason': stopped,
+                                   'seconds': time.monotonic()-started, 'inventory_polls': polls,
+                                   'stdout_file': output.name, 'stderr_file': errors.name,
+                                   'stdout_observed': observed_size(stdout), 'stderr_observed': observed_size(stderr),
+                                   'supervision_error': supervision_error}
     check(output.stat().st_size <= stdout_limit and errors.stat().st_size <= 32768, "bounded complete child streams")
     return {"command": list(map(str,command)),"returncode":child.returncode,"timed_out":timed_out,"stop_reason":stopped,
             "seconds":time.monotonic()-started,"stdout_file":output.name,"stderr_file":errors.name,
@@ -857,6 +876,8 @@ def run(args, directory, report, prepared):
 
 
 def main(argv=None):
+    global _latest_process
+    _latest_process = None
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client",type=Path);parser.add_argument("--server",type=Path)
     parser.add_argument("--java");parser.add_argument("--javac");parser.add_argument("--executable",type=Path)
@@ -897,6 +918,8 @@ def main(argv=None):
                     check(report["classes_after"]==report["classes_before"],"helper preservation after any outcome")
             except (Failure,OSError) as failure:
                 report["status"]="fail";report["errors"].append(str(failure));code=1
+        if report['status'] == 'fail' and _latest_process is not None:
+            report['failed_process'] = _latest_process
         if directory is None:
             print(json.dumps(report), file=sys.stderr)
         else:
@@ -906,6 +929,8 @@ def main(argv=None):
             except OSError as failure:
                 report["status"]="fail";code=1
                 report["errors"].append("cannot retain outcome manifest: "+str(failure))
+                if _latest_process is not None:
+                    report['failed_process'] = _latest_process
                 print(json.dumps(report), file=sys.stderr)
     return code
 

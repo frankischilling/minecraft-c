@@ -506,8 +506,17 @@ class SourceBindingGuards(unittest.TestCase):
 
     def test_complete_source_closure_copied_and_bound_to_constructed_tree(self):
         report = self.capture()
-        self.assertIs(report["git_source_binding"]["all_blob_bytes_match"], True)
-        self.assertEqual(report["git_source_binding"]["files"], len(report["source_fingerprints"]))
+        binding = report["git_source_binding"]
+        self.assertIs(binding["all_blob_bytes_match"], True)
+        self.assertEqual(binding["files"], len(report["source_fingerprints"]))
+        self.assertEqual(binding["kind_process"], process_record(
+            ["git", "cat-file", "-t", "a" * 40], "git-kind", b"commit\n"))
+        world.r.successful(binding["kind_process"], label="git-kind", stdout_limit=32768)
+        world.r.successful(binding["process"], label="git-source", stdout_limit=4 * 1024 * 1024)
+        self.assertEqual(binding["process"]["command"], ["git", "ls-tree", "-r", "-z", "a" * 40])
+        # The exact-commit branch must retain complete process dictionaries,
+        # rather than leaking a parsed ls-tree b"blob" into the final report.
+        self.assertTrue(world.t.same(level.strict_json(json.dumps(report, allow_nan=False)), report))
 
     def test_omitted_altered_or_symlink_source_cannot_claim_exact_tree(self):
         for mutation in ("missing", "digest", "symlink-mode"):
@@ -550,6 +559,95 @@ class SourceBindingGuards(unittest.TestCase):
                     world.prepare_sources(argparse.Namespace(tested_commit=None), root, {})
                 process.assert_not_called()
                 self.assertFalse((root / "sources").exists())
+
+
+class ManifestSerializationGuards(unittest.TestCase):
+    def capture(self, outcome):
+        """Construct report corruption; no Git/JVM/C process is executed."""
+        with tempfile.TemporaryDirectory(prefix="mc-world-manifest-") as directory:
+            root = Path(directory)
+            expected = {}
+
+            def execute(args, where, report):
+                stdout, stderr = b"constructed raw output\n", b"constructed raw diagnostic\n"
+                command = [str(root / "constructed-never-executed")]
+                (where / "original.stdout").write_bytes(stdout)
+                (where / "original.stderr").write_bytes(stderr)
+                process = process_record(command, "original", stdout, stderr, 1)
+                expected["process"] = process
+                report["processes"].append({"label": "original", "process": process, "stdin": None})
+                report["measurement_started"] = outcome != "unavailable"
+                report["source_fingerprints"] = {"constructed": world.fp(b"source bytes")}
+                report["git_source_binding"] = {"kind_process": b"blob", "process": process}
+                if outcome == "primary_failure":
+                    raise world.Failure("constructed primary failure: " + "x" * 2048)
+                if outcome == "unavailable":
+                    raise world.Unavailable("constructed missing preflight prerequisite")
+
+            with patch.object(world, "execute", side_effect=execute), \
+                 patch.object(world.r, "process") as process, \
+                 contextlib.redirect_stdout(io.StringIO()):
+                code = world.main(["--work-dir", str(root)])
+            process.assert_not_called()
+            manifests = list(root.glob("capture-*/manifest.json"))
+            self.assertEqual(len(manifests), 1)
+            raw = manifests[0].read_bytes()
+            self.assertLessEqual(len(raw), world.MAX_MANIFEST_BYTES)
+            report = level.strict_json(raw)
+            retained = report["retained_report"]
+            actual = retained["processes"][0]["process"]
+            self.assertEqual(actual, expected["process"])
+            for field in ("stdout", "stderr"):
+                stream = manifests[0].parent / actual[field + "_file"]
+                self.assertEqual(world.fp(stream.read_bytes()), actual[field])
+            self.assertEqual(retained["source_fingerprints"], {"constructed": world.fp(b"source bytes")})
+            excluded = report["report_serialization_failure"]["excluded_fields"]
+            self.assertEqual([(item["name"], item["type"]) for item in excluded], [("git_source_binding", "dict")])
+            self.assertNotIn("git_source_binding", retained)
+            self.assertNotIn('"blob"', raw.decode("utf8"))
+            return code, report
+
+    def test_json_ready_report_is_retained_without_an_envelope_or_mutation(self):
+        report = {"schema": 1, "status": "pass", "errors": [], "processes": [], "measurement_started": True}
+        before = copy.deepcopy(report)
+        raw, failed = world.encode_manifest(report)
+        self.assertIs(failed, False)
+        self.assertEqual(level.strict_json(raw), before)
+        self.assertEqual(report, before)
+
+    def test_corrupt_success_becomes_a_retained_failure_not_a_serialization_crash(self):
+        code, report = self.capture("success")
+        self.assertEqual((code, report["status"], report["measurement_started"]), (1, "fail", True))
+        self.assertIn("manifest serialization failed: TypeError", report["errors"][0])
+
+    def test_primary_failure_and_complete_raw_process_metadata_survive_report_corruption(self):
+        code, report = self.capture("primary_failure")
+        self.assertEqual((code, report["status"]), (1, "fail"))
+        self.assertEqual(report["errors"][0], "Failure: constructed primary failure: " + "x" * 2048)
+        self.assertIs(report["report_serialization_failure"]["primary_errors_complete"], True)
+        self.assertIn("manifest serialization failed: TypeError", report["errors"][1])
+
+    def test_corrupt_unavailable_report_is_failure_and_never_exit77(self):
+        code, report = self.capture("unavailable")
+        self.assertEqual((code, report["status"], report["measurement_started"]), (1, "fail", False))
+        self.assertEqual(report["retained_report"]["unavailable_reason"], "constructed missing preflight prerequisite")
+
+    def test_nonfinite_recursive_and_oversized_fields_are_explicitly_excluded(self):
+        cycle = {}
+        cycle["cycle"] = cycle
+        for invalid in (float("nan"), float("inf"), cycle, "x" * world.MAX_MANIFEST_BYTES):
+            with self.subTest(kind=type(invalid).__name__):
+                report = {"schema": 1, "status": "pass", "errors": ["primary evidence"],
+                          "measurement_started": True, "processes": [], "invalid": invalid}
+                raw, failed = world.encode_manifest(report)
+                self.assertIs(failed, True)
+                self.assertLessEqual(len(raw), world.MAX_MANIFEST_BYTES)
+                value = level.strict_json(raw)
+                self.assertEqual(value["status"], "fail")
+                self.assertEqual(value["errors"][0], "primary evidence")
+                self.assertEqual(value["retained_report"]["processes"], [])
+                self.assertEqual([row["name"] for row in value["report_serialization_failure"]["excluded_fields"]], ["invalid"])
+                self.assertNotIn("invalid", value["retained_report"])
 
 
 class WorkDirectoryGuards(unittest.TestCase):
