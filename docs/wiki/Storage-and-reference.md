@@ -1,5 +1,12 @@
 # Storage and original references
 
+The [concrete World lighting source](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md#concrete-world-source)
+records paired height, enqueue, Light and region-constructor order. Native
+client-World tests use actual store-owned restored chunks, real allocation
+limits and explicitly controlled shared depth. They supply no new original
+World observation. Complete live generation, propagation and population remain
+unfinished; see the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md).
+
 The [Biome capture](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome-registry.md)
 records natural ordinary initialization on both originals in three JVM modes,
 all Biome/list/record/Class aliases, six snapshots and 3,824 raw-bit queries per

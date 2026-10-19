@@ -1,5 +1,7 @@
 #include "runtime_internal.h"
 
+#include "construction_internal.h"
+#include "lighting_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/world/dimension/biome_runtime.h"
@@ -11,24 +13,9 @@
 #include <limits.h>
 #include <stdlib.h>
 
-struct mc_world_reference_list {
-    void **items;
-    size_t count, capacity;
-};
-
 struct mc_world_active_chunks {
     void *entries;
     size_t count, capacity;
-};
-
-struct mc_world_runtime_classes {
-    mc_world_info_side side;
-    mc_java_random_profile *profile;
-    const mc_math_trig *trig;
-    mc_registry_classes *registry;
-    int32_t enqueue_depth;
-    size_t live_worlds;
-    bool initialized;
 };
 
 const mc_math_trig *mc_world_runtime_class_trig(const mc_world_runtime *runtime)
@@ -699,6 +686,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
     mc_world_runtime_fields *f = &runtime->fields;
+    mc_world_runtime_lighting_free(runtime);
     mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
     for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
         if (lists[i] != NULL) {
@@ -733,7 +721,9 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
-    for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
+    /* C contains typed World-owned records, retired at final native free.
+     * Other unimplemented collection descendants still require emptiness. */
+    for (size_t i = 1; i < sizeof(lists) / sizeof(lists[0]); ++i) {
         if (lists[i] != NULL && lists[i]->count != 0)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World owned collection retirement");

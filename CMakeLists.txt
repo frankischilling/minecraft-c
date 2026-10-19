@@ -200,12 +200,14 @@ add_library(mc_simulation STATIC
     src/world/runtime/construction.c
     src/world/runtime/environment.c
     src/world/runtime/blocks.c
+    src/world/runtime/height.c
+    src/world/runtime/lighting.c
     src/world/runtime/provider.c
     src/world/dimension/dimension.c
     src/entity/entity.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
-    PRIVATE mc_platform_time mc_build_options)
+    PRIVATE mc_platform_time mc_platform_text mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -372,6 +374,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_fixed_biome_runtime tests/world/dimension/test_fixed_biome_runtime.c)
     target_link_libraries(mc_test_fixed_biome_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_lighting_runtime tests/world/runtime/test_lighting_runtime.c)
+    target_link_libraries(mc_test_world_lighting_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_light_queue_runtime tests/world/runtime/test_light_queue_runtime.c)
+    target_link_libraries(mc_test_world_light_queue_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -874,6 +882,24 @@ if(BUILD_TESTING)
     add_test(NAME world.fixed_biome_runtime COMMAND mc_test_fixed_biome_runtime)
     set_tests_properties(world.fixed_biome_runtime PROPERTIES
         LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_test(NAME world.lighting_runtime
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_lighting_runtime>"
+        --scenario world-lighting-runtime
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-lighting-runtime-contracts")
+    set_tests_properties(world.lighting_runtime PROPERTIES
+        LABELS "public;integration;lighting" TIMEOUT 90)
+
+    add_test(NAME world.light_queue_runtime
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_light_queue_runtime>"
+        --scenario world-light-queue-runtime
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-light-queue-runtime-contracts")
+    set_tests_properties(world.light_queue_runtime PROPERTIES
+        LABELS "public;integration;lighting" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

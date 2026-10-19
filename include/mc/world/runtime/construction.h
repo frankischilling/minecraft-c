@@ -179,6 +179,8 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
  * retired owner alive and free BUSY until released; no aggregate count is reset.
  * No implicit save, file rollback, profile reset or game constructor retry.
  * Repeated retirement succeeds. Existing Info/field inspection stays valid;
+ * typed lighting records in C remain owned until final native free. They need
+ * no propagation or implicit gameplay clear to retire the World itself.
  * ordinary gameplay/new persistent bindings are unavailable after retirement. */
 mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
                                                       mc_world_storage_error *error);

@@ -85,10 +85,12 @@ constructor and recorded-observation regressions pass separately in that run.
 Ordinary missing-chunk GAME generation still fails at its explicit registry
 and lighting join. The [shared Biome module](biome-registry.md) now supplies
 actual class owners and a direct sampler that can initialize Block during the
-first Biome lookup, after the first climate-cell stores. Wiring that concrete
-path into World/Dimension and the live generator remains unfinished. Generation,
-lighting, activation, population, full block setters and gameplay persistence
-remain unfinished. Prepared cache baselines and native constructor completion
+first Biome lookup, after the first climate-cell stores. World/Dimension now
+binds actual retained normal/fixed managers. The live generator join remains
+unfinished. [World height and lighting submission](runtime-lighting.md) use the
+actual provider and C/A storage; live Chunk finishing, propagation, activation,
+population, full block setters and gameplay persistence remain unfinished.
+Prepared cache baselines and native constructor completion
 cannot establish full fresh-world startup or original population parity.
 
 See [construction](construction.md), [block access](blocks.md) and the

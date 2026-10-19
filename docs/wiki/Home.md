@@ -1,5 +1,12 @@
 # minecraft-c
 
+The [concrete World height and lighting operations](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
+use the actual provider, C records and shared A. All 33 selected cases pass on
+MSVC/GCC/Clang, including 177 height and 2,000,383 queue checks with Linux
+sanitizers. These native client-World contracts add no new original World
+comparison. Live Chunk finishing, propagation, complete generation, population,
+synchronous mutations and persistence acceptance remain unfinished.
+
 The [World/Dimension Biome managers](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/biome-registry.md#world-and-dimension-managers)
 retain actual shared references, cached arrays and independent Registry borrows.
 All 28 selected cases pass on MSVC/GCC/Clang, including 304 World-manager and

@@ -1,5 +1,20 @@
 # Test scope and reproduction
 
+The [concrete World height and lighting contracts](world/runtime-lighting.md)
+pass 177 height and 2,000,383 queue checks within 33 selected cases on MSVC,
+GCC and Clang. Linux uses ASan/UBSan and leak detection. The queue unit performs
+one million-and-first actual append, verifies the complete ordered bootstrap
+and overflow transcript, and tests real nonempty pointer-array growth at a
+limit that permits retained storage but rejects its allocation peak. Explicit
+shared-A scalar controls remain distinct from natural recursion observations.
+Height tests preserve disk-only absence, pending history, unsigned bytes,
+packed-key sign behavior and asymmetric borders. All 588 code/tool/fixture
+inputs match before/after and retained host copies, with 33 products per host.
+Formatting passes 305 C/header files. Existing original Biome protocols replay
+with synthetic and imported resources. These native client-World contracts
+provide no new executed-original World comparison, forced queue stdout-failure
+observation, full GAME generation, propagation or population acceptance.
+
 The [World/Dimension manager contracts](world/biome-registry.md#world-and-dimension-managers)
 pass 304 normal/World and 386 fixed-manager checks within all 28 selected cases
 on MSVC, GCC and Clang. Linux uses ASan/UBSan and leak detection. Tests cover

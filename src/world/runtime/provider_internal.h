@@ -83,6 +83,16 @@ mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provide
                                                       mc_world_provider_fields *out,
                                                       mc_world_storage_error *error);
 
+/* Actual current World.v presence receiver, with only inert native cache
+ * metadata admission. No border, load, generation, pending removal, callbacks
+ * or future-payload preflight. Caller holds the World through the complete
+ * enclosing source operation and attributes this provider call at bytecode6.
+ * Failure preserves out and returns its cause without changing World errors. */
+mc_world_storage_status mc_world_runtime_provider_contains(mc_world_runtime *runtime,
+                                                           int32_t chunk_x, int32_t chunk_z,
+                                                           bool *out,
+                                                           mc_world_storage_error *error);
+
 /* Actual normal yf/pk a()Z body: literal false, without World/loader callbacks.
  * This is only the underlying normal provider result, not enclosing cache
  * unload/save/population or a claim that those descendants are implemented.

@@ -8,6 +8,11 @@ normal/fixed managers with independent Registry borrows and reference caches.
 Numerical climate APIs keep their separate bounded-buffer contract. Live
 generation and surface reads remain unfinished.
 
+The [concrete World height and lighting operations](world/runtime-lighting.md)
+use its current provider, actual C list and class-owned shared A. Regions retain
+stable addresses through pointer-array growth and merging. Native retirement
+keeps C until final free. Live Chunk finishing and propagation remain unfinished.
+
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility,
 the shared Random profile and allocation-free modified UTF-8 text helpers.
 Its profile uses the private `mc_platform_time` library and C17 atomics/threads.

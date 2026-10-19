@@ -300,3 +300,24 @@ mc_world_storage_status mc_world_provider_maintenance(mc_world_provider *provide
     *out = false;
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
+
+mc_world_storage_status mc_world_runtime_provider_contains(mc_world_runtime *runtime,
+                                                           int32_t chunk_x, int32_t chunk_z,
+                                                           bool *out, mc_world_storage_error *error)
+{
+    if (runtime == NULL || out == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World provider presence arguments");
+    mc_world_provider *provider = runtime->fields.v;
+    if (provider == NULL)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World provider presence receiver");
+    const mc_chunk_cache *cache = &provider->cache;
+    if (cache->count > cache->capacity || cache->insertion_count > cache->insertion_capacity ||
+        (cache->capacity != 0 && cache->entries == NULL) ||
+        (cache->insertion_capacity != 0 && cache->insertions == NULL))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World provider presence cache metadata");
+    *out = mc_chunk_cache_contains(cache, chunk_x, chunk_z);
+    return result(error, MC_WORLD_STORAGE_OK, NULL);
+}

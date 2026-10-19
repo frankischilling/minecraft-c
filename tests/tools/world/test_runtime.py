@@ -15,7 +15,7 @@ CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
-             "world-biome-runtime")
+             "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime")
 
 
 def main():
@@ -46,6 +46,13 @@ def main():
                  "typed_info_test": ROOT / "tests/world/storage/test_typed_info.c",
                  "construction": ROOT / "src/world/runtime/construction.c",
                  "construction_header": ROOT / "include/mc/world/runtime/construction.h",
+                 "construction_internal": ROOT / "src/world/runtime/construction_internal.h",
+                 "world_height": ROOT / "src/world/runtime/height.c",
+                 "world_lighting": ROOT / "src/world/runtime/lighting.c",
+                 "world_lighting_header": ROOT / "include/mc/world/runtime/lighting.h",
+                 "world_lighting_internal": ROOT / "src/world/runtime/lighting_internal.h",
+                 "stdout": ROOT / "src/platform/text/stdout.c",
+                 "stdout_header": ROOT / "src/platform/text/stdout.h",
                  "runtime_internal": ROOT / "src/world/runtime/runtime_internal.h",
                  "dimension": ROOT / "src/world/dimension/dimension.c",
                  "dimension_header": ROOT / "include/mc/world/dimension/dimension.h",
@@ -85,6 +92,9 @@ def main():
                 "registry_internal": ROOT / "src/block/registry/registry_internal.h",
                 "world_registry": ROOT / "src/world/runtime/registry.c",
             })
+        if args.scenario in ("world-lighting-runtime", "world-light-queue-runtime"):
+            paths["lighting_test"] = ROOT / ("tests/world/runtime/test_lighting_runtime.c"
+                if args.scenario == "world-lighting-runtime" else "tests/world/runtime/test_light_queue_runtime.c")
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
@@ -96,12 +106,21 @@ def main():
                                      deadline=time.monotonic() + 70)
         CAPTURE.require(not stderr, "native contract stderr must be empty")
         text = stdout.decode("ascii").replace("\r\n", "\n")
-        if args.scenario in ("world-registry", "world-biome-runtime"):
+        if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
-            CAPTURE.require(all(line in ("16 achievements\n", "151 recipes\n") for line in lines[:-1]),
+            console = ("16 achievements\n", "151 recipes\n")
+            if args.scenario == "world-light-queue-runtime":
+                console += ("More than 1000000 updates, aborting lighting updates\n",)
+            CAPTURE.require(all(line in console for line in lines[:-1]),
                             "unexpected native bootstrap console output")
             report["bootstrap_console"] = lines[:-1]
+            if args.scenario == "world-lighting-runtime":
+                CAPTURE.require(not lines[:-1], "height queries must not print bootstrap or queue diagnostics")
+            elif args.scenario == "world-light-queue-runtime":
+                CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n",
+                    "More than 1000000 updates, aborting lighting updates\n"],
+                    "complete ordered queue bootstrap and overflow diagnostics")
             text = lines[-1]
         CAPTURE.require(text.startswith("PASS: ") and text.endswith("(" + args.scenario + ")\n") and
                         text.count("\n") == 1, "complete native contract result")
@@ -118,9 +137,10 @@ def main():
             for slot in range(1024):
                 if struct.unpack_from(">I", header, slot * 4)[0] != 0:
                     timestamp = struct.unpack_from(">I", header, 4096 + slot * 4)[0]
-                    CAPTURE.require(timestamp == 0xfedcba98, "explicit native region clock in live header cell")
+                    expected_timestamp = 1 if args.scenario == "world-lighting-runtime" else 0xfedcba98
+                    CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
         report["passed"] = True

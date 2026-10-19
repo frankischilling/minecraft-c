@@ -28,7 +28,13 @@ That module owns actual objects, spawn lists/Class handles and reference arrays,
 and performs the real lookup after climate stores. Class-bound Dimension setup
 retains actual normal/fixed managers, independent Registry borrows and source-
 ordered reference caches. Retained managers can outlive their Worlds. Live
-generation, lighting and population joins remain unfinished.
+generation and population joins remain unfinished.
+
+The [concrete World lighting operations](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
+use current provider presence/getter calls and actual C/A storage. Distinct
+owned regions preserve their addresses through merging and list growth. Native
+retirement retains C until final free. Live Chunk finishing and propagation
+remain unfinished.
 
 The [World block access contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
 adds real acquired metadata reads and quiet writes, normal dirty marking and
