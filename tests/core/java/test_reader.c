@@ -428,8 +428,9 @@ static int test_single_byte(size_t chunk, bool advertise)
                                      0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
                                      0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
                                      0xfffd, 0xfffd, 0xfffd, 0};
-    CHECK(COUNT(bytes) == COUNT(windows) && COUNT(bytes) == COUNT(latin) &&
-          COUNT(bytes) == COUNT(ascii));
+    const bool lengths_match = COUNT(bytes) == COUNT(windows) && COUNT(bytes) == COUNT(latin) &&
+                               COUNT(bytes) == COUNT(ascii);
+    CHECK(lengths_match);
     CHECK(test_vector(MC_JAVA_READER_WINDOWS1252, bytes, COUNT(bytes), windows, COUNT(windows),
                       chunk, advertise, false) == 0);
     CHECK(test_vector(MC_JAVA_READER_ISO8859_1, bytes, COUNT(bytes), latin, COUNT(latin), chunk,
