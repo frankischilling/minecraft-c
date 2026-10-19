@@ -14,8 +14,9 @@ typedef struct mc_resource_files mc_resource_files;
 mc_registry_status mc_resource_files_create(const char *root, mc_resource_files **out);
 const mc_registry_resources *mc_resource_files_source(mc_resource_files *files);
 
-/* Open streams remain owned by this source, including after EOF or failure.
- * Retire all borrowers before freeing it. Every stream is closed once here;
+/* Stream contexts remain owned by this source, including after EOF, failure
+ * or explicit close through its resource-source interface. Retire all
+ * borrowers before freeing it. Every still-open file is closed once here;
  * all storage is released even if a close reports an I/O error. */
 mc_registry_status mc_resource_files_free(mc_resource_files *files);
 

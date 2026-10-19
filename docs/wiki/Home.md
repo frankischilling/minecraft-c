@@ -80,3 +80,11 @@ now reads imported language files on the shared class owner. Its complete
 [Properties evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/properties.md)
 covers 252 recorded JDK byte-stream loads and 980 queries. These prerequisites
 do not complete statistics, registry bootstrap or population/persistence.
+
+The native
+[achievement-key loader](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/keys.md)
+also matches all 446 entries and 453 lookups from both original JARs. Its
+[line reader](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/reader.md)
+matches 800 recorded JDK owners and 7,136 actions. Fourteen selected cases pass
+on MSVC/GCC/Clang with Linux sanitizers. Complete statistics, registry startup
+and population/persistence remain unfinished.

@@ -16,6 +16,15 @@ typedef struct mc_translation mc_translation;
 struct mc_registry_resources {
     void *context;
     mc_registry_status (*open)(void *context, const char *name, mc_java_properties_input *out);
+    /* Optional until a reached source operation closes its reader. Retire
+     * the supplied stream's file immediately, but keep its context valid
+     * until the resource source is freed. Repeated close is successful; a
+     * closed stream reads IO_ERROR. Translation itself never calls close. */
+    mc_registry_status (*close)(void *context, const mc_java_properties_input *input);
+    /* Optional InputStream.available observation for a reached text reader.
+     * False includes no advertised bytes and an availability I/O failure,
+     * which StreamDecoder catches. It performs no owner mutation. */
+    bool (*ready)(void *context, const mc_java_properties_input *input);
 };
 
 typedef struct mc_registry_translation_view {

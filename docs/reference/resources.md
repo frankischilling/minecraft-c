@@ -141,4 +141,7 @@ language resources from the imported `jar/` directory without a JAR or Java
 runtime. Both pinned originals supply identical language files, and native
 loading matches their complete 633-property observations on MSVC/GCC/Clang.
 The earlier client-only inventory above remains scoped to archive import.
+The native [achievement-key loader](../statistics/keys.md) consumes the third
+bootstrap resource, `achievement/map.txt`, from that same imported root. Its
+446 entries and 453 lookups match both original JARs on MSVC/GCC/Clang.
 Rendering, audio, resource reloads and complete startup remain unfinished.

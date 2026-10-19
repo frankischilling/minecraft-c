@@ -1,5 +1,14 @@
 # Development status
 
+Native [achievement-key loading](statistics/keys.md) now constructs actual
+shared class `b`, reads its imported resource, preserves String identities and
+closes its reader. All 446 entries and 453 lookups match both original JARs.
+The [byte/line reader](reference/reader.md) matches 19,594 projected rows from
+800 recorded JDK owners and 7,136 actions. Fourteen selected cases pass on
+MSVC/GCC/Clang with Linux sanitizers, including 4,299 key and 134,207 reader
+checks. Caught stack-trace output, formatters, statistics registration,
+achievements, recipes and full bootstrap/population/persistence remain unfinished.
+
 Native [Properties decoding](reference/properties.md) and
 [translation/resource loading](resources/translation.md) now run on the shared
 class owner. Ten selected cases pass on MSVC/GCC/Clang with Linux sanitizers:
@@ -14,7 +23,7 @@ now executes both orders of the real initialization cycle, including all 106
 named Item chains, retained subtype state, BlockItems, conditional fire setup
 and five actual profile-created Randoms. It stops explicitly at unfinished
 statistics and retains FAILED state. Six selected cases pass on MSVC, GCC and
-Clang, with Linux sanitizers: 530,297 Item and 102,679 Block native checks,
+Clang, with Linux sanitizers: 530,295 Item and 102,659 Block native checks,
 plus Material/profile controls and finite original comparisons of
 [33,064 Item rows](reference/item-registry.md) and
 [3,950 Block rows](reference/block-registry.md) per side. Full bootstrap,

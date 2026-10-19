@@ -64,7 +64,7 @@ must be retired before destruction.
 
 ## Native checks and remaining work
 
-`block.registry_construction` passes 102,679 checks on MSVC, GCC and Clang,
+`block.registry_construction` passes 102,659 checks on MSVC, GCC and Clang,
 within six selected registry, Material, profile and recorded-observation cases.
 Linux runs use
 ASan/UBSan and leak checks. Both client and server constructor paths are covered.
@@ -77,7 +77,7 @@ do not inject constructor failures or reset the shared profile.
 The separate [executed-original comparison](../reference/block-registry.md)
 matches all 3,950 projected base-field/array/reference rows per side on those
 three compilers. It excludes concrete subtype state, clock-dependent values
-and full bootstrap completion. Item has its own 530,297 native checks and
+and full bootstrap completion. Item has its own 530,295 native checks and
 [33,064-row original comparison](../reference/item-registry.md). The
 statistic, achievement, resource, recipe and smelting closure remains
 unfinished. Full registry startup, World integration, synchronous block hooks,

@@ -1,3 +1,7 @@
+#if !defined(_WIN32) && !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "mc/resources/files/files.h"
 
 #include <errno.h>
@@ -5,11 +9,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+#include <io.h>
 #include <wchar.h>
 #include <windows.h>
 #endif
@@ -91,7 +97,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *destination,
     if (destination == NULL || count == NULL || capacity == 0)
         return MC_JAVA_PROPERTIES_INVALID_ARGUMENT;
     *count = 0;
-    if (stream->pending_error)
+    if (stream->file == NULL || stream->pending_error)
         return MC_JAVA_PROPERTIES_IO_ERROR;
     const size_t actual = fread(destination, 1, capacity, stream->file);
     if (ferror(stream->file)) {
@@ -188,6 +194,51 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
+{
+    mc_resource_files *files = context;
+    if (input == NULL || input->read != read_bytes)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    for (resource_stream *stream = files->streams; stream != NULL; stream = stream->next) {
+        if (stream != input->context)
+            continue;
+        if (stream->file == NULL)
+            return MC_REGISTRY_OK;
+        FILE *file = stream->file;
+        stream->file = NULL;
+        return fclose(file) == 0 ? MC_REGISTRY_OK : MC_REGISTRY_IO_FAILED;
+    }
+    return MC_REGISTRY_INVALID_ARGUMENT;
+}
+
+static bool ready_resource(void *context, const mc_java_properties_input *input)
+{
+    mc_resource_files *files = context;
+    if (input == NULL || input->read != read_bytes)
+        return false;
+    for (resource_stream *stream = files->streams; stream != NULL; stream = stream->next) {
+        if (stream != input->context)
+            continue;
+        if (stream->file == NULL || stream->pending_error || ferror(stream->file))
+            return false;
+            /* Query the open file and logical stdio position without consuming
+             * bytes or changing its seek position. Availability failure is false,
+             * matching StreamDecoder's caught available() IOException. */
+#ifdef _WIN32
+        struct _stat64 information;
+        const __int64 position = _ftelli64(stream->file);
+        return position >= 0 && _fstat64(_fileno(stream->file), &information) == 0 &&
+               information.st_size > position;
+#else
+        struct stat information;
+        const off_t position = ftello(stream->file);
+        return position >= 0 && fstat(fileno(stream->file), &information) == 0 &&
+               information.st_size > position;
+#endif
+    }
+    return false;
+}
+
 mc_registry_status mc_resource_files_create(const char *root, mc_resource_files **out)
 {
     if (root == NULL || out == NULL || root[0] == '\0')
@@ -206,7 +257,10 @@ mc_registry_status mc_resource_files_create(const char *root, mc_resource_files 
         return MC_REGISTRY_ALLOCATION_FAILED;
     }
     memcpy(copy, root, length + 1);
-    *files = (mc_resource_files){.source = {.context = files, .open = open_resource},
+    *files = (mc_resource_files){.source = {.context = files,
+                                            .open = open_resource,
+                                            .close = close_resource,
+                                            .ready = ready_resource},
                                  .root = copy,
                                  .root_length = length,
                                  .streams = NULL};
@@ -227,7 +281,7 @@ mc_registry_status mc_resource_files_free(mc_resource_files *files)
     resource_stream *stream = files->streams;
     while (stream != NULL) {
         resource_stream *next = stream->next;
-        if (fclose(stream->file) != 0)
+        if (stream->file != NULL && fclose(stream->file) != 0)
             status = MC_REGISTRY_IO_FAILED;
         free(stream);
         stream = next;

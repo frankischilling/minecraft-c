@@ -110,6 +110,31 @@ static bool invalid_names(mc_resource_files *files)
     return true;
 }
 
+static bool stream_lifecycle(mc_resource_files *files)
+{
+    const mc_registry_resources *source = mc_resource_files_source(files);
+    mc_java_properties_input stream = {0};
+    if (source->close == NULL || source->ready == NULL ||
+        source->open(source->context, "/lang/en_US.lang", &stream) != MC_REGISTRY_OK ||
+        !source->ready(source->context, &stream))
+        return false;
+    uint8_t byte;
+    size_t count = 0;
+    if (stream.read(stream.context, &byte, 1, &count) != MC_JAVA_PROPERTIES_OK || count != 1 ||
+        !source->ready(source->context, &stream) ||
+        source->close(source->context, &stream) != MC_REGISTRY_OK ||
+        source->close(source->context, &stream) != MC_REGISTRY_OK ||
+        source->ready(source->context, &stream))
+        return false;
+    count = 123;
+    if (stream.read(stream.context, &byte, 1, &count) != MC_JAVA_PROPERTIES_IO_ERROR || count != 0)
+        return false;
+    mc_java_properties_input foreign = {.context = files, .read = stream.read};
+    return source->close(source->context, &foreign) == MC_REGISTRY_INVALID_ARGUMENT &&
+           source->close(source->context, NULL) == MC_REGISTRY_INVALID_ARGUMENT &&
+           !source->ready(source->context, &foreign) && !source->ready(source->context, NULL);
+}
+
 int main(int argc, char **argv)
 {
     int result = 1;
@@ -142,7 +167,7 @@ int main(int argc, char **argv)
     mc_registry_translation_view view;
     if (mc_registry_classes_inspect_translation(classes, &view, &error) != MC_REGISTRY_OK ||
         view.singleton_phase != MC_REGISTRY_READY || view.wrapper_phase != MC_REGISTRY_READY ||
-        view.singleton_a == NULL || view.singleton_a != view.wrapper_a)
+        view.singleton_a == NULL || view.singleton_a != view.wrapper_a || !stream_lifecycle(files))
         goto cleanup;
     const mc_translation *translation = view.singleton_a;
     const size_t count = mc_translation_property_count(translation);

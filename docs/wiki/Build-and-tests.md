@@ -36,7 +36,7 @@ clang-format18. No original JARs/assets are downloaded by CI.
 The [joined Block](https://github.com/frankischilling/minecraft-c/blob/main/docs/block/registry.md)
 and [Item construction](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/registry.md)
 passes six selected cases on MSVC and Linux GCC/Clang, with Linux sanitizers.
-The units have 102,679 Block and 530,297 Item checks covering both entry orders,
+The units have 102,659 Block and 530,295 Item checks covering both entry orders,
 retained aliases/subtypes, Random continuation and real allocation-budget
 failures. The finite comparisons match all
 [33,064 Item rows](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/item-registry.md)

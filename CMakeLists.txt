@@ -68,6 +68,10 @@ target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
 target_link_libraries(mc_platform_time PRIVATE mc_build_options)
 
+add_library(mc_platform_text STATIC src/platform/text/charset.c)
+target_include_directories(mc_platform_text PRIVATE include)
+target_link_libraries(mc_platform_text PRIVATE mc_build_options)
+
 find_package(Threads REQUIRED)
 add_library(mc_c_atomics INTERFACE)
 if(MSVC)
@@ -79,13 +83,14 @@ add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
     src/core/java/properties.c
+    src/core/java/reader.c
     src/core/java/random_profile.c
     src/core/math/math.c
     src/core/math/strict.c
     src/core/math/fdlibm/log.c
     src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
-target_link_libraries(mc_core PRIVATE mc_platform_time Threads::Threads mc_c_atomics mc_build_options)
+target_link_libraries(mc_core PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_c_atomics mc_build_options)
 if(UNIX)
     target_link_libraries(mc_core PRIVATE m)
 endif()
@@ -118,7 +123,8 @@ add_library(mc_registry STATIC
     src/item/registry/class_initializers.c
     src/item/registry/constructors.c
     src/item/registry/registration.c
-    src/resources/translation/translation.c)
+    src/resources/translation/translation.c
+    src/statistics/keys/keys.c)
 target_link_libraries(mc_registry PUBLIC mc_block mc_core PRIVATE mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
@@ -422,6 +428,14 @@ if(BUILD_TESTING)
     add_executable(mc_java_properties_probe tests/core/java/properties_probe.c)
     target_link_libraries(mc_java_properties_probe PRIVATE mc_core mc_build_options)
 
+    add_executable(mc_test_java_reader tests/core/java/test_reader.c)
+    target_link_libraries(mc_test_java_reader PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_reader COMMAND mc_test_java_reader)
+    set_tests_properties(core.java_reader PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_java_reader_probe tests/core/java/reader_probe.c)
+    target_link_libraries(mc_java_reader_probe PRIVATE mc_core mc_build_options)
+
     add_executable(mc_translation_file_probe tests/resources/translation/files_probe.c)
     target_link_libraries(mc_translation_file_probe PRIVATE mc_resources mc_build_options)
 
@@ -429,6 +443,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_translation PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME resources.translation COMMAND mc_test_translation)
     set_tests_properties(resources.translation PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_statistic_keys tests/statistics/keys/test_keys.c)
+    target_link_libraries(mc_test_statistic_keys PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME statistics.keys COMMAND mc_test_statistic_keys)
+    set_tests_properties(statistics.keys PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_statistic_keys_file_probe tests/statistics/keys/files_probe.c)
+    target_link_libraries(mc_statistic_keys_file_probe PRIVATE mc_resources mc_build_options)
 
     add_executable(mc_java_int_set_probe tests/core/java/int_set_probe.c)
     target_link_libraries(mc_java_int_set_probe PRIVATE mc_world mc_build_options)
@@ -550,11 +572,25 @@ if(BUILD_TESTING)
     set_tests_properties(core.java_properties_observation PROPERTIES
         LABELS "public;fixture;java" TIMEOUT 60)
 
+    add_test(NAME core.java_reader_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/java/compare_reader.py"
+            "$<TARGET_FILE:mc_java_reader_probe>")
+    set_tests_properties(core.java_reader_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 90)
+
     add_test(NAME resources.imported_files
         COMMAND "${Python3_EXECUTABLE}"
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/resources/test_files.py"
             "$<TARGET_FILE:mc_translation_file_probe>")
     set_tests_properties(resources.imported_files PROPERTIES
+        LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_test(NAME statistics.imported_keys
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/statistics/test_keys_files.py"
+            "$<TARGET_FILE:mc_statistic_keys_file_probe>")
+    set_tests_properties(statistics.imported_keys PROPERTIES
         LABELS "public;unit;ownership" TIMEOUT 60)
 
     add_test(NAME world.info_observation

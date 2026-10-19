@@ -268,7 +268,7 @@ static void resources_init(resources *r, size_t chunk)
         (memory_stream){(const uint8_t *)english, sizeof(english) - 1, 0, chunk, 0, 0, false};
     r->streams[1] =
         (memory_stream){(const uint8_t *)statistics, sizeof(statistics) - 1, 0, chunk, 0, 0, false};
-    r->source = (mc_registry_resources){r, open_resource};
+    r->source = (mc_registry_resources){r, open_resource, NULL, NULL};
     r->missing = -1;
 }
 
@@ -833,7 +833,7 @@ static int test_invalid_source(mc_registry_side side, const dependencies *d)
     mc_registry_classes *owner = NULL;
     CHECK(allocate(side, d, &r, 0, &owner, NULL) == MC_REGISTRY_OK);
     mc_registry_classes *out = owner;
-    const mc_registry_resources invalid = {&r, NULL};
+    const mc_registry_resources invalid = {&r, NULL, NULL, NULL};
     const mc_registry_options options = {side, d->profile, d->materials, 0, &invalid};
     CHECK(mc_registry_classes_allocate(&options, &out, NULL) == MC_REGISTRY_INVALID_ARGUMENT);
     CHECK(out == owner && r.opens == 0 && registry_untouched(owner) && dependencies_unchanged(d));

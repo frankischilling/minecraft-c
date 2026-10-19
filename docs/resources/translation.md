@@ -30,9 +30,11 @@ names use ASCII path segments; empty, dot, parent, drive and backslash segments
 are rejected. The local imported directory is trusted input, not a symlink
 sandbox.
 
-The source retains opened streams through EOF and failures. Retire the class
-owner before freeing the source. Source retirement closes every stream and
-releases its storage, including when a close reports failure. No JAR, Java,
+The source retains stream contexts through EOF, failures and explicit close.
+An explicit close retires the file immediately; repeated close succeeds and
+later reads report I/O failure. Retire the class owner before freeing the source.
+Source retirement closes every still-open stream and releases its storage,
+including when a close reports failure. No JAR, Java,
 launcher or network request is used by the native consumer.
 
 Missing files produce a null stream, which fails at the subsequent original
@@ -63,10 +65,10 @@ observations remain private.
 
 Public verification uses synthetic resource bytes only. The
 [translation unit](../../tests/resources/translation/test_translation.c) passes
-4,454 checks over both sides, successful and partial loads, String lifetimes,
+4,504 checks over both sides, successful and partial loads, String lifetimes,
 native resource bounds, saved failures and reentrant public-call refusal.
 Diagnostic inspection remains available during the admitted flow. The
 [filesystem test](../../tests/tools/resources/test_files.py) checks Unicode
 roots, trailing separators, binary bytes, actual map and fallback identities,
-and missing-file load boundaries. Ten selected cases, including existing
+and missing-file load boundaries. Fourteen selected cases, including existing
 Block/Item comparisons, pass on all three compilers with Linux sanitizers.
