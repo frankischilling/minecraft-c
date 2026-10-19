@@ -1,5 +1,7 @@
 #include "mc/world/storage/chunk.h"
 
+#include "chunk_build_internal.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -299,29 +301,29 @@ static bool stored_supported(const mc_stored_chunk *chunk, const mc_nbt_tag *lev
                              sizeof(chunk->data.heightmap));
 }
 
-static void stored_fields(const mc_stored_chunk *chunk, const mc_nbt_tag *level, int64_t world_time,
+static void stored_fields(const mc_chunk_state *state, const mc_nbt_tag *level, int64_t world_time,
                           mc_nbt_tag fields[STORED_FIELD_COUNT],
                           uint16_t names[STORED_FIELD_COUNT][16])
 {
     for (size_t i = 0; i < STORED_FIELD_COUNT; ++i)
         fields[i].name = stored_name(stored_names[i], names[i]);
     fields[0].type = fields[1].type = MC_NBT_INT;
-    fields[0].value.int_value = chunk->state.x;
-    fields[1].value.int_value = chunk->state.z;
+    fields[0].value.int_value = state->x;
+    fields[1].value.int_value = state->z;
     fields[2].type = MC_NBT_LONG;
     fields[2].value.long_value = world_time;
-    const uint8_t *arrays[] = {chunk->blocks, chunk->data.metadata, chunk->data.skylight,
-                               chunk->data.block_light, chunk->data.heightmap};
-    const size_t lengths[] = {sizeof(chunk->blocks), sizeof(chunk->data.metadata),
-                              sizeof(chunk->data.skylight), sizeof(chunk->data.block_light),
-                              sizeof(chunk->data.heightmap)};
+    const uint8_t *arrays[] = {state->data->blocks, state->data->metadata, state->data->skylight,
+                               state->data->block_light, state->data->heightmap};
+    const size_t lengths[] = {MC_CHUNK_BLOCKS, sizeof(state->data->metadata),
+                              sizeof(state->data->skylight), sizeof(state->data->block_light),
+                              sizeof(state->data->heightmap)};
     for (size_t i = 0; i < 5; ++i) {
         fields[3u + i].type = MC_NBT_BYTE_ARRAY;
         fields[3u + i].value.byte_array.data = arrays[i];
         fields[3u + i].value.byte_array.length = lengths[i];
     }
     fields[8].type = MC_NBT_BYTE;
-    fields[8].value.byte_value = chunk->state.terrain_populated ? 1 : 0;
+    fields[8].value.byte_value = state->terrain_populated ? 1 : 0;
     for (size_t i = 9; i < STORED_FIELD_COUNT; ++i) {
         const mc_nbt_tag *old = stored_get(level, stored_names[i]);
         fields[i].type = MC_NBT_LIST;
@@ -364,17 +366,11 @@ static size_t stored_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *field
     return length;
 }
 
-mc_stored_chunk_status mc_stored_chunk_build(const mc_stored_chunk *chunk, int64_t world_time,
-                                             const mc_nbt_limits *requested, mc_nbt_document **out,
-                                             mc_stored_chunk_error *error)
+static mc_stored_chunk_status stored_build(const mc_chunk_state *state, const mc_nbt_tag *baseline,
+                                           const mc_nbt_tag *level, int64_t world_time,
+                                           mc_nbt_limits limits, mc_nbt_document **out,
+                                           mc_stored_chunk_error *error)
 {
-    mc_nbt_limits limits;
-    if (!stored_valid(chunk) || out == NULL || !stored_limits(requested, &limits))
-        return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
-    const mc_nbt_tag *baseline = mc_stored_chunk_root(chunk);
-    const mc_nbt_tag *level = stored_get(baseline, "Level");
-    if (!stored_supported(chunk, level))
-        return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, NULL);
     size_t root_count = baseline == NULL ? 0 : baseline->value.compound.length;
     size_t level_count = level == NULL ? 0 : level->value.compound.length;
     if (root_count > limits.max_elements || level_count > limits.max_elements ||
@@ -391,7 +387,7 @@ mc_stored_chunk_status mc_stored_chunk_build(const mc_stored_chunk *chunk, int64
         return stored_status(error, MC_STORED_CHUNK_ALLOCATION_FAILED, NULL);
     mc_nbt_tag fields[STORED_FIELD_COUNT] = {0};
     uint16_t names[STORED_FIELD_COUNT][16];
-    stored_fields(chunk, level, world_time, fields, names);
+    stored_fields(state, level, world_time, fields, names);
     uint16_t level_name[16];
     mc_nbt_tag replacement = {0};
     replacement.type = MC_NBT_COMPOUND;
@@ -436,6 +432,35 @@ mc_stored_chunk_status mc_stored_chunk_build(const mc_stored_chunk *chunk, int64
         return stored_nbt_error(error, status, nbt);
     *out = document;
     return stored_status(error, MC_STORED_CHUNK_OK, NULL);
+}
+
+mc_stored_chunk_status mc_stored_chunk_build(const mc_stored_chunk *chunk, int64_t world_time,
+                                             const mc_nbt_limits *requested, mc_nbt_document **out,
+                                             mc_stored_chunk_error *error)
+{
+    mc_nbt_limits limits;
+    if (!stored_valid(chunk) || out == NULL || !stored_limits(requested, &limits))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
+    const mc_nbt_tag *baseline = mc_stored_chunk_root(chunk);
+    const mc_nbt_tag *level = stored_get(baseline, "Level");
+    if (!stored_supported(chunk, level))
+        return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, NULL);
+    return stored_build(&chunk->state, baseline, level, world_time, limits, out, error);
+}
+
+mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, int64_t world_time,
+                                                   const mc_nbt_limits *requested,
+                                                   mc_nbt_document **out,
+                                                   mc_stored_chunk_error *error)
+{
+    mc_nbt_limits limits;
+    if (state == NULL || out == NULL || state->blank || state->data == NULL ||
+        state->data->blocks == NULL || state->data->blocks_capacity < MC_CHUNK_BLOCKS ||
+        !stored_limits(requested, &limits))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
+    if (state->has_entities)
+        return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, "Entities");
+    return stored_build(state, NULL, NULL, world_time, limits, out, error);
 }
 
 void mc_stored_chunk_free(mc_stored_chunk *chunk)

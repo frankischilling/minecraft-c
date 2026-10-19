@@ -33,8 +33,11 @@ generation and population joins remain unfinished.
 The [concrete World lighting operations](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
 use current provider presence/getter calls and actual C/A storage. Distinct
 owned regions preserve their addresses through merging and list growth. Native
-retirement retains C until final free. Live Chunk finishing and propagation
-remain unfinished.
+retirement retains C until final free. The
+[generated Chunk owner](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/chunk-objects.md)
+adopts the original block allocation, retains actual child identities, and runs
+live finishing through these World operations. All 38 selected native cases
+pass on MSVC/GCC/Clang; full generation and propagation remain unfinished.
 
 The [World block access contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
 adds real acquired metadata reads and quiet writes, normal dirty marking and

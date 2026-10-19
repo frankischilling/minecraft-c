@@ -11,4 +11,22 @@
  * resource callback. False means a violated native ownership precondition. */
 bool mc_registry_runtime_borrow_release(mc_registry_classes *classes);
 
+/* Nonowning actual q reference captured by an ordinary Block active use.
+ * Existing final q has fixed extent256; NULL is a successful captured source
+ * reference. Keep the same class owner live/exclusive through later iaload.
+ * get preserves out on failure and retains the complete initializer cause.
+ * at performs no active use, phase check, current-q comparison or reload;
+ * captured NULL precedes signed bounds. Fresh element failures have no stale
+ * initializer/constructor attribution. No allocation, borrow or Random call. */
+typedef struct mc_registry_block_q_view {
+    mc_registry_classes *classes;
+    const int32_t *identity;
+    size_t length;
+} mc_registry_block_q_view;
+
+mc_registry_status mc_registry_block_q_get(mc_registry_classes *classes,
+                                           mc_registry_block_q_view *out, mc_registry_error *error);
+mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array, int32_t index,
+                                          int32_t *out, mc_registry_error *error);
+
 #endif

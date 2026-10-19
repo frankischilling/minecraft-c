@@ -1,5 +1,13 @@
 # Build and tests
 
+The [generated Chunk contracts](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/chunk-objects.md)
+pass 33,458 checks within all 38 selected cases on MSVC/GCC/Clang, with Linux
+ASan/UBSan and leak detection. Real owners retain their identities through
+finishing and array save/reload; quota and lifetime failures preserve reached
+effects. All 596 inputs and 35 products per host are retained; formatting passes
+313 C/header files. Full GAME generation, population and save acceptance remain
+unfinished; these tests provide no new executed-original Chunk comparison.
+
 The [concrete World height/queue contracts](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
 pass 177 height and 2,000,382 queue checks within 33 selected cases on
 MSVC/GCC/Clang, with Linux ASan/UBSan and leak detection. Real million-entry

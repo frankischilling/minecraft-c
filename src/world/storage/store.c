@@ -1,13 +1,22 @@
 #include "mc/world/storage/store.h"
 
+#include "../chunk/object_internal.h"
+#include "chunk_build_internal.h"
 #include "files.h"
+#include "generated_internal.h"
 #include "mc/core/java/java.h"
 
 #include <stdlib.h>
 #include <string.h>
 
+typedef enum store_chunk_kind { STORE_CHUNK_STORED, STORE_CHUNK_GENERATED } store_chunk_kind;
+
 typedef struct store_chunk {
-    mc_stored_chunk *owner;
+    store_chunk_kind kind;
+    union {
+        mc_stored_chunk *stored;
+        mc_world_chunk *generated;
+    } owner;
     int32_t dimension;
     size_t leases;
     struct store_chunk *next;
@@ -43,6 +52,55 @@ struct mc_world_store {
     mc_world_store_reservation *reservations;
     size_t reservation_count;
 };
+
+static mc_chunk_state *store_chunk_state(const store_chunk *entry)
+{
+    switch (entry->kind) {
+        case STORE_CHUNK_STORED:
+            return mc_stored_chunk_state(entry->owner.stored);
+        case STORE_CHUNK_GENERATED:
+            return mc_world_chunk_state(entry->owner.generated);
+    }
+    return NULL;
+}
+
+static const mc_nbt_tag *store_chunk_root(const store_chunk *entry)
+{
+    switch (entry->kind) {
+        case STORE_CHUNK_STORED:
+            return mc_stored_chunk_root(entry->owner.stored);
+        case STORE_CHUNK_GENERATED:
+            return NULL;
+    }
+    return NULL;
+}
+
+static mc_stored_chunk_status store_chunk_build(const store_chunk *entry, int64_t world_time,
+                                                const mc_nbt_limits *limits, mc_nbt_document **out,
+                                                mc_stored_chunk_error *error)
+{
+    if (entry->kind == STORE_CHUNK_STORED)
+        return mc_stored_chunk_build(entry->owner.stored, world_time, limits, out, error);
+    if (entry->kind == STORE_CHUNK_GENERATED &&
+        mc_world_chunk_storage_empty(entry->owner.generated))
+        return mc_stored_chunk_build_fresh(mc_world_chunk_state(entry->owner.generated), world_time,
+                                           limits, out, error);
+    if (error != NULL)
+        *error = (mc_stored_chunk_error){MC_STORED_CHUNK_UNSUPPORTED_EDIT, NULL, {MC_NBT_OK, 0}};
+    return MC_STORED_CHUNK_UNSUPPORTED_EDIT;
+}
+
+static void store_chunk_free(store_chunk *entry)
+{
+    switch (entry->kind) {
+        case STORE_CHUNK_STORED:
+            mc_stored_chunk_free(entry->owner.stored);
+            break;
+        case STORE_CHUNK_GENERATED:
+            mc_world_chunk_storage_free(entry->owner.generated);
+            break;
+    }
+}
 
 static mc_world_storage_status store_error(mc_world_storage_error *error,
                                            mc_world_storage_status status, const char *operation)
@@ -626,6 +684,8 @@ static mc_world_storage_status store_new_chunk(mc_world_store *store, store_chun
     store_chunk *entry = calloc(1, sizeof(*entry));
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "retained chunk link");
+    /* Reservations and old copy/load routes always begin as the stored variant. */
+    *entry = (store_chunk){.kind = STORE_CHUNK_STORED, .owner.stored = NULL};
     *out = entry;
     return MC_WORLD_STORAGE_OK;
 }
@@ -635,13 +695,12 @@ static store_chunk *store_find_chunk(const mc_world_store *store, const mc_chunk
     if (store == NULL || chunk == NULL)
         return NULL;
     store_chunk *entry = store->chunks;
-    while (entry != NULL && mc_stored_chunk_state(entry->owner) != chunk)
+    while (entry != NULL && store_chunk_state(entry) != chunk)
         entry = entry->next;
     return entry;
 }
 
-static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32_t dimension,
-                                mc_chunk_state **out)
+static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32_t dimension)
 {
     entry->dimension = dimension;
     if (store->last_chunk == NULL)
@@ -650,7 +709,62 @@ static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32
         store->last_chunk->next = entry;
     store->last_chunk = entry;
     ++store->chunk_count;
-    *out = mc_stored_chunk_state(entry->owner);
+}
+
+mc_world_storage_status mc_world_store_create_generated(mc_world_store *store,
+                                                        mc_world_runtime *world, int32_t dimension,
+                                                        int32_t x, int32_t z, uint8_t **blocks,
+                                                        size_t length, mc_world_chunk **out,
+                                                        mc_world_storage_error *error)
+{
+    if (store == NULL || world == NULL || blocks == NULL || *blocks == NULL ||
+        length != MC_CHUNK_BLOCKS || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "generated chunk arguments");
+    const char *root = NULL;
+    mc_world_storage_status status = store_dimension(store, dimension, &root, error);
+    (void)root;
+    store_chunk *entry = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_new_chunk(store, &entry, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    entry->kind = STORE_CHUNK_GENERATED;
+    entry->owner.generated = NULL;
+    status = mc_world_chunk_storage_create(world, x, z, blocks, length,
+                                           store->limits.nbt.max_allocation_bytes,
+                                           &entry->owner.generated, error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        store_chunk_free(entry);
+        free(entry);
+        return status;
+    }
+    /* No fallible step remains after the lower constructor adopts the blocks. */
+    store_publish_chunk(store, entry, dimension);
+    *out = entry->owner.generated;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_chunk *mc_world_store_generated_chunk(const mc_world_store *store,
+                                               const mc_chunk_state *state)
+{
+    const store_chunk *entry = store_find_chunk(store, state);
+    return entry != NULL && entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : NULL;
+}
+
+bool mc_world_store_has_generated_for_world(const mc_world_store *store,
+                                            const mc_world_runtime *world)
+{
+    if (store == NULL || world == NULL)
+        return false;
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        if (entry->kind == STORE_CHUNK_GENERATED) {
+            mc_world_chunk_fields fields;
+            if (mc_world_chunk_fields_get(entry->owner.generated, &fields) == MC_WORLD_STORAGE_OK &&
+                fields.d == world)
+                return true;
+        }
+    }
+    return false;
 }
 
 static const mc_nbt_tag *store_get(const mc_nbt_tag *parent, const char *name)
@@ -662,9 +776,9 @@ static const mc_nbt_tag *store_get(const mc_nbt_tag *parent, const char *name)
     return mc_nbt_compound_get(parent, units, length);
 }
 
-static bool store_opaque(const mc_stored_chunk *chunk)
+static bool store_opaque(const store_chunk *entry)
 {
-    const mc_nbt_tag *level = store_get(mc_stored_chunk_root(chunk), "Level");
+    const mc_nbt_tag *level = store_get(store_chunk_root(entry), "Level");
     const mc_nbt_tag *entities = store_get(level, "Entities");
     const mc_nbt_tag *tiles = store_get(level, "TileEntities");
     return (entities != NULL && entities->value.list.length != 0) ||
@@ -688,27 +802,28 @@ static mc_world_storage_status store_load_chunk(mc_world_store *store, int32_t d
     if (status == MC_WORLD_STORAGE_OK) {
         mc_stored_chunk_error detail;
         mc_stored_chunk_status decoded = mc_stored_chunk_decode(
-            raw.data, raw.length, &store->limits.nbt, &entry->owner, NULL, &detail);
+            raw.data, raw.length, &store->limits.nbt, &entry->owner.stored, NULL, &detail);
         if (decoded != MC_STORED_CHUNK_OK)
             status = store_chunk_error(error, decoded, &detail);
     }
     mc_compression_buffer_free(&raw);
-    if (status == MC_WORLD_STORAGE_OK && activation && store_opaque(entry->owner))
+    if (status == MC_WORLD_STORAGE_OK && activation && store_opaque(entry))
         status = store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                              "opaque entity or tile activation");
     if (status == MC_WORLD_STORAGE_OK) {
-        mc_stored_chunk_status normalized =
-            mc_stored_chunk_normalize(entry->owner, store->block_map, sizeof(store->block_map));
+        mc_stored_chunk_status normalized = mc_stored_chunk_normalize(
+            entry->owner.stored, store->block_map, sizeof(store->block_map));
         if (normalized != MC_STORED_CHUNK_OK)
             status = store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "postload normalization");
     }
     if (status != MC_WORLD_STORAGE_OK) {
         if (entry != NULL)
-            mc_stored_chunk_free(entry->owner);
+            store_chunk_free(entry);
         free(entry);
         return status;
     }
-    store_publish_chunk(store, entry, dimension, out);
+    store_publish_chunk(store, entry, dimension);
+    *out = store_chunk_state(entry);
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
@@ -735,15 +850,18 @@ mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32
     if (status == MC_WORLD_STORAGE_OK) {
         mc_stored_chunk_error detail;
         mc_stored_chunk_status copied =
-            mc_stored_chunk_create(chunk, &store->limits.nbt, &entry->owner, &detail);
+            mc_stored_chunk_create(chunk, &store->limits.nbt, &entry->owner.stored, &detail);
         if (copied != MC_STORED_CHUNK_OK)
             status = store_chunk_error(error, copied, &detail);
     }
     if (status != MC_WORLD_STORAGE_OK) {
+        if (entry != NULL)
+            store_chunk_free(entry);
         free(entry);
         return status;
     }
-    store_publish_chunk(store, entry, dimension, out);
+    store_publish_chunk(store, entry, dimension);
+    *out = store_chunk_state(entry);
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
@@ -765,7 +883,7 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     if (runtime) {
-        if (store_opaque(entry->owner))
+        if (store_opaque(entry))
             return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                "opaque entity or tile runtime save");
         chunk->has_entities = false;
@@ -773,7 +891,7 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     mc_nbt_document *document = NULL;
     mc_stored_chunk_error detail;
     mc_stored_chunk_status built =
-        mc_stored_chunk_build(entry->owner, world_time, &store->limits.nbt, &document, &detail);
+        store_chunk_build(entry, world_time, &store->limits.nbt, &document, &detail);
     if (built != MC_STORED_CHUNK_OK)
         return store_chunk_error(error, built, &detail);
     mc_ws_file_bytes raw = {0};
@@ -924,7 +1042,7 @@ mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_ch
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk retire arguments");
     store_chunk **link = &store->chunks;
     store_chunk *previous = NULL;
-    while (*link != NULL && mc_stored_chunk_state((*link)->owner) != chunk) {
+    while (*link != NULL && store_chunk_state(*link) != chunk) {
         previous = *link;
         link = &(*link)->next;
     }
@@ -949,7 +1067,7 @@ mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_ch
     if (store->last_chunk == entry)
         store->last_chunk = previous;
     --store->chunk_count;
-    mc_stored_chunk_free(entry->owner);
+    store_chunk_free(entry);
     free(entry);
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -979,6 +1097,7 @@ mc_world_storage_status mc_world_store_reserve_chunk(mc_world_store *store, int3
         return status;
     mc_world_store_reservation *reservation = malloc(sizeof(*reservation));
     if (reservation == NULL) {
+        store_chunk_free(entry);
         free(entry);
         return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "chunk reservation token");
     }
@@ -1001,6 +1120,7 @@ mc_world_storage_status mc_world_store_cancel_reservation(mc_world_store *store,
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk reservation");
     *link = reservation->next;
     --store->reservation_count;
+    store_chunk_free(reservation->entry);
     free(reservation->entry);
     free(reservation);
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
@@ -1020,12 +1140,13 @@ mc_world_storage_status mc_world_store_retain_reserved(mc_world_store *store,
     store_chunk *entry = reservation->entry;
     mc_stored_chunk_error detail;
     mc_stored_chunk_status copied =
-        mc_stored_chunk_create(chunk, &store->limits.nbt, &entry->owner, &detail);
+        mc_stored_chunk_create(chunk, &store->limits.nbt, &entry->owner.stored, &detail);
     if (copied != MC_STORED_CHUNK_OK)
         return store_chunk_error(error, copied, &detail);
     *link = reservation->next;
     --store->reservation_count;
-    store_publish_chunk(store, entry, entry->dimension, out);
+    store_publish_chunk(store, entry, entry->dimension);
+    *out = store_chunk_state(entry);
     free(reservation);
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -1061,7 +1182,7 @@ void mc_world_store_free(mc_world_store *store)
     store_chunk *entry = store->chunks;
     while (entry != NULL) {
         store_chunk *next = entry->next;
-        mc_stored_chunk_free(entry->owner);
+        store_chunk_free(entry);
         free(entry);
         entry = next;
     }
@@ -1074,6 +1195,7 @@ void mc_world_store_free(mc_world_store *store)
     mc_world_store_reservation *reservation = store->reservations;
     while (reservation != NULL) {
         mc_world_store_reservation *next = reservation->next;
+        store_chunk_free(reservation->entry);
         free(reservation->entry);
         free(reservation);
         reservation = next;

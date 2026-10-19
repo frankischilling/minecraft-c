@@ -1,16 +1,28 @@
 # Test scope and reproduction
 
+The [generated Chunk contracts](world/chunk-objects.md) pass 33,458 checks within
+all 38 selected cases on MSVC/GCC/Clang, with Linux ASan/UBSan and leak detection.
+They use actual constructed Worlds and store-owned Chunks. Tests cover stable
+child/array identities, unchanged block transfer, real reserved-slot and byte
+limits, reached registry failure, no-sky and queue partial effects, retired-World
+guards, and live generated-to-loaded persistence. Negative q elements and
+synthetic nonowning array guards are explicit native controls. All 596 measured
+inputs match before/after and retained host copies, with 35 products per host;
+formatting passes 313 C/header files. This is native integration and existing
+fixture replay, without a new executed-original Chunk comparison or complete
+GAME generation, propagation, population or save interoperability acceptance.
+
 The [concrete World height and lighting contracts](world/runtime-lighting.md)
-pass 177 height and 2,000,382 queue checks within 33 selected cases on MSVC,
+pass 177 height and 2,000,382 queue checks within 38 selected cases on MSVC,
 GCC and Clang. Linux uses ASan/UBSan and leak detection. The queue unit performs
 one million-and-first actual append, verifies the complete ordered bootstrap
 and overflow transcript, and tests real nonempty pointer-array growth at a
 limit that permits retained storage but rejects its allocation peak. Explicit
 shared-A scalar controls remain distinct from natural recursion observations.
 Height tests preserve disk-only absence, pending history, unsigned bytes,
-packed-key sign behavior and asymmetric borders. All 588 code/tool/fixture
-inputs match before/after and retained host copies, with 33 products per host.
-Formatting passes 305 C/header files. Existing original Biome protocols replay
+packed-key sign behavior and asymmetric borders. All 596 code/tool/fixture
+inputs match before/after and retained host copies, with 35 products per host.
+Formatting passes 313 C/header files. Existing original Biome protocols replay
 with synthetic and imported resources. These native client-World contracts
 provide no new executed-original World comparison, forced queue stdout-failure
 observation, full GAME generation, propagation or population acceptance.

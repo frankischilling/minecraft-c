@@ -89,7 +89,9 @@ record. Type initialization leaves the actual profile uniquifier unchanged.
 Forced queue output failure remains a source-reviewed boundary; the reused
 platform writer's closed-handle and broken-pipe controls pass separately.
 
-These operations enqueue work. Queue draining, light propagation, the live
-Chunk constructor/finalizer join, complete GAME generation, synchronous block
+The [generated Chunk constructor and finalizer](chunk-objects.md) now call these
+operations on the same store-owned Chunk. All 38 selected native cases pass on
+MSVC/GCC/Clang, including 33,458 new Chunk checks and Linux sanitizers.
+Queue draining, light propagation, complete GAME generation, synchronous block
 mutations and population remain unfinished. No new executed-original World
 comparison or complete startup/persistence acceptance follows from this module.

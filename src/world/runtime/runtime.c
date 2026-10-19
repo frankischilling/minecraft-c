@@ -1,3 +1,4 @@
+#include "../storage/generated_internal.h"
 #include "millis.h"
 #include "provider_internal.h"
 #include "runtime_internal.h"
@@ -685,6 +686,10 @@ mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
         return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime call or local lease active");
     if (runtime->persistent_bindings != 0)
         return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime persistent binding active");
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME &&
+        mc_world_store_has_generated_for_world(runtime->fields.w, runtime))
+        return runtime_error(error, MC_WORLD_STORAGE_BUSY,
+                             "runtime generated Chunk binding active");
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME)
         return mc_world_runtime_game_free(runtime, error);
     if (!mc_chunk_acquire_validate(&runtime->acquisition))

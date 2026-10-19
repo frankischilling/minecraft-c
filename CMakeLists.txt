@@ -173,6 +173,7 @@ add_library(mc_world STATIC
     src/world/lighting/world.c
     src/world/lighting/queue.c
     src/world/chunk/data.c
+    src/world/chunk/object.c
     src/world/chunk/nibbles.c
     src/world/noise/noise.c
     src/world/noise/simplex.c
@@ -202,6 +203,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/blocks.c
     src/world/runtime/height.c
     src/world/runtime/lighting.c
+    src/world/runtime/chunks.c
     src/world/runtime/provider.c
     src/world/dimension/dimension.c
     src/entity/entity.c)
@@ -380,6 +382,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_light_queue_runtime tests/world/runtime/test_light_queue_runtime.c)
     target_link_libraries(mc_test_world_light_queue_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_chunk_objects tests/world/runtime/test_chunk_objects.c)
+    target_link_libraries(mc_test_world_chunk_objects PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -900,6 +905,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-light-queue-runtime-contracts")
     set_tests_properties(world.light_queue_runtime PROPERTIES
         LABELS "public;integration;lighting" TIMEOUT 90)
+
+    add_test(NAME world.chunk_objects
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_chunk_objects>"
+        --scenario world-chunk-objects
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-chunk-object-contracts")
+    set_tests_properties(world.chunk_objects PROPERTIES
+        LABELS "public;integration;ownership;lighting;storage" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

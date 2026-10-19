@@ -1,6 +1,17 @@
 # Development status
 
-The [World/Dimension Biome managers](world/biome-registry.md#world-and-dimension-managers)
+The [generated Chunk constructor and full finalizer](world/chunk-objects.md) now
+keep one final store owner, the actual World receiver and stable child/array
+identities. Finishing reads live q and World state in source order, retains
+partial effects, and saves current arrays without replacing the Chunk. All 38
+selected cases pass on MSVC/GCC/Clang, including 33,458 new Chunk checks, four
+composition/storage routes and existing registry/Biome replays. Linux uses
+ASan/UBSan and leak detection. All 596 measured inputs and 35 products per host
+are retained; formatting passes 313 C/header files. Complete GAME generation,
+propagation, population, synchronous mutations and save interoperability remain
+unfinished. No new original Chunk comparison follows from these native tests.
+
+At the preceding manager checkpoint, the [World/Dimension Biome managers](world/biome-registry.md#world-and-dimension-managers)
 now retain actual shared references and independent Registry borrows. Normal
 and fixed direct/cached/point/chunk calls preserve receiver identity, source
 ordering and failure effects. World constructors retain the full Registry

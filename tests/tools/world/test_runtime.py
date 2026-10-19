@@ -15,7 +15,8 @@ CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
-             "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime")
+             "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime",
+             "world-chunk-objects")
 
 
 def main():
@@ -51,6 +52,16 @@ def main():
                  "world_lighting": ROOT / "src/world/runtime/lighting.c",
                  "world_lighting_header": ROOT / "include/mc/world/runtime/lighting.h",
                  "world_lighting_internal": ROOT / "src/world/runtime/lighting_internal.h",
+                 "chunk_object": ROOT / "src/world/chunk/object.c",
+                 "chunk_object_header": ROOT / "include/mc/world/chunk/object.h",
+                 "chunk_object_internal": ROOT / "src/world/chunk/object_internal.h",
+                 "chunk_runtime": ROOT / "src/world/runtime/chunks.c",
+                 "chunk_runtime_header": ROOT / "include/mc/world/runtime/chunks.h",
+                 "chunk_serializer": ROOT / "src/world/storage/chunk.c",
+                 "chunk_build_internal": ROOT / "src/world/storage/chunk_build_internal.h",
+                 "generated_internal": ROOT / "src/world/storage/generated_internal.h",
+                 "registry_runtime": ROOT / "src/block/registry/runtime.c",
+                 "registry_runtime_internal": ROOT / "src/block/registry/runtime_internal.h",
                  "stdout": ROOT / "src/platform/text/stdout.c",
                  "stdout_header": ROOT / "src/platform/text/stdout.h",
                  "runtime_internal": ROOT / "src/world/runtime/runtime_internal.h",
@@ -95,6 +106,8 @@ def main():
         if args.scenario in ("world-lighting-runtime", "world-light-queue-runtime"):
             paths["lighting_test"] = ROOT / ("tests/world/runtime/test_lighting_runtime.c"
                 if args.scenario == "world-lighting-runtime" else "tests/world/runtime/test_light_queue_runtime.c")
+        if args.scenario == "world-chunk-objects":
+            paths["chunk_object_test"] = ROOT / "tests/world/runtime/test_chunk_objects.c"
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
@@ -106,7 +119,8 @@ def main():
                                      deadline=time.monotonic() + 70)
         CAPTURE.require(not stderr, "native contract stderr must be empty")
         text = stdout.decode("ascii").replace("\r\n", "\n")
-        if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime"):
+        if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
+                             "world-light-queue-runtime", "world-chunk-objects"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -121,6 +135,9 @@ def main():
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n",
                     "More than 1000000 updates, aborting lighting updates\n"],
                     "complete ordered queue bootstrap and overflow diagnostics")
+            elif args.scenario == "world-chunk-objects":
+                CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"],
+                                "complete ordered Chunk opacity bootstrap diagnostics")
             text = lines[-1]
         CAPTURE.require(text.startswith("PASS: ") and text.endswith("(" + args.scenario + ")\n") and
                         text.count("\n") == 1, "complete native contract result")
@@ -137,10 +154,10 @@ def main():
             for slot in range(1024):
                 if struct.unpack_from(">I", header, slot * 4)[0] != 0:
                     timestamp = struct.unpack_from(">I", header, 4096 + slot * 4)[0]
-                    expected_timestamp = 1 if args.scenario == "world-lighting-runtime" else 0xfedcba98
+                    expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                     CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
         report["passed"] = True

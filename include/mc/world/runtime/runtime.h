@@ -181,7 +181,11 @@ mc_chunk_lifecycle_status mc_world_runtime_maintain(mc_world_runtime *runtime,
  * all external fallback pointers. Free returns BUSY while map/list/pending are
  * nonempty or an entered call/local lease or persistent binding remains active;
  * it neither saves, unpublishes nor frees retained store chunks. Empty
- * contexts are unregistered and this owner alone is freed. NULL is accepted. */
+ * contexts are unregistered and this owner alone is freed. A GAME World also
+ * stays BUSY while its actual store owns any generated Chunk bound to its d,
+ * including after World retirement. Retire those Chunk owners before final
+ * World free, and keep the store live through both lifetimes. This guard runs
+ * before World teardown. NULL is accepted. */
 mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
                                               mc_world_storage_error *error);
 

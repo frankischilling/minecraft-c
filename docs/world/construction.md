@@ -115,6 +115,11 @@ It never clears the aggregate persistent-binding count. External Entity/Tile
 bindings keep free BUSY until their owners release them. No implicit save,
 file rollback, profile reset or retry occurs.
 
+Store-owned [generated Chunks](chunk-objects.md) also keep their actual World d
+allocated. The free guard checks those exact references before teardown. World
+retirement can precede Chunk retirement, while final free remains BUSY until all
+such owners have retired. Keep the store live through both lifetimes.
+
 The shared-registry addition passes 150 constructed checks within 22 selected
 cases on MSVC/GCC/Clang, including the unchanged 4,397-check GAME case and
 recorded Dimension replay. Linux runs use ASan/UBSan and leak detection. These

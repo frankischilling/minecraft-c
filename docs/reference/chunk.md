@@ -36,6 +36,28 @@ stores only positive light and never writes Y0. Positions skipped by a later
 pass retain prior sky values. Blocks, metadata and block light are preserved
 by this local stage.
 
+## Concrete constructor and finalizer
+
+The same verified archives also define the concrete owner now represented by
+the [generated Chunk interface](../world/chunk-objects.md). The base constructor
+`lm.<init>(Lfd;II)V` / `hi.<init>(Ldj;II)V` publishes its fresh tile Map at12,
+List[8] at21, flags n/o/q and time r at26/31/36/41, actual World d at46, final
+coordinates j/k at51/56, and zero height byte[256] at65. Eight distinct empty
+ArrayLists are constructed91 and stored94 in order. The byte-array overload
+calls that base constructor5, stores the supplied blocks10 and distinct Nibble
+owners e/f/g at23/36/49. Each Nibble creates its zero packed array8 and stores
+its final a10. The native combined-backing allocation policy is separate from
+this logical field order and from Java allocation-failure timing.
+
+Full finishing captures the actual static q at39/113 before block bytes53/125;
+element reads occur58/130. Height h80 precedes current World.t/Dimension.e97.
+Wrapped subtraction131 precedes conditional Nibble setter149. Minimum i179
+precedes neighbor helper201 and final dirty218. Its column helper calls the
+four interval helpers at37/48/59/70. Each interval reads World height6; only a
+difference reaches Sky21 or52, queue31 or62, then dirty36 or67. These are paired
+bytecode findings, without a new original runtime observation. Existing actual
+finishing captures below remain qualified for their own recorded contexts.
+
 ## Opacity input authority
 
 The existing paired original-only opacity capture is retained locally at
