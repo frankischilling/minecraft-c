@@ -3,6 +3,9 @@
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility
 and allocation-free modified UTF-8 text helpers. `mc_storage` depends on it and
 contains raw NBT, gzip/zlib memory compression, level metadata and region images.
+Its independent NBT tree owner keeps immutable source provenance separate from
+decoded-document lifetime. `mc_item` builds on storage with stable
+[ItemStack fields, holds and serialization](item/stack.md).
 `mc_persistence` composes storage with the C world model and explicit native
 filesystem ownership. These libraries initialize no display, graphics, audio,
 networking, assets or Java. Tests and research helpers are
@@ -24,6 +27,11 @@ simplex channels with original climate processing and float-table lookup.
 Caller-owned managers retain mutable climate/biome buffers under an explicit
 allocation budget. External temperature/direct biome outputs stay separate
 from those retained fields; calls stage growth before publishing changes.
+
+The [scheduled-state modules](world/scheduling.md) own records and exact full-key
+membership separately. Shared record identities survive time changes and
+membership removal. Ordered scheduling, world admission and tick callbacks remain
+separate implementation work.
 
 The [normal terrain module](world/terrain.md) composes all original seeded
 Perlin groups into density, then interpolates base blocks. Immutable constructor

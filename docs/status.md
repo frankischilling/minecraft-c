@@ -6,6 +6,13 @@ metadata-first accounting and retained identities through reentry. Empty native
 entity/tile collections are supported; nonempty Boat/Sign behavior remains an
 external callback seam.
 
+The next state layer adds [ItemStack ownership and NBT provenance](item/stack.md)
+and [scheduled records and membership](world/scheduling.md). Its two CTest cases
+pass 422 checks on native Linux GCC with sanitizers and Windows MSVC without
+sanitizers. These are API contracts;
+original item/container comparisons, ordered scheduling and bound-world behavior
+remain unverified.
+
 Exact-source lifecycle qualification passes at
 `46546d8322de52beb6c3a51f30e827c0260d2b30`. Complete Windows v10, GCC v9 and
 Clang v9 suites each passed 92 tests without failures or skips: 1940.77s,

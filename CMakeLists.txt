@@ -79,11 +79,15 @@ endif()
 
 add_library(mc_storage STATIC
     src/storage/nbt/nbt.c
+    src/storage/nbt/tree.c
     src/storage/level/level.c
     src/storage/compression/compression.c
     src/storage/region/region.c
     src/storage/region/writer.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
+
+add_library(mc_item STATIC src/item/stack/stack.c)
+target_link_libraries(mc_item PUBLIC mc_storage PRIVATE mc_build_options)
 
 add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
 target_link_libraries(mc_region_inspect PRIVATE mc_storage mc_build_options)
@@ -92,6 +96,8 @@ if(MINGW)
 endif()
 
 add_library(mc_world STATIC
+    src/world/schedule/entry.c
+    src/world/schedule/membership.c
     src/world/generation/normal.c
     src/world/cache/cache.c
     src/world/cache/acquire.c
@@ -120,6 +126,16 @@ target_link_libraries(mc_persistence PUBLIC mc_world mc_storage PRIVATE mc_build
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_item_stack tests/item/stack/test_stack.c)
+    target_link_libraries(mc_test_item_stack PRIVATE mc_item mc_build_options)
+    add_test(NAME item.stack COMMAND mc_test_item_stack)
+    set_tests_properties(item.stack PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_scheduled_membership tests/world/schedule/test_membership.c)
+    target_link_libraries(mc_test_scheduled_membership PRIVATE mc_world mc_build_options)
+    add_test(NAME world.scheduled_membership COMMAND mc_test_scheduled_membership)
+    set_tests_properties(world.scheduled_membership PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
     add_executable(mc_test_stored_chunk tests/world/storage/test_chunk.c)
     target_link_libraries(mc_test_stored_chunk PRIVATE mc_persistence mc_build_options)
     add_test(NAME world.stored_chunk COMMAND mc_test_stored_chunk)

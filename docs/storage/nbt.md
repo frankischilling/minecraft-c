@@ -1,5 +1,12 @@
 # Raw NBT storage
 
+[`tree.h`](../../include/mc/storage/nbt/tree.h) supplies independent immutable
+source copies for owners such as [ItemStack](../item/stack.md). It preserves raw
+payload bits and meaningful names without inspecting decoded-document layouts.
+List-child names, which the format ignores, become empty. The allocation ceiling
+covers either validation scratch or the new complete tree allocation; callers
+deduct their other simultaneous live allocations before composing operations.
+
 The `mc_storage` library exposes the original Beta tag format through
 [`nbt.h`](../../include/mc/storage/nbt/nbt.h). It depends on `mc_core`, with no
 graphics, audio, Java, assets, sockets, compression or file initialization.
