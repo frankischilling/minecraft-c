@@ -728,22 +728,9 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World owned collection retirement");
     }
-    int32_t scheduled_count = 0;
-    if (f->E != NULL) {
-        if (mc_scheduled_ordered_size(f->E, &scheduled_count) != MC_SCHEDULED_ORDERED_OK)
-            return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                          "World scheduled ordered owner");
-        if (scheduled_count != 0)
-            return result(error, MC_WORLD_STORAGE_BUSY, "World scheduled ordered owner nonempty");
-    }
-    if (f->F != NULL) {
-        if (mc_scheduled_membership_size(f->F, &scheduled_count) != MC_SCHEDULED_MEMBERSHIP_OK)
-            return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                          "World scheduled membership owner");
-        if (scheduled_count != 0)
-            return result(error, MC_WORLD_STORAGE_BUSY,
-                          "World scheduled membership owner nonempty");
-    }
+    /* E/F remain owned and inspectable until final native free, like C.
+     * A failed E insertion can leave a legitimate F-only prefix; retirement
+     * neither repairs that state nor executes/discards its game work here. */
     if (f->P != NULL && f->P->count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World active chunk set nonempty");
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered) {

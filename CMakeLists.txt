@@ -205,11 +205,14 @@ add_library(mc_simulation STATIC
     src/world/runtime/height.c
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
+    src/world/runtime/presence.c
+    src/world/runtime/scheduling.c
     src/world/runtime/mutation/support.c
     src/world/runtime/mutation/chunk.c
     src/world/runtime/mutation/height.c
     src/world/runtime/mutation/observers.c
     src/world/runtime/mutation/hooks.c
+    src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
     src/world/runtime/generation/generation.c
@@ -404,6 +407,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_mutations tests/world/runtime/test_mutations.c)
     target_link_libraries(mc_test_world_mutations PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_scheduling tests/world/runtime/test_scheduling.c)
+    target_link_libraries(mc_test_world_scheduling PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -960,6 +966,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-mutation-contracts")
     set_tests_properties(world.mutations PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.scheduling
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_scheduling>"
+        --scenario world-scheduling
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-scheduling-contracts")
+    set_tests_properties(world.scheduling PROPERTIES
+        LABELS "public;integration;ownership;scheduling" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

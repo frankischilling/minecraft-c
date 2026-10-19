@@ -1,6 +1,18 @@
 # Test scope and reproduction
 
-The [World mutation contracts](world/mutations.md#native-validation) pass 218
+The [World scheduling contracts](world/scheduling.md#native-validation) pass 424
+checks within all 60 selected cases on MSVC/GCC/Clang, with Linux ASan/UBSan and
+leak detection. Reproduce with `ctest --test-dir build -R "^world.scheduling$"
+--output-on-failure`. Real constructed client Worlds cover shared sequence state,
+full keys, immediate dispatch, separate queue failures and ownership. All twelve
+loaded known-empty records finish actual GAME save/unload maintenance with
+timestamps inside the child execution interval. Each host retains 624 selected
+inputs and 51 products. Separate original client/base-server experiments each
+complete 18 calls and retain 39 full contexts; all 18 framing controls reject per
+side. The optional present-stone call was skipped on both sides. These original
+captures have no native replay or complete gameplay/persistence qualification.
+
+At the preceding checkpoint, the [World mutation contracts](world/mutations.md#native-validation) pass 218
 checks within all 52 selected cases on MSVC/GCC/Clang, with Linux ASan/UBSan
 and leak detection. Reproduce the new case with `ctest --test-dir build -R
 "^world.mutations$" --output-on-failure`. It creates fresh owned worlds and
@@ -247,6 +259,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `entity.item_formula_observation` | Ten cases replay 34 inferred original inputs against 50 directly observed phase/yaw/motion fields through the actual production scalar seam, plus three CLI refusals | Scalar formula replay only; no injected constructor entropy or whole-field parity; [provenance](reference/entity-construction.md) |
 | `world.runtime_profile-and-entity-bindings` | 104 checks per compiler using real stores/profiles/runtimes; nullable binding, typed diagnostics, RAW profile mismatch and READY/failed persistent world holds | Existing loaded-world foundation; no original World constructor order, collection insertion, registry or Tile behavior |
 | `world.scheduled_membership` | 329 native full-key collision, duplicate identity, held-alias, time-wrap, growth-budget and output-preservation checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | Membership layer only; no world scheduler, original comparison or forced allocator failure |
+| `world.scheduling` | 424 checks using actual client Worlds, shared sequence owners, full keys, immediate ticks, RAW Info, separate F/E failure effects and twelve actual maintenance saves; MSVC/GCC/Clang with Linux sanitizers | Client native contracts; separate original observations have no native replay; tick draining, nonempty tick descendants and scheduled persistence remain unfinished |
 | `world.scheduled_ordered` | 940 native identity, successor-hold, deletion-history, mutable-key, limit and output-preservation checks on GCC/Clang/MSVC | Finite collection contracts; no world drain/reentry or forced allocator/hold failure |
 | `world.scheduled_ordered_replay` | All 13,584 captured JDK public-API steps match GCC/Clang/MSVC; immutable expected trace and provenance are checked | Captured Temurin 17 profile with project-owned comparable records; no original game classes, Java 6 or whole-world qualification |
 | `tools.scheduled_ordered_protocol` | 101 constructed native protocol cases pass on GCC/Clang/MSVC, covering numeric/ID bounds, line endings, control bytes, the 160-byte line limit and exact failure output | Probe boundary only; no JDK/assets, operation-limit stress or world behavior |

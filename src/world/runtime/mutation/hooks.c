@@ -1,6 +1,7 @@
 #include "mutation_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
+#include "../presence_internal.h"
 #include "../provider_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -47,14 +48,6 @@ static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *error
     return false;
 }
 
-static bool presence_return(bool value, bool *out, mc_world_mutation_error *error)
-{
-    error->presence_bytecode = 0;
-    error->provider_bytecode = 0;
-    *out = value;
-    return true;
-}
-
 /* fd/dj.a(IIIIII)Z. These are nonacquiring presence calls, not World block
  * reads. Shifted endpoints cannot increment-wrap; reversed ranges stay empty.
  * All six source shifts remain in their original order, including unused Y. */
@@ -62,28 +55,12 @@ static bool region_present(mc_world_runtime *world, int32_t min_x, int32_t min_y
                            int32_t max_x, int32_t max_y, int32_t max_z, bool *out,
                            mc_world_mutation_error *error)
 {
-    if (max_y < 0 || min_y >= 128)
-        return presence_return(false, out, error);
-    const int32_t first_x = mc_java_i32_shr(min_x, 4);
-    (void)mc_java_i32_shr(min_y, 4);
-    const int32_t first_z = mc_java_i32_shr(min_z, 4);
-    const int32_t last_x = mc_java_i32_shr(max_x, 4);
-    (void)mc_java_i32_shr(max_y, 4);
-    const int32_t last_z = mc_java_i32_shr(max_z, 4);
-    for (int32_t chunk_x = first_x; chunk_x <= last_x; chunk_x = mc_java_i32_add(chunk_x, 1)) {
-        for (int32_t chunk_z = first_z; chunk_z <= last_z; chunk_z = mc_java_i32_add(chunk_z, 1)) {
-            bool present;
-            mc_world_storage_error cause = {0};
-            error->presence_bytecode = 69;
-            error->provider_bytecode = 6;
-            if (mc_world_runtime_provider_contains(world, chunk_x, chunk_z, &present, &cause) !=
-                MC_WORLD_STORAGE_OK)
-                return storage_fail(world, error, cause);
-            if (!present)
-                return presence_return(false, out, error);
-        }
-    }
-    return presence_return(true, out, error);
+    mc_world_presence_error frame = {0};
+    mc_world_storage_status status = mc_world_runtime_region_present_held(
+        world, min_x, min_y, min_z, max_x, max_y, max_z, out, &frame);
+    error->presence_bytecode = frame.bytecode;
+    error->provider_bytecode = frame.provider_bytecode;
+    return status == MC_WORLD_STORAGE_OK || storage_fail(world, error, frame.cause);
 }
 
 /* vg/nk and bk/ar.b(World,III)V. Their loop variables are small offsets,

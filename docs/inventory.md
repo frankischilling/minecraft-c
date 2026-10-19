@@ -60,6 +60,13 @@ terrain-feature execution remain unfinished. The separate finite
 light tables and celestial angles; they do not qualify whole-World startup.
 These modules do not complete a startup checklist.
 
+The [World scheduling foundation](world/scheduling.md#world-insertion) adds actual
+scheduled insertion, shared lazy sequence ownership, separate membership/ordered
+effects and immediate tick dispatch. Its 424 native checks pass on all three
+compilers. Separate original observations cover 18 direct calls per side; they
+have no native replay. Scheduled processing, nonempty tick descendants, full
+population and scheduled persistence remain unfinished.
+
 The [World mutation foundation](world/mutations.md) adds concrete block setters,
 incremental height repair and ordered notifications. Its 218 native checks pass
 on all three compilers. Full synchronous handlers and population remain open;

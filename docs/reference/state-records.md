@@ -1,8 +1,9 @@
 # Item and scheduled-record evidence
 
-Status: source research, native contract tests and a finite JDK collection replay.
-No original-game runtime comparison or complete item/container/world scheduler
-qualification is claimed.
+Status: source research, native contract tests, a finite JDK collection replay
+and finite original World scheduling observations. The World observations have
+no native comparison; complete item/container/world scheduler qualification is
+not claimed.
 The [binary manifest](manifest.json) identifies the supplied original inputs.
 
 | Side | Original archive SHA-256 | ItemStack | Scheduled record |
@@ -20,8 +21,9 @@ decrements the original count before allocating the new owner.
 Scheduled equality uses X/Y/Z/block, while ordering uses time/sequence. A rejected
 world scheduling request can already have consumed its construction sequence.
 The server time-shift body mutates retained records before assigning world time,
-without rebuilding its ordered collection. Those world operations remain outside
-the implemented record/membership layer.
+without rebuilding its ordered collection. World insertion now uses the native
+record and collection owners; the server time-shift operation remains outside
+that insertion API.
 
 The captured Temurin 17.0.17 library profile has modules SHA-256
 `2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8`.
@@ -69,6 +71,76 @@ observation requires the exact captured Windows module/VM fingerprints.
 These scenarios cover comparator ties, distinct and repeated identities,
 insertion/deletion histories, arbitrary signed time changes, wrapped shifts and
 structural-first/search disagreement. They establish neither exhaustive tree
-branch coverage nor world enqueue/drain/reentry behavior. The helper does not
-instantiate the game's scheduled-record classes; their construction/equality
-binding remains source research pending original-game comparisons.
+branch coverage nor world enqueue/drain/reentry behavior. This JDK helper does
+not instantiate the game's scheduled-record classes. The original World
+observations below are separate from its native collection replay.
+
+The complete paired insertion bodies are client `fd.c(IIIII)V` and base-server
+`dj.c(IIIII)V`, both PC 0 through 235. They allocate an actual `qy`/`ki` at PC 0
+and call its constructor at PC 9 before reading the immediate flag at PC 19.
+The immediate branch checks radius-eight presence at PC 74, reads the actual
+block at PC 96, checks full-ID equality and positivity, then reads the live Block
+array at PC 116/121 and dispatches the virtual tick at PC 142 with the current
+World Random. The deferred branch checks
+presence at PC 171. For positive IDs only, it reads current metadata time at
+PC 191 and stores wrapped time-plus-delay at PC 195. It then calls `F.contains`
+at PC 205, `F.add` at PC 219 and `E.add` at PC 231 on the same record. F is the
+membership set and E the ordered set. Each add's Boolean result is discarded;
+an E failure retains completed F effects. Absent requests, duplicates and
+immediate no-ops can already have consumed the class-shared sequence. These
+bodies do not reset it per World or draw Random
+directly. The [World scheduling contract](../world/scheduling.md) describes the
+native ownership and failure policies.
+
+The project-owned [SchedulingObservation.java](../../tests/reference/world/SchedulingObservation.java)
+uses genuine original Worlds through the unchanged construction and read-only
+context adapter in [MutationObservation.java](../../tests/reference/world/MutationObservation.java).
+Separate client and base-server executions on the pinned Windows Temurin profile
+each completed 18 direct calls, returned naturally with exit zero and retained
+39 complete raw context objects. Each transcript includes actual E/F iteration,
+record identities, due times, sequence values, flags, metadata time, Random,
+cache, lighting and Registry context. All measured before/after context and
+flag-restoration receipts passed. The recorder also rejected 18 malformed framing
+controls per side; these are transcript checks, not gameplay controls.
+
+The first counter value is explicitly `UNOBSERVED`: reading static `f` before a
+real call could initialize the scheduled-record class. After the 18 calls, its
+observed value is 18 and both E and F contain eight records. A duplicate with a
+changed delay retains the old owner, due time and sequence while consuming a
+new sequence. The calls also observe absent regions, wrapped presence ranges,
+distinct full-coordinate keys, full and nonpositive block IDs, and immediate
+no-ops. Every measured call returned void normally. The optional present-stone
+tick is `SKIPPED_NO_ACTUAL_FOOTPRINT` on both sides; no original tick dispatch is
+established by that optional case.
+
+The retained raw JSON SHA-256 values are
+`4608adc9abf6ec47de960e92bddb62921a493fc098d6ce1d71b1778072ae304c`
+(client) and
+`3e82e0a0c091d173e273e7e203b44343fca9d68a8d780ad9d18e54374b30f63d`
+(server). The capture report SHA-256 is
+`76f21e7e78248f5d20baa29d88496df44800205485431cd97ddc03a420a28be9`.
+Its input and compiled-class fingerprints match before and after execution.
+No original queue, sequence, time or Random state is replaced. Explicit a/o/B
+inputs are recorded and restored; constructor internals and inspector effects
+outside the measured World state remain uninstrumented. No cross-context
+normalization or native expected-result producer is used.
+
+To make a fresh observation, compile both project helpers with the pinned JDK:
+
+```text
+javac -encoding UTF-8 --release 17 -d out tests/reference/world/MutationObservation.java tests/reference/world/SchedulingObservation.java
+java -Xint -Xmx1g --add-opens java.base/java.util=ALL-UNNAMED -cp out SchedulingObservation <original-jar> <client|server> <new-owned-world-root>
+```
+
+Use a separate absent world root for each side. Stdout is one strict JSON object
+with a final LF; setup and measurement diagnostics go to stderr. Setup
+unavailability exits 77 and measurement failure exits 1. Fresh clocks, Random
+state and object identities are observed, so later captures need not have the
+same bytes.
+
+Separately, the native `world.scheduling` case passes 424 contracts on MSVC, GCC
+and Clang; see its [validation scope](../world/scheduling.md#native-validation)
+and [test source](../../tests/world/runtime/test_scheduling.c). Those contracts
+are not a replay of these original transcripts. The finite original observations
+establish no native comparison, helper-free control equivalence, dedicated-server
+route, population, queue draining or save interoperability.

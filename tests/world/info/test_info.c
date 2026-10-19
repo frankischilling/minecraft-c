@@ -179,6 +179,7 @@ static bool source_is(const mc_nbt_tag *root)
 static int test_fresh(mc_world_info_side side)
 {
     int result = 1;
+    int64_t time = 123;
     mc_world_info *info = NULL, *held = NULL;
     mc_world_info_name *name = NULL, *equal = NULL, *old = NULL;
     mc_world_info_fields fields = {0};
@@ -197,6 +198,9 @@ static int test_fresh(mc_world_info_side side)
     CHECK(mc_world_info_fields_get(NULL, &guarded.value) == MC_WORLD_INFO_INVALID_ARGUMENT);
     CHECK(memcmp(&saved, &guarded, sizeof(saved)) == 0);
     CHECK(mc_world_info_allocate(side, &info) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_time_get(NULL, &time) == MC_WORLD_INFO_INVALID_ARGUMENT && time == 123);
+    CHECK(mc_world_info_time_get(info, NULL) == MC_WORLD_INFO_INVALID_ARGUMENT);
+    CHECK(mc_world_info_time_get(info, &time) == MC_WORLD_INFO_OK && time == 0);
     CHECK(mc_world_info_fields_get(info, &guarded.value) == MC_WORLD_INFO_OK);
     CHECK(guarded.before == saved.before && guarded.after == saved.after);
     CHECK(scalars_equal(&guarded.value.value, &expected) && guarded.value.name == NULL &&
@@ -214,6 +218,7 @@ static int test_fresh(mc_world_info_side side)
     CHECK(name != equal &&
           text_equal(mc_world_info_name_text(name), mc_world_info_name_text(equal)));
     CHECK(mc_world_info_construct(info, INT64_MIN, name) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_time_get(info, &time) == MC_WORLD_INFO_OK && time == 0);
     expected.seed = INT64_MIN;
     CHECK(mc_world_info_fields_get(info, &fields) == MC_WORLD_INFO_OK &&
           scalars_equal(&fields.value, &expected) && fields.name == name && fields.player == NULL);
@@ -252,6 +257,7 @@ cleanup:
 static int test_wrong_type(mc_world_info_side side, size_t bad)
 {
     int result = 1;
+    int64_t time = 123;
     fixture input;
     mc_world_info_data *data = NULL;
     mc_world_info *info = NULL;
@@ -274,6 +280,9 @@ static int test_wrong_type(mc_world_info_side side, size_t bad)
           state.phase == MC_WORLD_INFO_FAILED_CONSTRUCTION && state.last_store_pc == pc);
     CHECK(mc_world_info_fields_get(info, &fields) == MC_WORLD_INFO_OK &&
           scalars_equal(&fields.value, &expected));
+    /* The source getter reads its current field even after a later constructor
+     * field failed. It has no READY gate and preserves completed time stores. */
+    CHECK(mc_world_info_time_get(info, &time) == MC_WORLD_INFO_OK && time == expected.time);
     CHECK(fields.name == (bad > 7u ? mc_world_info_data_name(data) : NULL));
     CHECK(fields.player == (bad == 14u ? mc_world_info_data_player(data) : NULL));
     mc_world_info_data_release(data);

@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+The [World scheduling foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#world-insertion)
+shares one lazy sequence across Worlds, constructs before every gate and retains
+the actual presence and F/E insertion order. Immediate calls dispatch empty tick
+bodies and explicitly stop at unimplemented concrete descendants. Retirement
+keeps pending records inspectable until final free. Scheduled processing,
+fluid/falling closure, full population and scheduled persistence remain unfinished.
+
 The [World mutation foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/mutations.md)
 preserves distinct Chunk setter schedules, incremental height/skylight repair,
 live registry captures and ordered observer/neighbor calls. Log/leaf removal

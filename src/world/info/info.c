@@ -648,6 +648,14 @@ const mc_world_info_live *mc_world_info_live_get(mc_world_info *info)
     return info_ready(info) == MC_WORLD_INFO_OK ? &info->live : NULL;
 }
 
+mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out)
+{
+    if (info == NULL || out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = info->fields.value.time;
+    return MC_WORLD_INFO_OK;
+}
+
 mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out)
 {
     if (out == NULL)

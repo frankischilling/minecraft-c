@@ -1,6 +1,17 @@
 # Development status
 
-The [synchronous World mutation foundation](world/mutations.md) now preserves
+The [World scheduling foundation](world/scheduling.md#world-insertion) constructs
+before every gate, shares the lazy sequence across Worlds, retains radius-eight
+presence order and separates F/E insertion effects. Immediate calls dispatch
+actual empty ticks; unfinished concrete tick bodies fail explicitly. All 60
+selected cases pass on MSVC and sanitized GCC/Clang, including 424 new checks,
+with 624 selected inputs and 51 products retained per host. Separate original
+client/base-server observations each cover 18 direct calls and complete queue
+and context snapshots. Their optional present-stone call was skipped on both
+sides. Native replay, scheduled processing, fluid/falling closure, full population
+and complete original/persistence acceptance remain unfinished.
+
+At the preceding checkpoint, the [synchronous World mutation foundation](world/mutations.md) preserves
 the two concrete setter schedules, incremental height/skylight repair, ordered
 notifications and reached partial effects. Real log/leaf removal and inherited
 empty hooks are implemented; other concrete descendants fail explicitly.

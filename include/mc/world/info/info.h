@@ -161,6 +161,11 @@ mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world
 const mc_world_info_live *mc_world_info_live_get(mc_world_info *info);
 const mc_nbt_tag *mc_world_info_source(const mc_world_info *info);
 
+/* Actual ei/ct.f()J reads only current time, with no construction-phase gate.
+ * Any live allocated Info is accepted; null receiver/output preserves out.
+ * No snapshot, allocation, clock, normalization or other field read occurs. */
+mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out);
+
 /* READY-only direct flag reads. Each reads only its named current scalar;
  * failure preserves out, and no allocation, clock or other flag read occurs. */
 mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out);

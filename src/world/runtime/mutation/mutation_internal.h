@@ -33,6 +33,9 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
 bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, int32_t source_id,
                                       mc_world_mutation_error *error);
+bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                  int32_t y, int32_t z, mc_java_random *random,
+                                  mc_world_mutation_error *error);
 
 /* Callers hold this actual World. u reload/size/get order is source behavior;
  * native empty-list support must validate the reached descriptor. Nonempty

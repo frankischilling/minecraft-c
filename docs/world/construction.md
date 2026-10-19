@@ -108,9 +108,10 @@ Inspection borrows live references; the exposed Random pointer has the World
 lifetime and does not add arbitrary public Random replacement/alias ownership.
 
 Native retirement requires no entered call/local lease and empty unimplemented
-collections/cache/list/pending state. The typed [lighting C records](runtime-lighting.md)
-remain owned and inspectable until final native free; retirement does not
-propagate or implicitly clear them. It unregisters actual contexts and clears
+collections/cache/list/pending state. Typed [lighting C records](runtime-lighting.md)
+and [scheduled E/F records](scheduling.md) remain owned and inspectable until final
+native free, including an F-only partial insertion prefix. Retirement does not
+propagate, repair queues or implicitly clear these records. It unregisters actual contexts and clears
 only this Dimension's binding to this World, without invoking biome setup.
 It never clears the aggregate persistent-binding count. External Entity/Tile
 bindings keep free BUSY until their owners release them. No implicit save,

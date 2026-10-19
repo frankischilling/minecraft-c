@@ -1,5 +1,14 @@
 # Build and tests
 
+The [World scheduling contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#native-validation)
+pass 424 checks within all 60 selected cases on MSVC/GCC/Clang, with Linux
+ASan/UBSan and leak detection. Each host retains 624 selected inputs and 51 actual
+products. Twelve loaded known-empty records finish actual GAME maintenance saves.
+Separate original client/base-server experiments each complete 18 calls and
+retain 39 full contexts; all 18 framing controls reject per side. The optional
+present-stone call was skipped on both sides. These captures have no native
+replay, dedicated-route, full-population or complete persistence qualification.
+
 The [mutation foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/mutations.md)
 passes 218 new checks within 52 selected cases on MSVC/GCC/Clang, with Linux
 ASan/UBSan and leak detection. All 618 selected inputs and 44 products per host

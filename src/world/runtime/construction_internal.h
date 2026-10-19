@@ -24,6 +24,9 @@ struct mc_world_runtime_classes {
     mc_world_light_type light_types[2];
     const mc_world_light_type *light_statics[2];
     bool light_types_initialized;
+    /* Separate qy/ki active-use lifetime, shared above World instances. */
+    bool scheduled_initialized;
+    mc_scheduled_tick_sequence scheduled_sequence;
 };
 
 #endif

@@ -16,7 +16,8 @@ SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime",
-             "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations")
+             "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
+             "world-scheduling")
 
 
 def provider_fixture(root):
@@ -173,13 +174,22 @@ def main():
                 if args.scenario == "world-lighting-runtime" else "tests/world/runtime/test_light_queue_runtime.c")
         if args.scenario == "world-chunk-objects":
             paths["chunk_object_test"] = ROOT / "tests/world/runtime/test_chunk_objects.c"
-        if args.scenario == "world-mutations":
+        if args.scenario in ("world-mutations", "world-scheduling"):
             paths["mutation_test"] = ROOT / "tests/world/runtime/test_mutations.c"
             paths["mutation_header"] = ROOT / "include/mc/world/runtime/mutations.h"
             paths["chunk_runtime_internal"] = ROOT / "src/world/runtime/chunks_internal.h"
-            for name in ("support", "chunk", "height", "observers", "hooks", "world", "mutation_internal"):
+            for name in ("support", "chunk", "height", "observers", "hooks", "ticks", "world", "mutation_internal"):
                 paths["mutation_" + name] = ROOT / ("src/world/runtime/mutation/" + name +
                     (".h" if name.endswith("_internal") else ".c"))
+            paths["world_presence"] = ROOT / "src/world/runtime/presence.c"
+            paths["world_presence_header"] = ROOT / "src/world/runtime/presence_internal.h"
+        if args.scenario == "world-scheduling":
+            paths["scheduling_test"] = ROOT / "tests/world/runtime/test_scheduling.c"
+            paths["scheduling_header"] = ROOT / "include/mc/world/runtime/scheduling.h"
+            paths["scheduling"] = ROOT / "src/world/runtime/scheduling.c"
+            for name in ("entry", "membership", "ordered"):
+                paths["schedule_" + name] = ROOT / ("src/world/schedule/" + name + ".c")
+                paths["schedule_" + name + "_header"] = ROOT / ("include/mc/world/schedule/" + name + ".h")
         if args.scenario in ("world-provider-generation", "world-provider-activation"):
             for name in ("generation", "surface", "caves", "generation_internal"):
                 paths["provider_" + name] = ROOT / ("src/world/runtime/generation/" + name +
@@ -209,7 +219,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations"):
+                             "world-provider-activation", "world-mutations", "world-scheduling"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -251,7 +261,7 @@ def main():
             for slot in range(1024):
                 if struct.unpack_from(">I", header, slot * 4)[0] != 0:
                     timestamp = struct.unpack_from(">I", header, 4096 + slot * 4)[0]
-                    if args.scenario in ("world-provider-activation", "world-mutations"):
+                    if args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling"):
                         opaque_input = path.relative_to(root).as_posix() == "loaded/region/r.1.0.mcr"
                         if opaque_input:
                             CAPTURE.require(slot in (136, 137) and timestamp == 1,
@@ -263,10 +273,16 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
-        if args.scenario in ("world-provider-activation", "world-mutations"):
+        if args.scenario == "world-scheduling":
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
+                              for i in range(3) for slot in (0, 1, 32, 33)}
+            CAPTURE.require(len(timestamps) == 12 and
+                            {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                            "all twelve loaded scheduler fixture slots saved by actual GAME maintenance")
+        if args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling"):
             report["actual_game_clock_window"] = [clock_before, clock_after]
         report["passed"] = True
         print(text, end="")

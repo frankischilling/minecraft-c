@@ -579,18 +579,28 @@ static int test_scheduled_retirement(mc_world_runtime *world)
     mc_scheduled_tick_sequence sequence = {0};
     bool in_e = false, in_f = false, removed = false;
     mc_world_storage_error error;
+    int32_t count = 0;
+    mc_world_runtime *const binding = mc_world_dimension_world(world->fields.t);
     CHECK(mc_scheduled_tick_create(&sequence, -1, 64, 7, 17, &tick) == MC_SCHEDULED_TICK_OK);
     CHECK(mc_scheduled_ordered_add(world->fields.E, tick, &in_e) == MC_SCHEDULED_ORDERED_OK &&
           in_e);
-    CHECK(mc_world_runtime_retire_world(world, &error) == MC_WORLD_STORAGE_BUSY);
-    CHECK(mc_world_dimension_world(world->fields.t) == world && world->construction.contexts_bound);
+    CHECK(mc_world_runtime_retire_world(world, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_dimension_world(world->fields.t) == (binding == world ? NULL : binding) &&
+          !world->construction.contexts_bound &&
+          world->construction.phase == MC_WORLD_RUNTIME_RETIRED);
+    CHECK(mc_scheduled_ordered_size(world->fields.E, &count) == MC_SCHEDULED_ORDERED_OK &&
+          count == 1);
     CHECK(mc_scheduled_ordered_remove(world->fields.E, tick, &removed) == MC_SCHEDULED_ORDERED_OK &&
           removed);
     in_e = false;
     CHECK(mc_scheduled_membership_add(world->fields.F, tick, &in_f) == MC_SCHEDULED_MEMBERSHIP_OK &&
           in_f);
-    CHECK(mc_world_runtime_retire_world(world, &error) == MC_WORLD_STORAGE_BUSY);
-    CHECK(mc_world_dimension_world(world->fields.t) == world && world->construction.contexts_bound);
+    CHECK(mc_world_runtime_retire_world(world, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_dimension_world(world->fields.t) == (binding == world ? NULL : binding) &&
+          !world->construction.contexts_bound &&
+          world->construction.phase == MC_WORLD_RUNTIME_RETIRED);
+    CHECK(mc_scheduled_membership_size(world->fields.F, &count) == MC_SCHEDULED_MEMBERSHIP_OK &&
+          count == 1);
     CHECK(mc_scheduled_membership_remove(world->fields.F, tick, &removed) ==
               MC_SCHEDULED_MEMBERSHIP_OK &&
           removed);
@@ -721,7 +731,6 @@ static int test_game(const char *root)
     owner_bytes = direct.direct_allocation_bytes - subordinate;
     before = uniquifier(profile);
     CHECK(test_blocks(world[1], store, regions, chunks) == 0);
-    CHECK(test_scheduled_retirement(world[1]) == 0);
     CHECK(uniquifier(profile) == before && cold(profile));
 
     CHECK(mc_world_dimension_create(0, NULL, &dimension[2], NULL) == MC_WORLD_DIMENSION_OK);
@@ -849,6 +858,9 @@ static int test_game(const char *root)
           bf.normal == direct.manager && bf.normal->initialized == 1 && bf.holds == 2);
     CHECK(mc_world_runtime_binding_retain(world[1]));
     ++bindings;
+    /* Retirement is final for gameplay. Exercise retained queue owners only
+     * after the last use of this World as a constructor/query receiver. */
+    CHECK(test_scheduled_retirement(world[1]) == 0);
     CHECK(mc_world_runtime_retire_world(world[1], &error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_dimension_world(dimension[1]) == world[2] &&
           mc_world_runtime_free(world[1], &error) == MC_WORLD_STORAGE_BUSY);
