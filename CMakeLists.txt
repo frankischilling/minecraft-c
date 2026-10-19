@@ -65,16 +65,26 @@ FetchContent_Declare(mc_zlib
 FetchContent_MakeAvailable(mc_zlib)
 target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 
+add_library(mc_platform_time STATIC src/platform/time/nanotime.c)
+target_link_libraries(mc_platform_time PRIVATE mc_build_options)
+
+find_package(Threads REQUIRED)
+add_library(mc_c_atomics INTERFACE)
+if(MSVC)
+    target_compile_options(mc_c_atomics INTERFACE /experimental:c11atomics)
+endif()
+
 # The shared core has no window, graphics, audio, JDK, or asset dependencies.
 add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
+    src/core/java/random_profile.c
     src/core/math/math.c
     src/core/math/strict.c
     src/core/math/fdlibm/log.c
     src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
-target_link_libraries(mc_core PRIVATE mc_build_options)
+target_link_libraries(mc_core PRIVATE mc_platform_time Threads::Threads mc_c_atomics mc_build_options)
 if(UNIX)
     target_link_libraries(mc_core PRIVATE m)
 endif()
@@ -129,6 +139,28 @@ target_link_libraries(mc_persistence PUBLIC mc_world mc_storage PRIVATE mc_build
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_nanotime tests/platform/time/test_nanotime.c)
+    target_include_directories(mc_test_nanotime PRIVATE src/platform/time)
+    target_link_libraries(mc_test_nanotime PRIVATE mc_platform_time mc_build_options)
+    add_test(NAME platform.nanotime COMMAND mc_test_nanotime)
+    set_tests_properties(platform.nanotime PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_nanotime_conversion tests/platform/time/test_nanotime_conversion.c)
+    target_include_directories(mc_test_nanotime_conversion PRIVATE src/platform/time tests/reference/java)
+    target_link_libraries(mc_test_nanotime_conversion PRIVATE mc_platform_time mc_build_options)
+    add_test(NAME platform.nanotime_conversion COMMAND mc_test_nanotime_conversion)
+    set_tests_properties(platform.nanotime_conversion PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_java_random_profile tests/core/java/test_random_profile.c)
+    target_link_libraries(mc_test_java_random_profile PRIVATE mc_core mc_c_atomics Threads::Threads mc_build_options)
+    add_test(NAME core.java_random_profile COMMAND mc_test_java_random_profile)
+    set_tests_properties(core.java_random_profile PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_random_constructor_observation tests/core/java/test_random_constructor_observation.c)
+    target_link_libraries(mc_test_random_constructor_observation PRIVATE mc_core mc_c_atomics mc_build_options)
+    add_test(NAME core.java_random_constructor_observation COMMAND mc_test_random_constructor_observation)
+    set_tests_properties(core.java_random_constructor_observation PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
     add_executable(mc_test_item_stack tests/item/stack/test_stack.c)
     target_link_libraries(mc_test_item_stack PRIVATE mc_item mc_build_options)
     add_test(NAME item.stack COMMAND mc_test_item_stack)

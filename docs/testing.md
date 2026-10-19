@@ -17,6 +17,10 @@ noise, climate and terrain comparisons remain local.
 | `core.java_gaussian_replay` | All 14,013 immutable JDK result/full-owner-state events match GCC/Clang with sanitizers and native MSVC; includes seeded Gaussian histories and positive-finite strict log/sqrt | Captured Windows Temurin 17 profile; no constructor entropy, clocks, original game classes or exhaustive input claim |
 | `core.java_gaussian` | 85 captured-result/cache contracts pass on GCC/Clang/MSVC, including stale bits after reseed, signed zero, no-draw hits, owner copies and strict-math boundaries | Explicit seeds and admitted FP environment only; no constructor entropy or arbitrary math-input claim |
 | `tools.java_gaussian_protocol` | 157 exact native cases pass on GCC/Clang/MSVC: seed/ID/bound limits, malformed math, line endings/control bytes, 160/161-byte boundaries, full cache snapshots and exact rejection prefixes | No operation-limit stress, changed-FP experiment, JDK or original-game execution |
+| `platform.nanotime` | 172 Windows / 173 Linux checks pass on MSVC/GCC/Clang: exact conversions, native OS brackets, unchanged outputs/clock storage and controlled unsupported MXCSR states | Native clock contracts; no original nanoTime/QPC conversion or timing-performance proof |
+| `platform.nanotime_conversion` | 17,769 checks over 4,866 actual Java scalar vectors pass on all three compilers | Java operator formula and explicit native range policy; no clock sampled by the Java helper |
+| `core.java_random_profile` | 191 native ownership, budget, failure-latch, constructor-commit, cold-holder contention, atomic Math and FP checks pass on all three compilers | Native contracts; no original-game startup or cross-language concurrent scheduling proof |
+| `core.java_random_constructor_observation` | 18 checks pass on MSVC/GCC/Clang for recorded constructor inputs through the production tail and plain Random continuations | No production clock sample, shared-uniquifier advance or atomic Math-holder replay |
 | `world.normal_generator` | 99082 public checks for composed generation, fresh lifecycle flags, borrowed ownership, unpublished identities, mutable materials, repeated results, populated-cache resets, coordinate/resource preflight and allocation-failure preservation | Finite ordinary normal generator; no cache acquisition, population or propagation |
 | `world.chunk_acquire` | 3945 constructed checks recorded in development for load/generate/fallback, gates, pending membership, publication, activation, population gates, recursion, local leases and partial failures | Lifecycle additions pass the complete exact-source suites; injected effects remain separate from genuine gameplay reachability |
 | `core.java_int_set` / `world.chunk_pending` | 6913747 / 35495 constructed checks for bounded history, tree bins, removal and mediated pending mutations | Modern-JDK history domain; no historical Java6 claim |
@@ -267,6 +271,23 @@ public tests, or 36 with the numerical Java oracle. The selected original
 finishing, light queue, chunk, nibble and normal generation comparisons bring
 that configuration to 41 tests. These are exact-checkpoint counts; later
 cache/region additions on the active branch need their own validation.
+
+## Shared Random profile reproduction
+
+The [profile reference](reference/random-profile.md) records the native contracts,
+public fixtures, exact capture hashes and commands for both scalar conversion
+and instrumented constructor capture. The native targets use committed data
+without Java or original game files. All four new targets pass within the
+complete 80-case public suite on native MSVC strict Debug and Linux GCC/Clang
+with ASan/UBSan and leak checks. Windows runs use no sanitizers. This checkpoint
+does not include opt-in original-game comparisons.
+
+Both capture scripts require the pinned Windows Temurin 17.0.17 installation
+and fresh output directories. Scalar capture compares three complete JVM-mode
+outputs; constructor capture records one instrumented `-Xint` execution whose
+clock samples change under debugger pauses. Its full nanoTime returns are not
+raw QPC measurements. Game constructor history and production population/world
+wiring remain separate work.
 
 ## Lifecycle reproduction and qualification
 

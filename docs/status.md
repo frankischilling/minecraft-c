@@ -17,12 +17,21 @@ remain unverified.
 Seeded [Gaussian cache and strict log/sqrt](reference/random-gaussian.md) now
 match all 14,013 captured JDK result/full-state operations on GCC/Clang with
 sanitizers and native Windows MSVC. Six separate JDK runs agree. This qualifies
-the finite explicit-seed/math corpus; constructor entropy, platform clocks and
-original gameplay consumption remain open.
+the finite explicit-seed/math corpus. The separate
+[Random profile and platform clocks](reference/random-profile.md) now pass
+191 native profile checks, 172 Windows / 173 Linux clock checks and 17,769 checks
+over 4,866 Java scalar vectors on all three compilers. Linux runs use ASan/UBSan
+and leak checks; Windows uses strict Debug without sanitizers. A separate
+instrumented Windows JDK17 trace records three constructor entropy events and
+one retained Math owner. Its recorded-input native replay passes 18 checks on
+each compiler. All 80 public CTest cases pass on all three compilers; this run
+does not include opt-in original-game comparisons. Population, registry, entity
+and application wiring, original gameplay consumption and the installed-native
+clock conversion bridge remain unfinished.
 
-The current seeded-Gaussian change passes all 75 public tests on each of the
-three compilers, plus 157 native protocol controls checked separately. The
-public suite includes the 85-check Gaussian unit and full captured replay.
+At the earlier seeded-Gaussian checkpoint, all 75 public tests passed on each
+of the three compilers, plus 157 native protocol controls checked separately.
+That suite included the 85-check Gaussian unit and full captured replay.
 These results retain the private lifecycle checkpoint below as its own
 historical source qualification.
 

@@ -1,0 +1,157 @@
+{
+    "scope":  "Java scalar formulas and explicit native range policy",
+    "inputs_before":  {
+                          "java":  {
+                                       "bytes":  50344,
+                                       "sha256":  "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+                                   },
+                          "javac":  {
+                                        "bytes":  24232,
+                                        "sha256":  "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+                                    },
+                          "helper":  {
+                                         "bytes":  6556,
+                                         "sha256":  "decd72436969714b9fafd79fb6d214fc873e76390521c22a0a5cda422ffd2a05"
+                                     },
+                          "recorder":  {
+                                           "bytes":  10182,
+                                           "sha256":  "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+                                       },
+                          "modules":  {
+                                          "bytes":  128648619,
+                                          "sha256":  "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+                                      },
+                          "jvm":  {
+                                      "bytes":  12681896,
+                                      "sha256":  "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+                                  },
+                          "java_native":  {
+                                              "bytes":  148136,
+                                              "sha256":  "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+                                          },
+                          "release":  {
+                                          "bytes":  1667,
+                                          "sha256":  "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+                                      },
+                          "source_archive":  {
+                                                 "bytes":  50855389,
+                                                 "sha256":  "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+                                             }
+                      },
+    "inputs_after":  {
+                         "java":  {
+                                      "bytes":  50344,
+                                      "sha256":  "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+                                  },
+                         "javac":  {
+                                       "bytes":  24232,
+                                       "sha256":  "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+                                   },
+                         "helper":  {
+                                        "bytes":  6556,
+                                        "sha256":  "decd72436969714b9fafd79fb6d214fc873e76390521c22a0a5cda422ffd2a05"
+                                    },
+                         "recorder":  {
+                                          "bytes":  10182,
+                                          "sha256":  "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+                                      },
+                         "modules":  {
+                                         "bytes":  128648619,
+                                         "sha256":  "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+                                     },
+                         "jvm":  {
+                                     "bytes":  12681896,
+                                     "sha256":  "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+                                 },
+                         "java_native":  {
+                                             "bytes":  148136,
+                                             "sha256":  "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+                                         },
+                         "release":  {
+                                         "bytes":  1667,
+                                         "sha256":  "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+                                     },
+                         "source_archive":  {
+                                                "bytes":  50855389,
+                                                "sha256":  "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+                                            }
+                     },
+    "counts":  {
+                   "C":  2608,
+                   "S":  2258
+               },
+    "trace":  {
+                  "bytes":  277626,
+                  "sha256":  "33bdead02a3e18570707bb189cbdf75e4f0cc3ea36cd3beb6bb7c9ba531f6f4b"
+              },
+    "generated_header":  {
+                             "bytes":  490803,
+                             "sha256":  "8bc44990777a2e13eab363c5c16d3fcf2c5a232a2f6b359e4d4635de1473ffa1"
+                         },
+    "formatted_header":  {
+                             "bytes":  504438,
+                             "sha256":  "f8b3c8d59d7b6816f7593bf3b257a5b605bbbc930bec543a6569ebec0ebf2b87"
+                         },
+    "classes":  {
+                    "NanotimeConversionObservation.class":  {
+                                                                "bytes":  5224,
+                                                                "sha256":  "8e5d15fb0fbb65a73313e8e4c1df23e55d2cc5c75d35b5d353e45ed7d6b2cdc4"
+                                                            }
+                },
+    "modes":  [
+                  "-Xint",
+                  "-XX:TieredStopAtLevel=1",
+                  "default"
+              ],
+    "observations":  [
+                         {
+                             "exit_code":  0,
+                             "reaped":  true,
+                             "stdout":  {
+                                            "bytes":  0,
+                                            "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                        },
+                             "stderr":  {
+                                            "bytes":  0,
+                                            "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                        }
+                         },
+                         {
+                             "exit_code":  0,
+                             "reaped":  true,
+                             "stdout":  {
+                                            "bytes":  277626,
+                                            "sha256":  "33bdead02a3e18570707bb189cbdf75e4f0cc3ea36cd3beb6bb7c9ba531f6f4b"
+                                        },
+                             "stderr":  {
+                                            "bytes":  0,
+                                            "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                        }
+                         },
+                         {
+                             "exit_code":  0,
+                             "reaped":  true,
+                             "stdout":  {
+                                            "bytes":  277626,
+                                            "sha256":  "33bdead02a3e18570707bb189cbdf75e4f0cc3ea36cd3beb6bb7c9ba531f6f4b"
+                                        },
+                             "stderr":  {
+                                            "bytes":  0,
+                                            "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                        }
+                         },
+                         {
+                             "exit_code":  0,
+                             "reaped":  true,
+                             "stdout":  {
+                                            "bytes":  277626,
+                                            "sha256":  "33bdead02a3e18570707bb189cbdf75e4f0cc3ea36cd3beb6bb7c9ba531f6f4b"
+                                        },
+                             "stderr":  {
+                                            "bytes":  0,
+                                            "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                                        }
+                         }
+                     ],
+    "limitation":  "Mode flags do not establish compilation or intrinsic selection"
+}

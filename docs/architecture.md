@@ -1,8 +1,10 @@
 # Runtime boundaries
 
-Project-owned runtime code uses C17. `mc_core` contains numerical compatibility
-and allocation-free modified UTF-8 text helpers. `mc_storage` depends on it and
-contains raw NBT, gzip/zlib memory compression, level metadata and region images.
+Project-owned runtime code uses C17. `mc_core` contains numerical compatibility,
+the shared Random profile and allocation-free modified UTF-8 text helpers.
+Its profile uses the private `mc_platform_time` library and C17 atomics/threads.
+`mc_storage` depends on core and contains raw NBT, gzip/zlib memory compression,
+level metadata and region images.
 Its independent NBT tree owner keeps immutable source provenance separate from
 decoded-document lifetime. `mc_item` builds on storage with stable
 [ItemStack fields, holds and serialization](item/stack.md).
@@ -148,8 +150,17 @@ Each Random owner also retains cached Gaussian bits and validity. Fresh native
 initialization clears both; Java-style reseeding clears validity while keeping
 the stored double. Gaussian misses use the core's strict log and SSE2 square
 root under the [documented FP contract](reference/random-gaussian.md). Native
-owners and complete continuation copies include this state; constructor entropy
-and clocks remain separate services to implement.
+owners and complete continuation copies include this state.
+
+The [shared Random profile](reference/random-profile.md) owns constructor entropy
+and a separate atomic Math stream above individual worlds and registries. A
+successful full-width uniquifier CAS precedes one real platform clock sample.
+Lazy Math initialization publishes one retained owner; each double has separate
+26-bit and 27-bit atomic LCG steps that may interleave across callers. Queries
+and destruction require quiescence. Windows QPC and Linux monotonic backends
+preserve their distinct conversions and native failure policies. Explicit seed
+and reseed stay entropy-free. Game startup and population/entity/registry wiring
+to this owner remain unfinished.
 
 The [NBT boundary](storage/nbt.md) owns retained decoded trees and budgets their
 allocations. It accepts bytes and produces bytes without compression, streams
@@ -168,6 +179,13 @@ Create new folders with actual implementations rather than empty placeholders.
 ```text
 include/mc/core/java/java.h
 src/core/java/java.c
+include/mc/core/java/random_profile.h
+src/core/java/random_profile.c
+src/core/java/random_profile_internal.h
+src/platform/time/nanotime.h
+src/platform/time/nanotime.c
+tests/core/java/test_random_profile.c
+tests/platform/time/test_nanotime.c
 include/mc/core/java/int_set.h
 src/core/java/int_set.c
 tests/core/java/test_java.c
