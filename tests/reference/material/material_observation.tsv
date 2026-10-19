@@ -1,0 +1,116 @@
+MATERIAL_V1
+P	b	0	0
+P	c	1	8368696
+P	d	2	16247203
+P	e	3	10987431
+P	f	4	16711680
+P	g	5	10526975
+P	h	6	10987431
+P	i	7	31744
+P	j	8	16777215
+P	k	9	10791096
+P	l	10	12020271
+P	m	11	7368816
+P	n	12	4210943
+P	o	13	6837042
+T	0	0
+T	1	1
+T	2	2
+T	3	3
+T	4	4
+T	5	5
+T	6	6
+T	7	7
+T	8	8
+T	9	9
+T	10	10
+T	11	11
+T	12	12
+T	13	13
+T	14	-1
+T	15	-1
+M	initial	a	0	00000101	0
+F	a	1
+M	after-f	a	0	00000101	0
+M	initial	b	1	11100011	0
+F	b	1
+M	after-f	b	1	11100111	0
+M	initial	c	10	11100011	0
+F	c	1
+M	after-f	c	10	11100111	0
+M	initial	d	13	11101011	0
+F	d	1
+M	after-f	d	13	11101111	0
+M	initial	e	11	11100010	0
+F	e	1
+M	after-f	e	11	11100110	0
+M	initial	f	6	11100010	0
+F	f	1
+M	after-f	f	6	11100110	0
+M	initial	g	12	01010101	1
+F	g	1
+M	after-f	g	12	01010101	1
+M	initial	h	4	01010101	1
+F	h	1
+M	after-f	h	4	01010101	1
+M	initial	i	7	11101001	1
+F	i	1
+M	after-f	i	7	11101101	1
+M	initial	j	7	00000001	1
+F	j	1
+M	after-f	j	7	00000101	1
+M	initial	k	3	11100011	0
+F	k	1
+M	after-f	k	3	11100111	0
+M	initial	l	3	11101011	0
+F	l	1
+M	after-f	l	3	11101111	0
+M	initial	m	0	00000101	1
+F	m	1
+M	after-f	m	0	00000101	1
+M	initial	n	2	11100011	0
+F	n	1
+M	after-f	n	2	11100111	0
+M	initial	o	0	00000001	1
+F	o	1
+M	after-f	o	0	00000101	1
+M	initial	p	0	11100001	0
+F	p	1
+M	after-f	p	0	11100101	0
+M	initial	q	4	11101001	0
+F	q	1
+M	after-f	q	4	11101101	0
+M	initial	r	7	11100011	1
+F	r	1
+M	after-f	r	7	11100111	1
+M	initial	s	5	11100001	0
+F	s	1
+M	after-f	s	5	11100101	0
+M	initial	t	8	00000100	1
+F	t	1
+M	after-f	t	8	00000100	1
+M	initial	u	8	11100010	0
+F	u	1
+M	after-f	u	8	11100110	0
+M	initial	v	7	11100001	1
+F	v	1
+M	after-f	v	7	11100101	1
+M	initial	w	9	11100011	0
+F	w	1
+M	after-f	w	9	11100111	0
+M	initial	x	7	11100011	1
+F	x	1
+M	after-f	x	7	11100111	1
+M	initial	y	0	00000001	2
+F	y	1
+M	after-f	y	0	00000101	2
+M	initial	z	0	11100011	1
+F	z	1
+M	after-f	z	0	11100111	1
+M	initial	A	3	11100010	1
+F	A	1
+M	after-f	A	3	11100110	1
+M	initial	B	11	11100011	2
+F	B	1
+M	after-f	B	11	11100111	2
+END	28	14	16

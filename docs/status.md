@@ -6,6 +6,13 @@ metadata-first accounting and retained identities through reentry. Empty native
 entity/tile collections are supported; nonempty Boat/Sign behavior remains an
 external callback seam.
 
+The [block material library](reference/materials.md) now implements all 28
+material identities, 14 palettes, the 16-slot palette table and the original
+receiver methods. Its 28,623 ownership/property checks pass on MSVC, GCC and
+Clang, with Linux sanitizers. Shared application/world binding and the block
+registry remain unfinished. A separate selected two-case run also matches all
+116 captured original client/server rows byte for byte on each compiler.
+
 The next state layer adds [ItemStack ownership and NBT provenance](item/stack.md)
 and [scheduled records, membership and ordered history](world/scheduling.md).
 Three native cases pass 1,362 checks on Linux GCC/Clang with sanitizers and
@@ -24,8 +31,8 @@ over 4,866 Java scalar vectors on all three compilers. Linux runs use ASan/UBSan
 and leak checks; Windows uses strict Debug without sanitizers. A separate
 instrumented Windows JDK17 trace records three constructor entropy events and
 one retained Math owner. Its recorded-input native replay passes 18 checks on
-each compiler. All 80 public CTest cases pass on all three compilers; this run
-does not include opt-in original-game comparisons. Population, registry, entity
+each compiler. At that checkpoint, all 80 public CTest cases passed on all three
+compilers; that run does not include opt-in original-game comparisons. Population, registry, entity
 and application wiring, original gameplay consumption and the installed-native
 clock conversion bridge remain unfinished.
 

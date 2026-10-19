@@ -9,6 +9,8 @@ noise, climate and terrain comparisons remain local.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
+| `block.material` | 28,623 checks for all 28 material result vectors, 14 palettes, 16 slots, stable/distinct identities, shared-alias mutation and independent native owners on MSVC/GCC/Clang; Linux sanitizers | Receiver and native ownership contracts; no full block registry, world or allocation-failure injection |
+| `block.material_observation` | 116 captured original client/server rows match exactly on MSVC/GCC/Clang, alongside the material unit in a separate two-case run; [provenance and reproduction](reference/materials.md) | Public replay of one fresh JVM run per original side; no world/bootstrap or historical-VM claim |
 | `item.stack` | 93 native construction/read-prefix, identity, provenance, overlay, budget and independent-document checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | No original or gameplay/container comparison |
 | `world.scheduled_membership` | 329 native full-key collision, duplicate identity, held-alias, time-wrap, growth-budget and output-preservation checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | Membership layer only; no world scheduler, original comparison or forced allocator failure |
 | `world.scheduled_ordered` | 940 native identity, successor-hold, deletion-history, mutable-key, limit and output-preservation checks on GCC/Clang/MSVC | Finite collection contracts; no world drain/reentry or forced allocator/hold failure |

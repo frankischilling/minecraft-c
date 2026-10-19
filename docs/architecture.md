@@ -8,6 +8,9 @@ level metadata and region images.
 Its independent NBT tree owner keeps immutable source provenance separate from
 decoded-document lifetime. `mc_item` builds on storage with stable
 [ItemStack fields, holds and serialization](item/stack.md).
+`mc_block` owns the distinct [material and palette identities](reference/materials.md)
+and their receiver methods. Every world in one material-class lifetime must
+borrow the same stable owner; material identity is separate from block IDs.
 `mc_persistence` composes storage with the C world model and explicit native
 filesystem ownership. These libraries initialize no display, graphics, audio,
 networking, assets or Java. Tests and research helpers are
