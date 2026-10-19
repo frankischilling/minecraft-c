@@ -1,26 +1,8 @@
-#include "mc/world/runtime/runtime.h"
+#include "millis.h"
+#include "provider_internal.h"
+#include "runtime_internal.h"
 
 #include <stdlib.h>
-
-struct mc_world_runtime {
-    mc_world_runtime_options options;
-    mc_world_runtime_state live;
-    struct {
-        int64_t time;
-        int32_t spawn_x, spawn_y, spawn_z;
-    } legacy_info;
-    bool world_force_load, provider_force_load, saving_disabled;
-    mc_chunk_state fallback;
-    mc_chunk_references references;
-    mc_chunk_acquire_context acquisition;
-    mc_chunk_lifecycle_context lifecycle;
-    mc_world_save_context saving;
-    mc_world_store_loader loader;
-    mc_world_storage_error last_error;
-    mc_java_random_profile_status last_random_status;
-    size_t active_calls, local_leases;
-    size_t persistent_bindings;
-};
 
 static mc_world_storage_status runtime_error(mc_world_storage_error *error,
                                              mc_world_storage_status status, const char *operation)
@@ -74,7 +56,8 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
     mc_chunk_load_result result =
         mc_world_store_load_callback(&runtime->loader, context, x, z, out);
     runtime->last_error = runtime->loader.last_error;
-    if (result == MC_CHUNK_LOAD_MISS && runtime->options.generator == NULL)
+    if (result == MC_CHUNK_LOAD_MISS && runtime->options.generator == NULL &&
+        runtime->construction.mode == MC_WORLD_RUNTIME_COMPOSITION)
         return MC_CHUNK_LOAD_FATAL;
     return result;
 }
@@ -84,6 +67,11 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
 {
     (void)context;
     mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World generation block registry and lighting owner");
+        return false;
+    }
     mc_world_store_reservation *reservation = NULL;
     if (mc_world_store_reserve_chunk(runtime->options.store, runtime->options.dimension,
                                      &reservation, &runtime->last_error) != MC_WORLD_STORAGE_OK)
@@ -141,6 +129,11 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *conte
 static bool populate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z)
 {
     mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World feature population");
+        return false;
+    }
     return runtime->options.populate(runtime->options.provider, context, x, z);
 }
 
@@ -149,15 +142,26 @@ static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_
 {
     mc_world_runtime *runtime = owner;
     uint32_t growth = 0;
-    uint32_t timestamp = runtime->options.region_timestamp(runtime->options.clock);
+    uint32_t timestamp;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        int64_t millis;
+        if (mc_platform_current_time_millis(&millis) != MC_PLATFORM_MILLIS_OK) {
+            runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "World region wall clock");
+            return MC_CHUNK_CALLBACK_FATAL;
+        }
+        timestamp = (uint32_t)(millis / INT64_C(1000));
+    } else {
+        timestamp = runtime->options.region_timestamp(runtime->options.clock);
+    }
     mc_world_storage_status status =
-        runtime->options.world_info == NULL
+        runtime->fields.x == NULL
             ? mc_world_store_write_runtime_chunk(runtime->options.store, chunk,
                                                  *context->world_time, timestamp, &growth,
                                                  &runtime->last_error)
-            : mc_world_store_write_runtime_chunk_for_info(
-                  runtime->options.store, chunk, runtime->options.world_info, *context->world_time,
-                  timestamp, &growth, &runtime->last_error);
+            : mc_world_store_write_runtime_chunk_for_info(runtime->options.store, chunk,
+                                                          runtime->fields.x, *context->world_time,
+                                                          timestamp, &growth, &runtime->last_error);
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
@@ -201,6 +205,11 @@ static mc_chunk_callback_result
 provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *result)
 {
     mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME)
+        return mc_world_provider_maintenance(runtime->fields.v, result, &runtime->last_error) ==
+                       MC_WORLD_STORAGE_OK
+                   ? MC_CHUNK_CALLBACK_OK
+                   : MC_CHUNK_CALLBACK_FATAL;
     return runtime->options.provider_maintenance(runtime->options.provider, context, result);
 }
 
@@ -218,7 +227,7 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
 {
     (void)context;
     mc_world_runtime *runtime = owner;
-    if (runtime->options.world_info != NULL) {
+    if (runtime->fields.x != NULL) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "live-player metadata serialization");
         return MC_CHUNK_CALLBACK_FATAL;
@@ -236,6 +245,11 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
 static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context)
 {
     mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World named saved-data serialization");
+        return MC_CHUNK_CALLBACK_FATAL;
+    }
     return runtime->options.save_auxiliary(runtime->options.auxiliary, context);
 }
 
@@ -244,6 +258,96 @@ static mc_chunk_callback_result progress(void *owner, const mc_world_save_contex
 {
     mc_world_runtime *runtime = owner;
     return runtime->options.report_progress(runtime->options.progress, context, stage);
+}
+
+mc_world_storage_status mc_world_runtime_bind_contexts(mc_world_runtime *runtime,
+                                                       mc_world_storage_error *error)
+{
+    if (runtime == NULL || runtime->construction.contexts_bound ||
+        runtime->construction.cache_registered ||
+        (runtime->construction.mode != MC_WORLD_RUNTIME_COMPOSITION &&
+         runtime->construction.mode != MC_WORLD_RUNTIME_GAME))
+        return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime context binding");
+    const mc_world_runtime_options *options = &runtime->options;
+    bool game = runtime->construction.mode == MC_WORLD_RUNTIME_GAME;
+    if (options->store == NULL || (options->dimension != 0 && options->dimension != -1) ||
+        (options->policy != MC_CHUNK_ACQUIRE_BASE &&
+         options->policy != MC_CHUNK_ACQUIRE_DEDICATED) ||
+        (!game && (options->region_timestamp == NULL ||
+                   (runtime->fields.x == NULL && options->metadata_timestamp == NULL) ||
+                   options->provider_maintenance == NULL || options->save_auxiliary == NULL ||
+                   (options->generator == NULL) != (options->generation == NULL) ||
+                   (options->generator == NULL) != (options->populate == NULL))) ||
+        (game &&
+         (runtime->fields.v == NULL || options->generator == NULL || runtime->fields.x == NULL)) ||
+        runtime->live.time == NULL || runtime->live.spawn_x == NULL ||
+        runtime->live.spawn_y == NULL || runtime->live.spawn_z == NULL ||
+        runtime->live.world_force_load == NULL || runtime->live.provider_force_load == NULL ||
+        runtime->live.saving_disabled == NULL)
+        return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime context binding");
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_COMPOSITION)
+        runtime->fallback = (mc_chunk_state){.blank = true, .never_save = true};
+    runtime->references = (mc_chunk_references){runtime, reference_retain, reference_release};
+    if (!game)
+        runtime->loader =
+            (mc_world_store_loader){.store = options->store, .dimension = options->dimension};
+    else if (runtime->loader.store != options->store ||
+             runtime->loader.dimension != options->dimension)
+        return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World loader binding");
+    runtime->acquisition =
+        (mc_chunk_acquire_context){.cache = options->cache,
+                                   .pending = options->pending,
+                                   .fallback = &runtime->fallback,
+                                   .world_time = runtime->live.time,
+                                   .world_force_load = runtime->live.world_force_load,
+                                   .provider_force_load = runtime->live.provider_force_load,
+                                   .spawn_x = runtime->live.spawn_x,
+                                   .spawn_z = runtime->live.spawn_z,
+                                   .policy = options->policy,
+                                   .world = runtime,
+                                   .loader = runtime,
+                                   .provider = runtime,
+                                   .load = load,
+                                   .generate = game || options->generator != NULL ? generate : NULL,
+                                   .register_tiles = register_tiles,
+                                   .register_entities = register_entities,
+                                   .populate = game || options->generator != NULL ? populate : NULL,
+                                   .references = &runtime->references};
+    runtime->lifecycle =
+        (mc_chunk_lifecycle_context){.cache = options->cache,
+                                     .pending = options->pending,
+                                     .world_time = runtime->live.time,
+                                     .saving_disabled = runtime->live.saving_disabled,
+                                     .policy = options->policy,
+                                     .world = runtime,
+                                     .loader = runtime,
+                                     .provider = runtime,
+                                     .save_main = save_main,
+                                     .save_extra = save_extra,
+                                     .flush = loader_noop,
+                                     .loader_maintenance = loader_noop,
+                                     .invalidate_tiles = invalidate_tiles,
+                                     .defer_entities = defer_entities,
+                                     .provider_maintenance = provider_maintenance,
+                                     .references = &runtime->references};
+    runtime->saving = (mc_world_save_context){
+        .chunks = &runtime->lifecycle,
+        .world = runtime,
+        .progress = runtime,
+        .check_session = session,
+        .save_metadata = metadata,
+        .save_auxiliary = auxiliary,
+        .report_progress = options->report_progress == NULL ? NULL : progress};
+    if (!mc_chunk_acquire_validate(&runtime->acquisition) ||
+        !mc_world_save_validate(&runtime->saving))
+        return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime context binding");
+    mc_world_storage_status status = mc_world_store_register_cache(
+        options->store, options->cache, &runtime->acquisition.fallback, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    runtime->construction.cache_registered = true;
+    runtime->construction.contexts_bound = true;
+    return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *options,
@@ -297,6 +401,7 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
         }
     }
     runtime->options = *options;
+    runtime->fields.x = options->world_info;
     runtime->last_random_status = MC_JAVA_RANDOM_PROFILE_OK;
     if (cells == NULL) {
         runtime->legacy_info.time = info->time;
@@ -309,82 +414,33 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
         .spawn_x = cells == NULL ? &runtime->legacy_info.spawn_x : cells->spawn_x,
         .spawn_y = cells == NULL ? &runtime->legacy_info.spawn_y : cells->spawn_y,
         .spawn_z = cells == NULL ? &runtime->legacy_info.spawn_z : cells->spawn_z,
-        .world_force_load = &runtime->world_force_load,
+        .world_force_load = &runtime->fields.y,
         .provider_force_load = &runtime->provider_force_load,
         .saving_disabled = &runtime->saving_disabled};
-    runtime->fallback = (mc_chunk_state){.blank = true, .never_save = true};
-    runtime->references = (mc_chunk_references){runtime, reference_retain, reference_release};
-    runtime->loader =
-        (mc_world_store_loader){.store = options->store, .dimension = options->dimension};
-    runtime->acquisition =
-        (mc_chunk_acquire_context){.cache = options->cache,
-                                   .pending = options->pending,
-                                   .fallback = &runtime->fallback,
-                                   .world_time = runtime->live.time,
-                                   .world_force_load = runtime->live.world_force_load,
-                                   .provider_force_load = runtime->live.provider_force_load,
-                                   .spawn_x = runtime->live.spawn_x,
-                                   .spawn_z = runtime->live.spawn_z,
-                                   .policy = options->policy,
-                                   .world = runtime,
-                                   .loader = runtime,
-                                   .provider = runtime,
-                                   .load = load,
-                                   .generate = options->generator == NULL ? NULL : generate,
-                                   .register_tiles = register_tiles,
-                                   .register_entities = register_entities,
-                                   .populate = options->generator == NULL ? NULL : populate,
-                                   .references = &runtime->references};
-    runtime->lifecycle =
-        (mc_chunk_lifecycle_context){.cache = options->cache,
-                                     .pending = options->pending,
-                                     .world_time = runtime->live.time,
-                                     .saving_disabled = runtime->live.saving_disabled,
-                                     .policy = options->policy,
-                                     .world = runtime,
-                                     .loader = runtime,
-                                     .provider = runtime,
-                                     .save_main = save_main,
-                                     .save_extra = save_extra,
-                                     .flush = loader_noop,
-                                     .loader_maintenance = loader_noop,
-                                     .invalidate_tiles = invalidate_tiles,
-                                     .defer_entities = defer_entities,
-                                     .provider_maintenance = provider_maintenance,
-                                     .references = &runtime->references};
-    runtime->saving = (mc_world_save_context){
-        .chunks = &runtime->lifecycle,
-        .world = runtime,
-        .progress = runtime,
-        .check_session = session,
-        .save_metadata = metadata,
-        .save_auxiliary = auxiliary,
-        .report_progress = options->report_progress == NULL ? NULL : progress};
-    if (!mc_chunk_acquire_validate(&runtime->acquisition) ||
-        !mc_world_save_validate(&runtime->saving)) {
-        mc_world_info_release(runtime->options.world_info);
-        free(runtime);
-        return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime context binding");
-    }
-    mc_world_storage_status status = mc_world_store_register_cache(
-        options->store, options->cache, &runtime->acquisition.fallback, error);
+    mc_world_storage_status status = mc_world_runtime_bind_contexts(runtime, error);
     if (status != MC_WORLD_STORAGE_OK) {
         mc_world_info_release(runtime->options.world_info);
         free(runtime);
         return status;
     }
     *out = runtime;
+    runtime->construction.mode = MC_WORLD_RUNTIME_COMPOSITION;
+    runtime->construction.phase = MC_WORLD_RUNTIME_READY;
+    runtime->construction.direct_allocation_bytes = sizeof(*runtime);
     return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 const mc_world_runtime_state *mc_world_runtime_live(mc_world_runtime *runtime)
 {
-    return runtime == NULL ? NULL : &runtime->live;
+    return runtime == NULL || runtime->live.time == NULL ||
+                   runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED
+               ? NULL
+               : &runtime->live;
 }
 
 mc_world_info *mc_world_runtime_info(mc_world_runtime *runtime)
 {
-    return runtime == NULL ? NULL : runtime->options.world_info;
+    return runtime == NULL ? NULL : runtime->fields.x;
 }
 
 mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runtime,
@@ -393,9 +449,9 @@ mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runti
 {
     if (runtime == NULL || out == NULL)
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime info arguments");
-    if (runtime->options.world_info != NULL) {
+    if (runtime->fields.x != NULL) {
         mc_world_info_fields fields;
-        (void)mc_world_info_fields_get(runtime->options.world_info, &fields);
+        (void)mc_world_info_fields_get(runtime->fields.x, &fields);
         *out = (mc_level_info){.seed = fields.value.seed,
                                .spawn_x = fields.value.spawn_x,
                                .spawn_y = fields.value.spawn_y,
@@ -413,6 +469,9 @@ mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runti
                                .player_dimension = fields.value.player_dimension};
         return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
     }
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME)
+        return runtime_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "World Info has not been constructed");
     const mc_level_info *current = mc_world_store_info(runtime->options.store);
     if (current == NULL)
         return runtime_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -428,17 +487,17 @@ mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runti
 
 const mc_chunk_acquire_context *mc_world_runtime_acquisition(const mc_world_runtime *runtime)
 {
-    return runtime == NULL ? NULL : &runtime->acquisition;
+    return runtime == NULL || !runtime->construction.contexts_bound ? NULL : &runtime->acquisition;
 }
 
 const mc_chunk_lifecycle_context *mc_world_runtime_lifecycle(const mc_world_runtime *runtime)
 {
-    return runtime == NULL ? NULL : &runtime->lifecycle;
+    return runtime == NULL || !runtime->construction.contexts_bound ? NULL : &runtime->lifecycle;
 }
 
 const mc_world_save_context *mc_world_runtime_saving(const mc_world_runtime *runtime)
 {
-    return runtime == NULL ? NULL : &runtime->saving;
+    return runtime == NULL || !runtime->construction.contexts_bound ? NULL : &runtime->saving;
 }
 
 const mc_world_storage_error *mc_world_runtime_last_error(const mc_world_runtime *runtime)
@@ -456,7 +515,8 @@ mc_java_random_profile_status mc_world_runtime_construct_default_random(mc_world
 {
     if (runtime == NULL)
         return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
-    if (out == NULL || runtime->options.random_profile == NULL)
+    if (out == NULL || runtime->options.random_profile == NULL ||
+        runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED)
         return random_result(runtime, MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
     if (runtime->active_calls == SIZE_MAX)
         return random_result(runtime, MC_JAVA_RANDOM_PROFILE_LIMIT);
@@ -476,6 +536,11 @@ bool mc_world_runtime_binding_retain(mc_world_runtime *runtime)
 {
     if (runtime == NULL)
         return false;
+    if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "retired World binding");
+        return false;
+    }
     if (runtime->persistent_bindings == SIZE_MAX) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_LIMIT, "runtime binding retain");
         return false;
@@ -500,6 +565,11 @@ static mc_chunk_acquire_status enter_acquire(mc_world_runtime *runtime)
 {
     if (runtime == NULL)
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    if (!runtime->construction.contexts_bound) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "runtime acquisition context not installed");
+        return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    }
     if (runtime->active_calls == SIZE_MAX)
         return MC_CHUNK_ACQUIRE_LIMIT;
     ++runtime->active_calls;
@@ -552,6 +622,11 @@ static mc_chunk_lifecycle_status enter_lifecycle(mc_world_runtime *runtime)
 {
     if (runtime == NULL)
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
+    if (!runtime->construction.contexts_bound) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "runtime lifecycle context not installed");
+        return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
+    }
     if (runtime->active_calls == SIZE_MAX)
         return MC_CHUNK_LIFECYCLE_LIMIT;
     ++runtime->active_calls;
@@ -610,6 +685,8 @@ mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
         return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime call or local lease active");
     if (runtime->persistent_bindings != 0)
         return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime persistent binding active");
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME)
+        return mc_world_runtime_game_free(runtime, error);
     if (!mc_chunk_acquire_validate(&runtime->acquisition))
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "invalid runtime bindings");
     if (runtime->options.cache->count != 0 || runtime->options.cache->insertion_count != 0 ||
@@ -619,7 +696,7 @@ mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
         mc_world_store_unregister_cache(runtime->options.store, runtime->options.cache, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
-    mc_world_info_release(runtime->options.world_info);
+    mc_world_info_release(runtime->fields.x);
     free(runtime);
     return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
 }

@@ -648,6 +648,28 @@ const mc_world_info_live *mc_world_info_live_get(mc_world_info *info)
     return info_ready(info) == MC_WORLD_INFO_OK ? &info->live : NULL;
 }
 
+mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out)
+{
+    if (out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    mc_world_info_status status = info_ready(info);
+    if (status != MC_WORLD_INFO_OK)
+        return status;
+    *out = info->fields.value.raining;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, bool *out)
+{
+    if (out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    mc_world_info_status status = info_ready(info);
+    if (status != MC_WORLD_INFO_OK)
+        return status;
+    *out = info->fields.value.thundering;
+    return MC_WORLD_INFO_OK;
+}
+
 mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world_info_state *out)
 {
     if (info == NULL || out == NULL)

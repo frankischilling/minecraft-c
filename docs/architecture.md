@@ -24,6 +24,14 @@ and named SavedData subtypes remain separate work.
 `mc_simulation` builds on persistence and items with the
 world runtime and [Entity construction](entity/construction.md). Keeping these
 mutually dependent owners together avoids a storage-to-Entity dependency.
+The [native base-World constructor](world/construction.md) keeps the same
+43-field runtime through RAW allocation, ordered construction, failure and
+retirement. Typed Dimension/biome owners and the concrete normal provider
+retain actual shared identities; block reads use the installed cache
+coordinator. Direct, copied and already-loaded normal construction can finish.
+Fresh spawn, full bootstrap/subclass startup and complete population remain
+unfinished. [Standalone Dimension observations](reference/dimension.md) have
+their own finite scope.
 These libraries initialize no display, graphics, audio,
 networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.

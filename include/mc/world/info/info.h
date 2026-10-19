@@ -161,6 +161,11 @@ mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world
 const mc_world_info_live *mc_world_info_live_get(mc_world_info *info);
 const mc_nbt_tag *mc_world_info_source(const mc_world_info *info);
 
+/* READY-only direct flag reads. Each reads only its named current scalar;
+ * failure preserves out, and no allocation, clock or other flag read occurs. */
+mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out);
+mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, bool *out);
+
 /* READY only. Retain before replacing a reference, including self-assignment.
  * name accepts NULL. Player assignment is client-only and accepts NULL without
  * reading or changing cached player_dimension. No numeric normalization. */

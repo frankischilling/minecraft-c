@@ -7,14 +7,37 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
-The [SavedData ID checkpoint](reference/saved-data-ids.md) passes 25 selected
+The [World construction checkpoint](world/construction.md) passes all 97 public
+cases on native MSVC (103.08s), Linux GCC (243.25s) and Linux
+Clang (250.72s). Linux uses ASan/UBSan and leak checks; Windows uses
+strict Debug without sanitizers. All 377 code/tool/fixture inputs remain
+unchanged across the runs and retained copies. clang-format 18 passes all
+196 C/header files.
+
+The five new native cases cover 5,548 prefix, 4,318 GAME World, 348 typed Info,
+2,225 provider and 35 environment checks. The sixth new case compares all
+48,782 original-derived Dimension rows per side, including 48,739 angles,
+and executes 28 corruption guards and four native protocol refusals. This
+finite standalone observation does not qualify whole-World startup, complete
+population, all-route controls or the complete local-original inventory.
+
+Earlier Linux qualification attempts hit outer deadlines in unchanged fixture
+guards. Isolated region-live and callback rechecks passed in 27.83s and 87.99s;
+timing localized much of the cost to repeated source-preservation reads on
+the mounted workspace. Their CTest budgets are now 90s and 180s. Assertions,
+fixtures and inner process deadlines stay unchanged. The accepted complete
+matrix runs hosts sequentially, with two CTest workers per host; unsuccessful
+attempts and diagnostic timings remain retained separately. These are local
+results, without a hosted-CI or full original-World claim.
+
+The preceding [SavedData ID checkpoint](reference/saved-data-ids.md) passes 25 selected
 storage/runtime checks on native MSVC (66.32s), Linux GCC (139.64s) and Linux
 Clang (139.38s), with Linux ASan/UBSan and leak checks. Its new unit passes
 196,823 checks per compiler. The memory replay matches 78 original-derived
 rows, rejects fourteen altered outputs and executes four protocol refusals.
 All 352 code/tool/fixture inputs remain unchanged across these runs;
 clang-format 18 passes all 176 C/header files. The declared public inventory
-is now 91; this is a selected run, without a fresh complete-suite or hosted-CI
+was then 91; that selected run made no fresh complete-suite or hosted-CI
 claim. Original disk captures and native disk contracts have distinct limits.
 
 The preceding [WorldInfo binding checkpoint](reference/world-info-runtime.md)

@@ -50,9 +50,15 @@ store serialization/accounting now use that owner. A separate
 preserves copied UTF-16 keys, wrapping and reached file-failure effects.
 Its native contracts and limited original-derived memory replay pass on all
 three compilers. Actual HashMap disk ordering and named SavedData remain
-unfinished. Original World construction, live-player serialization and provider
-initialization also remain unfinished; these
-modules do not complete a startup checklist.
+unfinished. The [native base-World constructor](world/construction.md) now
+retains all 43 fields, ordered Random/clock effects, actual Info bindings,
+Dimension/biome owners and a concrete normal provider. Direct, copied and
+already-loaded normal paths can reach native constructor completion. Fresh
+spawn, full registry/bootstrap/subclass startup, live-player serialization and
+terrain-feature execution remain unfinished. The separate finite
+[Dimension observations](reference/dimension.md) qualify standalone fields,
+light tables and celestial angles; they do not qualify whole-World startup.
+These modules do not complete a startup checklist.
 
 The [lifecycle boundary](world/lifecycle.md) implements synchronous saving,
 metadata-first accounting, history-sensitive pending unloads and explicit native

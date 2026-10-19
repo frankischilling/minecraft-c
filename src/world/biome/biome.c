@@ -1,5 +1,7 @@
 #include "mc/world/biome/biome.h"
 
+#include "biome_internal.h"
+
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
@@ -259,6 +261,57 @@ static bool biome_manager_valid(const mc_biome_manager *manager)
            biome_buffer_valid(manager->memory, manager->d.data, manager->d.length, BIOME_ID_BUFFER);
 }
 
+mc_biome_status mc_biome_manager_construct_channel(mc_biome_manager *manager, int64_t seed,
+                                                   mc_biome_construction_channel channel)
+{
+    if (manager == NULL) {
+        return MC_BIOME_INVALID_ARGUMENT;
+    }
+    mc_noise_simplex *layers;
+    size_t count;
+    int64_t multiplier;
+    switch (channel) {
+        case MC_BIOME_CONSTRUCT_TEMPERATURE:
+            layers = manager->temperature_layers;
+            count = 4;
+            multiplier = INT64_C(9871);
+            break;
+        case MC_BIOME_CONSTRUCT_RAINFALL:
+            layers = manager->rainfall_layers;
+            count = 4;
+            multiplier = INT64_C(39811);
+            break;
+        case MC_BIOME_CONSTRUCT_AUXILIARY:
+            layers = manager->auxiliary_layers;
+            count = 2;
+            multiplier = INT64_C(543321);
+            break;
+        default:
+            return MC_BIOME_INVALID_ARGUMENT;
+    }
+    mc_java_random random;
+    mc_noise_simplex_octaves noise;
+    mc_java_random_seed(&random, mc_java_i64_mul(seed, multiplier));
+    return mc_noise_simplex_octaves_init(&noise, layers, count, &random)
+               ? MC_BIOME_OK
+               : MC_BIOME_INVALID_ARGUMENT;
+}
+
+mc_biome_status mc_biome_manager_finish_construction(mc_biome_manager *manager,
+                                                     mc_biome_memory *memory)
+{
+    if (manager == NULL || !biome_memory_valid(memory)) {
+        return MC_BIOME_INVALID_ARGUMENT;
+    }
+    mc_biome_status status = mc_biome_classifier_init(&manager->classifier);
+    if (status != MC_BIOME_OK) {
+        return status;
+    }
+    manager->memory = memory;
+    manager->initialized = 1;
+    return MC_BIOME_OK;
+}
+
 mc_biome_status mc_biome_manager_init(mc_biome_manager *manager, int64_t seed,
                                       mc_biome_memory *memory)
 {
@@ -269,17 +322,20 @@ mc_biome_status mc_biome_manager_init(mc_biome_manager *manager, int64_t seed,
         return MC_BIOME_INVALID_ARGUMENT;
     }
     mc_biome_manager candidate = {0};
-    candidate.memory = memory;
-    mc_java_random random;
-    mc_noise_simplex_octaves channel;
-    mc_java_random_seed(&random, mc_java_i64_mul(seed, INT64_C(9871)));
-    (void)mc_noise_simplex_octaves_init(&channel, candidate.temperature_layers, 4, &random);
-    mc_java_random_seed(&random, mc_java_i64_mul(seed, INT64_C(39811)));
-    (void)mc_noise_simplex_octaves_init(&channel, candidate.rainfall_layers, 4, &random);
-    mc_java_random_seed(&random, mc_java_i64_mul(seed, INT64_C(543321)));
-    (void)mc_noise_simplex_octaves_init(&channel, candidate.auxiliary_layers, 2, &random);
-    (void)mc_biome_classifier_init(&candidate.classifier);
-    candidate.initialized = 1;
+    mc_biome_status status =
+        mc_biome_manager_construct_channel(&candidate, seed, MC_BIOME_CONSTRUCT_TEMPERATURE);
+    if (status == MC_BIOME_OK) {
+        status = mc_biome_manager_construct_channel(&candidate, seed, MC_BIOME_CONSTRUCT_RAINFALL);
+    }
+    if (status == MC_BIOME_OK) {
+        status = mc_biome_manager_construct_channel(&candidate, seed, MC_BIOME_CONSTRUCT_AUXILIARY);
+    }
+    if (status == MC_BIOME_OK) {
+        status = mc_biome_manager_finish_construction(&candidate, memory);
+    }
+    if (status != MC_BIOME_OK) {
+        return status;
+    }
     *manager = candidate;
     return MC_BIOME_OK;
 }

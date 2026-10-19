@@ -1,5 +1,15 @@
 # Systems and subsystems
 
+The [World construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
+describes one stable 43-field runtime, ordered profile/clock and metadata
+construction, typed Dimension/biome ownership and a native normal provider.
+Direct, copy and already-loaded normal paths can complete their represented
+constructor tails. Fresh spawn, full registries/subclass bootstrap, population
+and live-player saving remain unfinished. The
+[Dimension observations](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
+qualify standalone factory/array/table/angle scenarios separately from World
+startup.
+
 Project-owned runtime code uses C17. Implementations live under
 `src/<system>/<subsystem>/`; public headers mirror those paths under `include/mc/`,
 and tests mirror them under `tests/`. Create folders with actual implementations

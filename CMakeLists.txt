@@ -150,8 +150,15 @@ target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build
 
 add_library(mc_simulation STATIC
     src/world/runtime/runtime.c
+    src/world/runtime/construction.c
+    src/world/runtime/environment.c
+    src/world/runtime/blocks.c
+    src/world/runtime/provider.c
+    src/world/dimension/dimension.c
     src/entity/entity.c)
-target_link_libraries(mc_simulation PUBLIC mc_persistence mc_item PRIVATE mc_build_options)
+target_include_directories(mc_simulation PRIVATE src/platform/time)
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item
+    PRIVATE mc_platform_time mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -246,6 +253,31 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_info_binding tests/world/runtime/test_info_binding.c)
     target_link_libraries(mc_test_world_info_binding PRIVATE mc_simulation mc_build_options)
+
+    add_executable(mc_test_world_typed_info tests/world/storage/test_typed_info.c)
+    target_include_directories(mc_test_world_typed_info PRIVATE src/world/storage)
+    target_link_libraries(mc_test_world_typed_info PRIVATE mc_persistence mc_build_options)
+
+    add_executable(mc_test_world_environment tests/world/runtime/test_environment.c)
+    target_include_directories(mc_test_world_environment PRIVATE src/world/runtime)
+    target_link_libraries(mc_test_world_environment PRIVATE mc_simulation mc_build_options)
+    add_test(NAME world.environment COMMAND mc_test_world_environment)
+    set_tests_properties(world.environment PROPERTIES LABELS "public;unit;math" TIMEOUT 30)
+
+    add_executable(mc_test_world_construction tests/world/runtime/test_world_construction.c)
+    target_link_libraries(mc_test_world_construction PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.construction COMMAND mc_test_world_construction)
+    set_tests_properties(world.construction PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_game_world tests/world/runtime/test_game_world.c)
+    target_link_libraries(mc_test_game_world PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
+    target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
+
+    add_executable(mc_dimension_observation_probe tests/world/dimension/dimension_observation_probe.c)
+    target_include_directories(mc_dimension_observation_probe PRIVATE src/world/dimension)
+    target_link_libraries(mc_dimension_observation_probe PRIVATE mc_simulation mc_build_options)
 
     add_executable(mc_test_world_saved_data tests/world/saved_data/test_storage.c)
     target_include_directories(mc_test_world_saved_data PRIVATE src/world/storage)
@@ -531,6 +563,39 @@ if(BUILD_TESTING)
     set_tests_properties(world.runtime_info_bindings PROPERTIES
         LABELS "public;integration;storage" TIMEOUT 90)
 
+    add_test(NAME world.typed_world_info
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_typed_info>"
+        --scenario typed-world-info
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/typed-world-info-contracts")
+    set_tests_properties(world.typed_world_info PROPERTIES
+        LABELS "public;integration;storage" TIMEOUT 90)
+
+    add_test(NAME world.game_construction
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_game_world>"
+        --scenario game-world
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/game-world-contracts")
+    set_tests_properties(world.game_construction PROPERTIES
+        LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.normal_provider_construction
+        COMMAND mc_test_normal_provider_construction)
+    set_tests_properties(world.normal_provider_construction PROPERTIES
+        LABELS "public;unit;generation" TIMEOUT 90)
+
+    add_test(NAME world.dimension_reference
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_SOURCE_DIR}/tests/tools/world/test_dimension_reference.py" verify
+        --fixture-dir "${CMAKE_SOURCE_DIR}/tests/reference/world/dimension"
+        --provenance-sha256 5b620c091d1de9881f7c60b267706c693aa4726a99f67b7c99b63152118f813b
+        --probe "$<TARGET_FILE:mc_dimension_observation_probe>"
+        --work-dir "${CMAKE_BINARY_DIR}/dimension-reference")
+    set_tests_properties(world.dimension_reference PROPERTIES
+        LABELS "public;reference;math" TIMEOUT 120)
+
     add_test(NAME world.saved_data_ids
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
@@ -767,9 +832,11 @@ if(BUILD_TESTING)
     add_test(NAME tools.callbacks_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/cache" -p test_callbacks_reference.py)
+    # Failure controls repeatedly fingerprint the growing source tree; allow
+    # filesystem headroom for mounted workspaces and concurrent public checks.
     set_tests_properties(tools.callbacks_reference PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        LABELS "public;tools" TIMEOUT 90)
+        LABELS "public;tools" TIMEOUT 180)
 
     add_test(NAME tools.callbacks_fixture
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
@@ -839,7 +906,9 @@ if(BUILD_TESTING)
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/region" -p test_live.py)
     set_tests_properties(tools.region_live PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        LABELS "public;tools" TIMEOUT 30)
+        # Several failure controls fingerprint the complete growing source tree.
+        # Leave filesystem headroom for mounted workspaces and parallel checks.
+        LABELS "public;tools" TIMEOUT 90)
 
     if(MC_ENABLE_REGION_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)

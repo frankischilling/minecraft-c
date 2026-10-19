@@ -1,5 +1,13 @@
 # Storage and original references
 
+The [Dimension capture](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
+records actual original constructors, retained arrays, standalone light tables
+and 48,739 celestial calls per side. Its public projection compares exact bits
+and identities without requiring Java or original archives. The separate
+[native World contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
+documents normal constructor completion and the remaining spawn, registry,
+population, subclass and persistence dependencies.
+
 Storage provides raw NBT, gzip/zlib memory compression, metadata codecs,
 region inspection and writing, stable stored chunks, native region transport
 and world-store ownership through `mc_persistence`. The finite storage foundation

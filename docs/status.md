@@ -1,13 +1,22 @@
 # Development status
 
+The [native base-World constructor](world/construction.md) now retains one
+43-field identity through ordered construction, failure and retirement. Direct,
+copied and already-loaded normal paths can complete with actual Info,
+Dimension/biome and provider owners. Five new cases pass 12,474 native checks;
+the separate [Dimension replay](reference/dimension.md) matches 48,782
+original-derived rows per side on MSVC, GCC and Clang. All 97 public cases pass
+per compiler, with Linux sanitizers. Full registry/bootstrap/subclass startup,
+fresh spawn, complete population and live-player saves remain unfinished.
+
 The [SavedData ID owner](reference/saved-data-ids.md) passes 196,823 native
 checks and matches 78 original-derived memory rows on MSVC, GCC and Clang.
 All 25 selected storage/runtime checks pass per compiler, with Linux
 sanitizers. Raw ID files, copied nullable UTF-16 keys, signed-Short wrapping
 and reached file-error effects have native contracts. Original HashMap disk
-ordering, named SavedData and actual World construction remain unfinished.
-This selected run brings the declared public inventory to 91, without a fresh
-complete-suite claim.
+ordering, named SavedData and full original World startup remain unfinished.
+That selected run brought the declared public inventory to 91; the current
+constructor checkpoint above refreshes the complete public suite.
 
 The preceding [metadata binding checkpoint](reference/world-info-runtime.md) passes all
 89 public tests on native Windows MSVC and Linux GCC/Clang, with Linux
@@ -27,8 +36,8 @@ and live-player-list serialization remain unfinished.
 The private [millisecond wall-clock backend](reference/wall-clock.md) passes
 251 checks on MSVC, GCC and Clang, including four ordered OS brackets per
 compiler. All five selected clock/Random cases pass; Linux uses ASan/UBSan and
-leak checks. World construction, including its metadata and provider ordering,
-has not yet been connected to this clock.
+leak checks. The current native base-World constructor consumes this clock in
+its ordered prefix; full original startup remains unfinished.
 
 The C runtime now composes chunk acquisition, saving, pending unloads and explicit
 owner retirement. It preserves live callback order, a stable world clock,

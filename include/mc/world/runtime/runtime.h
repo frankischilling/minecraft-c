@@ -5,6 +5,7 @@
 #include "mc/world/cache/lifecycle.h"
 #include "mc/world/generation/normal.h"
 #include "mc/world/info/info.h"
+#include "mc/world/runtime/construction.h"
 #include "mc/world/storage/store.h"
 
 typedef struct mc_world_runtime mc_world_runtime;

@@ -14,7 +14,7 @@ SPEC = importlib.util.spec_from_file_location("int_set_capture", ROOT / "scripts
 CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
-             "world-info-bindings", "saved-data-ids")
+             "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world")
 
 
 def main():
@@ -41,7 +41,23 @@ def main():
                  "saved_data_test": ROOT / "tests/world/saved_data/test_storage.c",
                  "saved_data": ROOT / "src/world/saved_data/storage.c",
                  "saved_data_header": ROOT / "include/mc/world/saved_data/storage.h",
-                 "files": ROOT / "src/world/storage/files.c", "files_header": ROOT / "src/world/storage/files.h"}
+                 "files": ROOT / "src/world/storage/files.c", "files_header": ROOT / "src/world/storage/files.h",
+                 "typed_info_test": ROOT / "tests/world/storage/test_typed_info.c",
+                 "construction": ROOT / "src/world/runtime/construction.c",
+                 "construction_header": ROOT / "include/mc/world/runtime/construction.h",
+                 "runtime_internal": ROOT / "src/world/runtime/runtime_internal.h",
+                 "dimension": ROOT / "src/world/dimension/dimension.c",
+                 "dimension_header": ROOT / "include/mc/world/dimension/dimension.h",
+                 "biome": ROOT / "src/world/biome/biome.c",
+                 "biome_internal": ROOT / "src/world/biome/biome_internal.h",
+                 "provider": ROOT / "src/world/runtime/provider.c",
+                 "provider_internal": ROOT / "src/world/runtime/provider_internal.h",
+                 "environment": ROOT / "src/world/runtime/environment.c",
+                 "environment_header": ROOT / "include/mc/world/runtime/environment.h",
+                 "blocks": ROOT / "src/world/runtime/blocks.c",
+                 "blocks_header": ROOT / "include/mc/world/runtime/blocks.h"}
+        if args.scenario == "game-world":
+            paths["game_test"] = ROOT / "tests/world/runtime/test_game_world.c"
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":

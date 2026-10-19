@@ -1,0 +1,93 @@
+#ifndef MC_WORLD_RUNTIME_PROVIDER_INTERNAL_H
+#define MC_WORLD_RUNTIME_PROVIDER_INTERNAL_H
+
+#include "mc/core/java/int_set.h"
+#include "mc/world/cache/acquire.h"
+#include "mc/world/dimension/dimension.h"
+#include "mc/world/generation/normal.h"
+#include "mc/world/runtime/runtime.h"
+
+#define MC_WORLD_PROVIDER_GRID_WIDTH 32u
+
+/* Borrowed views of this concrete normal-provider/cache owner. These are the
+ * actual mutable descriptors and the runtime's ONE embedded fallback identity,
+ * not copies of owning state. constructor_grid is a retained native 32x32 zero
+ * storage projection, not Java row-object allocation/aliasing equivalence. */
+typedef struct mc_world_provider_fields {
+    mc_world_runtime *world;
+    mc_world_store *store;
+    mc_world_dimension_biome *biome;
+    mc_biome_manager *manager;
+    mc_normal_generator *generator;
+    mc_chunk_cache *cache;
+    mc_chunk_pending *pending;
+    mc_chunk_state *fallback;
+    int32_t (*constructor_grid)[MC_WORLD_PROVIDER_GRID_WIDTH];
+    size_t max_chunks, direct_allocation_bytes, max_direct_allocation_bytes;
+    mc_java_int_set_limits pending_history_limits;
+} mc_world_provider_fields;
+
+/* Construct the concrete Overworld provider and its enclosing empty base-cache
+ * storage. The caller has already asked the real store for its loader, as the
+ * original outer World.b does BEFORE the Dimension provider factory. Require
+ * the same live CONSTRUCTING game runtime, its nonnull actual fields.w/x/t,
+ * a successfully bound normal Dimension whose a is that runtime, and the exact
+ * class trig/profile bindings. Other actual Dimension kinds stop unsupported;
+ * they are never replaced by normal generation. No file/loader/registry,
+ * population, saving, user callback or implicit World construction occurs.
+ *
+ * Read the current Dimension.a World seed at the factory argument position,
+ * then call the real private normal constructor ONCE. Its retained cave owns
+ * the actual shared-profile default Random BEFORE seeded terrain/noise. Never
+ * use numerical init, copy/reseed/erase the cave or discard a successful
+ * generator. Retain the Dimension's actual biome owner separately, so later
+ * Dimension rebind cannot invalidate this generator's manager or buffers.
+ *
+ * Direct bytes count the provider (including generator/fixed scratch/grid),
+ * pending keys, cache entries/list, blank data and its 32768 blocks. Exclude
+ * allocator overhead, stack, borrowed World/store/trig/profile, retained biome
+ * storage/buffers and the separately bounded pending HashSet owner. The latter
+ * keeps existing default 8MiB retained/16MiB peak limits, with max_entries clipped
+ * to min(max_chunks,65536). Zero limits are valid; max_chunks > INT32_MAX is an
+ * invalid native bound. No growth/reallocation is hidden in these arrays.
+ * Fixed C reservation and bounded collection allocations are native policy,
+ * not the original Java per-array/row/object OOM/failure sequence.
+ *
+ * Failure preserves *out and the runtime fallback. profile_cause is required
+ * and changes only if the private generator actually enters its constructor,
+ * receiving that exact profile result even when later native work fails.
+ * An unpublished failed child is explicitly retired; completed shared-profile
+ * effects are NOT rolled back. The enclosing World must latch its failed
+ * attempt and cannot silently retry on the same World identity. Success
+ * constructs &runtime->fallback in place, owning its data without publishing
+ * World.v or binding contexts. Caller performs those later stores/operations.
+ * Results/errors/inputs and all owners must be disjoint and exclusive. */
+mc_world_storage_status mc_world_provider_create(mc_world_runtime *runtime,
+                                                 mc_world_dimension *dimension,
+                                                 const mc_math_trig *trig,
+                                                 mc_java_random_profile *profile, size_t max_chunks,
+                                                 size_t max_direct_bytes, mc_world_provider **out,
+                                                 mc_java_random_profile_status *profile_cause,
+                                                 mc_world_storage_error *error);
+
+/* No World retain/cycle or external provider retain is added. World/store and
+ * the shared profile/trig must outlive this owner. Before free, retire all
+ * entered calls, external views/leases/fallback pointers, cache registrations
+ * and nonempty cache/list/pending uses; chunk identities remain store-owned.
+ * Free NULL is safe. Release generator buffers before its supplying biome hold.
+ * Clear runtime->fallback.data only when it still points to this owner's data;
+ * never replace/copy/free the runtime's embedded chunk identity. */
+void mc_world_provider_free(mc_world_provider *provider);
+
+mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provider,
+                                                      mc_world_provider_fields *out,
+                                                      mc_world_storage_error *error);
+
+/* Actual normal yf/pk a()Z body: literal false, without World/loader callbacks.
+ * This is only the underlying normal provider result, not enclosing cache
+ * unload/save/population or a claim that those descendants are implemented.
+ * Invalid arguments preserve out; valid calls write false. */
+mc_world_storage_status mc_world_provider_maintenance(mc_world_provider *provider, bool *out,
+                                                      mc_world_storage_error *error);
+
+#endif

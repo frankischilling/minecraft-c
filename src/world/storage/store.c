@@ -269,6 +269,142 @@ mc_world_storage_status mc_world_store_load_info(mc_world_store *store,
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
+static mc_world_storage_status store_world_info_error(mc_world_storage_error *error,
+                                                      mc_world_info_status status,
+                                                      const mc_world_info_error *detail)
+{
+    if (status == MC_WORLD_INFO_NBT_ERROR && detail != NULL)
+        return store_nbt_error(error, detail->nbt.status);
+    mc_world_storage_status mapped =
+        status == MC_WORLD_INFO_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_WORLD_INFO_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_WORLD_INFO_INVALID_ARGUMENT  ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+        : status == MC_WORLD_INFO_INVALID_FIELD     ? MC_WORLD_STORAGE_INVALID_DATA
+                                                    : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    return store_error(error, mapped,
+                       detail != NULL && detail->field != NULL
+                           ? detail->field
+                           : mc_world_info_status_string(status));
+}
+
+static mc_world_storage_status
+store_read_world_info(const mc_world_store *store, const char *path, mc_world_info_side side,
+                      mc_nbt_document **out_document, mc_world_info **out_info,
+                      mc_level_info *out_view, mc_world_storage_error *error)
+{
+    size_t max_bytes = store->limits.compression.max_input_bytes;
+    if (max_bytes > MC_WS_FILE_MAX_BYTES)
+        max_bytes = MC_WS_FILE_MAX_BYTES;
+    mc_ws_file_bytes file = {0};
+    mc_world_storage_status status = mc_ws_read_file(path, max_bytes, &file, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_compression_buffer decoded = {0};
+    mc_compression_status compression = mc_compression_decode(
+        MC_COMPRESSION_GZIP, file.data, file.length, &store->limits.compression, &decoded, NULL);
+    mc_ws_free_file_bytes(&file);
+    if (compression != MC_COMPRESSION_OK)
+        return store_compression_error(error, compression);
+    mc_nbt_document *document = NULL;
+    mc_nbt_status nbt = mc_nbt_read_compound(decoded.data, decoded.length, &store->limits.nbt,
+                                             &document, NULL, NULL);
+    mc_compression_buffer_free(&decoded);
+    if (nbt != MC_NBT_OK)
+        return store_nbt_error(error, nbt);
+
+    static const uint16_t data_key[] = {'D', 'a', 't', 'a'};
+    static const uint16_t name_key[] = {'L', 'e', 'v', 'e', 'l', 'N', 'a', 'm', 'e'};
+    static const uint16_t player_key[] = {'P', 'l', 'a', 'y', 'e', 'r'};
+    const mc_nbt_tag empty_data = {.type = MC_NBT_COMPOUND};
+    const mc_nbt_tag *data = mc_nbt_compound_get(mc_nbt_document_root(document), data_key, 4);
+    if (data == NULL)
+        data = &empty_data;
+    else if (data->type != MC_NBT_COMPOUND) {
+        /* Original getCompound defaults only on absence; its present-value
+         * checkcast failure is caught by the handler's candidate fallback. */
+        mc_nbt_document_free(document);
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "Data");
+    }
+
+    mc_world_info *info = NULL;
+    mc_world_info_data *owned_data = NULL;
+    mc_world_info_error detail = {0};
+    mc_world_info_status constructed = mc_world_info_allocate(side, &info);
+    if (constructed == MC_WORLD_INFO_OK)
+        constructed = mc_world_info_data_copy(data, &store->limits.nbt, &owned_data, &detail);
+    if (constructed == MC_WORLD_INFO_OK)
+        constructed = mc_world_info_construct_nbt(info, owned_data, &detail);
+    mc_world_info_data_release(owned_data);
+    if (constructed != MC_WORLD_INFO_OK) {
+        mc_world_info_release(info);
+        mc_nbt_document_free(document);
+        return store_world_info_error(error, constructed, &detail);
+    }
+
+    mc_world_info_fields fields;
+    (void)mc_world_info_fields_get(info, &fields);
+    const mc_nbt_tag *name = mc_nbt_compound_get(data, name_key, 9);
+    const mc_nbt_tag *player = mc_nbt_compound_get(data, player_key, 6);
+    /* Scalars come from the completed real constructor. Reference views must
+     * borrow the retained document, never the independently held Info copy. */
+    *out_view =
+        (mc_level_info){.seed = fields.value.seed,
+                        .spawn_x = fields.value.spawn_x,
+                        .spawn_y = fields.value.spawn_y,
+                        .spawn_z = fields.value.spawn_z,
+                        .time = fields.value.time,
+                        .last_played = fields.value.last_played,
+                        .size_on_disk = fields.value.size_on_disk,
+                        .level_name = name == NULL ? (mc_nbt_string){0} : name->value.string,
+                        .version = fields.value.version,
+                        .rain_time = fields.value.rain_time,
+                        .thunder_time = fields.value.thunder_time,
+                        .raining = fields.value.raining,
+                        .thundering = fields.value.thundering,
+                        .player = player,
+                        .player_dimension = fields.value.player_dimension};
+    *out_document = document;
+    *out_info = info;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_load_world_info(mc_world_store *store,
+                                                       mc_world_info_side side, mc_world_info **out,
+                                                       mc_world_storage_error *error)
+{
+    if (store == NULL || out == NULL ||
+        (side != MC_WORLD_INFO_CLIENT && side != MC_WORLD_INFO_SERVER))
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "typed metadata load arguments");
+    mc_nbt_document *document = NULL;
+    mc_world_info *info = NULL;
+    mc_level_info view;
+    mc_world_storage_error detail, primary;
+    mc_world_storage_status status = store_read_world_info(store, store->metadata_paths[0], side,
+                                                           &document, &info, &view, &primary);
+    detail = primary;
+    if (store_fallback_status(status) && status != MC_WORLD_STORAGE_OK) {
+        status = store_read_world_info(store, store->metadata_paths[1], side, &document, &info,
+                                       &view, &detail);
+        if (status == MC_WORLD_STORAGE_MISSING && primary.status != MC_WORLD_STORAGE_MISSING) {
+            status = primary.status;
+            detail = primary;
+        }
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (error != NULL)
+            *error = detail;
+        return status;
+    }
+    mc_nbt_document *previous = store->metadata;
+    store->metadata = document;
+    store->info = view;
+    store->has_info = true;
+    mc_nbt_document_free(previous);
+    *out = info;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 const mc_level_info *mc_world_store_info(const mc_world_store *store)
 {
     return store == NULL || !store->has_info ? NULL : &store->info;

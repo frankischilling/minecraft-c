@@ -261,9 +261,9 @@ static void cave_neighbor(mc_terrain_cave_context *context, int32_t source_x, in
     }
 }
 
-bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
-                             int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                             size_t blocks_length)
+static bool cave_normal(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
+                        int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
+                        size_t blocks_length, bool fresh)
 {
     if (table == NULL || cave_random == NULL || blocks == NULL ||
         blocks_length < MC_TERRAIN_CAVE_BLOCKS || chunk_x < INT32_MIN + 8 ||
@@ -271,7 +271,10 @@ bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int3
         return false;
     }
     mc_terrain_cave_context context = {table, cave_random, blocks, chunk_x, chunk_z};
-    mc_java_random_seed(cave_random, world_seed);
+    if (fresh)
+        mc_java_random_seed(cave_random, world_seed);
+    else
+        mc_java_random_reseed(cave_random, world_seed);
     int64_t odd_x = mc_java_random_next_i64(cave_random) / 2;
     odd_x = mc_java_i64_add(mc_java_i64_mul(odd_x, 2), 1);
     int64_t odd_z = mc_java_random_next_i64(cave_random) / 2;
@@ -286,4 +289,20 @@ bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int3
         }
     }
     return true;
+}
+
+bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
+                             int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
+                             size_t blocks_length)
+{
+    return cave_normal(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
+                       true);
+}
+
+bool mc_terrain_normal_caves_reseed(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
+                                    int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
+                                    size_t blocks_length)
+{
+    return cave_normal(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
+                       false);
 }

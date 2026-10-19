@@ -33,11 +33,20 @@ GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
-The SavedData ID checkpoint passes 25 selected storage/runtime cases on native
+The [native World construction checkpoint](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
+passes all 97 public cases on MSVC and Linux GCC/Clang, with Linux sanitizers.
+Five new cases pass 12,474 native checks. The separate
+[Dimension replay](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
+matches 48,782 original-derived rows per side and checks corruption/protocol
+refusals. All 377 code/tool/fixture inputs stay unchanged; clang-format 18
+passes 196 C/header files. This does not qualify complete original World
+startup, population or the entire local-original inventory.
+
+The earlier SavedData ID checkpoint passed 25 selected storage/runtime cases on native
 MSVC and Linux GCC/Clang, with Linux sanitizers. Its new unit has 196,823 checks;
 the public memory replay matches 78 original-derived rows, rejects fourteen
 altered outputs and executes four protocol refusals. The declared inventory
-is now 91, without a fresh complete-suite claim.
+was then 91, without a fresh complete-suite claim at that checkpoint.
 [SavedData evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/saved-data-ids.md)
 keeps original HashMap disk order, named subtypes and actual World startup open.
 

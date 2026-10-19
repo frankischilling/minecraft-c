@@ -1,4 +1,6 @@
-#include "mc/world/generation/normal.h"
+#include "normal_internal.h"
+
+#include "../terrain/caves_internal.h"
 
 #include <limits.h>
 #include <string.h>
@@ -21,6 +23,8 @@ const char *mc_normal_generator_status_string(mc_normal_generator_status status)
             return "allocation failed";
         case MC_NORMAL_GENERATOR_STATE_ERROR:
             return "downstream state error";
+        case MC_NORMAL_GENERATOR_PROFILE_FAILED:
+            return "cave Random construction failed";
     }
     return "unknown normal generator status";
 }
@@ -40,26 +44,71 @@ static bool manager_ready(const mc_biome_manager *manager)
     return true;
 }
 
-mc_normal_generator_status mc_normal_generator_init(mc_normal_generator *generator,
-                                                    int64_t world_seed, mc_biome_manager *manager,
-                                                    const mc_math_trig *trig)
+static bool normal_raw(const mc_normal_generator *generator, const mc_biome_manager *manager,
+                       const mc_math_trig *trig)
 {
-    if (generator == NULL || generator->initialized || generator->biome_manager != NULL ||
-        generator->trig != NULL || generator->biomes.data != NULL ||
-        generator->biomes.length != 0 || !manager_ready(manager) || trig == NULL) {
-        return MC_NORMAL_GENERATOR_INVALID_ARGUMENT;
-    }
-    /* Constructor state and fixed scratch own no dynamic storage. */
-    memset(generator, 0, sizeof(*generator));
+    return generator != NULL && !generator->initialized &&
+           generator->phase == MC_NORMAL_GENERATOR_PHASE_RAW && generator->biome_manager == NULL &&
+           generator->trig == NULL && generator->biomes.data == NULL &&
+           generator->biomes.length == 0 && manager_ready(manager) && trig != NULL;
+}
+
+/* Shared allocation-free seeded tail. In particular this must never clear,
+ * copy or seed the already constructed provider-mode cave Random. */
+static mc_normal_generator_status normal_seeded_initialize(mc_normal_generator *generator,
+                                                           int64_t world_seed,
+                                                           mc_biome_manager *manager,
+                                                           const mc_math_trig *trig)
+{
     if (!mc_terrain_normal_init(&generator->terrain, world_seed)) {
+        generator->phase = MC_NORMAL_GENERATOR_PHASE_FAILED;
         return MC_NORMAL_GENERATOR_STATE_ERROR;
     }
     generator->world_seed = world_seed;
     generator->biome_manager = manager;
     generator->trig = trig;
     generator->generator_random = generator->terrain.random_after_init;
+    generator->phase = MC_NORMAL_GENERATOR_PHASE_READY;
     generator->initialized = true;
     return MC_NORMAL_GENERATOR_OK;
+}
+
+mc_normal_generator_status mc_normal_generator_init(mc_normal_generator *generator,
+                                                    int64_t world_seed, mc_biome_manager *manager,
+                                                    const mc_math_trig *trig)
+{
+    if (!normal_raw(generator, manager, trig)) {
+        return MC_NORMAL_GENERATOR_INVALID_ARGUMENT;
+    }
+    memset(generator, 0, sizeof(*generator));
+    generator->phase = MC_NORMAL_GENERATOR_PHASE_INITIALIZING;
+    generator->origin = MC_NORMAL_GENERATOR_NUMERICAL;
+    generator->cave_range = (int32_t)MC_TERRAIN_NORMAL_CAVE_RANGE;
+    return normal_seeded_initialize(generator, world_seed, manager, trig);
+}
+
+mc_normal_generator_status
+mc_normal_generator_construct_provider(mc_normal_generator *generator, int64_t world_seed,
+                                       mc_biome_manager *manager, const mc_math_trig *trig,
+                                       mc_java_random_profile *profile,
+                                       mc_java_random_profile_status *profile_cause)
+{
+    if (profile == NULL || profile_cause == NULL || !normal_raw(generator, manager, trig)) {
+        return MC_NORMAL_GENERATOR_INVALID_ARGUMENT;
+    }
+    /* The sole whole-object clear precedes fv/dy's range/default-Random prefix. */
+    memset(generator, 0, sizeof(*generator));
+    generator->phase = MC_NORMAL_GENERATOR_PHASE_INITIALIZING;
+    generator->origin = MC_NORMAL_GENERATOR_PROVIDER;
+    generator->cave_range = (int32_t)MC_TERRAIN_NORMAL_CAVE_RANGE;
+    const mc_java_random_profile_status status =
+        mc_java_random_construct_default(profile, &generator->cave_random);
+    *profile_cause = status;
+    if (status != MC_JAVA_RANDOM_PROFILE_OK) {
+        generator->phase = MC_NORMAL_GENERATOR_PHASE_FAILED;
+        return MC_NORMAL_GENERATOR_PROFILE_FAILED;
+    }
+    return normal_seeded_initialize(generator, world_seed, manager, trig);
 }
 
 void mc_normal_generator_free(mc_normal_generator *generator)
@@ -146,7 +195,11 @@ mc_normal_generator_generate(mc_normal_generator *generator, int32_t chunk_x, in
                              const mc_normal_generation_resources *resources,
                              mc_normal_chunk *result, uint8_t *blocks, size_t blocks_capacity)
 {
-    if (generator == NULL || !generator->initialized || generator->trig == NULL ||
+    if (generator == NULL || !generator->initialized ||
+        generator->phase != MC_NORMAL_GENERATOR_PHASE_READY ||
+        (generator->origin != MC_NORMAL_GENERATOR_NUMERICAL &&
+         generator->origin != MC_NORMAL_GENERATOR_PROVIDER) ||
+        generator->cave_range != (int32_t)MC_TERRAIN_NORMAL_CAVE_RANGE || generator->trig == NULL ||
         !manager_ready(generator->biome_manager) || result == NULL || blocks == NULL ||
         blocks_capacity < MC_CHUNK_BLOCKS || chunk_x < INT32_MIN + 8 || chunk_x > INT32_MAX - 9 ||
         chunk_z < INT32_MIN + 8 || chunk_z > INT32_MAX - 9 ||
@@ -204,8 +257,11 @@ mc_normal_generator_generate(mc_normal_generator *generator, int32_t chunk_x, in
         !mc_terrain_normal_surface(&generator->terrain, &surface, chunk_x, chunk_z,
                                    generator->materials, 256, &generator_random, blocks,
                                    blocks_capacity) ||
-        !mc_terrain_normal_caves(generator->trig, generator->world_seed, chunk_x, chunk_z,
-                                 &cave_random, blocks, blocks_capacity) ||
+        !(generator->origin == MC_NORMAL_GENERATOR_PROVIDER
+              ? mc_terrain_normal_caves_reseed(generator->trig, generator->world_seed, chunk_x,
+                                               chunk_z, &cave_random, blocks, blocks_capacity)
+              : mc_terrain_normal_caves(generator->trig, generator->world_seed, chunk_x, chunk_z,
+                                        &cave_random, blocks, blocks_capacity)) ||
         !mc_chunk_finish_normal(&result->chunk, resources->lighting, resources->opacity,
                                 resources->opacity_length, resources->trace,
                                 resources->queue_aborts)) {

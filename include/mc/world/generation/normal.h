@@ -13,8 +13,24 @@ typedef enum mc_normal_generator_status {
     MC_NORMAL_GENERATOR_INVALID_ARGUMENT,
     MC_NORMAL_GENERATOR_LIMIT,
     MC_NORMAL_GENERATOR_ALLOCATION_FAILED,
-    MC_NORMAL_GENERATOR_STATE_ERROR
+    MC_NORMAL_GENERATOR_STATE_ERROR,
+    MC_NORMAL_GENERATOR_PROFILE_FAILED
 } mc_normal_generator_status;
+
+/* Native initialization state, not Java class initialization. FAILED requires
+ * retirement with free before another attempt; it may have consumed profile
+ * constructor entropy even though initialized is false. */
+typedef enum mc_normal_generator_phase {
+    MC_NORMAL_GENERATOR_PHASE_RAW = 0,
+    MC_NORMAL_GENERATOR_PHASE_INITIALIZING,
+    MC_NORMAL_GENERATOR_PHASE_READY,
+    MC_NORMAL_GENERATOR_PHASE_FAILED
+} mc_normal_generator_phase;
+
+typedef enum mc_normal_generator_origin {
+    MC_NORMAL_GENERATOR_NUMERICAL = 0,
+    MC_NORMAL_GENERATOR_PROVIDER
+} mc_normal_generator_origin;
 
 const char *mc_normal_generator_status_string(mc_normal_generator_status status);
 
@@ -55,9 +71,14 @@ typedef struct mc_normal_generation_resources {
  * Calls require exclusive generator/manager/world access and no callbacks.
  *
  * All 82 terrain layers and constructor Random continuation are retained.
- * The cave Random has no reference-defined initial continuation; every cave
- * pass reseeds it from world_seed. Fixed scratch retains its address across
- * calls. Direct biome sampling updates manager a/b/c and leaves d untouched. */
+ * Public init selects the entropy-free numerical projection: its cave Random
+ * has no reference-defined initial continuation and each pass fresh-seeds it.
+ * The private provider constructor instead owns a real default cave Random;
+ * its passes use setSeed semantics, retaining cached bits and clearing validity.
+ * Origin, phase and range are module-owned state, not caller policy switches.
+ * Neither path is the full original provider/World constructor. Fixed scratch
+ * retains its address across calls. Direct biome sampling updates manager
+ * a/b/c and leaves d untouched. */
 typedef struct mc_normal_generator {
     int64_t world_seed;
     mc_biome_manager *biome_manager;
@@ -76,20 +97,26 @@ typedef struct mc_normal_generator {
     double gravel[MC_TERRAIN_NORMAL_SURFACE_VALUES];
     double thickness[MC_TERRAIN_NORMAL_SURFACE_VALUES];
     mc_terrain_surface_material materials[MC_TERRAIN_NORMAL_CLIMATE_VALUES];
+    mc_normal_generator_phase phase;
+    mc_normal_generator_origin origin;
+    int32_t cave_range;
     bool initialized;
 } mc_normal_generator;
 
 /* Allocation-free construction. Invalid arguments preserve the generator.
  * manager must already be initialized for world_seed, with valid module-owned
  * descriptors and unmodified noise/classifier state. This function does not
- * initialize, sample, resize or free any manager buffer. */
+ * initialize, sample, resize or free any manager buffer, construct a default
+ * Random or use a profile/clock. A reached defensive initialization failure
+ * latches FAILED; free retires that attempt before another init. */
 mc_normal_generator_status mc_normal_generator_init(mc_normal_generator *generator,
                                                     int64_t world_seed, mc_biome_manager *manager,
                                                     const mc_math_trig *trig);
 
 /* Releases only the separately owned biome output, then restores zero state.
  * Accepts NULL or a zero-initialized generator. Never frees the borrowed manager,
- * its a/b/c/d arrays, the trig table, result wrappers or result blocks. */
+ * its a/b/c/d arrays, the trig table, result wrappers, result blocks or shared
+ * Random profile. Also accepts a failed initialization attempt. */
 void mc_normal_generator_free(mc_normal_generator *generator);
 
 /* Complete unpublished normal generation: reseed, fresh constructor data,
