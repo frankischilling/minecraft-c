@@ -1,7 +1,7 @@
 # Test scope and reproduction
 
 The [concrete World height and lighting contracts](world/runtime-lighting.md)
-pass 177 height and 2,000,383 queue checks within 33 selected cases on MSVC,
+pass 177 height and 2,000,382 queue checks within 33 selected cases on MSVC,
 GCC and Clang. Linux uses ASan/UBSan and leak detection. The queue unit performs
 one million-and-first actual append, verifies the complete ordered bootstrap
 and overflow transcript, and tests real nonempty pointer-array growth at a

@@ -14,6 +14,8 @@
 #define WORLD_LIMIT (256u * 1024u * 1024u)
 #define PROFILE_LIMIT (4u * 1024u * 1024u)
 
+_Static_assert(MC_LIGHT_QUEUE_LIMIT == 1000000u, "source light queue limit");
+
 static unsigned int checks;
 static mc_math_trig trig;
 static uint8_t zero_blocks[MC_CHUNK_BLOCKS];
@@ -671,7 +673,6 @@ static bool test_million(fixture *f)
     mc_light_submit_result result;
     mc_world_light_error error;
     const mc_light_bounds bounds = {0, 64, 0, 0, 64, 0};
-    CHECK(MC_LIGHT_QUEUE_LIMIT == 1000000u);
     CHECK(create_world(f, 4, 0, WORLD_LIMIT, MC_WORLD_STORAGE_OK));
     CHECK(publish(f, 4, 0, 0, 0));
     CHECK(mc_world_runtime_light_list_get(f->worlds[4], &initial, NULL) == MC_WORLD_STORAGE_OK);

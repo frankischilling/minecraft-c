@@ -1,7 +1,7 @@
 # Build and tests
 
 The [concrete World height/queue contracts](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
-pass 177 height and 2,000,383 queue checks within 33 selected cases on
+pass 177 height and 2,000,382 queue checks within 33 selected cases on
 MSVC/GCC/Clang, with Linux ASan/UBSan and leak detection. Real million-entry
 overflow, nonempty allocation-peak failure and exact console order are covered.
 All 588 inputs and 33 products per host are retained; formatting passes 305

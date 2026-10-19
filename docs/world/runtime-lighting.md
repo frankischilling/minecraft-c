@@ -80,7 +80,7 @@ exercise real constructed client Worlds, actual store-owned restored chunks,
 natural allocation limits and explicit shared-A scalar controls. Their
 qualification is recorded in [testing](../testing.md).
 
-All 33 selected cases pass on MSVC/GCC/Clang, including 177 height and 2,000,383
+All 33 selected cases pass on MSVC/GCC/Clang, including 177 height and 2,000,382
 queue checks, with Linux ASan/UBSan and leak detection. The real overflow
 transcript contains the naturally reached achievement and recipe lines before
 the single diagnostic. Nonempty-growth tests admit the final retained size
