@@ -21,10 +21,19 @@ typedef struct mc_java_int_set_limits {
     size_t max_allocation_bytes;
 } mc_java_int_set_limits;
 
-/* Defaults: 65536 entries, 8 MiB retained storage and 16 MiB peak live
- * allocations. Budgets include the owner, table and nodes, including both old
- * and new tables during growth; allocator overhead and borrowed outputs are
- * excluded. Zero budgets are valid. max_entries must not exceed INT32_MAX.
+typedef struct mc_java_int_set_allocator {
+    void *context;
+    void *(*allocate)(void *context, size_t bytes);
+    void (*deallocate)(void *context, void *storage);
+} mc_java_int_set_allocator;
+
+/* Defaults: 65536 entries, 8 MiB logical retained storage and 16 MiB peak
+ * reservation. Retained storage includes the owner, current table and linked
+ * nodes; peak reservation also includes the new node and all replacement
+ * tables reserved before growth. Allocator overhead and borrowed outputs are
+ * excluded. A caller-retained allocator may keep removed nodes, replaced
+ * tables and failed reservations; its callback must enforce any cumulative
+ * arena budget separately. Zero budgets are valid. max_entries must not exceed INT32_MAX.
  * These are resource bounds, not a Java initial-capacity/load-factor option. */
 mc_java_int_set_limits mc_java_int_set_default_limits(void);
 const char *mc_java_int_set_status_string(mc_java_int_set_status status);
@@ -37,10 +46,23 @@ const char *mc_java_int_set_status_string(mc_java_int_set_status status);
  * behavior are outside this interface. No node/iterator addresses are exposed.
  *
  * Give one owner exclusive access, do not copy it, and keep arguments/results
- * disjoint from its storage and each other. No callbacks, clocks or I/O occur.
- * Release any previous owner before reusing out. */
+ * disjoint from its storage and each other. The implementation performs no
+ * clocks or I/O. Allocator callbacks run synchronously and must not reenter or
+ * mutate the owner or its input/output storage. Release any previous owner
+ * before reusing out. */
 mc_java_int_set_status mc_java_int_set_create(const mc_java_int_set_limits *limits,
                                               mc_java_int_set **out);
+
+/* The default constructor above uses malloc/free. This constructor requires
+ * allocator and allocate; deallocate may be NULL for caller-retained storage.
+ * The allocator is copied into the owner and services every owner/table/node
+ * allocation and release. It may return uncleared suitably aligned storage.
+ * NULL storage is never passed to deallocate. The context and any retained
+ * arena must outlive all set operations. out remains unchanged on failure. */
+mc_java_int_set_status
+mc_java_int_set_create_with_allocator(const mc_java_int_set_limits *limits,
+                                      const mc_java_int_set_allocator *allocator,
+                                      mc_java_int_set **out);
 
 /* NULL returns zero/false. Queries do not allocate or change traversal state. */
 size_t mc_java_int_set_size(const mc_java_int_set *set);
@@ -63,10 +85,11 @@ mc_java_int_set_status mc_java_int_set_first(const mc_java_int_set *set, int32_t
 mc_java_int_set_status mc_java_int_set_copy_order(const mc_java_int_set *set, int32_t *output,
                                                   size_t capacity, size_t *count);
 
-/* Clear frees the nodes while retaining the logical table capacity/threshold.
+/* Clear releases the nodes while retaining the logical table capacity/threshold.
  * Remove and clear never shrink the table. NULL clear/free are accepted.
  * Discard the owner pointer after free. Neither operation performs external
- * lifetime tracking or changes any other set. */
+ * lifetime tracking or changes any other set. A NULL deallocate callback
+ * leaves released storage with the caller's arena. */
 void mc_java_int_set_clear(mc_java_int_set *set);
 void mc_java_int_set_free(mc_java_int_set *set);
 

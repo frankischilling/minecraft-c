@@ -4,6 +4,7 @@
 #include "mc/statistics/registry/registry.h"
 
 struct mc_registry_list;
+struct mc_item;
 typedef struct mc_statistic_map mc_statistic_map;
 
 struct mc_statistic_number_format {
@@ -55,5 +56,20 @@ mc_registry_status mc_registry_statistic_register(mc_statistic *statistic);
 mc_registry_status mc_registry_statistic_list_add(mc_registry_classes *classes,
                                                   struct mc_registry_list *list,
                                                   mc_statistic *statistic);
+mc_registry_status mc_registry_statistic_block_array(mc_registry_classes *classes,
+                                                     const mc_registry_string *key, int32_t base,
+                                                     mc_statistic ***out);
+mc_registry_status mc_registry_statistic_block_items(mc_registry_classes *classes);
+mc_registry_status mc_registry_statistic_other_items(mc_registry_classes *classes);
+mc_registry_status mc_registry_statistic_block_name(mc_registry_classes *classes,
+                                                    const mc_block *block,
+                                                    const mc_registry_string **out);
+mc_registry_status mc_registry_statistic_item_name(mc_registry_classes *classes,
+                                                   const struct mc_item *item,
+                                                   const mc_registry_string **out);
+mc_registry_status mc_registry_statistic_block_admitted(mc_registry_classes *classes,
+                                                        const mc_block *block, bool *out);
+mc_registry_status mc_registry_statistic_item_damageable(mc_registry_classes *classes,
+                                                         const struct mc_item *item, bool *out);
 
 #endif

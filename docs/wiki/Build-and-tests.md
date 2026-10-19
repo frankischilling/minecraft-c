@@ -1,10 +1,11 @@
 # Build and tests
 
-The [common-stat addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/registry.md)
-passes 15 selected Windows cases and 17 Linux cases, including 12,918 native
-contract checks and two explicit locale regressions. Imported resources match
-all 25 common-field rows per original side. These selected runs use Linux
-ASan/UBSan and leak detection; complete native bootstrap remains unfinished.
+The [statistic-array addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/registry.md)
+passes 23 selected Windows cases and 25 cases per Linux compiler, including two
+locale regressions. Six numeric graph prefixes match both untouched originals;
+String/null formatting matches 275 Java cases and all 1,114,112 uppercase
+code-point values. Selected Linux runs use ASan/UBSan and leak detection.
+Complete native bootstrap remains unfinished.
 
 Use a C17 compiler, CMake 3.24+, Ninja, and Python 3.10+ for tests. The current
 baseline is x86-64 Linux and Windows. Public tests need no display, audio,

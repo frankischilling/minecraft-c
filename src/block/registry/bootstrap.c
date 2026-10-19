@@ -179,11 +179,9 @@ mc_registry_status mc_registry_finish_blocks(mc_registry_classes *classes)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Block r array", NULL);
     array[0] = true;
     AT(3674);
-    TRY(mc_registry_statistics_active_use(classes));
-    /* invokestatic jl/gg.b first completes declaring-class initialization.
-     * Its item-array helper body remains a separate reached dependency. */
-    return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                            "Statistics b() item-array initialization unfinished", NULL);
+    TRY(mc_registry_statistic_block_items(classes));
+    AT(3677);
+    return MC_REGISTRY_OK;
 }
 
 #undef TRY

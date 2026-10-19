@@ -36,9 +36,9 @@ typedef struct mc_registry_translation_view {
 
 /* Execute the actual do/ch wrapper and nh/ii singleton initialization on the
  * same class owner used by Block/Item. Resource reads occur only when reached.
- * The singleton is published after both loads succeed. Formatted lookup and
- * caught-I/O stack-trace output remain explicit unfinished dependencies until
- * implemented; neither may be replaced with a successful empty callback. */
+ * The singleton is published after both loads succeed. Reached internal
+ * formatted lookups support String/null arguments and English uppercase.
+ * Caught-I/O stack-trace output remains an unfinished dependency. */
 mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classes *classes,
                                                               mc_registry_error *error);
 mc_registry_status mc_registry_classes_inspect_translation(const mc_registry_classes *classes,

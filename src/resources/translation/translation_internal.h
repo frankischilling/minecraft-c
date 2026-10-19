@@ -29,5 +29,10 @@ mc_registry_status mc_registry_translation_active_use(mc_registry_classes *class
 mc_registry_status mc_registry_translate(mc_registry_classes *classes,
                                          const mc_registry_string *key,
                                          const mc_registry_string **out);
+mc_registry_status mc_registry_translate_formatted(mc_registry_classes *classes,
+                                                   const mc_registry_string *key,
+                                                   const mc_registry_string *const *arguments,
+                                                   size_t argument_count,
+                                                   const mc_registry_string **out);
 
 #endif

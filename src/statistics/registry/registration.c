@@ -360,6 +360,23 @@ mc_registry_status mc_registry_classes_find_statistic(const mc_registry_classes 
     return MC_REGISTRY_OK;
 }
 
+mc_registry_status mc_registry_classes_statistic_entry(const mc_registry_classes *classes,
+                                                       size_t index, int32_t *id,
+                                                       const mc_statistic **out)
+{
+    if (classes == NULL || id == NULL || out == NULL || (const void *)id == (const void *)out)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    const mc_statistic_map *map = classes->statistics.a;
+    if (map == NULL || index >= map->size)
+        return MC_REGISTRY_INDEX_OUT_OF_RANGE;
+    const statistic_map_entry *entry = map->first;
+    for (size_t i = 0; i < index; ++i)
+        entry = entry->next;
+    *id = entry->id;
+    *out = entry->statistic;
+    return MC_REGISTRY_OK;
+}
+
 size_t mc_statistic_list_size(const mc_statistic_list *list)
 {
     return list == NULL ? 0 : list->count;

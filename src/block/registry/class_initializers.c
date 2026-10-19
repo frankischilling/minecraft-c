@@ -55,6 +55,7 @@ mc_registry_status mc_registry_block_prefix(mc_registry_classes *classes)
         classes->blocks.field = value;                                                             \
     } while (0)
     ARRAY(m, mc_block *, 130, 133);
+    classes->blocks.m_length = MC_REGISTRY_BLOCK_SLOTS;
     ARRAY(n, bool, 139, 141);
     ARRAY(o, bool, 147, 149);
     ARRAY(p, bool, 155, 157);

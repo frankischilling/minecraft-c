@@ -95,6 +95,11 @@ mc_registry_status mc_registry_classes_inspect_statistics(const mc_registry_clas
  * common class owner retires. Outputs must be disjoint from owner storage. */
 mc_registry_status mc_registry_classes_find_statistic(const mc_registry_classes *classes,
                                                       int32_t id, const mc_statistic **out);
+/* Native diagnostic first-insertion order, not Java HashMap traversal. Both
+ * outputs are required, disjoint, and unchanged on an out-of-range index. */
+mc_registry_status mc_registry_classes_statistic_entry(const mc_registry_classes *classes,
+                                                       size_t index, int32_t *id,
+                                                       const mc_statistic **out);
 const mc_statistic_fields *mc_statistic_fields_get(const mc_statistic *statistic);
 mc_statistic_kind mc_statistic_kind_get(const mc_statistic *statistic);
 mc_registry_status mc_statistic_item_id(const mc_statistic *statistic, int32_t *out);

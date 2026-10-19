@@ -2,6 +2,7 @@
 #define MC_BLOCK_REGISTRY_REGISTRY_H
 
 #include "mc/block/material/material.h"
+#include "mc/core/java/format.h"
 #include "mc/core/java/random_profile.h"
 
 #include <stddef.h>
@@ -43,6 +44,8 @@ typedef struct mc_registry_error {
     const char *message;
     int32_t initializer_pc;
     int32_t block_id;
+    /* Native source-operation diagnostics. Constructors, registration and
+     * reached helpers use this channel; it is not a Java Throwable stack. */
     const char *constructor_class;
     int32_t constructor_pc;
     mc_java_random_profile_status profile_status;
@@ -51,6 +54,7 @@ typedef struct mc_registry_error {
     const char *active_initializer_class;
     int32_t active_initializer_pc;
     int32_t item_argument;
+    mc_java_format_error format_error;
 } mc_registry_error;
 
 typedef struct mc_registry_options {

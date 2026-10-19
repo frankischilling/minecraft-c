@@ -1,13 +1,16 @@
 # Development status
 
-Native [common statistics](statistics/registry.md) now construct their real
-formatter configuration and register all 23 common owners on the shared class
-owner. Their full field projection matches both normally initialized originals
-on MSVC/GCC/Clang. The native unit passes 12,918 checks; selected runs pass 15
-Windows and 17 Linux cases with Linux sanitizers, including explicit locale
-regressions. The next block-stat helper at PC618, runtime number formatting,
-achievements, recipes and complete bootstrap/population/persistence remain
-unfinished. PR52 remains draft for the complete acceptance.
+Native [statistics](statistics/registry.md) now execute the block/item statistic
+array helpers, real translated names, source predicates and alias/list
+unification on the shared class owner. Entry order retains distinct prefixes
+before the actual recipe PC21 or achievement PC624 dependency. The reached
+[String/null formatter](reference/string-format.md) matches 275 captured JDK
+cases, 109 typed error operands and all 1,114,112 English-uppercase code-point
+values on MSVC, GCC and Clang. All six numeric statistic graph prefixes match
+untouched originals. Selected runs pass 23 Windows cases and 25 cases per Linux
+compiler with sanitizers, including two locale regressions. Runtime number
+formatting, achievements, recipes
+and complete bootstrap/population/persistence remain unfinished.
 
 Native [achievement-key loading](statistics/keys.md) now constructs actual
 shared class `b`, reads its imported resource, preserves String identities and
@@ -24,8 +27,8 @@ class owner. Ten selected cases pass on MSVC/GCC/Clang with Linux sanitizers:
 252 recorded JDK loads and 980 queries compare exactly, and the native file
 consumer matches all 633 properties and String identities from both original
 translation classes. Public filesystem tests use synthetic resources and
-Unicode roots. Formatted lookup, caught-I/O stack-trace output, statistics and
-complete bootstrap integration remain unfinished.
+Unicode roots. Reached String/null formatted lookup now runs; caught-I/O
+stack-trace output and complete bootstrap integration remain unfinished.
 
 The shared [Block](block/registry.md) and [Item](item/registry.md) class owner
 now executes both orders of the real initialization cycle, including all 106

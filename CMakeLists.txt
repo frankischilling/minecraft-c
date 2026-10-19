@@ -82,6 +82,8 @@ endif()
 add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
+    src/core/java/format.c
+    src/core/java/format_case.c
     src/core/java/properties.c
     src/core/java/reader.c
     src/core/java/random_profile.c
@@ -124,8 +126,11 @@ add_library(mc_registry STATIC
     src/item/registry/constructors.c
     src/item/registry/registration.c
     src/resources/translation/translation.c
+    src/resources/translation/format.c
     src/statistics/keys/keys.c
     src/statistics/registry/base.c
+    src/statistics/registry/arrays.c
+    src/statistics/registry/names.c
     src/statistics/registry/format.c
     src/statistics/registry/initializer.c
     src/statistics/registry/registration.c)
@@ -424,6 +429,11 @@ if(BUILD_TESTING)
     add_test(NAME core.java_int_set COMMAND mc_test_java_int_set)
     set_tests_properties(core.java_int_set PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
+    add_executable(mc_test_java_int_set_allocator tests/core/java/test_int_set_allocator.c)
+    target_link_libraries(mc_test_java_int_set_allocator PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_int_set_allocator COMMAND mc_test_java_int_set_allocator)
+    set_tests_properties(core.java_int_set_allocator PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
     add_executable(mc_test_java_properties tests/core/java/test_properties.c)
     target_link_libraries(mc_test_java_properties PRIVATE mc_core mc_build_options)
     add_test(NAME core.java_properties COMMAND mc_test_java_properties)
@@ -433,6 +443,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_java_properties_probe PRIVATE mc_core mc_build_options)
 
     add_executable(mc_test_java_reader tests/core/java/test_reader.c)
+    add_executable(mc_test_java_format tests/core/java/test_format.c)
+    target_link_libraries(mc_test_java_format PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_format COMMAND mc_test_java_format)
+    set_tests_properties(core.java_format PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+    add_executable(mc_java_format_probe tests/core/java/format_probe.c)
+    target_link_libraries(mc_java_format_probe PRIVATE mc_core mc_build_options)
+    add_executable(mc_java_case_probe tests/core/java/case_probe.c)
+    target_link_libraries(mc_java_case_probe PRIVATE mc_core mc_build_options)
     target_link_libraries(mc_test_java_reader PRIVATE mc_core mc_build_options)
     add_test(NAME core.java_reader COMMAND mc_test_java_reader)
     set_tests_properties(core.java_reader PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
@@ -469,6 +487,14 @@ if(BUILD_TESTING)
 
     add_executable(mc_statistic_registry_file_probe tests/statistics/registry/files_probe.c)
     target_link_libraries(mc_statistic_registry_file_probe PRIVATE mc_resources mc_build_options)
+
+    add_executable(mc_statistic_arrays_probe tests/statistics/registry/arrays_probe.c)
+    target_link_libraries(mc_statistic_arrays_probe PRIVATE mc_resources mc_build_options)
+
+    add_executable(mc_test_statistic_arrays tests/statistics/registry/test_arrays.c)
+    target_link_libraries(mc_test_statistic_arrays PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME statistics.arrays COMMAND mc_test_statistic_arrays)
+    set_tests_properties(statistics.arrays PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
     add_executable(mc_statistic_keys_file_probe tests/statistics/keys/files_probe.c)
     target_link_libraries(mc_statistic_keys_file_probe PRIVATE mc_resources mc_build_options)
@@ -585,6 +611,27 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME core.java_format_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_format.py"
+            --executable "$<TARGET_FILE:mc_java_format_probe>")
+    set_tests_properties(core.java_format_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 60)
+
+    add_test(NAME core.java_string_case_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_string_case.py"
+            --executable "$<TARGET_FILE:mc_java_case_probe>")
+    set_tests_properties(core.java_string_case_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 90)
+
+    add_test(NAME statistics.arrays_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/statistics/compare_arrays.py"
+            --executable "$<TARGET_FILE:mc_statistic_arrays_probe>")
+    set_tests_properties(statistics.arrays_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 60)
 
     add_test(NAME core.java_properties_observation
         COMMAND "${Python3_EXECUTABLE}"

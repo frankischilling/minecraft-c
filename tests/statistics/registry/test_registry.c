@@ -86,7 +86,14 @@ static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
            a->profile_status == b->profile_status &&
            a->active_initializer_class == b->active_initializer_class &&
            a->active_initializer_pc == b->active_initializer_pc &&
-           a->item_argument == b->item_argument;
+           a->item_argument == b->item_argument &&
+           a->format_error.status == b->format_error.status &&
+           a->format_error.offset == b->format_error.offset &&
+           a->format_error.length == b->format_error.length &&
+           a->format_error.value == b->format_error.value &&
+           a->format_error.flags == b->format_error.flags &&
+           a->format_error.conversion == b->format_error.conversion &&
+           a->format_error.date_time == b->format_error.date_time;
 }
 
 static bool same_base(const mc_registry_statistic_base_view *a,
@@ -230,13 +237,80 @@ typedef struct dependencies {
     mc_text_number_locale locale;
 } dependencies;
 
+static uint64_t advanced(uint64_t value, size_t count)
+{
+    while (count-- != 0)
+        value *= UINT64_C(1181783497276652981);
+    return value;
+}
+
+static mc_java_random *random_at(const mc_registry_classes *owner, size_t id)
+{
+    if (owner->blocks.m == NULL || id >= owner->blocks.m_length || owner->blocks.m[id] == NULL)
+        return NULL;
+    if (id == 23)
+        return owner->blocks.m[id]->subtype.xq.a;
+    if (id == 54)
+        return owner->blocks.m[id]->subtype.e.a;
+    return owner->blocks.m[id]->subtype.tc.a;
+}
+
+static size_t random_owners(const mc_registry_classes *owner, mc_java_random **out)
+{
+    size_t count = 0;
+    if (owner != NULL) {
+        static const size_t block_ids[] = {23, 54, 61, 62};
+        for (size_t i = 0; i < COUNT(block_ids); ++i) {
+            mc_java_random *random = random_at(owner, block_ids[i]);
+            if (random != NULL)
+                out[count++] = random;
+        }
+        if (owner->items.b != NULL)
+            out[count++] = owner->items.b;
+    }
+    return count;
+}
+
+static bool same_random(const mc_java_random *a, const mc_java_random *b)
+{
+    uint64_t left, right;
+    memcpy(&left, &a->next_next_gaussian, sizeof(left));
+    memcpy(&right, &b->next_next_gaussian, sizeof(right));
+    return a->state == b->state && left == right &&
+           a->have_next_next_gaussian == b->have_next_next_gaussian;
+}
+
+static bool dependencies_cold(const mc_registry_classes *owner)
+{
+    mc_registry_block_view block;
+    mc_registry_item_view item;
+    return mc_registry_classes_inspect_blocks(owner, &block, NULL) == MC_REGISTRY_OK &&
+           mc_registry_classes_inspect_items(owner, &item, NULL) == MC_REGISTRY_OK &&
+           block.phase == MC_REGISTRY_COLD && block.named_blocks == 0 && block.m == NULL &&
+           owner->blocks.m_length == 0 && item.phase == MC_REGISTRY_COLD && item.named_items == 0 &&
+           item.b == NULL && item.c == NULL;
+}
+
 static bool dependencies_unchanged(const dependencies *d, const mc_registry_classes *owner)
 {
-    if (atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed) != d->uniquifier ||
+    mc_java_random *randoms[5] = {0};
+    size_t count = random_owners(owner, randoms);
+    if (atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed) !=
+            advanced(d->uniquifier, count) ||
         atomic_load_explicit(&d->profile->holder_phase, memory_order_relaxed) !=
             MC_JAVA_RANDOM_HOLDER_COLD ||
         d->profile->math != NULL || mc_java_random_profile_allocation_bytes(d->profile) != d->bytes)
         return false;
+    for (size_t i = 0; i < count; ++i) {
+        uint64_t cache;
+        memcpy(&cache, &randoms[i]->next_next_gaussian, sizeof(cache));
+        if (randoms[i]->state > UINT64_C(0xffffffffffff) || cache != 0 ||
+            randoms[i]->have_next_next_gaussian)
+            return false;
+        for (size_t j = 0; j < i; ++j)
+            if (randoms[i] == randoms[j])
+                return false;
+    }
     for (size_t i = 0; i < MC_MATERIAL_COUNT; ++i) {
         mc_material *m = mc_materials_get(d->materials, (mc_material_id)i);
         if (m != d->material[i] || mc_material_e(m) != d->material_e[i] ||
@@ -248,11 +322,25 @@ static bool dependencies_unchanged(const dependencies *d, const mc_registry_clas
         mc_registry_item_view item;
         if (mc_registry_classes_inspect_blocks(owner, &block, NULL) != MC_REGISTRY_OK ||
             mc_registry_classes_inspect_items(owner, &item, NULL) != MC_REGISTRY_OK ||
-            block.phase != MC_REGISTRY_COLD || block.named_blocks != 0 || block.m != NULL ||
-            item.phase != MC_REGISTRY_COLD || item.named_items != 0 || item.b != NULL ||
-            item.c != NULL)
+            block.phase == MC_REGISTRY_INITIALIZING || item.phase == MC_REGISTRY_INITIALIZING)
+            return false;
+        if (block.phase == MC_REGISTRY_COLD &&
+            (block.named_blocks != 0 || block.m != NULL || owner->blocks.m_length != 0))
+            return false;
+        if (item.phase == MC_REGISTRY_COLD &&
+            (item.named_items != 0 || item.b != NULL || item.c != NULL))
             return false;
     }
+    return true;
+}
+
+/* Move the next owner's baseline only after checking the real publications,
+ * exact wrapped U advance and untouched Math/material dependencies. */
+static bool accept_dependencies(dependencies *d, const mc_registry_classes *owner)
+{
+    if (!dependencies_unchanged(d, owner))
+        return false;
+    d->uniquifier = atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed);
     return true;
 }
 
@@ -350,7 +438,7 @@ static int test_base(mc_registry_side side, const dependencies *d)
     CHECK(mc_registry_classes_initialize_statistic_base(NULL, NULL) ==
           MC_REGISTRY_INVALID_ARGUMENT);
     CHECK(mc_registry_classes_initialize_statistic_base(owner, NULL) == MC_REGISTRY_OK &&
-          check_base(owner, d) == 0);
+          check_base(owner, d) == 0 && dependencies_cold(owner));
     mc_registry_statistic_view stats;
     CHECK(mc_registry_classes_inspect_statistics(owner, &stats, NULL) == MC_REGISTRY_OK);
     CHECK(stats.phase == MC_REGISTRY_COLD && stats.initializer_pc == -1 && stats.map_size == 0 &&
@@ -379,6 +467,17 @@ static int check_retry(mc_registry_classes *owner, const resources *r)
           before.phase == MC_REGISTRY_FAILED);
     const mc_registry_error failure = owner->statistics_state.failure;
     size_t bytes = owner->allocation_bytes;
+    const uint64_t u =
+        atomic_load_explicit(&owner->options.random_profile->uniquifier, memory_order_relaxed);
+    const size_t profile_bytes =
+        mc_java_random_profile_allocation_bytes(owner->options.random_profile);
+    mc_java_random *randoms[5] = {0}, *after_randoms[5] = {0};
+    mc_java_random saved_randoms[5];
+    const size_t random_count = random_owners(owner, randoms);
+    for (size_t i = 0; i < random_count; ++i)
+        saved_randoms[i] = *randoms[i];
+    const size_t sizes[] = {mc_statistic_list_size(before.b), mc_statistic_list_size(before.c),
+                            mc_statistic_list_size(before.d), mc_statistic_list_size(before.e)};
     size_t reads[3], opens[3], closes[3];
     const mc_statistic *named[23] = {0};
     for (size_t i = 0; i < COUNT(named); ++i)
@@ -393,17 +492,27 @@ static int check_retry(mc_registry_classes *owner, const resources *r)
           MC_REGISTRY_INVALID_ARGUMENT);
     CHECK(mc_registry_classes_initialize_statistics(owner, &error) ==
           MC_REGISTRY_FAILED_INITIALIZATION);
-    CHECK(error.status == MC_REGISTRY_FAILED_INITIALIZATION &&
-          error.active_initializer_class == failure.active_initializer_class &&
-          error.active_initializer_pc == failure.active_initializer_pc &&
-          error.constructor_pc == failure.constructor_pc);
+    mc_registry_error expected_error = failure;
+    expected_error.status = MC_REGISTRY_FAILED_INITIALIZATION;
+    CHECK(same_error(&error, &expected_error));
     CHECK(mc_registry_classes_inspect_statistics(owner, &after, NULL) == MC_REGISTRY_OK);
     CHECK(after.phase == before.phase && after.initializer_pc == before.initializer_pc &&
           after.map_size == before.map_size && after.b == before.b && after.c == before.c &&
           after.d == before.d && after.e == before.e && after.named == before.named &&
-          after.C == before.C && after.D == before.D && after.E == before.E && after.F == before.F);
+          after.C == before.C && after.D == before.D && after.E == before.E &&
+          after.F == before.F && after.G == before.G && after.H == before.H);
+    CHECK(mc_statistic_list_size(after.b) == sizes[0] &&
+          mc_statistic_list_size(after.c) == sizes[1] &&
+          mc_statistic_list_size(after.d) == sizes[2] &&
+          mc_statistic_list_size(after.e) == sizes[3]);
     CHECK(same_error(&failure, &owner->statistics_state.failure) &&
           owner->allocation_bytes == bytes);
+    CHECK(atomic_load_explicit(&owner->options.random_profile->uniquifier, memory_order_relaxed) ==
+              u &&
+          mc_java_random_profile_allocation_bytes(owner->options.random_profile) == profile_bytes);
+    CHECK(random_owners(owner, after_randoms) == random_count);
+    for (size_t i = 0; i < random_count; ++i)
+        CHECK(after_randoms[i] == randoms[i] && same_random(&saved_randoms[i], after_randoms[i]));
     for (size_t i = 0; i < COUNT(named); ++i)
         CHECK(after.named[i] == named[i]);
     for (size_t i = 0; i < COUNT(reads); ++i)
@@ -421,18 +530,33 @@ static int check_prefix(mc_registry_classes *owner, size_t *published)
     mc_registry_statistic_view view;
     CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK);
     size_t b = mc_statistic_list_size(view.b), c = mc_statistic_list_size(view.c), n = 0;
-    CHECK(b <= COUNT(ids) && c <= b && view.map_size <= b && c <= view.map_size);
-    CHECK(mc_statistic_list_size(view.d) == 0 && mc_statistic_list_size(view.e) == 0);
-    CHECK(view.C == NULL && view.D == NULL && view.E == NULL && view.F == NULL && !view.G &&
-          !view.H);
     for (size_t i = 0; i < COUNT(ids); ++i) {
         if (view.named[i] != NULL) {
             CHECK(i == n);
             ++n;
         }
     }
-    CHECK(n <= c && b <= n + 1);
-    for (size_t i = 0; i < b; ++i) {
+    if (n < COUNT(ids)) {
+        /* Before all common publications, exactly the old constructor/register
+         * prefix is reached; no Block/Item array helper has run. */
+        CHECK(dependencies_cold(owner));
+        CHECK(b <= COUNT(ids) && c <= b && view.map_size <= b && c <= view.map_size);
+        CHECK(mc_statistic_list_size(view.d) == 0 && mc_statistic_list_size(view.e) == 0);
+        CHECK(view.C == NULL && view.D == NULL && view.E == NULL && view.F == NULL && !view.G &&
+              !view.H);
+        CHECK(n <= c && b <= n + 1);
+    } else {
+        /* The real nested helpers can append many ITEM stats and remove list-b
+         * aliases. They never remove the first23 GENERAL objects or ID cells. */
+        CHECK(c == COUNT(ids) && b >= COUNT(ids) && view.map_size >= COUNT(ids));
+        CHECK(b <= view.map_size + 1 && mc_statistic_list_size(view.d) <= view.map_size &&
+              mc_statistic_list_size(view.e) <= view.map_size);
+        CHECK(view.C == NULL && view.D == NULL);
+        if (view.G || view.H)
+            CHECK(view.E != NULL && view.F != NULL);
+    }
+    const size_t common_b = b < COUNT(ids) ? b : COUNT(ids);
+    for (size_t i = 0; i < common_b; ++i) {
         const mc_statistic *statistic = NULL, *found = NULL;
         CHECK(mc_statistic_list_get(view.b, i, &statistic) == MC_REGISTRY_OK && statistic != NULL);
         const mc_statistic_fields *fields = mc_statistic_fields_get(statistic);
@@ -454,7 +578,31 @@ cleanup:
     return result;
 }
 
-static int test_common(mc_registry_side side, const dependencies *d, int mode)
+static bool completed_array_prefix(mc_registry_classes *owner, const mc_registry_error *error)
+{
+    mc_registry_statistic_view view;
+    mc_registry_block_view block;
+    mc_registry_item_view item;
+    mc_java_random *randoms[5] = {0};
+    if (mc_registry_classes_inspect_statistics(owner, &view, NULL) != MC_REGISTRY_OK ||
+        mc_registry_classes_inspect_blocks(owner, &block, NULL) != MC_REGISTRY_OK ||
+        mc_registry_classes_inspect_items(owner, &item, NULL) != MC_REGISTRY_OK)
+        return false;
+    const bool client = owner->options.side == MC_REGISTRY_CLIENT;
+    return view.phase == MC_REGISTRY_FAILED && view.initializer_pc == 618 && view.C == NULL &&
+           view.D == NULL && view.E != NULL && view.F != NULL && view.G && view.H &&
+           view.map_size > COUNT(ids) && mc_statistic_list_size(view.c) == COUNT(ids) &&
+           block.phase == MC_REGISTRY_FAILED && block.initializer_pc == 3674 &&
+           item.phase == MC_REGISTRY_READY && random_owners(owner, randoms) == 5 &&
+           error->status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error->initializer_pc == 3674 &&
+           error->active_initializer_pc == 3674 && error->active_initializer_class != NULL &&
+           strcmp(error->active_initializer_class, client ? "uu" : "na") == 0 &&
+           error->constructor_class != NULL &&
+           strcmp(error->constructor_class, client ? "jl" : "gg") == 0 &&
+           error->constructor_pc == 21;
+}
+
+static int test_common(mc_registry_side side, dependencies *d, int mode)
 {
     int result = 1;
     mc_registry_classes *owner = NULL;
@@ -482,9 +630,9 @@ static int test_common(mc_registry_side side, const dependencies *d, int mode)
         CHECK(r.first_observations != 0 && r.first != NULL && r.stream[0].opens == 1 &&
               r.stream[1].opens == 1 && r.stream[2].opens == 1);
         if (mode == 0) {
-            CHECK(view.initializer_pc == 618 && error.active_initializer_pc == 618);
-            CHECK(n == 23 && view.map_size == 23 && mc_statistic_list_size(view.b) == 23 &&
-                  mc_statistic_list_size(view.c) == 23);
+            CHECK(completed_array_prefix(owner, &error));
+            CHECK(n == COUNT(ids) && mc_statistic_list_size(view.b) >= COUNT(ids) &&
+                  mc_statistic_list_size(view.c) == COUNT(ids));
             CHECK(view.b != view.c && view.b != view.d && view.b != view.e && view.c != view.d &&
                   view.c != view.e && view.d != view.e);
             mc_registry_statistic_base_view base;
@@ -543,7 +691,7 @@ static int test_common(mc_registry_side side, const dependencies *d, int mode)
         }
     }
     CHECK(r.stream[0].closes == 0 && r.stream[1].closes == 0 && !r.invalid);
-    CHECK(check_retry(owner, &r) == 0 && dependencies_unchanged(d, owner));
+    CHECK(check_retry(owner, &r) == 0 && accept_dependencies(d, owner));
     result = 0;
 cleanup:
     if (retire(owner) != 0)
@@ -665,7 +813,7 @@ static int test_methods(mc_registry_side side, const dependencies *d, bool missi
         CHECK(mc_statistic_list_size(view.d) == 0 && mc_statistic_list_size(view.e) == 0);
     }
     owner->entered = 0;
-    CHECK(!r.invalid && dependencies_unchanged(d, owner));
+    CHECK(!r.invalid && dependencies_cold(owner) && dependencies_unchanged(d, owner));
     result = 0;
 cleanup:
     if (owner != NULL)
@@ -680,8 +828,7 @@ typedef struct budget_result {
     bool end;
 } budget_result;
 
-static int budget_trial(mc_registry_side side, const dependencies *d, size_t maximum,
-                        budget_result *out)
+static int budget_trial(mc_registry_side side, dependencies *d, size_t maximum, budget_result *out)
 {
     int result = 1;
     mc_registry_classes *owner = NULL;
@@ -705,9 +852,9 @@ static int budget_trial(mc_registry_side side, const dependencies *d, size_t max
         out->end = status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         CHECK(out->bytes <= maximum);
         if (out->end)
-            CHECK(view.initializer_pc == 618 && out->named == 23 && out->map == 23 &&
-                  out->b == 23 && out->c == 23);
-        CHECK(check_retry(owner, &r) == 0 && dependencies_unchanged(d, owner));
+            CHECK(completed_array_prefix(owner, &owner->statistics_state.failure) &&
+                  out->named == COUNT(ids));
+        CHECK(check_retry(owner, &r) == 0 && accept_dependencies(d, owner));
     }
     result = 0;
 cleanup:
@@ -716,7 +863,7 @@ cleanup:
     return result;
 }
 
-static int test_budgets(mc_registry_side side, const dependencies *d)
+static int test_budgets(mc_registry_side side, dependencies *d)
 {
     int result = 1;
     size_t low = sizeof(mc_registry_classes), high = 4u * 1024u * 1024u;
@@ -741,7 +888,10 @@ static int test_budgets(mc_registry_side side, const dependencies *d)
         CHECK(budget_trial(side, d, limits[i], &current) == 0);
         CHECK(current.end == (limits[i] >= low));
         CHECK(current.bytes >= previous.bytes && current.named >= previous.named &&
-              current.map >= previous.map && current.b >= previous.b && current.c >= previous.c);
+              current.map >= previous.map && current.c >= previous.c);
+        /* List-b aliases are removed by real unification. Registration may
+         * append one owner before its map publication, but never two. */
+        CHECK(current.b <= current.map + 1 && current.c <= current.b);
         previous = current;
     }
     result = 0;

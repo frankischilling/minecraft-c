@@ -221,6 +221,8 @@ typedef struct mc_block_arguments {
 typedef struct mc_registry_block_storage {
     mc_block_sound *d, *e, *f, *g, *h, *i, *j, *k, *l;
     mc_block **m;
+    /* Native extent metadata for the actual retained m array. */
+    size_t m_length;
     bool *n, *o, *p;
     int32_t *q;
     bool *r;

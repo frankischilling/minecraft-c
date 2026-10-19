@@ -136,14 +136,19 @@ static mc_registry_status initialize(mc_registry_classes *classes)
     status = mc_registry_literal_ascii(classes, "stat.mineBlock", &mine_block);
     if (status != MC_REGISTRY_OK)
         return status;
-    (void)mine_block;
     mc_registry_initializer_stage(classes, 616); /* int argument 16777216 */
     mc_registry_initializer_stage(classes, 618);
-    /* This source call is the next real dependency. Never publish C621 or
-     * run achievements624/G628/H632 as though that call had returned. */
+    mc_statistic **blocks = NULL;
+    status = mc_registry_statistic_block_array(classes, mine_block, INT32_C(16777216), &blocks);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_registry_initializer_stage(classes, 621);
+    classes->statistics.C = blocks;
+    mc_registry_initializer_stage(classes, 624);
+    /* The next invokestatic must initialize the actual achievement owners
+     * and icons. No empty force-initialization callback may stand in for it. */
     return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                            "Statistics block-statistics helper a(String,int) at618 unfinished",
-                            NULL);
+                            "Achievement class initialization ep/cy at624 unfinished", NULL);
 }
 
 mc_registry_status mc_registry_statistics_active_use(mc_registry_classes *classes)

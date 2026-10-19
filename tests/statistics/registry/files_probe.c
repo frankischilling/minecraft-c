@@ -120,8 +120,9 @@ int main(int argc, char **argv)
     if (initialized != MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY ||
         error.status != MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY ||
         error.active_initializer_class == NULL ||
-        strcmp(error.active_initializer_class, client ? "jl" : "gg") != 0 ||
-        error.active_initializer_pc != 618)
+        strcmp(error.active_initializer_class, client ? "uu" : "na") != 0 ||
+        error.active_initializer_pc != 3674 || error.constructor_class == NULL ||
+        strcmp(error.constructor_class, client ? "jl" : "gg") != 0 || error.constructor_pc != 21)
         goto cleanup;
     mc_registry_statistic_base_view base;
     mc_registry_statistic_view statistics;
@@ -131,16 +132,16 @@ int main(int argc, char **argv)
         base.c == NULL || base.b == base.c || base.i == NULL || base.j == NULL || base.k == NULL ||
         base.i == base.j || base.i == base.k || base.j == base.k ||
         statistics.phase != MC_REGISTRY_FAILED || statistics.initializer_pc != 618 ||
-        statistics.map_size != COMMON || statistics.named == NULL || statistics.b == NULL ||
+        statistics.map_size < COMMON || statistics.named == NULL || statistics.b == NULL ||
         statistics.c == NULL || statistics.d == NULL || statistics.e == NULL ||
         statistics.b == statistics.c || statistics.b == statistics.d ||
         statistics.b == statistics.e || statistics.c == statistics.d ||
         statistics.c == statistics.e || statistics.d == statistics.e ||
-        mc_statistic_list_size(statistics.b) != COMMON ||
+        mc_statistic_list_size(statistics.b) < COMMON ||
         mc_statistic_list_size(statistics.c) != COMMON ||
-        mc_statistic_list_size(statistics.d) != 0 || mc_statistic_list_size(statistics.e) != 0 ||
-        statistics.C != NULL || statistics.D != NULL || statistics.E != NULL ||
-        statistics.F != NULL || statistics.G || statistics.H ||
+        mc_statistic_list_size(statistics.d) == 0 || mc_statistic_list_size(statistics.e) != 0 ||
+        statistics.C != NULL || statistics.D != NULL || statistics.E == NULL ||
+        statistics.F == NULL || !statistics.G || !statistics.H ||
         statistics.duplicate_message != NULL)
         goto cleanup;
     const mc_statistic_formatter *formatters[3] = {base.i, base.j, base.k};

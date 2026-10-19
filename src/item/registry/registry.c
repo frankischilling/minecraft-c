@@ -92,10 +92,9 @@ mc_registry_status mc_registry_items_active_use(mc_registry_classes *classes)
         goto done;
     classes->current_item = NULL;
     state->pc = 2664;
-    status = mc_registry_statistics_active_use(classes);
+    status = mc_registry_statistic_other_items(classes);
     if (status == MC_REGISTRY_OK)
-        status = mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                  "Statistics c() item-array initialization unfinished", NULL);
+        state->pc = 2667;
 done:
     state->phase = status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED;
     if (status != MC_REGISTRY_OK)

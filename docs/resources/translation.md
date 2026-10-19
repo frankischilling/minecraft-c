@@ -42,8 +42,14 @@ load PC26 or PC40. Malformed Unicode fails there with ILLEGAL_ARGUMENT and
 retains earlier puts. A caught read error reaches the explicitly unfinished
 `printStackTrace` effect at constructor PC48; it does not publish an empty or
 partially loaded singleton as success. Missing resource configuration stops at
-the reached open operation. Formatted lookup, statistics, achievements and
-complete registry/bootstrap wiring remain unfinished.
+the reached open operation. Internal formatted lookup now performs the real
+property fallback and reached [String/null formatting](../reference/string-format.md).
+Each nonempty successful result has fresh String identity; empty results share
+the owner's empty literal. Format errors preserve the initialized Translation
+class and leave the output unchanged. Native registry errors retain the
+formatter's typed diagnostics and the reached `nh/ii` operation PC12; these
+are source-operation diagnostics, not Java Throwable stacks. Achievements,
+recipes and complete registry/bootstrap wiring remain unfinished.
 
 ## Evidence and tests
 

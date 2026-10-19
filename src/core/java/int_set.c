@@ -18,10 +18,29 @@ struct int_set_node {
 
 struct mc_java_int_set {
     mc_java_int_set_limits limits;
+    mc_java_int_set_allocator allocator;
     int_set_node **buckets;
     size_t size;
     uint32_t capacity, threshold;
 };
+
+static void *int_set_default_allocate(void *context, size_t bytes)
+{
+    (void)context;
+    return malloc(bytes);
+}
+
+static void int_set_default_deallocate(void *context, void *storage)
+{
+    (void)context;
+    free(storage);
+}
+
+static void int_set_release(const mc_java_int_set_allocator *allocator, void *storage)
+{
+    if (storage != NULL && allocator->deallocate != NULL)
+        allocator->deallocate(allocator->context, storage);
+}
 
 static bool int_set_sum(size_t left, size_t right, size_t *out)
 {
@@ -312,7 +331,7 @@ static void int_set_resize(mc_java_int_set *set, int_set_node **table, uint32_t 
             }
         }
     }
-    free(set->buckets);
+    int_set_release(&set->allocator, set->buckets);
     set->buckets = table;
     set->capacity = capacity;
     set->threshold = int_set_threshold(capacity);
@@ -421,8 +440,20 @@ const char *mc_java_int_set_status_string(mc_java_int_set_status status)
 mc_java_int_set_status mc_java_int_set_create(const mc_java_int_set_limits *requested,
                                               mc_java_int_set **out)
 {
-    if (out == NULL)
+    const mc_java_int_set_allocator allocator = {.context = NULL,
+                                                 .allocate = int_set_default_allocate,
+                                                 .deallocate = int_set_default_deallocate};
+    return mc_java_int_set_create_with_allocator(requested, &allocator, out);
+}
+
+mc_java_int_set_status
+mc_java_int_set_create_with_allocator(const mc_java_int_set_limits *requested,
+                                      const mc_java_int_set_allocator *allocator,
+                                      mc_java_int_set **out)
+{
+    if (out == NULL || allocator == NULL || allocator->allocate == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
+    const mc_java_int_set_allocator selected = *allocator;
     mc_java_int_set_limits limits =
         requested == NULL ? mc_java_int_set_default_limits() : *requested;
     if (limits.max_entries > (size_t)INT32_MAX)
@@ -430,10 +461,10 @@ mc_java_int_set_status mc_java_int_set_create(const mc_java_int_set_limits *requ
     if (limits.max_retained_bytes < sizeof(mc_java_int_set) ||
         limits.max_allocation_bytes < sizeof(mc_java_int_set))
         return MC_JAVA_INT_SET_LIMIT;
-    mc_java_int_set *set = malloc(sizeof(*set));
+    mc_java_int_set *set = selected.allocate(selected.context, sizeof(*set));
     if (set == NULL)
         return MC_JAVA_INT_SET_ALLOCATION_FAILED;
-    *set = (mc_java_int_set){.limits = limits};
+    *set = (mc_java_int_set){.limits = limits, .allocator = selected};
     *out = set;
     return MC_JAVA_INT_SET_OK;
 }
@@ -493,22 +524,22 @@ mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bo
     }
     if (retained > set->limits.max_retained_bytes || peak > set->limits.max_allocation_bytes)
         return MC_JAVA_INT_SET_LIMIT;
-    int_set_node *node = malloc(sizeof(*node));
+    int_set_node *node = set->allocator.allocate(set->allocator.context, sizeof(*node));
     if (node == NULL)
         return MC_JAVA_INT_SET_ALLOCATION_FAILED;
+    *node = (int_set_node){.key = key, .hash = hash};
     int_set_node **tables[2] = {NULL, NULL};
     for (size_t i = 0; i < table_count; ++i) {
-        tables[i] = malloc(table_bytes[i]);
+        tables[i] = set->allocator.allocate(set->allocator.context, table_bytes[i]);
         if (tables[i] == NULL) {
             for (size_t j = 0; j < i; ++j)
-                free(tables[j]);
-            free(node);
+                int_set_release(&set->allocator, tables[j]);
+            int_set_release(&set->allocator, node);
             return MC_JAVA_INT_SET_ALLOCATION_FAILED;
         }
         for (uint32_t j = 0; j < capacities[i]; ++j)
             tables[i][j] = NULL;
     }
-    *node = (int_set_node){.key = key, .hash = hash};
     size_t table_index = 0;
     if (initial) {
         int_set_resize(set, tables[table_index], capacities[table_index]);
@@ -562,7 +593,7 @@ mc_java_int_set_status mc_java_int_set_remove(mc_java_int_set *set, int32_t key,
         if (node->next != NULL)
             node->next->previous = node->previous;
     }
-    free(node);
+    int_set_release(&set->allocator, node);
     --set->size;
     *changed = true;
     return MC_JAVA_INT_SET_OK;
@@ -605,7 +636,7 @@ void mc_java_int_set_clear(mc_java_int_set *set)
         int_set_node *node = set->buckets[i];
         while (node != NULL) {
             int_set_node *next = node->next;
-            free(node);
+            int_set_release(&set->allocator, node);
             node = next;
         }
         set->buckets[i] = NULL;
@@ -617,7 +648,8 @@ void mc_java_int_set_free(mc_java_int_set *set)
 {
     if (set == NULL)
         return;
+    const mc_java_int_set_allocator allocator = set->allocator;
     mc_java_int_set_clear(set);
-    free(set->buckets);
-    free(set);
+    int_set_release(&allocator, set->buckets);
+    int_set_release(&allocator, set);
 }

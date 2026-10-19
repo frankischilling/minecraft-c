@@ -7,17 +7,20 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
-The current [common-stat addition](statistics/registry.md) passes 15 selected
-cases on native Windows MSVC and 17 on Linux GCC/Clang with ASan/UBSan and leak
-detection. Its unit reports 12,918 checks; explicit English/C.UTF-8 and invalid
-category profiles report 12,919 each. The real imported-resource probe matches
-all 25 common-field protocol rows from each normally initialized original in
-three JVM modes. Complete native statistics initialization remains unfinished
-at PC618. The selected run retains every earlier Reader, Properties,
-Translation, key and Block/Item comparison; current budget-search counts are
-4,454 Translation, 103,163 Block and 531,481 Item checks. All 460 code/tool/fixture
-inputs match before/after and across the three hosts. This is a selected local
-run; it does not replace the separately recorded complete local matrix.
+The current [statistic-array addition](statistics/registry.md) passes 23 selected
+cases on native Windows MSVC and 25 on Linux GCC/Clang with ASan/UBSan and leak
+detection. Its units report 14,564 statistic checks and 3,841,912 array checks;
+each explicit Linux locale regression reports 14,565 statistic checks.
+All six numeric array/map/list graphs match actual original prefixes from 18
+JDI captures. The [formatter](reference/string-format.md) matches 275 captured
+cases, 109 typed error operands and all 1,114,112 uppercase code-point values.
+Its unit has 613 checks. Integer-set allocator failure coverage passes
+15,313,212 checks and retains the historical captured JDK histories.
+The imported-resource consumers retain every earlier common-stat, Reader,
+Properties, Translation, key and Block/Item comparison. All 495 code/tool/fixture
+inputs match before/after and across the three hosts. This selected local run
+does not replace the separately recorded complete local matrix. Complete
+native bootstrap remains unfinished before recipe PC21 or achievement PC624.
 
 The current [Reader](reference/reader.md) and [achievement-key](statistics/keys.md)
 checkpoint passed 14 selected cases on MSVC/GCC/Clang with Linux sanitizers.
