@@ -1,6 +1,6 @@
 # Development status
 
-The [native base-World constructor](world/construction.md) now retains one
+At `e227e57`, the [native base-World constructor](world/construction.md) retains one
 43-field identity through ordered construction, failure and retirement. Direct,
 copied and already-loaded normal paths can complete with actual Info,
 Dimension/biome and provider owners. Five new cases pass 12,474 native checks;
@@ -8,6 +8,11 @@ the separate [Dimension replay](reference/dimension.md) matches 48,782
 original-derived rows per side on MSVC, GCC and Clang. All 97 public cases pass
 per compiler, with Linux sanitizers. Full registry/bootstrap/subclass startup,
 fresh spawn, complete population and live-player saves remain unfinished.
+
+A compiler compatibility follow-up preserves the C17 allocation layout and all
+material assertions. Five affected cases pass on MSVC, GCC and Clang; the
+[test record](testing.md) distinguishes this selected run from the complete
+constructor checkpoint.
 
 The [SavedData ID owner](reference/saved-data-ids.md) passes 196,823 native
 checks and matches 78 original-derived memory rows on MSVC, GCC and Clang.

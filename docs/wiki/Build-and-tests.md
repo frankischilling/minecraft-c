@@ -34,7 +34,7 @@ the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
 The [native World construction checkpoint](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
-passes all 97 public cases on MSVC and Linux GCC/Clang, with Linux sanitizers.
+at `e227e57` passes all 97 public cases on MSVC and Linux GCC/Clang, with Linux sanitizers.
 Five new cases pass 12,474 native checks. The separate
 [Dimension replay](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
 matches 48,782 original-derived rows per side and checks corruption/protocol

@@ -8,11 +8,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Older MSVC diagnoses this standard C17 flexible array as an extension. */
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 typedef struct saved_id_entry {
     mc_world_saved_id id;
     struct saved_id_entry *next;
     uint16_t units[];
 } saved_id_entry;
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 struct mc_world_saved_data {
     mc_world_saved_data_limits limits;

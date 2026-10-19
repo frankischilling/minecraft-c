@@ -8,7 +8,8 @@ static unsigned int checks;
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
         ++checks;                                                                                  \
-        if (!(condition)) {                                                                        \
+        bool check_passed = (condition);                                                           \
+        if (!check_passed) {                                                                       \
             fprintf(stderr, "%s:%d: failed: %s\n", __FILE__, __LINE__, #condition);                \
             goto cleanup;                                                                          \
         }                                                                                          \

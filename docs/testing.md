@@ -7,7 +7,16 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
-The [World construction checkpoint](world/construction.md) passes all 97 public
+A following MSVC 19.44 compatibility change scopes C4200 suppression to the
+standard C17 flexible-array declaration and evaluates material-test conditions
+through a local boolean. The material unit, SavedData unit/replay and two World
+constructor cases pass on MSVC (0.61s), GCC (0.69s) and Clang (0.70s), with Linux
+sanitizers. Counts remain 28,623 material, 196,823 ID, 5,548 prefix and 4,318 GAME
+checks, plus 78 original-derived memory rows. All 377 source inputs remain
+unchanged across these selected runs; formatting still passes 196 C/header
+files. The complete local matrix below remains bound to its recorded source.
+
+The [World construction checkpoint](world/construction.md) at `e227e57` passes all 97 public
 cases on native MSVC (103.08s), Linux GCC (243.25s) and Linux
 Clang (250.72s). Linux uses ASan/UBSan and leak checks; Windows uses
 strict Debug without sanitizers. All 377 code/tool/fixture inputs remain
