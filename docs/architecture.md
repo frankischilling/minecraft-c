@@ -11,6 +11,10 @@ decoded-document lifetime. `mc_item` builds on storage with stable
 `mc_block` owns the distinct [material and palette identities](reference/materials.md)
 and their receiver methods. Every world in one material-class lifetime must
 borrow the same stable owner; material identity is separate from block IDs.
+`mc_registry` builds on that owner and the shared Random profile with actual
+[Block class construction](block/registry.md). It retains source-ordered static,
+base and subtype state, including failed prefixes. Its unfinished Item dependency
+prevents successful registry initialization and World binding.
 `mc_world_info` owns per-World [metadata fields and shared references](world/info.md)
 above storage, with a private platform-clock dependency for actual no-list
 serialization. It borrows no store or World runtime. Runtime contexts can retain

@@ -1,5 +1,11 @@
 # Systems and subsystems
 
+The [Block class construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/block/registry.md)
+describes actual sound/array/96-Block construction with concrete subtype storage,
+early publication and four shared-profile Random constructions. Initialization
+stops FAILED before unfinished Item/bootstrap work; gameplay and World binding
+remain open.
+
 The [World construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
 describes one stable 43-field runtime, ordered profile/clock and metadata
 construction, typed Dimension/biome ownership and a native normal provider.

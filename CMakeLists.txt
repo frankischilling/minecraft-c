@@ -105,6 +105,14 @@ add_library(mc_block STATIC src/block/material/material.c)
 target_include_directories(mc_block PUBLIC include)
 target_link_libraries(mc_block PRIVATE mc_build_options)
 
+add_library(mc_registry STATIC
+    src/block/registry/registry.c
+    src/block/registry/class_initializers.c
+    src/block/registry/constructors.c
+    src/block/registry/registration.c
+    src/block/registry/opacity.c)
+target_link_libraries(mc_registry PUBLIC mc_block mc_core PRIVATE mc_build_options)
+
 add_library(mc_world_info STATIC src/world/info/info.c)
 target_include_directories(mc_world_info PRIVATE src/platform/time)
 target_link_libraries(mc_world_info PUBLIC mc_storage PRIVATE mc_platform_time mc_build_options)
@@ -175,6 +183,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_material PRIVATE mc_block mc_build_options)
     add_test(NAME block.material COMMAND mc_test_material)
     set_tests_properties(block.material PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_block_registry tests/block/registry/test_registry.c)
+    target_link_libraries(mc_test_block_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME block.registry_construction COMMAND mc_test_block_registry)
+    set_tests_properties(block.registry_construction PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_executable(mc_registry_prefix_probe tests/block/registry/prefix_probe.c)
+    target_link_libraries(mc_registry_prefix_probe PRIVATE mc_registry mc_build_options)
 
     add_executable(mc_material_probe tests/block/material/material_probe.c)
     target_link_libraries(mc_material_probe PRIVATE mc_block mc_build_options)
@@ -514,6 +530,14 @@ if(BUILD_TESTING)
         --fixture "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/material/material_observation.tsv")
     set_tests_properties(block.material_observation PROPERTIES
         LABELS "public;fixture" TIMEOUT 30)
+
+    add_test(NAME block.registry_base_observation
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/block/compare_registry_prefix.py"
+        --executable "$<TARGET_FILE:mc_registry_prefix_probe>"
+        --fixtures "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/block/registry-prefix")
+    set_tests_properties(block.registry_base_observation PROPERTIES
+        LABELS "public;fixture" TIMEOUT 60)
 
     add_test(NAME core.java_gaussian_replay
         COMMAND "${Python3_EXECUTABLE}"

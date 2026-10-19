@@ -1,5 +1,14 @@
 # Development status
 
+The [Block class owner](block/registry.md) now executes the real nine-sound,
+eight-array and 96-Block construction sequence, with subtype storage, early
+publication and four actual private Randoms. It stops at the unfinished Item
+dependency at PC3398 and retains FAILED state. Four selected cases pass on
+MSVC, GCC and Clang; the registry case has 101,839 checks, and a finite
+[original comparison](reference/block-registry.md) matches 3,950 rows per side.
+Full bootstrap,
+World integration and complete population/persistence remain unfinished.
+
 The [quiet World metadata path](world/blocks.md) now reads and mutates actual
 acquired chunk metadata, including dirty equal writes and blank no-op success.
 Six selected cases pass on MSVC, GCC and Clang, with Linux sanitizers; the GAME
