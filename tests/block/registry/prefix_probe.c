@@ -271,7 +271,7 @@ int main(int argc, char **argv)
         (void)fail(&p, "material creation failed");
         goto cleanup;
     }
-    mc_registry_options options = {side, profile, materials, 0};
+    mc_registry_options options = {side, profile, materials, 0, NULL};
     if (mc_registry_classes_allocate(&options, &owner, &error) != MC_REGISTRY_OK) {
         (void)fail(&p, "class owner allocation failed");
         goto cleanup;

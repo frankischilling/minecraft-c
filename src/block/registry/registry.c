@@ -214,6 +214,7 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
 {
     if (options == NULL || out == NULL || options->random_profile == NULL ||
         options->materials == NULL ||
+        (options->resources != NULL && options->resources->open == NULL) ||
         (options->side != MC_REGISTRY_CLIENT && options->side != MC_REGISTRY_SERVER))
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry options");
     const size_t maximum = options->max_allocation_bytes == 0 ? MC_REGISTRY_DEFAULT_BYTES
@@ -243,6 +244,10 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
     classes->item_dq_state.pc = -1;
     classes->item_cp_state.pc = -1;
     classes->item_tool_state.pc = -1;
+    classes->translation_state.pc = -1;
+    classes->translation_wrapper_state.pc = -1;
+    classes->translation_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    classes->translation_wrapper_state.failure = native_error(MC_REGISTRY_OK, NULL);
     *out = classes;
     return result(error, MC_REGISTRY_OK, NULL);
 }

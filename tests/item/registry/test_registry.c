@@ -143,7 +143,7 @@ static int test_cold(mc_registry_side side, mc_java_random_profile *profile,
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
-    const mc_registry_options options = {side, profile, materials, 0};
+    const mc_registry_options options = {side, profile, materials, 0, NULL};
     uint64_t u = uniquifier(profile);
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
     mc_registry_item_view view;
@@ -527,7 +527,7 @@ static int test_block_first(mc_registry_side side, mc_java_random_profile *profi
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
-    const mc_registry_options options = {side, profile, materials, 0};
+    const mc_registry_options options = {side, profile, materials, 0, NULL};
     uint64_t before = uniquifier(profile);
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_blocks(owner, &error) ==
@@ -584,7 +584,7 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
-    const mc_registry_options options = {side, profile, materials, 0};
+    const mc_registry_options options = {side, profile, materials, 0, NULL};
     static const struct {
         size_t id;
         mc_item_kind kind;
@@ -689,7 +689,8 @@ static int test_metadata_budget(mc_registry_side side, mc_java_random_profile *p
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
     /* An actual public owner budget; no allocator hook or state mutation. */
-    const mc_registry_options options = {side, profile, materials, sizeof(mc_registry_classes)};
+    const mc_registry_options options = {side, profile, materials, sizeof(mc_registry_classes),
+                                         NULL};
     uint64_t u = uniquifier(profile);
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
     CHECK(owner->allocation_bytes == sizeof(mc_registry_classes));
@@ -744,7 +745,7 @@ static int budget_trial(mc_registry_side side, mc_java_random_profile *profile,
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
-    const mc_registry_options options = {side, profile, materials, budget};
+    const mc_registry_options options = {side, profile, materials, budget, NULL};
     uint64_t before = uniquifier(profile);
     mc_registry_status status = mc_registry_classes_allocate(&options, &owner, &error);
     if (status == MC_REGISTRY_LIMIT) {
@@ -793,7 +794,7 @@ static int test_array_publication_budget(mc_registry_side side, mc_java_random_p
     }
     CHECK(low > sizeof(mc_registry_classes));
     uint64_t before = uniquifier(profile);
-    mc_registry_options options = {side, profile, materials, low - 1};
+    mc_registry_options options = {side, profile, materials, low - 1, NULL};
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_items(owner, &error) == MC_REGISTRY_LIMIT);
     CHECK(error.active_initializer_pc == 13 && error.profile_status == MC_JAVA_RANDOM_PROFILE_OK);

@@ -10,6 +10,7 @@ typedef struct mc_registry_classes mc_registry_classes;
 typedef struct mc_block mc_block;
 typedef struct mc_block_sound mc_block_sound;
 typedef struct mc_registry_string mc_registry_string;
+typedef struct mc_registry_resources mc_registry_resources;
 
 typedef enum mc_registry_side { MC_REGISTRY_CLIENT, MC_REGISTRY_SERVER } mc_registry_side;
 
@@ -25,7 +26,8 @@ typedef enum mc_registry_status {
     MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
     MC_REGISTRY_FAILED_INITIALIZATION,
     MC_REGISTRY_BUSY,
-    MC_REGISTRY_ILLEGAL_ARGUMENT
+    MC_REGISTRY_ILLEGAL_ARGUMENT,
+    MC_REGISTRY_IO_FAILED
 } mc_registry_status;
 
 typedef enum mc_registry_phase {
@@ -57,6 +59,10 @@ typedef struct mc_registry_options {
     /* Zero selects 4 MiB. Includes native metadata, allocation records and
      * every retained object/array/string, including failed prefixes. */
     size_t max_allocation_bytes;
+    /* Optional borrowed class-loader resource source, which must outlive
+     * initialization and its opened streams. NULL fails explicitly if a
+     * reached resource operation requires it; allocation performs no reads. */
+    const mc_registry_resources *resources;
 } mc_registry_options;
 
 /* The actual seventeen declaring-class fields of uu/na. Same-letter subtype

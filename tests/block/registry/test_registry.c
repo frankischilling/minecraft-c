@@ -604,7 +604,7 @@ static int test_cold(mc_registry_side side, mc_java_random_profile *profile,
     int result = 1;
     mc_registry_classes *owner = NULL, *sentinel = NULL;
     mc_registry_error error;
-    mc_registry_options options = {side, profile, materials, 0};
+    mc_registry_options options = {side, profile, materials, 0, NULL};
     mc_registry_block_view view = {.initializer_pc = 12345, .named_blocks = 77};
     uint64_t state = uniquifier(profile);
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
@@ -685,7 +685,7 @@ static int test_owners(mc_registry_side side, mc_java_random_profile *profile,
 {
     int result = 1;
     mc_registry_classes *first = NULL, *second = NULL;
-    mc_registry_options options = {side, profile, materials, 0};
+    mc_registry_options options = {side, profile, materials, 0, NULL};
     mc_registry_error error;
     mc_registry_block_view a, b;
     uint64_t state = uniquifier(profile);
@@ -736,7 +736,7 @@ static int limited_owner(mc_registry_side side, mc_java_random_profile *profile,
 {
     int result = 1;
     mc_registry_classes *owner = NULL;
-    mc_registry_options options = {side, profile, materials, limit};
+    mc_registry_options options = {side, profile, materials, limit, NULL};
     mc_registry_error error;
     uint64_t state = uniquifier(profile);
     mc_registry_status status = mc_registry_classes_allocate(&options, &owner, &error);

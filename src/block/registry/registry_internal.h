@@ -2,6 +2,7 @@
 #define MC_BLOCK_REGISTRY_INTERNAL_H
 
 #include "../../item/registry/registry_internal.h"
+#include "../../resources/translation/translation_internal.h"
 #include "mc/block/registry/registry.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
@@ -82,7 +83,7 @@ typedef struct mc_registry_allocation mc_registry_allocation;
 typedef struct mc_registry_literal mc_registry_literal;
 
 struct mc_registry_string {
-    uint16_t *units;
+    const uint16_t *units;
     size_t length;
 };
 
@@ -270,6 +271,8 @@ struct mc_registry_classes {
     mc_registry_item_storage items;
     mc_registry_class_state item_states[MC_ITEM_KIND_COUNT];
     mc_registry_class_state item_dq_state, item_cp_state, item_tool_state;
+    mc_registry_translation_storage translations;
+    mc_registry_class_state translation_state, translation_wrapper_state;
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

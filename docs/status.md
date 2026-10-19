@@ -1,5 +1,14 @@
 # Development status
 
+Native [Properties decoding](reference/properties.md) and
+[translation/resource loading](resources/translation.md) now run on the shared
+class owner. Ten selected cases pass on MSVC/GCC/Clang with Linux sanitizers:
+252 recorded JDK loads and 980 queries compare exactly, and the native file
+consumer matches all 633 properties and String identities from both original
+translation classes. Public filesystem tests use synthetic resources and
+Unicode roots. Formatted lookup, caught-I/O stack-trace output, statistics and
+complete bootstrap integration remain unfinished.
+
 The shared [Block](block/registry.md) and [Item](item/registry.md) class owner
 now executes both orders of the real initialization cycle, including all 106
 named Item chains, retained subtype state, BlockItems, conditional fire setup

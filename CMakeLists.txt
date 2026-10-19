@@ -78,6 +78,7 @@ endif()
 add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
+    src/core/java/properties.c
     src/core/java/random_profile.c
     src/core/math/math.c
     src/core/math/strict.c
@@ -116,8 +117,12 @@ add_library(mc_registry STATIC
     src/item/registry/registry.c
     src/item/registry/class_initializers.c
     src/item/registry/constructors.c
-    src/item/registry/registration.c)
+    src/item/registry/registration.c
+    src/resources/translation/translation.c)
 target_link_libraries(mc_registry PUBLIC mc_block mc_core PRIVATE mc_build_options)
+
+add_library(mc_resources STATIC src/resources/files/files.c)
+target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
 
 add_library(mc_world_info STATIC src/world/info/info.c)
 target_include_directories(mc_world_info PRIVATE src/platform/time)
@@ -409,6 +414,22 @@ if(BUILD_TESTING)
     add_test(NAME core.java_int_set COMMAND mc_test_java_int_set)
     set_tests_properties(core.java_int_set PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
+    add_executable(mc_test_java_properties tests/core/java/test_properties.c)
+    target_link_libraries(mc_test_java_properties PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_properties COMMAND mc_test_java_properties)
+    set_tests_properties(core.java_properties PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_java_properties_probe tests/core/java/properties_probe.c)
+    target_link_libraries(mc_java_properties_probe PRIVATE mc_core mc_build_options)
+
+    add_executable(mc_translation_file_probe tests/resources/translation/files_probe.c)
+    target_link_libraries(mc_translation_file_probe PRIVATE mc_resources mc_build_options)
+
+    add_executable(mc_test_translation tests/resources/translation/test_translation.c)
+    target_link_libraries(mc_test_translation PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME resources.translation COMMAND mc_test_translation)
+    set_tests_properties(resources.translation PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
     add_executable(mc_java_int_set_probe tests/core/java/int_set_probe.c)
     target_link_libraries(mc_java_int_set_probe PRIVATE mc_world mc_build_options)
 
@@ -521,6 +542,20 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME core.java_properties_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/java/compare_properties.py"
+            "$<TARGET_FILE:mc_java_properties_probe>")
+    set_tests_properties(core.java_properties_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 60)
+
+    add_test(NAME resources.imported_files
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/resources/test_files.py"
+            "$<TARGET_FILE:mc_translation_file_probe>")
+    set_tests_properties(resources.imported_files PROPERTIES
+        LABELS "public;unit;ownership" TIMEOUT 60)
 
     add_test(NAME world.info_observation
         COMMAND "${Python3_EXECUTABLE}"

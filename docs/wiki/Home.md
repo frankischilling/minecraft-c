@@ -72,3 +72,11 @@ records the current branch, tested commits and remaining work.
 
 These pages are versioned under `docs/wiki/`. Exact tested sources, retained
 evidence and remaining work are recorded in the linked development documents.
+
+The native
+[translation consumer](https://github.com/frankischilling/minecraft-c/blob/main/docs/resources/translation.md)
+now reads imported language files on the shared class owner. Its complete
+633-property observations match both originals on MSVC/GCC/Clang. Separate
+[Properties evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/properties.md)
+covers 252 recorded JDK byte-stream loads and 980 queries. These prerequisites
+do not complete statistics, registry bootstrap or population/persistence.

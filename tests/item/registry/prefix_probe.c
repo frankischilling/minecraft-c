@@ -174,7 +174,7 @@ int main(int argc, char **argv)
         goto cleanup;
     }
     mc_registry_options options = {client ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER, profile,
-                                   materials, 0};
+                                   materials, 0, NULL};
     if (mc_registry_classes_allocate(&options, &owner, &error) != MC_REGISTRY_OK ||
         mc_registry_classes_initialize_blocks(owner, &error) !=
             MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY ||
