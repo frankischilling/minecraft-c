@@ -12,7 +12,10 @@ decoded-document lifetime. `mc_item` builds on storage with stable
 and their receiver methods. Every world in one material-class lifetime must
 borrow the same stable owner; material identity is separate from block IDs.
 `mc_persistence` composes storage with the C world model and explicit native
-filesystem ownership. These libraries initialize no display, graphics, audio,
+filesystem ownership. `mc_simulation` builds on persistence and items with the
+world runtime and [Entity construction](entity/construction.md). Keeping these
+mutually dependent owners together avoids a storage-to-Entity dependency.
+These libraries initialize no display, graphics, audio,
 networking, assets or Java. Tests and research helpers are
 separate executables/scripts; none is a hidden game engine.
 
@@ -128,15 +131,24 @@ bindings and counts explicit leases. Unpublication never frees an owner;
 individual retirement refuses active, mapped, listed, fallback or leased
 identities and recovers capacity only after those references end.
 
-`world/runtime` belongs to `mc_persistence`. It binds acquisition, generation
+`world/runtime` belongs to `mc_simulation`. It binds acquisition, generation
 retention, storage and lifecycle callbacks to one stable world clock and fresh
 metadata views. Generation reserves an owner slot before running and returns a
 stable retained copy; later payload-allocation failure preserves generation's
 completed effects. Loaded chunks preserve their source NBT. Runtime destruction
-refuses live calls, leases or nonempty cache/list/pending state and does not
+refuses live calls, leases, persistent Entity/Tile bindings or nonempty
+cache/list/pending state and does not
 save or free store chunks. Empty entity/tile records are native; other bodies
 remain explicit external seams. Its [qualification ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
 is separate from the accepted storage checkpoint.
+
+The runtime optionally borrows the existing application Random profile. Its
+default-construction bridge enters that profile once and retains the exact
+typed result separately from storage diagnostics. This foundation binds already
+loaded metadata; it does not reproduce original World construction's earlier
+Random, clock and Q-field sequence. Standalone ItemEntity constructors use the
+shared profile, retain a world at its field store, and remain separate from
+world insertion, ticking and loaded chunk entity activation.
 
 The reference controller retains at most 32768 target object mirrors from their
 first serialized IDs through a capture session. A separate synthetic JDI check

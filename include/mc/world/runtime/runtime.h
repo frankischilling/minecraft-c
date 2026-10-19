@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_RUNTIME_H
 #define MC_WORLD_RUNTIME_RUNTIME_H
 
+#include "mc/core/java/random_profile.h"
 #include "mc/world/cache/lifecycle.h"
 #include "mc/world/generation/normal.h"
 #include "mc/world/storage/store.h"
@@ -42,6 +43,10 @@ typedef struct mc_world_runtime_options {
     void *clock;
     mc_world_region_clock region_timestamp;
     mc_world_metadata_clock metadata_timestamp;
+    /* Borrow one live application/library-class profile; NULL is permitted for
+     * the numerical/callback/storage foundation. No implicit creation, reset or
+     * draw occurs, and a generator does not require this binding. */
+    mc_java_random_profile *random_profile;
 } mc_world_runtime_options;
 
 /* Compose storage, acquisition, normal generation, save/unload and owner leases.
@@ -51,6 +56,8 @@ typedef struct mc_world_runtime_options {
  * internal blank fallback with the store, and owns stable context/clock storage.
  * No world files are touched by create. Failure preserves out and borrowed
  * state; an allocated registration is undone if construction cannot complete.
+ * This already-loaded metadata/generator composition does not construct a
+ * World-owned Random, g or Q, or reproduce original World construction.
  *
  * Dimensions 0 and -1 are accepted. An optional initialized normal generator is
  * supported only for dimension0, with matching resources/cache/world seed and
@@ -94,6 +101,40 @@ const mc_chunk_lifecycle_context *mc_world_runtime_lifecycle(const mc_world_runt
 const mc_world_save_context *mc_world_runtime_saving(const mc_world_runtime *runtime);
 const mc_world_storage_error *mc_world_runtime_last_error(const mc_world_runtime *runtime);
 
+/* Borrowed immutable binding, or NULL for a null runtime or absent profile.
+ * The profile must remain live for the runtime and every dependent user. */
+mc_java_random_profile *mc_world_runtime_random_profile(const mc_world_runtime *runtime);
+
+/* Require a live binding and fresh, valid output disjoint from runtime storage
+ * and satisfying random_profile.h. After argument/binding/active-call limit
+ * checks, enter the actual core constructor exactly once with runtime call
+ * protection. There is no retry, fallback profile, clock substitution or
+ * caller-stream draw.
+ * Return/store the exact profile status; null runtime returns INVALID_ARGUMENT.
+ * Failure preserves out and maps last_error to INVALID_ARGUMENT, LIMIT or
+ * ALLOCATION_FAILED for those statuses, otherwise UNSUPPORTED_STATE, with
+ * system_error=0 and a static operation. Success preserves prior last_error.
+ * Completed core uniquifier/clock prefixes are not rolled back on failure. */
+mc_java_random_profile_status mc_world_runtime_construct_default_random(mc_world_runtime *runtime,
+                                                                        mc_java_random *out);
+
+/* Initially OK. Only a default-construction attempt changes this retained
+ * result; unrelated operations and queries preserve it. NULL returns
+ * INVALID_ARGUMENT without touching any owner or diagnostics. */
+mc_java_random_profile_status mc_world_runtime_last_random_status(const mc_world_runtime *runtime);
+
+/* Native lifetime operations for persistent Entity/Tile world fields. Retain
+ * before publishing such a pointer and release when that field is retired.
+ * They invoke no callbacks and require exclusive access to the live runtime
+ * and the caller's binding. Counts are independent of entered calls, local
+ * leases and cache membership; invalidation/removal alone never releases them.
+ * Retain(NULL) is false; overflow returns false, leaves the count unchanged and
+ * sets last_error LIMIT. Release(NULL) is harmless; zero-count misuse sets
+ * last_error INVALID_ARGUMENT without decrementing. Success preserves existing
+ * diagnostics. Free remains BUSY until every persistent binding is released. */
+bool mc_world_runtime_binding_retain(mc_world_runtime *runtime);
+void mc_world_runtime_binding_release(mc_world_runtime *runtime);
+
 mc_chunk_acquire_status mc_world_runtime_acquire(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                  mc_chunk_state **out);
 mc_chunk_acquire_status mc_world_runtime_get(mc_world_runtime *runtime, int32_t x, int32_t z,
@@ -118,8 +159,8 @@ mc_chunk_lifecycle_status mc_world_runtime_maintain(mc_world_runtime *runtime,
  *
  * Raw returned contexts/views expire at free. Before free, retire their uses and
  * all external fallback pointers. Free returns BUSY while map/list/pending are
- * nonempty or an entered call/local lease remains active; it neither saves,
- * unpublishes nor frees retained store chunks. Empty
+ * nonempty or an entered call/local lease or persistent binding remains active;
+ * it neither saves, unpublishes nor frees retained store chunks. Empty
  * contexts are unregistered and this owner alone is freed. NULL is accepted. */
 mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
                                               mc_world_storage_error *error);

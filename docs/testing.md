@@ -7,11 +7,24 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
+At the Entity construction checkpoint, all 85 public CTest cases passed on
+native MSVC (114.62s), WSL GCC (244.09s) and WSL Clang (246.16s). Linux used
+ASan/UBSan and leak checks; Windows used strict Debug without sanitizers.
+After that matrix, test field macros were adjusted for stable clang-format 18
+output, retaining all 63 ordered selectors. The 1,276-check Entity unit was
+rebuilt and passed again on all three compilers. No production body changed
+after the full matrix. These runs exclude opt-in original-game comparisons;
+the fresh original constructor capture and public scalar replay have their own
+[evidence boundary](reference/entity-construction.md).
+
 | Check | Coverage | Limits |
 | --- | --- | --- |
 | `block.material` | 28,623 checks for all 28 material result vectors, 14 palettes, 16 slots, stable/distinct identities, shared-alias mutation and independent native owners on MSVC/GCC/Clang; Linux sanitizers | Receiver and native ownership contracts; no full block registry, world or allocation-failure injection |
 | `block.material_observation` | 116 captured original client/server rows match exactly on MSVC/GCC/Clang, alongside the material unit in a separate two-case run; [provenance and reproduction](reference/materials.md) | Public replay of one fresh JVM run per original side; no world/bootstrap or historical-VM claim |
 | `item.stack` | 93 native construction/read-prefix, identity, provenance, overlay, budget and independent-document checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | No original or gameplay/container comparison |
+| `entity.construction` | 1,276 native checks per compiler for both sources/overloads, all field defaults, owned children, real profile continuation, stack holds, ID wrap, strict FP and fifteen allocation boundaries per source | Native constructor/lifetime contracts; cold first-draw count, JVM resource equivalence and world insertion remain unqualified |
+| `entity.item_formula_observation` | Ten cases replay 34 inferred original inputs against 50 directly observed phase/yaw/motion fields through the actual production scalar seam, plus three CLI refusals | Scalar formula replay only; no injected constructor entropy or whole-field parity; [provenance](reference/entity-construction.md) |
+| `world.runtime_profile-and-entity-bindings` | 104 checks per compiler using real stores/profiles/runtimes; nullable binding, typed diagnostics, RAW profile mismatch and READY/failed persistent world holds | Existing loaded-world foundation; no original World constructor order, collection insertion, registry or Tile behavior |
 | `world.scheduled_membership` | 329 native full-key collision, duplicate identity, held-alias, time-wrap, growth-budget and output-preservation checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | Membership layer only; no world scheduler, original comparison or forced allocator failure |
 | `world.scheduled_ordered` | 940 native identity, successor-hold, deletion-history, mutable-key, limit and output-preservation checks on GCC/Clang/MSVC | Finite collection contracts; no world drain/reentry or forced allocator/hold failure |
 | `world.scheduled_ordered_replay` | All 13,584 captured JDK public-API steps match GCC/Clang/MSVC; immutable expected trace and provenance are checked | Captured Temurin 17 profile with project-owned comparable records; no original game classes, Java 6 or whole-world qualification |
@@ -28,7 +41,7 @@ noise, climate and terrain comparisons remain local.
 | `core.java_int_set` / `world.chunk_pending` | 6913747 / 35495 constructed checks for bounded history, tree bins, removal and mediated pending mutations | Modern-JDK history domain; no historical Java6 claim |
 | `core.java_int_set_replay` / `world.chunk_pending_replay` | Seven captured JDK histories, 574 operations, 588 complete responses and seven rejection controls per replay | Actual public Integer/HashSet APIs; game unload selection has separate original evidence |
 | `world.chunk_lifecycle` | 12371 constructed checks for eligibility, 24/25 cutoff, live/reentrant traversal, detachment, 100/101 unloads, failures and leases | Development count; callback bodies are explicit external contracts |
-| `world.runtime_*` / `world.lifecycle_protocol` | Fresh native owned worlds, retirement/capacity recovery, generated retention, session errors and 67685 protocol checks | Constructed values; native fatal storage policy and empty runtime records are explicit restrictions |
+| `world.runtime_*` / `world.lifecycle_protocol` | Fresh native owned worlds, retirement/capacity recovery, generated retention, session errors and 67705 protocol checks | Constructed values; native fatal storage policy and empty runtime records are explicit restrictions |
 | `world.lifecycle_callbacks_replay` | Three original-derived finite cases, 61 callback pairs, full arrays/headers, 39 response mutations and seven native input rejections | Original raw decoder output is imported; Boat/Sign bodies and world deferred cleanup are external |
 | `reference.lifecycle_*` (local opt-in) | Ten fresh paired original/control profiles with strict class-file/clock/provenance validation and native comparison; nonempty native activation refusal also preserves copied files | All ten profiles pass in the qualified Windows v10/GCC v9/Clang v9 suites; see [exact-source ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint) |
 | `tools.acquire_reference` | 23 original-protocol and execution guards covering complete events, object ownership, intermediate cache contents, query order, Random states and unavailable/failure classification | Java-free fixed three-context protocol corpus |

@@ -12,7 +12,9 @@ struct mc_world_runtime {
     mc_world_save_context saving;
     mc_world_store_loader loader;
     mc_world_storage_error last_error;
+    mc_java_random_profile_status last_random_status;
     size_t active_calls, local_leases;
+    size_t persistent_bindings;
 };
 
 static mc_world_storage_status runtime_error(mc_world_storage_error *error,
@@ -20,6 +22,22 @@ static mc_world_storage_status runtime_error(mc_world_storage_error *error,
 {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
+    return status;
+}
+
+static mc_java_random_profile_status random_result(mc_world_runtime *runtime,
+                                                   mc_java_random_profile_status status)
+{
+    runtime->last_random_status = status;
+    if (status != MC_JAVA_RANDOM_PROFILE_OK) {
+        mc_world_storage_status mapped =
+            status == MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+            : status == MC_JAVA_RANDOM_PROFILE_LIMIT          ? MC_WORLD_STORAGE_LIMIT
+            : status == MC_JAVA_RANDOM_PROFILE_ALLOCATION_FAILED
+                ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        runtime_error(&runtime->last_error, mapped, "runtime default random");
+    }
     return status;
 }
 
@@ -243,6 +261,7 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
     if (runtime == NULL)
         return runtime_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "runtime owner");
     runtime->options = *options;
+    runtime->last_random_status = MC_JAVA_RANDOM_PROFILE_OK;
     runtime->live = (mc_world_runtime_state){.time = info->time,
                                              .spawn_x = info->spawn_x,
                                              .spawn_y = info->spawn_y,
@@ -352,6 +371,56 @@ const mc_world_save_context *mc_world_runtime_saving(const mc_world_runtime *run
 const mc_world_storage_error *mc_world_runtime_last_error(const mc_world_runtime *runtime)
 {
     return runtime == NULL ? NULL : &runtime->last_error;
+}
+
+mc_java_random_profile *mc_world_runtime_random_profile(const mc_world_runtime *runtime)
+{
+    return runtime == NULL ? NULL : runtime->options.random_profile;
+}
+
+mc_java_random_profile_status mc_world_runtime_construct_default_random(mc_world_runtime *runtime,
+                                                                        mc_java_random *out)
+{
+    if (runtime == NULL)
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    if (out == NULL || runtime->options.random_profile == NULL)
+        return random_result(runtime, MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    if (runtime->active_calls == SIZE_MAX)
+        return random_result(runtime, MC_JAVA_RANDOM_PROFILE_LIMIT);
+    ++runtime->active_calls;
+    mc_java_random_profile_status status =
+        mc_java_random_construct_default(runtime->options.random_profile, out);
+    --runtime->active_calls;
+    return random_result(runtime, status);
+}
+
+mc_java_random_profile_status mc_world_runtime_last_random_status(const mc_world_runtime *runtime)
+{
+    return runtime == NULL ? MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT : runtime->last_random_status;
+}
+
+bool mc_world_runtime_binding_retain(mc_world_runtime *runtime)
+{
+    if (runtime == NULL)
+        return false;
+    if (runtime->persistent_bindings == SIZE_MAX) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_LIMIT, "runtime binding retain");
+        return false;
+    }
+    ++runtime->persistent_bindings;
+    return true;
+}
+
+void mc_world_runtime_binding_release(mc_world_runtime *runtime)
+{
+    if (runtime == NULL)
+        return;
+    if (runtime->persistent_bindings == 0) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "runtime binding release");
+        return;
+    }
+    --runtime->persistent_bindings;
 }
 
 static mc_chunk_acquire_status enter_acquire(mc_world_runtime *runtime)
@@ -466,6 +535,8 @@ mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
         return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
     if (runtime->active_calls != 0 || runtime->local_leases != 0)
         return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime call or local lease active");
+    if (runtime->persistent_bindings != 0)
+        return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime persistent binding active");
     if (!mc_chunk_acquire_validate(&runtime->acquisition))
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "invalid runtime bindings");
     if (runtime->options.cache->count != 0 || runtime->options.cache->insertion_count != 0 ||

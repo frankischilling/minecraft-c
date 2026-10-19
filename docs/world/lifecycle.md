@@ -91,8 +91,24 @@ failure diagnostic.
 Runtime entry functions block destruction across callbacks, including progress,
 auxiliary and provider callbacks without a selected chunk. Current chunk leases
 block retirement even if callbacks remove every map/list reference. Free refuses
-nonempty cache/list/pending or an active call/lease; it does not unload or free
+nonempty cache/list/pending, an active call/lease or a persistent binding; it does not unload or free
 store chunks.
+
+The runtime can borrow a nullable application Random profile. Without one,
+existing storage/numerical operations remain available and default Random
+construction is rejected. With one, the bridge invokes the actual profile
+constructor once under call protection. Its exact typed status survives
+unrelated operations; success preserves prior storage diagnostics. A bound
+profile must outlive the runtime and its users. Runtime creation performs no
+late substitute for the original World constructor's Random/clock sequence.
+
+Persistent binding retains/releases protect actual Entity/Tile world fields
+independently of entered calls, chunk leases and collection membership.
+[ItemEntity construction](../entity/construction.md) retains at its reached
+world-field store; even later constructor failure keeps that binding until
+the Entity's final release. Removing a collection entry alone releases no
+world-field binding. Retain overflow and release underflow are reported without
+wrapping the count. These lifetime operations invoke no callbacks.
 
 The native loader activates only empty entity/tile runtime records. Explicit
 registration/detachment callbacks are empty while every required coordinator

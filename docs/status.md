@@ -6,6 +6,19 @@ metadata-first accounting and retained identities through reentry. Empty native
 entity/tile collections are supported; nonempty Boat/Sign behavior remains an
 external callback seam.
 
+Standalone [Entity/ItemEntity construction](entity/construction.md) now owns
+complete base/item fields, private Randoms, bounds and the reached typed watcher
+record. Its 1,276 native checks and 104 real-runtime profile/binding checks pass
+on MSVC, GCC and Clang, with Linux sanitizers. Five actual original constructors
+per side supply complete returned-state observations and a separate scalar
+formula fixture. [Constructor evidence](reference/entity-construction.md)
+distinguishes inferred Math inputs from directly observed fields. World startup,
+insertion, ticking, loaded Entity activation and chest integration remain open.
+All 85 public CTest cases pass locally on each compiler, including the separate
+50-field scalar replay. The final test-only formatter adjustment was followed
+by a fresh Entity unit build/run on each compiler; details are in
+[testing](testing.md). This is local validation of the feature branch.
+
 The [block material library](reference/materials.md) now implements all 28
 material identities, 14 palettes, the 16-slot palette table and the original
 receiver methods. Its 28,623 ownership/property checks pass on MSVC, GCC and
@@ -32,8 +45,8 @@ and leak checks; Windows uses strict Debug without sanitizers. A separate
 instrumented Windows JDK17 trace records three constructor entropy events and
 one retained Math owner. Its recorded-input native replay passes 18 checks on
 each compiler. At that checkpoint, all 80 public CTest cases passed on all three
-compilers; that run does not include opt-in original-game comparisons. Population, registry, entity
-and application wiring, original gameplay consumption and the installed-native
+compilers; that run does not include opt-in original-game comparisons. Population, registry,
+bound-world Entity integration and application wiring, original gameplay consumption and the installed-native
 clock conversion bridge remain unfinished.
 
 At the earlier seeded-Gaussian checkpoint, all 75 public tests passed on each

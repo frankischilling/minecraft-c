@@ -133,13 +133,17 @@ add_library(mc_world STATIC
 target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
 
 add_library(mc_persistence STATIC
-    src/world/runtime/runtime.c
     src/world/storage/status.c
     src/world/storage/files.c
     src/world/storage/regions.c
     src/world/storage/store.c
     src/world/storage/chunk.c)
 target_link_libraries(mc_persistence PUBLIC mc_world mc_storage PRIVATE mc_build_options)
+
+add_library(mc_simulation STATIC
+    src/world/runtime/runtime.c
+    src/entity/entity.c)
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_item PRIVATE mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -178,6 +182,15 @@ if(BUILD_TESTING)
     add_test(NAME item.stack COMMAND mc_test_item_stack)
     set_tests_properties(item.stack PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
+    add_executable(mc_test_entity tests/entity/test_entity.c)
+    target_include_directories(mc_test_entity PRIVATE src/entity src/core/java)
+    target_link_libraries(mc_test_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.construction COMMAND mc_test_entity)
+    set_tests_properties(entity.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_entity_item_formula_probe tests/entity/item_formula_probe.c)
+    target_link_libraries(mc_entity_item_formula_probe PRIVATE mc_simulation mc_build_options)
+
     add_executable(mc_test_scheduled_membership tests/world/schedule/test_membership.c)
     target_link_libraries(mc_test_scheduled_membership PRIVATE mc_world mc_build_options)
     add_test(NAME world.scheduled_membership COMMAND mc_test_scheduled_membership)
@@ -206,10 +219,10 @@ if(BUILD_TESTING)
     target_link_libraries(mc_world_store_probe PRIVATE mc_persistence mc_build_options)
 
     add_executable(mc_test_world_runtime tests/world/runtime/test_runtime.c)
-    target_link_libraries(mc_test_world_runtime PRIVATE mc_persistence mc_build_options)
+    target_link_libraries(mc_test_world_runtime PRIVATE mc_simulation mc_build_options)
 
     add_executable(mc_world_lifecycle_probe tests/world/runtime/lifecycle_probe.c)
-    target_link_libraries(mc_world_lifecycle_probe PRIVATE mc_persistence mc_build_options)
+    target_link_libraries(mc_world_lifecycle_probe PRIVATE mc_simulation mc_build_options)
 
     add_executable(mc_level_probe tests/storage/level/level_probe.c)
     target_link_libraries(mc_level_probe PRIVATE mc_storage mc_build_options)
@@ -414,6 +427,14 @@ if(BUILD_TESTING)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
 
+    add_test(NAME entity.item_formula_observation
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/compare_formula.py"
+        --executable "$<TARGET_FILE:mc_entity_item_formula_probe>"
+        --fixture "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_formula_observation.tsv")
+    set_tests_properties(entity.item_formula_observation PROPERTIES
+        LABELS "public;fixture" TIMEOUT 210)
+
     add_test(NAME block.material_observation
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/material/compare_observation.py"
@@ -450,7 +471,7 @@ if(BUILD_TESTING)
     set_tests_properties(tools.scheduled_ordered_protocol PROPERTIES
         LABELS "public;tools;world" TIMEOUT 180)
 
-    foreach(MC_RUNTIME_CASE ownership-and-runtime generation generation-copy-limit)
+    foreach(MC_RUNTIME_CASE ownership-and-runtime generation generation-copy-limit profile-and-entity-bindings)
         add_test(NAME world.runtime_${MC_RUNTIME_CASE}
             COMMAND "${Python3_EXECUTABLE}"
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"

@@ -1,5 +1,8 @@
 #include "mc/world/runtime/runtime.h"
 
+#include "mc/entity/entity.h"
+
+#include <emmintrin.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +24,7 @@ typedef struct fixture {
     mc_world_store *store;
     mc_world_store_options store_options;
     mc_world_runtime *runtime;
+    mc_java_random_profile *random_profile;
     mc_chunk_cache cache;
     mc_chunk_cache_entry entries[8];
     mc_chunk_state *list[16];
@@ -162,7 +166,8 @@ static int create_runtime(bool generation)
                                         .save_auxiliary = auxiliary,
                                         .report_progress = progress,
                                         .region_timestamp = region_clock,
-                                        .metadata_timestamp = metadata_clock};
+                                        .metadata_timestamp = metadata_clock,
+                                        .random_profile = f.random_profile};
     if (generation) {
         options.generator = &f.generator;
         options.generation = &f.generation;
@@ -458,6 +463,294 @@ static int generation(bool copy_fails)
     return 0;
 }
 
+#define BINDING_CHECK(condition)                                                                   \
+    do {                                                                                           \
+        ++checks;                                                                                  \
+        if (!(condition)) {                                                                        \
+            fprintf(stderr, "%s:%d: failed: %s\n", __FILE__, __LINE__, #condition);                \
+            goto cleanup;                                                                          \
+        }                                                                                          \
+    } while (0)
+
+static uint64_t binding_double_bits(const double *value)
+{
+    uint64_t bits;
+    _Static_assert(sizeof(bits) == sizeof(*value), "binary64 storage required");
+    memcpy(&bits, value, sizeof(bits));
+    return bits;
+}
+
+static void binding_poison_random(mc_java_random *random)
+{
+    memset(random, 0xa5, sizeof(*random));
+    random->next_next_gaussian = -0.0;
+    random->have_next_next_gaussian = true;
+}
+
+static bool binding_same_error(const mc_world_storage_error *left,
+                               const mc_world_storage_error *right)
+{
+    return left->status == right->status && left->operation == right->operation &&
+           left->system_error == right->system_error;
+}
+
+static mc_java_random_profile_status binding_random_with_control(unsigned int control,
+                                                                 mc_java_random *out)
+{
+    const unsigned int saved = _mm_getcsr();
+    _mm_setcsr(control);
+    const mc_java_random_profile_status status =
+        mc_world_runtime_construct_default_random(f.runtime, out);
+    /* Restore the complete word before any CHECK, diagnostic, cleanup or return. */
+    _mm_setcsr(saved);
+    return status;
+}
+
+static mc_world_storage_status binding_free_runtime(void)
+{
+    const mc_world_storage_status status = mc_world_runtime_free(f.runtime, &f.error);
+    if (status == MC_WORLD_STORAGE_OK)
+        f.runtime = NULL;
+    return status;
+}
+
+static bool binding_runtime_is_busy(void)
+{
+    const mc_world_storage_status status = binding_free_runtime();
+    if (status == MC_WORLD_STORAGE_OK) {
+        /* A broken lifetime guard has already freed a world borrowed by an
+         * entity. Releasing that entity would dereference retired storage. */
+        fprintf(stderr, "runtime freed despite a live persistent binding\n");
+        abort();
+    }
+    return status == MC_WORLD_STORAGE_BUSY;
+}
+
+static int profile_and_entity_bindings(void)
+{
+    int result = 1;
+    size_t manual_bindings = 0;
+    mc_java_random_profile *profile = NULL, *limited_profile = NULL;
+    mc_entity_classes *classes = NULL, *limited_classes = NULL;
+    mc_entity *ready = NULL, *limited = NULL;
+    mc_entity_error entity_error = {0};
+    mc_entity_snapshot before_entity = {0}, after_entity = {0};
+    mc_entity_class_snapshot before_class = {0}, after_class = {0};
+    mc_java_random random;
+    unsigned char random_before[sizeof(random)];
+    mc_level_info info;
+    mc_world_storage_error prior_error;
+    size_t profile_bytes = 0, raw_bytes = 0;
+    unsigned int saved_control = 0;
+    mc_java_random_profile_status status;
+    double failed_math = -7.25;
+    const uint64_t failed_math_before = binding_double_bits(&failed_math);
+
+    BINDING_CHECK((_mm_getcsr() & 0xffc0u) == 0x1f80u);
+    BINDING_CHECK(mc_world_runtime_random_profile(NULL) == NULL);
+    BINDING_CHECK(mc_world_runtime_last_random_status(NULL) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(!mc_world_runtime_binding_retain(NULL));
+    mc_world_runtime_binding_release(NULL);
+    binding_poison_random(&random);
+    memcpy(random_before, &random, sizeof(random_before));
+    BINDING_CHECK(mc_world_runtime_construct_default_random(NULL, &random) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(memcmp(random_before, &random, sizeof(random_before)) == 0);
+
+    /* The existing foundation remains valid with no profile and no generator. */
+    BINDING_CHECK(create_runtime(false) == 0);
+    BINDING_CHECK(mc_world_runtime_random_profile(f.runtime) == NULL);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) == MC_JAVA_RANDOM_PROFILE_OK);
+    BINDING_CHECK(mc_world_runtime_construct_default_random(f.runtime, &random) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(memcmp(random_before, &random, sizeof(random_before)) == 0);
+    BINDING_CHECK(mc_world_runtime_construct_default_random(f.runtime, NULL) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(mc_world_runtime_last_error(f.runtime)->status ==
+                      MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+                  mc_world_runtime_last_error(f.runtime)->system_error == 0 &&
+                  mc_world_runtime_last_error(f.runtime)->operation != NULL);
+    BINDING_CHECK(mc_world_runtime_binding_retain(f.runtime));
+    ++manual_bindings;
+    BINDING_CHECK(mc_world_runtime_binding_retain(f.runtime));
+    ++manual_bindings;
+    BINDING_CHECK(binding_runtime_is_busy());
+    mc_world_runtime_binding_release(f.runtime);
+    --manual_bindings;
+    BINDING_CHECK(binding_runtime_is_busy());
+    mc_world_runtime_binding_release(f.runtime);
+    --manual_bindings;
+    mc_world_runtime_binding_release(f.runtime); /* Zero-count misuse, not underflow. */
+    BINDING_CHECK(mc_world_runtime_last_error(f.runtime)->status ==
+                      MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+                  mc_world_runtime_last_error(f.runtime)->system_error == 0 &&
+                  mc_world_runtime_last_error(f.runtime)->operation != NULL);
+    prior_error = *mc_world_runtime_last_error(f.runtime);
+    BINDING_CHECK(mc_world_runtime_read_info(f.runtime, &info, &f.error) == MC_WORLD_STORAGE_OK);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(binding_same_error(mc_world_runtime_last_error(f.runtime), &prior_error));
+    BINDING_CHECK(binding_free_runtime() == MC_WORLD_STORAGE_OK);
+
+    BINDING_CHECK(mc_java_random_profile_create(SIZE_MAX, &profile) == MC_JAVA_RANDOM_PROFILE_OK);
+    profile_bytes = mc_java_random_profile_allocation_bytes(profile); /* Quiescent and cold. */
+    BINDING_CHECK(profile_bytes != 0);
+    BINDING_CHECK(mc_java_random_profile_create(profile_bytes, &limited_profile) ==
+                  MC_JAVA_RANDOM_PROFILE_OK);
+    BINDING_CHECK(mc_java_random_profile_allocation_bytes(limited_profile) == profile_bytes);
+    BINDING_CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, profile, NULL, &classes) ==
+                  MC_ENTITY_OK);
+    BINDING_CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, limited_profile, NULL,
+                                           &limited_classes) == MC_ENTITY_OK);
+    f.random_profile = profile;
+    BINDING_CHECK(create_runtime(false) == 0);
+    BINDING_CHECK(mc_world_runtime_random_profile(f.runtime) == profile);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) == MC_JAVA_RANDOM_PROFILE_OK);
+
+    /* An unrelated diagnostic survives a successful actual core constructor. */
+    BINDING_CHECK(mc_world_runtime_last_error(f.runtime)->status == MC_WORLD_STORAGE_OK);
+    mc_world_runtime_binding_release(f.runtime);
+    prior_error = *mc_world_runtime_last_error(f.runtime);
+    BINDING_CHECK(prior_error.status == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+                  prior_error.system_error == 0 && prior_error.operation != NULL);
+    BINDING_CHECK(mc_world_runtime_construct_default_random(f.runtime, &random) ==
+                  MC_JAVA_RANDOM_PROFILE_OK);
+    BINDING_CHECK(random.state <= UINT64_C(0xffffffffffff) &&
+                  binding_double_bits(&random.next_next_gaussian) == 0 &&
+                  !random.have_next_next_gaussian);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) == MC_JAVA_RANDOM_PROFILE_OK);
+    BINDING_CHECK(binding_same_error(mc_world_runtime_last_error(f.runtime), &prior_error));
+    BINDING_CHECK(mc_world_runtime_read_info(f.runtime, &info, &f.error) == MC_WORLD_STORAGE_OK);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) == MC_JAVA_RANDOM_PROFILE_OK);
+    BINDING_CHECK(mc_world_runtime_construct_default_random(f.runtime, NULL) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+    BINDING_CHECK(mc_world_runtime_read_info(f.runtime, &info, &f.error) == MC_WORLD_STORAGE_OK);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) ==
+                  MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
+
+    binding_poison_random(&random);
+    memcpy(random_before, &random, sizeof(random_before));
+    saved_control = _mm_getcsr();
+    status = binding_random_with_control(saved_control | 0x8000u, &random);
+    BINDING_CHECK(_mm_getcsr() == saved_control);
+    BINDING_CHECK(status == MC_JAVA_RANDOM_PROFILE_UNSUPPORTED_FP);
+    BINDING_CHECK(memcmp(random_before, &random, sizeof(random_before)) == 0);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) ==
+                  MC_JAVA_RANDOM_PROFILE_UNSUPPORTED_FP);
+    BINDING_CHECK(mc_world_runtime_last_error(f.runtime)->status ==
+                      MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+                  mc_world_runtime_last_error(f.runtime)->system_error == 0 &&
+                  mc_world_runtime_last_error(f.runtime)->operation != NULL);
+    prior_error = *mc_world_runtime_last_error(f.runtime);
+    BINDING_CHECK(mc_world_runtime_read_info(f.runtime, &info, &f.error) == MC_WORLD_STORAGE_OK);
+    BINDING_CHECK(mc_world_runtime_last_random_status(f.runtime) ==
+                  MC_JAVA_RANDOM_PROFILE_UNSUPPORTED_FP);
+    BINDING_CHECK(binding_same_error(mc_world_runtime_last_error(f.runtime), &prior_error));
+    BINDING_CHECK(mc_world_runtime_construct_default_random(f.runtime, &random) ==
+                  MC_JAVA_RANDOM_PROFILE_OK);
+    BINDING_CHECK(binding_same_error(mc_world_runtime_last_error(f.runtime), &prior_error));
+    BINDING_CHECK(mc_java_random_profile_allocation_bytes(profile) == profile_bytes);
+
+    /* Different nonnull profiles reject while this actual allocated entity is RAW. */
+    BINDING_CHECK(mc_item_entity_allocate(limited_classes, &limited, &entity_error) ==
+                  MC_ENTITY_OK);
+    BINDING_CHECK(mc_entity_get_snapshot(limited, &before_entity) == MC_ENTITY_OK);
+    BINDING_CHECK(before_entity.phase == MC_ENTITY_RAW && before_entity.base.world == NULL);
+    BINDING_CHECK(mc_entity_classes_get_snapshot(limited_classes, &before_class) == MC_ENTITY_OK);
+    raw_bytes = mc_entity_native_bytes(limited);
+    BINDING_CHECK(raw_bytes != 0);
+    BINDING_CHECK(mc_item_entity_construct(limited, f.runtime, 2.0, 4.0, 8.0, NULL,
+                                           &entity_error) == MC_ENTITY_INVALID_ARGUMENT);
+    BINDING_CHECK(entity_error.status == MC_ENTITY_INVALID_ARGUMENT);
+    BINDING_CHECK(mc_entity_get_snapshot(limited, &after_entity) == MC_ENTITY_OK);
+    BINDING_CHECK(after_entity.phase == MC_ENTITY_RAW &&
+                  after_entity.base_bytecode == before_entity.base_bytecode &&
+                  after_entity.item_bytecode == before_entity.item_bytecode &&
+                  after_entity.base.id == before_entity.base.id &&
+                  after_entity.base.world == before_entity.base.world);
+    BINDING_CHECK(
+        binding_double_bits(&after_entity.base.x) == binding_double_bits(&before_entity.base.x) &&
+        binding_double_bits(&after_entity.base.y) == binding_double_bits(&before_entity.base.y) &&
+        binding_double_bits(&after_entity.base.z) == binding_double_bits(&before_entity.base.z));
+    BINDING_CHECK(after_entity.bounds == before_entity.bounds &&
+                  after_entity.random == before_entity.random &&
+                  after_entity.watcher == before_entity.watcher &&
+                  after_entity.stack == before_entity.stack &&
+                  mc_entity_native_bytes(limited) == raw_bytes);
+    BINDING_CHECK(mc_entity_classes_get_snapshot(limited_classes, &after_class) == MC_ENTITY_OK);
+    BINDING_CHECK(after_class.next_id == before_class.next_id &&
+                  after_class.live_entities == before_class.live_entities &&
+                  after_class.allocation_bytes == before_class.allocation_bytes &&
+                  after_class.entity_class == before_class.entity_class &&
+                  after_class.bounds_class == before_class.bounds_class &&
+                  after_class.watcher_class == before_class.watcher_class &&
+                  after_class.bounds_pool_identity == before_class.bounds_pool_identity &&
+                  after_class.watcher_types_identity == before_class.watcher_types_identity);
+
+    BINDING_CHECK(mc_item_entity_allocate(classes, &ready, &entity_error) == MC_ENTITY_OK);
+    BINDING_CHECK(mc_item_entity_construct(ready, f.runtime, 1.0, 2.0, 3.0, NULL, &entity_error) ==
+                  MC_ENTITY_OK);
+    BINDING_CHECK(mc_entity_get_snapshot(ready, &after_entity) == MC_ENTITY_OK);
+    BINDING_CHECK(after_entity.phase == MC_ENTITY_READY && after_entity.base.world == f.runtime &&
+                  after_entity.stack == NULL && after_entity.random != NULL &&
+                  after_entity.bounds != NULL && after_entity.watcher != NULL);
+    BINDING_CHECK(binding_runtime_is_busy());
+    BINDING_CHECK(mc_world_runtime_read_info(f.runtime, &info, &f.error) == MC_WORLD_STORAGE_OK);
+    mc_entity_release(ready);
+    ready = NULL;
+    BINDING_CHECK(binding_free_runtime() == MC_WORLD_STORAGE_OK);
+
+    /* Reuse the unchanged RAW object with its matching world. Math's separate
+     * allocation now fails against an actually measured profile-only budget. */
+    f.random_profile = limited_profile;
+    BINDING_CHECK(create_runtime(false) == 0);
+    BINDING_CHECK(mc_world_runtime_random_profile(f.runtime) == limited_profile);
+    BINDING_CHECK(mc_item_entity_construct(limited, f.runtime, 2.0, 4.0, 8.0, NULL,
+                                           &entity_error) == MC_ENTITY_PROFILE_FAILED);
+    BINDING_CHECK(entity_error.status == MC_ENTITY_PROFILE_FAILED &&
+                  entity_error.profile == MC_JAVA_RANDOM_PROFILE_LIMIT);
+    BINDING_CHECK(mc_entity_get_snapshot(limited, &after_entity) == MC_ENTITY_OK);
+    BINDING_CHECK(after_entity.phase == MC_ENTITY_FAILED_CONSTRUCTION &&
+                  after_entity.base.world == f.runtime && after_entity.random != NULL &&
+                  after_entity.bounds != NULL && after_entity.watcher != NULL);
+    BINDING_CHECK(mc_entity_classes_get_snapshot(limited_classes, &after_class) == MC_ENTITY_OK);
+    BINDING_CHECK(after_class.next_id == mc_java_i32_add(before_class.next_id, 1));
+    BINDING_CHECK(mc_java_random_profile_allocation_bytes(limited_profile) == profile_bytes);
+    BINDING_CHECK(mc_java_math_random(limited_profile, &failed_math) ==
+                  MC_JAVA_RANDOM_PROFILE_HOLDER_FAILED);
+    BINDING_CHECK(binding_double_bits(&failed_math) == failed_math_before);
+    BINDING_CHECK(binding_runtime_is_busy());
+    mc_entity_release(limited);
+    limited = NULL;
+    BINDING_CHECK(binding_free_runtime() == MC_WORLD_STORAGE_OK);
+    BINDING_CHECK(!f.callback_error && f.auxiliary_calls == 0 && f.progress_calls == 0 &&
+                  f.provider_calls == 0 && f.populate_calls == 0);
+    result = 0;
+cleanup:
+    mc_entity_release(ready);
+    mc_entity_release(limited);
+    while (manual_bindings != 0 && f.runtime != NULL) {
+        mc_world_runtime_binding_release(f.runtime);
+        --manual_bindings;
+    }
+    if (f.runtime != NULL && binding_free_runtime() != MC_WORLD_STORAGE_OK) {
+        fprintf(stderr, "runtime teardown failed after releasing owned bindings\n");
+        abort(); /* Do not retire its still-borrowed store/profile underneath it. */
+    }
+    if (mc_entity_classes_free(limited_classes) != MC_ENTITY_OK ||
+        mc_entity_classes_free(classes) != MC_ENTITY_OK) {
+        fprintf(stderr, "entity class teardown failed after releasing owned entities\n");
+        abort();
+    }
+    f.random_profile = NULL;
+    mc_java_random_profile_free(limited_profile);
+    mc_java_random_profile_free(profile);
+    return result;
+}
+
 static bool decode_path(const char *hex, char *path, size_t capacity)
 {
     size_t length = strlen(hex);
@@ -488,14 +781,20 @@ int main(int argc, char **argv)
     if (argc != 3 || !decode_path(argv[2], root, sizeof(root)))
         return 1;
     bool copy_fails = strcmp(argv[1], "generation-copy-limit") == 0;
+    bool profile_bindings = strcmp(argv[1], "profile-and-entity-bindings") == 0;
     size_t budget = copy_fails ? 32768u : mc_world_store_default_limits().nbt.max_allocation_bytes;
-    if (open_fixture(root, 3, budget) != 0)
+    if (open_fixture(root, 3, budget) != 0) {
+        if (profile_bindings)
+            close_fixture();
         return 1;
+    }
     int result;
     if (strcmp(argv[1], "ownership-and-runtime") == 0)
         result = ownership() != 0 || load_save_unload(root) != 0;
     else if (strcmp(argv[1], "generation") == 0 || copy_fails)
         result = generation(copy_fails);
+    else if (profile_bindings)
+        result = profile_and_entity_bindings();
     else
         result = 1;
     close_fixture();
