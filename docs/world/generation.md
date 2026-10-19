@@ -1,5 +1,9 @@
 # Unpopulated normal chunk generation
 
+The separate [concrete GAME provider operation](provider-generation.md) uses
+actual World/Registry owners and preserves reached failure effects. The
+interface below remains the numerical composition with its original preflight.
+
 `mc/world/generation/normal.h` composes the normal generator's direct chunk
 entry: fresh chunk data, climate and biomes, density and base terrain, surface
 replacement, caves, then full finishing. A successful result is a new normal

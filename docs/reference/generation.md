@@ -1,5 +1,10 @@
 # Direct normal generator composition evidence
 
+The newer [concrete GAME operation](../world/provider-generation.md) reuses
+this numerical arithmetic while retaining live owner and failure semantics.
+Its one-case data replay has a separate input and coverage boundary; the
+historical full numerical comparison below remains unchanged.
+
 This increment targets client `yf.b(II)Llm;` and server `pk.b(II)Lhi;`: direct
 unpopulated normal chunk generation through full finishing, before cache
 publication. The [C contract](../world/generation.md) describes ownership and

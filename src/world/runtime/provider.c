@@ -1,29 +1,10 @@
-#include "provider_internal.h"
+#include "provider_state_internal.h"
 
 #include "../generation/normal_internal.h"
 #include "runtime_internal.h"
 
 #include <limits.h>
 #include <stdlib.h>
-
-struct mc_world_provider {
-    mc_world_runtime *world;
-    mc_world_store *store;
-    mc_world_dimension_biome *biome;
-    mc_biome_manager *manager;
-    mc_normal_generator generator;
-    int32_t constructor_grid[MC_WORLD_PROVIDER_GRID_WIDTH][MC_WORLD_PROVIDER_GRID_WIDTH];
-    mc_chunk_pending pending;
-    mc_java_int_set *pending_history;
-    mc_java_int_set_limits history_limits;
-    int32_t *pending_keys;
-    mc_chunk_cache cache;
-    mc_chunk_cache_entry *entries;
-    mc_chunk_state **insertions;
-    mc_chunk_data *fallback_data;
-    uint8_t *fallback_blocks;
-    size_t max_chunks, direct_bytes, max_direct_bytes;
-};
 
 static mc_world_storage_status result(mc_world_storage_error *error, mc_world_storage_status status,
                                       const char *operation)
@@ -113,6 +94,7 @@ void mc_world_provider_free(mc_world_provider *provider)
     free(provider->pending_keys);
     mc_java_int_set_free(provider->pending_history);
     mc_normal_generator_free(&provider->generator);
+    mc_world_dimension_biome_release(provider->v_owner);
     mc_world_dimension_biome_release(provider->biome);
     free(provider);
 }
@@ -201,6 +183,13 @@ mc_world_storage_status mc_world_provider_create(mc_world_runtime *runtime,
         return result(error, status, "normal provider constructor");
     }
 
+    provider->generation.r =
+        (mc_terrain_double_span){provider->generator.sand, MC_TERRAIN_NORMAL_SURFACE_VALUES};
+    provider->generation.s =
+        (mc_terrain_double_span){provider->generator.gravel, MC_TERRAIN_NORMAL_SURFACE_VALUES};
+    provider->generation.t =
+        (mc_terrain_double_span){provider->generator.thickness, MC_TERRAIN_NORMAL_SURFACE_VALUES};
+
     /* ok/jb: pending HashSet, then cache map, insertion list, blank chunk.
      * The pre-reserved fixed generator/grid storage and these bounded native
      * arrays do not claim Java object/array allocation failure equivalence. */
@@ -281,6 +270,7 @@ mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provide
                                       .biome = provider->biome,
                                       .manager = provider->manager,
                                       .generator = &provider->generator,
+                                      .generation = &provider->generation,
                                       .cache = &provider->cache,
                                       .pending = &provider->pending,
                                       .fallback = &provider->world->fallback,

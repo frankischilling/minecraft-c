@@ -10,17 +10,19 @@ typedef enum biome_buffer_kind { BIOME_DOUBLE_BUFFER, BIOME_ID_BUFFER } biome_bu
 
 /* Every payload is an array of double or mc_biome_id. The union supplies those
  * alignments, including the pointers used by the allocation bookkeeping. */
-typedef union biome_allocation {
+union mc_biome_allocation {
     struct {
         mc_biome_memory *owner;
         size_t bytes;
         size_t length;
+        size_t references;
         biome_buffer_kind kind;
     } metadata;
     double double_alignment;
     mc_biome_id biome_alignment;
     void *pointer_alignment;
-} biome_allocation;
+};
+typedef mc_biome_allocation biome_allocation;
 
 typedef struct biome_replacement {
     void *data;
@@ -174,6 +176,7 @@ static mc_biome_status biome_allocate(mc_biome_memory *memory, size_t length,
     allocation->metadata.owner = memory;
     allocation->metadata.bytes = bytes;
     allocation->metadata.length = length;
+    allocation->metadata.references = 1u;
     allocation->metadata.kind = kind;
     memory->live_allocation_bytes += bytes;
     *out = allocation + 1;
@@ -184,9 +187,41 @@ static void biome_release(void *data)
 {
     if (data != NULL) {
         biome_allocation *allocation = (biome_allocation *)data - 1;
+        if (--allocation->metadata.references != 0)
+            return;
         allocation->metadata.owner->live_allocation_bytes -= allocation->metadata.bytes;
         free(allocation);
     }
+}
+
+mc_biome_status mc_biome_double_capture(const mc_biome_double_buffer *array,
+                                        mc_biome_double_reference *out)
+{
+    if (out == NULL || (array != NULL && array->data == NULL && array->length != 0))
+        return MC_BIOME_INVALID_ARGUMENT;
+    if (array == NULL || array->data == NULL) {
+        *out = (mc_biome_double_reference){0};
+        return MC_BIOME_OK;
+    }
+    biome_allocation *allocation = (biome_allocation *)array->data - 1;
+    if (allocation->metadata.kind != BIOME_DOUBLE_BUFFER ||
+        allocation->metadata.length != array->length ||
+        !biome_memory_valid(allocation->metadata.owner))
+        return MC_BIOME_INVALID_ARGUMENT;
+    if (allocation->metadata.references == SIZE_MAX)
+        return MC_BIOME_LIMIT;
+    ++allocation->metadata.references;
+    *out = (mc_biome_double_reference){array->data, array->length, allocation};
+    return MC_BIOME_OK;
+}
+
+void mc_biome_double_release(mc_biome_double_reference *reference)
+{
+    if (reference == NULL)
+        return;
+    if (reference->allocation != NULL)
+        biome_release(reference->allocation + 1);
+    *reference = (mc_biome_double_reference){0};
 }
 
 void mc_biome_double_buffer_free(mc_biome_double_buffer *buffer)

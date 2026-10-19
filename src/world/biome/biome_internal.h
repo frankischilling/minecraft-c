@@ -3,6 +3,25 @@
 
 #include "mc/world/biome/biome.h"
 
+typedef union mc_biome_allocation mc_biome_allocation;
+
+/* An actual array reference, distinct from its replaceable owning field.
+ * Capture permits a NULL array without looking at future elements. A live
+ * capture keeps precisely that allocation charged to its original memory
+ * owner across resize/free; its supplier/memory must outlive the capture.
+ * No array copy, allocation, callback or Random draw occurs. Keep captures
+ * exclusive/disjoint and never duplicate an owning capture. Successful capture
+ * overwrites a fresh output; failure preserves it. Release resets to zero. */
+typedef struct mc_biome_double_reference {
+    const double *data;
+    size_t length;
+    mc_biome_allocation *allocation;
+} mc_biome_double_reference;
+
+mc_biome_status mc_biome_double_capture(const mc_biome_double_buffer *array,
+                                        mc_biome_double_reference *out);
+void mc_biome_double_release(mc_biome_double_reference *reference);
+
 typedef enum mc_biome_construction_channel {
     MC_BIOME_CONSTRUCT_TEMPERATURE,
     MC_BIOME_CONSTRUCT_RAINFALL,

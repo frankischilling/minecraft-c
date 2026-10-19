@@ -35,195 +35,266 @@ void mc_terrain_cave_room(mc_terrain_cave_context *context, double x, double y, 
     mc_terrain_cave_path(context, x, y, z, width, 0.0f, 0.0f, -1, -1, 0.5);
 }
 
+void mc_terrain_cave_path_begin(mc_terrain_cave_path_frame *frame, mc_java_random *shared,
+                                const mc_terrain_cave_path_args *args)
+{
+    frame->current = *args;
+    frame->origin_x = mc_java_i32_mul(args->chunk_x, 16);
+    frame->origin_z = mc_java_i32_mul(args->chunk_z, 16);
+    frame->target_x = (double)mc_java_i32_add(frame->origin_x, 8);
+    frame->target_z = (double)mc_java_i32_add(frame->origin_z, 8);
+    frame->yaw_velocity = 0.0f;
+    frame->pitch_velocity = 0.0f;
+    const int64_t seed = mc_java_random_next_i64(shared);
+    mc_java_random_seed(&frame->local, seed);
+    if (frame->current.end <= 0)
+        frame->current.end = 112 - cave_bounded(&frame->local, 28);
+    frame->room = false;
+    if (frame->current.step == -1) {
+        frame->current.step = frame->current.end / 2;
+        frame->room = true;
+    }
+    frame->fork_step = cave_bounded(&frame->local, frame->current.end / 2) + frame->current.end / 4;
+    frame->slow_pitch = cave_bounded(&frame->local, 6) == 0;
+}
+
+mc_terrain_cave_step mc_terrain_cave_path_step(mc_terrain_cave_path_frame *frame,
+                                               const mc_math_trig *trig,
+                                               mc_terrain_cave_ellipsoid *out)
+{
+    mc_terrain_cave_path_args *current = &frame->current;
+    if (current->step >= current->end)
+        return MC_TERRAIN_CAVE_END;
+    float phase = (float)current->step * 3.1415927f;
+    phase = phase / (float)current->end;
+    float radius_wave = mc_math_sin(trig, phase) * current->width;
+    radius_wave = radius_wave * 1.0f;
+    double radius = 1.5 + (double)radius_wave;
+    double vertical_radius = radius * current->vertical_ratio;
+    float cosine_pitch = mc_math_cos(trig, current->pitch);
+    float sine_pitch = mc_math_sin(trig, current->pitch);
+    float movement_x = mc_math_cos(trig, current->yaw) * cosine_pitch;
+    current->x = current->x + (double)movement_x;
+    current->y = current->y + (double)sine_pitch;
+    float movement_z = mc_math_sin(trig, current->yaw) * cosine_pitch;
+    current->z = current->z + (double)movement_z;
+    current->pitch = current->pitch * (frame->slow_pitch ? 0.92f : 0.7f);
+    float pitch_change = frame->pitch_velocity * 0.1f;
+    current->pitch = current->pitch + pitch_change;
+    float yaw_change = frame->yaw_velocity * 0.1f;
+    current->yaw = current->yaw + yaw_change;
+    frame->pitch_velocity = frame->pitch_velocity * 0.9f;
+    frame->yaw_velocity = frame->yaw_velocity * 0.75f;
+
+    float first = mc_java_random_next_float(&frame->local);
+    float second = mc_java_random_next_float(&frame->local);
+    float third = mc_java_random_next_float(&frame->local);
+    float velocity_change = first - second;
+    velocity_change = velocity_change * third;
+    velocity_change = velocity_change * 2.0f;
+    frame->pitch_velocity = frame->pitch_velocity + velocity_change;
+    first = mc_java_random_next_float(&frame->local);
+    second = mc_java_random_next_float(&frame->local);
+    third = mc_java_random_next_float(&frame->local);
+    velocity_change = first - second;
+    velocity_change = velocity_change * third;
+    velocity_change = velocity_change * 4.0f;
+    frame->yaw_velocity = frame->yaw_velocity + velocity_change;
+
+    if (!frame->room && current->step == frame->fork_step && current->width > 1.0f)
+        return MC_TERRAIN_CAVE_FORK;
+    if (!frame->room && cave_bounded(&frame->local, 4) == 0)
+        return MC_TERRAIN_CAVE_SKIP;
+    double delta_x = current->x - frame->target_x;
+    double delta_z = current->z - frame->target_z;
+    double remaining = (double)mc_java_i32_sub(current->end, current->step);
+    float reach_float = current->width + 2.0f;
+    reach_float = reach_float + 16.0f;
+    double reach = (double)reach_float;
+    double distance = delta_x * delta_x + delta_z * delta_z;
+    distance = distance - remaining * remaining;
+    if (distance > reach * reach)
+        return MC_TERRAIN_CAVE_END;
+    if (current->x < frame->target_x - 16.0 - radius * 2.0 ||
+        current->z < frame->target_z - 16.0 - radius * 2.0 ||
+        current->x > frame->target_x + 16.0 + radius * 2.0 ||
+        current->z > frame->target_z + 16.0 + radius * 2.0)
+        return MC_TERRAIN_CAVE_SKIP;
+
+    int32_t low_x = mc_java_i32_sub(
+        mc_java_i32_sub(mc_math_floor_double(current->x - radius), frame->origin_x), 1);
+    int32_t high_x = mc_java_i32_add(
+        mc_java_i32_sub(mc_math_floor_double(current->x + radius), frame->origin_x), 1);
+    int32_t low_y = mc_java_i32_sub(mc_math_floor_double(current->y - vertical_radius), 1);
+    int32_t high_y = mc_java_i32_add(mc_math_floor_double(current->y + vertical_radius), 1);
+    int32_t low_z = mc_java_i32_sub(
+        mc_java_i32_sub(mc_math_floor_double(current->z - radius), frame->origin_z), 1);
+    int32_t high_z = mc_java_i32_add(
+        mc_java_i32_sub(mc_math_floor_double(current->z + radius), frame->origin_z), 1);
+    if (low_x < 0)
+        low_x = 0;
+    if (high_x > 16)
+        high_x = 16;
+    if (low_y < 1)
+        low_y = 1;
+    if (high_y > 120)
+        high_y = 120;
+    if (low_z < 0)
+        low_z = 0;
+    if (high_z > 16)
+        high_z = 16;
+    *out = (mc_terrain_cave_ellipsoid){.x = current->x,
+                                       .y = current->y,
+                                       .z = current->z,
+                                       .radius = radius,
+                                       .vertical_radius = vertical_radius,
+                                       .origin_x = frame->origin_x,
+                                       .origin_z = frame->origin_z,
+                                       .low_x = low_x,
+                                       .high_x = high_x,
+                                       .low_y = low_y,
+                                       .high_y = high_y,
+                                       .low_z = low_z,
+                                       .high_z = high_z};
+    return MC_TERRAIN_CAVE_ELLIPSOID;
+}
+
+void mc_terrain_cave_path_child(mc_terrain_cave_path_frame *parent, unsigned int index,
+                                mc_terrain_cave_path_args *out)
+{
+    float width = mc_java_random_next_float(&parent->local) * 0.5f;
+    width = width + 0.5f;
+    float yaw = index == 0 ? parent->current.yaw - 1.5707964f : parent->current.yaw + 1.5707964f;
+    float pitch = parent->current.pitch / 3.0f;
+    *out = parent->current;
+    out->width = width;
+    out->yaw = yaw;
+    out->pitch = pitch;
+    out->vertical_ratio = 1.0;
+}
+
+double mc_terrain_cave_ellipsoid_x(const mc_terrain_cave_ellipsoid *ellipse, int32_t local_x)
+{
+    double normalized = (double)mc_java_i32_add(local_x, ellipse->origin_x) + 0.5;
+    normalized = normalized - ellipse->x;
+    normalized = normalized / ellipse->radius;
+    return normalized;
+}
+
+bool mc_terrain_cave_ellipsoid_column(const mc_terrain_cave_ellipsoid *ellipse, double normalized_x,
+                                      int32_t local_x, int32_t local_z, mc_terrain_cave_column *out)
+{
+    double normalized_z = (double)mc_java_i32_add(local_z, ellipse->origin_z) + 0.5;
+    normalized_z = normalized_z - ellipse->z;
+    normalized_z = normalized_z / ellipse->radius;
+    int32_t index = mc_java_i32_add(
+        mc_java_i32_mul(mc_java_i32_add(mc_java_i32_mul(local_x, 16), local_z), 128),
+        ellipse->high_y);
+    *out = (mc_terrain_cave_column){normalized_x, normalized_z, index};
+    return normalized_x * normalized_x + normalized_z * normalized_z < 1.0;
+}
+
+bool mc_terrain_cave_ellipsoid_contains(const mc_terrain_cave_ellipsoid *ellipse,
+                                        const mc_terrain_cave_column *column, int32_t geometric_y)
+{
+    double normalized_y = (double)geometric_y + 0.5;
+    normalized_y = normalized_y - ellipse->y;
+    normalized_y = normalized_y / ellipse->vertical_radius;
+    if (!(normalized_y > -0.7))
+        return false;
+    double value = column->normalized_x * column->normalized_x + normalized_y * normalized_y;
+    value = value + column->normalized_z * column->normalized_z;
+    return value < 1.0;
+}
+
 void mc_terrain_cave_path(mc_terrain_cave_context *context, double x, double y, double z,
                           float width, float yaw, float pitch, int32_t step, int32_t end,
                           double vertical_ratio)
 {
-    int32_t origin_x = mc_java_i32_mul(context->chunk_x, 16);
-    int32_t origin_z = mc_java_i32_mul(context->chunk_z, 16);
-    double target_x = (double)mc_java_i32_add(origin_x, 8);
-    double target_z = (double)mc_java_i32_add(origin_z, 8);
-    float yaw_velocity = 0.0f;
-    float pitch_velocity = 0.0f;
-    mc_java_random local;
-    mc_java_random_seed(&local, mc_java_random_next_i64(context->random));
-    if (end <= 0) {
-        end = 112 - cave_bounded(&local, 28);
-    }
-    bool room = false;
-    if (step == -1) {
-        step = end / 2;
-        room = true;
-    }
-    int32_t fork_step = cave_bounded(&local, end / 2) + end / 4;
-    bool slow_pitch = cave_bounded(&local, 6) == 0;
-    for (; step < end; ++step) {
-        float phase = (float)step * 3.1415927f;
-        phase = phase / (float)end;
-        float radius_wave = mc_math_sin(context->table, phase) * width;
-        radius_wave = radius_wave * 1.0f;
-        double radius = 1.5 + (double)radius_wave;
-        double vertical_radius = radius * vertical_ratio;
-        float cosine_pitch = mc_math_cos(context->table, pitch);
-        float sine_pitch = mc_math_sin(context->table, pitch);
-        float movement_x = mc_math_cos(context->table, yaw) * cosine_pitch;
-        x = x + (double)movement_x;
-        y = y + (double)sine_pitch;
-        float movement_z = mc_math_sin(context->table, yaw) * cosine_pitch;
-        z = z + (double)movement_z;
-        pitch = pitch * (slow_pitch ? 0.92f : 0.7f);
-        float pitch_change = pitch_velocity * 0.1f;
-        pitch = pitch + pitch_change;
-        float yaw_change = yaw_velocity * 0.1f;
-        yaw = yaw + yaw_change;
-        pitch_velocity = pitch_velocity * 0.9f;
-        yaw_velocity = yaw_velocity * 0.75f;
-
-        float first = mc_java_random_next_float(&local);
-        float second = mc_java_random_next_float(&local);
-        float third = mc_java_random_next_float(&local);
-        float velocity_change = first - second;
-        velocity_change = velocity_change * third;
-        velocity_change = velocity_change * 2.0f;
-        pitch_velocity = pitch_velocity + velocity_change;
-        first = mc_java_random_next_float(&local);
-        second = mc_java_random_next_float(&local);
-        third = mc_java_random_next_float(&local);
-        velocity_change = first - second;
-        velocity_change = velocity_change * third;
-        velocity_change = velocity_change * 4.0f;
-        yaw_velocity = yaw_velocity + velocity_change;
-
-        if (!room && step == fork_step && width > 1.0f) {
-            float child_width = mc_java_random_next_float(&local) * 0.5f;
-            child_width = child_width + 0.5f;
-            float child_yaw = yaw - 1.5707964f;
-            float child_pitch = pitch / 3.0f;
-            mc_terrain_cave_path(context, x, y, z, child_width, child_yaw, child_pitch, step, end,
-                                 1.0);
-            child_width = mc_java_random_next_float(&local) * 0.5f;
-            child_width = child_width + 0.5f;
-            child_yaw = yaw + 1.5707964f;
-            child_pitch = pitch / 3.0f;
-            mc_terrain_cave_path(context, x, y, z, child_width, child_yaw, child_pitch, step, end,
-                                 1.0);
+    const mc_terrain_cave_path_args args = {.chunk_x = context->chunk_x,
+                                            .chunk_z = context->chunk_z,
+                                            .x = x,
+                                            .y = y,
+                                            .z = z,
+                                            .vertical_ratio = vertical_ratio,
+                                            .width = width,
+                                            .yaw = yaw,
+                                            .pitch = pitch,
+                                            .step = step,
+                                            .end = end};
+    mc_terrain_cave_path_frame frame;
+    mc_terrain_cave_path_begin(&frame, context->random, &args);
+    for (; frame.current.step < frame.current.end;
+         frame.current.step = mc_java_i32_add(frame.current.step, 1)) {
+        mc_terrain_cave_ellipsoid ellipse;
+        mc_terrain_cave_step outcome = mc_terrain_cave_path_step(&frame, context->table, &ellipse);
+        if (outcome == MC_TERRAIN_CAVE_END)
+            return;
+        if (outcome == MC_TERRAIN_CAVE_FORK) {
+            mc_terrain_cave_path_args child;
+            mc_terrain_cave_path_child(&frame, 0, &child);
+            mc_terrain_cave_path(context, child.x, child.y, child.z, child.width, child.yaw,
+                                 child.pitch, child.step, child.end, child.vertical_ratio);
+            mc_terrain_cave_path_child(&frame, 1, &child);
+            mc_terrain_cave_path(context, child.x, child.y, child.z, child.width, child.yaw,
+                                 child.pitch, child.step, child.end, child.vertical_ratio);
             return;
         }
-        if (!room && cave_bounded(&local, 4) == 0) {
+        if (outcome == MC_TERRAIN_CAVE_SKIP)
             continue;
-        }
-        double delta_x = x - target_x;
-        double delta_z = z - target_z;
-        double remaining = (double)(end - step);
-        float reach_float = width + 2.0f;
-        reach_float = reach_float + 16.0f;
-        double reach = (double)reach_float;
-        double distance = delta_x * delta_x + delta_z * delta_z;
-        distance = distance - remaining * remaining;
-        if (distance > reach * reach) {
-            return;
-        }
-        if (x < target_x - 16.0 - radius * 2.0 || z < target_z - 16.0 - radius * 2.0 ||
-            x > target_x + 16.0 + radius * 2.0 || z > target_z + 16.0 + radius * 2.0) {
-            continue;
-        }
-
-        int32_t low_x =
-            mc_java_i32_sub(mc_java_i32_sub(mc_math_floor_double(x - radius), origin_x), 1);
-        int32_t high_x =
-            mc_java_i32_add(mc_java_i32_sub(mc_math_floor_double(x + radius), origin_x), 1);
-        int32_t low_y = mc_java_i32_sub(mc_math_floor_double(y - vertical_radius), 1);
-        int32_t high_y = mc_java_i32_add(mc_math_floor_double(y + vertical_radius), 1);
-        int32_t low_z =
-            mc_java_i32_sub(mc_java_i32_sub(mc_math_floor_double(z - radius), origin_z), 1);
-        int32_t high_z =
-            mc_java_i32_add(mc_java_i32_sub(mc_math_floor_double(z + radius), origin_z), 1);
-        if (low_x < 0) {
-            low_x = 0;
-        }
-        if (high_x > 16) {
-            high_x = 16;
-        }
-        if (low_y < 1) {
-            low_y = 1;
-        }
-        if (high_y > 120) {
-            high_y = 120;
-        }
-        if (low_z < 0) {
-            low_z = 0;
-        }
-        if (high_z > 16) {
-            high_z = 16;
-        }
 
         bool water = false;
-        for (int32_t local_x = low_x; !water && local_x < high_x; ++local_x) {
-            for (int32_t local_z = low_z; !water && local_z < high_z; ++local_z) {
-                for (int32_t water_y = high_y + 1; !water && water_y >= low_y - 1; --water_y) {
-                    if (water_y < 0 || water_y >= 128) {
+        for (int32_t local_x = ellipse.low_x; !water && local_x < ellipse.high_x; ++local_x) {
+            for (int32_t local_z = ellipse.low_z; !water && local_z < ellipse.high_z; ++local_z) {
+                for (int32_t water_y = ellipse.high_y + 1; !water && water_y >= ellipse.low_y - 1;
+                     --water_y) {
+                    if (water_y < 0 || water_y >= 128)
                         continue;
-                    }
                     size_t index = (size_t)((local_x * 16 + local_z) * 128 + water_y);
                     uint8_t block = context->blocks[index];
-                    if (block == CAVE_FLOWING_WATER || block == CAVE_WATER) {
+                    if (block == CAVE_FLOWING_WATER || block == CAVE_WATER)
                         water = true;
-                    }
-                    if (water_y != low_y - 1 && local_x != low_x && local_x != high_x - 1 &&
-                        local_z != low_z && local_z != high_z - 1) {
-                        water_y = low_y;
-                    }
+                    if (water_y != ellipse.low_y - 1 && local_x != ellipse.low_x &&
+                        local_x != ellipse.high_x - 1 && local_z != ellipse.low_z &&
+                        local_z != ellipse.high_z - 1)
+                        water_y = ellipse.low_y;
                 }
             }
         }
-        if (water) {
+        if (water)
             continue;
-        }
-        for (int32_t local_x = low_x; local_x < high_x; ++local_x) {
-            double normalized_x = (double)mc_java_i32_add(local_x, origin_x) + 0.5;
-            normalized_x = normalized_x - x;
-            normalized_x = normalized_x / radius;
-            for (int32_t local_z = low_z; local_z < high_z; ++local_z) {
-                double normalized_z = (double)mc_java_i32_add(local_z, origin_z) + 0.5;
-                normalized_z = normalized_z - z;
-                normalized_z = normalized_z / radius;
-                int32_t index = (local_x * 16 + local_z) * 128 + high_y;
+        for (int32_t local_x = ellipse.low_x; local_x < ellipse.high_x; ++local_x) {
+            double normalized_x = mc_terrain_cave_ellipsoid_x(&ellipse, local_x);
+            for (int32_t local_z = ellipse.low_z; local_z < ellipse.high_z; ++local_z) {
+                mc_terrain_cave_column column;
+                bool inside = mc_terrain_cave_ellipsoid_column(&ellipse, normalized_x, local_x,
+                                                               local_z, &column);
+                int32_t index = column.initial_index;
                 bool found_grass = false;
-                if (normalized_x * normalized_x + normalized_z * normalized_z < 1.0) {
-                    for (int32_t geometric_y = high_y - 1; geometric_y >= low_y;
+                if (inside) {
+                    for (int32_t geometric_y = ellipse.high_y - 1; geometric_y >= ellipse.low_y;
                          --geometric_y, --index) {
-                        double normalized_y = (double)geometric_y + 0.5;
-                        normalized_y = normalized_y - y;
-                        normalized_y = normalized_y / vertical_radius;
-                        if (!(normalized_y > -0.7)) {
+                        if (!mc_terrain_cave_ellipsoid_contains(&ellipse, &column, geometric_y))
                             continue;
-                        }
-                        double ellipse = normalized_x * normalized_x + normalized_y * normalized_y;
-                        ellipse = ellipse + normalized_z * normalized_z;
-                        if (ellipse < 1.0) {
-                            uint8_t block = context->blocks[(size_t)index];
-                            if (block == CAVE_GRASS) {
-                                found_grass = true;
-                            }
-                            if (block == CAVE_STONE || block == CAVE_DIRT || block == CAVE_GRASS) {
-                                if (geometric_y < 10) {
-                                    context->blocks[(size_t)index] = CAVE_FLOWING_LAVA;
-                                } else {
-                                    context->blocks[(size_t)index] = CAVE_AIR;
-                                    if (found_grass &&
-                                        context->blocks[(size_t)(index - 1)] == CAVE_DIRT) {
-                                        context->blocks[(size_t)(index - 1)] = CAVE_GRASS;
-                                    }
-                                }
+                        uint8_t block = context->blocks[(size_t)index];
+                        if (block == CAVE_GRASS)
+                            found_grass = true;
+                        if (block == CAVE_STONE || block == CAVE_DIRT || block == CAVE_GRASS) {
+                            if (geometric_y < 10) {
+                                context->blocks[(size_t)index] = CAVE_FLOWING_LAVA;
+                            } else {
+                                context->blocks[(size_t)index] = CAVE_AIR;
+                                if (found_grass &&
+                                    context->blocks[(size_t)(index - 1)] == CAVE_DIRT)
+                                    context->blocks[(size_t)(index - 1)] = CAVE_GRASS;
                             }
                         }
                     }
                 }
             }
         }
-        if (room) {
+        if (frame.room)
             break;
-        }
     }
 }
 

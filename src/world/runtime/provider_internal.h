@@ -2,12 +2,25 @@
 #define MC_WORLD_RUNTIME_PROVIDER_INTERNAL_H
 
 #include "mc/core/java/int_set.h"
+#include "mc/world/biome/sampling.h"
 #include "mc/world/cache/acquire.h"
 #include "mc/world/dimension/dimension.h"
 #include "mc/world/generation/normal.h"
 #include "mc/world/runtime/runtime.h"
 
 #define MC_WORLD_PROVIDER_GRID_WIDTH 32u
+
+/* Actual nullable source fields over the provider's fixed native reservation.
+ * A zero span is an unpublished Java array, not the reserved C backing. r/s/t
+ * are constructor-published; q/d/e/f/g/h publish only at their reached stores.
+ * v borrows actual Registry-arena references, never numerical biome IDs. The
+ * provider separately retains its current supplier; each entered generation
+ * also holds its captured supplier across reentry. These are native lifetime
+ * holds, not source fields or owning copies of reference arrays. */
+typedef struct mc_world_provider_generation_fields {
+    mc_biome_reference_array *v;
+    mc_terrain_double_span q, d, e, f, g, h, r, s, t;
+} mc_world_provider_generation_fields;
 
 /* Borrowed views of this concrete normal-provider/cache owner. These are the
  * actual mutable descriptors and the runtime's ONE embedded fallback identity,
@@ -19,6 +32,7 @@ typedef struct mc_world_provider_fields {
     mc_world_dimension_biome *biome;
     mc_biome_manager *manager;
     mc_normal_generator *generator;
+    const mc_world_provider_generation_fields *generation;
     mc_chunk_cache *cache;
     mc_chunk_pending *pending;
     mc_chunk_state *fallback;

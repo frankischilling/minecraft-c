@@ -1,4 +1,4 @@
-#include "mc/world/terrain/surface.h"
+#include "surface_internal.h"
 
 enum surface_block {
     SURFACE_AIR = 0,
@@ -40,37 +40,55 @@ static bool surface_apply_valid(const mc_terrain_normal_surface_workspace *field
            blocks_length >= MC_TERRAIN_NORMAL_BLOCKS;
 }
 
-static void surface_noise(const mc_terrain_normal_state *state,
-                          const mc_terrain_normal_surface_workspace *workspace, int32_t chunk_x,
-                          int32_t chunk_z)
+bool mc_terrain_normal_surface_channel(const mc_terrain_normal_state *state,
+                                       mc_terrain_surface_channel selected, int32_t chunk_x,
+                                       int32_t chunk_z, mc_terrain_double_span out)
 {
+    if (state == NULL || !surface_span_valid(out)) {
+        return false;
+    }
     double origin_x = (double)mc_java_i32_mul(chunk_x, 16);
     double origin_z = (double)mc_java_i32_mul(chunk_z, 16);
     double scale = 0.03125;
     mc_noise_octaves channel = {state->surface_primary_layers, 4};
     mc_noise_grid grid = {origin_x, origin_z, 0.0, 16, 16, 1, scale, scale, 1.0};
+    switch (selected) {
+        case MC_TERRAIN_SURFACE_SAND:
+            break;
+        case MC_TERRAIN_SURFACE_GRAVEL:
+            grid.origin_y = 109.0134;
+            grid.origin_z = origin_z;
+            grid.size_y = 1;
+            grid.size_z = 16;
+            grid.scale_y = 1.0;
+            grid.scale_z = scale;
+            break;
+        case MC_TERRAIN_SURFACE_THICKNESS:
+            channel.layers = state->surface_secondary_layers;
+            grid.scale_x = scale * 2.0;
+            grid.scale_y = scale * 2.0;
+            grid.scale_z = scale * 2.0;
+            break;
+        default:
+            return false;
+    }
+    return mc_noise_octaves_fill(&channel, &grid, out.data, out.length);
+}
+
+static void surface_noise(const mc_terrain_normal_state *state,
+                          const mc_terrain_normal_surface_workspace *workspace, int32_t chunk_x,
+                          int32_t chunk_z)
+{
     /* Fixed shapes/counts and all full spans were validated before mutation;
      * each original octave request now has no remaining failure. */
-    (void)mc_noise_octaves_fill(&channel, &grid, workspace->sand.data, workspace->sand.length);
-
-    grid.origin_y = 109.0134;
-    grid.origin_z = origin_z;
-    grid.size_y = 1;
-    grid.size_z = 16;
-    grid.scale_y = 1.0;
-    grid.scale_z = scale;
-    (void)mc_noise_octaves_fill(&channel, &grid, workspace->gravel.data, workspace->gravel.length);
-
-    channel.layers = state->surface_secondary_layers;
-    grid.origin_y = origin_z;
-    grid.origin_z = 0.0;
-    grid.size_y = 16;
-    grid.size_z = 1;
-    grid.scale_x = scale * 2.0;
-    grid.scale_y = scale * 2.0;
-    grid.scale_z = scale * 2.0;
-    (void)mc_noise_octaves_fill(&channel, &grid, workspace->thickness.data,
-                                workspace->thickness.length);
+    /* The public numerical operations validate ALL spans before mutation.
+     * GAME instead uses the same requests one at a time at its source calls. */
+    (void)mc_terrain_normal_surface_channel(state, MC_TERRAIN_SURFACE_SAND, chunk_x, chunk_z,
+                                            workspace->sand);
+    (void)mc_terrain_normal_surface_channel(state, MC_TERRAIN_SURFACE_GRAVEL, chunk_x, chunk_z,
+                                            workspace->gravel);
+    (void)mc_terrain_normal_surface_channel(state, MC_TERRAIN_SURFACE_THICKNESS, chunk_x, chunk_z,
+                                            workspace->thickness);
 }
 
 static void surface_apply(const mc_terrain_normal_surface_workspace *fields,
@@ -80,13 +98,17 @@ static void surface_apply(const mc_terrain_normal_surface_workspace *fields,
     for (size_t z = 0; z < 16; ++z) {
         for (size_t x = 0; x < 16; ++x) {
             size_t column = x * 16u + z;
-            double sand_jitter = mc_java_random_next_double(random) * 0.2;
-            bool sand = fields->sand.data[column] + sand_jitter > 0.0;
-            double gravel_jitter = mc_java_random_next_double(random) * 0.2;
-            bool gravel = fields->gravel.data[column] + gravel_jitter > 3.0;
-            double thickness_jitter = mc_java_random_next_double(random) * 0.25;
-            int32_t thickness = mc_java_double_to_i32(
-                ((fields->thickness.data[column] / 3.0) + 3.0) + thickness_jitter);
+            double sand_noise = fields->sand.data[column];
+            double sand_uniform = mc_java_random_next_double(random);
+            bool sand = mc_terrain_surface_patch(sand_noise, sand_uniform, 0.0);
+            double gravel_noise = fields->gravel.data[column];
+            double gravel_uniform = mc_java_random_next_double(random);
+            bool gravel = mc_terrain_surface_patch(gravel_noise, gravel_uniform, 3.0);
+            double thickness_base =
+                mc_terrain_surface_thickness_base(fields->thickness.data[column]);
+            double thickness_uniform = mc_java_random_next_double(random);
+            int32_t thickness =
+                mc_terrain_surface_thickness_finish(thickness_base, thickness_uniform);
             int32_t remaining = -1;
             uint8_t top = materials[column].top;
             uint8_t filler = materials[column].filler;
