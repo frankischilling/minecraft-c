@@ -42,15 +42,17 @@ the live cell again. This preserves the real recursive initialization cycle.
 
 | Explicit entry | Retained state at the current implementation boundary |
 | --- | --- |
-| Block first, resources supplied | All 96 Blocks, all 106 named Items and sixteen achievements exist. Statistics and achievements complete; Item returns at2667. The outer Block finishes BlockItems and reaches recipe d21 through its statistics call3674. |
+| Block first, resources supplied | All 96 Blocks, all 106 named Items and sixteen achievements exist. Statistics and achievements complete; Item returns at2667. The outer Block finishes BlockItems, recipe/smelting initialization and D, then returns at3677. |
 | Item first, resources supplied | The first tool enters Block before any named Item publication. Block completes its BlockItem tail and enters statistics at3674. Statistics publishes C, then the first achievement allocates a real RAW Stack and fails on its NULL Item read at2. E/F remain NULL. |
 
-The Block entry returns the explicit unfinished recipe dependency; the Item
-entry propagates the actual NULL icon failure. Failed classes retain their
+The Block entry now returns successfully; the Item entry propagates the actual
+NULL icon failure. Failed classes retain their
 first cause, while successfully initialized nested classes remain READY.
-Neither entry completes registry bootstrap. Recipes and smelting remain
-unfinished; [achievement construction](../statistics/achievements.md) now runs
-through its actual source order.
+[Recipe and smelting initialization](recipes.md) constructs the actual managers,
+151 recipes and ten smelting entries. Direct manager entry orders retain their
+own null-singleton failures. Full World startup and gameplay remain unfinished;
+[achievement construction](../statistics/achievements.md) runs through its actual
+source order.
 An occupied Item slot also stops explicitly at the unfinished conflict-output
 dependency; the original warning branch must eventually continue to its later
 store rather than become a duplicate-ID rejection.

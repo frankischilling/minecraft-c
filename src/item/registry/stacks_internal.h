@@ -28,6 +28,23 @@ mc_registry_status mc_registry_stack_construct_item(mc_registry_classes *classes
 mc_registry_status mc_registry_stack_construct_block(mc_registry_classes *classes,
                                                      mc_item_stack *raw, const mc_block *block);
 
+/* Same real constructors with their supplied count/damage; no range or
+ * provider lookup. The copy operation allocates before reading source fields,
+ * creates a new numeric Stack with animation0 and no NBT provenance, and
+ * retains that new identity in the class ledger. source must be nonnull. */
+mc_registry_status mc_registry_stack_construct_numeric(mc_registry_classes *classes,
+                                                       mc_item_stack *raw, int32_t id,
+                                                       int32_t count, int32_t damage);
+mc_registry_status mc_registry_stack_construct_item_values(mc_registry_classes *classes,
+                                                           mc_item_stack *raw, const mc_item *item,
+                                                           int32_t count, int32_t damage);
+mc_registry_status mc_registry_stack_construct_block_values(mc_registry_classes *classes,
+                                                            mc_item_stack *raw,
+                                                            const mc_block *block, int32_t count,
+                                                            int32_t damage);
+mc_registry_status mc_registry_stack_copy(mc_registry_classes *classes, const mc_item_stack *source,
+                                          mc_item_stack **out);
+
 /* Quiescent final class retirement only, before freeing the class arena.
  * Drop the one real hold per linked owner and detach the ledger; repeated calls
  * while the arena is still live are harmless. Ledger storage/charges remain in

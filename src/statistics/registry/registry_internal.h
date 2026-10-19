@@ -75,6 +75,7 @@ mc_registry_status mc_registry_statistic_block_array(mc_registry_classes *classe
                                                      mc_statistic ***out);
 mc_registry_status mc_registry_statistic_block_items(mc_registry_classes *classes);
 mc_registry_status mc_registry_statistic_other_items(mc_registry_classes *classes);
+mc_registry_status mc_registry_statistic_recipes(mc_registry_classes *classes);
 mc_registry_status mc_registry_statistic_block_name(mc_registry_classes *classes,
                                                     const mc_block *block,
                                                     const mc_registry_string **out);

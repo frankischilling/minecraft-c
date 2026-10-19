@@ -68,7 +68,7 @@ must be retired before destruction.
 
 ## Native checks and remaining work
 
-`block.registry_construction` passes 103,163 checks on MSVC, GCC and Clang,
+`block.registry_construction` passes 103,185 checks on MSVC, GCC and Clang,
 within six selected registry, Material, profile and recorded-observation cases.
 Linux runs use
 ASan/UBSan and leak checks. Both client and server constructor paths are covered.
@@ -81,9 +81,11 @@ do not inject constructor failures or reset the shared profile.
 The separate [executed-original comparison](../reference/block-registry.md)
 matches all 3,950 projected base-field/array/reference rows per side on those
 three compilers. It excludes concrete subtype state, clock-dependent values
-and full bootstrap completion. Item has its own 531,481 native checks and
+and full bootstrap completion. Item has its own 531,357 native checks and
 [33,064-row original comparison](../reference/item-registry.md). The
-block-statistic, achievement, recipe and smelting closure remains
-unfinished. Full registry startup, World integration, synchronous block hooks,
+block-statistic and achievement construction now continues through real
+[recipe/smelting initialization](../item/recipes.md) and the D array. Ordinary
+Block entry returns at3677; Item and direct-manager entries preserve their
+actual failure boundaries. Full World startup and integration, synchronous block hooks,
 terrain-feature population, entity/tile behavior and gameplay persistence remain
 required. See the [parity matrix](../parity.md) and [test scope](../testing.md).

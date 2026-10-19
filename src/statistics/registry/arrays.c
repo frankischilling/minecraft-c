@@ -383,8 +383,45 @@ static void *set_allocate(void *context, size_t bytes)
     return mc_registry_allocate(context, bytes);
 }
 
-static mc_registry_status recipe_prefix(mc_registry_classes *classes)
+static mc_registry_status recipe_set_error(mc_registry_classes *classes,
+                                           mc_java_int_set_status status, int32_t pc)
 {
+    if (status == MC_JAVA_INT_SET_ALLOCATION_FAILED &&
+        (classes->last_error.status == MC_REGISTRY_LIMIT ||
+         classes->last_error.status == MC_REGISTRY_ALLOCATION_FAILED))
+        return array_error(classes, pc);
+    return array_fail(classes, pc,
+                      status == MC_JAVA_INT_SET_LIMIT               ? MC_REGISTRY_LIMIT
+                      : status == MC_JAVA_INT_SET_ALLOCATION_FAILED ? MC_REGISTRY_ALLOCATION_FAILED
+                                                                    : MC_REGISTRY_INVALID_ARGUMENT,
+                      "Statistics recipe Integer HashSet operation");
+}
+
+static mc_registry_status recipe_add_output(mc_registry_classes *classes, mc_java_int_set *set,
+                                            const mc_item_stack *output, int32_t read_pc,
+                                            int32_t add_pc)
+{
+    if (output == NULL)
+        return array_fail(classes, read_pc, MC_REGISTRY_NULL_REFERENCE,
+                          "Statistics recipe output ID read on null");
+    mc_item_stack_fields fields;
+    if (mc_item_stack_fields_get(output, &fields) != MC_ITEM_STACK_OK)
+        return array_fail(classes, read_pc, MC_REGISTRY_INVALID_ARGUMENT,
+                          "Statistics recipe output native owner");
+    bool changed = false;
+    const mc_java_int_set_status status = mc_java_int_set_add(set, fields.id, &changed);
+    return status == MC_JAVA_INT_SET_OK ? MC_REGISTRY_OK
+                                        : recipe_set_error(classes, status, add_pc);
+}
+
+mc_registry_status mc_registry_statistic_recipes(mc_registry_classes *classes)
+{
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (classes->entered == 0)
+        return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
+                                "Statistics recipe population requires admitted class access",
+                                NULL);
     if (!classes->statistics.G)
         return MC_REGISTRY_OK;
     if (!classes->statistics.H)
@@ -404,9 +441,115 @@ static mc_registry_status recipe_prefix(mc_registry_classes *classes)
                                                               : MC_REGISTRY_INVALID_ARGUMENT,
                           "Statistics empty Integer HashSet construction failed");
     }
-    (void)set; /* Reached local; the class allocation ledger retains its owner. */
-    return array_fail(classes, 21, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                      "Statistics recipe singleton hk/ey.a() at21 unfinished");
+    mc_registry_status status = mc_registry_crafting_active_use(classes); /*21*/
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_crafting_manager *crafting = classes->recipes.crafting;
+    if (crafting == NULL)
+        return array_fail(classes, 24, MC_REGISTRY_NULL_REFERENCE,
+                          "Statistics crafting List getter null receiver");
+    mc_registry_list *recipes = crafting->b; /* getter24 returns the actual list */
+    if (recipes == NULL)
+        return array_fail(classes, 27, MC_REGISTRY_NULL_REFERENCE,
+                          "Statistics crafting List.iterator null receiver");
+    for (size_t i = 0; i < recipes->count; ++i) {
+        const mc_recipe *recipe = recipes->elements[i];
+        if (recipe == NULL)
+            return array_fail(classes, 54, MC_REGISTRY_NULL_REFERENCE,
+                              "Statistics recipe output getter null receiver");
+        if (mc_recipe_kind_get(recipe) >= MC_RECIPE_KIND_COUNT)
+            return array_fail(classes, 48, MC_REGISTRY_ILLEGAL_ARGUMENT,
+                              "Statistics native recipe type");
+        status = recipe_add_output(classes, set, mc_recipe_output(recipe), 59, 65);
+        if (status != MC_REGISTRY_OK)
+            return status;
+    }
+    status = mc_registry_smelting_active_use(classes); /*72*/
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_smelting_manager *smelting = classes->recipes.smelting;
+    if (smelting == NULL)
+        return array_fail(classes, 75, MC_REGISTRY_NULL_REFERENCE,
+                          "Statistics smelting Map getter null receiver");
+    if (smelting->b == NULL)
+        return array_fail(classes, 78, MC_REGISTRY_NULL_REFERENCE,
+                          "Statistics smelting Map.values null receiver");
+    int32_t *keys = NULL;
+    size_t count = 0;
+    status = mc_registry_smelting_keys(classes, smelting, &keys, &count);
+    if (status != MC_REGISTRY_OK)
+        return array_error(classes, 83);
+    for (size_t i = 0; i < count; ++i) {
+        const mc_item_stack *output = NULL;
+        status = mc_smelting_manager_find(smelting, keys[i], &output);
+        if (status != MC_REGISTRY_OK)
+            return array_error(classes, 99);
+        status = recipe_add_output(classes, set, output, 110, 116);
+        if (status != MC_REGISTRY_OK)
+            return status;
+    }
+    mc_statistic **array = NULL;
+    status = new_array(classes, 32000u, 126, &array);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    classes->statistics.D = array; /*129, before the set iterator133*/
+    count = mc_java_int_set_size(set);
+    if (count > SIZE_MAX / sizeof(*keys))
+        return array_fail(classes, 133, MC_REGISTRY_LIMIT, "Statistics recipe traversal bound");
+    keys = NULL;
+    if (count != 0) {
+        keys = mc_registry_allocate(classes, count * sizeof(*keys));
+        if (keys == NULL)
+            return array_error(classes, 133);
+    }
+    size_t copied = 0;
+    set_status = mc_java_int_set_copy_order(set, keys, count, &copied);
+    if (set_status != MC_JAVA_INT_SET_OK)
+        return recipe_set_error(classes, set_status, 133);
+    if (copied != count)
+        return array_fail(classes, 133, MC_REGISTRY_INVALID_ARGUMENT,
+                          "Statistics recipe traversal size invariant");
+    for (size_t i = 0; i < count; ++i) {
+        const int32_t id = keys[i];
+        mc_item *item = NULL;
+        status = item_load(classes, id, 163, &item);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        if (item == NULL)
+            continue;
+        const mc_registry_string *key = NULL;
+        status = mc_registry_literal_ascii(classes, "stat.craftItem", &key);
+        if (status != MC_REGISTRY_OK)
+            return array_error(classes, 167);
+        /* The name expression reloads current Item.c independently at175. */
+        status = item_load(classes, id, 182, &item);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        if (item == NULL)
+            return array_fail(classes, 183, MC_REGISTRY_NULL_REFERENCE,
+                              "Statistics craft Item name null receiver");
+        const mc_registry_string *argument = NULL;
+        status = mc_registry_statistic_item_name(classes, item, &argument);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        const mc_registry_string *name = NULL;
+        status = mc_registry_translate_formatted(classes, key, &argument, 1u, &name);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        /* Source captures D191/index195 before new198/constructor214 and
+         * virtual registration217. A nested call can replace static D without
+         * changing this outer store's actual captured array. */
+        mc_statistic **captured = classes->statistics.D;
+        const int32_t index = id;
+        mc_statistic *statistic = NULL;
+        status = item_statistic(classes, 198, 16842752, id, name, &statistic);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        status = slot_store(classes, captured, 32000u, index, statistic, 220);
+        if (status != MC_REGISTRY_OK)
+            return status;
+    }
+    return unify(classes, classes->statistics.D, 32000u); /*current D224/call227*/
 }
 
 static mc_registry_status populate_items(mc_registry_classes *classes, bool other)
@@ -451,8 +594,8 @@ static mc_registry_status populate_items(mc_registry_classes *classes, bool othe
     if (other)
         classes->statistics.H = true; /* c41 */
     else
-        classes->statistics.G = true; /* b37 */
-    return recipe_prefix(classes);    /* b40 / c44 */
+        classes->statistics.G = true;              /* b37 */
+    return mc_registry_statistic_recipes(classes); /* b40 / c44 */
 }
 
 mc_registry_status mc_registry_statistic_block_items(mc_registry_classes *classes)

@@ -22,6 +22,7 @@ public final class ArrayPrefixController {
     private static final int STREAM_LIMIT = 16 * 1024 * 1024;
     private static final int MAX_STATS = 65536, MAX_HELD = 262144, MAX_TABLE = 131072;
     private static final int MAX_ARRAY = 32000, MAX_LIST = 131072;
+    private static final int MAX_RECIPES = 4096, MAX_RECIPE_STACKS = 16384;
 
     private static void require(boolean value, String message) {
         if (!value) throw new IllegalStateException(message);
@@ -178,20 +179,22 @@ public final class ArrayPrefixController {
 
     private static final class Snapshot {
         final VirtualMachine vm;
-        final boolean client, achievements;
+        final boolean client, achievements, recipes;
         final ClassLoaderReference loader;
         final ReferenceType statistics, base, item;
         final long deadline;
-        final Rows out = new Rows(), binding = new Rows();
+        final Rows out = new Rows(), binding = new Rows(), catalog = new Rows();
         final Map<Long, ObjectReference> held = new LinkedHashMap<>();
         final TreeMap<Integer, Stat> stats = new TreeMap<>();
         final Map<Long, Integer> ids = new HashMap<>();
+        final LinkedHashMap<Long, ObjectReference> recipeStacks = new LinkedHashMap<>();
+        final Map<Long, Integer> recipeStackIds = new HashMap<>();
         final ObjectReference[] strategies = new ObjectReference[3];
         final Field id, name, independent, key, formatter, associated;
         boolean released;
-        Snapshot(VirtualMachine vm, boolean client, boolean achievements, ClassLoaderReference loader,
+        Snapshot(VirtualMachine vm, boolean client, boolean achievements, boolean recipes, ClassLoaderReference loader,
                 ReferenceType statistics, long deadline) {
-            this.vm = vm; this.client = client; this.achievements = achievements; this.loader = loader;
+            this.vm = vm; this.client = client; this.achievements = achievements; this.recipes = recipes; this.loader = loader;
             this.statistics = statistics; this.deadline = deadline;
             base = original(client ? "vr" : "ns");
             item = original(client ? "tw" : "mm");
@@ -461,7 +464,8 @@ public final class ArrayPrefixController {
                 for (int prior = 0; prior < index; prior++)
                     require(!strategies[prior].equals(strategies[index]), "distinct strategy owners");
             }
-            out.add(achievements ? "STAT_ARRAY_PREFIX_V2" : "STAT_ARRAY_PREFIX_V1", side, entry, boundary);
+            out.add(recipes ? "STAT_BOOTSTRAP_V1" : achievements ? "STAT_ARRAY_PREFIX_V2" : "STAT_ARRAY_PREFIX_V1",
+                    side, entry, boundary);
             out.add("STATE", bool(statistics.getValue(field(statistics, "G", "Z", 10))),
                     bool(statistics.getValue(field(statistics, "H", "Z", 10))));
             map();
@@ -474,6 +478,186 @@ public final class ArrayPrefixController {
             for (String label : new String[] {"b", "c", "d", "e"}) list(label);
             if (achievements) achievementGraph();
             out.add("END");
+        }
+        final Set<String> catalogTypes = new HashSet<>();
+        ReferenceType catalogType(String name) {
+            ReferenceType type = original(name);
+            require(type instanceof ClassType && ((ClassType)type).superclass().equals(bootstrap("java.lang.Object")),
+                    "exact direct-Object original catalog class " + name);
+            if (catalogTypes.add(name))
+                binding.add("ORIGINAL_CATALOG_TYPE", name, loader.uniqueID(), hold(type.classObject()).uniqueID(),
+                        "EXCLUSIVE_VERIFIED_JAR_LOADER");
+            return type;
+        }
+        List<Value> catalogList(Value value, String role) {
+            ObjectReference list = hold(value);
+            ReferenceType type = bootstrap("java.util.ArrayList");
+            require(list.referenceType().equals(type), "actual catalog ArrayList " + role);
+            int size = integer(list.getValue(field(type, "size", "I", 2)));
+            Value backing = list.getValue(field(type, "elementData", "[Ljava/lang/Object;", 128));
+            require(backing instanceof ArrayReference, "actual catalog list backing array");
+            ArrayReference data = (ArrayReference)hold(backing);
+            require(data.referenceType().classLoader() == null
+                    && data.referenceType().signature().equals("[Ljava/lang/Object;")
+                    && size >= 0 && size <= MAX_RECIPES && size <= data.length() && data.length() <= MAX_TABLE,
+                    "complete bounded catalog logical list");
+            binding.add("CATALOG_LIST", role, list.uniqueID(), size, data.uniqueID(), data.length());
+            List<Value> values = size == 0 ? List.of() : data.getValues(0, size);
+            require(values.size() == size, "complete actual catalog list read");
+            return values;
+        }
+        ObjectReference manager(boolean crafting) throws Exception {
+            String name = crafting ? (client ? "hk" : "ey") : (client ? "ey" : "de");
+            ReferenceType type = optionalOriginal(name);
+            if (type == null) return null;
+            require(type.equals(catalogType(name)), "actual catalog manager type");
+            String signature = "L" + name + ";";
+            List<Method> getters = type.methodsByName("a", "()" + signature);
+            require(getters.size() == 1 && getters.get(0).declaringType().equals(type)
+                    && getters.get(0).modifiers() == 25, "exact original singleton getter");
+            byte[] code = getters.get(0).bytecodes();
+            require(code.length == 4 && (code[0] & 255) == 178
+                    && Session.u16(code, 1) == (crafting ? 104 : 9) && (code[3] & 255) == 176,
+                    "source-bound singleton getter returns actual static cell");
+            List<Method> containers = type.methodsByName("b", crafting ? "()Ljava/util/List;" : "()Ljava/util/Map;");
+            require(containers.size() == 1 && containers.get(0).declaringType().equals(type)
+                    && containers.get(0).modifiers() == 1, "exact original manager container getter");
+            byte[] container = containers.get(0).bytecodes();
+            require(container.length == 5 && (container[0] & 255) == 42 && (container[1] & 255) == 180
+                    && Session.u16(container, 2) == (crafting ? 105 : 10) && (container[4] & 255) == 176,
+                    "source-bound actual retained container getter");
+            binding.add("MANAGER_GETTERS", name, hash(code), hash(container));
+            Value value = type.getValue(field(type, "a", signature, 26));
+            binding.add("PUBLISHED_MANAGER", name, value == null ? "NULL" : hold(value).uniqueID());
+            if (value == null) return null;
+            ObjectReference object = hold(value);
+            require(object.referenceType().equals(type), "actual published manager owner identity");
+            return object;
+        }
+        String recipeStack(Value value) {
+            if (value == null) return "NULL";
+            ObjectReference object = hold(value);
+            require(object.referenceType().equals(catalogType(client ? "iz" : "fy")), "actual recipe Stack class");
+            long id = object.uniqueID();
+            if (!recipeStacks.containsKey(id)) {
+                require(recipeStacks.size() < MAX_RECIPE_STACKS, "bounded catalog Stack reference table");
+                recipeStacks.put(id, object);
+                recipeStackIds.put(id, recipeStacks.size());
+            }
+            require(recipeStacks.get(id).equals(object), "actual catalog Stack identity bijection");
+            return "R:" + recipeStackIds.get(id);
+        }
+        void craftingCatalog(ObjectReference manager) {
+            if (manager == null) {
+                catalog.add("CRAFTING", "NULL");
+                return;
+            }
+            ReferenceType type = manager.referenceType();
+            List<Value> recipes = catalogList(manager.getValue(field(type, "b", "Ljava/util/List;", 2)), "CRAFTING");
+            catalog.add("CRAFTING", recipes.size());
+            for (int ordinal = 0; ordinal < recipes.size(); ordinal++) {
+                remaining(deadline);
+                ObjectReference recipe = hold(recipes.get(ordinal));
+                type = recipe.referenceType();
+                boolean shaped = type.name().equals(client ? "is" : "ft");
+                require(shaped || type.name().equals(client ? "tt" : "ml"), "exact concrete recipe class");
+                require(type.equals(catalogType(shaped ? (client ? "is" : "ft") : (client ? "tt" : "ml")))
+                        && ((ClassType)type).allInterfaces().contains(original(client ? "dt" : "ck")),
+                        "actual selected-loader recipe implementation");
+                List<Value> ingredients;
+                Value output;
+                if (shaped) {
+                    Value raw = recipe.getValue(field(type, "d", client ? "[Liz;" : "[Lfy;", 2));
+                    require(raw instanceof ArrayReference, "actual shaped ingredient array");
+                    ArrayReference array = (ArrayReference)hold(raw);
+                    require(loader.equals(array.referenceType().classLoader())
+                            && array.referenceType().signature().equals(client ? "[Liz;" : "[Lfy;")
+                            && array.length() <= MAX_RECIPES, "bounded original shaped array extent");
+                    ingredients = array.getValues();
+                    require(ingredients.size() == array.length(), "every actual shaped array cell");
+                    output = recipe.getValue(field(type, "e", client ? "Liz;" : "Lfy;", 2));
+                    catalog.add("RECIPE", ordinal, "shaped", integer(recipe.getValue(field(type, "a", "I", 17))),
+                            integer(recipe.getValue(field(type, "b", "I", 2))),
+                            integer(recipe.getValue(field(type, "c", "I", 2))), array.length(), recipeStack(output));
+                    binding.add("RECIPE_OBJECT", ordinal, recipe.uniqueID(), type.name(), array.uniqueID());
+                } else {
+                    ingredients = catalogList(recipe.getValue(field(type, "b", "Ljava/util/List;", 18)),
+                            "SHAPELESS_" + ordinal);
+                    output = recipe.getValue(field(type, "a", client ? "Liz;" : "Lfy;", 18));
+                    catalog.add("RECIPE", ordinal, "shapeless", "NULL", "NULL", "NULL", ingredients.size(), recipeStack(output));
+                    binding.add("RECIPE_OBJECT", ordinal, recipe.uniqueID(), type.name());
+                }
+                for (int index = 0; index < ingredients.size(); index++) {
+                    remaining(deadline);
+                    catalog.add("INGREDIENT", ordinal, index, recipeStack(ingredients.get(index)));
+                }
+            }
+        }
+        void smeltingCatalog(ObjectReference manager) {
+            if (manager == null) {
+                catalog.add("SMELTING", "NULL");
+                return;
+            }
+            ObjectReference map = hold(manager.getValue(field(manager.referenceType(), "b", "Ljava/util/Map;", 2)));
+            ReferenceType type = bootstrap("java.util.HashMap");
+            require(map.referenceType().equals(type), "actual published smelting HashMap");
+            int size = integer(map.getValue(field(type, "size", "I", 128)));
+            require(size >= 0 && size <= MAX_RECIPES, "bounded actual smelting map size");
+            Value raw = map.getValue(field(type, "table", "[Ljava/util/HashMap$Node;", 128));
+            catalog.add("SMELTING", size);
+            Set<Long> nodes = new HashSet<>();
+            Set<Integer> keys = new HashSet<>();
+            if (raw != null) {
+                require(raw instanceof ArrayReference, "actual smelting table array");
+                ArrayReference table = (ArrayReference)hold(raw);
+                require(table.referenceType().classLoader() == null
+                        && table.referenceType().signature().equals("[Ljava/util/HashMap$Node;")
+                        && table.length() <= MAX_TABLE, "bounded complete smelting bucket table");
+                binding.add("SMELTING_MAP", map.uniqueID(), table.uniqueID(), table.length(), size);
+                ReferenceType node = bootstrap("java.util.HashMap$Node"), boxed = bootstrap("java.lang.Integer");
+                Field key = field(node, "key", "Ljava/lang/Object;", 16);
+                Field value = field(node, "value", "Ljava/lang/Object;", 0);
+                Field next = field(node, "next", "Ljava/util/HashMap$Node;", 0);
+                Field integer = field(boxed, "value", "I", 18);
+                int ordinal = 0;
+                // Actual JDK bucket/next traversal: deliberately never sorted by key.
+                for (Value bucket : table.getValues()) {
+                    Value cursor = bucket;
+                    while (cursor != null) {
+                        remaining(deadline);
+                        ObjectReference entry = hold(cursor);
+                        require(entry.referenceType().classLoader() == null
+                                && (entry.referenceType().name().equals("java.util.HashMap$Node")
+                                    || entry.referenceType().name().equals("java.util.HashMap$TreeNode"))
+                                && nodes.add(entry.uniqueID()) && nodes.size() <= MAX_RECIPES,
+                                "complete acyclic smelting bucket/next links");
+                        Map<Field, Value> fields = entry.getValues(List.of(key, value, next));
+                        ObjectReference number = hold(fields.get(key));
+                        require(number.referenceType().equals(boxed), "actual smelting Integer key");
+                        int numeric = integer(number.getValue(integer));
+                        require(keys.add(numeric), "unique actual smelting Integer keys");
+                        catalog.add("SMELT", ordinal++, numeric, recipeStack(fields.get(value)));
+                        cursor = fields.get(next);
+                    }
+                }
+            } else binding.add("SMELTING_MAP", map.uniqueID(), "NULL", 0, size);
+            require(nodes.size() == size && keys.size() == size, "complete actual smelting map traversal");
+        }
+        void captureRecipes(String side, String entry) throws Exception {
+            require(recipes, "recipe profile only catalog");
+            catalog.add("RECIPE_CATALOG_V1", side, entry);
+            craftingCatalog(manager(true));
+            smeltingCatalog(manager(false));
+            for (ObjectReference stack : recipeStacks.values()) {
+                remaining(deadline);
+                ReferenceType type = stack.referenceType();
+                catalog.add("STACK", recipeStackIds.get(stack.uniqueID()),
+                        integer(stack.getValue(field(type, "a", "I", 1))),
+                        integer(stack.getValue(field(type, "b", "I", 1))),
+                        integer(stack.getValue(field(type, "c", "I", 1))),
+                        integer(stack.getValue(field(type, "d", "I", 2))));
+            }
+            catalog.add("END");
         }
         void release() {
             if (released) return;
@@ -493,7 +677,7 @@ public final class ArrayPrefixController {
     private static final class Session {
         final VirtualMachine vm;
         final String side, entry, mode, expectedHash, expectedUrl;
-        final boolean client, achievements;
+        final boolean client, achievements, recipes;
         final long deadline;
         ReferenceType helper, target;
         ClassLoaderReference loader;
@@ -503,10 +687,10 @@ public final class ArrayPrefixController {
         Snapshot snapshot;
         long threadId;
         String codeHash;
-        Session(VirtualMachine vm, String side, String entry, String mode, boolean achievements, String expectedHash,
+        Session(VirtualMachine vm, String side, String entry, String mode, boolean achievements, boolean recipes, String expectedHash,
                 String expectedUrl, long deadline) {
             this.vm = vm; this.side = side; this.entry = entry; this.mode = mode;
-            this.client = side.equals("client"); this.achievements = achievements;
+            this.client = side.equals("client"); this.achievements = achievements; this.recipes = recipes;
             this.expectedHash = expectedHash; this.expectedUrl = expectedUrl; this.deadline = deadline;
             for (String name : new String[] {HELPER, targetName()}) {
                 ClassPrepareRequest request = vm.eventRequestManager().createClassPrepareRequest();
@@ -522,19 +706,41 @@ public final class ArrayPrefixController {
         }
         String trigger() {
             return entry.equals("stats") ? (client ? "jl" : "gg")
-                    : entry.equals("block") ? (client ? "uu" : "na") : (client ? "gm" : "ej");
+                    : entry.equals("block") ? (client ? "uu" : "na")
+                    : entry.equals("crafting") ? (client ? "hk" : "ey")
+                    : entry.equals("smelting") ? (client ? "ey" : "de") : (client ? "gm" : "ej");
         }
-        boolean itemException() { return achievements && entry.equals("item"); }
-        boolean dBoundary() { return entry.equals("stats") || (achievements && entry.equals("block")); }
+        boolean completeBoundary() { return recipes && (entry.equals("stats") || entry.equals("block")); }
+        boolean itemException() { return (achievements || recipes) && entry.equals("item"); }
+        boolean managerException() { return recipes && (entry.equals("crafting") || entry.equals("smelting")); }
+        boolean dBoundary() { return entry.equals("stats") || (achievements && entry.equals("block")) || managerException(); }
         String targetName() { return itemException() ? (client ? "iz" : "fy") : (client ? "jl" : "gg"); }
-        long boundaryIndex() { return itemException() ? 2 : dBoundary() ? 21 : 624; }
-        String boundaryLabel() { return itemException() ? "item-icon-null2" : dBoundary() ? "d21" : "clinit624"; }
+        long boundaryIndex() { return completeBoundary() ? 0 : itemException() ? 2
+                : managerException() ? (entry.equals("crafting") ? 24 : 75) : dBoundary() ? 21 : 624; }
+        String boundaryLabel() { return completeBoundary() ? "complete" : itemException() ? "item-icon-null2"
+                : managerException() ? (entry.equals("crafting") ? "crafting-null24" : "smelting-null75")
+                : dBoundary() ? "d21" : "clinit624"; }
         void prepare(ClassPrepareEvent event) throws Exception {
             require(event.request().suspendPolicy() == EventRequest.SUSPEND_ALL, "prepare SUSPEND_ALL");
             ReferenceType type = event.referenceType();
             if (type.name().equals(HELPER)) {
                 require(helper == null && type.classLoader() != null, "one actual helper");
                 helper = type;
+                if (completeBoundary()) {
+                    List<Method> markers = helper.methodsByName("complete", "()V");
+                    require(markers.size() == 1 && markers.get(0).declaringType().equals(helper)
+                            && markers.get(0).modifiers() == 9, "exact helper completion marker");
+                    method = markers.get(0);
+                    byte[] code = method.bytecodes();
+                    require(code.length == 1 && (code[0] & 255) == 177, "empty helper completion marker return0");
+                    codeHash = hash(code);
+                    Location location = method.locationOfCodeIndex(0);
+                    require(location != null && location.method().equals(method) && location.codeIndex() == 0,
+                            "actual helper complete0 location");
+                    breakpoint = vm.eventRequestManager().createBreakpointRequest(location);
+                    breakpoint.setSuspendPolicy(EventRequest.SUSPEND_ALL);
+                    breakpoint.enable();
+                }
                 return;
             }
             require(helper != null && target == null && type.name().equals(targetName())
@@ -547,8 +753,13 @@ public final class ArrayPrefixController {
                     && helperString("originalJarUrl").equals(expectedUrl)
                     && helperString("originalEntry").equals(entry)
                     && helperString("originalTrigger").equals(trigger())
-                    && helperString("originalProfile").equals(achievements ? "achievements" : "arrays"),
+                    && helperString("originalProfile").equals(recipes ? "recipes" : achievements ? "achievements" : "arrays"),
                     "original loader/hash/entry/profile binding");
+            if (completeBoundary()) {
+                target = type;
+                threadId = event.thread().uniqueID();
+                return;
+            }
             String methodName = itemException() ? "<init>" : dBoundary() ? "d" : "<clinit>";
             String signature = itemException() ? (client ? "(Lgm;)V" : "(Lej;)V") : "()V";
             List<Method> methods = type.methodsByName(methodName, signature);
@@ -569,7 +780,9 @@ public final class ArrayPrefixController {
                         && (code[13] & 255) == 187 && u16(code, 14) == (client ? 44 : 45)
                         && (code[17] & 255) == 183 && u16(code, 18) == (client ? 131 : 137)
                         && (code[20] & 255) == 75 && (code[21] & 255) == 184 && u16(code, 22) == 124
-                        && (code[24] & 255) == 182 && u16(code, 25) == 125 && (code[230] & 255) == 177,
+                        && (code[24] & 255) == 182 && u16(code, 25) == 125 && (code[230] & 255) == 177
+                        && (!managerException() || ((code[72] & 255) == 184 && u16(code, 73) == 120
+                            && (code[75] & 255) == 182 && u16(code, 76) == 121)),
                         "source-bound d21 bytecode shape");
             } else {
                 require(code.length == 636 && (code[618] & 255) == 184
@@ -584,7 +797,7 @@ public final class ArrayPrefixController {
             Location location = method.locationOfCodeIndex(boundaryIndex());
             require(location != null && location.method().equals(method)
                     && location.codeIndex() == boundaryIndex(), "exact source code index");
-            if (itemException()) {
+            if (itemException() || managerException()) {
                 List<ReferenceType> nullTypes = vm.classesByName("java.lang.NullPointerException").stream()
                         .filter(found -> found.classLoader() == null && found.isPrepared()).toList();
                 require(nullTypes.size() == 1, "actual prepared bootstrap NullPointerException");
@@ -602,11 +815,11 @@ public final class ArrayPrefixController {
             threadId = event.thread().uniqueID();
         }
         void stop(BreakpointEvent event) throws Exception {
-            require(!itemException() && event.request().equals(breakpoint), "selected breakpoint request");
+            require(!itemException() && !managerException() && event.request().equals(breakpoint), "selected breakpoint request");
             stop(event.location(), event.thread(), event.request(), null, null);
         }
         void stop(ExceptionEvent event) throws Exception {
-            require(itemException() && event.request().equals(exceptionRequest)
+            require((itemException() || managerException()) && event.request().equals(exceptionRequest)
                     && event.exception().referenceType().name().equals("java.lang.NullPointerException")
                     && event.exception().referenceType().classLoader() == null, "selected actual bootstrap NPE request");
             stop(event.location(), event.thread(), event.request(), event.exception(), event.catchLocation());
@@ -615,7 +828,7 @@ public final class ArrayPrefixController {
                   ObjectReference exception, Location catchLocation) throws Exception {
             require(snapshot == null && target != null
                     && request.suspendPolicy() == EventRequest.SUSPEND_ALL
-                    && location.declaringType().equals(target)
+                    && location.declaringType().equals(completeBoundary() ? helper : target)
                     && location.method().equals(method) && location.codeIndex() == boundaryIndex()
                     && thread.uniqueID() == threadId && thread.name().equals("main"),
                     "unique exact original boundary/thread");
@@ -635,16 +848,38 @@ public final class ArrayPrefixController {
                 require(selected.size() == 1, "one actual prepared selected-loader Stats class");
                 statistics = selected.get(0);
             } else statistics = target;
-            snapshot = new Snapshot(vm, client, achievements, loader, statistics, deadline);
-            snapshot.binding.add(achievements ? "STAT_ARRAY_BINDING_V2" : "STAT_ARRAY_BINDING_V1", side, entry);
+            snapshot = new Snapshot(vm, client, achievements || recipes, recipes, loader, statistics, deadline);
+            if (recipes) {
+                snapshot.hold(loader);
+                snapshot.hold(helper.classLoader());
+                snapshot.hold(thread);
+                snapshot.hold(mirror);
+            }
+            snapshot.binding.add(recipes ? "STAT_BOOTSTRAP_BINDING_V1" : achievements ? "STAT_ARRAY_BINDING_V2" : "STAT_ARRAY_BINDING_V1", side, entry);
             snapshot.binding.add("MODE", mode);
-            snapshot.binding.add("BOUNDARY", target.name(), method.name(), method.signature(),
-                    location.codeIndex(), codeHash, loader.uniqueID(), thread.uniqueID());
+            ClassLoaderReference boundaryLoader = completeBoundary() ? helper.classLoader() : loader;
+            if (recipes) snapshot.hold(boundaryLoader);
+            snapshot.binding.add("BOUNDARY", location.declaringType().name(), method.name(), method.signature(),
+                    location.codeIndex(), codeHash, boundaryLoader.uniqueID(), thread.uniqueID());
             if (achievements) {
                 snapshot.binding.add("PROFILE", "achievements", "PUBLISHED_NUMERIC_GRAPH_NOT_FULL_HEAP");
                 snapshot.binding.add("STATS_CLASS_STATE", statistics.isPrepared(), statistics.isInitialized(), statistics.failedToInitialize());
                 require(!statistics.failedToInitialize() && statistics.isInitialized() == entry.equals("block"),
                         "actual selected Stats initialization state");
+                if (exception != null) {
+                    snapshot.binding.add("EXCEPTION", snapshot.hold(exception).uniqueID(), exception.referenceType().name());
+                    snapshot.binding.add("CATCH", catchLocation == null ? "NULL" : catchLocation.declaringType().name(),
+                            catchLocation == null ? "NULL" : catchLocation.method().name(),
+                            catchLocation == null ? "NULL" : catchLocation.method().signature(),
+                            catchLocation == null ? -1 : catchLocation.codeIndex());
+                }
+            }
+            if (recipes) {
+                snapshot.binding.add("PROFILE", "recipes", "PUBLISHED_NUMERIC_GRAPH_NOT_FULL_HEAP");
+                snapshot.binding.add("ORIGINAL_ORIGIN", expectedHash, units(expectedUrl), loader.uniqueID(),
+                        "ONE_JAR_PLATFORM_PARENT_HELPER_VERIFIED_TARGET_CODESOURCE");
+                for (String name : new String[] {client ? "jl" : "gg", client ? "uu" : "na", client ? "gm" : "ej",
+                        client ? "ep" : "cy", client ? "hk" : "ey", client ? "ey" : "de"}) classState(name);
                 if (exception != null) {
                     snapshot.binding.add("EXCEPTION", snapshot.hold(exception).uniqueID(), exception.referenceType().name());
                     snapshot.binding.add("CATCH", catchLocation == null ? "NULL" : catchLocation.declaringType().name(),
@@ -662,6 +897,8 @@ public final class ArrayPrefixController {
                 boolean helperFrame = false, triggerFrame = false;
                 for (int index = 0; index < frames.size(); index++) {
                     Location at = frames.get(index).location();
+                    if (recipes && at.declaringType().classLoader() != null)
+                        snapshot.hold(at.declaringType().classLoader());
                     helperFrame |= at.declaringType().equals(helper) && at.method().name().equals("main");
                     triggerFrame |= at.declaringType().name().equals(trigger())
                             && loader.equals(at.declaringType().classLoader()) && at.method().name().equals("<clinit>");
@@ -669,18 +906,120 @@ public final class ArrayPrefixController {
                             at.method().signature(), at.codeIndex(),
                             at.declaringType().classLoader() == null ? "BOOT" : at.declaringType().classLoader().uniqueID());
                 }
-                require(helperFrame && triggerFrame, "real helper call and initiating constructor stack retained");
+                require(helperFrame && (completeBoundary() || triggerFrame), "real helper call and initiating constructor stack retained");
                 if (achievements) verifyAchievementStack(frames, statistics);
+                if (recipes) verifyRecipeStack(frames, statistics);
             } catch (IncompatibleThreadStateException failure) {
                 throw new IllegalStateException("suspended stack unavailable", failure);
             }
             snapshot.capture(side, entry, boundaryLabel());
+            if (recipes) snapshot.captureRecipes(side, entry);
             snapshot.binding.add("MIRRORS", snapshot.held.size());
             snapshot.binding.add("END");
         }
         void bindCode(String role, Location at, byte[] code) throws Exception {
             snapshot.binding.add("CALLSITE", role, at.declaringType().name(), at.method().name(),
                     at.method().signature(), at.codeIndex(), hash(code));
+        }
+        void classState(String name) {
+            List<ReferenceType> types = vm.classesByName(name).stream()
+                    .filter(type -> loader.equals(type.classLoader())).toList();
+            require(types.size() <= 1, "one selected-loader class-state identity");
+            if (types.isEmpty()) snapshot.binding.add("CLASS_STATE", name, "ABSENT");
+            else {
+                ReferenceType type = types.get(0);
+                require(type instanceof ClassType, "actual original class-state type");
+                snapshot.binding.add("CLASS_STATE", name, type.isPrepared(), type.isInitialized(),
+                        type.failedToInitialize(), loader.uniqueID());
+            }
+        }
+        void verifyRecipeStack(List<StackFrame> frames, ReferenceType statistics) throws Exception {
+            if (completeBoundary()) {
+                require(frames.size() >= 2, "complete marker actual caller");
+                Location caller = frames.get(1).location();
+                require(caller.declaringType().equals(helper) && caller.method().name().equals("main")
+                        && caller.method().signature().equals("([Ljava/lang/String;)V")
+                        && caller.method().modifiers() == 9, "ordinary helper main called complete marker");
+                byte[] code = caller.method().bytecodes();
+                long pc = caller.codeIndex();
+                require(pc >= 0 && pc + 2 < code.length && (code[(int)pc] & 255) == 184,
+                        "actual helper main invokestatic completion callsite");
+                List<ReferenceType> triggers = vm.classesByName(trigger()).stream()
+                        .filter(type -> loader.equals(type.classLoader())).toList();
+                require(triggers.size() == 1 && triggers.get(0).isPrepared() && triggers.get(0).isInitialized()
+                        && !triggers.get(0).failedToInitialize() && statistics.isInitialized()
+                        && !statistics.failedToInitialize(), "ordinary original class initialization returned");
+                for (StackFrame frame : frames)
+                    require(!loader.equals(frame.location().declaringType().classLoader()),
+                            "original trigger frames returned before helper marker");
+                bindCode("HELPER_MAIN_COMPLETION", caller, code);
+                snapshot.binding.add("ORIGINAL_CLASS_INITIALIZATION_RETURNED", true, trigger());
+                return;
+            }
+            require(itemException() || managerException(), "selected recipe exception route");
+            snapshot.binding.add("ORIGINAL_CLASS_INITIALIZATION_RETURNED", false, trigger());
+            verifyAchievementStack(frames, statistics);
+            if (itemException()) return;
+            boolean crafting = entry.equals("crafting");
+            ReferenceType owner = snapshot.catalogType(trigger());
+            require(!owner.isInitialized() && !owner.failedToInitialize(), "actual manager class still initializing at NPE");
+            require(snapshot.manager(crafting) == null, "actual unpublished singleton is null receiver from checked getter");
+            snapshot.binding.add("NULL_RECEIVER", trigger(), "STATIC_SINGLETON_NULL_CHECKED_GETTER_NO_INTERVENING_WRITE",
+                    boundaryIndex());
+            boolean constructor = false, initializer = false, tools = false;
+            for (StackFrame frame : frames) {
+                Location at = frame.location();
+                if (at.declaringType().equals(owner) && at.method().name().equals("<clinit>")) {
+                    require(!initializer && at.method().signature().equals("()V") && at.method().modifiers() == 8
+                            && at.codeIndex() == 4, "actual pending manager initializer4");
+                    byte[] code = at.method().bytecodes();
+                    require(code.length == 11 && (code[0] & 255) == 187 && u16(code, 1) == (crafting ? 37 : 1)
+                            && (code[4] & 255) == 183 && u16(code, 5) == (crafting ? 147 : 33)
+                            && (code[7] & 255) == 179 && u16(code, 8) == (crafting ? 104 : 9)
+                            && (code[10] & 255) == 177, "source-bound constructor-before-singleton-publication");
+                    bindCode("PENDING_MANAGER_INITIALIZER", at, code);
+                    initializer = true;
+                }
+                if (at.declaringType().equals(owner) && at.method().name().equals("<init>")) {
+                    require(!constructor && at.method().signature().equals("()V") && at.method().modifiers() == 2
+                            && at.codeIndex() == (crafting ? 19 : 16), "actual pending manager constructor caller");
+                    byte[] code = at.method().bytecodes();
+                    if (crafting)
+                        require(code.length == 3238 && (code[1] & 255) == 183 && u16(code, 2) == (client ? 159 : 166)
+                                && (code[5] & 255) == 187 && u16(code, 6) == (client ? 47 : 51)
+                                && (code[12] & 255) == 181 && u16(code, 13) == 105
+                                && (code[15] & 255) == 187 && u16(code, 16) == 36
+                                && (code[19] & 255) == 183 && u16(code, 20) == 145
+                                && (code[3237] & 255) == 177, "source-bound pending crafting first helper constructor");
+                    else
+                        require(code.length == 220 && (code[1] & 255) == 183 && u16(code, 2) == 39
+                                && (code[5] & 255) == 187 && u16(code, 6) == 6
+                                && (code[12] & 255) == 181 && u16(code, 13) == 10
+                                && (code[16] & 255) == 178 && u16(code, 17) == 25
+                                && (code[19] & 255) == 180 && u16(code, 20) == 30
+                                && (code[219] & 255) == 177, "source-bound pending smelting first Block load");
+                    require(frame.thisObject() != null && frame.thisObject().referenceType().equals(owner),
+                            "actual pending manager frame owner");
+                    snapshot.binding.add("UNPUBLISHED_MANAGER_FRAME", snapshot.hold(frame.thisObject()).uniqueID(),
+                            "EXCLUDED_FROM_PUBLISHED_CATALOG");
+                    bindCode("PENDING_MANAGER_CONSTRUCTOR", at, code);
+                    constructor = true;
+                }
+                if (crafting && at.declaringType().name().equals(client ? "ha" : "eq")
+                        && loader.equals(at.declaringType().classLoader()) && at.method().name().equals("<init>")) {
+                    require(!tools && at.method().signature().equals("()V") && at.method().modifiers() == 1
+                            && at.codeIndex() == 113, "actual first helper Block.y load113");
+                    byte[] code = at.method().bytecodes();
+                    require(code.length == 294 && (code[97] & 255) == 181 && u16(code, 98) == 44
+                            && (code[113] & 255) == 178 && u16(code, 114) == 47
+                            && (code[290] & 255) == 181 && u16(code, 291) == 45
+                            && (code[293] & 255) == 177, "source-bound first tools constructor pending field matrix");
+                    bindCode("PENDING_TOOLS_CONSTRUCTOR", at, code);
+                    tools = true;
+                }
+            }
+            require(initializer && constructor && (!crafting || tools), "complete original pending-manager caller chain");
+            snapshot.binding.add("EXCLUDED", "UNPUBLISHED_MANAGER_HELPERS_AND_OTHER_PARTIAL_HEAP");
         }
         void blockCaller(Location at) throws Exception {
             require(at.declaringType().name().equals(client ? "uu" : "na")
@@ -791,7 +1130,7 @@ public final class ArrayPrefixController {
         Path output = null, jar = null;
         String before = null, after = null, vmName = "", vmVersion = "", exitOutcome = "NOT_REQUESTED";
         String mode = "interpreted";
-        boolean achievements = false;
+        boolean achievements = false, recipes = false;
         List<String> command = new ArrayList<>(), failures = new ArrayList<>();
         Session session = null;
         boolean complete = false, requestedExit = false, reaped = false;
@@ -800,13 +1139,16 @@ public final class ArrayPrefixController {
         try {
             require(Runtime.version().feature() == 17, "captured Java17 observation profile");
             require((args.length == 4 || args.length == 5 || args.length == 6) && (args[0].equals("client") || args[0].equals("server"))
-                    && (args[1].equals("stats") || args[1].equals("block") || args[1].equals("item")),
-                    "Usage: ArrayPrefixController client|server stats|block|item jar fresh-output-directory [interpreted|tier1|default [achievements]]");
+                    && (args[1].equals("stats") || args[1].equals("block") || args[1].equals("item")
+                        || (args.length == 6 && args[5].equals("recipes")
+                            && (args[1].equals("crafting") || args[1].equals("smelting")))),
+                    "Usage: ArrayPrefixController client|server stats|block|item|crafting|smelting jar fresh-output-directory [interpreted|tier1|default [achievements|recipes]]");
             mode = args.length >= 5 ? args[4] : "interpreted";
             require(mode.equals("interpreted") || mode.equals("tier1") || mode.equals("default"),
                     "requested JVM mode");
-            require(args.length != 6 || args[5].equals("achievements"), "optional achievements profile");
-            achievements = args.length == 6;
+            require(args.length != 6 || args[5].equals("achievements") || args[5].equals("recipes"), "optional observer profile");
+            achievements = args.length == 6 && args[5].equals("achievements");
+            recipes = args.length == 6 && args[5].equals("recipes");
             boolean client = args[0].equals("client");
             jar = Path.of(args[2]).toRealPath();
             String expected = client ? "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
@@ -827,6 +1169,7 @@ public final class ArrayPrefixController {
                     "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:0",
                     "-cp", System.getProperty("java.class.path"), HELPER, args[0], args[1], jar.toString()));
             if (achievements) command.add("achievements");
+            if (recipes) command.add("recipes");
             child = new ProcessBuilder(command).start();
             pid = child.pid();
             watchdog = new Watchdog(child);
@@ -840,6 +1183,7 @@ public final class ArrayPrefixController {
             started.add("STAT_ARRAY_CHILD_STARTED_V1", pid, false);
             started.add("MODE", mode);
             if (achievements) started.add("PROFILE", "achievements");
+            if (recipes) started.add("PROFILE", "recipes");
             for (int index = 0; index < command.size(); index++) started.add("COMMAND_UTF16", index, units(command.get(index)));
             save(output, "child.started.tsv", started.bytes());
             child.getOutputStream().close();
@@ -856,7 +1200,7 @@ public final class ArrayPrefixController {
             vm = connector.attach(connection);
             require(vm.canGetBytecodes() && vm.canBeModified(), "JDI breakpoint/bytecode capabilities");
             vmName = vm.name(); vmVersion = vm.version();
-            session = new Session(vm, args[0], args[1], mode, achievements, expected, jar.toUri().toURL().toExternalForm(), deadline);
+            session = new Session(vm, args[0], args[1], mode, achievements, recipes, expected, jar.toUri().toURL().toExternalForm(), deadline);
             vm.resume();
             while (!complete) {
                 require(stdout.failure == null && stderr.failure == null, "bounded stream capture");
@@ -957,14 +1301,24 @@ public final class ArrayPrefixController {
                     catch (Throwable failure) { failures.add("snapshot save: " + failure); }
                     try { save(output, "binding.tsv", session.snapshot.binding.bytes()); }
                     catch (Throwable failure) { failures.add("binding save: " + failure); }
+                    if (recipes) {
+                        try { save(output, "recipes.tsv", session.snapshot.catalog.bytes()); }
+                        catch (Throwable failure) { failures.add("recipes save: " + failure); }
+                    }
                 }
                 try {
                     Rows receipt = new Rows();
                     receipt.add("STAT_ARRAY_PROCESS_V1");
                     receipt.add("STATUS", failures.isEmpty() ? "PASS" : "FAIL");
-                    receipt.add("POLICY", "REQUESTED_DEBUGGER_TERMINATION", "NOT_NATURAL_COMPLETION", "NOT_SUCCESSFUL_BOOTSTRAP");
+                    if (recipes)
+                        receipt.add("POLICY", "REQUESTED_DEBUGGER_TERMINATION", "NOT_NATURAL_PROCESS_COMPLETION",
+                                session == null || !complete ? "NO_ACCEPTED_BOUNDARY"
+                                    : session.completeBoundary() ? "ORIGINAL_CLASS_INITIALIZATION_RETURNED" : "STOPPED_ORIGINAL_EXCEPTION");
+                    else
+                        receipt.add("POLICY", "REQUESTED_DEBUGGER_TERMINATION", "NOT_NATURAL_COMPLETION", "NOT_SUCCESSFUL_BOOTSTRAP");
                     receipt.add("MODE", mode);
                     if (achievements) receipt.add("PROFILE", "achievements", "PUBLISHED_NUMERIC_GRAPH_NOT_FULL_HEAP");
+                    if (recipes) receipt.add("PROFILE", "recipes", "PUBLISHED_NUMERIC_GRAPH_NOT_FULL_HEAP");
                     receipt.add("CHILD", pid, reaped, childExit, requestedExit, requestedCode, complete);
                     receipt.add("DEBUGGER_EXIT_OUTCOME", exitOutcome);
                     for (int index = 0; index < command.size(); index++) receipt.add("COMMAND_UTF16", index, units(command.get(index)));
@@ -977,6 +1331,10 @@ public final class ArrayPrefixController {
                         byte[] snapshot = session.snapshot.out.bytes(), binding = session.snapshot.binding.bytes();
                         receipt.add("SNAPSHOT", snapshot.length, hash(snapshot), session.snapshot.out.count);
                         receipt.add("BINDING", binding.length, hash(binding), session.snapshot.binding.count);
+                        if (recipes) {
+                            byte[] catalog = session.snapshot.catalog.bytes();
+                            receipt.add("RECIPES", catalog.length, hash(catalog), session.snapshot.catalog.count);
+                        }
                         receipt.add("MIRRORS", session.snapshot.held.size(), session.snapshot.released);
                     }
                     receipt.add("ACTIVE_DEADLINE_SECONDS", ACTIVE_SECONDS);

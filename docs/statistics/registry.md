@@ -45,15 +45,25 @@ array publication and list insertion. Unification preserves aliases, removes
 the first object from the three reached lists by identity, and retains its ID
 map entry. The original self-pair also removes its list entry.
 
-The entry order changes the retained prefix. Stats-first enters Block
-initialization recursively, publishes `E/F`, sets `G/H` and reaches `d()`.
-It constructs a real allocator-backed Integer HashSet, then stops before the
-recipe singleton call at PC21; `C/D` remain NULL. Block-first and Item-first
-now diverge through real [achievement initialization](achievements.md).
-Block-first completes statistics and all sixteen achievements, then publishes
-E/F and reaches recipe d21. Item-first allocates the first real icon Stack,
-then fails on its NULL Item read at2, retaining C and the earlier writes.
-Recipes, smelting, full bootstrap, population, synchronous world mutations and
+The recipe helper `d()` runs only when both `G/H` are true. It collects current
+crafting outputs, then current smelting values, in a real allocator-backed
+Integer HashSet. It reads each output Stack's live ID, rather than the shaped
+recipe's cached ID. Only after both traversals does it publish the 32,000-slot
+`D` array at PC129. Each craft stat uses a fresh live Item lookup and formatted
+name, registers before its array store, and retains the array captured before
+construction. Final unification reloads the current `D`. No once flag or
+rollback is added.
+
+With resources supplied, Statistics-first and Block-first complete the
+[recipe and smelting construction](../item/recipes.md) and all sixteen
+[achievements](achievements.md). Both complete graphs contain 125 nonnull `D`
+slots and 121 crafting-statistic objects in the ID map and list `b`. Statistics-first ends with `G/H` false;
+Block-first ends with both true because its later Item/Block callbacks set
+them again. These flags describe source-ordered state, not permanent readiness.
+Item-first still fails at the first icon Stack's NULL Item read at PC2,
+retaining `C` and earlier writes. Direct crafting and smelting entry fail at
+the still-NULL manager receiver in `d()` at PC24 and PC75 respectively.
+World/population integration, synchronous world mutations and gameplay
 persistence acceptance remain unfinished.
 
 The [native unit](../../tests/statistics/registry/test_registry.c) uses synthetic
@@ -76,30 +86,53 @@ distinct identity, map/list membership and selected live strategy reference.
 The comparison covers 25 protocol rows per side: header, 23 full field rows and
 footer. It does not compare the rest of the original initialized registry.
 
-At the preceding array checkpoint, the [array controller](../../tests/reference/statistics/ArrayPrefixController.java)
-observes untouched original initialization at exact recipe/achievement call
+The current [bootstrap fixtures](../../tests/reference/statistics/bootstrap/provenance.json)
+cover both original sides and five explicit entries in interpreted, tier-1 and
+default modes: 30 equal-per-route captures. The
+[array controller](../../tests/reference/statistics/ArrayPrefixController.java)
+observes ordinary `Class.forName` return for Statistics and Block, or the
+actual original NULL dereferences at PC2/24/75 for the other entries. Every
+debuggee process still uses requested debugger termination; returned class
+initialization does not establish natural process completion. The numeric
+graphs contain 1,705/1,705/413/1,338/1,338 rows per side in Statistics, Block,
+Item, crafting and smelting order. They omit resource text and unpublished
+partial heap objects.
+
+Final qualification passes 30 selected Windows cases and 32 per Linux
+compiler, with Linux ASan/UBSan and leak detection. All ten graphs, ten recipe
+catalogs and both Stack-value projections match on MSVC, GCC and Clang.
+The units report 14,566 statistics and 11,312,084 array checks; each Linux
+locale case adds one statistics check. See
+the [recipe evidence](../item/recipes.md#evidence-and-validation) for the
+catalog and Stack scope. Thirty-six new legacy/achievement replay captures
+also match the unchanged historical fixtures.
+
+At the preceding array checkpoint, the same controller observed untouched
+original initialization at exact recipe/achievement call
 boundaries. Both sides and all three entry orders agree across interpreted,
 tier-1 and default modes: 18 actual captures. The helper verifies its original
 class loader; JDI reads fields and arrays without invoking suspended game
 methods. Complete numeric graph projections contain 953 rows for Stats-first
 and 396 rows for each other entry. Requested debugger termination, mirror
 release and child reaping are recorded separately from natural completion.
-The [native comparison](../../tests/tools/statistics/compare_arrays.py) uses
-synthetic display resources and checks every projected reference. All six
-numeric graphs match on MSVC, GCC and Clang; this observation omits display and
-key text. The current selected run passes 23 Windows cases and 25 cases per
-Linux compiler with ASan/UBSan and leak detection. Native contracts report
-14,564 statistics and 3,841,912 array checks; each Linux locale variant adds
+The retained [array fixtures](../../tests/reference/statistics/arrays/provenance.json)
+record that historical boundary, including recipe d21; they do not describe
+the current implementation's stopping point. All six numeric graphs matched
+on MSVC, GCC and Clang using synthetic display resources and every projected
+reference; that observation omitted display and key text. That checkpoint's
+selected run passed 23 Windows cases and 25 cases per Linux compiler with
+ASan/UBSan and leak detection. Native contracts reported
+14,564 statistics and 3,841,912 array checks; each Linux locale variant added
 one statistics check. The allocator extension also preserves the existing
 captured JDK HashSet histories and survives failure at every allocation
 request in its finite ownership test.
 
 At the earlier common-statistics checkpoint, the
 [native file probe](../../tests/statistics/registry/files_probe.c), consuming
-the privately imported original bytes, matches that projection on MSVC, GCC and
-Clang. Its class still fails explicitly at PC618. The native unit passes 12,918
-checks per compiler; Linux's explicit `C.UTF-8` and invalid-category cases each
-pass 12,919 with ASan/UBSan and leak detection. All 15 selected Windows cases and
-17 selected Linux cases pass, retaining the earlier Reader, Properties,
+the privately imported original bytes, matched that projection on MSVC, GCC and
+Clang. At that checkpoint its native class failed explicitly at PC618. The unit
+passed 12,918 checks per compiler; Linux's explicit `C.UTF-8` and invalid-category
+cases each passed 12,919 with ASan/UBSan and leak detection. All 15 selected
+Windows cases and 17 selected Linux cases passed, retaining the earlier Reader, Properties,
 Translation, key, Block and Item comparisons. The invalid-category regression
 also covers glibc's cached lookup failure without a fresh `errno` value.

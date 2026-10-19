@@ -15,13 +15,19 @@ public final class ArrayPrefixObservation {
     public static volatile String originalProfile;
     public static volatile Class<?> originalTarget;
 
+    /** Called only after the ordinary original trigger has returned. */
+    public static void complete() {}
+
     public static void main(String[] args) throws Exception {
         if ((args.length != 3 && args.length != 4) || !(args[0].equals("client") || args[0].equals("server"))
-                || !(args[1].equals("stats") || args[1].equals("block") || args[1].equals("item"))
-                || (args.length == 4 && !args[3].equals("achievements")))
-            throw new IllegalArgumentException("Usage: ArrayPrefixObservation client|server stats|block|item jar [achievements]");
+                || (args.length == 4 && !(args[3].equals("achievements") || args[3].equals("recipes")))
+                || !(args[1].equals("stats") || args[1].equals("block") || args[1].equals("item")
+                    || (args.length == 4 && args[3].equals("recipes")
+                        && (args[1].equals("crafting") || args[1].equals("smelting")))))
+            throw new IllegalArgumentException("Usage: ArrayPrefixObservation client|server stats|block|item|crafting|smelting jar [achievements|recipes]");
         boolean client = args[0].equals("client");
-        boolean achievements = args.length == 4;
+        boolean achievements = args.length == 4 && args[3].equals("achievements");
+        boolean recipes = args.length == 4 && args[3].equals("recipes");
         Path jar = Path.of(args[2]).toRealPath();
         String expected = client
                 ? "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
@@ -35,13 +41,15 @@ public final class ArrayPrefixObservation {
         originalJarUrl = url.toExternalForm();
         verifiedJarSha256 = actual;
         originalEntry = args[1];
-        originalProfile = achievements ? "achievements" : "arrays";
+        originalProfile = recipes ? "recipes" : achievements ? "achievements" : "arrays";
         originalTrigger = args[1].equals("stats") ? (client ? "jl" : "gg")
-                : args[1].equals("block") ? (client ? "uu" : "na") : (client ? "gm" : "ej");
+                : args[1].equals("block") ? (client ? "uu" : "na")
+                : args[1].equals("crafting") ? (client ? "hk" : "ey")
+                : args[1].equals("smelting") ? (client ? "ey" : "de") : (client ? "gm" : "ej");
         try (URLClassLoader loader = new URLClassLoader(new URL[] {url},
                 ClassLoader.getPlatformClassLoader())) {
             originalLoader = loader;
-            String target = achievements && args[1].equals("item") ? (client ? "iz" : "fy")
+            String target = (achievements || recipes) && args[1].equals("item") ? (client ? "iz" : "fy")
                     : (client ? "jl" : "gg");
             originalTarget = Class.forName(target, false, loader);
             if (originalTarget.getClassLoader() != loader
@@ -50,6 +58,10 @@ public final class ArrayPrefixObservation {
                             .toRealPath().equals(jar))
                 throw new IllegalStateException("supplied original target class origin");
             Class.forName(originalTrigger, true, loader);
+            if (recipes && (args[1].equals("stats") || args[1].equals("block"))) {
+                complete();
+                return;
+            }
             throw new IllegalStateException("UNEXPECTED_ORIGINAL_ENTRY_COMPLETION");
         }
     }

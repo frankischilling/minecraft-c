@@ -257,6 +257,9 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
     classes->statistics_state.failure = native_error(MC_REGISTRY_OK, NULL);
     classes->achievements_state.pc = -1;
     classes->achievements_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    classes->crafting_state.pc = classes->smelting_state.pc = -1;
+    classes->crafting_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    classes->smelting_state.failure = native_error(MC_REGISTRY_OK, NULL);
     *out = classes;
     return result(error, MC_REGISTRY_OK, NULL);
 }

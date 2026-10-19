@@ -34,24 +34,37 @@ Java thread-interruption behavior are outside this private output interface.
 
 Entry order matters:
 
-| Entry | Retained native boundary |
+| Entry, with resources supplied | Current retained behavior |
 | --- | --- |
-| Statistics | Recursive Block/Item work publishes E/F and G/H, then recipe d21 fails explicitly. C/D remain NULL; achievements have not run. |
-| Block | Nested statistics publish C, complete all sixteen achievements and clear G/H. Item then creates E/F; the outer Block sets G and reaches recipe d21. Statistics and achievements are READY; Block fails at its real nested call. D remains NULL. |
+| Statistics | Recursive Block/Item work completes recipes and smelting. Statistics publishes C, completes all sixteen achievements and clears G/H. Ordinary class initialization returns; C/D/E/F remain published. |
+| Block | Nested statistics publishes C, completes all sixteen achievements and clears G/H. Item and Block callbacks then publish E/F, set G/H and build D from the completed managers. Ordinary class initialization returns. |
 | Item | Named Items are still NULL when the first achievement reads its icon. A real RAW ItemStack exists before the Item constructor dereferences NULL at PC2. C remains published; statistics retain failure at624 and achievements at23. E/F are NULL and G/H false. |
+| Crafting | All sixteen achievements complete, but the recursive recipe-stat helper reads the still-NULL crafting singleton at PC24. The pending manager is not published. |
+| Smelting | All sixteen achievements and the crafting manager complete. The recursive recipe-stat helper reads the still-NULL smelting singleton at PC75. |
 
-Both original sides were captured in interpreted, tier-1 and default pinned
-Temurin17.0.17+10 modes: eighteen equal-per-route numeric projections. The
+The current [bootstrap fixtures](../../tests/reference/statistics/bootstrap/provenance.json)
+contain thirty captures across both original sides, all five entries and
+interpreted, tier-1 and default Temurin 17.0.17+10 modes. Modes agree within
+each side/entry. The
 [observer](../../tests/reference/statistics/ArrayPrefixController.java) stops
-at actual recipe d21 or the actual ItemStack NullPointerException at2 and checks
-the original loader, bytecode and caller stack. Requested debugger termination,
-released mirrors and reaped children do not establish natural completion.
-The [fixtures](../../tests/reference/statistics/achievements/provenance.json)
-cover the published map, arrays and lists, achievement bounds/named/parent
-references, special flags, icon identity and four real ItemStack fields.
+after ordinary `Class.forName` return for Statistics and Block, or at the actual
+original NULL dereferences at PC2/24/75. It checks the original loader,
+bytecode and caller stack. Every debuggee process uses requested debugger
+termination, including the two routes whose class initialization returned.
+Released mirrors and reaped children do not establish natural process
+completion. The fixtures cover the published map, arrays and lists,
+achievement bounds/named/parent references, special flags, icon identity and
+four real ItemStack fields.
 They omit resource text and unpublished partial heap objects. Raw original
 console bytes are retained; only the separately identified OS line separator
 is adapted by the [native comparison](../../tests/tools/statistics/compare_arrays.py).
+
+The eighteen [achievement-checkpoint captures](../../tests/reference/statistics/achievements/provenance.json)
+remain historical evidence at recipe d21 or ItemStack PC2. They are unchanged,
+as are the earlier array fixtures. Thirty-six replay captures using the
+successor observer match both historical profiles byte for byte; d21 is not
+the current implementation boundary. The completed recipe catalogs and
+entry-specific singleton state are described in [crafting and smelting](../item/recipes.md).
 
 The independent [PrintStream observer](../../tests/reference/java/PrintlnObservation.java)
 records actual bytes and checkError results for four ASCII payloads, including
@@ -68,10 +81,15 @@ checks actual registration/resource callbacks, retained READY and RAW Stack hold
 across class retirement, entry-specific failure caches, nine natural bootstrap
 budgets and a direct constructor partial prefix. Its isolated method fixtures
 explicitly model INITIALIZING classes; they do not manufacture successful
-bootstrap. All 26 selected Windows and 28 cases per Linux compiler pass,
-including 7,208 achievement and 7,598,064 array checks. All six original numeric
-graphs and actual console output match on MSVC/GCC/Clang; Linux uses
+bootstrap. At the achievement checkpoint, all 26 selected Windows and 28 cases
+per Linux compiler passed, including 7,208 achievement and 7,598,064 array
+checks. All six original numeric graphs and actual console output matched on
+MSVC/GCC/Clang; Linux used
 ASan/UBSan and leak detection.
 
-Recipes, smelting, complete registry bootstrap, World integration, population,
-synchronous mutations and gameplay persistence remain unfinished.
+The recipe checkpoint passes 30 selected Windows cases and 32 per Linux
+compiler, including 32,892 achievement checks and all ten current numeric
+graph/catalog comparisons plus both Stack-value projections. MSVC, GCC and
+Clang agree; Linux uses ASan/UBSan and leak detection. Runtime description/UI callbacks, achievement gameplay, World
+integration, population, synchronous mutations and gameplay persistence remain
+unfinished.

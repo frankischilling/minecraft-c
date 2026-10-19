@@ -1,6 +1,19 @@
 # Development status
 
-Native [achievement initialization](statistics/achievements.md) now runs all
+Native [crafting and smelting initialization](item/recipes.md) now constructs
+151 recipes and ten smelting entries, sorts the real recipe list and completes
+the crafting-statistic array. Ordinary Statistics and Block entry calls return
+on both sides; Item and direct-manager entries retain their actual null-reference
+failures. Thirty original captures agree across three JVM modes. All ten numeric
+graphs, ten catalogs and both Stack projections match MSVC, GCC and Clang.
+All 30 selected Windows and 32 cases per Linux compiler pass, with Linux
+ASan/UBSan and leak detection. This includes 2,872 recipe, 556 registry-Stack,
+11,312,084 array and 32,892 achievement checks. All 555 code/tool/fixture inputs
+match the retained host copies; 32 build products per host are retained.
+Crafting and furnace gameplay, full World startup, population, synchronous
+mutations and persistence acceptance remain unfinished.
+
+At the preceding achievement checkpoint, native [achievement initialization](statistics/achievements.md) ran all
 sixteen chains with real ItemStack icons, retained descriptions/parents/bounds,
 base-before-achievement registration and actual stdout. Eighteen new original
 captures cover both sides, three entry orders and three JVM modes; all six

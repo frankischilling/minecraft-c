@@ -1,18 +1,14 @@
 # minecraft-c
 
-The [achievement addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/achievements.md)
-runs all sixteen construction chains with real icon Stacks and stdout.
-Eighteen original captures and all six graph/console comparisons pass on
-MSVC/GCC/Clang. All 26 selected Windows and 28 cases per Linux compiler pass,
-with Linux sanitizers and real stdout-handle controls. Full bootstrap,
-population, world mutations and gameplay persistence remain unfinished.
-
-The [statistic-array module](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/registry.md)
-now matches six numeric graph prefixes from both untouched originals. Selected
-checks pass on Windows MSVC and Linux GCC/Clang with Linux sanitizers. Reached
-String/null formatting and full English uppercase match captured Java results.
-Native initialization stops at recipes or the entry-dependent NULL icon;
-complete bootstrap and population remain unfinished.
+The [recipe initialization](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/recipes.md)
+checkpoint constructs all 151 recipes and ten smelts, and completes the crafting
+statistics array. Thirty original captures cover five entry orders on both
+sides. All ten numeric graphs and catalogs, plus both Stack projections, match
+MSVC/GCC/Clang. All 30 selected Windows and 32 cases per Linux compiler pass,
+with Linux sanitizers. Ordinary Statistics and Block initialization returns;
+Item and direct managers preserve their recorded null-reference failures.
+Full World startup, crafting/furnace gameplay, population, synchronous mutations
+and persistence acceptance remain unfinished.
 
 The project targets Minecraft Beta 1.7.3 in C17, with a graphical single-player
 and multiplayer client plus a dedicated headless server. Players select local

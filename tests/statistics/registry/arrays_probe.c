@@ -1,3 +1,4 @@
+#include "mc/item/recipes/recipes.h"
 #include "mc/item/registry/registry.h"
 #include "mc/resources/files/files.h"
 #include "mc/statistics/achievements/achievements.h"
@@ -118,8 +119,11 @@ static bool emit(const char *side, const char *entry, const cell *cells,
                  const mc_registry_statistic_view *view,
                  const mc_registry_statistic_base_view *base)
 {
-    if (!row("STAT_ARRAY_PREFIX_V2\t%s\t%s\t%s\n", side, entry,
-             strcmp(entry, "item") == 0 ? "item-icon-null2" : "d21") ||
+    const char *boundary = strcmp(entry, "item") == 0       ? "item-icon-null2"
+                           : strcmp(entry, "crafting") == 0 ? "crafting-null24"
+                           : strcmp(entry, "smelting") == 0 ? "smelting-null75"
+                                                            : "complete";
+    if (!row("STAT_BOOTSTRAP_V1\t%s\t%s\t%s\n", side, entry, boundary) ||
         !row("STATE\t%u\t%u\nMAP\t%zu\n", view->G ? 1u : 0u, view->H ? 1u : 0u, view->map_size))
         return false;
     for (size_t i = 0; i < view->map_size; ++i) {
@@ -342,7 +346,8 @@ int main(int argc, char **argv)
     if ((argc != 4 && argc != 5) ||
         (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0) ||
         (strcmp(argv[2], "stats") != 0 && strcmp(argv[2], "block") != 0 &&
-         strcmp(argv[2], "item") != 0))
+         strcmp(argv[2], "item") != 0 && strcmp(argv[2], "crafting") != 0 &&
+         strcmp(argv[2], "smelting") != 0))
         goto cleanup;
     root = root_argument(argc, argv);
     if (root == NULL || mc_resource_files_create(root, &files) != MC_REGISTRY_OK ||
@@ -357,32 +362,40 @@ int main(int argc, char **argv)
     mc_registry_status status =
         strcmp(argv[2], "stats") == 0   ? mc_registry_classes_initialize_statistics(owner, &error)
         : strcmp(argv[2], "block") == 0 ? mc_registry_classes_initialize_blocks(owner, &error)
-                                        : mc_registry_classes_initialize_items(owner, &error);
+        : strcmp(argv[2], "item") == 0  ? mc_registry_classes_initialize_items(owner, &error)
+        : strcmp(argv[2], "crafting") == 0 ? mc_registry_classes_initialize_crafting(owner, &error)
+                                           : mc_registry_classes_initialize_smelting(owner, &error);
     mc_registry_statistic_view view;
     mc_registry_statistic_base_view base;
     mc_registry_achievement_view achievements;
-    bool stats = strcmp(argv[2], "stats") == 0;
     bool item = strcmp(argv[2], "item") == 0;
+    bool crafting = strcmp(argv[2], "crafting") == 0;
+    bool smelting = strcmp(argv[2], "smelting") == 0;
     if (mc_registry_classes_inspect_statistics(owner, &view, NULL) != MC_REGISTRY_OK ||
         mc_registry_classes_inspect_statistic_base(owner, &base, NULL) != MC_REGISTRY_OK ||
-        mc_registry_classes_inspect_achievements(owner, &achievements, NULL) != MC_REGISTRY_OK ||
-        view.D != NULL || error.constructor_class == NULL)
+        mc_registry_classes_inspect_achievements(owner, &achievements, NULL) != MC_REGISTRY_OK)
         goto cleanup;
-    if (item ? status != MC_REGISTRY_NULL_REFERENCE || view.phase != MC_REGISTRY_FAILED ||
-                   view.initializer_pc != 624 || view.C == NULL || view.E != NULL ||
-                   view.F != NULL || view.G || view.H || error.constructor_pc != 2 ||
-                   strcmp(error.constructor_class,
-                          options.side == MC_REGISTRY_CLIENT ? "iz" : "fy") != 0
-             : status != MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY || !view.G || !view.H ||
-                   error.constructor_pc != 21 ||
-                   strcmp(error.constructor_class,
-                          options.side == MC_REGISTRY_CLIENT ? "jl" : "gg") != 0 ||
-                   (stats ? view.phase != MC_REGISTRY_FAILED || view.initializer_pc != 618 ||
-                                view.C != NULL
-                          : view.phase != MC_REGISTRY_READY || view.initializer_pc != 635 ||
-                                view.C == NULL || achievements.phase != MC_REGISTRY_READY ||
-                                achievements.initializer_pc != 454))
-        goto cleanup;
+    if (item) {
+        if (status != MC_REGISTRY_NULL_REFERENCE || view.phase != MC_REGISTRY_FAILED ||
+            view.initializer_pc != 624 || view.C == NULL || view.D != NULL || view.E != NULL ||
+            view.F != NULL || view.G || view.H || error.constructor_pc != 2 ||
+            error.constructor_class == NULL ||
+            strcmp(error.constructor_class, options.side == MC_REGISTRY_CLIENT ? "iz" : "fy") != 0)
+            goto cleanup;
+    } else {
+        if (view.phase != MC_REGISTRY_READY || view.initializer_pc != 635 || view.C == NULL ||
+            view.E == NULL || view.F == NULL || achievements.phase != MC_REGISTRY_READY ||
+            achievements.initializer_pc != 454)
+            goto cleanup;
+        if (crafting || smelting) {
+            if (status != MC_REGISTRY_NULL_REFERENCE || view.D != NULL ||
+                error.constructor_pc != (crafting ? 24 : 75) || error.constructor_class == NULL ||
+                strcmp(error.constructor_class, options.side == MC_REGISTRY_CLIENT ? "jl" : "gg") !=
+                    0)
+                goto cleanup;
+        } else if (status != MC_REGISTRY_OK || view.D == NULL)
+            goto cleanup;
+    }
     cells = calloc(GRAPH_LIMIT, sizeof(*cells));
     icons = calloc(1, sizeof(*icons));
     if (cells == NULL || icons == NULL || !graph(owner, &view, &base, cells) ||

@@ -38,6 +38,7 @@ static const bool block_icons[] = {false, true,  true,  false, true,  false, fal
                                    false, false, false, true,  false, false, false, false};
 static const uint8_t english[] =
     "stat.mineBlock=Mine %1$s\nstat.useItem=Use %1$s\nstat.breakItem=Break %1$s\n"
+    "stat.craftItem=Craft %1$s\n"
     "achievement.openInventory=Inventory\nachievement.openInventory.desc=Inventory details\n"
     "achievement.unit=Display %q\nachievement.unit.desc=Details %q\nunit.suffix=x\\u0000\\ud800\n";
 static const uint8_t keys[] = "5242880,key.first\n5242917,key.unit\n";
@@ -346,7 +347,7 @@ static int test_bootstrap(mc_registry_side side, mc_materials *materials,
     mc_registry_error error;
     CHECK((item_first ? mc_registry_classes_initialize_items(owner, &error)
                       : mc_registry_classes_initialize_blocks(owner, &error)) ==
-          (item_first ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY));
+          (item_first ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_OK));
     CHECK(uniquifier(profile) == advanced(u, 5) && profile->math == NULL);
     mc_registry_achievement_view view;
     CHECK(mc_registry_classes_inspect_achievements(owner, &view, NULL) == MC_REGISTRY_OK);
@@ -372,11 +373,13 @@ static int test_bootstrap(mc_registry_side side, mc_materials *materials,
     } else {
         CHECK(view.phase == MC_REGISTRY_READY && view.initializer_pc == 454 && view.a == -1 &&
               view.b == -5 && view.c == 8 && view.d == 6);
-        CHECK(published(owner, &view, 16) == 0 && mc_registry_stack_count(owner) == 16);
+        CHECK(published(owner, &view, 16) == 0 && mc_registry_stack_count(owner) >= 16);
         CHECK(view.e != owner->statistics.b && view.e != owner->statistics.c &&
               view.e != owner->statistics.d && view.e != owner->statistics.e);
-        CHECK(error.constructor_pc == 21 && error.constructor_class != NULL &&
-              strcmp(error.constructor_class, side == MC_REGISTRY_CLIENT ? "jl" : "gg") == 0);
+        mc_registry_statistic_view stats;
+        CHECK(error.status == MC_REGISTRY_OK &&
+              mc_registry_classes_inspect_statistics(owner, &stats, NULL) == MC_REGISTRY_OK &&
+              stats.phase == MC_REGISTRY_READY && stats.D != NULL);
         size_t bytes = owner->allocation_bytes;
         CHECK(mc_registry_classes_initialize_achievements(owner, NULL) == MC_REGISTRY_OK &&
               owner->allocation_bytes == bytes);
@@ -415,9 +418,9 @@ static int retry_snapshot(mc_registry_classes *owner, resources *r)
     const mc_statistic *objects[16] = {0}, *named[16] = {0}, *listed[16] = {0};
     mc_statistic_fields bases[16];
     mc_achievement_fields typed[16];
-    const mc_item_stack *stacks[16] = {0};
-    mc_item_stack_fields fields[16];
-    mc_item_stack_phase phases[16];
+    const mc_item_stack *stacks[4096] = {0};
+    mc_item_stack_fields fields[4096];
+    mc_item_stack_phase phases[4096];
     mc_registry_achievement_view before, after;
     mc_registry_statistic_view stats_before, stats_after;
     CHECK(mc_registry_classes_inspect_achievements(owner, &before, NULL) == MC_REGISTRY_OK);
@@ -456,7 +459,11 @@ static int retry_snapshot(mc_registry_classes *owner, resources *r)
         reads[i] = r->streams[i].reads;
         closes[i] = r->streams[i].closes;
     }
-    CHECK(mc_registry_classes_initialize_blocks(owner, NULL) == MC_REGISTRY_FAILED_INITIALIZATION);
+    const mc_registry_phase block_phase = owner->blocks_phase;
+    CHECK(block_phase == MC_REGISTRY_FAILED || block_phase == MC_REGISTRY_READY);
+    CHECK(mc_registry_classes_initialize_blocks(owner, NULL) ==
+          (block_phase == MC_REGISTRY_READY ? MC_REGISTRY_OK : MC_REGISTRY_FAILED_INITIALIZATION));
+    CHECK(owner->blocks_phase == block_phase);
     CHECK(mc_registry_classes_inspect_achievements(owner, &after, NULL) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_inspect_statistics(owner, &stats_after, NULL) == MC_REGISTRY_OK);
     CHECK(before.phase == after.phase && before.initializer_pc == after.initializer_pc &&
@@ -512,7 +519,7 @@ static int bootstrap_budget(mc_registry_side side, mc_materials *materials,
     uint64_t u = uniquifier(profile);
     CHECK(create(side, materials, profile, budget, &r, &owner) == MC_REGISTRY_OK);
     mc_registry_status status = mc_registry_classes_initialize_blocks(owner, NULL);
-    CHECK(status == MC_REGISTRY_LIMIT || status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+    CHECK(status == MC_REGISTRY_LIMIT || status == MC_REGISTRY_OK);
     bool matched = false;
     for (size_t i = 0; i <= 5; ++i)
         if (uniquifier(profile) == advanced(u, i))
@@ -525,9 +532,8 @@ static int bootstrap_budget(mc_registry_side side, mc_materials *materials,
         ++n;
     for (size_t i = n; i < 16; ++i)
         CHECK(view.named[i] == NULL);
-    if (status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY || budget == 4u * 1024u * 1024u) {
-        CHECK(status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && n == 16 &&
-              view.phase == MC_REGISTRY_READY);
+    if (status == MC_REGISTRY_OK || budget == 4u * 1024u * 1024u) {
+        CHECK(status == MC_REGISTRY_OK && n == 16 && view.phase == MC_REGISTRY_READY);
         CHECK(published(owner, &view, 16) == 0 && uniquifier(profile) == advanced(u, 5));
     }
     CHECK(retry_snapshot(owner, &r) == 0);

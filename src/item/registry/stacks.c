@@ -95,18 +95,31 @@ static mc_registry_status require_raw(mc_registry_classes *classes, mc_item_stac
 }
 
 static mc_registry_status construct_numeric(mc_registry_classes *classes, mc_item_stack *raw,
-                                            int32_t id)
+                                            int32_t id, int32_t count, int32_t damage,
+                                            int32_t invocation_pc)
 {
-    /* iz/fy Item or Block/count constructor invokes the same (III)V at7. */
-    const mc_item_stack_status status = mc_item_stack_construct(raw, id, 1, 0);
+    const mc_item_stack_status status = mc_item_stack_construct(raw, id, count, damage);
     if (status != MC_ITEM_STACK_OK)
-        return constructor_fail(classes, 7, stack_status(status),
+        return constructor_fail(classes, invocation_pc, stack_status(status),
                                 mc_item_stack_status_string(status));
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_stack_construct_item(mc_registry_classes *classes,
-                                                    mc_item_stack *raw, const mc_item *item)
+mc_registry_status mc_registry_stack_construct_numeric(mc_registry_classes *classes,
+                                                       mc_item_stack *raw, int32_t id,
+                                                       int32_t count, int32_t damage)
+{
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    const mc_registry_status status = require_raw(classes, raw);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    return construct_numeric(classes, raw, id, count, damage, 1);
+}
+
+mc_registry_status mc_registry_stack_construct_item_values(mc_registry_classes *classes,
+                                                           mc_item_stack *raw, const mc_item *item,
+                                                           int32_t count, int32_t damage)
 {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -117,24 +130,70 @@ mc_registry_status mc_registry_stack_construct_item(mc_registry_classes *classes
         return constructor_fail(classes, 2, MC_REGISTRY_NULL_REFERENCE,
                                 "ItemStack Item constructor bf read on null");
     const int32_t id = item->fields.bf;
-    return construct_numeric(classes, raw, id);
+    return construct_numeric(classes, raw, id, count, damage, 7);
 }
 
-mc_registry_status mc_registry_stack_construct_block(mc_registry_classes *classes,
-                                                     mc_item_stack *raw, const mc_block *block)
+mc_registry_status mc_registry_stack_construct_block_values(mc_registry_classes *classes,
+                                                            mc_item_stack *raw,
+                                                            const mc_block *block, int32_t count,
+                                                            int32_t damage)
 {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     const mc_registry_status status = require_raw(classes, raw);
     if (status != MC_REGISTRY_OK)
         return status;
-    /* The one-Block overload calls Block/count at3 with count1; that actual
-     * overload dereferences bn at2 before entering the numeric constructor. */
+    /* Each reached Block overload forwards its supplied count/damage to the
+     * actual bn read, then invokes the numeric constructor at7. */
     if (block == NULL)
         return constructor_fail(classes, 2, MC_REGISTRY_NULL_REFERENCE,
                                 "ItemStack Block constructor bn read on null");
     const int32_t id = block->fields.bn;
-    return construct_numeric(classes, raw, id);
+    return construct_numeric(classes, raw, id, count, damage, 7);
+}
+
+mc_registry_status mc_registry_stack_construct_item(mc_registry_classes *classes,
+                                                    mc_item_stack *raw, const mc_item *item)
+{
+    return mc_registry_stack_construct_item_values(classes, raw, item, 1, 0);
+}
+
+mc_registry_status mc_registry_stack_construct_block(mc_registry_classes *classes,
+                                                     mc_item_stack *raw, const mc_block *block)
+{
+    return mc_registry_stack_construct_block_values(classes, raw, block, 1, 0);
+}
+
+mc_registry_status mc_registry_stack_copy(mc_registry_classes *classes, const mc_item_stack *source,
+                                          mc_item_stack **out)
+{
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (source == NULL || out == NULL || classes->entered == 0)
+        return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
+                                "Stack copy requires admitted owner, source and output", NULL);
+    /* Actual k/j allocates at0 before c5/a9/d13, then invokes (III)V16.
+     * No Java phase test or NBT copy appears in that method. */
+    mc_item_stack *copy = NULL;
+    mc_registry_status status = mc_registry_stack_allocate(classes, &copy);
+    if (status != MC_REGISTRY_OK) {
+        if (classes->last_error.constructor_class == NULL) {
+            classes->last_error.constructor_class =
+                classes->options.side == MC_REGISTRY_CLIENT ? "iz" : "fy";
+            classes->last_error.constructor_pc = 0;
+        }
+        return status;
+    }
+    mc_item_stack_fields fields;
+    const mc_item_stack_status read_status = mc_item_stack_fields_get(source, &fields);
+    if (read_status != MC_ITEM_STACK_OK)
+        return constructor_fail(classes, 5, stack_status(read_status),
+                                mc_item_stack_status_string(read_status));
+    status = construct_numeric(classes, copy, fields.id, fields.count, fields.damage, 16);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    *out = copy;
+    return MC_REGISTRY_OK;
 }
 
 void mc_registry_stacks_retire(mc_registry_classes *classes)

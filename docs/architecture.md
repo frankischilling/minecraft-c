@@ -18,9 +18,12 @@ initialization cycle, including failed prefixes. The same owner executes actual
 [Translation](resources/translation.md), [key loading](statistics/keys.md) and
 [statistic registration and arrays](statistics/registry.md), followed by real
 [achievement construction](statistics/achievements.md), using the reached
-[String/null formatter](reference/string-format.md) in core. Unfinished
-recipe and smelting dependencies still prevent complete registry startup
-and World binding.
+[String/null formatter](reference/string-format.md) in core. Its real
+[recipe and smelting managers](item/recipes.md) share that lifetime and retain
+actual recipe lists, ingredient/output Stacks and crafting-statistic arrays.
+Ordinary Statistics and Block initialization can return; other entry orders
+preserve their actual null-singleton failures. Full World startup and gameplay
+binding remain unfinished.
 `mc_world_info` owns per-World [metadata fields and shared references](world/info.md)
 above storage, with a private platform-clock dependency for actual no-list
 serialization. It borrows no store or World runtime. Runtime contexts can retain

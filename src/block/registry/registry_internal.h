@@ -1,6 +1,7 @@
 #ifndef MC_BLOCK_REGISTRY_INTERNAL_H
 #define MC_BLOCK_REGISTRY_INTERNAL_H
 
+#include "../../item/recipes/recipes_internal.h"
 #include "../../item/registry/registry_internal.h"
 #include "../../resources/translation/translation_internal.h"
 #include "../../statistics/keys/keys_internal.h"
@@ -286,6 +287,8 @@ struct mc_registry_classes {
     mc_registry_class_state statistics_state;
     mc_registry_achievement_storage achievements;
     mc_registry_class_state achievements_state;
+    mc_registry_recipe_storage recipes;
+    mc_registry_class_state crafting_state, smelting_state;
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

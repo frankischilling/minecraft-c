@@ -1,18 +1,14 @@
 # Build and tests
 
-The [achievement addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/achievements.md)
-runs all sixteen construction chains with real icon Stacks and stdout.
-Eighteen original captures and all six graph/console comparisons pass on
-MSVC/GCC/Clang. All 26 selected Windows and 28 cases per Linux compiler pass,
-with Linux sanitizers and real stdout-handle controls. Full bootstrap,
-population, world mutations and gameplay persistence remain unfinished.
-
-The [statistic-array addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/registry.md)
-passes 23 selected Windows cases and 25 cases per Linux compiler, including two
-locale regressions. Six numeric graph prefixes match both untouched originals;
-String/null formatting matches 275 Java cases and all 1,114,112 uppercase
-code-point values. Selected Linux runs use ASan/UBSan and leak detection.
-Complete native bootstrap remains unfinished.
+The [recipe initialization](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/recipes.md)
+checkpoint constructs all 151 recipes and ten smelts, and completes the crafting
+statistics array. Thirty original captures cover five entry orders on both
+sides. All ten numeric graphs and catalogs, plus both Stack projections, match
+MSVC/GCC/Clang. All 30 selected Windows and 32 cases per Linux compiler pass,
+with Linux sanitizers. Ordinary Statistics and Block initialization returns;
+Item and direct managers preserve their recorded null-reference failures.
+Full World startup, crafting/furnace gameplay, population, synchronous mutations
+and persistence acceptance remain unfinished.
 
 Use a C17 compiler, CMake 3.24+, Ninja, and Python 3.10+ for tests. The current
 baseline is x86-64 Linux and Windows. Public tests need no display, audio,

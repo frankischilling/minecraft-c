@@ -464,7 +464,8 @@ static int check_retry(mc_registry_classes *owner, const resources *r)
     int result = 1;
     mc_registry_statistic_view before, after;
     CHECK(mc_registry_classes_inspect_statistics(owner, &before, NULL) == MC_REGISTRY_OK &&
-          before.phase == MC_REGISTRY_FAILED);
+          (before.phase == MC_REGISTRY_FAILED || before.phase == MC_REGISTRY_READY));
+    const bool failed = before.phase == MC_REGISTRY_FAILED;
     const mc_registry_error failure = owner->statistics_state.failure;
     size_t bytes = owner->allocation_bytes;
     const uint64_t u =
@@ -491,10 +492,14 @@ static int check_retry(mc_registry_classes *owner, const resources *r)
     CHECK(mc_registry_classes_inspect_statistics(NULL, &after, &error) ==
           MC_REGISTRY_INVALID_ARGUMENT);
     CHECK(mc_registry_classes_initialize_statistics(owner, &error) ==
-          MC_REGISTRY_FAILED_INITIALIZATION);
-    mc_registry_error expected_error = failure;
-    expected_error.status = MC_REGISTRY_FAILED_INITIALIZATION;
-    CHECK(same_error(&error, &expected_error));
+          (failed ? MC_REGISTRY_FAILED_INITIALIZATION : MC_REGISTRY_OK));
+    if (failed) {
+        mc_registry_error expected_error = failure;
+        expected_error.status = MC_REGISTRY_FAILED_INITIALIZATION;
+        CHECK(same_error(&error, &expected_error));
+    } else {
+        CHECK(error.status == MC_REGISTRY_OK);
+    }
     CHECK(mc_registry_classes_inspect_statistics(owner, &after, NULL) == MC_REGISTRY_OK);
     CHECK(after.phase == before.phase && after.initializer_pc == before.initializer_pc &&
           after.map_size == before.map_size && after.b == before.b && after.c == before.c &&
@@ -551,7 +556,12 @@ static int check_prefix(mc_registry_classes *owner, size_t *published)
         CHECK(c == COUNT(ids) && b >= COUNT(ids) && view.map_size >= COUNT(ids));
         CHECK(b <= view.map_size + 1 && mc_statistic_list_size(view.d) <= view.map_size &&
               mc_statistic_list_size(view.e) <= view.map_size);
-        CHECK(view.C == NULL && view.D == NULL);
+        /* For this real Stats-first path, nested Item/Block d constructs D
+         * before Block returns and the outer helper can publish C. */
+        if (view.D != NULL)
+            CHECK(view.E != NULL && view.F != NULL);
+        if (view.C != NULL)
+            CHECK(view.D != NULL && view.E != NULL && view.F != NULL);
         if (view.G || view.H)
             CHECK(view.E != NULL && view.F != NULL);
     }
@@ -578,7 +588,7 @@ cleanup:
     return result;
 }
 
-static bool completed_array_prefix(mc_registry_classes *owner, const mc_registry_error *error)
+static bool completed_initialization(mc_registry_classes *owner)
 {
     mc_registry_statistic_view view;
     mc_registry_block_view block;
@@ -588,18 +598,20 @@ static bool completed_array_prefix(mc_registry_classes *owner, const mc_registry
         mc_registry_classes_inspect_blocks(owner, &block, NULL) != MC_REGISTRY_OK ||
         mc_registry_classes_inspect_items(owner, &item, NULL) != MC_REGISTRY_OK)
         return false;
-    const bool client = owner->options.side == MC_REGISTRY_CLIENT;
-    return view.phase == MC_REGISTRY_FAILED && view.initializer_pc == 618 && view.C == NULL &&
-           view.D == NULL && view.E != NULL && view.F != NULL && view.G && view.H &&
-           view.map_size > COUNT(ids) && mc_statistic_list_size(view.c) == COUNT(ids) &&
-           block.phase == MC_REGISTRY_FAILED && block.initializer_pc == 3674 &&
-           item.phase == MC_REGISTRY_READY && random_owners(owner, randoms) == 5 &&
-           error->status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error->initializer_pc == 3674 &&
-           error->active_initializer_pc == 3674 && error->active_initializer_class != NULL &&
-           strcmp(error->active_initializer_class, client ? "uu" : "na") == 0 &&
-           error->constructor_class != NULL &&
-           strcmp(error->constructor_class, client ? "jl" : "gg") == 0 &&
-           error->constructor_pc == 21;
+    /* Numeric sizes independently match both untouched-original Stats-first
+     * bootstrap fixtures; synthetic display text does not choose registered IDs. */
+    return view.phase == MC_REGISTRY_READY && view.initializer_pc == 635 && view.C != NULL &&
+           view.D != NULL && view.E != NULL && view.F != NULL && !view.G && !view.H &&
+           view.map_size == 486 && mc_statistic_list_size(view.b) == 467 &&
+           mc_statistic_list_size(view.c) == COUNT(ids) && mc_statistic_list_size(view.d) == 106 &&
+           mc_statistic_list_size(view.e) == 68 && view.duplicate_message == NULL &&
+           block.phase == MC_REGISTRY_READY && block.initializer_pc == 3677 &&
+           item.phase == MC_REGISTRY_READY && item.initializer_pc == 2667 &&
+           owner->achievements_state.phase == MC_REGISTRY_READY &&
+           owner->achievements_state.pc == 454 &&
+           owner->crafting_state.phase == MC_REGISTRY_READY &&
+           owner->smelting_state.phase == MC_REGISTRY_READY && owner->recipes.crafting != NULL &&
+           owner->recipes.smelting != NULL && random_owners(owner, randoms) == 5;
 }
 
 static int test_common(mc_registry_side side, dependencies *d, int mode)
@@ -614,15 +626,16 @@ static int test_common(mc_registry_side side, dependencies *d, int mode)
         r.stream[2].fail_read = 2;
     CHECK(allocate(side, d, &r, 0, &owner) == MC_REGISTRY_OK);
     mc_registry_error error;
-    mc_registry_status expected =
-        mode == 1 ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+    mc_registry_status expected = mode == 0   ? MC_REGISTRY_OK
+                                  : mode == 1 ? MC_REGISTRY_NULL_REFERENCE
+                                              : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
     CHECK(mc_registry_classes_initialize_statistics(owner, &error) == expected);
     CHECK(error.status == expected && check_base(owner, d) == 0);
     size_t n = 0;
     CHECK(check_prefix(owner, &n) == 0);
     mc_registry_statistic_view view;
     CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK &&
-          view.phase == MC_REGISTRY_FAILED);
+          view.phase == (mode == 0 ? MC_REGISTRY_READY : MC_REGISTRY_FAILED));
     if (mode == 1) {
         CHECK(n == 0 && view.map_size == 0 && mc_statistic_list_size(view.b) == 0);
         CHECK(r.stream[0].opens == 1 && r.stream[1].opens == 0 && r.stream[2].opens == 0);
@@ -630,7 +643,7 @@ static int test_common(mc_registry_side side, dependencies *d, int mode)
         CHECK(r.first_observations != 0 && r.first != NULL && r.stream[0].opens == 1 &&
               r.stream[1].opens == 1 && r.stream[2].opens == 1);
         if (mode == 0) {
-            CHECK(completed_array_prefix(owner, &error));
+            CHECK(completed_initialization(owner));
             CHECK(n == COUNT(ids) && mc_statistic_list_size(view.b) >= COUNT(ids) &&
                   mc_statistic_list_size(view.c) == COUNT(ids));
             CHECK(view.b != view.c && view.b != view.d && view.b != view.e && view.c != view.d &&
@@ -841,19 +854,19 @@ static int budget_trial(mc_registry_side side, dependencies *d, size_t maximum, 
         CHECK(status == MC_REGISTRY_LIMIT && maximum < sizeof(mc_registry_classes));
     } else {
         status = mc_registry_classes_initialize_statistics(owner, NULL);
-        CHECK(status == MC_REGISTRY_LIMIT || status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+        CHECK(status == MC_REGISTRY_LIMIT || status == MC_REGISTRY_OK);
         mc_registry_statistic_view view;
         CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK);
-        CHECK(view.phase == MC_REGISTRY_FAILED && check_prefix(owner, &out->named) == 0);
+        CHECK(view.phase == (status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED) &&
+              check_prefix(owner, &out->named) == 0);
         out->bytes = owner->allocation_bytes;
         out->map = view.map_size;
         out->b = mc_statistic_list_size(view.b);
         out->c = mc_statistic_list_size(view.c);
-        out->end = status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+        out->end = status == MC_REGISTRY_OK;
         CHECK(out->bytes <= maximum);
         if (out->end)
-            CHECK(completed_array_prefix(owner, &owner->statistics_state.failure) &&
-                  out->named == COUNT(ids));
+            CHECK(completed_initialization(owner) && out->named == COUNT(ids));
         CHECK(check_retry(owner, &r) == 0 && accept_dependencies(d, owner));
     }
     result = 0;

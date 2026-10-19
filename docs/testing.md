@@ -1,6 +1,20 @@
 # Test scope and reproduction
 
-The [achievement addition](statistics/achievements.md) has eighteen successful
+The [recipe initialization](item/recipes.md) checkpoint passes 30 selected
+Windows cases and 32 cases per Linux compiler, with Linux ASan/UBSan and leak
+detection. Contracts report 2,872 recipe, 556 registry-Stack, 11,312,084 array,
+32,892 achievement and 14,566 statistics checks; each explicit Linux locale
+case adds one statistics check. Thirty actual original captures cover both
+sides, five entry orders and three JVM modes. All ten numeric graphs, ten
+catalogs and both numeric Stack projections match on MSVC/GCC/Clang using
+imported and synthetic resources. Thirty-six historical observer replays remain
+byte-equal. All 555 code/tool/fixture inputs agree before/after, across retained
+host source copies and with the current source; 32 build products per host are
+retained. clang-format18 checks 280 C/header files. This selected run qualifies
+the recorded initialization scenarios; full World startup, gameplay,
+population and persistence acceptance remain unfinished.
+
+At the preceding checkpoint, the [achievement addition](statistics/achievements.md) had eighteen successful
 original stopped-prefix captures, unchanged eighteen-case legacy replay, and
 MSVC/GCC/Clang comparisons of all six published graphs plus actual console bytes.
 The three-mode JDK PrintStream capture reproduces through the public recorder.

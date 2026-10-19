@@ -127,6 +127,11 @@ add_library(mc_registry STATIC
     src/item/registry/constructors.c
     src/item/registry/registration.c
     src/item/registry/stacks.c
+    src/item/recipes/registration.c
+    src/item/recipes/families.c
+    src/item/recipes/explicit.c
+    src/item/recipes/managers.c
+    src/item/recipes/smelting.c
     src/resources/translation/translation.c
     src/resources/translation/format.c
     src/statistics/keys/keys.c
@@ -264,6 +269,22 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_item_stack PRIVATE mc_item mc_build_options)
     add_test(NAME item.stack COMMAND mc_test_item_stack)
     set_tests_properties(item.stack PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_registry_stacks tests/item/registry/test_stacks.c)
+    target_link_libraries(mc_test_registry_stacks PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME item.registry_stacks COMMAND mc_test_registry_stacks)
+    set_tests_properties(item.registry_stacks PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_recipe_bootstrap_probe tests/item/recipes/bootstrap_probe.c)
+    target_link_libraries(mc_recipe_bootstrap_probe PRIVATE mc_resources mc_build_options)
+
+    add_executable(mc_test_recipes tests/item/recipes/test_recipes.c)
+    target_link_libraries(mc_test_recipes PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME item.recipes COMMAND mc_test_recipes)
+    set_tests_properties(item.recipes PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_stack_values_probe tests/item/registry/stack_values_probe.c)
+    target_link_libraries(mc_stack_values_probe PRIVATE mc_registry mc_build_options)
 
     add_executable(mc_test_entity tests/entity/test_entity.c)
     target_include_directories(mc_test_entity PRIVATE src/entity src/core/java)
@@ -648,6 +669,20 @@ if(BUILD_TESTING)
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/statistics/compare_arrays.py"
             --executable "$<TARGET_FILE:mc_statistic_arrays_probe>")
     set_tests_properties(statistics.arrays_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 60)
+
+    add_test(NAME item.recipes_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/item/compare_recipes.py"
+            --executable "$<TARGET_FILE:mc_recipe_bootstrap_probe>")
+    set_tests_properties(item.recipes_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 60)
+
+    add_test(NAME item.stack_values_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/item/compare_stack_values.py"
+            --executable "$<TARGET_FILE:mc_stack_values_probe>")
+    set_tests_properties(item.stack_values_observation PROPERTIES
         LABELS "public;fixture;java" TIMEOUT 60)
 
     add_test(NAME core.java_properties_observation
