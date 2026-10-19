@@ -35,10 +35,18 @@ typedef struct arena {
     size_t bytes;
 } arena;
 
+/* Match the production C17 flexible-array layout on older MSVC as well. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 typedef struct helper_string {
     size_t length;
     uint16_t units[];
 } helper_string;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 typedef enum identity_kind { PROPERTY_STRING, FALLBACK_STRING } identity_kind;
 

@@ -5,10 +5,19 @@
 
 _Static_assert(CHAR_BIT == 8, "Properties InputStream decoding requires eight-bit bytes");
 
+/* Older MSVC diagnoses this standard C17 flexible array as extension C4200.
+ * Keep the allocation layout and scope the compatibility guard to this type. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 struct mc_java_properties_string {
     size_t length;
     uint16_t units[];
 };
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 typedef struct properties_entry {
     const mc_java_properties_string *key;
