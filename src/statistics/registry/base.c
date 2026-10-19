@@ -1,4 +1,5 @@
 #include "../../block/registry/registry_internal.h"
+#include "../achievements/achievements_internal.h"
 #include "registry_internal.h"
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
@@ -197,10 +198,6 @@ mc_registry_status mc_registry_statistic_allocate(mc_registry_classes *classes,
     mc_registry_status status = mc_registry_statistic_base_active_use(classes);
     if (status != MC_REGISTRY_OK)
         return status;
-    if (kind == MC_STATISTIC_ACHIEVEMENT)
-        return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                "Achievement class initialization and construction unfinished",
-                                NULL);
     mc_statistic *statistic = mc_registry_allocate(classes, sizeof(*statistic));
     if (statistic == NULL)
         return classes->last_error.status;
@@ -212,10 +209,9 @@ mc_registry_status mc_registry_statistic_allocate(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int32_t id,
-                                                   const mc_registry_string *name,
-                                                   const mc_statistic_formatter *formatter,
-                                                   int32_t associated_id)
+mc_registry_status mc_registry_statistic_construct_base(mc_statistic *statistic, int32_t id,
+                                                        const mc_registry_string *name,
+                                                        const mc_statistic_formatter *formatter)
 {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -223,9 +219,6 @@ mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int3
     if (classes->entered == 0)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Statistic construction requires admitted initialization", NULL);
-    if (statistic->kind == MC_STATISTIC_ACHIEVEMENT)
-        return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                "Achievement constructor unfinished", NULL);
     statistic->source_class = source_class(classes, MC_STATISTIC_BASE);
     statistic->source_pc = 1;
     statistic->source_pc = 6;
@@ -239,6 +232,24 @@ mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int3
      * constructors are supplied their actual already evaluated static i. */
     statistic->fields.a = formatter;
     statistic->source_pc = 24;
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int32_t id,
+                                                   const mc_registry_string *name,
+                                                   const mc_statistic_formatter *formatter,
+                                                   int32_t associated_id)
+{
+    if (statistic == NULL || statistic->classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (statistic->kind == MC_STATISTIC_ACHIEVEMENT)
+        return mc_registry_fail(statistic->classes, MC_REGISTRY_INVALID_ARGUMENT,
+                                "Use the typed Achievement constructor", NULL);
+    mc_registry_status status =
+        mc_registry_statistic_construct_base(statistic, id, name, formatter);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_registry_classes *classes = statistic->classes;
     if (statistic->kind == MC_STATISTIC_ITEM) {
         statistic->source_class = source_class(classes, MC_STATISTIC_ITEM);
         statistic->source_pc = 8;
@@ -248,7 +259,7 @@ mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int3
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistic_flag(mc_statistic *statistic)
+mc_registry_status mc_registry_statistic_base_flag(mc_statistic *statistic)
 {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -256,14 +267,18 @@ mc_registry_status mc_registry_statistic_flag(mc_statistic *statistic)
     if (classes->entered == 0)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Statistic flag requires admitted initialization", NULL);
-    if (statistic->kind == MC_STATISTIC_ACHIEVEMENT)
-        return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                "Achievement flag dispatch unfinished", NULL);
     statistic->source_class = source_class(classes, MC_STATISTIC_BASE);
     statistic->source_pc = 2;
     statistic->fields.g = true;
     statistic->source_pc = 6;
     return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_registry_statistic_flag(mc_statistic *statistic)
+{
+    if (statistic != NULL && statistic->kind == MC_STATISTIC_ACHIEVEMENT)
+        return mc_registry_achievement_flag(statistic);
+    return mc_registry_statistic_base_flag(statistic);
 }
 
 const mc_statistic_fields *mc_statistic_fields_get(const mc_statistic *statistic)

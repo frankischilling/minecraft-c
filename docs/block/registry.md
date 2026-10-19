@@ -4,14 +4,15 @@
 `uu`/`na` static initializer. It creates nine sounds, eight distinct property
 arrays and 96 concrete Blocks in source order, followed by the real recursive
 [Item construction](../item/registry.md). This owner remains incomplete:
-Block-first initialization suspends Block at PC3398 and Item at statistics
-invocation PC2664. Item-first initialization reaches the BlockItem tail and
-Block statistics PC3674. Both now execute actual
-[statistics class initialization](../statistics/registry.md). With no resource
-provider they fail at Translation's resource-open dependency; with imported
-resources they retain the 23 common registrations before the unfinished helper
-at PC618. Both retain FAILED state and cannot provide a successfully initialized
-gameplay registry.
+Both entry orders execute actual
+[statistics](../statistics/registry.md) and
+[achievement initialization](../statistics/achievements.md). With imported
+resources, Block-first completes nested Item/statistics/achievement work and
+reaches the unfinished recipe call at d21. Item-first instead reaches the
+first achievement icon while named Items are still NULL, failing on its real
+ItemStack Item read at2. Both retain failed Block state. Without a resource
+provider the earlier Translation resource-open dependency still stops them.
+Neither supplies a complete gameplay registry.
 
 The [public interface](../../include/mc/block/registry/registry.h) allocates one
 class owner above Worlds, borrowing the application's actual Material and Random

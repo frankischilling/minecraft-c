@@ -1,5 +1,12 @@
 # Build and tests
 
+The [achievement addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/achievements.md)
+runs all sixteen construction chains with real icon Stacks and stdout.
+Eighteen original captures and all six graph/console comparisons pass on
+MSVC/GCC/Clang. All 26 selected Windows and 28 cases per Linux compiler pass,
+with Linux sanitizers and real stdout-handle controls. Full bootstrap,
+population, world mutations and gameplay persistence remain unfinished.
+
 The [statistic-array addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/registry.md)
 passes 23 selected Windows cases and 25 cases per Linux compiler, including two
 locale regressions. Six numeric graph prefixes match both untouched originals;

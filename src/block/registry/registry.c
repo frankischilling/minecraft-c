@@ -1,3 +1,4 @@
+#include "../../item/registry/stacks_internal.h"
 #include "registry_internal.h"
 
 #include <stdlib.h>
@@ -254,6 +255,8 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
     classes->statistic_base_state.failure = native_error(MC_REGISTRY_OK, NULL);
     classes->statistics_state.pc = -1;
     classes->statistics_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    classes->achievements_state.pc = -1;
+    classes->achievements_state.failure = native_error(MC_REGISTRY_OK, NULL);
     *out = classes;
     return result(error, MC_REGISTRY_OK, NULL);
 }
@@ -390,6 +393,7 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_reg
         return result(error, MC_REGISTRY_OK, NULL);
     if (classes->entered != 0)
         return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
+    mc_registry_stacks_retire(classes);
     mc_registry_allocation *record = classes->allocations;
     while (record != NULL) {
         mc_registry_allocation *next = record->next;

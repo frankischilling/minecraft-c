@@ -1,0 +1,257 @@
+{
+  "schema": "ACHIEVEMENT_PREFIX_OBSERVATION_V1",
+  "runtime": "Temurin17.0.17+10 Windows x86-64 with JDI",
+  "scope": "Published numeric graph at recipe d21 for Stats/Block entries or actual ItemStack Item null dereference2. Requested debugger termination is not natural completion or successful bootstrap.",
+  "projection": "Complete statistic map/named/array/list graph plus achievement bounds, named references, parent/special/icon identity and four actual ItemStack fields. Signed map-ID observation order; no Java HashMap iteration-order, full-heap, text, Java Throwable identity or natural completion claim.",
+  "captures": 18,
+  "three_modes_equal_per_entry": true,
+  "inputs_unchanged": true,
+  "fixtures": {
+    "client-stats.tsv": {
+      "bytes": 22370,
+      "sha256": "5634178a6977953f4dc655464374c49efae8402b6c272a92baf3255879a352c4"
+    },
+    "client-block.tsv": {
+      "bytes": 31054,
+      "sha256": "f0212b15fb549f33ff4ca157e45831f65da595a17cd5328cff12f2accfc66942"
+    },
+    "client-item.tsv": {
+      "bytes": 8946,
+      "sha256": "3c0b4d3a682a5eea1d31631d13a9dbd5ca49e06e600693d3b95785cbc7b09b72"
+    },
+    "server-stats.tsv": {
+      "bytes": 22370,
+      "sha256": "31fad7dcb6fc3c040e85a0ac43e0f24565452853830f8dbded289827db5246b9"
+    },
+    "server-block.tsv": {
+      "bytes": 31054,
+      "sha256": "03542a831c87d85159dccdf8f215dd2eb265d2d642e04a0799d047e7f7381427"
+    },
+    "server-item.tsv": {
+      "bytes": 8946,
+      "sha256": "0c67ffb14e99f1eaec544760ce485e212cfe6a036958c768fe307aed19bba52d"
+    }
+  },
+  "console": {
+    "client-stats": {
+      "observed_hex": "",
+      "line_separator_hex": "0d0a"
+    },
+    "client-block": {
+      "observed_hex": "313620616368696576656d656e74730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "client-item": {
+      "observed_hex": "",
+      "line_separator_hex": "0d0a"
+    },
+    "server-stats": {
+      "observed_hex": "",
+      "line_separator_hex": "0d0a"
+    },
+    "server-block": {
+      "observed_hex": "313620616368696576656d656e74730d0a",
+      "line_separator_hex": "0d0a"
+    },
+    "server-item": {
+      "observed_hex": "",
+      "line_separator_hex": "0d0a"
+    }
+  },
+  "receipts": {
+    "client-stats-interpreted": {
+      "receipt": {
+        "bytes": 2424,
+        "sha256": "e1af91ac84ada204a01e3119bde1430a46bc689cd0c55ea602b0ebe0289a8c00"
+      },
+      "binding": {
+        "bytes": 912,
+        "sha256": "6604c29819c2b908929c4eaa1737e751a8ec23fed364c1f42d15332802b7400d"
+      }
+    },
+    "client-stats-tier1": {
+      "receipt": {
+        "bytes": 2488,
+        "sha256": "6502d5891dab8f05412dc4242fdfab9c71291d3c60c1152fe13023d349e5235b"
+      },
+      "binding": {
+        "bytes": 906,
+        "sha256": "2457a5882ea3a9563f0d2c270f984cf6a7189f26c099c6e6e93409b465e1735d"
+      }
+    },
+    "client-stats-default": {
+      "receipt": {
+        "bytes": 2381,
+        "sha256": "47c3225bfa186fbdc36cc419b675d4037327bbfd10784e5ba5e9b8c25f7e9a4f"
+      },
+      "binding": {
+        "bytes": 908,
+        "sha256": "111da71d0bc91df4438bebf4efd62604e0e903864b0a5bb6293b1c8b182cb9e1"
+      }
+    },
+    "client-block-interpreted": {
+      "receipt": {
+        "bytes": 2424,
+        "sha256": "a99c99f3d5d3d6ef4bf80a4be3386d5afa193b9b06ea19e86d37802eb1479ce3"
+      },
+      "binding": {
+        "bytes": 832,
+        "sha256": "a00b5afb8728a4db93c39676187320101dcb17405d871a43b99a906c8b07a0e9"
+      }
+    },
+    "client-block-tier1": {
+      "receipt": {
+        "bytes": 2490,
+        "sha256": "6742fa85e919a8e3bdd4a68412bf40f8e5bf02d9de0572afa5a3368267070189"
+      },
+      "binding": {
+        "bytes": 826,
+        "sha256": "5ceb6ab05566bd4d2d1100c849caf00c187612281d041e68785ece0e310ff3fa"
+      }
+    },
+    "client-block-default": {
+      "receipt": {
+        "bytes": 2382,
+        "sha256": "a429369112c3f84c7f1d2010c35074e7f65e402d22084126945d90733ce021da"
+      },
+      "binding": {
+        "bytes": 828,
+        "sha256": "7fc9e4664045d703f1b3499ff173fb2d20d11b00ce9803a08975606c1aa6ce8d"
+      }
+    },
+    "client-item-interpreted": {
+      "receipt": {
+        "bytes": 2418,
+        "sha256": "96e364178a59db1d91d1fc7f89729b28eb16ae21b2495a89906ab0bcfa29af7e"
+      },
+      "binding": {
+        "bytes": 1452,
+        "sha256": "b2748a90f7e13fe1d61913d3e436ee6e83510eef072f2e45dcb2ed0326c09bb8"
+      }
+    },
+    "client-item-tier1": {
+      "receipt": {
+        "bytes": 2484,
+        "sha256": "8f33c9f9e0c37da7346442bd4adb15538d6e1925f64ebee08f0e471311f27efb"
+      },
+      "binding": {
+        "bytes": 1446,
+        "sha256": "3cceee9752e51a74b8ae7536b58a9fb73d04f869b122c1a7266dbd11da0d43fd"
+      }
+    },
+    "client-item-default": {
+      "receipt": {
+        "bytes": 2375,
+        "sha256": "371227971969b6a1cd2d24c8244f9a0cd281f38a600b978929af859610f1352e"
+      },
+      "binding": {
+        "bytes": 1448,
+        "sha256": "c3ea9a75dcd9df2e92eb171d8fc4fabdb1b79bc7aa27a9ef86bd47b765a27ba0"
+      }
+    },
+    "server-stats-interpreted": {
+      "receipt": {
+        "bytes": 2451,
+        "sha256": "0944207cd81bf71311415359488ea0165d1648f3111a4d34c0d39ba732a64c4d"
+      },
+      "binding": {
+        "bytes": 912,
+        "sha256": "30baf21bd457667eda886431acd3b206b5202292acd8eedf43411019d936d192"
+      }
+    },
+    "server-stats-tier1": {
+      "receipt": {
+        "bytes": 2517,
+        "sha256": "1662327ba391f0bed4d78a7602b767c0abe4317f91a555799fcb1920e913d3d0"
+      },
+      "binding": {
+        "bytes": 906,
+        "sha256": "ad255276e7ebe818109d2dec00fce349729d97e0d249e761fc270166d0d7e1a3"
+      }
+    },
+    "server-stats-default": {
+      "receipt": {
+        "bytes": 2408,
+        "sha256": "da203279c4a85d4194202f9f8da7a7e182c2212dc9767c0aa449c5e8a92aabd8"
+      },
+      "binding": {
+        "bytes": 908,
+        "sha256": "68ac3ec6740930f84b0d2bf2127e2bd827015c88d992c7e9f53f7c8e99159108"
+      }
+    },
+    "server-block-interpreted": {
+      "receipt": {
+        "bytes": 2452,
+        "sha256": "f5986837e99579136961cc76d8c0dcc0fa741e3434ac1df7096387ac5d12f2b4"
+      },
+      "binding": {
+        "bytes": 832,
+        "sha256": "05a5fba4f2de0fb0e53045cc6f3498c9b2d468c826692be5369316af8f1dc6cd"
+      }
+    },
+    "server-block-tier1": {
+      "receipt": {
+        "bytes": 2518,
+        "sha256": "c0da35e2224507d378c48a8c7f781342b2b948afa2f233e37decfad70e1ffae2"
+      },
+      "binding": {
+        "bytes": 826,
+        "sha256": "96c9700b99a943a6bd47f525c8550ae54a1dd3db50850a41d3814116faaf3bab"
+      }
+    },
+    "server-block-default": {
+      "receipt": {
+        "bytes": 2410,
+        "sha256": "18bba4d099e0b2a8df895714e5db210d1d52b2f7df575435ca701dcd819a0118"
+      },
+      "binding": {
+        "bytes": 828,
+        "sha256": "18cebd92bf64fd6fc7ad44d1ab0cae0b73808536747fa14bc27b7fb6b43ac354"
+      }
+    },
+    "server-item-interpreted": {
+      "receipt": {
+        "bytes": 2446,
+        "sha256": "fa0bbdbc1d47d41e31f638c0189c6d877baf221a8d52c9713ad469597fda5772"
+      },
+      "binding": {
+        "bytes": 1443,
+        "sha256": "c77d9dbe91be7ad065a09b3bd57d08518b2f4a376f43ebb9a043c99830e6d8c3"
+      }
+    },
+    "server-item-tier1": {
+      "receipt": {
+        "bytes": 2512,
+        "sha256": "6fecceadadd0a142b69b766027080593f374bae72e8d8229f6296e76410e90dd"
+      },
+      "binding": {
+        "bytes": 1437,
+        "sha256": "a2cf3c1cca2f12ff57eff5c0ee77d96e77f794862b6af16713cfc009b7f71bd6"
+      }
+    },
+    "server-item-default": {
+      "receipt": {
+        "bytes": 2404,
+        "sha256": "3986e12819365c6c6ac2b4fd5a3858ac2d3ee1ac28c03b8d5635395f1dc80a0c"
+      },
+      "binding": {
+        "bytes": 1439,
+        "sha256": "b1c65d631792f356c8ed53e5ca7c74e3525d352caeaba3b3713ce741b22eccfe"
+      }
+    }
+  },
+  "helper_sha256": "3aad0807332352dcf59e774fec8f59304ac7c58c036b4d5feda441848616e5c5",
+  "controller_sha256": "610d77abc96c5430cfbe1a42a74f83c335b2f344bd2cad47c3f0e1dbb05debd2",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "server_jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+  "capture_receipt_sha256": "ed2a29e39ff1a911c638d2db8dde1d9499b8b2d7656ee81dc3f826c8780f19b0",
+  "jdk_profile": {
+    "java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "java_native": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f",
+    "release": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44",
+    "source_archive": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+  }
+}

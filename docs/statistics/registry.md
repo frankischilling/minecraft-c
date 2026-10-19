@@ -49,10 +49,12 @@ The entry order changes the retained prefix. Stats-first enters Block
 initialization recursively, publishes `E/F`, sets `G/H` and reaches `d()`.
 It constructs a real allocator-backed Integer HashSet, then stops before the
 recipe singleton call at PC21; `C/D` remain NULL. Block-first and Item-first
-publish `C` before stopping at the achievement class use at PC624, with `E/F`
-still NULL and `G/H` false. Achievements, recipes, smelting and complete
-bootstrap remain unfinished, along with complete population, synchronous
-world mutation and persistence acceptance.
+now diverge through real [achievement initialization](achievements.md).
+Block-first completes statistics and all sixteen achievements, then publishes
+E/F and reaches recipe d21. Item-first allocates the first real icon Stack,
+then fails on its NULL Item read at2, retaining C and the earlier writes.
+Recipes, smelting, full bootstrap, population, synchronous world mutations and
+persistence acceptance remain unfinished.
 
 The [native unit](../../tests/statistics/registry/test_registry.c) uses synthetic
 resources to check publication order, aliases, formatter configuration, failure
@@ -74,7 +76,7 @@ distinct identity, map/list membership and selected live strategy reference.
 The comparison covers 25 protocol rows per side: header, 23 full field rows and
 footer. It does not compare the rest of the original initialized registry.
 
-The [array controller](../../tests/reference/statistics/ArrayPrefixController.java)
+At the preceding array checkpoint, the [array controller](../../tests/reference/statistics/ArrayPrefixController.java)
 observes untouched original initialization at exact recipe/achievement call
 boundaries. Both sides and all three entry orders agree across interpreted,
 tier-1 and default modes: 18 actual captures. The helper verifies its original

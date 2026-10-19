@@ -1,6 +1,17 @@
 # Development status
 
-Native [statistics](statistics/registry.md) now execute the block/item statistic
+Native [achievement initialization](statistics/achievements.md) now runs all
+sixteen chains with real ItemStack icons, retained descriptions/parents/bounds,
+base-before-achievement registration and actual stdout. Eighteen new original
+captures cover both sides, three entry orders and three JVM modes; all six
+published numeric graphs and real console bytes match MSVC, GCC and Clang.
+All 26 selected Windows and 28 cases per Linux compiler pass, including 7,208
+achievement checks, 7,598,064 array checks and real stdout-handle controls.
+Linux runs use ASan/UBSan and leak detection. Recipes, smelting, full
+bootstrap/population/mutations/persistence and achievement gameplay/UI remain
+unfinished.
+
+At the preceding array checkpoint, native [statistics](statistics/registry.md) execute the block/item statistic
 array helpers, real translated names, source predicates and alias/list
 unification on the shared class owner. Entry order retains distinct prefixes
 before the actual recipe PC21 or achievement PC624 dependency. The reached

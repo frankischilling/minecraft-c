@@ -1,6 +1,7 @@
 #ifndef MC_STATISTICS_REGISTRY_INTERNAL_H
 #define MC_STATISTICS_REGISTRY_INTERNAL_H
 
+#include "mc/statistics/achievements/achievements.h"
 #include "mc/statistics/registry/registry.h"
 
 struct mc_registry_list;
@@ -22,6 +23,7 @@ struct mc_statistic {
     mc_statistic_kind kind;
     mc_statistic_fields fields;
     int32_t associated_id;
+    mc_achievement_fields achievement;
     const char *source_class;
     int32_t source_pc;
 };
@@ -40,6 +42,13 @@ typedef struct mc_registry_statistic_storage {
     const mc_registry_string *duplicate_message;
 } mc_registry_statistic_storage;
 
+typedef struct mc_registry_achievement_storage {
+    int32_t a, b, c, d;
+    struct mc_registry_list *e;
+    mc_statistic *named[16];
+    bool stdout_io_failed; /* native output diagnostic, not a game field */
+} mc_registry_achievement_storage;
+
 mc_registry_status mc_registry_number_format_create(mc_registry_classes *classes, bool integer_us,
                                                     mc_statistic_number_format **out);
 mc_registry_status mc_registry_statistic_base_active_use(mc_registry_classes *classes);
@@ -51,6 +60,11 @@ mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int3
                                                    const mc_registry_string *name,
                                                    const mc_statistic_formatter *formatter,
                                                    int32_t associated_id);
+mc_registry_status mc_registry_statistic_construct_base(mc_statistic *statistic, int32_t id,
+                                                        const mc_registry_string *name,
+                                                        const mc_statistic_formatter *formatter);
+mc_registry_status mc_registry_statistic_base_flag(mc_statistic *statistic);
+mc_registry_status mc_registry_statistic_register_base(mc_statistic *statistic);
 mc_registry_status mc_registry_statistic_flag(mc_statistic *statistic);
 mc_registry_status mc_registry_statistic_register(mc_statistic *statistic);
 mc_registry_status mc_registry_statistic_list_add(mc_registry_classes *classes,

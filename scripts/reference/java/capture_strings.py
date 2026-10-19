@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture synthetic Formatter or English uppercase observations on pinned Windows JDK17."""
+"""Capture synthetic Java text observations on pinned Windows JDK17."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[3]
 HELPERS = {
     "format": ("FormatObservation", "1eefa038dd0de0b445e27d97963027fc5c07c884af66fb9447ff96b19f5d8724"),
     "case": ("StringCaseObservation", "d65ecf319d6416d878d474e9d90b385a2ab15c58bb5e9d74b835343372c57c27"),
+    "println": ("PrintlnObservation", "9fff38493a5dbe53d8c5ea159be9023a6a18a0dd5220fb406892b12f9ee73fcb"),
 }
 
 
@@ -59,7 +60,8 @@ def main():
             traces.append(runner.run([java, *flags, "-Xmx128m", "-cp", classes, name],
                                      output, mode, children))
         runner.require(all(raw == traces[0] for raw in traces), "mode outputs differ")
-        fixture = ROOT / ("tests/reference/java/string-" + args.kind + "/observations.tsv")
+        fixture = ROOT / ("tests/reference/java/" + ("println" if args.kind == "println"
+                          else "string-" + args.kind) + "/observations.tsv")
         runner.require(traces[0] == fixture.read_bytes(), "fresh observation differs from retained fixture")
         report.update(status="captured", three_modes_equal=True,
                       observation={"bytes": len(traces[0]), "sha256": hashlib.sha256(traces[0]).hexdigest()})

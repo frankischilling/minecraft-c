@@ -255,6 +255,7 @@ struct mc_registry_classes {
     mc_registry_error block_failure;
     mc_registry_initializer *initializer;
     mc_registry_allocation *allocations;
+    struct mc_registry_stack_allocation *item_stacks;
     mc_registry_literal *literals;
     mc_block *current_block;
     mc_item *current_item;
@@ -283,6 +284,8 @@ struct mc_registry_classes {
     mc_registry_class_state statistic_base_state;
     mc_registry_statistic_storage statistics;
     mc_registry_class_state statistics_state;
+    mc_registry_achievement_storage achievements;
+    mc_registry_class_state achievements_state;
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

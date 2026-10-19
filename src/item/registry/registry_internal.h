@@ -189,5 +189,7 @@ mc_registry_status mc_registry_block_array_load(mc_registry_classes *classes,
                                                 mc_block **out);
 mc_registry_status mc_registry_block_static_load(mc_registry_classes *classes, const char *name,
                                                  mc_block **out);
+mc_registry_status mc_registry_item_static_load(mc_registry_classes *classes, const char *name,
+                                                mc_item **out);
 
 #endif

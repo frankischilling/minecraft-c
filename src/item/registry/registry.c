@@ -378,3 +378,23 @@ mc_registry_status mc_registry_block_static_load(mc_registry_classes *classes, c
     return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "unknown Block static operand",
                             NULL);
 }
+
+mc_registry_status mc_registry_item_static_load(mc_registry_classes *classes, const char *name,
+                                                mc_item **out)
+{
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (name == NULL || out == NULL)
+        return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Item static load arguments",
+                                NULL);
+    mc_registry_status status = mc_registry_items_active_use(classes);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    for (size_t i = 0; i < 106; ++i)
+        if (strcmp(mc_registry_item_static_name(i), name) == 0) {
+            *out = classes->items.named[i];
+            return MC_REGISTRY_OK;
+        }
+    return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "unknown Item static operand",
+                            NULL);
+}

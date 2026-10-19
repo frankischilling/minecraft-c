@@ -1,4 +1,5 @@
 #include "../../block/registry/registry_internal.h"
+#include "../achievements/achievements_internal.h"
 #include "registry_internal.h"
 
 #include <limits.h>
@@ -270,7 +271,7 @@ static mc_registry_status duplicate_message(mc_statistic *statistic)
     return fail(statistic, MC_REGISTRY_DUPLICATE_STATISTIC, "Duplicate statistic ID");
 }
 
-mc_registry_status mc_registry_statistic_register(mc_statistic *statistic)
+mc_registry_status mc_registry_statistic_register_base(mc_statistic *statistic)
 {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -278,9 +279,6 @@ mc_registry_status mc_registry_statistic_register(mc_statistic *statistic)
     if (classes->entered == 0)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Statistic registration requires admitted initialization", NULL);
-    if (statistic->kind == MC_STATISTIC_ACHIEVEMENT)
-        return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                "Achievement registration dispatch unfinished", NULL);
     stage(statistic, false, 0);
     mc_registry_status status = mc_registry_statistics_active_use(classes);
     if (status != MC_REGISTRY_OK)
@@ -312,9 +310,20 @@ mc_registry_status mc_registry_statistic_register(mc_statistic *statistic)
     stage(statistic, false, 124);
     statistic->fields.h = key;
     stage(statistic, false, 128);
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_registry_statistic_register(mc_statistic *statistic)
+{
+    if (statistic != NULL && statistic->kind == MC_STATISTIC_ACHIEVEMENT)
+        return mc_registry_achievement_register(statistic);
+    mc_registry_status status = mc_registry_statistic_register_base(statistic);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_registry_classes *classes = statistic->classes;
     if (statistic->kind == MC_STATISTIC_GENERAL) {
         stage(statistic, true, 5);
-        list = classes->statistics.c;
+        mc_registry_list *list = classes->statistics.c;
         stage(statistic, true, 9);
         status = mc_registry_statistic_list_add(classes, list, statistic);
         if (status != MC_REGISTRY_OK)

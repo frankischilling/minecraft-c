@@ -68,9 +68,10 @@ target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
 target_link_libraries(mc_platform_time PRIVATE mc_build_options)
 
-add_library(mc_platform_text STATIC src/platform/text/charset.c src/platform/text/locale.c)
+add_library(mc_platform_text STATIC src/platform/text/charset.c src/platform/text/locale.c
+    src/platform/text/stdout.c)
 target_include_directories(mc_platform_text PRIVATE include)
-target_link_libraries(mc_platform_text PRIVATE mc_build_options)
+target_link_libraries(mc_platform_text PRIVATE Threads::Threads mc_build_options)
 
 find_package(Threads REQUIRED)
 add_library(mc_c_atomics INTERFACE)
@@ -125,16 +126,18 @@ add_library(mc_registry STATIC
     src/item/registry/class_initializers.c
     src/item/registry/constructors.c
     src/item/registry/registration.c
+    src/item/registry/stacks.c
     src/resources/translation/translation.c
     src/resources/translation/format.c
     src/statistics/keys/keys.c
+    src/statistics/achievements/achievements.c
     src/statistics/registry/base.c
     src/statistics/registry/arrays.c
     src/statistics/registry/names.c
     src/statistics/registry/format.c
     src/statistics/registry/initializer.c
     src/statistics/registry/registration.c)
-target_link_libraries(mc_registry PUBLIC mc_block mc_core PRIVATE mc_platform_text mc_build_options)
+target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item PRIVATE mc_platform_text mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
 target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
@@ -496,6 +499,11 @@ if(BUILD_TESTING)
     add_test(NAME statistics.arrays COMMAND mc_test_statistic_arrays)
     set_tests_properties(statistics.arrays PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_achievements tests/statistics/achievements/test_achievements.c)
+    target_link_libraries(mc_test_achievements PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME statistics.achievements COMMAND mc_test_achievements)
+    set_tests_properties(statistics.achievements PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
     add_executable(mc_statistic_keys_file_probe tests/statistics/keys/files_probe.c)
     target_link_libraries(mc_statistic_keys_file_probe PRIVATE mc_resources mc_build_options)
 
@@ -611,6 +619,15 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_executable(mc_text_stdout_probe tests/platform/text/stdout_probe.c)
+    target_link_libraries(mc_text_stdout_probe PRIVATE mc_platform_text mc_build_options)
+    add_test(NAME platform.text_stdout
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/platform/test_stdout.py"
+            --executable "$<TARGET_FILE:mc_text_stdout_probe>"
+            --jdk-fixture "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/java/println/bytes.json")
+    set_tests_properties(platform.text_stdout PROPERTIES LABELS "public;unit;platform" TIMEOUT 60)
 
     add_test(NAME core.java_format_observation
         COMMAND "${Python3_EXECUTABLE}"

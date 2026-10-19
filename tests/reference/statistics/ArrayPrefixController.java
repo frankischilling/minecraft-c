@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-/** Reads numeric identities at an untouched original Stats boundary. */
+/** Reads numeric identities at an untouched original bootstrap boundary. */
 public final class ArrayPrefixController {
     private static final String HELPER = "ArrayPrefixObservation";
     private static final int ACTIVE_SECONDS = 40;
@@ -178,7 +178,7 @@ public final class ArrayPrefixController {
 
     private static final class Snapshot {
         final VirtualMachine vm;
-        final boolean client;
+        final boolean client, achievements;
         final ClassLoaderReference loader;
         final ReferenceType statistics, base, item;
         final long deadline;
@@ -189,9 +189,9 @@ public final class ArrayPrefixController {
         final ObjectReference[] strategies = new ObjectReference[3];
         final Field id, name, independent, key, formatter, associated;
         boolean released;
-        Snapshot(VirtualMachine vm, boolean client, ClassLoaderReference loader,
+        Snapshot(VirtualMachine vm, boolean client, boolean achievements, ClassLoaderReference loader,
                 ReferenceType statistics, long deadline) {
-            this.vm = vm; this.client = client; this.loader = loader;
+            this.vm = vm; this.client = client; this.achievements = achievements; this.loader = loader;
             this.statistics = statistics; this.deadline = deadline;
             base = original(client ? "vr" : "ns");
             item = original(client ? "tw" : "mm");
@@ -208,6 +208,15 @@ public final class ArrayPrefixController {
                     .filter(type -> loader.equals(type.classLoader())).toList();
             require(found.size() == 1 && found.get(0).isPrepared(), "one prepared original " + name);
             return found.get(0);
+        }
+        ReferenceType optionalOriginal(String name) {
+            remaining(deadline);
+            List<ReferenceType> found = vm.classesByName(name).stream()
+                    .filter(type -> loader.equals(type.classLoader())).toList();
+            require(found.size() <= 1, "at most one selected-loader original " + name);
+            if (found.isEmpty()) return null;
+            require(found.get(0) instanceof ClassType, "actual original class " + name);
+            return found.get(0).isPrepared() ? found.get(0) : null;
         }
         ReferenceType bootstrap(String name) {
             remaining(deadline);
@@ -238,8 +247,12 @@ public final class ArrayPrefixController {
             ReferenceType type = object.referenceType();
             require(loader.equals(type.classLoader()), "original statistic loader");
             String kind = type.name().equals(client ? "yd" : "pm") ? "general"
-                    : type.name().equals(client ? "tw" : "mm") ? "item" : "unsupported";
-            require(!kind.equals("unsupported"), "exact General/Item statistic concrete class");
+                    : type.name().equals(client ? "tw" : "mm") ? "item"
+                    : achievements && type.name().equals(client ? "ny" : "it") ? "achievement" : "unsupported";
+            require(!kind.equals("unsupported"), "exact supported statistic concrete class");
+            if (kind.equals("achievement"))
+                require(type instanceof ClassType && ((ClassType)type).superclass().equals(base),
+                        "actual Achievement extends original Stat");
             Map<Field, Value> fields = object.getValues(List.of(id, name, independent, key, formatter));
             stringOrNull(fields.get(name));
             stringOrNull(fields.get(key));
@@ -347,7 +360,96 @@ public final class ArrayPrefixController {
                 out.add("ELEMENT", label, index, sid(values.get(index), true));
             }
         }
-        void capture(String side, String entry) {
+        List<Value> achievementList(Value value) {
+            if (value == null) return null;
+            ObjectReference list = hold(value);
+            ReferenceType type = bootstrap("java.util.ArrayList");
+            require(list.referenceType().equals(type), "actual achievement ArrayList owner");
+            int size = integer(list.getValue(field(type, "size", "I", 2)));
+            ArrayReference data = (ArrayReference)hold(list.getValue(field(type, "elementData", "[Ljava/lang/Object;", 128)));
+            require(size >= 0 && size <= MAX_LIST && size <= data.length(), "bounded achievement list prefix");
+            List<Value> values = size == 0 ? List.of() : data.getValues(0, size);
+            require(values.size() == size, "complete achievement list read");
+            return values;
+        }
+        String achievementId(Value value) {
+            String numeric = sid(value, true);
+            if (value != null)
+                require(stats.get(ids.get(((ObjectReference)value).uniqueID())).kind.equals("achievement"),
+                        "actual registered Achievement reference");
+            return numeric;
+        }
+        void achievementGraph() {
+            ReferenceType owner = optionalOriginal(client ? "ep" : "cy");
+            List<Value> values = null;
+            if (owner == null) {
+                require(stats.values().stream().noneMatch(statistic -> statistic.kind.equals("achievement")),
+                        "no registered Achievement before owner preparation");
+                out.add("ACHIEVEMENTS", 0, 0, 0, 0, "NULL");
+                for (int index = 0; index < 16; index++) out.add("ACH_NAMED", index, "NULL");
+                return;
+            }
+            require(owner instanceof ClassType && ((ClassType)owner).superclass().equals(bootstrap("java.lang.Object")),
+                    "actual achievement owner class");
+            values = achievementList(owner.getValue(field(owner, "e", "Ljava/util/List;", 9)));
+            out.add("ACHIEVEMENTS", integer(owner.getValue(field(owner, "a", "I", 9))),
+                    integer(owner.getValue(field(owner, "b", "I", 9))),
+                    integer(owner.getValue(field(owner, "c", "I", 9))),
+                    integer(owner.getValue(field(owner, "d", "I", 9))), values == null ? "NULL" : values.size());
+            for (int index = 0; index < 16; index++)
+                out.add("ACH_NAMED", index, achievementId(owner.getValue(field(owner,
+                        String.valueOf((char)('f' + index)), client ? "Lny;" : "Lit;", 9))));
+            LinkedHashMap<Long, ObjectReference> icons = new LinkedHashMap<>();
+            Map<Long, Integer> iconIds = new HashMap<>();
+            for (Stat statistic : stats.values()) if (statistic.kind.equals("achievement")) {
+                remaining(deadline);
+                ReferenceType type = statistic.object.referenceType();
+                require(type.equals(original(client ? "ny" : "it")), "actual Achievement class identity");
+                // Coordinate fields are checked independently of inherited same-letter formatter.
+                integer(statistic.object.getValue(field(type, "a", "I", 17)));
+                integer(statistic.object.getValue(field(type, "b", "I", 17)));
+                stringOrNull(statistic.object.getValue(field(type, "l", "Ljava/lang/String;", 18)));
+                if (client) {
+                    Value callback = statistic.object.getValue(field(type, "m", "Lgt;", 2));
+                    if (callback != null) {
+                        ObjectReference object = hold(callback);
+                        ReferenceType callbackType = original("gt");
+                        require(callbackType instanceof InterfaceType && object.referenceType() instanceof ClassType
+                                && ((ClassType)object.referenceType()).allInterfaces().contains(callbackType),
+                                "actual achievement callback interface");
+                    }
+                }
+                String parent = achievementId(statistic.object.getValue(field(type, "c", client ? "Lny;" : "Lit;", 17)));
+                Value iconValue = statistic.object.getValue(field(type, "d", client ? "Liz;" : "Lfy;", 17));
+                String icon = "NULL";
+                if (iconValue != null) {
+                    ObjectReference object = hold(iconValue);
+                    require(object.referenceType().equals(original(client ? "iz" : "fy")),
+                            "actual original icon stack class");
+                    if (!icons.containsKey(object.uniqueID())) {
+                        icons.put(object.uniqueID(), object);
+                        iconIds.put(object.uniqueID(), icons.size());
+                    }
+                    require(icons.get(object.uniqueID()).equals(object), "actual icon identity bijection");
+                    icon = "I:" + iconIds.get(object.uniqueID());
+                }
+                out.add("ACH", statistic.id, parent,
+                        bool(statistic.object.getValue(field(type, client ? "n" : "m", "Z", 2))), icon);
+            }
+            for (ObjectReference icon : icons.values()) {
+                remaining(deadline);
+                ReferenceType type = icon.referenceType();
+                out.add("ICON", iconIds.get(icon.uniqueID()), integer(icon.getValue(field(type, "a", "I", 1))),
+                        integer(icon.getValue(field(type, "b", "I", 1))),
+                        integer(icon.getValue(field(type, "c", "I", 1))),
+                        integer(icon.getValue(field(type, "d", "I", 2))));
+            }
+            if (values != null) for (int index = 0; index < values.size(); index++) {
+                remaining(deadline);
+                out.add("ACH_LIST", index, achievementId(values.get(index)));
+            }
+        }
+        void capture(String side, String entry, String boundary) {
             String[] strategyClasses = client ? new String[] {"bq", "bo", "bn"}
                     : new String[] {"ax", "av", "at"};
             for (int index = 0; index < strategies.length; index++) {
@@ -359,7 +461,7 @@ public final class ArrayPrefixController {
                 for (int prior = 0; prior < index; prior++)
                     require(!strategies[prior].equals(strategies[index]), "distinct strategy owners");
             }
-            out.add("STAT_ARRAY_PREFIX_V1", side, entry, entry.equals("stats") ? "d21" : "clinit624");
+            out.add(achievements ? "STAT_ARRAY_PREFIX_V2" : "STAT_ARRAY_PREFIX_V1", side, entry, boundary);
             out.add("STATE", bool(statistics.getValue(field(statistics, "G", "Z", 10))),
                     bool(statistics.getValue(field(statistics, "H", "Z", 10))));
             map();
@@ -370,6 +472,7 @@ public final class ArrayPrefixController {
             }
             for (String label : new String[] {"C", "D", "E", "F"}) array(label);
             for (String label : new String[] {"b", "c", "d", "e"}) list(label);
+            if (achievements) achievementGraph();
             out.add("END");
         }
         void release() {
@@ -390,21 +493,22 @@ public final class ArrayPrefixController {
     private static final class Session {
         final VirtualMachine vm;
         final String side, entry, mode, expectedHash, expectedUrl;
-        final boolean client;
+        final boolean client, achievements;
         final long deadline;
         ReferenceType helper, target;
         ClassLoaderReference loader;
         Method method;
         BreakpointRequest breakpoint;
+        ExceptionRequest exceptionRequest;
         Snapshot snapshot;
         long threadId;
         String codeHash;
-        Session(VirtualMachine vm, String side, String entry, String mode, String expectedHash,
+        Session(VirtualMachine vm, String side, String entry, String mode, boolean achievements, String expectedHash,
                 String expectedUrl, long deadline) {
             this.vm = vm; this.side = side; this.entry = entry; this.mode = mode;
-            this.client = side.equals("client");
+            this.client = side.equals("client"); this.achievements = achievements;
             this.expectedHash = expectedHash; this.expectedUrl = expectedUrl; this.deadline = deadline;
-            for (String name : new String[] {HELPER, client ? "jl" : "gg"}) {
+            for (String name : new String[] {HELPER, targetName()}) {
                 ClassPrepareRequest request = vm.eventRequestManager().createClassPrepareRequest();
                 request.addClassFilter(name);
                 request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
@@ -420,6 +524,11 @@ public final class ArrayPrefixController {
             return entry.equals("stats") ? (client ? "jl" : "gg")
                     : entry.equals("block") ? (client ? "uu" : "na") : (client ? "gm" : "ej");
         }
+        boolean itemException() { return achievements && entry.equals("item"); }
+        boolean dBoundary() { return entry.equals("stats") || (achievements && entry.equals("block")); }
+        String targetName() { return itemException() ? (client ? "iz" : "fy") : (client ? "jl" : "gg"); }
+        long boundaryIndex() { return itemException() ? 2 : dBoundary() ? 21 : 624; }
+        String boundaryLabel() { return itemException() ? "item-icon-null2" : dBoundary() ? "d21" : "clinit624"; }
         void prepare(ClassPrepareEvent event) throws Exception {
             require(event.request().suspendPolicy() == EventRequest.SUSPEND_ALL, "prepare SUSPEND_ALL");
             ReferenceType type = event.referenceType();
@@ -428,7 +537,7 @@ public final class ArrayPrefixController {
                 helper = type;
                 return;
             }
-            require(helper != null && target == null && type.name().equals(client ? "jl" : "gg")
+            require(helper != null && target == null && type.name().equals(targetName())
                     && !type.isInitialized() && !type.failedToInitialize(), "original target before initialization");
             Value value = helper.getValue(field(helper, "originalLoader", "Ljava/net/URLClassLoader;", 73));
             require(value instanceof ClassLoaderReference, "actual helper-held URLClassLoader");
@@ -437,15 +546,24 @@ public final class ArrayPrefixController {
                     && helperString("verifiedJarSha256").equals(expectedHash)
                     && helperString("originalJarUrl").equals(expectedUrl)
                     && helperString("originalEntry").equals(entry)
-                    && helperString("originalTrigger").equals(trigger()), "original loader/hash/entry binding");
-            boolean statsEntry = entry.equals("stats");
-            String methodName = statsEntry ? "d" : "<clinit>";
-            List<Method> methods = type.methodsByName(methodName, "()V");
+                    && helperString("originalTrigger").equals(trigger())
+                    && helperString("originalProfile").equals(achievements ? "achievements" : "arrays"),
+                    "original loader/hash/entry/profile binding");
+            String methodName = itemException() ? "<init>" : dBoundary() ? "d" : "<clinit>";
+            String signature = itemException() ? (client ? "(Lgm;)V" : "(Lej;)V") : "()V";
+            List<Method> methods = type.methodsByName(methodName, signature);
             require(methods.size() == 1 && methods.get(0).declaringType().equals(type)
-                    && methods.get(0).modifiers() == (statsEntry ? 9 : 8), "actual boundary method descriptor");
+                    && methods.get(0).modifiers() == (itemException() ? 1 : dBoundary() ? 9 : 8),
+                    "actual boundary method descriptor");
             method = methods.get(0);
             byte[] code = method.bytecodes();
-            if (statsEntry) {
+            if (itemException()) {
+                require(code.length == 11 && (code[0] & 255) == 42 && (code[1] & 255) == 43
+                        && (code[2] & 255) == 180 && u16(code, 3) == 14
+                        && (code[5] & 255) == 4 && (code[6] & 255) == 3
+                        && (code[7] & 255) == 183 && u16(code, 8) == (client ? 41 : 39)
+                        && (code[10] & 255) == 177, "source-bound Item icon getfield2 constructor");
+            } else if (dBoundary()) {
                 require(code.length == 231 && (code[0] & 255) == 178 && u16(code, 1) == 63
                         && (code[6] & 255) == 178 && u16(code, 7) == 64
                         && (code[13] & 255) == 187 && u16(code, 14) == (client ? 44 : 45)
@@ -463,23 +581,44 @@ public final class ArrayPrefixController {
                         "source-bound clinit624 bytecode shape");
             }
             codeHash = hash(code);
-            Location location = method.locationOfCodeIndex(statsEntry ? 21 : 624);
+            Location location = method.locationOfCodeIndex(boundaryIndex());
             require(location != null && location.method().equals(method)
-                    && location.codeIndex() == (statsEntry ? 21 : 624), "exact source code index");
-            breakpoint = vm.eventRequestManager().createBreakpointRequest(location);
-            breakpoint.setSuspendPolicy(EventRequest.SUSPEND_ALL);
-            breakpoint.enable();
+                    && location.codeIndex() == boundaryIndex(), "exact source code index");
+            if (itemException()) {
+                List<ReferenceType> nullTypes = vm.classesByName("java.lang.NullPointerException").stream()
+                        .filter(found -> found.classLoader() == null && found.isPrepared()).toList();
+                require(nullTypes.size() == 1, "actual prepared bootstrap NullPointerException");
+                exceptionRequest = vm.eventRequestManager().createExceptionRequest(nullTypes.get(0), true, true);
+                exceptionRequest.addClassFilter(type);
+                exceptionRequest.addThreadFilter(event.thread());
+                exceptionRequest.setSuspendPolicy(EventRequest.SUSPEND_ALL);
+                exceptionRequest.enable();
+            } else {
+                breakpoint = vm.eventRequestManager().createBreakpointRequest(location);
+                breakpoint.setSuspendPolicy(EventRequest.SUSPEND_ALL);
+                breakpoint.enable();
+            }
             target = type;
             threadId = event.thread().uniqueID();
         }
-        void stop(BreakpointEvent event) {
-            require(snapshot == null && target != null && event.request().equals(breakpoint)
-                    && event.request().suspendPolicy() == EventRequest.SUSPEND_ALL
-                    && event.location().declaringType().equals(target)
-                    && event.location().method().equals(method)
-                    && event.location().codeIndex() == (entry.equals("stats") ? 21 : 624)
-                    && event.thread().uniqueID() == threadId && event.thread().name().equals("main"),
-                    "unique exact original breakpoint/thread");
+        void stop(BreakpointEvent event) throws Exception {
+            require(!itemException() && event.request().equals(breakpoint), "selected breakpoint request");
+            stop(event.location(), event.thread(), event.request(), null, null);
+        }
+        void stop(ExceptionEvent event) throws Exception {
+            require(itemException() && event.request().equals(exceptionRequest)
+                    && event.exception().referenceType().name().equals("java.lang.NullPointerException")
+                    && event.exception().referenceType().classLoader() == null, "selected actual bootstrap NPE request");
+            stop(event.location(), event.thread(), event.request(), event.exception(), event.catchLocation());
+        }
+        void stop(Location location, ThreadReference thread, EventRequest request,
+                  ObjectReference exception, Location catchLocation) throws Exception {
+            require(snapshot == null && target != null
+                    && request.suspendPolicy() == EventRequest.SUSPEND_ALL
+                    && location.declaringType().equals(target)
+                    && location.method().equals(method) && location.codeIndex() == boundaryIndex()
+                    && thread.uniqueID() == threadId && thread.name().equals("main"),
+                    "unique exact original boundary/thread");
             Field originalTarget = field(helper, "originalTarget", "Ljava/lang/Class;", 73);
             require("Ljava/lang/Class<*>;".equals(originalTarget.genericSignature()),
                     "exact helper target generic signature");
@@ -488,17 +627,37 @@ public final class ArrayPrefixController {
                     && ((ClassObjectReference)mirror).reflectedType().equals(target), "helper's preloaded target identity");
             List<ThreadReference> threads = vm.allThreads();
             require(threads.size() <= 128, "thread inventory transport bound");
-            for (ThreadReference thread : threads) require(thread.isSuspended(), "actual all-thread suspension");
-            snapshot = new Snapshot(vm, client, loader, target, deadline);
-            snapshot.binding.add("STAT_ARRAY_BINDING_V1", side, entry);
+            for (ThreadReference suspended : threads) require(suspended.isSuspended(), "actual all-thread suspension");
+            ReferenceType statistics;
+            if (itemException()) {
+                List<ReferenceType> selected = vm.classesByName(client ? "jl" : "gg").stream()
+                        .filter(type -> loader.equals(type.classLoader()) && type.isPrepared()).toList();
+                require(selected.size() == 1, "one actual prepared selected-loader Stats class");
+                statistics = selected.get(0);
+            } else statistics = target;
+            snapshot = new Snapshot(vm, client, achievements, loader, statistics, deadline);
+            snapshot.binding.add(achievements ? "STAT_ARRAY_BINDING_V2" : "STAT_ARRAY_BINDING_V1", side, entry);
             snapshot.binding.add("MODE", mode);
             snapshot.binding.add("BOUNDARY", target.name(), method.name(), method.signature(),
-                    event.location().codeIndex(), codeHash, loader.uniqueID(), event.thread().uniqueID());
+                    location.codeIndex(), codeHash, loader.uniqueID(), thread.uniqueID());
+            if (achievements) {
+                snapshot.binding.add("PROFILE", "achievements", "PUBLISHED_NUMERIC_GRAPH_NOT_FULL_HEAP");
+                snapshot.binding.add("STATS_CLASS_STATE", statistics.isPrepared(), statistics.isInitialized(), statistics.failedToInitialize());
+                require(!statistics.failedToInitialize() && statistics.isInitialized() == entry.equals("block"),
+                        "actual selected Stats initialization state");
+                if (exception != null) {
+                    snapshot.binding.add("EXCEPTION", snapshot.hold(exception).uniqueID(), exception.referenceType().name());
+                    snapshot.binding.add("CATCH", catchLocation == null ? "NULL" : catchLocation.declaringType().name(),
+                            catchLocation == null ? "NULL" : catchLocation.method().name(),
+                            catchLocation == null ? "NULL" : catchLocation.method().signature(),
+                            catchLocation == null ? -1 : catchLocation.codeIndex());
+                }
+            }
             try {
-                require(event.thread().frameCount() <= 128, "complete stack transport bound");
-                List<StackFrame> frames = event.thread().frames();
+                require(thread.frameCount() <= 128, "complete stack transport bound");
+                List<StackFrame> frames = thread.frames();
                 require(!frames.isEmpty() && frames.get(0).location().method().equals(method)
-                        && frames.get(0).location().codeIndex() == event.location().codeIndex(),
+                        && frames.get(0).location().codeIndex() == location.codeIndex(),
                         "actual suspended top frame equals boundary event");
                 boolean helperFrame = false, triggerFrame = false;
                 for (int index = 0; index < frames.size(); index++) {
@@ -511,12 +670,103 @@ public final class ArrayPrefixController {
                             at.declaringType().classLoader() == null ? "BOOT" : at.declaringType().classLoader().uniqueID());
                 }
                 require(helperFrame && triggerFrame, "real helper call and initiating constructor stack retained");
+                if (achievements) verifyAchievementStack(frames, statistics);
             } catch (IncompatibleThreadStateException failure) {
                 throw new IllegalStateException("suspended stack unavailable", failure);
             }
-            snapshot.capture(side, entry);
+            snapshot.capture(side, entry, boundaryLabel());
             snapshot.binding.add("MIRRORS", snapshot.held.size());
             snapshot.binding.add("END");
+        }
+        void bindCode(String role, Location at, byte[] code) throws Exception {
+            snapshot.binding.add("CALLSITE", role, at.declaringType().name(), at.method().name(),
+                    at.method().signature(), at.codeIndex(), hash(code));
+        }
+        void blockCaller(Location at) throws Exception {
+            require(at.declaringType().name().equals(client ? "uu" : "na")
+                    && loader.equals(at.declaringType().classLoader()) && at.method().name().equals("<clinit>")
+                    && at.method().signature().equals("()V") && at.method().modifiers() == 8
+                    && at.codeIndex() == 3674, "actual Block Stats.b caller");
+            byte[] code = at.method().bytecodes();
+            require(code.length == 3678 && (code[3668] & 255) == 178 && u16(code, 3669) == (client ? 354 : 353)
+                    && (code[3671] & 255) == 3 && (code[3672] & 255) == 4 && (code[3673] & 255) == 84
+                    && (code[3674] & 255) == 184 && u16(code, 3675) == (client ? 442 : 425)
+                    && (code[3677] & 255) == 177, "source-bound actual Block caller tail");
+            bindCode("BLOCK_CALLER", at, code);
+        }
+        void verifyAchievementStack(List<StackFrame> frames, ReferenceType statistics) throws Exception {
+            if (dBoundary()) {
+                require(frames.size() >= 3, "actual d21 caller frames");
+                Location caller = frames.get(1).location();
+                require(caller.declaringType().equals(statistics) && caller.method().name().equals("b")
+                        && caller.method().signature().equals("()V") && caller.method().modifiers() == 9
+                        && caller.codeIndex() == 40, "actual Stats.b40 recipe caller");
+                byte[] code = caller.method().bytecodes();
+                require(code.length == 44 && (code[36] & 255) == 4 && (code[37] & 255) == 179
+                        && u16(code, 38) == 63 && (code[40] & 255) == 184
+                        && u16(code, 41) == (client ? 139 : 131) && (code[43] & 255) == 177,
+                        "source-bound Stats.b40 bytecodes");
+                bindCode("STATS_B_CALLER", caller, code);
+                blockCaller(frames.get(2).location());
+                return;
+            }
+            require(itemException() && frames.size() >= 4, "actual Item icon exception stack");
+            List<Value> arguments = frames.get(0).getArgumentValues();
+            require(arguments.size() == 1 && arguments.get(0) == null
+                    && frames.get(0).thisObject() != null
+                    && frames.get(0).thisObject().referenceType().equals(target),
+                    "actual null Item argument at icon getfield2");
+            snapshot.hold(frames.get(0).thisObject());
+            Location constructor = frames.get(1).location();
+            require(constructor.declaringType().name().equals(client ? "ny" : "it")
+                    && loader.equals(constructor.declaringType().classLoader())
+                    && constructor.method().name().equals("<init>")
+                    && constructor.method().signature().equals(client
+                            ? "(ILjava/lang/String;IILgm;Lny;)V" : "(ILjava/lang/String;IILej;Lit;)V")
+                    && constructor.method().modifiers() == 1 && constructor.codeIndex() == 12,
+                    "actual Achievement Item constructor caller12");
+            byte[] code = constructor.method().bytecodes();
+            require(code.length == 21 && (code[6] & 255) == 187 && u16(code, 7) == (client ? 7 : 6)
+                    && (code[9] & 255) == 89 && (code[10] & 255) == 25 && (code[11] & 255) == 5
+                    && (code[12] & 255) == 183 && u16(code, 13) == (client ? 26 : 24)
+                    && (code[17] & 255) == 183 && u16(code, 18) == (client ? 31 : 26)
+                    && (code[20] & 255) == 177, "source-bound Achievement Item constructor bytecodes");
+            bindCode("ACHIEVEMENT_CONSTRUCTOR", constructor, code);
+            Location owner = frames.get(2).location();
+            require(owner.declaringType().name().equals(client ? "ep" : "cy")
+                    && loader.equals(owner.declaringType().classLoader()) && owner.method().name().equals("<clinit>")
+                    && owner.method().signature().equals("()V") && owner.method().modifiers() == 8
+                    && owner.codeIndex() == 23, "actual first Achievement initializer caller23");
+            code = owner.method().bytecodes();
+            require(code.length == 455 && (code[7] & 255) == 179 && u16(code, 8) == 28
+                    && (code[10] & 255) == 187 && u16(code, 11) == (client ? 26 : 20)
+                    && (code[19] & 255) == 178 && u16(code, 20) == 48 && (code[22] & 255) == 1
+                    && (code[23] & 255) == 183 && u16(code, 24) == (client ? 69 : 62)
+                    && (code[32] & 255) == 179 && u16(code, 33) == 29 && (code[454] & 255) == 177,
+                    "source-bound first Achievement constructor call");
+            bindCode("ACHIEVEMENT_OWNER", owner, code);
+            boolean statsCaller = false, block = false;
+            for (StackFrame frame : frames) {
+                Location at = frame.location();
+                if (at.declaringType().equals(statistics) && at.method().name().equals("<clinit>")) {
+                    require(!statsCaller && at.method().signature().equals("()V") && at.method().modifiers() == 8
+                            && at.codeIndex() == 624, "actual Stats achievement caller624");
+                    code = at.method().bytecodes();
+                    require(code.length == 636 && (code[621] & 255) == 179 && u16(code, 622) == 59
+                            && (code[624] & 255) == 184 && u16(code, 625) == 119 && (code[635] & 255) == 177,
+                            "source-bound Stats achievement call");
+                    bindCode("STATS_ACHIEVEMENT_CALLER", at, code);
+                    statsCaller = true;
+                }
+                if (at.declaringType().name().equals(client ? "uu" : "na")
+                        && loader.equals(at.declaringType().classLoader()) && at.method().name().equals("<clinit>")) {
+                    require(!block, "one actual Block caller");
+                    blockCaller(at);
+                    block = true;
+                }
+            }
+            require(statsCaller && block, "actual Item-triggered nested Stats and Block callers");
+            snapshot.binding.add("EXCLUDED", "UNPUBLISHED_PARTIAL_ACHIEVEMENT_AND_ICON_RAW_HEAP");
         }
         private static int u16(byte[] code, int at) { return ((code[at] & 255) << 8) | (code[at + 1] & 255); }
     }
@@ -541,6 +791,7 @@ public final class ArrayPrefixController {
         Path output = null, jar = null;
         String before = null, after = null, vmName = "", vmVersion = "", exitOutcome = "NOT_REQUESTED";
         String mode = "interpreted";
+        boolean achievements = false;
         List<String> command = new ArrayList<>(), failures = new ArrayList<>();
         Session session = null;
         boolean complete = false, requestedExit = false, reaped = false;
@@ -548,12 +799,14 @@ public final class ArrayPrefixController {
         long pid = -1, start = System.nanoTime(), deadline = start + TimeUnit.SECONDS.toNanos(ACTIVE_SECONDS);
         try {
             require(Runtime.version().feature() == 17, "captured Java17 observation profile");
-            require((args.length == 4 || args.length == 5) && (args[0].equals("client") || args[0].equals("server"))
+            require((args.length == 4 || args.length == 5 || args.length == 6) && (args[0].equals("client") || args[0].equals("server"))
                     && (args[1].equals("stats") || args[1].equals("block") || args[1].equals("item")),
-                    "Usage: ArrayPrefixController client|server stats|block|item jar fresh-output-directory [interpreted|tier1|default]");
-            mode = args.length == 5 ? args[4] : "interpreted";
+                    "Usage: ArrayPrefixController client|server stats|block|item jar fresh-output-directory [interpreted|tier1|default [achievements]]");
+            mode = args.length >= 5 ? args[4] : "interpreted";
             require(mode.equals("interpreted") || mode.equals("tier1") || mode.equals("default"),
                     "requested JVM mode");
+            require(args.length != 6 || args[5].equals("achievements"), "optional achievements profile");
+            achievements = args.length == 6;
             boolean client = args[0].equals("client");
             jar = Path.of(args[2]).toRealPath();
             String expected = client ? "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
@@ -573,6 +826,7 @@ public final class ArrayPrefixController {
             command.addAll(List.of("-Xmx256m",
                     "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:0",
                     "-cp", System.getProperty("java.class.path"), HELPER, args[0], args[1], jar.toString()));
+            if (achievements) command.add("achievements");
             child = new ProcessBuilder(command).start();
             pid = child.pid();
             watchdog = new Watchdog(child);
@@ -585,6 +839,7 @@ public final class ArrayPrefixController {
             Rows started = new Rows();
             started.add("STAT_ARRAY_CHILD_STARTED_V1", pid, false);
             started.add("MODE", mode);
+            if (achievements) started.add("PROFILE", "achievements");
             for (int index = 0; index < command.size(); index++) started.add("COMMAND_UTF16", index, units(command.get(index)));
             save(output, "child.started.tsv", started.bytes());
             child.getOutputStream().close();
@@ -601,7 +856,7 @@ public final class ArrayPrefixController {
             vm = connector.attach(connection);
             require(vm.canGetBytecodes() && vm.canBeModified(), "JDI breakpoint/bytecode capabilities");
             vmName = vm.name(); vmVersion = vm.version();
-            session = new Session(vm, args[0], args[1], mode, expected, jar.toUri().toURL().toExternalForm(), deadline);
+            session = new Session(vm, args[0], args[1], mode, achievements, expected, jar.toUri().toURL().toExternalForm(), deadline);
             vm.resume();
             while (!complete) {
                 require(stdout.failure == null && stderr.failure == null, "bounded stream capture");
@@ -614,6 +869,10 @@ public final class ArrayPrefixController {
                         else if (event instanceof BreakpointEvent) {
                             boundary = true;
                             session.stop((BreakpointEvent)event);
+                            complete = true;
+                        } else if (event instanceof ExceptionEvent) {
+                            boundary = true;
+                            session.stop((ExceptionEvent)event);
                             complete = true;
                         } else if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent)
                             throw new IllegalStateException("original unavailable before accepted prefix");
@@ -705,6 +964,7 @@ public final class ArrayPrefixController {
                     receipt.add("STATUS", failures.isEmpty() ? "PASS" : "FAIL");
                     receipt.add("POLICY", "REQUESTED_DEBUGGER_TERMINATION", "NOT_NATURAL_COMPLETION", "NOT_SUCCESSFUL_BOOTSTRAP");
                     receipt.add("MODE", mode);
+                    if (achievements) receipt.add("PROFILE", "achievements", "PUBLISHED_NUMERIC_GRAPH_NOT_FULL_HEAP");
                     receipt.add("CHILD", pid, reaped, childExit, requestedExit, requestedCode, complete);
                     receipt.add("DEBUGGER_EXIT_OUTCOME", exitOutcome);
                     for (int index = 0; index < command.size(); index++) receipt.add("COMMAND_UTF16", index, units(command.get(index)));

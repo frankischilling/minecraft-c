@@ -1,3 +1,4 @@
+#include "../achievements/achievements_internal.h"
 #include "registry_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -145,10 +146,16 @@ static mc_registry_status initialize(mc_registry_classes *classes)
     mc_registry_initializer_stage(classes, 621);
     classes->statistics.C = blocks;
     mc_registry_initializer_stage(classes, 624);
-    /* The next invokestatic must initialize the actual achievement owners
-     * and icons. No empty force-initialization callback may stand in for it. */
-    return mc_registry_fail(classes, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                            "Achievement class initialization ep/cy at624 unfinished", NULL);
+    status = mc_registry_achievements_active_use(classes);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    /* ep/cy.a() itself returns immediately after actual class active use. */
+    mc_registry_initializer_stage(classes, 628);
+    classes->statistics.G = false;
+    mc_registry_initializer_stage(classes, 632);
+    classes->statistics.H = false;
+    mc_registry_initializer_stage(classes, 635);
+    return MC_REGISTRY_OK;
 }
 
 mc_registry_status mc_registry_statistics_active_use(mc_registry_classes *classes)

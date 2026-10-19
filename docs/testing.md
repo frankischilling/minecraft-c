@@ -1,5 +1,16 @@
 # Test scope and reproduction
 
+The [achievement addition](statistics/achievements.md) has eighteen successful
+original stopped-prefix captures, unchanged eighteen-case legacy replay, and
+MSVC/GCC/Clang comparisons of all six published graphs plus actual console bytes.
+The three-mode JDK PrintStream capture reproduces through the public recorder.
+All 26 selected Windows and 28 cases per Linux compiler pass. Contracts report
+7,208 achievement and 7,598,064 array checks; fifteen Windows and seventeen
+Linux stdout-handle controls pass. Linux uses ASan/UBSan and leak detection.
+All 516 code/tool/fixture inputs match before/after and across retained host
+copies. This selected run is not a full bootstrap, population or
+gameplay-persistence result.
+
 CTest separates public unit/tool tests from explicitly requested reference
 comparisons. Public tests do not require Minecraft files, Java, a
 display, assets, or an account. Missing private references are unavailable results.
@@ -7,7 +18,7 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
-The current [statistic-array addition](statistics/registry.md) passes 23 selected
+The preceding [statistic-array addition](statistics/registry.md) passes 23 selected
 cases on native Windows MSVC and 25 on Linux GCC/Clang with ASan/UBSan and leak
 detection. Its units report 14,564 statistic checks and 3,841,912 array checks;
 each explicit Linux locale regression reports 14,565 statistic checks.

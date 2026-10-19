@@ -1,5 +1,6 @@
 #include "mc/item/registry/registry.h"
 #include "mc/resources/translation/translation.h"
+#include "mc/statistics/achievements/achievements.h"
 #include "mc/statistics/registry/registry.h"
 
 #include "../../../src/block/registry/registry_internal.h"
@@ -274,9 +275,10 @@ static int check_graph(mc_registry_classes *owner, int entry)
         CHECK(mc_statistic_list_get(view.c, i, &listed) == MC_REGISTRY_OK && listed == common);
     }
     size_t expected = 23, nonblock = 0;
-    if (entry == 0) {
-        CHECK(view.C == NULL && view.E != NULL && view.F != NULL && view.G && view.H);
-        CHECK(mc_statistic_list_size(view.e) == 0);
+    if (entry != 2) {
+        CHECK(view.E != NULL && view.F != NULL && view.G && view.H);
+        if (entry == 0)
+            CHECK(view.C == NULL && mc_statistic_list_size(view.e) == 0);
         for (size_t i = 0; i < 32000; ++i) {
             const mc_item *item = NULL;
             CHECK(mc_registry_item_array_get(owner->items.c, i, &item, NULL) == MC_REGISTRY_OK);
@@ -319,9 +321,12 @@ static int check_graph(mc_registry_classes *owner, int entry)
               self != NULL);
         int32_t id = mc_block_fields_get(self)->bn;
         CHECK(view.E[id] == find(owner, 16908288 + id) && !contains(view.b, view.E[id]));
-    } else {
-        CHECK(view.C != NULL && view.E == NULL && view.F == NULL && !view.G && !view.H);
-        CHECK(mc_statistic_list_size(view.d) == 0);
+    }
+    if (entry != 0) {
+        CHECK(view.C != NULL);
+        if (entry == 2)
+            CHECK(view.E == NULL && view.F == NULL && !view.G && !view.H &&
+                  mc_statistic_list_size(view.d) == 0);
         for (size_t i = 0; i < 256; ++i) {
             const mc_block *block = owner->blocks.m[i];
             const mc_statistic *mined = find(owner, 16777216 + (int32_t)i);
@@ -336,6 +341,18 @@ static int check_graph(mc_registry_classes *owner, int entry)
             }
         }
         CHECK(check_unification(owner, view.C, 16777216, view.b, view.e) == 0);
+    }
+    if (entry == 1) {
+        mc_registry_achievement_view achievements;
+        CHECK(mc_registry_classes_inspect_achievements(owner, &achievements, NULL) ==
+              MC_REGISTRY_OK);
+        CHECK(achievements.phase == MC_REGISTRY_READY &&
+              mc_statistic_list_size(achievements.e) == 16);
+        for (size_t i = 0; i < 16; ++i) {
+            CHECK(achievements.named[i] == find(owner, 5242880 + (int32_t)i));
+            CHECK(mc_statistic_kind_get(achievements.named[i]) == MC_STATISTIC_ACHIEVEMENT);
+        }
+        expected += 16;
     }
     CHECK(view.map_size == expected);
     for (size_t i = 0; i < view.map_size; ++i) {
@@ -448,11 +465,14 @@ static int test_route(mc_registry_side side, mc_materials *materials,
     uint64_t u = uniquifier(profile);
     CHECK(create(side, materials, profile, &r, 0, &owner) == MC_REGISTRY_OK);
     mc_registry_error error;
-    CHECK(initialize(owner, entry, &error) ==
-          (bad ? MC_REGISTRY_ILLEGAL_ARGUMENT : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY));
+    CHECK(initialize(owner, entry, &error) == (bad ? MC_REGISTRY_ILLEGAL_ARGUMENT
+                                               : entry == 2
+                                                   ? MC_REGISTRY_NULL_REFERENCE
+                                                   : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY));
     mc_registry_statistic_view view;
     CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK &&
-          view.phase == MC_REGISTRY_FAILED && view.D == NULL);
+          view.phase == (!bad && entry == 1 ? MC_REGISTRY_READY : MC_REGISTRY_FAILED) &&
+          view.D == NULL);
     CHECK(check_randoms(owner, u) == 0);
     if (bad) {
         CHECK(error.format_error.status == MC_JAVA_FORMAT_UNKNOWN_CONVERSION);
@@ -462,10 +482,13 @@ static int test_route(mc_registry_side side, mc_materials *materials,
         CHECK(view.C == NULL && view.E == NULL && view.F == NULL && !view.G && !view.H &&
               view.map_size == 23);
     } else {
-        CHECK(view.initializer_pc == (entry == 0 ? 618 : 624));
-        if (entry == 0)
+        CHECK(view.initializer_pc == (entry == 0 ? 618 : entry == 1 ? 635 : 624));
+        if (entry != 2)
             CHECK(error.constructor_pc == 21 && error.constructor_class != NULL &&
                   strcmp(error.constructor_class, side == MC_REGISTRY_CLIENT ? "jl" : "gg") == 0);
+        else
+            CHECK(error.constructor_pc == 2 && error.constructor_class != NULL &&
+                  strcmp(error.constructor_class, side == MC_REGISTRY_CLIENT ? "iz" : "fy") == 0);
         CHECK(check_graph(owner, entry) == 0);
     }
     for (size_t i = 0; i < 3; ++i)
@@ -557,17 +580,26 @@ static int budget_trial(mc_registry_side side, mc_materials *materials,
         CHECK(status == MC_REGISTRY_LIMIT && owner == NULL && uniquifier(profile) == u);
     } else {
         status = initialize(owner, entry, NULL);
-        CHECK(status == MC_REGISTRY_LIMIT || status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+        CHECK(status == MC_REGISTRY_LIMIT ||
+              status ==
+                  (entry == 2 ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY));
         CHECK(owner->allocation_bytes <= limit);
         mc_registry_statistic_view view;
         CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK &&
               view.D == NULL);
         CHECK(!(view.G || view.H) || (view.E != NULL && view.F != NULL));
-        CHECK(entry == 0 ? view.C == NULL : view.E == NULL && view.F == NULL && !view.G && !view.H);
-        if (status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY) {
-            CHECK(view.phase == MC_REGISTRY_FAILED &&
-                  view.initializer_pc == (entry == 0 ? 618 : 624));
-            CHECK(entry == 0 ? view.G && view.H : view.C != NULL);
+        if (entry == 0)
+            CHECK(view.C == NULL);
+        if (entry == 2)
+            CHECK(view.E == NULL && view.F == NULL && !view.G && !view.H);
+        if (status != MC_REGISTRY_LIMIT) {
+            CHECK(view.phase == (entry == 1 ? MC_REGISTRY_READY : MC_REGISTRY_FAILED) &&
+                  view.initializer_pc == (entry == 0   ? 618
+                                          : entry == 1 ? 635
+                                                       : 624));
+            CHECK(entry == 2 ? view.C != NULL : view.G && view.H);
+            if (entry == 1)
+                CHECK(view.C != NULL && view.E != NULL && view.F != NULL);
             *complete = true;
         }
         bool matched = false;

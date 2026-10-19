@@ -1,5 +1,6 @@
 #include "mc/item/registry/registry.h"
 #include "mc/resources/files/files.h"
+#include "mc/statistics/achievements/achievements.h"
 #include "mc/statistics/registry/registry.h"
 
 #include <inttypes.h>
@@ -19,6 +20,11 @@ typedef struct cell {
     int32_t id;
     const mc_statistic *object;
 } cell;
+
+typedef struct icon_table {
+    const mc_item_stack *objects[GRAPH_LIMIT];
+    size_t count;
+} icon_table;
 
 static bool row(const char *format, ...)
 {
@@ -66,7 +72,8 @@ static bool graph(mc_registry_classes *owner, const mc_registry_statistic_view *
         const mc_statistic *found = NULL;
         mc_statistic_kind kind = mc_statistic_kind_get(cells[i].object);
         if (f == NULL || f->e != cells[i].id ||
-            (kind != MC_STATISTIC_GENERAL && kind != MC_STATISTIC_ITEM) ||
+            (kind != MC_STATISTIC_GENERAL && kind != MC_STATISTIC_ITEM &&
+             kind != MC_STATISTIC_ACHIEVEMENT) ||
             formatter(cells[i].object, base) == 0 ||
             mc_registry_classes_find_statistic(owner, cells[i].id, &found) != MC_REGISTRY_OK ||
             found != cells[i].object)
@@ -111,16 +118,20 @@ static bool emit(const char *side, const char *entry, const cell *cells,
                  const mc_registry_statistic_view *view,
                  const mc_registry_statistic_base_view *base)
 {
-    if (!row("STAT_ARRAY_PREFIX_V1\t%s\t%s\t%s\n", side, entry,
-             strcmp(entry, "stats") == 0 ? "d21" : "clinit624") ||
+    if (!row("STAT_ARRAY_PREFIX_V2\t%s\t%s\t%s\n", side, entry,
+             strcmp(entry, "item") == 0 ? "item-icon-null2" : "d21") ||
         !row("STATE\t%u\t%u\nMAP\t%zu\n", view->G ? 1u : 0u, view->H ? 1u : 0u, view->map_size))
         return false;
     for (size_t i = 0; i < view->map_size; ++i) {
         const mc_statistic *object = cells[i].object;
         const mc_statistic_fields *f = mc_statistic_fields_get(object);
         bool item = mc_statistic_kind_get(object) == MC_STATISTIC_ITEM;
-        if (!row("MAPSTAT\t%" PRId32 "\t%s\t%u\t%c\t", cells[i].id, item ? "item" : "general",
-                 f->g ? 1u : 0u, formatter(object, base)))
+        const char *kind = item ? "item"
+                           : mc_statistic_kind_get(object) == MC_STATISTIC_ACHIEVEMENT
+                               ? "achievement"
+                               : "general";
+        if (!row("MAPSTAT\t%" PRId32 "\t%s\t%u\t%c\t", cells[i].id, kind, f->g ? 1u : 0u,
+                 formatter(object, base)))
             return false;
         int32_t associated;
         if (item) {
@@ -171,6 +182,100 @@ static bool emit(const char *side, const char *entry, const cell *cells,
                     : !row("%" PRId32 "\n", reference(cells, view->map_size, object)->id))
                 return false;
         }
+    }
+    return true;
+}
+
+static size_t icon_reference(const icon_table *icons, const mc_item_stack *stack)
+{
+    for (size_t i = 0; i < icons->count; ++i)
+        if (icons->objects[i] == stack)
+            return i + 1;
+    return 0;
+}
+
+static bool achievement_graph(const cell *cells, const mc_registry_statistic_view *stats,
+                              const mc_registry_achievement_view *view, icon_table *icons)
+{
+    if (view->named == NULL || mc_statistic_list_size(view->e) > GRAPH_LIMIT ||
+        (view->e != NULL && (view->e == stats->b || view->e == stats->c || view->e == stats->d ||
+                             view->e == stats->e)))
+        return false;
+    for (size_t i = 0; i < stats->map_size; ++i) {
+        const mc_statistic *object = cells[i].object;
+        if (mc_statistic_kind_get(object) != MC_STATISTIC_ACHIEVEMENT)
+            continue;
+        const mc_achievement_fields *fields = mc_statistic_achievement_fields_get(object);
+        if (fields == NULL || fields->l == NULL || fields->client_callback != NULL ||
+            (fields->c != NULL && (reference(cells, stats->map_size, fields->c) == NULL ||
+                                   mc_statistic_kind_get(fields->c) != MC_STATISTIC_ACHIEVEMENT)))
+            return false;
+        if (fields->d != NULL && icon_reference(icons, fields->d) == 0) {
+            if (icons->count == GRAPH_LIMIT)
+                return false;
+            mc_item_stack_fields values;
+            mc_item_stack_phase phase;
+            if (mc_item_stack_fields_get(fields->d, &values) != MC_ITEM_STACK_OK ||
+                mc_item_stack_phase_get(fields->d, &phase) != MC_ITEM_STACK_OK ||
+                phase != MC_ITEM_STACK_READY)
+                return false;
+            icons->objects[icons->count++] = fields->d;
+        }
+    }
+    for (size_t i = 0; i < 16; ++i)
+        if (view->named[i] != NULL &&
+            (reference(cells, stats->map_size, view->named[i]) == NULL ||
+             mc_statistic_kind_get(view->named[i]) != MC_STATISTIC_ACHIEVEMENT))
+            return false;
+    for (size_t i = 0; i < mc_statistic_list_size(view->e); ++i) {
+        const mc_statistic *object = NULL;
+        if (mc_statistic_list_get(view->e, i, &object) != MC_REGISTRY_OK ||
+            (object != NULL && (reference(cells, stats->map_size, object) == NULL ||
+                                mc_statistic_kind_get(object) != MC_STATISTIC_ACHIEVEMENT)))
+            return false;
+    }
+    return true;
+}
+
+static bool emit_reference(const cell *cells, size_t count, const mc_statistic *object)
+{
+    return object == NULL ? row("NULL") : row("%" PRId32, reference(cells, count, object)->id);
+}
+
+static bool emit_achievements(const cell *cells, const mc_registry_statistic_view *stats,
+                              const mc_registry_achievement_view *view, const icon_table *icons)
+{
+    if (!row("ACHIEVEMENTS\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t", view->a, view->b,
+             view->c, view->d) ||
+        !(view->e == NULL ? row("NULL\n") : row("%zu\n", mc_statistic_list_size(view->e))))
+        return false;
+    for (size_t i = 0; i < 16; ++i)
+        if (!row("ACH_NAMED\t%zu\t", i) ||
+            !emit_reference(cells, stats->map_size, view->named[i]) || !row("\n"))
+            return false;
+    for (size_t i = 0; i < stats->map_size; ++i) {
+        const mc_achievement_fields *fields = mc_statistic_achievement_fields_get(cells[i].object);
+        if (fields == NULL)
+            continue;
+        if (!row("ACH\t%" PRId32 "\t", cells[i].id) ||
+            !emit_reference(cells, stats->map_size, fields->c) ||
+            !row("\t%u\t", fields->special ? 1u : 0u) ||
+            !(fields->d == NULL ? row("NULL\n") : row("I:%zu\n", icon_reference(icons, fields->d))))
+            return false;
+    }
+    for (size_t i = 0; i < icons->count; ++i) {
+        mc_item_stack_fields fields;
+        if (mc_item_stack_fields_get(icons->objects[i], &fields) != MC_ITEM_STACK_OK ||
+            !row("ICON\t%zu\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\n", i + 1,
+                 fields.count, fields.animation, fields.id, fields.damage))
+            return false;
+    }
+    for (size_t i = 0; i < mc_statistic_list_size(view->e); ++i) {
+        const mc_statistic *object = NULL;
+        if (mc_statistic_list_get(view->e, i, &object) != MC_REGISTRY_OK ||
+            !row("ACH_LIST\t%zu\t", i) || !emit_reference(cells, stats->map_size, object) ||
+            !row("\n"))
+            return false;
     }
     return row("END\n");
 }
@@ -225,6 +330,7 @@ int main(int argc, char **argv)
     mc_registry_error error = {0};
     char *root = NULL;
     cell *cells = NULL;
+    icon_table *icons = NULL;
 #ifdef _WIN32
     if (_setmode(_fileno(stdout), _O_BINARY) < 0 || _setmode(_fileno(stderr), _O_BINARY) < 0)
         goto cleanup;
@@ -254,22 +360,36 @@ int main(int argc, char **argv)
                                         : mc_registry_classes_initialize_items(owner, &error);
     mc_registry_statistic_view view;
     mc_registry_statistic_base_view base;
+    mc_registry_achievement_view achievements;
     bool stats = strcmp(argv[2], "stats") == 0;
-    if (status != MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY ||
-        mc_registry_classes_inspect_statistics(owner, &view, NULL) != MC_REGISTRY_OK ||
+    bool item = strcmp(argv[2], "item") == 0;
+    if (mc_registry_classes_inspect_statistics(owner, &view, NULL) != MC_REGISTRY_OK ||
         mc_registry_classes_inspect_statistic_base(owner, &base, NULL) != MC_REGISTRY_OK ||
-        view.phase != MC_REGISTRY_FAILED || view.D != NULL ||
-        (stats ? view.initializer_pc != 618 || view.C != NULL || !view.G || !view.H ||
-                     error.constructor_class == NULL ||
-                     strcmp(error.constructor_class,
-                            options.side == MC_REGISTRY_CLIENT ? "jl" : "gg") != 0 ||
-                     error.constructor_pc != 21
-               : view.initializer_pc != 624 || view.C == NULL || view.E != NULL || view.F != NULL ||
-                     view.G || view.H))
+        mc_registry_classes_inspect_achievements(owner, &achievements, NULL) != MC_REGISTRY_OK ||
+        view.D != NULL || error.constructor_class == NULL)
+        goto cleanup;
+    if (item ? status != MC_REGISTRY_NULL_REFERENCE || view.phase != MC_REGISTRY_FAILED ||
+                   view.initializer_pc != 624 || view.C == NULL || view.E != NULL ||
+                   view.F != NULL || view.G || view.H || error.constructor_pc != 2 ||
+                   strcmp(error.constructor_class,
+                          options.side == MC_REGISTRY_CLIENT ? "iz" : "fy") != 0
+             : status != MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY || !view.G || !view.H ||
+                   error.constructor_pc != 21 ||
+                   strcmp(error.constructor_class,
+                          options.side == MC_REGISTRY_CLIENT ? "jl" : "gg") != 0 ||
+                   (stats ? view.phase != MC_REGISTRY_FAILED || view.initializer_pc != 618 ||
+                                view.C != NULL
+                          : view.phase != MC_REGISTRY_READY || view.initializer_pc != 635 ||
+                                view.C == NULL || achievements.phase != MC_REGISTRY_READY ||
+                                achievements.initializer_pc != 454))
         goto cleanup;
     cells = calloc(GRAPH_LIMIT, sizeof(*cells));
-    if (cells == NULL || !graph(owner, &view, &base, cells) ||
-        !emit(argv[1], argv[2], cells, &view, &base) || fflush(stdout) != 0 || ferror(stdout))
+    icons = calloc(1, sizeof(*icons));
+    if (cells == NULL || icons == NULL || !graph(owner, &view, &base, cells) ||
+        !achievement_graph(cells, &view, &achievements, icons) ||
+        !emit(argv[1], argv[2], cells, &view, &base) ||
+        !emit_achievements(cells, &view, &achievements, icons) || fflush(stdout) != 0 ||
+        ferror(stdout))
         goto cleanup;
     result = 0;
 cleanup:
@@ -278,6 +398,7 @@ cleanup:
                 (int)error.status, error.constructor_class == NULL ? "-" : error.constructor_class,
                 (int)error.constructor_pc);
     free(cells);
+    free(icons);
     free(root);
     if (mc_registry_classes_free(owner, NULL) != MC_REGISTRY_OK)
         return 1; /* Do not retire dependencies still borrowed by a live owner. */

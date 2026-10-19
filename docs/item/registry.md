@@ -10,7 +10,7 @@ the documented strict floating-point environment.
 Its statistics invocation now enters actual
 [common-stat construction and registration](../statistics/registry.md). Missing
 native resource support retains the nested Translation constructor cause;
-imported resources reach the explicit block-stat helper boundary at PC618.
+imported resources now run the array and achievement work described below.
 The suspended Item and Block initializer positions remain separate from that
 innermost failure.
 
@@ -42,12 +42,15 @@ the live cell again. This preserves the real recursive initialization cycle.
 
 | Explicit entry | Retained state at the current implementation boundary |
 | --- | --- |
-| Block first | All 96 Blocks and all 106 named Items exist. Item reaches its unfinished statistics invocation at PC2664; Block remains suspended at its Item-array active use, PC3398. No BlockItem tail or final Block flag write has run. |
-| Item first | Item publishes its Random and array, then the first tool enters Block. Block constructs all 96 Blocks, seven explicit special BlockItems and the remaining default BlockItems, using that same partial Item array. The conditional fire hook runs and `r[0]` becomes true before the unfinished Block statistics invocation at PC3674. The 106 named Item chains have not begun. |
+| Block first, resources supplied | All 96 Blocks, all 106 named Items and sixteen achievements exist. Statistics and achievements complete; Item returns at2667. The outer Block finishes BlockItems and reaches recipe d21 through its statistics call3674. |
+| Item first, resources supplied | The first tool enters Block before any named Item publication. Block completes its BlockItem tail and enters statistics at3674. Statistics publishes C, then the first achievement allocates a real RAW Stack and fails on its NULL Item read at2. E/F remain NULL. |
 
-Both entries currently return `MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY` and retain
-FAILED class state. Neither provides completed registry bootstrap. The actual
-statistics, resource, achievement, recipe and smelting closure remains required.
+The Block entry returns the explicit unfinished recipe dependency; the Item
+entry propagates the actual NULL icon failure. Failed classes retain their
+first cause, while successfully initialized nested classes remain READY.
+Neither entry completes registry bootstrap. Recipes and smelting remain
+unfinished; [achievement construction](../statistics/achievements.md) now runs
+through its actual source order.
 An occupied Item slot also stops explicitly at the unfinished conflict-output
 dependency; the original warning branch must eventually continue to its later
 store rather than become a duplicate-ID rejection.
