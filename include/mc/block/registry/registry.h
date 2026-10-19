@@ -131,9 +131,8 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
                                                 mc_registry_classes **out,
                                                 mc_registry_error *error);
 
-/* Execute the real Block construction prefix. The current implementation
- * stops explicitly at its unfinished Item/stat/resource dependency; it cannot
- * report READY or provide a successful full bootstrap. Failure latches and
+/* Execute the real Block class initializer and its reached Item, resource,
+ * statistic, achievement and recipe dependencies. Failure latches and
  * retains every completed global/object/profile effect. The same owner cannot
  * retry. This explicit entry does not qualify ordinary client/server startup
  * or prescribe a universal class-initialization order. */

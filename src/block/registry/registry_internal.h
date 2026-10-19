@@ -251,6 +251,8 @@ struct mc_registry_classes {
     int32_t block_initializer_pc;
     size_t allocation_bytes;
     size_t named_blocks;
+    /* Native runtime lifetime count, separate from Java class fields. */
+    size_t runtime_borrows;
     unsigned int entered;
     mc_registry_error last_error;
     mc_registry_error block_failure;

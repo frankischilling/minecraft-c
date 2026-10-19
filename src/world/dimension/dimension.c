@@ -1,9 +1,12 @@
 #include "mc/world/dimension/dimension.h"
 
+#include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/runtime.h"
 
 #include "../biome/biome_internal.h"
+#include "../runtime/runtime_internal.h"
 #include "dimension_internal.h"
 
 #include <float.h>
@@ -133,6 +136,8 @@ const char *mc_world_dimension_status_string(mc_world_dimension_status status)
             return "biome construction failed";
         case MC_WORLD_DIMENSION_UNSUPPORTED_FP:
             return "unsupported floating-point environment";
+        case MC_WORLD_DIMENSION_REGISTRY_FAILED:
+            return "block registry failed";
     }
     return "unknown dimension status";
 }
@@ -575,4 +580,145 @@ mc_world_dimension_status mc_world_dimension_celestial_angle(const mc_world_dime
     narrowed = original + narrowed;
     *out = narrowed;
     return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+}
+
+static mc_world_dimension_status spawn_registry_failure(mc_world_dimension_error *error,
+                                                        const char *operation,
+                                                        unsigned int bytecode,
+                                                        const mc_registry_error *registry_error)
+{
+    mc_world_dimension_status status =
+        result(error, MC_WORLD_DIMENSION_REGISTRY_FAILED, operation, bytecode);
+    if (error != NULL)
+        error->registry = *registry_error;
+    return status;
+}
+
+static mc_world_dimension_status
+spawn_registry_source_failure(mc_world_dimension_error *error, mc_registry_status registry_status,
+                              const char *operation, unsigned int bytecode, int32_t block_id)
+{
+    mc_registry_error registry_error = {.status = registry_status,
+                                        .message = operation,
+                                        .initializer_pc = -1,
+                                        .block_id = block_id,
+                                        .constructor_pc = -1,
+                                        .active_initializer_pc = -1,
+                                        .item_argument = -1};
+    return spawn_registry_failure(error, operation, bytecode, &registry_error);
+}
+
+static unsigned int spawn_array_failure_pc(mc_registry_status status,
+                                           const mc_registry_error *registry_error,
+                                           unsigned int static_pc, unsigned int array_pc)
+{
+    /* Active-use failures retain their actual initializer class, even when
+     * their first cause is NULL/index. Only the accessor's subsequent array
+     * failures clear that context; native entry failures are at the static use. */
+    if (registry_error->active_initializer_class == NULL &&
+        (status == MC_REGISTRY_NULL_REFERENCE || status == MC_REGISTRY_INDEX_OUT_OF_RANGE))
+        return array_pc;
+    return static_pc;
+}
+
+static mc_world_dimension_status can_spawn_admitted(mc_world_dimension_kind kind,
+                                                    mc_world_runtime *world,
+                                                    mc_registry_classes *classes, int32_t x,
+                                                    int32_t z, bool *out,
+                                                    mc_world_dimension_error *error)
+{
+    int32_t top;
+    mc_world_storage_error world_error = {0};
+    if (mc_world_runtime_top_block(world, x, z, &top, &world_error) != MC_WORLD_STORAGE_OK) {
+        mc_world_dimension_status status =
+            result(error, MC_WORLD_DIMENSION_WORLD_FAILED, "dimension spawn top block", 6);
+        if (error != NULL)
+            error->world = world_error;
+        return status;
+    }
+
+    if (kind == MC_WORLD_DIMENSION_SKY && top == 0) {
+        *out = false;
+        return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+    }
+    unsigned int static_pc = kind == MC_WORLD_DIMENSION_SKY ? 16u : 11u;
+    if (classes == NULL)
+        return spawn_registry_source_failure(error, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                                             "dimension spawn World registry", static_pc, -1);
+
+    mc_registry_error registry_error = {0};
+    const mc_block *block;
+    mc_registry_status registry_status;
+    if (kind == MC_WORLD_DIMENSION_SKY) {
+        registry_status = mc_registry_block_get(classes, top, &block, &registry_error);
+        if (registry_status != MC_REGISTRY_OK)
+            return spawn_registry_failure(
+                error, "dimension spawn Block.m",
+                spawn_array_failure_pc(registry_status, &registry_error, 16, 20), &registry_error);
+        if (block == NULL)
+            return spawn_registry_source_failure(error, MC_REGISTRY_NULL_REFERENCE,
+                                                 "dimension spawn Block.bA", 21, top);
+        const mc_material *material = mc_block_fields_get(block)->bA;
+        if (material == NULL)
+            return spawn_registry_source_failure(error, MC_REGISTRY_NULL_REFERENCE,
+                                                 "dimension spawn material c", 24, top);
+        *out = mc_material_c(material);
+        return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+    }
+
+    const char *name = kind == MC_WORLD_DIMENSION_NETHER ? "A" : "F";
+    registry_status = mc_registry_block_static_get(classes, name, &block, &registry_error);
+    if (registry_status != MC_REGISTRY_OK)
+        return spawn_registry_failure(error, "dimension spawn Block static", 11, &registry_error);
+    if (block == NULL)
+        return spawn_registry_source_failure(error, MC_REGISTRY_NULL_REFERENCE,
+                                             "dimension spawn Block.bn", 14, -1);
+    int32_t registered_id = mc_block_fields_get(block)->bn;
+    if (kind == MC_WORLD_DIMENSION_OVERWORLD) {
+        *out = top == registered_id;
+        return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+    }
+    if (top == registered_id || top == 0) {
+        *out = false;
+        return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+    }
+
+    bool opaque;
+    registry_status = mc_registry_block_opaque_get(classes, top, &opaque, &registry_error);
+    if (registry_status != MC_REGISTRY_OK)
+        return spawn_registry_failure(
+            error, "dimension spawn Block.o",
+            spawn_array_failure_pc(registry_status, &registry_error, 28, 32), &registry_error);
+    *out = opaque;
+    return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+}
+
+mc_world_dimension_status mc_world_dimension_can_spawn(mc_world_dimension *dimension, int32_t x,
+                                                       int32_t z, bool *out,
+                                                       mc_world_dimension_error *error)
+{
+    if (dimension == NULL || out == NULL)
+        return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension can spawn", 0);
+    if (dimension->phase != MC_WORLD_DIMENSION_READY)
+        return result(error, MC_WORLD_DIMENSION_INVALID_PHASE, "dimension can spawn", 0);
+
+    /* The source evaluates a once at PC1. This passive immutable binding read
+     * cannot initialize Block or reject an absent capability before top6. */
+    mc_world_dimension_kind kind = dimension->kind;
+    mc_world_runtime *world = dimension->a;
+    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    if (world != NULL) {
+        mc_world_storage_error world_error = {0};
+        if (mc_world_runtime_call_enter(world, &world_error) != MC_WORLD_STORAGE_OK) {
+            mc_world_dimension_status status = result(error, MC_WORLD_DIMENSION_WORLD_FAILED,
+                                                      "dimension spawn World call admission", 0);
+            if (error != NULL)
+                error->world = world_error;
+            return status;
+        }
+    }
+    mc_world_dimension_status status = can_spawn_admitted(kind, world, classes, x, z, out, error);
+    if (world != NULL)
+        mc_world_runtime_call_leave(world);
+    return status;
 }

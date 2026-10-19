@@ -1,5 +1,7 @@
 #include "runtime_internal.h"
 
+#include "mc/block/registry/runtime.h"
+#include "mc/core/java/java.h"
 #include "mc/world/dimension/dimension.h"
 #include "mc/world/runtime/blocks.h"
 #include "millis.h"
@@ -22,6 +24,7 @@ struct mc_world_runtime_classes {
     mc_world_info_side side;
     mc_java_random_profile *profile;
     const mc_math_trig *trig;
+    mc_registry_classes *registry;
     int32_t enqueue_depth;
     size_t live_worlds;
     bool initialized;
@@ -86,8 +89,49 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     if (classes->live_worlds != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World class has live instances");
+    if (classes->registry != NULL) {
+        mc_registry_error cause;
+        mc_registry_status status = mc_registry_classes_release(classes->registry, &cause);
+        if (status != MC_REGISTRY_OK)
+            return result(error, mc_world_runtime_registry_status(status), cause.message);
+    }
     free(classes);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_registry_status mc_world_runtime_classes_bind_registry(mc_world_runtime_classes *classes,
+                                                          mc_registry_classes *registry,
+                                                          mc_registry_error *error)
+{
+    mc_registry_status status = MC_REGISTRY_INVALID_ARGUMENT;
+    const char *message = "World registry binding arguments";
+    if (classes != NULL && registry != NULL) {
+        if (classes->registry == NULL && !classes->initialized && classes->live_worlds == 0) {
+            status = mc_registry_classes_retain(
+                registry,
+                classes->side == MC_WORLD_INFO_CLIENT ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER,
+                classes->profile, error);
+            if (status == MC_REGISTRY_OK)
+                classes->registry = registry;
+            return status;
+        }
+        status = MC_REGISTRY_BUSY;
+        message = "World registry already bound or class used for allocation";
+    }
+    if (error != NULL)
+        *error = (mc_registry_error){.status = status,
+                                     .message = message,
+                                     .initializer_pc = -1,
+                                     .block_id = -1,
+                                     .constructor_pc = -1,
+                                     .active_initializer_pc = -1,
+                                     .item_argument = -1};
+    return status;
+}
+
+mc_registry_classes *mc_world_runtime_registry(const mc_world_runtime *runtime)
+{
+    return runtime == NULL || runtime->classes == NULL ? NULL : runtime->classes->registry;
 }
 
 mc_world_storage_status
@@ -524,19 +568,57 @@ static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc)
     return true;
 }
 
+static bool world_spawn_draw(mc_world_runtime *runtime, int32_t *out)
+{
+    if (runtime->fields.r == NULL || !mc_java_random_next_bounded(runtime->fields.r, 64, out)) {
+        result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+               "World spawn Random receiver");
+        return false;
+    }
+    return true;
+}
+
 static bool world_initial_spawn(mc_world_runtime *runtime)
 {
     runtime->fields.y = true;
-    int32_t top;
-    /* The actual first predicate acquires the top block before it consults
-     * the live sand registry identity. A missing registry cannot accept a
-     * fabricated spawn or consume a guessed sequence of rejection draws. */
-    if (mc_world_runtime_top_block(runtime, 0, 0, &top, &runtime->last_error) !=
-        MC_WORLD_STORAGE_OK)
+    int32_t x = 0, z = 0;
+    for (;;) {
+        bool accepted;
+        mc_world_dimension_error cause;
+        mc_world_dimension_status status =
+            mc_world_dimension_can_spawn(runtime->fields.t, x, z, &accepted, &cause);
+        if (status != MC_WORLD_DIMENSION_OK) {
+            if (status == MC_WORLD_DIMENSION_REGISTRY_FAILED)
+                (void)mc_world_runtime_registry_result(runtime, cause.registry.status,
+                                                       &cause.registry, "World spawn registry",
+                                                       &runtime->last_error);
+            else if (status == MC_WORLD_DIMENSION_WORLD_FAILED)
+                runtime->last_error = cause.world;
+            else
+                result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                       "World spawn Dimension");
+            return false;
+        }
+        if (accepted)
+            break;
+        /* Reload the actual World.r separately at every original draw. x is
+         * completed before the z pair. The source has no rejection cap. */
+        int32_t first, second;
+        if (!world_spawn_draw(runtime, &first))
+            return false;
+        if (!world_spawn_draw(runtime, &second))
+            return false;
+        x = mc_java_i32_add(x, mc_java_i32_sub(first, second));
+        if (!world_spawn_draw(runtime, &first))
+            return false;
+        if (!world_spawn_draw(runtime, &second))
+            return false;
+        z = mc_java_i32_add(z, mc_java_i32_sub(first, second));
+    }
+    if (!world_info_result(runtime, mc_world_info_spawn_set(runtime->fields.x, x, 64, z), 415))
         return false;
-    (void)top;
-    result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World spawn block registry");
-    return false;
+    runtime->fields.y = false;
+    return true;
 }
 
 mc_world_storage_status

@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_CONSTRUCTION_H
 #define MC_WORLD_RUNTIME_CONSTRUCTION_H
 
+#include "mc/block/registry/registry.h"
 #include "mc/core/java/random_profile.h"
 #include "mc/core/math/math.h"
 #include "mc/world/info/info.h"
@@ -128,6 +129,25 @@ mc_world_storage_status mc_world_runtime_classes_get(const mc_world_runtime_clas
                                                      mc_world_runtime_class_state *out);
 mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *classes,
                                                       mc_world_storage_error *error);
+
+/* Bind the same application registry above every World of this class. Match
+ * side and Random-profile identity, retain one native registry borrow, and
+ * execute no initializer, resource read, clock or Random operation. Bind once,
+ * before allocating any World; replacing a binding or binding with live Worlds
+ * is BUSY. An absent binding leaves reached registry operations unavailable.
+ * Class destruction releases the borrow only after every World has been freed.
+ * Materials and profile must outlive the registry, including borrowed views. */
+mc_registry_status mc_world_runtime_classes_bind_registry(mc_world_runtime_classes *classes,
+                                                          mc_registry_classes *registry,
+                                                          mc_registry_error *error);
+
+/* Native identity/diagnostic views; no game active use. The registry is NULL
+ * for composition or an unbound class. A GAME World keeps its same binding
+ * through RAW, failed and retired phases until actual free. The diagnostic is
+ * replaced only by a reached registry operation, including its full nested
+ * initialization cause. Both views expire when the World is freed. */
+mc_registry_classes *mc_world_runtime_registry(const mc_world_runtime *runtime);
+const mc_registry_error *mc_world_runtime_last_registry_error(const mc_world_runtime *runtime);
 
 /* Allocate the SAME runtime identity before its game constructor. No game
  * instance fields, clocks, profile constructors or file operations run here.

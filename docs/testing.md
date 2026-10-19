@@ -1,6 +1,17 @@
 # Test scope and reproduction
 
-The [recipe initialization](item/recipes.md) checkpoint passes 30 selected
+The [World registry binding](world/registry.md) passes 22 selected cases on
+MSVC, GCC and Clang, with Linux ASan/UBSan and leak detection. This includes
+150 new constructed World checks, the existing 4,397 GAME checks, and the
+recorded Dimension, registry, recipe/Stack and statistic graph replays.
+All 559 code/tool/fixture inputs match before/after and across retained host
+copies; 22 products per host are retained. Formatting passes 284 C/header files.
+The array unit now reports 11,312,060 checks: the added native borrow counter
+changes its allocation-budget search, while every selected assertion passes.
+No new original World, fresh-generation or full population/persistence result
+follows from these constructed cache baselines.
+
+The preceding [recipe initialization](item/recipes.md) checkpoint passes 30 selected
 Windows cases and 32 cases per Linux compiler, with Linux ASan/UBSan and leak
 detection. Contracts report 2,872 recipe, 556 registry-Stack, 11,312,084 array,
 32,892 achievement and 14,566 statistics checks; each explicit Linux locale
@@ -9,7 +20,7 @@ sides, five entry orders and three JVM modes. All ten numeric graphs, ten
 catalogs and both numeric Stack projections match on MSVC/GCC/Clang using
 imported and synthetic resources. Thirty-six historical observer replays remain
 byte-equal. All 555 code/tool/fixture inputs agree before/after, across retained
-host source copies and with the current source; 32 build products per host are
+host source copies and with that checkpoint's source; 32 build products per host are
 retained. clang-format18 checks 280 C/header files. This selected run qualifies
 the recorded initialization scenarios; full World startup, gameplay,
 population and persistence acceptance remain unfinished.

@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_DIMENSION_DIMENSION_H
 #define MC_WORLD_DIMENSION_DIMENSION_H
 
+#include "mc/block/registry/registry.h"
 #include "mc/world/biome/biome.h"
 #include "mc/world/storage/status.h"
 
@@ -31,7 +32,8 @@ typedef enum mc_world_dimension_status {
     MC_WORLD_DIMENSION_ALLOCATION_FAILED,
     MC_WORLD_DIMENSION_WORLD_FAILED,
     MC_WORLD_DIMENSION_BIOME_FAILED,
-    MC_WORLD_DIMENSION_UNSUPPORTED_FP
+    MC_WORLD_DIMENSION_UNSUPPORTED_FP,
+    MC_WORLD_DIMENSION_REGISTRY_FAILED
 } mc_world_dimension_status;
 
 typedef struct mc_world_dimension_error {
@@ -40,6 +42,7 @@ typedef struct mc_world_dimension_error {
     unsigned int bytecode;
     mc_world_storage_error world;
     mc_biome_status biome;
+    mc_registry_error registry;
 } mc_world_dimension_error;
 
 typedef struct mc_world_dimension_limits {
@@ -160,6 +163,24 @@ mc_world_dimension_status mc_world_dimension_celestial_angle(const mc_world_dime
                                                              int64_t time, float partial_tick,
                                                              float *out,
                                                              mc_world_dimension_error *error);
+
+/* The actual virtual a(int,int) predicate. READY required. Use the World held
+ * in a for the acquiring top-block query before any Block active use or missing
+ * registry failure. Its immutable class binding supplies the same registry
+ * through synchronous query reentry. Overworld compares the live F.bn; Nether
+ * reads A.bn before rejecting air, then the actual o entry; Sky rejects air
+ * without Block access, otherwise reads m[top].bA and calls material c().
+ * Nullable Block/material and live array failures retain their reached source
+ * points and full registry cause. The ordinary bool is separate from native
+ * status; failure preserves out and all completed query/initialization effects.
+ * No float admission, detached property table, new World or registry is added.
+ * A native call guard protects the captured nonnull World through the entire
+ * predicate, including synchronous registry resource callbacks. Its count
+ * admission can fail before the query; this is not source class initialization.
+ * Keep the owner and its dependencies live throughout the call. */
+mc_world_dimension_status mc_world_dimension_can_spawn(mc_world_dimension *dimension, int32_t x,
+                                                       int32_t z, bool *out,
+                                                       mc_world_dimension_error *error);
 
 /* All access is exclusive. Snapshots support all phases and retain nothing.
  * Hold overflow preserves counts. release(NULL) is safe; null query owners

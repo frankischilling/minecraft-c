@@ -14,7 +14,7 @@ SPEC = importlib.util.spec_from_file_location("int_set_capture", ROOT / "scripts
 CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
-             "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world")
+             "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry")
 
 
 def main():
@@ -58,6 +58,15 @@ def main():
                  "blocks_header": ROOT / "include/mc/world/runtime/blocks.h"}
         if args.scenario == "game-world":
             paths["game_test"] = ROOT / "tests/world/runtime/test_game_world.c"
+        if args.scenario == "world-registry":
+            paths.update({
+                "registry_test": ROOT / "tests/world/runtime/test_world_registry.c",
+                "registry_runtime": ROOT / "src/block/registry/runtime.c",
+                "registry_runtime_header": ROOT / "include/mc/block/registry/runtime.h",
+                "registry": ROOT / "src/block/registry/registry.c",
+                "registry_internal": ROOT / "src/block/registry/registry_internal.h",
+                "world_registry": ROOT / "src/world/runtime/registry.c",
+            })
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
@@ -69,6 +78,13 @@ def main():
                                      deadline=time.monotonic() + 70)
         CAPTURE.require(not stderr, "native contract stderr must be empty")
         text = stdout.decode("ascii").replace("\r\n", "\n")
+        if args.scenario == "world-registry":
+            lines = text.splitlines(keepends=True)
+            CAPTURE.require(bool(lines), "native registry contract result is missing")
+            CAPTURE.require(all(line in ("16 achievements\n", "151 recipes\n") for line in lines[:-1]),
+                            "unexpected native bootstrap console output")
+            report["bootstrap_console"] = lines[:-1]
+            text = lines[-1]
         CAPTURE.require(text.startswith("PASS: ") and text.endswith("(" + args.scenario + ")\n") and
                         text.count("\n") == 1, "complete native contract result")
         for name, path in paths.items():

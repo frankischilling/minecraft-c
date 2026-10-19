@@ -1,6 +1,13 @@
 # minecraft-c
 
-The [recipe initialization](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/recipes.md)
+The [World registry integration](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/registry.md)
+adds shared owner lifetimes, material identities and ordered Dimension spawn
+predicates. All 22 selected cases pass on MSVC/GCC/Clang, including 150 new
+constructed checks and Linux sanitizers. Actual missing-chunk generation,
+Biome bootstrap, population and full persistence remain unfinished. These
+native checks supply no new executed-original World comparison.
+
+The preceding [recipe initialization](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/recipes.md)
 checkpoint constructs all 151 recipes and ten smelts, and completes the crafting
 statistics array. Thirty original captures cover five entry orders on both
 sides. All ten numeric graphs and catalogs, plus both Stack projections, match

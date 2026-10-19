@@ -116,6 +116,7 @@ target_link_libraries(mc_block PRIVATE mc_build_options)
 
 add_library(mc_registry STATIC
     src/block/registry/registry.c
+    src/block/registry/runtime.c
     src/block/registry/class_initializers.c
     src/block/registry/constructors.c
     src/block/registry/registration.c
@@ -192,6 +193,7 @@ target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build
 
 add_library(mc_simulation STATIC
     src/world/runtime/runtime.c
+    src/world/runtime/registry.c
     src/world/runtime/construction.c
     src/world/runtime/environment.c
     src/world/runtime/blocks.c
@@ -199,7 +201,7 @@ add_library(mc_simulation STATIC
     src/world/dimension/dimension.c
     src/entity/entity.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
-target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
     PRIVATE mc_platform_time mc_build_options)
 
 include(CTest)
@@ -345,6 +347,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_game_world tests/world/runtime/test_game_world.c)
     target_link_libraries(mc_test_game_world PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_registry tests/world/runtime/test_world_registry.c)
+    target_link_libraries(mc_test_world_registry PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -816,6 +821,15 @@ if(BUILD_TESTING)
         --scenario game-world
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/game-world-contracts")
     set_tests_properties(world.game_construction PROPERTIES
+        LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.registry_bindings
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_registry>"
+        --scenario world-registry
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-registry-contracts")
+    set_tests_properties(world.registry_bindings PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction

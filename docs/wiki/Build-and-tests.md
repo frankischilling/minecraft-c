@@ -1,6 +1,13 @@
 # Build and tests
 
-The [recipe initialization](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/recipes.md)
+The [World registry integration](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/registry.md)
+passes 22 selected cases on MSVC/GCC/Clang, including 150 constructed World
+checks, existing recorded-observation replays and Linux sanitizers. All 559
+code/tool/fixture inputs match retained copies; 22 products per host are
+retained. Formatting passes 284 C/header files. This does not qualify complete
+fresh-world startup, population or gameplay persistence.
+
+The preceding [recipe initialization](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/recipes.md)
 checkpoint constructs all 151 recipes and ten smelts, and completes the crafting
 statistics array. Thirty original captures cover five entry orders on both
 sides. All ten numeric graphs and catalogs, plus both Stack projections, match

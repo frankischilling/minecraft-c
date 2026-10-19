@@ -29,6 +29,11 @@ and the notifying metadata wrapper have additional behavior and remain
 unfinished. Existing top-block lookup starts at y63 and scans upward; the
 separate downward material query is also unfinished.
 
+The [shared-registry material getter](registry.md) performs the actual block
+query before choosing shared Material.a for air or reading Block.m/bA for
+nonair. It is separate from that unfinished downward scan. Registry activation
+and nullable material results retain their actual ordering and identities.
+
 ## Reference basis
 
 The unchanged archives have SHA-256 client

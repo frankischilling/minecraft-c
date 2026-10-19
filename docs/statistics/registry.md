@@ -98,7 +98,7 @@ graphs contain 1,705/1,705/413/1,338/1,338 rows per side in Statistics, Block,
 Item, crafting and smelting order. They omit resource text and unpublished
 partial heap objects.
 
-Final qualification passes 30 selected Windows cases and 32 per Linux
+The recipe checkpoint's qualification passes 30 selected Windows cases and 32 per Linux
 compiler, with Linux ASan/UBSan and leak detection. All ten graphs, ten recipe
 catalogs and both Stack-value projections match on MSVC, GCC and Clang.
 The units report 14,566 statistics and 11,312,084 array checks; each Linux
@@ -106,6 +106,12 @@ locale case adds one statistics check. See
 the [recipe evidence](../item/recipes.md#evidence-and-validation) for the
 catalog and Stack scope. Thirty-six new legacy/achievement replay captures
 also match the unchanged historical fixtures.
+
+The later shared-World-registry regression passes all 22 selected cases on
+MSVC/GCC/Clang, including these graph replays. The array unit now reports
+11,312,060 checks because its native allocation-budget search includes the new
+registry borrow counter. The earlier counts above describe the recipe
+checkpoint; this change adds no new original statistics observation.
 
 At the preceding array checkpoint, the same controller observed untouched
 original initialization at exact recipe/achievement call

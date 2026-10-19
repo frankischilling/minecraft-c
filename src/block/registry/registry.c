@@ -396,6 +396,8 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_reg
         return result(error, MC_REGISTRY_OK, NULL);
     if (classes->entered != 0)
         return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
+    if (classes->runtime_borrows != 0)
+        return result(error, MC_REGISTRY_BUSY, "registry runtime bindings remain");
     mc_registry_stacks_retire(classes);
     mc_registry_allocation *record = classes->allocations;
     while (record != NULL) {

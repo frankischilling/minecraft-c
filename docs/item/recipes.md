@@ -129,7 +129,7 @@ identified OS line separator adapted. The
 covers twelve explicit constructor inputs and their actual copy fields; its
 original-only animation mutation is excluded from the native comparison.
 
-Final native qualification passes 30 selected Windows cases and 32 per Linux
+The recipe checkpoint's native qualification passes 30 selected Windows cases and 32 per Linux
 compiler, with ASan/UBSan and leak detection on Linux. Contracts report 2,872
 recipe checks, 556 registry-Stack checks, 11,312,084 array checks and 32,892
 achievement checks. All ten numeric graphs, ten catalogs and both Stack
@@ -139,3 +139,10 @@ Block, Item, crafting and smelting. All 555 code/tool/fixture inputs agree
 before/after and across retained host source copies; 32 products per host are
 retained. clang-format18 passes 280 C/header files. These comparisons do not
 qualify crafting gameplay or full World startup.
+
+The later [World registry integration](../world/registry.md) regression passes
+22 selected cases on all three compilers, including the public recipe/Stack
+and statistic graph replays. Recipe and registry-Stack units retain 2,872 and
+556 checks. Array budget checks now total 11,312,060 after the native owner
+gains its borrow counter. The original captures and imported-resource
+qualification above remain bound to the earlier recipe checkpoint.

@@ -1,6 +1,18 @@
 # Development status
 
-Native [crafting and smelting initialization](item/recipes.md) now constructs
+The [World registry binding](world/registry.md) now shares the actual class
+owner across Worlds, performs ordered material and Dimension spawn queries,
+and preserves the constructor's live-Random rejection loop. All 22 selected
+cases pass on MSVC, GCC and Clang, with Linux ASan/UBSan and leak detection.
+The new constructed World contracts pass 150 checks; the existing GAME case
+still passes 4,397. All 559 code/tool/fixture inputs match retained copies,
+with 22 products retained per host; formatting passes 284 C/header files.
+These are native integration checks and existing recorded-observation replays,
+without a new executed-original World comparison. Missing-chunk generation,
+Biome bootstrap, lighting/population joins and full persistence remain open.
+
+At the preceding recipe checkpoint, native
+[crafting and smelting initialization](item/recipes.md) constructs
 151 recipes and ten smelting entries, sorts the real recipe list and completes
 the crafting-statistic array. Ordinary Statistics and Block entry calls return
 on both sides; Item and direct-manager entries retain their actual null-reference

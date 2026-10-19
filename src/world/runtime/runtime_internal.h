@@ -19,6 +19,7 @@ struct mc_world_runtime {
     mc_world_save_context saving;
     mc_world_store_loader loader;
     mc_world_storage_error last_error;
+    mc_registry_error last_registry_error;
     mc_java_random_profile_status last_random_status;
     size_t active_calls, local_leases;
     size_t persistent_bindings;
@@ -44,5 +45,15 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
 const mc_math_trig *mc_world_runtime_class_trig(const mc_world_runtime *runtime);
 mc_world_storage_status mc_world_runtime_initialize_environment(mc_world_runtime *runtime,
                                                                 mc_world_storage_error *error);
+
+mc_world_storage_status mc_world_runtime_registry_status(mc_registry_status status);
+mc_world_storage_status mc_world_runtime_call_enter(mc_world_runtime *runtime,
+                                                    mc_world_storage_error *error);
+void mc_world_runtime_call_leave(mc_world_runtime *runtime);
+mc_world_storage_status mc_world_runtime_registry_result(mc_world_runtime *runtime,
+                                                         mc_registry_status status,
+                                                         const mc_registry_error *cause,
+                                                         const char *operation,
+                                                         mc_world_storage_error *error);
 
 #endif

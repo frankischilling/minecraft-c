@@ -4,8 +4,9 @@ The [Block class construction contract](https://github.com/frankischilling/minec
 and the [Item construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/registry.md)
 describe the real recursive initialization cycle, 96 Block and 106 named Item
 chains, subtype/tool arrays, conditional fire setup and five shared-profile
-Random constructions. Initialization stops FAILED at unfinished statistics;
-full bootstrap, gameplay and World binding remain open.
+Random constructions. Ordinary Block initialization now completes its reached
+statistics, achievement and recipe dependencies; other entry orders retain
+their documented failures. Full startup and gameplay remain open.
 
 The [World construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
 describes one stable 43-field runtime, ordered profile/clock and metadata
@@ -16,6 +17,13 @@ and live-player saving remain unfinished. The
 [Dimension observations](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
 qualify standalone factory/array/table/angle scenarios separately from World
 startup.
+
+The [shared World registry](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/registry.md)
+is bound before the first allocation without initializing Block. Native borrows
+protect its lifetime across RAW, failed and retired Worlds. Material and spawn
+queries perform real active use after acquiring the block/top result. Numerical
+biome IDs and generator composition remain separate from the unfinished live
+Biome bootstrap, generation, lighting and population joins.
 
 The [World block access contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
 adds real acquired metadata reads and quiet writes, normal dirty marking and

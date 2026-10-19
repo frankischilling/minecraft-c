@@ -20,6 +20,9 @@ then draws Q through that same r. Both default constructors use the application
 profile; no constructor clock, entropy stream or chosen g/Q value is supplied.
 The base class owner shares its actual static lighting-depth cell across
 instances and borrows the application's profile and initialized trig table.
+An optional [shared registry binding](registry.md) is installed before the
+first World allocation and retained for the entire class lifetime. Binding
+performs no game initialization.
 
 Load/create constructs SavedData before typed Info loading. Direct metadata
 and copy use their original different schedules. Copy first executes the full
@@ -49,11 +52,12 @@ embedded blank identity.
 
 Direct/copy and already-loaded normal base-World paths can reach native READY
 after provider construction, initial light and weather. Missing metadata
-enters the real acquiring first spawn predicate. Generation resources and the
-live block registry are unfinished, so that path stops explicitly with its
-reached fields, y flag and provider retained. It cannot return a fabricated
-spawn or READY prefix. Nether/Sky full providers, dedicated/network-client
-subclass startup, registry/class bootstrap and complete gameplay startup remain
+enters the real acquiring spawn predicate and its source-ordered rejection
+loop. Missing-chunk generation still stops at the unfinished registry/lighting
+join, retaining its reached fields, y flag and provider. The live registry
+binding and Dimension predicates do not supply missing generation or
+population bodies. Nether/Sky full providers, dedicated/network-client
+subclass startup, Biome class bootstrap and complete gameplay startup remain
 unfinished. Native READY is constructor completion for the represented normal
 path, not a whole-game or original-World observation claim.
 
@@ -103,6 +107,12 @@ only this Dimension's binding to this World, without invoking biome setup.
 It never clears the aggregate persistent-binding count. External Entity/Tile
 bindings keep free BUSY until their owners release them. No implicit save,
 file rollback, profile reset or retry occurs.
+
+The shared-registry addition passes 150 constructed checks within 22 selected
+cases on MSVC/GCC/Clang, including the unchanged 4,397-check GAME case and
+recorded Dimension replay. Linux runs use ASan/UBSan and leak detection. These
+checks do not qualify original World construction or the complete fresh-spawn
+loop; see the [registry contract](registry.md) for exact scope.
 
 See [Dimension reference evidence](../reference/dimension.md),
 [Info ownership](info.md), [SavedData](saved-data.md) and

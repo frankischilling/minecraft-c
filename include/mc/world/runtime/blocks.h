@@ -48,4 +48,14 @@ mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *ru
 mc_world_storage_status mc_world_runtime_top_block(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                    int32_t *out, mc_world_storage_error *error);
 
+/* Acquire the actual block first. Air returns the shared Material.a identity
+ * without Block initialization; nonair performs Block active use, indexes the
+ * actual m array, then reads the selected Block.bA. A NULL material field is a
+ * successful nullable result. A NULL Block, failed initializer or absent class
+ * binding fails explicitly, preserving out and prior acquisition effects.
+ * Registry failures also retain their full cause in last_registry_error. */
+mc_world_storage_status mc_world_runtime_material_get(mc_world_runtime *runtime, int32_t x,
+                                                      int32_t y, int32_t z, mc_material **out,
+                                                      mc_world_storage_error *error);
+
 #endif
