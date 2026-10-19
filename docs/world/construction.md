@@ -77,6 +77,10 @@ Missing generation/population capabilities fail explicitly after any reached
 load/acquisition effects. Known-empty entity/tile records retain the existing
 storage activation boundary.
 
+The separate [block access contract](blocks.md) covers the implemented quiet
+metadata getter/setter and their selected native validation. Full block-ID
+mutation and notifying wrappers retain their additional unfinished behavior.
+
 ## Native limits and retirement
 
 Default World direct storage is bounded to 16 MiB and 65,536 scheduled entries.

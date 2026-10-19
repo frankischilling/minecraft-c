@@ -1,5 +1,12 @@
 # Development status
 
+The [quiet World metadata path](world/blocks.md) now reads and mutates actual
+acquired chunk metadata, including dirty equal writes and blank no-op success.
+Six selected cases pass on MSVC, GCC and Clang, with Linux sanitizers; the GAME
+case reports 4,397 checks. Its typed codec round trip is in memory. Executed
+original comparisons, block-ID handlers/notifications, registry bootstrap and
+complete population/persistence acceptance remain unfinished.
+
 At `e227e57`, the [native base-World constructor](world/construction.md) retains one
 43-field identity through ordered construction, failure and retirement. Direct,
 copied and already-loaded normal paths can complete with actual Info,

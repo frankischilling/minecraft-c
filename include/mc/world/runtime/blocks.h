@@ -16,6 +16,32 @@ mc_world_storage_status mc_world_runtime_block_get(mc_world_runtime *runtime, in
                                                    int32_t z, int32_t *out,
                                                    mc_world_storage_error *error);
 
+/* Same admission and real acquisition as block_get. Outside returns zero;
+ * the actual blank-chunk getter also returns zero. A normal chunk reads its
+ * packed metadata, with even Y in the low nibble and odd Y in the high.
+ * Native failure preserves out and any earlier acquisition effects. */
+mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
+                                                      int32_t y, int32_t z, int32_t *out,
+                                                      mc_world_storage_error *error);
+
+/* The original quiet metadata setter returns false outside the World domain
+ * and true after an in-domain chunk call, including an equal-value write or
+ * the actual blank chunk's no-op. The bool is an ordinary game result, separate
+ * from native status. Acquisition occurs before any metadata inspection.
+ *
+ * After successful acquisition, a normal chunk is marked dirty before its
+ * metadata owner is accessed; only the selected nibble receives metadata's low
+ * four bits. Acquisition can reject a malformed native chunk before this
+ * point; a later owner failure retains the dirty assignment. No block hook, observer,
+ * neighbor, height/light change or lighting submission occurs in this quiet
+ * path. The blank payload and its dirty flag remain unchanged. Native failure
+ * preserves out and retains completed acquisition/dirty effects. The same
+ * exclusive-access, lifetime and disjoint-output rules as block_get apply. */
+mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *runtime, int32_t x,
+                                                            int32_t y, int32_t z, int32_t metadata,
+                                                            bool *out,
+                                                            mc_world_storage_error *error);
+
 /* Start at y=63, acquire/read y+1 until air, then read y at that same x/z.
  * This is the original top-block operation, not a height-map query or a
  * downward search. The bounded World getter supplies air above height127. */

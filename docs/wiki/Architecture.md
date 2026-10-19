@@ -10,6 +10,11 @@ and live-player saving remain unfinished. The
 qualify standalone factory/array/table/angle scenarios separately from World
 startup.
 
+The [World block access contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
+adds real acquired metadata reads and quiet writes, normal dirty marking and
+blank no-op success. Block-ID handlers, notifying wrappers and complete
+registry/bootstrap remain unfinished.
+
 Project-owned runtime code uses C17. Implementations live under
 `src/<system>/<subsystem>/`; public headers mirror those paths under `include/mc/`,
 and tests mirror them under `tests/`. Create folders with actual implementations

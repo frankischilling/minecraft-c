@@ -33,6 +33,13 @@ GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
+The [quiet metadata addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
+passes six selected native cases on MSVC and Linux GCC/Clang, with Linux
+sanitizers. The GAME case has 4,397 checks, including actual stored/blank
+identities, packed-key aliases, equal writes, bounds, retained failure effects
+and an in-memory typed codec round trip. This addition has no fresh full-suite
+or executed-original result.
+
 The [native World construction checkpoint](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
 at `e227e57` passes all 97 public cases on MSVC and Linux GCC/Clang, with Linux sanitizers.
 Five new cases pass 12,474 native checks. The separate

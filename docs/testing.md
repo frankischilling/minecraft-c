@@ -7,6 +7,16 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
+The [quiet metadata addition](world/blocks.md) passes six selected cases on
+MSVC, GCC and Clang, with Linux ASan/UBSan and leak
+checks. These cover World construction/GAME, normal provider construction,
+chunk acquisition, packed nibbles and stored chunks. The GAME case now has
+4,397 native checks, including actual stored and blank identities, bounds,
+packed-key aliases, equal writes, retained acquisition failures and an
+in-memory typed codec round trip. All 377 code/tool/fixture inputs remain
+unchanged across these runs. No fresh complete-suite or new executed-original
+claim is attached to this selected addition.
+
 A following MSVC 19.44 compatibility change scopes C4200 suppression to the
 standard C17 flexible-array declaration and evaluates material-test conditions
 through a local boolean. The material unit, SavedData unit/replay and two World
