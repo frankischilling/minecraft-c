@@ -224,3 +224,87 @@ mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array,
         *error = array->classes->last_error;
     return status;
 }
+
+mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
+                                           mc_registry_block_m_view *out, mc_registry_error *error)
+{
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m output");
+    mc_registry_status status = enter_blocks(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_block *const *identity = NULL;
+    status = mc_registry_blocks_active_use(classes);
+    if (status == MC_REGISTRY_OK)
+        identity = classes->blocks.m;
+    status = leave_blocks(classes, status, error);
+    if (status == MC_REGISTRY_OK)
+        *out = (mc_registry_block_m_view){classes, identity,
+                                          identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
+    return status;
+}
+
+mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
+                                          const mc_block **out, mc_registry_error *error)
+{
+    if (array == NULL || array->classes == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m element arguments");
+    mc_registry_status status;
+    if (array->identity == NULL)
+        status = result(&array->classes->last_error, MC_REGISTRY_NULL_REFERENCE,
+                        "Block runtime captured m array is null");
+    else if (array->length > MC_REGISTRY_BLOCK_SLOTS)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m native extent");
+    else if (index < 0 || (size_t)index >= array->length)
+        status = result(&array->classes->last_error, MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                        "Block runtime captured m index");
+    else {
+        *out = array->identity[index];
+        return result(error, MC_REGISTRY_OK, NULL);
+    }
+    if (error != NULL)
+        *error = array->classes->last_error;
+    return status;
+}
+
+mc_registry_status mc_registry_block_t_get(mc_registry_classes *classes,
+                                           mc_registry_block_t_view *out, mc_registry_error *error)
+{
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime t output");
+    mc_registry_status status = enter_blocks(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    const bool *identity = NULL;
+    status = mc_registry_blocks_active_use(classes);
+    if (status == MC_REGISTRY_OK)
+        identity = classes->blocks.t;
+    status = leave_blocks(classes, status, error);
+    if (status == MC_REGISTRY_OK)
+        *out = (mc_registry_block_t_view){classes, identity,
+                                          identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
+    return status;
+}
+
+mc_registry_status mc_registry_block_t_at(const mc_registry_block_t_view *array, int32_t index,
+                                          bool *out, mc_registry_error *error)
+{
+    if (array == NULL || array->classes == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime t element arguments");
+    mc_registry_status status;
+    if (array->identity == NULL)
+        status = result(&array->classes->last_error, MC_REGISTRY_NULL_REFERENCE,
+                        "Block runtime captured t array is null");
+    else if (array->length > MC_REGISTRY_BLOCK_SLOTS)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime t native extent");
+    else if (index < 0 || (size_t)index >= array->length)
+        status = result(&array->classes->last_error, MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                        "Block runtime captured t index");
+    else {
+        *out = array->identity[index];
+        return result(error, MC_REGISTRY_OK, NULL);
+    }
+    if (error != NULL)
+        *error = array->classes->last_error;
+    return status;
+}

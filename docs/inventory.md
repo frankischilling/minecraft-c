@@ -60,6 +60,11 @@ terrain-feature execution remain unfinished. The separate finite
 light tables and celestial angles; they do not qualify whole-World startup.
 These modules do not complete a startup checklist.
 
+The [World mutation foundation](world/mutations.md) adds concrete block setters,
+incremental height repair and ordered notifications. Its 218 native checks pass
+on all three compilers. Full synchronous handlers and population remain open;
+the selected native corpus does not establish original mutation parity.
+
 The [lifecycle boundary](world/lifecycle.md) implements synchronous saving,
 metadata-first accounting, history-sensitive pending unloads and explicit native
 retirement. Native empty collections and external Boat/Sign callback replay

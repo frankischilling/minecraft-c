@@ -1,5 +1,15 @@
 # Test scope and reproduction
 
+The [World mutation contracts](world/mutations.md#native-validation) pass 218
+checks within all 52 selected cases on MSVC/GCC/Clang, with Linux ASan/UBSan
+and leak detection. Reproduce the new case with `ctest --test-dir build -R
+"^world.mutations$" --output-on-failure`. It creates fresh owned worlds and
+retains source, outputs and save files through the normal runtime driver.
+Prepared arrays, a restored actual q element and nonowning null-array guards
+are explicit controls; they do not establish whole population or new
+original/native mutation parity. All 618 selected inputs and 44 products per
+compiler are retained. Formatting passes 335 C/header files.
+
 The [generated Chunk contracts](world/chunk-objects.md) pass 33,458 checks within
 all 38 selected cases on MSVC/GCC/Clang, with Linux ASan/UBSan and leak detection.
 They use actual constructed Worlds and store-owned Chunks. Tests cover stable

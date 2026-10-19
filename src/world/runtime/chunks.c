@@ -1,4 +1,5 @@
 #include "mc/world/runtime/chunks.h"
+#include "chunks_internal.h"
 
 #include "../../block/registry/runtime_internal.h"
 #include "../storage/generated_internal.h"
@@ -124,7 +125,6 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
     (void)mc_world_chunk_fields_get(chunk, &fields);
     mc_world_runtime *world = fields.d;
     int32_t height;
-    frame->bytecode = 201;
     frame->column_bytecode = column_pc;
     frame->interval_bytecode = 6;
     if (mc_world_runtime_height(world, x, z, &height, &frame->light) != MC_WORLD_STORAGE_OK) {
@@ -161,6 +161,27 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
     /* A normal void return reaches o36/67 even when enqueue skipped. */
     mc_world_chunk_state(chunk)->dirty = true;
     return true;
+}
+
+bool mc_world_runtime_chunk_column(mc_world_chunk *chunk, int32_t x, int32_t z,
+                                   mc_world_chunk_error *frame)
+{
+    mc_world_chunk_fields fields;
+    (void)mc_world_chunk_fields_get(chunk, &fields);
+    const int32_t index = mc_java_i32_shl(z, 4) | x;
+    frame->column_bytecode = 3;
+    if (fields.h == NULL || index < 0 || (size_t)index >= MC_CHUNK_HEIGHTMAP_BYTES) {
+        frame->cause =
+            native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk column height element");
+        return false;
+    }
+    const int32_t local = (int32_t)fields.h[(size_t)index];
+    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(fields.j, 16), x);
+    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(fields.k, 16), z);
+    return interval(chunk, mc_java_i32_sub(world_x, 1), world_z, local, 37, frame) &&
+           interval(chunk, mc_java_i32_add(world_x, 1), world_z, local, 48, frame) &&
+           interval(chunk, world_x, mc_java_i32_sub(world_z, 1), local, 59, frame) &&
+           interval(chunk, world_x, mc_java_i32_add(world_z, 1), local, 70, frame);
 }
 
 mc_world_storage_status mc_world_runtime_chunk_finish(mc_world_chunk *chunk,
@@ -247,14 +268,8 @@ mc_world_storage_status mc_world_runtime_chunk_finish(mc_world_chunk *chunk,
 
     for (int32_t x = 0; x < 16; ++x) {
         for (int32_t z = 0; z < 16; ++z) {
-            (void)mc_world_chunk_fields_get(chunk, &fields);
-            const int32_t local = (int32_t)fields.h[((size_t)z << 4u) | (size_t)x];
-            const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(fields.j, 16), x);
-            const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(fields.k, 16), z);
-            if (!interval(chunk, mc_java_i32_sub(world_x, 1), world_z, local, 37, &frame) ||
-                !interval(chunk, mc_java_i32_add(world_x, 1), world_z, local, 48, &frame) ||
-                !interval(chunk, world_x, mc_java_i32_sub(world_z, 1), local, 59, &frame) ||
-                !interval(chunk, world_x, mc_java_i32_add(world_z, 1), local, 70, &frame))
+            frame.bytecode = 201;
+            if (!mc_world_runtime_chunk_column(chunk, x, z, &frame))
                 goto failed;
         }
     }

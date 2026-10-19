@@ -1,6 +1,16 @@
 # Development status
 
-The [generated Chunk constructor and full finalizer](world/chunk-objects.md) now
+The [synchronous World mutation foundation](world/mutations.md) now preserves
+the two concrete setter schedules, incremental height/skylight repair, ordered
+notifications and reached partial effects. Real log/leaf removal and inherited
+empty hooks are implemented; other concrete descendants fail explicitly.
+All 52 selected cases pass on MSVC and sanitized GCC/Clang, including 218 new
+checks and actual save/unload/reload. All 618 selected inputs and 44 products
+per host are retained; formatting passes 335 C/header files. Population,
+fluid/falling/tile/entity/presentation closure, nonempty observers and complete
+original/persistence acceptance remain unfinished.
+
+At the preceding Chunk checkpoint, the [constructor and full finalizer](world/chunk-objects.md) now
 keep one final store owner, the actual World receiver and stable child/array
 identities. Finishing reads live q and World state in source order, retains
 partial effects, and saves current arrays without replacing the Chunk. All 38

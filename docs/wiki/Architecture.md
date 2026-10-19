@@ -1,5 +1,11 @@
 # Systems and subsystems
 
+The [World mutation foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/mutations.md)
+preserves distinct Chunk setter schedules, incremental height/skylight repair,
+live registry captures and ordered observer/neighbor calls. Log/leaf removal
+and inherited empty hooks are implemented. Other concrete descendants remain
+explicit failures; full population and synchronous gameplay closure remain open.
+
 The [Block class construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/block/registry.md)
 and the [Item construction contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/registry.md)
 describe the real recursive initialization cycle, 96 Block and 106 named Item

@@ -24,9 +24,9 @@ zero and accepts writes with ordinary true while retaining its payload and
 dirty flag.
 
 This quiet metadata operation performs no block handler, observer or neighbor
-notification, height/light update, or lighting submission. Block-ID setters
-and the notifying metadata wrapper have additional behavior and remain
-unfinished. Existing top-block lookup starts at y63 and scans upward; the
+notification, height/light update, or lighting submission. [Block-ID setters
+and notifying metadata](mutations.md) have separate synchronous behavior and
+unfinished concrete descendants. Existing top-block lookup starts at y63 and scans upward; the
 separate downward material query is also unfinished.
 
 The [shared-registry material getter](registry.md) performs the actual block

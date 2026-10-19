@@ -1,5 +1,13 @@
 # Build and tests
 
+The [mutation foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/mutations.md)
+passes 218 new checks within 52 selected cases on MSVC/GCC/Clang, with Linux
+ASan/UBSan and leak detection. All 618 selected inputs and 44 products per host
+are retained. Separate fresh original direct-Chunk experiments cover 25 calls
+per side, with matching local arrays/scalars/outcomes and preserved context.
+They have no native replay yet and do not qualify complete cached population,
+dedicated routes or original save interoperability.
+
 The [generated Chunk contracts](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/chunk-objects.md)
 pass 33,458 checks within all 38 selected cases on MSVC/GCC/Clang, with Linux
 ASan/UBSan and leak detection. Real owners retain their identities through
