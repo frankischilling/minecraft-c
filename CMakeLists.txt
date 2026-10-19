@@ -105,6 +105,10 @@ add_library(mc_block STATIC src/block/material/material.c)
 target_include_directories(mc_block PUBLIC include)
 target_link_libraries(mc_block PRIVATE mc_build_options)
 
+add_library(mc_world_info STATIC src/world/info/info.c)
+target_include_directories(mc_world_info PRIVATE src/platform/time)
+target_link_libraries(mc_world_info PUBLIC mc_storage PRIVATE mc_platform_time mc_build_options)
+
 add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
 target_link_libraries(mc_region_inspect PRIVATE mc_storage mc_build_options)
 if(MINGW)
@@ -147,6 +151,15 @@ target_link_libraries(mc_simulation PUBLIC mc_persistence mc_item PRIVATE mc_bui
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_world_info tests/world/info/test_info.c)
+    target_include_directories(mc_test_world_info PRIVATE src/platform/time)
+    target_link_libraries(mc_test_world_info PRIVATE mc_world_info mc_platform_time mc_build_options)
+    add_test(NAME world.info COMMAND mc_test_world_info)
+    set_tests_properties(world.info PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_world_info_observation_probe tests/world/info/observation_probe.c)
+    target_link_libraries(mc_world_info_observation_probe PRIVATE mc_world_info mc_build_options)
+
     add_executable(mc_test_material tests/block/material/test_material.c)
     target_link_libraries(mc_test_material PRIVATE mc_block mc_build_options)
     add_test(NAME block.material COMMAND mc_test_material)
@@ -432,6 +445,13 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME world.info_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/check_world_info.py"
+            --probe "$<TARGET_FILE:mc_world_info_observation_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-info-observation")
+    set_tests_properties(world.info_observation PROPERTIES LABELS "public;replay" TIMEOUT 180)
 
     add_test(NAME entity.item_formula_observation
         COMMAND "${Python3_EXECUTABLE}"

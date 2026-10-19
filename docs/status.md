@@ -1,5 +1,13 @@
 # Development status
 
+The per-World [metadata owner](world/info.md) now passes 8,465 native checks and
+matches all 750 stable original-derived graph rows on MSVC, GCC and Clang.
+Copies keep independent scalars and shared name/Player references; no-list
+serialization preserves shared Player renaming and loaded LastPlayed.
+Linux uses sanitizers. [Evidence](reference/world-info.md) distinguishes the two
+selected checks from the older complete-suite checkpoint. World construction,
+typed persistence and live-player-list serialization remain unfinished.
+
 The private [millisecond wall-clock backend](reference/wall-clock.md) passes
 251 checks on MSVC, GCC and Clang, including four ordered OS brackets per
 compiler. All five selected clock/Random cases pass; Linux uses ASan/UBSan and

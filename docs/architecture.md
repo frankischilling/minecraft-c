@@ -11,6 +11,9 @@ decoded-document lifetime. `mc_item` builds on storage with stable
 `mc_block` owns the distinct [material and palette identities](reference/materials.md)
 and their receiver methods. Every world in one material-class lifetime must
 borrow the same stable owner; material identity is separate from block IDs.
+`mc_world_info` owns per-World [metadata fields and shared references](world/info.md)
+above storage, with a private platform-clock dependency for actual no-list
+serialization. It borrows no store or World runtime.
 `mc_persistence` composes storage with the C world model and explicit native
 filesystem ownership. `mc_simulation` builds on persistence and items with the
 world runtime and [Entity construction](entity/construction.md). Keeping these
@@ -206,6 +209,9 @@ src/platform/time/nanotime.h
 src/platform/time/nanotime.c
 src/platform/time/millis.h
 src/platform/time/millis.c
+include/mc/world/info/info.h
+src/world/info/info.c
+tests/world/info/test_info.c
 tests/core/java/test_random_profile.c
 tests/platform/time/test_nanotime.c
 tests/platform/time/test_millis.c

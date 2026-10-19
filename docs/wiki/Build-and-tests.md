@@ -33,6 +33,13 @@ GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
+WorldInfo ownership and no-list serialization pass 8,465 native checks and all
+750 stable original-derived graph rows on MSVC/GCC/Clang, with Linux sanitizers.
+Fourteen verifier corruptions are rejected per compiler. This is selected
+two-case validation; the declared inventory is 88, without a fresh full-suite
+claim. [WorldInfo evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/world-info.md)
+documents shared references, native error mapping and unfinished World/store wiring.
+
 The native millisecond wall clock adds 251 checks on MSVC/GCC/Clang, including
 four ordered OS brackets per compiler. Its selected five-case clock/Random run
 passes with Linux sanitizers. World construction remains unfinished; see the

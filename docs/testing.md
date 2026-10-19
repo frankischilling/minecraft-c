@@ -17,14 +17,25 @@ between those runs. These runs exclude opt-in original-game comparisons;
 the fresh original constructor capture and public scalar replay have their own
 [evidence boundary](reference/entity-construction.md).
 
-A later selected five-case clock/Random run passes on the same three compilers,
+The later WorldInfo checkpoint separately passes `world.info` (8,465 checks,
+two ordered serialization clock brackets) and `world.info_observation` (750
+stable original-derived rows and fourteen rejected verifier corruptions) on
+MSVC/GCC/Clang. Linux uses sanitizers. After a GCC test-initializer warning,
+the corrected unit was rebuilt and passed on all three compilers; the guarded
+replay then passed separately on each. No production body changed after those
+runs. [WorldInfo evidence](reference/world-info.md) records source/capture limits.
+The declared public inventory is now 88, with no fresh complete 88-case claim.
+
+The earlier millisecond-clock increment passed five selected clock/Random cases on the same three compilers,
 including 251 new `platform.millis` checks and four ordered live OS brackets per
 compiler. The [wall-clock record](reference/wall-clock.md) documents its source
 binding and limits. This run does not refresh the complete 85-case checkpoint
-above; the new test brings the declared public inventory to 86 cases.
+above; that increment brought the declared public inventory to 86 cases.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
+| `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |
+| `world.info_observation` | 750 stable rows from one unmodified original run per side match all three compilers; fourteen graph/order/value/refusal corruptions are rejected per compiler | Only 5/3 returned clock rows excluded; native status maps the recorded null-name exception category; no natural World startup or historical-VM claim |
 | `block.material` | 28,623 checks for all 28 material result vectors, 14 palettes, 16 slots, stable/distinct identities, shared-alias mutation and independent native owners on MSVC/GCC/Clang; Linux sanitizers | Receiver and native ownership contracts; no full block registry, world or allocation-failure injection |
 | `block.material_observation` | 116 captured original client/server rows match exactly on MSVC/GCC/Clang, alongside the material unit in a separate two-case run; [provenance and reproduction](reference/materials.md) | Public replay of one fresh JVM run per original side; no world/bootstrap or historical-VM claim |
 | `item.stack` | 93 native construction/read-prefix, identity, provenance, overlay, budget and independent-document checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | No original or gameplay/container comparison |
