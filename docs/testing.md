@@ -7,7 +7,17 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
-The latest [WorldInfo binding checkpoint](reference/world-info-runtime.md)
+The [SavedData ID checkpoint](reference/saved-data-ids.md) passes 25 selected
+storage/runtime checks on native MSVC (66.32s), Linux GCC (139.64s) and Linux
+Clang (139.38s), with Linux ASan/UBSan and leak checks. Its new unit passes
+196,823 checks per compiler. The memory replay matches 78 original-derived
+rows, rejects fourteen altered outputs and executes four protocol refusals.
+All 352 code/tool/fixture inputs remain unchanged across these runs;
+clang-format 18 passes all 176 C/header files. The declared public inventory
+is now 91; this is a selected run, without a fresh complete-suite or hosted-CI
+claim. Original disk captures and native disk contracts have distinct limits.
+
+The preceding [WorldInfo binding checkpoint](reference/world-info-runtime.md)
 passes all 89 public cases on native MSVC (126.50s), Linux GCC (274.28s) and
 Linux Clang (272.83s). Linux uses ASan/UBSan and leak checks; Windows uses strict
 Debug without sanitizers. Its new `world.runtime_info_bindings` case passes
@@ -43,6 +53,8 @@ above; that increment brought the declared public inventory to 86 cases.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
+| `world.saved_data_ids` | 196,823 native checks per compiler: complete signed-Short cycle, copied nullable UTF-16 keys, stable counters, raw load/write, independent owners, stale sessions, caught errors, reached partial files and resource bounds | Constructed contracts; original HashMap disk order, named SavedData, forced allocator/stdio failures and actual World startup remain unfinished |
+| `world.saved_data_ids_replay` | 78 original-derived memory rows match on MSVC/GCC/Clang; fourteen altered-output guards and four real malformed-input child refusals pass per compiler | NULL-store history only; excludes String argument identity, original disk interoperability and complete manager behavior |
 | `world.runtime_info_bindings` | 173 native checks: actual Info/context cell identity, independent copied scalars, failing callback visibility, retained lifetimes, per-Info wrapped region growth, real no-list metadata files and bounded record packaging | Constructed native contracts; no original World constructor/list save, new original handler interoperability, forced allocator/OS failure or general mutable NBT |
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |
 | `world.info_observation` | 750 stable rows from one unmodified original run per side match all three compilers; fourteen graph/order/value/refusal corruptions are rejected per compiler | Only 5/3 returned clock rows excluded; native status maps the recorded null-name exception category; no natural World startup or historical-VM claim |

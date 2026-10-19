@@ -144,6 +144,10 @@ add_library(mc_persistence STATIC
     src/world/storage/chunk.c)
 target_link_libraries(mc_persistence PUBLIC mc_world mc_storage mc_world_info PRIVATE mc_build_options)
 
+add_library(mc_world_saved_data STATIC src/world/saved_data/storage.c)
+target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
+target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
+
 add_library(mc_simulation STATIC
     src/world/runtime/runtime.c
     src/entity/entity.c)
@@ -242,6 +246,13 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_info_binding tests/world/runtime/test_info_binding.c)
     target_link_libraries(mc_test_world_info_binding PRIVATE mc_simulation mc_build_options)
+
+    add_executable(mc_test_world_saved_data tests/world/saved_data/test_storage.c)
+    target_include_directories(mc_test_world_saved_data PRIVATE src/world/storage)
+    target_link_libraries(mc_test_world_saved_data PRIVATE mc_world_saved_data mc_build_options)
+
+    add_executable(mc_saved_data_id_observation_probe tests/world/saved_data/observation_probe.c)
+    target_link_libraries(mc_saved_data_id_observation_probe PRIVATE mc_world_saved_data mc_build_options)
 
     add_executable(mc_world_lifecycle_probe tests/world/runtime/lifecycle_probe.c)
     target_link_libraries(mc_world_lifecycle_probe PRIVATE mc_simulation mc_build_options)
@@ -519,6 +530,23 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/runtime-info-contracts")
     set_tests_properties(world.runtime_info_bindings PROPERTIES
         LABELS "public;integration;storage" TIMEOUT 90)
+
+    add_test(NAME world.saved_data_ids
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_saved_data>"
+        --scenario saved-data-ids
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/saved-data-id-contracts")
+    set_tests_properties(world.saved_data_ids PROPERTIES
+        LABELS "public;integration;storage" TIMEOUT 90)
+
+    add_test(NAME world.saved_data_ids_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/check_saved_data_ids.py"
+        --executable "$<TARGET_FILE:mc_saved_data_id_observation_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/saved-data-memory-replay")
+    set_tests_properties(world.saved_data_ids_replay PROPERTIES
+        LABELS "public;reference;storage" TIMEOUT 90)
 
     add_test(NAME world.lifecycle_protocol
         COMMAND "${Python3_EXECUTABLE}"

@@ -17,7 +17,11 @@ serialization. It borrows no store or World runtime. Runtime contexts can retain
 an Info and borrow its actual scalar cells; persistence accepts the typed
 no-list record without making the store the live metadata authority.
 `mc_persistence` composes storage with the C world model and explicit native
-filesystem ownership. `mc_simulation` builds on persistence and items with the
+filesystem ownership. `mc_world_saved_data` builds on persistence with independent
+[ID-counter ownership](world/saved-data.md). It copies its fixed file path and
+UTF-16 keys, without borrowing the store or WorldInfo. Complete World startup
+and named SavedData subtypes remain separate work.
+`mc_simulation` builds on persistence and items with the
 world runtime and [Entity construction](entity/construction.md). Keeping these
 mutually dependent owners together avoids a storage-to-Entity dependency.
 These libraries initialize no display, graphics, audio,

@@ -7,6 +7,10 @@ and exact-source acceptance passes for the finite foundation scenarios at
 `9ad690d83592f127b9bb39d7233e8eef06fd0029`. See the
 [checkpoint evidence](../reference/storage.md#exact-source-storage-checkpoint).
 
+The separate [SavedData ID owner](saved-data.md) copies the store's
+`data/idcounts.dat` path. Its raw direct-overwrite route has its own caught-error
+and partial-file contract, without a session check or metadata rotation.
+
 ## Stable chunks
 
 [`storage/chunk.h`](../../include/mc/world/storage/chunk.h) owns the runtime

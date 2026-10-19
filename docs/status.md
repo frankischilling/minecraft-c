@@ -1,6 +1,15 @@
 # Development status
 
-The [metadata binding checkpoint](reference/world-info-runtime.md) passes all
+The [SavedData ID owner](reference/saved-data-ids.md) passes 196,823 native
+checks and matches 78 original-derived memory rows on MSVC, GCC and Clang.
+All 25 selected storage/runtime checks pass per compiler, with Linux
+sanitizers. Raw ID files, copied nullable UTF-16 keys, signed-Short wrapping
+and reached file-error effects have native contracts. Original HashMap disk
+ordering, named SavedData and actual World construction remain unfinished.
+This selected run brings the declared public inventory to 91, without a fresh
+complete-suite claim.
+
+The preceding [metadata binding checkpoint](reference/world-info-runtime.md) passes all
 89 public tests on native Windows MSVC and Linux GCC/Clang, with Linux
 sanitizers. Its new integration case passes 173 checks. Runtime contexts borrow
 the retained Info's actual time/spawn cells, typed region growth updates only

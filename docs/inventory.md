@@ -45,8 +45,13 @@ terrain features. The native storage work has [separate accepted finite copied-w
 World startup now has a tested native [millisecond wall-clock backend](reference/wall-clock.md)
 and a separate [WorldInfo owner](reference/world-info.md) with copied scalars,
 shared references and no-list serialization. Native runtime binding and typed
-store serialization/accounting now use that owner. Original World constructor,
-live-player serialization and provider initialization remain unfinished; these
+store serialization/accounting now use that owner. A separate
+[SavedData ID owner](reference/saved-data-ids.md) loads raw Short counters and
+preserves copied UTF-16 keys, wrapping and reached file-failure effects.
+Its native contracts and limited original-derived memory replay pass on all
+three compilers. Actual HashMap disk ordering and named SavedData remain
+unfinished. Original World construction, live-player serialization and provider
+initialization also remain unfinished; these
 modules do not complete a startup checklist.
 
 The [lifecycle boundary](world/lifecycle.md) implements synchronous saving,

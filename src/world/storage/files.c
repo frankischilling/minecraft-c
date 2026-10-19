@@ -605,6 +605,56 @@ mc_world_storage_status mc_ws_write_file(const char *path, const uint8_t *bytes,
     return status == MC_WORLD_STORAGE_OK ? mc_ws_success(error) : status;
 }
 
+mc_world_storage_status mc_ws_output_open(const char *path, size_t max_bytes, mc_ws_output *out,
+                                          mc_world_storage_error *error)
+{
+    if (out == NULL)
+        return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "output.arguments", 0);
+    if (max_bytes > MC_WS_FILE_MAX_BYTES)
+        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "output.limit", 0);
+    mc_ws_native_path native = {0};
+    mc_world_storage_status status = mc_ws_native(path, &native, error);
+    FILE *file = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_regular(native.value, true, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_ws_open(&native, true, false, &file, error);
+    free(native.value);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    *out = (mc_ws_output){file, max_bytes};
+    return mc_ws_success(error);
+}
+
+mc_world_storage_status mc_ws_output_write(mc_ws_output *output, const uint8_t *bytes,
+                                           size_t length, mc_world_storage_error *error)
+{
+    if (output == NULL || output->file == NULL || (length != 0 && bytes == NULL))
+        return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "output.arguments", 0);
+    if (length > output->remaining)
+        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "output.limit", 0);
+    errno = 0;
+    size_t written = length == 0 ? 0 : fwrite(bytes, 1, length, output->file);
+    output->remaining -= written;
+    if (written != length)
+        return mc_ws_io_errno(error, "output.write.errno", errno);
+    return mc_ws_success(error);
+}
+
+mc_world_storage_status mc_ws_output_close(mc_ws_output *output, mc_world_storage_error *error)
+{
+    if (output == NULL || output->file == NULL)
+        return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "output.arguments", 0);
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    errno = 0;
+    if (fflush(output->file) != 0)
+        status = mc_ws_io_errno(error, "output.flush.errno", errno);
+    status = mc_ws_close(output->file, status, "output.close.errno", error);
+    output->file = NULL;
+    output->remaining = 0;
+    return status == MC_WORLD_STORAGE_OK ? mc_ws_success(error) : status;
+}
+
 mc_world_storage_status mc_ws_replace_file(const char *source, const char *target,
                                            mc_world_storage_error *error)
 {

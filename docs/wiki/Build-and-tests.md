@@ -33,7 +33,15 @@ GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
-The latest metadata binding checkpoint passes all 89 public cases on native
+The SavedData ID checkpoint passes 25 selected storage/runtime cases on native
+MSVC and Linux GCC/Clang, with Linux sanitizers. Its new unit has 196,823 checks;
+the public memory replay matches 78 original-derived rows, rejects fourteen
+altered outputs and executes four protocol refusals. The declared inventory
+is now 91, without a fresh complete-suite claim.
+[SavedData evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/saved-data-ids.md)
+keeps original HashMap disk order, named subtypes and actual World startup open.
+
+The preceding metadata binding checkpoint passes all 89 public cases on native
 MSVC and Linux GCC/Clang, with Linux sanitizers. Its new integration case has
 173 checks for actual live-cell ownership, callback failures, typed files and
 per-Info growth. [Binding evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/world-info-runtime.md)

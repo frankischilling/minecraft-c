@@ -14,7 +14,7 @@ SPEC = importlib.util.spec_from_file_location("int_set_capture", ROOT / "scripts
 CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
-             "world-info-bindings")
+             "world-info-bindings", "saved-data-ids")
 
 
 def main():
@@ -37,7 +37,11 @@ def main():
                  "store": ROOT / "src/world/storage/store.c", "store_header": ROOT / "include/mc/world/storage/store.h",
                  "binding_test": ROOT / "tests/world/runtime/test_info_binding.c",
                  "info": ROOT / "src/world/info/info.c", "info_header": ROOT / "include/mc/world/info/info.h",
-                 "level": ROOT / "src/storage/level/level.c", "level_header": ROOT / "include/mc/storage/level/level.h"}
+                 "level": ROOT / "src/storage/level/level.c", "level_header": ROOT / "include/mc/storage/level/level.h",
+                 "saved_data_test": ROOT / "tests/world/saved_data/test_storage.c",
+                 "saved_data": ROOT / "src/world/saved_data/storage.c",
+                 "saved_data_header": ROOT / "include/mc/world/saved_data/storage.h",
+                 "files": ROOT / "src/world/storage/files.c", "files_header": ROOT / "src/world/storage/files.h"}
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
