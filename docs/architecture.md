@@ -28,10 +28,11 @@ Caller-owned managers retain mutable climate/biome buffers under an explicit
 allocation budget. External temperature/direct biome outputs stay separate
 from those retained fields; calls stage growth before publishing changes.
 
-The [scheduled-state modules](world/scheduling.md) own records and exact full-key
-membership separately. Shared record identities survive time changes and
-membership removal. Ordered scheduling, world admission and tick callbacks remain
-separate implementation work.
+The [scheduled-state modules](world/scheduling.md) own records, exact full-key
+membership and historical ordered-tree state separately. Shared record identities
+survive time changes and membership removal. Current comparison searches and
+structural-first lookup remain distinct after time mutation. World scheduling,
+admission and tick callbacks remain separate implementation work.
 
 The [normal terrain module](world/terrain.md) composes all original seeded
 Perlin groups into density, then interpolates base blocks. Immutable constructor

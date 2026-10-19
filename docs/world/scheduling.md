@@ -22,14 +22,32 @@ Uniform time shifting changes the actual retained records with wrapped long
 addition. It neither rebuilds ordering nor changes membership. The audited
 membership operations expose no traversal order or callbacks.
 
-An ordered schedule, world admission, immediate updates, tick draining and
-persistence are not implemented by these APIs. The original ordered tree's
-history remains observable after time changes; a newly sorted priority queue
-would not preserve that behavior.
+The [ordered owner](../../include/mc/world/schedule/ordered.h) preserves the
+captured library profile's red-black tree history. Insertion and removal search
+from the historical root using current time/sequence fields. Insertion keeps the
+stored identity on a comparison-zero hit; a path miss can insert another node holding the
+same record. Each node owns a separate hold. Structural-first lookup follows
+left links and returns an independent hold without comparing or removing.
+
+After wrapped time changes, removal can miss even the record returned by first.
+The tree remains in that state. Two-child deletion transfers the successor's
+existing hold and retires the matched hold without allocating or retaining.
+Empty first has a distinct exceptional status. Explicit native node/byte limits
+preserve outputs and collection state on failed admission; they do not model
+every original VM allocation failure.
+
+World admission, immediate updates, tick draining, callbacks and persistence
+remain outside these collection APIs.
 
 `world.scheduled_membership` exercises 329 native contracts for collisions,
 identity, wrapping, separate holds, growth limits and unchanged failure outputs.
-The GCC 13.3 Linux run passes with address, leak and undefined-behavior checks
-enabled. Native Windows MSVC 19.51 passes the same checks without sanitizers.
-Clang and original/world scheduler comparisons remain unverified. See the
-[source evidence](../reference/state-records.md).
+`world.scheduled_ordered` adds 940 native checks for identity, limits, successor
+holds, deletion histories and mutable-key search paths. Both suites pass on
+Linux GCC 13.3 and Clang 18.1 with address, leak and undefined-behavior checks,
+and native Windows MSVC 19.51 without sanitizers.
+
+The ordered replay matches 13,584 captured JDK public-API steps on those three
+compilers. Its project-owned Java records compare the source-proven time/sequence
+pair; it uses no original game classes. This qualifies the finite collection
+profile, while original/world scheduler comparisons remain pending. See the
+[source evidence and fixture provenance](../reference/state-records.md).

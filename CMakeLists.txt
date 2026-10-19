@@ -98,6 +98,7 @@ endif()
 add_library(mc_world STATIC
     src/world/schedule/entry.c
     src/world/schedule/membership.c
+    src/world/schedule/ordered.c
     src/world/generation/normal.c
     src/world/cache/cache.c
     src/world/cache/acquire.c
@@ -135,6 +136,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_scheduled_membership PRIVATE mc_world mc_build_options)
     add_test(NAME world.scheduled_membership COMMAND mc_test_scheduled_membership)
     set_tests_properties(world.scheduled_membership PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_scheduled_ordered tests/world/schedule/test_ordered.c)
+    target_link_libraries(mc_test_scheduled_ordered PRIVATE mc_world mc_build_options)
+    add_test(NAME world.scheduled_ordered COMMAND mc_test_scheduled_ordered)
+    set_tests_properties(world.scheduled_ordered PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_scheduled_ordered_probe tests/world/schedule/ordered_probe.c)
+    target_link_libraries(mc_scheduled_ordered_probe PRIVATE mc_world mc_build_options)
 
     add_executable(mc_test_stored_chunk tests/world/storage/test_chunk.c)
     target_link_libraries(mc_test_stored_chunk PRIVATE mc_persistence mc_build_options)
@@ -350,6 +359,20 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME world.scheduled_ordered_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_scheduled_ordered.py"
+        --executable "$<TARGET_FILE:mc_scheduled_ordered_probe>")
+    set_tests_properties(world.scheduled_ordered_replay PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 90)
+
+    add_test(NAME tools.scheduled_ordered_protocol
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_scheduled_ordered_probe.py"
+        --executable "$<TARGET_FILE:mc_scheduled_ordered_probe>")
+    set_tests_properties(tools.scheduled_ordered_protocol PROPERTIES
+        LABELS "public;tools;world" TIMEOUT 180)
 
     foreach(MC_RUNTIME_CASE ownership-and-runtime generation generation-copy-limit)
         add_test(NAME world.runtime_${MC_RUNTIME_CASE}

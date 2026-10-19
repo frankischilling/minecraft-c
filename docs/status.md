@@ -7,10 +7,11 @@ entity/tile collections are supported; nonempty Boat/Sign behavior remains an
 external callback seam.
 
 The next state layer adds [ItemStack ownership and NBT provenance](item/stack.md)
-and [scheduled records and membership](world/scheduling.md). Its two CTest cases
-pass 422 checks on native Linux GCC with sanitizers and Windows MSVC without
-sanitizers. These are API contracts;
-original item/container comparisons, ordered scheduling and bound-world behavior
+and [scheduled records, membership and ordered history](world/scheduling.md).
+Three native cases pass 1,362 checks on Linux GCC/Clang with sanitizers and
+Windows MSVC without sanitizers. The ordered owner also matches all 13,584 steps
+from the captured JDK public-API fixture on those compilers. These are finite
+state/collection results; original item/container comparisons and bound-world behavior
 remain unverified.
 
 Exact-source lifecycle qualification passes at

@@ -30,8 +30,8 @@ memory or reproduce writes into an original mutable compound.
 
 `item.stack` exercises 93 native contracts, including failed reads, self-borrowed
 source replacement, aliases, split wrapping, container overlays and document
-independence. The GCC 13.3 Linux run passes with address, leak and
+independence. The GCC 13.3 and Clang 18.1 Linux runs pass with address, leak and
 undefined-behavior checks enabled. Native Windows MSVC 19.51 passes the same
-checks without sanitizers. Clang, original comparisons and gameplay/container
+checks without sanitizers. Original comparisons and gameplay/container
 integration remain unverified. See the
 [source evidence and verification scope](../reference/state-records.md).
