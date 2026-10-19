@@ -1,6 +1,19 @@
 # Test scope and reproduction
 
-The [World registry binding](world/registry.md) passes 22 selected cases on
+The [Biome registry observations](reference/biome-registry.md) record actual
+ordinary initialization on both originals in three JVM modes. Each side
+supplies six graph snapshots, 3,824 raw-bit queries and all 4,096 table entries.
+Public replay needs no original archives or JVM. All 26 selected cases pass on
+MSVC, GCC and Clang, including 101,396 registry, 609 reference-sampling and
+33,155 numerical checks. Full graph/query replay passes with synthetic and
+imported resources, including ten corruption guards per side. Linux uses
+ASan/UBSan and leak detection. All 575 code/tool/fixture inputs match retained
+copies, with 26 products per host; formatting passes 292 C/header files.
+The larger class owner changes allocation-budget search counts to 11,312,040
+array, 103,163 Block and 531,361 Item checks; no assertion was removed.
+Full World startup, generation, population and persistence remain unfinished.
+
+The preceding [World registry binding](world/registry.md) passes 22 selected cases on
 MSVC, GCC and Clang, with Linux ASan/UBSan and leak detection. This includes
 150 new constructed World checks, the existing 4,397 GAME checks, and the
 recorded Dimension, registry, recipe/Stack and statistic graph replays.
@@ -235,6 +248,9 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
+| `world.biome_registry` | Actual shared objects, field/list/Class identities, literal selectors, cold/warm and retained failure contracts | Class bootstrap and ordinary helpers; no World binding or gameplay |
+| `world.biome_reference_sampling` | Cold, warm, partial channel/class failure, array reuse and whole-call lifetime contracts | Direct square sampler with native bounds; no World generation or surface join |
+| `world.biome_registry_observation` | Complete original graph/query streams, explicit byte/table controls and corruption guards | Finite Biome bootstrap and methods; no Java Throwable identity or full World startup |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |
 | `world.caves` | 2021832 checks: ten complete paired-original fixtures and 30 captured passes, reseeding, fresh cache initialization, owner isolation, suffix/table preservation and C argument/coordinate controls | Normal cave pass; protected geometry controls have separate evidence |

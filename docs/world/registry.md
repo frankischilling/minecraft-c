@@ -77,9 +77,10 @@ not execute fresh spawn acceptance or its rejection draws. The unchanged
 constructor and recorded-observation regressions pass separately in that run.
 
 Ordinary missing-chunk GAME generation still fails at its explicit registry
-and lighting join. Actual Biome bootstrap can initialize Block during the
-first biome sample, before terrain generation. Numerical biome IDs do not
-supply those class owners or their partial initialization effects. Generation,
+and lighting join. The [shared Biome module](biome-registry.md) now supplies
+actual class owners and a direct sampler that can initialize Block during the
+first Biome lookup, after the first climate-cell stores. Wiring that concrete
+path into World/Dimension and the live generator remains unfinished. Generation,
 lighting, activation, population, full block setters and gameplay persistence
 remain unfinished. Prepared cache baselines and native constructor completion
 cannot establish full fresh-world startup or original population parity.

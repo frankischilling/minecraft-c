@@ -260,6 +260,10 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
     classes->crafting_state.pc = classes->smelting_state.pc = -1;
     classes->crafting_state.failure = native_error(MC_REGISTRY_OK, NULL);
     classes->smelting_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    for (size_t i = 0; i < MC_BIOME_KIND_COUNT; ++i) {
+        classes->biome_states[i].pc = -1;
+        classes->biome_states[i].failure = native_error(MC_REGISTRY_OK, NULL);
+    }
     *out = classes;
     return result(error, MC_REGISTRY_OK, NULL);
 }

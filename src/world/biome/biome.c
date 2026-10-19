@@ -261,6 +261,11 @@ static bool biome_manager_valid(const mc_biome_manager *manager)
            biome_buffer_valid(manager->memory, manager->d.data, manager->d.length, BIOME_ID_BUFFER);
 }
 
+bool mc_biome_manager_sampling_valid(const mc_biome_manager *manager)
+{
+    return biome_manager_valid(manager);
+}
+
 mc_biome_status mc_biome_manager_construct_channel(mc_biome_manager *manager, int64_t seed,
                                                    mc_biome_construction_channel channel)
 {
@@ -415,11 +420,101 @@ static void biome_channel(mc_noise_simplex *layers, size_t layer_count, int32_t 
                                         buffer->length);
 }
 
+mc_biome_status mc_biome_sample_channel_direct(mc_biome_manager *manager, int32_t x, int32_t z,
+                                               size_t size, mc_biome_construction_channel channel)
+{
+    if (!biome_manager_valid(manager)) {
+        return MC_BIOME_INVALID_ARGUMENT;
+    }
+    mc_biome_double_buffer *buffer;
+    mc_noise_simplex *layers;
+    size_t layer_count;
+    double scale, frequency;
+    switch (channel) {
+        case MC_BIOME_CONSTRUCT_TEMPERATURE:
+            buffer = &manager->a;
+            layers = manager->temperature_layers;
+            layer_count = 4;
+            scale = (double)0.025f;
+            frequency = 0.25;
+            break;
+        case MC_BIOME_CONSTRUCT_RAINFALL:
+            buffer = &manager->b;
+            layers = manager->rainfall_layers;
+            layer_count = 4;
+            scale = (double)0.05f;
+            frequency = 0.3333333333333333;
+            break;
+        case MC_BIOME_CONSTRUCT_AUXILIARY:
+            buffer = &manager->c;
+            layers = manager->auxiliary_layers;
+            layer_count = 2;
+            scale = 0.25;
+            frequency = 0.5882352941176471;
+            break;
+        default:
+            return MC_BIOME_INVALID_ARGUMENT;
+    }
+    size_t elements;
+    mc_biome_status status = biome_dimensions(size, size, &elements);
+    if (status != MC_BIOME_OK) {
+        return status;
+    }
+    biome_replacement replacement = {0};
+    status = biome_prepare(manager->memory, buffer->data, buffer->length, elements,
+                           BIOME_DOUBLE_BUFFER, &replacement);
+    if (status != MC_BIOME_OK) {
+        return status;
+    }
+    mc_biome_double_buffer target = *buffer;
+    if (replacement.data != NULL) {
+        target.data = replacement.data;
+        target.length = replacement.length;
+    }
+    mc_noise_simplex_octaves noise = {layers, layer_count};
+    mc_noise_simplex_grid grid = {(double)x, (double)z, size, size, scale, scale};
+    /* Raw fill validates before clearing, then has no later failure. Reused
+     * storage therefore remains unchanged on refusal, while an unpublished
+     * replacement can be retired without touching the actual field. */
+    if (!mc_noise_simplex_octaves_fill(&noise, &grid, frequency,
+                                       MC_NOISE_SIMPLEX_DEFAULT_DIVISOR_MULTIPLIER, target.data,
+                                       target.length)) {
+        biome_release(replacement.data);
+        return MC_BIOME_INVALID_ARGUMENT;
+    }
+    biome_commit_double(buffer, &replacement);
+    return MC_BIOME_OK;
+}
+
 static double biome_temperature_mix(double raw_temperature, double auxiliary)
 {
     double weight = 0.01;
     double complement = 1.0 - weight;
     return ((raw_temperature * 0.15) + 0.7) * complement + auxiliary * weight;
+}
+
+void mc_biome_sample_process_cell(mc_biome_manager *manager, size_t index)
+{
+    double auxiliary = manager->c.data[index] * 1.1 + 0.5;
+    double mixed = biome_temperature_mix(manager->a.data[index], auxiliary);
+    double weight = 0.002;
+    double complement = 1.0 - weight;
+    double rainfall = ((manager->b.data[index] * 0.15) + 0.5) * complement + auxiliary * weight;
+    double temperature = 1.0 - ((1.0 - mixed) * (1.0 - mixed));
+    if (temperature < 0.0) {
+        temperature = 0.0;
+    }
+    if (rainfall < 0.0) {
+        rainfall = 0.0;
+    }
+    if (temperature > 1.0) {
+        temperature = 1.0;
+    }
+    if (rainfall > 1.0) {
+        rainfall = 1.0;
+    }
+    manager->a.data[index] = temperature;
+    manager->b.data[index] = rainfall;
 }
 
 mc_biome_status mc_biome_temperatures(mc_biome_manager *manager, int32_t x, int32_t z, size_t width,
@@ -501,26 +596,9 @@ static mc_biome_status biome_square(mc_biome_manager *manager, int32_t x, int32_
     biome_channel(manager->auxiliary_layers, 2, x, z, size, size, 0.25, 0.5882352941176471,
                   &manager->c);
     for (size_t i = 0; i < elements; ++i) {
-        double auxiliary = manager->c.data[i] * 1.1 + 0.5;
-        double mixed = biome_temperature_mix(manager->a.data[i], auxiliary);
-        double weight = 0.002;
-        double complement = 1.0 - weight;
-        double rainfall = ((manager->b.data[i] * 0.15) + 0.5) * complement + auxiliary * weight;
-        double temperature = 1.0 - ((1.0 - mixed) * (1.0 - mixed));
-        if (temperature < 0.0) {
-            temperature = 0.0;
-        }
-        if (rainfall < 0.0) {
-            rainfall = 0.0;
-        }
-        if (temperature > 1.0) {
-            temperature = 1.0;
-        }
-        if (rainfall > 1.0) {
-            rainfall = 1.0;
-        }
-        manager->a.data[i] = temperature;
-        manager->b.data[i] = rainfall;
+        mc_biome_sample_process_cell(manager, i);
+        double temperature = manager->a.data[i];
+        double rainfall = manager->b.data[i];
         output->data[i] = biome_lookup(&manager->classifier, temperature, rainfall);
     }
     return MC_BIOME_OK;

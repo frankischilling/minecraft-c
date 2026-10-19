@@ -6,6 +6,7 @@
 #include "../../resources/translation/translation_internal.h"
 #include "../../statistics/keys/keys_internal.h"
 #include "../../statistics/registry/registry_internal.h"
+#include "../../world/biome/registry_internal.h"
 #include "mc/block/registry/registry.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
@@ -291,6 +292,8 @@ struct mc_registry_classes {
     mc_registry_class_state achievements_state;
     mc_registry_recipe_storage recipes;
     mc_registry_class_state crafting_state, smelting_state;
+    mc_registry_biome_storage biomes;
+    mc_registry_class_state biome_states[MC_BIOME_KIND_COUNT];
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

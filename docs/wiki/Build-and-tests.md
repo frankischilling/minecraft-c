@@ -1,5 +1,14 @@
 # Build and tests
 
+The [Biome observations](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome-registry.md)
+capture ordinary bootstrap, six graph snapshots and 3,824 raw-bit queries per
+side. Public replay uses these observations without Java or original archives.
+All 26 selected cases pass on MSVC/GCC/Clang, including 101,396 registry,
+609 reference-sampling and 33,155 numerical checks. Graph replay passes with
+synthetic and imported resources, including 20 corruption guards. Linux uses
+ASan/UBSan and leak detection; all 575 inputs and 26 products per host are
+retained. Formatting passes 292 C/header files.
+
 The [World registry integration](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/registry.md)
 passes 22 selected cases on MSVC/GCC/Clang, including 150 constructed World
 checks, existing recorded-observation replays and Linux sanitizers. All 559

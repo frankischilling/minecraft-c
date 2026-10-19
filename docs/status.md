@@ -1,6 +1,17 @@
 # Development status
 
-The [World registry binding](world/registry.md) now shares the actual class
+The [shared Biome registry](world/biome-registry.md) now constructs actual
+objects, spawn lists, Class handles and a reference table on the shared class
+owner. The direct sampler writes each climate cell before the real Biome
+active use. Both originals returned from ordinary initialization in three JVM
+modes; their complete graphs and 3,824 queries per side match the native
+probe on MSVC, GCC and Clang. All 26 selected cases pass, including 101,396
+registry, 609 reference-sampling and 33,155 numerical checks. Linux uses
+ASan/UBSan and leak detection. All 575 code/tool/fixture inputs match retained
+copies; each host retains 26 products. World/Dimension binding, live
+generation, lighting, population and full persistence remain unfinished.
+
+At the preceding checkpoint, the [World registry binding](world/registry.md) shares the actual class
 owner across Worlds, performs ordered material and Dimension spawn queries,
 and preserves the constructor's live-Random rejection loop. All 22 selected
 cases pass on MSVC, GCC and Clang, with Linux ASan/UBSan and leak detection.
@@ -9,7 +20,7 @@ still passes 4,397. All 559 code/tool/fixture inputs match retained copies,
 with 22 products retained per host; formatting passes 284 C/header files.
 These are native integration checks and existing recorded-observation replays,
 without a new executed-original World comparison. Missing-chunk generation,
-Biome bootstrap, lighting/population joins and full persistence remain open.
+the World/Biome join, lighting/population joins and full persistence remain open.
 
 At the preceding recipe checkpoint, native
 [crafting and smelting initialization](item/recipes.md) constructs

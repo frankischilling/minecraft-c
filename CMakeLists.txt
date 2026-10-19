@@ -142,8 +142,10 @@ add_library(mc_registry STATIC
     src/statistics/registry/names.c
     src/statistics/registry/format.c
     src/statistics/registry/initializer.c
-    src/statistics/registry/registration.c)
-target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item PRIVATE mc_platform_text mc_build_options)
+    src/statistics/registry/registration.c
+    src/world/biome/registry.c
+    src/world/biome/sampling.c)
+target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world PRIVATE mc_platform_text mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
 target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
@@ -224,6 +226,19 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_block_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME block.registry_construction COMMAND mc_test_block_registry)
     set_tests_properties(block.registry_construction PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_executable(mc_test_biome_registry tests/world/biome/test_registry.c)
+    target_link_libraries(mc_test_biome_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME world.biome_registry COMMAND mc_test_biome_registry)
+    set_tests_properties(world.biome_registry PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_executable(mc_test_biome_sampling tests/world/biome/test_sampling.c)
+    target_link_libraries(mc_test_biome_sampling PRIVATE mc_registry mc_build_options)
+    add_test(NAME world.biome_reference_sampling COMMAND mc_test_biome_sampling)
+    set_tests_properties(world.biome_reference_sampling PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_executable(mc_biome_registry_probe tests/world/biome/registry_probe.c)
+    target_link_libraries(mc_biome_registry_probe PRIVATE mc_resources mc_registry mc_build_options)
 
     add_executable(mc_test_item_registry tests/item/registry/test_registry.c)
     target_link_libraries(mc_test_item_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -682,6 +697,14 @@ if(BUILD_TESTING)
             --executable "$<TARGET_FILE:mc_recipe_bootstrap_probe>")
     set_tests_properties(item.recipes_observation PROPERTIES
         LABELS "public;fixture;java" TIMEOUT 60)
+
+    add_test(NAME world.biome_registry_observation
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/check_biome_registry.py"
+            --executable "$<TARGET_FILE:mc_biome_registry_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/biome-registry-replay")
+    set_tests_properties(world.biome_registry_observation PROPERTIES
+        LABELS "public;fixture;java" TIMEOUT 90)
 
     add_test(NAME item.stack_values_observation
         COMMAND "${Python3_EXECUTABLE}"

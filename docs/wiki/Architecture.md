@@ -22,8 +22,11 @@ The [shared World registry](https://github.com/frankischilling/minecraft-c/blob/
 is bound before the first allocation without initializing Block. Native borrows
 protect its lifetime across RAW, failed and retired Worlds. Material and spawn
 queries perform real active use after acquiring the block/top result. Numerical
-biome IDs and generator composition remain separate from the unfinished live
-Biome bootstrap, generation, lighting and population joins.
+biome IDs and generator composition remain separate from the concrete
+[shared Biome registry](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/biome-registry.md).
+That module owns actual objects, spawn lists/Class handles and reference arrays,
+and performs the real lookup after climate stores. World/Dimension, generation,
+lighting and population joins remain unfinished.
 
 The [World block access contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
 adds real acquired metadata reads and quiet writes, normal dirty marking and

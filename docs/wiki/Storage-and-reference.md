@@ -1,5 +1,12 @@
 # Storage and original references
 
+The [Biome capture](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome-registry.md)
+records natural ordinary initialization on both originals in three JVM modes,
+all Biome/list/record/Class aliases, six snapshots and 3,824 raw-bit queries per
+side. Complete public protocols exclude original assets. Native comparison
+distinguishes its producer policy and projects exception kinds, without
+claiming Java Throwable identity or full World startup.
+
 The [Dimension capture](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
 records actual original constructors, retained arrays, standalone light tables
 and 48,739 celestial calls per side. Its public projection compares exact bits

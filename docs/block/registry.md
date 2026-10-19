@@ -3,16 +3,18 @@
 `mc_registry` executes the Block construction portion of the paired original
 `uu`/`na` static initializer. It creates nine sounds, eight distinct property
 arrays and 96 concrete Blocks in source order, followed by the real recursive
-[Item construction](../item/registry.md). This owner remains incomplete:
-Both entry orders execute actual
+[Item construction](../item/registry.md). Both entry orders execute actual
 [statistics](../statistics/registry.md) and
 [achievement initialization](../statistics/achievements.md). With imported
-resources, Block-first completes nested Item/statistics/achievement work and
-reaches the unfinished recipe call at d21. Item-first instead reaches the
+resources, Block-first completes nested Item/statistics/achievement work,
+[recipe and smelting initialization](../item/recipes.md), and returns at3677.
+Item-first instead reaches the
 first achievement icon while named Items are still NULL, failing on its real
-ItemStack Item read at2. Both retain failed Block state. Without a resource
+ItemStack Item read at2, retaining the failed Block state. Without a resource
 provider the earlier Translation resource-open dependency still stops them.
-Neither supplies a complete gameplay registry.
+Complete gameplay registry binding remains unfinished. The
+[shared Biome constructor](../world/biome-registry.md) performs real Block
+active uses for its initial top/filler fields and later sand fields.
 
 The [public interface](../../include/mc/block/registry/registry.h) allocates one
 class owner above Worlds, borrowing the application's actual Material and Random

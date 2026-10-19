@@ -1,10 +1,12 @@
 # Climate fields and biome classification
 
-This note records bytecode evidence for the Beta 1.7.3 climate managers and
-biome classifier. Original-only observations validated an isolated numerical
-fixture on Temurin 17.0.17+10; comparison with C is being implemented.
-The scope is climate grids and classification; world startup, complete biomes,
-terrain, population and rendering require further evidence.
+This note records bytecode evidence and the isolated numerical comparison for
+the Beta 1.7.3 climate managers and biome classifier. Its explicit-seed fixture
+separates climate grids and classification from original world startup.
+The [shared Biome bootstrap evidence](biome-registry.md) records actual
+class-owned objects, lists and table aliases, plus the source order of reference
+sampling.
+Complete World, terrain, population and rendering acceptance remains separate.
 
 ## Reference identity
 
