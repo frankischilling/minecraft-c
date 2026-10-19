@@ -7,8 +7,20 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
+The current [common-stat addition](statistics/registry.md) passes 15 selected
+cases on native Windows MSVC and 17 on Linux GCC/Clang with ASan/UBSan and leak
+detection. Its unit reports 12,918 checks; explicit English/C.UTF-8 and invalid
+category profiles report 12,919 each. The real imported-resource probe matches
+all 25 common-field protocol rows from each normally initialized original in
+three JVM modes. Complete native statistics initialization remains unfinished
+at PC618. The selected run retains every earlier Reader, Properties,
+Translation, key and Block/Item comparison; current budget-search counts are
+4,454 Translation, 103,163 Block and 531,481 Item checks. All 460 code/tool/fixture
+inputs match before/after and across the three hosts. This is a selected local
+run; it does not replace the separately recorded complete local matrix.
+
 The current [Reader](reference/reader.md) and [achievement-key](statistics/keys.md)
-addition passes 14 selected cases on MSVC/GCC/Clang with Linux sanitizers.
+checkpoint passed 14 selected cases on MSVC/GCC/Clang with Linux sanitizers.
 All 800 recorded reader owners, 7,136 actions and 19,594 projected rows match,
 along with all 446 key entries and 453 lookups from both originals. Native
 units report 134,207 reader, 4,299 key and 4,504 translation checks. The selected

@@ -1,12 +1,21 @@
 # Development status
 
+Native [common statistics](statistics/registry.md) now construct their real
+formatter configuration and register all 23 common owners on the shared class
+owner. Their full field projection matches both normally initialized originals
+on MSVC/GCC/Clang. The native unit passes 12,918 checks; selected runs pass 15
+Windows and 17 Linux cases with Linux sanitizers, including explicit locale
+regressions. The next block-stat helper at PC618, runtime number formatting,
+achievements, recipes and complete bootstrap/population/persistence remain
+unfinished. PR52 remains draft for the complete acceptance.
+
 Native [achievement-key loading](statistics/keys.md) now constructs actual
 shared class `b`, reads its imported resource, preserves String identities and
 closes its reader. All 446 entries and 453 lookups match both original JARs.
 The [byte/line reader](reference/reader.md) matches 19,594 projected rows from
 800 recorded JDK owners and 7,136 actions. Fourteen selected cases pass on
 MSVC/GCC/Clang with Linux sanitizers, including 4,299 key and 134,207 reader
-checks. Caught stack-trace output, formatters, statistics registration,
+checks at that earlier checkpoint. Caught stack-trace output, runtime formatting,
 achievements, recipes and full bootstrap/population/persistence remain unfinished.
 
 Native [Properties decoding](reference/properties.md) and

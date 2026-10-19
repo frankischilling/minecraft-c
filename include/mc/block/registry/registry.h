@@ -27,7 +27,8 @@ typedef enum mc_registry_status {
     MC_REGISTRY_FAILED_INITIALIZATION,
     MC_REGISTRY_BUSY,
     MC_REGISTRY_ILLEGAL_ARGUMENT,
-    MC_REGISTRY_IO_FAILED
+    MC_REGISTRY_IO_FAILED,
+    MC_REGISTRY_DUPLICATE_STATISTIC
 } mc_registry_status;
 
 typedef enum mc_registry_phase {

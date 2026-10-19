@@ -250,6 +250,10 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
     classes->translation_wrapper_state.failure = native_error(MC_REGISTRY_OK, NULL);
     classes->statistic_key_state.pc = -1;
     classes->statistic_key_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    classes->statistic_base_state.pc = -1;
+    classes->statistic_base_state.failure = native_error(MC_REGISTRY_OK, NULL);
+    classes->statistics_state.pc = -1;
+    classes->statistics_state.failure = native_error(MC_REGISTRY_OK, NULL);
     *out = classes;
     return result(error, MC_REGISTRY_OK, NULL);
 }

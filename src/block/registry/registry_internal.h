@@ -4,6 +4,7 @@
 #include "../../item/registry/registry_internal.h"
 #include "../../resources/translation/translation_internal.h"
 #include "../../statistics/keys/keys_internal.h"
+#include "../../statistics/registry/registry_internal.h"
 #include "mc/block/registry/registry.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
@@ -276,6 +277,10 @@ struct mc_registry_classes {
     mc_registry_class_state translation_state, translation_wrapper_state;
     mc_registry_key_storage statistic_keys;
     mc_registry_class_state statistic_key_state;
+    mc_registry_statistic_base_storage statistic_base;
+    mc_registry_class_state statistic_base_state;
+    mc_registry_statistic_storage statistics;
+    mc_registry_class_state statistics_state;
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

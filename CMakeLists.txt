@@ -68,7 +68,7 @@ target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
 target_link_libraries(mc_platform_time PRIVATE mc_build_options)
 
-add_library(mc_platform_text STATIC src/platform/text/charset.c)
+add_library(mc_platform_text STATIC src/platform/text/charset.c src/platform/text/locale.c)
 target_include_directories(mc_platform_text PRIVATE include)
 target_link_libraries(mc_platform_text PRIVATE mc_build_options)
 
@@ -124,8 +124,12 @@ add_library(mc_registry STATIC
     src/item/registry/constructors.c
     src/item/registry/registration.c
     src/resources/translation/translation.c
-    src/statistics/keys/keys.c)
-target_link_libraries(mc_registry PUBLIC mc_block mc_core PRIVATE mc_build_options)
+    src/statistics/keys/keys.c
+    src/statistics/registry/base.c
+    src/statistics/registry/format.c
+    src/statistics/registry/initializer.c
+    src/statistics/registry/registration.c)
+target_link_libraries(mc_registry PUBLIC mc_block mc_core PRIVATE mc_platform_text mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
 target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
@@ -448,6 +452,23 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_statistic_keys PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME statistics.keys COMMAND mc_test_statistic_keys)
     set_tests_properties(statistics.keys PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_statistic_registry tests/statistics/registry/test_registry.c)
+    target_link_libraries(mc_test_statistic_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME statistics.registry COMMAND mc_test_statistic_registry)
+    set_tests_properties(statistics.registry PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        add_test(NAME statistics.locale_c_utf8
+            COMMAND ${CMAKE_COMMAND} -E env LC_ALL=C.UTF-8 $<TARGET_FILE:mc_test_statistic_registry> en)
+        add_test(NAME statistics.locale_invalid_category
+            COMMAND ${CMAKE_COMMAND} -E env LC_ALL= LANG=en_US.UTF-8 LC_CTYPE=C.UTF-8
+                LC_NUMERIC=mc_invalid_locale $<TARGET_FILE:mc_test_statistic_registry> en_US)
+        set_tests_properties(statistics.locale_c_utf8 statistics.locale_invalid_category
+            PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+    endif()
+
+    add_executable(mc_statistic_registry_file_probe tests/statistics/registry/files_probe.c)
+    target_link_libraries(mc_statistic_registry_file_probe PRIVATE mc_resources mc_build_options)
 
     add_executable(mc_statistic_keys_file_probe tests/statistics/keys/files_probe.c)
     target_link_libraries(mc_statistic_keys_file_probe PRIVATE mc_resources mc_build_options)

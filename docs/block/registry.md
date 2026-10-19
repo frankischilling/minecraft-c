@@ -4,11 +4,14 @@
 `uu`/`na` static initializer. It creates nine sounds, eight distinct property
 arrays and 96 concrete Blocks in source order, followed by the real recursive
 [Item construction](../item/registry.md). This owner remains incomplete:
-Block-first initialization stops with Block suspended at PC3398 and Item at its
-unfinished statistics invocation, PC2664. Item-first initialization reaches the
-BlockItem tail and stops at Block statistics PC3674. Both return
-`MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY`, retain FAILED state and cannot provide
-a successfully initialized gameplay registry.
+Block-first initialization suspends Block at PC3398 and Item at statistics
+invocation PC2664. Item-first initialization reaches the BlockItem tail and
+Block statistics PC3674. Both now execute actual
+[statistics class initialization](../statistics/registry.md). With no resource
+provider they fail at Translation's resource-open dependency; with imported
+resources they retain the 23 common registrations before the unfinished helper
+at PC618. Both retain FAILED state and cannot provide a successfully initialized
+gameplay registry.
 
 The [public interface](../../include/mc/block/registry/registry.h) allocates one
 class owner above Worlds, borrowing the application's actual Material and Random
@@ -64,7 +67,7 @@ must be retired before destruction.
 
 ## Native checks and remaining work
 
-`block.registry_construction` passes 102,659 checks on MSVC, GCC and Clang,
+`block.registry_construction` passes 103,163 checks on MSVC, GCC and Clang,
 within six selected registry, Material, profile and recorded-observation cases.
 Linux runs use
 ASan/UBSan and leak checks. Both client and server constructor paths are covered.
@@ -77,9 +80,9 @@ do not inject constructor failures or reset the shared profile.
 The separate [executed-original comparison](../reference/block-registry.md)
 matches all 3,950 projected base-field/array/reference rows per side on those
 three compilers. It excludes concrete subtype state, clock-dependent values
-and full bootstrap completion. Item has its own 530,295 native checks and
+and full bootstrap completion. Item has its own 531,481 native checks and
 [33,064-row original comparison](../reference/item-registry.md). The
-statistic, achievement, resource, recipe and smelting closure remains
+block-statistic, achievement, recipe and smelting closure remains
 unfinished. Full registry startup, World integration, synchronous block hooks,
 terrain-feature population, entity/tile behavior and gameplay persistence remain
 required. See the [parity matrix](../parity.md) and [test scope](../testing.md).

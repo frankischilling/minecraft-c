@@ -1,5 +1,11 @@
 # minecraft-c
 
+The [common-stat module](https://github.com/frankischilling/minecraft-c/blob/main/docs/statistics/registry.md)
+now registers all 23 common stats and matches their fields from both normally
+initialized originals. Selected checks pass on Windows MSVC and Linux GCC/Clang
+with Linux sanitizers. Native class initialization still fails explicitly at
+the next block-stat helper; complete bootstrap and population remain unfinished.
+
 The project targets Minecraft Beta 1.7.3 in C17, with a graphical single-player
 and multiplayer client plus a dedicated headless server. Players select local
 usernames; account authentication is excluded.

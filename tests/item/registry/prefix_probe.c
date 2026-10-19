@@ -179,8 +179,10 @@ int main(int argc, char **argv)
         mc_registry_classes_initialize_blocks(owner, &error) !=
             MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY ||
         error.status != MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY || error.initializer_pc != 3398 ||
-        error.active_initializer_pc != 2664 || error.active_initializer_class == NULL ||
-        strcmp(error.active_initializer_class, client ? "gm" : "ej") != 0) {
+        error.active_initializer_pc != 4 || error.active_initializer_class == NULL ||
+        strcmp(error.active_initializer_class, client ? "nh" : "ii") != 0 ||
+        error.constructor_pc != 23 || error.constructor_class == NULL ||
+        strcmp(error.constructor_class, client ? "nh" : "ii") != 0) {
         (void)fail(&p, "required nested native failure edge was not reached");
         goto cleanup;
     }

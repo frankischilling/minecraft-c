@@ -53,7 +53,9 @@ for publication order, parsing, retained failures, String identity, close,
 reentry and native allocation budgets. The
 [file test](../../tests/tools/statistics/test_keys_files.py) also uses synthetic
 bytes and Unicode filesystem roots. This class-specific work does not complete
-statistics, achievements, recipes, full registry bootstrap or population.
+achievements, recipes, full registry bootstrap or population. Actual
+[common-stat registration](registry.md) now calls this loader at the original
+registration PC121, after list/map publication and before the `h` assignment.
 
 The complete original view matches on MSVC, GCC and Clang. All 4,299 native
 key checks pass within 14 selected registry/resource cases on each compiler;

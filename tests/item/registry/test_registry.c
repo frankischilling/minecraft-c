@@ -419,6 +419,60 @@ cleanup:
     return result;
 }
 
+static int check_statistics_prefix(const mc_registry_classes *owner, mc_registry_side side,
+                                   const mc_registry_error *failure)
+{
+    int result = 1;
+    mc_registry_statistic_base_view base;
+    mc_registry_statistic_view statistics;
+    mc_registry_translation_view translation;
+    mc_registry_statistic_key_view keys;
+    const char *singleton_class = side == MC_REGISTRY_CLIENT ? "nh" : "ii";
+    CHECK(owner->options.resources == NULL);
+    CHECK(failure->status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+    CHECK(failure->active_initializer_class != NULL &&
+          strcmp(failure->active_initializer_class, singleton_class) == 0 &&
+          failure->active_initializer_pc == 4);
+    CHECK(failure->constructor_class != NULL &&
+          strcmp(failure->constructor_class, singleton_class) == 0 &&
+          failure->constructor_pc == 23 && failure->profile_status == MC_JAVA_RANDOM_PROFILE_OK);
+    CHECK(mc_registry_classes_inspect_statistic_base(owner, &base, NULL) == MC_REGISTRY_OK);
+    CHECK(base.phase == MC_REGISTRY_READY && base.initializer_pc == 51);
+    CHECK(base.b != NULL && base.c != NULL && base.b != base.c);
+    CHECK(base.i != NULL && base.j != NULL && base.k != NULL && base.i != base.j &&
+          base.i != base.k && base.j != base.k);
+    CHECK(mc_registry_classes_inspect_statistics(owner, &statistics, NULL) == MC_REGISTRY_OK);
+    CHECK(statistics.phase == MC_REGISTRY_FAILED && statistics.initializer_pc == 59);
+    CHECK(owner->statistics.a != NULL && statistics.map_size == 0);
+    const mc_statistic_list *lists[] = {statistics.b, statistics.c, statistics.d, statistics.e};
+    for (size_t i = 0; i < COUNT(lists); ++i) {
+        CHECK(lists[i] != NULL && mc_statistic_list_size(lists[i]) == 0);
+        for (size_t j = 0; j < i; ++j)
+            CHECK(lists[i] != lists[j]);
+    }
+    CHECK(statistics.named != NULL);
+    for (size_t i = 0; i < 23; ++i)
+        CHECK(statistics.named[i] == NULL);
+    CHECK(statistics.C == NULL && statistics.D == NULL && statistics.E == NULL &&
+          statistics.F == NULL);
+    CHECK(!statistics.G && !statistics.H && statistics.duplicate_message == NULL);
+    CHECK(mc_registry_classes_inspect_translation(owner, &translation, NULL) == MC_REGISTRY_OK);
+    CHECK(translation.singleton_phase == MC_REGISTRY_FAILED &&
+          translation.singleton_initializer_pc == 4);
+    CHECK(translation.wrapper_phase == MC_REGISTRY_FAILED &&
+          translation.wrapper_initializer_pc == 0);
+    CHECK(translation.singleton_a == NULL && translation.wrapper_a == NULL);
+    CHECK(owner->translations.pending != NULL && owner->translations.pending->constructor_pc == 23);
+    CHECK(mc_registry_classes_inspect_statistic_keys(owner, &keys, NULL) == MC_REGISTRY_OK);
+    CHECK(keys.phase == MC_REGISTRY_COLD && keys.initializer_pc == -1);
+    CHECK(keys.a == NULL && keys.construction == NULL && !keys.map_published);
+    CHECK(keys.constructor_pc == -1 && keys.caught_status == MC_REGISTRY_OK &&
+          keys.caught_pc == -1);
+    result = 0;
+cleanup:
+    return result;
+}
+
 static int check_retry(mc_registry_classes *owner)
 {
     int result = 1;
@@ -458,6 +512,8 @@ static int check_retry(mc_registry_classes *owner)
     CHECK(error.initializer_pc == item_failure.initializer_pc &&
           error.active_initializer_pc == item_failure.active_initializer_pc &&
           error.active_initializer_class == item_failure.active_initializer_class &&
+          error.constructor_class == item_failure.constructor_class &&
+          error.constructor_pc == item_failure.constructor_pc &&
           error.item_argument == item_failure.item_argument &&
           error.profile_status == item_failure.profile_status);
     CHECK(mc_registry_classes_initialize_blocks(owner, &error) ==
@@ -466,6 +522,8 @@ static int check_retry(mc_registry_classes *owner)
     CHECK(error.initializer_pc == block_failure.initializer_pc &&
           error.active_initializer_pc == block_failure.active_initializer_pc &&
           error.active_initializer_class == block_failure.active_initializer_class &&
+          error.constructor_class == block_failure.constructor_class &&
+          error.constructor_pc == block_failure.constructor_pc &&
           error.item_argument == block_failure.item_argument &&
           error.profile_status == block_failure.profile_status);
     CHECK(mc_registry_classes_inspect_items(owner, &after, &error) == MC_REGISTRY_OK);
@@ -488,6 +546,7 @@ static int check_retry(mc_registry_classes *owner)
               randoms[i]->have_next_next_gaussian == snapshots[i].have_cache);
     }
     CHECK(profile_is(owner->options.random_profile, u) == 0);
+    CHECK(check_statistics_prefix(owner, owner->options.side, &item_failure) == 0);
     result = 0;
 cleanup:
     return result;
@@ -533,8 +592,7 @@ static int test_block_first(mc_registry_side side, mc_java_random_profile *profi
     CHECK(mc_registry_classes_initialize_blocks(owner, &error) ==
           MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
     CHECK(error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error.initializer_pc == 3398);
-    CHECK(error.active_initializer_pc == 2664 && error.active_initializer_class != NULL &&
-          strcmp(error.active_initializer_class, side == MC_REGISTRY_CLIENT ? "gm" : "ej") == 0);
+    CHECK(check_statistics_prefix(owner, side, &error) == 0);
     mc_registry_item_view view;
     mc_registry_block_view blocks;
     CHECK(mc_registry_classes_inspect_items(owner, &view, &error) == MC_REGISTRY_OK);
@@ -611,8 +669,7 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
     CHECK(mc_registry_classes_initialize_items(owner, &error) ==
           MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
     CHECK(error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error.initializer_pc == 3674);
-    CHECK(error.active_initializer_pc == 3674 && error.active_initializer_class != NULL &&
-          strcmp(error.active_initializer_class, side == MC_REGISTRY_CLIENT ? "uu" : "na") == 0);
+    CHECK(check_statistics_prefix(owner, side, &error) == 0);
     mc_registry_item_view view;
     mc_registry_block_view blocks;
     CHECK(mc_registry_classes_inspect_items(owner, &view, &error) == MC_REGISTRY_OK);
@@ -758,6 +815,12 @@ static int budget_trial(mc_registry_side side, mc_java_random_profile *profile,
         /* Unexpected clock/profile/system-allocation failures are not inferred
          * to have a count from static pointers and cannot qualify this trial. */
         CHECK(status == MC_REGISTRY_LIMIT || status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
+        if (status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY) {
+            CHECK(error.initializer_pc == 3674);
+            CHECK(check_statistics_prefix(owner, side, &error) == 0);
+        } else {
+            CHECK(error.status == MC_REGISTRY_LIMIT);
+        }
         CHECK(error.profile_status == MC_JAVA_RANDOM_PROFILE_OK);
         size_t constructors = 0;
         CHECK(published_random_count(owner, &constructors) == 0);

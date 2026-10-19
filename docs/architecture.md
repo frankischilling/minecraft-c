@@ -14,8 +14,11 @@ borrow the same stable owner; material identity is separate from block IDs.
 `mc_registry` builds on that owner and the shared Random profile with actual
 [Block](block/registry.md) and [Item](item/registry.md) class construction. It
 retains source-ordered static, base and subtype state through their recursive
-initialization cycle, including failed prefixes. The unfinished statistics and
-resource closure prevents successful registry initialization and World binding.
+initialization cycle, including failed prefixes. The same owner executes actual
+[Translation](resources/translation.md), [key loading](statistics/keys.md) and
+[common-stat registration](statistics/registry.md). Unfinished block-stat,
+achievement and recipe dependencies still prevent complete registry startup
+and World binding.
 `mc_world_info` owns per-World [metadata fields and shared references](world/info.md)
 above storage, with a private platform-clock dependency for actual no-list
 serialization. It borrows no store or World runtime. Runtime contexts can retain

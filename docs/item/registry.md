@@ -7,6 +7,13 @@ the application's live Material and Random profile owners. Allocation creates
 COLD metadata. Each public initialization entry requires exclusive access and
 the documented strict floating-point environment.
 
+Its statistics invocation now enters actual
+[common-stat construction and registration](../statistics/registry.md). Missing
+native resource support retains the nested Translation constructor cause;
+imported resources reach the explicit block-stat helper boundary at PC618.
+The suspended Item and Block initializer positions remain separate from that
+innermost failure.
+
 ## Construction and publication
 
 Item initialization constructs its ordinary static Random through the borrowed

@@ -68,6 +68,13 @@ FAILED at its explicitly unfinished dependency. Those phases are not equated.
 Native subtype, entry-order and retained-failure checks are separate controls.
 See the [native contract](../item/registry.md) for remaining implementation work.
 
+The later [common-stat integration](../statistics/registry.md) preserves this
+field projection while advancing the native failure into actual statistics
+and Translation initialization. Its no-provider probe now requires the nested
+`nh/ii` initializer PC4 and constructor PC23, retaining the outer Block3398 and
+Item2664 positions. It does not equate that later failure with the original
+debugger's suspended phase or broaden the recorded projection.
+
 ## Reproduction
 
 Public replay requires neither Java nor original files. Local recapture requires
