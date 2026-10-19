@@ -1,5 +1,7 @@
 #include "mc/world/terrain/surface.h"
 
+#include "../../support/java_random.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -116,7 +118,7 @@ static int test_original_composed_and_split(void)
         CHECK((uint64_t)seed == fixture->chunk_seed_bits);
         mc_java_random random = state.random_after_init;
         if (fixture->chunk_reseed)
-            mc_java_random_seed(&random, seed);
+            mc_java_random_reseed(&random, seed);
         mc_java_random before = random;
         CHECK(check_continuation(random, fixture->before) == 0);
         CHECK(mc_terrain_normal_surface(&state, &work, fixture->chunk_x, fixture->chunk_z,
@@ -131,7 +133,7 @@ static int test_original_composed_and_split(void)
         memcpy(&storage, &saved_storage, sizeof(storage));
         random = before;
         CHECK(mc_terrain_normal_surface_noise(&state, &work, fixture->chunk_x, fixture->chunk_z));
-        CHECK(memcmp(&random, &before, sizeof(random)) == 0);
+        CHECK(mc_test_java_random_equal(&random, &before));
         CHECK(memcmp(storage.blocks, saved_storage.blocks, sizeof(storage.blocks)) == 0);
         CHECK(mc_terrain_normal_surface_apply(&work, storage.materials, 259, &random,
                                               storage.blocks, sizeof(storage.blocks)));
@@ -171,8 +173,8 @@ static int test_minimum_spans_and_wrapped_origins(void)
     work.thickness.length = 256;
     mc_java_random random = state.random_after_init;
     if (fixture->chunk_reseed)
-        mc_java_random_seed(&random,
-                            mc_terrain_normal_chunk_seed(fixture->chunk_x, fixture->chunk_z));
+        mc_java_random_reseed(&random,
+                              mc_terrain_normal_chunk_seed(fixture->chunk_x, fixture->chunk_z));
     CHECK(mc_terrain_normal_surface(&state, &work, fixture->chunk_x, fixture->chunk_z,
                                     storage.materials, 256, &random, storage.blocks, 32768));
     for (size_t field = 0; field < 3; ++field) {
@@ -232,7 +234,7 @@ static int test_bedrock_and_nonstone_draws(void)
         mc_terrain_normal_surface_workspace work = workspace();
         CHECK(mc_terrain_normal_surface_apply(&work, storage.materials, 259, &random,
                                               storage.blocks, sizeof(storage.blocks)));
-        CHECK(memcmp(&random, &expected, sizeof(random)) == 0);
+        CHECK(mc_test_java_random_equal(&random, &expected));
         CHECK(check_continuation(random, controlled_air_after[0]) == 0);
         for (size_t i = 0; i < sizeof(storage.blocks); ++i)
             CHECK(storage.blocks[i] == expected_blocks[i]);
@@ -280,7 +282,7 @@ static int test_sea_band_and_sand_precedence(void)
                 /* Sand after gravel has exactly the same effect and draw
                  * schedule as sand alone, including sandstone continuations. */
                 CHECK(memcmp(storage.blocks, expected_blocks, sizeof(expected_blocks)) == 0);
-                CHECK(memcmp(&random, &sand_random, sizeof(random)) == 0);
+                CHECK(mc_test_java_random_equal(&random, &sand_random));
             }
         }
     }
@@ -402,7 +404,7 @@ static int test_material_byte_patterns_and_read_alias(void)
     mc_terrain_normal_surface_workspace saved_work = work;
     CHECK(mc_terrain_normal_surface_apply(&work, storage.materials, 259, &random, storage.blocks,
                                           sizeof(storage.blocks)));
-    CHECK(memcmp(&random, &expected, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &expected));
     CHECK(memcmp(storage.blocks, expected_blocks, sizeof(expected_blocks)) == 0);
     CHECK(memcmp(storage.fields, saved_storage.fields, sizeof(storage.fields)) == 0);
     CHECK(memcmp(&work, &saved_work, sizeof(work)) == 0);
@@ -413,7 +415,7 @@ static int check_preserved(mc_java_random random, mc_java_random saved_random)
 {
     CHECK(memcmp(&storage, &saved_storage, sizeof(storage)) == 0);
     CHECK(memcmp(&state, &saved_state, sizeof(state)) == 0);
-    CHECK(memcmp(&random, &saved_random, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &saved_random));
     return 0;
 }
 

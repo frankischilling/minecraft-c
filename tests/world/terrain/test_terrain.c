@@ -1,5 +1,7 @@
 #include "mc/world/terrain/terrain.h"
 
+#include "../../support/java_random.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -3892,7 +3894,7 @@ static int test_constructor_order(void)
                 CHECK(memcmp(&expected, &channels[channel][layer], sizeof(expected)) == 0);
             }
         }
-        CHECK(memcmp(&random, &state.random_after_init, sizeof(random)) == 0);
+        CHECK(mc_test_java_random_equal(&random, &state.random_after_init));
     }
     return 0;
 }

@@ -330,7 +330,7 @@ static int handle_request(char *line)
             return 0;
         if (seed) {
             chunk_seed = mc_terrain_normal_chunk_seed((int32_t)x, (int32_t)z);
-            mc_java_random_seed(&live_random, chunk_seed);
+            mc_java_random_reseed(&live_random, chunk_seed);
             seed_observed = 1;
         } else if (base) {
             if (blocks == NULL || !generate_base((int32_t)x, (int32_t)z))

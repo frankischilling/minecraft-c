@@ -1,6 +1,8 @@
 #include "mc/world/noise/noise.h"
 #include "mc/world/noise/simplex.h"
 
+#include "../../support/java_random.h"
+
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
@@ -403,7 +405,7 @@ static int test_invalid_constructors(void)
     memset(&layer, 0xa5, sizeof(layer));
     memcpy(&layer_saved, &layer, sizeof(layer));
     CHECK(!mc_noise_simplex_init(NULL, &random));
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     CHECK(!mc_noise_simplex_init(&layer, NULL));
     CHECK(memcmp(&layer, &layer_saved, sizeof(layer)) == 0);
     mc_noise_simplex_octaves noise;
@@ -417,9 +419,9 @@ static int test_invalid_constructors(void)
     CHECK(!mc_noise_simplex_octaves_init(&noise, &layer, SIZE_MAX, &random));
     CHECK(memcmp(&noise, &saved, sizeof(noise)) == 0);
     CHECK(memcmp(&layer, &layer_saved, sizeof(layer)) == 0);
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     CHECK(mc_noise_simplex_octaves_init(&noise, NULL, 0, &random));
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     return 0;
 }
 

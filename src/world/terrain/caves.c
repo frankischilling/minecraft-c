@@ -281,7 +281,7 @@ bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int3
             int64_t x_term = mc_java_i64_mul((int64_t)source_x, odd_x);
             int64_t z_term = mc_java_i64_mul((int64_t)source_z, odd_z);
             uint64_t seed_bits = (uint64_t)mc_java_i64_add(x_term, z_term) ^ (uint64_t)world_seed;
-            mc_java_random_seed(cave_random, cave_i64_from_bits(seed_bits));
+            mc_java_random_reseed(cave_random, cave_i64_from_bits(seed_bits));
             cave_neighbor(&context, source_x, source_z);
         }
     }

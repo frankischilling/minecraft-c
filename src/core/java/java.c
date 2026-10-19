@@ -1,5 +1,7 @@
 #include "mc/core/java/java.h"
 
+#include "mc/core/math/strict.h"
+
 #include <float.h>
 #include <limits.h>
 #include <stddef.h>
@@ -212,6 +214,14 @@ int64_t mc_java_float_to_i64(float value)
 void mc_java_random_seed(mc_java_random *random, int64_t seed)
 {
     random->state = ((uint64_t)seed ^ RANDOM_MULTIPLIER) & RANDOM_MASK;
+    random->next_next_gaussian = 0.0;
+    random->have_next_next_gaussian = false;
+}
+
+void mc_java_random_reseed(mc_java_random *random, int64_t seed)
+{
+    random->state = ((uint64_t)seed ^ RANDOM_MULTIPLIER) & RANDOM_MASK;
+    random->have_next_next_gaussian = false;
 }
 
 static uint32_t random_next_bits(mc_java_random *random, unsigned int bits)
@@ -267,4 +277,31 @@ double mc_java_random_next_double(mc_java_random *random)
     uint64_t high = random_next_bits(random, 26);
     uint64_t low = random_next_bits(random, 27);
     return (double)((high << 27) + low) * 0x1p-53;
+}
+
+double mc_java_random_next_gaussian(mc_java_random *random)
+{
+    if (random->have_next_next_gaussian) {
+        random->have_next_next_gaussian = false;
+        return random->next_next_gaussian;
+    }
+    double v1, v2, s;
+    do {
+        const double first_draw = mc_java_random_next_double(random);
+        const double first_scaled = 2.0 * first_draw;
+        v1 = first_scaled - 1.0;
+        const double second_draw = mc_java_random_next_double(random);
+        const double second_scaled = 2.0 * second_draw;
+        v2 = second_scaled - 1.0;
+        const double first_square = v1 * v1;
+        const double second_square = v2 * v2;
+        s = first_square + second_square;
+    } while (s >= 1.0 || s == 0.0);
+    const double logarithm = mc_math_strict_log(s);
+    const double scaled_logarithm = -2.0 * logarithm;
+    const double ratio = scaled_logarithm / s;
+    const double multiplier = mc_math_strict_sqrt(ratio);
+    random->next_next_gaussian = v2 * multiplier;
+    random->have_next_next_gaussian = true;
+    return v1 * multiplier;
 }

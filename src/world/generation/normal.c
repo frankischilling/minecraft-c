@@ -165,8 +165,8 @@ mc_normal_generator_generate(mc_normal_generator *generator, int32_t chunk_x, in
     if (!mc_chunk_data_init(&staged_data, blocks, blocks_capacity)) {
         return MC_NORMAL_GENERATOR_STATE_ERROR;
     }
-    mc_java_random generator_random;
-    mc_java_random_seed(&generator_random, mc_terrain_normal_chunk_seed(chunk_x, chunk_z));
+    mc_java_random generator_random = generator->generator_random;
+    mc_java_random_reseed(&generator_random, mc_terrain_normal_chunk_seed(chunk_x, chunk_z));
     mc_java_random cave_random = generator->cave_random;
     /* This is the only allocating stage. It atomically stages every needed
      * manager/output replacement and preserves all state on checked failure. */

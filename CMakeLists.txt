@@ -70,6 +70,8 @@ add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
     src/core/math/math.c
+    src/core/math/strict.c
+    src/core/math/fdlibm/log.c
     src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_build_options)
@@ -242,6 +244,14 @@ if(BUILD_TESTING)
     add_test(NAME core.java COMMAND mc_test_java)
     set_tests_properties(core.java PROPERTIES LABELS "public;unit" TIMEOUT 30)
 
+    add_executable(mc_test_java_gaussian tests/core/java/test_gaussian.c)
+    target_link_libraries(mc_test_java_gaussian PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_gaussian COMMAND mc_test_java_gaussian)
+    set_tests_properties(core.java_gaussian PROPERTIES LABELS "public;unit;math" TIMEOUT 30)
+
+    add_executable(mc_java_gaussian_probe tests/core/java/gaussian_probe.c)
+    target_link_libraries(mc_java_gaussian_probe PRIVATE mc_core mc_build_options)
+
     add_executable(mc_test_java_int_set tests/core/java/test_int_set.c)
     target_link_libraries(mc_test_java_int_set PRIVATE mc_core mc_build_options)
     add_test(NAME core.java_int_set COMMAND mc_test_java_int_set)
@@ -359,6 +369,20 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME core.java_gaussian_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_gaussian.py"
+        --executable "$<TARGET_FILE:mc_java_gaussian_probe>")
+    set_tests_properties(core.java_gaussian_replay PROPERTIES
+        LABELS "public;fixture;java;math" TIMEOUT 90)
+
+    add_test(NAME tools.java_gaussian_protocol
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/java/test_gaussian_probe.py"
+        --executable "$<TARGET_FILE:mc_java_gaussian_probe>")
+    set_tests_properties(tools.java_gaussian_protocol PROPERTIES
+        LABELS "public;tools;java;math" TIMEOUT 180)
 
     add_test(NAME world.scheduled_ordered_replay
         COMMAND "${Python3_EXECUTABLE}"

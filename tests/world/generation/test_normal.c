@@ -1,5 +1,7 @@
 #include "mc/world/generation/normal.h"
 
+#include "../../support/java_random.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,6 +42,30 @@ static fixture f;
 static unsigned char saved[sizeof(f)];
 static mc_math_trig trig, saved_trig;
 static mc_terrain_normal_state saved_terrain;
+
+/* Constructed finite cache payloads, independent of the LCG fixtures. */
+static const uint64_t generator_cache_bits = UINT64_C(0xc0023456789abcde);
+static const uint64_t cave_cache_bits = UINT64_C(0x3fdabcdef0123456);
+
+static void install_gaussian_cache(mc_java_random *random, uint64_t bits)
+{
+    _Static_assert(sizeof(bits) == sizeof(random->next_next_gaussian), "binary64 storage required");
+    memcpy(&random->next_next_gaussian, &bits, sizeof(bits));
+    random->have_next_next_gaussian = true;
+}
+
+static uint64_t gaussian_cache_bits(const mc_java_random *random)
+{
+    uint64_t bits;
+    memcpy(&bits, &random->next_next_gaussian, sizeof(bits));
+    return bits;
+}
+
+static void populate_generator_caches(void)
+{
+    install_gaussian_cache(&f.generator.generator_random, generator_cache_bits);
+    install_gaussian_cache(&f.generator.cave_random, cave_cache_bits);
+}
 
 static int reset_fixture(size_t budget)
 {
@@ -82,6 +108,7 @@ static int test_init_and_allocation_failure(void)
     static const size_t budgets[] = {0u, 4096u, 7000u};
     for (size_t i = 0; i < sizeof(budgets) / sizeof(*budgets); ++i) {
         CHECK(reset_fixture(budgets[i]) == 0);
+        populate_generator_caches();
         memcpy(saved, &f, sizeof(f));
         CHECK(mc_normal_generator_init(&f.generator, 23, &f.manager, &trig) ==
               MC_NORMAL_GENERATOR_INVALID_ARGUMENT);
@@ -101,6 +128,7 @@ static int test_preflight_preservation(void)
 {
     for (unsigned failure = 0; failure < 9u; ++failure) {
         CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
+        populate_generator_caches();
         int32_t x = 1, z = 0;
         size_t capacity = sizeof(f.blocks[0]);
         mc_normal_generator_status expected = MC_NORMAL_GENERATOR_INVALID_ARGUMENT;
@@ -135,6 +163,7 @@ static int test_preflight_preservation(void)
 static int test_existing_allocations_survive_failure(void)
 {
     CHECK(reset_fixture(7000u) == 0);
+    populate_generator_caches();
     CHECK(mc_biome_cached_square(&f.manager, 5, 6, 3) == MC_BIOME_OK);
     double temperature[9], rainfall[9], auxiliary[9];
     mc_biome_id cached[9];
@@ -156,6 +185,7 @@ static int test_unpublished_identity(void)
 {
     for (unsigned location = 0; location < 3u; ++location) {
         CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
+        populate_generator_caches();
         CHECK(mc_chunk_data_init(&f.results[0].data, f.blocks[0], sizeof(f.blocks[0])));
         f.results[0].chunk = (mc_chunk_state){.data = &f.results[0].data};
         CHECK(mc_chunk_data_init(&f.results[1].data, f.blocks[1], sizeof(f.blocks[1])));
@@ -195,8 +225,16 @@ static int test_repeated_generation_and_borrowed_owners(void)
     CHECK(f.trace.count == MC_CHUNK_FINISH_QUERIES && f.aborts == 0 && f.queue.count == 0);
     CHECK(f.generator.generator_random.state == UINT64_C(161302643799564));
     CHECK(f.generator.cave_random.state == UINT64_C(23799015621029));
+    CHECK(!f.generator.generator_random.have_next_next_gaussian);
+    CHECK(gaussian_cache_bits(&f.generator.generator_random) == UINT64_C(0));
+    CHECK(!f.generator.cave_random.have_next_next_gaussian);
+    CHECK(gaussian_cache_bits(&f.generator.cave_random) == UINT64_C(0));
     mc_java_random generator_random = f.generator.generator_random;
     mc_java_random cave_random = f.generator.cave_random;
+    /* The repeated chunk must keep the baseline LCG continuation while
+     * retaining these live-provider cache bits and invalidating the cache. */
+    install_gaussian_cache(&generator_random, generator_cache_bits);
+    generator_random.have_next_next_gaussian = false;
     double *temperature = f.manager.a.data, *rainfall = f.manager.b.data;
     double *auxiliary = f.manager.c.data;
     mc_biome_id *biomes = f.generator.biomes.data;
@@ -204,12 +242,18 @@ static int test_repeated_generation_and_borrowed_owners(void)
     static uint8_t first_blocks[MC_CHUNK_BLOCKS + 3u];
     memcpy(&first_result, &f.results[0], sizeof(first_result));
     memcpy(first_blocks, f.blocks[0], sizeof(first_blocks));
+    populate_generator_caches();
     CHECK(generate(1, -1, -1) == MC_NORMAL_GENERATOR_OK);
+    CHECK(!f.generator.generator_random.have_next_next_gaussian);
+    CHECK(gaussian_cache_bits(&f.generator.generator_random) == generator_cache_bits);
+    CHECK(!f.generator.cave_random.have_next_next_gaussian);
+    CHECK(gaussian_cache_bits(&f.generator.cave_random) == UINT64_C(0));
     CHECK(memcmp(&first_result, &f.results[0], sizeof(first_result)) == 0);
     CHECK(memcmp(first_blocks, f.blocks[0], sizeof(first_blocks)) == 0);
+    populate_generator_caches();
     CHECK(generate(2, 1, 0) == MC_NORMAL_GENERATOR_OK);
-    CHECK(memcmp(&generator_random, &f.generator.generator_random, sizeof(generator_random)) == 0);
-    CHECK(memcmp(&cave_random, &f.generator.cave_random, sizeof(cave_random)) == 0);
+    CHECK(mc_test_java_random_equal(&generator_random, &f.generator.generator_random));
+    CHECK(mc_test_java_random_equal(&cave_random, &f.generator.cave_random));
     CHECK(memcmp(f.blocks[0], f.blocks[2], sizeof(f.blocks[0])) == 0);
     CHECK(memcmp(f.results[0].data.metadata, f.results[2].data.metadata,
                  sizeof(f.results[0].data.metadata)) == 0);

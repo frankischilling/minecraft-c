@@ -1,5 +1,7 @@
 #include "caves_internal.h"
 
+#include "../../support/java_random.h"
+
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -106,7 +108,7 @@ static int check_following(const mc_java_random *random, const uint64_t followin
     for (size_t i = 0; i < 4; ++i) {
         CHECK((uint64_t)mc_java_random_next_i64(&copy) == following[i]);
     }
-    CHECK(memcmp(random, &before, sizeof(before)) == 0);
+    CHECK(mc_test_java_random_equal(random, &before));
     return 0;
 }
 
@@ -201,7 +203,7 @@ static int invoke_fixture(const caves_geometry_fixture *fixture, geometry_buffer
     CHECK(check_following(random, fixture->after) == 0);
     CHECK(memcmp(&table, &table_before, sizeof(table)) == 0);
     CHECK(memcmp(peer, &peer_before, sizeof(peer_before)) == 0);
-    CHECK(memcmp(peer_random, &saved_peer_random, sizeof(saved_peer_random)) == 0);
+    CHECK(mc_test_java_random_equal(peer_random, &saved_peer_random));
     return 0;
 }
 
@@ -221,7 +223,7 @@ int main(void)
         CHECK(invoke_fixture(fixture, &first, &first_random, &second, &second_random) == 0);
         CHECK(invoke_fixture(fixture, &second, &second_random, &first, &first_random) == 0);
         CHECK(memcmp(&first, &second, sizeof(first)) == 0);
-        CHECK(memcmp(&first_random, &second_random, sizeof(first_random)) == 0);
+        CHECK(mc_test_java_random_equal(&first_random, &second_random));
     }
     printf("Cave geometry: %u checks passed\n", checks);
     return 0;

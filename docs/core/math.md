@@ -46,3 +46,8 @@ The implementation checks expression evaluation width at compile time. Tests
 preserve raw input encodings and compare returned bit patterns. Passing these
 helpers establishes a cave prerequisite; normal cave scheduling and geometry
 remain documented separately in the [cave runtime](../world/caves.md).
+
+`mc/core/math/strict.h` additionally supplies positive-finite binary64 log and
+SSE2 square root for seeded Gaussian draws. Its backend, FP environment,
+separate fdlibm notice and captured JDK comparisons are documented in
+[Gaussian state and strict math](../reference/random-gaussian.md).

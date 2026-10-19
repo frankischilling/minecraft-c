@@ -144,6 +144,13 @@ without changing outputs or consuming randomness; game-specific exception behavi
 belongs to the caller. See [evidence](reference/java-semantics.md) for operation
 coverage and the remaining semantics audit.
 
+Each Random owner also retains cached Gaussian bits and validity. Fresh native
+initialization clears both; Java-style reseeding clears validity while keeping
+the stored double. Gaussian misses use the core's strict log and SSE2 square
+root under the [documented FP contract](reference/random-gaussian.md). Native
+owners and complete continuation copies include this state; constructor entropy
+and clocks remain separate services to implement.
+
 The [NBT boundary](storage/nbt.md) owns retained decoded trees and budgets their
 allocations. It accepts bytes and produces bytes without compression, streams
 or world schemas. Strings preserve UTF-16 code units, and parser failures leave

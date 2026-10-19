@@ -1,5 +1,7 @@
 #include "mc/world/terrain/caves.h"
 
+#include "../../support/java_random.h"
+
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -80,7 +82,7 @@ static int check_following(const mc_java_random *random, const uint64_t followin
     for (size_t i = 0; i < 4; ++i) {
         CHECK((uint64_t)mc_java_random_next_i64(&copy) == following[i]);
     }
-    CHECK(memcmp(random, &before, sizeof(before)) == 0);
+    CHECK(mc_test_java_random_equal(random, &before));
     return 0;
 }
 
@@ -105,11 +107,22 @@ static int check_ineligible(const uint8_t *before, const uint8_t *after)
     return 0;
 }
 
+static int check_empty_gaussian_cache(const mc_java_random *random)
+{
+    uint64_t bits;
+    _Static_assert(sizeof(bits) == sizeof(random->next_next_gaussian), "binary64 storage required");
+    memcpy(&bits, &random->next_next_gaussian, sizeof(bits));
+    CHECK(bits == UINT64_C(0));
+    CHECK(!random->have_next_next_gaussian);
+    return 0;
+}
+
 static int check_golden(const caves_case_fixture *fixture, size_t pass, const uint8_t *actual,
                         const mc_java_random *random)
 {
     CHECK(decode(fixture->arrays[pass + 1], expected) == 0);
     CHECK(check_bytes(actual, expected, GOLDEN_LENGTH) == 0);
+    CHECK(check_empty_gaussian_cache(random) == 0);
     CHECK(check_following(random, fixture->following[pass]) == 0);
     CHECK(memcmp(&table, &table_before, sizeof(table)) == 0);
     return 0;
@@ -140,7 +153,7 @@ static int test_original_public_cases(void)
             CHECK(changed_bytes(pass_input, working) == fixture->changed[pass]);
             CHECK(memcmp(working + BLOCKS, pass_input + BLOCKS, GOLDEN_LENGTH - BLOCKS) == 0);
             CHECK(check_ineligible(pass_input, working) == 0);
-            CHECK(memcmp(&surface_random, &surface_before, sizeof(surface_random)) == 0);
+            CHECK(mc_test_java_random_equal(&surface_random, &surface_before));
             if (pass == 0) {
                 memcpy(first_output, working, sizeof(first_output));
             } else if (pass == 1) {
@@ -159,6 +172,9 @@ static int test_original_public_cases(void)
         memcpy(working, original, sizeof(working));
         mc_java_random_seed(&cave_random, INT64_C(9248657));
         (void)mc_java_random_next_i64(&cave_random);
+        /* This fresh-output projection also discards an initialized cache. */
+        cave_random.next_next_gaussian = -0x1.23456789abcdep+1;
+        cave_random.have_next_next_gaussian = true;
         CHECK(mc_terrain_normal_caves(&table, fixture->seed, fixture->chunk_x, fixture->chunk_z,
                                       &cave_random, working, sizeof(working)));
         CHECK(check_golden(fixture, 0, working, &cave_random) == 0);
@@ -187,7 +203,7 @@ static int test_independent_owners(void)
                                   sizeof(other)));
     CHECK(check_golden(b, 0, other, &random_b) == 0);
     CHECK(memcmp(working, other_before, sizeof(working)) == 0);
-    CHECK(memcmp(&random_a, &before_a, sizeof(random_a)) == 0);
+    CHECK(mc_test_java_random_equal(&random_a, &before_a));
     before_b = random_b;
     memcpy(other_before, other, sizeof(other_before));
     CHECK(decode(a->arrays[0], working) == 0);
@@ -195,7 +211,7 @@ static int test_independent_owners(void)
                                   sizeof(working)));
     CHECK(check_golden(a, 0, working, &random_a) == 0);
     CHECK(memcmp(other, other_before, sizeof(other)) == 0);
-    CHECK(memcmp(&random_b, &before_b, sizeof(random_b)) == 0);
+    CHECK(mc_test_java_random_equal(&random_b, &before_b));
     return 0;
 }
 
@@ -231,6 +247,7 @@ static int property_call(int32_t x, int32_t z, size_t capacity, int eligible)
     guarded_before = guarded;
     memset(&random, 0xb6, sizeof(random));
     CHECK(mc_terrain_normal_caves(&table, INT64_C(-1), x, z, &random, guarded.blocks, capacity));
+    CHECK(check_empty_gaussian_cache(&random) == 0);
     CHECK(check_guards_and_suffix() == 0);
     if (!eligible) {
         CHECK(memcmp(&guarded, &guarded_before, sizeof(guarded)) == 0);
@@ -240,7 +257,7 @@ static int property_call(int32_t x, int32_t z, size_t capacity, int eligible)
     guarded = guarded_before;
     CHECK(mc_terrain_normal_caves(&table, INT64_C(-1), x, z, &random, guarded.blocks, capacity));
     CHECK(memcmp(&guarded, &property_output, sizeof(guarded)) == 0);
-    CHECK(memcmp(&random, &first_random, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &first_random));
     CHECK(check_guards_and_suffix() == 0);
     return 0;
 }
@@ -278,6 +295,7 @@ static int test_constructed_boundaries_and_bytes(void)
     guarded_before = guarded;
     mc_java_random random;
     CHECK(mc_terrain_normal_caves(&table, INT64_C(0), 0, 0, &random, guarded.blocks, CAPACITY));
+    CHECK(check_empty_gaussian_cache(&random) == 0);
     CHECK(check_ineligible(guarded_before.blocks, guarded.blocks) == 0);
     CHECK(check_guards_and_suffix() == 0);
     return 0;
@@ -286,11 +304,13 @@ static int test_constructed_boundaries_and_bytes(void)
 static int rejected(const mc_math_trig *input_table, int32_t x, int32_t z, mc_java_random *random,
                     uint8_t *blocks, size_t length)
 {
-    mc_java_random before = rejected_random;
+    /* Rejected calls preserve even deliberately poisoned prior storage. */
+    unsigned char before[sizeof(rejected_random)];
+    memcpy(before, &rejected_random, sizeof(before));
     guarded_before = guarded;
     CHECK(!mc_terrain_normal_caves(input_table, INT64_C(0), x, z, random, blocks, length));
     CHECK(memcmp(&guarded, &guarded_before, sizeof(guarded)) == 0);
-    CHECK(memcmp(&rejected_random, &before, sizeof(rejected_random)) == 0);
+    CHECK(memcmp(&rejected_random, before, sizeof(before)) == 0);
     CHECK(memcmp(&table, &table_before, sizeof(table)) == 0);
     return 0;
 }
@@ -302,6 +322,8 @@ static int test_preflight_preservation(void)
     fill_guarded(1);
     mc_java_random_seed(&rejected_random, INT64_C(6389248));
     (void)mc_java_random_next_i64(&rejected_random);
+    rejected_random.next_next_gaussian = 0x1.abcdef0123456p-2;
+    rejected_random.have_next_next_gaussian = true;
     CHECK(rejected(NULL, 0, 0, &rejected_random, guarded.blocks, CAPACITY) == 0);
     CHECK(rejected(&table, 0, 0, NULL, guarded.blocks, CAPACITY) == 0);
     CHECK(rejected(&table, 0, 0, &rejected_random, NULL, CAPACITY) == 0);

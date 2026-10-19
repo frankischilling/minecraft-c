@@ -1,4 +1,5 @@
-﻿#include "mc/core/math/math.h"
+﻿#include "../../support/java_random.h"
+#include "mc/core/math/math.h"
 #include "mc/world/biome/biome.h"
 #include "mc/world/terrain/caves.h"
 #include "mc/world/terrain/surface.h"
@@ -249,7 +250,7 @@ static int initialize_case(probe_request request)
 }
 static int prepare_prefix(probe_request request)
 {
-    mc_java_random_seed(&generator_random, mc_terrain_normal_chunk_seed(request.x, request.z));
+    mc_java_random_reseed(&generator_random, mc_terrain_normal_chunk_seed(request.x, request.z));
     mc_java_random seeded = generator_random;
     if (mc_biome_sample_square(&manager, mc_java_i32_mul(request.x, 16),
                                mc_java_i32_mul(request.z, 16), 16, &biomes) != MC_BIOME_OK ||
@@ -276,7 +277,7 @@ static int prepare_prefix(probe_request request)
                                          manager.b.length};
     if (!mc_terrain_normal_generate(&state, &work, request.x, request.z, &climate,
                                     (mc_terrain_double_span){density, 425}, blocks, PROBE_BLOCKS) ||
-        memcmp(&seeded, &generator_random, sizeof(seeded)) != 0)
+        !mc_test_java_random_equal(&seeded, &generator_random))
         return 0;
     mc_terrain_normal_surface_workspace surface = {
         {fields[0], 256}, {fields[1], 256}, {fields[2], 256}};
@@ -302,7 +303,7 @@ static int prepare_prefix(probe_request request)
 static int unchanged_prefix_state(void)
 {
     return memcmp(&state, &original_state, sizeof(state)) == 0 &&
-           memcmp(&generator_random, &saved_generator_random, sizeof(generator_random)) == 0 &&
+           mc_test_java_random_equal(&generator_random, &saved_generator_random) &&
            memcmp(density, saved_density, sizeof(density)) == 0 &&
            memcmp(volumes, saved_volumes, sizeof(volumes)) == 0 &&
            memcmp(columns, saved_columns, sizeof(columns)) == 0 &&
@@ -342,7 +343,7 @@ static int observe(probe_request request, size_t number)
     memcpy(blocks, prefix, sizeof(blocks));
     if (!measure_pass(request, 1) || !measure_pass(request, 2) ||
         memcmp(passes[0].output, passes[1].output, sizeof(blocks)) != 0 ||
-        memcmp(&passes[0].continuation, &passes[1].continuation, sizeof(cave_random)) != 0)
+        !mc_test_java_random_equal(&passes[0].continuation, &passes[1].continuation))
         return 0;
     printf("OK\t{\"case\":%zu,\"seed\":%" PRId64 ",\"chunk\":[%" PRId32 ",%" PRId32
            "],\"chunk_seed\":\"%016" PRIx64 "\",\"constructor\":",

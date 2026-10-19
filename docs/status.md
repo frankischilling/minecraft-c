@@ -14,6 +14,18 @@ from the captured JDK public-API fixture on those compilers. These are finite
 state/collection results; original item/container comparisons and bound-world behavior
 remain unverified.
 
+Seeded [Gaussian cache and strict log/sqrt](reference/random-gaussian.md) now
+match all 14,013 captured JDK result/full-state operations on GCC/Clang with
+sanitizers and native Windows MSVC. Six separate JDK runs agree. This qualifies
+the finite explicit-seed/math corpus; constructor entropy, platform clocks and
+original gameplay consumption remain open.
+
+The current seeded-Gaussian change passes all 75 public tests on each of the
+three compilers, plus 157 native protocol controls checked separately. The
+public suite includes the 85-check Gaussian unit and full captured replay.
+These results retain the private lifecycle checkpoint below as its own
+historical source qualification.
+
 Exact-source lifecycle qualification passes at
 `46546d8322de52beb6c3a51f30e827c0260d2b30`. Complete Windows v10, GCC v9 and
 Clang v9 suites each passed 92 tests without failures or skips: 1940.77s,
