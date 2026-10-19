@@ -1,11 +1,18 @@
 # minecraft-c
 
+The [World/Dimension Biome managers](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/biome-registry.md#world-and-dimension-managers)
+retain actual shared references, cached arrays and independent Registry borrows.
+All 28 selected cases pass on MSVC/GCC/Clang, including 304 World-manager and
+386 fixed-manager checks with Linux sanitizers. These native contracts add no
+new original World comparison. Live generation, lighting, population, complete
+mutations and persistence remain unfinished.
+
 The [shared Biome module](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/biome-registry.md)
 adds actual objects, spawn lists/Class handles and a source-ordered reference
 sampler. Both original graphs and 3,824 queries per side match MSVC/GCC/Clang.
 All 26 selected cases pass, including 101,396 registry and 609 sampling checks,
-with Linux sanitizers. World binding,
-live generation, population and full persistence remain unfinished.
+with Linux sanitizers. Live generation, population and full persistence remain
+unfinished.
 
 The [World registry integration](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/registry.md)
 adds shared owner lifetimes, material identities and ordered Dimension spawn

@@ -112,6 +112,53 @@ existing numerical memory owner; reference arrays use the Registry arena.
 The numerical square API still preflights replacements and preserves prior
 state on failure. It does not acquire this sampler's partial-publication policy.
 
+## World and Dimension managers
+
+The [class-bound manager interface](../../include/mc/world/dimension/biome_runtime.h)
+binds a Dimension to the application's actual Registry, side and Random profile.
+A nonnull World must use that same Registry. The World constructor selects this
+binding when its class has a Registry; the explicit numerical binding remains
+available separately. Admission checks the native binding without class use.
+
+Setup publishes the World in Dimension `a2` and allocates a replacement manager
+at1. Normal setup
+reads the supplied World's seed three times, constructs the actual noise
+channels and publishes `b12`, without initializing Biome. Nether and Sky first
+actively load actual Biome `l/m5`, before the fixed constructor and `b13/15`
+publication. A failure retains the preceding manager, published World and reached
+Registry effects. World construction preserves the full Registry cause at its
+enclosing bind call300,315 or398.
+
+Each manager owns an independent counted Registry borrow through final release.
+An alias can survive Dimension replacement and World/class teardown. A manager
+does not retain a World field after construction. Sampling holds its captured
+manager through synchronous resource callbacks. A numerical rebind can replace
+the Dimension's current manager while a pending call finishes on its held
+receiver; its returned cache belongs to that receiver. Ordinary class-bound
+reentry is BUSY while the Registry is entered.
+
+The actual reference cache `d` is separate from the numerical enum buffer.
+Direct sampling leaves it untouched. Cached sampling captures prior `d3`, calls
+direct11, and publishes `d14` only after success. Failure can retain writes in a
+reused array, while an unpublished replacement remains a diagnostic local.
+Normal point sampling calls cached1x1, then reads element0. Normal chunk sampling
+uses Java's wrapping four-bit coordinate shifts before that point call.
+
+Fixed managers retain actual nullable `e`, temperature `f` and rainfall `g`.
+Their point and chunk overrides return current `e` directly without arrays or
+cache effects. Fixed direct sampling permits rectangles and follows this order:
+
+1. Allocate a null or short reference output at19.
+2. Only if actual `a` is null or short, allocate and publish fresh `a49/51`, then
+   independently allocate and publish fresh `b60/62`.
+3. Fill output references with `e76`, then `b` with `g93`, then `a` with `f110`.
+
+If the second allocation fails, the published `a` survives. A subsequent call
+with sufficiently long `a` does not repair null or short `b`: reference writes
+finish before the fill fails at93. Fixed direct sampling leaves `c` and both
+cached/numerical `d` fields alone. Empty requests still check and materialize
+the reached arrays. Sufficiently long arrays keep their identities and suffixes.
+
 ## Lifetime and unfinished joins
 
 All Biomes, names, Class handles, lists, records and reference arrays borrow the
@@ -128,9 +175,9 @@ prefixes; they do not reproduce Java allocation exceptions or heap limits.
 An initialization failure is cached and cannot be retried on that owner.
 An ordinary later constructor failure does not poison a READY class.
 
-These modules establish shared storage and the direct reference-sampling seam.
-The remaining joins include sharing these references through World/Dimension
-and fixed-manager construction, generator/provider sampling, live surface
+These modules establish shared storage, retained World/Dimension managers and
+direct/cached reference sampling. The remaining joins include
+generator/provider sampling, live surface
 `p/q` reads, spawning, feature placement and persistence. The bootstrap fixture
 does not qualify those paths or complete game startup. See
 [World construction](construction.md) and [World registry access](registry.md)

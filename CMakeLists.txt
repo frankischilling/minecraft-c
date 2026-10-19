@@ -144,7 +144,8 @@ add_library(mc_registry STATIC
     src/statistics/registry/initializer.c
     src/statistics/registry/registration.c
     src/world/biome/registry.c
-    src/world/biome/sampling.c)
+    src/world/biome/sampling.c
+    src/world/biome/fixed_sampling.c)
 target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world PRIVATE mc_platform_text mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
@@ -365,6 +366,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_registry tests/world/runtime/test_world_registry.c)
     target_link_libraries(mc_test_world_registry PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_biome_runtime tests/world/dimension/test_biome_runtime.c)
+    target_link_libraries(mc_test_world_biome_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_fixed_biome_runtime tests/world/dimension/test_fixed_biome_runtime.c)
+    target_link_libraries(mc_test_fixed_biome_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -854,6 +861,19 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-registry-contracts")
     set_tests_properties(world.registry_bindings PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.biome_runtime
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_biome_runtime>"
+        --scenario world-biome-runtime
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-biome-runtime-contracts")
+    set_tests_properties(world.biome_runtime PROPERTIES
+        LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.fixed_biome_runtime COMMAND mc_test_fixed_biome_runtime)
+    set_tests_properties(world.fixed_biome_runtime PROPERTIES
+        LABELS "public;unit;ownership" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

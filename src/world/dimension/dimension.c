@@ -2,10 +2,13 @@
 
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "mc/world/dimension/biome_runtime.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/runtime.h"
 
+#include "../../block/registry/runtime_internal.h"
 #include "../biome/biome_internal.h"
+#include "../biome/sampling_internal.h"
 #include "../runtime/runtime_internal.h"
 #include "dimension_internal.h"
 
@@ -41,6 +44,8 @@ struct mc_world_dimension_biome {
     dimension_ledger *ledger;
     size_t holds, bytes;
     bool fixed;
+    mc_registry_classes *registry;
+    mc_biome_reference_array *reference_d;
 };
 
 typedef struct normal_biome {
@@ -51,10 +56,8 @@ typedef struct normal_biome {
 
 typedef struct fixed_biome {
     mc_world_dimension_biome base;
-    mc_biome_double_buffer a, b, c;
-    mc_biome_buffer d;
-    mc_biome_id e;
-    double f, g;
+    mc_biome_fixed_storage storage;
+    mc_biome_id projection_e;
 } fixed_biome;
 
 struct mc_world_dimension {
@@ -302,8 +305,19 @@ void mc_world_dimension_biome_release(mc_world_dimension_biome *biome)
         return;
     dimension_ledger *ledger = biome->ledger;
     size_t bytes = biome->bytes;
-    if (!biome->fixed)
+    if (!biome->fixed) {
         mc_biome_manager_free(&((normal_biome *)biome)->manager);
+    } else {
+        mc_biome_fixed_storage *storage = &((fixed_biome *)biome)->storage;
+        mc_biome_double_buffer_free(&storage->a);
+        mc_biome_double_buffer_free(&storage->b);
+        mc_biome_double_buffer_free(&storage->c);
+        mc_biome_buffer_free(&storage->numerical_d);
+    }
+    /* Each GAME manager owns exactly this borrow. Retirement cannot invoke
+     * class use or callbacks and is valid even inside another entered flow. */
+    if (biome->registry != NULL)
+        (void)mc_registry_runtime_borrow_release(biome->registry);
     retire(ledger, biome, bytes);
     ledger_release(ledger);
 }
@@ -366,13 +380,13 @@ mc_world_dimension_status mc_world_dimension_biome_fields_get(const mc_world_dim
     mc_world_dimension_biome_fields fields = {.fixed = biome->fixed, .holds = biome->holds};
     if (biome->fixed) {
         const fixed_biome *fixed = (const fixed_biome *)biome;
-        fields.a = &fixed->a;
-        fields.b = &fixed->b;
-        fields.c = &fixed->c;
-        fields.d = &fixed->d;
-        fields.fixed_e = fixed->e;
-        fields.fixed_f = fixed->f;
-        fields.fixed_g = fixed->g;
+        fields.a = &fixed->storage.a;
+        fields.b = &fixed->storage.b;
+        fields.c = &fixed->storage.c;
+        fields.d = &fixed->storage.numerical_d;
+        fields.fixed_e = fixed->projection_e;
+        fields.fixed_f = fixed->storage.f;
+        fields.fixed_g = fixed->storage.g;
     } else {
         normal_biome *normal = (normal_biome *)(void *)biome;
         fields.normal = &normal->manager;
@@ -401,6 +415,7 @@ static mc_world_dimension_status new_biome(mc_world_dimension *dimension, bool f
     if (fixed) {
         fixed_biome *biome = allocation;
         *biome = (fixed_biome){.base = base};
+        (void)mc_biome_memory_init(&biome->storage.memory, ledger->buffer_limit);
         *out = &biome->base;
     } else {
         normal_biome *biome = allocation;
@@ -473,9 +488,10 @@ mc_world_dimension_status mc_world_dimension_bind(mc_world_dimension *dimension,
         return result(error, status, "dimension biome allocation", 1);
     if (fixed) {
         fixed_biome *biome = (fixed_biome *)replacement;
-        biome->e = dimension->kind == MC_WORLD_DIMENSION_NETHER ? MC_BIOME_HELL : MC_BIOME_SKY;
-        biome->f = dimension->kind == MC_WORLD_DIMENSION_NETHER ? 1.0 : 0.5;
-        biome->g = 0.0;
+        biome->projection_e =
+            dimension->kind == MC_WORLD_DIMENSION_NETHER ? MC_BIOME_HELL : MC_BIOME_SKY;
+        biome->storage.f = dimension->kind == MC_WORLD_DIMENSION_NETHER ? 1.0 : 0.5;
+        biome->storage.g = 0.0;
     } else {
         normal_biome *biome = (normal_biome *)replacement;
         mc_biome_status biome_status =
@@ -531,6 +547,410 @@ mc_world_dimension_status mc_world_dimension_bind(mc_world_dimension *dimension,
     dimension->bind_pc = 10;
     dimension->bind_pc = 13;
     return result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+}
+
+mc_world_dimension_status
+mc_world_dimension_bind_game(mc_world_dimension *dimension, mc_world_runtime *world,
+                             const mc_world_dimension_registry_binding *binding,
+                             mc_world_dimension_error *error)
+{
+    if (dimension == NULL || binding == NULL)
+        return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension GAME bind", 0);
+    if (dimension->phase != MC_WORLD_DIMENSION_READY)
+        return result(error, MC_WORLD_DIMENSION_INVALID_PHASE, "dimension GAME bind", 0);
+    if (!valid_fp())
+        return result(error, MC_WORLD_DIMENSION_UNSUPPORTED_FP, "dimension GAME bind FP admission",
+                      0);
+    const mc_world_dimension_registry_binding captured = *binding;
+    if (world != NULL && mc_world_runtime_registry(world) != captured.classes)
+        return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension GAME World registry",
+                      0);
+
+    mc_world_dimension_status status = mc_world_dimension_retain(dimension);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return result(error, status, "dimension GAME call hold", 0);
+    mc_world_dimension_biome *old = dimension->b;
+    bool old_held = false, registry_owned = false, world_entered = false;
+    mc_world_dimension_biome *replacement = NULL;
+    if (old != NULL) {
+        status = mc_world_dimension_biome_retain(old);
+        if (status != MC_WORLD_DIMENSION_OK) {
+            (void)result(error, status, "dimension GAME preceding manager hold", 0);
+            goto leave;
+        }
+        old_held = true;
+    }
+    mc_registry_error registry_error = {0};
+    if (mc_registry_classes_retain(captured.classes, captured.side, captured.profile,
+                                   &registry_error) != MC_REGISTRY_OK) {
+        status = result(error,
+                        registry_error.status == MC_REGISTRY_INVALID_ARGUMENT
+                            ? MC_WORLD_DIMENSION_INVALID_ARGUMENT
+                            : MC_WORLD_DIMENSION_REGISTRY_FAILED,
+                        "dimension GAME registry borrow", 0);
+        if (error != NULL)
+            error->registry = registry_error;
+        goto leave;
+    }
+    registry_owned = true;
+    if (world != NULL) {
+        mc_world_storage_error world_error = {0};
+        if (mc_world_runtime_call_enter(world, &world_error) != MC_WORLD_STORAGE_OK) {
+            status = result(error, MC_WORLD_DIMENSION_WORLD_FAILED,
+                            "dimension GAME World call admission", 0);
+            if (error != NULL)
+                error->world = world_error;
+            goto leave;
+        }
+        world_entered = true;
+    }
+
+    if (world != dimension->a) {
+        if (world != NULL && !mc_world_runtime_binding_retain(world)) {
+            mc_world_storage_error world_error = *mc_world_runtime_last_error(world);
+            status = result(error,
+                            world_error.status == MC_WORLD_STORAGE_LIMIT
+                                ? MC_WORLD_DIMENSION_LIMIT
+                                : MC_WORLD_DIMENSION_WORLD_FAILED,
+                            "dimension GAME World retain", 2);
+            if (error != NULL)
+                error->world = world_error;
+            goto leave;
+        }
+        mc_world_runtime *previous = dimension->a;
+        dimension->a = world;
+        dimension->bind_pc = 2;
+        mc_world_runtime_binding_release(previous);
+    } else {
+        dimension->a = world;
+        dimension->bind_pc = 2;
+    }
+    dimension->setup_pc = 0;
+    const bool fixed = dimension->kind != MC_WORLD_DIMENSION_OVERWORLD;
+    status = new_biome(dimension, fixed, &replacement);
+    if (status != MC_WORLD_DIMENSION_OK) {
+        (void)result(error, status, "dimension GAME biome allocation", 1);
+        goto leave;
+    }
+    replacement->registry = captured.classes;
+    registry_owned = false;
+    if (fixed) {
+        fixed_biome *biome = (fixed_biome *)replacement;
+        const mc_biome *selected = NULL;
+        dimension->setup_pc = 5;
+        if (mc_biome_static_get(captured.classes,
+                                dimension->kind == MC_WORLD_DIMENSION_NETHER ? 'l' : 'm', &selected,
+                                &registry_error) != MC_REGISTRY_OK) {
+            status = result(error, MC_WORLD_DIMENSION_REGISTRY_FAILED,
+                            "dimension GAME fixed Biome static", 5);
+            if (error != NULL)
+                error->registry = registry_error;
+            goto leave;
+        }
+        /* Constructor arguments were evaluated before the virtual call. A
+         * synchronous callback can replace Dimension.b; it cannot substitute
+         * this allocated receiver or the selected actual Biome reference. */
+        biome->storage.e = selected;
+        biome->storage.f = dimension->kind == MC_WORLD_DIMENSION_NETHER ? 1.0 : 0.5;
+        biome->storage.g = 0.0;
+        biome->projection_e =
+            dimension->kind == MC_WORLD_DIMENSION_NETHER ? MC_BIOME_HELL : MC_BIOME_SKY;
+    } else {
+        normal_biome *biome = (normal_biome *)replacement;
+        /* Normal setup evaluates Dimension.a once at6. The constructor then
+         * performs three separate seed reads on that captured World. */
+        mc_world_runtime *constructor_world = dimension->a;
+        mc_biome_status biome_status =
+            mc_biome_memory_init(&biome->memory, dimension->ledger->buffer_limit);
+        for (unsigned int i = 0; i < 3u && biome_status == MC_BIOME_OK; ++i) {
+            mc_level_info info;
+            mc_world_storage_error world_error = {0};
+            if (mc_world_runtime_read_info(constructor_world, &info, &world_error) !=
+                MC_WORLD_STORAGE_OK) {
+                status = result(error, MC_WORLD_DIMENSION_WORLD_FAILED, "GAME biome World seed",
+                                14u + i * 27u);
+                if (error != NULL)
+                    error->world = world_error;
+                goto leave;
+            }
+            biome_status = mc_biome_manager_construct_channel(&biome->manager, info.seed,
+                                                              (mc_biome_construction_channel)i);
+        }
+        if (biome_status == MC_BIOME_OK)
+            biome_status = mc_biome_manager_finish_construction(&biome->manager, &biome->memory);
+        if (biome_status != MC_BIOME_OK) {
+            status = result(error, MC_WORLD_DIMENSION_BIOME_FAILED,
+                            "dimension GAME biome numerical init", 9);
+            if (error != NULL)
+                error->biome = biome_status;
+            goto leave;
+        }
+    }
+
+    /* Publish over the current field, not over the earlier captured manager:
+     * a registry resource callback may have completed a numerical rebind. */
+    mc_world_dimension_biome *previous = dimension->b;
+    dimension->b = replacement;
+    replacement = NULL;
+    dimension->setup_pc = fixed ? (dimension->kind == MC_WORLD_DIMENSION_NETHER ? 13u : 15u) : 12u;
+    mc_world_dimension_biome_release(previous);
+    if (dimension->kind == MC_WORLD_DIMENSION_NETHER) {
+        dimension->c = true;
+        dimension->setup_pc = 18;
+        dimension->d = true;
+        dimension->setup_pc = 23;
+        dimension->e = true;
+        dimension->setup_pc = 28;
+        dimension->g = -1;
+        dimension->setup_pc = 33;
+    } else if (dimension->kind == MC_WORLD_DIMENSION_SKY) {
+        dimension->g = 1;
+        dimension->setup_pc = 20;
+    }
+    dimension->bind_pc = 6;
+    status = mc_world_dimension_initialize_light_table(dimension, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        goto leave;
+    dimension->bind_pc = 10;
+    dimension->bind_pc = 13;
+    status = result(error, MC_WORLD_DIMENSION_OK, NULL, 0);
+leave:
+    mc_world_dimension_biome_release(replacement);
+    if (registry_owned)
+        (void)mc_registry_runtime_borrow_release(captured.classes);
+    if (world_entered)
+        mc_world_runtime_call_leave(world);
+    if (old_held)
+        mc_world_dimension_biome_release(old);
+    mc_world_dimension_release(dimension);
+    return status;
+}
+
+mc_world_dimension_status
+mc_world_dimension_biome_game_fields_get(const mc_world_dimension_biome *biome,
+                                         mc_world_biome_game_fields *out)
+{
+    if (biome == NULL || out == NULL)
+        return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
+    *out = (mc_world_biome_game_fields){
+        .registry = biome->registry,
+        .d = biome->reference_d,
+        .fixed_e = biome->fixed ? ((const fixed_biome *)biome)->storage.e : NULL};
+    return MC_WORLD_DIMENSION_OK;
+}
+
+static mc_world_dimension_status biome_native_result(mc_world_biome_error *error,
+                                                     mc_world_dimension_status status,
+                                                     mc_registry_status registry_status,
+                                                     mc_biome_status climate_status,
+                                                     const char *operation, unsigned int bytecode)
+{
+    if (error != NULL)
+        *error = (mc_world_biome_error){.status = status,
+                                        .operation = operation,
+                                        .bytecode = bytecode,
+                                        .sampling = {.registry = {.status = registry_status,
+                                                                  .message = operation,
+                                                                  .initializer_pc = -1,
+                                                                  .block_id = -1,
+                                                                  .constructor_pc = -1,
+                                                                  .active_initializer_pc = -1,
+                                                                  .item_argument = -1},
+                                                     .climate_status = climate_status,
+                                                     .sampler_pc = -1}};
+    return status;
+}
+
+static mc_world_dimension_status biome_sampling_result(mc_world_biome_error *error,
+                                                       const mc_biome_sampling_error *sampling,
+                                                       const char *operation, unsigned int bytecode)
+{
+    mc_world_dimension_status status =
+        sampling->registry.status == MC_REGISTRY_OK ? MC_WORLD_DIMENSION_OK
+        : sampling->climate_status != MC_BIOME_OK   ? MC_WORLD_DIMENSION_BIOME_FAILED
+                                                    : MC_WORLD_DIMENSION_REGISTRY_FAILED;
+    if (error != NULL)
+        *error = (mc_world_biome_error){
+            .status = status, .operation = operation, .bytecode = bytecode, .sampling = *sampling};
+    return status;
+}
+
+static mc_world_dimension_status biome_call_enter(mc_world_dimension_biome *biome, const void *out,
+                                                  mc_world_biome_error *error)
+{
+    if (biome == NULL || out == NULL)
+        return biome_native_result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT,
+                                   MC_REGISTRY_INVALID_ARGUMENT, MC_BIOME_OK,
+                                   "GAME biome owner/output", 0);
+    mc_world_dimension_status status = mc_world_dimension_biome_retain(biome);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return biome_native_result(error, status, MC_REGISTRY_LIMIT, MC_BIOME_OK,
+                                   "GAME biome call hold", 0);
+    return MC_WORLD_DIMENSION_OK;
+}
+
+static mc_world_dimension_status biome_reference_capability(const mc_world_dimension_biome *biome,
+                                                            mc_world_biome_error *error)
+{
+    if (biome->registry == NULL)
+        return biome_native_result(error, MC_WORLD_DIMENSION_REGISTRY_FAILED,
+                                   MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, MC_BIOME_OK,
+                                   "numerical biome has no actual reference capability", 0);
+    return MC_WORLD_DIMENSION_OK;
+}
+
+static mc_world_dimension_status biome_sample_admitted(mc_world_dimension_biome *biome, int32_t x,
+                                                       int32_t z, size_t width, size_t height,
+                                                       mc_biome_reference_array *input,
+                                                       mc_biome_reference_array **out,
+                                                       mc_world_biome_error *error)
+{
+    mc_world_dimension_status status = biome_reference_capability(biome, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return status;
+    if (!biome->fixed && width != height)
+        return biome_native_result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT,
+                                   MC_REGISTRY_INVALID_ARGUMENT, MC_BIOME_INVALID_ARGUMENT,
+                                   "normal GAME biome requires square extent", 0);
+    mc_biome_sampling_error sampling = {0};
+    mc_biome_reference_array *sampled = NULL;
+    if (biome->fixed) {
+        (void)mc_registry_biome_fixed_sample(biome->registry, &((fixed_biome *)biome)->storage, x,
+                                             z, width, height, input, &sampled, &sampling);
+    } else {
+        (void)mc_biome_sample_references(biome->registry, &((normal_biome *)biome)->manager, x, z,
+                                         width, input, &sampled, &sampling);
+    }
+    unsigned int pc = sampling.sampler_pc < 0 ? 0u : (unsigned int)sampling.sampler_pc;
+    status = biome_sampling_result(error, &sampling, "GAME biome direct sample", pc);
+    if (status == MC_WORLD_DIMENSION_OK)
+        *out = sampled;
+    return status;
+}
+
+mc_world_dimension_status
+mc_world_dimension_biome_sample(mc_world_dimension_biome *biome, int32_t x, int32_t z, size_t width,
+                                size_t height, mc_biome_reference_array *input,
+                                mc_biome_reference_array **out, mc_world_biome_error *error)
+{
+    mc_world_dimension_status status = biome_call_enter(biome, out, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return status;
+    status = biome_sample_admitted(biome, x, z, width, height, input, out, error);
+    mc_world_dimension_biome_release(biome);
+    return status;
+}
+
+static mc_world_dimension_status biome_cached_admitted(mc_world_dimension_biome *biome, int32_t x,
+                                                       int32_t z, size_t width, size_t height,
+                                                       mc_biome_reference_array **out,
+                                                       mc_world_biome_error *error)
+{
+    mc_biome_reference_array *input = biome->reference_d;
+    mc_biome_reference_array *sampled = NULL;
+    mc_world_dimension_status status =
+        biome_sample_admitted(biome, x, z, width, height, input, &sampled, error);
+    if (status != MC_WORLD_DIMENSION_OK) {
+        if (error != NULL && error->bytecode != 0) {
+            error->operation = "GAME biome cached direct";
+            error->bytecode = 11;
+        }
+        return status;
+    }
+    biome->reference_d = sampled;
+    *out = biome->reference_d;
+    if (error != NULL) {
+        error->operation = "GAME biome cached return";
+        error->bytecode = 21;
+    }
+    return MC_WORLD_DIMENSION_OK;
+}
+
+mc_world_dimension_status mc_world_dimension_biome_cached(mc_world_dimension_biome *biome,
+                                                          int32_t x, int32_t z, size_t width,
+                                                          size_t height,
+                                                          mc_biome_reference_array **out,
+                                                          mc_world_biome_error *error)
+{
+    mc_world_dimension_status status = biome_call_enter(biome, out, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return status;
+    status = biome_cached_admitted(biome, x, z, width, height, out, error);
+    mc_world_dimension_biome_release(biome);
+    return status;
+}
+
+static mc_world_dimension_status biome_point_admitted(mc_world_dimension_biome *biome, int32_t x,
+                                                      int32_t z, const mc_biome **out,
+                                                      mc_world_biome_error *error)
+{
+    mc_world_dimension_status status = biome_reference_capability(biome, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return status;
+    if (biome->fixed) {
+        *out = ((fixed_biome *)biome)->storage.e;
+        return biome_native_result(error, MC_WORLD_DIMENSION_OK, MC_REGISTRY_OK, MC_BIOME_OK,
+                                   "fixed GAME biome point return", 4);
+    }
+    mc_biome_reference_array *sampled = NULL;
+    status = biome_cached_admitted(biome, x, z, 1, 1, &sampled, error);
+    if (status != MC_WORLD_DIMENSION_OK) {
+        if (error != NULL && error->bytecode != 0) {
+            error->operation = "normal GAME biome point cached";
+            error->bytecode = 5;
+        }
+        return status;
+    }
+    const mc_biome *const *data = mc_biome_reference_array_data(sampled);
+    if (data == NULL || mc_biome_reference_array_length(sampled) == 0)
+        return biome_native_result(error, MC_WORLD_DIMENSION_REGISTRY_FAILED,
+                                   data == NULL ? MC_REGISTRY_NULL_REFERENCE
+                                                : MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                                   MC_BIOME_OK, "normal GAME biome point array", 9);
+    *out = data[0];
+    if (error != NULL) {
+        error->operation = "normal GAME biome point return";
+        error->bytecode = 10;
+    }
+    return MC_WORLD_DIMENSION_OK;
+}
+
+mc_world_dimension_status mc_world_dimension_biome_point(mc_world_dimension_biome *biome, int32_t x,
+                                                         int32_t z, const mc_biome **out,
+                                                         mc_world_biome_error *error)
+{
+    mc_world_dimension_status status = biome_call_enter(biome, out, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return status;
+    status = biome_point_admitted(biome, x, z, out, error);
+    mc_world_dimension_biome_release(biome);
+    return status;
+}
+
+mc_world_dimension_status mc_world_dimension_biome_chunk(mc_world_dimension_biome *biome,
+                                                         int32_t chunk_x, int32_t chunk_z,
+                                                         const mc_biome **out,
+                                                         mc_world_biome_error *error)
+{
+    mc_world_dimension_status status = biome_call_enter(biome, out, error);
+    if (status != MC_WORLD_DIMENSION_OK)
+        return status;
+    if (biome->fixed) {
+        status = biome_point_admitted(biome, chunk_x, chunk_z, out, error);
+        if (status == MC_WORLD_DIMENSION_OK && error != NULL)
+            error->operation = "fixed GAME biome chunk return";
+    } else {
+        const int32_t x = mc_java_i32_shl(chunk_x, 4);
+        const int32_t z = mc_java_i32_shl(chunk_z, 4);
+        status = biome_point_admitted(biome, x, z, out, error);
+        if (error != NULL && error->bytecode != 0) {
+            error->operation = status == MC_WORLD_DIMENSION_OK ? "normal GAME biome chunk return"
+                                                               : "normal GAME biome chunk point";
+            error->bytecode = status == MC_WORLD_DIMENSION_OK ? 16u : 13u;
+        }
+    }
+    mc_world_dimension_biome_release(biome);
+    return status;
 }
 
 mc_world_dimension_status mc_world_dimension_celestial_angle(const mc_world_dimension *dimension,

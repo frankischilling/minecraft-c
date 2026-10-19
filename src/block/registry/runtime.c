@@ -1,6 +1,7 @@
 #include "mc/block/registry/runtime.h"
 
 #include "registry_internal.h"
+#include "runtime_internal.h"
 
 #include <stdint.h>
 
@@ -28,6 +29,14 @@ static mc_registry_status quiescent(mc_registry_classes *classes, mc_registry_er
     if (classes->entered != 0)
         return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
     return MC_REGISTRY_OK;
+}
+
+bool mc_registry_runtime_borrow_release(mc_registry_classes *classes)
+{
+    if (classes == NULL || classes->runtime_borrows == 0)
+        return false;
+    --classes->runtime_borrows;
+    return true;
 }
 
 mc_registry_status mc_registry_classes_retain(mc_registry_classes *classes,

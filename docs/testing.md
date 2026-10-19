@@ -1,5 +1,17 @@
 # Test scope and reproduction
 
+The [World/Dimension manager contracts](world/biome-registry.md#world-and-dimension-managers)
+pass 304 normal/World and 386 fixed-manager checks within all 28 selected cases
+on MSVC, GCC and Clang. Linux uses ASan/UBSan and leak detection. Tests cover
+actual World construction, manager lifetime after World teardown, synchronous
+numerical replacement during class initialization, cached publication and
+source-ordered fixed-buffer failures. Direct, copy and load/create client
+constructors preserve their full registry cause at300/315/398 and stop before
+provider setup. All 581 measured inputs match retained host copies, with
+28 products per host; formatting passes 298 C/header files. The existing
+original graph and imported-resource replays also pass. No new original World,
+provider/surface, population or complete persistence comparison follows.
+
 The [Biome registry observations](reference/biome-registry.md) record actual
 ordinary initialization on both originals in three JVM modes. Each side
 supplies six graph snapshots, 3,824 raw-bit queries and all 4,096 table entries.
@@ -250,6 +262,8 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
 | `world.biome_registry` | Actual shared objects, field/list/Class identities, literal selectors, cold/warm and retained failure contracts | Class bootstrap and ordinary helpers; no World binding or gameplay |
 | `world.biome_reference_sampling` | Cold, warm, partial channel/class failure, array reuse and whole-call lifetime contracts | Direct square sampler with native bounds; no World generation or surface join |
+| `world.biome_runtime` | 304 checks: constructed Worlds, same-registry binding, actual cache and pointer results, callback replacement, retained failures, all three client constructor cause frames and manager lifetime | Native integration and existing climate fixtures; no new original World observation or generation |
+| `world.fixed_biome_runtime` | 386 checks: both sides and fixed kinds, cold l/m setup, rectangle/empty/suffix effects, natural allocation/fill failures, aliases and registry retirement | Native/source contracts; no fabricated recursive null-e state or Java OOM/GC timing |
 | `world.biome_registry_observation` | Complete original graph/query streams, explicit byte/table controls and corruption guards | Finite Biome bootstrap and methods; no Java Throwable identity or full World startup |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |

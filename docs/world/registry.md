@@ -13,6 +13,12 @@ initialization call remains. Materials, profile and resources retain their
 separate dependency lifetimes. Binding cannot replace an owner or attach one
 after the World class has admitted its first allocation.
 
+Class-bound [Dimension Biome managers](biome-registry.md#world-and-dimension-managers)
+retain additional independent Registry borrows. A separately held manager can
+outlive its World and World class, so freeing those owners does not by itself
+make Registry destruction possible. Manager retirement only releases its own
+borrow; reference arrays in the Registry arena never retain that arena cyclically.
+
 ## Reached operations
 
 The ordinary registry getters execute actual Block active use. A cold owner

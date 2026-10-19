@@ -14,7 +14,8 @@ SPEC = importlib.util.spec_from_file_location("int_set_capture", ROOT / "scripts
 CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
-             "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry")
+             "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
+             "world-biome-runtime")
 
 
 def main():
@@ -67,6 +68,23 @@ def main():
                 "registry_internal": ROOT / "src/block/registry/registry_internal.h",
                 "world_registry": ROOT / "src/world/runtime/registry.c",
             })
+        if args.scenario == "world-biome-runtime":
+            paths.update({
+                "biome_runtime_test": ROOT / "tests/world/dimension/test_biome_runtime.c",
+                "biome_runtime_header": ROOT / "include/mc/world/dimension/biome_runtime.h",
+                "biome_sampling": ROOT / "src/world/biome/sampling.c",
+                "biome_sampling_header": ROOT / "include/mc/world/biome/sampling.h",
+                "biome_sampling_internal": ROOT / "src/world/biome/sampling_internal.h",
+                "fixed_sampling": ROOT / "src/world/biome/fixed_sampling.c",
+                "biome_registry": ROOT / "src/world/biome/registry.c",
+                "biome_registry_header": ROOT / "include/mc/world/biome/registry.h",
+                "biome_registry_internal": ROOT / "src/world/biome/registry_internal.h",
+                "registry_runtime": ROOT / "src/block/registry/runtime.c",
+                "registry_runtime_header": ROOT / "include/mc/block/registry/runtime.h",
+                "registry_runtime_internal": ROOT / "src/block/registry/runtime_internal.h",
+                "registry_internal": ROOT / "src/block/registry/registry_internal.h",
+                "world_registry": ROOT / "src/world/runtime/registry.c",
+            })
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
@@ -78,7 +96,7 @@ def main():
                                      deadline=time.monotonic() + 70)
         CAPTURE.require(not stderr, "native contract stderr must be empty")
         text = stdout.decode("ascii").replace("\r\n", "\n")
-        if args.scenario == "world-registry":
+        if args.scenario in ("world-registry", "world-biome-runtime"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             CAPTURE.require(all(line in ("16 achievements\n", "151 recipes\n") for line in lines[:-1]),

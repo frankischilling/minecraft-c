@@ -74,6 +74,36 @@ Its source contract is distinct from the existing numerical API's preflight
 failure preservation. Bootstrap observations alone do not establish an
 end-to-end original World/provider/surface sampling comparison.
 
+## Manager source and native contracts
+
+The concrete World/Dimension binding and cached methods follow these paired
+method bodies. These source anchors supplement the bootstrap observations;
+they do not extend that observer into a running World comparison.
+
+| Client / server method | Source operations |
+| --- | --- |
+| `xv/ph` World constructor | Three separate seed reads14/41/68, noise publications28/55/82; no Biome active use or stored World field |
+| `xa/os.a()V` normal setup | Allocate manager1, capture Dimension.a6, constructor9, publish b12 |
+| `wd/nz.a()V`, `ay/aj.a()V` fixed setup | Allocate manager1, actual Biome l/m active use5, constructor10/12, b13/15, then subtype flags/ID |
+| `hd/et` fixed constructor | Actual nullable e6, f11 and g17 after empty superclass construction |
+| `xv/ph` and `hd/et` cached wrapper | Capture d3, virtual direct11, publish d14, reload18, return21 |
+| `hd/et` direct | Output allocation19; conditional fresh a49/51 then b60/62; e-fill76, b.g-fill93, a.f-fill110, return114 |
+| `xv/ph` point/chunk | Cached1x1 call5, element0 read9; chunk coordinates use wrapping shifts before point13 |
+| `hd/et` point/chunk | Return current e4 without direct sampling or cache publication |
+
+The [normal-manager contracts](../../tests/world/dimension/test_biome_runtime.c)
+exercise actual constructed Worlds, manager calls, callback replacement, retained
+aliases and class failures. The
+[fixed-manager contracts](../../tests/world/dimension/test_fixed_biome_runtime.c)
+cover both sides and fixed dimensions. They use public allocation accounting to
+reach a successful a publication followed by b allocation failure, then the
+subsequent uncorrected null/short-b fill failure after reference writes.
+No class phase, opaque layout or failure outcome is fabricated for these tests.
+Their lookup consistency checks are native integration checks; the existing
+original-derived numerical fixtures remain the climate oracle. Java OOM/GC
+timing, nullable fixed e reached through recursive original class flow, and
+complete original World startup are not newly observed here.
+
 ## Actual observations and native comparison
 
 The [project-owned observer](../../tests/reference/world/BiomeRegistryObservation.java)

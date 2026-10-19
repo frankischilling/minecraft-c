@@ -9,14 +9,14 @@ typedef struct mc_biome_reference_array mc_biome_reference_array;
 typedef struct mc_biome_sampling_error {
     mc_registry_error registry;
     mc_biome_status climate_status;
-    /* Outer xv/ph direct sampler operation, separate from nested clinit PCs.
-     * -1 is native admission; 331 is successful return. */
+    /* Outer direct sampler operation, separate from nested clinit PCs.
+     * -1 is native admission; xv/ph returns at331, fixed hd/et at114. */
     int32_t sampler_pc;
     /* Reached local array, including an unpublished replacement on failure.
      * A diagnostic reference is not a successfully returned Java array. */
     const mc_biome_reference_array *array;
     size_t cells_completed;
-    size_t next_index; /* iinc at 307 precedes the active use at 314. */
+    size_t next_index; /* Normal iinc307 precedes lookup314; fixed has no loop. */
 } mc_biome_sampling_error;
 
 /* Direct square xv/ph sampler using actual shared Biome references. The

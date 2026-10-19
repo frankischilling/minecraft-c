@@ -1,6 +1,19 @@
 # Development status
 
-The [shared Biome registry](world/biome-registry.md) now constructs actual
+The [World/Dimension Biome managers](world/biome-registry.md#world-and-dimension-managers)
+now retain actual shared references and independent Registry borrows. Normal
+and fixed direct/cached/point/chunk calls preserve receiver identity, source
+ordering and failure effects. World constructors retain the full Registry
+cause at bind300/315/398. All 28 selected cases pass on MSVC, GCC and Clang,
+including 304 World-manager and 386 fixed-manager checks, with Linux
+ASan/UBSan and leak detection. The 581 measured code/tool/fixture inputs and
+28 retained products per host bind these results to their source; formatting
+passes 298 C/header files. These are native integration contracts and existing
+original-fixture replays, without a new executed-original World comparison.
+Live provider/density/surface reads, lighting, population, complete mutations
+and persistence remain unfinished.
+
+At the preceding checkpoint, the [shared Biome registry](world/biome-registry.md) constructs actual
 objects, spawn lists, Class handles and a reference table on the shared class
 owner. The direct sampler writes each climate cell before the real Biome
 active use. Both originals returned from ordinary initialization in three JVM
@@ -8,8 +21,8 @@ modes; their complete graphs and 3,824 queries per side match the native
 probe on MSVC, GCC and Clang. All 26 selected cases pass, including 101,396
 registry, 609 reference-sampling and 33,155 numerical checks. Linux uses
 ASan/UBSan and leak detection. All 575 code/tool/fixture inputs match retained
-copies; each host retains 26 products. World/Dimension binding, live
-generation, lighting, population and full persistence remain unfinished.
+copies; each host retains 26 products. Live generation, lighting, population
+and full persistence remain unfinished.
 
 At the preceding checkpoint, the [World registry binding](world/registry.md) shares the actual class
 owner across Worlds, performs ordered material and Dimension spawn queries,

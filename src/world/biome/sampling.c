@@ -2,6 +2,7 @@
 
 #include "../../block/registry/registry_internal.h"
 #include "biome_internal.h"
+#include "sampling_internal.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -51,6 +52,67 @@ static bool owns_array(const mc_registry_classes *classes, const mc_biome_refere
         if (owned == array)
             return true;
     return false;
+}
+
+static mc_registry_status array_failure(mc_registry_classes *classes, mc_registry_status status,
+                                        const char *message)
+{
+    if (classes != NULL)
+        classes->last_error = native_error(status, message);
+    return status;
+}
+
+mc_registry_status mc_registry_biome_array_prepare(mc_registry_classes *classes,
+                                                   mc_biome_reference_array *input, size_t length,
+                                                   mc_biome_reference_array **out)
+{
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (classes->entered == 0 || out == NULL || (input != NULL && !owns_array(classes, input)))
+        return array_failure(classes, MC_REGISTRY_INVALID_ARGUMENT,
+                             "Biome reference array owner/output");
+    if (length > INT32_MAX ||
+        length > (SIZE_MAX - sizeof(mc_biome_reference_array)) / sizeof(const mc_biome *))
+        return array_failure(classes, MC_REGISTRY_LIMIT, "Biome reference array native span");
+    mc_biome_reference_array *array = input;
+    if (array == NULL || array->length < length) {
+        mc_biome_reference_array *replacement =
+            mc_registry_allocate(classes, sizeof(*replacement) + length * sizeof(const mc_biome *));
+        if (replacement == NULL) {
+            /* Ordinary array allocation has no source initializer frame. */
+            return array_failure(classes, classes->last_error.status, classes->last_error.message);
+        }
+        replacement->classes = classes;
+        replacement->length = length;
+        replacement->elements = (const mc_biome **)(replacement + 1);
+        replacement->next = classes->biomes.sample_arrays;
+        classes->biomes.sample_arrays = replacement;
+        array = replacement;
+    }
+    *out = array;
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_registry_biome_array_fill(mc_registry_classes *classes,
+                                                mc_biome_reference_array *array, size_t length,
+                                                const mc_biome *value)
+{
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (classes->entered == 0)
+        return array_failure(classes, MC_REGISTRY_INVALID_ARGUMENT,
+                             "Biome reference fill requires an admitted flow");
+    if (array == NULL)
+        return array_failure(classes, MC_REGISTRY_NULL_REFERENCE, "Biome reference fill array");
+    if (!owns_array(classes, array))
+        return array_failure(classes, MC_REGISTRY_INVALID_ARGUMENT, "Biome reference fill owner");
+    if (length > INT32_MAX)
+        return array_failure(classes, MC_REGISTRY_LIMIT, "Biome reference fill native span");
+    if (length > array->length)
+        return array_failure(classes, MC_REGISTRY_INDEX_OUT_OF_RANGE, "Biome reference fill range");
+    for (size_t i = 0; i < length; ++i)
+        array->elements[i] = value;
+    return MC_REGISTRY_OK;
 }
 
 static mc_registry_status climate_result(mc_biome_status status)
@@ -104,21 +166,9 @@ mc_registry_status mc_biome_sample_references(mc_registry_classes *classes,
     int32_t pc = 19;
     size_t completed = 0, next_index = 0;
     mc_biome_status climate_status = MC_BIOME_OK;
-    if (array == NULL || array->length < count) {
-        mc_biome_reference_array *replacement =
-            mc_registry_allocate(classes, sizeof(*replacement) + count * sizeof(const mc_biome *));
-        if (replacement == NULL) {
-            /* This ordinary allocation has no source initializer/constructor
-             * frame. Do not attach a stale successful Block position to it. */
-            cause = native_error(classes->last_error.status, classes->last_error.message);
-            goto leave;
-        }
-        replacement->classes = classes;
-        replacement->length = count;
-        replacement->elements = (const mc_biome **)(replacement + 1);
-        replacement->next = classes->biomes.sample_arrays;
-        classes->biomes.sample_arrays = replacement;
-        array = replacement;
+    if (mc_registry_biome_array_prepare(classes, input, count, &array) != MC_REGISTRY_OK) {
+        cause = classes->last_error;
+        goto leave;
     }
 
     pc = 49;

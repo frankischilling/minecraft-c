@@ -71,8 +71,10 @@ typedef struct mc_world_dimension_state {
 
 /* Fixed e/f/g hide the normal superclass's same-label noise fields. A fixed
  * owner has null superclass noise and initially null a/b/c/d arrays. normal is
- * NULL for fixed owners. These are the actual retained numerical manager and
- * array descriptors, not copies that can be used as new owning descriptors. */
+ * NULL for fixed owners. These are the retained numerical manager/projection
+ * descriptors, not copies that can be used as new owning descriptors. fixed_e
+ * and d are numerical projections; biome_runtime.h exposes actual GAME e/d
+ * references separately, without reconstructing them from these encodings. */
 typedef struct mc_world_dimension_biome_fields {
     bool fixed;
     mc_biome_manager *normal;
@@ -87,8 +89,8 @@ const char *mc_world_dimension_status_string(mc_world_dimension_status status);
 mc_world_dimension_limits mc_world_dimension_default_limits(void);
 
 /* Allocate RAW with one hold, without game construction, entropy or I/O.
- * NULL limits selects 4MiB of direct requests and the existing 64MiB per-normal-
- * manager buffer budget. Direct accounting includes the shared ledger, owner,
+ * NULL limits selects 4MiB of direct requests and the existing 64MiB per-manager
+ * buffer budget. Direct accounting includes the shared ledger, owner,
  * both float arrays and all live current/retired biome-owner requests, including
  * old+new peak during replacement. Allocator overhead, C stack, retained World
  * and separately bounded numerical biome buffers are excluded. Zero limits are

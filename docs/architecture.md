@@ -3,9 +3,10 @@
 The [shared Biome registry](world/biome-registry.md) stores actual objects,
 spawn lists, record/Class references and its mutable table on the existing
 class owner. Its direct sampler retains reference arrays and invokes the real
-lookup after each climate-cell store. Numerical climate APIs keep their
-separate bounded-buffer contract. Connecting these owners to Dimension setup,
-live generation and surface reads remains unfinished.
+lookup after each climate-cell store. Class-bound Dimension setup retains actual
+normal/fixed managers with independent Registry borrows and reference caches.
+Numerical climate APIs keep their separate bounded-buffer contract. Live
+generation and surface reads remain unfinished.
 
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility,
 the shared Random profile and allocation-free modified UTF-8 text helpers.

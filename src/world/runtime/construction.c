@@ -2,6 +2,7 @@
 
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "mc/world/dimension/biome_runtime.h"
 #include "mc/world/dimension/dimension.h"
 #include "mc/world/runtime/blocks.h"
 #include "millis.h"
@@ -644,9 +645,30 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
                 runtime->construction.entry == MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA ? 300u
                 : runtime->construction.entry == MC_WORLD_RUNTIME_CLIENT_COPY          ? 315u
                                                                                        : 398u;
-            mc_world_dimension_status bound =
-                mc_world_dimension_bind(runtime->fields.t, runtime, NULL);
-            if (world_dimension_result(runtime, bound, bind_pc)) {
+            mc_world_dimension_error dimension_cause = {0};
+            mc_world_dimension_status bound;
+            if (runtime->classes->registry != NULL) {
+                const mc_world_dimension_registry_binding binding = {
+                    .classes = runtime->classes->registry,
+                    .side = runtime->classes->side == MC_WORLD_INFO_CLIENT ? MC_REGISTRY_CLIENT
+                                                                           : MC_REGISTRY_SERVER,
+                    .profile = runtime->classes->profile};
+                bound = mc_world_dimension_bind_game(runtime->fields.t, runtime, &binding,
+                                                     &dimension_cause);
+            } else {
+                bound = mc_world_dimension_bind(runtime->fields.t, runtime, &dimension_cause);
+            }
+            bool dimension_ready = false;
+            if (bound != MC_WORLD_DIMENSION_OK &&
+                dimension_cause.registry.status != MC_REGISTRY_OK) {
+                runtime->construction.failed_call_pc = bind_pc;
+                (void)mc_world_runtime_registry_result(runtime, dimension_cause.registry.status,
+                                                       &dimension_cause.registry,
+                                                       "World Dimension Biome registry", NULL);
+            } else {
+                dimension_ready = world_dimension_result(runtime, bound, bind_pc);
+            }
+            if (dimension_ready) {
                 if (world_provider(runtime, bind_pc + 5u)) {
                     bool spawn_ready = !new_world || world_initial_spawn(runtime);
                     if (!spawn_ready)

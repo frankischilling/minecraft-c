@@ -40,6 +40,11 @@ Dimension binding publishes the same World before constructing the current
 biome manager and filling the Dimension's actual light array. Normal biome
 noise reads the live World seed before each of its three channels. Rebinding
 publishes a new manager; an independently held preceding manager stays alive.
+With a class Registry binding, construction uses the actual
+[normal/fixed Biome managers](biome-registry.md#world-and-dimension-managers).
+Each owns a Registry borrow independent of the World class. Fixed setup loads
+actual Hell/Sky references before replacing the manager, and any failure keeps
+the full Registry cause at the enclosing World bind call300,315 or398.
 
 The concrete native normal provider owns its generator, pending history,
 cache/list storage and blank payload. Its actual cave Random is default
