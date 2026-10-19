@@ -16,8 +16,19 @@ typedef struct recipe_call {
 
 typedef struct recipe_text {
     size_t length;
-    uint16_t units[];
 } recipe_text;
+
+_Static_assert(_Alignof(recipe_text) >= _Alignof(uint16_t) &&
+                   sizeof(recipe_text) % _Alignof(uint16_t) == 0,
+               "Recipe text trailing UTF16 storage must stay aligned");
+
+/* The same allocation holds this header followed by length uint16_t units.
+ * Avoid a flexible-array member: the supported MSVC profiles differ in the
+ * diagnostic they issue for that otherwise standard C declaration. */
+static uint16_t *text_units(recipe_text *text)
+{
+    return (uint16_t *)(void *)(text + 1);
+}
 
 typedef struct recipe_binding {
     bool null_key;
@@ -122,14 +133,14 @@ static mc_registry_status append_row(recipe_call *call, const mc_registry_string
     const size_t length = old_length + row->length;
     if (length > (SIZE_MAX - sizeof(recipe_text)) / sizeof(uint16_t))
         return fail(call, MC_REGISTRY_LIMIT, "Recipe native concatenation allocation bound");
-    recipe_text *joined = allocate(call, sizeof(*joined) + length * sizeof(*joined->units));
+    recipe_text *joined = allocate(call, sizeof(*joined) + length * sizeof(uint16_t));
     if (joined == NULL)
         return call->classes->last_error.status;
     joined->length = length;
     if (old_length != 0)
-        memcpy(joined->units, (*text)->units, old_length * sizeof(*joined->units));
+        memcpy(text_units(joined), text_units(*text), old_length * sizeof(uint16_t));
     if (row->length != 0)
-        memcpy(joined->units + old_length, row->units, row->length * sizeof(*joined->units));
+        memcpy(text_units(joined) + old_length, row->units, row->length * sizeof(uint16_t));
     *text = joined;
     return MC_REGISTRY_OK;
 }
@@ -299,7 +310,7 @@ mc_registry_status mc_registry_recipe_shaped(mc_crafting_manager *manager, mc_it
         call.pc = 312;
         if (text == NULL || cell >= text->length)
             return fail(&call, MC_REGISTRY_INDEX_OUT_OF_RANGE, "Recipe String.charAt index");
-        recipe_binding *binding = find_binding(map, false, text->units[cell]);
+        recipe_binding *binding = find_binding(map, false, text_units(text)[cell]);
         if (binding != NULL) {
             call.pc = 351;
             if (binding->value == NULL)
