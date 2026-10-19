@@ -4,19 +4,23 @@
 #include "mc/core/java/random_profile.h"
 #include "mc/world/cache/lifecycle.h"
 #include "mc/world/generation/normal.h"
+#include "mc/world/info/info.h"
 #include "mc/world/storage/store.h"
 
 typedef struct mc_world_runtime mc_world_runtime;
 
-/* Stable mutable scalar state, separate from expiring metadata views. The
- * runtime initially copies these values from current metadata; force/save-off
- * flags start false. Edits require exclusive access or synchronous callbacks.
- * Every metadata save overlays time/spawn on a fresh store view, retaining live
- * SizeOnDisk and the loaded last_played field. No world tick is implemented. */
+/* Stable typed cell view, separate from expiring metadata views. Legacy
+ * composition initially copies time/spawn from current store metadata and its
+ * metadata saves overlay those cells on a fresh store view, retaining the
+ * store's SizeOnDisk and loaded last_played. Force/save-off flags start false.
+ * Edits require exclusive access or synchronous callbacks. With world_info selected below,
+ * time/spawn point directly into that retained Info; no fallback cells are used.
+ * Flags always belong to the runtime. Mutate *view->time (likewise other cells),
+ * not the descriptor itself. No world tick is implemented. */
 typedef struct mc_world_runtime_state {
-    int64_t time;
-    int32_t spawn_x, spawn_y, spawn_z;
-    bool world_force_load, provider_force_load, saving_disabled;
+    int64_t *time;
+    int32_t *spawn_x, *spawn_y, *spawn_z;
+    bool *world_force_load, *provider_force_load, *saving_disabled;
 } mc_world_runtime_state;
 
 typedef uint32_t (*mc_world_region_clock)(void *owner);
@@ -47,17 +51,26 @@ typedef struct mc_world_runtime_options {
      * the numerical/callback/storage foundation. No implicit creation, reset or
      * draw occurs, and a generator does not require this binding. */
     mc_java_random_profile *random_profile;
+    /* Optional READY Info retained by this composition. Bind all live scalar
+     * contexts to its actual time/spawn; full reads use its own fifteen fields.
+     * No store metadata is required in this mode. Copy Info for independent
+     * World scalars; sharing a store does not imply sharing Info. This remains
+     * a native composition, not the original World constructor. The actual
+     * live-player-list metadata serializer is not implemented, so metadata
+     * save stops explicitly at that operation without sampling its clock.
+     * Standalone one-argument store serialization is a separate route. */
+    mc_world_info *world_info;
 } mc_world_runtime_options;
 
 /* Compose storage, acquisition, normal generation, save/unload and owner leases.
- * Borrow store, validated cache/ordered pending and all optional dependencies;
- * they must outlive this owner. cache/list/pending must initially be empty and
- * the store must already have metadata. The runtime registers its cache and its
- * internal blank fallback with the store, and owns stable context/clock storage.
- * No world files are touched by create. Failure preserves out and borrowed
- * state; an allocated registration is undone if construction cannot complete.
- * This already-loaded metadata/generator composition does not construct a
- * World-owned Random, g or Q, or reproduce original World construction.
+ * Borrow store, validated cache/ordered pending and optional dependencies except
+ * the retained world_info; borrowed dependencies must outlive this owner.
+ * cache/list/pending must initially be empty and
+ * the store must already have metadata when world_info is NULL. The runtime registers its cache and
+ * its internal blank fallback with the store, and owns stable context/clock storage. No world files
+ * are touched by create. Failure preserves out and borrowed state; an allocated registration is
+ * undone if construction cannot complete. This already-loaded metadata/generator composition does
+ * not construct a World-owned Random, g or Q, or reproduce original World construction.
  *
  * Dimensions 0 and -1 are accepted. An optional initialized normal generator is
  * supported only for dimension0, with matching resources/cache/world seed and
@@ -83,11 +96,17 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
                                                 mc_world_runtime **out,
                                                 mc_world_storage_error *error);
 
-mc_world_runtime_state *mc_world_runtime_live(mc_world_runtime *runtime);
+const mc_world_runtime_state *mc_world_runtime_live(mc_world_runtime *runtime);
+/* Exact borrowed retained owner, or NULL for legacy composition/null runtime. */
+mc_world_info *mc_world_runtime_info(mc_world_runtime *runtime);
 /* Snapshot current world metadata: copy a fresh store view, then overlay stable
  * live time/spawn. SizeOnDisk and loaded last_played come from that current view.
  * Strings/Player remain borrowed until the next successful store load/save or
- * runtime/store destruction. Queries do not change last_error. Failure preserves
+ * runtime/store destruction. In Info-bound mode every value comes from that
+ * Info, including its cached dimension; references instead expire on the
+ * relevant Info reference replacement/retirement. A NULL name has an empty
+ * lossy span here; use the Info interface to distinguish its identity/state.
+ * Queries do not change last_error. Failure preserves
  * out. This is distinct from the store's last retained persistence view. */
 mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runtime,
                                                    mc_level_info *out,

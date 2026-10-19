@@ -5,6 +5,11 @@
 struct mc_world_runtime {
     mc_world_runtime_options options;
     mc_world_runtime_state live;
+    struct {
+        int64_t time;
+        int32_t spawn_x, spawn_y, spawn_z;
+    } legacy_info;
+    bool world_force_load, provider_force_load, saving_disabled;
     mc_chunk_state fallback;
     mc_chunk_references references;
     mc_chunk_acquire_context acquisition;
@@ -146,8 +151,13 @@ static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_
     uint32_t growth = 0;
     uint32_t timestamp = runtime->options.region_timestamp(runtime->options.clock);
     mc_world_storage_status status =
-        mc_world_store_write_runtime_chunk(runtime->options.store, chunk, *context->world_time,
-                                           timestamp, &growth, &runtime->last_error);
+        runtime->options.world_info == NULL
+            ? mc_world_store_write_runtime_chunk(runtime->options.store, chunk,
+                                                 *context->world_time, timestamp, &growth,
+                                                 &runtime->last_error)
+            : mc_world_store_write_runtime_chunk_for_info(
+                  runtime->options.store, chunk, runtime->options.world_info, *context->world_time,
+                  timestamp, &growth, &runtime->last_error);
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
@@ -208,6 +218,11 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
 {
     (void)context;
     mc_world_runtime *runtime = owner;
+    if (runtime->options.world_info != NULL) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "live-player metadata serialization");
+        return MC_CHUNK_CALLBACK_FATAL;
+    }
     int64_t timestamp = runtime->options.metadata_timestamp(runtime->options.clock);
     mc_level_info info;
     if (mc_world_runtime_read_info(runtime, &info, &runtime->last_error) != MC_WORLD_STORAGE_OK)
@@ -242,30 +257,61 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
         (options->dimension != 0 && options->dimension != -1) ||
         (options->policy != MC_CHUNK_ACQUIRE_BASE &&
          options->policy != MC_CHUNK_ACQUIRE_DEDICATED) ||
-        options->region_timestamp == NULL || options->metadata_timestamp == NULL ||
+        options->region_timestamp == NULL ||
+        (options->world_info == NULL && options->metadata_timestamp == NULL) ||
         options->provider_maintenance == NULL || options->save_auxiliary == NULL ||
         (options->generator == NULL) != (options->generation == NULL) ||
         (options->generator == NULL) != (options->populate == NULL))
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime arguments");
     const mc_level_info *info = mc_world_store_info(options->store);
-    if (info == NULL)
+    const mc_world_info_live *cells = NULL;
+    mc_world_info_fields fields;
+    int64_t seed;
+    if (options->world_info != NULL) {
+        cells = mc_world_info_live_get(options->world_info);
+        if (cells == NULL ||
+            mc_world_info_fields_get(options->world_info, &fields) != MC_WORLD_INFO_OK)
+            return runtime_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "runtime requires READY WorldInfo");
+        seed = fields.value.seed;
+    } else if (info == NULL) {
         return runtime_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                              "runtime requires metadata");
+    } else {
+        seed = info->seed;
+    }
     if (options->generator != NULL &&
         (options->dimension != 0 || !options->generator->initialized ||
-         options->generator->world_seed != info->seed || options->generation->lighting == NULL ||
+         options->generator->world_seed != seed || options->generation->lighting == NULL ||
          options->generation->lighting->cache != options->cache))
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                              "runtime generation binding");
     mc_world_runtime *runtime = calloc(1, sizeof(*runtime));
     if (runtime == NULL)
         return runtime_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "runtime owner");
+    if (options->world_info != NULL) {
+        mc_world_info_status retained = mc_world_info_retain(options->world_info);
+        if (retained != MC_WORLD_INFO_OK) {
+            free(runtime);
+            return runtime_error(error, MC_WORLD_STORAGE_LIMIT, "runtime WorldInfo hold");
+        }
+    }
     runtime->options = *options;
     runtime->last_random_status = MC_JAVA_RANDOM_PROFILE_OK;
-    runtime->live = (mc_world_runtime_state){.time = info->time,
-                                             .spawn_x = info->spawn_x,
-                                             .spawn_y = info->spawn_y,
-                                             .spawn_z = info->spawn_z};
+    if (cells == NULL) {
+        runtime->legacy_info.time = info->time;
+        runtime->legacy_info.spawn_x = info->spawn_x;
+        runtime->legacy_info.spawn_y = info->spawn_y;
+        runtime->legacy_info.spawn_z = info->spawn_z;
+    }
+    runtime->live = (mc_world_runtime_state){
+        .time = cells == NULL ? &runtime->legacy_info.time : cells->time,
+        .spawn_x = cells == NULL ? &runtime->legacy_info.spawn_x : cells->spawn_x,
+        .spawn_y = cells == NULL ? &runtime->legacy_info.spawn_y : cells->spawn_y,
+        .spawn_z = cells == NULL ? &runtime->legacy_info.spawn_z : cells->spawn_z,
+        .world_force_load = &runtime->world_force_load,
+        .provider_force_load = &runtime->provider_force_load,
+        .saving_disabled = &runtime->saving_disabled};
     runtime->fallback = (mc_chunk_state){.blank = true, .never_save = true};
     runtime->references = (mc_chunk_references){runtime, reference_retain, reference_release};
     runtime->loader =
@@ -274,11 +320,11 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
         (mc_chunk_acquire_context){.cache = options->cache,
                                    .pending = options->pending,
                                    .fallback = &runtime->fallback,
-                                   .world_time = &runtime->live.time,
-                                   .world_force_load = &runtime->live.world_force_load,
-                                   .provider_force_load = &runtime->live.provider_force_load,
-                                   .spawn_x = &runtime->live.spawn_x,
-                                   .spawn_z = &runtime->live.spawn_z,
+                                   .world_time = runtime->live.time,
+                                   .world_force_load = runtime->live.world_force_load,
+                                   .provider_force_load = runtime->live.provider_force_load,
+                                   .spawn_x = runtime->live.spawn_x,
+                                   .spawn_z = runtime->live.spawn_z,
                                    .policy = options->policy,
                                    .world = runtime,
                                    .loader = runtime,
@@ -292,8 +338,8 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
     runtime->lifecycle =
         (mc_chunk_lifecycle_context){.cache = options->cache,
                                      .pending = options->pending,
-                                     .world_time = &runtime->live.time,
-                                     .saving_disabled = &runtime->live.saving_disabled,
+                                     .world_time = runtime->live.time,
+                                     .saving_disabled = runtime->live.saving_disabled,
                                      .policy = options->policy,
                                      .world = runtime,
                                      .loader = runtime,
@@ -316,12 +362,14 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
         .report_progress = options->report_progress == NULL ? NULL : progress};
     if (!mc_chunk_acquire_validate(&runtime->acquisition) ||
         !mc_world_save_validate(&runtime->saving)) {
+        mc_world_info_release(runtime->options.world_info);
         free(runtime);
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime context binding");
     }
     mc_world_storage_status status = mc_world_store_register_cache(
         options->store, options->cache, &runtime->acquisition.fallback, error);
     if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_info_release(runtime->options.world_info);
         free(runtime);
         return status;
     }
@@ -329,9 +377,14 @@ mc_world_storage_status mc_world_runtime_create(const mc_world_runtime_options *
     return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-mc_world_runtime_state *mc_world_runtime_live(mc_world_runtime *runtime)
+const mc_world_runtime_state *mc_world_runtime_live(mc_world_runtime *runtime)
 {
     return runtime == NULL ? NULL : &runtime->live;
+}
+
+mc_world_info *mc_world_runtime_info(mc_world_runtime *runtime)
+{
+    return runtime == NULL ? NULL : runtime->options.world_info;
 }
 
 mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runtime,
@@ -340,15 +393,35 @@ mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runti
 {
     if (runtime == NULL || out == NULL)
         return runtime_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime info arguments");
+    if (runtime->options.world_info != NULL) {
+        mc_world_info_fields fields;
+        (void)mc_world_info_fields_get(runtime->options.world_info, &fields);
+        *out = (mc_level_info){.seed = fields.value.seed,
+                               .spawn_x = fields.value.spawn_x,
+                               .spawn_y = fields.value.spawn_y,
+                               .spawn_z = fields.value.spawn_z,
+                               .time = fields.value.time,
+                               .last_played = fields.value.last_played,
+                               .size_on_disk = fields.value.size_on_disk,
+                               .level_name = mc_world_info_name_text(fields.name),
+                               .version = fields.value.version,
+                               .rain_time = fields.value.rain_time,
+                               .thunder_time = fields.value.thunder_time,
+                               .raining = fields.value.raining,
+                               .thundering = fields.value.thundering,
+                               .player = mc_world_info_player_root(fields.player),
+                               .player_dimension = fields.value.player_dimension};
+        return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
+    }
     const mc_level_info *current = mc_world_store_info(runtime->options.store);
     if (current == NULL)
         return runtime_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                              "runtime metadata is missing");
     mc_level_info snapshot = *current;
-    snapshot.time = runtime->live.time;
-    snapshot.spawn_x = runtime->live.spawn_x;
-    snapshot.spawn_y = runtime->live.spawn_y;
-    snapshot.spawn_z = runtime->live.spawn_z;
+    snapshot.time = *runtime->live.time;
+    snapshot.spawn_x = *runtime->live.spawn_x;
+    snapshot.spawn_y = *runtime->live.spawn_y;
+    snapshot.spawn_z = *runtime->live.spawn_z;
     *out = snapshot;
     return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -546,6 +619,7 @@ mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
         mc_world_store_unregister_cache(runtime->options.store, runtime->options.cache, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
+    mc_world_info_release(runtime->options.world_info);
     free(runtime);
     return runtime_error(error, MC_WORLD_STORAGE_OK, NULL);
 }

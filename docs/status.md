@@ -1,12 +1,19 @@
 # Development status
 
+The [metadata binding checkpoint](reference/world-info-runtime.md) passes all
+89 public tests on native Windows MSVC and Linux GCC/Clang, with Linux
+sanitizers. Its new integration case passes 173 checks. Runtime contexts borrow
+the retained Info's actual time/spawn cells, typed region growth updates only
+the calling Info, and typed no-list metadata uses the real serializer. Original
+World construction and live-player metadata saving remain unfinished.
+
 The per-World [metadata owner](world/info.md) now passes 8,465 native checks and
 matches all 750 stable original-derived graph rows on MSVC, GCC and Clang.
 Copies keep independent scalars and shared name/Player references; no-list
 serialization preserves shared Player renaming and loaded LastPlayed.
 Linux uses sanitizers. [Evidence](reference/world-info.md) distinguishes the two
-selected checks from the older complete-suite checkpoint. World construction,
-typed persistence and live-player-list serialization remain unfinished.
+selected checks from the earlier complete-suite checkpoint. World construction
+and live-player-list serialization remain unfinished.
 
 The private [millisecond wall-clock backend](reference/wall-clock.md) passes
 251 checks on MSVC, GCC and Clang, including four ordered OS brackets per

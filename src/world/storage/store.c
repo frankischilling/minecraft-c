@@ -341,6 +341,25 @@ static mc_world_storage_status store_rotate(mc_world_store *store, const uint8_t
     return status;
 }
 
+static mc_world_storage_status store_write_metadata(mc_world_store *store, const mc_nbt_tag *root,
+                                                    mc_world_storage_error *error)
+{
+    mc_ws_file_bytes raw = {0};
+    mc_world_storage_status status = store_encode_nbt(root, &store->limits.nbt, &raw, error);
+    mc_compression_buffer compressed = {0};
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_compression_status encoded = mc_compression_encode(
+            MC_COMPRESSION_GZIP, raw.data, raw.length, &store->limits.compression, &compressed);
+        if (encoded != MC_COMPRESSION_OK)
+            status = store_compression_error(error, encoded);
+    }
+    mc_ws_free_file_bytes(&raw);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = store_rotate(store, compressed.data, compressed.length, error);
+    mc_compression_buffer_free(&compressed);
+    return status;
+}
+
 mc_world_storage_status mc_world_store_save_info(mc_world_store *store, const mc_level_info *info,
                                                  int64_t saved_at_ms, mc_world_storage_error *error)
 {
@@ -366,19 +385,78 @@ mc_world_storage_status mc_world_store_save_info(mc_world_store *store, const mc
         return store_level_error(error, level, &detail);
     }
     rebound.last_played = requested.last_played;
-    mc_ws_file_bytes raw = {0};
-    status = store_encode_nbt(mc_nbt_document_root(document), &store->limits.nbt, &raw, error);
-    mc_compression_buffer compressed = {0};
-    if (status == MC_WORLD_STORAGE_OK) {
-        mc_compression_status encoded = mc_compression_encode(
-            MC_COMPRESSION_GZIP, raw.data, raw.length, &store->limits.compression, &compressed);
-        if (encoded != MC_COMPRESSION_OK)
-            status = store_compression_error(error, encoded);
+    status = store_write_metadata(store, mc_nbt_document_root(document), error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_nbt_document_free(document);
+        return status;
     }
-    mc_ws_free_file_bytes(&raw);
-    if (status == MC_WORLD_STORAGE_OK)
-        status = store_rotate(store, compressed.data, compressed.length, error);
-    mc_compression_buffer_free(&compressed);
+    mc_nbt_document *previous = store->metadata;
+    store->metadata = document;
+    store->info = rebound;
+    store->has_info = true;
+    mc_nbt_document_free(previous);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_save_world_info(mc_world_store *store, mc_world_info *info,
+                                                       mc_world_storage_error *error)
+{
+    if (store == NULL || info == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "typed metadata arguments");
+    if (mc_world_info_live_get(info) == NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "typed metadata requires READY WorldInfo");
+    mc_world_storage_status status = mc_world_store_check_session(store, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    mc_world_info_record *record = NULL;
+    mc_world_info_error info_error;
+    mc_world_info_status serialized = mc_world_info_record_create(info, &record, &info_error);
+    if (serialized != MC_WORLD_INFO_OK) {
+        mc_world_storage_status mapped =
+            serialized == MC_WORLD_INFO_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+            : serialized == MC_WORLD_INFO_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+            : serialized == MC_WORLD_INFO_INVALID_ARGUMENT  ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+            : serialized == MC_WORLD_INFO_CLOCK_FAILURE     ? MC_WORLD_STORAGE_IO_ERROR
+            : serialized == MC_WORLD_INFO_INVALID_PHASE     ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                            : MC_WORLD_STORAGE_INVALID_DATA;
+        return store_error(error, mapped,
+                           info_error.field == NULL ? mc_world_info_status_string(serialized)
+                                                    : info_error.field);
+    }
+    mc_nbt_document *document = NULL;
+    mc_level_error detail;
+    mc_level_status built = mc_level_build_record(mc_world_info_record_root(record),
+                                                  mc_world_store_metadata_root(store),
+                                                  &store->limits.nbt, &document, &detail);
+    mc_world_info_record_release(record);
+    if (built != MC_LEVEL_OK)
+        return store_level_error(error, built, &detail);
+    /* Rebind only the persistence projection. Reading Dimension here would add
+     * a schema failure absent from the actual serializer. */
+    static const uint16_t data_key[] = {'D', 'a', 't', 'a'};
+    static const uint16_t name_key[] = {'L', 'e', 'v', 'e', 'l', 'N', 'a', 'm', 'e'};
+    static const uint16_t player_key[] = {'P', 'l', 'a', 'y', 'e', 'r'};
+    const mc_nbt_tag *data = mc_nbt_compound_get(mc_nbt_document_root(document), data_key, 4);
+    const mc_nbt_tag *name = mc_nbt_compound_get(data, name_key, 9);
+    mc_world_info_fields fields;
+    (void)mc_world_info_fields_get(info, &fields);
+    mc_level_info rebound = {.seed = fields.value.seed,
+                             .spawn_x = fields.value.spawn_x,
+                             .spawn_y = fields.value.spawn_y,
+                             .spawn_z = fields.value.spawn_z,
+                             .time = fields.value.time,
+                             .last_played = fields.value.last_played,
+                             .size_on_disk = fields.value.size_on_disk,
+                             .level_name = name->value.string,
+                             .version = fields.value.version,
+                             .rain_time = fields.value.rain_time,
+                             .thunder_time = fields.value.thunder_time,
+                             .raining = fields.value.raining,
+                             .thundering = fields.value.thundering,
+                             .player = mc_nbt_compound_get(data, player_key, 6),
+                             .player_dimension = fields.value.player_dimension};
+    status = store_write_metadata(store, mc_nbt_document_root(document), error);
     if (status != MC_WORLD_STORAGE_OK) {
         mc_nbt_document_free(document);
         return status;
@@ -536,6 +614,7 @@ mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32
 static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk_state *chunk,
                                                  int64_t world_time, uint32_t timestamp,
                                                  uint32_t *growth, bool runtime,
+                                                 mc_world_info *account,
                                                  mc_world_storage_error *error)
 {
     if (store == NULL || chunk == NULL || growth == NULL)
@@ -543,7 +622,7 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
-    if (!store->has_info)
+    if (account == NULL && !store->has_info)
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "chunk write requires metadata");
     mc_world_storage_status status = mc_world_store_check_session(store, error);
@@ -572,8 +651,14 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     mc_nbt_document_free(document);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
-    store->info.size_on_disk =
-        mc_java_i64_add(store->info.size_on_disk, (int64_t)mc_java_i32_narrow((int64_t)appended));
+    int64_t delta = (int64_t)mc_java_i32_narrow((int64_t)appended);
+    if (account == NULL) {
+        store->info.size_on_disk = mc_java_i64_add(store->info.size_on_disk, delta);
+    } else {
+        mc_world_info_fields fields;
+        (void)mc_world_info_fields_get(account, &fields);
+        (void)mc_world_info_size_set(account, mc_java_i64_add(fields.value.size_on_disk, delta));
+    }
     *growth = appended;
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -582,7 +667,7 @@ mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chu
                                                    int64_t world_time, uint32_t timestamp,
                                                    uint32_t *growth, mc_world_storage_error *error)
 {
-    return store_write_chunk(store, chunk, world_time, timestamp, growth, false, error);
+    return store_write_chunk(store, chunk, world_time, timestamp, growth, false, NULL, error);
 }
 
 mc_world_storage_status mc_world_store_write_runtime_chunk(mc_world_store *store,
@@ -591,7 +676,19 @@ mc_world_storage_status mc_world_store_write_runtime_chunk(mc_world_store *store
                                                            uint32_t *growth,
                                                            mc_world_storage_error *error)
 {
-    return store_write_chunk(store, chunk, world_time, timestamp, growth, true, error);
+    return store_write_chunk(store, chunk, world_time, timestamp, growth, true, NULL, error);
+}
+
+mc_world_storage_status mc_world_store_write_runtime_chunk_for_info(
+    mc_world_store *store, mc_chunk_state *chunk, mc_world_info *info, int64_t world_time,
+    uint32_t timestamp, uint32_t *growth, mc_world_storage_error *error)
+{
+    if (info == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk WorldInfo argument");
+    if (mc_world_info_live_get(info) == NULL)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "chunk requires READY WorldInfo");
+    return store_write_chunk(store, chunk, world_time, timestamp, growth, true, info, error);
 }
 
 size_t mc_world_store_chunk_count(const mc_world_store *store)

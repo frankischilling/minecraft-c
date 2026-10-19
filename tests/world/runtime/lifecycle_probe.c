@@ -649,10 +649,10 @@ static bool response(size_t index, const char *command, const char *category, un
     else
         format("{\"time\":\"%016" PRIx64 "\",\"spawn\":[%" PRId32 ",%" PRId32 ",%" PRId32
                "],\"world_force_load\":%s,\"provider_force_load\":%s,\"saving_disabled\":%s}",
-               (uint64_t)live->time, live->spawn_x, live->spawn_y, live->spawn_z,
-               live->world_force_load ? "true" : "false",
-               live->provider_force_load ? "true" : "false",
-               live->saving_disabled ? "true" : "false");
+               (uint64_t)*live->time, *live->spawn_x, *live->spawn_y, *live->spawn_z,
+               *live->world_force_load ? "true" : "false",
+               *live->provider_force_load ? "true" : "false",
+               *live->saving_disabled ? "true" : "false");
     emit(",\"info\":");
     print_info(owner.runtime == NULL ? NULL : &live_info);
     emit(",\"retained_info\":");
@@ -876,12 +876,12 @@ int main(void)
                 exit_status = 2;
                 goto finish;
             }
-            mc_world_runtime_state *live = mc_world_runtime_live(owner.runtime);
+            const mc_world_runtime_state *live = mc_world_runtime_live(owner.runtime);
             if (live == NULL)
                 status = (unsigned)error_status(&error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                                 "probe runtime is closed");
             else
-                live->time = signed_bits(value);
+                *live->time = signed_bits(value);
         } else if (strcmp(words[0], "ELIGIBLE") == 0 && count == 3u) {
             uint64_t id, force;
             if (!number(words[1], SIZE_MAX, &id) || !number(words[2], 1u, &force)) {
@@ -897,8 +897,8 @@ int main(void)
                 status = (unsigned)error_status(&error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                                 "probe unknown eligibility identity");
             else
-                result = mc_chunk_save_eligible(chunk, mc_world_runtime_live(owner.runtime)->time,
-                                                force != 0)
+                result = mc_chunk_save_eligible(
+                             chunk, (*mc_world_runtime_live(owner.runtime)->time), force != 0)
                              ? 1
                              : 0;
         } else if ((strcmp(words[0], "DIRTY") == 0 && count == 2u) ||

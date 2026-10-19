@@ -3,6 +3,7 @@
 
 #include "mc/storage/level/level.h"
 #include "mc/world/cache/acquire.h"
+#include "mc/world/info/info.h"
 #include "mc/world/storage/chunk.h"
 #include "mc/world/storage/regions.h"
 
@@ -91,6 +92,22 @@ const char *mc_world_store_root(const mc_world_store *store);
 mc_world_storage_status mc_world_store_save_info(mc_world_store *store, const mc_level_info *info,
                                                  int64_t saved_at_ms,
                                                  mc_world_storage_error *error);
+
+/* Checked native transport of the one-argument handler's no-list output.
+ * Require a held READY Info, perform this store's extra native session admission,
+ * then execute the actual serializer with its real internal clock. The original
+ * one-argument handler does not itself perform that session check.
+ * Do not force version, reread Player.Dimension or require the old opaque
+ * Player pointer. Preserve unknown retained root/Data fields as a native safety
+ * policy, then encode/gzip and use the same checked file rotation. No extra
+ * timestamp callback is sampled. Info fields remain unchanged; reached Player
+ * root renaming and file effects are not rolled back on later failure.
+ * The replacement store view borrows its new document and retains the Info's
+ * loaded LastPlayed/cached dimension as convenience values. The live Info and
+ * its aliases never rebind to that persistence document. This is not the
+ * live-player-list route used by actual World saves. */
+mc_world_storage_status mc_world_store_save_world_info(mc_world_store *store, mc_world_info *info,
+                                                       mc_world_storage_error *error);
 
 /* Dimension 0 uses the root; -1 uses DIM-1. Other dimensions return
  * UNSUPPORTED_STATE. Load owns a new stable chunk identity on every success,
@@ -202,6 +219,15 @@ mc_world_storage_status mc_world_store_write_runtime_chunk(mc_world_store *store
                                                            int64_t world_time, uint32_t timestamp,
                                                            uint32_t *growth,
                                                            mc_world_storage_error *error);
+
+/* Same real empty-runtime transport, but account successful Java-int-narrowed
+ * growth only to this held READY Info's current SizeOnDisk. No retained store
+ * metadata is required or synthesized, and its legacy size is not changed.
+ * Keep Info exclusive/live through the call. Failure preserves growth and the
+ * Info size; earlier file or has_entities effects retain the rules above. */
+mc_world_storage_status mc_world_store_write_runtime_chunk_for_info(
+    mc_world_store *store, mc_chunk_state *chunk, mc_world_info *info, int64_t world_time,
+    uint32_t timestamp, uint32_t *growth, mc_world_storage_error *error);
 
 /* Real acquisition loader adapter. Keep this caller-owned binding stable during
  * a call. Missing records alone permit generation; unreadable/unsupported data

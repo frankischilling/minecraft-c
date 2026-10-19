@@ -142,7 +142,7 @@ add_library(mc_persistence STATIC
     src/world/storage/regions.c
     src/world/storage/store.c
     src/world/storage/chunk.c)
-target_link_libraries(mc_persistence PUBLIC mc_world mc_storage PRIVATE mc_build_options)
+target_link_libraries(mc_persistence PUBLIC mc_world mc_storage mc_world_info PRIVATE mc_build_options)
 
 add_library(mc_simulation STATIC
     src/world/runtime/runtime.c
@@ -239,6 +239,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_runtime tests/world/runtime/test_runtime.c)
     target_link_libraries(mc_test_world_runtime PRIVATE mc_simulation mc_build_options)
+
+    add_executable(mc_test_world_info_binding tests/world/runtime/test_info_binding.c)
+    target_link_libraries(mc_test_world_info_binding PRIVATE mc_simulation mc_build_options)
 
     add_executable(mc_world_lifecycle_probe tests/world/runtime/lifecycle_probe.c)
     target_link_libraries(mc_world_lifecycle_probe PRIVATE mc_simulation mc_build_options)
@@ -507,6 +510,15 @@ if(BUILD_TESTING)
         set_tests_properties(world.runtime_${MC_RUNTIME_CASE} PROPERTIES
             LABELS "public;integration;storage" TIMEOUT 90)
     endforeach()
+
+    add_test(NAME world.runtime_info_bindings
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_info_binding>"
+        --scenario world-info-bindings
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/runtime-info-contracts")
+    set_tests_properties(world.runtime_info_bindings PROPERTIES
+        LABELS "public;integration;storage" TIMEOUT 90)
 
     add_test(NAME world.lifecycle_protocol
         COMMAND "${Python3_EXECUTABLE}"

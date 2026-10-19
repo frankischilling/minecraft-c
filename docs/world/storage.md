@@ -78,7 +78,7 @@ behind a backup. Both missing files return `MISSING`; invalid files return an
 error instead of implicitly starting a new world. Failed loads retain the
 previous metadata owner and borrowed views.
 
-Saving forces the McRegion version 19132 in an independent result and writes
+Legacy `save_info` forces the McRegion version 19132 in an independent result and writes
 the supplied clock as LastPlayed. The retained info's loaded LastPlayed field
 does not change. The complete gzip `_new` file precedes checked current/old
 rotation. A failed step stops with recovery files retained; it is not a crash
@@ -86,12 +86,25 @@ transaction. Opaque Player and unknown fields survive. Player replacement,
 removal or introduction is refused at this seam. This intermediate preservation
 is stronger than the original fresh serializer and empty-player-list behavior.
 
+The separate typed `save_world_info` path retains the Info's version and uses
+its actual no-list serializer and internal wall clock. It accepts that owner's
+Player without the legacy pointer guard or a new Dimension read. Session
+admission precedes serialization as extra native store policy; the original
+one-argument handler has no internal check. Shared gzip/rotation code replaces
+only the store persistence view after success. Live Info fields/references stay
+independent; reached Player rename survives later codec or file failure.
+The [binding record](../reference/world-info-runtime.md) explains the distinct
+World/list-save gap.
+
 Dimension 0 uses the world root; -1 uses DIM-1. Storage loads apply a copied
 registry map. The acquisition adapter permits generation only for missing
 records, refuses unreadable data and refuses activation of opaque entities or
 tiles. The coordinator owns publication, activation and loaded time stamping.
 Explicit chunk writes update live SizeOnDisk after commit; save eligibility,
 dirty reset, last-save stamps and save/unload scheduling remain caller-owned.
+The typed runtime variant instead adds growth only to its supplied READY Info,
+without requiring store metadata or changing the legacy store counter. Shared
+storage does not broadcast growth to another World's Info.
 
 Each load retains a new stable chunk identity, even for a previously loaded
 slot. The default owner limit is 512 chunks, with no individual retirement.

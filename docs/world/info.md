@@ -4,7 +4,8 @@
 record. Its [interface](../../include/mc/world/info/info.h) and implementation
 live under `world/info`; the library depends on storage and the private platform
 clock. It initializes no World, provider, registry, display or Java runtime.
-The existing loaded-world runtime and store have not yet been connected to it.
+The native runtime can retain this owner and borrow its actual live cells.
+World constructor ordering remains separate work.
 
 Each WorldInfo has thirteen scalar cells and two nullable references: name and
 Player compound. A copy has independent scalar cells and retains the same two
@@ -67,7 +68,7 @@ synchronization, Java GC or allocation-failure equivalence is claimed.
 record. It allocates the destination, captures the current Player reference,
 then writes seed, spawn, Time and SizeOnDisk. One real wall-clock sample supplies
 output LastPlayed. It then writes name, version and weather, and finally renames
-and inserts the captured same Player root. The record holds the actual name and
+and inserts that same Player root. The record holds the actual name and
 Player identities after its Info retires; `record_name` exposes the identity
 supplying the LevelName span.
 
@@ -83,10 +84,39 @@ remain live and exclusive. Normal writing has the codec's documented NaN/list
 canonicalization. Insertion order represents the source put sequence; it does
 not reproduce Java HashMap byte traversal order.
 
-The live-player-list serializer, mutable Player children, player simulation,
-World construction and typed persistence/accounting integration remain open.
-The store's existing opaque-Player pointer guard stays intact; an independently
-owned Player requires a concrete typed save path. The storage schema builder
-also validates Dimension and accepts an explicit timestamp, so it cannot stand
-in for this original serializer. [Reference evidence](../reference/world-info.md)
-records the tested scope and reproduction steps.
+## Runtime and storage binding
+
+`live_get` exposes a const descriptor of pointers to this owner's actual time
+and spawn cells, only in READY. Setters and direct cell writes immediately affect
+the same values. Copies have different cell addresses. Keep an Info hold and
+exclusive access throughout use; the descriptor acquires no hold itself.
+
+An optional `runtime_options.world_info` retains that exact owner. Acquisition
+and lifecycle contexts point directly at its cells across callbacks, including
+failing callbacks. Full metadata reads use all its fields and cached dimension.
+Runtime flags have separate runtime-owned cells. `runtime_live` now returns a
+const pointer descriptor: write `*live->time` or `*live->saving_disabled`.
+Info survives runtime retirement under an independent hold, without retaining
+the World in return. The legacy NULL binding keeps separate private scalar
+backing and its earlier store-view overlay behavior.
+
+Typed runtime chunk transport attributes successful signed Java-int region
+growth only to the calling Info's SizeOnDisk. It needs no disk metadata record
+and does not change a shared store's legacy size counter. Creating a runtime
+does not save metadata or run the original World constructor.
+
+`store_save_world_info` checks this native store's session token, invokes the
+actual no-list serializer, packages its record, and shares gzip/checked rotation
+with the legacy writer. That session admission is extra native policy: the
+original one-argument handler does not itself check it. The typed route keeps
+the Info's version and accepts opaque Player children without rereading
+Dimension. Its replacement persistence view never replaces the live Info.
+Unknown retained root/Data fields survive as an additional native preservation
+policy. The legacy opaque-Player pointer guard remains intact.
+
+The actual World caller passes live players to a different serializer. An
+Info-bound runtime explicitly refuses that metadata operation until those
+descendants exist; it does not substitute no-list saving. Mutable Player
+children, player simulation and original World construction also remain open.
+[Construction evidence](../reference/world-info.md) and
+[binding contracts](../reference/world-info-runtime.md) distinguish these scopes.

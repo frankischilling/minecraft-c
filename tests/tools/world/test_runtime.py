@@ -13,7 +13,8 @@ ROOT = Path(__file__).resolve().parents[3]
 SPEC = importlib.util.spec_from_file_location("int_set_capture", ROOT / "scripts/reference/java/compare_int_set.py")
 CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
-SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings")
+SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
+             "world-info-bindings")
 
 
 def main():
@@ -33,7 +34,10 @@ def main():
                  "runtime": ROOT / "src/world/runtime/runtime.c", "runtime_header": ROOT / "include/mc/world/runtime/runtime.h",
                  "entity": ROOT / "src/entity/entity.c", "entity_header": ROOT / "include/mc/entity/entity.h",
                  "entity_internal": ROOT / "src/entity/entity_internal.h",
-                 "store": ROOT / "src/world/storage/store.c", "store_header": ROOT / "include/mc/world/storage/store.h"}
+                 "store": ROOT / "src/world/storage/store.c", "store_header": ROOT / "include/mc/world/storage/store.h",
+                 "binding_test": ROOT / "tests/world/runtime/test_info_binding.c",
+                 "info": ROOT / "src/world/info/info.c", "info_header": ROOT / "include/mc/world/info/info.h",
+                 "level": ROOT / "src/storage/level/level.c", "level_header": ROOT / "include/mc/storage/level/level.h"}
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
@@ -62,7 +66,7 @@ def main():
                     timestamp = struct.unpack_from(">I", header, 4096 + slot * 4)[0]
                     CAPTURE.require(timestamp == 0xfedcba98, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
         report["passed"] = True

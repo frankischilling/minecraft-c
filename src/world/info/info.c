@@ -36,6 +36,7 @@ struct mc_world_info {
     size_t holds;
     mc_world_info_state state;
     mc_world_info_fields fields;
+    mc_world_info_live live;
     mc_world_info_data *data;
 };
 
@@ -472,6 +473,10 @@ mc_world_info_status mc_world_info_allocate(mc_world_info_side side, mc_world_in
     info->holds = 1;
     info->state.side = side;
     info->state.phase = MC_WORLD_INFO_RAW;
+    info->live = (mc_world_info_live){.time = &info->fields.value.time,
+                                      .spawn_x = &info->fields.value.spawn_x,
+                                      .spawn_y = &info->fields.value.spawn_y,
+                                      .spawn_z = &info->fields.value.spawn_z};
     *out = info;
     return MC_WORLD_INFO_OK;
 }
@@ -636,6 +641,11 @@ mc_world_info_status mc_world_info_fields_get(const mc_world_info *info, mc_worl
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     *out = info->fields;
     return MC_WORLD_INFO_OK;
+}
+
+const mc_world_info_live *mc_world_info_live_get(mc_world_info *info)
+{
+    return info_ready(info) == MC_WORLD_INFO_OK ? &info->live : NULL;
 }
 
 mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world_info_state *out)

@@ -61,6 +61,14 @@ typedef struct mc_world_info_state {
     unsigned int last_store_pc; /* Last completed original constructor field store. */
 } mc_world_info_state;
 
+/* Stable native access to the actual mutable cells used by World contexts.
+ * The descriptor cannot be rebound. Keep the supplying Info held and exclusive
+ * through every use; a copied Info has its own distinct cells. */
+typedef struct mc_world_info_live {
+    int64_t *time;
+    int32_t *spawn_x, *spawn_y, *spawn_z;
+} mc_world_info_live;
+
 const char *mc_world_info_status_string(mc_world_info_status status);
 
 /* Native UTF-16 ownership conversion, not a gameplay String constructor.
@@ -149,6 +157,8 @@ mc_world_info_status mc_world_info_retain(mc_world_info *info);
 void mc_world_info_release(mc_world_info *info);
 mc_world_info_status mc_world_info_fields_get(const mc_world_info *info, mc_world_info_fields *out);
 mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world_info_state *out);
+/* READY only; NULL or any other phase returns NULL. No snapshot or hold. */
+const mc_world_info_live *mc_world_info_live_get(mc_world_info *info);
 const mc_nbt_tag *mc_world_info_source(const mc_world_info *info);
 
 /* READY only. Retain before replacing a reference, including self-assignment.

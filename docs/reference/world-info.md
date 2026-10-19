@@ -8,6 +8,10 @@ common scalar setters, name replacement, client Player replacement, and the
 no-list serializer. World startup and the live-player-list serializer remain
 unfinished.
 
+The later [runtime and persistence checkpoint](world-info-runtime.md) binds
+these owners to native contexts and typed files. Its complete 89-case public
+matrix is separate from the earlier selected owner qualification below.
+
 | Selector | Type | Meaning |
 | --- | --- | --- |
 | a | long | seed |
@@ -127,8 +131,8 @@ The first GCC unit build stopped on a nested zero-initializer warning in the
 test. Replacing it with one aggregate `{0}` retained coverage; the final unit
 was rebuilt and passed on all three compilers. The final guarded replay also
 passes on each compiler. No production changes followed these checks.
-clang-format 18 passes all 171 current C/header files. The public inventory is
-now 88 cases; this selected two-case qualification does not claim a fresh full
+At that checkpoint, clang-format 18 passed all 171 C/header files. Its public
+inventory was 88 cases; that selected qualification did not claim a fresh full
 88-case pass or hosted CI. The earlier complete 85-case Entity run remains its
 own historical checkpoint.
 
@@ -149,7 +153,7 @@ Original archives, raw captures and compiled classes remain local. The public
 replay retains complete bounded native streams and comparison reports under
 the build's `world-info-observation` directory.
 
-World/runtime binding, typed store save/SizeOnDisk accounting, the live-player
-list route, mutable Player children, full NBT virtual behavior, resource-failure
+Original World construction, the live-player-list route, mutable Player
+children, full NBT virtual behavior, resource-failure
 equivalence and whole population acceptance remain unfinished. Neither the
 source map nor this finite corpus completes those requirements.

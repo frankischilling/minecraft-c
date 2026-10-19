@@ -13,7 +13,9 @@ and their receiver methods. Every world in one material-class lifetime must
 borrow the same stable owner; material identity is separate from block IDs.
 `mc_world_info` owns per-World [metadata fields and shared references](world/info.md)
 above storage, with a private platform-clock dependency for actual no-list
-serialization. It borrows no store or World runtime.
+serialization. It borrows no store or World runtime. Runtime contexts can retain
+an Info and borrow its actual scalar cells; persistence accepts the typed
+no-list record without making the store the live metadata authority.
 `mc_persistence` composes storage with the C world model and explicit native
 filesystem ownership. `mc_simulation` builds on persistence and items with the
 world runtime and [Entity construction](entity/construction.md). Keeping these

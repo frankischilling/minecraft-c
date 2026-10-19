@@ -9,6 +9,10 @@ static const char *const level_names[LEVEL_FIELD_COUNT] = {
     "RandomSeed", "SpawnX",  "SpawnY",   "SpawnZ",  "Time",        "LastPlayed", "SizeOnDisk",
     "LevelName",  "version", "rainTime", "raining", "thunderTime", "thundering", "Player"};
 
+static const mc_nbt_type level_types[LEVEL_FIELD_COUNT] = {
+    MC_NBT_LONG,   MC_NBT_INT, MC_NBT_INT, MC_NBT_INT,  MC_NBT_LONG, MC_NBT_LONG, MC_NBT_LONG,
+    MC_NBT_STRING, MC_NBT_INT, MC_NBT_INT, MC_NBT_BYTE, MC_NBT_INT,  MC_NBT_BYTE, MC_NBT_COMPOUND};
+
 static mc_level_status level_error(mc_level_error *error, mc_level_status status, const char *field,
                                    mc_nbt_error nbt)
 {
@@ -157,8 +161,8 @@ static void level_fields(const mc_level_info *info, int64_t saved_at_ms,
     }
 }
 
-static size_t level_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *fields, size_t count,
-                            const mc_nbt_tag **items)
+static size_t level_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *const *fields,
+                            size_t count, const mc_nbt_tag **items)
 {
     bool used[LEVEL_FIELD_COUNT] = {false};
     size_t length = 0;
@@ -167,8 +171,8 @@ static size_t level_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *fields
         const mc_nbt_tag *old = baseline->value.compound.items[i];
         size_t replacement = count;
         for (size_t j = 0; j < count; ++j) {
-            if (old->name.length == fields[j].name.length &&
-                memcmp(old->name.units, fields[j].name.units,
+            if (old->name.length == fields[j]->name.length &&
+                memcmp(old->name.units, fields[j]->name.units,
                        old->name.length * sizeof(uint16_t)) == 0) {
                 replacement = j;
                 break;
@@ -178,38 +182,25 @@ static size_t level_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *fields
             items[length++] = old;
         } else {
             used[replacement] = true;
-            if (fields[replacement].type != MC_NBT_END) {
-                items[length++] = &fields[replacement];
+            if (fields[replacement]->type != MC_NBT_END) {
+                items[length++] = fields[replacement];
             }
         }
     }
     for (size_t i = 0; i < count; ++i) {
-        if (!used[i] && fields[i].type != MC_NBT_END) {
-            items[length++] = &fields[i];
+        if (!used[i] && fields[i]->type != MC_NBT_END) {
+            items[length++] = fields[i];
         }
     }
     return length;
 }
 
-mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *baseline,
-                               int64_t saved_at_ms, const mc_nbt_limits *requested_limits,
-                               mc_nbt_document **out, mc_level_error *error)
+static mc_level_status level_build_document(const mc_level_info *info, int64_t saved_at_ms,
+                                            const mc_nbt_tag *const *record_fields,
+                                            const mc_nbt_tag *baseline, const mc_nbt_tag *data,
+                                            const mc_nbt_limits *requested_limits,
+                                            mc_nbt_document **out, mc_level_error *error)
 {
-    if (info == NULL || out == NULL || (baseline != NULL && baseline->type != MC_NBT_COMPOUND)) {
-        return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
-    }
-    const mc_nbt_tag *data;
-    const mc_nbt_tag *dimension;
-    if (!level_typed(baseline, "Data", MC_NBT_COMPOUND, &data, error)) {
-        return MC_LEVEL_INVALID_FIELD;
-    }
-    if (info->player != NULL && info->player->type != MC_NBT_COMPOUND) {
-        return level_status(error, MC_LEVEL_INVALID_FIELD, "Player");
-    }
-    if (!level_typed(info->player, "Dimension", MC_NBT_INT, &dimension, error)) {
-        return MC_LEVEL_INVALID_FIELD;
-    }
-    (void)dimension;
     mc_nbt_limits limits = requested_limits == NULL ? mc_nbt_default_limits() : *requested_limits;
     if (limits.max_depth == 0 || limits.max_depth > 128) {
         return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
@@ -233,21 +224,31 @@ mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *base
     }
     mc_nbt_tag fields[LEVEL_FIELD_COUNT] = {0};
     uint16_t names[LEVEL_FIELD_COUNT][16];
-    level_fields(info, saved_at_ms, fields, names);
+    const mc_nbt_tag *field_pointers[LEVEL_FIELD_COUNT];
+    if (info != NULL) {
+        level_fields(info, saved_at_ms, fields, names);
+        for (size_t i = 0; i < LEVEL_FIELD_COUNT; ++i)
+            field_pointers[i] = &fields[i];
+    } else {
+        for (size_t i = 0; i < LEVEL_FIELD_COUNT; ++i)
+            field_pointers[i] = record_fields[i];
+    }
     uint16_t data_name[16];
     mc_nbt_tag replacement = {0};
     replacement.type = MC_NBT_COMPOUND;
     replacement.name = level_name("Data", data_name);
     replacement.value.compound.items = items;
-    replacement.value.compound.length = level_overlay(data, fields, LEVEL_FIELD_COUNT, items);
+    replacement.value.compound.length =
+        level_overlay(data, field_pointers, LEVEL_FIELD_COUNT, items);
     mc_nbt_tag root = {0};
     root.type = MC_NBT_COMPOUND;
     if (baseline != NULL) {
         root.name = baseline->name;
     }
     root.value.compound.items = items + data_count + LEVEL_FIELD_COUNT;
+    const mc_nbt_tag *root_fields[] = {&replacement};
     root.value.compound.length =
-        level_overlay(baseline, &replacement, 1, items + data_count + LEVEL_FIELD_COUNT);
+        level_overlay(baseline, root_fields, 1, items + data_count + LEVEL_FIELD_COUNT);
     limits.max_allocation_bytes -= scratch_bytes;
     size_t length = 0;
     mc_nbt_error nbt = {MC_NBT_OK, 0};
@@ -281,4 +282,63 @@ mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *base
     }
     *out = document;
     return level_status(error, MC_LEVEL_OK, NULL);
+}
+
+mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *baseline,
+                               int64_t saved_at_ms, const mc_nbt_limits *requested_limits,
+                               mc_nbt_document **out, mc_level_error *error)
+{
+    if (info == NULL || out == NULL || (baseline != NULL && baseline->type != MC_NBT_COMPOUND)) {
+        return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
+    }
+    const mc_nbt_tag *data;
+    const mc_nbt_tag *dimension;
+    if (!level_typed(baseline, "Data", MC_NBT_COMPOUND, &data, error)) {
+        return MC_LEVEL_INVALID_FIELD;
+    }
+    if (info->player != NULL && info->player->type != MC_NBT_COMPOUND) {
+        return level_status(error, MC_LEVEL_INVALID_FIELD, "Player");
+    }
+    if (!level_typed(info->player, "Dimension", MC_NBT_INT, &dimension, error)) {
+        return MC_LEVEL_INVALID_FIELD;
+    }
+    (void)dimension;
+    return level_build_document(info, saved_at_ms, NULL, baseline, data, requested_limits, out,
+                                error);
+}
+
+mc_level_status mc_level_build_record(const mc_nbt_tag *record, const mc_nbt_tag *baseline,
+                                      const mc_nbt_limits *requested_limits, mc_nbt_document **out,
+                                      mc_level_error *error)
+{
+    if (record == NULL || record->type != MC_NBT_COMPOUND || out == NULL ||
+        (baseline != NULL && baseline->type != MC_NBT_COMPOUND)) {
+        return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
+    }
+    const mc_nbt_tag *data;
+    if (!level_typed(baseline, "Data", MC_NBT_COMPOUND, &data, error)) {
+        return MC_LEVEL_INVALID_FIELD;
+    }
+    const size_t count = record->value.compound.length;
+    if (count != LEVEL_FIELD_COUNT - 1u && count != LEVEL_FIELD_COUNT) {
+        return level_status(error, MC_LEVEL_INVALID_FIELD, "Data");
+    }
+    const mc_nbt_tag *fields[LEVEL_FIELD_COUNT];
+    for (size_t i = 0; i < LEVEL_FIELD_COUNT; ++i) {
+        if (!level_typed(record, level_names[i], level_types[i], &fields[i], error)) {
+            return MC_LEVEL_INVALID_FIELD;
+        }
+        if (i != LEVEL_FIELD_COUNT - 1u && fields[i] == NULL) {
+            return level_status(error, MC_LEVEL_INVALID_FIELD, level_names[i]);
+        }
+    }
+    if (count != LEVEL_FIELD_COUNT - 1u + (fields[LEVEL_FIELD_COUNT - 1u] != NULL ? 1u : 0u)) {
+        return level_status(error, MC_LEVEL_INVALID_FIELD, "Data");
+    }
+    uint16_t player_name[16];
+    mc_nbt_tag absent_player = {0};
+    absent_player.name = level_name("Player", player_name);
+    if (fields[LEVEL_FIELD_COUNT - 1u] == NULL)
+        fields[LEVEL_FIELD_COUNT - 1u] = &absent_player;
+    return level_build_document(NULL, 0, fields, baseline, data, requested_limits, out, error);
 }

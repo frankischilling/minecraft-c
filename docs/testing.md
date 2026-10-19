@@ -7,6 +7,15 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
+The latest [WorldInfo binding checkpoint](reference/world-info-runtime.md)
+passes all 89 public cases on native MSVC (126.50s), Linux GCC (274.28s) and
+Linux Clang (272.83s). Linux uses ASan/UBSan and leak checks; Windows uses strict
+Debug without sanitizers. Its new `world.runtime_info_bindings` case passes
+173 checks, initially selected and again in each complete run. All 339
+code/tool/fixture files stay unchanged across the runs. clang-format 18 passes
+all 172 C/header files. This matrix refreshes the existing Info unit and graph
+replay, without adding a new original-game capture or hosted-CI result.
+
 At the Entity construction checkpoint, all 85 public CTest cases passed on
 native MSVC (114.62s), WSL GCC (244.09s) and WSL Clang (246.16s). Linux used
 ASan/UBSan and leak checks; Windows used strict Debug without sanitizers.
@@ -17,14 +26,14 @@ between those runs. These runs exclude opt-in original-game comparisons;
 the fresh original constructor capture and public scalar replay have their own
 [evidence boundary](reference/entity-construction.md).
 
-The later WorldInfo checkpoint separately passes `world.info` (8,465 checks,
+The earlier standalone WorldInfo checkpoint separately passed `world.info` (8,465 checks,
 two ordered serialization clock brackets) and `world.info_observation` (750
 stable original-derived rows and fourteen rejected verifier corruptions) on
 MSVC/GCC/Clang. Linux uses sanitizers. After a GCC test-initializer warning,
 the corrected unit was rebuilt and passed on all three compilers; the guarded
-replay then passed separately on each. No production body changed after those
-runs. [WorldInfo evidence](reference/world-info.md) records source/capture limits.
-The declared public inventory is now 88, with no fresh complete 88-case claim.
+replay then passed separately on each. No production body changed between those
+checkpoint runs. [WorldInfo evidence](reference/world-info.md) records source/capture limits.
+That declared public inventory was 88, without a fresh complete 88-case claim.
 
 The earlier millisecond-clock increment passed five selected clock/Random cases on the same three compilers,
 including 251 new `platform.millis` checks and four ordered live OS brackets per
@@ -34,6 +43,7 @@ above; that increment brought the declared public inventory to 86 cases.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
+| `world.runtime_info_bindings` | 173 native checks: actual Info/context cell identity, independent copied scalars, failing callback visibility, retained lifetimes, per-Info wrapped region growth, real no-list metadata files and bounded record packaging | Constructed native contracts; no original World constructor/list save, new original handler interoperability, forced allocator/OS failure or general mutable NBT |
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |
 | `world.info_observation` | 750 stable rows from one unmodified original run per side match all three compilers; fourteen graph/order/value/refusal corruptions are rejected per compiler | Only 5/3 returned clock rows excluded; native status maps the recorded null-name exception category; no natural World startup or historical-VM claim |
 | `block.material` | 28,623 checks for all 28 material result vectors, 14 palettes, 16 slots, stable/distinct identities, shared-alias mutation and independent native owners on MSVC/GCC/Clang; Linux sanitizers | Receiver and native ownership contracts; no full block registry, world or allocation-failure injection |

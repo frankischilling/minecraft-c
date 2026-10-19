@@ -44,9 +44,10 @@ terrain features. The native storage work has [separate accepted finite copied-w
 
 World startup now has a tested native [millisecond wall-clock backend](reference/wall-clock.md)
 and a separate [WorldInfo owner](reference/world-info.md) with copied scalars,
-shared references and no-list serialization. Binding that owner to the original
-World constructor, storage accounting and provider initialization remains
-unfinished; these modules do not complete a startup checklist.
+shared references and no-list serialization. Native runtime binding and typed
+store serialization/accounting now use that owner. Original World constructor,
+live-player serialization and provider initialization remain unfinished; these
+modules do not complete a startup checklist.
 
 The [lifecycle boundary](world/lifecycle.md) implements synchronous saving,
 metadata-first accounting, history-sensitive pending unloads and explicit native

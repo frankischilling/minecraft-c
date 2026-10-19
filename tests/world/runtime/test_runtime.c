@@ -174,9 +174,9 @@ static int create_runtime(bool generation)
         options.populate = populate;
     }
     CHECK(mc_world_runtime_create(&options, &f.runtime, &f.error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_runtime_live(f.runtime)->time == 1000);
+    CHECK((*mc_world_runtime_live(f.runtime)->time) == 1000);
     CHECK(mc_world_runtime_acquisition(f.runtime)->world_time ==
-          &mc_world_runtime_live(f.runtime)->time);
+          mc_world_runtime_live(f.runtime)->time);
     return 0;
 }
 
@@ -273,8 +273,8 @@ static int load_save_unload(const char *root)
               MC_WORLD_STORAGE_OK &&
           growth != 0);
     CHECK(create_runtime(false) == 0);
-    mc_world_runtime_state *live = mc_world_runtime_live(f.runtime);
-    live->world_force_load = true;
+    const mc_world_runtime_state *live = mc_world_runtime_live(f.runtime);
+    *live->world_force_load = true;
     mc_chunk_state *chunk = NULL;
     CHECK(mc_world_runtime_get(f.runtime, 16, 0, &chunk) == MC_CHUNK_ACQUIRE_OK);
     CHECK(chunk != baseline && chunk->active && !chunk->dirty && chunk->last_save_time == 1000);
@@ -293,7 +293,7 @@ static int load_save_unload(const char *root)
         chunk->data->blocks[i] = (uint8_t)(random >> 24u);
     }
     chunk->dirty = true;
-    live->time = 2000;
+    *live->time = 2000;
     mc_level_info current_info;
     CHECK(mc_world_runtime_read_info(f.runtime, &current_info, &f.error) == MC_WORLD_STORAGE_OK);
     CHECK(current_info.time == 2000 && current_info.last_played == -15);
@@ -304,7 +304,7 @@ static int load_save_unload(const char *root)
     int64_t previous_size = mc_world_store_info(f.store)->size_on_disk;
     CHECK(mc_world_runtime_save(f.runtime, false) == MC_CHUNK_LIFECYCLE_OK);
     CHECK(!chunk->dirty && !chunk->has_entities && chunk->last_save_time == 2000);
-    CHECK(live->time == 2000 && mc_world_store_info(f.store)->size_on_disk > previous_size);
+    CHECK(*live->time == 2000 && mc_world_store_info(f.store)->size_on_disk > previous_size);
     int64_t grown_size = mc_world_store_info(f.store)->size_on_disk;
     CHECK(mc_world_store_info(f.store)->last_played == -15);
     mc_world_store *observer = NULL;
@@ -317,7 +317,7 @@ static int load_save_unload(const char *root)
     CHECK(mc_world_runtime_save(f.runtime, true) == MC_CHUNK_LIFECYCLE_OK);
     CHECK(mc_world_store_load_info(observer, &f.error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_store_info(observer)->size_on_disk == grown_size);
-    CHECK(mc_world_store_info(f.store)->last_played == -15 && live->time == 2000);
+    CHECK(mc_world_store_info(f.store)->last_played == -15 && *live->time == 2000);
     mc_world_store_free(observer);
     mc_world_store_options conflict_options = f.store_options;
     ++conflict_options.session_token;
@@ -325,7 +325,7 @@ static int load_save_unload(const char *root)
           MC_WORLD_STORAGE_OK);
     chunk->dirty = true;
     chunk->has_entities = true;
-    live->time = 3000;
+    *live->time = 3000;
     bool completed = false;
     CHECK(mc_world_runtime_save_chunks(f.runtime, false, &completed) ==
               MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
@@ -341,12 +341,12 @@ static int load_save_unload(const char *root)
     mc_world_store_free(observer);
     CHECK(mc_world_runtime_mark_drop(f.runtime, 16, 0) == MC_CHUNK_ACQUIRE_OK &&
           f.pending.count == 1);
-    live->saving_disabled = true;
+    *live->saving_disabled = true;
     bool provider_result = true;
     CHECK(mc_world_runtime_maintain(f.runtime, &provider_result) == MC_CHUNK_LIFECYCLE_OK &&
           !provider_result);
     CHECK(f.pending.count == 1 && chunk->active && chunk->has_entities);
-    live->saving_disabled = false;
+    *live->saving_disabled = false;
     CHECK(mc_world_store_lease_chunk(f.store, chunk, &f.error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_maintain(f.runtime, &provider_result) == MC_CHUNK_LIFECYCLE_OK &&
           !provider_result);

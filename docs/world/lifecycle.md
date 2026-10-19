@@ -79,14 +79,24 @@ borrowed view before releasing its owner. C cannot detect arbitrary raw pointers
 this is explicit ownership, not a Java garbage-collector model.
 
 `mc/world/runtime/runtime.h` binds an existing store and empty caller-owned
-cache/ordered pending descriptors. Live time/spawn/force/save-off values have
-stable addresses. Each metadata save obtains a fresh store view, overlays live
+cache/ordered pending descriptors. Its const live descriptor contains pointers
+to stable time/spawn/force/save-off cells. In legacy composition, each metadata
+save obtains a fresh store view, overlays live
 time/spawn and preserves current SizeOnDisk and loaded last_played. Serialized
 LastPlayed uses the supplied clock. Metadata saved before chunk growth
 intentionally lags that operation's later live SizeOnDisk.
 `mc_world_runtime_read_info` exposes the same fresh overlay for inspection. A
 failed query preserves its output, and inspection preserves the last runtime
 failure diagnostic.
+
+An optional retained [WorldInfo](info.md) supplies the actual time/spawn cells
+and every field of the runtime's metadata view. Callback changes need no
+entry/exit copying; copied Infos keep independent scalars even with a shared
+store. Runtime-owned flags remain separate. Typed chunk transport accounts
+growth only to the calling Info. This mode can start without disk metadata;
+it does not manufacture a file to initialize the World. Its actual World/list
+metadata save operation remains explicitly unsupported. Standalone typed
+no-list store serialization is a distinct route, not a fallback for that call.
 
 Runtime entry functions block destruction across callbacks, including progress,
 auxiliary and provider callbacks without a selected chunk. Current chunk leases
