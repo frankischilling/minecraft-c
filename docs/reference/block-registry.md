@@ -62,7 +62,7 @@ missing physical array cell, with framing counters rebound so each structural
 guard reaches its intended check.
 
 This result qualifies the recorded base-field and identity projection. Native
-subtype/failure tests are separate controls. The Item/stat/resource/recipe tail,
+subtype/failure tests are separate controls. The complete stat/resource/recipe tail,
 full bootstrap, gameplay methods, World integration, population and persistence
 remain unfinished; see the [native contract](../block/registry.md).
 

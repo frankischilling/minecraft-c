@@ -33,13 +33,15 @@ GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
-The [Block construction addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/block/registry.md)
-passes four selected cases on MSVC and Linux GCC/Clang, with Linux
-sanitizers. The registry case has 101,839 checks across both original-side
-constructor paths, aliases, profile continuation and real allocation-budget
-failures. The [finite original comparison](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/block-registry.md)
-matches all 3,950 base-field/array/reference rows per side. Full Item/bootstrap
-completion and broader original equivalence remain open.
+The [joined Block](https://github.com/frankischilling/minecraft-c/blob/main/docs/block/registry.md)
+and [Item construction](https://github.com/frankischilling/minecraft-c/blob/main/docs/item/registry.md)
+passes six selected cases on MSVC and Linux GCC/Clang, with Linux sanitizers.
+The units have 102,679 Block and 530,297 Item checks covering both entry orders,
+retained aliases/subtypes, Random continuation and real allocation-budget
+failures. The finite comparisons match all
+[33,064 Item rows](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/item-registry.md)
+and [3,950 Block rows](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/block-registry.md)
+per side. Full bootstrap and broader original equivalence remain open.
 
 The [quiet metadata addition](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/blocks.md)
 passes six selected native cases on MSVC and Linux GCC/Clang, with Linux

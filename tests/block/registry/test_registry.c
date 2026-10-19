@@ -466,11 +466,11 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
     CHECK(strcmp(owner->sign_class.client_name, "yk") == 0);
     CHECK(strcmp(owner->sign_class.server_name, "pq") == 0);
     CHECK(!owner->gk_a && !owner->tc_c);
-    CHECK(owner->nr_phase == MC_REGISTRY_READY && owner->jp_phase == MC_REGISTRY_READY);
-    CHECK(owner->rp_phase == MC_REGISTRY_READY && owner->rw_phase == MC_REGISTRY_READY);
-    CHECK(owner->kind_phases[MC_BLOCK_UU_NA] == MC_REGISTRY_FAILED);
+    CHECK(owner->nr_state.phase == MC_REGISTRY_READY && owner->jp_state.phase == MC_REGISTRY_READY);
+    CHECK(owner->rp_state.phase == MC_REGISTRY_READY && owner->rw_state.phase == MC_REGISTRY_READY);
+    CHECK(owner->block_states[MC_BLOCK_UU_NA].phase == MC_REGISTRY_FAILED);
     for (size_t i = 1; i < MC_BLOCK_KIND_COUNT; ++i)
-        CHECK(owner->kind_phases[i] == MC_REGISTRY_READY);
+        CHECK(owner->block_states[i].phase == MC_REGISTRY_READY);
     for (size_t id = 8; id <= 10; id += 2) {
         const mc_block *block = view->m[id];
         CHECK(block->subtype.om.a == 0 && block->subtype.om.b != NULL &&
@@ -503,7 +503,7 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
     static const double offsets[] = {-0.0625, 0.0625, 0.1875, 0.3125};
     for (size_t i = 0; i < 4; ++i)
         CHECK(owner->wo_a[i] == offsets[i] && owner->wo_b[i] == (int32_t)i + 1);
-    CHECK(owner->pressure_phase == MC_REGISTRY_READY && owner->pressure_values != NULL);
+    CHECK(owner->pressure_state.phase == MC_REGISTRY_READY && owner->pressure_values != NULL);
     const mc_pressure_category *categories[] = {owner->pressure_a, owner->pressure_b,
                                                 owner->pressure_c};
     static const char *const category_names[] = {"everything", "mobs", "players"};
@@ -696,13 +696,13 @@ static int test_owners(mc_registry_side side, mc_java_random_profile *profile,
     CHECK(mc_registry_classes_initialize_blocks(first, &error) ==
           MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
     CHECK(error.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY && error.initializer_pc == 3398);
-    CHECK(check_profile(profile, advanced(state, 4)) == 0);
+    CHECK(check_profile(profile, advanced(state, 5)) == 0);
     CHECK(check_complete(first, materials, &a) == 0);
     CHECK(check_retry(first, profile) == 0);
     CHECK(check_complete(first, materials, &a) == 0);
     CHECK(mc_registry_classes_initialize_blocks(second, &error) ==
           MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
-    CHECK(check_profile(profile, advanced(state, 8)) == 0);
+    CHECK(check_profile(profile, advanced(state, 10)) == 0);
     CHECK(check_complete(second, materials, &b) == 0);
     CHECK(a.m != b.m && a.n != b.n && a.o != b.o && a.p != b.p);
     CHECK(a.q != b.q && a.r != b.r && a.s != b.s && a.t != b.t);
@@ -716,7 +716,7 @@ static int test_owners(mc_registry_side side, mc_java_random_profile *profile,
         CHECK(random_at(&a, random_ids[i]) != random_at(&b, random_ids[i]));
     CHECK(mc_registry_classes_free(first, &error) == MC_REGISTRY_OK);
     first = NULL;
-    CHECK(check_profile(profile, advanced(state, 8)) == 0);
+    CHECK(check_profile(profile, advanced(state, 10)) == 0);
     CHECK(check_complete(second, materials, &b) == 0);
     CHECK(check_retry(second, profile) == 0);
     *complete_bytes = b.allocation_bytes;
@@ -751,6 +751,8 @@ static int limited_owner(mc_registry_side side, mc_java_random_profile *profile,
         for (size_t i = 0; i < COUNT(random_ids); ++i)
             if (random_at(&view, random_ids[i]) != NULL)
                 ++calls;
+        if (owner->items.b != NULL)
+            ++calls;
     }
     CHECK(check_profile(profile, advanced(state, calls)) == 0);
     *out = owner;
@@ -890,6 +892,55 @@ cleanup:
     return result;
 }
 
+static int test_direction_prefix(mc_registry_side side, mc_java_random_profile *profile,
+                                 mc_materials *materials, size_t upper)
+{
+    int result = 1;
+    mc_registry_classes *owner = NULL;
+    size_t low = 1, high = upper;
+    while (low < high) {
+        size_t middle = low + (high - low) / 2;
+        CHECK(limited_owner(side, profile, materials, middle, &owner) == 0);
+        bool published = owner != NULL && owner->ve_a != NULL;
+        CHECK(mc_registry_classes_free(owner, NULL) == MC_REGISTRY_OK);
+        owner = NULL;
+        if (published)
+            high = middle;
+        else
+            low = middle + 1;
+    }
+    CHECK(low > 1);
+    CHECK(limited_owner(side, profile, materials, low - 1, &owner) == 0);
+    CHECK(owner != NULL && owner->ve_a == NULL);
+    const mc_registry_class_state *state = &owner->block_states[MC_BLOCK_VE_NJ];
+    CHECK(state->phase == MC_REGISTRY_FAILED && state->pc == 49);
+    CHECK(state->failure.status == MC_REGISTRY_LIMIT);
+    CHECK(state->failure.active_initializer_pc == 49);
+    CHECK(state->failure.active_initializer_class != NULL);
+    CHECK(strcmp(state->failure.active_initializer_class,
+                 side == MC_REGISTRY_CLIENT ? "ve" : "nj") == 0);
+    CHECK(check_retry(owner, profile) == 0);
+    mc_registry_error failure = owner->block_failure, error;
+    uint64_t u = uniquifier(profile);
+    /* The remaining bytes cannot allocate Item's first Random. Its distinct
+     * failure must not replace the saved nested Block failure on later use. */
+    CHECK(mc_registry_classes_initialize_items(owner, &error) == MC_REGISTRY_LIMIT);
+    CHECK(error.active_initializer_pc == 0 && owner->items.b == NULL);
+    CHECK(strcmp(error.active_initializer_class, side == MC_REGISTRY_CLIENT ? "gm" : "ej") == 0);
+    CHECK(mc_registry_classes_initialize_blocks(owner, &error) ==
+          MC_REGISTRY_FAILED_INITIALIZATION);
+    CHECK(error.initializer_pc == failure.initializer_pc);
+    CHECK(error.active_initializer_class == failure.active_initializer_class);
+    CHECK(error.active_initializer_pc == failure.active_initializer_pc);
+    CHECK(state->failure.status == MC_REGISTRY_LIMIT && state->failure.active_initializer_pc == 49);
+    CHECK(check_profile(profile, u) == 0);
+    result = 0;
+cleanup:
+    if (owner != NULL)
+        (void)mc_registry_classes_free(owner, NULL);
+    return result;
+}
+
 static int test_side(mc_registry_side side, mc_java_random_profile *profile,
                      mc_materials *materials)
 {
@@ -897,7 +948,8 @@ static int test_side(mc_registry_side side, mc_java_random_profile *profile,
     if (test_cold(side, profile, materials) != 0 ||
         test_owners(side, profile, materials, &upper) != 0 ||
         test_random_prefixes(side, profile, materials, upper) != 0 ||
-        test_cloth_prefix(side, profile, materials, upper) != 0)
+        test_cloth_prefix(side, profile, materials, upper) != 0 ||
+        test_direction_prefix(side, profile, materials, upper) != 0)
         return 1;
     return 0;
 }

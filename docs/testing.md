@@ -7,21 +7,19 @@ The numerical and collection Java oracles use only the standard library and can
 run in public CI without original game files. Original-class math, storage,
 noise, climate and terrain comparisons remain local.
 
-The [Block construction addition](block/registry.md) passes four selected cases
-on MSVC, GCC and Clang: `block.registry_construction`, `block.material` and
-`core.java_random_profile`, plus `block.registry_base_observation`. Linux uses
-ASan/UBSan and leak checks. The construction case
-has 101,839 checks covering both sides, real 96-Block construction, live aliases,
-subtype owners, profile continuation and retained allocation-limit failures.
-The separate [original comparison](reference/block-registry.md) matches all
-3,950 base-field/array/reference rows per side. All 394 code/tool/fixture inputs
-remain unchanged across these runs and retained copies; clang-format 18 passes
-all 205 C/header files. The first attempt failed
-an incorrect chest-opacity expectation in a partial-construction test; checking
-the original inherited method corrected that expectation. Production opacity
-was unchanged. Full bootstrap and broader executed-original equivalence remain
-unfinished. The complete local matrix below remains
-bound to its recorded source.
+The [joined Block](block/registry.md) and [Item](item/registry.md) construction
+passes six selected cases on MSVC, GCC and Clang: both `registry_construction`
+units, both `registry_base_observation` comparisons, `block.material` and
+`core.java_random_profile`. Linux uses ASan/UBSan and leak checks. Item has
+530,297 checks covering both entry orders, all 32,000 array cells, subtype and
+tool identities, five real Random owners, unchanged retries and actual
+allocation-budget publication boundaries. Block has 102,679 checks, including
+the retained class/PC of a nested failure after another class fails.
+The finite original comparisons match all
+[33,064 Item rows](reference/item-registry.md) and
+[3,950 Block rows](reference/block-registry.md) per side. These are selected
+runs; the complete local matrix below remains bound to its recorded source.
+Full bootstrap and broader original equivalence remain unfinished.
 
 The [quiet metadata addition](world/blocks.md) passes six selected cases on
 MSVC, GCC and Clang, with Linux ASan/UBSan and leak
@@ -117,8 +115,10 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |
 | `world.info_observation` | 750 stable rows from one unmodified original run per side match all three compilers; fourteen graph/order/value/refusal corruptions are rejected per compiler | Only 5/3 returned clock rows excluded; native status maps the recorded null-name exception category; no natural World startup or historical-VM claim |
 | `block.material` | 28,623 checks for all 28 material result vectors, 14 palettes, 16 slots, stable/distinct identities, shared-alias mutation and independent native owners on MSVC/GCC/Clang; Linux sanitizers | Receiver and native ownership contracts; no full block registry, world or allocation-failure injection |
-| `block.registry_construction` | 101,839 native checks for both 96-Block construction paths, retained base/subtype/static identities, real shared-profile effects, owner lifetimes and five actual byte-budget failure boundaries on MSVC/GCC/Clang; Linux sanitizers | Stops FAILED at unfinished Item dependency PC3398; no completed bootstrap, original execution, gameplay hooks or World integration |
+| `block.registry_construction` | 102,679 native checks for both 96-Block construction paths, retained base/subtype/static identities, shared-profile effects, lifetimes and six allocation-budget boundaries on MSVC/GCC/Clang; Linux sanitizers | Stops FAILED at unfinished statistics; no completed bootstrap, original subtype equivalence or World integration |
 | `block.registry_base_observation` | All 3,950 recorded-original base-field/array/reference rows per side match MSVC/GCC/Clang; Linux sanitizers | Finite explicit Block entry stopped by debugger before Item PC3398; excludes subtype/JDK/clock state, initialization phase, full bootstrap and World integration |
+| `item.registry_construction` | 530,297 native checks for both entry orders, all 106 named Items and 32,000 cells, subtype/tool/armor/dye state, conditional fire setup, five actual Random owners, retry snapshots and real allocation-budget prefixes on MSVC/GCC/Clang; Linux sanitizers | Explicit unfinished statistics/resource edges; native resource controls do not reproduce Java OOM, and subtype fields are source-derived unit expectations |
+| `item.registry_base_observation` | All 33,064 recorded-original base-field/static/array/String rows per side match MSVC/GCC/Clang; Linux sanitizers | Actual nested Item2664 with outer Block3398; excludes phase, subtype/class metadata, JDK/clock/profile state and completed bootstrap |
 | `block.material_observation` | 116 captured original client/server rows match exactly on MSVC/GCC/Clang, alongside the material unit in a separate two-case run; [provenance and reproduction](reference/materials.md) | Public replay of one fresh JVM run per original side; no world/bootstrap or historical-VM claim |
 | `item.stack` | 93 native construction/read-prefix, identity, provenance, overlay, budget and independent-document checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | No original or gameplay/container comparison |
 | `entity.construction` | 1,276 native checks per compiler for both sources/overloads, all field defaults, owned children, real profile continuation, stack holds, ID wrap, strict FP and fifteen allocation boundaries per source | Native constructor/lifetime contracts; cold first-draw count, JVM resource equivalence and world insertion remain unqualified |

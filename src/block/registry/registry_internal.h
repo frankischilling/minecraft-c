@@ -1,6 +1,7 @@
 #ifndef MC_BLOCK_REGISTRY_INTERNAL_H
 #define MC_BLOCK_REGISTRY_INTERNAL_H
 
+#include "../../item/registry/registry_internal.h"
 #include "mc/block/registry/registry.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
@@ -227,6 +228,17 @@ typedef struct mc_registry_block_storage {
     mc_block *named[96];
 } mc_registry_block_storage;
 
+/* Automatic frames follow the real synchronous C call chain. The parent is
+ * restored on every return, including failure; diagnostics copy values before
+ * unwind. There is no fabricated fixed recursion/initializer budget. */
+typedef struct mc_registry_initializer {
+    struct mc_registry_initializer *parent;
+    const char *client_class, *server_class;
+    int32_t *pc;
+    mc_block *saved_block;
+    mc_item *saved_item;
+} mc_registry_initializer;
+
 struct mc_registry_classes {
     mc_registry_options options;
     mc_registry_phase blocks_phase;
@@ -235,12 +247,15 @@ struct mc_registry_classes {
     size_t named_blocks;
     unsigned int entered;
     mc_registry_error last_error;
+    mc_registry_error block_failure;
+    mc_registry_initializer *initializer;
     mc_registry_allocation *allocations;
     mc_registry_literal *literals;
     mc_block *current_block;
+    mc_item *current_item;
     mc_registry_block_storage blocks;
-    mc_registry_phase kind_phases[MC_BLOCK_KIND_COUNT];
-    mc_registry_phase nr_phase, jp_phase, rp_phase, rw_phase, pressure_phase;
+    mc_registry_class_state block_states[MC_BLOCK_KIND_COUNT];
+    mc_registry_class_state nr_state, jp_state, rp_state, rw_state, pressure_state;
     bool gk_a;
     int32_t **ve_a;
     const mc_registry_string **ys_a;
@@ -252,7 +267,22 @@ struct mc_registry_classes {
     mc_pressure_category **pressure_values;
     /* Resolving a Class literal does not construct/initialize its tile. */
     mc_tile_class_identity sign_class;
+    mc_registry_item_storage items;
+    mc_registry_class_state item_states[MC_ITEM_KIND_COUNT];
+    mc_registry_class_state item_dq_state, item_cp_state, item_tool_state;
 };
+
+void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,
+                                   const char *client, const char *server, int32_t *pc);
+void mc_registry_initializer_leave(mc_registry_classes *classes, mc_registry_initializer *frame);
+void mc_registry_initializer_stage(mc_registry_classes *classes, int32_t pc);
+mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes);
+mc_registry_status mc_registry_finish_blocks(mc_registry_classes *classes);
+mc_registry_status mc_registry_string_ascii(mc_registry_classes *classes, const char *prefix,
+                                            const char *suffix, const mc_registry_string **out);
+mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
+                                                  const mc_block *block, int32_t side,
+                                                  int32_t *out);
 
 mc_registry_status mc_registry_fail(mc_registry_classes *classes, mc_registry_status status,
                                     const char *message, const mc_block *block);

@@ -2,10 +2,13 @@
 
 `mc_registry` executes the Block construction portion of the paired original
 `uu`/`na` static initializer. It creates nine sounds, eight distinct property
-arrays and 96 concrete Blocks in source order. This owner remains incomplete:
-initialization returns `MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY` at bytecode PC3398,
-before the first unfinished Item active use. It retains the reached storage in
-the FAILED phase. It cannot provide a successfully initialized gameplay registry.
+arrays and 96 concrete Blocks in source order, followed by the real recursive
+[Item construction](../item/registry.md). This owner remains incomplete:
+Block-first initialization stops with Block suspended at PC3398 and Item at its
+unfinished statistics invocation, PC2664. Item-first initialization reaches the
+BlockItem tail and stops at Block statistics PC3674. Both return
+`MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY`, retain FAILED state and cannot provide
+a successfully initialized gameplay registry.
 
 The [public interface](../../include/mc/block/registry/registry.h) allocates one
 class owner above Worlds, borrowing the application's actual Material and Random
@@ -29,7 +32,9 @@ later flag assignments do not replace them with final-object predicates.
 Hardness, resistance, emission and bounds preserve the original separate float
 operations and float-to-double widening.
 
-Superclass and subtype initialization have separate phases. Actual direction,
+Superclass and subtype initialization have separate phases, source positions
+and retained first failures. Automatic frames preserve suspended parent state.
+Actual direction,
 slab-name and repeater arrays, the empty leaf list, pressure-category identities
 and sign Class identity are retained. Wire construction creates its own typed
 empty Set/Map owners. Their later collection operations, tile construction and
@@ -39,7 +44,8 @@ Dispenser, chest and the two furnaces each construct a distinct ordinary Random
 through the borrowed profile. Earlier global Block publication and tile flags
 precede each private Random allocation. Seeds use the real profile clock path;
 the owner supplies no fixed seed or entropy callback. These four constructions
-do not initialize the separate Math Random holder.
+do not initialize the separate Math Random holder. Item constructs its fifth
+ordinary Random through that same profile at its actual initialization point.
 
 ## Failure and lifetime
 
@@ -58,19 +64,22 @@ must be retired before destruction.
 
 ## Native checks and remaining work
 
-`block.registry_construction` passes 101,839 checks on MSVC, GCC and Clang,
-alongside `block.material` and `core.java_random_profile`. Linux runs use
+`block.registry_construction` passes 102,679 checks on MSVC, GCC and Clang,
+within six selected registry, Material, profile and recorded-observation cases.
+Linux runs use
 ASan/UBSan and leak checks. Both client and server constructor paths are covered.
 Checks include all 96 named/ID aliases, base fields and property slots, subtype
-identities, separate owners, retained retries and five natural allocation-budget
-failure boundaries. The byte-budget searches exercise real allocations; they
+identities, separate owners, retained retries and six natural allocation-budget
+failure boundaries. A nested direction-array failure retains its actual class
+and PC49 even after a distinct Item initialization failure. The byte-budget searches exercise real allocations; they
 do not inject constructor failures or reset the shared profile.
 
 The separate [executed-original comparison](../reference/block-registry.md)
 matches all 3,950 projected base-field/array/reference rows per side on those
 three compilers. It excludes concrete subtype state, clock-dependent values
-and full bootstrap completion. The Item,
-statistic, achievement, resource, recipe, smelting and final-hook closure remains
+and full bootstrap completion. Item has its own 530,297 native checks and
+[33,064-row original comparison](../reference/item-registry.md). The
+statistic, achievement, resource, recipe and smelting closure remains
 unfinished. Full registry startup, World integration, synchronous block hooks,
 terrain-feature population, entity/tile behavior and gameplay persistence remain
 required. See the [parity matrix](../parity.md) and [test scope](../testing.md).

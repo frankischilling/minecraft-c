@@ -1,12 +1,14 @@
 # Development status
 
-The [Block class owner](block/registry.md) now executes the real nine-sound,
-eight-array and 96-Block construction sequence, with subtype storage, early
-publication and four actual private Randoms. It stops at the unfinished Item
-dependency at PC3398 and retains FAILED state. Four selected cases pass on
-MSVC, GCC and Clang; the registry case has 101,839 checks, and a finite
-[original comparison](reference/block-registry.md) matches 3,950 rows per side.
-Full bootstrap,
+The shared [Block](block/registry.md) and [Item](item/registry.md) class owner
+now executes both orders of the real initialization cycle, including all 106
+named Item chains, retained subtype state, BlockItems, conditional fire setup
+and five actual profile-created Randoms. It stops explicitly at unfinished
+statistics and retains FAILED state. Six selected cases pass on MSVC, GCC and
+Clang, with Linux sanitizers: 530,297 Item and 102,679 Block native checks,
+plus Material/profile controls and finite original comparisons of
+[33,064 Item rows](reference/item-registry.md) and
+[3,950 Block rows](reference/block-registry.md) per side. Full bootstrap,
 World integration and complete population/persistence remain unfinished.
 
 The [quiet World metadata path](world/blocks.md) now reads and mutates actual

@@ -71,23 +71,48 @@ static mc_registry_status base_class(mc_registry_classes *classes)
     /* The real driver is already executing uu/na.<clinit> on this same flow.
      * A subclass's superclass initialization therefore sees that prefix.
      * No independent successful Block initializer is synthesized here. */
-    if (classes->blocks_phase == MC_REGISTRY_INITIALIZING ||
-        classes->blocks_phase == MC_REGISTRY_READY)
-        return MC_REGISTRY_OK;
-    return mc_registry_fail(classes, MC_REGISTRY_FAILED_INITIALIZATION,
-                            "Block superclass is not initializing", NULL);
+    return mc_registry_blocks_active_use(classes);
 }
 
-static mc_registry_status intermediate(mc_registry_classes *classes, mc_registry_phase *phase)
+/* Private initialization runs on the shared owner's admitted synchronous flow.
+ * Each declaring class keeps its own first failure before its frame unwinds. */
+static mc_registry_status cached_state(mc_registry_classes *classes,
+                                       const mc_registry_class_state *state, bool *done)
 {
-    if (*phase == MC_REGISTRY_READY || *phase == MC_REGISTRY_INITIALIZING)
-        return MC_REGISTRY_OK;
-    if (*phase == MC_REGISTRY_FAILED)
-        return mc_registry_fail(classes, MC_REGISTRY_FAILED_INITIALIZATION,
-                                "Block ancestor initialization previously failed", NULL);
-    *phase = MC_REGISTRY_INITIALIZING;
-    mc_registry_status status = base_class(classes);
-    *phase = status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED;
+    *done = state->phase != MC_REGISTRY_COLD;
+    if (state->phase == MC_REGISTRY_FAILED) {
+        classes->last_error = state->failure;
+        return MC_REGISTRY_FAILED_INITIALIZATION;
+    }
+    return MC_REGISTRY_OK;
+}
+
+static void finish_state(mc_registry_classes *classes, mc_registry_class_state *state,
+                         mc_registry_initializer *frame, mc_registry_status status)
+{
+    if (status == MC_REGISTRY_OK)
+        state->phase = MC_REGISTRY_READY;
+    else {
+        state->phase = MC_REGISTRY_FAILED;
+        state->failure = classes->last_error;
+    }
+    mc_registry_initializer_leave(classes, frame);
+}
+
+static mc_registry_status intermediate(mc_registry_classes *classes, mc_registry_class_state *state,
+                                       const char *client, const char *server)
+{
+    bool done = false;
+    mc_registry_status status = cached_state(classes, state, &done);
+    if (done)
+        return status;
+    state->phase = MC_REGISTRY_INITIALIZING;
+    /* These actual ancestors have no own <clinit> body. */
+    state->pc = -1;
+    mc_registry_initializer frame;
+    mc_registry_initializer_enter(classes, &frame, client, server, &state->pc);
+    status = base_class(classes);
+    finish_state(classes, state, &frame, status);
     return status;
 }
 
@@ -102,15 +127,15 @@ static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_ki
             return mc_registry_block_class_initialize(classes, MC_BLOCK_WB_NW);
         case MC_BLOCK_OM_JC:
         case MC_BLOCK_NX_IS:
-            return intermediate(classes, &classes->rp_phase);
+            return intermediate(classes, &classes->rp_state, "rp", "kv");
         case MC_BLOCK_NE_IG:
             return mc_registry_block_class_initialize(classes, MC_BLOCK_GK_EI);
         case MC_BLOCK_BK_AR:
-            return intermediate(classes, &classes->nr_phase);
+            return intermediate(classes, &classes->nr_state, "nr", "in");
         case MC_BLOCK_FK_DO:
         case MC_BLOCK_NK_IK:
         case MC_BLOCK_AK_Z:
-            return intermediate(classes, &classes->jp_phase);
+            return intermediate(classes, &classes->jp_state, "jp", "gh");
         case MC_BLOCK_XQ_PA:
         case MC_BLOCK_PT_JR:
         case MC_BLOCK_UT_MZ:
@@ -119,7 +144,7 @@ static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_ki
         case MC_BLOCK_TC_LZ:
         case MC_BLOCK_UJ_MT:
         case MC_BLOCK_FO_DT:
-            return intermediate(classes, &classes->rw_phase);
+            return intermediate(classes, &classes->rw_state, "rw", "lb");
         case MC_BLOCK_PH_JN:
             return mc_registry_block_class_initialize(classes, MC_BLOCK_PC_JJ);
         case MC_BLOCK_FB_DH:
@@ -133,92 +158,141 @@ static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_ki
 
 static mc_registry_status directions(mc_registry_classes *classes)
 {
+    mc_registry_initializer_stage(classes, 1);
     int32_t **rows = mc_registry_allocate(classes, 4u * sizeof(*rows));
     if (rows == NULL)
         return classes->last_error.status;
-    rows[0] = mc_registry_allocate(classes, 2u * sizeof(*rows[0]));
-    if (rows[0] == NULL)
-        return classes->last_error.status;
-    rows[0][0] = 0;
-    rows[0][1] = 1;
-    rows[1] = mc_registry_allocate(classes, 2u * sizeof(*rows[1]));
-    if (rows[1] == NULL)
-        return classes->last_error.status;
-    rows[1][0] = -1;
-    rows[1][1] = 0;
-    rows[2] = mc_registry_allocate(classes, 2u * sizeof(*rows[2]));
-    if (rows[2] == NULL)
-        return classes->last_error.status;
-    rows[2][0] = 0;
-    rows[2][1] = -1;
-    rows[3] = mc_registry_allocate(classes, 2u * sizeof(*rows[3]));
-    if (rows[3] == NULL)
-        return classes->last_error.status;
-    rows[3][0] = 1;
-    rows[3][1] = 0;
+#define ROW(index, allocation_pc, first, first_pc, second, second_pc, store_pc)                    \
+    do {                                                                                           \
+        mc_registry_initializer_stage(classes, allocation_pc);                                     \
+        int32_t *row = mc_registry_allocate(classes, 2u * sizeof(*row));                           \
+        if (row == NULL)                                                                           \
+            return classes->last_error.status;                                                     \
+        mc_registry_initializer_stage(classes, first_pc);                                          \
+        row[0] = first;                                                                            \
+        mc_registry_initializer_stage(classes, second_pc);                                         \
+        row[1] = second;                                                                           \
+        mc_registry_initializer_stage(classes, store_pc);                                          \
+        rows[index] = row;                                                                         \
+    } while (0)
+    ROW(0, 7, 0, 12, 1, 16, 17);
+    ROW(1, 21, -1, 26, 0, 30, 31);
+    ROW(2, 35, 0, 40, -1, 44, 45);
+    ROW(3, 49, 1, 54, 0, 58, 59);
+#undef ROW
+    mc_registry_initializer_stage(classes, 60);
     classes->ve_a = rows;
+    mc_registry_initializer_stage(classes, 63);
     return MC_REGISTRY_OK;
 }
 
 static mc_registry_status slab_names(mc_registry_classes *classes)
 {
+    mc_registry_initializer_stage(classes, 1);
     const mc_registry_string **array = mc_registry_allocate(classes, 4u * sizeof(*array));
     if (array == NULL)
         return classes->last_error.status;
-    mc_registry_status status = mc_registry_literal_ascii(classes, "stone", &array[0]);
-    if (status != MC_REGISTRY_OK)
-        return status;
-    status = mc_registry_literal_ascii(classes, "sand", &array[1]);
-    if (status != MC_REGISTRY_OK)
-        return status;
-    status = mc_registry_literal_ascii(classes, "wood", &array[2]);
-    if (status != MC_REGISTRY_OK)
-        return status;
-    status = mc_registry_literal_ascii(classes, "cobble", &array[3]);
-    if (status != MC_REGISTRY_OK)
-        return status;
+    mc_registry_status status;
+#define NAME(index, text, literal_pc, store_pc)                                                    \
+    do {                                                                                           \
+        const mc_registry_string *value = NULL;                                                    \
+        mc_registry_initializer_stage(classes, literal_pc);                                        \
+        status = mc_registry_literal_ascii(classes, text, &value);                                 \
+        if (status != MC_REGISTRY_OK)                                                              \
+            return status;                                                                         \
+        mc_registry_initializer_stage(classes, store_pc);                                          \
+        array[index] = value;                                                                      \
+    } while (0)
+    NAME(0, "stone", 6, 8);
+    NAME(1, "sand", 11, 13);
+    NAME(2, "wood", 16, 18);
+    NAME(3, "cobble", 21, 23);
+#undef NAME
+    mc_registry_initializer_stage(classes, 24);
     classes->ys_a = array;
+    mc_registry_initializer_stage(classes, 27);
     return MC_REGISTRY_OK;
 }
 
 static mc_registry_status repeater_arrays(mc_registry_classes *classes)
 {
+    mc_registry_initializer_stage(classes, 1);
     double *offsets = mc_registry_allocate(classes, 4u * sizeof(*offsets));
     if (offsets == NULL)
         return classes->last_error.status;
-    offsets[0] = -0.0625;
-    offsets[1] = 0.0625;
-    offsets[2] = 0.1875;
-    offsets[3] = 0.3125;
+    mc_registry_initializer_stage(classes, 5);
+    double offset = -0.0625;
+    mc_registry_initializer_stage(classes, 8);
+    offsets[0] = offset;
+    mc_registry_initializer_stage(classes, 11);
+    offset = 0.0625;
+    mc_registry_initializer_stage(classes, 14);
+    offsets[1] = offset;
+    mc_registry_initializer_stage(classes, 17);
+    offset = 0.1875;
+    mc_registry_initializer_stage(classes, 20);
+    offsets[2] = offset;
+    mc_registry_initializer_stage(classes, 23);
+    offset = 0.3125;
+    mc_registry_initializer_stage(classes, 26);
+    offsets[3] = offset;
+    mc_registry_initializer_stage(classes, 27);
     classes->wo_a = offsets;
+    mc_registry_initializer_stage(classes, 31);
     int32_t *delays = mc_registry_allocate(classes, 4u * sizeof(*delays));
     if (delays == NULL)
         return classes->last_error.status;
+    mc_registry_initializer_stage(classes, 36);
     delays[0] = 1;
+    mc_registry_initializer_stage(classes, 40);
     delays[1] = 2;
+    mc_registry_initializer_stage(classes, 44);
     delays[2] = 3;
+    mc_registry_initializer_stage(classes, 48);
     delays[3] = 4;
+    mc_registry_initializer_stage(classes, 49);
     classes->wo_b = delays;
+    mc_registry_initializer_stage(classes, 52);
     return MC_REGISTRY_OK;
 }
 
 mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *classes,
                                                       mc_block_kind kind)
 {
+    static const char *const clients[MC_BLOCK_KIND_COUNT] = {
+        "uu", "eo", "wp", "ot", "he", "om", "nx", "gk", "ne", "mt", "vg", "bk", "xf", "fk",
+        "xq", "rd", "pt", "ve", "pc", "ph", "jq", "rn", "ru", "jb", "h",  "ee", "ut", "wb",
+        "tl", "l",  "ys", "ah", "hb", "fb", "vm", "yq", "dd", "ss", "e",  "sm", "fi", "ni",
+        "vl", "tc", "uj", "le", "dp", "xr", "bv", "bs", "db", "oi", "jr", "nk", "ac", "or",
+        "rz", "ri", "fo", "jw", "fc", "yi", "oa", "ly", "ak", "um", "wo", "ks", "oq"};
+    static const char *const servers[MC_BLOCK_KIND_COUNT] = {
+        "na", "cx", "oj", "jf", "eu", "jc", "is", "ei", "ig", "ic", "nk", "ar", "ov", "do",
+        "pa", "kl", "jr", "nj", "jj", "jn", "gi", "ku", "kz", "fz", "g",  "cq", "mz", "nw",
+        "md", "j",  "pw", "t",  "er", "dh", "np", "pt", "bz", "lu", "e",  "lo", "dn", "ij",
+        "no", "lz", "mt", "hc", "cg", "pd", "bc", "az", "by", "iz", "gj", "ik", "p",  "je",
+        "lf", "ko", "dt", "gn", "di", "po", "iu", "hr", "z",  "mw", "oi", "gv", "jd"};
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if ((unsigned int)kind >= (unsigned int)MC_BLOCK_KIND_COUNT)
+        return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Block class kind", NULL);
     if (kind == MC_BLOCK_UU_NA)
         return base_class(classes);
-    mc_registry_phase *phase = &classes->kind_phases[kind];
-    if (*phase == MC_REGISTRY_READY || *phase == MC_REGISTRY_INITIALIZING)
-        return MC_REGISTRY_OK;
-    if (*phase == MC_REGISTRY_FAILED)
-        return mc_registry_fail(classes, MC_REGISTRY_FAILED_INITIALIZATION,
-                                "Block subtype initialization previously failed", NULL);
-    *phase = MC_REGISTRY_INITIALIZING;
-    mc_registry_status status = parent_class(classes, kind);
+    mc_registry_class_state *state = &classes->block_states[kind];
+    bool done = false;
+    mc_registry_status status = cached_state(classes, state, &done);
+    if (done)
+        return status;
+    state->phase = MC_REGISTRY_INITIALIZING;
+    state->pc = -1;
+    mc_registry_initializer frame;
+    mc_registry_initializer_enter(classes, &frame, clients[kind], servers[kind], &state->pc);
+    status = parent_class(classes, kind);
     if (status == MC_REGISTRY_OK) {
         switch (kind) {
             case MC_BLOCK_GK_EI:
+                mc_registry_initializer_stage(classes, 1);
                 classes->gk_a = false;
+                mc_registry_initializer_stage(classes, 4);
                 break;
             case MC_BLOCK_VE_NJ:
                 status = directions(classes);
@@ -227,14 +301,23 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
                 status = slab_names(classes);
                 break;
             case MC_BLOCK_TC_LZ:
+                mc_registry_initializer_stage(classes, 1);
                 classes->tc_c = false;
+                mc_registry_initializer_stage(classes, 4);
                 break;
             case MC_BLOCK_DB_BY: {
+                mc_registry_initializer_stage(classes, 0);
                 mc_registry_list *list = mc_registry_allocate(classes, sizeof(*list));
                 if (list == NULL)
                     status = classes->last_error.status;
-                else
+                else {
+                    /* The existing empty ArrayList representation has no
+                     * fallible operation at the reached constructor call. */
+                    mc_registry_initializer_stage(classes, 4);
+                    mc_registry_initializer_stage(classes, 7);
                     classes->db_b = list;
+                    mc_registry_initializer_stage(classes, 10);
+                }
                 break;
             }
             case MC_BLOCK_WO_OI:
@@ -244,51 +327,80 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
                 break;
         }
     }
-    *phase = status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED;
+    finish_state(classes, state, &frame, status);
     return status;
 }
 
 static mc_registry_status pressure_category(mc_registry_classes *classes, const char *name,
-                                            int32_t ordinal, mc_pressure_category **destination)
+                                            int32_t ordinal, mc_pressure_category **destination,
+                                            int32_t allocation_pc, int32_t literal_pc,
+                                            int32_t ordinal_pc, int32_t constructor_pc,
+                                            int32_t publication_pc)
 {
+    mc_registry_initializer_stage(classes, allocation_pc);
     mc_pressure_category *category = mc_registry_allocate(classes, sizeof(*category));
     if (category == NULL)
         return classes->last_error.status;
+    mc_registry_initializer_stage(classes, literal_pc);
     const mc_registry_string *argument = NULL;
     mc_registry_status status = mc_registry_literal_ascii(classes, name, &argument);
     if (status != MC_REGISTRY_OK)
         return status;
+    mc_registry_initializer_stage(classes, ordinal_pc);
+    mc_registry_initializer_stage(classes, constructor_pc);
     category->name = argument;
     category->ordinal = ordinal;
+    mc_registry_initializer_stage(classes, publication_pc);
     *destination = category;
+    return MC_REGISTRY_OK;
+}
+
+static mc_registry_status pressure_body(mc_registry_classes *classes)
+{
+    mc_registry_status status =
+        pressure_category(classes, "everything", 0, &classes->pressure_a, 0, 4, 6, 7, 10);
+    if (status == MC_REGISTRY_OK)
+        status = pressure_category(classes, "mobs", 1, &classes->pressure_b, 13, 17, 19, 20, 23);
+    if (status == MC_REGISTRY_OK)
+        status = pressure_category(classes, "players", 2, &classes->pressure_c, 26, 30, 32, 33, 36);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    mc_registry_initializer_stage(classes, 40);
+    mc_pressure_category **values = mc_registry_allocate(classes, 3u * sizeof(*values));
+    if (values == NULL)
+        return classes->last_error.status;
+    mc_registry_initializer_stage(classes, 45);
+    mc_pressure_category *value = classes->pressure_a;
+    mc_registry_initializer_stage(classes, 48);
+    values[0] = value;
+    mc_registry_initializer_stage(classes, 51);
+    value = classes->pressure_b;
+    mc_registry_initializer_stage(classes, 54);
+    values[1] = value;
+    mc_registry_initializer_stage(classes, 57);
+    value = classes->pressure_c;
+    mc_registry_initializer_stage(classes, 60);
+    values[2] = value;
+    mc_registry_initializer_stage(classes, 61);
+    classes->pressure_values = values;
+    mc_registry_initializer_stage(classes, 64);
     return MC_REGISTRY_OK;
 }
 
 mc_registry_status mc_registry_pressure_initialize(mc_registry_classes *classes)
 {
-    if (classes->pressure_phase == MC_REGISTRY_READY ||
-        classes->pressure_phase == MC_REGISTRY_INITIALIZING)
-        return MC_REGISTRY_OK;
-    if (classes->pressure_phase == MC_REGISTRY_FAILED)
-        return mc_registry_fail(classes, MC_REGISTRY_FAILED_INITIALIZATION,
-                                "pressure enum initialization previously failed", NULL);
-    classes->pressure_phase = MC_REGISTRY_INITIALIZING;
-    mc_registry_status status = pressure_category(classes, "everything", 0, &classes->pressure_a);
-    if (status == MC_REGISTRY_OK)
-        status = pressure_category(classes, "mobs", 1, &classes->pressure_b);
-    if (status == MC_REGISTRY_OK)
-        status = pressure_category(classes, "players", 2, &classes->pressure_c);
-    if (status == MC_REGISTRY_OK) {
-        mc_pressure_category **values = mc_registry_allocate(classes, 3u * sizeof(*values));
-        if (values == NULL)
-            status = classes->last_error.status;
-        else {
-            values[0] = classes->pressure_a;
-            values[1] = classes->pressure_b;
-            values[2] = classes->pressure_c;
-            classes->pressure_values = values;
-        }
-    }
-    classes->pressure_phase = status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED;
+    if (classes == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    mc_registry_class_state *state = &classes->pressure_state;
+    bool done = false;
+    mc_registry_status status = cached_state(classes, state, &done);
+    if (done)
+        return status;
+    state->phase = MC_REGISTRY_INITIALIZING;
+    state->pc = 0;
+    mc_registry_initializer frame;
+    mc_registry_initializer_enter(classes, &frame, "rt", "kx", &state->pc);
+    status = pressure_body(classes);
+    finish_state(classes, state, &frame, status);
     return status;
 }

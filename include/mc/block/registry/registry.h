@@ -24,7 +24,8 @@ typedef enum mc_registry_status {
     MC_REGISTRY_DUPLICATE_BLOCK,
     MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
     MC_REGISTRY_FAILED_INITIALIZATION,
-    MC_REGISTRY_BUSY
+    MC_REGISTRY_BUSY,
+    MC_REGISTRY_ILLEGAL_ARGUMENT
 } mc_registry_status;
 
 typedef enum mc_registry_phase {
@@ -42,6 +43,11 @@ typedef struct mc_registry_error {
     const char *constructor_class;
     int32_t constructor_pc;
     mc_java_random_profile_status profile_status;
+    /* Block's retained driver position remains initializer_pc. A nested
+     * source initializer has its own active class/position and Item argument. */
+    const char *active_initializer_class;
+    int32_t active_initializer_pc;
+    int32_t item_argument;
 } mc_registry_error;
 
 typedef struct mc_registry_options {
