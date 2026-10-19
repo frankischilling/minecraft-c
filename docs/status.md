@@ -1,5 +1,11 @@
 # Development status
 
+The private [millisecond wall-clock backend](reference/wall-clock.md) passes
+251 checks on MSVC, GCC and Clang, including four ordered OS brackets per
+compiler. All five selected clock/Random cases pass; Linux uses ASan/UBSan and
+leak checks. World construction, including its metadata and provider ordering,
+has not yet been connected to this clock.
+
 The C runtime now composes chunk acquisition, saving, pending unloads and explicit
 owner retirement. It preserves live callback order, a stable world clock,
 metadata-first accounting and retained identities through reentry. Empty native
@@ -14,8 +20,8 @@ per side supply complete returned-state observations and a separate scalar
 formula fixture. [Constructor evidence](reference/entity-construction.md)
 distinguishes inferred Math inputs from directly observed fields. World startup,
 insertion, ticking, loaded Entity activation and chest integration remain open.
-All 85 public CTest cases pass locally on each compiler, including the separate
-50-field scalar replay. The final test-only formatter adjustment was followed
+At that checkpoint, all 85 public CTest cases passed locally on each compiler,
+including the separate 50-field scalar replay. The final test-only formatter adjustment was followed
 by a fresh Entity unit build/run on each compiler; details are in
 [testing](testing.md). This is local validation of the feature branch.
 

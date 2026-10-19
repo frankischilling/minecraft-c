@@ -177,6 +177,11 @@ preserve their distinct conversions and native failure policies. Explicit seed
 and reseed stay entropy-free. Game startup and population/entity/registry wiring
 to this owner remain unfinished.
 
+The separate private [millisecond wall clock](reference/wall-clock.md) uses
+Windows FILETIME or Linux CLOCK_REALTIME. It has checked integer conversions,
+no retained state and no monotonicity guarantee. World startup has not yet
+been connected to it.
+
 The [NBT boundary](storage/nbt.md) owns retained decoded trees and budgets their
 allocations. It accepts bytes and produces bytes without compression, streams
 or world schemas. Strings preserve UTF-16 code units, and parser failures leave
@@ -199,8 +204,11 @@ src/core/java/random_profile.c
 src/core/java/random_profile_internal.h
 src/platform/time/nanotime.h
 src/platform/time/nanotime.c
+src/platform/time/millis.h
+src/platform/time/millis.c
 tests/core/java/test_random_profile.c
 tests/platform/time/test_nanotime.c
+tests/platform/time/test_millis.c
 include/mc/core/java/int_set.h
 src/core/java/int_set.c
 tests/core/java/test_java.c

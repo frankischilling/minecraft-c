@@ -33,6 +33,11 @@ GCC/Clang builds support `MC_ENABLE_SANITIZERS=ON`, including
 the zlib dependency. CI runs native Windows MSVC and Linux GCC/Clang plus
 clang-format18. No original JARs/assets are downloaded by CI.
 
+The native millisecond wall clock adds 251 checks on MSVC/GCC/Clang, including
+four ordered OS brackets per compiler. Its selected five-case clock/Random run
+passes with Linux sanitizers. World construction remains unfinished; see the
+[source and test limits](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/wall-clock.md).
+
 `core/math` adds original float lookup/floor tests without Java. Its optional
 `MC_ENABLE_MATH_REFERENCE_TESTS` checks every initialized table entry and
 sampled scalar calls from both supplied originals; it needs no world setup.

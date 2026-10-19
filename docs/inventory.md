@@ -42,6 +42,10 @@ and evidence limits. Callback replay imports observed effects within the recorde
 cache/world boundary; that replay itself does not implement a disk decoder or
 terrain features. The native storage work has [separate accepted finite copied-world scenarios](reference/storage.md#exact-source-storage-checkpoint); it does not complete gameplay saving.
 
+World startup now has a tested native [millisecond wall-clock backend](reference/wall-clock.md).
+The original World constructor, metadata ownership and provider initialization
+remain unfinished; this primitive does not complete a startup checklist.
+
 The [lifecycle boundary](world/lifecycle.md) implements synchronous saving,
 metadata-first accounting, history-sensitive pending unloads and explicit native
 retirement. Native empty collections and external Boat/Sign callback replay

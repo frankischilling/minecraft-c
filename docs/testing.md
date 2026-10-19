@@ -13,9 +13,15 @@ ASan/UBSan and leak checks; Windows used strict Debug without sanitizers.
 After that matrix, test field macros were adjusted for stable clang-format 18
 output, retaining all 63 ordered selectors. The 1,276-check Entity unit was
 rebuilt and passed again on all three compilers. No production body changed
-after the full matrix. These runs exclude opt-in original-game comparisons;
+between those runs. These runs exclude opt-in original-game comparisons;
 the fresh original constructor capture and public scalar replay have their own
 [evidence boundary](reference/entity-construction.md).
+
+A later selected five-case clock/Random run passes on the same three compilers,
+including 251 new `platform.millis` checks and four ordered live OS brackets per
+compiler. The [wall-clock record](reference/wall-clock.md) documents its source
+binding and limits. This run does not refresh the complete 85-case checkpoint
+above; the new test brings the declared public inventory to 86 cases.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
@@ -33,6 +39,7 @@ the fresh original constructor capture and public scalar replay have their own
 | `core.java_gaussian` | 85 captured-result/cache contracts pass on GCC/Clang/MSVC, including stale bits after reseed, signed zero, no-draw hits, owner copies and strict-math boundaries | Explicit seeds and admitted FP environment only; no constructor entropy or arbitrary math-input claim |
 | `tools.java_gaussian_protocol` | 157 exact native cases pass on GCC/Clang/MSVC: seed/ID/bound limits, malformed math, line endings/control bytes, 160/161-byte boundaries, full cache snapshots and exact rejection prefixes | No operation-limit stress, changed-FP experiment, JDK or original-game execution |
 | `platform.nanotime` | 172 Windows / 173 Linux checks pass on MSVC/GCC/Clang: exact conversions, native OS brackets, unchanged outputs/clock storage and controlled unsupported MXCSR states | Native clock contracts; no original nanoTime/QPC conversion or timing-performance proof |
+| `platform.millis` | 251 checks pass on MSVC/GCC/Clang: signed epoch/unit conversions, checked ranges, output guards, six FP-control variants and four ordered real OS brackets per compiler | Native wall-clock contracts and pinned upstream source; no forced OS failure, installed-library bridge or World-constructor qualification |
 | `platform.nanotime_conversion` | 17,769 checks over 4,866 actual Java scalar vectors pass on all three compilers | Java operator formula and explicit native range policy; no clock sampled by the Java helper |
 | `core.java_random_profile` | 191 native ownership, budget, failure-latch, constructor-commit, cold-holder contention, atomic Math and FP checks pass on all three compilers | Native contracts; no original-game startup or cross-language concurrent scheduling proof |
 | `core.java_random_constructor_observation` | 18 checks pass on MSVC/GCC/Clang for recorded constructor inputs through the production tail and plain Random continuations | No production clock sample, shared-uniquifier advance or atomic Math-holder replay |

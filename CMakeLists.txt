@@ -65,7 +65,7 @@ FetchContent_Declare(mc_zlib
 FetchContent_MakeAvailable(mc_zlib)
 target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 
-add_library(mc_platform_time STATIC src/platform/time/nanotime.c)
+add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
 target_link_libraries(mc_platform_time PRIVATE mc_build_options)
 
 find_package(Threads REQUIRED)
@@ -154,6 +154,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_material_probe tests/block/material/material_probe.c)
     target_link_libraries(mc_material_probe PRIVATE mc_block mc_build_options)
+
+    add_executable(mc_test_millis tests/platform/time/test_millis.c)
+    target_include_directories(mc_test_millis PRIVATE src/platform/time)
+    target_link_libraries(mc_test_millis PRIVATE mc_platform_time mc_build_options)
+    add_test(NAME platform.millis COMMAND mc_test_millis)
+    set_tests_properties(platform.millis PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
     add_executable(mc_test_nanotime tests/platform/time/test_nanotime.c)
     target_include_directories(mc_test_nanotime PRIVATE src/platform/time)
