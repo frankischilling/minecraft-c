@@ -1,4 +1,7 @@
 #include "../storage/generated_internal.h"
+#include "../storage/objects_internal.h"
+#include "activation_internal.h"
+#include "generation/generation_internal.h"
 #include "millis.h"
 #include "provider_internal.h"
 #include "runtime_internal.h"
@@ -54,6 +57,14 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
                                  int32_t z, mc_chunk_state **out)
 {
     mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        mc_world_storage_status status = mc_world_store_load_game_chunk(
+            runtime->options.store, runtime, runtime->options.dimension, x, z, out,
+            &runtime->last_error);
+        return status == MC_WORLD_STORAGE_OK        ? MC_CHUNK_LOAD_LOADED
+               : status == MC_WORLD_STORAGE_MISSING ? MC_CHUNK_LOAD_MISS
+                                                    : MC_CHUNK_LOAD_FATAL;
+    }
     mc_chunk_load_result result =
         mc_world_store_load_callback(&runtime->loader, context, x, z, out);
     runtime->last_error = runtime->loader.last_error;
@@ -69,9 +80,15 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
     (void)context;
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World generation block registry and lighting owner");
-        return false;
+        mc_world_generation_error error;
+        mc_world_storage_status status =
+            mc_world_provider_generate_game(runtime->fields.v, x, z, out, &error);
+        if (status != MC_WORLD_STORAGE_OK) {
+            runtime->last_error = error.cause;
+            if (error.registry.status != MC_REGISTRY_OK)
+                runtime->last_registry_error = error.registry;
+        }
+        return status == MC_WORLD_STORAGE_OK;
     }
     mc_world_store_reservation *reservation = NULL;
     if (mc_world_store_reserve_chunk(runtime->options.store, runtime->options.dimension,
@@ -111,20 +128,31 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
 static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
                            mc_chunk_state *chunk)
 {
-    (void)owner;
     (void)context;
-    (void)chunk;
-    return true;
+    mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
+        return true;
+    mc_world_activation_error error;
+    mc_world_storage_status status = mc_world_runtime_register_chunk_tiles(
+        mc_world_store_chunk_object(runtime->options.store, chunk), &error);
+    if (status != MC_WORLD_STORAGE_OK)
+        runtime->last_error = error.cause;
+    return status == MC_WORLD_STORAGE_OK;
 }
 
 static bool register_entities(void *owner, const mc_chunk_acquire_context *context,
                               mc_chunk_state *chunk, size_t slice)
 {
-    (void)owner;
     (void)context;
-    (void)chunk;
-    (void)slice;
-    return true;
+    mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
+        return true;
+    mc_world_activation_error error;
+    mc_world_storage_status status = mc_world_runtime_register_chunk_entities(
+        mc_world_store_chunk_object(runtime->options.store, chunk), slice, &error);
+    if (status != MC_WORLD_STORAGE_OK)
+        runtime->last_error = error.cause;
+    return status == MC_WORLD_STORAGE_OK;
 }
 
 static bool populate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z)
@@ -185,21 +213,32 @@ static mc_chunk_callback_result loader_noop(void *owner, const mc_chunk_lifecycl
 static mc_chunk_callback_result
 invalidate_tiles(void *owner, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk)
 {
-    (void)owner;
     (void)context;
-    (void)chunk;
-    return MC_CHUNK_CALLBACK_OK;
+    mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
+        return MC_CHUNK_CALLBACK_OK;
+    mc_world_activation_error error;
+    mc_world_storage_status status = mc_world_runtime_invalidate_chunk_tiles(
+        mc_world_store_chunk_object(runtime->options.store, chunk), &error);
+    if (status != MC_WORLD_STORAGE_OK)
+        runtime->last_error = error.cause;
+    return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
 static mc_chunk_callback_result defer_entities(void *owner,
                                                const mc_chunk_lifecycle_context *context,
                                                mc_chunk_state *chunk, size_t slice)
 {
-    (void)owner;
     (void)context;
-    (void)chunk;
-    (void)slice;
-    return MC_CHUNK_CALLBACK_OK;
+    mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
+        return MC_CHUNK_CALLBACK_OK;
+    mc_world_activation_error error;
+    mc_world_storage_status status = mc_world_runtime_defer_chunk_entities(
+        mc_world_store_chunk_object(runtime->options.store, chunk), slice, &error);
+    if (status != MC_WORLD_STORAGE_OK)
+        runtime->last_error = error.cause;
+    return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
 static mc_chunk_callback_result
@@ -687,9 +726,8 @@ mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,
     if (runtime->persistent_bindings != 0)
         return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime persistent binding active");
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME &&
-        mc_world_store_has_generated_for_world(runtime->fields.w, runtime))
-        return runtime_error(error, MC_WORLD_STORAGE_BUSY,
-                             "runtime generated Chunk binding active");
+        mc_world_store_has_chunks_for_world(runtime->fields.w, runtime))
+        return runtime_error(error, MC_WORLD_STORAGE_BUSY, "runtime Chunk binding active");
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME)
         return mc_world_runtime_game_free(runtime, error);
     if (!mc_chunk_acquire_validate(&runtime->acquisition))

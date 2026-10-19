@@ -5,6 +5,7 @@
 #include "files.h"
 #include "generated_internal.h"
 #include "mc/core/java/java.h"
+#include "objects_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +18,7 @@ typedef struct store_chunk {
         mc_stored_chunk *stored;
         mc_world_chunk *generated;
     } owner;
+    mc_world_chunk *loaded_binding;
     int32_t dimension;
     size_t leases;
     struct store_chunk *next;
@@ -79,7 +81,8 @@ static mc_stored_chunk_status store_chunk_build(const store_chunk *entry, int64_
                                                 const mc_nbt_limits *limits, mc_nbt_document **out,
                                                 mc_stored_chunk_error *error)
 {
-    if (entry->kind == STORE_CHUNK_STORED)
+    if (entry->kind == STORE_CHUNK_STORED &&
+        (entry->loaded_binding == NULL || mc_world_chunk_storage_empty(entry->loaded_binding)))
         return mc_stored_chunk_build(entry->owner.stored, world_time, limits, out, error);
     if (entry->kind == STORE_CHUNK_GENERATED &&
         mc_world_chunk_storage_empty(entry->owner.generated))
@@ -94,6 +97,7 @@ static void store_chunk_free(store_chunk *entry)
 {
     switch (entry->kind) {
         case STORE_CHUNK_STORED:
+            mc_world_chunk_storage_free(entry->loaded_binding);
             mc_stored_chunk_free(entry->owner.stored);
             break;
         case STORE_CHUNK_GENERATED:
@@ -751,6 +755,29 @@ mc_world_chunk *mc_world_store_generated_chunk(const mc_world_store *store,
     return entry != NULL && entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : NULL;
 }
 
+mc_world_chunk *mc_world_store_chunk_object(const mc_world_store *store,
+                                            const mc_chunk_state *state)
+{
+    const store_chunk *entry = store_find_chunk(store, state);
+    return entry == NULL                          ? NULL
+           : entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated
+                                                  : entry->loaded_binding;
+}
+
+bool mc_world_store_has_chunks_for_world(const mc_world_store *store, const mc_world_runtime *world)
+{
+    if (store == NULL || world == NULL)
+        return false;
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        mc_world_chunk *chunk =
+            entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+        mc_world_chunk_fields fields;
+        if (mc_world_chunk_fields_get(chunk, &fields) == MC_WORLD_STORAGE_OK && fields.d == world)
+            return true;
+    }
+    return false;
+}
+
 bool mc_world_store_has_generated_for_world(const mc_world_store *store,
                                             const mc_world_runtime *world)
 {
@@ -786,8 +813,8 @@ static bool store_opaque(const store_chunk *entry)
 }
 
 static mc_world_storage_status store_load_chunk(mc_world_store *store, int32_t dimension, int32_t x,
-                                                int32_t z, bool activation, mc_chunk_state **out,
-                                                mc_world_storage_error *error)
+                                                int32_t z, bool activation, mc_world_runtime *world,
+                                                mc_chunk_state **out, mc_world_storage_error *error)
 {
     if (store == NULL || out == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk load arguments");
@@ -816,6 +843,10 @@ static mc_world_storage_status store_load_chunk(mc_world_store *store, int32_t d
         if (normalized != MC_STORED_CHUNK_OK)
             status = store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "postload normalization");
     }
+    if (status == MC_WORLD_STORAGE_OK && world != NULL)
+        status = mc_world_chunk_storage_bind_loaded(world, store_chunk_state(entry),
+                                                    store->limits.nbt.max_allocation_bytes,
+                                                    &entry->loaded_binding, error);
     if (status != MC_WORLD_STORAGE_OK) {
         if (entry != NULL)
             store_chunk_free(entry);
@@ -831,7 +862,17 @@ mc_world_storage_status mc_world_store_load_chunk(mc_world_store *store, int32_t
                                                   int32_t x, int32_t z, mc_chunk_state **out,
                                                   mc_world_storage_error *error)
 {
-    return store_load_chunk(store, dimension, x, z, false, out, error);
+    return store_load_chunk(store, dimension, x, z, false, NULL, out, error);
+}
+
+mc_world_storage_status mc_world_store_load_game_chunk(mc_world_store *store,
+                                                       mc_world_runtime *world, int32_t dimension,
+                                                       int32_t x, int32_t z, mc_chunk_state **out,
+                                                       mc_world_storage_error *error)
+{
+    if (world == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME load World receiver");
+    return store_load_chunk(store, dimension, x, z, true, world, out, error);
 }
 
 mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32_t dimension,
@@ -1168,8 +1209,8 @@ mc_chunk_load_result mc_world_store_load_callback(void *loader,
                           "store loader arguments");
         return MC_CHUNK_LOAD_FATAL;
     }
-    mc_world_storage_status status =
-        store_load_chunk(binding->store, binding->dimension, x, z, true, out, &binding->last_error);
+    mc_world_storage_status status = store_load_chunk(binding->store, binding->dimension, x, z,
+                                                      true, NULL, out, &binding->last_error);
     return status == MC_WORLD_STORAGE_OK        ? MC_CHUNK_LOAD_LOADED
            : status == MC_WORLD_STORAGE_MISSING ? MC_CHUNK_LOAD_MISS
                                                 : MC_CHUNK_LOAD_FATAL;

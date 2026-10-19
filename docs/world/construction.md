@@ -58,10 +58,10 @@ embedded blank identity.
 Direct/copy and already-loaded normal base-World paths can reach native READY
 after provider construction, initial light and weather. Missing metadata
 enters the real acquiring spawn predicate and its source-ordered rejection
-loop. Missing-chunk generation still stops at the unfinished registry/lighting
-join, retaining its reached fields, y flag and provider. The live registry
-binding and Dimension predicates do not supply missing generation or
-population bodies. Nether/Sky full providers, dedicated/network-client
+loop. Missing chunks enter [concrete generation and known-empty activation](chunk-activation.md),
+retaining reached fields, y, provider and generation effects on failure.
+Registry resources are required; feature population still fails explicitly
+at its reached gate. Nether/Sky full providers, dedicated/network-client
 subclass startup, Biome class bootstrap and complete gameplay startup remain
 unfinished. Native READY is constructor completion for the represented normal
 path, not a whole-game or original-World observation claim.

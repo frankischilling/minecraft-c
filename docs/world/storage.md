@@ -104,6 +104,9 @@ Dimension 0 uses the world root; -1 uses DIM-1. Storage loads apply a copied
 registry map. The acquisition adapter permits generation only for missing
 records, refuses unreadable data and refuses activation of opaque entities or
 tiles. The coordinator owns publication, activation and loaded time stamping.
+GAME loads attach [concrete known-empty Chunk headers](chunk-activation.md)
+over that same stored state before publication; unknown-NBT serialization
+continues through the retained stored owner.
 Explicit chunk writes update live SizeOnDisk after commit; save eligibility,
 dirty reset, last-save stamps and save/unload scheduling remain caller-owned.
 The typed runtime variant instead adds growth only to its supplied READY Info,

@@ -35,7 +35,7 @@ Ordinary flags and array contents remain mutable under exclusive access. Views
 borrow the Chunk until checked retirement. Existing store leases and scans of
 registered maps, insertion lists and fallback slots protect the same identity.
 
-World free checks for generated owners bound to its exact d before any teardown.
+World free checks for generated and bound loaded owners with its exact d before any teardown.
 World retirement may occur first and leaves that World allocated. Retire the
 Chunks, then free the World, and keep the store live through those operations.
 This uses the existing ownership hierarchy without a reverse persistence call
@@ -89,7 +89,7 @@ negative q elements and synthetic nonowning q-array guards are native controls.
 
 The constructor and finisher have not received a new executed-original
 comparison. Existing numerical reference
-observations qualify their recorded contexts separately. Complete GAME
-generation still stops until its provider, density, surface and cave joins are
-connected. Population, synchronous mutations, propagation and complete save
+observations qualify their recorded contexts separately. Concrete GAME
+generation and [known-empty activation](chunk-activation.md) now connect to
+ordinary acquisition. Population, synchronous mutations, propagation and complete save
 interoperability remain separate unfinished acceptance requirements.

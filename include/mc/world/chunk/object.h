@@ -14,7 +14,7 @@ typedef struct mc_world_chunk_entity_list mc_world_chunk_entity_list;
 /* Passive snapshots of the seventeen actual instance fields. Scalars read the
  * same cells used by cache/lifecycle/save, never a detached flag projection.
  * e/f/g and each of m's eight lists are distinct stable child identities.
- * This finite owner represents constructed normal Chunk objects and actual
+ * This finite owner represents generated and bound loaded Chunk objects and actual
  * known-empty children, without a general Java collection implementation. */
 typedef struct mc_world_chunk_fields {
     uint8_t *b;
@@ -37,7 +37,8 @@ typedef struct mc_world_chunk_nibble_fields {
 /* All returned handles, pointers and views borrow the store-owned Chunk.
  * Retire external views before checked store retirement/free. Mutable state
  * permits ordinary flags/array contents, but never rebinding data/blocks or
- * changing generated Chunk final j/k coordinates. Grant exclusive access;
+ * changing concrete Chunk final j/k coordinates. Generic unbound stored states
+ * keep their separate editing contract. Grant exclusive access;
  * output slots must be live and disjoint from owners/dependencies/each other.
  * Failure preserves out; NULL state/byte queries return NULL/0. */
 mc_chunk_state *mc_world_chunk_state(mc_world_chunk *chunk);

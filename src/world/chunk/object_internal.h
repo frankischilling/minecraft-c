@@ -21,7 +21,21 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
                                                       mc_world_storage_error *error);
 void mc_world_chunk_storage_free(mc_world_chunk *chunk);
 
-/* Validate the actual finite empty child contract for generated serialization.
+/* Construct finite known-empty loaded Chunk headers over the SAME stored
+ * state/data/arrays. The store has already decoded the fixed shape and rejected
+ * opaque entity/tile payloads. No borrowed cell is cleared, copied or rebound;
+ * source NBT remains owned by the stored serializer. Header backing alone is
+ * charged to this native budget. Failure preserves out and borrowed storage.
+ * Concrete j/k stay final from binding onward; generic unbound stored owners
+ * retain their separate coordinate-edit contract. Free this header before
+ * retiring its borrowed state/data/arrays. */
+mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *world,
+                                                           mc_chunk_state *state,
+                                                           size_t max_allocation_bytes,
+                                                           mc_world_chunk **out,
+                                                           mc_world_storage_error *error);
+
+/* Validate the actual finite empty child/binding contract for serialization.
  * No class use, source World access, callback, propagation or state mutation. */
 bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk);
 

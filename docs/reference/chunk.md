@@ -6,6 +6,9 @@ separate acceptance requirements.
 
 ## Original bindings
 
+See [activation and detach](#activation-and-detach) for ordinary GAME
+acquisition's concrete known-empty World collection operations.
+
 Both supplied references use the hashes recorded in the
 [binary audit](binaries.md): client SHA-256
 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`
@@ -146,6 +149,42 @@ These results establish the declared local arrays and packed access. Genuine
 world cache/queue observations remain diagnostic evidence for later work.
 They do not establish C world-height queries, queued-light behavior, propagation,
 complete chunk generation, other dimensions, persistence or playable operation.
+
+## Activation and detach
+
+The same pinned client/server binaries establish these paired methods:
+
+| Operation | Client | Server | Ordered bytecode |
+| --- | --- | --- | --- |
+| Preactivation | `lm.d()V` | `hi.c()V` | Return0 |
+| Activation | `lm.e()V` | `hi.d()V` | active2; d6; l10/values13; World Collection18; each current m slice41/World List42; return51 |
+| World tile registration | `fd.a(Collection)V` | `dj.a(Collection)V` | L1; true selects G8/addAll12, false selects c22/addAll26; return32 |
+| World Entity registration | `fd.a(List)V` | `dj.a(List)V` | b1/addAll5; incoming size15; per-Entity hook34 only for nonempty input |
+| Detach | `lm.f()V` | `hi.e()V` | inactive2; l6/values9; iterator14/hasNext21; Tile invalidation40 only for nonempty input; each current slice66/World List67; return76 |
+| World Entity deferral | `fd.b(List)V` | `dj.b(List)V` | D1/addAll5; return11 |
+
+The base cache invokes generation before map95/list107 publication,
+preactivation120, activation125 and population gates128 onward. Registration
+does not precede active or cache publication. Detach does not remove objects
+from World b, clear Chunk collections or save/unpublish the Chunk itself.
+Client Tile invalidation is `ow.i()V`; the paired server target is `jh.h()V`.
+Their primitive h=true store is unreached for the known-empty domain.
+
+The region decoder invokes `to.a(World,Level)` / `mg.a(World,Level)`, which
+reads Level xPos3/zPos10 and calls the base Chunk constructor21 before
+assigning Blocks34, Data52, SkyLight70, BlockLight88, HeightMap99 and
+population110. The constructor creates actual d, Map and eight List identities.
+Region relocation writes xPos246/zPos254 to the outer root before decoding
+root.Level again265; this does not rewrite Level coordinates. The final
+`lm.i()` / `hi.h()` normalization uses the class-shared first-use Block map.
+The C [loaded binding](../world/chunk-activation.md) retains its existing atomic,
+fixed-array decoder and explicit frozen-map policy; it does not claim the
+source's allocation failures, missing-array handling or nonempty factories.
+
+These are paired bytecode findings. Empty collection call order is reviewed
+against that source; final empty lists alone cannot measure the number of
+calls, Java Values identities, allocation or modCount. No new executed-original
+Chunk activation or detach comparison is claimed.
 
 ## Local reproduction
 

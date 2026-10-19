@@ -197,6 +197,7 @@ target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build
 
 add_library(mc_simulation STATIC
     src/world/runtime/runtime.c
+    src/world/runtime/activation.c
     src/world/runtime/registry.c
     src/world/runtime/construction.c
     src/world/runtime/environment.c
@@ -391,6 +392,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_provider_generation tests/world/runtime/test_provider_generation.c)
     target_link_libraries(mc_test_world_provider_generation PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_provider_activation tests/world/runtime/test_provider_activation.c)
+    target_link_libraries(mc_test_world_provider_activation PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -929,6 +933,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-provider-generation-contracts")
     set_tests_properties(world.provider_generation PROPERTIES
         LABELS "public;integration;ownership;generation" TIMEOUT 90)
+
+    add_test(NAME world.provider_activation
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_provider_activation>"
+        --scenario world-provider-activation
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-provider-activation-contracts")
+    set_tests_properties(world.provider_activation PROPERTIES
+        LABELS "public;integration;ownership;generation;storage" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

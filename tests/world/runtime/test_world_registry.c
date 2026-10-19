@@ -421,7 +421,15 @@ static int test_queries(fixture *f)
     CHECK(mc_world_runtime_material_get(f->worlds[1], 128, 63, 128, &material, &error) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           material == air);
-    CHECK(mc_world_runtime_last_registry_error(f->worlds[1])->status == MC_REGISTRY_OK);
+    /* This genuine cache miss now enters concrete generation. Its numerical
+     * manager has no actual reference capability without a Registry binding;
+     * failure precedes the later material lookup and retires its new child. */
+    const mc_registry_error *generation_cause = mc_world_runtime_last_registry_error(f->worlds[1]);
+    CHECK(generation_cause->status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY &&
+          generation_cause->message != NULL &&
+          strcmp(generation_cause->message, "numerical biome has no actual reference capability") ==
+              0 &&
+          mc_world_store_chunk_count(f->store) == 1 && f->providers[1].cache->count == 1);
     allowed = true;
     CHECK(mc_world_dimension_can_spawn(f->dimensions[1], 128, 128, &allowed, &dimension_error) ==
               MC_WORLD_DIMENSION_WORLD_FAILED &&

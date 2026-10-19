@@ -169,20 +169,21 @@ mc_chunk_lifecycle_status mc_world_runtime_save_client(mc_world_runtime *runtime
 mc_chunk_lifecycle_status mc_world_runtime_maintain(mc_world_runtime *runtime,
                                                     bool *provider_result);
 
-/* Native generation reserves one owner/link slot before mutating generator,
+/* COMPOSITION generation reserves one owner/link slot before mutating generator,
  * manager or lighting state, creates unpublished staging data, then retains its
  * owned copy and returns only that stable identity. Reservation cannot reserve
  * all later payload allocations: retention failure after successful generation
  * leaves RNG/manager/queue effects visible, cancels the reservation, frees only
  * staging storage and reports failure. Loaded source NBT is never cloned through
- * this generated-record path. These rules apply to the acquisition adapter above.
+ * this generated-record path. GAME instead generates directly into the final
+ * store-owned Chunk, then registers its actual known-empty child collections.
  *
  * Raw returned contexts/views expire at free. Before free, retire their uses and
  * all external fallback pointers. Free returns BUSY while map/list/pending are
  * nonempty or an entered call/local lease or persistent binding remains active;
  * it neither saves, unpublishes nor frees retained store chunks. Empty
  * contexts are unregistered and this owner alone is freed. A GAME World also
- * stays BUSY while its actual store owns any generated Chunk bound to its d,
+ * stays BUSY while its actual store owns any generated or bound loaded Chunk with its d,
  * including after World retirement. Retire those Chunk owners before final
  * World free, and keep the store live through both lifetimes. This guard runs
  * before World teardown. NULL is accepted. */

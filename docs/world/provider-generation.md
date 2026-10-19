@@ -8,11 +8,11 @@ the [full Chunk finalizer](chunk-objects.md). Success returns that same Chunk
 before cache publication. The public [numerical generator](generation.md)
 retains its separate preflight and failure contract.
 
-The ordinary GAME acquisition callback still refuses generation. Its next
-join requires actual known-empty tile/entity registration through the Chunk's
-World and child collections. Population also remains unavailable. This
-private operation does not establish complete startup, acquisition, feature
-population, propagation or gameplay persistence.
+Ordinary GAME acquisition now calls this operation before publishing and
+[activating the same Chunk](chunk-activation.md). Feature population remains
+unavailable: reaching a population gate reports the missing operation after
+the coordinator's earlier publication and flag stores. This does not establish
+complete startup, feature population, propagation or gameplay persistence.
 
 ## Live state and source order
 
