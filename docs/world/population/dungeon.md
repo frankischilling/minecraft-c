@@ -7,6 +7,9 @@ records the original descriptors and source positions. Native integration
 and the finite original helper comparisons below pass. Natural population
 and arbitrary-World closure remain unfinished.
 
+The [prepared whole-placement procedure](../../reference/dungeon-placement.md)
+records a separate complete-call observation and exact comparison boundary.
+
 Placement uses the actual GAME World, bound Registry, acquiring Chunk paths,
 supplied Random, notifying mutation methods and concrete Tile owners. It does
 not construct a second terrain backend or suppress unavailable descendants.
@@ -44,7 +47,7 @@ All 153 configured MSVC cases and 155 cases on each Linux GCC/Clang build pass,
 with zero skips and local JDK comparisons enabled. Linux uses ASan/UBSan and
 leak checks on fresh byte-verified source/dependency copies. The Dungeon case
 passes 3,655 checks per host; ordinary Item runtime access passes 292. Each
-host retains 720 selected inputs, 254 zlib pins, 190 products and 36 captures.
+host retains 723 selected inputs, 254 zlib pins, 191 products and 36 captures.
 
 The Dungeon suite constructs 18 independent epochs with 72 real World/Store
 owners. It covers all four horizontal radius combinations, opening admission
@@ -63,6 +66,16 @@ controls. Across all three native hosts, 924 comparisons match complete Stack
 fields, exact UTF16 mob names and all five subsequent Random draws against
 both original repeats. Helper comparisons exclude class-context/World identity,
 wall-clock/default-Random effects, whole placement and native/JVM error text.
+
+The separate [whole-placement comparison](../../reference/dungeon-placement.md)
+captures all 24 prepared room cases per original side. Each side has eight
+true placements and sixteen validation rejections. All 144 matching native
+comparisons pass across MSVC and sanitized GCC/Clang, including complete arrays,
+independently captured actual Map keys, all physical Chest slots, ordered Map/
+World Tile/light queues, Spawner values and five consuming Random draws.
+The passive `mc_live_tiles_map_entry_at` inspector exposes actual immutable
+local-coordinate keys separately from mutable Tile positions without retaining
+or changing the borrowed Map value.
 
 The complete normal-population controller is unfinished. Nonempty concrete
 observers, several old-block/neighbor hooks and other explicitly unsupported

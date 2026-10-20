@@ -498,6 +498,9 @@ if(BUILD_TESTING)
     add_executable(mc_dungeon_loot_probe tests/world/runtime/population/dungeon_loot_probe.c)
     target_link_libraries(mc_dungeon_loot_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_dungeon_placement_probe tests/world/runtime/population/dungeon_placement_probe.c)
+    target_link_libraries(mc_dungeon_placement_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
     target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME block.registry_runtime_literals COMMAND mc_test_registry_runtime_literals)

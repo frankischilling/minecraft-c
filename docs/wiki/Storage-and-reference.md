@@ -1,5 +1,14 @@
 # Storage and original references
 
+The [prepared Dungeon placement reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dungeon-placement.md)
+retains 48 genuine complete original calls on independently copied saved Worlds.
+All 144 native comparisons pass across MSVC and sanitized GCC/Clang. Actual
+cache acquisition precedes each notifying placement; exact selected Chunk bytes,
+Tile/Stack values, collection order, queued lighting and Random continuation
+match. These direct prepared calls do not establish natural population or
+original save/unload/reload. The separate native persistence tests keep their
+own finite coverage.
+
 The [ordinary GAME Item persistence reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-game-storage.md)
 records complete paired load/save bytecode order, actual factory/Chunk/Boolean
 joins, current Entity/Stack provenance and retained failure prefixes. Its

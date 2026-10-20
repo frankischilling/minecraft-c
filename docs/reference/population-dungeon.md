@@ -1,5 +1,9 @@
 # Dungeon source map
 
+The [prepared whole-placement experiment](dungeon-placement.md) separately
+captures complete original calls and matching native inputs. Its comparison
+boundary differs from the direct loot/name helper observations below.
+
 The verified [original archives](binaries.md) contain the stateless Dungeon
 generator `er` on the client and `da` on the base server. Their complete
 constructors, placement body and two private helpers have the same instruction

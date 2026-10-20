@@ -49,8 +49,11 @@ real active use precedes static selection or current-array capture, while a
 later signed element read uses the captured array without reinitialization.
 The [Dungeon subsystem](world/population/dungeon.md) uses those reads with real
 notifying World writes, held Chest/Spawner identities and new gameplay Stacks.
-Its local Stack request budget is separate from retained World ownership;
-whole placement in the originals and complete population closure remain pending.
+Its local Stack request budget is separate from retained World ownership.
+The [prepared whole-placement comparison](reference/dungeon-placement.md)
+matches 48 original calls on all three native hosts, including actual immutable
+Map keys inspected independently of Tile coordinates. Natural population and
+complete closure remain pending.
 Ordinary Statistics and Block initialization can return; other entry orders
 preserve their actual null-singleton failures. Full World startup and gameplay
 binding remain unfinished.

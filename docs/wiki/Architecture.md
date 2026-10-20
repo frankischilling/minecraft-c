@@ -51,8 +51,10 @@ uses notifying writes, retained concrete Chest/Spawner identities and actual
 gameplay Stack ownership. Ordinary Item active use and captured-array reads
 preserve the loot helper's source order. Its separate native Stack request
 budget excludes retained World graphs. Native integration and finite original
-helper comparisons pass; whole original placement and full population closure
-remain pending.
+helper comparisons pass. The finite whole-placement experiment also matches
+all 48 original prepared calls on all three native hosts. Passive Map entry
+inspection captures immutable keys separately from mutable Tile coordinates.
+Natural population and full closure remain pending.
 
 The [Entity publication methods](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 retain the same Entity in actual ordered World.b and Chunk slices. Duplicate and

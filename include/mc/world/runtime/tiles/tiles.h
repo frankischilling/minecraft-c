@@ -317,6 +317,18 @@ mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *c
 mc_world_storage_status mc_live_tiles_map_at(const mc_world_chunk *chunk, size_t ordinal,
                                              mc_tile **out);
 
+typedef struct mc_live_tile_map_entry {
+    int32_t x, y, z; /* Actual immutable local-coordinate Map key. */
+    mc_tile *tile;   /* Borrowed same value; its coordinates are independent. */
+} mc_live_tile_map_entry;
+
+/* Passive entry inspection in actual bucket/chain iteration order. Keep the
+ * Chunk and Map unchanged while borrowing the returned Tile. This does not
+ * retain, initialize classes, acquire chunks or derive keys from Tile fields.
+ * Failure preserves out; keep output storage disjoint from the owners. */
+mc_world_storage_status mc_live_tiles_map_entry_at(const mc_world_chunk *chunk, size_t ordinal,
+                                                   mc_live_tile_map_entry *out);
+
 /* Load the real TileEntities list into this actual held Chunk, preserving
  * successful earlier source imports on failure. A native pending marker blocks
  * serialization after an incomplete attempt. Only exact witnessed successful

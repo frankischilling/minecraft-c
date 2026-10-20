@@ -2562,8 +2562,8 @@ void mc_live_tiles_map_release(mc_world_chunk_tile_map *descriptor)
     free(map);
 }
 
-mc_world_storage_status mc_live_tiles_map_at(const mc_world_chunk *chunk, size_t ordinal,
-                                             mc_tile **out)
+mc_world_storage_status mc_live_tiles_map_entry_at(const mc_world_chunk *chunk, size_t ordinal,
+                                                   mc_live_tile_map_entry *out)
 {
     if (out == NULL || !mc_live_tiles_map_valid(chunk) || ordinal >= chunk->l->count)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
@@ -2572,12 +2572,24 @@ mc_world_storage_status mc_live_tiles_map_at(const mc_world_chunk *chunk, size_t
     for (uint32_t i = 0; i < map->capacity; ++i) {
         for (live_map_node *node = map->buckets[i]; node != NULL; node = node->next) {
             if (index++ == ordinal) {
-                *out = node->value; /* Borrowed same owner for actual values traversal. */
+                *out = (mc_live_tile_map_entry){node->x, node->y, node->z, node->value};
                 return MC_WORLD_STORAGE_OK;
             }
         }
     }
     return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+}
+
+mc_world_storage_status mc_live_tiles_map_at(const mc_world_chunk *chunk, size_t ordinal,
+                                             mc_tile **out)
+{
+    if (out == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    mc_live_tile_map_entry entry;
+    const mc_world_storage_status status = mc_live_tiles_map_entry_at(chunk, ordinal, &entry);
+    if (status == MC_WORLD_STORAGE_OK)
+        *out = entry.tile;
+    return status;
 }
 static bool live_tile_block_kind(const mc_block *block)
 {

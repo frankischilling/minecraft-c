@@ -2,14 +2,18 @@
 
 The [Dungeon checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/dungeon.md)
 pass all 153 configured MSVC cases and 155 on each sanitized Linux GCC/Clang
-build, with zero skips and local JDK comparisons. Each host retains 720 selected
-unchanged inputs, 254 zlib pins, 190 products and 36 captures. Dungeon generation,
+build, with zero skips and local JDK comparisons. Each host retains 723 selected
+unchanged inputs, 254 zlib pins, 191 products and 36 captures. Dungeon generation,
 failure prefixes and real prepared save/unload/reload pass 3,655 checks per host;
-ordinary Item runtime access passes 292. Formatting covers 421 C files/headers.
+ordinary Item runtime access passes 292. Formatting covers 422 C files/headers.
 Six fresh original helper captures preserve cold failures and two explicitly
 Block-initialized contexts per side. Across all native hosts, 924 comparisons
 match actual Stack fields, exact UTF16 mob names and five subsequent Random
-draws. Whole original placement, natural population and full closure remain open.
+draws. The separate [whole-placement comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dungeon-placement.md)
+captures 24 prepared rooms per original side and passes all 144 matching native
+comparisons. Complete arrays, all physical Chest slots, real Map keys, ordered
+Tile/light queues and five consuming Random draws match. Natural population,
+broader original routes and full closure remain open.
 
 The following ordinary Item checkpoint predates Dungeon integration.
 
