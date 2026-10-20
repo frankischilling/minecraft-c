@@ -402,11 +402,95 @@ cleanup:
     return result;
 }
 
+static int test_readonly_snapshot(void)
+{
+    int result = 1;
+    mc_scheduled_membership *membership = NULL;
+    mc_scheduled_tick *ticks[3] = {NULL};
+    mc_scheduled_tick_fields fields[3] = {0};
+    mc_scheduled_tick_sequence sequence = {0};
+    const mc_scheduled_tick *entries[4] = {NULL};
+    size_t written = 71, allocated = 0;
+    bool changed = false;
+    CHECK(mc_scheduled_membership_create(3, SIZE_MAX, &membership) == MC_SCHEDULED_MEMBERSHIP_OK);
+    CHECK(mc_scheduled_membership_snapshot(membership, NULL, 0, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 0);
+    written = 71;
+    CHECK(mc_scheduled_membership_snapshot(NULL, entries, 4, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT &&
+          written == 71);
+    CHECK(mc_scheduled_membership_snapshot(membership, NULL, 1, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT &&
+          written == 71);
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 4, NULL) ==
+          MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT);
+    for (size_t i = 0; i < 3; ++i) {
+        CHECK(mc_scheduled_tick_create(&sequence, (int32_t)i, 64, -3, 8, &ticks[i]) ==
+              MC_SCHEDULED_TICK_OK);
+        CHECK(mc_scheduled_tick_time_set(ticks[i], 17 - (int64_t)i) == MC_SCHEDULED_TICK_OK);
+        CHECK(mc_scheduled_tick_fields_get(ticks[i], &fields[i]) == MC_SCHEDULED_TICK_OK);
+        CHECK(mc_scheduled_membership_add(membership, ticks[i], &changed) ==
+                  MC_SCHEDULED_MEMBERSHIP_OK &&
+              changed);
+    }
+    for (size_t i = 0; i < 4; ++i)
+        entries[i] = ticks[0];
+    CHECK(mc_scheduled_membership_native_bytes(membership, &allocated) ==
+          MC_SCHEDULED_MEMBERSHIP_OK);
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 2, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_LIMIT &&
+          written == 71);
+    for (size_t i = 0; i < 4; ++i)
+        CHECK(entries[i] == ticks[0]);
+    CHECK(mc_scheduled_membership_snapshot(membership, NULL, 0, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_LIMIT &&
+          written == 71);
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 4, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 3 && entries[3] == ticks[0]);
+    bool seen[3] = {false};
+    for (size_t i = 0; i < written; ++i) {
+        size_t match = 3;
+        for (size_t j = 0; j < 3; ++j)
+            if (entries[i] == ticks[j])
+                match = j;
+        CHECK(match < 3 && !seen[match]);
+        seen[match] = true;
+        CHECK(record_matches(entries[i], &fields[match]));
+    }
+    CHECK(seen[0] && seen[1] && seen[2] && size_is(membership, 3) &&
+          bytes_is(membership, allocated));
+    written = 71;
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 3, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 3 && entries[3] == ticks[0]);
+    for (size_t i = 0; i < 3; ++i)
+        CHECK(mc_scheduled_membership_remove(membership, ticks[i], &changed) ==
+                  MC_SCHEDULED_MEMBERSHIP_OK &&
+              changed);
+    CHECK(size_is(membership, 0));
+    written = 71;
+    CHECK(mc_scheduled_membership_snapshot(membership, NULL, 0, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 0);
+    mc_scheduled_membership_destroy(membership);
+    membership = NULL;
+    for (size_t i = 0; i < 3; ++i)
+        CHECK(record_matches(ticks[i], &fields[i]));
+    result = 0;
+cleanup:
+    mc_scheduled_membership_destroy(membership);
+    for (size_t i = 0; i < 3; ++i)
+        mc_scheduled_tick_release(ticks[i]);
+    return result;
+}
+
 int main(void)
 {
     if (test_collisions_identity_shift_and_removal() != 0 ||
         test_growth_and_public_budget_boundaries() != 0 ||
-        test_zero_entry_and_invalid_outputs() != 0) {
+        test_zero_entry_and_invalid_outputs() != 0 || test_readonly_snapshot() != 0) {
         return 1;
     }
     printf("scheduled membership contract checks: %u\n", checks);

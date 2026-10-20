@@ -49,6 +49,21 @@ mc_scheduled_ordered_status mc_scheduled_ordered_size(const mc_scheduled_ordered
 mc_scheduled_ordered_status mc_scheduled_ordered_native_bytes(const mc_scheduled_ordered *ordered,
                                                               size_t *out);
 
+/* Read-only complete structural in-order inventory, including repeated SAME
+ * record identities in distinct nodes. No comparison, repair, sort, allocation,
+ * retain/release, field change or callback occurs. Output pointers borrow the
+ * retained records. Access is exclusive. Each pointer is valid only while a
+ * retained record hold keeps that owner live; collection liveness alone is
+ * insufficient after removal retires its last node. No caller hold is granted.
+ * capacity counts pointer slots; NULL entries is valid only when capacity=0.
+ * Required written and the buffer must be disjoint from all owners/records
+ * and each other. Invalid arguments or insufficient capacity preserve both
+ * outputs; shortage returns LIMIT. Empty inventory succeeds with written=0.
+ * Unused buffer slots remain unchanged. This is not an owning collection copy. */
+mc_scheduled_ordered_status mc_scheduled_ordered_snapshot(const mc_scheduled_ordered *ordered,
+                                                          const mc_scheduled_tick **entries,
+                                                          size_t capacity, size_t *written);
+
 /* Search CURRENT comparison from the historical root. Zero on that path means
  * OK,false, retaining the original key/hold/shape/count without allocation or
  * candidate retain, even at capacity. Full x/y/z/block and pointer identity are

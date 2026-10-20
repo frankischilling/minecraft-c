@@ -12,6 +12,22 @@ executes six complete feature families with the actual World and supplied Random
 late fields, quiet setters and preserved partial effects. Complete population
 ordering, other features and callback closure remain unfinished.
 
+The [tree feature subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/trees.md)
+implements all five tree bodies through those same World operations. Small
+trees borrow the supplied Random; big oak retains its own Random, node rows
+and source World binding through reuse, rejection and failure. Its constructor
+precedes the separate population height query. Original comparison, the
+numeric backend and complete population orchestration remain unqualified.
+
+The [ore/clay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/ore-clay.md)
+and [lake/spring](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/lakes-springs.md)
+bodies use actual Registry, World, Chunk and Random owners. Lakes validate before
+quiet writes. Springs notify before setting the immediate flag, then invoke the
+actual selected tick and preserve reached flags on failure. Recursive fluid
+requests retain real E/F records and constructor sequence effects. Complete
+population ordering, unsupported descendants and original comparisons remain
+unfinished.
+
 The [Entity publication methods](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 retain the same Entity in actual ordered World.b and Chunk slices. Duplicate and
 cross-World occurrences preserve source identity and construction bindings.

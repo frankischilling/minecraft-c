@@ -175,7 +175,7 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
 /* Explicit native retirement, separate from original gameplay construction.
  * Require no entered call/local lease and empty owned registrations. Detach
  * actual contexts and this dimension's binding to this exact World without
- * running game biome setup. External Entity/Tile bindings still keep the same
+ * running game biome setup. External Entity/Tile/feature bindings still keep the same
  * retired owner alive and free BUSY until released; no aggregate count is reset.
  * No implicit save, file rollback, profile reset or game constructor retry.
  * Repeated retirement succeeds. Existing Info/field inspection stays valid;

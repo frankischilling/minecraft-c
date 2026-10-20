@@ -56,6 +56,22 @@ mc_scheduled_membership_size(const mc_scheduled_membership *membership, int32_t 
 mc_scheduled_membership_status
 mc_scheduled_membership_native_bytes(const mc_scheduled_membership *membership, size_t *out);
 
+/* Read-only complete inventory into caller storage. Pointers borrow the SAME
+ * retained records; no allocation, retain/release, field change or callback
+ * occurs. Access is exclusive. Each pointer is valid only while a retained
+ * record hold keeps that owner live; collection liveness alone is insufficient
+ * after removal retires an entry. This call grants no independent caller hold.
+ * Native bucket traversal is not a Java HashSet iteration-order claim.
+ * capacity counts pointer slots; NULL entries is valid only when capacity=0.
+ * Required written and the buffer must be disjoint from all owners/records
+ * and each other. Invalid arguments or insufficient capacity preserve both
+ * outputs; shortage returns LIMIT. Empty inventory succeeds with written=0.
+ * Unused buffer slots remain unchanged. This is not an owning collection copy. */
+mc_scheduled_membership_status
+mc_scheduled_membership_snapshot(const mc_scheduled_membership *membership,
+                                 const mc_scheduled_tick **entries, size_t capacity,
+                                 size_t *written);
+
 /* Native success is separate from the original bool result. Duplicate add is
  * OK,false, allocates/retains NOTHING, and keeps the originally stored SAME
  * owner/time/sequence. Unique add takes one hold on the supplied owner; all

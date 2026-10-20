@@ -362,7 +362,9 @@ static bool create_world(fixture *f, size_t slot)
     bool ok = false;
     mc_world_runtime_construction state;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
-    limits.max_provider_chunks = 8;
+    /* Two additional real publications support the spring radius controls.
+     * Later capacity trials still fill this owner and assert its exact limit. */
+    limits.max_provider_chunks = 10;
     CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
@@ -1506,7 +1508,36 @@ cleanup:
     return ok;
 }
 
+static bool nullable_block_provider(fixture *f, size_t side)
+{
+    bool ok = false, changed = true;
+    mc_world_runtime *w = f->worlds[side];
+    mc_world_provider *provider = w->fields.v;
+    int32_t block = -123, metadata = -456, outside = -789;
+    mc_world_storage_error block_error, metadata_error, write_error, outside_error;
+    w->fields.v = NULL;
+    const mc_world_storage_status b = mc_world_runtime_block_get(w, 8, 64, 8, &block, &block_error);
+    const mc_world_storage_status m =
+        mc_world_runtime_metadata_get(w, 8, 64, 8, &metadata, &metadata_error);
+    const mc_world_storage_status s =
+        mc_world_runtime_metadata_set_quiet(w, 8, 64, 8, 7, &changed, &write_error);
+    const mc_world_storage_status o =
+        mc_world_runtime_block_get(w, 8, 128, 8, &outside, &outside_error);
+    w->fields.v = provider;
+    CHECK(b == MC_WORLD_STORAGE_UNSUPPORTED_STATE && m == b && s == b && block == -123 &&
+          metadata == -456 && changed && block_error.status == b && metadata_error.status == b &&
+          write_error.status == b);
+    CHECK(o == MC_WORLD_STORAGE_OK && outside == 0 && outside_error.status == o &&
+          outside_error.operation == NULL && w->active_calls == 0 && w->local_leases == 0);
+    ok = true;
+cleanup:
+    return ok;
+}
+
+#include "population/lake_spring_contracts.h"
+#include "population/ore_clay_contracts.h"
 #include "population/plants_contracts.h"
+#include "population/trees_contracts.h"
 
 int main(int argc, char **argv)
 {
@@ -1558,6 +1589,14 @@ int main(int argc, char **argv)
         CHECK(detailed_material_contracts(f, side) && captured_o_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)
         CHECK(plant_predicate_contracts(f, side));
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(nullable_block_provider(f, side));
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(population_ore_clay_contracts(f, side));
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(population_lake_spring_contracts(f, side));
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(population_tree_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)
         CHECK(population_plant_contracts(f, side));
     for (size_t slot = 0; slot < COUNT(f->stores); ++slot) {

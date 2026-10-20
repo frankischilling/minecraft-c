@@ -21,7 +21,8 @@ changes, and its allocation ceiling covers overlapping old/new bucket arrays.
 
 Uniform time shifting changes the actual retained records with wrapped long
 addition. It neither rebuilds ordering nor changes membership. The audited
-membership operations expose no traversal order or callbacks.
+membership snapshot exposes native bucket traversal without callbacks. That
+order supplies an inventory, not an original Java HashSet iteration guarantee.
 
 The [ordered owner](../../include/mc/world/schedule/ordered.h) preserves the
 captured library profile's red-black tree history. Insertion and removal search
@@ -39,6 +40,18 @@ every original VM allocation failure.
 
 World admission, immediate updates, tick draining, callbacks and persistence
 remain outside these collection APIs.
+
+Both collection owners expose allocation-free snapshots into caller-provided
+pointer arrays. E follows structural in-order occurrences, including repeated
+identities after mutable-key insertion; it does not sort or repair the tree.
+F visits every current native bucket entry. Short buffers and invalid arguments
+preserve the output array and written count. Empty snapshots accept a null
+array with zero capacity, including after a populated owner is emptied.
+
+Snapshot pointers are borrowed. Removing their owning entries can release the
+record even while the collection itself remains alive. A caller needing later
+access must retain the actual record separately. Snapshot reads acquire no
+holds and change no fields, bytes, owner counts or collection history.
 
 ## World insertion
 
@@ -147,10 +160,11 @@ population, tick-draining or save-interoperability claim. See the
 
 ## Collection validation
 
-`world.scheduled_membership` exercises 329 native contracts for collisions,
+`world.scheduled_membership` exercises 370 native contracts for collisions,
 identity, wrapping, separate holds, growth limits and unchanged failure outputs.
-`world.scheduled_ordered` adds 940 native checks for identity, limits, successor
-holds, deletion histories and mutable-key search paths. Both suites pass on
+`world.scheduled_ordered` adds 984 native checks for identity, limits, successor
+holds, deletion histories, mutable-key search paths and full borrowed snapshots.
+Both suites pass on
 Linux GCC 13.3 and Clang 18.1 with address, leak and undefined-behavior checks,
 and native Windows MSVC 19.51 without sanitizers.
 

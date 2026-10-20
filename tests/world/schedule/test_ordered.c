@@ -496,11 +496,96 @@ cleanup:
     return result;
 }
 
+static int test_readonly_snapshot(void)
+{
+    int result = 1;
+    mc_scheduled_ordered *ordered = NULL;
+    mc_scheduled_tick *ticks[3] = {NULL};
+    mc_scheduled_tick_fields fields[3] = {0};
+    mc_scheduled_tick_sequence sequence = {0};
+    const mc_scheduled_tick *entries[5] = {NULL};
+    size_t written = 71, allocated = 0;
+    bool changed = false;
+    CHECK(mc_scheduled_ordered_create(4, SIZE_MAX, &ordered) == MC_SCHEDULED_ORDERED_OK);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, NULL, 0, &written) == MC_SCHEDULED_ORDERED_OK &&
+          written == 0);
+    written = 71;
+    CHECK(mc_scheduled_ordered_snapshot(NULL, entries, 5, &written) ==
+              MC_SCHEDULED_ORDERED_INVALID_ARGUMENT &&
+          written == 71);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, NULL, 1, &written) ==
+              MC_SCHEDULED_ORDERED_INVALID_ARGUMENT &&
+          written == 71);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, entries, 5, NULL) ==
+          MC_SCHEDULED_ORDERED_INVALID_ARGUMENT);
+    for (size_t i = 0; i < 3; ++i) {
+        CHECK(mc_scheduled_tick_create(&sequence, (int32_t)i, 64, -3, 8, &ticks[i]) ==
+              MC_SCHEDULED_TICK_OK);
+        CHECK(mc_scheduled_tick_time_set(ticks[i], (int64_t)i * 10) == MC_SCHEDULED_TICK_OK);
+        CHECK(mc_scheduled_ordered_add(ordered, ticks[i], &changed) == MC_SCHEDULED_ORDERED_OK &&
+              changed);
+    }
+    /* Current keys now disagree with the historical tree. Snapshot must not
+     * sort or repair it, and a new path may hold the SAME identity twice. */
+    CHECK(mc_scheduled_tick_time_set(ticks[0], 30) == MC_SCHEDULED_TICK_OK);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, entries, 5, &written) == MC_SCHEDULED_ORDERED_OK &&
+          written == 3 && entries[0] == ticks[0] && entries[1] == ticks[1] &&
+          entries[2] == ticks[2]);
+    CHECK(mc_scheduled_ordered_add(ordered, ticks[0], &changed) == MC_SCHEDULED_ORDERED_OK &&
+          changed);
+    for (size_t i = 0; i < 3; ++i)
+        CHECK(mc_scheduled_tick_fields_get(ticks[i], &fields[i]) == MC_SCHEDULED_TICK_OK);
+    for (size_t i = 0; i < 5; ++i)
+        entries[i] = ticks[1];
+    written = 71;
+    CHECK(mc_scheduled_ordered_native_bytes(ordered, &allocated) == MC_SCHEDULED_ORDERED_OK);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, entries, 3, &written) ==
+              MC_SCHEDULED_ORDERED_LIMIT &&
+          written == 71);
+    for (size_t i = 0; i < 5; ++i)
+        CHECK(entries[i] == ticks[1]);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, NULL, 0, &written) == MC_SCHEDULED_ORDERED_LIMIT &&
+          written == 71);
+    CHECK(mc_scheduled_ordered_snapshot(ordered, entries, 5, &written) == MC_SCHEDULED_ORDERED_OK &&
+          written == 4 && entries[0] == ticks[0] && entries[1] == ticks[1] &&
+          entries[2] == ticks[2] && entries[3] == ticks[0] && entries[4] == ticks[1]);
+    for (size_t i = 0; i < 3; ++i)
+        CHECK(record_matches(ticks[i], &fields[i]));
+    CHECK(size_is(ordered, 4) && bytes_is(ordered, allocated) && first_is(ordered, ticks[0]));
+    written = 71;
+    CHECK(mc_scheduled_ordered_snapshot(ordered, entries, 4, &written) == MC_SCHEDULED_ORDERED_OK &&
+          written == 4 && entries[0] == ticks[0] && entries[1] == ticks[1] &&
+          entries[2] == ticks[2] && entries[3] == ticks[0] && entries[4] == ticks[1]);
+    CHECK(mc_scheduled_ordered_remove(ordered, ticks[0], &changed) == MC_SCHEDULED_ORDERED_OK &&
+          changed);
+    /* Restore the first node's original key before removing it through the
+     * public search. The snapshot itself never repairs the mutated tree. */
+    CHECK(mc_scheduled_tick_time_set(ticks[0], 0) == MC_SCHEDULED_TICK_OK);
+    fields[0].due_time = 0;
+    for (size_t i = 0; i < 3; ++i)
+        CHECK(mc_scheduled_ordered_remove(ordered, ticks[i], &changed) == MC_SCHEDULED_ORDERED_OK &&
+              changed);
+    CHECK(size_is(ordered, 0));
+    written = 71;
+    CHECK(mc_scheduled_ordered_snapshot(ordered, NULL, 0, &written) == MC_SCHEDULED_ORDERED_OK &&
+          written == 0);
+    mc_scheduled_ordered_destroy(ordered);
+    ordered = NULL;
+    for (size_t i = 0; i < 3; ++i)
+        CHECK(record_matches(ticks[i], &fields[i]));
+    result = 0;
+cleanup:
+    mc_scheduled_ordered_destroy(ordered);
+    for (size_t i = 0; i < 3; ++i)
+        mc_scheduled_tick_release(ticks[i]);
+    return result;
+}
+
 int main(void)
 {
     if (test_invalid_empty_identity_and_limits() != 0 || test_successor_hold_transfer() != 0 ||
         test_deletion_permutations() != 0 || test_mirrored_deletion_history() != 0 ||
-        test_wrapped_and_individually_mutated_paths() != 0) {
+        test_wrapped_and_individually_mutated_paths() != 0 || test_readonly_snapshot() != 0) {
         return 1;
     }
     printf("scheduled ordered contract checks: %u\n", checks);

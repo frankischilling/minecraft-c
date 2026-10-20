@@ -15,6 +15,11 @@ retain completed acquisition effects. Native failure preserves the ordinary
 output. These calls require exclusive access and the runtime's existing
 lifetime and disjoint-output rules.
 
+Every in-domain request checks the actual current provider receiver before
+looking up a cached Chunk. A null World.v therefore fails even on a cache hit;
+out-of-domain reads still return zero before that receiver access. The shared
+block/metadata acquisition path preserves this order.
+
 A normal metadata getter reads its packed array. Even y selects the low
 nibble; odd y selects the high nibble. A quiet setter marks the selected
 normal chunk dirty before accessing metadata, writes the supplied integer's

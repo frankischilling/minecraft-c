@@ -19,6 +19,9 @@ static bool in_domain(int32_t x, int32_t y, int32_t z)
 static mc_world_storage_status acquire_chunk(mc_world_runtime *runtime, int32_t x, int32_t z,
                                              mc_chunk_state **out, mc_world_storage_error *error)
 {
+    /* World.c reads v before invoking provider.b, including a cached hit. */
+    if (runtime->fields.v == NULL)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block provider receiver");
     mc_chunk_acquire_status status =
         mc_world_runtime_get(runtime, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out);
     if (status == MC_CHUNK_ACQUIRE_OK)

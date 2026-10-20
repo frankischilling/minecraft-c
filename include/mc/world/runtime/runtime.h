@@ -143,7 +143,8 @@ mc_java_random_profile_status mc_world_runtime_construct_default_random(mc_world
  * INVALID_ARGUMENT without touching any owner or diagnostics. */
 mc_java_random_profile_status mc_world_runtime_last_random_status(const mc_world_runtime *runtime);
 
-/* Native lifetime operations for persistent Entity/Tile world fields. Retain
+/* Native lifetime operations for persistent Entity, Tile and feature World
+ * fields, including the retained big-oak c binding. Retain
  * before publishing such a pointer and release when that field is retired.
  * They invoke no callbacks and require exclusive access to the live runtime
  * and the caller's binding. Counts are independent of entered calls, local

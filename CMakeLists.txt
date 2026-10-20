@@ -206,6 +206,9 @@ add_library(mc_simulation STATIC
     src/world/runtime/queries.c
     src/world/runtime/plants.c
     src/world/runtime/population/plants.c
+    src/world/runtime/population/trees.c
+    src/world/runtime/population/ore_clay.c
+    src/world/runtime/population/lake_spring.c
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c

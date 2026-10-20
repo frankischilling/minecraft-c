@@ -176,6 +176,28 @@ mc_scheduled_membership_native_bytes(const mc_scheduled_membership *membership, 
     return MC_SCHEDULED_MEMBERSHIP_OK;
 }
 
+mc_scheduled_membership_status
+mc_scheduled_membership_snapshot(const mc_scheduled_membership *membership,
+                                 const mc_scheduled_tick **entries, size_t capacity,
+                                 size_t *written)
+{
+    if (membership == NULL || written == NULL || (entries == NULL && capacity != 0)) {
+        return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
+    }
+    if (membership->count > capacity) {
+        return MC_SCHEDULED_MEMBERSHIP_LIMIT;
+    }
+    size_t count = 0;
+    for (size_t bucket = 0; bucket < membership->bucket_count; ++bucket) {
+        for (const scheduled_membership_node *node = membership->buckets[bucket]; node != NULL;
+             node = node->next) {
+            entries[count++] = node->tick;
+        }
+    }
+    *written = count;
+    return MC_SCHEDULED_MEMBERSHIP_OK;
+}
+
 mc_scheduled_membership_status mc_scheduled_membership_add(mc_scheduled_membership *membership,
                                                            mc_scheduled_tick *tick, bool *added)
 {

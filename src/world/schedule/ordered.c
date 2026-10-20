@@ -343,6 +343,29 @@ mc_scheduled_ordered_status mc_scheduled_ordered_native_bytes(const mc_scheduled
     return MC_SCHEDULED_ORDERED_OK;
 }
 
+mc_scheduled_ordered_status mc_scheduled_ordered_snapshot(const mc_scheduled_ordered *ordered,
+                                                          const mc_scheduled_tick **entries,
+                                                          size_t capacity, size_t *written)
+{
+    if (ordered == NULL || written == NULL || (entries == NULL && capacity != 0)) {
+        return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
+    }
+    if (ordered->count > capacity) {
+        return MC_SCHEDULED_ORDERED_LIMIT;
+    }
+    ordered_node *node = ordered->root;
+    while (node != NULL && node->child[0] != NULL) {
+        node = node->child[0];
+    }
+    size_t count = 0;
+    while (node != NULL) {
+        entries[count++] = node->tick;
+        node = ordered_successor(node);
+    }
+    *written = count;
+    return MC_SCHEDULED_ORDERED_OK;
+}
+
 mc_scheduled_ordered_status mc_scheduled_ordered_add(mc_scheduled_ordered *ordered,
                                                      mc_scheduled_tick *tick, bool *added)
 {

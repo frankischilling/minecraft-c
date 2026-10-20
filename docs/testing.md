@@ -1,6 +1,47 @@
 # Test scope and reproduction
 
-The [World-query, predicate and plant-feature contracts](world/population/plants.md)
+The integrated tree/geology checkpoint passes all 142 configured public cases
+on native Windows MSVC and all 144 on each sanitized GCC/Clang build, with zero
+skips and local JDK comparisons enabled. Each host retains 661 unchanged selected
+source inputs, 254 unchanged external zlib pins, 143 products and 30 new capture
+directories. Linux runs use fresh byte-verified native source/dependency copies.
+This configured public inventory remains smaller than complete local-original
+and population acceptance.
+
+The [tree](world/population/trees.md), [ore/clay](world/population/ore-clay.md)
+and [lake/spring](world/population/lakes-springs.md) bodies are integrated into
+`world.queries` before provider-capacity exhaustion. Focused MSVC and sanitized
+GCC/Clang runs pass 6,062 combined query, predicate and feature checks, plus
+370 membership and 984 ordered-collection checks. Each host retains 661 selected
+source inputs and 254 external zlib source pins unchanged before/after. The
+focused runs retain 10/21/21 products and one complete capture per host.
+
+These scenarios inspect actual private tree Random/node state, complete lake
+arrays, recursive spring ticks, full E/F inventories and source flag/Random
+prefixes. The shared block getter now rejects a null current provider even on
+cached hits; out-of-height air still precedes that receiver access. Two real
+spring-presence publications remain in cache history. The explicit fixture
+capacity accommodates them, then later trials exhaust that actual owner and
+still verify the exact region inventory and empty capacity headers.
+
+The focused result does not qualify the complete configured suite, original
+feature equivalence, the host numeric backend or complete population. Exact
+lake geometry, high lava-rim draw counts, unsupported gravel hooks and other
+descendants remain explicit limits. See the [tree source map](reference/population-trees.md)
+and [geology source map](reference/population-geology.md).
+
+Separate original tree experiments complete ten canonical whole calls: five
+forms on each original client/base-server side, seed0, actual height64 and true
+source returns. Thirteen direct children exit naturally with zero status; 27
+fresh compiled helper classes remain unchanged. All retained array-image bytes,
+raw streams, ten JVM class-load/init logs and owned world-file inventories pass
+an offline binding audit. These are prepared feature-API observations, not a
+helper-free control or native replay. Their scheduler view captures E/F field
+identities rather than full members and shared sequence; wider queue comparison
+remains pending.
+
+At the preceding plant checkpoint,
+the [World-query, predicate and plant-feature contracts](world/population/plants.md)
 pass 2,870 checks per host. All 142 configured public cases pass on native MSVC;
 all 144 pass on each sanitized GCC/Clang build, including local JDK comparisons.
 Run
