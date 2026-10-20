@@ -133,6 +133,7 @@ add_library(mc_registry STATIC
     src/block/registry/texture.c
     src/block/registry/bootstrap.c
     src/item/registry/registry.c
+    src/item/registry/runtime.c
     src/item/registry/class_initializers.c
     src/item/registry/constructors.c
     src/item/registry/registration.c
@@ -226,6 +227,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/population/trees.c
     src/world/runtime/population/ore_clay.c
     src/world/runtime/population/lake_spring.c
+    src/world/runtime/population/dungeon.c
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
@@ -291,6 +293,11 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_item_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME item.registry_construction COMMAND mc_test_item_registry)
     set_tests_properties(item.registry_construction PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_executable(mc_test_item_registry_runtime tests/item/registry/test_runtime.c)
+    target_link_libraries(mc_test_item_registry_runtime PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME item.registry_runtime COMMAND mc_test_item_registry_runtime)
+    set_tests_properties(item.registry_runtime PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
 
     add_executable(mc_registry_prefix_probe tests/block/registry/prefix_probe.c)
     target_link_libraries(mc_registry_prefix_probe PRIVATE mc_registry mc_build_options)
@@ -484,6 +491,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_game_entities tests/world/runtime/entities/test_game_entities.c)
     target_link_libraries(mc_test_game_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_dungeon tests/world/runtime/population/test_dungeon.c)
+    target_link_libraries(mc_test_dungeon PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_dungeon_loot_probe tests/world/runtime/population/dungeon_loot_probe.c)
+    target_link_libraries(mc_dungeon_loot_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
     target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -1118,6 +1131,14 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-game-entities-contracts")
     set_tests_properties(world.game_entities PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 120)
+
+    add_test(NAME world.dungeon
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_dungeon.py"
+        --executable "$<TARGET_FILE:mc_test_dungeon>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-dungeon-contracts")
+    set_tests_properties(world.dungeon PROPERTIES
+        LABELS "public;integration;ownership;mutation;storage" TIMEOUT 160)
 
     add_test(NAME world.queries
         COMMAND "${Python3_EXECUTABLE}"

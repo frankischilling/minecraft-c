@@ -46,6 +46,14 @@ requests retain real E/F records and constructor sequence effects. Complete
 population ordering, unsupported descendants and original comparisons remain
 unfinished.
 
+The [Dungeon subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/dungeon.md)
+uses notifying writes, retained concrete Chest/Spawner identities and actual
+gameplay Stack ownership. Ordinary Item active use and captured-array reads
+preserve the loot helper's source order. Its separate native Stack request
+budget excludes retained World graphs. Native integration and finite original
+helper comparisons pass; whole original placement and full population closure
+remain pending.
+
 The [Entity publication methods](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 retain the same Entity in actual ordered World.b and Chunk slices. Duplicate and
 cross-World occurrences preserve source identity and construction bindings.

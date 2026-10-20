@@ -44,6 +44,13 @@ initialization cycle, including failed prefixes. The same owner executes actual
 [String/null formatter](reference/string-format.md) in core. Its real
 [recipe and smelting managers](item/recipes.md) share that lifetime and retain
 actual recipe lists, ingredient/output Stacks and crafting-statistic arrays.
+Ordinary Item reads use a separate source-facing interface on that same owner:
+real active use precedes static selection or current-array capture, while a
+later signed element read uses the captured array without reinitialization.
+The [Dungeon subsystem](world/population/dungeon.md) uses those reads with real
+notifying World writes, held Chest/Spawner identities and new gameplay Stacks.
+Its local Stack request budget is separate from retained World ownership;
+whole placement in the originals and complete population closure remain pending.
 Ordinary Statistics and Block initialization can return; other entry orders
 preserve their actual null-singleton failures. Full World startup and gameplay
 binding remain unfinished.

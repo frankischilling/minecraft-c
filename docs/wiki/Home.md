@@ -1,5 +1,15 @@
 # minecraft-c
 
+The [Dungeon subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/dungeon.md)
+now builds rooms through notifying World writes, fills actual Chest inventories
+and assigns the shared Spawner name. Its 3,655 native checks pass per compiler,
+including real prepared save/unload/reload. Ordinary Item runtime access passes
+292 checks; 924 finite original helper comparisons match loot, names and Random
+continuations. All 153/155/155 configured MSVC/GCC/Clang cases pass. Complete
+original placement, observer/hook closure and natural population remain open.
+
+At the preceding ordinary Item persistence checkpoint:
+
 The [ordinary GAME Item persistence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-game-storage.md)
 path now loads through the bound factory, directly adopts into the held Chunk,
 and saves every real Item occurrence before Tiles. Its 468 native disk checks

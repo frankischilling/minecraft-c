@@ -62,6 +62,26 @@ live Block receiver. The default-item loop invokes the post-Item virtual hook
 only when the current Item slot was null. Fire fills its two private arrays in
 the original order; it is not initialized by an unconditional final table.
 
+## Ordinary runtime reads
+
+[`registry/runtime.h`](../../include/mc/item/registry/runtime.h) exposes ordinary
+Item static reads and capture of the actual nullable Item.c array. Both perform
+real Item active use first, preserving initialization and its complete cached
+failure. A selected NULL static or array is a successful nullable result.
+
+The signed element operation reads that same captured array after intervening
+work, without a second active use or current-c reload. NULL precedes bounds;
+a NULL element succeeds. Captures borrow the actual class owner's lifetime.
+All public calls require quiescent exclusive access and reject reentry with
+BUSY. Fresh runtime argument/name/NULL/bounds errors carry no stale initializer
+or constructor attribution. Outputs remain unchanged on failure.
+
+Native MSVC and sanitized Linux GCC/Clang each pass 292 runtime contracts across
+both sides, including genuine COLD failures, cached causes, resource-callback
+reentry, captured-array identity and nullable source-cell controls. The
+[Dungeon caller](../world/population/dungeon.md) has separate whole-call native
+contracts and finite original helper comparisons.
+
 ## Failures, observations and lifetime
 
 Each declaring class retains its own phase, source position and first failure.
