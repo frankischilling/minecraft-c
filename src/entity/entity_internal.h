@@ -3,6 +3,7 @@
 
 #include "classes/classes_internal.h"
 #include "mc/entity/entity.h"
+#include "mc/storage/nbt/tree.h"
 
 /* Actual production layouts, shared only with native invariant tests. */
 struct mc_entity_watch_record {
@@ -38,6 +39,10 @@ struct mc_entity {
     mc_java_random *random;
     mc_entity_watcher *watcher;
     mc_item_stack *stack;
+    /* Independent native storage provenance, not a source field. This tree's
+     * allocation is outside the direct constructor ledger; the pointer cell
+     * remains part of the actual Entity header. Its lifetime follows Entity. */
+    mc_nbt_tree *storage_source;
 };
 
 /* The production constructor calls these after each real shared Math draw.

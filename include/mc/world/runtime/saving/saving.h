@@ -8,10 +8,20 @@
  * Timestamp is an explicit native region-transport input. The concrete runtime
  * lifecycle uses its real platform clock; this entry does not sample a clock.
  * Hold the World, selected Info and exact Chunk through both session checks,
- * source field/List traversal, live Tile build and region commit. Earlier q
+ * source field/List traversal, live Entity/Tile builds and region commit. Earlier q
  * changes survive failure; growth is published only after successful commit.
- * Empty live Entity slices are supported; the first Entity serializer is an
- * explicit unfinished boundary, never an opaque-record substitute.
+ * Every Item occurrence calls its actual Boolean serializer in slice/List
+ * order, including duplicates and false/dead results. Other Entity types are
+ * not implemented. Known records use current semantic fields and actual
+ * Entity/Stack provenance. Unknown factory-NULL source records are preserved
+ * by the Store's completed import journal, never placed in live containers.
+ * Both completed live lists are required before lower composition/encoding.
+ *
+ * The NBT operation ceiling combines all temporary record nodes/trees, list
+ * pointer scratch and independent list/composed/encoded outputs while live.
+ * Each storage serializer additionally charges its own current Entity/Stack
+ * graph. World/Store/container/class graphs and their native ceilings remain
+ * separate; this is not a whole-World/process heap bound or Java OOM timing.
  *
  * Source e/f/g, their a arrays, h, m and l are read as current projections.
  * Fixed native spans must remain live under exclusive access. Source owner

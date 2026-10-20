@@ -66,6 +66,7 @@ mc_live_tile_error mc_live_tiles_empty_error(void)
                                   .system_error = 0},
                         .entity = empty_entity_error()},
         .batch = {.index = SIZE_MAX},
+        .load_entity = mc_world_entity_load_empty_error(),
         .caller_bytecode = 0,
         .hook_bytecode = 0,
         .remove_bytecode = 0,

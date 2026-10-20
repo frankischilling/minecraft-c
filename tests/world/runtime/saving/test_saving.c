@@ -737,11 +737,20 @@ static bool entity_boundary(fixture *f, size_t slot)
           ordinary && snapshot_take(f, slot, &before));
     uint32_t growth = UINT32_MAX;
     mc_world_game_save_error error;
-    CHECK(mc_world_runtime_write_game_chunk(f->worlds[slot], f->states[slot], direct_stamp(slot),
-                                            &growth,
-                                            &error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          growth == UINT32_MAX && f->states[slot]->has_entities && error.region_bytecode == 51 &&
+    /* A genuine late writer failure now replaces the former absent Entity
+     * boundary. Keep the real Stack hold and restore the nullable source
+     * projection before any CHECK or native finalization. */
+    mc_item_stack *held_stack = entity->stack;
+    entity->stack = NULL;
+    const mc_world_storage_status status = mc_world_runtime_write_game_chunk(
+        f->worlds[slot], f->states[slot], direct_stamp(slot), &growth, &error);
+    entity->stack = held_stack;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && growth == UINT32_MAX &&
+          f->states[slot]->has_entities && error.region_bytecode == 51 &&
           error.serializer_bytecode == 183 && error.entity_slice == 4 && error.entity_index == 0 &&
+          error.entity.status == MC_ENTITY_NBT_NULL_REFERENCE &&
+          error.entity.wrapper_bytecode == 27 && error.entity.name_bytecode == 7 &&
+          error.entity.item_bytecode == 37 && error.entity.stack_bytecode == 0 &&
           fresh_save_codecs(&error) && fresh_live_save(&error.tile) &&
           snapshot_same(f, slot, &before));
     ok = true;

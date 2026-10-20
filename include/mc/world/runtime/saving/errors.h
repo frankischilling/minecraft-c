@@ -14,6 +14,9 @@ typedef struct mc_world_game_save_error {
     mc_world_storage_error cause;
     unsigned int region_bytecode, serializer_bytecode;
     size_t entity_slice, entity_index;
+    mc_entity_nbt_error entity;
+    /* Native collection/tree assembly, separate from an actual Entity call. */
+    mc_nbt_error entity_records;
     mc_live_tile_error tile;
     mc_stored_chunk_error composition;
     mc_nbt_error encoding;

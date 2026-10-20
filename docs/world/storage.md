@@ -138,14 +138,27 @@ The Store attaches the same decoded owner and concrete header to its canonical
 ownership chain before exposing a stage and one coordinator lease. Native
 state/data/array identities remain stable through imports and normalization.
 
-Simulation traverses Entities first. A reached nonempty record currently fails
-at the absent Entity NBT factory before q277 or Tile work. Empty traversal
-continues to actual Chest/Spawner Tile factories and local import. Only after
+Simulation traverses Entities first through the actual bound Entity namespace
+and Item constructor/read. Every normal factory return sets q=true277, including
+an unknown-name NULL. Nonnull results enter the same held Chunk directly at289,
+then receive independent Entity/Stack provenance. A native ordered journal
+records only those completed results. Unsupported constructors and later read,
+insertion or provenance failures preserve the reached prefix. Only normal
+completion of every Entity allows Chest/Spawner Tile factories and local import. Only after
 both loops return does the Store normalize those same block bytes and publish
 ordinary load success. A wrong-location result stops at the unfinished Region
 diagnostic after first imports, preserving them before normalization or a second
 builder. Generic decode/load and the old known-empty native route retain their
 separate contracts.
+
+The journal is tied to the exact decoded root/List owner and source count.
+Known records are consumed; unknown normal-NULL records remain opaque in that
+Store only. During GAME save, current semantic records fill consumed baseline
+positions in stream order, surplus consumed positions disappear, extra current
+records append and unknown records retain relative order. No retained known
+payload replaces live state. This is an intermediate native preservation policy;
+the original fresh writer discards unknown fields. The journal's own bounded
+allocation and the retained document keep separate native budgets.
 
 Every attached failed stage remains owned, capacity-counted and enumerable.
 Failure balances only the coordinator lease and disables source continuation.

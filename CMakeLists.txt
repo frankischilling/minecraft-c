@@ -101,6 +101,7 @@ endif()
 add_library(mc_storage STATIC
     src/storage/nbt/nbt.c
     src/storage/nbt/tree.c
+    src/storage/nbt/overlay.c
     src/storage/level/level.c
     src/storage/compression/compression.c
     src/storage/region/region.c
@@ -117,6 +118,7 @@ target_link_libraries(mc_block PRIVATE mc_build_options)
 # Passive Entity class/literal/namespace ownership stays below the Registry.
 # Concrete Entity construction and World/NBT methods remain in simulation.
 add_library(mc_entity_classes STATIC
+    src/entity/nbt/errors.c
     src/entity/classes/classes.c
     src/entity/registry/registry.c)
 target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
@@ -169,6 +171,7 @@ if(MINGW)
 endif()
 
 add_library(mc_world STATIC
+    src/world/runtime/loading/errors.c
     src/world/runtime/tiles/errors.c
     src/world/schedule/entry.c
     src/world/schedule/membership.c
@@ -189,7 +192,7 @@ add_library(mc_world STATIC
     src/world/terrain/terrain.c
     src/world/terrain/surface.c
     src/world/terrain/caves.c)
-target_link_libraries(mc_world PUBLIC mc_core PRIVATE mc_build_options)
+target_link_libraries(mc_world PUBLIC mc_core mc_entity_classes PRIVATE mc_build_options)
 
 add_library(mc_persistence STATIC
     src/world/storage/status.c
@@ -206,6 +209,7 @@ target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build
 add_library(mc_simulation STATIC
     src/entity/nbt/factory.c
     src/entity/nbt/nbt.c
+    src/entity/nbt/storage.c
     src/world/runtime/tiles/tiles.c
     src/world/runtime/loading/loading.c
     src/world/runtime/saving/saving.c
@@ -478,6 +482,9 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_saving tests/world/runtime/saving/test_saving.c)
     target_link_libraries(mc_test_world_saving PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_game_entities tests/world/runtime/entities/test_game_entities.c)
+    target_link_libraries(mc_test_game_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
     target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME block.registry_runtime_literals COMMAND mc_test_registry_runtime_literals)
@@ -689,6 +696,11 @@ if(BUILD_TESTING)
 
     add_executable(mc_nbt_probe tests/storage/nbt/nbt_probe.c)
     target_link_libraries(mc_nbt_probe PRIVATE mc_storage mc_build_options)
+
+    add_executable(mc_test_nbt_overlay tests/storage/nbt/test_overlay.c)
+    target_link_libraries(mc_test_nbt_overlay PRIVATE mc_storage mc_build_options)
+    add_test(NAME storage.nbt_overlay COMMAND mc_test_nbt_overlay)
+    set_tests_properties(storage.nbt_overlay PROPERTIES LABELS "public;unit;storage" TIMEOUT 30)
 
     add_executable(mc_test_compression tests/storage/compression/test_compression.c)
     target_link_libraries(mc_test_compression PRIVATE mc_storage mc_build_options)
@@ -1097,6 +1109,14 @@ if(BUILD_TESTING)
         --executable "$<TARGET_FILE:mc_test_world_saving>"
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-saving-contracts")
     set_tests_properties(world.saving PROPERTIES
+        LABELS "public;integration;ownership;storage" TIMEOUT 120)
+
+    add_test(NAME world.game_entities
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_game_entities.py"
+        --executable "$<TARGET_FILE:mc_test_game_entities>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-game-entities-contracts")
+    set_tests_properties(world.game_entities PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 120)
 
     add_test(NAME world.queries

@@ -27,6 +27,7 @@ typedef struct mc_world_mutation_error {
     mc_live_tile_error tile;
     unsigned int activation_bytecode, activation_world_bytecode;
     unsigned int load_bytecode, load_builder_bytecode;
+    mc_world_entity_load_error load_entity;
     /* Flat nested diagnostics retain the current concrete caller and deepest
      * reached concrete hook origin, rather than a recursive call-stack owner.
      * No gameplay recursion or work limit follows from this representation. */

@@ -2652,6 +2652,7 @@ static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk
     error->activation_world_bytecode = acquired.activation_world_bytecode;
     error->load_bytecode = acquired.load_bytecode;
     error->load_builder_bytecode = acquired.load_builder_bytecode;
+    error->load_entity = acquired.load_entity;
     return false;
 }
 

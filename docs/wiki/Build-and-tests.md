@@ -1,5 +1,21 @@
 # Build and tests
 
+The [ordinary Item persistence checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-game-storage.md)
+pass all 151 configured MSVC cases and 153 on each sanitized Linux GCC/Clang
+build, with zero skips and local JDK comparisons. Each host retains 710 selected
+unchanged inputs, 254 zlib pins, 185 products and 35 captures. The GAME Entity
+test passes 468 checks and the lower overlay passes 255. Clang-format18 covers
+414 C files and headers.
+
+Four fresh original processes on the selected Windows JDK17 profile each run
+ten prepared cases and 117 explicit top-level calls. Twenty-four comparisons
+match complete known two-Item tag lists, retaining types, UTF16 names, scalar
+values, floating bits and List order/metadata. Compound key order and the native
+unknown-preservation policy remain separate. This is not complete World, natural
+population, or broader original/native save-route qualification.
+
+The following leaf checkpoint predates ordinary Item disk integration.
+
 The [Item NBT evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
 records twenty actual original cases per side and their exact native field/tag
 comparisons on MSVC/GCC/Clang. `entity.nbt_observation` loads both complete

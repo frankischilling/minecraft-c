@@ -3,6 +3,7 @@
 #include "mc/storage/region/region.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
+#include "mc/world/runtime/saving/saving.h"
 
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/entity/entity_internal.h"
@@ -31,7 +32,7 @@
     } while (0)
 
 /* Constructed native contracts, not original observed state. All eight loaded
- * records and GAME constructors are real. Native observer input controls are
+ * records and GAME constructors are real. Native observer/nullable Stack controls are
  * temporary and restored before assertions. No Entity phase/position fields,
  * holds, World/cache counts, limits, Random or returned results are injected. */
 enum { WORLD_COUNT = 8, ENTITY_COUNT = 32 };
@@ -690,7 +691,7 @@ cleanup:
     return ok;
 }
 
-static bool refuse_nonempty_saves(fixture *f, size_t slot)
+static bool opaque_and_failed_saves(fixture *f, size_t slot)
 {
     bool ok = false, completed = true;
     mc_world_storage_error error = {0};
@@ -706,8 +707,33 @@ static bool refuse_nonempty_saves(fixture *f, size_t slot)
     CHECK(!mc_chunk_save_eligible(f->states[slot], 1000 + (int64_t)slot, true) &&
           mc_world_info_time_set(f->worlds[slot]->fields.x, 2000) == MC_WORLD_INFO_OK &&
           mc_chunk_save_eligible(f->states[slot], 2000, true));
-    CHECK(mc_world_runtime_save_chunks(f->worlds[slot], true, &completed) ==
-              MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
+    mc_entity *first = NULL;
+    size_t selected_slice = SIZE_MAX;
+    for (size_t slice = 0; slice < COUNT(f->slices[slot]); ++slice) {
+        size_t count = 0;
+        CHECK(mc_world_chunk_entity_count(f->slices[slot][slice], &count) == MC_WORLD_STORAGE_OK);
+        if (count != 0) {
+            CHECK(mc_world_chunk_entity_at(f->slices[slot][slice], 0, &first) ==
+                  MC_WORLD_STORAGE_OK);
+            selected_slice = slice;
+            break;
+        }
+    }
+    CHECK(first != NULL);
+    /* Generic opaque entry points above keep their refusal. The live GAME
+     * path now has a real serializer: select its first actual occurrence and
+     * supply a late NULL Stack receiver. Restore before assertions/teardown;
+     * the real owning Stack hold remains live throughout the control. */
+    mc_item_stack *const stack = first->stack;
+    first->stack = NULL;
+    mc_world_runtime_lifecycle_error detail;
+    const mc_chunk_lifecycle_status saved =
+        mc_world_runtime_save_chunks_detailed(f->worlds[slot], true, &completed, &detail);
+    first->stack = stack;
+    CHECK(saved == MC_CHUNK_LIFECYCLE_CALLBACK_FAILED && detail.save.serializer_bytecode == 183 &&
+          detail.save.entity_slice == selected_slice && detail.save.entity_index == 0 &&
+          detail.save.entity.status == MC_ENTITY_NBT_NULL_REFERENCE &&
+          detail.save.entity.wrapper_bytecode == 27 && detail.save.entity.item_bytecode == 37 &&
           completed && f->states[slot]->has_entities && files_unchanged(f, slot));
     ok = true;
 cleanup:
@@ -955,7 +981,7 @@ int main(int argc, char **argv)
         CHECK(lease_blocks_retirement(f, side, primary[side]));
     }
     for (size_t slot = 0; slot < WORLD_COUNT; ++slot)
-        CHECK(refuse_nonempty_saves(f, slot));
+        CHECK(opaque_and_failed_saves(f, slot));
     CHECK(terminal_retirement(f, primary));
     result = 0;
 cleanup:

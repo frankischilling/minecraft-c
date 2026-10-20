@@ -24,6 +24,7 @@ static mc_world_runtime_acquisition_error acquisition_empty_error(void)
                                                 .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                                 .registry = mc_tile_empty_error().registry,
                                                 .tile = mc_live_tiles_empty_error(),
+                                                .load_entity = mc_world_entity_load_empty_error(),
                                                 .batch = mc_world_entity_batch_empty_error()};
 }
 
@@ -132,6 +133,7 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
             acquisition_cause(runtime, runtime->last_error);
             if (runtime->acquisition_error != NULL) {
                 runtime->acquisition_error->tile = error.tile;
+                runtime->acquisition_error->load_entity = error.entity;
                 runtime->acquisition_error->registry = error.tile.registry;
                 runtime->acquisition_error->load_bytecode = error.region_bytecode;
                 runtime->acquisition_error->load_builder_bytecode = error.builder_bytecode;

@@ -28,6 +28,12 @@ The lower `mc_entity_classes` library owns passive canonical Class cells and
 EntityList namespace metadata. Registry can retain that same owner for its
 Biome handles without depending on concrete Entity constructors or simulation.
 See the [Class/NBT lifetime contract](entity/nbt.md).
+Passive Entity NBT/load diagnostics also stay below simulation. The borrowed
+Compound overlay lives in storage; actual Entity provenance/factory/save calls
+stay in simulation. GAME loading adopts directly into the held Chunk, and its
+Store-owned journal records completed source occurrences. GAME saving builds
+both live lists before lower composition, without invoking simulation from
+persistence. See [ordinary Item persistence](reference/entity-game-storage.md).
 `mc_registry` builds on that owner and the shared Random profile with actual
 [Block](block/registry.md) and [Item](item/registry.md) class construction. It
 retains source-ordered static, base and subtype state through their recursive

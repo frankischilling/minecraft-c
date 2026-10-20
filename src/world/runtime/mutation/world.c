@@ -74,6 +74,7 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
         frame->activation_world_bytecode = detail.activation_world_bytecode;
         frame->load_bytecode = detail.load_bytecode;
         frame->load_builder_bytecode = detail.load_builder_bytecode;
+        frame->load_entity = detail.load_entity;
         if (detail.cause.status != MC_WORLD_STORAGE_OK)
             return storage_fail(world, frame, detail.cause);
         if (acquired == MC_CHUNK_ACQUIRE_LIMIT || acquired == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)

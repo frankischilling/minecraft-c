@@ -82,11 +82,12 @@ continue the original block replacement and notification sequence.
 
 ## Persistence and terminal disposal
 
-The GAME save coordinator resets q and sets it for the first live occurrence
-before its still-unfinished Entity serializer call. Generic Store writers keep
-their separate nonempty guards. Neither path writes a live nonempty Entity list
-to a region yet. Opaque retained NBT remains a separate contract;
-it does not supply a live Entity serializer. The caller-owned numerical storage
+The GAME save coordinator resets q and sets it before each actual Boolean Item
+serializer call. False/dead results continue and duplicates remain occurrences.
+The [save path](saving.md) supplies explicit current Entity and Tile record lists
+to persistence. Generic Store writers keep their separate nonempty guards.
+Opaque retained NBT remains a separate contract and never supplies live state.
+The caller-owned numerical storage
 interface cannot infer the provenance of arbitrarily copied state. Borrowed
 concrete Chunk state must stay within its documented ownership contract.
 

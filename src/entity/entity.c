@@ -501,6 +501,7 @@ void mc_entity_release(mc_entity *entity)
     if (--entity->holds != 0)
         return;
     mc_entity_classes *classes = entity->classes;
+    mc_nbt_tree_free(entity->storage_source);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);
     if (entity->watcher != NULL) {

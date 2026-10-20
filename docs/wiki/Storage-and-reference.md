@@ -1,5 +1,15 @@
 # Storage and original references
 
+The [ordinary GAME Item persistence reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-game-storage.md)
+records complete paired load/save bytecode order, actual factory/Chunk/Boolean
+joins, current Entity/Stack provenance and retained failure prefixes. Its
+constructed native disk tests pass on MSVC and sanitized GCC/Clang. Separate
+untouched-original shared-schema and direct-region calls run ten cases per side,
+twice; exact known Item tag lists match all native hosts. Unknown native records
+and provenance metadata follow an explicit preservation policy, while original
+fresh writers discard them. Other constructors, natural dedicated startup,
+broader original/native routes and full population remain unfinished.
+
 The [Item Entity NBT observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
 retain twenty prepared calls per side into the untouched archives. Actual
 MSVC/GCC/Clang probes match 2,422 comparison rows per side, including exact

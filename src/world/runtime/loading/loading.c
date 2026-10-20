@@ -1,7 +1,9 @@
 #include "loading_internal.h"
 
+#include "../../chunk/object_internal.h"
 #include "../../storage/objects_internal.h"
 #include "../runtime_internal.h"
+#include "mc/entity/nbt/storage.h"
 
 #include <limits.h>
 #include <string.h>
@@ -22,27 +24,81 @@ static mc_world_storage_status fail(mc_world_game_load_error *frame, mc_world_st
     return status;
 }
 
-static mc_world_storage_status import_entities(const mc_nbt_tag *level,
+static mc_world_storage_status entity_failure(mc_world_game_load_error *frame,
+                                              mc_entity_nbt_status status, const char *operation)
+{
+    return fail(frame,
+                status == MC_ENTITY_NBT_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+                : status == MC_ENTITY_NBT_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                operation);
+}
+
+static mc_world_storage_status import_entities(mc_world_runtime *world, mc_world_store *store,
+                                               mc_world_store_game_stage *stage,
+                                               const mc_world_store_game_stage_view *view,
                                                mc_world_game_load_error *frame)
 {
     frame->builder_bytecode = 231;
-    const mc_nbt_tag *records = field(level, "Entities");
+    const mc_nbt_tag *records = field(view->level, "Entities");
     if (records != NULL && records->type != MC_NBT_LIST)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME Entities list getter");
     frame->builder_bytecode = 248;
     const size_t count = records == NULL ? 0 : records->value.list.length;
     if (count > (size_t)INT32_MAX)
         return fail(frame, MC_WORLD_STORAGE_LIMIT, "GAME Entities list length");
-    if (count != 0) {
+    for (size_t index = 0; index < count; ++index) {
+        frame->entity = mc_world_entity_load_empty_error();
+        frame->entity.index = index;
+        frame->builder_bytecode = 258;
+        if (records->value.list.items == NULL)
+            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "GAME Entity List native storage");
+        const mc_nbt_tag *record = records->value.list.items[index];
         frame->builder_bytecode = 261;
-        const mc_nbt_tag *record = records->value.list.items[0];
-        if (record == NULL || record->type != MC_NBT_COMPOUND)
+        /* Java checkcast accepts NULL; the actual factory owns that later
+         * getter failure and its separate catch/read diagnostics. */
+        if (record != NULL && record->type != MC_NBT_COMPOUND)
             return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME Entity compound cast");
         frame->builder_bytecode = 269;
-        /* A constructor alone does not provide class lookup or semantic NBT
-         * read. Stop at the reached factory, before source q=true277. */
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME Entity NBT factory");
+        mc_entity *entity = NULL;
+        mc_entity_nbt_status child = mc_entity_factory_nbt(mc_world_runtime_entities(world), world,
+                                                           record, &entity, &frame->entity.factory);
+        if (child != MC_ENTITY_NBT_OK)
+            return entity_failure(frame, child, "GAME Entity NBT factory");
+
+        /* Every normal factory result sets q, including an unknown-id NULL.
+         * Direct Chunk adoption does not publish into World.b or invoke the
+         * provider. Its actual membership stores and hold precede provenance. */
+        frame->builder_bytecode = 277;
+        view->state->has_entities = true;
+        mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+        if (entity != NULL) {
+            frame->builder_bytecode = 289;
+            status = mc_world_chunk_insert_entity(view->chunk, entity, &frame->entity.insertion);
+            if (status != MC_WORLD_STORAGE_OK)
+                frame->cause = frame->entity.insertion.cause;
+            else {
+                child = mc_entity_preserve_source(entity, record, &view->limits,
+                                                  &frame->entity.provenance);
+                if (child != MC_ENTITY_NBT_OK)
+                    status = entity_failure(frame, child, "GAME Entity native provenance");
+            }
+        }
+        if (status == MC_WORLD_STORAGE_OK) {
+            status = mc_world_store_game_stage_record_entity_result(
+                store, stage, index, entity != NULL, &frame->entity.native);
+            if (status != MC_WORLD_STORAGE_OK)
+                frame->cause = frame->entity.native;
+        }
+        /* The factory-local hold spans adoption AND independent provenance.
+         * A late failure keeps the Chunk's real hold and completed source
+         * effects; only this local hold is balanced here, exactly once. */
+        mc_entity_release(entity);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
     }
+    frame->entity = mc_world_entity_load_empty_error();
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -77,6 +133,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
     mc_world_game_load_error frame = {.status = MC_WORLD_STORAGE_OK,
                                       .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                       .tile = mc_live_tiles_empty_error()};
+    frame.entity = mc_world_entity_load_empty_error();
     if (world == NULL || out == NULL) {
         frame.status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME load arguments");
         if (error != NULL)
@@ -108,7 +165,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
         frame.status = mc_world_store_game_stage_imports_begin(store, stage, &frame.cause);
     if (frame.status == MC_WORLD_STORAGE_OK) {
         frame.region_bytecode = 143;
-        frame.status = import_entities(view.level, &frame);
+        frame.status = import_entities(world, store, stage, &view, &frame);
     }
     if (frame.status == MC_WORLD_STORAGE_OK)
         frame.status = import_tiles(&view, &frame);
@@ -141,6 +198,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
         frame = (mc_world_game_load_error){.status = MC_WORLD_STORAGE_OK,
                                            .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                            .tile = mc_live_tiles_empty_error()};
+        frame.entity = mc_world_entity_load_empty_error();
     }
     mc_world_runtime_call_leave(world);
     if (error != NULL)

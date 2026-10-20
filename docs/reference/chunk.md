@@ -260,10 +260,10 @@ independent-result allocation boundaries.
 | Stack | `iz.a(Compound)Compound` / `fy.a(Compound)Compound` | narrowed id8, Count19 and Damage30 |
 
 The [native GAME coordinator](../world/saving.md) implements the supported
-Chest/Spawner traversal with genuinely empty live Entity slices. It retains
-whole Tile and lower codec diagnostics and preserves reached q changes on
-failure. A first nonempty Entity occurrence stops at the unfinished serializer
-after q becomes true. The lower Store replaces both current lists over the
+ItemEntity and Chest/Spawner traversals. It retains whole Entity/Tile and lower
+codec diagnostics and preserves reached q changes on failure. Every Entity
+occurrence invokes its actual Boolean serializer after q becomes true; false
+continues. The lower Store composes both current lists over the
 same owned header/document; it never supplies old opaque records as live state.
 
 The original Region catches Exception over4..97, prints at102 and returns105;
@@ -272,3 +272,6 @@ returns explicit failure and does not emulate that exception/stream behavior.
 Independent NBT trees, retained unknown fields and the existing native clock
 position also remain separate policies. Source inspection and constructed
 native saves do not establish an executed original/native whole-save replay.
+The separate [Entity GAME observations](entity-game-storage.md) add finite
+whole-Chunk original calls and exact known Item tag comparisons; their broader
+World/disk routes and native unknown-preservation policy remain distinct.

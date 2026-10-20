@@ -6,6 +6,7 @@
 #include "mc/item/stack/stack.h"
 #include "mc/storage/nbt/nbt.h"
 #include "mc/world/runtime/entity_errors.h"
+#include "mc/world/runtime/loading/entity_errors.h"
 #include "mc/world/storage/status.h"
 
 #include <stddef.h>
@@ -77,6 +78,7 @@ typedef struct mc_live_tile_error {
      * The complete child fields above remain unchanged during propagation. */
     unsigned int acquisition_caller_bytecode, activation_bytecode, activation_world_bytecode;
     unsigned int load_bytecode, load_builder_bytecode;
+    mc_world_entity_load_error load_entity;
     unsigned int provider_bytecode;
     /* The acquiring caller's already-reached frames, beside the complete
      * load/activation child above. Current supported import/activation bodies

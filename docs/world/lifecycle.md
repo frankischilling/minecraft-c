@@ -17,12 +17,12 @@ interval regression have separate Windows/Linux passes.
 
 ## Saving and unloading
 
-GAME main-save callbacks now use the [live Tile coordinator](saving.md).
+GAME main-save callbacks now use the [live Entity/Tile coordinator](saving.md).
 Detailed runtime save/save-client/save-chunks/maintenance entries return fresh
 per-attempt diagnostics with complete save children. Synchronous nested calls
 suspend and restore their predecessor's acquisition/lifecycle frames. The
 legacy entries delegate to these wrappers. This does not add natural dedicated
-World construction, nonempty Entity persistence or whole World metadata saves.
+World construction, other Entity descendants or whole World metadata saves.
 
 `mc/world/cache/lifecycle.h` borrows the cache, ordered pending set, stable clock
 and explicit callback owners. Normal eligibility uses dirty, never-save,

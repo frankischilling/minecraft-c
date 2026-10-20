@@ -2,6 +2,7 @@
 #define MC_WORLD_CHUNK_OBJECT_INTERNAL_H
 
 #include "mc/entity/entity.h"
+#include "mc/world/chunk/entity_errors.h"
 #include "mc/world/chunk/object.h"
 
 /* Lower concrete storage, called only by the typed store factory/destructor.
@@ -39,17 +40,6 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
 /* Validate the actual finite empty child/binding contract for serialization.
  * No class use, source World access, callback, propagation or state mutation. */
 bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk);
-
-typedef struct mc_world_chunk_entity_error {
-    mc_world_storage_status status;
-    const char *operation;
-    unsigned int bytecode;
-    mc_world_storage_error cause;
-    /* Only a genuinely reached native Entity operation populates this.
-     * A NULL source Entity, mismatch or Chunk budget failure does not invent
-     * an Entity constructor/phase error. */
-    mc_entity_error entity;
-} mc_world_chunk_entity_error;
 
 /* Actual normal lm/hi.a(Entity)V only. Caller holds the exact concrete Chunk,
  * supplying Store and live Entity (when nonnull) across this synchronous call;

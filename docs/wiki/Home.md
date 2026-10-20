@@ -1,14 +1,21 @@
 # minecraft-c
 
+The [ordinary GAME Item persistence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-game-storage.md)
+path now loads through the bound factory, directly adopts into the held Chunk,
+and saves every real Item occurrence before Tiles. Its 468 native disk checks
+and 255 overlay checks pass on all three compilers. Four original ten-case
+captures supply 24 exact known two-Item tag-list comparisons against the native
+saved records. Unknown-field retention remains an explicit native policy.
+
 The [Item Entity NBT subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/nbt.md)
 adds canonical Class ownership, ordered EntityList registration, actual Item
 read/write and factory calls, and whole-batch World activation/deferral. Twenty
 prepared cases per side match both originals on MSVC and sanitized GCC/Clang.
 The [captured-original regression](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
-checks 4,844 comparison rows without requiring game archives or a JDK. Ordinary
-GAME Entity load/save integration, other concrete subclasses, ticking and
+checks 4,844 comparison rows without requiring game archives or a JDK. Other
+concrete subclasses, ticking and
 complete population remain unfinished.
-All 149 configured MSVC cases and 151 cases on each sanitized GCC/Clang build
+All 151 configured MSVC cases and 153 cases on each sanitized GCC/Clang build
 pass, with zero skips and local JDK comparisons enabled.
 
 At the preceding live Tile checkpoint:

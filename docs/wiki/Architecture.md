@@ -9,6 +9,15 @@ and Stack owners; factory calls preserve constructor effects before semantic
 read. World batch methods retain every occurrence before observer dispatch,
 with a separate deferral ledger and complete failure diagnostics.
 
+Ordinary GAME loading uses that same bound factory and the actual direct Chunk
+insertion, then attaches independent provenance to the Entity and its current
+Stack. A Store-owned occurrence journal distinguishes consumed known records
+from unknown factory-NULL inputs. Saving calls every actual Boolean serializer,
+including duplicates and false/dead results, before building Tiles and passing
+both completed live lists to lower composition. A phase-neutral borrowed NBT
+overlay preserves unknown fields without replacing current Stack identity or
+introducing a reverse storage-to-simulation dependency.
+
 The [World query module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 retains the acquired Chunk through each scan, reads actual arrays and materials,
 and shares the positive-sky Chunk.a cell across Worlds. Its provider.b getter

@@ -36,6 +36,11 @@ struct store_chunk {
     mc_world_store_game_stage_phase phase;
     bool game_stage, imports_started, coordinator_lease;
     mc_world_store_game_stage stage;
+    /* Native occurrence provenance over the exact immutable decoded owner.
+     * No Entity/World holds or replacement source objects live here. */
+    const mc_nbt_tag *entity_source_root, *entity_source_list;
+    bool *entity_consumed;
+    size_t entity_source_count, entity_processed;
     bool game_save_open;
     mc_world_store_game_save save;
     struct store_chunk *next;
@@ -118,6 +123,7 @@ static mc_stored_chunk_status store_chunk_build(const store_chunk *entry, int64_
 
 static void store_chunk_free(store_chunk *entry)
 {
+    free(entry->entity_consumed);
     switch (entry->kind) {
         case STORE_CHUNK_STORED:
             mc_world_chunk_storage_free(entry->loaded_binding);
@@ -1253,8 +1259,42 @@ static store_chunk *store_find_game_stage(const mc_world_store *store,
     return NULL;
 }
 
+static bool store_chunk_entity_journal_valid(const store_chunk *entry)
+{
+    if (entry->entity_consumed == NULL)
+        return entry->entity_source_root == NULL && entry->entity_source_list == NULL &&
+               entry->entity_source_count == 0 && entry->entity_processed == 0;
+    if (!entry->game_stage || !entry->imports_started || entry->kind != STORE_CHUNK_STORED ||
+        entry->owner.stored == NULL || entry->entity_source_root == NULL ||
+        entry->entity_source_list == NULL || entry->entity_source_count == 0 ||
+        entry->entity_source_count > SIZE_MAX / sizeof(*entry->entity_consumed) ||
+        entry->entity_processed == 0 || entry->entity_processed > entry->entity_source_count ||
+        entry->entity_source_root != store_chunk_root(entry))
+        return false;
+    const mc_nbt_tag *level = store_get(entry->entity_source_root, "Level");
+    const mc_nbt_tag *records = store_get(level, "Entities");
+    return level != NULL && level->type == MC_NBT_COMPOUND &&
+           records == entry->entity_source_list && records->type == MC_NBT_LIST &&
+           records->value.list.items != NULL &&
+           records->value.list.length == entry->entity_source_count;
+}
+
+static bool store_chunk_entity_journal_complete(const store_chunk *entry)
+{
+    if (!store_chunk_entity_journal_valid(entry))
+        return false;
+    if (entry->entity_consumed != NULL)
+        return entry->entity_processed == entry->entity_source_count;
+    /* No source method, allocation, q write or hidden empty factory occurs.
+     * Inspect only the immutable document already owned by this entry. */
+    const mc_nbt_tag *records = store_get(store_get(store_chunk_root(entry), "Level"), "Entities");
+    return records == NULL || (records->type == MC_NBT_LIST && records->value.list.length == 0);
+}
+
 static bool store_chunk_phase_valid(const store_chunk *entry)
 {
+    if (!store_chunk_entity_journal_valid(entry))
+        return false;
     if (!entry->game_stage)
         return entry->phase == MC_WORLD_STORE_GAME_COMMITTED && !entry->imports_started &&
                !entry->coordinator_lease;
@@ -1263,12 +1303,14 @@ static bool store_chunk_phase_valid(const store_chunk *entry)
         return false;
     switch (entry->phase) {
         case MC_WORLD_STORE_GAME_PREPARED:
-            return !entry->imports_started && entry->coordinator_lease && entry->leases != 0;
+            return !entry->imports_started && entry->coordinator_lease && entry->leases != 0 &&
+                   entry->entity_consumed == NULL;
         case MC_WORLD_STORE_GAME_IMPORTING:
         case MC_WORLD_STORE_GAME_NORMALIZED:
             return entry->imports_started && entry->coordinator_lease && entry->leases != 0;
         case MC_WORLD_STORE_GAME_COMMITTED:
-            return entry->imports_started && !entry->coordinator_lease;
+            return entry->imports_started && !entry->coordinator_lease &&
+                   store_chunk_entity_journal_complete(entry);
         case MC_WORLD_STORE_GAME_FAILED:
             return !entry->coordinator_lease;
     }
@@ -1372,14 +1414,15 @@ mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
 
 mc_world_storage_status mc_world_store_game_save_write(
     mc_world_store *store, mc_world_store_game_save *save, int64_t world_time, uint32_t timestamp,
-    const mc_nbt_tree *tile_records, uint32_t *growth, mc_world_storage_error *error,
-    mc_stored_chunk_error *composition_error, mc_nbt_error *encoding_error)
+    const mc_nbt_tree *entity_records, const mc_nbt_tree *tile_records, uint32_t *growth,
+    mc_world_storage_error *error, mc_stored_chunk_error *composition_error,
+    mc_nbt_error *encoding_error)
 {
     if (composition_error != NULL)
         *composition_error = (mc_stored_chunk_error){MC_STORED_CHUNK_OK, NULL, {MC_NBT_OK, 0}};
     if (encoding_error != NULL)
         *encoding_error = (mc_nbt_error){MC_NBT_OK, 0};
-    if (growth == NULL || tile_records == NULL)
+    if (growth == NULL || entity_records == NULL || tile_records == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save write arguments");
     store_chunk *entry = store_find_game_save(store, save);
     if (entry == NULL)
@@ -1388,9 +1431,17 @@ mc_world_storage_status mc_world_store_game_save_write(
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "GAME save Chunk ownership metadata");
     mc_chunk_state *state = store_chunk_state(entry);
-    if (state->has_entities)
+    if (!store_chunk_entity_journal_complete(entry))
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                           "GAME save requires completed empty Entity traversal");
+                           "GAME save incomplete Entity occurrence journal");
+    const mc_nbt_tag *entity_root = mc_nbt_tree_root(entity_records);
+    if (entity_root == NULL || entity_root->type != MC_NBT_COMPOUND ||
+        entity_root->value.compound.length != 1)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save Entity records root");
+    const mc_nbt_tag *entities = store_get(entity_root, "Entities");
+    if (entities == NULL || entities->type != MC_NBT_LIST ||
+        entities->value.list.element_type != MC_NBT_COMPOUND)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save Entities List");
     const mc_nbt_tag *records_root = mc_nbt_tree_root(tile_records);
     if (records_root == NULL || records_root->type != MC_NBT_COMPOUND ||
         records_root->value.compound.length != 1)
@@ -1400,15 +1451,20 @@ mc_world_storage_status mc_world_store_game_save_write(
         records->value.list.element_type != MC_NBT_COMPOUND)
         return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save TileEntities List");
     mc_nbt_limits remaining = store->limits.nbt;
-    size_t input_bytes = mc_nbt_tree_allocation_bytes(tile_records);
+    size_t input_bytes = mc_nbt_tree_allocation_bytes(entity_records);
     if (input_bytes > remaining.max_allocation_bytes)
-        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save input tree budget");
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save Entity input tree budget");
+    remaining.max_allocation_bytes -= input_bytes;
+    input_bytes = mc_nbt_tree_allocation_bytes(tile_records);
+    if (input_bytes > remaining.max_allocation_bytes)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save Tile input tree budget");
     remaining.max_allocation_bytes -= input_bytes;
     mc_nbt_tree *document = NULL;
     mc_stored_chunk_error detail;
-    mc_stored_chunk_status built = mc_stored_chunk_build_game_tiles(
+    mc_stored_chunk_status built = mc_stored_chunk_build_game_records(
         entry->kind == STORE_CHUNK_STORED ? entry->owner.stored : NULL, state,
-        store_runtime_chunk(entry), world_time, records, &remaining, &document, &detail);
+        store_runtime_chunk(entry), world_time, entities, records, entry->entity_source_list,
+        entry->entity_consumed, entry->entity_source_count, &remaining, &document, &detail);
     if (composition_error != NULL)
         *composition_error = detail;
     if (built != MC_STORED_CHUNK_OK)
@@ -1559,6 +1615,50 @@ mc_world_storage_status mc_world_store_game_stage_imports_begin(mc_world_store *
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
+mc_world_storage_status
+mc_world_store_game_stage_record_entity_result(mc_world_store *store,
+                                               mc_world_store_game_stage *stage, size_t index,
+                                               bool consumed, mc_world_storage_error *error)
+{
+    store_chunk *entry = store_find_game_stage(store, stage);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
+    if (!store_chunk_owner_valid(entry) || entry->phase != MC_WORLD_STORE_GAME_IMPORTING ||
+        !mc_world_chunk_source_enabled(entry->loaded_binding))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME Entity result recording phase");
+    const mc_nbt_tag *root = store_chunk_root(entry);
+    const mc_nbt_tag *records = store_get(store_get(root, "Level"), "Entities");
+    if (records == NULL || records->type != MC_NBT_LIST || records->value.list.length == 0 ||
+        records->value.list.items == NULL || index != entry->entity_processed ||
+        index >= records->value.list.length)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "GAME Entity result occurrence order");
+    const mc_nbt_tag *record = records->value.list.items[index];
+    if (record == NULL || record->type != MC_NBT_COMPOUND)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA,
+                           "GAME Entity result source Compound");
+    if (entry->entity_consumed == NULL) {
+        const size_t count = records->value.list.length;
+        if (count > store->limits.nbt.max_elements ||
+            count > SIZE_MAX / sizeof(*entry->entity_consumed) ||
+            count * sizeof(*entry->entity_consumed) > store->limits.nbt.max_allocation_bytes)
+            return store_error(error, MC_WORLD_STORAGE_LIMIT,
+                               "GAME Entity occurrence journal budget");
+        bool *results = malloc(count * sizeof(*results));
+        if (results == NULL)
+            return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                               "GAME Entity occurrence journal");
+        entry->entity_source_root = root;
+        entry->entity_source_list = records;
+        entry->entity_source_count = count;
+        entry->entity_consumed = results;
+    }
+    entry->entity_consumed[index] = consumed;
+    ++entry->entity_processed;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 mc_world_storage_status mc_world_store_game_stage_finish(mc_world_store *store,
                                                          mc_world_store_game_stage *stage,
                                                          mc_chunk_state **out,
@@ -1573,6 +1673,9 @@ mc_world_storage_status mc_world_store_game_stage_finish(mc_world_store *store,
         !mc_world_chunk_source_enabled(entry->loaded_binding))
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "GAME stage completion phase");
+    if (!store_chunk_entity_journal_complete(entry))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME stage incomplete Entity occurrence journal");
     const mc_stored_chunk_status normalized =
         mc_stored_chunk_normalize(entry->owner.stored, store->block_map, sizeof(store->block_map));
     if (normalized != MC_STORED_CHUNK_OK)

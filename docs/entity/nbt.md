@@ -97,7 +97,7 @@ resource and output contracts do not claim Java allocation/OOME timing.
 The native contracts cover both sides and real immutable allocation ceilings:
 `entity.nbt` passes 1,084 checks, `entity.classes` passes 7,759,
 `entity.factory` passes 364 and `world.entity_batch` passes 353 on MSVC and
-sanitized Linux GCC/Clang. All 149 configured MSVC cases and 151 cases on each
+sanitized Linux GCC/Clang. All 151 configured MSVC cases and 153 cases on each
 Linux compiler pass, with zero skips and local JDK comparisons enabled. They check
 signed narrowing, ordered partial reads, numeric edge bits, Stack replacement,
 all 24 namespace mappings, cached partial initialization, Class binding and
@@ -113,3 +113,33 @@ ordinary disk save/reload. See [paired NBT source anchors and capture
 procedure](../reference/entity-nbt.md),
 [construction evidence](../reference/entity-construction.md) and
 [World publication](../world/entities.md).
+
+## Storage provenance and ordinary GAME coordination
+
+[`nbt/storage.h`](../../include/mc/entity/nbt/storage.h) adds native storage
+operations beside the semantic reader/writer. After successful direct Chunk
+adoption, a complete independent source tree belongs to that actual Entity and
+its current successfully read Stack receives a separate Item source copy.
+Replacement commits both attachments only after every fallible copy succeeds.
+The final Entity hold frees its own source. The direct Class allocation ledger
+keeps its prior meaning; a checked storage inspector adds actual source/Stack
+allocations without multiplying them by hold count.
+
+Storage saving calls the actual Boolean wrapper first. A normal false allocates
+no overlay even with a zero residual ceiling. A true result overlays generated
+fields over the Entity source and the generated Item over only its current
+Stack's source. Replacing that Stack cannot resurrect the prior Item's unknown
+fields. This uses a phase-neutral borrowed Compound overlay, so RAW/failed Stack
+fields accepted by the semantic writer remain accepted. The final tree is an
+independent copy; source owners and pointer scratch remain live until it finishes.
+Preserved unknown fields/order/raw bits are an intermediate native policy, not
+original fresh-writer behavior or encoded-byte/order equivalence.
+
+The ordinary GAME loader now calls the actual factory and direct Chunk insertion;
+the saver traverses every actual slice/List occurrence. Their disk/failure
+contracts pass 468 native checks per host; the borrowed overlay passes 255.
+Separate original whole-Chunk calls cover ten prepared cases per side, twice.
+Known two-Item tag lists match all three native outputs; unknown-field retention
+remains the native policy above. See [GAME persistence](../world/saving.md),
+[staged loading](../world/storage.md#staged-game-loading) and
+[paired source/observation boundaries](../reference/entity-game-storage.md).

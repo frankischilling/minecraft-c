@@ -48,8 +48,8 @@ Activation sets active before registering actual Map values into c or G,
 selected by the live L flag, then proceeds to the Entity slices. Tile detach
 invalidates each actual value without dereferencing a World receiver or clearing
 the Map. The explicit deferred-G phase preserves duplicate occurrences. These
-bodies do not supply the missing complete World tick or nonempty Entity
-activation protocol.
+bodies do not supply the missing complete World tick. The separate Entity
+activation phase uses its actual whole-batch ownership protocol.
 
 Detailed diagnostics carry the whole Tile/Registry/Stack/NBT/Entity/publication
 cause with separate caller, provider, load and activation positions. Each
@@ -61,8 +61,9 @@ last-error state or diagnostic strings.
 
 The GAME loader stages the same decoded state, arrays, document and concrete
 header as an owned, leased Store entry. It traverses Entities before TileEntities
-and normalizes blocks only after both loops complete. A nonempty Entity list
-currently stops at its missing NBT factory before q is set. Supported Tile
+and normalizes blocks only after both loops complete. Actual Item factories,
+direct Chunk adoption and native provenance precede the first Tile getter.
+Any failed Entity prefix stops there. Supported Tile
 records use the real factory, local installation and retained provenance.
 Coordinate mismatch retains first-import effects and stops at the unfinished
 relocation diagnostic before normalization. See [storage ownership](storage.md).
@@ -72,7 +73,7 @@ are disabled, while passive owner validation and native teardown remain usable.
 An empty Map can still own a table or import journal; count zero does not make
 it eligible for the old empty serializer. The [live GAME save path](saving.md)
 uses the actual Map builder, including count-zero ownership and deleted known
-records. Nonempty Entity serialization remains unsupported.
+records. The same coordinator now traverses actual ItemEntity serializers before Tiles.
 
 `mc_world_runtime_retire_entity_containers` now admits the complete World b/c/G
 ownership and every bound Store Chunk, including failed stages, before releasing

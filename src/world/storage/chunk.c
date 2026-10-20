@@ -486,11 +486,11 @@ mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, 
     return stored_build(state, NULL, NULL, world_time, limits, out, error);
 }
 
-mc_stored_chunk_status
-mc_stored_chunk_build_game_tiles(const mc_stored_chunk *stored, const mc_chunk_state *state,
-                                 const mc_world_chunk *chunk, int64_t world_time,
-                                 const mc_nbt_tag *tile_records, const mc_nbt_limits *requested,
-                                 mc_nbt_tree **out, mc_stored_chunk_error *error)
+mc_stored_chunk_status mc_stored_chunk_build_game_records(
+    const mc_stored_chunk *stored, const mc_chunk_state *state, const mc_world_chunk *chunk,
+    int64_t world_time, const mc_nbt_tag *entity_records, const mc_nbt_tag *tile_records,
+    const mc_nbt_tag *baseline_entities, const bool *consumed, size_t consumed_count,
+    const mc_nbt_limits *requested, mc_nbt_tree **out, mc_stored_chunk_error *error)
 {
     mc_nbt_limits limits;
     if (state == NULL || chunk == NULL || out == NULL || state->blank || state->data == NULL ||
@@ -499,8 +499,10 @@ mc_stored_chunk_build_game_tiles(const mc_stored_chunk *stored, const mc_chunk_s
         (stored != NULL && (!stored_valid(stored) || state != &stored->state)) ||
         !stored_limits(requested, &limits))
         return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
-    if (state->has_entities)
-        return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, "Entities");
+    if (entity_records == NULL || entity_records->type != MC_NBT_LIST ||
+        entity_records->value.list.element_type != MC_NBT_COMPOUND ||
+        (entity_records->value.list.length != 0 && entity_records->value.list.items == NULL))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "Entities");
     if (tile_records == NULL || tile_records->type != MC_NBT_LIST ||
         tile_records->value.list.element_type != MC_NBT_COMPOUND)
         return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "TileEntities");
@@ -510,6 +512,32 @@ mc_stored_chunk_build_game_tiles(const mc_stored_chunk *stored, const mc_chunk_s
     if (stored != NULL && (baseline == NULL || baseline->type != MC_NBT_COMPOUND || level == NULL ||
                            level->type != MC_NBT_COMPOUND))
         return stored_status(error, MC_STORED_CHUNK_MISSING_LEVEL, "Level");
+    const mc_nbt_tag *old_entities = stored_get(level, "Entities");
+    if (old_entities != NULL && old_entities->type != MC_NBT_LIST)
+        return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "Entities");
+    const size_t old_count = old_entities == NULL ? 0 : old_entities->value.list.length;
+    if (old_count == 0) {
+        if (baseline_entities != NULL || consumed != NULL || consumed_count != 0)
+            return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, "Entities");
+    } else if (baseline_entities != old_entities || consumed == NULL ||
+               consumed_count != old_count || old_entities->value.list.items == NULL) {
+        return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, "Entities");
+    }
+    if (old_count > limits.max_elements ||
+        entity_records->value.list.length > limits.max_elements ||
+        tile_records->value.list.length > limits.max_elements)
+        return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
+    size_t unknown_count = 0;
+    for (size_t index = 0; index < old_count; ++index) {
+        const mc_nbt_tag *record = old_entities->value.list.items[index];
+        if (record == NULL || record->type != MC_NBT_COMPOUND)
+            return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "Entities");
+        if (!consumed[index])
+            ++unknown_count;
+    }
+    if (entity_records->value.list.length > limits.max_elements - unknown_count)
+        return stored_status(error, MC_STORED_CHUNK_LIMIT, "Entities");
+    const size_t entity_count = unknown_count + entity_records->value.list.length;
 
     mc_world_chunk_fields source;
     mc_world_chunk_nibble_fields metadata, skylight, block_light;
@@ -535,6 +563,10 @@ mc_stored_chunk_build_game_tiles(const mc_stored_chunk *stored, const mc_chunk_s
         level_count > SIZE_MAX - STORED_FIELD_COUNT - 1u - root_count)
         return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
     size_t pointer_count = root_count + level_count + STORED_FIELD_COUNT + 1u;
+    const size_t entity_offset = pointer_count;
+    if (entity_count > SIZE_MAX - pointer_count)
+        return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
+    pointer_count += entity_count;
     if (pointer_count > SIZE_MAX / sizeof(const mc_nbt_tag *) ||
         pointer_count * sizeof(const mc_nbt_tag *) > limits.max_allocation_bytes)
         return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
@@ -551,6 +583,21 @@ mc_stored_chunk_build_game_tiles(const mc_stored_chunk *stored, const mc_chunk_s
     fields[5].value.byte_array.data = skylight.a;
     fields[6].value.byte_array.data = block_light.a;
     fields[7].value.byte_array.data = source.h;
+    /* Explicit native storage policy: preserve only unknown source records.
+     * A consumed slot receives the next current serialized occurrence, never
+     * an old Entity payload or an Entity-pointer/ID-derived substitute. */
+    const mc_nbt_tag **entity_items = items + entity_offset;
+    size_t next_entity = 0, emitted = 0;
+    for (size_t index = 0; index < old_count; ++index) {
+        if (!consumed[index])
+            entity_items[emitted++] = old_entities->value.list.items[index];
+        else if (next_entity < entity_records->value.list.length)
+            entity_items[emitted++] = entity_records->value.list.items[next_entity++];
+    }
+    while (next_entity < entity_records->value.list.length)
+        entity_items[emitted++] = entity_records->value.list.items[next_entity++];
+    fields[9].value.list.items = entity_count == 0 ? NULL : entity_items;
+    fields[9].value.list.length = entity_count;
     fields[10].value.list = tile_records->value.list;
     uint16_t level_name[16];
     mc_nbt_tag replacement = {0}, root = {0};

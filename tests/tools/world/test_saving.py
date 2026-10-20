@@ -146,7 +146,7 @@ def main():
     report = {"schema": 1, "scope": "constructed native GAME save integration contracts",
               "scenario": "world-saving", "tested_commit": None, "passed": False,
               "original_comparison": False, "natural_population_equivalence": False,
-              "entity_serializer_implemented": False, "processes": []}
+              "item_entity_serializer_implemented": True, "processes": []}
     try:
         CAPTURE.require(args.executable.is_file(), "actual native save executable is missing")
         work = CAPTURE.capture_root(args.work_dir, [sys.executable])
