@@ -1,5 +1,17 @@
 # Build and tests
 
+The [staged temperature checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/temperature.md)
+pass all 154 configured MSVC cases and 156 on each sanitized GCC/Clang build,
+with zero skips and local JDK comparisons. Each host retains 726 unchanged
+selected inputs, 254 zlib pins, 194 products and 37 captures. The new test passes
+371 checks per host: exact retained original numerical vectors, actual array
+identity/lifetime, rebind, allocation failure prefixes, accounting and FP order.
+The finite original values and native sequencing/quota controls have distinct
+scope. No fresh original or full controller/population qualification is claimed.
+Repository formatting covers 425 C files/headers.
+
+The following Dungeon checkpoint predates temperature integration.
+
 The [Dungeon checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/dungeon.md)
 pass all 153 configured MSVC cases and 155 on each sanitized Linux GCC/Clang
 build, with zero skips and local JDK comparisons. Each host retains 723 selected

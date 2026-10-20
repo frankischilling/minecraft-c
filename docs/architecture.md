@@ -5,8 +5,12 @@ spawn lists, record/Class references and its mutable table on the existing
 class owner. Its direct sampler retains reference arrays and invokes the real
 lookup after each climate-cell store. Class-bound Dimension setup retains actual
 normal/fixed managers with independent Registry borrows and reference caches.
-Numerical climate APIs keep their separate bounded-buffer contract. Live
-generation and surface reads remain unfinished.
+The [temperature-array module](world/temperature.md) keeps output allocations
+independent of manager replacement and preserves raw writes before a later
+auxiliary-buffer failure. Its concrete normal/fixed methods support the pending
+population controller without using the atomic numerical temperature helper.
+Numerical climate APIs keep their separate bounded-buffer contract. Complete
+population ordering and reached World descendants remain unfinished.
 
 The [concrete World height and lighting operations](world/runtime-lighting.md)
 use its current provider, actual C list and class-owned shared A. Regions retain

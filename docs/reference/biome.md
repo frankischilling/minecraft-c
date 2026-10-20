@@ -74,6 +74,19 @@ and assign raw G to manager `c` at 77. With disjoint output, manager `a`, `b`
 and `d` are unchanged. Both grid paths traverse X outermost, Z innermost, with
 flat index `x*height+z`.
 
+The concrete [Dimension temperature implementation](../world/temperature.md)
+preserves these separate publication points. Output allocation19 is local until
+the method returns209; raw temperature44 precedes auxiliary74 and `c`77. A later
+auxiliary allocation failure therefore leaves earlier raw writes on a reused
+input. The normal population caller stores the returned array in provider `w`
+only at2684. That controller integration remains unfinished.
+
+The complete fixed overrides `hd.a([DIIII)[D` / `et.a([DIIII)[D` allocate output19
+only for null/short input, read actual fixed `f`30, call prefix `Arrays.fill`33
+and return37. They preserve a larger output suffix and do not access normal
+noise or manager `a/b/c/d`. These bodies use the same descriptor on both sides.
+Native allocation limits are separate controls, not original OOME observations.
+
 ## Reused arrays and adapters
 
 The fields are reusable mutable arrays, with no coordinate keys or cache-hit

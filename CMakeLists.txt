@@ -250,6 +250,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/generation/surface.c
     src/world/runtime/generation/caves.c
     src/world/dimension/dimension.c
+    src/world/dimension/temperature.c
     src/entity/entity.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
@@ -449,6 +450,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_fixed_biome_runtime tests/world/dimension/test_fixed_biome_runtime.c)
     target_link_libraries(mc_test_fixed_biome_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_temperature tests/world/dimension/test_temperature.c)
+    target_link_libraries(mc_test_temperature PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_lighting_runtime tests/world/runtime/test_lighting_runtime.c)
     target_link_libraries(mc_test_world_lighting_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1027,6 +1031,15 @@ if(BUILD_TESTING)
 
     add_test(NAME world.fixed_biome_runtime COMMAND mc_test_fixed_biome_runtime)
     set_tests_properties(world.fixed_biome_runtime PROPERTIES
+        LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_test(NAME world.temperature_runtime
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_temperature>"
+        --scenario temperature-runtime
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/temperature-runtime-contracts")
+    set_tests_properties(world.temperature_runtime PROPERTIES
         LABELS "public;unit;ownership" TIMEOUT 90)
 
     add_test(NAME world.lighting_runtime

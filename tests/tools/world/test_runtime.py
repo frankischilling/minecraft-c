@@ -15,7 +15,7 @@ CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
-             "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime",
+             "world-biome-runtime", "temperature-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
              "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch")
@@ -169,6 +169,15 @@ def main():
                 "registry_runtime_internal": ROOT / "src/block/registry/runtime_internal.h",
                 "registry_internal": ROOT / "src/block/registry/registry_internal.h",
                 "world_registry": ROOT / "src/world/runtime/registry.c",
+            })
+        if args.scenario == "temperature-runtime":
+            paths.update({
+                "temperature_test": ROOT / "tests/world/dimension/test_temperature.c",
+                "temperature": ROOT / "src/world/dimension/temperature.c",
+                "temperature_header": ROOT / "include/mc/world/dimension/temperature.h",
+                "original_value_fixture": ROOT / "tests/world/biome/test_biome.c",
+                "simplex": ROOT / "src/world/noise/simplex.c",
+                "simplex_header": ROOT / "include/mc/world/noise/simplex.h",
             })
         if args.scenario in ("world-lighting-runtime", "world-light-queue-runtime"):
             paths["lighting_test"] = ROOT / ("tests/world/runtime/test_lighting_runtime.c"

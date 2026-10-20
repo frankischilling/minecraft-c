@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+The [temperature-array module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/temperature.md)
+implements concrete normal/fixed Dimension methods with independent output-array
+ownership. Raw temperature writes precede auxiliary allocation and publication;
+fixed fills preserve larger suffixes. Actual arrays survive manager replacement
+and root retirement through their own holds. The full population controller,
+provider w publication and snow loop remain unfinished.
+
 The [Entity Class and NBT modules](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/nbt.md)
 keep passive canonical Class identity in a lower library shared by Registry and
 simulation. The actual EntityList namespace owns four separately published

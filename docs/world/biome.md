@@ -12,6 +12,11 @@ separate initialization, lifetime and partial-effect contracts. The numerical
 interfaces on this page retain their existing finite-input and preflight
 behavior.
 
+The [Dimension temperature-array module](temperature.md) provides the separate
+staged normal/fixed methods needed by population. It preserves raw output writes
+before auxiliary allocation failure and keeps output ownership independent of
+the current manager. The numerical interface described below remains atomic.
+
 ## Classification and seeded state
 
 `mc_biome_classifier_init` builds all 4096 entries using binary32 index/63

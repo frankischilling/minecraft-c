@@ -1,5 +1,18 @@
 # Test scope and reproduction
 
+The [staged temperature checks](world/temperature.md) pass all 154 configured
+MSVC cases and 156 per Linux GCC/Clang build, with zero skips and local JDK
+comparisons enabled. Linux uses ASan/UBSan/leak checks and fresh byte-verified
+native filesystem source/dependency copies. Each host retains 726 unchanged
+selected inputs, 254 zlib pins, 194 products and 37 captures. The new
+`world.temperature_runtime` case passes 371 checks per host over genuine World,
+Dimension, array and allocator owners. Four retained original rectangular
+value/auxiliary vectors supply successful numerical expectations; native quota,
+raw-write sequencing and FP controls retain their separate scope. No fresh
+original experiment or full population/controller qualification follows.
+
+The following live-save checkpoint predates temperature integration.
+
 The [live save integration](world/saving.md) passes all 144 configured MSVC and
 146 GCC/Clang cases with zero skips and local JDK comparisons enabled. Linux
 uses ASan/UBSan and leak checks with fresh byte-verified source/dependency copies.
@@ -442,6 +455,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.biome_reference_sampling` | Cold, warm, partial channel/class failure, array reuse and whole-call lifetime contracts | Direct square sampler with native bounds; no World generation or surface join |
 | `world.biome_runtime` | 304 checks: constructed Worlds, same-registry binding, actual cache and pointer results, callback replacement, retained failures, all three client constructor cause frames and manager lifetime | Native integration and existing climate fixtures; no new original World observation or generation |
 | `world.fixed_biome_runtime` | 386 checks: both sides and fixed kinds, cold l/m setup, rectangle/empty/suffix effects, natural allocation/fill failures, aliases and registry retirement | Native/source contracts; no fabricated recursive null-e state or Java OOM/GC timing |
+| `world.temperature_runtime` | 371 checks: retained original temperature/auxiliary bits, actual normal/fixed owners, null/empty/reuse/growth, suffixes, manager/root retirement, real late c/output quota effects and FP ordering | Concrete method and native ownership controls; no fresh original OOME, provider w/controller, snow or natural population qualification |
 | `world.biome_registry_observation` | Complete original graph/query streams, explicit byte/table controls and corruption guards | Finite Biome bootstrap and methods; no Java Throwable identity or full World startup |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |
