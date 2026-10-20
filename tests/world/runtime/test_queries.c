@@ -79,6 +79,7 @@ typedef struct fixture {
     mc_chunk_state *normal[4][2];
     child children[16];
     mc_ws_file_bytes seed[4];
+    mc_ws_file_bytes negative_seed[2];
     const mc_world_light_type *types[2][2];
 } fixture;
 
@@ -324,25 +325,30 @@ cleanup:
     return ok;
 }
 
-static bool image(fixture *f, const char *root, size_t slot, bool retain)
+static bool image(fixture *f, const char *root, size_t slot, bool negative, bool retain)
 {
     bool ok = false;
-    char name[64];
+    char name[64], relative[64];
     char *path = NULL, *copy = NULL;
     mc_ws_file_bytes bytes = {0};
-    CHECK(mc_ws_path_join(mc_world_store_root(f->stores[slot]), "region/r.0.0.mcr", &path, NULL) ==
+    CHECK(slot < COUNT(f->seed) && (!negative || slot < COUNT(f->negative_seed)));
+    mc_ws_file_bytes *seed = negative ? &f->negative_seed[slot] : &f->seed[slot];
+    const int relative_length =
+        snprintf(relative, sizeof(relative), "region/r.%d.0.mcr", negative ? -1 : 0);
+    CHECK(relative_length > 0 && (size_t)relative_length < sizeof(relative));
+    CHECK(mc_ws_path_join(mc_world_store_root(f->stores[slot]), relative, &path, NULL) ==
           MC_WORLD_STORAGE_OK);
     CHECK(mc_ws_read_file(path, 2u * 1024u * 1024u, &bytes, NULL) == MC_WORLD_STORAGE_OK);
     if (retain) {
-        const int n = snprintf(name, sizeof(name), "seed-world%zu.region.bin", slot);
+        const int n = snprintf(name, sizeof(name), "seed-%sworld%zu.region.bin",
+                               negative ? "negative-" : "", slot);
         CHECK(n > 0 && (size_t)n < sizeof(name));
         CHECK(mc_ws_path_join(root, name, &copy, NULL) == MC_WORLD_STORAGE_OK);
         CHECK(mc_ws_write_file(copy, bytes.data, bytes.length, true, NULL) == MC_WORLD_STORAGE_OK);
-        f->seed[slot] = bytes;
+        *seed = bytes;
         bytes = (mc_ws_file_bytes){0};
     } else
-        CHECK(bytes.length == f->seed[slot].length &&
-              memcmp(bytes.data, f->seed[slot].data, bytes.length) == 0);
+        CHECK(bytes.length == seed->length && memcmp(bytes.data, seed->data, bytes.length) == 0);
     ok = true;
 cleanup:
     mc_ws_free_file_bytes(&bytes);
@@ -923,6 +929,8 @@ static bool cleanup_fixture(fixture *f, bool verify_retired)
         mc_world_store_free(f->stores[i]);
         mc_ws_free_file_bytes(&f->seed[i]);
     }
+    for (size_t i = 0; i < COUNT(f->negative_seed); ++i)
+        mc_ws_free_file_bytes(&f->negative_seed[i]);
     mc_world_regions_free(f->regions);
     mc_java_random_profile_free(f->profile);
     mc_materials_destroy(f->materials);
@@ -1498,6 +1506,8 @@ cleanup:
     return ok;
 }
 
+#include "population/plants_contracts.h"
+
 int main(int argc, char **argv)
 {
     int result = 1;
@@ -1518,7 +1528,9 @@ int main(int argc, char **argv)
         CHECK(open_store(f, slot, root) && seed_record(f, slot, 0));
         if (slot < 2)
             CHECK(seed_record(f, slot, 1));
-        CHECK(image(f, root, slot, true));
+        CHECK(image(f, root, slot, false, true));
+        if (slot < 2)
+            CHECK(seed_record(f, slot, -1) && image(f, root, slot, true, true));
     }
     for (size_t side = 0; side < COUNT(f->registry); ++side) {
         resource *r = &f->resources[side];
@@ -1546,8 +1558,13 @@ int main(int argc, char **argv)
         CHECK(detailed_material_contracts(f, side) && captured_o_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)
         CHECK(plant_predicate_contracts(f, side));
-    for (size_t slot = 0; slot < COUNT(f->stores); ++slot)
-        CHECK(image(f, root, slot, false));
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(population_plant_contracts(f, side));
+    for (size_t slot = 0; slot < COUNT(f->stores); ++slot) {
+        CHECK(image(f, root, slot, false, false));
+        if (slot < 2)
+            CHECK(image(f, root, slot, true, false));
+    }
     result = 0;
 cleanup:
     if (!cleanup_fixture(f, result == 0)) {

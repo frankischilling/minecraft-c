@@ -1,19 +1,25 @@
 # Test scope and reproduction
 
-The [World-query and plant contracts](world/queries.md) pass 986 checks within
-all 67 selected cases on MSVC and sanitized GCC/Clang. Run
+The [World-query, predicate and plant-feature contracts](world/population/plants.md)
+pass 2,870 checks per host. All 142 configured public cases pass on native MSVC;
+all 144 pass on each sanitized GCC/Clang build, including local JDK comparisons.
+Run
 `ctest --test-dir build -R "^(world.queries|world.entity_publication)$" --output-on-failure`.
-Entity publication now checks 736 conditions, including preservation of pending
-work on cached hits. Fluid checks number 527/529/528 in the same host order;
-actual World Random branches select additional assertions.
-Each host retains 646 identical selected inputs, 58 products
-and selected tool executable pins before/after. Query inputs retain four complete
-unchanged region files containing six records. Separate [original queries](reference/world-queries.md)
+Each host retains 651 unchanged selected inputs, 254 unchanged external zlib
+source files, 140 products and 30 new capture directories. Linux uses fresh
+source/dependency copies whose bytes match the working inputs before and after
+execution. Selected executable pins include the compiler, build tools, Python,
+Java and javac; they do not cover every backend, header or runtime library.
+Tests require six byte-equal region baselines, eight occupied input records,
+the exact eight-file inventory and two exact empty provider-capacity headers.
+Plant cases include later-layer placement after earlier survival rejection,
+ordinary false setters, preserved partial effects and a primed Gaussian cache.
+Separate [original queries](reference/world-queries.md)
 each record 44 calls and 170 raw Contexts; they supply no native replay or full
 population qualification. A separate offline audit completes both positive
 side checks and twenty semantic corruption refusals with 45 unchanged inputs.
-These are selected local runs, not the complete
-declared local-original inventory.
+The complete configured public suite does not cover the complete declared
+local-original inventory or establish original/native feature equivalence.
 
 At the preceding checkpoint, the
 [Entity publication contracts](world/entities.md#validation-and-limits) passed

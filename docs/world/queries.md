@@ -48,15 +48,18 @@ diagnostics intact. RAW, constructing and failed GAME prefixes remain usable at
 their actually reached fields; retired Worlds reject.
 
 The [paired source map](../reference/world-queries.md) records the authority and
-method locations. Native query, material-array and [plant predicate](plants.md)
-contracts pass 986 checks within all 67 selected cases on Windows MSVC and
-sanitized Linux GCC/Clang. Each host retains the same 646 selected inputs and
-58 products, with selected tool executable pins before and after execution.
+method locations. Native query, material-array, [plant predicate](plants.md)
+and [plant feature](population/plants.md) contracts pass 2,870 checks per host.
+All 142 configured public cases pass on Windows MSVC and all 144 on each
+sanitized Linux GCC/Clang build. Each host retains the same 651 selected inputs,
+254 external zlib source pins, 140 products and selected executable pins before
+and after execution, including Java/javac.
 Tests verify captured-Chunk continuation through Registry reentry, pending-key
 preservation, live nullable fields, cold Light, shared class state, packed
-aliases, prefix failures and four unchanged complete region baselines containing
-six records. The denied-policy test is an explicit native input control on a
-base World, not an executed dedicated-World constructor.
+aliases and prefix failures. Six complete region baselines containing eight
+records remain byte-equal; the complete inventory also includes two exactly
+empty provider-capacity regions. The denied-policy test is an explicit native
+input control on a base World, not an executed dedicated-World constructor.
 
 Separate untouched-original client/base-server experiments each record 44 calls,
 55 operations, 112 snapshots, 170 raw Contexts and 35 complete byte-array images.

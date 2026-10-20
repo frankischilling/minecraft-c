@@ -2,11 +2,13 @@
 
 The [population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 and [plant predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
-implement downward solid/liquid scans, light, sky visibility and seven concrete
-plant receiver kinds. All 67 selected cases pass on MSVC and sanitized GCC/Clang,
-including 986 query/plant checks and 736 Entity publication checks. Separate
-original query observations retain 44 calls per side; native replay, feature
-bodies and complete population remain unfinished.
+implement downward solid/liquid scans, light, sky visibility and nine concrete
+plant receiver kinds. The [plant feature subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md)
+executes six complete feature families over actual World/Registry/Random owners.
+All 142 configured public tests pass on MSVC and all 144 on each sanitized
+GCC/Clang build, including 2,870 combined query/plant checks per host. Separate
+original query observations retain 44 calls per side; native replay, remaining
+feature families and complete population remain unfinished.
 
 The [Entity publication contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 adds real World/Chunk occurrences, duplicates, cross-World bindings and terminal

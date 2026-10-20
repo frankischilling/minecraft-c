@@ -3,6 +3,7 @@
 - [Systems and subsystems](Architecture)
 - [Population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 - [Plant placement and survival](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
+- [Plant population features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md)
 - [Entity publication and ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 - [Normal generator API](Architecture#normal-generator)
 - [Verified generation checkpoint](Storage-and-reference#normal-generation-checkpoint)

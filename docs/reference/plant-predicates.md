@@ -16,6 +16,7 @@ rather than a similar name or block ID, determines each virtual method.
 | Flower can-place | `wb.a` | `nw.a` | Base invokespecial6; below block20; virtual substrate23 |
 | Flower survival | `wb.g` | `nw.f` | Plant light5; only below8, sky18; below block32; virtual substrate35 |
 | Flower substrate | `wb.d` | `nw.c` | Live grass v1/bn4; conditional dirt w11/bn14; conditional farmland aB21/bn24 |
+| Crops substrate | `ni.d` | `ij.c` | Live farmland aB1/bn4, equality7; no grass/dirt read |
 | Dead-bush substrate | `jb.d` | `fz.c` | Live sand F1/bn4 |
 | Mushroom survival | `tl.g` | `md.f` | Y check; light18 below13; below block34; virtual substrate37 |
 | Mushroom substrate | `tl.d` | `md.c` | Capture actual Block.o0; reached signed element4 |
@@ -30,6 +31,14 @@ overrides substrate but inherits flower placement/survival. Mushroom overrides
 survival and substrate, while its can-place remains the flower method. Pumpkin
 has its own can-place and no survival override. No other Block kinds receive a
 guessed base implementation from these findings.
+
+Complete `he`/`eu` and `ni`/`ij` member inventories also prove inheritance of
+both World predicates from `wb`/`nw`. Saplings inherit the flower substrate;
+crops override only that substrate with the farmland comparison above. The
+feature caller's `wb`/`nw` cast therefore admits exactly six retained kinds:
+flower, sapling, crops, tall grass, dead bush and mushroom. Inherited failures
+keep their actual declaring body and immediate caller, including crops
+substrate failures reached through flower survival35 or placement23.
 
 The material query itself is `fd.f(III)Lln;` / `dj.d(III)Lhj;`: World block4,
 air Material14, Block.m18, element23 and bA24. Its nullable material return is

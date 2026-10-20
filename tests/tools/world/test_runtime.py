@@ -196,6 +196,9 @@ def main():
                 "queries_header": ROOT / "include/mc/world/runtime/queries.h",
                 "plants": ROOT / "src/world/runtime/plants.c",
                 "plants_header": ROOT / "include/mc/world/runtime/plants.h",
+                "population_plants": ROOT / "src/world/runtime/population/plants.c",
+                "population_plants_header": ROOT / "include/mc/world/runtime/population/plants.h",
+                "population_plants_contracts": ROOT / "tests/world/runtime/population/plants_contracts.h",
                 "registry_runtime": ROOT / "src/block/registry/runtime.c",
                 "registry_runtime_header": ROOT / "include/mc/block/registry/runtime.h",
                 "registry_runtime_internal": ROOT / "src/block/registry/runtime_internal.h",
@@ -294,8 +297,12 @@ def main():
         if args.scenario in ("world-solid-support", "world-fluids", "world-entity-publication", "world-queries"):
             stores = ((0, 1, 4, 5) if args.scenario == "world-solid-support" else
                       range(8) if args.scenario == "world-entity-publication" else range(4))
+            expected_regions = {f"world{i}/region/r.0.0.mcr" for i in stores}
+            if args.scenario == "world-queries":
+                expected_regions.update(f"world{i}/region/r.-1.0.mcr" for i in range(2))
+                expected_regions.update(f"world{i}/region/r.32.64.mcr" for i in range(2))
             CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
-                            {f"world{i}/region/r.0.0.mcr" for i in stores},
+                            expected_regions,
                             "exact complete region file inventory, including empty files")
         timestamps = []
         for path in sorted(root.rglob("*.mcr")):
@@ -333,22 +340,35 @@ def main():
         if args.scenario == "world-queries":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
                               for i in range(4) for slot in ((0, 1) if i < 2 else (0,))}
-            CAPTURE.require(len(timestamps) == 6 and
+            expected_slots.update((f"world{i}/region/r.-1.0.mcr", 31) for i in range(2))
+            CAPTURE.require(len(timestamps) == 8 and
                             {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
-                            "all six prepared query input records remain present")
-            CAPTURE.require({path.name for path in root.glob("seed-world*.region.bin")} ==
-                            {f"seed-world{i}.region.bin" for i in range(4)},
-                            "all four query baseline region files retained")
+                            "all eight prepared query and population input records remain present")
+            baseline_regions = [(f"seed-world{i}.region.bin", f"world{i}/region/r.0.0.mcr")
+                                for i in range(4)]
+            baseline_regions.extend((f"seed-negative-world{i}.region.bin", f"world{i}/region/r.-1.0.mcr")
+                                    for i in range(2))
+            CAPTURE.require({path.name for path in root.glob("seed-*.region.bin")} ==
+                            {baseline for baseline, _ in baseline_regions},
+                            "all six query and population baseline region files retained")
             baselines = []
-            for i in range(4):
-                baseline = root / f"seed-world{i}.region.bin"
-                actual = root / f"world{i}/region/r.0.0.mcr"
+            for baseline_name, actual_name in baseline_regions:
+                baseline = root / baseline_name
+                actual = root / actual_name
                 CAPTURE.require(baseline.read_bytes() == actual.read_bytes(),
                                 "queries and terminal native disposal preserve every region byte")
                 baselines.append({"baseline": baseline.relative_to(root).as_posix(),
                                   "actual": actual.relative_to(root).as_posix(),
                                   "fingerprint": CAPTURE.file_fingerprint(actual)})
             report["query_unchanged_region_baselines"] = baselines
+            empty_regions = []
+            for i in range(2):
+                path = root / f"world{i}/region/r.32.64.mcr"
+                CAPTURE.require(path.read_bytes() == bytes(8192),
+                                "provider capacity controls create only an empty region header")
+                empty_regions.append({"file": path.relative_to(root).as_posix(),
+                                      "fingerprint": CAPTURE.file_fingerprint(path)})
+            report["query_empty_capacity_regions"] = empty_regions
         if args.scenario == "world-fluids":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
                               for i in range(4) for slot in (0, 1, 32, 33)}

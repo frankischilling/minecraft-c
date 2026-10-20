@@ -5,8 +5,9 @@ retain 44 calls, 112 snapshots and 170 raw Context records per side. Complete
 array images, typed fields and namespace bridges preserve actual World/Chunk
 identities. A cold unpublished Chunk prelude and two same-class Worlds expose
 Light initialization and the shared positive-sky flag. Prepared input writes
-are explicit. The separate native query/plant contracts preserve four region
-files; they do not replay the originals or qualify genuine dedicated construction,
+are explicit. The separate native query/plant contracts preserve six region
+baselines and check two exact empty provider-capacity regions. They do not
+replay the originals or qualify genuine dedicated construction,
 full population or gameplay persistence.
 A separate offline audit checks the retained typed fields, complete images,
 identity bridges, ordered preparations and raw Contexts. Both positive side

@@ -181,7 +181,14 @@ static bool substrate(plant_frame *frame, int32_t id, bool *out)
                 return false;
             *out = id == candidate;
             return true;
+        case MC_BLOCK_NI_IJ:
+            stage(frame, "ni", "ij", "d", "c", 0);
+            if (!static_id(frame, "aB", 1, 4, &candidate))
+                return false;
+            *out = id == candidate;
+            return true;
         case MC_BLOCK_WB_NW:
+        case MC_BLOCK_HE_EU:
         case MC_BLOCK_RU_KZ:
             stage(frame, "wb", "nw", "d", "c", 0);
             if (!static_id(frame, "v", 1, 4, &candidate))
@@ -432,6 +439,8 @@ static bool supported(const mc_block *receiver)
 {
     switch (receiver->kind) {
         case MC_BLOCK_WB_NW:
+        case MC_BLOCK_HE_EU:
+        case MC_BLOCK_NI_IJ:
         case MC_BLOCK_RU_KZ:
         case MC_BLOCK_JB_FZ:
         case MC_BLOCK_TL_MD:
@@ -448,6 +457,8 @@ static bool survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *
 {
     switch (frame->receiver->kind) {
         case MC_BLOCK_WB_NW:
+        case MC_BLOCK_HE_EU:
+        case MC_BLOCK_NI_IJ:
         case MC_BLOCK_RU_KZ:
         case MC_BLOCK_JB_FZ:
             return flower_survives(frame, x, y, z, out);
@@ -476,6 +487,8 @@ static bool can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool 
 {
     switch (frame->receiver->kind) {
         case MC_BLOCK_WB_NW:
+        case MC_BLOCK_HE_EU:
+        case MC_BLOCK_NI_IJ:
         case MC_BLOCK_RU_KZ:
         case MC_BLOCK_JB_FZ:
         case MC_BLOCK_TL_MD:
