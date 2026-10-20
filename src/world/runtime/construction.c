@@ -1,6 +1,8 @@
 #include "runtime_internal.h"
 
+#include "../storage/objects_internal.h"
 #include "construction_internal.h"
+#include "entity_publication_internal.h"
 #include "lighting_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -237,6 +239,8 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
     if (list == NULL)
         return false;
     *field = list;
+    if (field == &runtime->fields.b)
+        runtime->entity_membership.list = list;
     runtime->construction.last_store_pc = store_pc;
     return true;
 }
@@ -713,7 +717,12 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
 {
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
+    if (!mc_world_runtime_entity_list_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
+    if (runtime->entity_membership.count != 0)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World Entity occurrences remain");
     mc_world_runtime_fields *f = &runtime->fields;
+    mc_world_runtime_entity_list_release(runtime);
     mc_world_runtime_lighting_free(runtime);
     mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
     for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
@@ -745,7 +754,8 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World retirement arguments");
     if (runtime->active_calls != 0 || runtime->local_leases != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World call or lease during retirement");
-    if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED)
+    if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED &&
+        !runtime->construction.contexts_bound && !runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
@@ -781,5 +791,58 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     if (mc_world_dimension_world(f->t) == runtime)
         mc_world_dimension_unbind(f->t);
     runtime->construction.phase = MC_WORLD_RUNTIME_RETIRED;
+    return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static bool entity_retirement_other_collections_empty(const mc_world_runtime *world)
+{
+    const mc_world_runtime_fields *fields = &world->fields;
+    /* C/E/F are already concrete typed owners retained until final native free.
+     * b is admitted separately. Never reinterpret entries of these remaining
+     * finite void* lists, clear their counts, or discard a nonempty active set. */
+    const mc_world_reference_list *lists[] = {fields->D, fields->c, fields->G, fields->d,
+                                              fields->e, fields->u, fields->K, fields->R};
+    for (size_t index = 0; index < sizeof(lists) / sizeof(lists[0]); ++index) {
+        const mc_world_reference_list *list = lists[index];
+        if (list != NULL && (list->count != 0 || list->capacity > SIZE_MAX / sizeof(*list->items) ||
+                             (list->capacity != 0 && list->items == NULL)))
+            return false;
+    }
+    return fields->P == NULL || fields->P->count == 0;
+}
+
+mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runtime *world,
+                                                                  mc_world_storage_error *error)
+{
+    if (world == NULL || world->construction.mode != MC_WORLD_RUNTIME_GAME)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World entity retirement arguments");
+    if (world->active_calls != 0 || world->local_leases != 0)
+        return result(error, MC_WORLD_STORAGE_BUSY,
+                      "World call or local lease during entity retirement");
+    if (!mc_world_runtime_entity_list_valid(world))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World entity retirement ownership metadata");
+    if (!entity_retirement_other_collections_empty(world))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World entity retirement untyped collections");
+    mc_world_store *store = world->fields.w;
+    if (store != NULL) {
+        const mc_world_storage_status status =
+            mc_world_store_entity_containers_validate(store, world, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+    }
+    /* COMMIT: no allocation, callback, fallible admission or source gameplay
+     * call may be introduced below. A later full-World/cache admission belongs
+     * to a separate API; this operation must not clear then report BUSY.
+     * The latch is terminal: central source entry/acquire/lifecycle, constructor,
+     * default Random creation/new bindings and context getters must reject it.
+     * Do not save or resume a World after discarding its actual Entity state. */
+    world->entity_containers_retired = true;
+    world->construction.phase = MC_WORLD_RUNTIME_RETIRED;
+    if (store != NULL)
+        mc_world_store_entity_containers_release(store, world);
+    mc_world_runtime_entity_list_release(world);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

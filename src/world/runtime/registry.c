@@ -7,6 +7,8 @@ mc_world_storage_status mc_world_runtime_call_enter(mc_world_runtime *runtime,
                                                     mc_world_storage_error *error)
 {
     mc_world_storage_status status = runtime == NULL ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                     : runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED
+                                         ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
                                      : runtime->active_calls == SIZE_MAX ? MC_WORLD_STORAGE_LIMIT
                                                                          : MC_WORLD_STORAGE_OK;
     if (status != MC_WORLD_STORAGE_OK) {

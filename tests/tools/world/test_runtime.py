@@ -17,7 +17,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
-             "world-scheduling", "world-solid-support", "world-fluids")
+             "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication")
 
 
 def provider_fixture(root):
@@ -195,6 +195,16 @@ def main():
             paths["presentation"] = ROOT / "src/world/runtime/presentation.c"
             paths["presentation_header"] = ROOT / "include/mc/world/runtime/presentation.h"
             paths["world_entities_header"] = ROOT / "include/mc/world/runtime/entities.h"
+        if args.scenario in ("world-fluids", "world-entity-publication"):
+            paths.update({
+                "entity_publication": ROOT / "src/world/runtime/entity_publication.c",
+                "entity_publication_internal": ROOT / "src/world/runtime/entity_publication_internal.h",
+                "chunk_entities": ROOT / "src/world/chunk/entities.c",
+                "chunk_object_state": ROOT / "src/world/chunk/object_state_internal.h",
+                "world_entities_header": ROOT / "include/mc/world/runtime/entities.h",
+            })
+        if args.scenario == "world-entity-publication":
+            paths["entity_publication_test"] = ROOT / "tests/world/runtime/test_entity_publication.c"
         if args.scenario == "world-scheduling":
             paths["scheduling_test"] = ROOT / "tests/world/runtime/test_scheduling.c"
             paths["scheduling_header"] = ROOT / "include/mc/world/runtime/scheduling.h"
@@ -231,7 +241,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids"):
+                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -265,8 +275,9 @@ def main():
         report["inputs_unchanged"] = True
         report["world_files"] = {path.relative_to(root).as_posix(): CAPTURE.file_fingerprint(path)
                                  for path in sorted(root.rglob("*")) if path.is_file()}
-        if args.scenario in ("world-solid-support", "world-fluids"):
-            stores = (0, 1, 4, 5) if args.scenario == "world-solid-support" else range(4)
+        if args.scenario in ("world-solid-support", "world-fluids", "world-entity-publication"):
+            stores = ((0, 1, 4, 5) if args.scenario == "world-solid-support" else
+                      range(8) if args.scenario == "world-entity-publication" else range(4))
             CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
                             {f"world{i}/region/r.0.0.mcr" for i in stores},
                             "exact complete region file inventory, including empty files")
@@ -288,7 +299,7 @@ def main():
                         else:
                             CAPTURE.require(timestamp == 0xfedcba98,
                                             "untouched store-limit fixture clock")
-                    elif args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling", "world-fluids"):
+                    elif args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling", "world-fluids", "world-entity-publication"):
                         opaque_input = path.relative_to(root).as_posix() == "loaded/region/r.1.0.mcr"
                         if opaque_input:
                             CAPTURE.require(slot in (136, 137) and timestamp == 1,
@@ -300,7 +311,7 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
         if args.scenario == "world-fluids":
@@ -326,13 +337,27 @@ def main():
                                 "store-limit fixture SHA256 unchanged")
                 unchanged[str(i)] = {"seed": before, "final": after}
             report["unchanged_store_limit_regions"] = unchanged
+        if args.scenario == "world-entity-publication":
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(8)}
+            CAPTURE.require(len(timestamps) == 8 and
+                            {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                            "all eight publication fixtures saved before Entity insertion")
+            unchanged = {}
+            for i in range(8):
+                saved = root / f"saved-world{i}.region.bin"
+                final = root / f"world{i}/region/r.0.0.mcr"
+                CAPTURE.require(saved.read_bytes() == final.read_bytes(),
+                                "complete publication region bytes unchanged after refused writes")
+                unchanged[str(i)] = {"saved": CAPTURE.file_fingerprint(saved),
+                                     "final": CAPTURE.file_fingerprint(final)}
+            report["unchanged_publication_regions"] = unchanged
         if args.scenario == "world-scheduling":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
                               for i in range(3) for slot in (0, 1, 32, 33)}
             CAPTURE.require(len(timestamps) == 12 and
                             {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
                             "all twelve loaded scheduler fixture slots saved by actual GAME maintenance")
-        if args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids"):
+        if args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication"):
             report["actual_game_clock_window"] = [clock_before, clock_after]
         report["passed"] = True
         print(text, end="")

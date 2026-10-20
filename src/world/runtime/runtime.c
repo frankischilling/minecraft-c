@@ -527,17 +527,26 @@ mc_world_storage_status mc_world_runtime_read_info(const mc_world_runtime *runti
 
 const mc_chunk_acquire_context *mc_world_runtime_acquisition(const mc_world_runtime *runtime)
 {
-    return runtime == NULL || !runtime->construction.contexts_bound ? NULL : &runtime->acquisition;
+    return runtime == NULL || !runtime->construction.contexts_bound ||
+                   runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED
+               ? NULL
+               : &runtime->acquisition;
 }
 
 const mc_chunk_lifecycle_context *mc_world_runtime_lifecycle(const mc_world_runtime *runtime)
 {
-    return runtime == NULL || !runtime->construction.contexts_bound ? NULL : &runtime->lifecycle;
+    return runtime == NULL || !runtime->construction.contexts_bound ||
+                   runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED
+               ? NULL
+               : &runtime->lifecycle;
 }
 
 const mc_world_save_context *mc_world_runtime_saving(const mc_world_runtime *runtime)
 {
-    return runtime == NULL || !runtime->construction.contexts_bound ? NULL : &runtime->saving;
+    return runtime == NULL || !runtime->construction.contexts_bound ||
+                   runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED
+               ? NULL
+               : &runtime->saving;
 }
 
 const mc_world_storage_error *mc_world_runtime_last_error(const mc_world_runtime *runtime)
@@ -605,7 +614,8 @@ static mc_chunk_acquire_status enter_acquire(mc_world_runtime *runtime)
 {
     if (runtime == NULL)
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
-    if (!runtime->construction.contexts_bound) {
+    if (!runtime->construction.contexts_bound ||
+        runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "runtime acquisition context not installed");
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
@@ -662,7 +672,8 @@ static mc_chunk_lifecycle_status enter_lifecycle(mc_world_runtime *runtime)
 {
     if (runtime == NULL)
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
-    if (!runtime->construction.contexts_bound) {
+    if (!runtime->construction.contexts_bound ||
+        runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "runtime lifecycle context not installed");
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;

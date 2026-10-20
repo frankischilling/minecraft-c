@@ -32,11 +32,17 @@ light or dirty mutation.
 
 Entity/tile compounds and unknown root/Level children remain opaque. Building
 an independent result writes explicit LastUpdate and known current state.
-Until live objects exist, nonempty opaque lists permit only unchanged arrays,
+Nonempty opaque lists permit only unchanged arrays,
 coordinates and population state. Other edits fail. Normalization of unknown
 block IDs can therefore make an opaque record unwritable; the source remains
 available instead of being silently replaced. Opaque retention does not run
 factories, register world objects or establish subtype persistence.
+
+Actual [live Entity publication](entities.md) is separate from opaque NBT.
+Writers refuse nonempty concrete Chunk lists before resetting q or writing a
+region. Terminal native disposal does not make those Chunks serializable after
+their Entity lists are cleared. No Entity save format or copied-world Entity
+interoperability follows from the current insertion methods.
 
 ## Native region transport
 

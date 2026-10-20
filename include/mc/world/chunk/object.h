@@ -10,6 +10,7 @@ typedef struct mc_world_chunk_nibble mc_world_chunk_nibble;
 typedef struct mc_world_chunk_tile_map mc_world_chunk_tile_map;
 typedef struct mc_world_chunk_list_array mc_world_chunk_list_array;
 typedef struct mc_world_chunk_entity_list mc_world_chunk_entity_list;
+typedef struct mc_entity mc_entity;
 
 /* Passive snapshots of the seventeen actual instance fields. Scalars read the
  * same cells used by cache/lifecycle/save, never a detached flag projection.
@@ -53,5 +54,10 @@ mc_world_storage_status mc_world_chunk_slice_at(const mc_world_chunk_list_array 
 mc_world_storage_status mc_world_chunk_tile_count(const mc_world_chunk_tile_map *map, size_t *out);
 mc_world_storage_status mc_world_chunk_entity_count(const mc_world_chunk_entity_list *list,
                                                     size_t *out);
+/* Borrow one actual occurrence in the stable slice List; duplicates remain
+ * separate entries. Keep the Chunk alive and unchanged while using the result.
+ * Failure preserves out; this neither retains nor dispatches Entity behavior. */
+mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_list *list,
+                                                 size_t index, mc_entity **out);
 
 #endif

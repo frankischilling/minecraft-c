@@ -1,3 +1,4 @@
+#include "../chunk/object_internal.h"
 #include "activation_internal.h"
 
 #include "construction_internal.h"
@@ -34,6 +35,8 @@ static mc_world_storage_status completed(mc_world_activation_error *error)
 static mc_world_storage_status fields_get(mc_world_chunk *chunk, mc_world_chunk_fields *fields,
                                           mc_world_activation_error *error)
 {
+    if (mc_world_chunk_entity_containers_retired(chunk))
+        return failed(error, NULL, 0, 0, "Chunk containers are retired");
     mc_world_storage_status status = mc_world_chunk_fields_get(chunk, fields);
     if (status != MC_WORLD_STORAGE_OK)
         return result(error, NULL, 0, 0,

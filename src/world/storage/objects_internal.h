@@ -26,4 +26,13 @@ mc_world_chunk *mc_world_store_chunk_object(const mc_world_store *store,
 bool mc_world_store_has_chunks_for_world(const mc_world_store *store,
                                          const mc_world_runtime *world);
 
+/* Whole-Store native teardown admission, followed only after complete World
+ * admission by infallible per-occurrence release. This does not save, unload,
+ * remove cache identities or reset source flags. Retired containers cannot
+ * return to gameplay/serialization; unknown stored NBT remains untouched. */
+mc_world_storage_status mc_world_store_entity_containers_validate(const mc_world_store *store,
+                                                                  const mc_world_runtime *world,
+                                                                  mc_world_storage_error *error);
+void mc_world_store_entity_containers_release(mc_world_store *store, const mc_world_runtime *world);
+
 #endif

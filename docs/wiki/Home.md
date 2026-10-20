@@ -1,9 +1,11 @@
 # minecraft-c
 
-The [fluid checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md)
-adds flowing/still bodies, mixing, solid support and actual drop construction
-prefixes. All 65 selected native cases pass on MSVC and sanitized GCC/Clang.
-Entity publication and complete synchronous population remain unfinished.
+The [Entity publication contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
+adds real World/Chunk occurrences, duplicates, cross-World bindings and terminal
+native disposal. Fluid drops can publish their actual ItemEntity and continue.
+All 66 selected native cases pass on MSVC and sanitized GCC/Clang. Nonempty Entity
+saving, player/dedicated descendants and complete synchronous population remain
+unfinished; terminal disposal never makes erased Entity state serializable.
 
 The [concrete World height and lighting operations](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
 use the actual provider, C records and shared A. All 33 selected cases pass on

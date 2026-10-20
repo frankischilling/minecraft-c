@@ -23,6 +23,15 @@ struct mc_world_runtime {
     mc_java_random_profile_status last_random_status;
     size_t active_calls, local_leases;
     size_t persistent_bindings;
+    /* Native typed holds parallel the actual b List, preserving each duplicate
+     * occurrence. The exact constructor-created descriptor is captured at b28;
+     * unknown void* contents are never adopted as owning Entity references. */
+    struct {
+        mc_world_reference_list *list;
+        struct mc_entity **entries;
+        size_t count, capacity;
+    } entity_membership;
+    bool entity_containers_retired;
     mc_world_runtime_fields fields;
     mc_world_runtime_construction construction;
     mc_world_runtime_construction_limits construction_limits;

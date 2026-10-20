@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_MUTATIONS_H
 
 #include "mc/entity/entity.h"
+#include "mc/world/runtime/entities.h"
 
 #include "mc/world/runtime/lighting.h"
 
@@ -20,6 +21,7 @@ typedef struct mc_world_mutation_error {
     unsigned int drop_bytecode, drop_call_bytecode, drop_spawn_bytecode;
     mc_item_stack_status item;
     mc_entity_error entity;
+    mc_world_entity_error publication;
     /* Flat nested diagnostics retain the current concrete caller and deepest
      * reached concrete hook origin, rather than a recursive call-stack owner.
      * No gameplay recursion or work limit follows from this representation. */

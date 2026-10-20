@@ -76,4 +76,9 @@ double mc_entity_item_velocity_from_draw(double draw);
  * the concrete Entity; this does not add a source phase gate or constructor PC. */
 mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay);
 
+/* Borrow the actual source fields while holding this Entity. Reads and stores
+ * belong to the caller's concrete source operation; no constructor/READY gate,
+ * World rebinding, snapshot copy or callback is inserted here. */
+mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity);
+
 #endif

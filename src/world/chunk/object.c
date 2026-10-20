@@ -1,64 +1,9 @@
-#include "object_internal.h"
+#include "object_state_internal.h"
 
+#include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-
-enum { CHUNK_ENTITY_SLICES = 8 };
-
-struct mc_world_chunk_nibble {
-    uint8_t *a;
-    size_t length;
-};
-
-struct mc_world_chunk_tile_map {
-    size_t count;
-};
-
-struct mc_world_chunk_entity_list {
-    size_t count;
-};
-
-struct mc_world_chunk_list_array {
-    const mc_world_chunk_entity_list *items[CHUNK_ENTITY_SLICES];
-    size_t length;
-};
-
-typedef enum chunk_storage_kind {
-    CHUNK_STORAGE_GENERATED,
-    CHUNK_STORAGE_LOADED
-} chunk_storage_kind;
-
-struct mc_world_chunk {
-    mc_chunk_state *state;
-    mc_chunk_data *data;
-
-    mc_world_runtime *d;
-    mc_world_chunk_nibble *e, *f, *g;
-    uint8_t *h;
-    mc_world_chunk_tile_map *l;
-    mc_world_chunk_list_array *m;
-
-    mc_world_chunk_nibble metadata, skylight, block_light;
-    mc_world_chunk_tile_map tile_map;
-    mc_world_chunk_list_array slices;
-    mc_world_chunk_entity_list entities[CHUNK_ENTITY_SLICES];
-
-    /* Native ownership/invariant metadata, not additional Java fields. */
-    chunk_storage_kind storage_kind;
-    uint8_t *bound_blocks;
-    uint8_t *owned_blocks;
-    int32_t constructor_x, constructor_z;
-    size_t allocation_bytes;
-};
-
-/* The first member is the same opaque header used by loaded bindings. Normal
- * C struct layout supplies the state/data alignment without tail arithmetic. */
-typedef struct generated_chunk_backing {
-    mc_world_chunk chunk;
-    mc_chunk_state state;
-    mc_chunk_data data;
-} generated_chunk_backing;
 
 _Static_assert(offsetof(generated_chunk_backing, chunk) == 0,
                "generated Chunk header is the allocation's first member");
@@ -136,6 +81,9 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
     chunk->constructor_x = x;
     chunk->constructor_z = z;
     chunk->allocation_bytes = allocation_bytes;
+    chunk->max_allocation_bytes = max_allocation_bytes;
+    chunk->entity_containers_retired = false;
+    chunk->release_entity = NULL;
 
     /* lm/hi.<init>(World,II)V: fresh empty Map, l12. */
     chunk->tile_map.count = 0;
@@ -162,7 +110,7 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
 
     /* Eight separate empty List identities: ctor91/store94 in index order. */
     for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index) {
-        chunk->entities[index].count = 0;
+        chunk->entities[index] = (mc_world_chunk_entity_list){0};
         chunk->slices.items[index] = &chunk->entities[index];
     }
 
@@ -216,7 +164,8 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
                               .bound_blocks = data->blocks,
                               .constructor_x = state->x,
                               .constructor_z = state->z,
-                              .allocation_bytes = sizeof(*chunk)};
+                              .allocation_bytes = sizeof(*chunk),
+                              .max_allocation_bytes = max_allocation_bytes};
     chunk->metadata = (mc_world_chunk_nibble){data->metadata, MC_CHUNK_NIBBLE_BYTES};
     chunk->skylight = (mc_world_chunk_nibble){data->skylight, MC_CHUNK_NIBBLE_BYTES};
     chunk->block_light = (mc_world_chunk_nibble){data->block_light, MC_CHUNK_NIBBLE_BYTES};
@@ -311,10 +260,11 @@ mc_world_storage_status mc_world_chunk_entity_count(const mc_world_chunk_entity_
 
 bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk)
 {
-    if (chunk == NULL || chunk->d == NULL || chunk->state == NULL || chunk->data == NULL ||
-        chunk->state->blank || chunk->state->data != chunk->data || chunk->bound_blocks == NULL ||
-        chunk->state->x != chunk->constructor_x || chunk->state->z != chunk->constructor_z ||
-        chunk->data->blocks != chunk->bound_blocks ||
+    if (chunk == NULL || chunk->entity_containers_retired ||
+        !mc_world_chunk_entities_validate(chunk) || chunk->d == NULL || chunk->state == NULL ||
+        chunk->data == NULL || chunk->state->blank || chunk->state->data != chunk->data ||
+        chunk->bound_blocks == NULL || chunk->state->x != chunk->constructor_x ||
+        chunk->state->z != chunk->constructor_z || chunk->data->blocks != chunk->bound_blocks ||
         chunk->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS || chunk->e != &chunk->metadata ||
         chunk->f != &chunk->skylight || chunk->g != &chunk->block_light ||
         chunk->h != chunk->data->heightmap || chunk->l != &chunk->tile_map ||
@@ -346,7 +296,93 @@ void mc_world_chunk_storage_free(mc_world_chunk *chunk)
         /* Generated header is the first member of its malloc backing. Loaded
          * headers have no owned blocks/tail; their stored payload outlives this
          * call and is freed separately by the store. */
+        mc_world_chunk_entities_release(chunk);
         free(chunk->owned_blocks);
         free(chunk);
     }
+}
+
+static bool list_valid(const mc_world_chunk_entity_list *list)
+{
+    return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
+           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
+           ((list->capacity == 0 && list->items == NULL) ||
+            (list->capacity != 0 && list->items != NULL));
+}
+
+mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_list *list,
+                                                 size_t index, mc_entity **out)
+{
+    if (out == NULL || !list_valid(list) || index >= list->count)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    *out = list->items[index];
+    return MC_WORLD_STORAGE_OK;
+}
+
+bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk)
+{
+    if (chunk == NULL || chunk->m != &chunk->slices ||
+        chunk->slices.length != CHUNK_ENTITY_SLICES ||
+        chunk->allocation_bytes > chunk->max_allocation_bytes)
+        return false;
+
+    size_t bytes;
+    if (chunk->storage_kind == CHUNK_STORAGE_GENERATED) {
+        if ((size_t)MC_CHUNK_BLOCKS > SIZE_MAX - sizeof(generated_chunk_backing))
+            return false;
+        bytes = sizeof(generated_chunk_backing) + (size_t)MC_CHUNK_BLOCKS;
+    } else if (chunk->storage_kind == CHUNK_STORAGE_LOADED) {
+        bytes = sizeof(mc_world_chunk);
+    } else {
+        return false;
+    }
+    for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index) {
+        const mc_world_chunk_entity_list *const list = &chunk->entities[index];
+        if (chunk->slices.items[index] != list || !list_valid(list) ||
+            (list->count != 0 && chunk->release_entity == NULL))
+            return false;
+        if (chunk->entity_containers_retired &&
+            (list->items != NULL || list->count != 0 || list->capacity != 0))
+            return false;
+        if (list->items != NULL)
+            for (size_t previous = 0; previous < index; ++previous)
+                if (list->items == chunk->entities[previous].items)
+                    return false;
+        const size_t array_bytes = list->capacity * sizeof(*list->items);
+        if (array_bytes > SIZE_MAX - bytes)
+            return false;
+        bytes += array_bytes;
+        for (size_t occurrence = 0; occurrence < list->count; ++occurrence)
+            if (list->items[occurrence] == NULL)
+                return false;
+    }
+    return bytes == chunk->allocation_bytes;
+}
+
+void mc_world_chunk_entities_release(mc_world_chunk *chunk)
+{
+    if (chunk == NULL)
+        return;
+    chunk->entity_containers_retired = true;
+    /* The complete application/container admission happened BEFORE the first
+     * release. All pointers below are genuine held occurrences. No validation,
+     * source callbacks, failure, future-container check or q/bF store occurs. */
+    for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index) {
+        mc_world_chunk_entity_list *const list = &chunk->entities[index];
+        mc_entity **const items = list->items;
+        const size_t count = list->count;
+        const size_t bytes = list->capacity * sizeof(*items);
+        list->items = NULL;
+        list->count = 0;
+        list->capacity = 0;
+        for (size_t occurrence = 0; occurrence < count; ++occurrence)
+            chunk->release_entity(items[occurrence]);
+        free(items);
+        chunk->allocation_bytes -= bytes;
+    }
+}
+
+bool mc_world_chunk_entity_containers_retired(const mc_world_chunk *chunk)
+{
+    return chunk != NULL && chunk->entity_containers_retired;
 }

@@ -1,6 +1,21 @@
 # Test scope and reproduction
 
-The [fluid/support/literal contracts](world/fluids.md#reference-mapping-and-validation-limits)
+The [Entity publication contracts](world/entities.md#validation-and-limits) pass
+within all 66 selected cases on MSVC and sanitized GCC/Clang. Run
+`ctest --test-dir build -R "^(world.entity_publication|world.fluids)$" --output-on-failure`.
+Publication performs 730 checks per host. Fluid performs 529/528/529 checks in
+that host order; actual World Random branches select additional assertions.
+Each host retains the same 640 inputs and 57 products, with selected tool
+executable pins before/after. Eight publication region files remain byte-equal
+to actual saved baselines after refused writes and terminal teardown. The
+sixteen-record fluid maintenance round trip precedes its real drop publication.
+Separate [original publication observations](reference/entity-publication.md)
+complete 21 calls, 44 snapshots and 88 Context records per side, with 12 framing
+refusals and full payload/identity joins. They do not supply native replay,
+dedicated/player coverage or complete population/save qualification.
+
+At the preceding checkpoint, the
+[fluid/support/literal contracts](world/fluids.md#reference-mapping-and-validation-limits)
 pass within all 65 selected cases on MSVC and sanitized GCC/Clang. Run the new
 cases with `ctest --test-dir build -R "^(world.fluids|world.solid_support|block.registry_runtime_literals)$" --output-on-failure`.
 Fluid check counts are 487/487/486 in that host order; actual World Random

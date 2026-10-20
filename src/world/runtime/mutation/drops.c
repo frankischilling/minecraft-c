@@ -1,5 +1,6 @@
-/* Caller holds the actual World and live Registry/Block owners. No successful
- * Entity publication or TileEntity substitute is supplied by this file. */
+/* Caller holds the actual World and live Registry/Block owners. Reached Entity
+ * publication uses the actual World/Chunk owners; TileEntity lookup remains a
+ * distinct unfinished descendant. */
 #include "mutation_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
@@ -519,7 +520,24 @@ static bool drop_done(mc_world_mutation_error *error)
     error->drop_bytecode = 0;
     error->drop_call_bytecode = 0;
     error->drop_spawn_bytecode = 0;
+    error->publication = (mc_world_entity_error){0};
     return true;
+}
+
+static bool drop_publish(const drop_frame *frame, unsigned int pc, mc_entity *entity)
+{
+    drop_at(frame, pc);
+    bool inserted;
+    mc_world_mutation_error *error = frame->error;
+    const mc_world_storage_status status =
+        mc_world_runtime_insert_entity(frame->world, entity, &inserted, &error->publication);
+    if (status == MC_WORLD_STORAGE_OK)
+        return true; /* Original pop discards ordinary false as well as true. */
+    error->status = status;
+    error->operation = error->publication.operation;
+    error->cause = error->publication.cause;
+    frame->world->last_error = error->cause;
+    return false;
 }
 
 static void drop_spawn_at(const drop_frame *frame, unsigned int pc)
@@ -589,14 +607,10 @@ static bool drop_spawn(mc_world_runtime *world, const mc_block *block, int32_t x
         mc_entity_release(entity);
         return false;
     }
-    /* This is the actual reached World.b(Entity)119. The native owner/list
-     * cycle and nonempty insertion API are not implemented yet. Constructor,
-     * class-ID, Math and RNG effects above are real; no publish success is
-     * fabricated. The local native reference is retired normally. */
     drop_spawn_at(&frame, 119);
-    (void)drop_fail(&frame, 119, "World entity insertion is not implemented");
+    const bool completed = drop_publish(&frame, 119, entity);
     mc_entity_release(entity);
-    return false;
+    return completed;
 }
 
 static bool drop_probability(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
@@ -770,9 +784,10 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
             mc_entity_release(entity);
             return false;
         }
-        (void)drop_fail(&frame, 160, "World entity insertion is not implemented");
+        const bool completed = drop_publish(&frame, 160, entity);
         mc_entity_release(entity);
-        return false;
+        if (!completed)
+            return false;
     }
     return true;
 }
@@ -833,6 +848,7 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
 bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                             int32_t z, int32_t metadata, mc_world_mutation_error *error)
 {
+    error->publication = (mc_world_entity_error){0};
     error->drop_class = NULL;
     error->drop_method = NULL;
     error->drop_bytecode = 0;

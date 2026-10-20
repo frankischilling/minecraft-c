@@ -1,6 +1,7 @@
 - [Home](Home)
 - [Build and tests](Build-and-tests)
 - [Systems and subsystems](Architecture)
+- [Entity publication and ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 - [Normal generator API](Architecture#normal-generator)
 - [Verified generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
 - [Cache and region checks](Storage-and-reference#cache-and-region-checks)

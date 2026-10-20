@@ -9,9 +9,11 @@
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/platform/time/millis.h"
+#include "../../../src/world/runtime/construction_internal.h"
 #include "../../../src/world/runtime/mutation/mutation_internal.h"
 #include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/storage/files.h"
+#include "../../../src/world/storage/objects_internal.h"
 #include "../../support/java_random.h"
 
 #include <limits.h>
@@ -887,26 +889,6 @@ static bool frontiers(fixture *f, size_t slot)
           at(w, p->x + dx - 1, p->y + 1, p->z + dz - 1, mc_block_fields_get(fire)->bn, 0) &&
           mc_test_java_random_equal(&passed, &expected) && delta(w, &before, 0, 0));
 
-    /* A nonfluid ID is deliberately not filtered from horizontal displacement.
-     * wb/nw's probability/quantity/item/damage resolve to actual base bodies.
-     * Entity construction is real; World insertion remains an explicit barrier. */
-    p = location(DROP_FRONTIER);
-    CHECK(registry->blocks.m[37] != NULL && registry->blocks.m[37]->kind == MC_BLOCK_WB_NW);
-    mc_entity_class_snapshot entities_before, entities_after;
-    CHECK(mc_entity_classes_get_snapshot(f->entities[slot % 2u], &entities_before) == MC_ENTITY_OK);
-    mc_java_random drop_random = *w->fields.r;
-    for (size_t i = 0; i < 4; ++i)
-        (void)mc_java_random_next_float(&drop_random);
-    CHECK(scheduled(w, &before));
-    CHECK(tick(f, slot, 8, p, &passed, &error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          error.drop_spawn_bytecode == 119 && error.item == MC_ITEM_STACK_OK &&
-          error.entity.status == MC_ENTITY_OK && at(w, p->x, p->y, p->z, 9, 0) &&
-          at(w, p->x - 1, p->y, p->z, 37, 0) && delta(w, &before, 0, 0) &&
-          mc_test_java_random_equal(w->fields.r, &drop_random));
-    CHECK(mc_entity_classes_get_snapshot(f->entities[slot % 2u], &entities_after) == MC_ENTITY_OK &&
-          entities_after.next_id == mc_java_i32_add(entities_before.next_id, 1) &&
-          entities_after.live_entities == entities_before.live_entities && w->active_calls == 0 &&
-          w->local_leases == 0);
     ok = true;
 cleanup:
     return ok;
@@ -1028,13 +1010,104 @@ cleanup:
     return ok;
 }
 
+/* Run after the genuine empty-Entity maintenance round trip. A displaced flower
+ * now publishes its real ItemEntity in both source containers and flow resumes.
+ * Persistence must refuse this live Entity rather than silently erase it. */
+static bool drop_publication(fixture *f, size_t slot)
+{
+    bool ok = false;
+    mc_world_runtime *w = f->worlds[slot];
+    const patch *p = location(DROP_FRONTIER);
+    char *path = NULL;
+    mc_ws_file_bytes saved = {0}, current = {0};
+    mc_item_stack *stack = NULL;
+    for (int32_t x = 0; x < 2; ++x)
+        for (int32_t z = 0; z < 2; ++z) {
+            mc_chunk_state *state = NULL;
+            const mc_chunk_acquire_status status = mc_world_runtime_get(w, x, z, &state);
+            CHECK(remember(f, slot));
+            CHECK(status == MC_CHUNK_ACQUIRE_OK && state != NULL);
+            f->chunks[slot][x][z] = state;
+        }
+    CHECK(region_path(f, slot, &path) &&
+          mc_ws_read_file(path, 1024u * 1024u, &saved, NULL) == MC_WORLD_STORAGE_OK);
+    mc_entity_class_snapshot before_entities = {0}, after_entities = {0};
+    CHECK(w->fields.b->count == 0 &&
+          mc_entity_classes_get_snapshot(f->entities[slot % 2u], &before_entities) == MC_ENTITY_OK);
+    mc_java_random expected = *w->fields.r, passed;
+    for (size_t i = 0; i < 4; ++i)
+        (void)mc_java_random_next_float(&expected);
+    mc_java_random_seed(&passed, 27);
+    const mc_java_random untouched = passed;
+    schedule_state before;
+    mc_world_mutation_error error;
+    CHECK(scheduled(w, &before));
+    CHECK(tick(f, slot, 8, p, &passed, &error) == MC_WORLD_STORAGE_OK &&
+          at(w, p->x, p->y, p->z, 8, 0) && at(w, p->x - 1, p->y, p->z, 8, 1) &&
+          delta(w, &before, 3, 2) && mc_test_java_random_equal(w->fields.r, &expected) &&
+          mc_test_java_random_equal(&passed, &untouched));
+    CHECK(w->fields.b->count == 1 && w->fields.b->items[0] != NULL);
+    mc_entity *entity = w->fields.b->items[0];
+    mc_entity_snapshot snapshot = {0};
+    mc_item_stack_fields payload = {0};
+    CHECK(mc_entity_get_snapshot(entity, &snapshot) == MC_ENTITY_OK &&
+          snapshot.phase == MC_ENTITY_READY && snapshot.base.world == w && snapshot.item.c == 10 &&
+          snapshot.base.bF && snapshot.base.bG == 0 && snapshot.base.bH == 4 &&
+          snapshot.base.bI == 1 && mc_item_entity_stack_get(entity, &stack) == MC_ENTITY_OK &&
+          stack == snapshot.stack &&
+          mc_item_stack_fields_get(stack, &payload) == MC_ITEM_STACK_OK && payload.id == 37 &&
+          payload.count == 1 && payload.damage == 0);
+    mc_world_chunk *chunk = mc_world_store_chunk_object(f->stores[slot], f->chunks[slot][0][1]);
+    mc_world_chunk_fields fields = {0};
+    const mc_world_chunk_entity_list *slice = NULL;
+    mc_entity *occurrence = NULL;
+    size_t count = SIZE_MAX;
+    CHECK(chunk != NULL && mc_world_chunk_fields_get(chunk, &fields) == MC_WORLD_STORAGE_OK &&
+          fields.q && mc_world_chunk_slice_at(fields.m, 4, &slice) == MC_WORLD_STORAGE_OK &&
+          mc_world_chunk_entity_count(slice, &count) == MC_WORLD_STORAGE_OK && count == 1 &&
+          mc_world_chunk_entity_at(slice, 0, &occurrence) == MC_WORLD_STORAGE_OK &&
+          occurrence == entity);
+    CHECK(mc_entity_classes_get_snapshot(f->entities[slot % 2u], &after_entities) == MC_ENTITY_OK &&
+          after_entities.next_id == mc_java_i32_add(before_entities.next_id, 1) &&
+          after_entities.live_entities == before_entities.live_entities + 1u &&
+          w->active_calls == 0 && w->local_leases == 0);
+    uint32_t growth = UINT32_MAX;
+    CHECK(mc_world_store_write_runtime_chunk(f->stores[slot], f->chunks[slot][0][1], 2000, 12345,
+                                             &growth, NULL) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          growth == UINT32_MAX && f->chunks[slot][0][1]->has_entities &&
+          mc_ws_read_file(path, 1024u * 1024u, &current, NULL) == MC_WORLD_STORAGE_OK &&
+          current.length == saved.length && memcmp(current.data, saved.data, saved.length) == 0);
+    ok = true;
+cleanup:
+    mc_item_stack_release(stack);
+    mc_ws_free_file_bytes(&current);
+    mc_ws_free_file_bytes(&saved);
+    free(path);
+    return ok;
+}
+
 static bool cleanup_fixture(fixture *f)
 {
     if (f == NULL)
         return true;
-    for (size_t i = 0; i < COUNT(f->worlds); ++i)
-        if (f->worlds[i] != NULL && !drain(f, i))
+    for (size_t i = 0; i < COUNT(f->worlds); ++i) {
+        if (f->worlds[i] == NULL)
+            continue;
+        if (!remember(f, i) ||
+            mc_world_runtime_retire_entity_containers(f->worlds[i], NULL) != MC_WORLD_STORAGE_OK)
             return false;
+        /* Native terminal disposal, without save, source unload or active-bit
+         * edits. The actual Entity lists have already released their holds. */
+        if (f->bound[i]) {
+            mc_chunk_cache *cache = f->providers[i].cache;
+            if (mc_chunk_pending_clear(f->providers[i].pending) != MC_CHUNK_ACQUIRE_OK ||
+                !mc_chunk_cache_init(cache, cache->entries, cache->capacity, cache->insertions,
+                                     cache->insertion_capacity))
+                return false;
+        }
+        if (mc_world_runtime_retire_world(f->worlds[i], NULL) != MC_WORLD_STORAGE_OK)
+            return false;
+    }
     for (size_t i = 0; i < COUNT(f->children); ++i)
         if (f->children[i].state != NULL) {
             if (mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) !=
@@ -1139,6 +1212,16 @@ int main(int argc, char **argv)
         CHECK(quota_prefix(f, side + 2u));
     }
     CHECK(maintained(f));
+    /* Maintenance removed the native cache references. Retire its still-owned
+     * empty records before loading copies, preserving the real four-owner cap. */
+    for (size_t i = 0; i < COUNT(f->children); ++i)
+        if (f->children[i].state != NULL) {
+            CHECK(mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) ==
+                  MC_WORLD_STORAGE_OK);
+            f->children[i] = (child){0};
+        }
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(drop_publication(f, side));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {

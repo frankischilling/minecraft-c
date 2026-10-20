@@ -3,9 +3,9 @@
 The concrete flowing and still fluid bodies now execute through the actual Block
 addition, neighbor and tick dispatch in
 [fluids.c](../../src/world/runtime/mutation/fluids.c). This is partial synchronous
-gameplay support. Selected Block quantity/item/damage bodies and drop construction
-prefixes execute; entity insertion, moving-piston TileEntity lookup, fire/portal
-effects and nonempty observers remain dependencies where reached. Population and
+gameplay support. Selected Block quantity/item/damage bodies, drop construction
+and [actual Entity publication](entities.md) execute. Moving-piston TileEntity
+lookup, fire/portal effects and nonempty observers remain dependencies where reached. Population and
 complete original/native fluid parity are not established by these bodies alone.
 
 ## Source behavior
@@ -64,7 +64,8 @@ initializer attribution.
 exact application's matching side/profile owner before the first World
 allocation. Binding does not initialize classes or reset IDs, Math or Random.
 The class owner cannot be destroyed while a WorldClasses binding holds it.
-Entity publication and nonempty persistence still need their own concrete owners.
+Entity publication now uses the actual World.b and Chunk slice owners. Nonempty
+Entity persistence remains an explicit refusal.
 
 Calls hold the exact World through synchronous reentry. Failure retains reached
 bytes, flags, scratch, scheduling and random effects. Flat diagnostics keep the
@@ -96,7 +97,7 @@ completed 56 subject calls per side, including nine genuine prepared World cases
 Their exported Contexts contain array fingerprints. They have no native replay
 or complete fluid/population qualification claim.
 
-All 65 selected cases pass on MSVC and Linux GCC/Clang, with Linux address,
+At the preceding fluid checkpoint, all 65 selected cases pass on MSVC and Linux GCC/Clang, with Linux address,
 undefined-behavior and leak checks. Each host retains the same 634 selected
 inputs and 56 products. The fluid test performs 487 checks on MSVC/GCC and 486
 on Clang; conditional assertions follow genuine World Random draws. It covers
@@ -114,7 +115,10 @@ These are selected native runs, not the complete local-original inventory or
 all concrete drop-body executions.
 
 Independent paired source reviews cover fluid bodies, Entity binding and all
-69 Block kinds across five drop roles. Drop dispatch does not imply completed
-publication: base/crop paths stop explicitly at World insertion PCs 119/160,
-and moving-piston lookup stops at PC 14. No successful substitute or allowed-ID
-restriction closes those remaining calls.
+69 Block kinds across five drop roles. Base/crop paths now call the actual World
+publication method at PCs 119/160 and retain its nested failure frame. The fluid
+test verifies a real displaced flower publication after the genuine empty-Entity
+maintenance round trip; flow continues and nonempty serialization refuses to
+overwrite the saved region. Moving-piston lookup still stops at PC 14. The
+[publication contract](entities.md) describes the separate native ownership and
+terminal disposal limits.

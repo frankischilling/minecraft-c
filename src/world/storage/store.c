@@ -917,6 +917,11 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    mc_world_chunk *runtime_chunk =
+        entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+    if (mc_world_chunk_entity_containers_retired(runtime_chunk))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "retired Chunk containers cannot serialize");
     if (account == NULL && !store->has_info)
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "chunk write requires metadata");
@@ -924,7 +929,8 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     if (runtime) {
-        if (store_opaque(entry))
+        if (store_opaque(entry) ||
+            (runtime_chunk != NULL && !mc_world_chunk_storage_empty(runtime_chunk)))
             return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                "opaque entity or tile runtime save");
         chunk->has_entities = false;
@@ -1102,7 +1108,10 @@ mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_ch
             referenced = referenced || *entry->fallback == chunk;
     }
     store_chunk *entry = *link;
-    if (entry->leases != 0 || chunk->active || referenced)
+    const mc_world_chunk *runtime_chunk =
+        entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+    if (entry->leases != 0 || referenced ||
+        (chunk->active && !mc_world_chunk_entity_containers_retired(runtime_chunk)))
         return store_error(error, MC_WORLD_STORAGE_BUSY, "chunk identity still referenced");
     *link = entry->next;
     if (store->last_chunk == entry)
@@ -1248,4 +1257,50 @@ void mc_world_store_free(mc_world_store *store)
     for (size_t i = 0; i < 3; ++i)
         free(store->metadata_paths[i]);
     free(store);
+}
+
+mc_world_storage_status mc_world_store_entity_containers_validate(const mc_world_store *store,
+                                                                  const mc_world_runtime *world,
+                                                                  mc_world_storage_error *error)
+{
+    if (store == NULL || world == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "Store entity retirement arguments");
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        mc_world_chunk *chunk =
+            entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+        if (chunk == NULL)
+            continue; /* Generic stored/opaque NBT has no runtime owner to clear. */
+        mc_world_chunk_fields fields;
+        const mc_world_storage_status inspected = mc_world_chunk_fields_get(chunk, &fields);
+        if (inspected != MC_WORLD_STORAGE_OK)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store entity retirement Chunk identity");
+        if (fields.d != world)
+            continue;
+        if (entry->leases != 0)
+            return store_error(error, MC_WORLD_STORAGE_BUSY,
+                               "Store Chunk lease during entity retirement");
+        if (!mc_world_chunk_entities_validate(chunk))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store entity retirement slice ownership");
+    }
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+void mc_world_store_entity_containers_release(mc_world_store *store, const mc_world_runtime *world)
+{
+    /* Requires whole admission above and unchanged exclusive owners. No lease
+     * is acquired/released, no entry is removed, and no cache/active flag changes.
+     * fields_get cannot fail for those same already-admitted live identities. */
+    for (store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        mc_world_chunk *chunk =
+            entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+        if (chunk != NULL) {
+            mc_world_chunk_fields fields;
+            (void)mc_world_chunk_fields_get(chunk, &fields);
+            if (fields.d == world)
+                mc_world_chunk_entities_release(chunk);
+        }
+    }
 }

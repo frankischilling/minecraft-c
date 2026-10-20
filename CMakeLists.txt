@@ -208,6 +208,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/presence.c
     src/world/runtime/solid_support.c
     src/world/runtime/presentation.c
+    src/world/runtime/entity_publication.c
+    src/world/chunk/entities.c
     src/world/runtime/scheduling.c
     src/world/runtime/mutation/support.c
     src/world/runtime/mutation/chunk.c
@@ -420,6 +422,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
+    target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
     target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -1000,6 +1005,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-solid-support-contracts")
     set_tests_properties(world.solid_support PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.entity_publication
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_entity_publication>"
+        --scenario world-entity-publication
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-publication-contracts")
+    set_tests_properties(world.entity_publication PROPERTIES
+        LABELS "public;integration;ownership" TIMEOUT 90)
 
     add_test(NAME world.fluids
         COMMAND "${Python3_EXECUTABLE}"

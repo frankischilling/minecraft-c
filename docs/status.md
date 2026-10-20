@@ -1,13 +1,28 @@
 # Development status
 
-The [flowing/still fluid bodies](world/fluids.md) now execute updates, conversions,
+The [World and Chunk Entity publication methods](world/entities.md) now retain
+actual typed occurrences, duplicates and cross-World bindings. Base/crop drops
+use real publication, and a displaced flower allows fluid flow to continue.
+Nonempty or terminal Chunk persistence refuses before writing. Terminal native
+disposal releases each occurrence without pretending to save or unload it.
+All 66 selected cases pass on MSVC and sanitized GCC/Clang: 730 publication
+checks per host and 529/528/529 fluid checks, with 640 inputs and 57 products
+retained per host. Separate [original observations](reference/entity-publication.md)
+each complete 21 calls, 44 snapshots and 88 Context records with full Chunk bytes,
+normal substrates and cross-World calls. They have no native replay. Player and
+dedicated descendants, nonempty activation/observers, Entity persistence,
+falling, complete population and full original/persistence acceptance remain
+unfinished.
+
+At the preceding checkpoint, the
+[flowing/still fluid bodies](world/fluids.md) execute updates, conversions,
 routes, mixing and selected Block drop construction prefixes. All 65 selected
 cases pass on MSVC and sanitized GCC/Clang, retaining the same 634 inputs and
 56 products per host. Fluid cases perform 487/487/486 checks; support and literals
 add 4,359 and 4,409. The new support/fluid cases retain twenty exact region slots,
 real saved clocks or whole-file unchanged limit inputs as appropriate. Separate
 originals each complete 56 support/presentation subject calls. Their descriptors
-contain array fingerprints and have no native replay. Entity insertion,
+contain array fingerprints and have no native replay. At that checkpoint, Entity insertion,
 moving-piston lookup, fire/portal, nonempty observers, falling behavior, complete
 population and full original/persistence acceptance remain unfinished.
 

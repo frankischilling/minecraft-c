@@ -1,5 +1,13 @@
 # Storage and original references
 
+The [original Entity publication observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-publication.md)
+retain 21 actual calls per side, full Chunk array bytes, ordered duplicate lists,
+typed payloads and actual cross-World aliases. The separate [native owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
+retains each occurrence and refuses nonempty saves. Terminal disposal prevents
+later serialization even after lists are cleared. Original/native replay,
+Entity save interoperability, player/dedicated descendants and complete
+population acceptance remain unfinished.
+
 The [concrete World lighting source](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md#concrete-world-source)
 records paired height, enqueue, Light and region-constructor order. Native
 client-World tests use actual store-owned restored chunks, real allocation

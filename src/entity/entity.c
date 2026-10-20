@@ -237,6 +237,11 @@ mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t dela
     return MC_ENTITY_OK;
 }
 
+mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity)
+{
+    return entity == NULL ? NULL : &entity->base;
+}
+
 mc_entity_status mc_entity_classes_free(mc_entity_classes *classes)
 {
     if (classes == NULL)
