@@ -1,9 +1,17 @@
 # minecraft-c
 
+The [population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
+and [plant predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
+implement downward solid/liquid scans, light, sky visibility and seven concrete
+plant receiver kinds. All 67 selected cases pass on MSVC and sanitized GCC/Clang,
+including 986 query/plant checks and 736 Entity publication checks. Separate
+original query observations retain 44 calls per side; native replay, feature
+bodies and complete population remain unfinished.
+
 The [Entity publication contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 adds real World/Chunk occurrences, duplicates, cross-World bindings and terminal
 native disposal. Fluid drops can publish their actual ItemEntity and continue.
-All 66 selected native cases pass on MSVC and sanitized GCC/Clang. Nonempty Entity
+All 67 selected native cases pass on MSVC and sanitized GCC/Clang. Nonempty Entity
 saving, player/dedicated descendants and complete synchronous population remain
 unfinished; terminal disposal never makes erased Entity state serializable.
 

@@ -37,6 +37,15 @@ comparisons. They do not complete their parent checklists:
 | Chunks and lighting | [Cached heights and finishing](reference/finishing.md); [retained-provider acquisition](reference/cache.md), with successful-load/natural-population [callback evidence](reference/cache-callbacks.md) passing exact-source MSVC/GCC/Clang acceptance; [owned disk decoding](world/storage.md) with separate exact-source MSVC/GCC/Clang acceptance | General tick-driven scheduling, propagation, simulation updates and entity/tile activation; synchronous [save/unload and retirement](world/lifecycle.md) has separate qualification |
 | Saves and recovery | [Raw NBT](reference/nbt.md), [compression](reference/compression.md), [read-only inspection](reference/region.md), newer [metadata](storage/level.md), [region writing](storage/region-writer.md) and [native ownership](world/storage.md) | General tick-driven save scheduling, entity/player and subtype bodies, full running-game restart compatibility and recovery beyond checked host errors |
 
+The narrower [population World queries](world/queries.md) and
+[plant placement/survival predicates](world/plants.md) now have concrete native
+implementations. Their 986 checks cover acquired-Chunk identity, late live
+material/array reads, shared positive-sky state and seven actual plant receiver
+kinds. Separate original World-query observations retain full arrays and
+identity bridges; original/native replay and plant-feature comparisons remain
+unfinished. These boundaries do not complete feature bodies, callback closure
+or population/save acceptance.
+
 The [parity matrix](parity.md) records exact tested sources, narrower statuses
 and evidence limits. Callback replay imports observed effects within the recorded
 cache/world boundary; that replay itself does not implement a disk decoder or

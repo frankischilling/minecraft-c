@@ -1,5 +1,14 @@
 # Systems and subsystems
 
+The [World query module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
+retains the acquired Chunk through each scan, reads actual arrays and materials,
+and shares the positive-sky Chunk.a cell across Worlds. Its provider.b getter
+preserves pending work on cached hits; Entity publication uses the same getter.
+The [plant module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
+dispatches seven actual receiver kinds with distinct placement and survival
+bodies, fresh nested causes and source-ordered static, material and opacity
+reads. Feature loops and complete callback closure remain unfinished.
+
 The [Entity publication methods](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 retain the same Entity in actual ordered World.b and Chunk slices. Duplicate and
 cross-World occurrences preserve source identity and construction bindings.

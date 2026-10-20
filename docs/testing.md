@@ -1,6 +1,22 @@
 # Test scope and reproduction
 
-The [Entity publication contracts](world/entities.md#validation-and-limits) pass
+The [World-query and plant contracts](world/queries.md) pass 986 checks within
+all 67 selected cases on MSVC and sanitized GCC/Clang. Run
+`ctest --test-dir build -R "^(world.queries|world.entity_publication)$" --output-on-failure`.
+Entity publication now checks 736 conditions, including preservation of pending
+work on cached hits. Fluid checks number 527/529/528 in the same host order;
+actual World Random branches select additional assertions.
+Each host retains 646 identical selected inputs, 58 products
+and selected tool executable pins before/after. Query inputs retain four complete
+unchanged region files containing six records. Separate [original queries](reference/world-queries.md)
+each record 44 calls and 170 raw Contexts; they supply no native replay or full
+population qualification. A separate offline audit completes both positive
+side checks and twenty semantic corruption refusals with 45 unchanged inputs.
+These are selected local runs, not the complete
+declared local-original inventory.
+
+At the preceding checkpoint, the
+[Entity publication contracts](world/entities.md#validation-and-limits) passed
 within all 66 selected cases on MSVC and sanitized GCC/Clang. Run
 `ctest --test-dir build -R "^(world.entity_publication|world.fluids)$" --output-on-failure`.
 Publication performs 730 checks per host. Fluid performs 529/528/528 checks in

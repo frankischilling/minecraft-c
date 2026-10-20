@@ -11,7 +11,9 @@ tracking, networking, Entity removal and nonempty persistence remain unfinished.
 World insertion reads the Entity's live X and Z, divides by sixteen and applies
 the original floor conversion. An absent nonplayer chunk returns ordinary false
 without acquiring a Chunk, appending to World.b or invoking an observer. A present
-chunk uses the acquiring provider route, then its actual virtual add method.
+chunk uses the provider's `b` getter, then its actual virtual add method. A
+cached hit preserves that Chunk's pending key; it does not enter the separate
+cache `c` method that removes pending work.
 Normal completion appends to the current World.b and invokes the observer hook
 before returning true. The current empty observer list completes. Reached
 nonempty untyped dispatch fails explicitly after both publications.

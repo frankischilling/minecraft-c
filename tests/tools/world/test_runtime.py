@@ -17,7 +17,8 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
-             "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication")
+             "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
+             "world-queries")
 
 
 def provider_fixture(root):
@@ -188,6 +189,21 @@ def main():
             paths["solid_support"] = ROOT / "src/world/runtime/solid_support.c"
             paths["presentation"] = ROOT / "src/world/runtime/presentation.c"
             paths["presentation_header"] = ROOT / "include/mc/world/runtime/presentation.h"
+        if args.scenario == "world-queries":
+            paths.update({
+                "query_test": ROOT / "tests/world/runtime/test_queries.c",
+                "queries": ROOT / "src/world/runtime/queries.c",
+                "queries_header": ROOT / "include/mc/world/runtime/queries.h",
+                "plants": ROOT / "src/world/runtime/plants.c",
+                "plants_header": ROOT / "include/mc/world/runtime/plants.h",
+                "registry_runtime": ROOT / "src/block/registry/runtime.c",
+                "registry_runtime_header": ROOT / "include/mc/block/registry/runtime.h",
+                "registry_runtime_internal": ROOT / "src/block/registry/runtime_internal.h",
+                "chunk_object_state": ROOT / "src/world/chunk/object_state_internal.h",
+                "store_objects_internal": ROOT / "src/world/storage/objects_internal.h",
+                "world_presence": ROOT / "src/world/runtime/presence.c",
+                "world_presence_internal": ROOT / "src/world/runtime/presence_internal.h",
+            })
         if args.scenario == "world-fluids":
             paths["fluid_test"] = ROOT / "tests/world/runtime/test_fluids.c"
             paths["fluids"] = ROOT / "src/world/runtime/mutation/fluids.c"
@@ -241,7 +257,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication"):
+                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -275,7 +291,7 @@ def main():
         report["inputs_unchanged"] = True
         report["world_files"] = {path.relative_to(root).as_posix(): CAPTURE.file_fingerprint(path)
                                  for path in sorted(root.rglob("*")) if path.is_file()}
-        if args.scenario in ("world-solid-support", "world-fluids", "world-entity-publication"):
+        if args.scenario in ("world-solid-support", "world-fluids", "world-entity-publication", "world-queries"):
             stores = ((0, 1, 4, 5) if args.scenario == "world-solid-support" else
                       range(8) if args.scenario == "world-entity-publication" else range(4))
             CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
@@ -311,9 +327,28 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-queries":
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
+                              for i in range(4) for slot in ((0, 1) if i < 2 else (0,))}
+            CAPTURE.require(len(timestamps) == 6 and
+                            {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                            "all six prepared query input records remain present")
+            CAPTURE.require({path.name for path in root.glob("seed-world*.region.bin")} ==
+                            {f"seed-world{i}.region.bin" for i in range(4)},
+                            "all four query baseline region files retained")
+            baselines = []
+            for i in range(4):
+                baseline = root / f"seed-world{i}.region.bin"
+                actual = root / f"world{i}/region/r.0.0.mcr"
+                CAPTURE.require(baseline.read_bytes() == actual.read_bytes(),
+                                "queries and terminal native disposal preserve every region byte")
+                baselines.append({"baseline": baseline.relative_to(root).as_posix(),
+                                  "actual": actual.relative_to(root).as_posix(),
+                                  "fingerprint": CAPTURE.file_fingerprint(actual)})
+            report["query_unchanged_region_baselines"] = baselines
         if args.scenario == "world-fluids":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
                               for i in range(4) for slot in (0, 1, 32, 33)}

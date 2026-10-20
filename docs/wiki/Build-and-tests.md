@@ -1,6 +1,17 @@
 # Build and tests
 
-The [Entity publication contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md#validation-and-limits)
+The [World-query and plant contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
+pass 986 checks within all 67 selected cases on MSVC and sanitized GCC/Clang.
+Entity publication passes 736 checks, including pending preservation on cached
+hits. Fluid checks number 527/529/528 in that host order. Each host retains 646
+unchanged selected inputs and 58 products. Four complete query region files,
+containing six records, remain byte-equal after the native trials. Run
+`ctest --test-dir build -R "^(world.queries|world.entity_publication)$" --output-on-failure`.
+These finite native contracts and separate original API captures do not supply
+native replay or complete population qualification.
+
+At the preceding checkpoint, the
+[Entity publication contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md#validation-and-limits)
 pass within all 66 selected cases on MSVC and sanitized GCC/Clang. Publication
 checks number 730 per host; fluid checks are 529/528/528. Each host retains 640
 inputs and 57 products. Eight publication regions stay byte-equal after refused

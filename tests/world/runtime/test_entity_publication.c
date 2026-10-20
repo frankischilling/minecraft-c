@@ -532,9 +532,17 @@ static bool publication(fixture *f, size_t side, mc_entity **primary)
           membership(a, w, 0));
     mc_entity *aa[] = {a, a};
     mc_entity *one_a[] = {a};
+    bool pending_changed = false;
+    CHECK(mc_chunk_pending_add(f->providers[slot].pending, mc_chunk_cache_key(0, 0),
+                               &pending_changed) == MC_CHUNK_ACQUIRE_OK &&
+          pending_changed);
     CHECK(mc_world_runtime_insert_entity(w, a, &value, &error) == MC_WORLD_STORAGE_OK && value &&
           slice_is(f, slot, 0, aa, COUNT(aa)) && world_is(f, slot, one_a, COUNT(one_a)) &&
           a->holds == 4);
+    CHECK(mc_chunk_pending_contains(f->providers[slot].pending, mc_chunk_cache_key(0, 0)));
+    CHECK(mc_chunk_pending_remove(f->providers[slot].pending, mc_chunk_cache_key(0, 0),
+                                  &pending_changed) == MC_CHUNK_ACQUIRE_OK &&
+          pending_changed);
     CHECK(make_entity(f, side, w, 8.5, 200.0, 8.5, &b));
     CHECK(mc_world_runtime_insert_entity(w, b, &value, &error) == MC_WORLD_STORAGE_OK && value &&
           membership(b, w, 7));

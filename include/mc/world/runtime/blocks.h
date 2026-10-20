@@ -58,6 +58,25 @@ mc_world_storage_status mc_world_runtime_material_get(mc_world_runtime *runtime,
                                                       int32_t y, int32_t z, mc_material **out,
                                                       mc_world_storage_error *error);
 
+typedef struct mc_world_material_error {
+    mc_world_storage_status status;
+    const char *operation;
+    unsigned int bytecode;
+    mc_world_storage_error cause;
+    mc_registry_error registry;
+} mc_world_material_error;
+
+/* The same actual material operation, with a fresh nested Registry frame and
+ * separate source PCs for block query4, air Material14, Block.m active use18,
+ * array element23 and bA24. A block-query failure does not copy stale World
+ * Registry diagnostics. Ordinary output and ownership rules match material_get;
+ * both interfaces execute one shared implementation. Success retains the
+ * existing material operation's World Registry/storage diagnostic behavior. */
+mc_world_storage_status mc_world_runtime_material_get_detailed(mc_world_runtime *runtime, int32_t x,
+                                                               int32_t y, int32_t z,
+                                                               mc_material **out,
+                                                               mc_world_material_error *error);
+
 typedef struct mc_world_solid_support_error {
     mc_world_storage_status status;
     const char *operation;

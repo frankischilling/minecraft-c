@@ -26,12 +26,13 @@ dirty flag.
 This quiet metadata operation performs no block handler, observer or neighbor
 notification, height/light update, or lighting submission. [Block-ID setters
 and notifying metadata](mutations.md) have separate synchronous behavior and
-unfinished concrete descendants. Existing top-block lookup starts at y63 and scans upward; the
-separate downward material query is also unfinished.
+unfinished concrete descendants. Existing top-block lookup starts at y63 and
+scans upward; the separate [downward solid/liquid query](queries.md) acquires one
+Chunk and scans Y127 through Y1.
 
 The [shared-registry material getter](registry.md) performs the actual block
 query before choosing shared Material.a for air or reading Block.m/bA for
-nonair. It is separate from that unfinished downward scan. Registry activation
+nonair. It is separate from that downward scan. Registry activation
 and nullable material results retain their actual ordering and identities.
 
 The separate solid-support query captures the live Registry block array before

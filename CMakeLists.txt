@@ -203,6 +203,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/environment.c
     src/world/runtime/blocks.c
     src/world/runtime/height.c
+    src/world/runtime/queries.c
+    src/world/runtime/plants.c
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
@@ -419,6 +421,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_solid_support tests/world/runtime/test_solid_support.c)
     target_link_libraries(mc_test_world_solid_support PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_queries tests/world/runtime/test_queries.c)
+    target_link_libraries(mc_test_world_queries PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1014,6 +1019,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-publication-contracts")
     set_tests_properties(world.entity_publication PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.queries
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_queries>"
+        --scenario world-queries
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-query-contracts")
+    set_tests_properties(world.queries PROPERTIES
+        LABELS "public;integration;ownership;generation" TIMEOUT 90)
 
     add_test(NAME world.fluids
         COMMAND "${Python3_EXECUTABLE}"
