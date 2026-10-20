@@ -73,6 +73,12 @@ _Static_assert(sizeof(double) == sizeof(uint64_t), "Tile rotation snapshots requ
 
 /* Concrete Tile/Stack/name layouts. Runtime and persistence joins require
  * the coordinated actual owners; no stand-in success is provided. */
+/* Older MSVC diagnoses this standard C17 flexible array as extension C4200.
+ * Keep the allocation layout and scope the compatibility guard to this type. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 struct mc_tile_name {
     size_t holds;
     size_t allocation_bytes;
@@ -82,6 +88,9 @@ struct mc_tile_name {
     struct mc_tile_name *literal_next;
     uint16_t units[];
 };
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 struct mc_tile {
     size_t holds;
