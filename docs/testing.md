@@ -1,6 +1,19 @@
 # Test scope and reproduction
 
-The [World scheduling contracts](world/scheduling.md#native-validation) pass 424
+The [fluid/support/literal contracts](world/fluids.md#reference-mapping-and-validation-limits)
+pass within all 65 selected cases on MSVC and sanitized GCC/Clang. Run the new
+cases with `ctest --test-dir build -R "^(world.fluids|world.solid_support|block.registry_runtime_literals)$" --output-on-failure`.
+Fluid check counts are 487/487/486 in that host order; actual World Random
+branches select additional assertions. Support passes 4,359 and literals 4,409.
+Each host retains 634 selected inputs, 56 products and new capture deltas.
+Fluid maintenance saves all sixteen records with actual GAME clocks and
+independent disk reload; support verifies two actual saves and two whole-file
+unchanged limit records. [Original support/presentation observations](reference/world-solid-support.md)
+each complete 56 calls, with 132 Context descriptors and eight framing refusals.
+They have no native replay or full fluid/population qualification. This is a
+selected local run, not the complete local-original inventory.
+
+At the preceding checkpoint, the [World scheduling contracts](world/scheduling.md#native-validation) pass 424
 checks within all 60 selected cases on MSVC/GCC/Clang, with Linux ASan/UBSan and
 leak detection. Reproduce with `ctest --test-dir build -R "^world.scheduling$"
 --output-on-failure`. Real constructed client Worlds cover shared sequence state,

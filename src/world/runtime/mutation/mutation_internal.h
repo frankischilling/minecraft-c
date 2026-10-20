@@ -37,6 +37,27 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error);
 
+/* Concrete flowing/still fluid bodies share the actual receiver scratch.
+ * Internal callers already hold World and preserve the supplied Random. */
+bool mc_world_mutation_fluid_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                  int32_t y, int32_t z, mc_java_random *random,
+                                  mc_world_mutation_error *error);
+bool mc_world_mutation_fluid_added(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                   int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_fluid_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, int32_t source_id,
+                                      mc_world_mutation_error *error);
+bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                            int32_t z, int32_t metadata, mc_world_mutation_error *error);
+
+/* Caller already holds the exact World; preserve its enclosing source frames. */
+bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double z,
+                             const mc_registry_string *name, float volume, float pitch,
+                             mc_world_mutation_error *error);
+bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_string *name, double x,
+                                double y, double z, double velocity_x, double velocity_y,
+                                double velocity_z, mc_world_mutation_error *error);
+
 /* Callers hold this actual World. u reload/size/get order is source behavior;
  * native empty-list support must validate the reached descriptor. Nonempty
  * unsupported observer calls fail at their reached cast/invocation, never succeed.

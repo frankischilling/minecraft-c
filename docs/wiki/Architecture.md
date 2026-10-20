@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+The [fluid implementation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md)
+executes flowing/still updates, live route scratch, conversions, mixing/fizz and
+selected Block drop prefixes. Exact application Entity classes bind above Worlds
+without resetting IDs or Random. Entity insertion, moving-piston lookup,
+fire/portal and nonempty observers remain reached failures. Full synchronous
+closure, falling behavior and population remain unfinished.
+
 The [World scheduling foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#world-insertion)
 shares one lazy sequence across Worlds, constructs before every gate and retains
 the actual presence and F/E insertion order. Immediate calls dispatch empty tick

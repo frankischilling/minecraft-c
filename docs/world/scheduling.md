@@ -65,7 +65,8 @@ invokes the selected tick with current World.r. It does not read delay, Info or
 E/F on this branch. The fresh record remains held through synchronous calls.
 Base/inherited empty tick bodies return normally, including with a null Random
 that is never dereferenced. Reached concrete bodies without an implementation
-fail explicitly at their actual entry. This does not complete fluid/falling,
+fail explicitly at their actual entry. [Flowing and still bodies](fluids.md)
+now execute through the same dispatch. This does not complete fluid/falling,
 plant, fire, drop, entity or other synchronous gameplay descendants.
 
 The presence body is shared with log/leaf removal. It visits chunk X then Z,

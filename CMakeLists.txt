@@ -206,6 +206,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
+    src/world/runtime/solid_support.c
+    src/world/runtime/presentation.c
     src/world/runtime/scheduling.c
     src/world/runtime/mutation/support.c
     src/world/runtime/mutation/chunk.c
@@ -213,6 +215,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/observers.c
     src/world/runtime/mutation/hooks.c
     src/world/runtime/mutation/ticks.c
+    src/world/runtime/mutation/fluids.c
+    src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
     src/world/runtime/generation/generation.c
@@ -410,6 +414,18 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_scheduling tests/world/runtime/test_scheduling.c)
     target_link_libraries(mc_test_world_scheduling PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_solid_support tests/world/runtime/test_solid_support.c)
+    target_link_libraries(mc_test_world_solid_support PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
+    target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
+    target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME block.registry_runtime_literals COMMAND mc_test_registry_runtime_literals)
+    set_tests_properties(block.registry_runtime_literals PROPERTIES
+        LABELS "public;unit;ownership" TIMEOUT 60)
 
     add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
     target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
@@ -975,6 +991,24 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-scheduling-contracts")
     set_tests_properties(world.scheduling PROPERTIES
         LABELS "public;integration;ownership;scheduling" TIMEOUT 90)
+
+    add_test(NAME world.solid_support
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_solid_support>"
+        --scenario world-solid-support
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-solid-support-contracts")
+    set_tests_properties(world.solid_support PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.fluids
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_fluids>"
+        --scenario world-fluids
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-fluid-contracts")
+    set_tests_properties(world.fluids PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

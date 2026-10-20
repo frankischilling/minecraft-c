@@ -7,6 +7,7 @@
 #include "mc/world/dimension/biome_runtime.h"
 #include "mc/world/dimension/dimension.h"
 #include "mc/world/runtime/blocks.h"
+#include "mc/world/runtime/entities.h"
 #include "millis.h"
 #include "provider_internal.h"
 
@@ -82,6 +83,13 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
         mc_registry_status status = mc_registry_classes_release(classes->registry, &cause);
         if (status != MC_REGISTRY_OK)
             return result(error, mc_world_runtime_registry_status(status), cause.message);
+        classes->registry = NULL;
+    }
+    if (classes->entities != NULL) {
+        if (mc_entity_classes_release(classes->entities) != MC_ENTITY_OK)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "World Entity class binding release");
+        classes->entities = NULL;
     }
     free(classes);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
@@ -120,6 +128,26 @@ mc_registry_status mc_world_runtime_classes_bind_registry(mc_world_runtime_class
 mc_registry_classes *mc_world_runtime_registry(const mc_world_runtime *runtime)
 {
     return runtime == NULL || runtime->classes == NULL ? NULL : runtime->classes->registry;
+}
+
+mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes *classes,
+                                                        mc_entity_classes *entities)
+{
+    if (classes == NULL || entities == NULL)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    if (classes->entities != NULL || classes->initialized || classes->live_worlds != 0)
+        return MC_ENTITY_BUSY;
+    const mc_entity_status status = mc_entity_classes_retain(
+        entities, classes->side == MC_WORLD_INFO_CLIENT ? MC_ENTITY_CLIENT : MC_ENTITY_SERVER,
+        classes->profile);
+    if (status == MC_ENTITY_OK)
+        classes->entities = entities;
+    return status;
+}
+
+mc_entity_classes *mc_world_runtime_entities(const mc_world_runtime *runtime)
+{
+    return runtime == NULL || runtime->classes == NULL ? NULL : runtime->classes->entities;
 }
 
 mc_world_storage_status

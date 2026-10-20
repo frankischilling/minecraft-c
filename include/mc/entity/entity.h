@@ -148,6 +148,12 @@ mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_rando
                                           const mc_entity_limits *limits, mc_entity_classes **out);
 mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes,
                                                 mc_entity_class_snapshot *out);
+/* Native application bindings retain this exact class owner without active use.
+ * Side/profile must match. Overflow or mismatch leaves the owner unchanged.
+ * release balances one binding; it does not free or reset class state. */
+mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_source source,
+                                          mc_java_random_profile *profile);
+mc_entity_status mc_entity_classes_release(mc_entity_classes *classes);
 mc_entity_status mc_entity_classes_free(mc_entity_classes *classes);
 
 /* Allocate RAW before evaluating constructor arguments. First active use runs

@@ -58,4 +58,29 @@ mc_world_storage_status mc_world_runtime_material_get(mc_world_runtime *runtime,
                                                       int32_t y, int32_t z, mc_material **out,
                                                       mc_world_storage_error *error);
 
+typedef struct mc_world_solid_support_error {
+    mc_world_storage_status status;
+    const char *operation;
+    unsigned int bytecode;
+    mc_world_storage_error cause;
+    mc_registry_error registry;
+} mc_world_solid_support_error;
+
+/* Actual fd.h/dj.e(III)Z. Capture live Block.m before acquiring the block,
+ * then index that same array without narrowing or an air/bounds preflight.
+ * A NULL Block returns false. Otherwise invoke its current Material.h and,
+ * only when true, its actual virtual Block.d/client or b/server predicate.
+ * The slab predicate reads its live own field; opacity is a different call.
+ *
+ * Hold the actual World and its bound Registry across synchronous acquisition.
+ * GAME raw/constructing/failed prefixes are admitted; retirement rejects.
+ * Require exclusive live owners and disjoint out/error/dependency storage.
+ * Failure preserves out and every reached initialization/acquisition effect.
+ * Getter failures retain their actual storage cause; they do not manufacture
+ * a new Registry frame from earlier World diagnostics. Native admission leaves
+ * earlier World diagnostics intact. error may be NULL; out is required. */
+mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *world, int32_t x,
+                                                           int32_t y, int32_t z, bool *out,
+                                                           mc_world_solid_support_error *error);
+
 #endif

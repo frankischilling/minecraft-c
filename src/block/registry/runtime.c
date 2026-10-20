@@ -31,6 +31,27 @@ static mc_registry_status quiescent(mc_registry_classes *classes, mc_registry_er
     return MC_REGISTRY_OK;
 }
 
+mc_registry_status mc_registry_runtime_literal_ascii(mc_registry_classes *classes, const char *text,
+                                                     const mc_registry_string **out,
+                                                     mc_registry_error *error)
+{
+    if (classes == NULL || text == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "runtime literal arguments");
+    const mc_registry_string *literal = NULL;
+    const mc_registry_status status = mc_registry_literal_ascii(classes, text, &literal);
+    if (status != MC_REGISTRY_OK) {
+        const char *message = classes->last_error.message;
+        mc_registry_error cause;
+        (void)result(&cause, status, message);
+        classes->last_error = cause;
+        if (error != NULL)
+            *error = cause;
+        return status;
+    }
+    *out = literal;
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
 bool mc_registry_runtime_borrow_release(mc_registry_classes *classes)
 {
     if (classes == NULL || classes->runtime_borrows == 0)

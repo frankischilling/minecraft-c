@@ -45,7 +45,7 @@ struct mc_entity_classes {
     mc_entity_source source;
     mc_java_random_profile *profile;
     mc_entity_limits limits;
-    size_t allocated_bytes, live_entities;
+    size_t allocated_bytes, live_entities, borrowers;
     mc_entity_class_phase entity_phase, bounds_phase, watcher_phase;
     int32_t next_id, bounds_cursor;
     mc_entity_bounds_pool *bounds_pool;
@@ -71,5 +71,9 @@ struct mc_entity {
 float mc_entity_item_phase_from_draw(double draw);
 float mc_entity_item_yaw_from_draw(double draw);
 double mc_entity_item_velocity_from_draw(double draw);
+
+/* Actual post-constructor ItemEntity.c store by Block spawn. The caller owns
+ * the concrete Entity; this does not add a source phase gate or constructor PC. */
+mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay);
 
 #endif

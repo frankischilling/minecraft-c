@@ -18,6 +18,7 @@ struct mc_world_runtime_classes {
     mc_java_random_profile *profile;
     const mc_math_trig *trig;
     mc_registry_classes *registry;
+    struct mc_entity_classes *entities;
     int32_t enqueue_depth;
     size_t live_worlds;
     bool initialized;

@@ -286,10 +286,8 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
             hook_stage(block, "fc", "di", 6, error);
             return hook_return(error);
         case MC_BLOCK_OM_JC:
-            return unavailable(world, block, "om", "jc", "Block flowing liquid addition hook",
-                               error);
         case MC_BLOCK_NX_IS:
-            return unavailable(world, block, "rp", "kv", "Block liquid addition hook", error);
+            return mc_world_mutation_fluid_added(world, block, x, y, z, error);
         case MC_BLOCK_GK_EI:
         case MC_BLOCK_NE_IG:
             return unavailable(world, block, "gk", "ei", "Block sand addition hook", error);
@@ -386,9 +384,8 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_NI_IJ:
             return unavailable(world, block, "wb", "nw", "Block plant neighbor hook", error);
         case MC_BLOCK_OM_JC:
-            return unavailable(world, block, "rp", "kv", "Block liquid neighbor hook", error);
         case MC_BLOCK_NX_IS:
-            return unavailable(world, block, "nx", "is", "Block still liquid neighbor hook", error);
+            return mc_world_mutation_fluid_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_GK_EI:
         case MC_BLOCK_NE_IG:
             return unavailable(world, block, "gk", "ei", "Block sand neighbor hook", error);

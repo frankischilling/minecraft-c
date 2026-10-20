@@ -8,8 +8,9 @@ the quiet call returns true. The notifying metadata operation has a void game
 result; native status reports failures separately.
 
 Reached concrete handlers without an implemented body fail explicitly after
-earlier effects. Population, fluid/falling updates, tile/entity closures and
-general observer dispatch remain unfinished.
+earlier effects. [Flowing and still fluids](fluids.md) now have concrete update,
+addition and neighbor bodies. Population, complete fluid/falling closure,
+tile/entity effects and general observer dispatch remain unfinished.
 
 ## Source order
 

@@ -1,5 +1,14 @@
 # Build and tests
 
+The [fluid/support/literal contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md#reference-mapping-and-validation-limits)
+pass within all 65 selected cases on MSVC and sanitized GCC/Clang. Fluid checks
+are 487/487/486, support 4,359 and literals 4,409. Each host retains 634 selected
+inputs and 56 products; all sixteen fluid records receive actual GAME save clocks.
+[Separate originals](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/world-solid-support.md)
+each complete 56 support/presentation calls with 132 descriptor contexts. These
+have no native replay, complete local-original inventory, full fluid/population
+or complete persistence qualification claim.
+
 The [World scheduling contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#native-validation)
 pass 424 checks within all 60 selected cases on MSVC/GCC/Clang, with Linux
 ASan/UBSan and leak detection. Each host retains 624 selected inputs and 51 actual

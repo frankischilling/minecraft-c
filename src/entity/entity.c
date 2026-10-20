@@ -208,11 +208,40 @@ mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes
     return MC_ENTITY_OK;
 }
 
+mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_source source,
+                                          mc_java_random_profile *profile)
+{
+    if (classes == NULL || classes->source != source || classes->profile != profile)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    if (classes->borrowers == SIZE_MAX)
+        return MC_ENTITY_LIMIT;
+    ++classes->borrowers;
+    return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_classes_release(mc_entity_classes *classes)
+{
+    if (classes == NULL)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    if (classes->borrowers == 0)
+        return MC_ENTITY_STATE_ERROR;
+    --classes->borrowers;
+    return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay)
+{
+    if (entity == NULL)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    entity->item.c = delay;
+    return MC_ENTITY_OK;
+}
+
 mc_entity_status mc_entity_classes_free(mc_entity_classes *classes)
 {
     if (classes == NULL)
         return MC_ENTITY_OK;
-    if (classes->live_entities != 0)
+    if (classes->live_entities != 0 || classes->borrowers != 0)
         return MC_ENTITY_BUSY;
     if (classes->types != NULL) {
         mc_entity_type_entry *entry = classes->types->head;

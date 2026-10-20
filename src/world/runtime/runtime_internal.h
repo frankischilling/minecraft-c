@@ -43,6 +43,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                                    mc_world_storage_error *error);
 
 const mc_math_trig *mc_world_runtime_class_trig(const mc_world_runtime *runtime);
+struct mc_entity_classes *mc_world_runtime_entities(const mc_world_runtime *runtime);
 mc_world_storage_status mc_world_runtime_initialize_environment(mc_world_runtime *runtime,
                                                                 mc_world_storage_error *error);
 

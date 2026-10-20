@@ -56,7 +56,11 @@ or NBT. No constructor world query, insertion, collision or Gaussian draw occurs
 Retain/release, snapshots and native-byte queries support RAW, READY and failed
 instances. The final release retires published children and releases any stored
 world/stack holds. `mc_item_entity_stack_get` acquires an additional stack hold
-before returning it. Class free returns BUSY while any entity remains.
+before returning it. Class free returns BUSY while any entity or native class
+binding remains. [World class bindings](../world/fluids.md#world-dependencies-and-ownership)
+retain the exact side/profile owner before the first World allocation without
+initializing classes or resetting IDs/Random. Binding holds release separately
+from Entity instance holds.
 `mc_entity_release(NULL)` and `mc_entity_classes_free(NULL)` are harmless.
 Snapshot child pointers are borrowed views requiring the corresponding live
 owner and exclusive access; they expire on mutation or final release.

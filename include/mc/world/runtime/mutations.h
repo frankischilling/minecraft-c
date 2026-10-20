@@ -1,6 +1,8 @@
 #ifndef MC_WORLD_RUNTIME_MUTATIONS_H
 #define MC_WORLD_RUNTIME_MUTATIONS_H
 
+#include "mc/entity/entity.h"
+
 #include "mc/world/runtime/lighting.h"
 
 typedef struct mc_world_mutation_error {
@@ -13,6 +15,20 @@ typedef struct mc_world_mutation_error {
     unsigned int neighbor_call_bytecode, neighbor_bytecode, hook_bytecode;
     unsigned int presence_bytecode, provider_bytecode;
     const char *hook_class;
+    const char *hook_method;
+    const char *drop_class, *drop_method;
+    unsigned int drop_bytecode, drop_call_bytecode, drop_spawn_bytecode;
+    mc_item_stack_status item;
+    mc_entity_error entity;
+    /* Flat nested diagnostics retain the current concrete caller and deepest
+     * reached concrete hook origin, rather than a recursive call-stack owner.
+     * No gameplay recursion or work limit follows from this representation. */
+    const char *cause_hook_class, *cause_hook_method;
+    unsigned int cause_hook_bytecode;
+    unsigned int schedule_bytecode, support_bytecode;
+    mc_scheduled_tick_status record;
+    mc_scheduled_membership_status membership;
+    mc_scheduled_ordered_status ordered;
     mc_world_storage_error cause;
     mc_registry_error registry;
     mc_world_light_error light;

@@ -1,5 +1,10 @@
 # minecraft-c
 
+The [fluid checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md)
+adds flowing/still bodies, mixing, solid support and actual drop construction
+prefixes. All 65 selected native cases pass on MSVC and sanitized GCC/Clang.
+Entity publication and complete synchronous population remain unfinished.
+
 The [concrete World height and lighting operations](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md)
 use the actual provider, C records and shared A. All 33 selected cases pass on
 MSVC/GCC/Clang, including 177 height and 2,000,382 queue checks with Linux

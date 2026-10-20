@@ -83,9 +83,8 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_HE_EU:
             return tick_unavailable(world, block, "he", "eu", error);
         case MC_BLOCK_OM_JC:
-            return tick_unavailable(world, block, "om", "jc", error);
         case MC_BLOCK_NX_IS:
-            return tick_unavailable(world, block, "nx", "is", error);
+            return mc_world_mutation_fluid_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_GK_EI:
         case MC_BLOCK_NE_IG:
             return tick_unavailable(world, block, "gk", "ei", error);

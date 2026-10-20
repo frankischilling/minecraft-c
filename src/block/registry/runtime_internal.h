@@ -11,6 +11,17 @@
  * resource callback. False means a violated native ownership precondition. */
 bool mc_registry_runtime_borrow_release(mc_registry_classes *classes);
 
+/* Resolve a reached ASCII code literal in the actual shared String pool.
+ * The caller keeps the same Registry live/exclusive; text is a programmer-owned
+ * NUL-terminated literal, not external input. No class active use, phase gate,
+ * borrow, resource callback or Random operation occurs. Checked allocation
+ * retains its reached prefix and uses the existing Registry ledger. Failure
+ * preserves out and reports fresh runtime diagnostics, without attributing an
+ * earlier class initializer/Block constructor to this String allocation. */
+mc_registry_status mc_registry_runtime_literal_ascii(mc_registry_classes *classes, const char *text,
+                                                     const mc_registry_string **out,
+                                                     mc_registry_error *error);
+
 /* Nonowning actual q reference captured by an ordinary Block active use.
  * Existing final q has fixed extent256; NULL is a successful captured source
  * reference. Keep the same class owner live/exclusive through later iaload.

@@ -1,6 +1,17 @@
 # Development status
 
-The [World scheduling foundation](world/scheduling.md#world-insertion) constructs
+The [flowing/still fluid bodies](world/fluids.md) now execute updates, conversions,
+routes, mixing and selected Block drop construction prefixes. All 65 selected
+cases pass on MSVC and sanitized GCC/Clang, retaining the same 634 inputs and
+56 products per host. Fluid cases perform 487/487/486 checks; support and literals
+add 4,359 and 4,409. The new support/fluid cases retain twenty exact region slots,
+real saved clocks or whole-file unchanged limit inputs as appropriate. Separate
+originals each complete 56 support/presentation subject calls. Their descriptors
+contain array fingerprints and have no native replay. Entity insertion,
+moving-piston lookup, fire/portal, nonempty observers, falling behavior, complete
+population and full original/persistence acceptance remain unfinished.
+
+At the preceding checkpoint, the [World scheduling foundation](world/scheduling.md#world-insertion) constructs
 before every gate, shares the lazy sequence across Worlds, retains radius-eight
 presence order and separates F/E insertion effects. Immediate calls dispatch
 actual empty ticks; unfinished concrete tick bodies fail explicitly. All 60

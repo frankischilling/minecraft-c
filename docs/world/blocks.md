@@ -34,6 +34,12 @@ query before choosing shared Material.a for air or reading Block.m/bA for
 nonair. It is separate from that unfinished downward scan. Registry activation
 and nullable material results retain their actual ordering and identities.
 
+The separate solid-support query captures the live Registry block array before
+the acquiring getter. It then indexes that captured reference, returns false for
+a NULL Block, calls material `h`, and conditionally invokes the selected Block's
+support predicate. Slabs read their live subtype flag. This order differs from
+the material getter and opacity lookup; see [fluid dependencies](fluids.md).
+
 ## Reference basis
 
 The unchanged archives have SHA-256 client
