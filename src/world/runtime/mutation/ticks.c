@@ -20,8 +20,9 @@ static bool tick_unavailable(mc_world_runtime *world, const mc_block *block, con
 }
 
 /* uu/na.a(World,III,Random)V virtual resolution. The empty base does not
- * dereference World or Random. All other reached bodies stop at their actual
- * declaring entry until those concrete bodies are implemented. */
+ * dereference World or Random. Concrete fluid/falling overrides execute their
+ * actual bodies; remaining overrides stop at their declaring entry until
+ * those concrete bodies are implemented. */
 bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error)
@@ -87,7 +88,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
             return mc_world_mutation_fluid_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_GK_EI:
         case MC_BLOCK_NE_IG:
-            return tick_unavailable(world, block, "gk", "ei", error);
+            return mc_world_mutation_falling_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_BK_AR:
             return tick_unavailable(world, block, "bk", "ar", error);
         case MC_BLOCK_XQ_PA:

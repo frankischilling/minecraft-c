@@ -62,7 +62,7 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
         return finish(frame, error);
     }
     mc_nbt_tree *leaf = NULL, *result = NULL;
-    const mc_entity_class_literal *type = NULL;
+    const mc_entity_class_literal *type = entity->class_literal;
     mc_nbt_string name;
     frame.wrapper_bytecode = 1;
     frame.name_bytecode = 1;
@@ -71,13 +71,6 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
     if (mc_entity_classes_initialize_registry(entity->classes, &frame.registry) !=
         MC_ENTITY_REGISTRY_OK) {
         registry_failure(&frame);
-        goto done;
-    }
-    const mc_entity_status literal =
-        mc_entity_class_literal_get(entity->classes, MC_ENTITY_CLASS_KIND_ITEM, &type);
-    if (literal != MC_ENTITY_OK) {
-        frame.construction.status = literal;
-        construction_failure(&frame);
         goto done;
     }
     frame.name_bytecode = 7;
@@ -103,11 +96,18 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
         goto done;
     }
     const mc_nbt_tag *root = mc_nbt_tree_root(leaf);
+    const size_t field_count =
+        mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) ? 8u : 10u;
+    if (root == NULL || root->type != MC_NBT_COMPOUND ||
+        root->value.compound.length != field_count) {
+        fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Entity NBT Boolean save semantic shape");
+        goto done;
+    }
     const mc_nbt_tag *items[11] = {&id};
-    for (size_t index = 0; index < 10; ++index)
+    for (size_t index = 0; index < field_count; ++index)
         items[index + 1] = root->value.compound.items[index];
     const mc_nbt_tag compound = {.type = MC_NBT_COMPOUND,
-                                 .value.compound = {.items = items, .length = 11}};
+                                 .value.compound = {.items = items, .length = field_count + 1u}};
     mc_nbt_limits selected = limits == NULL ? mc_nbt_default_limits() : *limits;
     const size_t retained = mc_nbt_tree_allocation_bytes(leaf);
     if (retained > selected.max_allocation_bytes) {
@@ -232,13 +232,23 @@ mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_
         return finish(frame, error);
     }
     frame.factory_bytecode = 45;
-    if (type->kind != MC_ENTITY_CLASS_KIND_ITEM) {
+    if (type->kind != MC_ENTITY_CLASS_KIND_ITEM &&
+        type->kind != MC_ENTITY_CLASS_KIND_FALLING_SAND) {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT factory concrete constructor");
         return finish(frame, error);
     }
     mc_entity *entity = NULL;
-    if (mc_item_entity_allocate(classes, &entity, &frame.construction) != MC_ENTITY_OK ||
-        mc_item_entity_construct_world(entity, world, &frame.construction) != MC_ENTITY_OK) {
+    mc_entity_status constructed;
+    if (type->kind == MC_ENTITY_CLASS_KIND_FALLING_SAND) {
+        constructed = mc_falling_entity_allocate(classes, &entity, &frame.construction);
+        if (constructed == MC_ENTITY_OK)
+            constructed = mc_falling_entity_construct_world(entity, world, &frame.construction);
+    } else {
+        constructed = mc_item_entity_allocate(classes, &entity, &frame.construction);
+        if (constructed == MC_ENTITY_OK)
+            constructed = mc_item_entity_construct_world(entity, world, &frame.construction);
+    }
+    if (constructed != MC_ENTITY_OK) {
         construction_failure(&frame);
         mc_entity_release(entity);
         return finish(frame, error);

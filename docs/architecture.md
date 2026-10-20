@@ -12,6 +12,11 @@ uses those concrete methods and owns the actual provider w independently of the
 current manager. The installed GAME cache adapter uses the same provider Random,
 late Registry/Biome statics and notifying snow writes. The shared falling flag
 uses the existing Registry cell and real declaring-class initialization.
+The [falling Block module](world/falling.md) uses the actual scheduler and
+notifying setters, with complete immediate and Entity-construction branches.
+FallingSand has an immutable canonical subtype identity, genuine constructors
+and its own NBT fields; Item storage and Math draws are not substituted.
+Its later Entity movement and tick descendants remain separate unfinished work.
 Numerical climate APIs keep their separate bounded-buffer contract. Complete
 natural population and reached World descendants remain unfinished. Direct
 controller errors select one typed child; nested acquisition retains an acyclic

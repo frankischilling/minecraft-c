@@ -1,5 +1,20 @@
 # Development status
 
+The [falling subsystem](world/falling.md) now implements inherited sand/gravel
+Block hooks and ticks, real FallingSand constructors and World publication,
+and subtype NBT/factory/provenance. All 158 configured MSVC cases pass across
+two sequential partitions using unchanged compiled outputs; nineteen affected
+cases pass on each sanitized GCC/Clang build. The new cases pass 230 constructor/
+NBT checks and 300 runtime checks per host. Generated terrain now reaches the
+later snow-neighbor failure at controller PC2886. An earlier Windows attempt
+hit host disk exhaustion; its failures, incomplete stdout and damaged GCC
+capture copies remain retained. Fresh GCC verification used unchanged binaries
+and stable capture hashes.
+Later Entity movement/ticks, original replay and whole-game acceptance remain
+unfinished. Linux local verification covers the selected affected inventory.
+
+The following controller checkpoint predates falling integration.
+
 The [normal population controller](world/population/normal.md) now executes its
 complete schedule through the real GAME cache adapter. Prepared all-air Worlds
 pass 2,219 controller/ownership checks per host; the shared Registry flag adds

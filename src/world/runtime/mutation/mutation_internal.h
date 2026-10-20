@@ -47,6 +47,33 @@ bool mc_world_mutation_fluid_added(mc_world_runtime *world, const mc_block *bloc
 bool mc_world_mutation_fluid_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, int32_t source_id,
                                       mc_world_mutation_error *error);
+
+/* Actual gk/ei bodies, inherited unchanged by ne/ig. The enclosing source flow
+ * holds the same live World/Registry/Block and selected Chunk leases. Added and
+ * neighbor evaluate bn and virtual delay before scheduling; tick ignores its
+ * supplied Random and executes the complete immediate or real Entity branch.
+ * No extra source flag, remote guard, work cap or rollback is introduced. */
+bool mc_world_mutation_falling_added(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                     int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_falling_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                        int32_t y, int32_t z, int32_t source_id,
+                                        mc_world_mutation_error *error);
+bool mc_world_mutation_falling_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                    int32_t y, int32_t z, mc_java_random *random,
+                                    mc_world_mutation_error *error);
+
+/* Actual invokestatic c_(World,III)Z: perform gk/ei declaring active use at the
+ * caller's reached invoke, then source body query4/fire18/m29/material42/52.
+ * classes is that same application's actual Registry, not an ID palette.
+ * Keep it and World/dependencies live/exclusive; no new borrow is acquired.
+ * World may be NULL until query4. A nullable Material is an identity value.
+ * The ordinary boolean out is unchanged on failure. Arguments/results/errors
+ * are disjoint from each other and owners; error is required by internal use.
+ * Whole native/Registry causes and separate predicate/private/tick PCs survive
+ * failure; the finite current/deepest hook projection is not a source stack. */
+bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_classes *classes,
+                                        int32_t x, int32_t y, int32_t z, bool *out,
+                                        mc_world_mutation_error *error);
 bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                             int32_t z, int32_t metadata, mc_world_mutation_error *error);
 

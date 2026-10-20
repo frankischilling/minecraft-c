@@ -9,7 +9,7 @@ candidate order, leases and population flags are unchanged.
 
 The [paired source map](../../reference/normal-population.md) identifies the
 original controller and its reached operations. Implementing this controller
-does not close every feature descendant. Falling hooks/entities, snow survival,
+does not close every feature descendant. Later [FallingSand Entity ticks](../falling.md), snow survival,
 nonempty observers and other unsupported operations remain explicit failures.
 Natural terrain, complete original/native continuation and arbitrary recursive
 resource behavior remain unqualified.
@@ -101,9 +101,12 @@ flags, actual `w` and ledger identity, stable cache hits, cold resource failures
 leases and retained temperature aliases after owner retirement. Its retained
 driver independently inspects all eight final saved Chunk slots.
 
-The existing provider-activation test now reaches gravel placement at controller
-PC664 and the real unfinished falling-addition hook. It checks completed dirty
-writes, failure context, shared flag and absence of an implicit retry.
+At the preceding controller checkpoint, generated-terrain activation reached
+gravel placement at controller PC664 and the unfinished falling-addition hook.
+The falling Block bodies now implement that hook and its complete tick dispatch.
+The continuing generated-terrain regression reaches the actual snow-neighbor
+failure at controller PC2886, retaining earlier dirty writes and the shared
+flag. A cache hit does not retry the already-marked candidate.
 
 These prepared native scenarios do not establish natural terrain population,
 all Biome selectors/gates, exact whole-controller RNG continuation, nested field

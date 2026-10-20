@@ -1,5 +1,16 @@
 # Build and tests
 
+The [falling contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
+pass all 158 configured MSVC cases in two sequential partitions using unchanged
+compiled outputs, plus nineteen affected cases on each sanitized GCC/Clang build.
+The new cases add 230 constructor/NBT checks and 300 runtime checks per host.
+Ordinary gravel continues to the prepared terrain's snow-neighbor failure at
+controller PC2886. An earlier disk-exhausted Windows attempt remains retained.
+Formatting passes all 436 C source/header files. Later Entity ticks/movement,
+full original replay and complete population qualification remain unfinished.
+
+The following controller checkpoint predates falling integration.
+
 The [normal controller checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md)
 pass all 156 configured MSVC cases and 158 on each sanitized GCC/Clang build,
 with zero skips and local JDK comparisons. Prepared all-air cache calls pass

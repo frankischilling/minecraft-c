@@ -245,6 +245,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/hooks.c
     src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/fluids.c
+    src/world/runtime/mutation/falling.c
     src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
@@ -366,6 +367,12 @@ if(BUILD_TESTING)
     add_test(NAME entity.construction COMMAND mc_test_entity)
     set_tests_properties(entity.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
+    add_executable(mc_test_falling_entity tests/entity/test_falling.c)
+    target_include_directories(mc_test_falling_entity PRIVATE src/entity src/core/java)
+    target_link_libraries(mc_test_falling_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.falling COMMAND mc_test_falling_entity)
+    set_tests_properties(entity.falling PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
     add_executable(mc_test_entity_nbt tests/entity/nbt/test_nbt.c)
     target_include_directories(mc_test_entity_nbt PRIVATE src/entity src/core/java)
     target_link_libraries(mc_test_entity_nbt PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -485,6 +492,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_falling tests/world/runtime/test_falling.c)
+    target_link_libraries(mc_test_world_falling PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1190,6 +1200,14 @@ if(BUILD_TESTING)
         --scenario world-fluids
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-fluid-contracts")
     set_tests_properties(world.fluids PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.falling
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_falling.py"
+        --executable "$<TARGET_FILE:mc_test_world_falling>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-falling-contracts")
+    set_tests_properties(world.falling PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction

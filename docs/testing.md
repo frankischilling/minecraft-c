@@ -1,5 +1,28 @@
 # Test scope and reproduction
 
+The [falling contracts](world/falling.md) pass all 158 configured MSVC cases
+across two sequential partitions and nineteen affected cases on each Linux
+GCC/Clang build with ASan/UBSan/leak checks. `entity.falling` passes 230 checks
+and `world.falling` passes 300 per host, covering real owners, source ordering,
+notifying descent, constructor/publication branches, queue failures and subtype
+NBT/provenance. Ordinary gravel geometry passes 6,114 checks per host. Generated
+terrain reaches the actual snow-neighbor failure at controller PC2886.
+
+The Windows retry reused unchanged compiled executables after an earlier full
+attempt hit disk exhaustion. It ran the six failed tool cases first, then the
+complementary 152, retaining both complete streams. Earlier failures and
+incomplete stdout after case132 remain historical evidence. The disk-full
+period also left empty files in the first GCC captures. A fresh GCC verification
+reused unchanged compiled outputs, flushed the filesystem and checked two
+complete capture hash passes; the damaged run remains preserved. Each native run
+binds the same 739 selected inputs; Windows verifies all 211 retained compiled
+products, while each Linux build retains 85 selected products. Linux local runs
+cover the affected inventory rather than all 160 configured cases. Formatting
+passes all 436 C source/header files. No original falling replay, later Entity
+movement/tick or full natural population qualification follows from these tests.
+
+The following controller checkpoint predates falling integration.
+
 The [normal controller checks](world/population/normal.md) pass all 156 configured
 MSVC cases and 158 on each sanitized GCC/Clang build, with zero skips and local
 JDK comparisons enabled. The new prepared cache scenarios pass 2,219 checks per
@@ -470,7 +493,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.fixed_biome_runtime` | 386 checks: both sides and fixed kinds, cold l/m setup, rectangle/empty/suffix effects, natural allocation/fill failures, aliases and registry retirement | Native/source contracts; no fabricated recursive null-e state or Java OOM/GC timing |
 | `world.temperature_runtime` | 371 checks: retained original temperature/auxiliary bits, actual normal/fixed owners, null/empty/reuse/growth, suffixes, manager/root retirement, real late c/output quota effects and FP ordering | Concrete method and native ownership controls; no fresh original OOME, provider w/controller, snow or natural population qualification |
 | `world.normal_population` | 2,219 prepared native checks: real complete cache-triggered schedule on both class sides, full all-air Chunk images and eight saved slots, w/ledger identity, cold resource failure, cache hits, leases and aliases after provider retirement | Native controller/ownership scenarios; full original RNG continuation, all selectors/reentry, falling/snow descendants and natural terrain remain unqualified |
-| `block.registry_falling` | 408 checks over actual declaring-class initialization, shared flag access, complete first/cached causes and genuine entered-resource BUSY calls on both sides | Shared flag contract; falling physics and Entity construction remain unfinished |
+| `block.registry_falling` | 408 checks over actual declaring-class initialization, shared flag access, complete first/cached causes and genuine entered-resource BUSY calls on both sides | Shared flag contract; later FallingSand Entity ticks and physics remain unfinished |
 | `world.biome_registry_observation` | Complete original graph/query streams, explicit byte/table controls and corruption guards | Finite Biome bootstrap and methods; no Java Throwable identity or full World startup |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |

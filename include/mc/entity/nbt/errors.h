@@ -38,7 +38,7 @@ typedef struct mc_entity_nbt_error {
     const char *operation, *field;
     size_t index;
     unsigned int wrapper_bytecode, name_bytecode, factory_bytecode;
-    unsigned int base_bytecode, item_bytecode, stack_bytecode;
+    unsigned int base_bytecode, item_bytecode, falling_bytecode, stack_bytecode;
     unsigned int initializer_bytecode, registration_bytecode;
     mc_entity_error construction;
     mc_item_stack_error stack;

@@ -3,10 +3,10 @@
 The base World insertion method and normal Chunk insertion method use the real
 Entity, World list and eight Chunk slice lists. The public entry points are in
 [`runtime/entities.h`](../../include/mc/world/runtime/entities.h). These methods
-currently cover the runtime's constructed ItemEntities. Player-specific sleep,
-tracking, networking, Entity removal and nonempty persistence remain unfinished.
-Standalone [Item NBT and canonical Class methods](../entity/nbt.md) are available;
-the ordinary GAME load/save loops still require their integration.
+cover the runtime's constructed Item and [FallingSand Entities](falling.md).
+Player-specific sleep, tracking, networking and Entity removal remain unfinished.
+[Subtype NBT and canonical Class methods](../entity/nbt.md) join the GAME load/save
+loops; complete original interoperability remains unqualified.
 
 ## Source order
 

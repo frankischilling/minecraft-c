@@ -548,19 +548,20 @@ static bool immediate(fixture *f)
           f->center[0]->data->blocks[cell(8, 64, 8)] == 255 && !f->center[0]->dirty &&
           same_cause(&error.cause, mc_world_runtime_last_error(w)));
     f->center[0]->data->blocks[cell(8, 64, 8)] = 12;
-    CHECK(invoke(w, 8, 64, 8, 12, 0, MC_WORLD_STORAGE_UNSUPPORTED_STATE, &error) &&
-          error.bytecode == 142 && error.registry.status == MC_REGISTRY_OK &&
-          error.tick.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          error.tick.hook_class != NULL && strcmp(error.tick.hook_class, "gk") == 0 &&
-          error.tick.hook_bytecode == 0 && counts(w, 3, 3) &&
-          f->center[0]->data->blocks[cell(8, 64, 8)] == 12 && !f->center[0]->dirty &&
-          same_cause(&error.cause, mc_world_runtime_last_error(w)));
+    /* A real solid support makes the now-implemented falling body return
+     * normally before a flag/presence/mutation call, even with Random NULL. */
+    f->center[0]->data->blocks[cell(8, 63, 8)] = 1;
+    CHECK(invoke(w, 8, 64, 8, 12, 0, MC_WORLD_STORAGE_OK, &error) && error.bytecode == 0 &&
+          error.registry.status == MC_REGISTRY_OK && error.tick.status == MC_WORLD_STORAGE_OK &&
+          error.tick.hook_class == NULL && counts(w, 3, 3) &&
+          f->center[0]->data->blocks[cell(8, 64, 8)] == 12 && !f->center[0]->dirty);
     CHECK(mc_test_java_random_equal(saved_random, &random) && w->fields.a &&
           w->fields.E == ordered && w->fields.F == membership && f->resources[0].opens == 3);
     ok = true;
 cleanup:
     if (controlled) {
         f->center[0]->data->blocks[cell(8, 64, 8)] = 1;
+        f->center[0]->data->blocks[cell(8, 63, 8)] = 0;
         w->fields.a = saved_a;
         w->fields.x = saved_info;
         w->fields.r = saved_random;

@@ -167,9 +167,16 @@ const char *mc_entity_status_string(mc_entity_status status)
     return "unknown Entity status";
 }
 
+bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind)
+{
+    return entity != NULL && entity->classes != NULL &&
+           (unsigned int)kind < (unsigned int)MC_ENTITY_CLASS_KIND_COUNT &&
+           entity->class_literal == &entity->classes->literals[(size_t)kind];
+}
+
 mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay)
 {
-    if (entity == NULL)
+    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return MC_ENTITY_INVALID_ARGUMENT;
     entity->item.c = delay;
     return MC_ENTITY_OK;
@@ -180,27 +187,44 @@ mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity)
     return entity == NULL ? NULL : &entity->base;
 }
 
-mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity **out,
-                                         mc_entity_error *error)
+static mc_entity_status entity_allocate(mc_entity_classes *classes, mc_entity_class_kind kind,
+                                        const char *operation, mc_entity **out,
+                                        mc_entity_error *error)
 {
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
     if (classes == NULL || out == NULL)
-        return result(error, MC_ENTITY_INVALID_ARGUMENT, "item allocation", 0);
+        return result(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
     mc_entity_status status = ensure_entity_class(classes, error);
     if (status != MC_ENTITY_OK)
         return status;
     if (classes->live_entities == SIZE_MAX ||
         classes->live_entities >= classes->limits.max_live_entities)
-        return result(error, MC_ENTITY_LIMIT, "item allocation", 0);
-    mc_entity *entity = allocate(classes, NULL, sizeof(*entity), error, "item allocation", 0);
+        return result(error, MC_ENTITY_LIMIT, operation, 0);
+    mc_entity *entity = allocate(classes, NULL, sizeof(*entity), error, operation, 0);
     if (entity == NULL)
         return error->status;
-    *entity = (mc_entity){.classes = classes, .holds = 1, .direct_bytes = sizeof(*entity)};
+    *entity = (mc_entity){.classes = classes,
+                          .class_literal = &classes->literals[(size_t)kind],
+                          .holds = 1,
+                          .direct_bytes = sizeof(*entity)};
     ++classes->live_entities;
     *out = entity;
     return result(error, MC_ENTITY_OK, NULL, 0);
+}
+
+mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity **out,
+                                         mc_entity_error *error)
+{
+    return entity_allocate(classes, MC_ENTITY_CLASS_KIND_ITEM, "item allocation", out, error);
+}
+
+mc_entity_status mc_falling_entity_allocate(mc_entity_classes *classes, mc_entity **out,
+                                            mc_entity_error *error)
+{
+    return entity_allocate(classes, MC_ENTITY_CLASS_KIND_FALLING_SAND, "falling allocation", out,
+                           error);
 }
 
 void mc_entity_source_position(mc_entity *entity, double x, double y, double z)
@@ -357,7 +381,7 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez initialization hook is an empty return. */
+    /* Actual hl/ez and ju/gl initialization hooks are empty returns. */
     entity->base_bytecode = 231;
     return MC_ENTITY_OK;
 }
@@ -419,7 +443,7 @@ static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, do
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
-    if (entity == NULL)
+    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return result(error, MC_ENTITY_INVALID_ARGUMENT, "item constructor", 0);
     if (entity->phase != MC_ENTITY_RAW)
         return result(error, MC_ENTITY_INVALID_PHASE, "item constructor", 0);
@@ -484,6 +508,70 @@ mc_entity_status mc_item_entity_construct_world(mc_entity *raw, mc_world_runtime
     return construct(raw, world, 0.0, 0.0, 0.0, NULL, false, error);
 }
 
+static mc_entity_status construct_falling(mc_entity *entity, mc_world_runtime *world, double x,
+                                          double y, double z, int32_t id, bool full,
+                                          mc_entity_error *error)
+{
+    mc_entity_error local_error;
+    if (error == NULL)
+        error = &local_error;
+    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND))
+        return result(error, MC_ENTITY_INVALID_ARGUMENT, "falling constructor", 0);
+    if (entity->phase != MC_ENTITY_RAW)
+        return result(error, MC_ENTITY_INVALID_PHASE, "falling constructor", 0);
+    if (world != NULL && mc_world_runtime_random_profile(world) != entity->classes->profile)
+        return result(error, MC_ENTITY_INVALID_ARGUMENT, "falling world profile", 0);
+    entity->phase = MC_ENTITY_CONSTRUCTING;
+    const mc_entity_status status = base_constructor(entity, world, error);
+    if (status != MC_ENTITY_OK) {
+        entity->phase = MC_ENTITY_FAILED_CONSTRUCTION;
+        return status;
+    }
+    entity->falling.b = 0;
+    entity->falling_bytecode = 7;
+    if (full) {
+        entity->falling.a = id;
+        entity->falling_bytecode = 13;
+        entity->base.aF = true;
+        entity->falling_bytecode = 18;
+        /* Shared b(FF) only stores size; it leaves the existing bounds alone. */
+        entity->base.width = 0.98f;
+        entity->base.height = 0.98f;
+        entity->falling_bytecode = 26;
+        entity->base.offset = entity->base.height / 2.0f;
+        entity->falling_bytecode = 36;
+        mc_entity_source_position(entity, x, y, z);
+        entity->falling_bytecode = 45;
+        entity->base.velocity_x = 0.0;
+        entity->falling_bytecode = 50;
+        entity->base.velocity_y = 0.0;
+        entity->falling_bytecode = 55;
+        entity->base.velocity_z = 0.0;
+        entity->falling_bytecode = 60;
+        entity->base.aJ = x;
+        entity->falling_bytecode = 65;
+        entity->base.aK = y;
+        entity->falling_bytecode = 71;
+        entity->base.aL = z;
+        entity->falling_bytecode = 77;
+    }
+    entity->falling_bytecode = full ? 80 : 10;
+    entity->phase = MC_ENTITY_READY;
+    return result(error, MC_ENTITY_OK, NULL, 0);
+}
+
+mc_entity_status mc_falling_entity_construct_world(mc_entity *raw, mc_world_runtime *world,
+                                                   mc_entity_error *error)
+{
+    return construct_falling(raw, world, 0.0, 0.0, 0.0, 0, false, error);
+}
+
+mc_entity_status mc_falling_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,
+                                             double y, double z, int32_t id, mc_entity_error *error)
+{
+    return construct_falling(raw, world, x, y, z, id, true, error);
+}
+
 mc_entity_status mc_entity_retain(mc_entity *entity)
 {
     if (entity == NULL)
@@ -526,11 +614,14 @@ mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snaps
     if (entity == NULL || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     *out = (mc_entity_snapshot){.source = entity->classes->source,
+                                .class_literal = entity->class_literal,
                                 .phase = entity->phase,
                                 .base_bytecode = entity->base_bytecode,
                                 .item_bytecode = entity->item_bytecode,
+                                .falling_bytecode = entity->falling_bytecode,
                                 .base = entity->base,
                                 .item = entity->item,
+                                .falling = entity->falling,
                                 .bounds = entity->bounds,
                                 .random = entity->random,
                                 .watcher = entity->watcher,
@@ -560,7 +651,7 @@ mc_entity_status mc_entity_watcher_get_snapshot(const mc_entity_watcher *watcher
 
 mc_entity_status mc_item_entity_stack_get(mc_entity *entity, mc_item_stack **out)
 {
-    if (entity == NULL || out == NULL)
+    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->stack != NULL && mc_item_stack_retain(entity->stack) != MC_ITEM_STACK_OK)
         return MC_ENTITY_ITEM_FAILED;

@@ -6,14 +6,16 @@
 
 mc_world_mutation_error mc_world_mutation_empty_error(void)
 {
+    const mc_registry_error registry = {.initializer_pc = -1,
+                                        .block_id = -1,
+                                        .constructor_pc = -1,
+                                        .active_initializer_pc = -1,
+                                        .item_argument = -1};
     return (mc_world_mutation_error){.tile = mc_live_tiles_empty_error(),
                                      .load_entity = mc_world_entity_load_empty_error(),
                                      .batch = {.index = SIZE_MAX},
-                                     .registry = {.initializer_pc = -1,
-                                                  .block_id = -1,
-                                                  .constructor_pc = -1,
-                                                  .active_initializer_pc = -1,
-                                                  .item_argument = -1}};
+                                     .registry = registry,
+                                     .schedule = {.registry = registry}};
 }
 
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,

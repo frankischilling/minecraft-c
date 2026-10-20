@@ -1,10 +1,10 @@
-# Entity classes and Item NBT
+# Entity classes and subtype NBT
 
 The [NBT methods](../../include/mc/entity/nbt/nbt.h) operate on actual constructed
-ItemEntities. The [save wrapper and NBT factory](../../include/mc/entity/nbt/factory.h)
-add the original class-name and world-only construction calls. These APIs do
-not yet replace the unfinished Entity loops in ordinary GAME Chunk loading and
-saving. Other concrete Entity constructors, AI, ticking, source removal and
+Item and FallingSand Entities. The [save wrapper and NBT factory](../../include/mc/entity/nbt/factory.h)
+add the original class-name and world-only construction calls. GAME Chunk
+loading and saving dispatch through the actual concrete subtype. Other
+concrete Entity constructors, AI, ticking, source removal and
 complete save interoperability remain unfinished.
 
 ## Class identity and lifetime
@@ -38,7 +38,7 @@ concrete constructors and World/NBT operations remain in `mc_simulation`.
 
 ## Read and write order
 
-The independent leaf writer emits ten known fields and 22 value tags:
+The Item leaf writer emits ten known fields and 22 value tags:
 
 | Fields | Representation |
 | --- | --- |
@@ -69,7 +69,7 @@ new Stack. The old Stack remains owned until successful reference replacement.
 Missing Item constructs a genuine zero-valued Stack. None of these operations
 resets IDs, class phases, Random, World bindings or constructor state.
 
-The Boolean save wrapper resolves the Class name before testing dead. A false
+For Item, the Boolean save wrapper resolves the Class name before testing dead. A false
 result leaves the caller's tree untouched. A true result adds String `id=Item`,
 giving eleven known fields and 23 tags. The NBT factory uses the supplied
 application Class owner even with NULL World. It calls the real world-only
@@ -84,6 +84,22 @@ Known unsupported subclasses stop at their reached constructor frontier.
 Wrong-type getters stop at the catch diagnostic frontier. Java reflection,
 Throwable stack printing, arbitrary Unicode output, stream replacement and
 PrintStream error-state queries remain outside this finite implementation.
+
+## FallingSand
+
+The [falling subsystem](../world/falling.md) uses the same base read/write
+order followed by the genuine FallingSand hook. Its leaf has eight fields and
+17 tags: the seven common fields plus Byte `Tile`. The named wrapper has nine
+fields and 18 tags, including `id=FallingSand`. Saving narrows the carried int
+to Byte; reading masks that Byte with 255. Age is not persisted. No Health,
+Age, Item Compound or Stack is required by this subtype.
+
+The factory invokes the genuine world-only FallingSand constructor before
+semantic read. That constructor consumes the base private Random allocation
+and ID, with no Item Math draw. Its independent provenance tree preserves
+unknown Entity tags using the same native overlay policy. Replacement and
+save budgets include all overlapping live trees, generated trees and pointer
+scratch. Item provenance still belongs to the actual current Stack.
 
 ## Native contracts and verification
 

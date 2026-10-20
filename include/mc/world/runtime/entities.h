@@ -25,8 +25,8 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
  * World.b before invoking the concrete observer hook. Duplicates own separate
  * native holds. It does not change Entity.world or precheck source membership.
  *
- * This runtime currently constructs actual ItemEntities; player sleep/tracker
- * descendants remain separate implementations. Empty actual observer lists
+ * This runtime constructs actual Item and FallingSand Entities; player
+ * sleep/tracker descendants remain separate implementations. Empty observer lists
  * complete; unsupported reached nonempty dispatch retains both publications.
  * NULL Entity is admitted until its reached source field read. A nonnull Entity
  * must belong to this World's bound application EntityClasses, independently

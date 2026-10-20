@@ -30,11 +30,13 @@ struct mc_entity_watcher {
 
 struct mc_entity {
     mc_entity_classes *classes;
+    const mc_entity_class_literal *class_literal;
     size_t holds, direct_bytes;
     mc_entity_phase phase;
-    uint16_t base_bytecode, item_bytecode;
+    uint16_t base_bytecode, item_bytecode, falling_bytecode;
     mc_entity_base_fields base;
     mc_item_entity_fields item;
+    mc_falling_entity_fields falling;
     mc_entity_bounds *bounds;
     mc_java_random *random;
     mc_entity_watcher *watcher;
@@ -44,6 +46,10 @@ struct mc_entity {
      * remains part of the actual Entity header. Its lifetime follows Entity. */
     mc_nbt_tree *storage_source;
 };
+
+/* Passive actual subtype admission, valid in every phase. The immutable
+ * literal must be this Entity classes owner's canonical literal for kind. */
+bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind);
 
 /* The production constructor calls these after each real shared Math draw.
  * Their internal seam also permits replay of original observed field formulas;

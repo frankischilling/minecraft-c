@@ -16,3 +16,6 @@
 - [Lifecycle qualification](Storage-and-reference#lifecycle-qualification)
 - [Storage and original references](Storage-and-reference)
 - [Source repository](https://github.com/frankischilling/minecraft-c)
+
+- [Falling blocks and Entity ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
+- [Paired falling method map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/falling.md)

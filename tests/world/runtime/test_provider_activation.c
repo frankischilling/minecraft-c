@@ -388,13 +388,13 @@ static bool population_prefix(fixture *f)
     CHECK(check_children(f, 0, square[3]));
     const mc_world_storage_error cause = *mc_world_runtime_last_error(f->worlds[0]);
     CHECK(cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && cause.operation != NULL &&
-          strcmp(cause.operation, "Block sand addition hook") == 0);
-    /* The real controller now reaches gravel ore placement and its explicit
-     * falling descendant frontier. Earlier dirt/gravel writes remain dirty;
-     * the cache must not roll back or rerun the completed source prefix. */
-    CHECK(population.population.reached && population.population.current.bytecode == 664 &&
-          population.population.origin.bytecode == 664 &&
-          population.population.current.iteration < 10 &&
+          strcmp(cause.operation, "Block snow neighbor hook") == 0);
+    /* Gravel now schedules normally. This prepared terrain reaches notifying
+     * snow placement and its real unfinished neighbor hook. Earlier writes
+     * remain dirty; the cache must not roll back or retry that source prefix. */
+    CHECK(population.population.reached && population.population.current.bytecode == 2886 &&
+          population.population.origin.bytecode == 2886 &&
+          population.population.current.iteration == SIZE_MAX &&
           population.population.cause.status == cause.status &&
           population.population.cause.operation == cause.operation &&
           population.registry.status == MC_REGISTRY_OK);

@@ -23,7 +23,7 @@ typedef enum mc_entity_phase {
  * Reference fields stay null unless assigned by construction. Semantic NBT
  * read updates only its documented scalar fields and concrete Item Stack.
  * No generic String, relationship or watcher Object API is
- * implied. Nested base/item records preserve shadowed names and their types. */
+ * implied. Nested base/item/falling records preserve shadowed names and types. */
 typedef struct mc_entity_base_fields {
     int32_t id;
     double aE;
@@ -62,16 +62,22 @@ typedef struct mc_item_entity_fields {
     int32_t f;
 } mc_item_entity_fields;
 
+typedef struct mc_falling_entity_fields {
+    int32_t a, b;
+} mc_falling_entity_fields;
+
 typedef struct mc_entity_bounds {
     double min_x, min_y, min_z, max_x, max_y, max_z;
 } mc_entity_bounds;
 
 typedef struct mc_entity_snapshot {
     mc_entity_source source;
+    const mc_entity_class_literal *class_literal; /* Immutable same-owner identity. */
     mc_entity_phase phase;
-    uint16_t base_bytecode, item_bytecode; /* Last completed store/call. */
+    uint16_t base_bytecode, item_bytecode, falling_bytecode; /* Last completed store/call/return. */
     mc_entity_base_fields base;
     mc_item_entity_fields item;
+    mc_falling_entity_fields falling;
     const mc_entity_bounds *bounds;
     const mc_java_random *random;
     const mc_entity_watcher *watcher;
@@ -99,7 +105,13 @@ const char *mc_entity_status_string(mc_entity_status status);
  * reached failure permanently retains FAILED_CONSTRUCTION and its field/class/
  * ID/entropy prefix. No rollback or retry occurs. AABB and watcher class failure
  * latch separately, while ordinary instance failure does not poison classes.
+ * Constructor FP arithmetic requires the java.h strict environment.
  *
+ * The allocator fixes the actual canonical class literal from this classes
+ * owner; construction cannot change it. Each constructor requires its matching
+ * concrete kind. Base equality continues to compare loaded base ownership/IDs.
+ * Only the subtype record selected by class_literal represents source fields;
+ * the other subtype record remains zero native storage.
  * NULL world/stack are accepted. A nonnull world must borrow this same profile;
  * caller keeps it live until its reached counted binding at base bytecode205.
  * Stack storage is retained at item bytecode61 without a READY/field check.
@@ -115,6 +127,23 @@ mc_entity_status mc_item_entity_construct(mc_entity *raw, mc_world_runtime *worl
  * velocities zero; changing size does not itself recompute the bounds. */
 mc_entity_status mc_item_entity_construct_world(mc_entity *raw, mc_world_runtime *world,
                                                 mc_entity_error *error);
+
+/* Actual ju/gl constructors, with the same RAW/failed-prefix/ownership and
+ * strict FP environment contract as the Item constructors above. They call the
+ * base constructor once and never run Item initialization, retain a Stack or
+ * draw Math entropy. The world-only overload stores falling.b=0, then returns
+ * with the base size/bounds unchanged. The full overload stores falling.a=id,
+ * enables prevent-spawn collision, sets size to 0.98f, derives offset from the
+ * actual height/2, positions the same bounds, zeroes velocities, then stores
+ * the supplied coordinates into the previous-position fields. No insertion,
+ * falling tick, collision handling or subtype NBT behavior is implied. */
+mc_entity_status mc_falling_entity_allocate(mc_entity_classes *classes, mc_entity **out,
+                                            mc_entity_error *error);
+mc_entity_status mc_falling_entity_construct_world(mc_entity *raw, mc_world_runtime *world,
+                                                   mc_entity_error *error);
+mc_entity_status mc_falling_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,
+                                             double y, double z, int32_t id,
+                                             mc_entity_error *error);
 mc_entity_status mc_entity_retain(mc_entity *entity);
 void mc_entity_release(mc_entity *entity);
 mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snapshot *out);
@@ -128,7 +157,8 @@ size_t mc_entity_native_bytes(const mc_entity *entity);
  * previous positions/angles remain untouched. No dirty/world/RNG callbacks or
  * coordinate/finite-value clamp is added. FP arithmetic needs the java.h strict
  * environment. Axis is 0,1,2. Equality/hash require READY; right may be NULL and
- * a distinct loaded game class never compares equal. IDs wrap as Java int. */
+ * a distinct loaded Entity classes owner never compares equal. Concrete
+ * subtype identity adds no equality gate. IDs wrap as Java int. */
 mc_entity_status mc_entity_set_velocity(mc_entity *entity, unsigned int axis, double value);
 mc_entity_status mc_entity_set_position(mc_entity *entity, double x, double y, double z);
 mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height);

@@ -1,5 +1,14 @@
 # minecraft-c
 
+The [falling subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
+now implements sand/gravel Block hooks, immediate descent, actual FallingSand
+constructors/publication and subtype NBT. All 158 configured MSVC cases pass in two partitions;
+nineteen affected cases pass per sanitized GCC/Clang build, including 230
+constructor/NBT and 300 runtime checks per host. Later Entity movement/ticks,
+full original replay and complete population acceptance remain unfinished.
+
+The following Dungeon checkpoint predates falling integration.
+
 The [Dungeon subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/dungeon.md)
 now builds rooms through notifying World writes, fills actual Chest inventories
 and assigns the shared Spawner name. Its 3,655 native checks pass per compiler,

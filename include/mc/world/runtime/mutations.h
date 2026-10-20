@@ -5,6 +5,7 @@
 #include "mc/world/runtime/entities.h"
 
 #include "mc/world/runtime/lighting.h"
+#include "mc/world/runtime/scheduling_context.h"
 #include "mc/world/runtime/tiles/errors.h"
 
 typedef struct mc_world_mutation_error {
@@ -34,6 +35,10 @@ typedef struct mc_world_mutation_error {
     const char *cause_hook_class, *cause_hook_method;
     unsigned int cause_hook_bytecode;
     unsigned int schedule_bytecode, support_bytecode;
+    /* Separate falling tick/private/predicate sites, alongside current/deepest
+     * concrete hooks. These are explicit reached call frames, not a stack. */
+    unsigned int falling_tick_bytecode, falling_bytecode, falling_predicate_bytecode;
+    mc_world_schedule_prefix schedule;
     mc_scheduled_tick_status record;
     mc_scheduled_membership_status membership;
     mc_scheduled_ordered_status ordered;

@@ -3,11 +3,12 @@
 
 #include "mc/entity/nbt/factory.h"
 
-/* EXTRA native storage operation after an actual successful ItemEntity NBT
- * read, not a semantic reader or constructor. The caller identifies that same
- * input Compound and its actual current, successfully read READY Stack. Copy
- * the complete Entity Compound and attach its Item Compound to that same Stack
- * through the real Stack provenance owner. Missing Item uses an empty Compound.
+/* EXTRA native storage operation after an actual successful supported Entity
+ * NBT read, not a semantic reader or constructor. Copy the same complete input
+ * Entity Compound. Item additionally attaches its Item Compound to the actual
+ * current successfully read READY Stack through that Stack's provenance owner;
+ * missing Item uses an empty Compound. FallingSand owns an independent Entity
+ * source only: no Item getter, Stack requirement or Stack attachment occurs.
  * No source field, ID, Random, Class phase/accounting, World binding or hold is
  * changed. The Entity's independent source is freed only on replacement or its
  * final hold. Both old attached sources stay unchanged on every failure.
@@ -16,6 +17,8 @@
  * operation's simultaneous requested heap bytes: this Entity's direct bytes,
  * its old source tree, its current Stack plus that Stack's old source tree,
  * and each new tree/validation scratch while it overlaps those live owners.
+ * FallingSand has no current Stack allocation and charges its actual Entity
+ * and old/new Entity trees without a fictional Stack or Item source graph.
  * Existing tree-copy validation and exact allocation use the residual ceiling;
  * neither encoded length nor a private document layout estimates tree size.
  * The Entity and Stack copies are separate allocations, even for equal input.
@@ -53,7 +56,10 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
  * No READY-only Stack overlay/phase gate is called: supported RAW/failed Stack
  * fields accepted by the semantic writer remain accepted here. A true result
  * overlays the generated fields over the Entity source, and the generated
- * current Item over only the CURRENT Stack source. Replacing a Stack without
+ * current Item over only the CURRENT Stack source. FallingSand overlays the
+ * generated base+Tile record directly onto its own Entity source, without a
+ * Stack overlay; unknown fields remain native preservation, even an unknown
+ * field whose name happens to be Item. Replacing an ItemEntity Stack without
  * provenance therefore cannot resurrect the Entity's old Item unknown fields.
  * Retained positions/root name and unknown fields survive; missing generated
  * names append in generated order. This preservation policy is stronger than

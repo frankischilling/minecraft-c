@@ -96,18 +96,26 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity storage provenance arguments");
         return publish(frame, error);
     }
-    if (entity->stack == NULL) {
+    const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
+    if (!item_entity && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
+        fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity storage provenance concrete type");
+        return publish(frame, error);
+    }
+    if (item_entity && entity->stack == NULL) {
         frame.field = "Item";
         fail(&frame, MC_ENTITY_NBT_NULL_REFERENCE, "Entity storage provenance current Stack");
         return publish(frame, error);
     }
-    mc_item_stack_phase phase;
-    mc_item_stack_status item_status = mc_item_stack_phase_get(entity->stack, &phase);
-    if (item_status != MC_ITEM_STACK_OK || phase != MC_ITEM_STACK_READY) {
-        if (item_status == MC_ITEM_STACK_OK)
-            item_status = MC_ITEM_STACK_INVALID_PHASE;
-        stack_failure(&frame, item_status, "Entity storage provenance successfully read Stack");
-        return publish(frame, error);
+    mc_item_stack_status item_status = MC_ITEM_STACK_OK;
+    if (item_entity) {
+        mc_item_stack_phase phase;
+        item_status = mc_item_stack_phase_get(entity->stack, &phase);
+        if (item_status != MC_ITEM_STACK_OK || phase != MC_ITEM_STACK_READY) {
+            if (item_status == MC_ITEM_STACK_OK)
+                item_status = MC_ITEM_STACK_INVALID_PHASE;
+            stack_failure(&frame, item_status, "Entity storage provenance successfully read Stack");
+            return publish(frame, error);
+        }
     }
     mc_nbt_limits limits = requested == NULL ? mc_nbt_default_limits() : *requested;
     const size_t ceiling = limits.max_allocation_bytes;
@@ -124,6 +132,14 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
     if (copied != MC_NBT_OK) {
         nbt_failure(&frame, copied, "Entity storage provenance independent tree");
         return publish(frame, error);
+    }
+    if (!item_entity) {
+        /* FallingSand owns only this independent source tree. No Item getter,
+         * Stack admission, Stack attachment or subtype field store is reached. */
+        mc_nbt_tree *old_source = entity->storage_source;
+        entity->storage_source = source;
+        mc_nbt_tree_free(old_source);
+        return publish(mc_entity_nbt_empty_error(), error);
     }
     const mc_nbt_tag *root = mc_nbt_tree_root(source);
     const mc_nbt_tag *item = mc_nbt_compound_get(root, item_units, 4);
@@ -212,16 +228,23 @@ mc_entity_nbt_status mc_entity_save_storage_nbt(mc_entity *entity, const mc_nbt_
     }
     limits.max_allocation_bytes -= live + semantic_bytes;
     const mc_nbt_tag *known = mc_nbt_tree_root(semantic);
-    const mc_nbt_tag *known_item = mc_nbt_compound_get(known, item_units, 4);
-    if (known == NULL || known->type != MC_NBT_COMPOUND || known->value.compound.length != 11 ||
-        known_item == NULL || known_item->type != MC_NBT_COMPOUND || entity->stack == NULL) {
+    const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
+    const bool falling_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND);
+    const mc_nbt_tag *known_item = item_entity ? mc_nbt_compound_get(known, item_units, 4) : NULL;
+    const size_t known_count = item_entity ? 11u : 9u;
+    if ((!item_entity && !falling_entity) || known == NULL || known->type != MC_NBT_COMPOUND ||
+        known->value.compound.length != known_count ||
+        (item_entity &&
+         (known_item == NULL || known_item->type != MC_NBT_COMPOUND || entity->stack == NULL))) {
         fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Entity storage save semantic result shape");
         mc_nbt_tree_free(semantic);
         return publish(frame, error);
     }
     size_t item_count = 0, entity_count = 0;
-    mc_nbt_status status = mc_nbt_compound_overlay_count(mc_item_stack_source(entity->stack),
-                                                         known_item, &item_count, &frame.nbt);
+    mc_nbt_status status = MC_NBT_OK;
+    if (item_entity)
+        status = mc_nbt_compound_overlay_count(mc_item_stack_source(entity->stack), known_item,
+                                               &item_count, &frame.nbt);
     if (status == MC_NBT_OK)
         status = mc_nbt_compound_overlay_count(mc_entity_storage_source(entity), known,
                                                &entity_count, &frame.nbt);
@@ -247,20 +270,23 @@ mc_entity_nbt_status mc_entity_save_storage_nbt(mc_entity *entity, const mc_nbt_
         return publish(frame, error);
     }
     mc_nbt_tag item_view, entity_view;
-    status = mc_nbt_compound_overlay(mc_item_stack_source(entity->stack), known_item, scratch,
-                                     item_count, &item_view, &frame.nbt);
+    if (item_entity)
+        status = mc_nbt_compound_overlay(mc_item_stack_source(entity->stack), known_item, scratch,
+                                         item_count, &item_view, &frame.nbt);
     mc_nbt_tree *result = NULL;
     if (status == MC_NBT_OK) {
-        /* A Stack's provenance root name belongs to its former container.
-         * This occurrence's actual generated field owns the Item name. */
-        item_view.name = known_item->name;
         const mc_nbt_tag *generated_items[11];
-        for (size_t index = 0; index < 11; ++index) {
-            const mc_nbt_tag *field = known->value.compound.items[index];
-            generated_items[index] = field == known_item ? &item_view : field;
-        }
         mc_nbt_tag fields = *known;
-        fields.value.compound.items = generated_items;
+        if (item_entity) {
+            /* A Stack's provenance root name belongs to its former container.
+             * This occurrence's actual generated field owns the Item name. */
+            item_view.name = known_item->name;
+            for (size_t index = 0; index < known_count; ++index) {
+                const mc_nbt_tag *field = known->value.compound.items[index];
+                generated_items[index] = field == known_item ? &item_view : field;
+            }
+            fields.value.compound.items = generated_items;
+        }
         status =
             mc_nbt_compound_overlay(mc_entity_storage_source(entity), &fields, scratch + item_count,
                                     entity_count, &entity_view, &frame.nbt);

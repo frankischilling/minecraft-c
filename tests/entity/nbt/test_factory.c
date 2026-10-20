@@ -879,8 +879,8 @@ static int fc_frontiers(mc_entity_source source)
         expected.factory_bytecode = 99;
         CHECK(error.operation != NULL && fc_error_equal(&error, &expected));
     }
-    const char *const known[] = {"Skeleton", "Zombie", "Spider", "Mob", "FallingSand"};
-    for (size_t index = 0; index < 5; ++index) {
+    const char *const known[] = {"Skeleton", "Zombie", "Spider", "Mob"};
+    for (size_t index = 0; index < sizeof(known) / sizeof(known[0]); ++index) {
         fc_record_init(&record, known[index]);
         mc_entity *out = sentinel;
         error = fc_poison();

@@ -188,7 +188,7 @@ def main():
             paths["mutation_test"] = ROOT / "tests/world/runtime/test_mutations.c"
             paths["mutation_header"] = ROOT / "include/mc/world/runtime/mutations.h"
             paths["chunk_runtime_internal"] = ROOT / "src/world/runtime/chunks_internal.h"
-            for name in ("support", "chunk", "height", "observers", "hooks", "ticks", "fluids", "drops", "world", "mutation_internal"):
+            for name in ("support", "chunk", "height", "observers", "hooks", "ticks", "fluids", "falling", "drops", "world", "mutation_internal"):
                 paths["mutation_" + name] = ROOT / ("src/world/runtime/mutation/" + name +
                     (".h" if name.endswith("_internal") else ".c"))
             paths["world_presence"] = ROOT / "src/world/runtime/presence.c"

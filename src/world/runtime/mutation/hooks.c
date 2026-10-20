@@ -311,7 +311,7 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
             return mc_world_mutation_fluid_added(world, block, x, y, z, error);
         case MC_BLOCK_GK_EI:
         case MC_BLOCK_NE_IG:
-            return unavailable(world, block, "gk", "ei", "Block sand addition hook", error);
+            return mc_world_mutation_falling_added(world, block, x, y, z, error);
         case MC_BLOCK_PT_JR:
         case MC_BLOCK_DD_BZ:
         case MC_BLOCK_E_E:
@@ -409,7 +409,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
             return mc_world_mutation_fluid_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_GK_EI:
         case MC_BLOCK_NE_IG:
-            return unavailable(world, block, "gk", "ei", "Block sand neighbor hook", error);
+            return mc_world_mutation_falling_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_PC_JJ:
         case MC_BLOCK_PH_JN:
             return unavailable(world, block, "pc", "jj", "Block rail neighbor hook", error);

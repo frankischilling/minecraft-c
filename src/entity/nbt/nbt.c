@@ -40,6 +40,7 @@ static const uint16_t item_name[] = {'I', 't', 'e', 'm'};
 static const uint16_t id_name[] = {'i', 'd'};
 static const uint16_t count_name[] = {'C', 'o', 'u', 'n', 't'};
 static const uint16_t damage_name[] = {'D', 'a', 'm', 'a', 'g', 'e'};
+static const uint16_t tile_name[] = {'T', 'i', 'l', 'e'};
 
 static bool fail(mc_entity_nbt_error *frame, mc_entity_nbt_status status, const char *operation)
 {
@@ -200,6 +201,25 @@ static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
     return true;
 }
 
+static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
+{
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
+        return read_item(entity, compound, frame);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
+        const mc_nbt_tag *tag;
+        frame->falling_bytecode = 4;
+        if (!get(compound, tile_name, 4, "Tile", MC_NBT_BYTE, &tag, frame))
+            return false;
+        /* Actual Byte getter, unsigned mask10, then own field store11. Age is
+         * not read here; the actual current b remains unchanged. */
+        frame->falling_bytecode = 11;
+        entity->falling.a = (tag == NULL ? 0 : (int32_t)tag->value.byte_value) & 255;
+        frame->falling_bytecode = 14;
+        return true;
+    }
+    return fail(frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete read hook");
+}
+
 static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
 {
     const mc_nbt_tag *pos, *motion, *rotation, *tag;
@@ -290,7 +310,7 @@ static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
     entity->base.yaw = fmodf(entity->base.yaw, 360.0f);
     entity->base.aT = fmodf(entity->base.aT, 360.0f);
     frame->base_bytecode = 311;
-    return read_item(entity, compound, frame);
+    return read_subtype(entity, compound, frame);
 }
 
 mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *compound,
@@ -403,52 +423,65 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
                              .name = name(ground_name, 8),
                              .value.byte_value = (int8_t)(entity->base.aX ? 1 : 0)};
     frame.base_bytecode = 145;
-    frame.item_bytecode = 9;
-    fields[7] = (mc_nbt_tag){.type = MC_NBT_SHORT,
-                             .name = name(health_name, 6),
-                             .value.short_value = mc_java_i8_narrow(entity->item.f)};
-    frame.item_bytecode = 20;
-    fields[8] = (mc_nbt_tag){.type = MC_NBT_SHORT,
-                             .name = name(age_name, 3),
-                             .value.short_value = mc_java_i16_narrow(entity->item.b)};
-    mc_item_stack *stack = entity->stack; /* Actual captured receiver27. */
-    fields[9] = (mc_nbt_tag){.type = MC_NBT_COMPOUND,
-                             .name = name(item_name, 4),
-                             .value.compound = {.items = item_items, .length = 3}};
-    frame.item_bytecode = 37;
-    frame.field = "Item";
-    if (stack == NULL) {
-        fail(&frame, MC_ENTITY_NBT_NULL_REFERENCE, "ItemEntity NBT Stack writer receiver");
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM)) {
+        frame.item_bytecode = 9;
+        fields[7] = (mc_nbt_tag){.type = MC_NBT_SHORT,
+                                 .name = name(health_name, 6),
+                                 .value.short_value = mc_java_i8_narrow(entity->item.f)};
+        frame.item_bytecode = 20;
+        fields[8] = (mc_nbt_tag){.type = MC_NBT_SHORT,
+                                 .name = name(age_name, 3),
+                                 .value.short_value = mc_java_i16_narrow(entity->item.b)};
+        mc_item_stack *stack = entity->stack; /* Actual captured receiver27. */
+        fields[9] = (mc_nbt_tag){.type = MC_NBT_COMPOUND,
+                                 .name = name(item_name, 4),
+                                 .value.compound = {.items = item_items, .length = 3}};
+        frame.item_bytecode = 37;
+        frame.field = "Item";
+        if (stack == NULL) {
+            fail(&frame, MC_ENTITY_NBT_NULL_REFERENCE, "ItemEntity NBT Stack writer receiver");
+            goto done;
+        }
+        mc_item_stack_status status = mc_item_stack_retain(stack);
+        if (status != MC_ITEM_STACK_OK) {
+            frame.stack.status = status;
+            fail(&frame, stack_status(status), "ItemEntity NBT Stack writer ownership");
+            goto done;
+        }
+        held_stack = stack;
+        mc_item_stack_fields values;
+        status = mc_item_stack_fields_get(stack, &values);
+        if (status != MC_ITEM_STACK_OK) {
+            frame.stack.status = status;
+            fail(&frame, stack_status(status), "ItemEntity NBT Stack fields");
+            goto done;
+        }
+        frame.stack_bytecode = 8;
+        stack_fields[0] = (mc_nbt_tag){.type = MC_NBT_SHORT,
+                                       .name = name(id_name, 2),
+                                       .value.short_value = mc_java_i16_narrow(values.id)};
+        frame.stack_bytecode = 19;
+        stack_fields[1] = (mc_nbt_tag){.type = MC_NBT_BYTE,
+                                       .name = name(count_name, 5),
+                                       .value.byte_value = mc_java_i8_narrow(values.count)};
+        frame.stack_bytecode = 30;
+        stack_fields[2] = (mc_nbt_tag){.type = MC_NBT_SHORT,
+                                       .name = name(damage_name, 6),
+                                       .value.short_value = mc_java_i16_narrow(values.damage)};
+        frame.stack_bytecode = 34;
+        frame.item_bytecode = 43;
+    } else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
+        frame.falling_bytecode = 8;
+        frame.field = "Tile";
+        fields[7] = (mc_nbt_tag){.type = MC_NBT_BYTE,
+                                 .name = name(tile_name, 4),
+                                 .value.byte_value = mc_java_i8_narrow(entity->falling.a)};
+        frame.falling_bytecode = 11;
+        root.value.compound.length = 8;
+    } else {
+        fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete write hook");
         goto done;
     }
-    mc_item_stack_status status = mc_item_stack_retain(stack);
-    if (status != MC_ITEM_STACK_OK) {
-        frame.stack.status = status;
-        fail(&frame, stack_status(status), "ItemEntity NBT Stack writer ownership");
-        goto done;
-    }
-    held_stack = stack;
-    mc_item_stack_fields values;
-    status = mc_item_stack_fields_get(stack, &values);
-    if (status != MC_ITEM_STACK_OK) {
-        frame.stack.status = status;
-        fail(&frame, stack_status(status), "ItemEntity NBT Stack fields");
-        goto done;
-    }
-    frame.stack_bytecode = 8;
-    stack_fields[0] = (mc_nbt_tag){.type = MC_NBT_SHORT,
-                                   .name = name(id_name, 2),
-                                   .value.short_value = mc_java_i16_narrow(values.id)};
-    frame.stack_bytecode = 19;
-    stack_fields[1] = (mc_nbt_tag){.type = MC_NBT_BYTE,
-                                   .name = name(count_name, 5),
-                                   .value.byte_value = mc_java_i8_narrow(values.count)};
-    frame.stack_bytecode = 30;
-    stack_fields[2] = (mc_nbt_tag){.type = MC_NBT_SHORT,
-                                   .name = name(damage_name, 6),
-                                   .value.short_value = mc_java_i16_narrow(values.damage)};
-    frame.stack_bytecode = 34;
-    frame.item_bytecode = 43;
     frame.base_bytecode = 148;
     frame.field = NULL;
     const mc_nbt_status copied = mc_nbt_tree_copy_compound(&root, limits, &tree, &frame.nbt);

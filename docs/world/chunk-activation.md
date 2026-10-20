@@ -96,7 +96,8 @@ complete live Entity/Tile save interoperability remain unfinished. The separate
 native coordinator unload/reload on the same continuing World.
 
 The installed [normal controller](population/normal.md) now passes prepared
-all-air gates and reaches the real gravel-hook failure on generated terrain.
+all-air gates. With the [falling hooks](falling.md) installed, the generated
+terrain case reaches the later snow-neighbor failure at controller PC2886.
 Earlier writes, dirty/populated flags and supplied Random effects remain.
 Complete natural population, object lifecycle, synchronous block/lighting
 closure, live-player metadata saving and playable startup remain unfinished.

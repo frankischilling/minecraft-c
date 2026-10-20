@@ -344,8 +344,7 @@ static bool oc_trial(fixture *f, size_t side, const oc_family *family, oc_contro
     mc_world_chunk *c = mc_world_store_chunk_object(f->stores[side], f->normal[side][0]);
     const mc_block *stone = NULL, *sand = NULL, *dirt = NULL, *water_block = NULL, *target = NULL;
     const bool clay = family->clay;
-    const bool gravel = !clay && strcmp(family->target, "G") == 0;
-    const bool remote = control == OC_REMOTE_GRAVEL || (gravel && control == OC_VOLUME);
+    const bool remote = control == OC_REMOTE_GRAVEL;
     const bool old_remote = w->fields.B;
     mc_material *water_material = NULL;
     CHECK(!old_remote && oc_block(f, side, "u", &stone) && oc_block(f, side, "F", &sand) &&
@@ -438,10 +437,8 @@ static bool oc_trial(fixture *f, size_t side, const oc_family *family, oc_contro
                                      control == OC_NULL_MATERIAL);
     const bool before_random =
         gate_false || control == OC_MATERIAL_M || control == OC_NULL_RANDOM || control == OC_BAD_FP;
-    const bool gravel_failure = gravel && !remote && control == OC_SINGLE;
     const bool mutation_failure = control == OC_MUTATION_M || control == OC_MUTATION_Q ||
-                                  control == OC_MUTATION_METADATA || control == OC_TWO_WRITES ||
-                                  gravel_failure;
+                                  control == OC_MUTATION_METADATA || control == OC_TWO_WRITES;
     const bool failure = control == OC_MATERIAL_M || control == OC_NULL_RANDOM ||
                          control == OC_BAD_FP || control == OC_LATE_STATIC || mutation_failure;
     const bool changes = (!failure && !gate_false && control != OC_NO_REPLACEMENT &&
@@ -563,15 +560,11 @@ static bool oc_trial(fixture *f, size_t side, const oc_family *family, oc_contro
             if (control == OC_MUTATION_M || control == OC_MUTATION_Q)
                 CHECK(e.mutation.chunk_bytecode == (control == OC_MUTATION_M ? 107u : 140u) &&
                       e.registry.status == MC_REGISTRY_NULL_REFERENCE && registry_matches_world);
-            else if (control == OC_MUTATION_METADATA || control == OC_TWO_WRITES) {
+            else {
+                CHECK(control == OC_MUTATION_METADATA || control == OC_TWO_WRITES);
                 const mc_registry_error empty = oc_empty_registry();
                 CHECK(e.mutation.chunk_bytecode == 128 && same_registry(&e.registry, &empty) &&
                       ambient_retained);
-            } else {
-                CHECK(gravel_failure && e.mutation.chunk_bytecode == 253 &&
-                      e.mutation.hook_class != NULL &&
-                      strcmp(e.mutation.hook_class, side == 0 ? "gk" : "ei") == 0 &&
-                      e.mutation.hook_bytecode == 0 && e.registry.status == MC_REGISTRY_OK);
             }
         }
     }
@@ -698,10 +691,8 @@ static bool population_ore_clay_contracts(fixture *f, size_t side)
         CHECK(oc_trial(f, side, family, OC_SINGLE, &probe, (i & 1u) != 0));
         CHECK(oc_trial(f, side, family, OC_NO_REPLACEMENT, &probe, false));
         CHECK(oc_trial(f, side, family, OC_EQUAL, &probe, true));
-        /* G volume uses an explicit actual B=true source-field control to skip
-         * its unavailable falling-block addition hook. It is not a successful
-         * normal-provider/gravel-world qualification. G SINGLE above retains
-         * the real B=false failure at Chunk253 after first byte/metadata. */
+        /* G now reaches its complete ordinary added hook on both single-cell
+         * and volume paths. Keep the separate remote-field control below. */
         CHECK(oc_trial(f, side, family, OC_VOLUME, &probe, (i & 1u) == 0));
         if (!family->clay && strcmp(family->target, "G") == 0)
             CHECK(oc_trial(f, side, family, OC_REMOTE_GRAVEL, &probe, false));

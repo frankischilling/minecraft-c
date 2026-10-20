@@ -5,9 +5,9 @@
 #include "mc/entity/nbt/errors.h"
 #include "mc/storage/nbt/tree.h"
 
-/* Actual sn/lq.e(NBT), including the concrete hl/ez.a(NBT) ItemEntity hook.
- * Every currently allocated mc_entity is that actual ItemEntity subtype. New
- * concrete subclasses require real dispatch and fields before using this leaf.
+/* Actual sn/lq.e(NBT), followed by the actual hl/ez Item or ju/gl FallingSand
+ * a(NBT) hook selected by this Entity's immutable same-owner canonical Class.
+ * Other concrete subclasses require real dispatch and fields before use.
  * No dead/name/factory decision, constructor, READY gate, source preservation,
  * World callback or Random draw is added. A balanced temporary Entity hold
  * precedes source work; native hold overflow preserves the Entity unchanged.
@@ -30,15 +30,20 @@
  * provenance copy is implicit; that one Stack is a separate ordinary native
  * owner, excluded from the Entity class/direct-allocation ledger.
  * Input may borrow the old Stack's immutable source through its last read.
+ * FallingSand instead reads only Tile Byte at own4, masks with255 and stores
+ * carried a at11. Missing Tile supplies0; a wrong tag preserves the complete
+ * earlier base prefix. Its age b, Item fields and Stack remain untouched.
  * Caller retains exclusive live owners for the call. error may be NULL. */
 mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *compound,
                                         mc_entity_nbt_error *error);
 
-/* Independent-result form of actual sn/lq.d(NBT) plus hl/ez.b(NBT). Emits ten
- * fresh root fields: Pos, Motion, Rotation, FallDistance, Fire, Air, OnGround,
- * Health, Age, Item. No id/dead/namespace/Boolean c wrapper or retained unknown
- * tags are supplied here. All values come from the held actual Entity/Stack;
- * saved Y is y+widen(y_size), and Health narrows int->byte->short.
+/* Independent-result form of actual sn/lq.d(NBT) plus the concrete b(NBT).
+ * Both supported classes emit Pos, Motion, Rotation, FallDistance, Fire, Air
+ * and OnGround. Item adds Health, Age and Item (ten fields); FallingSand adds
+ * only carried a narrowed int->byte as Tile (eight fields), without age/Stack.
+ * No id/dead/namespace/Boolean c wrapper or retained unknown tags are supplied.
+ * Values come from the held actual Entity/Stack; saved Y is y+widen(y_size),
+ * and Item Health narrows int->byte->short.
  *
  * No Entity READY check. Nullable Stack is reached only at Item37, after the
  * earlier base/Item values. A nonnull Stack is retained there and its actual

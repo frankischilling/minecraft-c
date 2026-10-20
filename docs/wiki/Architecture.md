@@ -1,5 +1,12 @@
 # Systems and subsystems
 
+The [falling module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
+implements complete inherited Block hooks and ticks, using the real scheduler,
+notifying setters and actual FallingSand allocation/publication. Immutable
+canonical subtype identity selects genuine constructors and NBT/provenance;
+no Item storage or Math draws substitute for FallingSand. Later Entity movement,
+landing and tick descendants remain unfinished.
+
 The [temperature-array module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/temperature.md)
 implements concrete normal/fixed Dimension methods with independent output-array
 ownership. Raw temperature writes precede auxiliary allocation and publication;
