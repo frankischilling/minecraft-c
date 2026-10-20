@@ -451,7 +451,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_OI_IZ:
             return unavailable(world, block, "oi", "iz", "Block neighbor hook", error);
         case MC_BLOCK_JR_GJ:
-            return unavailable(world, block, "jr", "gj", "Block snow neighbor hook", error);
+            return mc_world_mutation_snow_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_OR_JE:
             return unavailable(world, block, "or", "je", "Block cactus neighbor hook", error);
         case MC_BLOCK_RI_KO:

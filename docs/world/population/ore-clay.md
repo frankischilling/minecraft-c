@@ -32,7 +32,8 @@ ordinary path; a separate labeled World.B=true control remains. Original/native
 output comparison, complete numeric edge coverage,
 callback closure, full controller qualification and populated persistence remain
 unfinished. The [installed controller](normal.md) continues through gravel and
-reaches the later snow-neighbor failure on the prepared generated terrain.
+the concrete [snow-neighbor method](../snow.md). Its prepared generated-terrain
+regression now requires successful whole-controller completion and flag reset.
 
 See the [paired source map](../../reference/population-geology.md) and
 [test scope](../../testing.md).

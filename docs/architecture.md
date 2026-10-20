@@ -12,6 +12,12 @@ uses those concrete methods and owns the actual provider w independently of the
 current manager. The installed GAME cache adapter uses the same provider Random,
 late Registry/Biome statics and notifying snow writes. The shared falling flag
 uses the existing Registry cell and real declaring-class initialization.
+The [snow-layer module](world/snow.md) keeps virtual opacity separate from the
+fresh World material query. Neighbor support loss and saved Block-light melting
+use the genuine zero-quantity drop path and synchronous notifying removal.
+Each failed call retains its actual material/query child and reached source
+frames. Player harvesting and rendering remain separate unfinished operations.
+
 The [falling Block module](world/falling.md) uses the actual scheduler and
 notifying setters, with complete immediate and Entity-construction branches.
 FallingSand has an immutable canonical subtype identity, genuine constructors

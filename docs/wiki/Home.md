@@ -1,5 +1,15 @@
 # minecraft-c
 
+The [snow-layer subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
+implements support, neighbor survival and saved Block-light melting. Its
+focused case passes 380 checks per native compiler. All 159/161/161 configured
+MSVC/GCC/Clang cases pass in focused/complementary partitions. The prepared
+generated-terrain controller finishes through snow and resets the shared falling flag.
+Full original replay, player harvesting/rendering and later FallingSand physics
+remain unfinished.
+
+The following falling checkpoint predates snow integration.
+
 The [falling subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
 now implements sand/gravel Block hooks, immediate descent, actual FallingSand
 constructors/publication and subtype NBT. All 158 configured MSVC cases pass in two partitions;

@@ -1,5 +1,27 @@
 # Test scope and reproduction
 
+The [snow contracts](world/snow.md) pass all 159 configured MSVC cases and 161
+per sanitized GCC/Clang build, without skips and with numerical Java comparisons
+enabled. Each fresh build runs the Snow case first, then the complementary
+158/160/160 cases using its unchanged executables. Snow passes 380 checks per
+host using both Registry sides, four GAME Worlds and sixteen serialized input
+Chunks. It checks virtual opacity before a fresh material query, zero-quantity
+RNG/ownership behavior, recursive removal and partial effects, light eleven
+versus twelve, remote melting and integer boundaries. The stronger generated-
+terrain regression passes 98,871 checks, including whole-controller completion,
+actual snow and the final flag reset.
+
+Fresh qualification checks all 742 selected source inputs, 254 dependency pins,
+215 retained products and 40 captures per host, complete case rows and the
+actual Snow process/stream/executable joins. Linux capture collection and a
+separate fresh inventory/hash audit run on the native filesystem. Failed earlier
+compile/test attempts and their evidence remain retained. All 438 C source/
+header files pass clang-format18. These are native constructed scenarios;
+saved Snow regions are fixture inputs, and no fresh original snow execution,
+original/native replay or arbitrary recursive resource qualification follows.
+
+The following falling checkpoint predates snow integration.
+
 The [falling contracts](world/falling.md) pass all 158 configured MSVC cases
 across two sequential partitions and nineteen affected cases on each Linux
 GCC/Clang build with ASan/UBSan/leak checks. `entity.falling` passes 230 checks

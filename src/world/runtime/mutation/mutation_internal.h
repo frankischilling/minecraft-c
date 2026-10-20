@@ -62,6 +62,23 @@ bool mc_world_mutation_falling_tick(mc_world_runtime *world, const mc_block *blo
                                     int32_t y, int32_t z, mc_java_random *random,
                                     mc_world_mutation_error *error);
 
+/* Actual jr/gj snow support, neighbor/private survival and light-melt bodies.
+ * The caller holds the same live GAME World and actual snow Block. Support
+ * reads the below ID before Block.m, invokes virtual opacity, then separately
+ * reacquires the below Material. Neighbor ignores source_id; tick ignores
+ * Random, uses actual saved Block light, and does not run survival first.
+ * Failed calls preserve ordinary out and every reached synchronous effect.
+ * Native arguments/outputs/errors are disjoint from each other and owners. */
+bool mc_world_mutation_snow_can_place(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, bool *out,
+                                      mc_world_mutation_error *error);
+bool mc_world_mutation_snow_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                     int32_t y, int32_t z, int32_t source_id,
+                                     mc_world_mutation_error *error);
+bool mc_world_mutation_snow_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                 int32_t y, int32_t z, mc_java_random *random,
+                                 mc_world_mutation_error *error);
+
 /* Actual invokestatic c_(World,III)Z: perform gk/ei declaring active use at the
  * caller's reached invoke, then source body query4/fire18/m29/material42/52.
  * classes is that same application's actual Registry, not an ID palette.

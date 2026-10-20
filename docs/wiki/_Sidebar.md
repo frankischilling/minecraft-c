@@ -19,3 +19,5 @@
 
 - [Falling blocks and Entity ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
 - [Paired falling method map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/falling.md)
+- [Snow support and melting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
+- [Paired snow method map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/snow.md)

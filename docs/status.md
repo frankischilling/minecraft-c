@@ -1,5 +1,18 @@
 # Development status
 
+The [snow-layer subsystem](world/snow.md) implements concrete support,
+neighbor survival and saved Block-light melting. Its focused native case
+passes 380 checks on MSVC and sanitized GCC/Clang. All 159 configured MSVC cases
+and 161 per Linux compiler pass in focused/complementary partitions, without
+skips and with numerical Java comparisons enabled. Fresh audits verify 742
+source inputs, 254 dependency pins, 215 products and 40 captures per host.
+The prepared generated-terrain controller completes through notifying snow
+writes and resets its falling flag. Player harvesting, rendering, later
+FallingSand physics, original snow replay and whole-game acceptance remain
+unfinished.
+
+The following falling checkpoint predates snow integration.
+
 The [falling subsystem](world/falling.md) now implements inherited sand/gravel
 Block hooks and ticks, real FallingSand constructors and World publication,
 and subtype NBT/factory/provenance. All 158 configured MSVC cases pass across

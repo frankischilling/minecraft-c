@@ -1,4 +1,5 @@
 #include "mc/block/registry/falling.h"
+#include "mc/block/registry/runtime.h"
 #include "mc/resources/translation/translation.h"
 #include "mc/world/biome/registry.h"
 #include "mc/world/runtime/entities.h"
@@ -353,7 +354,7 @@ cleanup:
     return ok;
 }
 
-static bool population_prefix(fixture *f)
+static bool population_completion(fixture *f)
 {
     bool ok = false, completed = false;
     mc_world_info_fields info_before, info_after;
@@ -378,29 +379,31 @@ static bool population_prefix(fixture *f)
     mc_chunk_state *out = f->children[0].state;
     mc_world_runtime_acquisition_error population;
     CHECK(mc_world_runtime_get_detailed(f->worlds[0], 1, 1, &out, &population) ==
-              MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
-          out == f->children[0].state);
+              MC_CHUNK_ACQUIRE_OK &&
+          out != NULL && !population.population.reached &&
+          population.cause.status == MC_WORLD_STORAGE_OK &&
+          population.registry.status == MC_REGISTRY_OK);
     CHECK(observe_cache(f, 0));
     CHECK(mc_chunk_cache_lookup(f->provider[0].cache, 1, 1, &square[3]) && square[3] != NULL &&
-          square[3]->active && square[3]->dirty && !square[3]->terrain_populated &&
-          square[0]->terrain_populated && square[0]->dirty && !square[1]->terrain_populated &&
-          !square[2]->terrain_populated);
+          out == square[3] && square[3]->active && square[3]->dirty &&
+          !square[3]->terrain_populated && square[0]->terrain_populated && square[0]->dirty &&
+          !square[1]->terrain_populated && !square[2]->terrain_populated);
     CHECK(check_children(f, 0, square[3]));
-    const mc_world_storage_error cause = *mc_world_runtime_last_error(f->worlds[0]);
-    CHECK(cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && cause.operation != NULL &&
-          strcmp(cause.operation, "Block snow neighbor hook") == 0);
-    /* Gravel now schedules normally. This prepared terrain reaches notifying
-     * snow placement and its real unfinished neighbor hook. Earlier writes
-     * remain dirty; the cache must not roll back or retry that source prefix. */
-    CHECK(population.population.reached && population.population.current.bytecode == 2886 &&
-          population.population.origin.bytecode == 2886 &&
-          population.population.current.iteration == SIZE_MAX &&
-          population.population.cause.status == cause.status &&
-          population.population.cause.operation == cause.operation &&
-          population.registry.status == MC_REGISTRY_OK);
-    bool falling = false;
+    /* The actual generated-terrain controller now continues through notifying
+     * snow placements and resets its shared falling flag on normal return.
+     * A hit or explicit populate must not repeat the marked candidate. */
+    bool falling = true;
     CHECK(mc_registry_falling_flag_get(f->registry[0], &falling, NULL) == MC_REGISTRY_OK &&
-          falling);
+          !falling);
+    const mc_block *snow = NULL;
+    CHECK(mc_registry_block_static_get(f->registry[0], "aT", &snow, NULL) == MC_REGISTRY_OK &&
+          snow != NULL);
+    size_t snow_count = 0;
+    for (size_t i = 0; i < COUNT(square); ++i)
+        for (size_t j = 0; j < MC_CHUNK_BLOCKS; ++j)
+            if (square[i]->data->blocks[j] == mc_block_fields_get(snow)->bn)
+                ++snow_count;
+    CHECK(snow_count != 0);
     const size_t count = mc_world_store_chunk_count(f->stores[0]);
     const mc_java_random generator = f->provider[0].generator->generator_random;
     const mc_java_random cave = f->provider[0].generator->cave_random;
@@ -975,7 +978,7 @@ int main(int argc, char **argv)
     }
     CHECK(create_world(f, 0, 0, 0, 12) && create_world(f, 1, 1, 1, 12));
     CHECK(generated_and_cached(f));
-    CHECK(population_prefix(f));
+    CHECK(population_completion(f));
     CHECK(loaded_and_persisted(f));
     CHECK(opaque_refusal(f));
     CHECK(relocation_frontier(f));

@@ -246,6 +246,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/falling.c
+    src/world/runtime/mutation/snow.c
     src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
@@ -495,6 +496,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_falling tests/world/runtime/test_falling.c)
     target_link_libraries(mc_test_world_falling PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_snow tests/world/runtime/test_snow.c)
+    target_link_libraries(mc_test_world_snow PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1208,6 +1212,14 @@ if(BUILD_TESTING)
         --executable "$<TARGET_FILE:mc_test_world_falling>"
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-falling-contracts")
     set_tests_properties(world.falling PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.snow
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_snow.py"
+        --executable "$<TARGET_FILE:mc_test_world_snow>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-snow-contracts")
+    set_tests_properties(world.snow PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
 
     add_test(NAME world.normal_provider_construction

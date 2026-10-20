@@ -120,7 +120,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_OI_IZ:
             return tick_unavailable(world, block, "oi", "iz", error);
         case MC_BLOCK_JR_GJ:
-            return tick_unavailable(world, block, "jr", "gj", error);
+            return mc_world_mutation_snow_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_NK_IK:
             return tick_unavailable(world, block, "nk", "ik", error);
         case MC_BLOCK_AC_P:

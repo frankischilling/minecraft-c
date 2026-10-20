@@ -1,5 +1,17 @@
 # Build and tests
 
+The [snow case](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
+passes all 159 configured MSVC cases and 161 per sanitized GCC/Clang build in
+focused/complementary partitions, without skips and with numerical Java checks.
+Snow adds 380 checks per host using both Registry sides, four GAME Worlds and
+sixteen serialized input Chunks. Fresh audits verify 742 source inputs, 254
+dependency pins, 215 products and 40 captures per host. Formatting passes 438
+C source/header files. The generated-terrain regression completes the controller,
+retains actual snow and resets the falling flag. No original snow replay or
+whole-game qualification follows.
+
+The following falling checkpoint predates snow integration.
+
 The [falling contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
 pass all 158 configured MSVC cases in two sequential partitions using unchanged
 compiled outputs, plus nineteen affected cases on each sanitized GCC/Clang build.

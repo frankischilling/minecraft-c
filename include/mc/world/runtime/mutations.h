@@ -5,6 +5,7 @@
 #include "mc/world/runtime/entities.h"
 
 #include "mc/world/runtime/lighting.h"
+#include "mc/world/runtime/queries.h"
 #include "mc/world/runtime/scheduling_context.h"
 #include "mc/world/runtime/tiles/errors.h"
 
@@ -38,6 +39,11 @@ typedef struct mc_world_mutation_error {
     /* Separate falling tick/private/predicate sites, alongside current/deepest
      * concrete hooks. These are explicit reached call frames, not a stack. */
     unsigned int falling_tick_bytecode, falling_bytecode, falling_predicate_bytecode;
+    /* Snow's neighbor, private survival, support and tick are distinct source
+     * frames. Detailed material/light queries retain their own nested sites. */
+    unsigned int snow_neighbor_bytecode, snow_bytecode, snow_support_bytecode, snow_tick_bytecode;
+    mc_world_material_error material;
+    mc_world_query_error query;
     mc_world_schedule_prefix schedule;
     mc_scheduled_tick_status record;
     mc_scheduled_membership_status membership;

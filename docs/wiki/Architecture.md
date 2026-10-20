@@ -1,5 +1,11 @@
 # Systems and subsystems
 
+The [snow-layer module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
+implements support, neighbor survival and light melting with actual World
+queries and notifying setters. Virtual opacity precedes a separate material
+query. Removal reaches the inherited zero-quantity drop without Random draws
+or Item Entities. Player harvesting and rendering remain unfinished.
+
 The [falling module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/falling.md)
 implements complete inherited Block hooks and ticks, using the real scheduler,
 notifying setters and actual FallingSand allocation/publication. Immutable
