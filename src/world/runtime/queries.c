@@ -97,14 +97,17 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
     error->provider_bytecode = 6;
     if (world->fields.v == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
-    error->acquisition =
-        mc_world_runtime_get(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &out->state);
+    mc_world_runtime_acquisition_error detail;
+    error->acquisition = mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4),
+                                                       mc_java_i32_shr(z, 4), &out->state, &detail);
     if (error->acquisition != MC_CHUNK_ACQUIRE_OK) {
+        error->population = detail.population;
+        error->registry = detail.registry;
+        if (detail.cause.status != MC_WORLD_STORAGE_OK)
+            return storage_fail(error, &detail.cause);
         if (error->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
             error->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
             return fail(error, MC_WORLD_STORAGE_LIMIT, "World query acquisition limit");
-        if (world->last_error.status != MC_WORLD_STORAGE_OK)
-            return storage_fail(error, &world->last_error);
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query acquisition");
     }
     error->provider_bytecode = 0;

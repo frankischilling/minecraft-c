@@ -79,7 +79,8 @@ preserves these separate publication points. Output allocation19 is local until
 the method returns209; raw temperature44 precedes auxiliary74 and `c`77. A later
 auxiliary allocation failure therefore leaves earlier raw writes on a reused
 input. The normal population caller stores the returned array in provider `w`
-only at2684. That controller integration remains unfinished.
+only at2684 in the [installed controller](../world/population/normal.md).
+Whole-controller reentry and natural population qualification remain unfinished.
 
 The complete fixed overrides `hd.a([DIIII)[D` / `et.a([DIIII)[D` allocate output19
 only for null/short input, read actual fixed `f`30, call prefix `Arrays.fill`33

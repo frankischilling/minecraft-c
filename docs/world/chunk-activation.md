@@ -95,7 +95,8 @@ complete live Entity/Tile save interoperability remain unfinished. The separate
 [GAME save contracts](saving.md) cover supported live Tile writes and constructed
 native coordinator unload/reload on the same continuing World.
 
-Feature population, full object lifecycle, complete synchronous block/lighting
-closure, live-player metadata saving and playable startup remain
-unfinished. A natural population gate fails explicitly; it is not disabled to
-make acquisition appear complete.
+The installed [normal controller](population/normal.md) now passes prepared
+all-air gates and reaches the real gravel-hook failure on generated terrain.
+Earlier writes, dirty/populated flags and supplied Random effects remain.
+Complete natural population, object lifecycle, synchronous block/lighting
+closure, live-player metadata saving and playable startup remain unfinished.

@@ -40,6 +40,7 @@ typedef struct mc_world_mutation_error {
     mc_world_storage_error cause;
     mc_registry_error registry;
     mc_world_light_error light;
+    mc_world_population_context population;
 } mc_world_mutation_error;
 
 /* Actual GAME World setters. Bounds and acquisition precede the selected

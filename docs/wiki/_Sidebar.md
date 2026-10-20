@@ -1,6 +1,7 @@
 - [Home](Home)
 - [Build and tests](Build-and-tests)
 - [Systems and subsystems](Architecture)
+- [Normal population controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md)
 - [Population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 - [Plant placement and survival](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
 - [Plant population features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md)

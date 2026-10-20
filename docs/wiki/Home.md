@@ -56,8 +56,11 @@ At the preceding checkpoint, all 142 configured public tests passed on MSVC and
 all 144 on each sanitized GCC/Clang build, including 6,110 combined query, predicate, plant, tree and
 geology checks per host. Separate original query observations retain 44 calls
 per side; ten selected original tree calls cover the five forms on both sides.
-Original/native feature replay, dungeons, snow and the complete population
-controller remain unfinished.
+That checkpoint left original/native feature replay, Dungeons, snow and the
+complete controller unfinished. The current
+[normal controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md)
+and [Dungeon contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/dungeon.md)
+record subsequent work. Full natural population remains unfinished.
 
 The [Entity publication contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 adds real World/Chunk occurrences, duplicates, cross-World bindings and terminal

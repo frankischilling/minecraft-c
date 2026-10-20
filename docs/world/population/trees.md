@@ -3,7 +3,9 @@
 [`population/trees.h`](../../../include/mc/world/runtime/population/trees.h)
 provides the complete oak, birch, two taiga and big-oak feature bodies. Each
 uses the actual acquiring World, shared Registry and quiet mutation operations.
-The complete normal-provider population controller remains unfinished.
+The [normal controller](normal.md) now selects these bodies through actual Biome
+dispatch. Full original continuation, reentry and descendant closure remain
+unfinished.
 
 | Tree | Initial height and shape draws | Placement behavior |
 | --- | --- | --- |

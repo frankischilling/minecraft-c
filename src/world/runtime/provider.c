@@ -93,6 +93,8 @@ void mc_world_provider_free(mc_world_provider *provider)
     free(provider->entries);
     free(provider->pending_keys);
     mc_java_int_set_free(provider->pending_history);
+    mc_temperature_array_release(provider->w);
+    mc_temperature_owner_release(provider->temperature_allocations);
     mc_normal_generator_free(&provider->generator);
     mc_world_dimension_biome_release(provider->v_owner);
     mc_world_dimension_biome_release(provider->biome);
@@ -151,6 +153,8 @@ mc_world_storage_status mc_world_provider_create(mc_world_runtime *runtime,
                                     .max_chunks = max_chunks,
                                     .direct_bytes = sizeof(*provider),
                                     .max_direct_bytes = max_direct_bytes};
+    /* Inert defaults; actual w and its lazy allocation owner remain NULL. */
+    mc_temperature_limits_default(&provider->temperature_limits);
     mc_world_dimension_status biome_status = mc_world_dimension_biome_retain(dimension_fields.b);
     if (biome_status != MC_WORLD_DIMENSION_OK) {
         mc_world_provider_free(provider);
@@ -271,6 +275,9 @@ mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provide
                                       .manager = provider->manager,
                                       .generator = &provider->generator,
                                       .generation = &provider->generation,
+                                      .w = provider->w,
+                                      .temperature_allocations = provider->temperature_allocations,
+                                      .temperature_limits = provider->temperature_limits,
                                       .cache = &provider->cache,
                                       .pending = &provider->pending,
                                       .fallback = &provider->world->fallback,

@@ -1,5 +1,16 @@
 # Build and tests
 
+The [normal controller checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md)
+pass all 156 configured MSVC cases and 158 on each sanitized GCC/Clang build,
+with zero skips and local JDK comparisons. Prepared all-air cache calls pass
+2,219 checks per host; genuine shared falling-flag access adds 408. The retained
+driver independently inspects all eight saved Chunk slots. The generated-terrain
+activation case preserves real writes at the gravel-hook frontier. Full original
+continuation, all selectors/reentry, falling/snow descendants and natural terrain
+remain unqualified. Formatting covers 432 C files/headers.
+
+The following temperature checkpoint predates controller integration.
+
 The [staged temperature checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/temperature.md)
 pass all 154 configured MSVC cases and 156 on each sanitized GCC/Clang build,
 with zero skips and local JDK comparisons. Each host retains 726 unchanged

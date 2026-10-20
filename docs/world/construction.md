@@ -60,9 +60,10 @@ after provider construction, initial light and weather. Missing metadata
 enters the real acquiring spawn predicate and its source-ordered rejection
 loop. Missing chunks enter [concrete generation and known-empty activation](chunk-activation.md),
 retaining reached fields, y, provider and generation effects on failure.
-Registry resources are required; feature population still fails explicitly
-at its reached gate. Nether/Sky full providers, dedicated/network-client
-subclass startup, Biome class bootstrap and complete gameplay startup remain
+Registry resources are required; reached population gates enter the
+[actual normal controller](population/normal.md). Unsupported descendants retain
+their explicit failure prefixes. Nether/Sky full providers, dedicated/network-client
+subclass startup and complete gameplay startup qualification remain
 unfinished. Native READY is constructor completion for the represented normal
 path, not a whole-game or original-World observation claim.
 
@@ -82,7 +83,7 @@ and actual X/Z/Y payload indexing. Out-of-range coordinates return air before
 acquisition. The positive x boundary is exclusive; positive z is inclusive.
 Top-block lookup starts at y63, scans upward while the block above is nonair,
 then reads the resulting y. It uses no cached height or downward search.
-Missing generation/population capabilities fail explicitly after any reached
+Unsupported generation/population descendants fail explicitly after any reached
 load/acquisition effects. Known-empty entity/tile records retain the existing
 storage activation boundary.
 

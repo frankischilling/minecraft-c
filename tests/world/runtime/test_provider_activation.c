@@ -1,3 +1,4 @@
+#include "mc/block/registry/falling.h"
 #include "mc/resources/translation/translation.h"
 #include "mc/world/biome/registry.h"
 #include "mc/world/runtime/entities.h"
@@ -375,23 +376,38 @@ static bool population_prefix(fixture *f)
     for (size_t i = 0; i < COUNT(x); ++i)
         CHECK(!square[i]->dirty && !square[i]->terrain_populated);
     mc_chunk_state *out = f->children[0].state;
-    CHECK(acquire(f, 0, 1, 1, true, &out) == MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
+    mc_world_runtime_acquisition_error population;
+    CHECK(mc_world_runtime_get_detailed(f->worlds[0], 1, 1, &out, &population) ==
+              MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
           out == f->children[0].state);
+    CHECK(observe_cache(f, 0));
     CHECK(mc_chunk_cache_lookup(f->provider[0].cache, 1, 1, &square[3]) && square[3] != NULL &&
           square[3]->active && square[3]->dirty && !square[3]->terrain_populated &&
-          square[0]->terrain_populated && !square[0]->dirty && !square[1]->terrain_populated &&
+          square[0]->terrain_populated && square[0]->dirty && !square[1]->terrain_populated &&
           !square[2]->terrain_populated);
     CHECK(check_children(f, 0, square[3]));
     const mc_world_storage_error cause = *mc_world_runtime_last_error(f->worlds[0]);
     CHECK(cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && cause.operation != NULL &&
-          strcmp(cause.operation, "World feature population") == 0);
+          strcmp(cause.operation, "Block sand addition hook") == 0);
+    /* The real controller now reaches gravel ore placement and its explicit
+     * falling descendant frontier. Earlier dirt/gravel writes remain dirty;
+     * the cache must not roll back or rerun the completed source prefix. */
+    CHECK(population.population.reached && population.population.current.bytecode == 664 &&
+          population.population.origin.bytecode == 664 &&
+          population.population.current.iteration < 10 &&
+          population.population.cause.status == cause.status &&
+          population.population.cause.operation == cause.operation &&
+          population.registry.status == MC_REGISTRY_OK);
+    bool falling = false;
+    CHECK(mc_registry_falling_flag_get(f->registry[0], &falling, NULL) == MC_REGISTRY_OK &&
+          falling);
     const size_t count = mc_world_store_chunk_count(f->stores[0]);
     const mc_java_random generator = f->provider[0].generator->generator_random;
     const mc_java_random cave = f->provider[0].generator->cave_random;
     out = NULL;
     CHECK(acquire(f, 0, 1, 1, true, &out) == MC_CHUNK_ACQUIRE_OK && out == square[3]);
     CHECK(mc_world_runtime_populate(f->worlds[0], 0, 0) == MC_CHUNK_ACQUIRE_OK &&
-          square[0]->terrain_populated && !square[0]->dirty &&
+          square[0]->terrain_populated && square[0]->dirty &&
           mc_world_store_chunk_count(f->stores[0]) == count &&
           mc_test_java_random_equal(&f->provider[0].generator->generator_random, &generator) &&
           mc_test_java_random_equal(&f->provider[0].generator->cave_random, &cave));

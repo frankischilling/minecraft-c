@@ -1,5 +1,18 @@
 # Test scope and reproduction
 
+The [normal controller checks](world/population/normal.md) pass all 156 configured
+MSVC cases and 158 on each sanitized GCC/Clang build, with zero skips and local
+JDK comparisons enabled. The new prepared cache scenarios pass 2,219 checks per
+host, plus 408 shared falling-flag checks. Both real class sides execute the full
+schedule over four saved all-air chunks; the retained driver independently
+inspects all eight final Chunk slots. The activation regression reaches the real
+gravel-hook frontier and preserves earlier dirty writes without retry.
+Full original continuation, all selectors/reentry, falling/snow descendants,
+natural terrain and complete persistence remain unqualified. Formatting covers
+432 C files/headers.
+
+The following temperature checkpoint predates controller integration.
+
 The [staged temperature checks](world/temperature.md) pass all 154 configured
 MSVC cases and 156 per Linux GCC/Clang build, with zero skips and local JDK
 comparisons enabled. Linux uses ASan/UBSan/leak checks and fresh byte-verified
@@ -456,6 +469,8 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.biome_runtime` | 304 checks: constructed Worlds, same-registry binding, actual cache and pointer results, callback replacement, retained failures, all three client constructor cause frames and manager lifetime | Native integration and existing climate fixtures; no new original World observation or generation |
 | `world.fixed_biome_runtime` | 386 checks: both sides and fixed kinds, cold l/m setup, rectangle/empty/suffix effects, natural allocation/fill failures, aliases and registry retirement | Native/source contracts; no fabricated recursive null-e state or Java OOM/GC timing |
 | `world.temperature_runtime` | 371 checks: retained original temperature/auxiliary bits, actual normal/fixed owners, null/empty/reuse/growth, suffixes, manager/root retirement, real late c/output quota effects and FP ordering | Concrete method and native ownership controls; no fresh original OOME, provider w/controller, snow or natural population qualification |
+| `world.normal_population` | 2,219 prepared native checks: real complete cache-triggered schedule on both class sides, full all-air Chunk images and eight saved slots, w/ledger identity, cold resource failure, cache hits, leases and aliases after provider retirement | Native controller/ownership scenarios; full original RNG continuation, all selectors/reentry, falling/snow descendants and natural terrain remain unqualified |
+| `block.registry_falling` | 408 checks over actual declaring-class initialization, shared flag access, complete first/cached causes and genuine entered-resource BUSY calls on both sides | Shared flag contract; falling physics and Entity construction remain unfinished |
 | `world.biome_registry_observation` | Complete original graph/query streams, explicit byte/table controls and corruption guards | Finite Biome bootstrap and methods; no Java Throwable identity or full World startup |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
 | `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |

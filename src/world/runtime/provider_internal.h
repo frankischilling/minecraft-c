@@ -5,6 +5,7 @@
 #include "mc/world/biome/sampling.h"
 #include "mc/world/cache/acquire.h"
 #include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/temperature.h"
 #include "mc/world/generation/normal.h"
 #include "mc/world/runtime/runtime.h"
 
@@ -33,6 +34,10 @@ typedef struct mc_world_provider_fields {
     mc_biome_manager *manager;
     mc_normal_generator *generator;
     const mc_world_provider_generation_fields *generation;
+    /* Borrowed actual field/ledger; retain arrays across replacement/reentry. */
+    mc_temperature_array *w;
+    mc_temperature_owner *temperature_allocations;
+    mc_temperature_limits temperature_limits;
     mc_chunk_cache *cache;
     mc_chunk_pending *pending;
     mc_chunk_state *fallback;
@@ -60,10 +65,14 @@ typedef struct mc_world_provider_fields {
  * Direct bytes count the provider (including generator/fixed scratch/grid),
  * pending keys, cache entries/list, blank data and its 32768 blocks. Exclude
  * allocator overhead, stack, borrowed World/store/trig/profile, retained biome
- * storage/buffers and the separately bounded pending HashSet owner. The latter
+ * storage/buffers, independent temperature owner/arrays, and pending HashSet.
+ * The latter
  * keeps existing default 8MiB retained/16MiB peak limits, with max_entries clipped
  * to min(max_chunks,65536). Zero limits are valid; max_chunks > INT32_MAX is an
  * invalid native bound. No growth/reallocation is hidden in these arrays.
+ * Temperature defaults separately bound direct owner/handles to 1MiB and actual
+ * Biome buffer requests to 64MiB. Live old/new aliases count simultaneously.
+ * These are not a combined World/controller/Java heap or stack bound.
  * Fixed C reservation and bounded collection allocations are native policy,
  * not the original Java per-array/row/object OOM/failure sequence.
  *

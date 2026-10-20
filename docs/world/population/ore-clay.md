@@ -30,7 +30,9 @@ Ordinary gravel placement still reaches an unsupported added hook when World.B
 is false. A separate labeled World.B=true input bypasses that source hook and
 tests the geometry path. Its successful result does not qualify ordinary gravel
 population. Original/native output comparison, complete numeric edge coverage,
-callback closure, controller ordering and populated persistence remain unfinished.
+callback closure, full controller qualification and populated persistence remain
+unfinished. The [installed controller](normal.md) now reaches the ordinary
+gravel hook and retains its real partial-write failure prefix.
 
 See the [paired source map](../../reference/population-geology.md) and
 [test scope](../../testing.md).

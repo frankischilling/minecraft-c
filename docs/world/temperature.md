@@ -9,8 +9,9 @@ no World, Registry, Random, biome classifier or alternate terrain backend.
 
 The [climate reference](../reference/biome.md) records the paired normal bodies.
 The fixed overrides are client `hd.a([DIIII)[D` and server `et.a([DIIII)[D`.
-This operation is a dependency of normal population. The population controller,
-its `w` field publication and snow loop are still unfinished.
+The [normal population controller](population/normal.md) uses this staged
+operation for its actual `w` publication and snow loop. Full natural population
+and all reached descendants remain unfinished.
 
 ## Ordered effects
 
@@ -62,10 +63,10 @@ keeping it across replacement or releasing its supplying root.
 
 The caller supplies a separate local result slot. Successful reuse reserves
 the result hold before writing, so it cannot fail a final retain after effects.
-The future population controller must move that returned hold into its actual
-`w` field only at successful source store2684, then release the preceding field
-hold. A snow height query can reenter population; the subsequent source read
-must reload the current field rather than retain an earlier temperature view.
+The population controller moves that returned hold into its actual `w` field
+only at successful source store2684, then releases the preceding field hold.
+A snow height query can reenter population; the subsequent source read reloads
+the current field rather than retaining an earlier temperature view.
 
 ## Native bounds and errors
 

@@ -9,10 +9,11 @@ before cache publication. The public [numerical generator](generation.md)
 retains its separate preflight and failure contract.
 
 Ordinary GAME acquisition now calls this operation before publishing and
-[activating the same Chunk](chunk-activation.md). Feature population remains
-unavailable: reaching a population gate reports the missing operation after
-the coordinator's earlier publication and flag stores. This does not establish
-complete startup, feature population, propagation or gameplay persistence.
+[activating the same Chunk](chunk-activation.md). Its population gates call the
+[complete normal controller](population/normal.md) on that same owned provider.
+Reached unfinished descendants retain real partial writes and failure flags.
+Complete startup, natural population, propagation and gameplay persistence
+remain unqualified.
 
 ## Live state and source order
 

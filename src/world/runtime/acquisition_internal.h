@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_ACQUISITION_INTERNAL_H
 
 #include "mc/world/runtime/entity_errors.h"
+#include "mc/world/runtime/population/context.h"
 #include "mc/world/runtime/runtime.h"
 #include "mc/world/runtime/tiles/errors.h"
 
@@ -19,6 +20,7 @@ typedef struct mc_world_runtime_acquisition_error {
     unsigned int activation_bytecode, activation_world_bytecode;
     unsigned int load_bytecode, load_builder_bytecode;
     mc_world_entity_load_error load_entity;
+    mc_world_population_context population;
 } mc_world_runtime_acquisition_error;
 
 mc_chunk_acquire_status mc_world_runtime_get_detailed(mc_world_runtime *runtime, int32_t x,

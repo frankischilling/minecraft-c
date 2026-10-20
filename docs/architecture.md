@@ -7,10 +7,15 @@ lookup after each climate-cell store. Class-bound Dimension setup retains actual
 normal/fixed managers with independent Registry borrows and reference caches.
 The [temperature-array module](world/temperature.md) keeps output allocations
 independent of manager replacement and preserves raw writes before a later
-auxiliary-buffer failure. Its concrete normal/fixed methods support the pending
-population controller without using the atomic numerical temperature helper.
+auxiliary-buffer failure. The [full normal controller](world/population/normal.md)
+uses those concrete methods and owns the actual provider w independently of the
+current manager. The installed GAME cache adapter uses the same provider Random,
+late Registry/Biome statics and notifying snow writes. The shared falling flag
+uses the existing Registry cell and real declaring-class initialization.
 Numerical climate APIs keep their separate bounded-buffer contract. Complete
-population ordering and reached World descendants remain unfinished.
+natural population and reached World descendants remain unfinished. Direct
+controller errors select one typed child; nested acquisition retains an acyclic
+current/deepest-site projection, not an unbounded recursive Throwable graph.
 
 The [concrete World height and lighting operations](world/runtime-lighting.md)
 use its current provider, actual C list and class-owned shared A. Regions retain

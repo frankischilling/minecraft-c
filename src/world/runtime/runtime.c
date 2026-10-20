@@ -3,6 +3,7 @@
 #include "activation_internal.h"
 #include "generation/generation_internal.h"
 #include "loading/loading_internal.h"
+#include "mc/world/runtime/population/normal.h"
 #include "millis.h"
 #include "provider_internal.h"
 #include "runtime_internal.h"
@@ -250,10 +251,19 @@ static bool populate(void *owner, const mc_chunk_acquire_context *context, int32
 {
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World feature population");
-        acquisition_cause(runtime, runtime->last_error);
-        return false;
+        mc_world_normal_population_error error;
+        const mc_world_storage_status status =
+            mc_world_provider_populate_game(runtime->fields.v, x, z, &error);
+        if (status != MC_WORLD_STORAGE_OK) {
+            runtime->last_error = error.cause;
+            acquisition_cause(runtime, error.cause);
+            if (runtime->acquisition_error != NULL) {
+                runtime->acquisition_error->registry = error.registry;
+                runtime->acquisition_error->population =
+                    mc_world_normal_population_context_get(&error);
+            }
+        }
+        return status == MC_WORLD_STORAGE_OK;
     }
     return runtime->options.populate(runtime->options.provider, context, x, z);
 }

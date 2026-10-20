@@ -1,5 +1,16 @@
 # Development status
 
+The [normal population controller](world/population/normal.md) now executes its
+complete schedule through the real GAME cache adapter. Prepared all-air Worlds
+pass 2,219 controller/ownership checks per host; the shared Registry flag adds
+408. All 156 configured MSVC cases and 158 on each sanitized GCC/Clang build pass
+without skips, with local JDK comparisons. The real generated-terrain activation
+case reaches the unfinished gravel addition hook and retains earlier writes.
+Full original controller continuation, all selectors/reentry, falling/snow
+descendants, natural terrain and complete persistence remain unfinished.
+
+The following save checkpoint predates controller integration.
+
 The [live GAME save path](world/saving.md) now writes actual Chest/Spawner Map
 occurrences and physical Stack slots over the same Store-owned Chunk. It
 preserves source q/error prefixes, replaces both live NBT lists and updates

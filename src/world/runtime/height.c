@@ -45,6 +45,7 @@ mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32
 
     unsigned int bytecode = 0, provider_bytecode = 0;
     mc_chunk_acquire_status acquisition = MC_CHUNK_ACQUIRE_OK;
+    mc_world_population_context population = {0};
     int32_t height = 0;
     if (x < -32000000 || x >= 32000000 || z < -32000000 || z > 32000000)
         goto success;
@@ -69,12 +70,15 @@ mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32
         goto failed;
     }
     mc_chunk_state *chunk = NULL;
-    acquisition = mc_world_runtime_get(runtime, chunk_x, chunk_z, &chunk);
+    mc_world_runtime_acquisition_error detail;
+    acquisition = mc_world_runtime_get_detailed(runtime, chunk_x, chunk_z, &chunk, &detail);
     if (acquisition != MC_CHUNK_ACQUIRE_OK) {
-        if (acquisition == MC_CHUNK_ACQUIRE_LIMIT || acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
+        population = detail.population;
+        if (detail.cause.status != MC_WORLD_STORAGE_OK)
+            cause = detail.cause;
+        else if (acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
+                 acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
             cause = native_error(MC_WORLD_STORAGE_LIMIT, "World height getter acquisition limit");
-        else if (runtime->last_error.status != MC_WORLD_STORAGE_OK)
-            cause = runtime->last_error;
         else
             cause =
                 native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World height getter acquisition");
@@ -100,6 +104,8 @@ success:
 failed:
     runtime->last_error = cause;
     status = result(error, &cause, bytecode, provider_bytecode, acquisition);
+    if (error != NULL)
+        error->population = population;
 leave:
     mc_world_runtime_call_leave(runtime);
     return status;

@@ -11,6 +11,7 @@ typedef struct mc_world_query_error {
     mc_chunk_acquire_status acquisition;
     mc_world_storage_error cause;
     mc_registry_error registry;
+    mc_world_population_context population;
 } mc_world_query_error;
 
 /* Actual fd.e/dj.e(II)I: acquire one Chunk before masking coordinates, then

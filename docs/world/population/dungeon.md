@@ -77,7 +77,8 @@ The passive `mc_live_tiles_map_entry_at` inspector exposes actual immutable
 local-coordinate keys separately from mutable Tile positions without retaining
 or changing the borrowed Map value.
 
-The complete normal-population controller is unfinished. Nonempty concrete
+The [normal-population controller](normal.md) now invokes the actual Dungeon
+body in its complete schedule. Nonempty concrete
 observers, several old-block/neighbor hooks and other explicitly unsupported
 descendants still prevent arbitrary-World closure. Prepared solid-room native
 tests and direct untouched-original helper experiments retain that scope.

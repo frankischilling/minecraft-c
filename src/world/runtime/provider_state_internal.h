@@ -13,6 +13,10 @@ struct mc_world_provider {
     mc_biome_manager *manager;
     mc_normal_generator generator;
     mc_world_provider_generation_fields generation;
+    /* Actual nullable yf/pk.w. Each field owns one temperature-array hold. */
+    mc_temperature_array *w;
+    mc_temperature_owner *temperature_allocations;
+    mc_temperature_limits temperature_limits;
     int32_t constructor_grid[MC_WORLD_PROVIDER_GRID_WIDTH][MC_WORLD_PROVIDER_GRID_WIDTH];
     mc_chunk_pending pending;
     mc_java_int_set *pending_history;

@@ -1,5 +1,12 @@
 # Storage and original references
 
+The [normal population source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/normal-population.md)
+records the complete paired controller, shared-Random mixing, late Biome/static
+reads, tree constructor/height order and current-w snow operations. Native
+all-air cache scenarios inspect all eight final saved Chunk slots. These
+prepared contracts provide no original whole-controller continuation or natural
+terrain qualification.
+
 The [prepared Dungeon placement reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dungeon-placement.md)
 retains 48 genuine complete original calls on independently copied saved Worlds.
 All 144 native comparisons pass across MSVC and sanitized GCC/Clang. Actual

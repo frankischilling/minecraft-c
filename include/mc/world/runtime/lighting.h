@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_LIGHTING_H
 
 #include "mc/world/lighting/world.h"
+#include "mc/world/runtime/population/context.h"
 #include "mc/world/runtime/runtime.h"
 
 typedef struct mc_world_light_type mc_world_light_type;
@@ -28,6 +29,7 @@ typedef struct mc_world_light_error {
     unsigned int bytecode, provider_bytecode;
     mc_chunk_acquire_status acquisition;
     mc_world_storage_error cause;
+    mc_world_population_context population;
 } mc_world_light_error;
 
 /* Actual GAME World.d(II) height method. Native admission requires a live GAME

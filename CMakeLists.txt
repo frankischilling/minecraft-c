@@ -126,6 +126,7 @@ target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 add_library(mc_registry STATIC
     src/block/registry/registry.c
     src/block/registry/runtime.c
+    src/block/registry/falling.c
     src/block/registry/class_initializers.c
     src/block/registry/constructors.c
     src/block/registry/registration.c
@@ -228,6 +229,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/population/ore_clay.c
     src/world/runtime/population/lake_spring.c
     src/world/runtime/population/dungeon.c
+    src/world/runtime/population/normal.c
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
@@ -498,6 +500,14 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_dungeon tests/world/runtime/population/test_dungeon.c)
     target_link_libraries(mc_test_dungeon PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_normal_population tests/world/runtime/population/test_normal.c)
+    target_link_libraries(mc_test_normal_population PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_registry_falling tests/block/registry/test_falling.c)
+    target_link_libraries(mc_test_registry_falling PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME block.registry_falling COMMAND mc_test_registry_falling)
+    set_tests_properties(block.registry_falling PROPERTIES LABELS "public;integration;registry" TIMEOUT 90)
 
     add_executable(mc_dungeon_loot_probe tests/world/runtime/population/dungeon_loot_probe.c)
     target_link_libraries(mc_dungeon_loot_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1155,6 +1165,14 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-dungeon-contracts")
     set_tests_properties(world.dungeon PROPERTIES
         LABELS "public;integration;ownership;mutation;storage" TIMEOUT 160)
+
+    add_test(NAME world.normal_population
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_normal_population.py"
+        --executable "$<TARGET_FILE:mc_test_normal_population>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-normal-population-contracts")
+    set_tests_properties(world.normal_population PROPERTIES
+        LABELS "public;integration;ownership;population;storage" TIMEOUT 120)
 
     add_test(NAME world.queries
         COMMAND "${Python3_EXECUTABLE}"

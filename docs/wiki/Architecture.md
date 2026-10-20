@@ -4,8 +4,13 @@ The [temperature-array module](https://github.com/frankischilling/minecraft-c/bl
 implements concrete normal/fixed Dimension methods with independent output-array
 ownership. Raw temperature writes precede auxiliary allocation and publication;
 fixed fills preserve larger suffixes. Actual arrays survive manager replacement
-and root retirement through their own holds. The full population controller,
-provider w publication and snow loop remain unfinished.
+and root retirement through their own holds. The
+[normal controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md)
+now executes the complete schedule through the actual GAME cache adapter, using
+the same provider Random, late statics, actual w and notifying snow writes.
+Falling accesses the existing Registry cell. Finite nested failure projections
+preserve explicitly carried source sites and causes. Full descendant closure,
+natural terrain and original whole-controller qualification remain unfinished.
 
 The [Entity Class and NBT modules](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/nbt.md)
 keep passive canonical Class identity in a lower library shared by Registry and
