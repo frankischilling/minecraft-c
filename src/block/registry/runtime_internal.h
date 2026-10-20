@@ -68,6 +68,21 @@ mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_block_o_at(const mc_registry_block_o_view *array, int32_t index,
                                           bool *out, mc_registry_error *error);
 
+/* Actual Tile-bearing Block p reference captured before later Chunk lookup
+ * work. A false element returns before the separate m capture. NULL capture
+ * succeeds; at checks that retained reference before signed bounds, without
+ * reloading p or invoking class initialization. Caller keeps the same Registry
+ * owner and captured array alive/exclusive through the later baload. */
+typedef struct mc_registry_block_p_view {
+    mc_registry_classes *classes;
+    const bool *identity;
+    size_t length;
+} mc_registry_block_p_view;
+mc_registry_status mc_registry_block_p_get(mc_registry_classes *classes,
+                                           mc_registry_block_p_view *out, mc_registry_error *error);
+mc_registry_status mc_registry_block_p_at(const mc_registry_block_p_view *array, int32_t index,
+                                          bool *out, mc_registry_error *error);
+
 /* Actual live metadata-notification t reference, with the same get/at timing
  * contract. Index masking belongs to the World bytecode, never this accessor. */
 typedef struct mc_registry_block_t_view {

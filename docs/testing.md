@@ -1,6 +1,6 @@
 # Test scope and reproduction
 
-The integrated tree/geology checkpoint passes all 142 configured public cases
+The captured Registry-array and integrated tree/geology checkpoint passes all 142 configured public cases
 on native Windows MSVC and all 144 on each sanitized GCC/Clang build, with zero
 skips and local JDK comparisons enabled. Each host retains 661 unchanged selected
 source inputs, 254 unchanged external zlib pins, 143 products and 30 new capture
@@ -8,7 +8,15 @@ directories. Linux runs use fresh byte-verified native source/dependency copies.
 This configured public inventory remains smaller than complete local-original
 and population acceptance.
 
-The [tree](world/population/trees.md), [ore/clay](world/population/ore-clay.md)
+The same runs pass 6,110 combined World query, predicate and feature checks,
+including captured `Block.p` reference/element controls. Real resource callbacks
+exercise cold active use, nested BUSY admission, captured-array reads while
+initialization is entered, and retained first-cause retries after failure.
+The Registry-only target performs 4,543 runtime literal/array checks. These
+checks do not complete live Tile ownership, factories, Map/List joins or saving.
+
+At the preceding tree/geology checkpoint,
+the [tree](world/population/trees.md), [ore/clay](world/population/ore-clay.md)
 and [lake/spring](world/population/lakes-springs.md) bodies are integrated into
 `world.queries` before provider-capacity exhaustion. Focused MSVC and sanitized
 GCC/Clang runs pass 6,062 combined query, predicate and feature checks, plus
@@ -39,6 +47,14 @@ an offline binding audit. These are prepared feature-API observations, not a
 helper-free control or native replay. Their scheduler view captures E/F field
 identities rather than full members and shared sequence; wider queue comparison
 remains pending.
+
+Separate [original geology API experiments](reference/population-geology.md)
+retain eight canonical true returns across ore, clay, lake and spring on both
+sides. Seven complete calls use one capture epoch; server spring uses a
+separate capture-only encoder-limit successor. Their class/stream/array-image
+and world-file bindings pass an offline audit. Earlier failed captures remain
+retained. These observations do not supply native replay, helper-free controls,
+dedicated construction or complete population qualification.
 
 At the preceding plant checkpoint,
 the [World-query, predicate and plant-feature contracts](world/population/plants.md)

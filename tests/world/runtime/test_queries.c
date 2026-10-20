@@ -1160,6 +1160,145 @@ cleanup:
     return ok;
 }
 
+static bool captured_p_contracts(fixture *f, size_t side)
+{
+    bool ok = false;
+    mc_registry_classes *registry = f->registry[side];
+    CHECK(registry != NULL && registry->blocks.p != NULL && f->resources[side].opens == 3 &&
+          !f->resources[side].bad);
+    const size_t opens = f->resources[side].opens;
+    const size_t before_bytes = registry->allocation_bytes;
+    const size_t before_borrows = registry->runtime_borrows;
+    const size_t before_profile = mc_java_random_profile_allocation_bytes(f->profile);
+    mc_registry_error error;
+    mc_registry_block_p_view captured;
+    CHECK(mc_registry_block_p_get(registry, &captured, &error) == MC_REGISTRY_OK &&
+          captured.classes == registry && captured.identity == registry->blocks.p &&
+          captured.length == MC_REGISTRY_BLOCK_SLOTS &&
+          query_registry_fresh(&error, MC_REGISTRY_OK));
+
+    const mc_block *chest = NULL, *spawner = NULL, *stone = NULL;
+    CHECK(mc_registry_block_static_get(registry, "av", &chest, &error) == MC_REGISTRY_OK &&
+          mc_registry_block_static_get(registry, "at", &spawner, &error) == MC_REGISTRY_OK &&
+          mc_registry_block_static_get(registry, "u", &stone, &error) == MC_REGISTRY_OK &&
+          chest != NULL && spawner != NULL && stone != NULL);
+    const mc_block *const receivers[] = {chest, spawner, stone};
+    for (size_t i = 0; i < COUNT(receivers); ++i) {
+        const mc_block_fields *fields = mc_block_fields_get(receivers[i]);
+        bool actual = i == 2;
+        CHECK(fields != NULL &&
+              mc_registry_block_p_at(&captured, fields->bn, &actual, &error) == MC_REGISTRY_OK &&
+              actual == (i != 2) && query_registry_fresh(&error, MC_REGISTRY_OK));
+    }
+
+    bool alternate[MC_REGISTRY_BLOCK_SLOTS];
+    bool *saved_array = registry->blocks.p;
+    for (size_t i = 0; i < COUNT(alternate); ++i)
+        alternate[i] = !saved_array[i];
+    const bool old_value = saved_array[1];
+    bool old_result = !old_value, current_result = old_value, changed_result = old_value;
+    mc_registry_block_p_view current;
+
+    /* A captured reference keeps its original allocation. A fresh get sees the
+     * replacement field. Reading the old allocation's subsequently changed
+     * element separately proves reference capture did not copy array contents. */
+    registry->blocks.p = alternate;
+    const mc_registry_status old_status = mc_registry_block_p_at(&captured, 1, &old_result, &error);
+    const bool old_frame = query_registry_fresh(&error, MC_REGISTRY_OK);
+    const mc_registry_status current_status = mc_registry_block_p_get(registry, &current, &error);
+    const bool current_frame = query_registry_fresh(&error, MC_REGISTRY_OK);
+    const mc_registry_status current_at =
+        current_status == MC_REGISTRY_OK
+            ? mc_registry_block_p_at(&current, 1, &current_result, &error)
+            : current_status;
+    const bool current_at_frame = query_registry_fresh(&error, MC_REGISTRY_OK);
+    saved_array[1] = !old_value;
+    const mc_registry_status changed_status =
+        mc_registry_block_p_at(&captured, 1, &changed_result, &error);
+    const bool changed_frame = query_registry_fresh(&error, MC_REGISTRY_OK);
+    saved_array[1] = old_value;
+    registry->blocks.p = saved_array;
+    CHECK(old_status == MC_REGISTRY_OK && old_frame && old_result == old_value &&
+          current_status == MC_REGISTRY_OK && current_frame && current.identity == alternate &&
+          current.length == COUNT(alternate) && current_at == MC_REGISTRY_OK && current_at_frame &&
+          current_result == !old_value && changed_status == MC_REGISTRY_OK && changed_frame &&
+          changed_result == !old_value && captured.identity == saved_array &&
+          registry->blocks.p == saved_array && saved_array[1] == old_value &&
+          f->resources[side].opens == opens);
+
+    /* NULL is a successful captured source reference. Restoring current p does
+     * not heal that reference. Null dereference precedes signed bounds, even
+     * for the most negative int; result and fresh cause remain exact. */
+    mc_registry_block_p_view null_array;
+    registry->blocks.p = NULL;
+    const mc_registry_status null_capture = mc_registry_block_p_get(registry, &null_array, &error);
+    const bool null_get_frame = query_registry_fresh(&error, MC_REGISTRY_OK);
+    registry->blocks.p = saved_array;
+    CHECK(null_capture == MC_REGISTRY_OK && null_get_frame && null_array.classes == registry &&
+          null_array.identity == NULL && null_array.length == 0);
+    bool value = true;
+    CHECK(mc_registry_block_p_at(&null_array, INT32_MIN, &value, &error) ==
+              MC_REGISTRY_NULL_REFERENCE &&
+          value && query_registry_fresh(&error, MC_REGISTRY_NULL_REFERENCE) &&
+          same_registry(&error, &registry->last_error));
+
+    const int32_t invalid_indices[] = {-1, 256, INT32_MIN, INT32_MAX};
+    for (size_t i = 0; i < COUNT(invalid_indices); ++i) {
+        value = true;
+        CHECK(mc_registry_block_p_at(&captured, invalid_indices[i], &value, &error) ==
+                  MC_REGISTRY_INDEX_OUT_OF_RANGE &&
+              value && query_registry_fresh(&error, MC_REGISTRY_INDEX_OUT_OF_RANGE) &&
+              same_registry(&error, &registry->last_error));
+    }
+
+    /* Native admission has no source array access and cannot overwrite the
+     * Registry's earlier real element failure or the caller's value/view. */
+    const mc_registry_error before = registry->last_error;
+    mc_registry_block_p_view unchanged = captured;
+    CHECK(mc_registry_block_p_get(NULL, &unchanged, &error) == MC_REGISTRY_INVALID_ARGUMENT &&
+          unchanged.classes == captured.classes && unchanged.identity == captured.identity &&
+          unchanged.length == captured.length &&
+          query_registry_fresh(&error, MC_REGISTRY_INVALID_ARGUMENT));
+    CHECK(mc_registry_block_p_get(registry, NULL, &error) == MC_REGISTRY_INVALID_ARGUMENT &&
+          query_registry_fresh(&error, MC_REGISTRY_INVALID_ARGUMENT));
+    value = true;
+    CHECK(mc_registry_block_p_at(NULL, 1, &value, &error) == MC_REGISTRY_INVALID_ARGUMENT &&
+          value && query_registry_fresh(&error, MC_REGISTRY_INVALID_ARGUMENT));
+    CHECK(mc_registry_block_p_at(&captured, 1, NULL, &error) == MC_REGISTRY_INVALID_ARGUMENT &&
+          query_registry_fresh(&error, MC_REGISTRY_INVALID_ARGUMENT) &&
+          same_registry(&before, &registry->last_error) && registry->blocks.p == saved_array &&
+          f->resources[side].opens == opens && registry->entered == 0);
+    mc_registry_block_p_view malformed = captured;
+    malformed.length = SIZE_MAX;
+    CHECK(mc_registry_block_p_at(&malformed, INT32_MIN, &value, &error) ==
+              MC_REGISTRY_INVALID_ARGUMENT &&
+          value && query_registry_fresh(&error, MC_REGISTRY_INVALID_ARGUMENT) &&
+          same_registry(&before, &registry->last_error));
+    malformed.identity = NULL;
+    CHECK(mc_registry_block_p_at(&malformed, INT32_MIN, &value, &error) ==
+              MC_REGISTRY_NULL_REFERENCE &&
+          value && query_registry_fresh(&error, MC_REGISTRY_NULL_REFERENCE));
+    value = true;
+    CHECK(mc_registry_block_p_at(&captured, 0, &value, NULL) == MC_REGISTRY_OK &&
+          value == captured.identity[0]);
+    CHECK(mc_registry_block_p_at(&captured, 255, &value, NULL) == MC_REGISTRY_OK &&
+          value == captured.identity[255]);
+    value = true;
+    CHECK(mc_registry_block_p_at(&captured, -1, &value, NULL) == MC_REGISTRY_INDEX_OUT_OF_RANGE &&
+          value && query_registry_fresh(&registry->last_error, MC_REGISTRY_INDEX_OUT_OF_RANGE));
+    malformed = captured;
+    malformed.classes = NULL;
+    CHECK(mc_registry_block_p_at(&malformed, 0, &value, &error) == MC_REGISTRY_INVALID_ARGUMENT &&
+          value && query_registry_fresh(&error, MC_REGISTRY_INVALID_ARGUMENT));
+    CHECK(registry->allocation_bytes == before_bytes &&
+          registry->runtime_borrows == before_borrows &&
+          mc_java_random_profile_allocation_bytes(f->profile) == before_profile &&
+          f->resources[side].opens == opens);
+    ok = true;
+cleanup:
+    return ok;
+}
+
 typedef enum plant_control {
     PLANT_INPUTS,
     PLANT_NULL_O,
@@ -1586,7 +1725,8 @@ int main(int argc, char **argv)
     for (size_t side = 0; side < 2; ++side)
         CHECK(prefixes_and_admission(f, side));
     for (size_t side = 0; side < 2; ++side)
-        CHECK(detailed_material_contracts(f, side) && captured_o_contracts(f, side));
+        CHECK(detailed_material_contracts(f, side) && captured_o_contracts(f, side) &&
+              captured_p_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)
         CHECK(plant_predicate_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)

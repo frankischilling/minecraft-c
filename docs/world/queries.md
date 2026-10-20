@@ -48,11 +48,11 @@ diagnostics intact. RAW, constructing and failed GAME prefixes remain usable at
 their actually reached fields; retired Worlds reject.
 
 The [paired source map](../reference/world-queries.md) records the authority and
-method locations. Native query, material-array, [plant predicate](plants.md)
-and [plant feature](population/plants.md) contracts pass 2,870 checks per host.
+method locations. Native query, material-array, [plant predicate](plants.md),
+[plant features](population/plants.md), trees and geology contracts pass 6,110 checks per host.
 All 142 configured public cases pass on Windows MSVC and all 144 on each
-sanitized Linux GCC/Clang build. Each host retains the same 651 selected inputs,
-254 external zlib source pins, 140 products and selected executable pins before
+sanitized Linux GCC/Clang build. Each host retains the same 661 selected inputs,
+254 external zlib source pins, 143 products and selected executable pins before
 and after execution, including Java/javac.
 Tests verify captured-Chunk continuation through Registry reentry, pending-key
 preservation, live nullable fields, cold Light, shared class state, packed

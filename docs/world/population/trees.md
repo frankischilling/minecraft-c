@@ -46,7 +46,7 @@ the feature method/PC, outer big-oak phase and fresh lower Registry/mutation
 cause. No rollback, retry, fallback Random or substitute World is supplied.
 Missing lower callback bodies remain explicit failures.
 
-Focused MSVC and sanitized GCC/Clang runs pass the combined 6,062 query,
+Native MSVC and sanitized GCC/Clang runs pass the combined 6,110 query,
 predicate, plant, tree and geology checks on actual client/base-server GAME
 fixtures. Separate membership/ordered cases pass 370/984 checks. They cover the
 four small forms, big-oak geometry and reuse, constructor/global Random

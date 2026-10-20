@@ -34,3 +34,25 @@ The [ore/clay contract](../world/population/ore-clay.md) and
 prepared native scenarios and remaining descendants. The native tests derive
 invocation budgets and selected exact layouts from these source boundaries;
 they supply no original output replay or complete population qualification.
+
+Separate prepared-input original API experiments retain one canonical call for
+each family on each client/base-server side, using supplied seed0. All eight
+selected calls return true. Seven complete observations come from one epoch;
+the server spring comes from a separate capture with the project encoder's
+transcript limit raised from 128 to 256 MiB. Only that limit and its expected
+helper-source hash changed. Original game classes and archives were untouched.
+These are not a uniform eight-case execution epoch.
+
+An offline audit checks selected source/tool/helper/class pins, raw streams,
+recorded byte and float-array images, API stage order, source/final scheduler
+inventory shapes, JVM class logs and complete owned world-file inventories.
+Earlier heap/transcript-limit failures remain retained as capture failures.
+Only the later spring capture records the named compiler environment variable
+`JDK_JAVAC_OPTIONS`; earlier missing receipts are not reconstructed.
+
+Real setup acquisitions can trigger untraced population before the selected
+call, so this direct-call count is not a census of source feature execution.
+The source checkpoint precedes explicit JDK Random continuation draws. Throwable
+encoding can prevent an immediate failure snapshot, and the captured graph is
+not a complete runtime inventory. Helper-free controls, dedicated construction,
+native replay, numeric qualification and complete population remain pending.

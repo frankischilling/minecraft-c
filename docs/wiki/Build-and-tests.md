@@ -1,14 +1,17 @@
 # Build and tests
 
-The [World-query and plant contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
-and [plant features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md)
-pass 2,870 checks per host. All 142 configured public cases pass on MSVC and all
+The [World-query and plant contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md),
+[plant features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md),
+[trees](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/trees.md),
+[ore/clay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/ore-clay.md)
+and [lake/spring features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/lakes-springs.md)
+pass 6,110 combined checks per host. All 142 configured public cases pass on MSVC and all
 144 on each sanitized GCC/Clang build, including local JDK comparisons.
-Each host retains 651 unchanged selected inputs, 254 external zlib source pins,
-140 products and 30 new captures. Linux source/dependency copies match before
+Each host retains 661 unchanged selected inputs, 254 external zlib source pins,
+143 products and 30 new captures. Linux source/dependency copies match before
 and after execution. Selected tools include Java/javac. Six full baselines,
 eight occupied records and two exact empty region headers close the complete
-eight-file inventory. Run
+eight-region-file inventory. Run
 `ctest --test-dir build -R "^(world.queries|world.entity_publication)$" --output-on-failure`.
 These finite native contracts and separate original API captures do not supply
 native replay or complete population qualification.

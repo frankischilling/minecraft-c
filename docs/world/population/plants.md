@@ -36,8 +36,9 @@ at its first reached invocation without fabricating a Registry error. Missing
 dependencies and unfinished lower hook bodies remain explicit failures.
 
 All 142 configured public tests pass on MSVC and all 144 on each sanitized
-GCC/Clang build. Query, predicate and feature contracts perform 2,870 checks
-per host using real loaded GAME Chunks on both sides. They exercise all
+GCC/Clang build. Combined query, predicate, plant, tree and geology contracts
+perform 6,110 checks per host using real loaded GAME Chunks on both sides. The
+plant cases exercise all
 nine predicate kinds, negative and wrapped coordinates, height/orientation
 branches, late nullable inputs, ordinary false writes, and failures after a
 completed lower layer or a stored block byte. Separate reed/cactus trials

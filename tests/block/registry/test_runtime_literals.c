@@ -459,6 +459,197 @@ cleanup:
     return result;
 }
 
+typedef struct p_entered_fixture {
+    mc_registry_classes *owner;
+    mc_registry_block_p_view captured;
+    const mc_java_random *randoms[4];
+    unsigned char random_bytes[4][sizeof(mc_java_random)];
+    size_t captured_bytes;
+    uint64_t captured_uniquifier;
+    unsigned int opens;
+    bool valid;
+} p_entered_fixture;
+
+static mc_registry_status p_missing_resource(void *context, const char *name,
+                                             mc_java_properties_input *out)
+{
+    p_entered_fixture *fixture = context;
+    mc_registry_classes *owner = fixture->owner;
+    ++fixture->opens;
+    OBSERVE(fixture, name != NULL && strcmp(name, "/lang/en_US.lang") == 0 && out != NULL);
+    OBSERVE(fixture, owner->blocks_phase == MC_REGISTRY_INITIALIZING &&
+                         owner->block_initializer_pc == 3398 && owner->named_blocks == 96);
+    OBSERVE(fixture, owner->translation_state.phase == MC_REGISTRY_INITIALIZING &&
+                         owner->translation_wrapper_state.phase == MC_REGISTRY_INITIALIZING);
+    OBSERVE(fixture, owner->entered != 0 && owner->initializer != NULL &&
+                         owner->initializer->pc != NULL && *owner->initializer->pc == 4);
+    OBSERVE(fixture, owner->blocks.p != NULL && owner->blocks.m != NULL);
+    if (owner->initializer == NULL || owner->initializer->pc == NULL || owner->blocks.p == NULL ||
+        owner->blocks.m == NULL)
+        return MC_REGISTRY_NULL_REFERENCE;
+
+    /* Explicit native callback input from this live owner's actual array.
+     * This is not a successful p_get while Block initialization is entered. */
+    fixture->captured = (mc_registry_block_p_view){owner, owner->blocks.p, MC_REGISTRY_BLOCK_SLOTS};
+    fixture->captured_bytes = owner->allocation_bytes;
+    fixture->captured_uniquifier = uniquifier(owner->options.random_profile);
+    static const size_t random_ids[] = {23, 54, 61, 62};
+    for (size_t i = 0; i < 4; ++i) {
+        const mc_block *block = owner->blocks.m[random_ids[i]];
+        OBSERVE(fixture, block != NULL);
+        if (block == NULL)
+            return MC_REGISTRY_NULL_REFERENCE;
+        const mc_block_kind kind = i == 0 ? MC_BLOCK_XQ_PA : i == 1 ? MC_BLOCK_E_E : MC_BLOCK_TC_LZ;
+        OBSERVE(fixture, block->kind == kind);
+        if (block->kind != kind)
+            return MC_REGISTRY_NULL_REFERENCE;
+        fixture->randoms[i] = i == 0   ? block->subtype.xq.a
+                              : i == 1 ? block->subtype.e.a
+                                       : block->subtype.tc.a;
+        OBSERVE(fixture, fixture->randoms[i] != NULL);
+        if (fixture->randoms[i] == NULL)
+            return MC_REGISTRY_NULL_REFERENCE;
+        memcpy(fixture->random_bytes[i], fixture->randoms[i], sizeof(mc_java_random));
+    }
+
+    mc_registry_initializer *const initializer = owner->initializer;
+    unsigned char owner_before[sizeof(*owner)], frame_before[sizeof(*initializer)];
+    bool p_before[MC_REGISTRY_BLOCK_SLOTS];
+    memcpy(owner_before, owner, sizeof(owner_before));
+    memcpy(frame_before, initializer, sizeof(frame_before));
+    memcpy(p_before, fixture->captured.identity, sizeof(p_before));
+    const size_t profile_bytes =
+        mc_java_random_profile_allocation_bytes(owner->options.random_profile);
+    const unsigned int holder_phase =
+        atomic_load_explicit(&owner->options.random_profile->holder_phase, memory_order_relaxed);
+    mc_java_math_random_owner *const math = owner->options.random_profile->math;
+    mc_registry_block_p_view nested = {.classes = NULL, .identity = NULL, .length = SIZE_MAX};
+    mc_registry_error error = poison_error();
+    OBSERVE(fixture, mc_registry_block_p_get(owner, &nested, &error) == MC_REGISTRY_BUSY);
+    OBSERVE(fixture,
+            nested.classes == NULL && nested.identity == NULL && nested.length == SIZE_MAX);
+    OBSERVE(fixture, fresh_error(error, MC_REGISTRY_BUSY));
+    OBSERVE(fixture, memcmp(owner_before, owner, sizeof(owner_before)) == 0 &&
+                         memcmp(frame_before, initializer, sizeof(frame_before)) == 0);
+
+    bool value = true;
+    error = poison_error();
+    OBSERVE(fixture,
+            mc_registry_block_p_at(&fixture->captured, 1, &value, &error) == MC_REGISTRY_OK);
+    OBSERVE(fixture, !value && fresh_error(error, MC_REGISTRY_OK));
+    value = false;
+    error = poison_error();
+    OBSERVE(fixture,
+            mc_registry_block_p_at(&fixture->captured, 54, &value, &error) == MC_REGISTRY_OK);
+    OBSERVE(fixture, value && fresh_error(error, MC_REGISTRY_OK));
+    OBSERVE(fixture, memcmp(owner_before, owner, sizeof(owner_before)) == 0 &&
+                         memcmp(frame_before, initializer, sizeof(frame_before)) == 0 &&
+                         memcmp(p_before, fixture->captured.identity, sizeof(p_before)) == 0);
+    for (size_t i = 0; i < 4; ++i)
+        OBSERVE(fixture,
+                memcmp(fixture->random_bytes[i], fixture->randoms[i], sizeof(mc_java_random)) == 0);
+    OBSERVE(fixture, uniquifier(owner->options.random_profile) == fixture->captured_uniquifier &&
+                         mc_java_random_profile_allocation_bytes(owner->options.random_profile) ==
+                             profile_bytes &&
+                         owner->options.random_profile->math == math &&
+                         atomic_load_explicit(&owner->options.random_profile->holder_phase,
+                                              memory_order_relaxed) == holder_phase);
+    /* The actual Translation constructor receives a missing stream. */
+    return MC_REGISTRY_NULL_REFERENCE;
+}
+
+static int test_p_entered_failure(mc_registry_options options)
+{
+    int result = 1;
+    mc_registry_classes *owner = NULL;
+    p_entered_fixture fixture = {.valid = true};
+    const mc_registry_resources resources = {.context = &fixture, .open = p_missing_resource};
+    options.resources = &resources;
+    mc_registry_error error = poison_error();
+    bool output_anchor = true;
+    mc_registry_block_p_view view = {
+        .classes = NULL, .identity = &output_anchor, .length = SIZE_MAX};
+    CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
+    fixture.owner = owner;
+    CHECK(cold_except_literals(owner) && owner->blocks.p == NULL && fixture.opens == 0);
+    error = poison_error();
+    CHECK(mc_registry_block_p_get(owner, &view, &error) == MC_REGISTRY_NULL_REFERENCE);
+    CHECK(fixture.valid && fixture.opens == 1);
+    CHECK(view.classes == NULL && view.identity == &output_anchor && view.length == SIZE_MAX &&
+          output_anchor);
+    const char *declaring = options.side == MC_REGISTRY_CLIENT ? "nh" : "ii";
+    const mc_registry_error first_failure = {.status = MC_REGISTRY_NULL_REFERENCE,
+                                             .message =
+                                                 "Translation Properties.load null InputStream",
+                                             .initializer_pc = 3398,
+                                             .block_id = -1,
+                                             .constructor_class = declaring,
+                                             .constructor_pc = 26,
+                                             .profile_status = MC_JAVA_RANDOM_PROFILE_OK,
+                                             .active_initializer_class = declaring,
+                                             .active_initializer_pc = 4,
+                                             .item_argument = -1};
+    CHECK(same_error(error, first_failure) && same_error(owner->last_error, first_failure));
+    CHECK(owner->blocks_phase == MC_REGISTRY_FAILED && owner->entered == 0 &&
+          owner->initializer == NULL && owner->translation_state.phase == MC_REGISTRY_FAILED &&
+          owner->translation_wrapper_state.phase == MC_REGISTRY_FAILED);
+    CHECK(same_error(owner->block_failure, first_failure) &&
+          same_error(owner->block_states[MC_BLOCK_UU_NA].failure, first_failure) &&
+          same_error(owner->translation_state.failure, first_failure) &&
+          same_error(owner->translation_wrapper_state.failure, first_failure));
+    CHECK(fixture.captured.classes == owner && fixture.captured.identity == owner->blocks.p &&
+          fixture.captured.length == MC_REGISTRY_BLOCK_SLOTS);
+    CHECK(owner->allocation_bytes == fixture.captured_bytes);
+    mc_registry_allocation *const allocations = owner->allocations;
+    mc_registry_error retry_failure = first_failure;
+    retry_failure.status = MC_REGISTRY_FAILED_INITIALIZATION;
+    error = poison_error();
+    CHECK(mc_registry_block_p_get(owner, &view, &error) == MC_REGISTRY_FAILED_INITIALIZATION);
+    CHECK(same_error(error, retry_failure) && same_error(owner->last_error, retry_failure));
+    CHECK(view.classes == NULL && view.identity == &output_anchor && view.length == SIZE_MAX &&
+          output_anchor && fixture.opens == 1);
+
+    /* The retained array remains usable even though fresh Block active use fails. */
+    bool value = true;
+    error = poison_error();
+    CHECK(mc_registry_block_p_at(&fixture.captured, 1, &value, &error) == MC_REGISTRY_OK);
+    CHECK(!value && fresh_error(error, MC_REGISTRY_OK));
+    value = false;
+    error = poison_error();
+    CHECK(mc_registry_block_p_at(&fixture.captured, 54, &value, &error) == MC_REGISTRY_OK);
+    CHECK(value && fresh_error(error, MC_REGISTRY_OK) &&
+          same_error(owner->last_error, retry_failure));
+    static const int32_t bad_indices[] = {-1, (int32_t)MC_REGISTRY_BLOCK_SLOTS};
+    for (size_t i = 0; i < 2; ++i) {
+        value = true;
+        error = poison_error();
+        CHECK(mc_registry_block_p_at(&fixture.captured, bad_indices[i], &value, &error) ==
+              MC_REGISTRY_INDEX_OUT_OF_RANGE);
+        CHECK(value && fresh_error(error, MC_REGISTRY_INDEX_OUT_OF_RANGE) &&
+              same_error(owner->last_error, error));
+        CHECK(same_error(owner->block_failure, first_failure) &&
+              same_error(owner->block_states[MC_BLOCK_UU_NA].failure, first_failure) &&
+              same_error(owner->translation_state.failure, first_failure) &&
+              same_error(owner->translation_wrapper_state.failure, first_failure));
+        error = poison_error();
+        CHECK(mc_registry_block_p_get(owner, &view, &error) == MC_REGISTRY_FAILED_INITIALIZATION);
+        CHECK(same_error(error, retry_failure) && same_error(owner->last_error, retry_failure));
+        CHECK(view.classes == NULL && view.identity == &output_anchor && view.length == SIZE_MAX &&
+              output_anchor && fixture.opens == 1);
+    }
+    CHECK(owner->blocks_phase == MC_REGISTRY_FAILED && owner->entered == 0 &&
+          owner->initializer == NULL && owner->allocation_bytes == fixture.captured_bytes &&
+          owner->allocations == allocations && owner->blocks.p == fixture.captured.identity);
+    CHECK(uniquifier(options.random_profile) == fixture.captured_uniquifier);
+    for (size_t i = 0; i < 4; ++i)
+        CHECK(memcmp(fixture.random_bytes[i], fixture.randoms[i], sizeof(mc_java_random)) == 0);
+    result = 0;
+cleanup:
+    if (owner != NULL && mc_registry_classes_free(owner, NULL) != MC_REGISTRY_OK)
+        result = 1;
+    return result;
+}
+
 int main(void)
 {
     int result = 1;
@@ -476,6 +667,7 @@ int main(void)
         CHECK(test_literal_budgets(options) == 0);
         CHECK(test_entered(options) == 0);
         CHECK(test_fresh_failure(options) == 0);
+        CHECK(test_p_entered_failure(options) == 0);
     }
     CHECK(profile->math == NULL);
     CHECK(atomic_load_explicit(&profile->holder_phase, memory_order_relaxed) ==

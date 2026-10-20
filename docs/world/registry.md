@@ -28,6 +28,14 @@ values. Static reads can return a nullable cell. Array reads access the actual
 `m` or `o` storage, checking its reference before the signed index. `o` is the
 captured boolean array, distinct from a virtual material or Block predicate.
 
+The internal captured `p` view retains the actual Tile-bearing flag array.
+Its get performs ordinary Block active use and publishes no view if that use
+fails. A later element read uses the captured reference, including a captured
+NULL, without reloading the field or initializing the class again. NULL precedes
+signed bounds; false is a successful element value. This implements the array
+access at `lm.d(III)Low;` / `hi.d(III)Ljh;` PCs42/47. The later Tile lookup,
+factory and Map/List ownership joins remain unfinished.
+
 World material lookup acquires the block first. Air returns the same shared
 `Material.a` without initializing Block. Nonair performs Block active use,
 loads the actual `m` element and returns that Block's nullable `bA` material.

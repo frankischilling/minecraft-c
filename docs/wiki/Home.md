@@ -5,10 +5,17 @@ and [plant predicates](https://github.com/frankischilling/minecraft-c/blob/featu
 implement downward solid/liquid scans, light, sky visibility and nine concrete
 plant receiver kinds. The [plant feature subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md)
 executes six complete feature families over actual World/Registry/Random owners.
+The [tree features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/trees.md)
+add oak, birch, both taiga forms and big oak. The
+[geology features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/ore-clay.md)
+and [lake/spring features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/lakes-springs.md)
+add ore, clay, lakes and springs through the same actual owners.
 All 142 configured public tests pass on MSVC and all 144 on each sanitized
-GCC/Clang build, including 2,870 combined query/plant checks per host. Separate
-original query observations retain 44 calls per side; native replay, remaining
-feature families and complete population remain unfinished.
+GCC/Clang build, including 6,110 combined query, predicate, plant, tree and
+geology checks per host. Separate original query observations retain 44 calls
+per side; ten selected original tree calls cover the five forms on both sides.
+Original/native feature replay, dungeons, snow and the complete population
+controller remain unfinished.
 
 The [Entity publication contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
 adds real World/Chunk occurrences, duplicates, cross-World bindings and terminal
