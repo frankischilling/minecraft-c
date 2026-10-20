@@ -3,7 +3,7 @@
 The [Entity publication contracts](world/entities.md#validation-and-limits) pass
 within all 66 selected cases on MSVC and sanitized GCC/Clang. Run
 `ctest --test-dir build -R "^(world.entity_publication|world.fluids)$" --output-on-failure`.
-Publication performs 730 checks per host. Fluid performs 529/528/529 checks in
+Publication performs 730 checks per host. Fluid performs 529/528/528 checks in
 that host order; actual World Random branches select additional assertions.
 Each host retains the same 640 inputs and 57 products, with selected tool
 executable pins before/after. Eight publication region files remain byte-equal

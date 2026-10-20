@@ -6,7 +6,7 @@ use real publication, and a displaced flower allows fluid flow to continue.
 Nonempty or terminal Chunk persistence refuses before writing. Terminal native
 disposal releases each occurrence without pretending to save or unload it.
 All 66 selected cases pass on MSVC and sanitized GCC/Clang: 730 publication
-checks per host and 529/528/529 fluid checks, with 640 inputs and 57 products
+checks per host and 529/528/528 fluid checks, with 640 inputs and 57 products
 retained per host. Separate [original observations](reference/entity-publication.md)
 each complete 21 calls, 44 snapshots and 88 Context records with full Chunk bytes,
 normal substrates and cross-World calls. They have no native replay. Player and

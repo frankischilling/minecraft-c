@@ -2,7 +2,7 @@
 
 The [Entity publication contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md#validation-and-limits)
 pass within all 66 selected cases on MSVC and sanitized GCC/Clang. Publication
-checks number 730 per host; fluid checks are 529/528/529. Each host retains 640
+checks number 730 per host; fluid checks are 529/528/528. Each host retains 640
 inputs and 57 products. Eight publication regions stay byte-equal after refused
 writes and terminal teardown; sixteen fluid records receive actual GAME saves
 before a genuine drop publication. [Separate original observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-publication.md)

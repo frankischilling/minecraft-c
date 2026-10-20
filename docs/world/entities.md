@@ -79,7 +79,7 @@ No save, callback or apparent unload is used to break the ownership cycle.
 All 66 selected cases pass on MSVC and Linux GCC/Clang, with Linux address,
 undefined-behavior and leak checks. Each host retains the same 640 selected
 inputs before/after execution and 57 actual products. Publication passes 730
-checks per host; fluid checks number 529/528/529 in that order because genuine
+checks per host; fluid checks number 529/528/528 in that order because genuine
 World Random branches select additional assertions. Selected resolved tool
 executables also match before and after; this does not capture every compiler
 runtime or system library.

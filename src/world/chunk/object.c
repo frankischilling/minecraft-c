@@ -328,8 +328,8 @@ bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk)
 
     size_t bytes;
     if (chunk->storage_kind == CHUNK_STORAGE_GENERATED) {
-        if ((size_t)MC_CHUNK_BLOCKS > SIZE_MAX - sizeof(generated_chunk_backing))
-            return false;
+        _Static_assert((size_t)MC_CHUNK_BLOCKS <= SIZE_MAX - sizeof(generated_chunk_backing),
+                       "generated Chunk backing and blocks must fit size_t");
         bytes = sizeof(generated_chunk_backing) + (size_t)MC_CHUNK_BLOCKS;
     } else if (chunk->storage_kind == CHUNK_STORAGE_LOADED) {
         bytes = sizeof(mc_world_chunk);
