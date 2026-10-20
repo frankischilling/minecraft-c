@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_STORAGE_OBJECTS_INTERNAL_H
 #define MC_WORLD_STORAGE_OBJECTS_INTERNAL_H
 
+#include "mc/storage/nbt/tree.h"
 #include "mc/world/chunk/object.h"
 #include "mc/world/storage/store.h"
 
@@ -93,6 +94,63 @@ mc_world_storage_status mc_world_store_game_stage_at(const mc_world_store *store
                                                      mc_world_store_game_stage_view *view,
                                                      mc_world_storage_error *error);
 bool mc_world_store_chunk_source_enabled(const mc_world_store *store, const mc_chunk_state *state);
+
+typedef struct mc_world_store_game_save mc_world_store_game_save;
+typedef struct mc_world_store_game_save_view {
+    mc_world_chunk *chunk;
+    mc_chunk_state *state;
+    mc_nbt_limits limits;
+} mc_world_store_game_save_view;
+
+/* Concrete synchronous GAME save transport. The caller holds the actual World,
+ * its Store binding and selected READY Info (when nonnull) exclusively through
+ * end. Begin admits the SAME committed/source-enabled concrete Chunk and owns
+ * one actual Store identity lease, then checks the session. NULL account uses
+ * existing Store metadata. No source field reset, Entity/Tile traversal, class
+ * use or callback occurs. A nested begin for this entry is BUSY. Failure balances
+ * its temporary lease and preserves both outputs. All outputs/errors must be
+ * disjoint from each other, owners, input trees and borrowed dependencies. */
+mc_world_storage_status
+mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
+                               mc_chunk_state *state, mc_world_info *account,
+                               mc_world_store_game_save **out, mc_world_store_game_save_view *view,
+                               mc_world_storage_error *error);
+
+/* Only the concrete high coordinator calls write: after its second actual
+ * shared-serializer session check, source prefix, q=false and genuine EMPTY
+ * Entity traversal, then actual Tile builder success. It must dereference the
+ * reached e/f/g descriptors before q in source order. No hidden session check,
+ * source reset, Tile call, old-list replay or owner rebinding occurs here.
+ * Compose actual b/e.a/f.a/g.a/h projections using the fixed native extents;
+ * nibble descriptors must have exactly the packed extent, nonnull a/h spans
+ * must be readable for those extents, and NULL array pointers are left for
+ * codec failure after the reached q reset. No canonical array substitution.
+ * tile_records is the actual builder's independent root Compound containing
+ * only a Compound TileEntities List, borrowed unchanged through the call.
+ * Caller retains/frees that tree. Explicit empty Entities and current Tiles
+ * replace BOTH baseline lists; generic opaque builders remain unchanged.
+ * The codec ceiling charges input tree + outer tree + overlapping scratch/raw
+ * output. Retained Store payload/document and live World/Tile graphs retain
+ * their separate existing budgets; region budgets remain separate as well.
+ * Success alone publishes growth and adds Java-int-narrowed growth to selected
+ * Info/metadata. Failure preserves growth and all earlier source effects. */
+/* Optional disjoint composition/encoding outputs retain the complete actual
+ * lower causes. Both start OK; native owner/buffer/region failures do not
+ * manufacture codec errors for operations that were never reached. */
+mc_world_storage_status mc_world_store_game_save_write(
+    mc_world_store *store, mc_world_store_game_save *save, int64_t world_time, uint32_t timestamp,
+    const mc_nbt_tree *tile_records, uint32_t *growth, mc_world_storage_error *error,
+    mc_stored_chunk_error *composition_error, mc_nbt_error *encoding_error);
+
+/* Balance ONLY this save's lease and invalidate its borrowed handle. No source
+ * validation is repeated during cleanup; a reached nullable source projection
+ * must not prevent cleanup. No source disable, retirement, rollback or implicit
+ * retry occurs. Valid begin/end pairs are infallible under exclusive unchanged
+ * native ownership. Always end exactly once after successful begin, including
+ * source/build/write failure. A save handle is invalid after end. */
+mc_world_storage_status mc_world_store_game_save_end(mc_world_store *store,
+                                                     mc_world_store_game_save *save,
+                                                     mc_world_storage_error *error);
 
 /* Exact state identity lookup for generated and bound loaded Chunk objects.
  * Generic stored states have no concrete object. No state/data copy or cast. */

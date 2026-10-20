@@ -91,7 +91,9 @@ Current focused MSVC validation also covers real Tile imports, retained failed
 Entity/Tile stages, wrong-location refusal after first imports, full untouched
 block bytes and independent typed caller frames. The [Tile test](tiles.md)
 adds source hooks, item drops and coordinated disposal. Original replay and
-complete live Entity/Tile save interoperability remain unfinished.
+complete live Entity/Tile save interoperability remain unfinished. The separate
+[GAME save contracts](saving.md) cover supported live Tile writes and constructed
+native coordinator unload/reload on the same continuing World.
 
 Feature population, full object lifecycle, complete synchronous block/lighting
 closure, live-player metadata saving and playable startup remain

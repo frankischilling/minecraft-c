@@ -41,6 +41,10 @@ typedef struct mc_tile_error {
     mc_item_stack_error item;
     mc_nbt_error nbt;             /* Whole-tree codec error, separate from item context. */
     unsigned int source_bytecode; /* Factory25 or read46 for composed imports. */
+    /* Reached serialization frames, independent of import/constructor frames.
+     * base is ow/jh.b; save is concrete Chest/Spawner.b; item is Stack.a.
+     * Native planning/codec errors without a reached field leave these zero. */
+    unsigned int base_save_bytecode, save_bytecode, item_save_bytecode;
     /* Fresh per-attempt Registry cause; empty sentinels on native-only errors.
      * Constructor PC15 identifies spawner Pig resolution after successful
      * base-class initialization; initializer PC remains a separate frame. */

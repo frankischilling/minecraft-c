@@ -2,10 +2,15 @@
 
 The [live Tile subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
 adds actual Chest and Spawner owners, World/Chunk occurrences, typed failures
-and staged GAME imports before block normalization. All 143 configured public
-tests pass on MSVC and all 145 on each sanitized GCC/Clang build, including
-468 Tile checks per host. Other Tile constructors, Entity NBT factories,
-nonempty live Tile saving and complete population remain unfinished.
+and staged GAME imports before block normalization. The
+[live GAME save path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md)
+now writes actual Chest/Spawner/Stack state over the same stored Chunk, with
+source q/error prefixes and selected Info growth. All 144 configured public
+tests pass on MSVC and all 146 on each sanitized GCC/Clang build, including
+468 Tile and 1,003 save checks per host. Reload uses an explicit native
+dedicated-policy coordinator; natural dedicated startup remains unfinished.
+Other Tile constructors, Entity NBT factories/serialization, whole World
+metadata, original/native save replay and complete population remain open.
 
 The [population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 and [plant predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)

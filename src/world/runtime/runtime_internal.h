@@ -4,6 +4,7 @@
 #include "acquisition_internal.h"
 #include "mc/world/runtime/construction.h"
 #include "mc/world/runtime/runtime.h"
+#include "mc/world/runtime/saving/errors.h"
 #include "mc/world/runtime/tiles/tiles.h"
 
 struct mc_world_runtime {
@@ -24,6 +25,7 @@ struct mc_world_runtime {
     mc_registry_error last_registry_error;
     mc_java_random_profile_status last_random_status;
     mc_world_runtime_acquisition_error *acquisition_error;
+    mc_world_runtime_lifecycle_error *lifecycle_error;
     size_t active_calls, local_leases;
     size_t persistent_bindings;
     /* Native typed holds parallel the actual b List, preserving each duplicate

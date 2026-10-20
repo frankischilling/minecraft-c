@@ -199,6 +199,7 @@ target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build
 add_library(mc_simulation STATIC
     src/world/runtime/tiles/tiles.c
     src/world/runtime/loading/loading.c
+    src/world/runtime/saving/saving.c
     src/world/runtime/runtime.c
     src/world/runtime/activation.c
     src/world/runtime/registry.c
@@ -440,6 +441,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_tiles tests/world/runtime/tiles/test_tiles.c)
     target_link_libraries(mc_test_world_tiles PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_saving tests/world/runtime/saving/test_saving.c)
+    target_link_libraries(mc_test_world_saving PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
     target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -1038,6 +1042,14 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-tiles-contracts")
     set_tests_properties(world.tiles PROPERTIES
         LABELS "public;integration;ownership;mutation;storage" TIMEOUT 90)
+
+    add_test(NAME world.saving
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_saving.py"
+        --executable "$<TARGET_FILE:mc_test_world_saving>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-saving-contracts")
+    set_tests_properties(world.saving PROPERTIES
+        LABELS "public;integration;ownership;storage" TIMEOUT 120)
 
     add_test(NAME world.queries
         COMMAND "${Python3_EXECUTABLE}"

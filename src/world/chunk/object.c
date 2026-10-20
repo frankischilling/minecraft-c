@@ -352,8 +352,7 @@ mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_lis
 
 bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk)
 {
-    if (chunk == NULL || chunk->m != &chunk->slices ||
-        chunk->slices.length != CHUNK_ENTITY_SLICES ||
+    if (chunk == NULL || chunk->slices.length != CHUNK_ENTITY_SLICES ||
         chunk->allocation_bytes > chunk->max_allocation_bytes)
         return false;
 

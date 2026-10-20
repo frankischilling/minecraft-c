@@ -243,3 +243,32 @@ classpath options before creating output. It records the canonical driver and
 the exact bytes loaded for shared helpers. The commit field is a caller-supplied
 label; acceptance also checks source and executable fingerprints against the
 tested checkout.
+
+## Live GAME saving
+
+Both verified archives have matching save control flow at these paired entry
+points. PCs are method bytecode offsets, separate from native ownership and
+independent-result allocation boundaries.
+
+| Frame | Client / base server | Reached order |
+| --- | --- | --- |
+| Region save | `ld.a(World,Chunk)V` / `hb.a(World,Chunk)V` | session1; output stream16; root/Level24/33; shared serializer51; NBT57; close61; Info65; actual growth89, signed widening92 and wrapped add93/set94 |
+| Shared Chunk serializer | `to.a(Chunk,World,Compound)V` / `mg.a(Chunk,World,Compound)V` | second session1; time28; arrays41/54/67/80/90; population100; q=false105; actual m length125/slice iterator136; q=true167 before Entity183; Entities208; actual l.values224; Tile271; TileEntities289 |
+| Base Tile | `ow.b(Compound)V` / `jh.b(Compound)V` | class-name lookup7; id54; current coordinates64/74/84 |
+| Chest | `js.b(Compound)V` / `gk.b(Compound)V` | base2; physical slots20; Slot48; actual Stack59; Items79 |
+| Spawner | `cy.b(Compound)V` / `bx.b(Compound)V` | base2; EntityId12 before Delay23 |
+| Stack | `iz.a(Compound)Compound` / `fy.a(Compound)Compound` | narrowed id8, Count19 and Damage30 |
+
+The [native GAME coordinator](../world/saving.md) implements the supported
+Chest/Spawner traversal with genuinely empty live Entity slices. It retains
+whole Tile and lower codec diagnostics and preserves reached q changes on
+failure. A first nonempty Entity occurrence stops at the unfinished serializer
+after q becomes true. The lower Store replaces both current lists over the
+same owned header/document; it never supplies old opaque records as live state.
+
+The original Region catches Exception over4..97, prints at102 and returns105;
+its first session1 lies outside that catch. Native buffered checked replacement
+returns explicit failure and does not emulate that exception/stream behavior.
+Independent NBT trees, retained unknown fields and the existing native clock
+position also remain separate policies. Source inspection and constructed
+native saves do not establish an executed original/native whole-save replay.

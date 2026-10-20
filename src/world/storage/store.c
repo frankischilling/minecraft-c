@@ -18,6 +18,12 @@ struct mc_world_store_game_stage {
     store_chunk *entry;
 };
 
+struct mc_world_store_game_save {
+    store_chunk *entry;
+    mc_world_runtime *world;
+    mc_world_info *account;
+};
+
 struct store_chunk {
     store_chunk_kind kind;
     union {
@@ -30,6 +36,8 @@ struct store_chunk {
     mc_world_store_game_stage_phase phase;
     bool game_stage, imports_started, coordinator_lease;
     mc_world_store_game_stage stage;
+    bool game_save_open;
+    mc_world_store_game_save save;
     struct store_chunk *next;
 };
 
@@ -499,10 +507,12 @@ const char *mc_world_store_root(const mc_world_store *store)
 
 static mc_world_storage_status store_encode_nbt(const mc_nbt_tag *root, const mc_nbt_limits *limits,
                                                 mc_ws_file_bytes *out,
-                                                mc_world_storage_error *error)
+                                                mc_world_storage_error *error, mc_nbt_error *detail)
 {
+    if (detail != NULL)
+        *detail = (mc_nbt_error){MC_NBT_OK, 0};
     size_t length = 0;
-    mc_nbt_status nbt = mc_nbt_measure(root, limits, &length, NULL);
+    mc_nbt_status nbt = mc_nbt_measure(root, limits, &length, detail);
     if (nbt != MC_NBT_OK)
         return store_nbt_error(error, nbt);
     if (length > limits->max_allocation_bytes)
@@ -513,7 +523,7 @@ static mc_world_storage_status store_encode_nbt(const mc_nbt_tag *root, const mc
     mc_nbt_limits remaining = *limits;
     remaining.max_allocation_bytes -= length;
     size_t written = 0;
-    nbt = mc_nbt_write(root, &remaining, bytes, length, &written, NULL);
+    nbt = mc_nbt_write(root, &remaining, bytes, length, &written, detail);
     if (nbt != MC_NBT_OK) {
         free(bytes);
         return store_nbt_error(error, nbt);
@@ -558,7 +568,7 @@ static mc_world_storage_status store_write_metadata(mc_world_store *store, const
                                                     mc_world_storage_error *error)
 {
     mc_ws_file_bytes raw = {0};
-    mc_world_storage_status status = store_encode_nbt(root, &store->limits.nbt, &raw, error);
+    mc_world_storage_status status = store_encode_nbt(root, &store->limits.nbt, &raw, error, NULL);
     mc_compression_buffer compressed = {0};
     if (status == MC_WORLD_STORAGE_OK) {
         mc_compression_status encoded = mc_compression_encode(
@@ -935,6 +945,8 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (entry->game_save_open)
+        return store_error(error, MC_WORLD_STORAGE_BUSY, "GAME save already open");
     if (entry->phase != MC_WORLD_STORE_GAME_COMMITTED)
         return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "uncommitted GAME stage cannot serialize");
@@ -963,7 +975,8 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     if (built != MC_STORED_CHUNK_OK)
         return store_chunk_error(error, built, &detail);
     mc_ws_file_bytes raw = {0};
-    status = store_encode_nbt(mc_nbt_document_root(document), &store->limits.nbt, &raw, error);
+    status =
+        store_encode_nbt(mc_nbt_document_root(document), &store->limits.nbt, &raw, error, NULL);
     uint32_t appended = 0;
     const char *root = entry->dimension == 0 ? store->root : store->nether;
     if (status == MC_WORLD_STORAGE_OK)
@@ -1131,7 +1144,7 @@ mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_ch
     store_chunk *entry = *link;
     const mc_world_chunk *runtime_chunk =
         entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
-    if (entry->leases != 0 || entry->coordinator_lease || referenced ||
+    if (entry->leases != 0 || entry->coordinator_lease || entry->game_save_open || referenced ||
         (entry->imports_started && entry->phase != MC_WORLD_STORE_GAME_COMMITTED &&
          !mc_world_chunk_entity_containers_retired(runtime_chunk)) ||
         (chunk->active && !mc_world_chunk_entity_containers_retired(runtime_chunk)))
@@ -1267,6 +1280,16 @@ static mc_world_chunk *store_runtime_chunk(const store_chunk *entry)
     return entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
 }
 
+static bool store_chunk_save_valid(const store_chunk *entry)
+{
+    if (!entry->game_save_open)
+        return entry->save.entry == NULL && entry->save.world == NULL &&
+               entry->save.account == NULL;
+    return entry->phase == MC_WORLD_STORE_GAME_COMMITTED && !entry->coordinator_lease &&
+           entry->leases != 0 && entry->save.entry == entry && entry->save.world != NULL &&
+           (entry->save.account == NULL || mc_world_info_live_get(entry->save.account) != NULL);
+}
+
 static bool store_chunk_owner_valid(const store_chunk *entry)
 {
     if (entry->kind == STORE_CHUNK_STORED) {
@@ -1277,16 +1300,163 @@ static bool store_chunk_owner_valid(const store_chunk *entry)
     }
     mc_chunk_state *state = store_chunk_state(entry);
     if (state == NULL || state->blank || state->data == NULL || state->data->blocks == NULL ||
-        state->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS || !store_chunk_phase_valid(entry))
+        state->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS ||
+        !store_chunk_phase_valid(entry) || !store_chunk_save_valid(entry))
         return false;
     mc_world_chunk *chunk = store_runtime_chunk(entry);
     if (chunk == NULL)
-        return entry->kind == STORE_CHUNK_STORED && !entry->game_stage;
+        return entry->kind == STORE_CHUNK_STORED && !entry->game_stage && !entry->game_save_open;
     if (mc_world_chunk_state(chunk) != state || !mc_world_chunk_entities_validate(chunk))
         return false;
     mc_world_chunk_fields fields;
     return mc_world_chunk_fields_get(chunk, &fields) == MC_WORLD_STORAGE_OK &&
-           fields.b == state->data->blocks;
+           fields.b == state->data->blocks &&
+           (!entry->game_save_open ||
+            (fields.d == entry->save.world && mc_world_chunk_source_enabled(chunk)));
+}
+
+static store_chunk *store_find_game_save(const mc_world_store *store,
+                                         const mc_world_store_game_save *save)
+{
+    if (store == NULL || save == NULL)
+        return NULL;
+    for (store_chunk *entry = store->chunks; entry != NULL; entry = entry->next)
+        if (entry->game_save_open && &entry->save == save && entry->save.entry == entry)
+            return entry;
+    return NULL;
+}
+
+mc_world_storage_status
+mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
+                               mc_chunk_state *state, mc_world_info *account,
+                               mc_world_store_game_save **out, mc_world_store_game_save_view *view,
+                               mc_world_storage_error *error)
+{
+    if (store == NULL || world == NULL || state == NULL || out == NULL || view == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save arguments");
+    store_chunk *entry = store_find_chunk(store, state);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (entry->game_save_open)
+        return store_error(error, MC_WORLD_STORAGE_BUSY, "GAME save already open");
+    if (!store_chunk_owner_valid(entry))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME save Chunk ownership metadata");
+    mc_world_chunk *chunk = store_runtime_chunk(entry);
+    if (entry->phase != MC_WORLD_STORE_GAME_COMMITTED || chunk == NULL ||
+        !mc_world_chunk_source_enabled(chunk))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME save requires committed source owner");
+    mc_world_chunk_fields fields;
+    (void)mc_world_chunk_fields_get(chunk, &fields);
+    if (fields.d != world)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save foreign World");
+    if ((account == NULL && !store->has_info) ||
+        (account != NULL && mc_world_info_live_get(account) == NULL))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME save metadata owner");
+    mc_world_storage_status status = mc_world_store_lease_chunk(store, state, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    status = mc_world_store_check_session(store, error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        (void)mc_world_store_release_chunk(store, state, NULL);
+        return status;
+    }
+    entry->save = (mc_world_store_game_save){entry, world, account};
+    entry->game_save_open = true;
+    const mc_world_store_game_save_view snapshot = {chunk, state, store->limits.nbt};
+    *out = &entry->save;
+    *view = snapshot;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_save_write(
+    mc_world_store *store, mc_world_store_game_save *save, int64_t world_time, uint32_t timestamp,
+    const mc_nbt_tree *tile_records, uint32_t *growth, mc_world_storage_error *error,
+    mc_stored_chunk_error *composition_error, mc_nbt_error *encoding_error)
+{
+    if (composition_error != NULL)
+        *composition_error = (mc_stored_chunk_error){MC_STORED_CHUNK_OK, NULL, {MC_NBT_OK, 0}};
+    if (encoding_error != NULL)
+        *encoding_error = (mc_nbt_error){MC_NBT_OK, 0};
+    if (growth == NULL || tile_records == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save write arguments");
+    store_chunk *entry = store_find_game_save(store, save);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME save");
+    if (!store_chunk_owner_valid(entry))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME save Chunk ownership metadata");
+    mc_chunk_state *state = store_chunk_state(entry);
+    if (state->has_entities)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME save requires completed empty Entity traversal");
+    const mc_nbt_tag *records_root = mc_nbt_tree_root(tile_records);
+    if (records_root == NULL || records_root->type != MC_NBT_COMPOUND ||
+        records_root->value.compound.length != 1)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save Tile records root");
+    const mc_nbt_tag *records = store_get(records_root, "TileEntities");
+    if (records == NULL || records->type != MC_NBT_LIST ||
+        records->value.list.element_type != MC_NBT_COMPOUND)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save TileEntities List");
+    mc_nbt_limits remaining = store->limits.nbt;
+    size_t input_bytes = mc_nbt_tree_allocation_bytes(tile_records);
+    if (input_bytes > remaining.max_allocation_bytes)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save input tree budget");
+    remaining.max_allocation_bytes -= input_bytes;
+    mc_nbt_tree *document = NULL;
+    mc_stored_chunk_error detail;
+    mc_stored_chunk_status built = mc_stored_chunk_build_game_tiles(
+        entry->kind == STORE_CHUNK_STORED ? entry->owner.stored : NULL, state,
+        store_runtime_chunk(entry), world_time, records, &remaining, &document, &detail);
+    if (composition_error != NULL)
+        *composition_error = detail;
+    if (built != MC_STORED_CHUNK_OK)
+        return store_chunk_error(error, built, &detail);
+    size_t document_bytes = mc_nbt_tree_allocation_bytes(document);
+    if (document_bytes > remaining.max_allocation_bytes) {
+        mc_nbt_tree_free(document);
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save output tree budget");
+    }
+    remaining.max_allocation_bytes -= document_bytes;
+    mc_ws_file_bytes raw = {0};
+    mc_world_storage_status status =
+        store_encode_nbt(mc_nbt_tree_root(document), &remaining, &raw, error, encoding_error);
+    uint32_t appended = 0;
+    const char *root = entry->dimension == 0 ? store->root : store->nether;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_world_regions_write(store->regions, root, state->x, state->z, raw.data,
+                                        raw.length, timestamp, &appended, error);
+    mc_ws_free_file_bytes(&raw);
+    mc_nbt_tree_free(document);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    int64_t delta = (int64_t)mc_java_i32_narrow((int64_t)appended);
+    if (save->account == NULL) {
+        store->info.size_on_disk = mc_java_i64_add(store->info.size_on_disk, delta);
+    } else {
+        mc_world_info_fields fields;
+        (void)mc_world_info_fields_get(save->account, &fields);
+        (void)mc_world_info_size_set(save->account,
+                                     mc_java_i64_add(fields.value.size_on_disk, delta));
+    }
+    *growth = appended;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_save_end(mc_world_store *store,
+                                                     mc_world_store_game_save *save,
+                                                     mc_world_storage_error *error)
+{
+    store_chunk *entry = store_find_game_save(store, save);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME save");
+    if (entry->leases == 0)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME save lease metadata");
+    --entry->leases;
+    entry->game_save_open = false;
+    entry->save = (mc_world_store_game_save){0};
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
 static mc_world_store_game_stage_view store_game_stage_view(const mc_world_store *store,
@@ -1584,7 +1754,7 @@ mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
         ++chunks;
         last = entry;
         const mc_world_chunk *chunk = store_runtime_chunk(entry);
-        busy = busy || entry->leases != 0 || entry->coordinator_lease ||
+        busy = busy || entry->leases != 0 || entry->coordinator_lease || entry->game_save_open ||
                (chunk != NULL && !mc_world_chunk_entity_containers_retired(chunk)) ||
                (chunk == NULL && store_chunk_state(entry)->active);
     }
@@ -1620,7 +1790,7 @@ mc_world_storage_status mc_world_store_entity_containers_validate(const mc_world
                                "Store entity retirement Chunk identity");
         if (fields.d != world)
             continue;
-        if (entry->leases != 0 || entry->coordinator_lease)
+        if (entry->leases != 0 || entry->coordinator_lease || entry->game_save_open)
             return store_error(error, MC_WORLD_STORAGE_BUSY,
                                "Store Chunk lease during entity retirement");
         if (!store_chunk_owner_valid(entry))

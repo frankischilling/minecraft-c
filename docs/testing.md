@@ -1,6 +1,16 @@
 # Test scope and reproduction
 
-The [live Tile contracts](world/tiles.md) add real Chest/Spawner owners, actual
+The [live save integration](world/saving.md) passes all 144 configured MSVC and
+146 GCC/Clang cases with zero skips and local JDK comparisons enabled. Linux
+uses ASan/UBSan and leak checks with fresh byte-verified source/dependency copies.
+Each host retains 678 unchanged selected inputs, 254 zlib pins, 163 products and
+32 captures. Formatting passes all 388 C files/headers with clang-format18.
+The new `world.saving` case passes 1,003 checks per host, including actual saved
+arrays/records, provenance, session and late errors, retry freshness and explicit
+native coordinator reload on the same World. It does not establish natural
+dedicated startup, Entity persistence or original/native whole-save replay.
+
+The preceding [live Tile contracts](world/tiles.md) add real Chest/Spawner owners, actual
 NBT imports before normalization, Map/List holds, item drops, detailed acquisition
 failures and joint native retirement. All 143 configured cases pass on Windows
 MSVC and all 145 on each Ubuntu GCC/Clang build, with zero skips and local JDK

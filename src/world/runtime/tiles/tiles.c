@@ -1270,8 +1270,12 @@ static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6
     fields[0].type = MC_NBT_STRING;
     fields[0].name = (mc_nbt_string){tile_id_name, 2};
     mc_tile_name *registered = live_class_name(tile->classes, tile->kind);
-    if (registered == NULL)
-        return tile_status(error, MC_TILE_STATE_ERROR, "id", SIZE_MAX);
+    if (registered == NULL) {
+        const mc_tile_status status = tile_status(error, MC_TILE_STATE_ERROR, "id", SIZE_MAX);
+        if (error != NULL)
+            error->base_save_bytecode = 7;
+        return status;
+    }
     fields[0].value.string = registered->text;
     fields[1].type = fields[2].type = fields[3].type = MC_NBT_INT;
     fields[1].name = (mc_nbt_string){tile_x_name, 1};
@@ -1289,7 +1293,11 @@ static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6
         /* The original String construction rejects null before reaching Delay.
          * This independent result has no caller-visible mutable base prefix. */
         if (tile->state.spawner.name == NULL) {
-            return tile_status(error, MC_TILE_INVALID_ARGUMENT, "EntityId", SIZE_MAX);
+            const mc_tile_status status =
+                tile_status(error, MC_TILE_INVALID_ARGUMENT, "EntityId", SIZE_MAX);
+            if (error != NULL)
+                error->save_bytecode = 12;
+            return status;
         }
         fields[4].type = MC_NBT_STRING;
         fields[4].name = (mc_nbt_string){tile_entity_name, 8};
@@ -3970,8 +3978,12 @@ static mc_tile_status live_record_plan(mc_tile *tile, live_record_view *view,
             mc_item_stack_error item_error = {0};
             mc_item_stack_status item = mc_item_stack_record_pointer_count(
                 stack, &view->slots[n], 1, &view->counts[n], &item_error);
-            if (item != MC_ITEM_STACK_OK)
-                return tile_item_error(error, item, &item_error, n);
+            if (item != MC_ITEM_STACK_OK) {
+                const mc_tile_status failure = tile_item_error(error, item, &item_error, n);
+                if (error != NULL)
+                    error->save_bytecode = 59;
+                return failure;
+            }
             if (view->counts[n] > limits->max_elements ||
                 !tile_size_add(&view->pointer_count, view->counts[n]))
                 return tile_status(error, MC_TILE_LIMIT, "Items[]", n);
@@ -3992,8 +4004,12 @@ static mc_tile_status live_record_prepare(live_record_view *view, const mc_nbt_t
         mc_item_stack_status item =
             mc_item_stack_record_overlay(view->stacks[i], &view->slots[i], 1, scratch + offset,
                                          view->counts[i], &view->items[i], &item_error);
-        if (item != MC_ITEM_STACK_OK)
-            return tile_item_error(error, item, &item_error, i);
+        if (item != MC_ITEM_STACK_OK) {
+            const mc_tile_status failure = tile_item_error(error, item, &item_error, i);
+            if (error != NULL)
+                error->save_bytecode = 59;
+            return failure;
+        }
         scratch[view->root_count + i] = &view->items[i].root;
         offset += view->counts[i];
     }
@@ -4118,6 +4134,8 @@ mc_world_storage_status mc_live_tiles_build_records(const mc_world_chunk *chunk,
         mc_tile_status planned = live_record_plan(tile, &views[i], &limits, &frame.tile);
         if (planned != MC_TILE_OK) {
             live_tile_error(&frame, planned, "Tile record semantic plan");
+            if (frame.tile.base_save_bytecode != 0 || frame.tile.save_bytecode != 0)
+                frame.bytecode = 271;
             break;
         }
         if (!tile_size_add(&pointer_count, views[i].pointer_count)) {
@@ -4168,6 +4186,8 @@ mc_world_storage_status mc_live_tiles_build_records(const mc_world_chunk *chunk,
             mc_tile_status prepared = live_record_prepare(&views[i], scratch + offset, &frame.tile);
             if (prepared != MC_TILE_OK) {
                 live_tile_error(&frame, prepared, "Tile records borrowed overlay");
+                if (frame.tile.save_bytecode != 0)
+                    frame.bytecode = 271;
                 break;
             }
             offset += views[i].pointer_count;

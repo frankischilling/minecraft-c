@@ -5,8 +5,13 @@ imports supported Tile records into the same Store-owned Chunk before block
 normalization. Failed imports retain their source prefix under that owner and
 disable further direct source use. Pending and failed imports require joint
 container retirement before individual disposal. Successfully committed chunks
-retain ordinary save, unload and retirement behavior. Full live Tile saving,
-Entity NBT construction and original/native Tile replay remain unfinished.
+retain ordinary save, unload and retirement behavior. The
+[live GAME save coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md)
+writes current supported Tiles and explicit empty Entities over that same
+owner, preserving reached q effects and complete typed failures. Constructed
+native coordinator tests save, unload, retire and reload on a continuing World.
+Natural dedicated startup, Entity NBT construction/serialization, whole World
+metadata and original/native Tile replay remain unfinished.
 
 The [original World query observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/world-queries.md)
 retain 44 calls, 112 snapshots and 170 raw Context records per side. Complete

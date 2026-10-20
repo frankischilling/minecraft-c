@@ -70,8 +70,9 @@ relocation diagnostic before normalization. See [storage ownership](storage.md).
 Failed stages remain counted and inspectable. Their direct source operations
 are disabled, while passive owner validation and native teardown remain usable.
 An empty Map can still own a table or import journal; count zero does not make
-it eligible for the old empty serializer. Outer live Tile saving and nonempty
-Entity serialization remain unsupported.
+it eligible for the old empty serializer. The [live GAME save path](saving.md)
+uses the actual Map builder, including count-zero ownership and deleted known
+records. Nonempty Entity serialization remains unsupported.
 
 `mc_world_runtime_retire_entity_containers` now admits the complete World b/c/G
 ownership and every bound Store Chunk, including failed stages, before releasing
@@ -83,11 +84,12 @@ result leaves the entire class owner intact.
 
 ## Validation boundary
 
-All 143 configured public cases pass on native Windows MSVC and all 145 on each
+All 144 configured public cases pass on native Windows MSVC and all 146 on each
 sanitized Ubuntu GCC/Clang build, with zero skips and local JDK comparisons.
 The dedicated Tile scenario passes 468 checks on each host. Each run retains
-672 unchanged selected source inputs, 254 external zlib pins, 161 products and
-31 capture directories. These are native integration contracts, not original
+678 unchanged selected source inputs, 254 external zlib pins, 163 products and
+32 capture directories. The [save contracts](saving.md) add 1,003 checks per host.
+These are native integration contracts, not original
 Tile replay or complete populated persistence qualification.
 
 `world.tiles` constructs real owners on both sides, exercises Chest/Spawner NBT,

@@ -2,13 +2,17 @@
 
 The [live Tile contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
 exercise actual Chest/Spawner, Stack, Map and List owners, staged GAME loading
-and terminal disposal. All 143 configured public cases pass on MSVC and all 145
+and terminal disposal. The [live save contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md)
+add 1,003 checks per host, complete current saved arrays/records, retained
+unknown fields, late failures, retries and explicit native coordinator reload.
+Both installed GAME constructors bind BASE policy; no natural dedicated startup
+or original/native whole-save comparison follows. All 144 configured public cases pass on MSVC and all 146
 on each sanitized GCC/Clang build, with zero skips and local JDK comparisons.
 Each host passes 468 Tile checks and 98,868 provider-activation checks, retaining
-672 unchanged selected source inputs, 254 external zlib pins, 161 products and
-31 captures. Linux source/dependency copies match before and after execution.
-Clang-format 18 checks all 383 C sources and headers. Complete population,
-original/native replay and live Entity/Tile saving remain unfinished.
+678 unchanged selected source inputs, 254 external zlib pins, 163 products and
+32 captures. Linux source/dependency copies match before and after execution.
+Clang-format 18 checks all 388 C sources and headers. Complete population,
+original/native replay, live Entity serialization and whole World saves remain unfinished.
 
 The following checkpoint predates live Tile integration.
 

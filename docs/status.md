@@ -1,5 +1,20 @@
 # Development status
 
+The [live GAME save path](world/saving.md) now writes actual Chest/Spawner Map
+occurrences and physical Stack slots over the same Store-owned Chunk. It
+preserves source q/error prefixes, replaces both live NBT lists and updates
+the selected Info's actual region-growth accounting. The focused Windows run
+passes all eleven rebuilt integration suites, including 1,003 new save checks.
+Same-World unload/reload uses an explicit native dedicated-policy coordinator;
+both installed GAME constructors still bind BASE policy. The complete local
+suites pass all 144 MSVC and 146 GCC/Clang cases, without skips and with local
+JDK comparisons enabled. Linux uses ASan/UBSan and leak checks. Each host
+retains 678 unchanged selected inputs, 254 zlib pins, 163 products and 32 captures;
+clang-format18 checks 388 C files/headers. Nonempty Entity NBT, whole World metadata, natural
+dedicated startup, original save replay and complete population remain open.
+
+The following checkpoint predates live Tile saving.
+
 The [World and Chunk Entity publication methods](world/entities.md) now retain
 actual typed occurrences, duplicates and cross-World bindings. Base/crop drops
 use real publication, and a displaced flower allows fluid flow to continue.

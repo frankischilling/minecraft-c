@@ -78,7 +78,9 @@ mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_lis
 /* Native quiescent retirement, NOT game removal/List.clear. The application
  * first validates ALL World/Store/Chunk containers and leases before releasing
  * ANY occurrence. Validation is read-only and verifies actual eight List
- * identities, descriptor coherence, nonnull held entries and exact byte ledger.
+ * embedded identities, descriptor coherence, nonnull held entries and exact
+ * byte ledger. It never dereferences replaceable source m or l; reached source
+ * operations validate those projections independently.
  * Live typed provenance is an owner contract; this cannot detect stale or
  * forged pointers. Validated metadata may not change before release.
  *

@@ -167,7 +167,10 @@ the session file.
 
 Decoder/document and header limits remain separate native budgets. A staged
 load is not a whole-process heap limit, original malformed-array repair profile
-or live Entity/Tile save implementation.
+or complete live Entity/Tile save implementation. The separate
+[live GAME coordinator](saving.md) now composes supported Chest/Spawner records
+and explicit empty live Entities over this same stored owner. Generic opaque
+editing APIs retain their separate restrictions.
 
 ## Verification limits
 

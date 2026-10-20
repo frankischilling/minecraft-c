@@ -6,6 +6,7 @@
 #include "millis.h"
 #include "provider_internal.h"
 #include "runtime_internal.h"
+#include "saving/saving_internal.h"
 
 #include <stdlib.h>
 
@@ -23,6 +24,21 @@ static mc_world_runtime_acquisition_error acquisition_empty_error(void)
                                                 .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                                 .registry = mc_tile_empty_error().registry,
                                                 .tile = mc_live_tiles_empty_error()};
+}
+
+static mc_world_runtime_lifecycle_error lifecycle_empty_error(void)
+{
+    return (mc_world_runtime_lifecycle_error){.status = MC_CHUNK_LIFECYCLE_OK,
+                                              .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
+                                              .save = mc_world_game_save_empty_error()};
+}
+
+static void lifecycle_cause(mc_world_runtime *runtime, mc_world_storage_error cause)
+{
+    if (runtime->lifecycle_error != NULL) {
+        *runtime->lifecycle_error = lifecycle_empty_error();
+        runtime->lifecycle_error->cause = cause;
+    }
 }
 
 static void acquisition_cause(mc_world_runtime *runtime, mc_world_storage_error cause)
@@ -67,12 +83,14 @@ static bool reference_retain(void *owner, mc_chunk_state *chunk)
     if (runtime->local_leases == SIZE_MAX) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_LIMIT, "runtime local lease retain");
         acquisition_cause(runtime, runtime->last_error);
+        lifecycle_cause(runtime, runtime->last_error);
         return false;
     }
     if (chunk != &runtime->fallback &&
         mc_world_store_lease_chunk(runtime->options.store, chunk, &runtime->last_error) !=
             MC_WORLD_STORAGE_OK) {
         acquisition_cause(runtime, runtime->last_error);
+        lifecycle_cause(runtime, runtime->last_error);
         return false;
     }
     ++runtime->local_leases;
@@ -234,9 +252,19 @@ static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_
         if (mc_platform_current_time_millis(&millis) != MC_PLATFORM_MILLIS_OK) {
             runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World region wall clock");
+            lifecycle_cause(runtime, runtime->last_error);
             return MC_CHUNK_CALLBACK_FATAL;
         }
         timestamp = (uint32_t)(millis / INT64_C(1000));
+        mc_world_game_save_error frame;
+        const mc_world_storage_status status =
+            mc_world_runtime_write_game_chunk(runtime, chunk, timestamp, &growth, &frame);
+        runtime->last_error = frame.cause;
+        if (status != MC_WORLD_STORAGE_OK && runtime->lifecycle_error != NULL) {
+            lifecycle_cause(runtime, frame.cause);
+            runtime->lifecycle_error->save = frame;
+        }
+        return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
     } else {
         timestamp = runtime->options.region_timestamp(runtime->options.clock);
     }
@@ -248,6 +276,8 @@ static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_
             : mc_world_store_write_runtime_chunk_for_info(runtime->options.store, chunk,
                                                           runtime->fields.x, *context->world_time,
                                                           timestamp, &growth, &runtime->last_error);
+    if (status != MC_WORLD_STORAGE_OK)
+        lifecycle_cause(runtime, runtime->last_error);
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
@@ -277,8 +307,10 @@ invalidate_tiles(void *owner, const mc_chunk_lifecycle_context *context, mc_chun
     mc_world_activation_error error;
     mc_world_storage_status status = mc_world_runtime_invalidate_chunk_tiles(
         mc_world_store_chunk_object(runtime->options.store, chunk), &error);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
+        lifecycle_cause(runtime, error.cause);
+    }
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
@@ -293,8 +325,10 @@ static mc_chunk_callback_result defer_entities(void *owner,
     mc_world_activation_error error;
     mc_world_storage_status status = mc_world_runtime_defer_chunk_entities(
         mc_world_store_chunk_object(runtime->options.store, chunk), slice, &error);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
+        lifecycle_cause(runtime, error.cause);
+    }
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
@@ -302,11 +336,13 @@ static mc_chunk_callback_result
 provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *result)
 {
     mc_world_runtime *runtime = owner;
-    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME)
-        return mc_world_provider_maintenance(runtime->fields.v, result, &runtime->last_error) ==
-                       MC_WORLD_STORAGE_OK
-                   ? MC_CHUNK_CALLBACK_OK
-                   : MC_CHUNK_CALLBACK_FATAL;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        const mc_world_storage_status status =
+            mc_world_provider_maintenance(runtime->fields.v, result, &runtime->last_error);
+        if (status != MC_WORLD_STORAGE_OK)
+            lifecycle_cause(runtime, runtime->last_error);
+        return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
+    }
     return runtime->options.provider_maintenance(runtime->options.provider, context, result);
 }
 
@@ -314,10 +350,11 @@ static mc_chunk_callback_result session(void *owner, const mc_world_save_context
 {
     (void)context;
     mc_world_runtime *runtime = owner;
-    return mc_world_store_check_session(runtime->options.store, &runtime->last_error) ==
-                   MC_WORLD_STORAGE_OK
-               ? MC_CHUNK_CALLBACK_OK
-               : MC_CHUNK_CALLBACK_FATAL;
+    const mc_world_storage_status status =
+        mc_world_store_check_session(runtime->options.store, &runtime->last_error);
+    if (status != MC_WORLD_STORAGE_OK)
+        lifecycle_cause(runtime, runtime->last_error);
+    return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
 static mc_chunk_callback_result metadata(void *owner, const mc_world_save_context *context)
@@ -327,16 +364,20 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
     if (runtime->fields.x != NULL) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "live-player metadata serialization");
+        lifecycle_cause(runtime, runtime->last_error);
         return MC_CHUNK_CALLBACK_FATAL;
     }
     int64_t timestamp = runtime->options.metadata_timestamp(runtime->options.clock);
     mc_level_info info;
-    if (mc_world_runtime_read_info(runtime, &info, &runtime->last_error) != MC_WORLD_STORAGE_OK)
+    if (mc_world_runtime_read_info(runtime, &info, &runtime->last_error) != MC_WORLD_STORAGE_OK) {
+        lifecycle_cause(runtime, runtime->last_error);
         return MC_CHUNK_CALLBACK_FATAL;
-    return mc_world_store_save_info(runtime->options.store, &info, timestamp,
-                                    &runtime->last_error) == MC_WORLD_STORAGE_OK
-               ? MC_CHUNK_CALLBACK_OK
-               : MC_CHUNK_CALLBACK_FATAL;
+    }
+    const mc_world_storage_status status =
+        mc_world_store_save_info(runtime->options.store, &info, timestamp, &runtime->last_error);
+    if (status != MC_WORLD_STORAGE_OK)
+        lifecycle_cause(runtime, runtime->last_error);
+    return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
 
 static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context)
@@ -345,6 +386,7 @@ static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_conte
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World named saved-data serialization");
+        lifecycle_cause(runtime, runtime->last_error);
         return MC_CHUNK_CALLBACK_FATAL;
     }
     return runtime->options.save_auxiliary(runtime->options.auxiliary, context);
@@ -705,7 +747,9 @@ static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_
     frame.status = enter_acquire(runtime, &frame.cause);
     if (frame.status == MC_CHUNK_ACQUIRE_OK) {
         mc_world_runtime_acquisition_error *previous = runtime->acquisition_error;
+        mc_world_runtime_lifecycle_error *previous_lifecycle = runtime->lifecycle_error;
         runtime->acquisition_error = &frame;
+        runtime->lifecycle_error = NULL;
         switch (operation) {
             case ACQUISITION_ACQUIRE:
                 frame.status = mc_chunk_acquire(&runtime->acquisition, x, z, out);
@@ -721,6 +765,7 @@ static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_
                 break;
         }
         runtime->acquisition_error = previous;
+        runtime->lifecycle_error = previous_lifecycle;
         --runtime->active_calls;
     }
     if (frame.status == MC_CHUNK_ACQUIRE_OK)
@@ -759,63 +804,129 @@ mc_chunk_acquire_status mc_world_runtime_mark_drop(mc_world_runtime *runtime, in
     return acquire_attempt(runtime, x, z, NULL, ACQUISITION_MARK_DROP, NULL);
 }
 
-static mc_chunk_lifecycle_status enter_lifecycle(mc_world_runtime *runtime)
+static mc_chunk_lifecycle_status enter_lifecycle(mc_world_runtime *runtime,
+                                                 mc_world_storage_error *cause)
 {
-    if (runtime == NULL)
+    if (runtime == NULL) {
+        runtime_error(cause, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime lifecycle owner");
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
+    }
     if (!runtime->construction.contexts_bound ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "runtime lifecycle context not installed");
+        *cause = runtime->last_error;
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
     }
-    if (runtime->active_calls == SIZE_MAX)
+    if (runtime->active_calls == SIZE_MAX) {
+        runtime_error(cause, MC_WORLD_STORAGE_LIMIT, "runtime lifecycle call hold");
         return MC_CHUNK_LIFECYCLE_LIMIT;
+    }
     ++runtime->active_calls;
     return MC_CHUNK_LIFECYCLE_OK;
+}
+
+typedef enum lifecycle_operation {
+    LIFECYCLE_SAVE_CHUNKS,
+    LIFECYCLE_SAVE_WORLD,
+    LIFECYCLE_SAVE_CLIENT,
+    LIFECYCLE_MAINTAIN
+} lifecycle_operation;
+
+static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bool force,
+                                                   int32_t pass, bool *out,
+                                                   lifecycle_operation operation,
+                                                   mc_world_runtime_lifecycle_error *error)
+{
+    mc_world_runtime_lifecycle_error frame = lifecycle_empty_error();
+    frame.status = enter_lifecycle(runtime, &frame.cause);
+    if (frame.status == MC_CHUNK_LIFECYCLE_OK) {
+        mc_world_runtime_lifecycle_error *previous = runtime->lifecycle_error;
+        mc_world_runtime_acquisition_error *previous_acquisition = runtime->acquisition_error;
+        runtime->lifecycle_error = &frame;
+        runtime->acquisition_error = NULL;
+        switch (operation) {
+            case LIFECYCLE_SAVE_CHUNKS:
+                frame.status = mc_chunk_lifecycle_save(&runtime->lifecycle, force, out);
+                break;
+            case LIFECYCLE_SAVE_WORLD:
+                frame.status = mc_world_lifecycle_save(&runtime->saving, force);
+                break;
+            case LIFECYCLE_SAVE_CLIENT:
+                frame.status = mc_world_lifecycle_save_client(&runtime->saving, pass, out);
+                break;
+            case LIFECYCLE_MAINTAIN:
+                frame.status = mc_chunk_lifecycle_maintain(&runtime->lifecycle, out);
+                break;
+        }
+        runtime->lifecycle_error = previous;
+        runtime->acquisition_error = previous_acquisition;
+        --runtime->active_calls;
+    }
+    if (frame.status == MC_CHUNK_LIFECYCLE_OK)
+        frame = lifecycle_empty_error();
+    else if (frame.cause.status == MC_WORLD_STORAGE_OK) {
+        /* Underlying native validation and external callback results need no
+         * ambient diagnostic lookup or fabricated Tile child. */
+        const mc_world_storage_status status =
+            frame.status == MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+            : frame.status == MC_CHUNK_LIFECYCLE_LIMIT          ? MC_WORLD_STORAGE_LIMIT
+                                                       : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        runtime_error(&frame.cause, status, "runtime lifecycle result");
+    }
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
+}
+
+mc_chunk_lifecycle_status
+mc_world_runtime_save_chunks_detailed(mc_world_runtime *runtime, bool force, bool *completed,
+                                      mc_world_runtime_lifecycle_error *error)
+{
+    return lifecycle_attempt(runtime, force, 0, completed, LIFECYCLE_SAVE_CHUNKS, error);
+}
+
+mc_chunk_lifecycle_status mc_world_runtime_save_detailed(mc_world_runtime *runtime, bool force,
+                                                         mc_world_runtime_lifecycle_error *error)
+{
+    return lifecycle_attempt(runtime, force, 0, NULL, LIFECYCLE_SAVE_WORLD, error);
+}
+
+mc_chunk_lifecycle_status
+mc_world_runtime_save_client_detailed(mc_world_runtime *runtime, int32_t pass, bool *completed,
+                                      mc_world_runtime_lifecycle_error *error)
+{
+    return lifecycle_attempt(runtime, false, pass, completed, LIFECYCLE_SAVE_CLIENT, error);
+}
+
+mc_chunk_lifecycle_status
+mc_world_runtime_maintain_detailed(mc_world_runtime *runtime, bool *provider_result,
+                                   mc_world_runtime_lifecycle_error *error)
+{
+    return lifecycle_attempt(runtime, false, 0, provider_result, LIFECYCLE_MAINTAIN, error);
 }
 
 mc_chunk_lifecycle_status mc_world_runtime_save_chunks(mc_world_runtime *runtime, bool force,
                                                        bool *completed)
 {
-    mc_chunk_lifecycle_status status = enter_lifecycle(runtime);
-    if (status != MC_CHUNK_LIFECYCLE_OK)
-        return status;
-    status = mc_chunk_lifecycle_save(&runtime->lifecycle, force, completed);
-    --runtime->active_calls;
-    return status;
+    return mc_world_runtime_save_chunks_detailed(runtime, force, completed, NULL);
 }
 
 mc_chunk_lifecycle_status mc_world_runtime_save(mc_world_runtime *runtime, bool force)
 {
-    mc_chunk_lifecycle_status status = enter_lifecycle(runtime);
-    if (status != MC_CHUNK_LIFECYCLE_OK)
-        return status;
-    status = mc_world_lifecycle_save(&runtime->saving, force);
-    --runtime->active_calls;
-    return status;
+    return mc_world_runtime_save_detailed(runtime, force, NULL);
 }
 
 mc_chunk_lifecycle_status mc_world_runtime_save_client(mc_world_runtime *runtime, int32_t pass,
                                                        bool *completed)
 {
-    mc_chunk_lifecycle_status status = enter_lifecycle(runtime);
-    if (status != MC_CHUNK_LIFECYCLE_OK)
-        return status;
-    status = mc_world_lifecycle_save_client(&runtime->saving, pass, completed);
-    --runtime->active_calls;
-    return status;
+    return mc_world_runtime_save_client_detailed(runtime, pass, completed, NULL);
 }
 
 mc_chunk_lifecycle_status mc_world_runtime_maintain(mc_world_runtime *runtime,
                                                     bool *provider_result)
 {
-    mc_chunk_lifecycle_status status = enter_lifecycle(runtime);
-    if (status != MC_CHUNK_LIFECYCLE_OK)
-        return status;
-    status = mc_chunk_lifecycle_maintain(&runtime->lifecycle, provider_result);
-    --runtime->active_calls;
-    return status;
+    return mc_world_runtime_maintain_detailed(runtime, provider_result, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_free(mc_world_runtime *runtime,

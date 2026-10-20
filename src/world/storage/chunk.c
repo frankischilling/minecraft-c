@@ -325,7 +325,7 @@ static bool stored_supported(const mc_stored_chunk *chunk, const mc_nbt_tag *lev
 }
 
 static void stored_fields(const mc_chunk_state *state, const mc_nbt_tag *level, int64_t world_time,
-                          mc_nbt_tag fields[STORED_FIELD_COUNT],
+                          bool retain_lists, mc_nbt_tag fields[STORED_FIELD_COUNT],
                           uint16_t names[STORED_FIELD_COUNT][16])
 {
     for (size_t i = 0; i < STORED_FIELD_COUNT; ++i)
@@ -348,7 +348,7 @@ static void stored_fields(const mc_chunk_state *state, const mc_nbt_tag *level, 
     fields[8].type = MC_NBT_BYTE;
     fields[8].value.byte_value = state->terrain_populated ? 1 : 0;
     for (size_t i = 9; i < STORED_FIELD_COUNT; ++i) {
-        const mc_nbt_tag *old = stored_get(level, stored_names[i]);
+        const mc_nbt_tag *old = retain_lists ? stored_get(level, stored_names[i]) : NULL;
         fields[i].type = MC_NBT_LIST;
         if (old == NULL) {
             fields[i].value.list.element_type = MC_NBT_COMPOUND;
@@ -410,7 +410,7 @@ static mc_stored_chunk_status stored_build(const mc_chunk_state *state, const mc
         return stored_status(error, MC_STORED_CHUNK_ALLOCATION_FAILED, NULL);
     mc_nbt_tag fields[STORED_FIELD_COUNT] = {0};
     uint16_t names[STORED_FIELD_COUNT][16];
-    stored_fields(state, level, world_time, fields, names);
+    stored_fields(state, level, world_time, true, fields, names);
     uint16_t level_name[16];
     mc_nbt_tag replacement = {0};
     replacement.type = MC_NBT_COMPOUND;
@@ -484,6 +484,95 @@ mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, 
     if (state->has_entities)
         return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, "Entities");
     return stored_build(state, NULL, NULL, world_time, limits, out, error);
+}
+
+mc_stored_chunk_status
+mc_stored_chunk_build_game_tiles(const mc_stored_chunk *stored, const mc_chunk_state *state,
+                                 const mc_world_chunk *chunk, int64_t world_time,
+                                 const mc_nbt_tag *tile_records, const mc_nbt_limits *requested,
+                                 mc_nbt_tree **out, mc_stored_chunk_error *error)
+{
+    mc_nbt_limits limits;
+    if (state == NULL || chunk == NULL || out == NULL || state->blank || state->data == NULL ||
+        state->data->blocks == NULL || state->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS ||
+        mc_world_chunk_state((mc_world_chunk *)chunk) != state ||
+        (stored != NULL && (!stored_valid(stored) || state != &stored->state)) ||
+        !stored_limits(requested, &limits))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
+    if (state->has_entities)
+        return stored_status(error, MC_STORED_CHUNK_UNSUPPORTED_EDIT, "Entities");
+    if (tile_records == NULL || tile_records->type != MC_NBT_LIST ||
+        tile_records->value.list.element_type != MC_NBT_COMPOUND)
+        return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "TileEntities");
+
+    const mc_nbt_tag *baseline = stored == NULL ? NULL : mc_stored_chunk_root(stored);
+    const mc_nbt_tag *level = stored_get(baseline, "Level");
+    if (stored != NULL && (baseline == NULL || baseline->type != MC_NBT_COMPOUND || level == NULL ||
+                           level->type != MC_NBT_COMPOUND))
+        return stored_status(error, MC_STORED_CHUNK_MISSING_LEVEL, "Level");
+
+    mc_world_chunk_fields source;
+    mc_world_chunk_nibble_fields metadata, skylight, block_light;
+    if (mc_world_chunk_fields_get(chunk, &source) != MC_WORLD_STORAGE_OK)
+        return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
+    if (mc_world_chunk_nibble_fields_get(source.e, &metadata) != MC_WORLD_STORAGE_OK)
+        return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "Data");
+    if (mc_world_chunk_nibble_fields_get(source.f, &skylight) != MC_WORLD_STORAGE_OK)
+        return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "SkyLight");
+    if (mc_world_chunk_nibble_fields_get(source.g, &block_light) != MC_WORLD_STORAGE_OK)
+        return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "BlockLight");
+    if (metadata.length != sizeof(state->data->metadata))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_SHAPE, "Data");
+    if (skylight.length != sizeof(state->data->skylight))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_SHAPE, "SkyLight");
+    if (block_light.length != sizeof(state->data->block_light))
+        return stored_status(error, MC_STORED_CHUNK_INVALID_SHAPE, "BlockLight");
+
+    size_t root_count = baseline == NULL ? 0 : baseline->value.compound.length;
+    size_t level_count = level == NULL ? 0 : level->value.compound.length;
+    if (root_count > limits.max_elements || level_count > limits.max_elements ||
+        root_count > SIZE_MAX - STORED_FIELD_COUNT - 1u ||
+        level_count > SIZE_MAX - STORED_FIELD_COUNT - 1u - root_count)
+        return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
+    size_t pointer_count = root_count + level_count + STORED_FIELD_COUNT + 1u;
+    if (pointer_count > SIZE_MAX / sizeof(const mc_nbt_tag *) ||
+        pointer_count * sizeof(const mc_nbt_tag *) > limits.max_allocation_bytes)
+        return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
+    size_t scratch_bytes = pointer_count * sizeof(const mc_nbt_tag *);
+    const mc_nbt_tag **items = malloc(scratch_bytes);
+    if (items == NULL)
+        return stored_status(error, MC_STORED_CHUNK_ALLOCATION_FAILED, NULL);
+
+    mc_nbt_tag fields[STORED_FIELD_COUNT] = {0};
+    uint16_t names[STORED_FIELD_COUNT][16];
+    stored_fields(state, level, world_time, false, fields, names);
+    fields[3].value.byte_array.data = source.b;
+    fields[4].value.byte_array.data = metadata.a;
+    fields[5].value.byte_array.data = skylight.a;
+    fields[6].value.byte_array.data = block_light.a;
+    fields[7].value.byte_array.data = source.h;
+    fields[10].value.list = tile_records->value.list;
+    uint16_t level_name[16];
+    mc_nbt_tag replacement = {0}, root = {0};
+    replacement.type = MC_NBT_COMPOUND;
+    replacement.name = stored_name("Level", level_name);
+    replacement.value.compound.items = items;
+    replacement.value.compound.length = stored_overlay(level, fields, STORED_FIELD_COUNT, items);
+    root.type = MC_NBT_COMPOUND;
+    if (baseline != NULL)
+        root.name = baseline->name;
+    root.value.compound.items = items + level_count + STORED_FIELD_COUNT;
+    root.value.compound.length =
+        stored_overlay(baseline, &replacement, 1, items + level_count + STORED_FIELD_COUNT);
+    limits.max_allocation_bytes -= scratch_bytes;
+    mc_nbt_tree *built = NULL;
+    mc_nbt_error nbt = {MC_NBT_OK, 0};
+    mc_nbt_status status = mc_nbt_tree_copy_compound(&root, &limits, &built, &nbt);
+    free(items);
+    if (status != MC_NBT_OK)
+        return stored_nbt_error(error, status, nbt);
+    *out = built;
+    return stored_status(error, MC_STORED_CHUNK_OK, NULL);
 }
 
 void mc_stored_chunk_free(mc_stored_chunk *chunk)
