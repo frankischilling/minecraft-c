@@ -13,7 +13,7 @@ with zero skips and local JDK comparisons enabled. Linux uses ASan/UBSan and
 leak checks over fresh byte-verified source/dependency copies. Each host retains
 699 unchanged selected inputs, 254 external zlib pins, 178 products and 34
 captures. Clang-format 18 checks all 404 C files. NBT/Class/factory/batch native
-checks number 1,084/7,765/364/353 per host. The final binaries also match fresh
+checks number 1,084/7,759/364/353 per host. The final binaries also match fresh
 calls into both original archives for the finite twenty-case NBT corpus.
 Selected build/tool/product joins and all retained capture bytes were rehashed;
 the detailed NBT and batch audits do not establish whole-game or full process

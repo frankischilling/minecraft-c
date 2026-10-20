@@ -65,6 +65,8 @@ static const struct expected_class {
                 {MC_ENTITY_CLASS_KIND_FALLING_SAND, 21, "FallingSand", "ju", "gl"},
                 {MC_ENTITY_CLASS_KIND_MINECART, 40, "Minecart", "yl", "pr"},
                 {MC_ENTITY_CLASS_KIND_BOAT, 41, "Boat", "fz", "eb"}};
+_Static_assert(COUNT(expected) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
+               "one expected record per Entity Class");
 static const mc_entity_class_kind biome_kinds[] = {
     MC_ENTITY_CLASS_KIND_SPIDER,    MC_ENTITY_CLASS_KIND_ZOMBIE,  MC_ENTITY_CLASS_KIND_SKELETON,
     MC_ENTITY_CLASS_KIND_CREEPER,   MC_ENTITY_CLASS_KIND_SLIME,   MC_ENTITY_CLASS_KIND_SHEEP,
@@ -174,7 +176,6 @@ static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_so
 {
     const mc_entity_class_literal *seen[MC_ENTITY_CLASS_KIND_COUNT] = {0};
     mc_entity_class_snapshot before, after, other_before, other_after;
-    VERIFY(COUNT(expected) == (size_t)MC_ENTITY_CLASS_KIND_COUNT);
     VERIFY(mc_entity_classes_get_snapshot(a, &before) == MC_ENTITY_OK &&
            mc_entity_classes_get_snapshot(b, &other_before) == MC_ENTITY_OK);
     const profile_state p = profile_get(a->profile);

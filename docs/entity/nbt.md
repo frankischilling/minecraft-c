@@ -95,7 +95,7 @@ the whole namespace first failure, constructor cause and codec cause. These
 resource and output contracts do not claim Java allocation/OOME timing.
 
 The native contracts cover both sides and real immutable allocation ceilings:
-`entity.nbt` passes 1,084 checks, `entity.classes` passes 7,765,
+`entity.nbt` passes 1,084 checks, `entity.classes` passes 7,759,
 `entity.factory` passes 364 and `world.entity_batch` passes 353 on MSVC and
 sanitized Linux GCC/Clang. All 149 configured MSVC cases and 151 cases on each
 Linux compiler pass, with zero skips and local JDK comparisons enabled. They check
