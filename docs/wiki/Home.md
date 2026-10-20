@@ -1,5 +1,18 @@
 # minecraft-c
 
+The [Item Entity NBT subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/nbt.md)
+adds canonical Class ownership, ordered EntityList registration, actual Item
+read/write and factory calls, and whole-batch World activation/deferral. Twenty
+prepared cases per side match both originals on MSVC and sanitized GCC/Clang.
+The [captured-original regression](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
+checks 4,844 comparison rows without requiring game archives or a JDK. Ordinary
+GAME Entity load/save integration, other concrete subclasses, ticking and
+complete population remain unfinished.
+All 149 configured MSVC cases and 151 cases on each sanitized GCC/Clang build
+pass, with zero skips and local JDK comparisons enabled.
+
+At the preceding live Tile checkpoint:
+
 The [live Tile subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
 adds actual Chest and Spawner owners, World/Chunk occurrences, typed failures
 and staged GAME imports before block normalization. The
@@ -9,7 +22,7 @@ source q/error prefixes and selected Info growth. All 144 configured public
 tests pass on MSVC and all 146 on each sanitized GCC/Clang build, including
 468 Tile and 1,003 save checks per host. Reload uses an explicit native
 dedicated-policy coordinator; natural dedicated startup remains unfinished.
-Other Tile constructors, Entity NBT factories/serialization, whole World
+Other Tile constructors, GAME Entity load/save integration, whole World
 metadata, original/native save replay and complete population remain open.
 
 The [population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)

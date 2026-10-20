@@ -65,6 +65,7 @@ mc_live_tile_error mc_live_tiles_empty_error(void)
                                   .operation = NULL,
                                   .system_error = 0},
                         .entity = empty_entity_error()},
+        .batch = {.index = SIZE_MAX},
         .caller_bytecode = 0,
         .hook_bytecode = 0,
         .remove_bytecode = 0,

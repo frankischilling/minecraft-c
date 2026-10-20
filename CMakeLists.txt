@@ -114,6 +114,13 @@ add_library(mc_block STATIC src/block/material/material.c)
 target_include_directories(mc_block PUBLIC include)
 target_link_libraries(mc_block PRIVATE mc_build_options)
 
+# Passive Entity class/literal/namespace ownership stays below the Registry.
+# Concrete Entity construction and World/NBT methods remain in simulation.
+add_library(mc_entity_classes STATIC
+    src/entity/classes/classes.c
+    src/entity/registry/registry.c)
+target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
+
 add_library(mc_registry STATIC
     src/block/registry/registry.c
     src/block/registry/runtime.c
@@ -146,7 +153,7 @@ add_library(mc_registry STATIC
     src/world/biome/registry.c
     src/world/biome/sampling.c
     src/world/biome/fixed_sampling.c)
-target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world PRIVATE mc_platform_text mc_build_options)
+target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world mc_entity_classes PRIVATE mc_platform_text mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
 target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
@@ -197,6 +204,8 @@ target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
 target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
 
 add_library(mc_simulation STATIC
+    src/entity/nbt/factory.c
+    src/entity/nbt/nbt.c
     src/world/runtime/tiles/tiles.c
     src/world/runtime/loading/loading.c
     src/world/runtime/saving/saving.c
@@ -342,6 +351,30 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME entity.construction COMMAND mc_test_entity)
     set_tests_properties(entity.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_entity_nbt tests/entity/nbt/test_nbt.c)
+    target_include_directories(mc_test_entity_nbt PRIVATE src/entity src/core/java)
+    target_link_libraries(mc_test_entity_nbt PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.nbt COMMAND mc_test_entity_nbt)
+    set_tests_properties(entity.nbt PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_entity_classes tests/entity/classes/test_classes.c)
+    target_link_libraries(mc_test_entity_classes PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.classes COMMAND mc_test_entity_classes)
+    set_tests_properties(entity.classes PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_entity_factory tests/entity/nbt/test_factory.c)
+    target_include_directories(mc_test_entity_factory PRIVATE src/entity src/core/java)
+    target_link_libraries(mc_test_entity_factory PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.factory COMMAND mc_test_entity_factory)
+    set_tests_properties(entity.factory PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_probe_entity_nbt tests/entity/nbt/nbt_probe.c)
+    target_include_directories(mc_probe_entity_nbt PRIVATE src/entity src/core/java)
+    target_link_libraries(mc_probe_entity_nbt PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_entity_batch tests/world/runtime/entity_batch/test_entity_batch.c)
+    target_link_libraries(mc_test_world_entity_batch PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_entity_item_formula_probe tests/entity/item_formula_probe.c)
     target_link_libraries(mc_entity_item_formula_probe PRIVATE mc_simulation mc_build_options)
@@ -745,6 +778,21 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+
+    add_test(NAME entity.nbt_observation
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_nbt.py"
+        --executable "$<TARGET_FILE:mc_probe_entity_nbt>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/entity-nbt-observation")
+    set_tests_properties(entity.nbt_observation PROPERTIES LABELS "public;fixture;integration" TIMEOUT 120)
+
+    add_test(NAME world.entity_batch
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_entity_batch>"
+        --scenario world-entity-batch
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-batch-contracts")
+    set_tests_properties(world.entity_batch PROPERTIES LABELS "public;integration;ownership" TIMEOUT 90)
 
     add_executable(mc_text_stdout_probe tests/platform/text/stdout_probe.c)
     target_link_libraries(mc_text_stdout_probe PRIVATE mc_platform_text mc_build_options)

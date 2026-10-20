@@ -18,7 +18,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-biome-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
              "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
-             "world-queries")
+             "world-queries", "world-entity-batch")
 
 
 def provider_fixture(root):
@@ -224,7 +224,7 @@ def main():
             paths["presentation"] = ROOT / "src/world/runtime/presentation.c"
             paths["presentation_header"] = ROOT / "include/mc/world/runtime/presentation.h"
             paths["world_entities_header"] = ROOT / "include/mc/world/runtime/entities.h"
-        if args.scenario in ("world-fluids", "world-entity-publication"):
+        if args.scenario in ("world-fluids", "world-entity-publication", "world-entity-batch"):
             paths.update({
                 "entity_publication": ROOT / "src/world/runtime/entity_publication.c",
                 "entity_publication_internal": ROOT / "src/world/runtime/entity_publication_internal.h",
@@ -234,6 +234,14 @@ def main():
             })
         if args.scenario == "world-entity-publication":
             paths["entity_publication_test"] = ROOT / "tests/world/runtime/test_entity_publication.c"
+        if args.scenario == "world-entity-batch":
+            paths.update({
+                "entity_batch_test": ROOT / "tests/world/runtime/entity_batch/test_entity_batch.c",
+                "entity_publication_fixture": ROOT / "tests/world/runtime/test_entity_publication.c",
+                "entity_class_owner": ROOT / "src/entity/classes/classes.c",
+                "entity_class_internal": ROOT / "src/entity/classes/classes_internal.h",
+                "entity_errors": ROOT / "include/mc/world/runtime/entity_errors.h",
+            })
         if args.scenario == "world-scheduling":
             paths["scheduling_test"] = ROOT / "tests/world/runtime/test_scheduling.c"
             paths["scheduling_header"] = ROOT / "include/mc/world/runtime/scheduling.h"
@@ -270,7 +278,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries"):
+                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -304,9 +312,9 @@ def main():
         report["inputs_unchanged"] = True
         report["world_files"] = {path.relative_to(root).as_posix(): CAPTURE.file_fingerprint(path)
                                  for path in sorted(root.rglob("*")) if path.is_file()}
-        if args.scenario in ("world-solid-support", "world-fluids", "world-entity-publication", "world-queries"):
+        if args.scenario in ("world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch"):
             stores = ((0, 1, 4, 5) if args.scenario == "world-solid-support" else
-                      range(8) if args.scenario == "world-entity-publication" else range(4))
+                      range(8) if args.scenario in ("world-entity-publication", "world-entity-batch") else range(4))
             expected_regions = {f"world{i}/region/r.0.0.mcr" for i in stores}
             if args.scenario == "world-queries":
                 expected_regions.update(f"world{i}/region/r.-1.0.mcr" for i in range(2))
@@ -345,9 +353,14 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-entity-batch":
+            CAPTURE.require(len(timestamps) == 8 and
+                            {(row["file"], row["slot"]) for row in timestamps} ==
+                            {(f"world{i}/region/r.0.0.mcr", 0) for i in range(8)},
+                            "all eight original batch fixture records remain present")
         if args.scenario == "world-provider-activation":
             CAPTURE.require({row["slot"] for row in timestamps
                              if row["file"] == "loaded/region/r.1.0.mcr"} == {136, 137, 138},

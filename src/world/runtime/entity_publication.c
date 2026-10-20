@@ -21,6 +21,11 @@
 #endif
 #include <emmintrin.h>
 
+mc_world_entity_batch_error mc_world_entity_batch_empty_error(void)
+{
+    return (mc_world_entity_batch_error){.index = SIZE_MAX};
+}
+
 static mc_world_storage_status entity_result(mc_world_entity_error *out,
                                              const mc_world_entity_error *frame)
 {
@@ -70,53 +75,69 @@ static bool list_shape(const mc_world_reference_list *list)
             (list->capacity != 0 && list->items != NULL));
 }
 
-bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world)
+static bool entity_ledger_valid(const mc_world_runtime *world,
+                                const mc_world_entity_list_ledger *ledger, size_t *out)
 {
-    if (world == NULL)
-        return false;
-    const mc_world_reference_list *list = world->fields.b;
-    if (list != world->entity_membership.list)
-        return false;
-    if (list == NULL)
-        return world->entity_membership.entries == NULL && world->entity_membership.count == 0 &&
-               world->entity_membership.capacity == 0;
-    if (!list_shape(list) || world->entity_membership.count > world->entity_membership.capacity ||
-        world->entity_membership.capacity > (size_t)INT32_MAX ||
-        world->entity_membership.capacity > SIZE_MAX / sizeof(*world->entity_membership.entries) ||
-        list->count != world->entity_membership.count ||
-        list->capacity != world->entity_membership.capacity ||
-        ((world->entity_membership.capacity == 0) != (world->entity_membership.entries == NULL)) ||
-        (list->items != NULL && (void *)list->items == (void *)world->entity_membership.entries))
+    const mc_world_reference_list *list = ledger->list;
+    if (list == NULL) {
+        *out = 0;
+        return ledger->entries == NULL && ledger->count == 0 && ledger->capacity == 0;
+    }
+    if (!list_shape(list) || ledger->count > ledger->capacity ||
+        ledger->capacity > (size_t)INT32_MAX ||
+        ledger->capacity > SIZE_MAX / sizeof(*ledger->entries) || list->count != ledger->count ||
+        list->capacity != ledger->capacity ||
+        ((ledger->capacity == 0) != (ledger->entries == NULL)) ||
+        (list->items != NULL && (void *)list->items == (void *)ledger->entries))
         return false;
     const size_t source_bytes = list->capacity * sizeof(*list->items);
-    const size_t hold_bytes =
-        world->entity_membership.capacity * sizeof(*world->entity_membership.entries);
+    const size_t hold_bytes = ledger->capacity * sizeof(*ledger->entries);
     if (source_bytes > SIZE_MAX - hold_bytes ||
         source_bytes + hold_bytes > world->construction.direct_allocation_bytes)
         return false;
     for (size_t index = 0; index < list->count; ++index)
-        if (world->entity_membership.entries[index] == NULL ||
-            list->items[index] != world->entity_membership.entries[index])
+        if (list->items[index] != ledger->entries[index])
             return false;
+    *out = source_bytes + hold_bytes;
     return true;
 }
 
-void mc_world_runtime_entity_list_release(mc_world_runtime *world)
+bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world)
 {
-    mc_world_reference_list *list = world->entity_membership.list;
+    if (world == NULL)
+        return false;
+    const mc_world_entity_list_ledger *a = &world->entity_membership;
+    const mc_world_entity_list_ledger *b = &world->entity_deferral;
+    size_t a_bytes, b_bytes;
+    if (!entity_ledger_valid(world, a, &a_bytes) || !entity_ledger_valid(world, b, &b_bytes) ||
+        (a->list != NULL && a->list == b->list) || a_bytes > SIZE_MAX - b_bytes ||
+        a_bytes + b_bytes > world->construction.direct_allocation_bytes)
+        return false;
+    const void *spans[] = {a->list == NULL ? NULL : (void *)a->list->items, (void *)a->entries,
+                           b->list == NULL ? NULL : (void *)b->list->items, (void *)b->entries};
+    for (size_t i = 0; i < sizeof(spans) / sizeof(spans[0]); ++i)
+        for (size_t j = 0; j < i; ++j)
+            if (spans[i] != NULL && spans[i] == spans[j])
+                return false;
+    return true;
+}
+
+static void entity_ledger_release(mc_world_runtime *world, mc_world_entity_list_ledger *ledger)
+{
+    mc_world_reference_list *list = ledger->list;
     if (list == NULL)
         return;
     const size_t bytes =
-        list->capacity * sizeof(*list->items) +
-        world->entity_membership.capacity * sizeof(*world->entity_membership.entries);
-    const size_t count = world->entity_membership.count;
-    mc_entity **entries = world->entity_membership.entries;
-    world->entity_membership.entries = NULL;
-    world->entity_membership.count = 0;
-    world->entity_membership.capacity = 0;
+        list->capacity * sizeof(*list->items) + ledger->capacity * sizeof(*ledger->entries);
+    const size_t count = ledger->count;
+    mc_entity **entries = ledger->entries;
+    ledger->entries = NULL;
+    ledger->count = 0;
+    ledger->capacity = 0;
     for (size_t index = 0; index < count; ++index) {
         list->items[index] = NULL;
-        mc_entity_release(entries[index]);
+        if (entries[index] != NULL)
+            mc_entity_release(entries[index]);
     }
     free(entries);
     free(list->items);
@@ -126,11 +147,18 @@ void mc_world_runtime_entity_list_release(mc_world_runtime *world)
     world->construction.direct_allocation_bytes -= bytes;
 }
 
+void mc_world_runtime_entity_list_release(mc_world_runtime *world)
+{
+    entity_ledger_release(world, &world->entity_membership);
+    entity_ledger_release(world, &world->entity_deferral);
+}
+
 static bool append_entity(mc_world_runtime *world, mc_entity *entity, mc_world_entity_error *frame)
 {
     mc_world_reference_list *list = world->fields.b; /* getfield91 */
     frame->bytecode = 95;
-    if (!mc_world_runtime_entity_list_valid(world) || list == NULL)
+    if (!mc_world_runtime_entity_list_valid(world) || list == NULL ||
+        list != world->entity_membership.list)
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity List ownership");
     if (list->count == (size_t)INT32_MAX)
@@ -198,9 +226,10 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity, mc_world_e
     return true;
 }
 
-static bool observe_entity(mc_world_runtime *world, mc_world_entity_error *frame)
+static bool observe_entity_at(mc_world_runtime *world, mc_world_entity_error *frame,
+                              unsigned int caller_bytecode)
 {
-    frame->bytecode = 103;
+    frame->bytecode = caller_bytecode;
     frame->observer_bytecode = 7;
     const mc_world_reference_list *list = world->fields.u; /* getfield4 */
     if (!list_shape(list))
@@ -215,6 +244,181 @@ static bool observe_entity(mc_world_runtime *world, mc_world_entity_error *frame
                            "World Entity observer List get");
     frame->observer_bytecode = list->items[0] == NULL ? 29u : 25u;
     return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity observer dispatch");
+}
+
+static bool observe_entity(mc_world_runtime *world, mc_world_entity_error *frame)
+{
+    return observe_entity_at(world, frame, 103);
+}
+
+static bool append_entity_batch(mc_world_runtime *world, const mc_world_chunk_entity_list *source,
+                                bool deferred, mc_world_entity_batch_error *frame)
+{
+    mc_world_entity_error *publication = &frame->publication;
+    publication->bytecode = 5;
+    mc_world_reference_list *list = deferred ? world->fields.D : world->fields.b;
+    if (list == NULL)
+        return entity_fail(publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "World addAll destination is null");
+    if (list->count > list->capacity || list->capacity > SIZE_MAX / sizeof(*list->items) ||
+        (list->capacity != 0 && list->items == NULL))
+        return entity_fail(publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "World addAll destination metadata");
+    size_t count;
+    if (mc_world_chunk_entity_count(source, &count) != MC_WORLD_STORAGE_OK)
+        return entity_fail(publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "World addAll Entity input is null");
+    if (count == 0)
+        return true; /* Preserve the existing finite empty-source no-op domain. */
+    mc_world_entity_list_ledger *ledger =
+        deferred ? &world->entity_deferral : &world->entity_membership;
+    if (!mc_world_runtime_entity_list_valid(world) || list != ledger->list)
+        return entity_fail(publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "World addAll Entity ownership");
+    if (count > (size_t)INT32_MAX - list->count || count > SIZE_MAX / sizeof(mc_entity *))
+        return entity_fail(publication, MC_WORLD_STORAGE_LIMIT, "World addAll Entity size");
+    const size_t target = list->count + count;
+    size_t capacity = list->capacity;
+    const bool grow = target > capacity;
+    if (grow) {
+        capacity = capacity == 0 ? 4u : capacity;
+        while (capacity < target)
+            capacity = capacity > (size_t)INT32_MAX / 2u ? (size_t)INT32_MAX : capacity * 2u;
+    }
+    if (capacity > SIZE_MAX / (sizeof(void *) + sizeof(mc_entity *)))
+        return entity_fail(publication, MC_WORLD_STORAGE_LIMIT, "World addAll Entity capacity");
+    const size_t new_bytes = grow ? capacity * (sizeof(void *) + sizeof(mc_entity *)) : 0;
+    const size_t scratch_bytes = count * sizeof(mc_entity *);
+    const size_t used = world->construction.direct_allocation_bytes;
+    const size_t limit = world->construction_limits.max_direct_allocation_bytes;
+    if (used > limit || scratch_bytes > limit - used || new_bytes > limit - used - scratch_bytes)
+        return entity_fail(publication, MC_WORLD_STORAGE_LIMIT, "World addAll Entity peak budget");
+    mc_entity **prepared = malloc(scratch_bytes);
+    void **items = grow ? malloc(capacity * sizeof(*items)) : list->items;
+    mc_entity **holds = grow ? malloc(capacity * sizeof(*holds)) : ledger->entries;
+    if (prepared == NULL || items == NULL || holds == NULL) {
+        free(prepared);
+        if (grow) {
+            free(items);
+            free(holds);
+        }
+        return entity_fail(publication, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                           "World addAll Entity allocation");
+    }
+    const size_t temporary_bytes = scratch_bytes + new_bytes;
+    world->construction.direct_allocation_bytes += temporary_bytes;
+    if (grow && list->count != 0) {
+        memcpy(items, list->items, list->count * sizeof(*items));
+        memcpy(holds, ledger->entries, list->count * sizeof(*holds));
+    }
+    size_t prepared_count = 0;
+    for (size_t index = 0; index < count; ++index) {
+        frame->index = index;
+        mc_entity *entity;
+        if (mc_world_chunk_entity_at(source, index, &entity) != MC_WORLD_STORAGE_OK) {
+            entity_fail(publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World addAll typed source occurrence");
+            goto failed;
+        }
+        if (entity != NULL) {
+            const mc_entity_status status = mc_entity_retain(entity);
+            if (status != MC_ENTITY_OK) {
+                publication->entity =
+                    (mc_entity_error){.status = status, .operation = "World addAll Entity hold"};
+                entity_fail(publication, ownership_status(status), "World addAll Entity hold");
+                goto failed;
+            }
+        }
+        prepared[prepared_count++] = entity;
+    }
+    /* All actual occurrence holds and capacity requests succeeded. Publish the
+     * entire addAll before any source observer call, never one Entity at a time.
+     * No Entity fields/World binding/class or Chunk location are inspected. */
+    for (size_t index = 0; index < count; ++index) {
+        items[list->count + index] = prepared[index];
+        holds[list->count + index] = prepared[index];
+    }
+    if (grow) {
+        const size_t old_bytes =
+            list->capacity * sizeof(*list->items) + ledger->capacity * sizeof(*ledger->entries);
+        free(list->items);
+        free(ledger->entries);
+        list->items = items;
+        ledger->entries = holds;
+        list->capacity = capacity;
+        ledger->capacity = capacity;
+        world->construction.direct_allocation_bytes -= old_bytes;
+    }
+    list->count = target;
+    ledger->count = target;
+    free(prepared);
+    world->construction.direct_allocation_bytes -= scratch_bytes;
+    frame->index = SIZE_MAX;
+    return true;
+
+failed:
+    for (size_t index = 0; index < prepared_count; ++index)
+        if (prepared[index] != NULL)
+            mc_entity_release(prepared[index]);
+    free(prepared);
+    if (grow) {
+        free(items);
+        free(holds);
+    }
+    world->construction.direct_allocation_bytes -= temporary_bytes;
+    return false;
+}
+
+mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *world,
+                                                           const mc_world_chunk_entity_list *source,
+                                                           bool deferred,
+                                                           mc_world_entity_batch_error *error)
+{
+    mc_world_entity_batch_error frame = mc_world_entity_batch_empty_error();
+    bool complete = false;
+    if (world == NULL)
+        entity_fail(&frame.publication, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World batch receiver");
+    else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+             world->construction.phase == MC_WORLD_RUNTIME_RETIRED ||
+             world->entity_containers_retired)
+        entity_fail(&frame.publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "World batch native phase");
+    else if (append_entity_batch(world, source, deferred, &frame)) {
+        complete = true;
+        for (size_t index = 0; !deferred; ++index) {
+            size_t count;
+            frame.index = index;
+            frame.publication.bytecode = 15;
+            if (mc_world_chunk_entity_count(source, &count) != MC_WORLD_STORAGE_OK) {
+                entity_fail(&frame.publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World batch live input size");
+                complete = false;
+                break;
+            }
+            if (index >= count)
+                break;
+            frame.publication.bytecode = 26;
+            mc_entity *entity;
+            if (mc_world_chunk_entity_at(source, index, &entity) != MC_WORLD_STORAGE_OK) {
+                entity_fail(&frame.publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World batch live input get");
+                complete = false;
+                break;
+            }
+            /* Source cast31 accepts actual typed Entity/NULL. No ID/World/phase
+             * filter is invented; base observer's empty path never reads it. */
+            (void)entity;
+            if (!observe_entity_at(world, &frame.publication, 34)) {
+                complete = false;
+                break;
+            }
+        }
+    }
+    if (complete)
+        frame = mc_world_entity_batch_empty_error();
+    if (error != NULL)
+        *error = frame;
+    return frame.publication.status;
 }
 
 static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_entity_error *frame)

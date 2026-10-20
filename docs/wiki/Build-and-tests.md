@@ -1,5 +1,26 @@
 # Build and tests
 
+The [Item NBT evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
+records twenty actual original cases per side and their exact native field/tag
+comparisons on MSVC/GCC/Clang. `entity.nbt_observation` loads both complete
+captured stdout streams and compares 4,844 rows from fresh native runs without
+a JAR or JDK. Separate fixture/comparator controls exercise malformed streams,
+pins, scope, provenance and a changed scalar. These checks cover prepared Item
+calls, not ordinary Chunk persistence or complete World startup.
+
+All 149 configured MSVC cases and 151 cases on each Linux GCC/Clang build pass,
+with zero skips and local JDK comparisons enabled. Linux uses ASan/UBSan and
+leak checks over fresh byte-verified source/dependency copies. Each host retains
+699 unchanged selected inputs, 254 external zlib pins, 178 products and 34
+captures. Clang-format 18 checks all 404 C files. NBT/Class/factory/batch native
+checks number 1,084/7,765/364/353 per host. The final binaries also match fresh
+calls into both original archives for the finite twenty-case NBT corpus.
+Selected build/tool/product joins and all retained capture bytes were rehashed;
+the detailed NBT and batch audits do not establish whole-game or full process
+tree coverage.
+
+At the preceding live Tile checkpoint:
+
 The [live Tile contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
 exercise actual Chest/Spawner, Stack, Map and List owners, staged GAME loading
 and terminal disposal. The [live save contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md)

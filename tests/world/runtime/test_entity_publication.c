@@ -886,8 +886,8 @@ static bool cleanup_fixture(fixture *f)
     }
     for (size_t side = 0; side < 2; ++side) {
         if (mc_world_runtime_classes_free(f->classes[side], NULL) != MC_WORLD_STORAGE_OK ||
-            mc_entity_classes_free(f->entity_classes[side]) != MC_ENTITY_OK ||
-            mc_registry_classes_free(f->registry[side], NULL) != MC_REGISTRY_OK)
+            mc_registry_classes_free(f->registry[side], NULL) != MC_REGISTRY_OK ||
+            mc_entity_classes_free(f->entity_classes[side]) != MC_ENTITY_OK)
             return false;
     }
     mc_item_stack_release(f->stack);

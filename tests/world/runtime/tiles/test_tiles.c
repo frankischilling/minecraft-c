@@ -247,10 +247,10 @@ static bool class_retirement_callback(fixture *f, size_t side)
     source.retirement_owner = NULL;
     CHECK(mc_world_runtime_classes_free(classes, NULL) == MC_WORLD_STORAGE_OK);
     classes = NULL;
-    CHECK(mc_entity_classes_free(entities) == MC_ENTITY_OK);
-    entities = NULL;
     CHECK(mc_registry_classes_free(registry, NULL) == MC_REGISTRY_OK);
     registry = NULL;
+    CHECK(mc_entity_classes_free(entities) == MC_ENTITY_OK);
+    entities = NULL;
     ok = true;
 cleanup:
     source.retirement_owner = NULL;
@@ -259,10 +259,10 @@ cleanup:
         (void)mc_world_runtime_free(world, NULL);
     if (classes != NULL)
         (void)mc_world_runtime_classes_free(classes, NULL);
-    if (entities != NULL)
-        (void)mc_entity_classes_free(entities);
     if (registry != NULL)
         (void)mc_registry_classes_free(registry, NULL);
+    if (entities != NULL)
+        (void)mc_entity_classes_free(entities);
     return ok;
 }
 
@@ -1068,8 +1068,8 @@ static bool cleanup_fixture(fixture *f)
             return false;
         mc_tile_name_release(f->names[side]);
         if (mc_world_runtime_classes_free(f->classes[side], NULL) != MC_WORLD_STORAGE_OK ||
-            mc_entity_classes_free(f->entity_classes[side]) != MC_ENTITY_OK ||
-            mc_registry_classes_free(f->registry[side], NULL) != MC_REGISTRY_OK)
+            mc_registry_classes_free(f->registry[side], NULL) != MC_REGISTRY_OK ||
+            mc_entity_classes_free(f->entity_classes[side]) != MC_ENTITY_OK)
             return false;
     }
     mc_world_info_name_release(f->name);

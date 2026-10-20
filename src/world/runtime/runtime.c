@@ -23,14 +23,17 @@ static mc_world_runtime_acquisition_error acquisition_empty_error(void)
     return (mc_world_runtime_acquisition_error){.status = MC_CHUNK_ACQUIRE_OK,
                                                 .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                                 .registry = mc_tile_empty_error().registry,
-                                                .tile = mc_live_tiles_empty_error()};
+                                                .tile = mc_live_tiles_empty_error(),
+                                                .batch = mc_world_entity_batch_empty_error()};
 }
 
 static mc_world_runtime_lifecycle_error lifecycle_empty_error(void)
 {
     return (mc_world_runtime_lifecycle_error){.status = MC_CHUNK_LIFECYCLE_OK,
                                               .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                              .save = mc_world_game_save_empty_error()};
+                                              .save = mc_world_game_save_empty_error(),
+                                              .tile = mc_live_tiles_empty_error(),
+                                              .batch = mc_world_entity_batch_empty_error()};
 }
 
 static void lifecycle_cause(mc_world_runtime *runtime, mc_world_storage_error cause)
@@ -55,9 +58,21 @@ static void acquisition_activation(mc_world_runtime *runtime,
     if (runtime->acquisition_error != NULL) {
         acquisition_cause(runtime, error->cause);
         runtime->acquisition_error->tile = error->tile;
+        runtime->acquisition_error->batch = error->batch;
         runtime->acquisition_error->registry = error->tile.registry;
         runtime->acquisition_error->activation_bytecode = error->bytecode;
         runtime->acquisition_error->activation_world_bytecode = error->world_bytecode;
+    }
+}
+
+static void lifecycle_activation(mc_world_runtime *runtime, const mc_world_activation_error *error)
+{
+    if (runtime->lifecycle_error != NULL) {
+        lifecycle_cause(runtime, error->cause);
+        runtime->lifecycle_error->tile = error->tile;
+        runtime->lifecycle_error->batch = error->batch;
+        runtime->lifecycle_error->activation_bytecode = error->bytecode;
+        runtime->lifecycle_error->activation_world_bytecode = error->world_bytecode;
     }
 }
 
@@ -309,7 +324,7 @@ invalidate_tiles(void *owner, const mc_chunk_lifecycle_context *context, mc_chun
         mc_world_store_chunk_object(runtime->options.store, chunk), &error);
     if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
-        lifecycle_cause(runtime, error.cause);
+        lifecycle_activation(runtime, &error);
     }
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }
@@ -327,7 +342,7 @@ static mc_chunk_callback_result defer_entities(void *owner,
         mc_world_store_chunk_object(runtime->options.store, chunk), slice, &error);
     if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
-        lifecycle_cause(runtime, error.cause);
+        lifecycle_activation(runtime, &error);
     }
     return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
 }

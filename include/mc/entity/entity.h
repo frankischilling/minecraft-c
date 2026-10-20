@@ -2,37 +2,27 @@
 #define MC_ENTITY_ENTITY_H
 
 #include "mc/core/java/random_profile.h"
+#include "mc/entity/classes/classes.h"
 #include "mc/entity/errors.h"
 #include "mc/item/stack/stack.h"
 #include "mc/world/runtime/runtime.h"
 
-typedef struct mc_entity_classes mc_entity_classes;
 typedef struct mc_entity mc_entity;
 typedef struct mc_entity_watcher mc_entity_watcher;
 typedef struct mc_entity_watch_record mc_entity_watch_record;
 
-typedef enum mc_entity_source { MC_ENTITY_CLIENT = 0, MC_ENTITY_SERVER } mc_entity_source;
 typedef enum mc_entity_phase {
     MC_ENTITY_RAW = 0,
     MC_ENTITY_CONSTRUCTING,
     MC_ENTITY_READY,
     MC_ENTITY_FAILED_CONSTRUCTION
 } mc_entity_phase;
-typedef enum mc_entity_class_phase {
-    MC_ENTITY_CLASS_COLD = 0,
-    MC_ENTITY_CLASS_INITIALIZING,
-    MC_ENTITY_CLASS_READY,
-    MC_ENTITY_CLASS_FAILED
-} mc_entity_class_phase;
-typedef struct mc_entity_limits {
-    size_t max_allocation_bytes, max_live_entities;
-} mc_entity_limits;
-#define MC_ENTITY_DEFAULT_ALLOCATION_BYTES (64u * 1024u * 1024u)
 
 /* Field selectors use client sn labels where no semantic name is established.
  * The server mapping and five client-only fields are documented separately.
- * Reference fields in this constructor-only record stay null unless assigned
- * by construction. No generic String, relationship or watcher Object API is
+ * Reference fields stay null unless assigned by construction. Semantic NBT
+ * read updates only its documented scalar fields and concrete Item Stack.
+ * No generic String, relationship or watcher Object API is
  * implied. Nested base/item records preserve shadowed names and their types. */
 typedef struct mc_entity_base_fields {
     int32_t id;
@@ -88,14 +78,6 @@ typedef struct mc_entity_snapshot {
     mc_item_stack *stack; /* Borrowed same identity, possibly null. */
 } mc_entity_snapshot;
 
-typedef struct mc_entity_class_snapshot {
-    mc_entity_source source;
-    mc_entity_class_phase entity_class, bounds_class, watcher_class;
-    int32_t next_id, bounds_pool_cursor;
-    const void *bounds_pool_identity, *watcher_types_identity;
-    size_t watcher_type_count, live_entities, allocation_bytes;
-} mc_entity_class_snapshot;
-
 /* Only the reached index0/Byte0 construction record is exposed here. The record
  * has stable identity; the Byte is a typed value, not a per-record Java box.
  * This does not implement generic watcher mutation, boxing or serialization. */
@@ -109,29 +91,6 @@ typedef struct mc_entity_watcher_snapshot {
 } mc_entity_watcher_snapshot;
 
 const char *mc_entity_status_string(mc_entity_status status);
-
-/* One game-class owner spans worlds/subtypes and borrows the same existing
- * application/library Random profile as those worlds and registries. It never
- * creates/resets/frees that profile. Source distinguishes actual game-class
- * identities; separate owners also denote separate loaded classes.
- *
- * limits==NULL selects 64MiB and SIZE_MAX live entities. The ledger charges all
- * direct class/entity/bounds/Random/watcher/map/record requests before malloc at
- * their reached point. External stack/world/profile owners, allocator overhead
- * and C stack are excluded. Failure preserves out. All access is exclusive;
- * the profile must outlive every dependent class/entity and concurrent user.
- * create alone performs no game-class initialization or entropy draw. */
-mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
-                                          const mc_entity_limits *limits, mc_entity_classes **out);
-mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes,
-                                                mc_entity_class_snapshot *out);
-/* Native application bindings retain this exact class owner without active use.
- * Side/profile must match. Overflow or mismatch leaves the owner unchanged.
- * release balances one binding; it does not free or reset class state. */
-mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_source source,
-                                          mc_java_random_profile *profile);
-mc_entity_status mc_entity_classes_release(mc_entity_classes *classes);
-mc_entity_status mc_entity_classes_free(mc_entity_classes *classes);
 
 /* Allocate RAW before evaluating constructor arguments. First active use runs
  * the actual Entity counter initializer; allocation does not consume an ID,

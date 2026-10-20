@@ -1,5 +1,14 @@
 # Storage and original references
 
+The [Item Entity NBT observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
+retain twenty prepared calls per side into the untouched archives. Actual
+MSVC/GCC/Clang probes match 2,422 comparison rows per side, including exact
+selected field bits, partial reads, owner relationships and semantic saved
+tags. Complete original stdout is preserved in a bounded public fixture;
+private archives, logs, commands and environment values remain excluded. This
+does not establish serialized byte order, private Random state or ordinary
+GAME Entity disk round trips.
+
 The [live Tile and staged GAME path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
 imports supported Tile records into the same Store-owned Chunk before block
 normalization. Failed imports retain their source prefix under that owner and
@@ -10,7 +19,7 @@ retain ordinary save, unload and retirement behavior. The
 writes current supported Tiles and explicit empty Entities over that same
 owner, preserving reached q effects and complete typed failures. Constructed
 native coordinator tests save, unload, retire and reload on a continuing World.
-Natural dedicated startup, Entity NBT construction/serialization, whole World
+Natural dedicated startup, GAME Entity load/save integration, whole World
 metadata and original/native Tile replay remain unfinished.
 
 The [original World query observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/world-queries.md)

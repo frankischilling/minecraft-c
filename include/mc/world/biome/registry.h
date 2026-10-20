@@ -2,6 +2,7 @@
 #define MC_WORLD_BIOME_REGISTRY_H
 
 #include "mc/block/registry/registry.h"
+#include "mc/entity/classes/classes.h"
 
 typedef struct mc_biome mc_biome;
 typedef struct mc_biome_spawn_list mc_biome_spawn_list;
@@ -34,6 +35,8 @@ typedef struct mc_biome_fields {
 } mc_biome_fields;
 
 typedef struct mc_biome_spawn_fields {
+    /* Stable logical native handle. Use the explicit canonical join below
+     * for an actual Entity runtime Class key; never compare its name. */
     const mc_biome_entity_class *a;
     int32_t b;
 } mc_biome_spawn_fields;
@@ -89,5 +92,20 @@ const mc_biome_spawn *mc_biome_spawn_list_at(const mc_biome_spawn_list *list, si
 const mc_biome_spawn_fields *mc_biome_spawn_fields_get(const mc_biome_spawn *spawn);
 const char *mc_biome_entity_class_name(const mc_biome_entity_class *entity_class,
                                        mc_registry_side side);
+
+/* Resolve this exact Registry's already-published logical handle to the SAME
+ * actual canonical Class cell used by its bound Entity owner. No initializer,
+ * constructor, ID/Random, name comparison or allocation runs. Legacy logical
+ * handle addresses/names are unchanged by binding. Without a bound owner this
+ * explicit canonical operation returns UNIMPLEMENTED_DEPENDENCY, preserving
+ * out; standalone logical Biome APIs remain available. Foreign handles are
+ * INVALID_ARGUMENT. The result borrows Entity lifetime through Registry's hold;
+ * an independent Entity binding must precede any use beyond Registry free.
+ * This passive view may be inspected during an entered Registry initializer.
+ * All access remains exclusive and outputs/errors disjoint from owners. */
+mc_registry_status mc_biome_entity_class_canonical(const mc_registry_classes *classes,
+                                                   const mc_biome_entity_class *logical,
+                                                   const mc_entity_class_literal **out,
+                                                   mc_registry_error *error);
 
 #endif

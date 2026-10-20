@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_ACQUISITION_INTERNAL_H
 #define MC_WORLD_RUNTIME_ACQUISITION_INTERNAL_H
 
+#include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/runtime.h"
 #include "mc/world/runtime/tiles/errors.h"
 
@@ -14,6 +15,7 @@ typedef struct mc_world_runtime_acquisition_error {
     mc_world_storage_error cause;
     mc_registry_error registry;
     mc_live_tile_error tile;
+    mc_world_entity_batch_error batch;
     unsigned int activation_bytecode, activation_world_bytecode;
     unsigned int load_bytecode, load_builder_bytecode;
 } mc_world_runtime_acquisition_error;

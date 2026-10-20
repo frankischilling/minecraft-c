@@ -2,6 +2,7 @@
 #include "activation_internal.h"
 
 #include "construction_internal.h"
+#include "entity_publication_internal.h"
 #include "mc/world/runtime/tiles/tiles.h"
 #include "runtime_internal.h"
 
@@ -17,7 +18,8 @@ static mc_world_storage_status result(mc_world_activation_error *error, mc_world
                                              .bytecode = bytecode,
                                              .world_bytecode = world_bytecode,
                                              .cause = cause,
-                                             .tile = mc_live_tiles_empty_error()};
+                                             .tile = mc_live_tiles_empty_error(),
+                                             .batch = mc_world_entity_batch_empty_error()};
     return cause.status;
 }
 
@@ -67,42 +69,6 @@ static mc_world_storage_status enter_world(mc_world_runtime *world, unsigned int
     return MC_WORLD_STORAGE_OK;
 }
 
-/* Finite actual World list metadata only. An empty append retains every item,
- * count, capacity and allocation; it does not emulate Java backing/modCount or
- * temporary-array allocation. Destination admission precedes input traversal. */
-static mc_world_storage_status destination_check(mc_world_runtime *world,
-                                                 const mc_world_reference_list *destination,
-                                                 unsigned int bytecode, unsigned int world_bytecode,
-                                                 mc_world_activation_error *error)
-{
-    if (destination == NULL)
-        return failed(error, world, bytecode, world_bytecode,
-                      "World empty addAll destination is null");
-    if (destination->count > destination->capacity ||
-        destination->capacity > SIZE_MAX / sizeof(void *) ||
-        (destination->capacity != 0 && destination->items == NULL))
-        return failed(error, world, bytecode, world_bytecode,
-                      "World empty addAll destination metadata");
-    return MC_WORLD_STORAGE_OK;
-}
-
-static mc_world_storage_status empty_entities(mc_world_runtime *world,
-                                              const mc_world_reference_list *destination,
-                                              const mc_world_chunk_entity_list *source,
-                                              unsigned int bytecode,
-                                              mc_world_activation_error *error)
-{
-    mc_world_storage_status status = destination_check(world, destination, bytecode, 5, error);
-    if (status != MC_WORLD_STORAGE_OK)
-        return status;
-    size_t count;
-    if (mc_world_chunk_entity_count(source, &count) != MC_WORLD_STORAGE_OK)
-        return failed(error, world, bytecode, 5, "World empty addAll entity input is null");
-    if (count != 0)
-        return failed(error, world, bytecode, 5, "World nonempty entity addAll unsupported");
-    return MC_WORLD_STORAGE_OK;
-}
-
 mc_world_storage_status mc_world_runtime_register_chunk_tiles(mc_world_chunk *chunk,
                                                               mc_world_activation_error *error)
 {
@@ -149,13 +115,12 @@ mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk 
         return status;
     /* b1/addAll5 completes before the subsequent live input size15. A NULL
      * slice is evaluated successfully at41 and fails only inside addAll. */
-    status = empty_entities(world, world->fields.b, source, 42, error);
-    if (status == MC_WORLD_STORAGE_OK) {
-        size_t count;
-        if (mc_world_chunk_entity_count(source, &count) != MC_WORLD_STORAGE_OK)
-            status = failed(error, world, 42, 15, "World registered entity size receiver");
-        else if (count != 0)
-            status = failed(error, world, 42, 15, "World nonempty entity registration unsupported");
+    mc_world_entity_batch_error detail = mc_world_entity_batch_empty_error();
+    status = mc_world_runtime_entity_batch_held(world, source, false, &detail);
+    if (status != MC_WORLD_STORAGE_OK) {
+        result(error, world, 42, detail.publication.bytecode, detail.publication.cause);
+        if (error != NULL)
+            error->batch = detail;
     }
     mc_world_runtime_call_leave(world);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
@@ -199,7 +164,13 @@ mc_world_storage_status mc_world_runtime_defer_chunk_entities(mc_world_chunk *ch
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     /* The deferral callee reads D1, not activation's b or tile G/c. */
-    status = empty_entities(world, world->fields.D, source, 67, error);
+    mc_world_entity_batch_error detail = mc_world_entity_batch_empty_error();
+    status = mc_world_runtime_entity_batch_held(world, source, true, &detail);
+    if (status != MC_WORLD_STORAGE_OK) {
+        result(error, world, 67, detail.publication.bytecode, detail.publication.cause);
+        if (error != NULL)
+            error->batch = detail;
+    }
     mc_world_runtime_call_leave(world);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
 }

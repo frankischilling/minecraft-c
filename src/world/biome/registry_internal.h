@@ -15,7 +15,9 @@ typedef struct mc_registry_biome_storage {
     /* Native provenance only; defined/linked by the concrete sampler. */
     struct mc_biome_reference_array *sample_arrays;
     /* Stable logical loaded-Class handles; names are resolved only at ldc.
-     * No target Entity class initialization or allocation is performed. */
+     * No target Entity class initialization or allocation is performed. The
+     * explicit bound canonical accessor joins these to Entity-owned Class
+     * cells without moving/replacing these existing native handles. */
     mc_biome_entity_class entity_classes[13];
 } mc_registry_biome_storage;
 

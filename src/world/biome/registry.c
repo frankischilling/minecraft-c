@@ -750,4 +750,32 @@ const char *mc_biome_entity_class_name(const mc_biome_entity_class *entity_class
                                         : NULL;
 }
 
+mc_registry_status mc_biome_entity_class_canonical(const mc_registry_classes *classes,
+                                                   const mc_biome_entity_class *logical,
+                                                   const mc_entity_class_literal **out,
+                                                   mc_registry_error *error)
+{
+    static const mc_entity_class_kind kinds[13] = {
+        MC_ENTITY_CLASS_KIND_SPIDER,    MC_ENTITY_CLASS_KIND_ZOMBIE,  MC_ENTITY_CLASS_KIND_SKELETON,
+        MC_ENTITY_CLASS_KIND_CREEPER,   MC_ENTITY_CLASS_KIND_SLIME,   MC_ENTITY_CLASS_KIND_SHEEP,
+        MC_ENTITY_CLASS_KIND_PIG,       MC_ENTITY_CLASS_KIND_CHICKEN, MC_ENTITY_CLASS_KIND_COW,
+        MC_ENTITY_CLASS_KIND_SQUID,     MC_ENTITY_CLASS_KIND_WOLF,    MC_ENTITY_CLASS_KIND_GHAST,
+        MC_ENTITY_CLASS_KIND_PIG_ZOMBIE};
+    if (classes == NULL || logical == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome Class canonical arguments");
+    size_t index = 0;
+    while (index < 13u && logical != &classes->biomes.entity_classes[index])
+        ++index;
+    if (index == 13u || logical->client_name == NULL || logical->server_name == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "foreign/unresolved Biome Class handle");
+    if (classes->entities == NULL)
+        return result(error, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                      "Biome canonical Entity Class owner unbound");
+    const mc_entity_class_literal *literal = NULL;
+    if (mc_entity_class_literal_get(classes->entities, kinds[index], &literal) != MC_ENTITY_OK)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome canonical Entity Class owner");
+    *out = literal;
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
 #undef TRY

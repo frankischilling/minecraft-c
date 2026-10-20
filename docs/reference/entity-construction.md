@@ -2,7 +2,8 @@
 
 The native [Entity contract](../entity/construction.md) implements the paired
 base and ItemEntity constructors, owned children and native failure prefixes.
-World insertion, ticking, persistence and the chest caller remain unfinished.
+World publication, Tile drops and [Item NBT](../entity/nbt.md) have separate
+contracts. Ticking and ordinary live Entity persistence remain unfinished.
 The evidence below separates native ownership tests, actual original snapshots
 and recorded-input scalar formula replay.
 

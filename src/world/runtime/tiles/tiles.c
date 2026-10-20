@@ -2647,6 +2647,7 @@ static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile Chunk acquisition");
     if (acquired.registry.status != MC_REGISTRY_OK)
         error->registry = acquired.registry;
+    error->batch = acquired.batch;
     error->activation_bytecode = acquired.activation_bytecode;
     error->activation_world_bytecode = acquired.activation_world_bytecode;
     error->load_bytecode = acquired.load_bytecode;

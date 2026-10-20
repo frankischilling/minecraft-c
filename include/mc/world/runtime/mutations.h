@@ -23,6 +23,7 @@ typedef struct mc_world_mutation_error {
     mc_item_stack_status item;
     mc_entity_error entity;
     mc_world_entity_error publication;
+    mc_world_entity_batch_error batch;
     mc_live_tile_error tile;
     unsigned int activation_bytecode, activation_world_bytecode;
     unsigned int load_bytecode, load_builder_bytecode;

@@ -5,6 +5,8 @@
 - [Plant placement and survival](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
 - [Plant population features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md)
 - [Entity publication and ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
+- [Item Entity NBT and Class ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/nbt.md)
+- [Original Item Entity NBT evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
 - [Normal generator API](Architecture#normal-generator)
 - [Verified generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
 - [Cache and region checks](Storage-and-reference#cache-and-region-checks)

@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_SAVING_ERRORS_H
 
 #include "mc/world/cache/lifecycle.h"
+#include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/tiles/errors.h"
 #include "mc/world/storage/chunk.h"
 
@@ -22,6 +23,11 @@ typedef struct mc_world_runtime_lifecycle_error {
     mc_chunk_lifecycle_status status;
     mc_world_storage_error cause;
     mc_world_game_save_error save;
+    /* Actual maintenance activation/deferral child, independent of save.
+     * Fresh batch.index is SIZE_MAX; caller/callee PCs remain distinct. */
+    mc_live_tile_error tile;
+    mc_world_entity_batch_error batch;
+    unsigned int activation_bytecode, activation_world_bytecode;
 } mc_world_runtime_lifecycle_error;
 
 #endif

@@ -69,6 +69,7 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
     if (acquired != MC_CHUNK_ACQUIRE_OK) {
         frame->tile = detail.tile;
         frame->registry = detail.registry;
+        frame->batch = detail.batch;
         frame->activation_bytecode = detail.activation_bytecode;
         frame->activation_world_bytecode = detail.activation_world_bytecode;
         frame->load_bytecode = detail.load_bytecode;

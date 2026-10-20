@@ -11,7 +11,12 @@
  * existing Entity binding. It retains one native class hold without class
  * initialization, ID consumption or Random/Math activity. WorldClasses releases
  * that hold at destruction; the application profile still outlives both owners.
- * An absent binding stays an explicit dependency at reached Entity allocation. */
+ * An absent binding stays an explicit dependency at reached Entity allocation.
+ * Binding the second of Registry/Entity classes also joins Registry to the same
+ * canonical Entity owner, retaining its one independent Registry hold. A
+ * conflicting pair fails without publishing the WorldClasses binding. Release
+ * WorldClasses, then Registry, then Entity classes; passive Class cells never
+ * initialize a target Entity or consume IDs/entropy. */
 mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes *classes,
                                                         mc_entity_classes *entities);
 

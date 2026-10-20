@@ -1,3 +1,4 @@
+#include "../../entity/classes/classes_internal.h"
 #include "../../item/registry/stacks_internal.h"
 #include "registry_internal.h"
 
@@ -394,6 +395,32 @@ bool mc_registry_string_read(const mc_registry_string *string, mc_registry_strin
     return true;
 }
 
+mc_registry_status mc_registry_classes_bind_entities(mc_registry_classes *classes,
+                                                     mc_entity_classes *entities,
+                                                     mc_registry_error *error)
+{
+    if (classes == NULL || entities == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding arguments");
+    if (classes->entered != 0)
+        return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
+    if (classes->entities != NULL) {
+        if (classes->entities != entities)
+            return result(error, MC_REGISTRY_BUSY, "Registry Entity owner already bound");
+        if (mc_entity_classes_runtime_release_admit(entities) != MC_ENTITY_OK)
+            return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding ownership");
+        return result(error, MC_REGISTRY_OK, NULL);
+    }
+    const mc_entity_status held = mc_entity_classes_retain(
+        entities, classes->options.side == MC_REGISTRY_CLIENT ? MC_ENTITY_CLIENT : MC_ENTITY_SERVER,
+        classes->options.random_profile);
+    if (held != MC_ENTITY_OK)
+        return result(error,
+                      held == MC_ENTITY_LIMIT ? MC_REGISTRY_LIMIT : MC_REGISTRY_INVALID_ARGUMENT,
+                      "Registry Entity binding dependencies");
+    classes->entities = entities;
+    return result(error, MC_REGISTRY_OK, NULL);
+}
+
 mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_registry_error *error)
 {
     if (classes == NULL)
@@ -402,6 +429,9 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_reg
         return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
     if (classes->runtime_borrows != 0)
         return result(error, MC_REGISTRY_BUSY, "registry runtime bindings remain");
+    if (classes->entities != NULL &&
+        mc_entity_classes_runtime_release_admit(classes->entities) != MC_ENTITY_OK)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding release");
     mc_registry_stacks_retire(classes);
     mc_registry_allocation *record = classes->allocations;
     while (record != NULL) {
@@ -409,6 +439,12 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_reg
         free(record->data);
         free(record);
         record = next;
+    }
+    /* Complete release admission above; native arena retirement cannot change
+     * this exclusive Entity binding or invoke source callbacks. */
+    if (classes->entities != NULL) {
+        (void)mc_entity_classes_release(classes->entities);
+        classes->entities = NULL;
     }
     free(classes);
     return result(error, MC_REGISTRY_OK, NULL);

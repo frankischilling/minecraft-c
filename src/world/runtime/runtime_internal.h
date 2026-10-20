@@ -7,6 +7,12 @@
 #include "mc/world/runtime/saving/errors.h"
 #include "mc/world/runtime/tiles/tiles.h"
 
+typedef struct mc_world_entity_list_ledger {
+    mc_world_reference_list *list;
+    struct mc_entity **entries;
+    size_t count, capacity;
+} mc_world_entity_list_ledger;
+
 struct mc_world_runtime {
     mc_world_runtime_options options;
     mc_world_runtime_state live;
@@ -28,14 +34,14 @@ struct mc_world_runtime {
     mc_world_runtime_lifecycle_error *lifecycle_error;
     size_t active_calls, local_leases;
     size_t persistent_bindings;
-    /* Native typed holds parallel the actual b List, preserving each duplicate
-     * occurrence. The exact constructor-created descriptor is captured at b28;
-     * unknown void* contents are never adopted as owning Entity references. */
-    struct {
-        mc_world_reference_list *list;
-        struct mc_entity **entries;
-        size_t count, capacity;
-    } entity_membership;
+    /* Native typed holds parallel the actual b List, preserving each nonnull
+     * duplicate occurrence; typed NULL owns no hold. The exact constructor
+     * descriptor is captured at b28, independently of replaceable source b.
+     * Unknown void* contents are never adopted as owning Entity references. */
+    mc_world_entity_list_ledger entity_membership;
+    /* Separate actual D39 capture; one real hold per nonnull occurrence,
+     * including duplicates. No source deferred-removal processing is implied. */
+    mc_world_entity_list_ledger entity_deferral;
     bool entity_containers_retired;
     mc_tile_list_ledger tile_membership[2];
     bool tile_containers_retired;

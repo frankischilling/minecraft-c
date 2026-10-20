@@ -1,24 +1,10 @@
 #ifndef MC_ENTITY_ENTITY_INTERNAL_H
 #define MC_ENTITY_ENTITY_INTERNAL_H
 
+#include "classes/classes_internal.h"
 #include "mc/entity/entity.h"
 
 /* Actual production layouts, shared only with native invariant tests. */
-typedef struct mc_entity_bounds_pool {
-    mc_entity_bounds **elements;
-    size_t length, capacity;
-} mc_entity_bounds_pool;
-
-typedef struct mc_entity_type_entry {
-    int32_t kind, value;
-    struct mc_entity_type_entry *next;
-} mc_entity_type_entry;
-
-typedef struct mc_entity_type_map {
-    mc_entity_type_entry *head, *tail;
-    size_t size;
-} mc_entity_type_map;
-
 struct mc_entity_watch_record {
     int32_t index, type;
     int8_t byte_value;
@@ -41,17 +27,6 @@ struct mc_entity_watcher {
     bool dirty;
 };
 
-struct mc_entity_classes {
-    mc_entity_source source;
-    mc_java_random_profile *profile;
-    mc_entity_limits limits;
-    size_t allocated_bytes, live_entities, borrowers;
-    mc_entity_class_phase entity_phase, bounds_phase, watcher_phase;
-    int32_t next_id, bounds_cursor;
-    mc_entity_bounds_pool *bounds_pool;
-    mc_entity_type_map *types;
-};
-
 struct mc_entity {
     mc_entity_classes *classes;
     size_t holds, direct_bytes;
@@ -64,12 +39,6 @@ struct mc_entity {
     mc_entity_watcher *watcher;
     mc_item_stack *stack;
 };
-
-/* Read-only admission for classes_release: NULL is INVALID_ARGUMENT and zero
- * borrowers is STATE_ERROR. No class phase, live-entity or entered gate is
- * added, and no owner state, allocation or callback is touched. Success
- * reserves nothing; keep this owner exclusive and unchanged through release. */
-mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes *classes);
 
 /* The production constructor calls these after each real shared Math draw.
  * Their internal seam also permits replay of original observed field formulas;
@@ -86,5 +55,11 @@ mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t dela
  * belong to the caller's concrete source operation; no constructor/READY gate,
  * World rebinding, snapshot copy or callback is inserted here. */
 mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity);
+
+/* Actual shared source position body. Entity and its existing bounds must be
+ * live/non-null; no READY/FP admission, World access or allocation occurs.
+ * Stores current coordinates and mutates those same bounds in original order.
+ * Caller owns reached native/source guards and leaves previous fields alone. */
+void mc_entity_source_position(mc_entity *entity, double x, double y, double z);
 
 #endif

@@ -5,6 +5,8 @@ Entity, World list and eight Chunk slice lists. The public entry points are in
 [`runtime/entities.h`](../../include/mc/world/runtime/entities.h). These methods
 currently cover the runtime's constructed ItemEntities. Player-specific sleep,
 tracking, networking, Entity removal and nonempty persistence remain unfinished.
+Standalone [Item NBT and canonical Class methods](../entity/nbt.md) are available;
+the ordinary GAME load/save loops still require their integration.
 
 ## Source order
 
@@ -32,6 +34,30 @@ can be inserted into another same-side World while retaining its construction
 World. Native admission requires the exact bound EntityClasses owner; it does
 not treat a foreign type as an ItemEntity.
 
+## Whole-batch activation and deferral
+
+Chunk activation uses the actual World batch method rather than repeated single
+insertion. It appends the whole slice to World.b before reading each live input
+occurrence and invoking its observer. Deferral appends the whole slice to the
+constructor-created D list without observing it. Duplicate references own
+separate holds; typed NULL values own none. The real empty observer body returns
+normally, while reached nonempty interface dispatch remains unsupported.
+
+Native allocation and occurrence holds are admitted before publishing the
+complete append. A later observer failure preserves every appended occurrence.
+This transactional native preparation does not reproduce JDK ArrayList/OOM
+timing. Batch methods do not impose an Entity READY, construction-World,
+application-class, coordinate or current-Chunk gate. The caller supplies genuine
+typed live owners, not arbitrary untyped World list values. Source deferred
+processing/removal remains unfinished.
+
+Separate b/D ledgers retain actual occurrences and peak array/scratch bytes.
+Activation, acquisition and lifecycle diagnostics preserve the complete batch
+child, failing occurrence and independent Chunk/World/observer positions. Tile
+and mutation acquisition callers retain that child too. Terminal disposal admits
+both ledgers before releasing any owner, even when source projections have been
+replaced; it does not free unknown replacement descriptors.
+
 ## Ownership and failure
 
 Each slice occurrence and each World.b occurrence retains the same Entity once.
@@ -56,8 +82,10 @@ continue the original block replacement and notification sequence.
 
 ## Persistence and terminal disposal
 
-Runtime and generic Store writers reject actual nonempty Chunk lists before
-resetting q or writing a region. Opaque retained NBT remains a separate contract;
+The GAME save coordinator resets q and sets it for the first live occurrence
+before its still-unfinished Entity serializer call. Generic Store writers keep
+their separate nonempty guards. Neither path writes a live nonempty Entity list
+to a region yet. Opaque retained NBT remains a separate contract;
 it does not supply a live Entity serializer. The caller-owned numerical storage
 interface cannot infer the provenance of arbitrarily copied state. Borrowed
 concrete Chunk state must stay within its documented ownership contract.
@@ -65,7 +93,7 @@ concrete Chunk state must stay within its documented ownership contract.
 `mc_world_runtime_retire_entity_containers` is terminal native disposal, separate
 from source removal or unload. Its historical name now covers actual Entity and
 [Tile ownership](tiles.md). Admission first validates the complete World b/c/G
-ledgers, every bound Chunk slice/embedded Tile Map, failed Store stages, other
+ledgers, D, every bound Chunk slice/embedded Tile Map, failed Store stages, other
 unsupported collections and all leases.
 Any failed admission leaves all occurrences intact. Success marks the World and
 Chunk containers terminal before releasing any hold, then releases each actual
@@ -80,6 +108,17 @@ those bindings are released.
 No save, callback or apparent unload is used to break the ownership cycle.
 
 ## Validation and limits
+
+Whole-batch activation and deferral pass 353 native checks per host within all
+149 configured MSVC cases and 151 cases on each sanitized Linux GCC/Clang build,
+with zero skips and local JDK comparisons enabled. Actual late observer failure
+retains the whole appended batch, including occurrences after the failing one.
+Separate b/D holds, duplicate and NULL occurrences, foreign construction Worlds,
+RAW Entities, real allocation ceilings and terminal retirement are covered.
+The [Item NBT comparisons](../reference/entity-nbt.md) qualify a separate finite
+read/write/factory corpus; they do not replay ordinary World publication.
+
+At the earlier publication checkpoint:
 
 All 66 selected cases pass on MSVC and Linux GCC/Clang, with Linux address,
 undefined-behavior and leak checks. Each host retains the same 640 selected
@@ -108,5 +147,5 @@ Separate [original client and server observations](../reference/entity-publicati
 record actual constructors, base World insertion and direct normal/Blank Chunk
 calls. These captures and the native contracts are separate evidence. There is
 no native replay or complete original/native Entity, fluid or population parity
-claim. Nonempty activation, arbitrary observers, dedicated indexing, player
+claim. Batch activation has its separate native contract; arbitrary observers, dedicated indexing, player
 descendants, item ticking and Entity save interoperability remain unfinished.

@@ -5,6 +5,8 @@
 `sn`/`hl` and server `lq`/`ez` constructor state, owned children and native failure
 prefixes. The [reference evidence](../reference/entity-construction.md) separates
 native contracts, original constructor snapshots and scalar formula replay.
+The separate [NBT and canonical Class contract](nbt.md) covers semantic Item
+records, the class-name save wrapper and the world-only NBT factory.
 
 ## Construction and ownership
 

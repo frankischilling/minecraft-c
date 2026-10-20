@@ -24,6 +24,10 @@ decoded-document lifetime. `mc_item` builds on storage with stable
 `mc_block` owns the distinct [material and palette identities](reference/materials.md)
 and their receiver methods. Every world in one material-class lifetime must
 borrow the same stable owner; material identity is separate from block IDs.
+The lower `mc_entity_classes` library owns passive canonical Class cells and
+EntityList namespace metadata. Registry can retain that same owner for its
+Biome handles without depending on concrete Entity constructors or simulation.
+See the [Class/NBT lifetime contract](entity/nbt.md).
 `mc_registry` builds on that owner and the shared Random profile with actual
 [Block](block/registry.md) and [Item](item/registry.md) class construction. It
 retains source-ordered static, base and subtype state through their recursive

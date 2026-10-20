@@ -1,5 +1,14 @@
 # Systems and subsystems
 
+The [Entity Class and NBT modules](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/nbt.md)
+keep passive canonical Class identity in a lower library shared by Registry and
+simulation. The actual EntityList namespace owns four separately published
+Maps and retains partial initialization failures. Biome handles resolve through
+an explicit same-owner binding. Item NBT methods use actual constructed Entity
+and Stack owners; factory calls preserve constructor effects before semantic
+read. World batch methods retain every occurrence before observer dispatch,
+with a separate deferral ledger and complete failure diagnostics.
+
 The [World query module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 retains the acquired Chunk through each scan, reads actual arrays and materials,
 and shares the positive-sky Chunk.a cell across Worlds. Its provider.b getter
@@ -34,7 +43,8 @@ cross-World occurrences preserve source identity and construction bindings.
 Terminal native disposal validates all leases before releasing any occurrence;
 nonempty and terminal Chunks refuse serialization. The [fluid implementation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md)
 now continues after real drop publication. Moving-piston lookup, fire/portal,
-nonempty observers/activation, falling and complete population remain unfinished.
+nonempty observers, falling and complete population remain unfinished. Whole
+batch activation and deferral now have their own supported native contract.
 
 The [World scheduling foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#world-insertion)
 shares one lazy sequence across Worlds, constructs before every gate and retains

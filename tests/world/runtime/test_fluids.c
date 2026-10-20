@@ -1125,11 +1125,11 @@ static bool cleanup_fixture(fixture *f)
     for (size_t i = 0; i < COUNT(f->classes); ++i)
         if (mc_world_runtime_classes_free(f->classes[i], NULL) != MC_WORLD_STORAGE_OK)
             return false;
-    for (size_t i = 0; i < COUNT(f->entities); ++i)
-        if (mc_entity_classes_free(f->entities[i]) != MC_ENTITY_OK)
-            return false;
     for (size_t i = 0; i < COUNT(f->registry); ++i)
         if (mc_registry_classes_free(f->registry[i], NULL) != MC_REGISTRY_OK)
+            return false;
+    for (size_t i = 0; i < COUNT(f->entities); ++i)
+        if (mc_entity_classes_free(f->entities[i]) != MC_ENTITY_OK)
             return false;
     mc_world_info_name_release(f->name);
     for (size_t i = 0; i < COUNT(f->stores); ++i)

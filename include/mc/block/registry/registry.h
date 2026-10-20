@@ -12,6 +12,7 @@ typedef struct mc_block mc_block;
 typedef struct mc_block_sound mc_block_sound;
 typedef struct mc_registry_string mc_registry_string;
 typedef struct mc_registry_resources mc_registry_resources;
+typedef struct mc_entity_classes mc_entity_classes;
 
 typedef enum mc_registry_side { MC_REGISTRY_CLIENT, MC_REGISTRY_SERVER } mc_registry_side;
 
@@ -131,6 +132,17 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
                                                 mc_registry_classes **out,
                                                 mc_registry_error *error);
 
+/* Explicit native join to the canonical Entity Class-literal owner. Retain
+ * exactly one matching side/profile binding; an exact existing pair is
+ * idempotent, a different owner is BUSY. Entered initialization is BUSY.
+ * This may precede or follow Biome/Entity initialization and preserves all
+ * already-observed logical Biome handles. No class initializer, Entity/ID,
+ * Random/profile operation or source String resolution occurs. Failure leaves
+ * the binding unchanged. Entity classes remain live until Registry free. */
+mc_registry_status mc_registry_classes_bind_entities(mc_registry_classes *classes,
+                                                     mc_entity_classes *entities,
+                                                     mc_registry_error *error);
+
 /* Execute the real Block class initializer and its reached Item, resource,
  * statistic, achievement and recipe dependencies. Failure latches and
  * retains every completed global/object/profile effect. The same owner cannot
@@ -155,7 +167,10 @@ bool mc_registry_string_read(const mc_registry_string *string, mc_registry_strin
 /* Quiescent destruction releases this owner's native storage only, including
  * globally retained failed objects. No caller may retain a borrowed view.
  * The borrowed material/profile owners and their reached effects are retained.
- * free(NULL) succeeds; an entered initializer cannot be destroyed. */
+ * A bound Entity class owner is released only after complete native arena
+ * teardown, with its release admitted before any destruction. No reverse
+ * Entity-to-Registry hold is created. free(NULL) succeeds; an entered
+ * initializer cannot be destroyed. */
 mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_registry_error *error);
 
 #endif

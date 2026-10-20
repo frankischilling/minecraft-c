@@ -7,6 +7,7 @@
 mc_world_mutation_error mc_world_mutation_empty_error(void)
 {
     return (mc_world_mutation_error){.tile = mc_live_tiles_empty_error(),
+                                     .batch = {.index = SIZE_MAX},
                                      .registry = {.initializer_pc = -1,
                                                   .block_id = -1,
                                                   .constructor_pc = -1,

@@ -294,6 +294,9 @@ struct mc_registry_classes {
     mc_registry_class_state crafting_state, smelting_state;
     mc_registry_biome_storage biomes;
     mc_registry_class_state biome_states[MC_BIOME_KIND_COUNT];
+    /* One native hold on the actual canonical Entity Class owner. Existing
+     * logical Biome cells remain inline and are never moved or replaced. */
+    mc_entity_classes *entities;
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

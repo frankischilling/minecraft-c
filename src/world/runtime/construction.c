@@ -123,6 +123,15 @@ mc_registry_status mc_world_runtime_classes_bind_registry(mc_world_runtime_class
                 registry,
                 classes->side == MC_WORLD_INFO_CLIENT ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER,
                 classes->profile, error);
+            if (status != MC_REGISTRY_OK)
+                return status;
+            if (classes->entities != NULL) {
+                status = mc_registry_classes_bind_entities(registry, classes->entities, error);
+                if (status != MC_REGISTRY_OK) {
+                    (void)mc_registry_classes_release(registry, NULL);
+                    return status;
+                }
+            }
             if (status == MC_REGISTRY_OK)
                 classes->registry = registry;
             return status;
@@ -156,9 +165,20 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
     const mc_entity_status status = mc_entity_classes_retain(
         entities, classes->side == MC_WORLD_INFO_CLIENT ? MC_ENTITY_CLIENT : MC_ENTITY_SERVER,
         classes->profile);
-    if (status == MC_ENTITY_OK)
-        classes->entities = entities;
-    return status;
+    if (status != MC_ENTITY_OK)
+        return status;
+    if (classes->registry != NULL) {
+        const mc_registry_status joined =
+            mc_registry_classes_bind_entities(classes->registry, entities, NULL);
+        if (joined != MC_REGISTRY_OK) {
+            (void)mc_entity_classes_release(entities);
+            if (joined == MC_REGISTRY_LIMIT)
+                return MC_ENTITY_LIMIT;
+            return joined == MC_REGISTRY_BUSY ? MC_ENTITY_BUSY : MC_ENTITY_INVALID_ARGUMENT;
+        }
+    }
+    classes->entities = entities;
+    return MC_ENTITY_OK;
 }
 
 mc_entity_classes *mc_world_runtime_entities(const mc_world_runtime *runtime)
@@ -255,6 +275,8 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
     *field = list;
     if (field == &runtime->fields.b)
         runtime->entity_membership.list = list;
+    else if (field == &runtime->fields.D)
+        runtime->entity_deferral.list = list;
     else if (field == &runtime->fields.c)
         mc_live_tiles_capture_list(runtime, false, list);
     else if (field == &runtime->fields.G)
@@ -737,7 +759,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
     if (!mc_world_runtime_entity_list_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
-    if (runtime->entity_membership.count != 0)
+    if (runtime->entity_membership.count != 0 || runtime->entity_deferral.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World Entity occurrences remain");
     if (!mc_live_tiles_lists_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Tile ownership metadata");
@@ -747,7 +769,16 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
     mc_world_runtime_entity_list_release(runtime);
     mc_live_tiles_lists_release(runtime);
     mc_world_runtime_lighting_free(runtime);
-    mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
+    mc_world_reference_list *lists[] = {f->C,
+                                        runtime->entity_membership.list,
+                                        runtime->entity_deferral.list,
+                                        f->c,
+                                        f->G,
+                                        f->d,
+                                        f->e,
+                                        f->u,
+                                        f->K,
+                                        f->R};
     for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
         if (lists[i] != NULL) {
             free(lists[i]->items);
@@ -777,11 +808,22 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World retirement arguments");
     if (runtime->active_calls != 0 || runtime->local_leases != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World call or lease during retirement");
+    if (!mc_world_runtime_entity_list_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
     if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED &&
         !runtime->construction.contexts_bound && !runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     mc_world_runtime_fields *f = &runtime->fields;
-    mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
+    mc_world_reference_list *lists[] = {f->C,
+                                        runtime->entity_membership.list,
+                                        runtime->entity_deferral.list,
+                                        f->c,
+                                        f->G,
+                                        f->d,
+                                        f->e,
+                                        f->u,
+                                        f->K,
+                                        f->R};
     /* C contains typed World-owned records, retired at final native free.
      * Other unimplemented collection descendants still require emptiness. */
     for (size_t i = 1; i < sizeof(lists) / sizeof(lists[0]); ++i) {
@@ -821,10 +863,10 @@ static bool entity_retirement_other_collections_empty(const mc_world_runtime *wo
 {
     const mc_world_runtime_fields *fields = &world->fields;
     /* C/E/F are already concrete typed owners retained until final native free.
-     * b/c/G are admitted separately. Never reinterpret entries of these remaining
+     * b/D/c/G are admitted separately. Never reinterpret entries of these remaining
      * finite void* lists, clear their counts, or discard a nonempty active set. */
-    const mc_world_reference_list *lists[] = {fields->D, fields->d, fields->e,
-                                              fields->u, fields->K, fields->R};
+    const mc_world_reference_list *lists[] = {fields->d, fields->e, fields->u, fields->K,
+                                              fields->R};
     for (size_t index = 0; index < sizeof(lists) / sizeof(lists[0]); ++index) {
         const mc_world_reference_list *list = lists[index];
         if (list != NULL && (list->count != 0 || list->capacity > SIZE_MAX / sizeof(*list->items) ||

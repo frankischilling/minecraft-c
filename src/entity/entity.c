@@ -167,76 +167,6 @@ const char *mc_entity_status_string(mc_entity_status status)
     return "unknown Entity status";
 }
 
-mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
-                                          const mc_entity_limits *limits, mc_entity_classes **out)
-{
-    if ((source != MC_ENTITY_CLIENT && source != MC_ENTITY_SERVER) || profile == NULL ||
-        out == NULL)
-        return MC_ENTITY_INVALID_ARGUMENT;
-    const mc_entity_limits selected =
-        limits == NULL ? (mc_entity_limits){MC_ENTITY_DEFAULT_ALLOCATION_BYTES, SIZE_MAX} : *limits;
-    if (selected.max_allocation_bytes < sizeof(mc_entity_classes))
-        return MC_ENTITY_LIMIT;
-    mc_entity_classes *classes = malloc(sizeof(*classes));
-    if (classes == NULL)
-        return MC_ENTITY_ALLOCATION_FAILED;
-    *classes = (mc_entity_classes){.source = source,
-                                   .profile = profile,
-                                   .limits = selected,
-                                   .allocated_bytes = sizeof(*classes)};
-    *out = classes;
-    return MC_ENTITY_OK;
-}
-
-mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes,
-                                                mc_entity_class_snapshot *out)
-{
-    if (classes == NULL || out == NULL)
-        return MC_ENTITY_INVALID_ARGUMENT;
-    *out = (mc_entity_class_snapshot){.source = classes->source,
-                                      .entity_class = classes->entity_phase,
-                                      .bounds_class = classes->bounds_phase,
-                                      .watcher_class = classes->watcher_phase,
-                                      .next_id = classes->next_id,
-                                      .bounds_pool_cursor = classes->bounds_cursor,
-                                      .bounds_pool_identity = classes->bounds_pool,
-                                      .watcher_types_identity = classes->types,
-                                      .watcher_type_count =
-                                          classes->types == NULL ? 0 : classes->types->size,
-                                      .live_entities = classes->live_entities,
-                                      .allocation_bytes = classes->allocated_bytes};
-    return MC_ENTITY_OK;
-}
-
-mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_source source,
-                                          mc_java_random_profile *profile)
-{
-    if (classes == NULL || classes->source != source || classes->profile != profile)
-        return MC_ENTITY_INVALID_ARGUMENT;
-    if (classes->borrowers == SIZE_MAX)
-        return MC_ENTITY_LIMIT;
-    ++classes->borrowers;
-    return MC_ENTITY_OK;
-}
-
-mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes *classes)
-{
-    if (classes == NULL)
-        return MC_ENTITY_INVALID_ARGUMENT;
-    if (classes->borrowers == 0)
-        return MC_ENTITY_STATE_ERROR;
-    return MC_ENTITY_OK;
-}
-
-mc_entity_status mc_entity_classes_release(mc_entity_classes *classes)
-{
-    const mc_entity_status status = mc_entity_classes_runtime_release_admit(classes);
-    if (status != MC_ENTITY_OK)
-        return status;
-    --classes->borrowers;
-    return status;
-}
-
 mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay)
 {
     if (entity == NULL)
@@ -248,26 +178,6 @@ mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t dela
 mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity)
 {
     return entity == NULL ? NULL : &entity->base;
-}
-
-mc_entity_status mc_entity_classes_free(mc_entity_classes *classes)
-{
-    if (classes == NULL)
-        return MC_ENTITY_OK;
-    if (classes->live_entities != 0 || classes->borrowers != 0)
-        return MC_ENTITY_BUSY;
-    if (classes->types != NULL) {
-        mc_entity_type_entry *entry = classes->types->head;
-        while (entry != NULL) {
-            mc_entity_type_entry *next = entry->next;
-            retire(classes, NULL, entry, sizeof(*entry));
-            entry = next;
-        }
-        retire(classes, NULL, classes->types, sizeof(*classes->types));
-    }
-    retire(classes, NULL, classes->bounds_pool, sizeof(*classes->bounds_pool));
-    free(classes);
-    return MC_ENTITY_OK;
 }
 
 mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity **out,
@@ -293,7 +203,7 @@ mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity *
     return result(error, MC_ENTITY_OK, NULL, 0);
 }
 
-static void position(mc_entity *entity, double x, double y, double z)
+void mc_entity_source_position(mc_entity *entity, double x, double y, double z)
 {
     entity->base.x = x;
     entity->base.y = y;
@@ -439,7 +349,7 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
     }
     entity->base.world = world;
     entity->base_bytecode = 205;
-    position(entity, 0.0, 0.0, 0.0);
+    mc_entity_source_position(entity, 0.0, 0.0, 0.0);
     entity->base_bytecode = 212;
     /* The exposed watcher holds a typed Byte value; no per-entity Byte box. */
     entity->base_bytecode = 221;
@@ -520,7 +430,7 @@ static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, do
     if (status == MC_ENTITY_OK)
         status = item_prefix(entity, error);
     if (status == MC_ENTITY_OK && full) {
-        position(entity, x, y, z);
+        mc_entity_source_position(entity, x, y, z);
         entity->item_bytecode = 55;
         if (stack != NULL) {
             const mc_item_stack_status item_status = mc_item_stack_retain(stack);
@@ -685,7 +595,7 @@ mc_entity_status mc_entity_set_position(mc_entity *entity, double x, double y, d
         return MC_ENTITY_INVALID_PHASE;
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return MC_ENTITY_UNSUPPORTED_FP;
-    position(entity, x, y, z);
+    mc_entity_source_position(entity, x, y, z);
     return MC_ENTITY_OK;
 }
 

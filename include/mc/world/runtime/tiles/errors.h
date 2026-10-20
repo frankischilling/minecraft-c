@@ -67,6 +67,7 @@ typedef struct mc_live_tile_error {
     mc_tile_error tile;
     mc_entity_error entity;
     mc_world_entity_error publication;
+    mc_world_entity_batch_error batch;
     /* Source caller frames are independent of the deepest reached child.
      * Removal used to discard Tile/Registry/Entity data at this join. */
     unsigned int caller_bytecode, hook_bytecode;
