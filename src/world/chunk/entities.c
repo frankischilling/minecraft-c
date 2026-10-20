@@ -133,9 +133,9 @@ mc_world_storage_status mc_world_chunk_insert_entity(mc_world_chunk *chunk, mc_e
     if (chunk->state == NULL)
         return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                 "Chunk Entity state binding", 0);
-    if (chunk->entity_containers_retired)
+    if (!mc_world_chunk_source_enabled(chunk))
         return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity containers are retired", 0);
+                                "Chunk Entity source operations are disabled", 0);
 
     /* lm/hi.a(Entity)V: this precedes even the first nullable Entity read. */
     chunk->state->has_entities = true; /* q2 */

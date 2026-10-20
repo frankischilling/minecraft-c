@@ -2,6 +2,7 @@
 #define MC_ENTITY_ENTITY_H
 
 #include "mc/core/java/random_profile.h"
+#include "mc/entity/errors.h"
 #include "mc/item/stack/stack.h"
 #include "mc/world/runtime/runtime.h"
 
@@ -23,30 +24,6 @@ typedef enum mc_entity_class_phase {
     MC_ENTITY_CLASS_READY,
     MC_ENTITY_CLASS_FAILED
 } mc_entity_class_phase;
-typedef enum mc_entity_status {
-    MC_ENTITY_OK = 0,
-    MC_ENTITY_INVALID_ARGUMENT,
-    MC_ENTITY_INVALID_PHASE,
-    MC_ENTITY_LIMIT,
-    MC_ENTITY_ALLOCATION_FAILED,
-    MC_ENTITY_PROFILE_FAILED,
-    MC_ENTITY_WORLD_FAILED,
-    MC_ENTITY_ITEM_FAILED,
-    MC_ENTITY_CLASS_FAILED_STATUS,
-    MC_ENTITY_BUSY,
-    MC_ENTITY_STATE_ERROR,
-    MC_ENTITY_UNSUPPORTED_FP
-} mc_entity_status;
-
-typedef struct mc_entity_error {
-    mc_entity_status status;
-    const char *operation; /* Static diagnostic naming the reached constructor. */
-    uint16_t bytecode;
-    mc_java_random_profile_status profile;
-    mc_item_stack_status item;
-    mc_world_storage_status world;
-} mc_entity_error;
-
 typedef struct mc_entity_limits {
     size_t max_allocation_bytes, max_live_entities;
 } mc_entity_limits;

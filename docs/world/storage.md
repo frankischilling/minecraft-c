@@ -24,13 +24,13 @@ arrays is an explicit C malformed-input restriction. Original getters return
 empty arrays and do not trigger the apparent null-repair branches. C never
 invents finishing or rebuilt lighting to conceal that difference.
 
-Coordinates come from Level even when they disagree with the requested slot.
+Passive stored coordinates come from Level even when they disagree with the requested slot.
 LastUpdate is ignored. Minimum, active, dirty, never-save and last-save time
 begin at zero; a later successful acquisition stamps live world time. Frozen
 registry normalization is a separate block-only operation, with no height,
 light or dirty mutation.
 
-Entity/tile compounds and unknown root/Level children remain opaque. Building
+In the passive storage path, Entity/tile compounds and unknown root/Level children remain opaque. Building
 an independent result writes explicit LastUpdate and known current state.
 Nonempty opaque lists permit only unchanged arrays,
 coordinates and population state. Other edits fail. Normalization of unknown
@@ -107,12 +107,11 @@ The [binding record](../reference/world-info-runtime.md) explains the distinct
 World/list-save gap.
 
 Dimension 0 uses the world root; -1 uses DIM-1. Storage loads apply a copied
-registry map. The acquisition adapter permits generation only for missing
-records, refuses unreadable data and refuses activation of opaque entities or
-tiles. The coordinator owns publication, activation and loaded time stamping.
-GAME loads attach [concrete known-empty Chunk headers](chunk-activation.md)
-over that same stored state before publication; unknown-NBT serialization
-continues through the retained stored owner.
+registry map. The generic acquisition adapter permits generation only for missing
+records, refuses unreadable data and refuses opaque activation. GAME uses a
+separate staged protocol described below. The coordinator owns cache publication,
+activation and loaded time stamping; unknown-NBT serialization remains separate
+from [live Tile ownership](tiles.md).
 Explicit chunk writes update live SizeOnDisk after commit; save eligibility,
 dirty reset, last-save stamps and save/unload scheduling remain caller-owned.
 The typed runtime variant instead adds growth only to its supplied READY Info,
@@ -120,7 +119,8 @@ without requiring store metadata or changing the legacy store counter. Shared
 storage does not broadcast growth to another World's Info.
 
 Each load retains a new stable chunk identity, even for a previously loaded
-slot. The default owner limit is 512 chunks, with no individual retirement.
+slot. The default owner limit is 512 chunks, including retained failed stages.
+Individual retirement checks exact identity leases and registered references.
 Freeing a store requires retiring every cache/list reference first; it does not
 save chunks, remove the lock file or clear the borrowed region cache. The
 copied registry map must contain only zero or each entry's original index.
@@ -129,6 +129,45 @@ Metadata gzip, chunk NBT and the shared region transport have separate limits.
 The store's compression limits apply to metadata, while chunk compression uses
 the borrowed region owner's limits. These bounded operations do not form one
 process-wide allocation budget.
+
+## Staged GAME loading
+
+The internal GAME decoder preserves fixed-shape transport admission while
+deferring Entity/Tile list semantics. Its actual Chunk starts with q=false.
+The Store attaches the same decoded owner and concrete header to its canonical
+ownership chain before exposing a stage and one coordinator lease. Native
+state/data/array identities remain stable through imports and normalization.
+
+Simulation traverses Entities first. A reached nonempty record currently fails
+at the absent Entity NBT factory before q277 or Tile work. Empty traversal
+continues to actual Chest/Spawner Tile factories and local import. Only after
+both loops return does the Store normalize those same block bytes and publish
+ordinary load success. A wrong-location result stops at the unfinished Region
+diagnostic after first imports, preserving them before normalization or a second
+builder. Generic decode/load and the old known-empty native route retain their
+separate contracts.
+
+Every attached failed stage remains owned, capacity-counted and enumerable.
+Failure balances only the coordinator lease and disables source continuation.
+It preserves source fields, earlier Map/Stack/class effects and independent
+external leases. Incomplete stages refuse saving before session or serialization
+effects. Pending or failed imports require joint terminal container retirement
+before individual owner retirement, even when source active is false. Completed
+chunks retain ordinary retirement after unload, subject to their actual leases,
+registered references and borrowed-view obligations; the continuing World need
+not be terminally retired.
+
+`mc_world_store_free_checked` validates the complete known ownership graph before
+releasing anything. Registrations, reservations, leases, invalid owners or live
+runtime containers preserve the caller's owner pointer and all resources.
+Successful close releases quiescent owners and clears that pointer. The Store
+must still outlive borrowing Worlds and unregistered views. The legacy void free
+retains its quiescent caller precondition. Neither close path saves or removes
+the session file.
+
+Decoder/document and header limits remain separate native budgets. A staged
+load is not a whole-process heap limit, original malformed-array repair profile
+or live Entity/Tile save implementation.
 
 ## Verification limits
 

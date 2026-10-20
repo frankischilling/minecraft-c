@@ -335,8 +335,9 @@ def main():
                     elif args.scenario in ("world-provider-activation", "world-mutations", "world-scheduling", "world-fluids", "world-entity-publication"):
                         opaque_input = path.relative_to(root).as_posix() == "loaded/region/r.1.0.mcr"
                         if opaque_input:
-                            CAPTURE.require(slot in (136, 137) and timestamp == 1,
-                                            "untouched opaque input fixture timestamp")
+                            input_slots = (136, 137, 138) if args.scenario == "world-provider-activation" else (136, 137)
+                            CAPTURE.require(slot in input_slots and timestamp == 1,
+                                            "untouched retained load-input fixture timestamp")
                         else:
                             CAPTURE.require(clock_before <= timestamp <= clock_after,
                                             "actual GAME region wall clock in execution window")
@@ -347,6 +348,10 @@ def main():
         CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-provider-activation":
+            CAPTURE.require({row["slot"] for row in timestamps
+                             if row["file"] == "loaded/region/r.1.0.mcr"} == {136, 137, 138},
+                            "complete Entity/Tile failure and relocation input slots")
         if args.scenario == "world-queries":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
                               for i in range(4) for slot in ((0, 1) if i < 2 else (0,))}

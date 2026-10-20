@@ -1,5 +1,17 @@
 # Build and tests
 
+The [live Tile contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
+exercise actual Chest/Spawner, Stack, Map and List owners, staged GAME loading
+and terminal disposal. All 143 configured public cases pass on MSVC and all 145
+on each sanitized GCC/Clang build, with zero skips and local JDK comparisons.
+Each host passes 468 Tile checks and 98,868 provider-activation checks, retaining
+672 unchanged selected source inputs, 254 external zlib pins, 161 products and
+31 captures. Linux source/dependency copies match before and after execution.
+Clang-format 18 checks all 383 C sources and headers. Complete population,
+original/native replay and live Entity/Tile saving remain unfinished.
+
+The following checkpoint predates live Tile integration.
+
 The [World-query and plant contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md),
 [plant features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/plants.md),
 [trees](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/trees.md),

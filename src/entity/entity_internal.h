@@ -65,6 +65,12 @@ struct mc_entity {
     mc_item_stack *stack;
 };
 
+/* Read-only admission for classes_release: NULL is INVALID_ARGUMENT and zero
+ * borrowers is STATE_ERROR. No class phase, live-entity or entered gate is
+ * added, and no owner state, allocation or callback is touched. Success
+ * reserves nothing; keep this owner exclusive and unchanged through release. */
+mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes *classes);
+
 /* The production constructor calls these after each real shared Math draw.
  * Their internal seam also permits replay of original observed field formulas;
  * it injects neither constructor entropy nor a Math stream into production. */

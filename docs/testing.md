@@ -1,6 +1,17 @@
 # Test scope and reproduction
 
-The captured Registry-array and integrated tree/geology checkpoint passes all 142 configured public cases
+The [live Tile contracts](world/tiles.md) add real Chest/Spawner owners, actual
+NBT imports before normalization, Map/List holds, item drops, detailed acquisition
+failures and joint native retirement. All 143 configured cases pass on Windows
+MSVC and all 145 on each Ubuntu GCC/Clang build, with zero skips and local JDK
+comparisons enabled. Linux uses ASan/UBSan and leak checks. Each host passes
+468 Tile checks and 98,868 provider-activation checks, retaining 672 unchanged
+selected source inputs, 254 external zlib pins, 161 products and 31 captures.
+Linux source/dependency copies match before and after execution. Clang-format
+18 checks all 383 C sources and headers. These native contracts do not complete
+live Entity/Tile saving or original/native feature replay.
+
+The preceding captured Registry-array and integrated tree/geology checkpoint passes all 142 configured public cases
 on native Windows MSVC and all 144 on each sanitized GCC/Clang build, with zero
 skips and local JDK comparisons enabled. Each host retains 661 unchanged selected
 source inputs, 254 unchanged external zlib pins, 143 products and 30 new capture

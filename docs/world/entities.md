@@ -63,8 +63,10 @@ interface cannot infer the provenance of arbitrarily copied state. Borrowed
 concrete Chunk state must stay within its documented ownership contract.
 
 `mc_world_runtime_retire_entity_containers` is terminal native disposal, separate
-from source removal or unload. Admission first validates the complete World.b
-ledger, every bound Chunk slice, other unsupported collections and all leases.
+from source removal or unload. Its historical name now covers actual Entity and
+[Tile ownership](tiles.md). Admission first validates the complete World b/c/G
+ledgers, every bound Chunk slice/embedded Tile Map, failed Store stages, other
+unsupported collections and all leases.
 Any failed admission leaves all occurrences intact. Success marks the World and
 Chunk containers terminal before releasing any hold, then releases each actual
 occurrence and frees retained list capacity. It preserves q, active flags,
@@ -73,7 +75,8 @@ serialization refuses terminal containers even after their lists become empty.
 
 The owner can then retire native cache/pending descriptors, World contexts and
 Store Chunk owners. External Entities still retain their real construction
-World; final World destruction stays busy until those bindings are released.
+World; external Tiles do likewise. Final World destruction stays busy until
+those bindings are released.
 No save, callback or apparent unload is used to break the ownership cycle.
 
 ## Validation and limits

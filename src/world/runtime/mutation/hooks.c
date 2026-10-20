@@ -48,6 +48,26 @@ static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *error
     return false;
 }
 
+static bool tile_hook(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                      int32_t z, bool added, mc_world_mutation_error *error)
+{
+    mc_live_tile_error detail = mc_live_tiles_empty_error();
+    const mc_world_storage_status status =
+        added ? mc_live_tiles_block_added(world, block, x, y, z, &detail)
+              : mc_live_tiles_block_removed(world, block, x, y, z, &detail);
+    if (status == MC_WORLD_STORAGE_OK)
+        return hook_return(error);
+    /* Keep the reached concrete hook frame beside its whole typed child. */
+    hook_stage(block, block->kind == MC_BLOCK_E_E && !added ? "e" : "rw",
+               block->kind == MC_BLOCK_E_E && !added ? "e" : "lb",
+               detail.hook_bytecode != 0 ? detail.hook_bytecode : detail.bytecode, error);
+    error->tile = detail;
+    error->registry = detail.registry;
+    error->entity = detail.entity;
+    error->publication = detail.publication;
+    return storage_fail(world, error, detail.cause);
+}
+
 /* fd/dj.a(IIIIII)Z. These are nonacquiring presence calls, not World block
  * reads. Shifted endpoints cannot increment-wrap; reversed ranges stay empty.
  * All six source shifts remain in their original order, including unused Y. */
@@ -191,9 +211,10 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_BK_AR:
             return mark_leaves(world, block, x, y, z, false, error);
         case MC_BLOCK_PT_JR:
-        case MC_BLOCK_DD_BZ:
         case MC_BLOCK_UJ_MT:
             return unavailable(world, block, "rw", "lb", "Block tile removal hook", error);
+        case MC_BLOCK_DD_BZ:
+            return tile_hook(world, block, x, y, z, false, error);
         case MC_BLOCK_XF_OV:
             return unavailable(world, block, "xf", "ov", "Block sponge removal hook", error);
         case MC_BLOCK_XQ_PA:
@@ -205,7 +226,7 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_SS_LU:
             return unavailable(world, block, "ss", "lu", "Block removal hook", error);
         case MC_BLOCK_E_E:
-            return unavailable(world, block, "e", "e", "Block chest removal hook", error);
+            return tile_hook(world, block, x, y, z, false, error);
         case MC_BLOCK_SM_LO:
             return unavailable(world, block, "sm", "lo", "Block wire removal hook", error);
         case MC_BLOCK_TC_LZ:
@@ -296,7 +317,7 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
         case MC_BLOCK_E_E:
         case MC_BLOCK_UJ_MT:
         case MC_BLOCK_FO_DT:
-            return unavailable(world, block, "rw", "lb", "Block tile addition hook", error);
+            return tile_hook(world, block, x, y, z, true, error);
         case MC_BLOCK_PC_JJ:
         case MC_BLOCK_PH_JN:
             return unavailable(world, block, "pc", "jj", "Block rail addition hook", error);

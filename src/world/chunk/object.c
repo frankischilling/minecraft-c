@@ -31,6 +31,34 @@ static void nibble_construct(mc_world_chunk_nibble *nibble, uint8_t *storage, si
     nibble->length = packed_length;
 }
 
+static bool tile_map_virgin(const mc_world_chunk_tile_map *map)
+{
+    return map->count == 0 && map->backing == NULL && map->release_backing == NULL &&
+           map->backing_bytes == NULL;
+}
+
+static bool tile_map_owned_bytes(const mc_world_chunk *chunk, size_t *out)
+{
+    const mc_world_chunk_tile_map *const map = &chunk->tile_map;
+    if (tile_map_virgin(map)) {
+        *out = 0;
+        return true;
+    }
+    if (map->release_backing == NULL || map->backing_bytes == NULL)
+        return false;
+
+    /* This native inspection validates the actual owned descriptor, never
+     * the mutable source l projection or a second lower ledger. A retired
+     * descriptor retains both hooks but owns no allocation or occurrences. */
+    size_t bytes = 0;
+    if (!map->backing_bytes(chunk, &bytes) ||
+        (map->backing == NULL && (map->count != 0 || bytes != 0)) ||
+        (map->backing != NULL && bytes == 0))
+        return false;
+    *out = bytes;
+    return true;
+}
+
 mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, int32_t x, int32_t z,
                                                       uint8_t **blocks, size_t length,
                                                       size_t max_allocation_bytes,
@@ -83,10 +111,11 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
     chunk->allocation_bytes = allocation_bytes;
     chunk->max_allocation_bytes = max_allocation_bytes;
     chunk->entity_containers_retired = false;
+    chunk->source_disabled = false;
     chunk->release_entity = NULL;
 
     /* lm/hi.<init>(World,II)V: fresh empty Map, l12. */
-    chunk->tile_map.count = 0;
+    chunk->tile_map = (mc_world_chunk_tile_map){0};
     chunk->l = &chunk->tile_map;
 
     /* Fresh List[8] with null elements at18, m21. */
@@ -152,8 +181,9 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
         return chunk_result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                             "loaded Chunk header allocation");
 
-    /* The stored owner has already decoded its actual cells and normalized
-     * blocks. Bind only our own reference/child headers; never clear, copy,
+    /* The stored owner has already decoded its actual cells. Normalization
+     * belongs to its caller's load protocol. Bind only reference/child headers;
+     * never clear, copy,
      * rebind or resynchronize any borrowed state/data/array. */
     mc_chunk_data *data = state->data;
     *chunk = (mc_world_chunk){.state = state,
@@ -172,6 +202,7 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
     chunk->e = &chunk->metadata;
     chunk->f = &chunk->skylight;
     chunk->g = &chunk->block_light;
+    chunk->tile_map = (mc_world_chunk_tile_map){0};
     chunk->l = &chunk->tile_map;
     chunk->slices.length = CHUNK_ENTITY_SLICES;
     for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index)
@@ -260,7 +291,7 @@ mc_world_storage_status mc_world_chunk_entity_count(const mc_world_chunk_entity_
 
 bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk)
 {
-    if (chunk == NULL || chunk->entity_containers_retired ||
+    if (!mc_world_chunk_source_enabled(chunk) || !tile_map_virgin(&chunk->tile_map) ||
         !mc_world_chunk_entities_validate(chunk) || chunk->d == NULL || chunk->state == NULL ||
         chunk->data == NULL || chunk->state->blank || chunk->state->data != chunk->data ||
         chunk->bound_blocks == NULL || chunk->state->x != chunk->constructor_x ||
@@ -273,7 +304,7 @@ bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk)
         chunk->skylight.a != chunk->data->skylight ||
         chunk->skylight.length != (size_t)MC_CHUNK_NIBBLE_BYTES ||
         chunk->block_light.a != chunk->data->block_light ||
-        chunk->block_light.length != (size_t)MC_CHUNK_NIBBLE_BYTES || chunk->tile_map.count != 0 ||
+        chunk->block_light.length != (size_t)MC_CHUNK_NIBBLE_BYTES ||
         chunk->slices.length != CHUNK_ENTITY_SLICES)
         return false;
     if (chunk->storage_kind == CHUNK_STORAGE_GENERATED) {
@@ -296,7 +327,7 @@ void mc_world_chunk_storage_free(mc_world_chunk *chunk)
         /* Generated header is the first member of its malloc backing. Loaded
          * headers have no owned blocks/tail; their stored payload outlives this
          * call and is freed separately by the store. */
-        mc_world_chunk_entities_release(chunk);
+        mc_world_chunk_containers_release(chunk);
         free(chunk->owned_blocks);
         free(chunk);
     }
@@ -336,6 +367,14 @@ bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk)
     } else {
         return false;
     }
+    /* One direct ownership ledger: actual base storage, validated embedded
+     * Map backing, and each actual Entity capacity. Never derive one owner
+     * by subtracting another from allocation_bytes. The Map inspector must
+     * not call this validator and must not acquire a source l dereference. */
+    size_t map_bytes;
+    if (!tile_map_owned_bytes(chunk, &map_bytes) || map_bytes > SIZE_MAX - bytes)
+        return false;
+    bytes += map_bytes;
     for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index) {
         const mc_world_chunk_entity_list *const list = &chunk->entities[index];
         if (chunk->slices.items[index] != list || !list_valid(list) ||
@@ -382,7 +421,28 @@ void mc_world_chunk_entities_release(mc_world_chunk *chunk)
     }
 }
 
+void mc_world_chunk_containers_release(mc_world_chunk *chunk)
+{
+    if (chunk == NULL)
+        return;
+    mc_world_chunk_entities_release(chunk);
+    /* Finalize the actual embedded owner even if source l was replaced.
+     * This is native held-resource cleanup, never a source Map callback. */
+    if (chunk->tile_map.release_backing != NULL)
+        chunk->tile_map.release_backing(&chunk->tile_map);
+}
+
 bool mc_world_chunk_entity_containers_retired(const mc_world_chunk *chunk)
 {
     return chunk != NULL && chunk->entity_containers_retired;
+}
+
+bool mc_world_chunk_source_enabled(const mc_world_chunk *chunk)
+{
+    return chunk != NULL && !chunk->entity_containers_retired && !chunk->source_disabled;
+}
+
+void mc_world_chunk_source_disable(mc_world_chunk *chunk)
+{
+    chunk->source_disabled = true;
 }

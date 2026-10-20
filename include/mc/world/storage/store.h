@@ -157,6 +157,11 @@ mc_world_storage_status mc_world_store_retain_chunk(mc_world_store *store, int32
 mc_world_storage_status mc_world_store_write_chunk(mc_world_store *store, mc_chunk_state *chunk,
                                                    int64_t world_time, uint32_t timestamp,
                                                    uint32_t *growth, mc_world_storage_error *error);
+/* Count includes every actual retained owner, including pending and failed
+ * internal GAME stages. Such stages consume the same finite capacity and are
+ * exact-identity leaseable; they are never coordinate cache hits or successful
+ * loader publications. Every noncommitted stage refuses serialization before
+ * session checks or output/state/file effects. */
 size_t mc_world_store_chunk_count(const mc_world_store *store);
 
 /* Identity queries use the exact retained state pointer, never coordinates or a
@@ -194,7 +199,9 @@ mc_world_storage_status mc_world_store_unregister_cache(mc_world_store *store,
  * Invalid cache/fallback metadata returns INVALID_ARGUMENT without freeing.
  * Leases, active=true, or any map/list/fallback occurrence return BUSY. Repeated
  * list entries, overwritten packed aliases and references from several caches
- * all count. Success unlinks/frees this owner and recovers one admission slot.
+ * all count. An uncommitted GAME stage that began imports additionally requires
+ * terminal joint Entity/Tile container retirement, including when active is false.
+ * Success unlinks/frees this owner and recovers one admission slot.
  * No save, file/session/metadata change or shared-region clear occurs.
  *
  * The caller must first retire every unregistered raw pointer/view, including
@@ -274,5 +281,18 @@ mc_chunk_load_result mc_world_store_load_callback(void *loader,
  * save, session-lock deletion or shared-region-cache clearing occurs. NULL is
  * valid. Explicitly clear/free regions only after every borrowing store stops. */
 void mc_world_store_free(mc_world_store *store);
+
+/* Checked native close. Validate the WHOLE actual ownership graph before any
+ * release: registrations must be valid and unregistered, reservations gone,
+ * identity/coordinator leases zero, runtime headers coherent and their joint
+ * Entity/Tile containers terminally retired. Generic unbound stored owners keep
+ * their existing borrowed-view obligations. On failure *owner and every owner
+ * remain unchanged; success frees the store and sets *owner=NULL. NULL owner
+ * argument is invalid; a NULL *owner succeeds. No save, source callback, lock
+ * deletion or region-cache clear occurs. This cannot discover arbitrary raw
+ * pointers: the Store must still outlive every borrowing World/view. Legacy
+ * void free above keeps its existing quiescent caller precondition. */
+mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
+                                                    mc_world_storage_error *error);
 
 #endif

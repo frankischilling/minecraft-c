@@ -1,5 +1,13 @@
 # Storage and original references
 
+The [live Tile and staged GAME path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
+imports supported Tile records into the same Store-owned Chunk before block
+normalization. Failed imports retain their source prefix under that owner and
+disable further direct source use. Pending and failed imports require joint
+container retirement before individual disposal. Successfully committed chunks
+retain ordinary save, unload and retirement behavior. Full live Tile saving,
+Entity NBT construction and original/native Tile replay remain unfinished.
+
 The [original World query observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/world-queries.md)
 retain 44 calls, 112 snapshots and 170 raw Context records per side. Complete
 array images, typed fields and namespace bridges preserve actual World/Chunk

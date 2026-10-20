@@ -19,6 +19,7 @@ struct mc_world_runtime_classes {
     const mc_math_trig *trig;
     mc_registry_classes *registry;
     struct mc_entity_classes *entities;
+    struct mc_tile_classes *tiles;
     int32_t enqueue_depth;
     size_t live_worlds;
     bool initialized;

@@ -2,6 +2,7 @@
 #include "activation_internal.h"
 
 #include "construction_internal.h"
+#include "mc/world/runtime/tiles/tiles.h"
 #include "runtime_internal.h"
 
 static mc_world_storage_status result(mc_world_activation_error *error, mc_world_runtime *world,
@@ -15,7 +16,8 @@ static mc_world_storage_status result(mc_world_activation_error *error, mc_world
                                              .operation = cause.operation,
                                              .bytecode = bytecode,
                                              .world_bytecode = world_bytecode,
-                                             .cause = cause};
+                                             .cause = cause,
+                                             .tile = mc_live_tiles_empty_error()};
     return cause.status;
 }
 
@@ -35,8 +37,8 @@ static mc_world_storage_status completed(mc_world_activation_error *error)
 static mc_world_storage_status fields_get(mc_world_chunk *chunk, mc_world_chunk_fields *fields,
                                           mc_world_activation_error *error)
 {
-    if (mc_world_chunk_entity_containers_retired(chunk))
-        return failed(error, NULL, 0, 0, "Chunk containers are retired");
+    if (chunk != NULL && !mc_world_chunk_source_enabled(chunk))
+        return failed(error, NULL, 0, 0, "Chunk source operations are disabled");
     mc_world_storage_status status = mc_world_chunk_fields_get(chunk, fields);
     if (status != MC_WORLD_STORAGE_OK)
         return result(error, NULL, 0, 0,
@@ -117,17 +119,12 @@ mc_world_storage_status mc_world_runtime_register_chunk_tiles(mc_world_chunk *ch
     if (status != MC_WORLD_STORAGE_OK)
         return status;
 
-    /* L1 is the first callee field read. Read only its selected G8 or c22. */
-    const bool pending = world->fields.L;
-    const mc_world_reference_list *destination = pending ? world->fields.G : world->fields.c;
-    const unsigned int call_pc = pending ? 12u : 26u;
-    status = destination_check(world, destination, 18, call_pc, error);
-    if (status == MC_WORLD_STORAGE_OK) {
-        size_t count;
-        if (mc_world_chunk_tile_count(fields.l, &count) != MC_WORLD_STORAGE_OK)
-            status = failed(error, world, 18, call_pc, "World empty addAll tile input");
-        else if (count != 0)
-            status = failed(error, world, 18, call_pc, "World nonempty tile addAll unsupported");
+    mc_live_tile_error detail = mc_live_tiles_empty_error();
+    status = mc_live_tiles_chunk_register(chunk, &detail);
+    if (status != MC_WORLD_STORAGE_OK) {
+        result(error, world, detail.bytecode, detail.chunk_bytecode, detail.cause);
+        if (error != NULL)
+            error->tile = detail;
     }
     mc_world_runtime_call_leave(world);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
@@ -173,13 +170,15 @@ mc_world_storage_status mc_world_runtime_invalidate_chunk_tiles(mc_world_chunk *
         return status;
     if (fields.l == NULL)
         return failed(error, NULL, 9, 0, "Chunk detach tile Map values receiver is null");
-    /* values9/iterator14/hasNext21: known-empty actual input completes the
-     * traversal. No World or TileEntity receiver is reached on this branch. */
-    size_t count;
-    if (mc_world_chunk_tile_count(fields.l, &count) != MC_WORLD_STORAGE_OK)
-        return failed(error, NULL, 21, 0, "Chunk detach tile iterator input");
-    if (count != 0)
-        return failed(error, NULL, 21, 0, "Chunk nonempty tile invalidation unsupported");
+    /* Tile invalidation reads no World receiver, including a nonempty Map. */
+    mc_live_tile_error detail = mc_live_tiles_empty_error();
+    status = mc_live_tiles_chunk_invalidate(chunk, &detail);
+    if (status != MC_WORLD_STORAGE_OK) {
+        result(error, NULL, detail.bytecode, detail.chunk_bytecode, detail.cause);
+        if (error != NULL)
+            error->tile = detail;
+        return status;
+    }
     return completed(error);
 }
 

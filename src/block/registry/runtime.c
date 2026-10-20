@@ -22,7 +22,7 @@ static mc_registry_status result(mc_registry_error *error, mc_registry_status st
     return status;
 }
 
-static mc_registry_status quiescent(mc_registry_classes *classes, mc_registry_error *error)
+static mc_registry_status quiescent(const mc_registry_classes *classes, mc_registry_error *error)
 {
     if (classes == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry owner");
@@ -78,16 +78,25 @@ mc_registry_status mc_registry_classes_retain(mc_registry_classes *classes,
     return result(error, MC_REGISTRY_OK, NULL);
 }
 
-mc_registry_status mc_registry_classes_release(mc_registry_classes *classes,
-                                               mc_registry_error *error)
+mc_registry_status mc_registry_runtime_borrow_release_admit(const mc_registry_classes *classes,
+                                                            mc_registry_error *error)
 {
     mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
     if (classes->runtime_borrows == 0)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry binding count is zero");
-    --classes->runtime_borrows;
     return result(error, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_registry_classes_release(mc_registry_classes *classes,
+                                               mc_registry_error *error)
+{
+    const mc_registry_status status = mc_registry_runtime_borrow_release_admit(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    --classes->runtime_borrows;
+    return status;
 }
 
 static mc_registry_status enter_blocks(mc_registry_classes *classes, mc_registry_error *error)

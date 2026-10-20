@@ -1,12 +1,16 @@
 #include "mutation_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
+#include "../../chunk/object_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/dimension/dimension.h"
 
 static bool initial(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t *height,
                     int32_t *old, mc_world_mutation_error *error)
 {
+    if (!mc_world_chunk_source_enabled(chunk))
+        return mc_world_mutation_fail(NULL, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "Chunk mutation source is disabled");
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     const int32_t column = mc_java_i32_shl(z, 4) | x;

@@ -219,14 +219,22 @@ mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_
     return MC_ENTITY_OK;
 }
 
-mc_entity_status mc_entity_classes_release(mc_entity_classes *classes)
+mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes *classes)
 {
     if (classes == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (classes->borrowers == 0)
         return MC_ENTITY_STATE_ERROR;
-    --classes->borrowers;
     return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_classes_release(mc_entity_classes *classes)
+{
+    const mc_entity_status status = mc_entity_classes_runtime_release_admit(classes);
+    if (status != MC_ENTITY_OK)
+        return status;
+    --classes->borrowers;
+    return status;
 }
 
 mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay)

@@ -2,6 +2,7 @@
 #include "../storage/objects_internal.h"
 #include "activation_internal.h"
 #include "generation/generation_internal.h"
+#include "loading/loading_internal.h"
 #include "millis.h"
 #include "provider_internal.h"
 #include "runtime_internal.h"
@@ -14,6 +15,34 @@ static mc_world_storage_status runtime_error(mc_world_storage_error *error,
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
+}
+
+static mc_world_runtime_acquisition_error acquisition_empty_error(void)
+{
+    return (mc_world_runtime_acquisition_error){.status = MC_CHUNK_ACQUIRE_OK,
+                                                .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
+                                                .registry = mc_tile_empty_error().registry,
+                                                .tile = mc_live_tiles_empty_error()};
+}
+
+static void acquisition_cause(mc_world_runtime *runtime, mc_world_storage_error cause)
+{
+    if (runtime->acquisition_error != NULL) {
+        *runtime->acquisition_error = acquisition_empty_error();
+        runtime->acquisition_error->cause = cause;
+    }
+}
+
+static void acquisition_activation(mc_world_runtime *runtime,
+                                   const mc_world_activation_error *error)
+{
+    if (runtime->acquisition_error != NULL) {
+        acquisition_cause(runtime, error->cause);
+        runtime->acquisition_error->tile = error->tile;
+        runtime->acquisition_error->registry = error->tile.registry;
+        runtime->acquisition_error->activation_bytecode = error->bytecode;
+        runtime->acquisition_error->activation_world_bytecode = error->world_bytecode;
+    }
 }
 
 static mc_java_random_profile_status random_result(mc_world_runtime *runtime,
@@ -35,12 +64,17 @@ static mc_java_random_profile_status random_result(mc_world_runtime *runtime,
 static bool reference_retain(void *owner, mc_chunk_state *chunk)
 {
     mc_world_runtime *runtime = owner;
-    if (runtime->local_leases == SIZE_MAX)
+    if (runtime->local_leases == SIZE_MAX) {
+        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_LIMIT, "runtime local lease retain");
+        acquisition_cause(runtime, runtime->last_error);
         return false;
+    }
     if (chunk != &runtime->fallback &&
         mc_world_store_lease_chunk(runtime->options.store, chunk, &runtime->last_error) !=
-            MC_WORLD_STORAGE_OK)
+            MC_WORLD_STORAGE_OK) {
+        acquisition_cause(runtime, runtime->last_error);
         return false;
+    }
     ++runtime->local_leases;
     return true;
 }
@@ -58,9 +92,18 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
 {
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        mc_world_storage_status status = mc_world_store_load_game_chunk(
-            runtime->options.store, runtime, runtime->options.dimension, x, z, out,
-            &runtime->last_error);
+        mc_world_game_load_error error;
+        mc_world_storage_status status = mc_world_runtime_load_game(runtime, x, z, out, &error);
+        runtime->last_error = error.cause;
+        if (status != MC_WORLD_STORAGE_OK && status != MC_WORLD_STORAGE_MISSING) {
+            acquisition_cause(runtime, runtime->last_error);
+            if (runtime->acquisition_error != NULL) {
+                runtime->acquisition_error->tile = error.tile;
+                runtime->acquisition_error->registry = error.tile.registry;
+                runtime->acquisition_error->load_bytecode = error.region_bytecode;
+                runtime->acquisition_error->load_builder_bytecode = error.builder_bytecode;
+            }
+        }
         return status == MC_WORLD_STORAGE_OK        ? MC_CHUNK_LOAD_LOADED
                : status == MC_WORLD_STORAGE_MISSING ? MC_CHUNK_LOAD_MISS
                                                     : MC_CHUNK_LOAD_FATAL;
@@ -68,6 +111,8 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
     mc_chunk_load_result result =
         mc_world_store_load_callback(&runtime->loader, context, x, z, out);
     runtime->last_error = runtime->loader.last_error;
+    if (result == MC_CHUNK_LOAD_FATAL)
+        acquisition_cause(runtime, runtime->loader.last_error);
     if (result == MC_CHUNK_LOAD_MISS && runtime->options.generator == NULL &&
         runtime->construction.mode == MC_WORLD_RUNTIME_COMPOSITION)
         return MC_CHUNK_LOAD_FATAL;
@@ -85,15 +130,20 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
             mc_world_provider_generate_game(runtime->fields.v, x, z, out, &error);
         if (status != MC_WORLD_STORAGE_OK) {
             runtime->last_error = error.cause;
+            acquisition_cause(runtime, error.cause);
             if (error.registry.status != MC_REGISTRY_OK)
                 runtime->last_registry_error = error.registry;
+            if (runtime->acquisition_error != NULL)
+                runtime->acquisition_error->registry = error.registry;
         }
         return status == MC_WORLD_STORAGE_OK;
     }
     mc_world_store_reservation *reservation = NULL;
     if (mc_world_store_reserve_chunk(runtime->options.store, runtime->options.dimension,
-                                     &reservation, &runtime->last_error) != MC_WORLD_STORAGE_OK)
+                                     &reservation, &runtime->last_error) != MC_WORLD_STORAGE_OK) {
+        acquisition_cause(runtime, runtime->last_error);
         return false;
+    }
     mc_normal_chunk *staging = calloc(1, sizeof(*staging));
     uint8_t *blocks = malloc(MC_CHUNK_BLOCKS);
     bool success = false;
@@ -118,8 +168,10 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
             runtime_error(&runtime->last_error, mapped, mc_normal_generator_status_string(status));
         }
     }
-    if (!success)
+    if (!success) {
+        acquisition_cause(runtime, runtime->last_error);
         (void)mc_world_store_cancel_reservation(runtime->options.store, reservation, NULL);
+    }
     free(blocks);
     free(staging);
     return success;
@@ -135,8 +187,10 @@ static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
     mc_world_activation_error error;
     mc_world_storage_status status = mc_world_runtime_register_chunk_tiles(
         mc_world_store_chunk_object(runtime->options.store, chunk), &error);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
+        acquisition_activation(runtime, &error);
+    }
     return status == MC_WORLD_STORAGE_OK;
 }
 
@@ -150,8 +204,10 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *conte
     mc_world_activation_error error;
     mc_world_storage_status status = mc_world_runtime_register_chunk_entities(
         mc_world_store_chunk_object(runtime->options.store, chunk), slice, &error);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
+        acquisition_activation(runtime, &error);
+    }
     return status == MC_WORLD_STORAGE_OK;
 }
 
@@ -161,6 +217,7 @@ static bool populate(void *owner, const mc_chunk_acquire_context *context, int32
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World feature population");
+        acquisition_cause(runtime, runtime->last_error);
         return false;
     }
     return runtime->options.populate(runtime->options.provider, context, x, z);
@@ -610,62 +667,96 @@ void mc_world_runtime_binding_release(mc_world_runtime *runtime)
     --runtime->persistent_bindings;
 }
 
-static mc_chunk_acquire_status enter_acquire(mc_world_runtime *runtime)
+static mc_chunk_acquire_status enter_acquire(mc_world_runtime *runtime,
+                                             mc_world_storage_error *cause)
 {
-    if (runtime == NULL)
+    if (runtime == NULL) {
+        runtime_error(cause, MC_WORLD_STORAGE_INVALID_ARGUMENT, "runtime acquisition owner");
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+    }
     if (!runtime->construction.contexts_bound ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "runtime acquisition context not installed");
+        *cause = runtime->last_error;
         return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
     }
-    if (runtime->active_calls == SIZE_MAX)
+    if (runtime->active_calls == SIZE_MAX) {
+        runtime_error(cause, MC_WORLD_STORAGE_LIMIT, "runtime acquisition call hold");
         return MC_CHUNK_ACQUIRE_LIMIT;
+    }
     ++runtime->active_calls;
     return MC_CHUNK_ACQUIRE_OK;
+}
+
+typedef enum acquisition_operation {
+    ACQUISITION_ACQUIRE,
+    ACQUISITION_GET,
+    ACQUISITION_POPULATE,
+    ACQUISITION_MARK_DROP
+} acquisition_operation;
+
+static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z,
+                                               mc_chunk_state **out,
+                                               acquisition_operation operation,
+                                               mc_world_runtime_acquisition_error *error)
+{
+    mc_world_runtime_acquisition_error frame = acquisition_empty_error();
+    frame.status = enter_acquire(runtime, &frame.cause);
+    if (frame.status == MC_CHUNK_ACQUIRE_OK) {
+        mc_world_runtime_acquisition_error *previous = runtime->acquisition_error;
+        runtime->acquisition_error = &frame;
+        switch (operation) {
+            case ACQUISITION_ACQUIRE:
+                frame.status = mc_chunk_acquire(&runtime->acquisition, x, z, out);
+                break;
+            case ACQUISITION_GET:
+                frame.status = mc_chunk_acquire_get(&runtime->acquisition, x, z, out);
+                break;
+            case ACQUISITION_POPULATE:
+                frame.status = mc_chunk_acquire_populate(&runtime->acquisition, x, z);
+                break;
+            case ACQUISITION_MARK_DROP:
+                frame.status = mc_chunk_acquire_mark_drop(&runtime->acquisition, x, z);
+                break;
+        }
+        runtime->acquisition_error = previous;
+        --runtime->active_calls;
+    }
+    if (frame.status == MC_CHUNK_ACQUIRE_OK)
+        frame = acquisition_empty_error();
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
 }
 
 mc_chunk_acquire_status mc_world_runtime_acquire(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                  mc_chunk_state **out)
 {
-    mc_chunk_acquire_status status = enter_acquire(runtime);
-    if (status != MC_CHUNK_ACQUIRE_OK)
-        return status;
-    status = mc_chunk_acquire(&runtime->acquisition, x, z, out);
-    --runtime->active_calls;
-    return status;
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_ACQUIRE, NULL);
 }
 
 mc_chunk_acquire_status mc_world_runtime_get(mc_world_runtime *runtime, int32_t x, int32_t z,
                                              mc_chunk_state **out)
 {
-    mc_chunk_acquire_status status = enter_acquire(runtime);
-    if (status != MC_CHUNK_ACQUIRE_OK)
-        return status;
-    status = mc_chunk_acquire_get(&runtime->acquisition, x, z, out);
-    --runtime->active_calls;
-    return status;
+    return mc_world_runtime_get_detailed(runtime, x, z, out, NULL);
+}
+
+mc_chunk_acquire_status mc_world_runtime_get_detailed(mc_world_runtime *runtime, int32_t x,
+                                                      int32_t z, mc_chunk_state **out,
+                                                      mc_world_runtime_acquisition_error *error)
+{
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error);
 }
 
 mc_chunk_acquire_status mc_world_runtime_populate(mc_world_runtime *runtime, int32_t x, int32_t z)
 {
-    mc_chunk_acquire_status status = enter_acquire(runtime);
-    if (status != MC_CHUNK_ACQUIRE_OK)
-        return status;
-    status = mc_chunk_acquire_populate(&runtime->acquisition, x, z);
-    --runtime->active_calls;
-    return status;
+    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_POPULATE, NULL);
 }
 
 mc_chunk_acquire_status mc_world_runtime_mark_drop(mc_world_runtime *runtime, int32_t x, int32_t z)
 {
-    mc_chunk_acquire_status status = enter_acquire(runtime);
-    if (status != MC_CHUNK_ACQUIRE_OK)
-        return status;
-    status = mc_chunk_acquire_mark_drop(&runtime->acquisition, x, z);
-    --runtime->active_calls;
-    return status;
+    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_MARK_DROP, NULL);
 }
 
 static mc_chunk_lifecycle_status enter_lifecycle(mc_world_runtime *runtime)

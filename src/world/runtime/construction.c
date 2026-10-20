@@ -1,5 +1,7 @@
 #include "runtime_internal.h"
 
+#include "../../block/registry/runtime_internal.h"
+#include "../../entity/entity_internal.h"
 #include "../storage/objects_internal.h"
 #include "construction_internal.h"
 #include "entity_publication_internal.h"
@@ -82,16 +84,28 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
         return result(error, MC_WORLD_STORAGE_BUSY, "World class has live instances");
     if (classes->registry != NULL) {
         mc_registry_error cause;
-        mc_registry_status status = mc_registry_classes_release(classes->registry, &cause);
+        mc_registry_status status =
+            mc_registry_runtime_borrow_release_admit(classes->registry, &cause);
         if (status != MC_REGISTRY_OK)
             return result(error, mc_world_runtime_registry_status(status), cause.message);
-        classes->registry = NULL;
     }
     if (classes->entities != NULL) {
-        if (mc_entity_classes_release(classes->entities) != MC_ENTITY_OK)
+        if (mc_entity_classes_runtime_release_admit(classes->entities) != MC_ENTITY_OK)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World Entity class binding release");
+    }
+    const mc_world_storage_status tiles = mc_live_tiles_classes_retire(classes, error);
+    if (tiles != MC_WORLD_STORAGE_OK)
+        return tiles;
+    /* All dependent releases are admitted above under unchanged exclusive
+     * owners. Tile retirement cannot alter either application binding. */
+    if (classes->entities != NULL) {
+        (void)mc_entity_classes_release(classes->entities);
         classes->entities = NULL;
+    }
+    if (classes->registry != NULL) {
+        (void)mc_registry_classes_release(classes->registry, NULL);
+        classes->registry = NULL;
     }
     free(classes);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
@@ -241,6 +255,10 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
     *field = list;
     if (field == &runtime->fields.b)
         runtime->entity_membership.list = list;
+    else if (field == &runtime->fields.c)
+        mc_live_tiles_capture_list(runtime, false, list);
+    else if (field == &runtime->fields.G)
+        mc_live_tiles_capture_list(runtime, true, list);
     runtime->construction.last_store_pc = store_pc;
     return true;
 }
@@ -721,8 +739,13 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
     if (runtime->entity_membership.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World Entity occurrences remain");
+    if (!mc_live_tiles_lists_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Tile ownership metadata");
+    if (runtime->tile_membership[0].count != 0 || runtime->tile_membership[1].count != 0)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World Tile occurrences remain");
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_runtime_entity_list_release(runtime);
+    mc_live_tiles_lists_release(runtime);
     mc_world_runtime_lighting_free(runtime);
     mc_world_reference_list *lists[] = {f->C, f->b, f->D, f->c, f->G, f->d, f->e, f->u, f->K, f->R};
     for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
@@ -798,10 +821,10 @@ static bool entity_retirement_other_collections_empty(const mc_world_runtime *wo
 {
     const mc_world_runtime_fields *fields = &world->fields;
     /* C/E/F are already concrete typed owners retained until final native free.
-     * b is admitted separately. Never reinterpret entries of these remaining
+     * b/c/G are admitted separately. Never reinterpret entries of these remaining
      * finite void* lists, clear their counts, or discard a nonempty active set. */
-    const mc_world_reference_list *lists[] = {fields->D, fields->c, fields->G, fields->d,
-                                              fields->e, fields->u, fields->K, fields->R};
+    const mc_world_reference_list *lists[] = {fields->D, fields->d, fields->e,
+                                              fields->u, fields->K, fields->R};
     for (size_t index = 0; index < sizeof(lists) / sizeof(lists[0]); ++index) {
         const mc_world_reference_list *list = lists[index];
         if (list != NULL && (list->count != 0 || list->capacity > SIZE_MAX / sizeof(*list->items) ||
@@ -823,6 +846,9 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     if (!mc_world_runtime_entity_list_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement ownership metadata");
+    if (!mc_live_tiles_lists_valid(world))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World Tile retirement ownership metadata");
     if (!entity_retirement_other_collections_empty(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement untyped collections");
@@ -838,11 +864,13 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
      * to a separate API; this operation must not clear then report BUSY.
      * The latch is terminal: central source entry/acquire/lifecycle, constructor,
      * default Random creation/new bindings and context getters must reject it.
-     * Do not save or resume a World after discarding its actual Entity state. */
+     * Do not save or resume a World after discarding Entity or Tile state. */
     world->entity_containers_retired = true;
+    world->tile_containers_retired = true;
     world->construction.phase = MC_WORLD_RUNTIME_RETIRED;
     if (store != NULL)
         mc_world_store_entity_containers_release(store, world);
     mc_world_runtime_entity_list_release(world);
+    mc_live_tiles_lists_release(world);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

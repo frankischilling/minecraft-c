@@ -162,6 +162,7 @@ if(MINGW)
 endif()
 
 add_library(mc_world STATIC
+    src/world/runtime/tiles/errors.c
     src/world/schedule/entry.c
     src/world/schedule/membership.c
     src/world/schedule/ordered.c
@@ -196,6 +197,8 @@ target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
 target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
 
 add_library(mc_simulation STATIC
+    src/world/runtime/tiles/tiles.c
+    src/world/runtime/loading/loading.c
     src/world/runtime/runtime.c
     src/world/runtime/activation.c
     src/world/runtime/registry.c
@@ -434,6 +437,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_tiles tests/world/runtime/tiles/test_tiles.c)
+    target_link_libraries(mc_test_world_tiles PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_registry_runtime_literals tests/block/registry/test_runtime_literals.c)
     target_link_libraries(mc_test_registry_runtime_literals PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -1023,6 +1029,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-publication-contracts")
     set_tests_properties(world.entity_publication PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.tiles
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_tiles.py"
+        --executable "$<TARGET_FILE:mc_test_world_tiles>"
+        --mode all
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-tiles-contracts")
+    set_tests_properties(world.tiles PROPERTIES
+        LABELS "public;integration;ownership;mutation;storage" TIMEOUT 90)
 
     add_test(NAME world.queries
         COMMAND "${Python3_EXECUTABLE}"

@@ -1,8 +1,12 @@
 #include "mc/resources/translation/translation.h"
 #include "mc/world/biome/registry.h"
+#include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/lighting.h"
+#include "mc/world/runtime/tiles/tiles.h"
 
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/world/chunk/object_internal.h"
+#include "../../../src/world/runtime/acquisition_internal.h"
 #include "../../../src/world/runtime/activation_internal.h"
 #include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/storage/objects_internal.h"
@@ -423,7 +427,8 @@ static uint8_t input_byte(size_t array, size_t i)
     return (uint8_t)((i * (2u * array + 1u) + array * 37u + 11u) & 255u);
 }
 
-static bool write_record(fixture *f, int32_t x, int32_t z, bool entities, bool tiles)
+static bool write_record_at(fixture *f, int32_t x, int32_t z, int32_t stored_x, int32_t stored_z,
+                            bool entities, bool tiles)
 {
     bool ok = false;
     record *r = NULL;
@@ -449,8 +454,8 @@ static bool write_record(fixture *f, int32_t x, int32_t z, bool entities, bool t
         r->fields[i].name = ascii(names[i], r->names[i]);
         r->level_items[i + 1u] = &r->fields[i];
     }
-    r->fields[0].value.int_value = x;
-    r->fields[1].value.int_value = z;
+    r->fields[0].value.int_value = stored_x;
+    r->fields[1].value.int_value = stored_z;
     r->fields[2].value.long_value = -123;
     r->fields[8].value.byte_value = 1;
     for (size_t a = 0; a < COUNT(lengths); ++a) {
@@ -504,6 +509,11 @@ cleanup:
     free(encoded);
     free(r);
     return ok;
+}
+
+static bool write_record(fixture *f, int32_t x, int32_t z, bool entities, bool tiles)
+{
+    return write_record_at(f, x, z, x, z, entities, tiles);
 }
 
 static bool patterned(const mc_chunk_data *data)
@@ -645,19 +655,54 @@ static bool opaque_refusal(fixture *f)
         CHECK(mc_world_regions_read(f->regions, mc_world_store_root(f->stores[1]), x, 4, &before,
                                     NULL) == MC_WORLD_STORAGE_OK);
         const size_t count = mc_world_store_chunk_count(f->stores[1]);
+        const size_t stages = mc_world_store_game_stage_count(f->stores[1]);
         const size_t cached = f->provider[1].cache->count;
         mc_chunk_state *out = sentinel;
         CHECK(mc_world_store_load_game_chunk(f->stores[1], f->worlds[1], 0, x, 4, &out, NULL) ==
                   MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
               out == sentinel && mc_world_store_chunk_count(f->stores[1]) == count);
-        CHECK(acquire(f, 1, x, 4, true, &out) == MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
-              out == sentinel &&
-              mc_world_runtime_last_error(f->worlds[1])->status ==
-                  MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-              mc_world_store_chunk_count(f->stores[1]) == count &&
+        mc_world_runtime_acquisition_error detail;
+        CHECK(mc_world_runtime_get_detailed(f->worlds[1], x, 4, &out, &detail) ==
+                  MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
+              out == sentinel && detail.cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              detail.load_bytecode == 143 &&
+              detail.load_builder_bytecode == (i == 0 ? 269u : 338u) &&
+              mc_world_store_chunk_count(f->stores[1]) == count + 1 &&
+              mc_world_store_game_stage_count(f->stores[1]) == stages + 1 &&
               f->provider[1].cache->count == cached &&
               !mc_chunk_cache_contains(f->provider[1].cache, x, 4) && f->resources[1].opens == 0 &&
               f->provider[1].generation->v == NULL);
+        mc_world_store_game_stage *stage = NULL;
+        mc_world_store_game_stage_view view;
+        CHECK(mc_world_store_game_stage_at(f->stores[1], stages, &stage, &view, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              stage != NULL && view.phase == MC_WORLD_STORE_GAME_FAILED && view.state != NULL &&
+              view.chunk != NULL && !view.state->active && !view.state->has_entities &&
+              !mc_world_chunk_source_enabled(view.chunk) &&
+              mc_world_store_chunk_object(f->stores[1], view.state) == view.chunk &&
+              remember(f, f->stores[1], view.state));
+        for (size_t cell = 0; cell < MC_CHUNK_BLOCKS; ++cell)
+            CHECK(view.state->data->blocks[cell] == input_byte(0, cell));
+        CHECK(mc_world_store_retire_chunk(f->stores[1], view.state, NULL) == MC_WORLD_STORAGE_BUSY);
+        if (i == 1) {
+            mc_live_tile_error tile_error;
+            CHECK(mc_live_tiles_remove(f->worlds[1], x * 16, 64, 4 * 16, &tile_error) ==
+                      MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+                  tile_error.status == tile_error.cause.status && tile_error.bytecode == 338 &&
+                  tile_error.load_bytecode == 143 && tile_error.load_builder_bytecode == 338 &&
+                  tile_error.acquisition_parent.remove_bytecode == 4 &&
+                  tile_error.acquisition_parent.bytecode ==
+                      tile_error.acquisition_caller_bytecode &&
+                  tile_error.acquisition_parent.bytecode != 0 &&
+                  mc_world_store_game_stage_count(f->stores[1]) == stages + 2 &&
+                  !mc_chunk_cache_contains(f->provider[1].cache, x, 4));
+            mc_world_store_game_stage_view nested_view;
+            CHECK(mc_world_store_game_stage_at(f->stores[1], stages + 1, &stage, &nested_view,
+                                               NULL) == MC_WORLD_STORAGE_OK &&
+                  nested_view.phase == MC_WORLD_STORE_GAME_FAILED &&
+                  nested_view.state != view.state && nested_view.chunk != view.chunk &&
+                  remember(f, f->stores[1], nested_view.state));
+        }
         CHECK(mc_world_regions_read(f->regions, mc_world_store_root(f->stores[1]), x, 4, &after,
                                     NULL) == MC_WORLD_STORAGE_OK &&
               before.length == after.length && memcmp(before.data, after.data, before.length) == 0);
@@ -668,6 +713,51 @@ static bool opaque_refusal(fixture *f)
     }
     ok = true;
 cleanup:
+    mc_compression_buffer_free(&before);
+    mc_compression_buffer_free(&after);
+    return ok;
+}
+
+static bool relocation_frontier(fixture *f)
+{
+    bool ok = false, leased = false;
+    mc_compression_buffer before = {0}, after = {0};
+    mc_chunk_state *out = f->children[0].state;
+    mc_world_store_game_stage *stage = NULL;
+    mc_world_store_game_stage_view view = {0};
+    const size_t count = mc_world_store_chunk_count(f->stores[1]);
+    const size_t stages = mc_world_store_game_stage_count(f->stores[1]);
+    CHECK(write_record_at(f, 42, 4, 43, 4, false, false));
+    CHECK(mc_world_regions_read(f->regions, mc_world_store_root(f->stores[1]), 42, 4, &before,
+                                NULL) == MC_WORLD_STORAGE_OK);
+    mc_world_runtime_acquisition_error detail;
+    CHECK(mc_world_runtime_get_detailed(f->worlds[1], 42, 4, &out, &detail) ==
+              MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
+          out == f->children[0].state &&
+          detail.cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          detail.load_bytecode == 158 && detail.load_builder_bytecode == 0 &&
+          mc_world_store_chunk_count(f->stores[1]) == count + 1 &&
+          mc_world_store_game_stage_count(f->stores[1]) == stages + 1 &&
+          !mc_chunk_cache_contains(f->provider[1].cache, 42, 4));
+    CHECK(mc_world_store_game_stage_at(f->stores[1], stages, &stage, &view, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          view.phase == MC_WORLD_STORE_GAME_FAILED && view.state->x == 43 && view.state->z == 4 &&
+          !view.state->has_entities && !view.state->active &&
+          !mc_world_chunk_source_enabled(view.chunk) && remember(f, f->stores[1], view.state));
+    for (size_t cell = 0; cell < MC_CHUNK_BLOCKS; ++cell)
+        CHECK(view.state->data->blocks[cell] == input_byte(0, cell));
+    CHECK(mc_world_store_lease_chunk(f->stores[1], view.state, NULL) == MC_WORLD_STORAGE_OK);
+    leased = true;
+    CHECK(mc_world_runtime_retire_entity_containers(f->worlds[1], NULL) == MC_WORLD_STORAGE_BUSY);
+    CHECK(mc_world_store_release_chunk(f->stores[1], view.state, NULL) == MC_WORLD_STORAGE_OK);
+    leased = false;
+    CHECK(mc_world_regions_read(f->regions, mc_world_store_root(f->stores[1]), 42, 4, &after,
+                                NULL) == MC_WORLD_STORAGE_OK &&
+          before.length == after.length && memcmp(before.data, after.data, before.length) == 0);
+    ok = true;
+cleanup:
+    if (leased)
+        (void)mc_world_store_release_chunk(f->stores[1], view.state, NULL);
     mc_compression_buffer_free(&before);
     mc_compression_buffer_free(&after);
     return ok;
@@ -773,6 +863,10 @@ static bool cleanup_fixture(fixture *f)
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
         if (f->worlds[i] != NULL && !drain_world(f, i))
             return false;
+    for (size_t i = 0; i < COUNT(f->worlds); ++i)
+        if (f->worlds[i] != NULL &&
+            mc_world_runtime_retire_entity_containers(f->worlds[i], NULL) != MC_WORLD_STORAGE_OK)
+            return false;
     for (size_t i = 0; i < COUNT(f->children); ++i) {
         if (f->children[i].state != NULL &&
             mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) !=
@@ -868,6 +962,7 @@ int main(int argc, char **argv)
     CHECK(population_prefix(f));
     CHECK(loaded_and_persisted(f));
     CHECK(opaque_refusal(f));
+    CHECK(relocation_frontier(f));
     CHECK(limits(f));
     CHECK(retirement(f));
     CHECK(!f->bad && !f->resources[0].bad && !f->resources[1].bad);

@@ -4,6 +4,7 @@
 #include "mc/entity/entity.h"
 #include "mc/world/chunk/object.h"
 #include "mc/world/runtime/construction.h"
+#include "mc/world/runtime/entity_errors.h"
 
 /* Bind the exact application Entity classes above all Worlds of this class.
  * Binding requires matching side/profile, no earlier World allocation, and no
@@ -13,16 +14,6 @@
  * An absent binding stays an explicit dependency at reached Entity allocation. */
 mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes *classes,
                                                         mc_entity_classes *entities);
-
-typedef struct mc_world_entity_error {
-    mc_world_storage_status status;
-    const char *operation;
-    unsigned int bytecode, presence_bytecode, provider_bytecode;
-    unsigned int chunk_bytecode, observer_bytecode;
-    mc_chunk_acquire_status acquisition;
-    mc_world_storage_error cause;
-    mc_entity_error entity;
-} mc_world_entity_error;
 
 /* Actual base World.b(Entity)Z. A missing nonplayer chunk completes false;
  * successful publication appends the same Entity to the actual Chunk slice and
@@ -53,11 +44,12 @@ mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk,
 
 /* Explicit terminal native teardown, separate from game removal/save/unload.
  * First retire borrowed views/calls/leases. Admission validates the complete
- * typed World.b ledger and every bound Chunk slice before releasing any hold.
+ * typed World.b/c/G ledgers and every bound Chunk slice/embedded Tile Map
+ * before releasing any hold. The historical name now admits both owner kinds.
  * Success terminates source operations and releases each actual occurrence;
  * it leaves gameplay q/membership/World bindings untouched. Retired containers
  * cannot serialize even when empty. Retire native cache/pending descriptors,
- * then World contexts and checked store owners; externally held Entities keep
+ * then World contexts and checked store owners; externally held Entities/Tiles keep
  * final World.free BUSY until their real construction bindings are released.
  * Failure before admission preserves every owner. No callback or save runs. */
 mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runtime *world,

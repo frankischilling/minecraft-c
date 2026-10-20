@@ -6,7 +6,8 @@
 
 mc_world_mutation_error mc_world_mutation_empty_error(void)
 {
-    return (mc_world_mutation_error){.registry = {.initializer_pc = -1,
+    return (mc_world_mutation_error){.tile = mc_live_tiles_empty_error(),
+                                     .registry = {.initializer_pc = -1,
                                                   .block_id = -1,
                                                   .constructor_pc = -1,
                                                   .active_initializer_pc = -1,

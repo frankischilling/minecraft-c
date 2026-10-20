@@ -22,9 +22,9 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
                                                       mc_world_storage_error *error);
 void mc_world_chunk_storage_free(mc_world_chunk *chunk);
 
-/* Construct finite known-empty loaded Chunk headers over the SAME stored
- * state/data/arrays. The store has already decoded the fixed shape and rejected
- * opaque entity/tile payloads. No borrowed cell is cleared, copied or rebound;
+/* Construct initially empty loaded Chunk headers over the SAME stored
+ * state/data/arrays. The store has decoded the fixed transport shape; its load
+ * protocol owns semantic imports and normalization. No borrowed cell is cleared, copied or rebound;
  * source NBT remains owned by the stored serializer. Header backing alone is
  * charged to this native budget. Failure preserves out and borrowed storage.
  * Concrete j/k stay final from binding onward; generic unbound stored owners
@@ -95,7 +95,13 @@ mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_lis
  * release is safe. */
 bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk);
 void mc_world_chunk_entities_release(mc_world_chunk *chunk);
+/* Joint native finalization after the same complete quiescent admission:
+ * Entity slices followed by the actual embedded Map, independent of source l.
+ * This remains infallible and terminal; no gameplay or source callback runs. */
+void mc_world_chunk_containers_release(mc_world_chunk *chunk);
 
 bool mc_world_chunk_entity_containers_retired(const mc_world_chunk *chunk);
+bool mc_world_chunk_source_enabled(const mc_world_chunk *chunk);
+void mc_world_chunk_source_disable(mc_world_chunk *chunk);
 
 #endif

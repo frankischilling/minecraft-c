@@ -3,6 +3,14 @@
 
 #include "mc/block/registry/registry.h"
 
+/* Read-only admission for ordinary classes_release: reject NULL, entered
+ * initialization, then zero runtime borrows, with fresh caller diagnostics.
+ * No owner mutation, class use, allocation, release or callback occurs. The
+ * error, if present, is disjoint from owner storage. Success reserves nothing;
+ * keep the same owner exclusive and unchanged through the matching release. */
+mc_registry_status mc_registry_runtime_borrow_release_admit(const mc_registry_classes *classes,
+                                                            mc_registry_error *error);
+
 /* Drop one independently owned native borrow, including inside an admitted
  * synchronous registry flow. No owner destruction/class use/callback occurs;
  * entered still prevents class destruction. Caller must own that exact live

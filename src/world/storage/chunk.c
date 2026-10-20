@@ -140,7 +140,7 @@ static void stored_bind(mc_stored_chunk *chunk)
     chunk->data.blocks_capacity = sizeof(chunk->blocks);
 }
 
-static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk,
+static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk, bool game,
                                                    mc_stored_chunk_error *error)
 {
     const mc_nbt_tag *root = mc_nbt_document_root(chunk->source);
@@ -151,7 +151,7 @@ static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk,
         return stored_status(error, MC_STORED_CHUNK_MISSING_LEVEL, "Level");
     if (stored_get(level, "Blocks") == NULL)
         return stored_status(error, MC_STORED_CHUNK_MISSING_BLOCKS, "Blocks");
-    const mc_nbt_tag *x, *z, *populated, *entities, *tiles;
+    const mc_nbt_tag *x, *z, *populated, *entities = NULL, *tiles = NULL;
     if (!stored_typed(level, "xPos", MC_NBT_INT, &x, error) ||
         !stored_typed(level, "zPos", MC_NBT_INT, &z, error) ||
         !stored_array(level, "Blocks", chunk->blocks, sizeof(chunk->blocks), error) ||
@@ -162,22 +162,25 @@ static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk,
                       error) ||
         !stored_array(level, "HeightMap", chunk->data.heightmap, sizeof(chunk->data.heightmap),
                       error) ||
-        !stored_typed(level, "TerrainPopulated", MC_NBT_BYTE, &populated, error) ||
-        !stored_list(level, "Entities", &entities, error) ||
-        !stored_list(level, "TileEntities", &tiles, error)) {
+        !stored_typed(level, "TerrainPopulated", MC_NBT_BYTE, &populated, error)) {
+        return error == NULL ? MC_STORED_CHUNK_INVALID_FIELD : error->status;
+    }
+    if (!game && (!stored_list(level, "Entities", &entities, error) ||
+                  !stored_list(level, "TileEntities", &tiles, error))) {
         return error == NULL ? MC_STORED_CHUNK_INVALID_FIELD : error->status;
     }
     (void)tiles;
     chunk->state.x = x == NULL ? 0 : x->value.int_value;
     chunk->state.z = z == NULL ? 0 : z->value.int_value;
     chunk->state.terrain_populated = populated != NULL && populated->value.byte_value != 0;
-    chunk->state.has_entities = entities != NULL && entities->value.list.length != 0;
+    chunk->state.has_entities = !game && entities != NULL && entities->value.list.length != 0;
     return stored_status(error, MC_STORED_CHUNK_OK, NULL);
 }
 
-mc_stored_chunk_status mc_stored_chunk_decode(const uint8_t *input, size_t length,
-                                              const mc_nbt_limits *requested, mc_stored_chunk **out,
-                                              size_t *consumed, mc_stored_chunk_error *error)
+static mc_stored_chunk_status stored_decode(const uint8_t *input, size_t length,
+                                            const mc_nbt_limits *requested, bool game,
+                                            mc_stored_chunk **out, size_t *consumed,
+                                            mc_stored_chunk_error *error)
 {
     mc_nbt_limits limits;
     if (out == NULL || (input == NULL && length != 0) || !stored_limits(requested, &limits))
@@ -198,7 +201,7 @@ mc_stored_chunk_status mc_stored_chunk_decode(const uint8_t *input, size_t lengt
     }
     stored_bind(chunk);
     mc_stored_chunk_error field_error;
-    mc_stored_chunk_status decoded = stored_decode_fields(chunk, &field_error);
+    mc_stored_chunk_status decoded = stored_decode_fields(chunk, game, &field_error);
     if (decoded != MC_STORED_CHUNK_OK) {
         mc_stored_chunk_free(chunk);
         if (error != NULL)
@@ -209,6 +212,21 @@ mc_stored_chunk_status mc_stored_chunk_decode(const uint8_t *input, size_t lengt
     if (consumed != NULL)
         *consumed = used;
     return stored_status(error, MC_STORED_CHUNK_OK, NULL);
+}
+
+mc_stored_chunk_status mc_stored_chunk_decode(const uint8_t *input, size_t length,
+                                              const mc_nbt_limits *requested, mc_stored_chunk **out,
+                                              size_t *consumed, mc_stored_chunk_error *error)
+{
+    return stored_decode(input, length, requested, false, out, consumed, error);
+}
+
+mc_stored_chunk_status mc_stored_chunk_decode_game(const uint8_t *input, size_t length,
+                                                   const mc_nbt_limits *requested,
+                                                   mc_stored_chunk **out, size_t *consumed,
+                                                   mc_stored_chunk_error *error)
+{
+    return stored_decode(input, length, requested, true, out, consumed, error);
 }
 
 mc_stored_chunk_status mc_stored_chunk_create(const mc_chunk_state *state,
@@ -251,6 +269,11 @@ static bool stored_valid(const mc_stored_chunk *chunk)
     return chunk != NULL && !chunk->state.blank && chunk->state.data == &chunk->data &&
            chunk->data.blocks == chunk->blocks &&
            chunk->data.blocks_capacity == sizeof(chunk->blocks);
+}
+
+bool mc_stored_chunk_storage_valid(const mc_stored_chunk *chunk)
+{
+    return stored_valid(chunk);
 }
 
 mc_stored_chunk_status mc_stored_chunk_normalize(mc_stored_chunk *chunk, const uint8_t *map,

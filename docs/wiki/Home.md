@@ -1,5 +1,12 @@
 # minecraft-c
 
+The [live Tile subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
+adds actual Chest and Spawner owners, World/Chunk occurrences, typed failures
+and staged GAME imports before block normalization. All 143 configured public
+tests pass on MSVC and all 145 on each sanitized GCC/Clang build, including
+468 Tile checks per host. Other Tile constructors, Entity NBT factories,
+nonempty live Tile saving and complete population remain unfinished.
+
 The [population World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md)
 and [plant predicates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md)
 implement downward solid/liquid scans, light, sky visibility and nine concrete
@@ -10,8 +17,8 @@ add oak, birch, both taiga forms and big oak. The
 [geology features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/ore-clay.md)
 and [lake/spring features](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/lakes-springs.md)
 add ore, clay, lakes and springs through the same actual owners.
-All 142 configured public tests pass on MSVC and all 144 on each sanitized
-GCC/Clang build, including 6,110 combined query, predicate, plant, tree and
+At the preceding checkpoint, all 142 configured public tests passed on MSVC and
+all 144 on each sanitized GCC/Clang build, including 6,110 combined query, predicate, plant, tree and
 geology checks per host. Separate original query observations retain 44 calls
 per side; ten selected original tree calls cover the five forms on both sides.
 Original/native feature replay, dungeons, snow and the complete population

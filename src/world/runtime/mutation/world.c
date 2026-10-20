@@ -57,15 +57,27 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
                   bool with_metadata, int32_t metadata, bool *out, mc_world_mutation_error *frame)
 {
     frame->bytecode = 48;
+    if (world->fields.v == NULL) {
+        frame->provider_bytecode = 6;
+        return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "World mutation provider receiver");
+    }
     mc_chunk_state *state = NULL;
-    const mc_chunk_acquire_status acquired =
-        mc_world_runtime_get(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state);
+    mc_world_runtime_acquisition_error detail;
+    const mc_chunk_acquire_status acquired = mc_world_runtime_get_detailed(
+        world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, &detail);
     if (acquired != MC_CHUNK_ACQUIRE_OK) {
+        frame->tile = detail.tile;
+        frame->registry = detail.registry;
+        frame->activation_bytecode = detail.activation_bytecode;
+        frame->activation_world_bytecode = detail.activation_world_bytecode;
+        frame->load_bytecode = detail.load_bytecode;
+        frame->load_builder_bytecode = detail.load_builder_bytecode;
+        if (detail.cause.status != MC_WORLD_STORAGE_OK)
+            return storage_fail(world, frame, detail.cause);
         if (acquired == MC_CHUNK_ACQUIRE_LIMIT || acquired == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
             return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_LIMIT,
                                           "World mutation acquisition limit");
-        if (world->last_error.status != MC_WORLD_STORAGE_OK)
-            return storage_fail(world, frame, world->last_error);
         return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "World mutation acquisition");
     }

@@ -12,7 +12,13 @@
 
 typedef enum store_chunk_kind { STORE_CHUNK_STORED, STORE_CHUNK_GENERATED } store_chunk_kind;
 
-typedef struct store_chunk {
+typedef struct store_chunk store_chunk;
+
+struct mc_world_store_game_stage {
+    store_chunk *entry;
+};
+
+struct store_chunk {
     store_chunk_kind kind;
     union {
         mc_stored_chunk *stored;
@@ -21,8 +27,11 @@ typedef struct store_chunk {
     mc_world_chunk *loaded_binding;
     int32_t dimension;
     size_t leases;
+    mc_world_store_game_stage_phase phase;
+    bool game_stage, imports_started, coordinator_lease;
+    mc_world_store_game_stage stage;
     struct store_chunk *next;
-} store_chunk;
+};
 
 typedef struct store_cache {
     const mc_chunk_cache *cache;
@@ -81,6 +90,12 @@ static mc_stored_chunk_status store_chunk_build(const store_chunk *entry, int64_
                                                 const mc_nbt_limits *limits, mc_nbt_document **out,
                                                 mc_stored_chunk_error *error)
 {
+    if (entry->phase != MC_WORLD_STORE_GAME_COMMITTED) {
+        if (error != NULL)
+            *error =
+                (mc_stored_chunk_error){MC_STORED_CHUNK_UNSUPPORTED_EDIT, NULL, {MC_NBT_OK, 0}};
+        return MC_STORED_CHUNK_UNSUPPORTED_EDIT;
+    }
     if (entry->kind == STORE_CHUNK_STORED &&
         (entry->loaded_binding == NULL || mc_world_chunk_storage_empty(entry->loaded_binding)))
         return mc_stored_chunk_build(entry->owner.stored, world_time, limits, out, error);
@@ -689,7 +704,8 @@ static mc_world_storage_status store_new_chunk(mc_world_store *store, store_chun
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "retained chunk link");
     /* Reservations and old copy/load routes always begin as the stored variant. */
-    *entry = (store_chunk){.kind = STORE_CHUNK_STORED, .owner.stored = NULL};
+    *entry = (store_chunk){
+        .kind = STORE_CHUNK_STORED, .owner.stored = NULL, .phase = MC_WORLD_STORE_GAME_COMMITTED};
     *out = entry;
     return MC_WORLD_STORAGE_OK;
 }
@@ -706,6 +722,8 @@ static store_chunk *store_find_chunk(const mc_world_store *store, const mc_chunk
 
 static void store_publish_chunk(mc_world_store *store, store_chunk *entry, int32_t dimension)
 {
+    /* Canonical native ownership attachment, including pending/failed stages.
+     * This is not source cache/list publication, activation or loader success. */
     entry->dimension = dimension;
     if (store->last_chunk == NULL)
         store->chunks = entry;
@@ -917,6 +935,9 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
     store_chunk *entry = store_find_chunk(store, chunk);
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (entry->phase != MC_WORLD_STORE_GAME_COMMITTED)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "uncommitted GAME stage cannot serialize");
     mc_world_chunk *runtime_chunk =
         entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
     if (mc_world_chunk_entity_containers_retired(runtime_chunk))
@@ -1110,7 +1131,9 @@ mc_world_storage_status mc_world_store_retire_chunk(mc_world_store *store, mc_ch
     store_chunk *entry = *link;
     const mc_world_chunk *runtime_chunk =
         entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
-    if (entry->leases != 0 || referenced ||
+    if (entry->leases != 0 || entry->coordinator_lease || referenced ||
+        (entry->imports_started && entry->phase != MC_WORLD_STORE_GAME_COMMITTED &&
+         !mc_world_chunk_entity_containers_retired(runtime_chunk)) ||
         (chunk->active && !mc_world_chunk_entity_containers_retired(runtime_chunk)))
         return store_error(error, MC_WORLD_STORAGE_BUSY, "chunk identity still referenced");
     *link = entry->next;
@@ -1206,6 +1229,262 @@ size_t mc_world_store_reservation_count(const mc_world_store *store)
     return store == NULL ? 0 : store->reservation_count;
 }
 
+static store_chunk *store_find_game_stage(const mc_world_store *store,
+                                          const mc_world_store_game_stage *stage)
+{
+    if (store == NULL || stage == NULL)
+        return NULL;
+    for (store_chunk *entry = store->chunks; entry != NULL; entry = entry->next)
+        if (entry->game_stage && &entry->stage == stage && entry->stage.entry == entry)
+            return entry;
+    return NULL;
+}
+
+static bool store_chunk_phase_valid(const store_chunk *entry)
+{
+    if (!entry->game_stage)
+        return entry->phase == MC_WORLD_STORE_GAME_COMMITTED && !entry->imports_started &&
+               !entry->coordinator_lease;
+    if (entry->kind != STORE_CHUNK_STORED || entry->owner.stored == NULL ||
+        entry->loaded_binding == NULL || entry->stage.entry != entry)
+        return false;
+    switch (entry->phase) {
+        case MC_WORLD_STORE_GAME_PREPARED:
+            return !entry->imports_started && entry->coordinator_lease && entry->leases != 0;
+        case MC_WORLD_STORE_GAME_IMPORTING:
+        case MC_WORLD_STORE_GAME_NORMALIZED:
+            return entry->imports_started && entry->coordinator_lease && entry->leases != 0;
+        case MC_WORLD_STORE_GAME_COMMITTED:
+            return entry->imports_started && !entry->coordinator_lease;
+        case MC_WORLD_STORE_GAME_FAILED:
+            return !entry->coordinator_lease;
+    }
+    return false;
+}
+
+static mc_world_chunk *store_runtime_chunk(const store_chunk *entry)
+{
+    return entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : entry->loaded_binding;
+}
+
+static bool store_chunk_owner_valid(const store_chunk *entry)
+{
+    if (entry->kind == STORE_CHUNK_STORED) {
+        if (!mc_stored_chunk_storage_valid(entry->owner.stored))
+            return false;
+    } else if (entry->kind != STORE_CHUNK_GENERATED || entry->owner.generated == NULL) {
+        return false;
+    }
+    mc_chunk_state *state = store_chunk_state(entry);
+    if (state == NULL || state->blank || state->data == NULL || state->data->blocks == NULL ||
+        state->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS || !store_chunk_phase_valid(entry))
+        return false;
+    mc_world_chunk *chunk = store_runtime_chunk(entry);
+    if (chunk == NULL)
+        return entry->kind == STORE_CHUNK_STORED && !entry->game_stage;
+    if (mc_world_chunk_state(chunk) != state || !mc_world_chunk_entities_validate(chunk))
+        return false;
+    mc_world_chunk_fields fields;
+    return mc_world_chunk_fields_get(chunk, &fields) == MC_WORLD_STORAGE_OK &&
+           fields.b == state->data->blocks;
+}
+
+static mc_world_store_game_stage_view store_game_stage_view(const mc_world_store *store,
+                                                            const store_chunk *entry)
+{
+    return (mc_world_store_game_stage_view){.chunk = entry->loaded_binding,
+                                            .state = store_chunk_state(entry),
+                                            .level = store_get(store_chunk_root(entry), "Level"),
+                                            .phase = entry->phase,
+                                            .limits = store->limits.nbt};
+}
+
+mc_world_storage_status mc_world_store_game_stage_begin(mc_world_store *store,
+                                                        mc_world_runtime *world, int32_t dimension,
+                                                        int32_t x, int32_t z,
+                                                        mc_world_store_game_stage **out,
+                                                        mc_world_storage_error *error)
+{
+    if (store == NULL || world == NULL || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage arguments");
+    const char *root = NULL;
+    mc_world_storage_status status = store_dimension(store, dimension, &root, error);
+    mc_world_store_reservation *reservation = NULL;
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_world_store_reserve_chunk(store, dimension, &reservation, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    store_chunk *entry = reservation->entry;
+    mc_compression_buffer raw = {0};
+    status = mc_world_regions_read(store->regions, root, x, z, &raw, error);
+    if (status == MC_WORLD_STORAGE_OK) {
+        mc_stored_chunk_error detail;
+        const mc_stored_chunk_status decoded = mc_stored_chunk_decode_game(
+            raw.data, raw.length, &store->limits.nbt, &entry->owner.stored, NULL, &detail);
+        if (decoded != MC_STORED_CHUNK_OK)
+            status = store_chunk_error(error, decoded, &detail);
+    }
+    mc_compression_buffer_free(&raw);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_world_chunk_storage_bind_loaded(world, store_chunk_state(entry),
+                                                    store->limits.nbt.max_allocation_bytes,
+                                                    &entry->loaded_binding, error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        /* No source import, callback, public handle or canonical attachment has
+         * occurred. This private preparation alone is cancellable. */
+        (void)mc_world_store_cancel_reservation(store, reservation, NULL);
+        return status;
+    }
+
+    mc_world_store_reservation **link = store_find_reservation(store, reservation);
+    *link = reservation->next;
+    --store->reservation_count;
+    free(reservation);
+    entry->game_stage = true;
+    entry->phase = MC_WORLD_STORE_GAME_PREPARED;
+    entry->stage.entry = entry;
+    store_publish_chunk(store, entry, dimension);
+    status = mc_world_store_lease_chunk(store, store_chunk_state(entry), error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        /* New entry/zero leases makes this unreachable under exclusive valid
+         * ownership. Even an invariant failure keeps the attached owner. */
+        entry->phase = MC_WORLD_STORE_GAME_FAILED;
+        mc_world_chunk_source_disable(entry->loaded_binding);
+        return status;
+    }
+    entry->coordinator_lease = true;
+    *out = &entry->stage;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_stage_view_get(const mc_world_store *store,
+                                                           const mc_world_store_game_stage *stage,
+                                                           mc_world_store_game_stage_view *out,
+                                                           mc_world_storage_error *error)
+{
+    if (out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage view output");
+    const store_chunk *entry = store_find_game_stage(store, stage);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
+    if (!store_chunk_phase_valid(entry))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME stage ownership metadata");
+    *out = store_game_stage_view(store, entry);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_stage_imports_begin(mc_world_store *store,
+                                                                mc_world_store_game_stage *stage,
+                                                                mc_world_storage_error *error)
+{
+    store_chunk *entry = store_find_game_stage(store, stage);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
+    if (!store_chunk_phase_valid(entry) || entry->phase != MC_WORLD_STORE_GAME_PREPARED ||
+        !mc_world_chunk_source_enabled(entry->loaded_binding))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME stage import phase");
+    entry->imports_started = true;
+    entry->phase = MC_WORLD_STORE_GAME_IMPORTING;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_stage_finish(mc_world_store *store,
+                                                         mc_world_store_game_stage *stage,
+                                                         mc_chunk_state **out,
+                                                         mc_world_storage_error *error)
+{
+    if (out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage result output");
+    store_chunk *entry = store_find_game_stage(store, stage);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
+    if (!store_chunk_owner_valid(entry) || entry->phase != MC_WORLD_STORE_GAME_IMPORTING ||
+        !mc_world_chunk_source_enabled(entry->loaded_binding))
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "GAME stage completion phase");
+    const mc_stored_chunk_status normalized =
+        mc_stored_chunk_normalize(entry->owner.stored, store->block_map, sizeof(store->block_map));
+    if (normalized != MC_STORED_CHUNK_OK)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA,
+                           "GAME stage postload normalization");
+    entry->phase = MC_WORLD_STORE_GAME_NORMALIZED;
+    /* All admission precedes normalization. The actual lease is known held;
+     * these exclusive owner updates cannot fail or call source code. */
+    (void)mc_world_store_release_chunk(store, store_chunk_state(entry), NULL);
+    entry->coordinator_lease = false;
+    entry->phase = MC_WORLD_STORE_GAME_COMMITTED;
+    *out = store_chunk_state(entry);
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_game_stage_fail(mc_world_store *store,
+                                                       mc_world_store_game_stage *stage,
+                                                       mc_world_storage_status original_status,
+                                                       mc_world_storage_error *error)
+{
+    if (original_status == MC_WORLD_STORAGE_OK)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage failure status");
+    store_chunk *entry = store_find_game_stage(store, stage);
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign GAME stage");
+    if (!store_chunk_phase_valid(entry) || entry->phase == MC_WORLD_STORE_GAME_COMMITTED)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME stage failure phase");
+    mc_world_chunk_source_disable(entry->loaded_binding);
+    if (entry->phase != MC_WORLD_STORE_GAME_FAILED) {
+        (void)mc_world_store_release_chunk(store, store_chunk_state(entry), NULL);
+        entry->coordinator_lease = false;
+        entry->phase = MC_WORLD_STORE_GAME_FAILED;
+    }
+    return store_error(error, original_status, "failed GAME stage retained");
+}
+
+size_t mc_world_store_game_stage_count(const mc_world_store *store)
+{
+    size_t count = 0;
+    if (store != NULL)
+        for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next)
+            if (entry->game_stage && entry->phase != MC_WORLD_STORE_GAME_COMMITTED)
+                ++count;
+    return count;
+}
+
+mc_world_storage_status mc_world_store_game_stage_at(const mc_world_store *store, size_t ordinal,
+                                                     mc_world_store_game_stage **out,
+                                                     mc_world_store_game_stage_view *view,
+                                                     mc_world_storage_error *error)
+{
+    if (store == NULL || out == NULL || view == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "GAME stage ordinal arguments");
+    for (store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        if (!entry->game_stage || entry->phase == MC_WORLD_STORE_GAME_COMMITTED)
+            continue;
+        if (ordinal != 0) {
+            --ordinal;
+            continue;
+        }
+        if (!store_chunk_phase_valid(entry))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "GAME stage ownership metadata");
+        const mc_world_store_game_stage_view snapshot = store_game_stage_view(store, entry);
+        *out = &entry->stage;
+        *view = snapshot;
+        return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+    }
+    return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME stage ordinal");
+}
+
+bool mc_world_store_chunk_source_enabled(const mc_world_store *store, const mc_chunk_state *state)
+{
+    const store_chunk *entry = store_find_chunk(store, state);
+    if (entry == NULL || !store_chunk_phase_valid(entry) ||
+        entry->phase == MC_WORLD_STORE_GAME_FAILED)
+        return false;
+    const mc_world_chunk *chunk = store_runtime_chunk(entry);
+    return chunk == NULL || mc_world_chunk_source_enabled(chunk);
+}
+
 mc_chunk_load_result mc_world_store_load_callback(void *loader,
                                                   const mc_chunk_acquire_context *context,
                                                   int32_t x, int32_t z, mc_chunk_state **out)
@@ -1259,6 +1538,69 @@ void mc_world_store_free(mc_world_store *store)
     free(store);
 }
 
+mc_world_storage_status mc_world_store_free_checked(mc_world_store **owner,
+                                                    mc_world_storage_error *error)
+{
+    if (owner == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Store close owner output");
+    mc_world_store *store = *owner;
+    if (store == NULL)
+        return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+    if (store->chunk_count > store->limits.max_loaded_chunks ||
+        store->reservation_count > store->limits.max_loaded_chunks - store->chunk_count ||
+        store->cache_count > MC_WORLD_STORE_MAX_REGISTERED_CACHES)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Store ownership counts");
+
+    size_t registrations = 0;
+    for (const store_cache *entry = store->caches; entry != NULL; entry = entry->next) {
+        if (registrations == store->cache_count ||
+            !store_cache_valid(entry->cache, entry->fallback))
+            return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                               "Store close registered cache metadata");
+        ++registrations;
+    }
+    if (registrations != store->cache_count)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Store registered cache count");
+
+    size_t reservations = 0;
+    for (const mc_world_store_reservation *entry = store->reservations; entry != NULL;
+         entry = entry->next) {
+        if (reservations == store->reservation_count || entry->entry == NULL)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store reservation ownership metadata");
+        ++reservations;
+    }
+    if (reservations != store->reservation_count)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Store reservation count");
+
+    size_t chunks = 0;
+    const store_chunk *last = NULL;
+    bool busy = registrations != 0 || reservations != 0;
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        if (chunks == store->chunk_count || !store_chunk_owner_valid(entry))
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Store close Chunk ownership metadata");
+        ++chunks;
+        last = entry;
+        const mc_world_chunk *chunk = store_runtime_chunk(entry);
+        busy = busy || entry->leases != 0 || entry->coordinator_lease ||
+               (chunk != NULL && !mc_world_chunk_entity_containers_retired(chunk)) ||
+               (chunk == NULL && store_chunk_state(entry)->active);
+    }
+    if (chunks != store->chunk_count || last != store->last_chunk)
+        return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Store Chunk chain metadata");
+    if (busy)
+        return store_error(error, MC_WORLD_STORAGE_BUSY, "Store owners not quiescent");
+
+    /* Complete admission above; no allocation, source call or later owner
+     * validation can be introduced after the first release. The real lower
+     * finalizers accept already-retired coherent empty containers. */
+    mc_world_store_free(store);
+    *owner = NULL;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
 mc_world_storage_status mc_world_store_entity_containers_validate(const mc_world_store *store,
                                                                   const mc_world_runtime *world,
                                                                   mc_world_storage_error *error)
@@ -1278,12 +1620,12 @@ mc_world_storage_status mc_world_store_entity_containers_validate(const mc_world
                                "Store entity retirement Chunk identity");
         if (fields.d != world)
             continue;
-        if (entry->leases != 0)
+        if (entry->leases != 0 || entry->coordinator_lease)
             return store_error(error, MC_WORLD_STORAGE_BUSY,
                                "Store Chunk lease during entity retirement");
-        if (!mc_world_chunk_entities_validate(chunk))
+        if (!store_chunk_owner_valid(entry))
             return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                               "Store entity retirement slice ownership");
+                               "Store entity retirement Chunk ownership");
     }
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -1300,7 +1642,7 @@ void mc_world_store_entity_containers_release(mc_world_store *store, const mc_wo
             mc_world_chunk_fields fields;
             (void)mc_world_chunk_fields_get(chunk, &fields);
             if (fields.d == world)
-                mc_world_chunk_entities_release(chunk);
+                mc_world_chunk_containers_release(chunk);
         }
     }
 }

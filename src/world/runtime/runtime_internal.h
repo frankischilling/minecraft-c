@@ -1,8 +1,10 @@
 #ifndef MC_WORLD_RUNTIME_INTERNAL_H
 #define MC_WORLD_RUNTIME_INTERNAL_H
 
+#include "acquisition_internal.h"
 #include "mc/world/runtime/construction.h"
 #include "mc/world/runtime/runtime.h"
+#include "mc/world/runtime/tiles/tiles.h"
 
 struct mc_world_runtime {
     mc_world_runtime_options options;
@@ -21,6 +23,7 @@ struct mc_world_runtime {
     mc_world_storage_error last_error;
     mc_registry_error last_registry_error;
     mc_java_random_profile_status last_random_status;
+    mc_world_runtime_acquisition_error *acquisition_error;
     size_t active_calls, local_leases;
     size_t persistent_bindings;
     /* Native typed holds parallel the actual b List, preserving each duplicate
@@ -32,6 +35,8 @@ struct mc_world_runtime {
         size_t count, capacity;
     } entity_membership;
     bool entity_containers_retired;
+    mc_tile_list_ledger tile_membership[2];
+    bool tile_containers_retired;
     mc_world_runtime_fields fields;
     mc_world_runtime_construction construction;
     mc_world_runtime_construction_limits construction_limits;
