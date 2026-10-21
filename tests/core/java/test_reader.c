@@ -33,8 +33,7 @@ typedef struct arena {
 } arena;
 
 /* Real, distinct, uncleared allocations retained until every view retires. */
-static void *arena_allocate(void *context, size_t size)
-{
+static void *arena_allocate(void *context, size_t size) {
     arena *a = context;
     ++a->requests;
     if (a->fail_at != 0 && a->requests == a->fail_at) {
@@ -62,13 +61,11 @@ static void *arena_allocate(void *context, size_t size)
     return block;
 }
 
-static bool arena_healthy(const arena *a)
-{
+static bool arena_healthy(const arena *a) {
     return !a->invalid && !a->malloc_failure;
 }
 
-static void arena_release(arena *a)
-{
+static void arena_release(arena *a) {
     for (size_t i = 0; i < a->count; ++i)
         free(a->blocks[i]);
     free(a->blocks);
@@ -83,8 +80,7 @@ typedef struct byte_stream {
 } byte_stream;
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     byte_stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || capacity > 8192 || s->offset > s->length) {
@@ -106,15 +102,13 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static bool ready_bytes(void *context)
-{
+static bool ready_bytes(void *context) {
     byte_stream *s = context;
     ++s->ready_calls;
     return s->advertise && s->offset < s->length;
 }
 
-static mc_java_reader_status close_bytes(void *context)
-{
+static mc_java_reader_status close_bytes(void *context) {
     byte_stream *s = context;
     ++s->closes;
     return s->close_status;
@@ -129,8 +123,7 @@ typedef struct fixture {
 } fixture;
 
 static void fixture_prepare(fixture *f, const uint8_t *bytes, size_t length, size_t chunk,
-                            bool advertise)
-{
+                            bool advertise) {
     *f = (fixture){0};
     /* Test bookkeeping has its own finite heap array, outside production's
      * allocator-request sequence. Its failure cannot pass as an injected one. */
@@ -146,18 +139,15 @@ static void fixture_prepare(fixture *f, const uint8_t *bytes, size_t length, siz
     f->input = (mc_java_reader_input){{&f->stream, read_bytes}, ready_bytes, close_bytes};
 }
 
-static mc_java_reader_status fixture_create(fixture *f, mc_java_reader_charset charset)
-{
+static mc_java_reader_status fixture_create(fixture *f, mc_java_reader_charset charset) {
     return mc_java_reader_create(&f->allocator, &f->input, charset, &f->reader);
 }
 
-static bool fixture_healthy(const fixture *f)
-{
+static bool fixture_healthy(const fixture *f) {
     return arena_healthy(&f->storage) && !f->stream.invalid;
 }
 
-static void fixture_release(fixture *f)
-{
+static void fixture_release(fixture *f) {
     if (f->reader != NULL) {
         mc_java_reader_status status = mc_java_reader_close(f->reader);
         if (status != MC_JAVA_READER_OK && status != MC_JAVA_READER_IO_ERROR &&
@@ -170,8 +160,7 @@ static void fixture_release(fixture *f)
     arena_release(&f->storage);
 }
 
-static bool units_are(const mc_java_reader_line *line, const uint16_t *units, size_t length)
-{
+static bool units_are(const mc_java_reader_line *line, const uint16_t *units, size_t length) {
     if (line == NULL || line->length != length || (length != 0 && line->units == NULL))
         return false;
     for (size_t i = 0; i < length; ++i)
@@ -180,8 +169,7 @@ static bool units_are(const mc_java_reader_line *line, const uint16_t *units, si
     return true;
 }
 
-static bool text_is(const mc_java_reader_line *line, const char *text)
-{
+static bool text_is(const mc_java_reader_line *line, const char *text) {
     size_t length = strlen(text);
     if (line == NULL || line->length != length || (length != 0 && line->units == NULL))
         return false;
@@ -191,8 +179,7 @@ static bool text_is(const mc_java_reader_line *line, const char *text)
     return true;
 }
 
-static bool repeated(const mc_java_reader_line *line, uint16_t value, size_t length)
-{
+static bool repeated(const mc_java_reader_line *line, uint16_t value, size_t length) {
     if (line == NULL || line->length != length || (length != 0 && line->units == NULL))
         return false;
     for (size_t i = 0; i < length; ++i)
@@ -201,8 +188,7 @@ static bool repeated(const mc_java_reader_line *line, uint16_t value, size_t len
     return true;
 }
 
-static int test_invalid(void)
-{
+static int test_invalid(void) {
     int result = 1;
     static const uint8_t bytes[] = "canary\nnext\n";
     fixture f = {0};
@@ -259,8 +245,7 @@ cleanup:
     return result;
 }
 
-static int test_line_ends(size_t chunk, bool advertise)
-{
+static int test_line_ends(size_t chunk, bool advertise) {
     int result = 1;
     static const uint8_t bytes[] = "\r\n\nsame\rsame\n\rZ\r\n\n";
     static const char *const expected[] = {"", "", "same", "same", "", "Z", ""};
@@ -302,8 +287,7 @@ cleanup:
     return result;
 }
 
-static int test_ready(size_t chunk, int ready_mode)
-{
+static int test_ready(size_t chunk, int ready_mode) {
     int result = 1;
     static const uint8_t bytes[] = "one\ntwo\n";
     fixture f = {0};
@@ -381,8 +365,7 @@ static const utf8_case utf8_cases[] = {
 
 static int test_vector(mc_java_reader_charset charset, const uint8_t *bytes, size_t length,
                        const uint16_t *expected, size_t units, size_t chunk, bool advertise,
-                       bool second_z)
-{
+                       bool second_z) {
     int result = 1;
     fixture f = {0};
     fixture_prepare(&f, bytes, length, chunk, advertise);
@@ -407,8 +390,7 @@ cleanup:
     return result;
 }
 
-static int test_single_byte(size_t chunk, bool advertise)
-{
+static int test_single_byte(size_t chunk, bool advertise) {
     int result = 1;
     static const uint8_t bytes[] = {0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88,
                                     0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 0x90, 0x91,
@@ -442,8 +424,7 @@ cleanup:
     return result;
 }
 
-static int test_empty(size_t chunk, bool advertise)
-{
+static int test_empty(size_t chunk, bool advertise) {
     int result = 1;
     fixture f = {0};
     fixture_prepare(&f, NULL, 0, chunk, advertise);
@@ -459,8 +440,7 @@ cleanup:
     return result;
 }
 
-static int test_large(size_t chunk, bool advertise, bool pair_in_line)
-{
+static int test_large(size_t chunk, bool advertise, bool pair_in_line) {
     int result = 1;
     fixture f = {0};
     uint8_t bytes[18000];
@@ -516,8 +496,7 @@ cleanup:
     return result;
 }
 
-static int test_close(void)
-{
+static int test_close(void) {
     int result = 1;
     static const uint8_t bytes[] = "a\nb\n";
     fixture normal = {0}, failed = {0}, missing = {0};
@@ -567,8 +546,7 @@ cleanup:
     return result;
 }
 
-static int test_io(bool advertise, bool incomplete_utf8)
-{
+static int test_io(bool advertise, bool incomplete_utf8) {
     int result = 1;
     static const uint8_t text[] = "good\npartial";
     static const uint8_t incomplete[] = {'o', 'k', '\n', 0xe1, 0x80};
@@ -610,16 +588,14 @@ cleanup:
     return result;
 }
 
-static bool workload_line(const mc_java_reader_line *line, size_t index)
-{
+static bool workload_line(const mc_java_reader_line *line, size_t index) {
     return index == 0   ? text_is(line, "first")
            : index == 1 ? text_is(line, "second")
            : index == 2 ? repeated(line, 'q', 9000)
                         : index == 3 && text_is(line, "tail");
 }
 
-static int test_allocation_failures(void)
-{
+static int test_allocation_failures(void) {
     int result = 1;
     uint8_t bytes[9032];
     size_t length = 0;
@@ -694,8 +670,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     CHECK(test_invalid() == 0);
     const size_t chunks[] = {SIZE_MAX, 1, 7, 8192};

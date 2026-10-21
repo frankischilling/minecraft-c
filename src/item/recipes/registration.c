@@ -25,8 +25,7 @@ _Static_assert(_Alignof(recipe_text) >= _Alignof(uint16_t) &&
 /* The same allocation holds this header followed by length uint16_t units.
  * Avoid a flexible-array member: the supported MSVC profiles differ in the
  * diagnostic they issue for that otherwise standard C declaration. */
-static uint16_t *text_units(recipe_text *text)
-{
+static uint16_t *text_units(recipe_text *text) {
     return (uint16_t *)(void *)(text + 1);
 }
 
@@ -41,8 +40,7 @@ typedef struct recipe_map {
     recipe_binding *first;
 } recipe_map;
 
-static mc_registry_status own_error(const recipe_call *call)
-{
+static mc_registry_status own_error(const recipe_call *call) {
     call->classes->last_error.constructor_class =
         call->classes->options.side == MC_REGISTRY_CLIENT ? call->client : call->server;
     call->classes->last_error.constructor_pc = call->pc;
@@ -50,22 +48,19 @@ static mc_registry_status own_error(const recipe_call *call)
 }
 
 static mc_registry_status fail(const recipe_call *call, mc_registry_status status,
-                               const char *message)
-{
+                               const char *message) {
     (void)mc_registry_fail(call->classes, status, message, NULL);
     return own_error(call);
 }
 
-static void *allocate(const recipe_call *call, size_t bytes)
-{
+static void *allocate(const recipe_call *call, size_t bytes) {
     void *allocation = mc_registry_allocate(call->classes, bytes);
     if (allocation == NULL)
         (void)own_error(call);
     return allocation;
 }
 
-static mc_registry_status admit(mc_crafting_manager *manager)
-{
+static mc_registry_status admit(mc_crafting_manager *manager) {
     if (manager == NULL || manager->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (manager->classes->entered == 0)
@@ -74,8 +69,7 @@ static mc_registry_status admit(mc_crafting_manager *manager)
     return MC_REGISTRY_OK;
 }
 
-static bool nonnull(const mc_recipe_argument *argument)
-{
+static bool nonnull(const mc_recipe_argument *argument) {
     switch (argument->kind) {
         case MC_RECIPE_ARGUMENT_NULL:
             return false;
@@ -95,14 +89,12 @@ static bool nonnull(const mc_recipe_argument *argument)
     return true;
 }
 
-static bool instance(const mc_recipe_argument *argument, mc_recipe_argument_kind kind)
-{
+static bool instance(const mc_recipe_argument *argument, mc_recipe_argument_kind kind) {
     return argument->kind == kind && nonnull(argument);
 }
 
 static mc_registry_status argument_at(recipe_call *call, const mc_recipe_argument *arguments,
-                                      size_t count, size_t index, const mc_recipe_argument **out)
-{
+                                      size_t count, size_t index, const mc_recipe_argument **out) {
     if (arguments == NULL)
         return fail(call, MC_REGISTRY_NULL_REFERENCE, "Recipe Object[] is null");
     if (index >= count)
@@ -117,8 +109,7 @@ static mc_registry_status argument_at(recipe_call *call, const mc_recipe_argumen
  * Strings; no StringBuilder heap-allocation equivalence is implied. */
 static mc_registry_status append_row(recipe_call *call, const mc_registry_string *row,
                                      recipe_text **text, int32_t *width, int32_t *height,
-                                     bool array_rows)
-{
+                                     bool array_rows) {
     *height = mc_java_i32_add(*height, 1);
     call->pc = array_rows ? 60 : 124;
     if (row == NULL)
@@ -146,8 +137,7 @@ static mc_registry_status append_row(recipe_call *call, const mc_registry_string
 }
 
 mc_registry_status mc_registry_recipe_list_add(mc_registry_classes *classes, mc_registry_list *list,
-                                               void *element)
-{
+                                               void *element) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -183,8 +173,7 @@ mc_registry_status mc_registry_recipe_list_add(mc_registry_classes *classes, mc_
     return MC_REGISTRY_OK;
 }
 
-static recipe_binding *find_binding(recipe_map *map, bool null_key, uint16_t key)
-{
+static recipe_binding *find_binding(recipe_map *map, bool null_key, uint16_t key) {
     for (recipe_binding *binding = map->first; binding != NULL; binding = binding->next)
         if (binding->null_key == null_key && (null_key || binding->key == key))
             return binding;
@@ -192,8 +181,7 @@ static recipe_binding *find_binding(recipe_map *map, bool null_key, uint16_t key
 }
 
 static mc_registry_status put_binding(recipe_call *call, recipe_map *map, bool null_key,
-                                      uint16_t key, mc_item_stack *value)
-{
+                                      uint16_t key, mc_item_stack *value) {
     recipe_binding *binding = find_binding(map, null_key, key);
     if (binding == NULL) {
         binding = allocate(call, sizeof(*binding));
@@ -207,8 +195,7 @@ static mc_registry_status put_binding(recipe_call *call, recipe_map *map, bool n
 }
 
 mc_registry_status mc_registry_recipe_shaped(mc_crafting_manager *manager, mc_item_stack *output,
-                                             const mc_recipe_argument *arguments, size_t count)
-{
+                                             const mc_recipe_argument *arguments, size_t count) {
     mc_registry_status status = admit(manager);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -348,8 +335,7 @@ mc_registry_status mc_registry_recipe_shaped(mc_crafting_manager *manager, mc_it
 }
 
 mc_registry_status mc_registry_recipe_shapeless(mc_crafting_manager *manager, mc_item_stack *output,
-                                                const mc_recipe_argument *arguments, size_t count)
-{
+                                                const mc_recipe_argument *arguments, size_t count) {
     mc_registry_status status = admit(manager);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -416,28 +402,23 @@ mc_registry_status mc_registry_recipe_shapeless(mc_crafting_manager *manager, mc
     return status == MC_REGISTRY_OK ? status : own_error(&call);
 }
 
-mc_recipe_kind mc_recipe_kind_get(const mc_recipe *recipe)
-{
+mc_recipe_kind mc_recipe_kind_get(const mc_recipe *recipe) {
     return recipe == NULL ? MC_RECIPE_KIND_COUNT : recipe->kind;
 }
 
-const mc_shaped_recipe_fields *mc_recipe_shaped_fields_get(const mc_recipe *recipe)
-{
+const mc_shaped_recipe_fields *mc_recipe_shaped_fields_get(const mc_recipe *recipe) {
     return recipe != NULL && recipe->kind == MC_RECIPE_SHAPED ? &recipe->fields.shaped : NULL;
 }
 
-const mc_shapeless_recipe_fields *mc_recipe_shapeless_fields_get(const mc_recipe *recipe)
-{
+const mc_shapeless_recipe_fields *mc_recipe_shapeless_fields_get(const mc_recipe *recipe) {
     return recipe != NULL && recipe->kind == MC_RECIPE_SHAPELESS ? &recipe->fields.shapeless : NULL;
 }
 
-size_t mc_recipe_shaped_array_length(const mc_recipe *recipe)
-{
+size_t mc_recipe_shaped_array_length(const mc_recipe *recipe) {
     return recipe != NULL && recipe->kind == MC_RECIPE_SHAPED ? recipe->ingredient_count : 0;
 }
 
-const mc_item_stack *mc_recipe_output(const mc_recipe *recipe)
-{
+const mc_item_stack *mc_recipe_output(const mc_recipe *recipe) {
     if (recipe == NULL)
         return NULL;
     if (recipe->kind == MC_RECIPE_SHAPED)
@@ -445,8 +426,7 @@ const mc_item_stack *mc_recipe_output(const mc_recipe *recipe)
     return recipe->kind == MC_RECIPE_SHAPELESS ? recipe->fields.shapeless.a : NULL;
 }
 
-mc_registry_status mc_recipe_size(const mc_recipe *recipe, int32_t *out)
-{
+mc_registry_status mc_recipe_size(const mc_recipe *recipe, int32_t *out) {
     if (recipe == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     int32_t value;
@@ -465,14 +445,12 @@ mc_registry_status mc_recipe_size(const mc_recipe *recipe, int32_t *out)
     return MC_REGISTRY_OK;
 }
 
-size_t mc_recipe_ingredient_list_size(const mc_recipe_ingredient_list *list)
-{
+size_t mc_recipe_ingredient_list_size(const mc_recipe_ingredient_list *list) {
     return list == NULL ? 0 : list->count;
 }
 
 mc_registry_status mc_recipe_ingredient_list_get(const mc_recipe_ingredient_list *list,
-                                                 size_t index, const mc_item_stack **out)
-{
+                                                 size_t index, const mc_item_stack **out) {
     if (list == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (index >= list->count)
@@ -481,14 +459,12 @@ mc_registry_status mc_recipe_ingredient_list_get(const mc_recipe_ingredient_list
     return MC_REGISTRY_OK;
 }
 
-size_t mc_crafting_manager_size(const mc_crafting_manager *manager)
-{
+size_t mc_crafting_manager_size(const mc_crafting_manager *manager) {
     return manager == NULL || manager->b == NULL ? 0 : manager->b->count;
 }
 
 mc_registry_status mc_crafting_manager_get(const mc_crafting_manager *manager, size_t index,
-                                           const mc_recipe **out)
-{
+                                           const mc_recipe **out) {
     if (manager == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (manager->b == NULL)
@@ -499,8 +475,7 @@ mc_registry_status mc_crafting_manager_get(const mc_crafting_manager *manager, s
     return MC_REGISTRY_OK;
 }
 
-static int compare(const mc_recipe *left, const mc_recipe *right)
-{
+static int compare(const mc_recipe *left, const mc_recipe *right) {
     if (left->kind != right->kind)
         return left->kind == MC_RECIPE_SHAPED ? -1 : 1;
     int32_t a = 0, b = 0;
@@ -509,8 +484,7 @@ static int compare(const mc_recipe *left, const mc_recipe *right)
     return b < a ? -1 : b > a ? 1 : 0;
 }
 
-mc_registry_status mc_registry_recipe_sort(mc_crafting_manager *manager)
-{
+mc_registry_status mc_registry_recipe_sort(mc_crafting_manager *manager) {
     mc_registry_status status = admit(manager);
     if (status != MC_REGISTRY_OK)
         return status;

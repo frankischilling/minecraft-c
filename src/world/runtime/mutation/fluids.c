@@ -23,8 +23,7 @@ typedef struct fluid_frame {
 static fluid_frame fluid_frame_make(mc_world_runtime *world, const mc_block *block,
                                     const char *client_class, const char *server_class,
                                     const char *client_method, const char *server_method,
-                                    mc_world_mutation_error *error)
-{
+                                    mc_world_mutation_error *error) {
     const bool client = block->classes->options.side == MC_REGISTRY_CLIENT;
     /* Registry arena allocations are mutable actual source objects. const
      * on the dispatch argument is a borrowed view, not immutable storage. */
@@ -32,31 +31,27 @@ static fluid_frame fluid_frame_make(mc_world_runtime *world, const mc_block *blo
                          client ? client_method : server_method, error};
 }
 
-static void fluid_at(const fluid_frame *frame, unsigned int pc)
-{
+static void fluid_at(const fluid_frame *frame, unsigned int pc) {
     frame->error->hook_class = frame->class_name;
     frame->error->hook_method = frame->method;
     frame->error->hook_bytecode = pc;
 }
 
-static bool fluid_return(const fluid_frame *frame)
-{
+static bool fluid_return(const fluid_frame *frame) {
     frame->error->hook_class = NULL;
     frame->error->hook_method = NULL;
     frame->error->hook_bytecode = 0;
     return true;
 }
 
-static bool fluid_fail(const fluid_frame *frame, unsigned int pc, const char *operation)
-{
+static bool fluid_fail(const fluid_frame *frame, unsigned int pc, const char *operation) {
     fluid_at(frame, pc);
     return mc_world_mutation_fail(frame->world, frame->error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                   operation);
 }
 
 static bool fluid_storage_fail(const fluid_frame *frame, unsigned int pc,
-                               mc_world_storage_error cause)
-{
+                               mc_world_storage_error cause) {
     fluid_at(frame, pc);
     frame->error->status = cause.status;
     frame->error->operation = cause.operation;
@@ -68,8 +63,7 @@ static bool fluid_storage_fail(const fluid_frame *frame, unsigned int pc,
 /* One current caller plus the deepest concrete hook, not a recursive stack.
  * lower may alias frame->error, so capture every field before restoration. */
 static bool fluid_nested(const fluid_frame *frame, unsigned int pc,
-                         const mc_world_mutation_error *lower)
-{
+                         const mc_world_mutation_error *lower) {
     const mc_world_mutation_error captured = *lower;
     *frame->error = captured;
     if (captured.cause_hook_class == NULL) {
@@ -83,20 +77,17 @@ static bool fluid_nested(const fluid_frame *frame, unsigned int pc,
 }
 
 static bool fluid_registry_fail(const fluid_frame *frame, unsigned int pc,
-                                const mc_registry_error *cause, const char *operation)
-{
+                                const mc_registry_error *cause, const char *operation) {
     fluid_at(frame, pc);
     return mc_world_mutation_registry_fail(frame->world, frame->error, cause, operation);
 }
 
-static mc_material *fluid_material_static(const fluid_frame *frame, mc_material_id id)
-{
+static mc_material *fluid_material_static(const fluid_frame *frame, mc_material_id id) {
     return mc_materials_get(frame->block->classes->options.materials, id);
 }
 
 static bool fluid_id(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                     int32_t *out)
-{
+                     int32_t *out) {
     mc_world_storage_error cause = {0};
     fluid_at(frame, pc);
     if (mc_world_runtime_block_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
@@ -105,8 +96,7 @@ static bool fluid_id(const fluid_frame *frame, unsigned int pc, int32_t x, int32
 }
 
 static bool fluid_metadata(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                           int32_t z, int32_t *out)
-{
+                           int32_t z, int32_t *out) {
     mc_world_storage_error cause = {0};
     fluid_at(frame, pc);
     if (mc_world_runtime_metadata_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
@@ -117,8 +107,7 @@ static bool fluid_metadata(const fluid_frame *frame, unsigned int pc, int32_t x,
 /* Actual World material body, fd.f/dj.d(III): ID4; air Material.a14;
  * otherwise live m18/index23/selected bA24. Never read a stale World cause. */
 static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                           int32_t z, mc_material **out)
-{
+                           int32_t z, mc_material **out) {
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     mc_world_storage_error cause = {0};
     int32_t id;
@@ -175,8 +164,7 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
 }
 
 static bool fluid_static_id(const fluid_frame *frame, const char *name, unsigned int load_pc,
-                            unsigned int field_pc, int32_t *out)
-{
+                            unsigned int field_pc, int32_t *out) {
     const mc_block *selected;
     mc_registry_error registry = mc_world_mutation_empty_error().registry;
     fluid_at(frame, load_pc);
@@ -190,8 +178,7 @@ static bool fluid_static_id(const fluid_frame *frame, const char *name, unsigned
 }
 
 static bool fluid_array_block(const fluid_frame *frame, unsigned int load_pc, unsigned int index_pc,
-                              int32_t id, const mc_block **out)
-{
+                              int32_t id, const mc_block **out) {
     mc_registry_block_m_view array;
     mc_registry_error registry = mc_world_mutation_empty_error().registry;
     fluid_at(frame, load_pc);
@@ -204,8 +191,7 @@ static bool fluid_array_block(const fluid_frame *frame, unsigned int load_pc, un
 }
 
 static bool fluid_write_id(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                           int32_t z, int32_t id)
-{
+                           int32_t z, int32_t id) {
     bool ignored;
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     fluid_at(frame, pc);
@@ -216,8 +202,7 @@ static bool fluid_write_id(const fluid_frame *frame, unsigned int pc, int32_t x,
 }
 
 static bool fluid_write(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                        int32_t id, int32_t metadata, bool quiet)
-{
+                        int32_t id, int32_t metadata, bool quiet) {
     bool ignored;
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     fluid_at(frame, pc);
@@ -232,8 +217,7 @@ static bool fluid_write(const fluid_frame *frame, unsigned int pc, int32_t x, in
 }
 
 static bool fluid_write_metadata(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                                 int32_t z, int32_t metadata)
-{
+                                 int32_t z, int32_t metadata) {
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     fluid_at(frame, pc);
     if (mc_world_runtime_metadata_set(frame->world, x, y, z, metadata, &lower) !=
@@ -243,8 +227,7 @@ static bool fluid_write_metadata(const fluid_frame *frame, unsigned int pc, int3
 }
 
 static bool fluid_observe(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                          int32_t z, bool range)
-{
+                          int32_t z, bool range) {
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     fluid_at(frame, pc);
     const bool complete =
@@ -254,8 +237,7 @@ static bool fluid_observe(const fluid_frame *frame, unsigned int pc, int32_t x, 
 }
 
 static bool fluid_schedule(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                           int32_t z, int32_t id, int32_t delay)
-{
+                           int32_t z, int32_t id, int32_t delay) {
     mc_world_schedule_error scheduled;
     fluid_at(frame, pc);
     if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, &scheduled) ==
@@ -278,8 +260,7 @@ static bool fluid_schedule(const fluid_frame *frame, unsigned int pc, int32_t x,
 }
 
 static bool fluid_bounded(const fluid_frame *frame, unsigned int pc, mc_java_random *random,
-                          int32_t bound, int32_t *out)
-{
+                          int32_t bound, int32_t *out) {
     fluid_at(frame, pc);
     if (random == NULL)
         return fluid_fail(frame, pc, "Fluid Random method receiver");
@@ -288,8 +269,7 @@ static bool fluid_bounded(const fluid_frame *frame, unsigned int pc, mc_java_ran
     return true;
 }
 
-static int32_t fluid_delay(const fluid_frame *frame)
-{
+static int32_t fluid_delay(const fluid_frame *frame) {
     if (frame->block->fields.bA == fluid_material_static(frame, MC_MATERIAL_g))
         return 5;
     if (frame->block->fields.bA == fluid_material_static(frame, MC_MATERIAL_h))
@@ -298,8 +278,7 @@ static int32_t fluid_delay(const fluid_frame *frame)
 }
 
 static bool fluid_raw_level(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                            int32_t z, int32_t *out, mc_world_mutation_error *error)
-{
+                            int32_t z, int32_t *out, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "h(Lfd;III)I", "g(Ldj;III)I", error);
     mc_material *material;
@@ -315,8 +294,7 @@ static bool fluid_raw_level(mc_world_runtime *world, mc_block *block, int32_t x,
 }
 
 static bool fluid_minimum(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                          int32_t best, int32_t *out, mc_world_mutation_error *error)
-{
+                          int32_t best, int32_t *out, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "f(Lfd;IIII)I", "f(Ldj;IIII)I", error);
     int32_t level;
@@ -337,8 +315,7 @@ static bool fluid_minimum(mc_world_runtime *world, mc_block *block, int32_t x, i
 }
 
 static void fluid_direction(int32_t direction, int32_t x, int32_t z, int32_t *next_x,
-                            int32_t *next_z)
-{
+                            int32_t *next_z) {
     *next_x = x;
     *next_z = z;
     if (direction == 0)
@@ -352,8 +329,7 @@ static void fluid_direction(int32_t direction, int32_t x, int32_t z, int32_t *ne
 }
 
 static bool fluid_blocked(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                          bool *out, mc_world_mutation_error *error)
-{
+                          bool *out, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "l(Lfd;III)Z", "k(Ldj;III)Z", error);
     int32_t id;
@@ -388,8 +364,7 @@ static bool fluid_blocked(mc_world_runtime *world, mc_block *block, int32_t x, i
 }
 
 static bool fluid_eligible(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                           int32_t z, bool *out, mc_world_mutation_error *error)
-{
+                           int32_t z, bool *out, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "m(Lfd;III)Z", "l(Ldj;III)Z", error);
     mc_material *material;
@@ -408,8 +383,7 @@ static bool fluid_eligible(mc_world_runtime *world, mc_block *block, int32_t x, 
 
 static bool fluid_distance(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
                            int32_t z, int32_t depth, int32_t previous, int32_t *out,
-                           mc_world_mutation_error *error)
-{
+                           mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "b(Lfd;IIIII)I", "b(Ldj;IIIII)I", error);
     int32_t best = 1000;
@@ -454,8 +428,7 @@ static bool fluid_distance(mc_world_runtime *world, mc_block *block, int32_t x, 
 }
 
 static bool fluid_routes(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                         bool **out, mc_world_mutation_error *error)
-{
+                         bool **out, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "k(Lfd;III)[Z", "j(Ldj;III)[Z", error);
     for (int32_t direction = 0; direction < 4; ++direction) {
@@ -527,8 +500,7 @@ static bool fluid_routes(mc_world_runtime *world, mc_block *block, int32_t x, in
 }
 
 static bool fluid_flow_to_still(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                int32_t z, mc_world_mutation_error *error)
-{
+                                int32_t z, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "j(Lfd;III)V", "i(Ldj;III)V", error);
     int32_t metadata;
@@ -545,8 +517,7 @@ static bool fluid_flow_to_still(mc_world_runtime *world, mc_block *block, int32_
 }
 
 static bool fluid_still_to_flow(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                int32_t z, mc_world_mutation_error *error)
-{
+                                int32_t z, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "nx", "is", "j(Lfd;III)V", "i(Ldj;III)V", error);
     int32_t metadata;
@@ -572,8 +543,7 @@ static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int3
                        mc_world_mutation_error *error);
 
 static bool fluid_spill(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                        int32_t metadata, mc_world_mutation_error *error)
-{
+                        int32_t metadata, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "h(Lfd;IIII)V", "h(Ldj;IIII)V", error);
     bool eligible;
@@ -608,8 +578,7 @@ static bool fluid_spill(mc_world_runtime *world, mc_block *block, int32_t x, int
 }
 
 static bool fluid_flowing_tick(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                               int32_t z, mc_java_random *random, mc_world_mutation_error *error)
-{
+                               int32_t z, mc_java_random *random, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "a(Lfd;IIILjava/util/Random;)V",
                          "a(Ldj;IIILjava/util/Random;)V", error);
@@ -754,8 +723,7 @@ static bool fluid_flowing_tick(mc_world_runtime *world, mc_block *block, int32_t
 }
 
 static bool fluid_literal(const fluid_frame *frame, unsigned int pc, const char *text,
-                          const mc_registry_string **out)
-{
+                          const mc_registry_string **out) {
     mc_registry_error registry = mc_world_mutation_empty_error().registry;
     fluid_at(frame, pc);
     if (mc_registry_runtime_literal_ascii(frame->block->classes, text, out, &registry) !=
@@ -764,8 +732,7 @@ static bool fluid_literal(const fluid_frame *frame, unsigned int pc, const char 
     return true;
 }
 
-static bool fluid_math(const fluid_frame *frame, unsigned int pc, double *out)
-{
+static bool fluid_math(const fluid_frame *frame, unsigned int pc, double *out) {
     fluid_at(frame, pc);
     const mc_java_random_profile_status status =
         mc_java_math_random(frame->block->classes->options.random_profile, out);
@@ -781,8 +748,7 @@ static bool fluid_math(const fluid_frame *frame, unsigned int pc, double *out)
 }
 
 static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                       mc_world_mutation_error *error)
-{
+                       mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "i(Lfd;III)V", "h(Ldj;III)V", error);
     /* Native FP admission is at the first reached floating operation, not at
@@ -838,8 +804,7 @@ static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int3
 }
 
 static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                      mc_world_mutation_error *error)
-{
+                      mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "j(Lfd;III)V", "i(Ldj;III)V", error);
     int32_t current;
@@ -895,8 +860,7 @@ static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32
 }
 
 static bool fluid_common_added(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                               int32_t z, mc_world_mutation_error *error)
-{
+                               int32_t z, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "c(Lfd;III)V", "c(Ldj;III)V", error);
     if (!fluid_mix(world, block, x, y, z, error))
@@ -905,8 +869,7 @@ static bool fluid_common_added(mc_world_runtime *world, mc_block *block, int32_t
 }
 
 static bool fluid_common_neighbor(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                  int32_t z, mc_world_mutation_error *error)
-{
+                                  int32_t z, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "b(Lfd;IIII)V", "b(Ldj;IIII)V", error);
     if (!fluid_mix(world, block, x, y, z, error))
@@ -915,8 +878,7 @@ static bool fluid_common_neighbor(mc_world_runtime *world, mc_block *block, int3
 }
 
 static bool fluid_flowing_added(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                int32_t z, mc_world_mutation_error *error)
-{
+                                int32_t z, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "c(Lfd;III)V", "c(Ldj;III)V", error);
     if (!fluid_common_added(world, block, x, y, z, error))
@@ -934,8 +896,7 @@ static bool fluid_flowing_added(mc_world_runtime *world, mc_block *block, int32_
 }
 
 static bool fluid_still_neighbor(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                 int32_t z, mc_world_mutation_error *error)
-{
+                                 int32_t z, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "nx", "is", "b(Lfd;IIII)V", "b(Ldj;IIII)V", error);
     if (!fluid_common_neighbor(world, block, x, y, z, error))
@@ -951,8 +912,7 @@ static bool fluid_still_neighbor(mc_world_runtime *world, mc_block *block, int32
 }
 
 static bool fluid_ignition_material(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                    int32_t z, bool *out, mc_world_mutation_error *error)
-{
+                                    int32_t z, bool *out, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "nx", "is", "k(Lfd;III)Z", "j(Ldj;III)Z", error);
     mc_material *material;
@@ -965,8 +925,7 @@ static bool fluid_ignition_material(mc_world_runtime *world, mc_block *block, in
 }
 
 static bool fluid_still_tick(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                             int32_t z, mc_java_random *random, mc_world_mutation_error *error)
-{
+                             int32_t z, mc_java_random *random, mc_world_mutation_error *error) {
     const fluid_frame frame =
         fluid_frame_make(world, block, "nx", "is", "a(Lfd;IIILjava/util/Random;)V",
                          "a(Ldj;IIILjava/util/Random;)V", error);
@@ -1028,8 +987,7 @@ static bool fluid_still_tick(mc_world_runtime *world, mc_block *block, int32_t x
 }
 
 static bool fluid_receiver(mc_world_runtime *world, const mc_block *block,
-                           mc_world_mutation_error *error)
-{
+                           mc_world_mutation_error *error) {
     if (block != NULL && (block->kind == MC_BLOCK_OM_JC || block->kind == MC_BLOCK_NX_IS))
         return true;
     error->hook_class = NULL;
@@ -1042,8 +1000,7 @@ static bool fluid_receiver(mc_world_runtime *world, const mc_block *block,
 
 bool mc_world_mutation_fluid_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, mc_java_random *random,
-                                  mc_world_mutation_error *error)
-{
+                                  mc_world_mutation_error *error) {
     if (!fluid_receiver(world, block, error))
         return false;
     return block->kind == MC_BLOCK_OM_JC
@@ -1052,8 +1009,7 @@ bool mc_world_mutation_fluid_tick(mc_world_runtime *world, const mc_block *block
 }
 
 bool mc_world_mutation_fluid_added(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                   int32_t y, int32_t z, mc_world_mutation_error *error)
-{
+                                   int32_t y, int32_t z, mc_world_mutation_error *error) {
     if (!fluid_receiver(world, block, error))
         return false;
     return block->kind == MC_BLOCK_OM_JC
@@ -1063,8 +1019,7 @@ bool mc_world_mutation_fluid_added(mc_world_runtime *world, const mc_block *bloc
 
 bool mc_world_mutation_fluid_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, int32_t source_id,
-                                      mc_world_mutation_error *error)
-{
+                                      mc_world_mutation_error *error) {
     (void)source_id; /* Actual common liquid body does not use its fourth int. */
     if (!fluid_receiver(world, block, error))
         return false;

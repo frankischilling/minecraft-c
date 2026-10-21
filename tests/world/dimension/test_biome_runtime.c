@@ -32,6 +32,7 @@ typedef struct stream {
     size_t length, offset, opens, reads, closes;
     bool closed;
 } stream;
+
 typedef struct resources {
     mc_registry_resources source;
     stream streams[3];
@@ -46,6 +47,7 @@ typedef struct resources {
     size_t callbacks;
     double channels[3][4];
 } resources;
+
 typedef struct fixture {
     mc_materials *materials;
     mc_java_random_profile *profile, *other_profile;
@@ -62,27 +64,23 @@ typedef struct fixture {
     bool constructor_retirement_refused;
 } fixture;
 
-static uint64_t bits(double value)
-{
+static uint64_t bits(double value) {
     uint64_t out;
     memcpy(&out, &value, sizeof(out));
     return out;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advance(uint64_t value, unsigned int count)
-{
+static uint64_t advance(uint64_t value, unsigned int count) {
     while (count-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_cause(const mc_registry_error *a, const mc_registry_error *b) {
     return a->message == b->message && a->initializer_pc == b->initializer_pc &&
            a->block_id == b->block_id && a->constructor_class == b->constructor_class &&
            a->constructor_pc == b->constructor_pc && a->profile_status == b->profile_status &&
@@ -98,8 +96,7 @@ static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static bool registry_cold(mc_registry_classes *classes)
-{
+static bool registry_cold(mc_registry_classes *classes) {
     mc_registry_block_view block;
     mc_biome_registry_view biome;
     return mc_registry_classes_inspect_blocks(classes, &block, NULL) == MC_REGISTRY_OK &&
@@ -109,8 +106,7 @@ static bool registry_cold(mc_registry_classes *classes)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
@@ -127,8 +123,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static void observe_callback(resources *r)
-{
+static void observe_callback(resources *r) {
     mc_world_dimension_biome_fields fields = {0};
     mc_world_biome_game_fields game;
     mc_world_dimension_error bind_error;
@@ -180,8 +175,7 @@ static void observe_callback(resources *r)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     size_t index = COUNT(names);
@@ -203,8 +197,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->invalid = true;
@@ -215,8 +208,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->invalid = true;
@@ -224,8 +216,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
 }
 
 static mc_registry_status create_registry(fixture *f, size_t i, mc_registry_side side,
-                                          mc_java_random_profile *profile, bool missing)
-{
+                                          mc_java_random_profile *profile, bool missing) {
     resources *r = &f->sources[i];
     *r = (resources){.profile = profile, .missing = missing};
     r->streams[0] = (stream){.bytes = english, .length = sizeof(english) - 1};
@@ -239,8 +230,7 @@ static mc_registry_status create_registry(fixture *f, size_t i, mc_registry_side
     return status;
 }
 
-static bool create_worlds(fixture *f)
-{
+static bool create_worlds(fixture *f) {
     bool ok = false;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 2;
@@ -290,14 +280,12 @@ cleanup:
     return ok;
 }
 
-static bool fields_same(const mc_world_dimension_fields *a, const mc_world_dimension_fields *b)
-{
+static bool fields_same(const mc_world_dimension_fields *a, const mc_world_dimension_fields *b) {
     return a->a == b->a && a->b == b->b && a->c == b->c && a->d == b->d && a->e == b->e &&
            a->f == b->f && a->g == b->g && a->h == b->h;
 }
 
-static bool test_bindings(fixture *f)
-{
+static bool test_bindings(fixture *f) {
     bool ok = false;
     mc_world_dimension_fields before, after;
     mc_world_dimension_state state_before, state_after;
@@ -359,8 +347,7 @@ cleanup:
 }
 
 static bool result_matches(mc_world_dimension_biome *manager, const mc_biome_reference_array *array,
-                           size_t cells)
-{
+                           size_t cells) {
     mc_world_dimension_biome_fields fields;
     mc_world_biome_game_fields game;
     if (mc_world_dimension_biome_fields_get(manager, &fields) != MC_WORLD_DIMENSION_OK ||
@@ -379,8 +366,7 @@ static bool result_matches(mc_world_dimension_biome *manager, const mc_biome_ref
     return true; /* Actual lookup consistency, not a new climate golden oracle. */
 }
 
-static bool test_success(fixture *f)
-{
+static bool test_success(fixture *f) {
     bool ok = false;
     resources *r = &f->sources[0];
     mc_world_dimension_biome *manager = f->held[0];
@@ -485,8 +471,7 @@ cleanup:
     return ok;
 }
 
-static bool test_failure(fixture *f)
-{
+static bool test_failure(fixture *f) {
     bool ok = false;
     resources *r = &f->sources[1];
     mc_world_dimension_biome *manager = f->held[1];
@@ -568,8 +553,7 @@ cleanup:
     return ok;
 }
 
-static bool test_world_constructor_causes(fixture *f)
-{
+static bool test_world_constructor_causes(fixture *f) {
     bool ok = false;
     mc_world_runtime_classes *classes = NULL;
     mc_world_runtime *worlds[3] = {NULL};
@@ -676,8 +660,7 @@ cleanup:
     return ok;
 }
 
-static bool retire_worlds(fixture *f)
-{
+static bool retire_worlds(fixture *f) {
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
         mc_world_dimension_unbind(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->worlds); ++i) {
@@ -701,8 +684,7 @@ static bool retire_worlds(fixture *f)
     return true;
 }
 
-static bool test_lifetime(fixture *f)
-{
+static bool test_lifetime(fixture *f) {
     bool ok = false;
     CHECK(retire_worlds(f));
     mc_world_dimension_biome_fields fields;
@@ -734,8 +716,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     if (f->constructor_retirement_refused)
@@ -761,8 +742,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -785,8 +765,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

@@ -34,8 +34,7 @@ typedef struct fixture {
 
 static fixture f, saved;
 
-static int reset_fixture(void)
-{
+static int reset_fixture(void) {
     memset(&f, 0, sizeof(f));
     for (size_t i = 0; i < 2u; ++i) {
         memset(f.blocks[i] + MC_CHUNK_BLOCKS, 0xa7, 3u);
@@ -54,8 +53,7 @@ static int reset_fixture(void)
     return 0;
 }
 
-static int test_cache(void)
-{
+static int test_cache(void) {
     CHECK(reset_fixture() == 0);
     CHECK(mc_chunk_cache_validate(&f.cache));
     CHECK(mc_chunk_cache_key(0, 0) == 0);
@@ -99,8 +97,7 @@ static int test_cache(void)
     return 0;
 }
 
-static int test_world_height(void)
-{
+static int test_world_height(void) {
     CHECK(reset_fixture() == 0);
     f.data[0].heightmap[255] = 254u;
     f.data[0].heightmap[0] = 231u;
@@ -127,8 +124,7 @@ static int test_world_height(void)
     return 0;
 }
 
-static int test_admission(void)
-{
+static int test_admission(void) {
     CHECK(reset_fixture() == 0);
     CHECK(mc_chunk_cache_publish(&f.cache, 0, 0, &f.chunks[0]));
     mc_light_region region = {MC_LIGHT_SKY, {-1, -200, 0, 0, 300, 0}};
@@ -165,8 +161,7 @@ static int test_admission(void)
     return 0;
 }
 
-static int test_finish_preflight(void)
-{
+static int test_finish_preflight(void) {
     for (unsigned int failure = 0; failure < 5u; ++failure) {
         CHECK(reset_fixture() == 0);
         memset(f.data[0].skylight, 0x37, sizeof(f.data[0].skylight));
@@ -188,8 +183,7 @@ static int test_finish_preflight(void)
     return 0;
 }
 
-static int test_finish_order_and_preservation(void)
-{
+static int test_finish_order_and_preservation(void) {
     CHECK(reset_fixture() == 0);
     f.chunks[0].x = f.chunks[0].z = -1;
     memset(f.data[0].metadata, 0x35, sizeof(f.data[0].metadata));
@@ -217,8 +211,7 @@ static int test_finish_order_and_preservation(void)
     return 0;
 }
 
-static int test_finish_visibility_and_queue(void)
-{
+static int test_finish_visibility_and_queue(void) {
     for (unsigned int published = 0; published < 2u; ++published) {
         CHECK(reset_fixture() == 0);
         for (size_t column = 0; column < 256u; ++column)
@@ -252,8 +245,7 @@ static int test_finish_visibility_and_queue(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_cache() || test_world_height() || test_admission() || test_finish_preflight() ||
         test_finish_order_and_preservation() || test_finish_visibility_and_queue()) {
         return 1;

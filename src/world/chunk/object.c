@@ -13,15 +13,14 @@ _Static_assert(offsetof(generated_chunk_backing, data) % _Alignof(mc_chunk_data)
                "generated Chunk data alignment");
 
 static mc_world_storage_status chunk_result(mc_world_storage_error *error,
-                                            mc_world_storage_status status, const char *operation)
-{
+                                            mc_world_storage_status status, const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static void nibble_construct(mc_world_chunk_nibble *nibble, uint8_t *storage, size_t packed_length)
-{
+static void nibble_construct(mc_world_chunk_nibble *nibble, uint8_t *storage,
+                             size_t packed_length) {
     /* wi/ob.<init>(I)V: raw a=NULL, zero byte[input length >> 1] at8,
      * then final a store10. The fixed caller supplies that packed span. */
     nibble->a = NULL;
@@ -31,14 +30,12 @@ static void nibble_construct(mc_world_chunk_nibble *nibble, uint8_t *storage, si
     nibble->length = packed_length;
 }
 
-static bool tile_map_virgin(const mc_world_chunk_tile_map *map)
-{
+static bool tile_map_virgin(const mc_world_chunk_tile_map *map) {
     return map->count == 0 && map->backing == NULL && map->release_backing == NULL &&
            map->backing_bytes == NULL;
 }
 
-static bool tile_map_owned_bytes(const mc_world_chunk *chunk, size_t *out)
-{
+static bool tile_map_owned_bytes(const mc_world_chunk *chunk, size_t *out) {
     const mc_world_chunk_tile_map *const map = &chunk->tile_map;
     if (tile_map_virgin(map)) {
         *out = 0;
@@ -63,8 +60,7 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
                                                       uint8_t **blocks, size_t length,
                                                       size_t max_allocation_bytes,
                                                       mc_world_chunk **out,
-                                                      mc_world_storage_error *error)
-{
+                                                      mc_world_storage_error *error) {
     if (world == NULL || blocks == NULL || *blocks == NULL || length != (size_t)MC_CHUNK_BLOCKS ||
         out == NULL)
         return chunk_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
@@ -166,8 +162,7 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
                                                            mc_chunk_state *state,
                                                            size_t max_allocation_bytes,
                                                            mc_world_chunk **out,
-                                                           mc_world_storage_error *error)
-{
+                                                           mc_world_storage_error *error) {
     if (world == NULL || state == NULL || state->blank || state->data == NULL ||
         state->data->blocks == NULL || state->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS ||
         out == NULL)
@@ -213,19 +208,16 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
     return chunk_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-mc_chunk_state *mc_world_chunk_state(mc_world_chunk *chunk)
-{
+mc_chunk_state *mc_world_chunk_state(mc_world_chunk *chunk) {
     return chunk == NULL ? NULL : chunk->state;
 }
 
-size_t mc_world_chunk_allocation_bytes(const mc_world_chunk *chunk)
-{
+size_t mc_world_chunk_allocation_bytes(const mc_world_chunk *chunk) {
     return chunk == NULL ? 0 : chunk->allocation_bytes;
 }
 
 mc_world_storage_status mc_world_chunk_fields_get(const mc_world_chunk *chunk,
-                                                  mc_world_chunk_fields *out)
-{
+                                                  mc_world_chunk_fields *out) {
     if (chunk == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     /* Inspection is passive, including when a caller has violated a mutable
@@ -254,8 +246,7 @@ mc_world_storage_status mc_world_chunk_fields_get(const mc_world_chunk *chunk,
 }
 
 mc_world_storage_status mc_world_chunk_nibble_fields_get(const mc_world_chunk_nibble *nibble,
-                                                         mc_world_chunk_nibble_fields *out)
-{
+                                                         mc_world_chunk_nibble_fields *out) {
     if (nibble == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = (mc_world_chunk_nibble_fields){nibble->a, nibble->length};
@@ -264,16 +255,14 @@ mc_world_storage_status mc_world_chunk_nibble_fields_get(const mc_world_chunk_ni
 
 mc_world_storage_status mc_world_chunk_slice_at(const mc_world_chunk_list_array *array,
                                                 size_t index,
-                                                const mc_world_chunk_entity_list **out)
-{
+                                                const mc_world_chunk_entity_list **out) {
     if (array == NULL || out == NULL || index >= array->length)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = array->items[index];
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status mc_world_chunk_tile_count(const mc_world_chunk_tile_map *map, size_t *out)
-{
+mc_world_storage_status mc_world_chunk_tile_count(const mc_world_chunk_tile_map *map, size_t *out) {
     if (map == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = map->count;
@@ -281,16 +270,14 @@ mc_world_storage_status mc_world_chunk_tile_count(const mc_world_chunk_tile_map 
 }
 
 mc_world_storage_status mc_world_chunk_entity_count(const mc_world_chunk_entity_list *list,
-                                                    size_t *out)
-{
+                                                    size_t *out) {
     if (list == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = list->count;
     return MC_WORLD_STORAGE_OK;
 }
 
-bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk)
-{
+bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk) {
     if (!mc_world_chunk_source_enabled(chunk) || !tile_map_virgin(&chunk->tile_map) ||
         !mc_world_chunk_entities_validate(chunk) || chunk->d == NULL || chunk->state == NULL ||
         chunk->data == NULL || chunk->state->blank || chunk->state->data != chunk->data ||
@@ -321,8 +308,7 @@ bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk)
     return true;
 }
 
-void mc_world_chunk_storage_free(mc_world_chunk *chunk)
-{
+void mc_world_chunk_storage_free(mc_world_chunk *chunk) {
     if (chunk != NULL) {
         /* Generated header is the first member of its malloc backing. Loaded
          * headers have no owned blocks/tail; their stored payload outlives this
@@ -333,8 +319,7 @@ void mc_world_chunk_storage_free(mc_world_chunk *chunk)
     }
 }
 
-static bool list_valid(const mc_world_chunk_entity_list *list)
-{
+static bool list_valid(const mc_world_chunk_entity_list *list) {
     return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            ((list->capacity == 0 && list->items == NULL) ||
@@ -342,16 +327,14 @@ static bool list_valid(const mc_world_chunk_entity_list *list)
 }
 
 mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_list *list,
-                                                 size_t index, mc_entity **out)
-{
+                                                 size_t index, mc_entity **out) {
     if (out == NULL || !list_valid(list) || index >= list->count)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = list->items[index];
     return MC_WORLD_STORAGE_OK;
 }
 
-bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk)
-{
+bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk) {
     if (chunk == NULL || chunk->slices.length != CHUNK_ENTITY_SLICES ||
         chunk->allocation_bytes > chunk->max_allocation_bytes)
         return false;
@@ -397,8 +380,7 @@ bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk)
     return bytes == chunk->allocation_bytes;
 }
 
-void mc_world_chunk_entities_release(mc_world_chunk *chunk)
-{
+void mc_world_chunk_entities_release(mc_world_chunk *chunk) {
     if (chunk == NULL)
         return;
     chunk->entity_containers_retired = true;
@@ -420,8 +402,7 @@ void mc_world_chunk_entities_release(mc_world_chunk *chunk)
     }
 }
 
-void mc_world_chunk_containers_release(mc_world_chunk *chunk)
-{
+void mc_world_chunk_containers_release(mc_world_chunk *chunk) {
     if (chunk == NULL)
         return;
     mc_world_chunk_entities_release(chunk);
@@ -431,17 +412,14 @@ void mc_world_chunk_containers_release(mc_world_chunk *chunk)
         chunk->tile_map.release_backing(&chunk->tile_map);
 }
 
-bool mc_world_chunk_entity_containers_retired(const mc_world_chunk *chunk)
-{
+bool mc_world_chunk_entity_containers_retired(const mc_world_chunk *chunk) {
     return chunk != NULL && chunk->entity_containers_retired;
 }
 
-bool mc_world_chunk_source_enabled(const mc_world_chunk *chunk)
-{
+bool mc_world_chunk_source_enabled(const mc_world_chunk *chunk) {
     return chunk != NULL && !chunk->entity_containers_retired && !chunk->source_disabled;
 }
 
-void mc_world_chunk_source_disable(mc_world_chunk *chunk)
-{
+void mc_world_chunk_source_disable(mc_world_chunk *chunk) {
     chunk->source_disabled = true;
 }

@@ -13,8 +13,7 @@ typedef struct plant_frame {
     mc_world_plant_error *error;
 } plant_frame;
 
-static mc_registry_error empty_registry(void)
-{
+static mc_registry_error empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
@@ -22,8 +21,7 @@ static mc_registry_error empty_registry(void)
                                .item_argument = -1};
 }
 
-static mc_world_plant_error empty_error(void)
-{
+static mc_world_plant_error empty_error(void) {
     const mc_registry_error registry = empty_registry();
     return (mc_world_plant_error){.registry = registry,
                                   .query = {.registry = registry},
@@ -31,24 +29,23 @@ static mc_world_plant_error empty_error(void)
                                   .support = {.registry = registry}};
 }
 
-static bool fail(mc_world_plant_error *error, mc_world_storage_status status, const char *operation)
-{
+static bool fail(mc_world_plant_error *error, mc_world_storage_status status,
+                 const char *operation) {
     error->status = status;
     error->operation = operation;
     error->cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool storage_fail(mc_world_plant_error *error, const mc_world_storage_error *cause)
-{
+static bool storage_fail(mc_world_plant_error *error, const mc_world_storage_error *cause) {
     error->status = cause->status;
     error->operation = cause->operation;
     error->cause = *cause;
     return false;
 }
 
-static bool registry_fail(plant_frame *frame, const mc_registry_error *cause, const char *operation)
-{
+static bool registry_fail(plant_frame *frame, const mc_registry_error *cause,
+                          const char *operation) {
     frame->error->registry = *cause;
     frame->error->status = mc_world_runtime_registry_result(frame->world, cause->status, cause,
                                                             operation, &frame->error->cause);
@@ -56,8 +53,7 @@ static bool registry_fail(plant_frame *frame, const mc_registry_error *cause, co
     return false;
 }
 
-static bool null_reference(plant_frame *frame, const char *operation)
-{
+static bool null_reference(plant_frame *frame, const char *operation) {
     mc_registry_error cause = empty_registry();
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
@@ -65,8 +61,7 @@ static bool null_reference(plant_frame *frame, const char *operation)
 }
 
 static void stage(plant_frame *frame, const char *client_class, const char *server_class,
-                  const char *client_method, const char *server_method, unsigned int pc)
-{
+                  const char *client_method, const char *server_method, unsigned int pc) {
     const bool client = frame->receiver->classes->options.side == MC_REGISTRY_CLIENT;
     frame->error->declaring_class = client ? client_class : server_class;
     frame->error->declaring_method = client ? client_method : server_method;
@@ -74,8 +69,7 @@ static void stage(plant_frame *frame, const char *client_class, const char *serv
 }
 
 static void caller(plant_frame *frame, const char *client_class, const char *server_class,
-                   const char *client_method, const char *server_method, unsigned int pc)
-{
+                   const char *client_method, const char *server_method, unsigned int pc) {
     const bool client = frame->receiver->classes->options.side == MC_REGISTRY_CLIENT;
     frame->error->caller_class = client ? client_class : server_class;
     frame->error->caller_method = client ? client_method : server_method;
@@ -83,8 +77,7 @@ static void caller(plant_frame *frame, const char *client_class, const char *ser
 }
 
 static bool block_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                      int32_t *out)
-{
+                      int32_t *out) {
     frame->error->bytecode = pc;
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_block_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
@@ -93,8 +86,7 @@ static bool block_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t y,
 }
 
 static bool material_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                         mc_material **out)
-{
+                         mc_material **out) {
     frame->error->bytecode = pc;
     if (mc_world_runtime_material_get_detailed(frame->world, x, y, z, out,
                                                &frame->error->material) == MC_WORLD_STORAGE_OK)
@@ -106,8 +98,7 @@ static bool material_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t
 /* Each static and following nullable receiver field remain separate source
  * operations. This does not cache a block ID across acquiring calls. */
 static bool static_id(plant_frame *frame, const char *name, unsigned int load_pc,
-                      unsigned int field_pc, int32_t *out)
-{
+                      unsigned int field_pc, int32_t *out) {
     frame->error->bytecode = load_pc;
     mc_registry_error cause = empty_registry();
     const mc_block *block = NULL;
@@ -123,8 +114,7 @@ static bool static_id(plant_frame *frame, const char *name, unsigned int load_pc
 
 /* Shared exact prefix of uu/na.a and pumpkin fc/di.a. Their World ID query
  * precedes Block active use. Air does not initialize Block or read m/bA. */
-static bool replaceable(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool replaceable(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     int32_t id;
     if (!block_get(frame, 5, x, y, z, &id))
         return false;
@@ -152,16 +142,14 @@ static bool replaceable(plant_frame *frame, int32_t x, int32_t y, int32_t z, boo
     return true;
 }
 
-static bool base_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool base_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "uu", "na", "a", "a", 0);
     return replaceable(frame, x, y, z, out);
 }
 
 /* wb.d / nw.c dispatches on the ACTUAL retained receiver. Mushroom and dead
  * bush select their own substrate body; tall grass inherits wb/nw. */
-static bool substrate(plant_frame *frame, int32_t id, bool *out)
-{
+static bool substrate(plant_frame *frame, int32_t id, bool *out) {
     int32_t candidate;
     switch (frame->receiver->kind) {
         case MC_BLOCK_TL_MD: {
@@ -213,8 +201,7 @@ static bool substrate(plant_frame *frame, int32_t id, bool *out)
     }
 }
 
-static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     bool accepted;
     if (!base_can_place(frame, x, y, z, &accepted)) {
         caller(frame, "wb", "nw", "a", "a", 6);
@@ -235,8 +222,7 @@ static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z
     return true;
 }
 
-static bool flower_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool flower_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "wb", "nw", "g", "f", 5);
     int32_t light;
     if (mc_world_runtime_plant_light(frame->world, x, y, z, &light, &frame->error->query) !=
@@ -267,8 +253,7 @@ static bool flower_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z,
     return true;
 }
 
-static bool mushroom_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool mushroom_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "tl", "md", "g", "f", 0);
     if (y < 0 || y >= 128) {
         *out = false;
@@ -296,8 +281,7 @@ static bool mushroom_survives(plant_frame *frame, int32_t x, int32_t y, int32_t 
 }
 
 static bool reed_water(plant_frame *frame, unsigned int query_pc, unsigned int static_pc, int32_t x,
-                       int32_t y, int32_t z, bool *out)
-{
+                       int32_t y, int32_t z, bool *out) {
     mc_material *material;
     if (!material_get(frame, query_pc, x, y, z, &material))
         return false;
@@ -312,8 +296,7 @@ static bool reed_water(plant_frame *frame, unsigned int query_pc, unsigned int s
     return true;
 }
 
-static bool reed_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool reed_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "ri", "ko", "a", "a", 7);
     int32_t below;
     if (!block_get(frame, 7, x, mc_java_i32_sub(y, 1), z, &below))
@@ -357,8 +340,7 @@ static bool reed_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, 
     return reed_water(frame, 116, 119, x, below_y, mc_java_i32_add(z, 1), out);
 }
 
-static bool cactus_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool cactus_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     static const unsigned int query_pc[4] = {7, 25, 43, 61};
     static const unsigned int invoke_pc[4] = {10, 28, 46, 64};
     stage(frame, "or", "je", "g", "f", 0);
@@ -398,8 +380,7 @@ static bool cactus_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z,
     return true;
 }
 
-static bool cactus_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool cactus_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     bool accepted;
     if (!base_can_place(frame, x, y, z, &accepted)) {
         caller(frame, "or", "je", "a", "a", 6);
@@ -416,8 +397,7 @@ static bool cactus_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z
     return true;
 }
 
-static bool pumpkin_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool pumpkin_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "fc", "di", "a", "a", 0);
     bool accepted;
     if (!replaceable(frame, x, y, z, &accepted))
@@ -435,8 +415,7 @@ static bool pumpkin_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t 
     return true;
 }
 
-static bool supported(const mc_block *receiver)
-{
+static bool supported(const mc_block *receiver) {
     switch (receiver->kind) {
         case MC_BLOCK_WB_NW:
         case MC_BLOCK_HE_EU:
@@ -453,8 +432,7 @@ static bool supported(const mc_block *receiver)
     }
 }
 
-static bool survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     switch (frame->receiver->kind) {
         case MC_BLOCK_WB_NW:
         case MC_BLOCK_HE_EU:
@@ -483,8 +461,7 @@ static bool survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *
     }
 }
 
-static bool can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     switch (frame->receiver->kind) {
         case MC_BLOCK_WB_NW:
         case MC_BLOCK_HE_EU:
@@ -507,8 +484,7 @@ static bool can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool 
 
 static mc_world_storage_status enter(mc_world_runtime *world, const mc_block *receiver, int32_t x,
                                      int32_t y, int32_t z, bool placement, bool *out,
-                                     mc_world_plant_error *error)
-{
+                                     mc_world_plant_error *error) {
     mc_world_plant_error frame = empty_error();
     if (world == NULL || out == NULL)
         (void)fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Plant predicate arguments");
@@ -556,15 +532,13 @@ static mc_world_storage_status enter(mc_world_runtime *world, const mc_block *re
 mc_world_storage_status mc_world_runtime_plant_survives(mc_world_runtime *world,
                                                         const mc_block *receiver, int32_t x,
                                                         int32_t y, int32_t z, bool *out,
-                                                        mc_world_plant_error *error)
-{
+                                                        mc_world_plant_error *error) {
     return enter(world, receiver, x, y, z, false, out, error);
 }
 
 mc_world_storage_status mc_world_runtime_plant_can_place(mc_world_runtime *world,
                                                          const mc_block *receiver, int32_t x,
                                                          int32_t y, int32_t z, bool *out,
-                                                         mc_world_plant_error *error)
-{
+                                                         mc_world_plant_error *error) {
     return enter(world, receiver, x, y, z, true, out, error);
 }

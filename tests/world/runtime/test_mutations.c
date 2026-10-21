@@ -79,33 +79,28 @@ typedef struct fixture {
     mc_chunk_state *loaded;
 } fixture;
 
-static size_t cell(int32_t x, int32_t y, int32_t z)
-{
+static size_t cell(int32_t x, int32_t y, int32_t z) {
     return ((size_t)x << 11u) | ((size_t)z << 7u) | (size_t)y;
 }
 
-static uint8_t nibble(const uint8_t *bytes, size_t index)
-{
+static uint8_t nibble(const uint8_t *bytes, size_t index) {
     return (uint8_t)(((uint32_t)bytes[index / 2u] >> (4u * (unsigned int)(index & 1u))) & 15u);
 }
 
-static bool bytes_are(const uint8_t *bytes, size_t length, uint8_t value)
-{
+static bool bytes_are(const uint8_t *bytes, size_t length, uint8_t value) {
     for (size_t i = 0; i < length; ++i)
         if (bytes[i] != value)
             return false;
     return true;
 }
 
-static bool same_storage(const mc_world_storage_error *a, const mc_world_storage_error *b)
-{
+static bool same_storage(const mc_world_storage_error *a, const mc_world_storage_error *b) {
     return a != NULL && b != NULL && a->status == b->status && a->operation == b->operation &&
            a->system_error == b->system_error;
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     byte_stream *s = context;
     if (s == NULL || out == NULL || count == NULL || capacity == 0 || s->closed ||
         s->offset > s->length)
@@ -123,8 +118,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resource_source *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || r->opens >= COUNT(names) ||
@@ -152,8 +146,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resource_source *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -164,16 +157,14 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool resource_ready(void *context, const mc_java_properties_input *input)
-{
+static bool resource_ready(void *context, const mc_java_properties_input *input) {
     resource_source *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static bool open_store(fixture *f, size_t index, const char *root, const char *suffix)
-{
+static bool open_store(fixture *f, size_t index, const char *root, const char *suffix) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -193,8 +184,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t index)
-{
+static bool create_world(fixture *f, size_t index) {
     bool ok = false;
     mc_world_runtime_fields fields;
     mc_world_runtime_construction state;
@@ -226,8 +216,7 @@ cleanup:
     return ok;
 }
 
-static bool new_chunk(fixture *f, size_t slot, size_t world)
-{
+static bool new_chunk(fixture *f, size_t slot, size_t world) {
     bool ok = false;
     uint8_t *blocks = calloc(MC_CHUNK_BLOCKS, 1);
     CHECK(blocks != NULL && slot < COUNT(f->chunks) && f->chunks[slot].state == NULL);
@@ -253,8 +242,7 @@ cleanup:
  * success/failure leaves those holds in reverse order and preserves its first
  * source diagnostic; this is not a substitute fake Chunk/world call context. */
 static bool direct_set(chunk_slot *s, bool with_metadata, int32_t x, int32_t y, int32_t z,
-                       int32_t id, int32_t metadata, bool *out, mc_world_mutation_error *error)
-{
+                       int32_t id, int32_t metadata, bool *out, mc_world_mutation_error *error) {
     *error = mc_world_mutation_empty_error();
     error->bytecode = with_metadata ? 68u : 66u;
     if (mc_world_runtime_call_enter(s->world, NULL) != MC_WORLD_STORAGE_OK)
@@ -274,8 +262,7 @@ static bool direct_set(chunk_slot *s, bool with_metadata, int32_t x, int32_t y, 
 }
 
 static bool direct_height(chunk_slot *s, int32_t x, int32_t y, int32_t z,
-                          mc_world_mutation_error *error)
-{
+                          mc_world_mutation_error *error) {
     *error = mc_world_mutation_empty_error();
     /* Test-supplied enclosing-PC token. This direct helper call does not
      * execute the setter; it verifies that the helper retains its caller frame. */
@@ -293,8 +280,7 @@ static bool direct_height(chunk_slot *s, int32_t x, int32_t y, int32_t z,
     return result && released;
 }
 
-static bool cold_failure(fixture *f)
-{
+static bool cold_failure(fixture *f) {
     bool ok = false, out = true;
     mc_world_mutation_error first, again;
     mc_registry_block_view view;
@@ -344,8 +330,7 @@ cleanup:
     return ok;
 }
 
-static bool ordinary_overloads(fixture *f)
-{
+static bool ordinary_overloads(fixture *f) {
     bool ok = false;
     for (size_t mode = 0; mode < 2; ++mode) {
         const bool with_metadata = mode != 0;
@@ -375,8 +360,7 @@ cleanup:
     return ok;
 }
 
-static bool top_and_full_metadata(fixture *f)
-{
+static bool top_and_full_metadata(fixture *f) {
     bool ok = false, out = false;
     mc_world_mutation_error error;
     CHECK(new_chunk(f, 3, 0));
@@ -414,8 +398,7 @@ cleanup:
     return ok;
 }
 
-static bool full_ids_and_null_old(fixture *f)
-{
+static bool full_ids_and_null_old(fixture *f) {
     bool ok = false;
     for (size_t mode = 0; mode < 2; ++mode) {
         for (size_t id_case = 0; id_case < 2; ++id_case) {
@@ -465,8 +448,7 @@ cleanup:
     return ok;
 }
 
-static bool retained_heights(fixture *f)
-{
+static bool retained_heights(fixture *f) {
     bool ok = false;
     mc_world_mutation_error error;
     /* Both valid arrays can contain retained unsigned height255. For z8 the
@@ -503,8 +485,7 @@ cleanup:
     return ok;
 }
 
-static bool negative_opacity(fixture *f)
-{
+static bool negative_opacity(fixture *f) {
     bool ok = false, altered = false;
     int32_t saved = 0;
     mc_world_mutation_error error;
@@ -532,8 +513,7 @@ cleanup:
     return ok;
 }
 
-static bool captured_view_guards(fixture *f)
-{
+static bool captured_view_guards(fixture *f) {
     bool ok = false;
     mc_registry_error error;
     mc_registry_block_m_view actual_m;
@@ -576,8 +556,7 @@ cleanup:
     return ok;
 }
 
-static bool public_cached(fixture *f)
-{
+static bool public_cached(fixture *f) {
     bool ok = false, out = true;
     mc_world_mutation_error error;
     mc_world_provider_fields *p = &f->provider[0];
@@ -656,8 +635,7 @@ cleanup:
     return ok;
 }
 
-static bool drain_world(fixture *f, size_t index)
-{
+static bool drain_world(fixture *f, size_t index) {
     if (!f->bound[index])
         return true;
     mc_chunk_cache *cache = f->provider[index].cache;
@@ -696,8 +674,7 @@ static bool drain_world(fixture *f, size_t index)
     return cache->count == 0 && cache->insertion_count == 0;
 }
 
-static bool saved_and_unpublished(fixture *f)
-{
+static bool saved_and_unpublished(fixture *f) {
     bool ok = false;
     mc_world_info_fields before, after;
     CHECK(f->cached != NULL && f->cached->dirty &&
@@ -723,8 +700,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
@@ -772,8 +748,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -796,8 +771,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

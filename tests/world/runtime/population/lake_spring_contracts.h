@@ -16,6 +16,7 @@ typedef struct ls_image {
     mc_chunk_data data;
     uint8_t blocks[MC_CHUNK_BLOCKS];
 } ls_image;
+
 typedef struct ls_inputs {
     ls_image image;
     mc_world_chunk_nibble *e, *f, *g;
@@ -26,6 +27,7 @@ typedef struct ls_inputs {
     mc_java_random *r;
     bool a, o, B;
 } ls_inputs;
+
 typedef struct ls_profile {
     uint64_t unique, state, cache;
     unsigned int phase;
@@ -34,6 +36,7 @@ typedef struct ls_profile {
     mc_platform_nanotime clock;
     bool cached;
 } ls_profile;
+
 typedef struct ls_queues {
     mc_world_light_list_view lights;
     const mc_world_light_region **light;
@@ -44,18 +47,18 @@ typedef struct ls_queues {
     size_t e_bytes, f_bytes;
     mc_world_schedule_class_state sequence;
 } ls_queues;
+
 typedef struct ls_counts {
     size_t air, liquid, grass, stone, changed;
 } ls_counts;
 
-static uint64_t ls_bits(double d)
-{
+static uint64_t ls_bits(double d) {
     uint64_t u;
     memcpy(&u, &d, sizeof(u));
     return u;
 }
-static ls_profile ls_profile_read(const mc_java_random_profile *p)
-{
+
+static ls_profile ls_profile_read(const mc_java_random_profile *p) {
     ls_profile s = {.unique = atomic_load_explicit(&p->uniquifier, memory_order_relaxed),
                     .phase = atomic_load_explicit(&p->holder_phase, memory_order_acquire),
                     .math = p->math,
@@ -68,8 +71,8 @@ static ls_profile ls_profile_read(const mc_java_random_profile *p)
     }
     return s;
 }
-static bool ls_profile_same(const mc_java_random_profile *p, const ls_profile *s)
-{
+
+static bool ls_profile_same(const mc_java_random_profile *p, const ls_profile *s) {
     const ls_profile a = ls_profile_read(p);
     return a.unique == s->unique && a.phase == s->phase && a.math == s->math &&
            a.allocated == s->allocated && a.state == s->state && a.cache == s->cache &&
@@ -77,21 +80,21 @@ static bool ls_profile_same(const mc_java_random_profile *p, const ls_profile *s
            a.clock.initial_sample == s->clock.initial_sample &&
            a.clock.initialized == s->clock.initialized;
 }
-static size_t ls_index(int32_t x, int32_t y, int32_t z)
-{
+
+static size_t ls_index(int32_t x, int32_t y, int32_t z) {
     return ((size_t)x * 16u + (size_t)z) * 128u + (size_t)y;
 }
-static unsigned int ls_nibble(const uint8_t *a, size_t i)
-{
+
+static unsigned int ls_nibble(const uint8_t *a, size_t i) {
     return ((unsigned int)a[i >> 1u] >> ((i & 1u) * 4u)) & 15u;
 }
-static void ls_image_read(ls_image *s, const mc_world_chunk *c)
-{
+
+static void ls_image_read(ls_image *s, const mc_world_chunk *c) {
     s->data = *c->data;
     memcpy(s->blocks, c->data->blocks, sizeof(s->blocks));
 }
-static bool ls_image_same(const ls_image *s, const mc_world_chunk *c)
-{
+
+static bool ls_image_same(const ls_image *s, const mc_world_chunk *c) {
     const mc_chunk_data *d = c->data;
     return d->blocks == s->data.blocks && d->blocks_capacity == s->data.blocks_capacity &&
            d->minimum_height == s->data.minimum_height &&
@@ -101,15 +104,15 @@ static bool ls_image_same(const ls_image *s, const mc_world_chunk *c)
            memcmp(s->data.block_light, d->block_light, sizeof(d->block_light)) == 0 &&
            memcmp(s->data.heightmap, d->heightmap, sizeof(d->heightmap)) == 0;
 }
-static bool ls_support_same(const ls_image *s, const mc_world_chunk *c)
-{
+
+static bool ls_support_same(const ls_image *s, const mc_world_chunk *c) {
     return c->data->minimum_height == s->data.minimum_height &&
            memcmp(c->data->skylight, s->data.skylight, MC_CHUNK_NIBBLE_BYTES) == 0 &&
            memcmp(c->data->block_light, s->data.block_light, MC_CHUNK_NIBBLE_BYTES) == 0 &&
            memcmp(c->data->heightmap, s->data.heightmap, MC_CHUNK_HEIGHTMAP_BYTES) == 0;
 }
-static mc_block **ls_named(mc_registry_classes *r, const char *name)
-{
+
+static mc_block **ls_named(mc_registry_classes *r, const char *name) {
     for (size_t i = 0; i < COUNT(r->blocks.named); ++i) {
         const char *n = mc_registry_block_static_name(i);
         if (n != NULL && strcmp(n, name) == 0)
@@ -117,17 +120,17 @@ static mc_block **ls_named(mc_registry_classes *r, const char *name)
     }
     return NULL;
 }
-static bool ls_id(mc_registry_classes *r, const char *name, int32_t *id)
-{
+
+static bool ls_id(mc_registry_classes *r, const char *name, int32_t *id) {
     const mc_block *b = NULL;
     if (mc_registry_block_static_get(r, name, &b, NULL) != MC_REGISTRY_OK || b == NULL)
         return false;
     *id = b->fields.bn;
     return *id > 0 && *id <= UINT8_MAX;
 }
+
 static bool ls_inputs_read(ls_inputs *s, mc_world_chunk *c, mc_world_runtime *w,
-                           mc_registry_classes *r)
-{
+                           mc_registry_classes *r) {
     if (c == NULL || c->data == NULL || c->data->blocks == NULL ||
         c->data->blocks_capacity < MC_CHUNK_BLOCKS || c->e == NULL || c->f == NULL ||
         c->g == NULL || c->h != c->data->heightmap || c->e->a != c->data->metadata ||
@@ -148,9 +151,9 @@ static bool ls_inputs_read(ls_inputs *s, mc_world_chunk *c, mc_world_runtime *w,
     s->B = w->fields.B;
     return true;
 }
+
 static void ls_inputs_restore(const ls_inputs *s, mc_world_chunk *c, mc_world_runtime *w,
-                              mc_registry_classes *r)
-{
+                              mc_registry_classes *r) {
     *c->data = s->image.data;
     memcpy(c->data->blocks, s->image.blocks, sizeof(s->image.blocks));
     c->e = s->e;
@@ -168,8 +171,8 @@ static void ls_inputs_restore(const ls_inputs *s, mc_world_chunk *c, mc_world_ru
      * C/E/F record, scheduler sequence, Random object state, diagnostics and
      * publication/lease/binding/class state retain all reached effects. */
 }
-static void ls_terrain(mc_world_chunk *c, mc_world_runtime *w, int32_t fill)
-{
+
+static void ls_terrain(mc_world_chunk *c, mc_world_runtime *w, int32_t fill) {
     /* Explicit payload/flag inputs. Height128 makes every trial write an
      * interior edit, so no height/skylight rebuild is expected. Saved sky15
      * is intentional input even inside this prepared solid volume. */
@@ -183,23 +186,23 @@ static void ls_terrain(mc_world_chunk *c, mc_world_runtime *w, int32_t fill)
     w->fields.o = false;
     w->fields.B = false;
 }
-static void ls_cavity(mc_world_chunk *c, mc_world_runtime *w, int32_t stone, int32_t x)
-{
+
+static void ls_cavity(mc_world_chunk *c, mc_world_runtime *w, int32_t stone, int32_t x) {
     ls_terrain(c, w, stone);
     c->data->blocks[ls_index(x + 1, 64, 8)] = 0;
 }
-static bool ls_bounds_same(const mc_light_bounds *a, const mc_light_bounds *b)
-{
+
+static bool ls_bounds_same(const mc_light_bounds *a, const mc_light_bounds *b) {
     return a->min_x == b->min_x && a->min_y == b->min_y && a->min_z == b->min_z &&
            a->max_x == b->max_x && a->max_y == b->max_y && a->max_z == b->max_z;
 }
-static bool ls_tick_same(const mc_scheduled_tick_fields *a, const mc_scheduled_tick_fields *b)
-{
+
+static bool ls_tick_same(const mc_scheduled_tick_fields *a, const mc_scheduled_tick_fields *b) {
     return a->x == b->x && a->y == b->y && a->z == b->z && a->block == b->block &&
            a->due_time == b->due_time && a->sequence == b->sequence;
 }
-static void ls_queues_free(ls_queues *s)
-{
+
+static void ls_queues_free(ls_queues *s) {
     free(s->light);
     free(s->light_fields);
     free(s->ordered);
@@ -208,8 +211,8 @@ static void ls_queues_free(ls_queues *s)
     free(s->membership_fields);
     *s = (ls_queues){0};
 }
-static bool ls_queues_read(mc_world_runtime *w, ls_queues *s)
-{
+
+static bool ls_queues_read(mc_world_runtime *w, ls_queues *s) {
     int32_t e = 0, f = 0;
     size_t written = SIZE_MAX;
     *s = (ls_queues){0};
@@ -278,8 +281,8 @@ fail:
     ls_queues_free(s);
     return false;
 }
-static bool ls_scheduled_same(const ls_queues *a, const ls_queues *b)
-{
+
+static bool ls_scheduled_same(const ls_queues *a, const ls_queues *b) {
     if (a->e != b->e || a->f != b->f || a->e_bytes != b->e_bytes || a->f_bytes != b->f_bytes)
         return false;
     for (size_t i = 0; i < a->e; ++i)
@@ -292,8 +295,8 @@ static bool ls_scheduled_same(const ls_queues *a, const ls_queues *b)
             return false;
     return true;
 }
-static bool ls_lights_same(const ls_queues *a, const ls_queues *b)
-{
+
+static bool ls_lights_same(const ls_queues *a, const ls_queues *b) {
     if (a->lights.identity != b->lights.identity || a->lights.count != b->lights.count ||
         a->lights.capacity != b->lights.capacity)
         return false;
@@ -303,17 +306,17 @@ static bool ls_lights_same(const ls_queues *a, const ls_queues *b)
             return false;
     return true;
 }
-static bool ls_sequence_delta(const ls_queues *a, const ls_queues *b, int64_t requests)
-{
+
+static bool ls_sequence_delta(const ls_queues *a, const ls_queues *b, int64_t requests) {
     const int64_t start = a->sequence.initialized ? a->sequence.next : 0;
     return requests == 0
                ? a->sequence.initialized == b->sequence.initialized &&
                      a->sequence.next == b->sequence.next
                : b->sequence.initialized && b->sequence.next == mc_java_i64_add(start, requests);
 }
+
 static bool ls_queues_after(mc_world_runtime *w, const ls_queues *before, bool lights,
-                            int64_t requests)
-{
+                            int64_t requests) {
     ls_queues after = {0};
     const bool read = ls_queues_read(w, &after);
     const bool result = read && ls_scheduled_same(before, &after) &&
@@ -323,8 +326,8 @@ static bool ls_queues_after(mc_world_runtime *w, const ls_queues *before, bool l
     ls_queues_free(&after);
     return result;
 }
-static bool ls_cleared(const mc_population_lake_spring_error *e)
-{
+
+static bool ls_cleared(const mc_population_lake_spring_error *e) {
     const mc_registry_error empty = {.initializer_pc = -1,
                                      .block_id = -1,
                                      .constructor_pc = -1,
@@ -343,9 +346,9 @@ static bool ls_cleared(const mc_population_lake_spring_error *e)
            e->mutation.chunk_bytecode == 0 && e->mutation.hook_class == NULL &&
            e->mutation.cause_hook_class == NULL && e->mutation.schedule_bytecode == 0;
 }
+
 static bool ls_failure(const mc_population_lake_spring_error *e, mc_world_runtime *w, size_t side,
-                       bool lake, unsigned int pc)
-{
+                       bool lake, unsigned int pc) {
     return e->status != MC_WORLD_STORAGE_OK && e->operation != NULL && e->feature_class != NULL &&
            strcmp(e->feature_class, lake ? (side == 0 ? "dj" : "cd") : (side == 0 ? "xo" : "pc")) ==
                0 &&
@@ -353,13 +356,13 @@ static bool ls_failure(const mc_population_lake_spring_error *e, mc_world_runtim
            same_cause(&e->cause, &w->last_error) && e->cause.status == e->status &&
            e->cause.operation == e->operation && w->active_calls == 0 && w->local_leases == 0;
 }
-static void ls_random(mc_java_random *r, int64_t seed)
-{
+
+static void ls_random(mc_java_random *r, int64_t seed) {
     mc_java_random_seed(r, seed);
     (void)mc_java_random_next_gaussian(r); /* Real API retains a cached Gaussian. */
 }
-static bool ls_lake_budget(mc_java_random *r, bool complete)
-{
+
+static bool ls_lake_budget(mc_java_random *r, bool complete) {
     int32_t n;
     if (!mc_java_random_next_bounded(r, 4, &n))
         return false;
@@ -369,19 +372,19 @@ static bool ls_lake_budget(mc_java_random *r, bool complete)
                 (void)mc_java_random_next_double(r);
     return true;
 }
-static bool ls_lava_budget(mc_java_random *r, int32_t *count)
-{
+
+static bool ls_lava_budget(mc_java_random *r, int32_t *count) {
     int32_t ignored;
     if (!mc_java_random_next_bounded(r, 3, count))
         return false;
     return *count == 0 || (mc_java_random_next_bounded(r, 3, &ignored) &&
                            mc_java_random_next_bounded(r, 3, &ignored));
 }
+
 /* Output properties, NOT a copied ellipsoid/mask/voxel oracle. Every actual
  * cell and packed nibble is inspected. No expected carved shape is generated. */
 static bool ls_lake_image(const ls_image *before, const mc_world_chunk *c, int32_t target,
-                          int32_t grass, int32_t stone, bool rim, ls_counts *n)
-{
+                          int32_t grass, int32_t stone, bool rim, ls_counts *n) {
     *n = (ls_counts){0};
     if (!ls_support_same(before, c))
         return false;
@@ -419,10 +422,10 @@ static bool ls_lake_image(const ls_image *before, const mc_world_chunk *c, int32
             }
     return true;
 }
+
 static bool ls_spring_image_extra(const ls_image *before, const mc_world_chunk *c, int32_t x,
                                   int32_t center, int32_t side, unsigned int side_metadata,
-                                  int32_t east, unsigned int east_metadata)
-{
+                                  int32_t east, unsigned int east_metadata) {
     if (!ls_support_same(before, c))
         return false;
     for (size_t i = 0; i < MC_CHUNK_BLOCKS; ++i) {
@@ -445,13 +448,13 @@ static bool ls_spring_image_extra(const ls_image *before, const mc_world_chunk *
     }
     return true;
 }
+
 static bool ls_spring_image(const ls_image *before, const mc_world_chunk *c, int32_t x,
-                            int32_t center, int32_t side, unsigned int side_metadata)
-{
+                            int32_t center, int32_t side, unsigned int side_metadata) {
     return ls_spring_image_extra(before, c, x, center, side, side_metadata, -1, 0);
 }
-static bool ls_air_lake_image(const ls_image *before, const mc_world_chunk *c)
-{
+
+static bool ls_air_lake_image(const ls_image *before, const mc_world_chunk *c) {
     size_t changed = 0;
     if (!ls_support_same(before, c))
         return false;
@@ -474,8 +477,7 @@ static bool ls_air_lake_image(const ls_image *before, const mc_world_chunk *c)
 }
 
 static bool ls_lakes(fixture *f, size_t side, mc_world_chunk *c, mc_world_runtime *w, int32_t stone,
-                     int32_t dirt, int32_t grass, int32_t water, int32_t lava)
-{
+                     int32_t dirt, int32_t grass, int32_t water, int32_t lava) {
     bool ok = false, saved = false;
     ls_inputs *input = calloc(1, sizeof(*input));
     ls_image *before = malloc(sizeof(*before));
@@ -785,8 +787,7 @@ cleanup:
 }
 
 static bool ls_new_record(const ls_queues *before, const ls_queues *after, int32_t x, int32_t block,
-                          int64_t due)
-{
+                          int64_t due) {
     if (after->e != before->e + 1u || after->f != before->f + 1u)
         return false;
     size_t added_e = 0, added_f = 0, old_e = 0;
@@ -838,10 +839,10 @@ static bool ls_new_record(const ls_queues *before, const ls_queues *after, int32
     }
     return added_e == 1 && added_f == 1 && old_e == before->e;
 }
+
 static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runtime *w,
                        int32_t stone, int32_t dirt, int32_t grass, int32_t water, int32_t lava,
-                       int32_t flowing_water, int32_t flowing_lava)
-{
+                       int32_t flowing_water, int32_t flowing_lava) {
     bool ok = false, saved = false;
     ls_inputs *input = calloc(1, sizeof(*input));
     ls_image *before = malloc(sizeof(*before));
@@ -1217,8 +1218,7 @@ cleanup:
     return ok;
 }
 
-static bool population_lake_spring_contracts(fixture *f, size_t side)
-{
+static bool population_lake_spring_contracts(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];

@@ -23,8 +23,7 @@ _Static_assert(CHAR_BIT == 8 && sizeof(double) == sizeof(uint64_t),
 static mc_world_storage_status insertion_result(mc_world_chunk_entity_error *out,
                                                 const mc_world_chunk_entity_error *frame,
                                                 mc_world_storage_status status,
-                                                const char *operation, unsigned int pc)
-{
+                                                const char *operation, unsigned int pc) {
     if (out != NULL) {
         *out = *frame;
         out->status = status;
@@ -35,16 +34,14 @@ static mc_world_storage_status insertion_result(mc_world_chunk_entity_error *out
     return status;
 }
 
-static bool list_valid(const mc_world_chunk_entity_list *list)
-{
+static bool list_valid(const mc_world_chunk_entity_list *list) {
     return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            ((list->capacity == 0 && list->items == NULL) ||
             (list->capacity != 0 && list->items != NULL));
 }
 
-static mc_world_storage_status hold_status(mc_entity_status status)
-{
+static mc_world_storage_status hold_status(mc_entity_status status) {
     switch (status) {
         case MC_ENTITY_LIMIT:
             return MC_WORLD_STORAGE_LIMIT;
@@ -60,8 +57,7 @@ static mc_world_storage_status hold_status(mc_entity_status status)
 }
 
 static mc_world_storage_status append(mc_world_chunk *chunk, mc_world_chunk_entity_list *list,
-                                      mc_entity *entity, mc_world_chunk_entity_error *frame)
-{
+                                      mc_entity *entity, mc_world_chunk_entity_error *frame) {
     if (!list_valid(list) || chunk->allocation_bytes > chunk->max_allocation_bytes ||
         (chunk->release_entity != NULL && chunk->release_entity != mc_entity_release))
         return insertion_result(frame, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -124,8 +120,7 @@ static mc_world_storage_status append(mc_world_chunk *chunk, mc_world_chunk_enti
 }
 
 mc_world_storage_status mc_world_chunk_insert_entity(mc_world_chunk *chunk, mc_entity *entity,
-                                                     mc_world_chunk_entity_error *error)
-{
+                                                     mc_world_chunk_entity_error *error) {
     mc_world_chunk_entity_error frame = {0};
     if (chunk == NULL)
         return insertion_result(error, &frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,

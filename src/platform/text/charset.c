@@ -17,8 +17,7 @@
 #include <locale.h>
 #endif
 
-mc_java_reader_status mc_java_reader_default_charset(mc_java_reader_charset *out)
-{
+mc_java_reader_status mc_java_reader_default_charset(mc_java_reader_charset *out) {
     if (out == NULL)
         return MC_JAVA_READER_INVALID_ARGUMENT;
     mc_java_reader_charset selected;

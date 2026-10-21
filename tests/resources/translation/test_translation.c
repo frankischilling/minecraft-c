@@ -39,8 +39,7 @@ static const uint16_t nul_key[] = {'n', 'u', 'l', 0, 'k', 'e', 'y'};
 static const uint16_t nul_value[] = {'l', 'a', 't', 'i', 'n', 0x00e9, 0, 0xd800};
 static const uint16_t astral_value[] = {0xd83d, 0xde00};
 
-static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_error(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -50,8 +49,8 @@ static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
            a->item_argument == b->item_argument;
 }
 
-static bool same_view(const mc_registry_translation_view *a, const mc_registry_translation_view *b)
-{
+static bool same_view(const mc_registry_translation_view *a,
+                      const mc_registry_translation_view *b) {
     return a->singleton_phase == b->singleton_phase && a->wrapper_phase == b->wrapper_phase &&
            a->singleton_initializer_pc == b->singleton_initializer_pc &&
            a->wrapper_initializer_pc == b->wrapper_initializer_pc &&
@@ -59,8 +58,7 @@ static bool same_view(const mc_registry_translation_view *a, const mc_registry_t
 }
 
 static bool core_units(const mc_java_properties_string *string, const uint16_t *units,
-                       size_t length)
-{
+                       size_t length) {
     mc_java_properties_string_view view;
     if (!mc_java_properties_string_read(string, &view) || view.length != length ||
         (length != 0 && view.units == NULL))
@@ -71,8 +69,7 @@ static bool core_units(const mc_java_properties_string *string, const uint16_t *
     return true;
 }
 
-static bool core_text(const mc_java_properties_string *string, const char *text)
-{
+static bool core_text(const mc_java_properties_string *string, const char *text) {
     uint16_t units[128];
     size_t length = strlen(text);
     if (length > COUNT(units))
@@ -83,8 +80,7 @@ static bool core_text(const mc_java_properties_string *string, const char *text)
 }
 
 static mc_java_properties_status core_lookup(const mc_java_properties *properties, const char *key,
-                                             const mc_java_properties_string **out)
-{
+                                             const mc_java_properties_string **out) {
     uint16_t units[128];
     size_t length = strlen(key);
     if (length > COUNT(units))
@@ -95,8 +91,7 @@ static mc_java_properties_status core_lookup(const mc_java_properties *propertie
 }
 
 static mc_registry_status lookup(const mc_translation *translation, const char *key,
-                                 const mc_registry_string **out, mc_registry_error *error)
-{
+                                 const mc_registry_string **out, mc_registry_error *error) {
     uint16_t units[128];
     size_t length = strlen(key);
     if (length > COUNT(units))
@@ -106,8 +101,7 @@ static mc_registry_status lookup(const mc_translation *translation, const char *
     return mc_translation_property(translation, units, length, out, error);
 }
 
-static bool units_are(const mc_registry_string *string, const uint16_t *units, size_t length)
-{
+static bool units_are(const mc_registry_string *string, const uint16_t *units, size_t length) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length != length ||
         (length != 0 && view.units == NULL))
@@ -118,8 +112,7 @@ static bool units_are(const mc_registry_string *string, const uint16_t *units, s
     return true;
 }
 
-static bool text_is(const mc_registry_string *string, const char *text)
-{
+static bool text_is(const mc_registry_string *string, const char *text) {
     uint16_t units[128];
     size_t length = strlen(text);
     if (length > COUNT(units))
@@ -136,8 +129,7 @@ typedef struct memory_stream {
 } memory_stream;
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *destination, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     memory_stream *stream = context;
     ++stream->calls;
     if (destination == NULL || count == NULL || capacity == 0 || capacity > 8192 ||
@@ -174,8 +166,7 @@ typedef struct resources {
 /* The callback is an actual source opening, not a root initialization flow.
  * Public nested initialization/free must refuse it. Diagnostic inspection
  * reports the actual entered prefix without performing an active use. */
-static bool check_reentry(resources *r)
-{
+static bool check_reentry(resources *r) {
     mc_registry_classes *owner = r->owner;
     if (owner == NULL || owner->entered == 0)
         return false;
@@ -220,8 +211,7 @@ static bool check_reentry(resources *r)
     return ok;
 }
 
-static bool observe_first(resources *r)
-{
+static bool observe_first(resources *r) {
     const mc_translation *pending = r->owner->translations.pending;
     const mc_java_properties_string *value = NULL;
     if (pending == NULL || pending->b == NULL || mc_java_properties_size(pending->b) != 6 ||
@@ -240,8 +230,7 @@ static bool observe_first(resources *r)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     size_t index = r->opens++;
     if (index >= COUNT(r->streams) || name == NULL || out == NULL ||
@@ -261,8 +250,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static void resources_init(resources *r, size_t chunk)
-{
+static void resources_init(resources *r, size_t chunk) {
     *r = (resources){0};
     r->streams[0] =
         (memory_stream){(const uint8_t *)english, sizeof(english) - 1, 0, chunk, 0, 0, false};
@@ -272,19 +260,16 @@ static void resources_init(resources *r, size_t chunk)
     r->missing = -1;
 }
 
-static void stream_text(memory_stream *stream, const char *text)
-{
+static void stream_text(memory_stream *stream, const char *text) {
     stream->bytes = (const uint8_t *)text;
     stream->length = strlen(text);
 }
 
-static bool resources_valid(const resources *r)
-{
+static bool resources_valid(const resources *r) {
     return !r->invalid && !r->streams[0].invalid && !r->streams[1].invalid && r->opens <= 2;
 }
 
-static int retire(mc_registry_classes *owner)
-{
+static int retire(mc_registry_classes *owner) {
     if (owner == NULL || mc_registry_classes_free(owner, NULL) == MC_REGISTRY_OK)
         return 0;
     retirement_failed = true;
@@ -292,8 +277,7 @@ static int retire(mc_registry_classes *owner)
     return 1;
 }
 
-static bool registry_untouched(const mc_registry_classes *owner)
-{
+static bool registry_untouched(const mc_registry_classes *owner) {
     mc_registry_block_view blocks;
     mc_registry_item_view items;
     if (mc_registry_classes_inspect_blocks(owner, &blocks, NULL) != MC_REGISTRY_OK ||
@@ -340,8 +324,7 @@ typedef struct dependencies {
     size_t profile_bytes;
 } dependencies;
 
-static material_snapshot material_read(mc_material *m)
-{
+static material_snapshot material_read(mc_material *m) {
     const mc_material_palette *palette = mc_material_palette_of(m);
     return (material_snapshot){m,
                                palette,
@@ -358,8 +341,7 @@ static material_snapshot material_read(mc_material *m)
                                mc_material_j(m)};
 }
 
-static void capture_dependencies(dependencies *d)
-{
+static void capture_dependencies(dependencies *d) {
     d->uniquifier = atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed);
     d->holder = atomic_load_explicit(&d->profile->holder_phase, memory_order_relaxed);
     d->math = d->profile->math;
@@ -368,8 +350,7 @@ static void capture_dependencies(dependencies *d)
         d->material[i] = material_read(mc_materials_get(d->materials, (mc_material_id)i));
 }
 
-static bool dependencies_unchanged(const dependencies *d)
-{
+static bool dependencies_unchanged(const dependencies *d) {
     if (atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed) != d->uniquifier ||
         atomic_load_explicit(&d->profile->holder_phase, memory_order_relaxed) != d->holder ||
         d->profile->math != d->math ||
@@ -389,8 +370,7 @@ static bool dependencies_unchanged(const dependencies *d)
 
 static mc_registry_status allocate(mc_registry_side side, const dependencies *d, resources *r,
                                    size_t maximum, mc_registry_classes **out,
-                                   mc_registry_error *error)
-{
+                                   mc_registry_error *error) {
     const mc_registry_options options = {side, d->profile, d->materials, maximum,
                                          r == NULL ? NULL : &r->source};
     mc_registry_status status = mc_registry_classes_allocate(&options, out, error);
@@ -399,8 +379,7 @@ static mc_registry_status allocate(mc_registry_side side, const dependencies *d,
     return status;
 }
 
-static int test_cold(mc_registry_side side, const dependencies *d)
-{
+static int test_cold(mc_registry_side side, const dependencies *d) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -433,8 +412,7 @@ cleanup:
     return result;
 }
 
-static int check_loaded(mc_registry_classes *owner, const resources *r)
-{
+static int check_loaded(mc_registry_classes *owner, const resources *r) {
     int result = 1;
     mc_registry_translation_view view;
     mc_registry_error error;
@@ -505,8 +483,7 @@ cleanup:
     return result;
 }
 
-static int test_success(mc_registry_side side, const dependencies *d, size_t chunk)
-{
+static int test_success(mc_registry_side side, const dependencies *d, size_t chunk) {
     int result = 1;
     mc_registry_classes *first = NULL, *second = NULL;
     resources a, b;
@@ -541,8 +518,7 @@ cleanup:
     return result;
 }
 
-static int check_failed_retry(mc_registry_classes *owner, const resources *r)
-{
+static int check_failed_retry(mc_registry_classes *owner, const resources *r) {
     int result = 1;
     mc_registry_translation_view before, after;
     mc_registry_error error;
@@ -597,8 +573,7 @@ enum failure_case {
     BAD_SECOND
 };
 
-static int test_failure(mc_registry_side side, const dependencies *d, enum failure_case which)
-{
+static int test_failure(mc_registry_side side, const dependencies *d, enum failure_case which) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -696,8 +671,7 @@ typedef struct budget_observation {
 /* Check a complete source-order prefix, rather than accepting an arbitrary
  * map of the right size. Native first-insertion enumeration is explicitly a
  * Properties API contract, not a Java Hashtable iteration-order assertion. */
-static bool budget_prefix(const mc_java_properties *properties, size_t opens)
-{
+static bool budget_prefix(const mc_java_properties *properties, size_t opens) {
     static const char *const keys[] = {"dup", "only",  "same", "alias",
                                        NULL,  "empty", "tail", "astral"};
     static const char *const values[] = {NULL, "base", "equal", "equal", NULL, "", "stats", NULL};
@@ -738,8 +712,7 @@ static bool budget_prefix(const mc_java_properties *properties, size_t opens)
  * allocator hook, private mutation, clock substitution or allocation fault is
  * injected. The shared dependencies remain untouched between all trials. */
 static int budget_trial(mc_registry_side side, const dependencies *d, size_t maximum,
-                        budget_observation *observation)
-{
+                        budget_observation *observation) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -782,8 +755,7 @@ cleanup:
     return result;
 }
 
-static int test_budgets(mc_registry_side side, const dependencies *d)
-{
+static int test_budgets(mc_registry_side side, const dependencies *d) {
     int result = 1;
     const size_t upper = 4u * 1024u * 1024u;
     size_t low = sizeof(mc_registry_classes), high = upper;
@@ -825,8 +797,7 @@ cleanup:
     return result;
 }
 
-static int test_invalid_source(mc_registry_side side, const dependencies *d)
-{
+static int test_invalid_source(mc_registry_side side, const dependencies *d) {
     int result = 1;
     resources r;
     resources_init(&r, 7);
@@ -844,8 +815,7 @@ cleanup:
     return result;
 }
 
-static int test_side(mc_registry_side side, const dependencies *d)
-{
+static int test_side(mc_registry_side side, const dependencies *d) {
     int result = 1;
     CHECK(test_cold(side, d) == 0 && test_invalid_source(side, d) == 0);
     const size_t chunks[] = {SIZE_MAX, 1, 7, 8192};
@@ -859,8 +829,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     dependencies d = {0};
     CHECK(mc_materials_create(&d.materials));

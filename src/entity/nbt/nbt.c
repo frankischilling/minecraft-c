@@ -42,22 +42,19 @@ static const uint16_t count_name[] = {'C', 'o', 'u', 'n', 't'};
 static const uint16_t damage_name[] = {'D', 'a', 'm', 'a', 'g', 'e'};
 static const uint16_t tile_name[] = {'T', 'i', 'l', 'e'};
 
-static bool fail(mc_entity_nbt_error *frame, mc_entity_nbt_status status, const char *operation)
-{
+static bool fail(mc_entity_nbt_error *frame, mc_entity_nbt_status status, const char *operation) {
     frame->status = status;
     frame->operation = operation;
     return false;
 }
 
-static mc_entity_nbt_status publish(const mc_entity_nbt_error *frame, mc_entity_nbt_error *error)
-{
+static mc_entity_nbt_status publish(const mc_entity_nbt_error *frame, mc_entity_nbt_error *error) {
     if (error != NULL)
         *error = *frame;
     return frame->status;
 }
 
-static bool enter(mc_entity *entity, mc_entity_nbt_error *frame)
-{
+static bool enter(mc_entity *entity, mc_entity_nbt_error *frame) {
     if (entity == NULL)
         return fail(frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity NBT native owner");
     const mc_entity_status status = mc_entity_retain(entity);
@@ -71,8 +68,7 @@ static bool enter(mc_entity *entity, mc_entity_nbt_error *frame)
     return true;
 }
 
-static bool fp_admit(mc_entity_nbt_error *frame, const char *operation)
-{
+static bool fp_admit(mc_entity_nbt_error *frame, const char *operation) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return fail(frame, MC_ENTITY_NBT_UNSUPPORTED_FP, operation);
     return true;
@@ -81,8 +77,7 @@ static bool fp_admit(mc_entity_nbt_error *frame, const char *operation)
 /* Called only at the reached original Compound getter. Input structural spans
  * are caller-owned/readable; no whole-tree validation moves later failures. */
 static bool get(const mc_nbt_tag *compound, const uint16_t *name, size_t length, const char *field,
-                mc_nbt_type type, const mc_nbt_tag **out, mc_entity_nbt_error *frame)
-{
+                mc_nbt_type type, const mc_nbt_tag **out, mc_entity_nbt_error *frame) {
     frame->field = field;
     frame->index = SIZE_MAX;
     if (compound == NULL)
@@ -98,8 +93,7 @@ static bool get(const mc_nbt_tag *compound, const uint16_t *name, size_t length,
 
 static const mc_nbt_tag *element(const mc_nbt_tag *list, const char *field, size_t index,
                                  mc_nbt_type type, unsigned int get_pc, unsigned int cast_pc,
-                                 unsigned int value_pc, mc_entity_nbt_error *frame)
-{
+                                 unsigned int value_pc, mc_entity_nbt_error *frame) {
     frame->field = field;
     frame->index = index;
     frame->base_bytecode = get_pc;
@@ -123,19 +117,16 @@ static const mc_nbt_tag *element(const mc_nbt_tag *list, const char *field, size
     return tag;
 }
 
-static void load_double(double *destination, const mc_nbt_tag *tag)
-{
+static void load_double(double *destination, const mc_nbt_tag *tag) {
     memcpy(destination, &tag->value.double_bits, sizeof(*destination));
 }
 
-static void load_float(float *destination, const mc_nbt_tag *tag)
-{
+static void load_float(float *destination, const mc_nbt_tag *tag) {
     const uint32_t bits = tag == NULL ? 0 : tag->value.float_bits;
     memcpy(destination, &bits, sizeof(*destination));
 }
 
-static void clamp_motion(double *value)
-{
+static void clamp_motion(double *value) {
     uint64_t bits;
     memcpy(&bits, value, sizeof(bits));
     const uint64_t magnitude = bits & UINT64_C(0x7fffffffffffffff);
@@ -145,8 +136,7 @@ static void clamp_motion(double *value)
         *value = 0.0;
 }
 
-static mc_entity_nbt_status stack_status(mc_item_stack_status status)
-{
+static mc_entity_nbt_status stack_status(mc_item_stack_status status) {
     if (status == MC_ITEM_STACK_LIMIT)
         return MC_ENTITY_NBT_LIMIT;
     if (status == MC_ITEM_STACK_ALLOCATION_FAILED)
@@ -154,8 +144,7 @@ static mc_entity_nbt_status stack_status(mc_item_stack_status status)
     return MC_ENTITY_NBT_STACK_FAILED;
 }
 
-static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
-{
+static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame) {
     const mc_nbt_tag *tag;
     frame->item_bytecode = 4;
     if (!get(compound, health_name, 6, "Health", MC_NBT_SHORT, &tag, frame))
@@ -201,8 +190,8 @@ static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
     return true;
 }
 
-static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
-{
+static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound,
+                         mc_entity_nbt_error *frame) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return read_item(entity, compound, frame);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
@@ -220,8 +209,7 @@ static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound, mc_entit
     return fail(frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete read hook");
 }
 
-static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
-{
+static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame) {
     const mc_nbt_tag *pos, *motion, *rotation, *tag;
     frame->base_bytecode = 3;
     if (!get(compound, pos_name, 3, "Pos", MC_NBT_LIST, &pos, frame))
@@ -314,8 +302,7 @@ static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
 }
 
 mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *compound,
-                                        mc_entity_nbt_error *error)
-{
+                                        mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (!enter(entity, &frame))
         return publish(&frame, error);
@@ -326,26 +313,22 @@ mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *com
     return publish(&frame, error);
 }
 
-static mc_nbt_string name(const uint16_t *units, size_t length)
-{
+static mc_nbt_string name(const uint16_t *units, size_t length) {
     return (mc_nbt_string){units, length};
 }
 
-static void store_double(mc_nbt_tag *tag, const double *value)
-{
+static void store_double(mc_nbt_tag *tag, const double *value) {
     tag->type = MC_NBT_DOUBLE;
     memcpy(&tag->value.double_bits, value, sizeof(*value));
 }
 
-static void store_float(mc_nbt_tag *tag, const float *value)
-{
+static void store_float(mc_nbt_tag *tag, const float *value) {
     tag->type = MC_NBT_FLOAT;
     memcpy(&tag->value.float_bits, value, sizeof(*value));
 }
 
 static void list(mc_nbt_tag *tag, const uint16_t *units, size_t length, mc_nbt_type type,
-                 const mc_nbt_tag *const *items, size_t count)
-{
+                 const mc_nbt_tag *const *items, size_t count) {
     tag->type = MC_NBT_LIST;
     tag->name = name(units, length);
     tag->value.list.element_type = (uint8_t)type;
@@ -353,8 +336,7 @@ static void list(mc_nbt_tag *tag, const uint16_t *units, size_t length, mc_nbt_t
     tag->value.list.length = count;
 }
 
-static mc_entity_nbt_status nbt_status(mc_nbt_status status)
-{
+static mc_entity_nbt_status nbt_status(mc_nbt_status status) {
     if (status == MC_NBT_LIMIT)
         return MC_ENTITY_NBT_LIMIT;
     if (status == MC_NBT_ALLOCATION_FAILED)
@@ -363,8 +345,7 @@ static mc_entity_nbt_status nbt_status(mc_nbt_status status)
 }
 
 mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits *limits,
-                                         mc_nbt_tree **out, mc_entity_nbt_error *error)
-{
+                                         mc_nbt_tree **out, mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (out == NULL) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity NBT tree output");

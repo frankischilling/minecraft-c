@@ -16,10 +16,12 @@ typedef struct mc_world_entity_list_ledger {
 struct mc_world_runtime {
     mc_world_runtime_options options;
     mc_world_runtime_state live;
+
     struct {
         int64_t time;
         int32_t spawn_x, spawn_y, spawn_z;
     } legacy_info;
+
     bool provider_force_load, saving_disabled;
     mc_chunk_state fallback;
     mc_chunk_references references;

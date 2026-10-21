@@ -41,16 +41,14 @@ typedef struct fc_guard {
     size_t holds, borrowers;
 } fc_guard;
 
-static mc_nbt_string fc_ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string fc_ascii(const char *text, uint16_t *units) {
     const size_t length = strlen(text);
     for (size_t index = 0; index < length; ++index)
         units[index] = (uint16_t)(unsigned char)text[index];
     return (mc_nbt_string){units, length};
 }
 
-static bool fc_text(mc_nbt_string value, const char *expected)
-{
+static bool fc_text(mc_nbt_string value, const char *expected) {
     if (value.length != strlen(expected) || (value.length != 0 && value.units == NULL))
         return false;
     for (size_t index = 0; index < value.length; ++index)
@@ -59,15 +57,13 @@ static bool fc_text(mc_nbt_string value, const char *expected)
     return true;
 }
 
-static const mc_nbt_tag *fc_field(const mc_nbt_tag *root, const char *name)
-{
+static const mc_nbt_tag *fc_field(const mc_nbt_tag *root, const char *name) {
     uint16_t units[16];
     const mc_nbt_string key = fc_ascii(name, units);
     return mc_nbt_compound_get(root, key.units, key.length);
 }
 
-static void fc_record_init(fc_record *record, const char *class_name)
-{
+static void fc_record_init(fc_record *record, const char *class_name) {
     static const char *const names[] = {"id",   "Pos", "Motion",   "Rotation", "FallDistance",
                                         "Fire", "Air", "OnGround", "Health",   "Age",
                                         "Item", "id",  "Count",    "Damage"};
@@ -122,14 +118,12 @@ static void fc_record_init(fc_record *record, const char *class_name)
     record->stack[2].value.short_value = 5;
 }
 
-static bool fc_string_equal(const char *left, const char *right)
-{
+static bool fc_string_equal(const char *left, const char *right) {
     return left == NULL || right == NULL ? left == right : strcmp(left, right) == 0;
 }
 
 static bool fc_registry_error_equal(const mc_entity_registry_error *left,
-                                    const mc_entity_registry_error *right)
-{
+                                    const mc_entity_registry_error *right) {
     return left->status == right->status && left->cause == right->cause &&
            fc_string_equal(left->operation, right->operation) &&
            left->initializer_bytecode == right->initializer_bytecode &&
@@ -137,8 +131,7 @@ static bool fc_registry_error_equal(const mc_entity_registry_error *left,
            left->class_cause == right->class_cause;
 }
 
-static mc_entity_nbt_error fc_empty(void)
-{
+static mc_entity_nbt_error fc_empty(void) {
     return (mc_entity_nbt_error){.status = MC_ENTITY_NBT_OK,
                                  .index = SIZE_MAX,
                                  .construction = {.status = MC_ENTITY_OK,
@@ -152,8 +145,7 @@ static mc_entity_nbt_error fc_empty(void)
                                               .class_cause = MC_ENTITY_OK}};
 }
 
-static mc_entity_nbt_error fc_poison(void)
-{
+static mc_entity_nbt_error fc_poison(void) {
     return (mc_entity_nbt_error){
         .status = MC_ENTITY_NBT_UNSUPPORTED_TYPE,
         .operation = "old operation",
@@ -183,8 +175,7 @@ static mc_entity_nbt_error fc_poison(void)
                      .class_cause = MC_ENTITY_LIMIT}};
 }
 
-static bool fc_error_equal(const mc_entity_nbt_error *left, const mc_entity_nbt_error *right)
-{
+static bool fc_error_equal(const mc_entity_nbt_error *left, const mc_entity_nbt_error *right) {
     return left->status == right->status && fc_string_equal(left->operation, right->operation) &&
            fc_string_equal(left->field, right->field) && left->index == right->index &&
            left->wrapper_bytecode == right->wrapper_bytecode &&
@@ -209,15 +200,13 @@ static bool fc_error_equal(const mc_entity_nbt_error *left, const mc_entity_nbt_
            fc_registry_error_equal(&left->registry, &right->registry);
 }
 
-static bool fc_fresh(const mc_entity_nbt_error *error)
-{
+static bool fc_fresh(const mc_entity_nbt_error *error) {
     const mc_entity_nbt_error expected = fc_empty();
     return fc_error_equal(error, &expected);
 }
 
 static bool fc_classes_equal(const mc_entity_class_snapshot *left,
-                             const mc_entity_class_snapshot *right)
-{
+                             const mc_entity_class_snapshot *right) {
     return left->source == right->source && left->entity_class == right->entity_class &&
            left->bounds_class == right->bounds_class &&
            left->watcher_class == right->watcher_class && left->next_id == right->next_id &&
@@ -230,8 +219,7 @@ static bool fc_classes_equal(const mc_entity_class_snapshot *left,
 }
 
 static bool fc_registry_equal(const mc_entity_registry_view *left,
-                              const mc_entity_registry_view *right)
-{
+                              const mc_entity_registry_view *right) {
     if (left->phase != right->phase ||
         !fc_registry_error_equal(&left->first_failure, &right->first_failure))
         return false;
@@ -241,8 +229,7 @@ static bool fc_registry_equal(const mc_entity_registry_view *left,
     return true;
 }
 
-static bool fc_ready_registry(const mc_entity_registry_view *view)
-{
+static bool fc_ready_registry(const mc_entity_registry_view *view) {
     if (view->phase != MC_ENTITY_CLASS_READY)
         return false;
     const mc_entity_registry_error empty = {0};
@@ -254,8 +241,7 @@ static bool fc_ready_registry(const mc_entity_registry_view *view)
     return true;
 }
 
-static bool fc_capture(mc_entity *entity, fc_guard *guard)
-{
+static bool fc_capture(mc_entity *entity, fc_guard *guard) {
     if (mc_entity_get_snapshot(entity, &guard->entity) != MC_ENTITY_OK ||
         guard->entity.bounds == NULL || guard->entity.random == NULL ||
         mc_entity_classes_get_snapshot(entity->classes, &guard->classes) != MC_ENTITY_OK ||
@@ -271,8 +257,7 @@ static bool fc_capture(mc_entity *entity, fc_guard *guard)
     return true;
 }
 
-static bool fc_unchanged(mc_entity *entity, const fc_guard *guard)
-{
+static bool fc_unchanged(mc_entity *entity, const fc_guard *guard) {
     fc_guard current;
     return fc_capture(entity, &current) && base_equal(&current.entity.base, &guard->entity.base) &&
            current.entity.source == guard->entity.source &&
@@ -304,8 +289,7 @@ static bool fc_unchanged(mc_entity *entity, const fc_guard *guard)
            current.watcher.record_dirty == guard->watcher.record_dirty;
 }
 
-static size_t fc_tags(const mc_nbt_tag *tag)
-{
+static size_t fc_tags(const mc_nbt_tag *tag) {
     size_t count = 1;
     if (tag->type == MC_NBT_COMPOUND)
         for (size_t index = 0; index < tag->value.compound.length; ++index)
@@ -316,8 +300,7 @@ static size_t fc_tags(const mc_nbt_tag *tag)
     return count;
 }
 
-static bool fc_saved_record(const mc_nbt_tag *root)
-{
+static bool fc_saved_record(const mc_nbt_tag *root) {
     static const char *const names[] = {"id",           "Pos",  "Motion", "Rotation",
                                         "FallDistance", "Fire", "Air",    "OnGround",
                                         "Health",       "Age",  "Item"};
@@ -364,8 +347,7 @@ static bool fc_saved_record(const mc_nbt_tag *root)
            damage->type == MC_NBT_SHORT && damage->value.short_value == 5;
 }
 
-static bool fc_loaded(mc_entity *entity, mc_entity_source source, int32_t id)
-{
+static bool fc_loaded(mc_entity *entity, mc_entity_source source, int32_t id) {
     mc_entity_snapshot view;
     mc_item_stack_fields stack;
     const mc_entity_bounds box = {7.875, 16.375, 31.875, 8.125, 16.625, 32.125};
@@ -394,8 +376,7 @@ static bool fc_loaded(mc_entity *entity, mc_entity_source source, int32_t id)
            stack.count == 4 && stack.damage == 5 && stack.animation == 0;
 }
 
-static size_t fc_constructed_bytes(void)
-{
+static size_t fc_constructed_bytes(void) {
     /* Exact native owner requests for one real world-only Item constructor;
      * this is not an original JVM allocation-size/OOME expectation. */
     return sizeof(mc_entity_classes) + sizeof(mc_entity) + sizeof(mc_entity_bounds_pool) +
@@ -405,8 +386,7 @@ static size_t fc_constructed_bytes(void)
            sizeof(mc_entity_watch_node);
 }
 
-static size_t fc_namespace_bytes(void)
-{
+static size_t fc_namespace_bytes(void) {
     return 4u * sizeof(mc_entity_registry_map) + 96u * sizeof(mc_entity_registry_node);
 }
 
@@ -415,8 +395,7 @@ static size_t fc_namespace_bytes(void)
  * Output is at most66 platform bytes, so the pipe cannot fill during the call. */
 static bool fc_capture_call(mc_entity_classes *classes, const mc_nbt_tag *compound, mc_entity **out,
                             mc_entity_nbt_error *error, mc_entity_nbt_status *status,
-                            char bytes[80], size_t *length)
-{
+                            char bytes[80], size_t *length) {
     bool okay = false;
     size_t used = 0;
 #ifdef _WIN32
@@ -497,8 +476,7 @@ done:
     return okay;
 }
 
-static int fc_dead_namespace(mc_entity_source source, unsigned int control)
-{
+static int fc_dead_namespace(mc_entity_source source, unsigned int control) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -633,8 +611,7 @@ cleanup:
     return result;
 }
 
-static int fc_save_roundtrip(mc_entity_source source)
-{
+static int fc_save_roundtrip(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL, *loaded_classes = NULL;
@@ -801,8 +778,7 @@ cleanup:
     return result;
 }
 
-static int fc_frontiers(mc_entity_source source)
-{
+static int fc_frontiers(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -984,8 +960,7 @@ cleanup:
     return result;
 }
 
-static int fc_constructor_frontier(mc_entity_source source, unsigned int control)
-{
+static int fc_constructor_frontier(mc_entity_source source, unsigned int control) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -1075,8 +1050,7 @@ cleanup:
     return result;
 }
 
-static int fc_cold_factory(mc_entity_source source)
-{
+static int fc_cold_factory(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -1113,8 +1087,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         fputs("Entity NBT factory tests require the qualified strict SSE environment\n", stderr);
         return 1;

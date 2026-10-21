@@ -35,16 +35,14 @@ typedef struct en_guard {
     uint64_t unique;
 } en_guard;
 
-static mc_nbt_string en_ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string en_ascii(const char *text, uint16_t *units) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, length};
 }
 
-static bool en_text(mc_nbt_string value, const char *expected)
-{
+static bool en_text(mc_nbt_string value, const char *expected) {
     if (value.length != strlen(expected) || (value.length != 0 && value.units == NULL))
         return false;
     for (size_t i = 0; i < value.length; ++i)
@@ -53,14 +51,12 @@ static bool en_text(mc_nbt_string value, const char *expected)
     return true;
 }
 
-static const mc_nbt_tag *en_field(const mc_nbt_tag *root, const char *name)
-{
+static const mc_nbt_tag *en_field(const mc_nbt_tag *root, const char *name) {
     uint16_t units[16];
     return mc_nbt_compound_get(root, units, en_ascii(name, units).length);
 }
 
-static void en_record_init(en_record *r)
-{
+static void en_record_init(en_record *r) {
     const char *const names[] = {"Pos", "Motion",   "Rotation", "FallDistance", "Fire",
                                  "Air", "OnGround", "Health",   "Age",          "Item",
                                  "id",  "Count",    "Damage"};
@@ -113,8 +109,7 @@ static void en_record_init(en_record *r)
     r->stack[2].value.short_value = -11;
 }
 
-static bool en_open(en_fixture *f, mc_entity_source source)
-{
+static bool en_open(en_fixture *f, mc_entity_source source) {
     return mc_java_random_profile_create(profile_budget(), &f->profile) ==
                MC_JAVA_RANDOM_PROFILE_OK &&
            mc_entity_classes_create(source, f->profile, NULL, &f->classes) == MC_ENTITY_OK &&
@@ -122,8 +117,7 @@ static bool en_open(en_fixture *f, mc_entity_source source)
            mc_item_entity_construct_world(f->entity, NULL, NULL) == MC_ENTITY_OK;
 }
 
-static bool en_close(en_fixture *f)
-{
+static bool en_close(en_fixture *f) {
     mc_entity_release(f->entity);
     f->entity = NULL;
     if (retire_classes(&f->classes) != 0)
@@ -133,8 +127,7 @@ static bool en_close(en_fixture *f)
     return true;
 }
 
-static bool en_capture(en_fixture *f, en_guard *g)
-{
+static bool en_capture(en_fixture *f, en_guard *g) {
     if (mc_entity_get_snapshot(f->entity, &g->entity) != MC_ENTITY_OK || g->entity.bounds == NULL ||
         g->entity.random == NULL ||
         mc_entity_classes_get_snapshot(f->classes, &g->classes) != MC_ENTITY_OK ||
@@ -147,8 +140,7 @@ static bool en_capture(en_fixture *f, en_guard *g)
     return true;
 }
 
-static bool en_unrelated(en_fixture *f, const en_guard *g)
-{
+static bool en_unrelated(en_fixture *f, const en_guard *g) {
     mc_entity_snapshot e;
     mc_entity_class_snapshot c;
     mc_entity_watcher_snapshot w;
@@ -176,8 +168,7 @@ static bool en_unrelated(en_fixture *f, const en_guard *g)
            float_bits(e.item.d) == float_bits(g->entity.item.d);
 }
 
-static bool en_fresh(const mc_entity_nbt_error *e)
-{
+static bool en_fresh(const mc_entity_nbt_error *e) {
     return e->status == MC_ENTITY_NBT_OK && e->operation == NULL && e->field == NULL &&
            e->index == SIZE_MAX && e->wrapper_bytecode == 0 && e->name_bytecode == 0 &&
            e->factory_bytecode == 0 && e->base_bytecode == 0 && e->item_bytecode == 0 &&
@@ -196,8 +187,7 @@ static bool en_fresh(const mc_entity_nbt_error *e)
 }
 
 static bool en_frame(const mc_entity_nbt_error *e, mc_entity_nbt_status status, unsigned int base,
-                     unsigned int item, unsigned int stack, const char *field, size_t index)
-{
+                     unsigned int item, unsigned int stack, const char *field, size_t index) {
     if (e->status != status || e->operation == NULL || e->base_bytecode != base ||
         e->item_bytecode != item || e->stack_bytecode != stack || e->index != index ||
         e->field == NULL || strcmp(e->field, field) != 0)
@@ -217,8 +207,7 @@ static bool en_frame(const mc_entity_nbt_error *e, mc_entity_nbt_status status, 
     return en_fresh(&unselected);
 }
 
-static void en_motion_expected(mc_entity_base_fields *b, size_t completed, bool clamped)
-{
+static void en_motion_expected(mc_entity_base_fields *b, size_t completed, bool clamped) {
     if (completed > 0)
         b->velocity_x = clamped ? 0.0 : 20.0;
     if (completed > 1)
@@ -227,8 +216,7 @@ static void en_motion_expected(mc_entity_base_fields *b, size_t completed, bool 
         b->velocity_z = clamped ? 0.0 : 40.0;
 }
 
-static void en_position_expected(mc_entity_base_fields *b, size_t completed)
-{
+static void en_position_expected(mc_entity_base_fields *b, size_t completed) {
     if (completed > 0)
         b->x = b->bl = b->aJ = 8.0;
     if (completed > 1)
@@ -237,8 +225,7 @@ static void en_position_expected(mc_entity_base_fields *b, size_t completed)
         b->z = b->bn = b->aL = 32.0;
 }
 
-static void en_rotation_expected(mc_entity_base_fields *b, size_t completed, bool reduced)
-{
+static void en_rotation_expected(mc_entity_base_fields *b, size_t completed, bool reduced) {
     if (completed > 0) {
         b->yaw = reduced ? 5.0f : 725.0f;
         b->aU = 725.0f;
@@ -249,8 +236,7 @@ static void en_rotation_expected(mc_entity_base_fields *b, size_t completed, boo
     }
 }
 
-static size_t en_tag_count(const mc_nbt_tag *tag)
-{
+static size_t en_tag_count(const mc_nbt_tag *tag) {
     size_t count = 1;
     if (tag->type == MC_NBT_COMPOUND)
         for (size_t i = 0; i < tag->value.compound.length; ++i)
@@ -261,8 +247,7 @@ static size_t en_tag_count(const mc_nbt_tag *tag)
     return count;
 }
 
-static bool en_shape(const mc_nbt_tag *root)
-{
+static bool en_shape(const mc_nbt_tag *root) {
     const char *const names[] = {"Pos", "Motion",   "Rotation", "FallDistance", "Fire",
                                  "Air", "OnGround", "Health",   "Age",          "Item"};
     const mc_nbt_type types[] = {MC_NBT_LIST,  MC_NBT_LIST,    MC_NBT_LIST, MC_NBT_FLOAT,
@@ -291,8 +276,7 @@ static bool en_shape(const mc_nbt_tag *root)
            damage->type == MC_NBT_SHORT;
 }
 
-static int en_write(mc_entity_source source)
-{
+static int en_write(mc_entity_source source) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -402,8 +386,7 @@ cleanup:
 /* A table of independent source failure boundaries. completed is the number
  * of assignments BEFORE the selected vector getter/cast/value receiver. */
 static int en_vector_failure(mc_entity_source source, size_t group, size_t selected,
-                             unsigned int control)
-{
+                             unsigned int control) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -454,8 +437,7 @@ cleanup:
     return result;
 }
 
-static int en_getter_order(mc_entity_source source)
-{
+static int en_getter_order(mc_entity_source source) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -501,8 +483,7 @@ cleanup:
     return result;
 }
 
-static int en_scalar_failure(mc_entity_source source, size_t selected)
-{
+static int en_scalar_failure(mc_entity_source source, size_t selected) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -547,8 +528,7 @@ cleanup:
     return result;
 }
 
-static int en_read_success(mc_entity_source source)
-{
+static int en_read_success(mc_entity_source source) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -608,8 +588,7 @@ cleanup:
     return result;
 }
 
-static int en_stack_failure(mc_entity_source source, size_t selected)
-{
+static int en_stack_failure(mc_entity_source source, size_t selected) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -643,8 +622,7 @@ cleanup:
     return result;
 }
 
-static int en_motion_edges(mc_entity_source source)
-{
+static int en_motion_edges(mc_entity_source source) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -691,8 +669,7 @@ cleanup:
     return result;
 }
 
-static int en_stack_phases(mc_entity_source source, unsigned int which)
-{
+static int en_stack_phases(mc_entity_source source, unsigned int which) {
     int result = 1;
     en_fixture f = {0};
     en_record r;
@@ -774,15 +751,13 @@ static const en_mapping en_mappings[] = {
     {MC_ENTITY_CLASS_KIND_MINECART, "Minecart", "yl", "pr", 40},
     {MC_ENTITY_CLASS_KIND_BOAT, "Boat", "fz", "eb", 41}};
 
-static bool en_registry_fresh(const mc_entity_registry_error *error)
-{
+static bool en_registry_fresh(const mc_entity_registry_error *error) {
     return error->status == MC_ENTITY_REGISTRY_OK && error->cause == MC_ENTITY_REGISTRY_OK &&
            error->operation == NULL && error->initializer_bytecode == 0 &&
            error->registration_bytecode == 0 && error->class_cause == MC_ENTITY_OK;
 }
 
-static bool en_cold_classes(const mc_entity_class_snapshot *snapshot)
-{
+static bool en_cold_classes(const mc_entity_class_snapshot *snapshot) {
     return snapshot->entity_class == MC_ENTITY_CLASS_COLD &&
            snapshot->bounds_class == MC_ENTITY_CLASS_COLD &&
            snapshot->watcher_class == MC_ENTITY_CLASS_COLD && snapshot->next_id == 0 &&
@@ -791,8 +766,7 @@ static bool en_cold_classes(const mc_entity_class_snapshot *snapshot)
            snapshot->watcher_type_count == 0;
 }
 
-static int en_registry(mc_entity_source source)
-{
+static int en_registry(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL, *foreign = NULL, *limited = NULL;
@@ -957,8 +931,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         fputs("Entity NBT tests require the qualified strict SSE environment\n", stderr);
         return 1;

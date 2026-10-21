@@ -15,46 +15,42 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
-static bool same_fields(const mc_scheduled_tick_fields *left, const mc_scheduled_tick_fields *right)
-{
+static bool same_fields(const mc_scheduled_tick_fields *left,
+                        const mc_scheduled_tick_fields *right) {
     return left->x == right->x && left->y == right->y && left->z == right->z &&
            left->block == right->block && left->due_time == right->due_time &&
            left->sequence == right->sequence;
 }
 
-static bool record_matches(const mc_scheduled_tick *tick, const mc_scheduled_tick_fields *expected)
-{
+static bool record_matches(const mc_scheduled_tick *tick,
+                           const mc_scheduled_tick_fields *expected) {
     mc_scheduled_tick_fields actual = {0};
     return mc_scheduled_tick_fields_get(tick, &actual) == MC_SCHEDULED_TICK_OK &&
            same_fields(&actual, expected);
 }
 
 static bool contains_is(const mc_scheduled_membership *membership, const mc_scheduled_tick *tick,
-                        bool expected)
-{
+                        bool expected) {
     bool actual = !expected;
     return mc_scheduled_membership_contains(membership, tick, &actual) ==
                MC_SCHEDULED_MEMBERSHIP_OK &&
            actual == expected;
 }
 
-static bool size_is(const mc_scheduled_membership *membership, int32_t expected)
-{
+static bool size_is(const mc_scheduled_membership *membership, int32_t expected) {
     int32_t actual = -1;
     return mc_scheduled_membership_size(membership, &actual) == MC_SCHEDULED_MEMBERSHIP_OK &&
            actual == expected;
 }
 
-static bool bytes_is(const mc_scheduled_membership *membership, size_t expected)
-{
+static bool bytes_is(const mc_scheduled_membership *membership, size_t expected) {
     size_t actual = SIZE_MAX;
     return mc_scheduled_membership_native_bytes(membership, &actual) ==
                MC_SCHEDULED_MEMBERSHIP_OK &&
            actual == expected;
 }
 
-static int test_collisions_identity_shift_and_removal(void)
-{
+static int test_collisions_identity_shift_and_removal(void) {
     int result = 1;
     mc_scheduled_membership *membership = NULL;
     mc_scheduled_tick *original = NULL;
@@ -199,8 +195,7 @@ cleanup:
     return result;
 }
 
-static int test_growth_and_public_budget_boundaries(void)
-{
+static int test_growth_and_public_budget_boundaries(void) {
     int result = 1;
     mc_scheduled_membership *reference = NULL;
     mc_scheduled_membership *exact = NULL;
@@ -320,8 +315,7 @@ cleanup:
     return result;
 }
 
-static int test_zero_entry_and_invalid_outputs(void)
-{
+static int test_zero_entry_and_invalid_outputs(void) {
     int result = 1;
     mc_scheduled_membership *zero = NULL;
     mc_scheduled_membership *failed = NULL;
@@ -402,8 +396,7 @@ cleanup:
     return result;
 }
 
-static int test_readonly_snapshot(void)
-{
+static int test_readonly_snapshot(void) {
     int result = 1;
     mc_scheduled_membership *membership = NULL;
     mc_scheduled_tick *ticks[3] = {NULL};
@@ -486,8 +479,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_collisions_identity_shift_and_removal() != 0 ||
         test_growth_and_public_budget_boundaries() != 0 ||
         test_zero_entry_and_invalid_outputs() != 0 || test_readonly_snapshot() != 0) {

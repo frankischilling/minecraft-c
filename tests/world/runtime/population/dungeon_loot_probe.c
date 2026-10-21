@@ -6,8 +6,7 @@
 
 #include <inttypes.h>
 
-static bool probe_seed(const char *text, int64_t *out)
-{
+static bool probe_seed(const char *text, int64_t *out) {
     uint64_t value = 0;
     for (size_t i = 0; i < 16u; ++i) {
         const unsigned char c = (unsigned char)text[i];
@@ -27,8 +26,7 @@ static bool probe_seed(const char *text, int64_t *out)
     return true;
 }
 
-static bool probe_call(fixture *f, size_t side, bool loot, mc_java_random *random)
-{
+static bool probe_call(fixture *f, size_t side, bool loot, mc_java_random *random) {
     bool ok = false;
     mc_item_stack *stack = NULL;
     mc_tile_name *name = NULL;
@@ -95,8 +93,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192], line[80];

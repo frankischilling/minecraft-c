@@ -17,6 +17,7 @@ typedef struct oc_profile {
     mc_platform_nanotime clock;
     bool math_cached;
 } oc_profile;
+
 typedef struct oc_saved {
     mc_chunk_data data;
     uint8_t blocks[MC_CHUNK_BLOCKS];
@@ -25,15 +26,18 @@ typedef struct oc_saved {
     mc_block **m, *elements[MC_REGISTRY_BLOCK_SLOTS], *named[96];
     int32_t *q;
 } oc_saved;
+
 typedef struct oc_probe {
     int64_t seed;
     int32_t y_start;
 } oc_probe;
+
 typedef struct oc_family {
     bool clay;
     const char *target;
     int32_t size;
 } oc_family;
+
 typedef enum oc_control {
     OC_SINGLE,
     OC_VOLUME,
@@ -55,14 +59,13 @@ typedef enum oc_control {
     OC_REMOTE_GRAVEL
 } oc_control;
 
-static uint64_t oc_bits(double value)
-{
+static uint64_t oc_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
-static oc_profile oc_profile_read(const mc_java_random_profile *p)
-{
+
+static oc_profile oc_profile_read(const mc_java_random_profile *p) {
     oc_profile s = {.unique = atomic_load_explicit(&p->uniquifier, memory_order_relaxed),
                     .phase = atomic_load_explicit(&p->holder_phase, memory_order_acquire),
                     .math = p->math,
@@ -75,8 +78,8 @@ static oc_profile oc_profile_read(const mc_java_random_profile *p)
     }
     return s;
 }
-static bool oc_profile_same(const mc_java_random_profile *p, const oc_profile *before)
-{
+
+static bool oc_profile_same(const mc_java_random_profile *p, const oc_profile *before) {
     const oc_profile a = oc_profile_read(p);
     return a.unique == before->unique && a.phase == before->phase && a.math == before->math &&
            a.math_state == before->math_state && a.math_bits == before->math_bits &&
@@ -85,16 +88,16 @@ static bool oc_profile_same(const mc_java_random_profile *p, const oc_profile *b
            a.clock.initial_sample == before->clock.initial_sample &&
            a.clock.initialized == before->clock.initialized;
 }
-static mc_registry_error oc_empty_registry(void)
-{
+
+static mc_registry_error oc_empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
                                .active_initializer_pc = -1,
                                .item_argument = -1};
 }
-static bool oc_cleared(const mc_population_ore_clay_error *e)
-{
+
+static bool oc_cleared(const mc_population_ore_clay_error *e) {
     const mc_registry_error empty = oc_empty_registry();
     return e->status == MC_WORLD_STORAGE_OK && e->operation == NULL && e->feature_class == NULL &&
            e->feature_method == NULL && e->bytecode == 0 &&
@@ -105,16 +108,16 @@ static bool oc_cleared(const mc_population_ore_clay_error *e)
            e->mutation.status == MC_WORLD_STORAGE_OK && e->mutation.bytecode == 0 &&
            e->mutation.chunk_bytecode == 0 && same_registry(&e->mutation.registry, &empty);
 }
-static size_t oc_index(int32_t x, int32_t y, int32_t z)
-{
+
+static size_t oc_index(int32_t x, int32_t y, int32_t z) {
     return (((size_t)(uint32_t)x & 15u) << 11u) | (((size_t)(uint32_t)z & 15u) << 7u) | (size_t)y;
 }
-static uint8_t oc_nibble(const uint8_t *a, size_t index)
-{
+
+static uint8_t oc_nibble(const uint8_t *a, size_t index) {
     return (uint8_t)(((uint32_t)a[index / 2u] >> ((index & 1u) * 4u)) & 15u);
 }
-static mc_block **oc_named(mc_registry_classes *r, const char *name)
-{
+
+static mc_block **oc_named(mc_registry_classes *r, const char *name) {
     for (size_t i = 0; i < COUNT(r->blocks.named); ++i) {
         const char *n = mc_registry_block_static_name(i);
         if (n != NULL && strcmp(n, name) == 0)
@@ -122,13 +125,13 @@ static mc_block **oc_named(mc_registry_classes *r, const char *name)
     }
     return NULL;
 }
-static bool oc_block(fixture *f, size_t side, const char *name, const mc_block **out)
-{
+
+static bool oc_block(fixture *f, size_t side, const char *name, const mc_block **out) {
     return mc_registry_block_static_get(f->registry[side], name, out, NULL) == MC_REGISTRY_OK &&
            *out != NULL && (*out)->fields.bn > 0 && (*out)->fields.bn <= UINT8_MAX;
 }
-static bool oc_save(oc_saved *s, mc_world_chunk *c, mc_registry_classes *r)
-{
+
+static bool oc_save(oc_saved *s, mc_world_chunk *c, mc_registry_classes *r) {
     if (c == NULL || c->data == NULL || c->data->blocks == NULL ||
         c->data->blocks_capacity < MC_CHUNK_BLOCKS || c->e == NULL || c->f == NULL ||
         c->g == NULL || c->h != c->data->heightmap || c->e->a != c->data->metadata ||
@@ -148,8 +151,8 @@ static bool oc_save(oc_saved *s, mc_world_chunk *c, mc_registry_classes *r)
     memcpy(s->named, r->blocks.named, sizeof(s->named));
     return true;
 }
-static void oc_restore(const oc_saved *s, mc_world_chunk *c, mc_registry_classes *r)
-{
+
+static void oc_restore(const oc_saved *s, mc_world_chunk *c, mc_registry_classes *r) {
     *c->data = s->data;
     memcpy(c->data->blocks, s->blocks, sizeof(s->blocks));
     c->e = s->e;
@@ -164,15 +167,15 @@ static void oc_restore(const oc_saved *s, mc_world_chunk *c, mc_registry_classes
     /* Only controlled arrays/references restored. Actual dirty flags, native
      * leases, class phases, queues, diagnostics and Random effects survive. */
 }
-static void oc_seed(mc_java_random *r, int64_t seed)
-{
+
+static void oc_seed(mc_java_random *r, int64_t seed) {
     mc_java_random_seed(r, seed);
     (void)mc_java_random_next_gaussian(r); /* Actual valid primed cache. */
 }
+
 /* Invocation budget only; no centers/radii/voxel loop is computed here.
  * Calling core Random is a shared-module native contract, not JVM replay. */
-static bool oc_budget(mc_java_random *r, unsigned int segments)
-{
+static bool oc_budget(mc_java_random *r, unsigned int segments) {
     int32_t ignored;
     (void)mc_java_random_next_float(r);
     if (!mc_java_random_next_bounded(r, 3, &ignored) ||
@@ -182,8 +185,8 @@ static bool oc_budget(mc_java_random *r, unsigned int segments)
         (void)mc_java_random_next_double(r);
     return true;
 }
-static bool oc_find_probe(oc_probe *p)
-{
+
+static bool oc_find_probe(oc_probe *p) {
     for (int64_t seed = 0; seed < 65536; ++seed) {
         mc_java_random r;
         int32_t first, second;
@@ -200,8 +203,8 @@ static bool oc_find_probe(oc_probe *p)
     }
     return false; /* Test-input search failure never becomes feature success. */
 }
-static bool oc_trig_precondition(void)
-{
+
+static bool oc_trig_precondition(void) {
     if (trig.values[0] != 0.0f)
         return false;
     for (size_t i = 0; i < MC_MATH_TRIG_VALUES; ++i)
@@ -217,18 +220,18 @@ static bool oc_trig_precondition(void)
             return false;
     return true;
 }
+
 static mc_world_storage_status oc_place(bool clay, const mc_population_ore_feature *ore,
                                         const mc_population_clay_feature *deposit,
                                         mc_world_runtime *w, mc_java_random *r, int32_t x,
                                         int32_t y, int32_t z, bool *out,
-                                        mc_population_ore_clay_error *e)
-{
+                                        mc_population_ore_clay_error *e) {
     return clay ? mc_population_clay_place(deposit, w, r, x, y, z, out, e)
                 : mc_population_ore_place(ore, w, r, x, y, z, out, e);
 }
+
 static bool oc_prime_registry_error(mc_world_runtime *w, mc_world_chunk *c, mc_registry_classes *r,
-                                    uint8_t stone)
-{
+                                    uint8_t stone) {
     const size_t cell = oc_index(0, 40, 0);
     const uint8_t old = c->data->blocks[cell];
     mc_block **m = r->blocks.m;
@@ -243,8 +246,8 @@ static bool oc_prime_registry_error(mc_world_runtime *w, mc_world_chunk *c, mc_r
     return status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == NULL && e.bytecode == 23 &&
            e.registry.status == MC_REGISTRY_NULL_REFERENCE;
 }
-static bool oc_constructor_contracts(fixture *f, size_t side)
-{
+
+static bool oc_constructor_contracts(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side], *unbound = NULL, *retired = NULL;
     mc_world_runtime_classes *classes = NULL;
@@ -333,9 +336,9 @@ cleanup:
         ok = false;
     return ok;
 }
+
 static bool oc_trial(fixture *f, size_t side, const oc_family *family, oc_control control,
-                     const oc_probe *probe, bool alias_world_random)
-{
+                     const oc_probe *probe, bool alias_world_random) {
     bool ok = false, prepared = false, water_changed = false;
     oc_saved *saved = NULL;
     uint8_t *before = NULL, *expected_blocks = NULL, *short_metadata = NULL;
@@ -582,8 +585,7 @@ cleanup:
     return ok;
 }
 
-static bool oc_raw_and_admission(fixture *f, size_t side, const oc_probe *probe)
-{
+static bool oc_raw_and_admission(fixture *f, size_t side, const oc_probe *probe) {
     bool ok = false;
     const mc_registry_error empty = oc_empty_registry();
     mc_population_ore_feature ore = {0};
@@ -647,8 +649,8 @@ static bool oc_raw_and_admission(fixture *f, size_t side, const oc_probe *probe)
 cleanup:
     return ok;
 }
-static bool oc_wrapped_no_candidates(fixture *f, size_t side, const oc_probe *probe)
-{
+
+static bool oc_wrapped_no_candidates(fixture *f, size_t side, const oc_probe *probe) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     const oc_profile profile = oc_profile_read(f->profile);
@@ -675,8 +677,7 @@ cleanup:
     return ok;
 }
 
-static bool population_ore_clay_contracts(fixture *f, size_t side)
-{
+static bool population_ore_clay_contracts(fixture *f, size_t side) {
     bool ok = false;
     oc_probe probe;
     CHECK(side < 2 && (_mm_getcsr() & 0xffc0u) == 0x1f80u && oc_find_probe(&probe) &&

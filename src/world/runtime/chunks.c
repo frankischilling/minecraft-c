@@ -7,13 +7,11 @@
 #include "mc/world/dimension/dimension.h"
 #include "runtime_internal.h"
 
-static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation)
-{
+static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
     return (mc_world_storage_error){status, operation, 0};
 }
 
-static mc_registry_error registry_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error registry_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -23,14 +21,12 @@ static mc_registry_error registry_error(mc_registry_status status, const char *m
                                .item_argument = -1};
 }
 
-static mc_world_chunk_error empty_error(void)
-{
+static mc_world_chunk_error empty_error(void) {
     return (mc_world_chunk_error){.registry = registry_error(MC_REGISTRY_OK, NULL)};
 }
 
 static mc_world_storage_status result(mc_world_chunk_error *out, mc_world_chunk_error *frame,
-                                      mc_world_storage_error cause, unsigned int bytecode)
-{
+                                      mc_world_storage_error cause, unsigned int bytecode) {
     frame->status = cause.status;
     frame->operation = cause.operation;
     frame->cause = cause;
@@ -43,8 +39,7 @@ static mc_world_storage_status result(mc_world_chunk_error *out, mc_world_chunk_
 mc_world_storage_status mc_world_runtime_chunk_construct(mc_world_runtime *world, int32_t x,
                                                          int32_t z, uint8_t **blocks, size_t length,
                                                          mc_world_chunk **out,
-                                                         mc_world_chunk_error *error)
-{
+                                                         mc_world_chunk_error *error) {
     mc_world_chunk_error frame = empty_error();
     if (world == NULL || blocks == NULL || *blocks == NULL || length != (size_t)MC_CHUNK_BLOCKS ||
         out == NULL)
@@ -84,8 +79,7 @@ mc_world_storage_status mc_world_runtime_chunk_construct(mc_world_runtime *world
 
 static bool opacity(mc_world_chunk *chunk, mc_world_runtime *world, size_t block_index,
                     unsigned int capture_pc, unsigned int byte_pc, unsigned int element_pc,
-                    int32_t *out, mc_world_chunk_error *frame)
-{
+                    int32_t *out, mc_world_chunk_error *frame) {
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     mc_registry_error cause =
         registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, "Chunk opacity registry binding");
@@ -119,8 +113,7 @@ static bool opacity(mc_world_chunk *chunk, mc_world_runtime *world, size_t block
 }
 
 static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_height,
-                     unsigned int column_pc, mc_world_chunk_error *frame)
-{
+                     unsigned int column_pc, mc_world_chunk_error *frame) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     mc_world_runtime *world = fields.d;
@@ -164,8 +157,7 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
 }
 
 bool mc_world_runtime_chunk_column(mc_world_chunk *chunk, int32_t x, int32_t z,
-                                   mc_world_chunk_error *frame)
-{
+                                   mc_world_chunk_error *frame) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     const int32_t index = mc_java_i32_shl(z, 4) | x;
@@ -185,8 +177,7 @@ bool mc_world_runtime_chunk_column(mc_world_chunk *chunk, int32_t x, int32_t z,
 }
 
 mc_world_storage_status mc_world_runtime_chunk_finish(mc_world_chunk *chunk,
-                                                      mc_world_chunk_error *error)
-{
+                                                      mc_world_chunk_error *error) {
     mc_world_chunk_error frame = empty_error();
     if (chunk == NULL)
         return result(error, &frame,

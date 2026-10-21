@@ -4,8 +4,7 @@
  * initialization flow. Public reentry is guarded by the root entry points.
  * Each actual declaring class retains its own phase, PC and first failure. */
 static mc_registry_status cached_state(mc_registry_classes *classes,
-                                       const mc_registry_class_state *state, bool *done)
-{
+                                       const mc_registry_class_state *state, bool *done) {
     *done = state->phase != MC_REGISTRY_COLD;
     if (state->phase == MC_REGISTRY_FAILED) {
         classes->last_error = state->failure;
@@ -15,8 +14,7 @@ static mc_registry_status cached_state(mc_registry_classes *classes,
 }
 
 static void finish_state(mc_registry_classes *classes, mc_registry_class_state *state,
-                         mc_registry_initializer *frame, mc_registry_status status)
-{
+                         mc_registry_initializer *frame, mc_registry_status status) {
     if (status == MC_REGISTRY_OK)
         state->phase = MC_REGISTRY_READY;
     else {
@@ -27,8 +25,7 @@ static void finish_state(mc_registry_classes *classes, mc_registry_class_state *
 }
 
 static mc_registry_status ancestor(mc_registry_classes *classes, mc_registry_class_state *state,
-                                   const char *client, const char *server)
-{
+                                   const char *client, const char *server) {
     bool done = false;
     mc_registry_status status = cached_state(classes, state, &done);
     if (done)
@@ -42,8 +39,7 @@ static mc_registry_status ancestor(mc_registry_classes *classes, mc_registry_cla
     return status;
 }
 
-static mc_registry_status parent_class(mc_registry_classes *classes, mc_item_kind kind)
-{
+static mc_registry_status parent_class(mc_registry_classes *classes, mc_item_kind kind) {
     switch (kind) {
         case MC_ITEM_WC_NY:
         case MC_ITEM_AU_AH:
@@ -66,8 +62,7 @@ static mc_registry_status parent_class(mc_registry_classes *classes, mc_item_kin
     }
 }
 
-static mc_registry_status tool_blocks(mc_registry_classes *classes, mc_item_kind kind)
-{
+static mc_registry_status tool_blocks(mc_registry_classes *classes, mc_item_kind kind) {
     mc_registry_block_array *array = NULL;
     size_t length = kind == MC_ITEM_WC_NY ? 8u : kind == MC_ITEM_AU_AH ? 17u : 4u;
     mc_registry_initializer_stage(classes, kind == MC_ITEM_TA_LY ? 1 : 2);
@@ -134,8 +129,7 @@ static mc_registry_status tool_blocks(mc_registry_classes *classes, mc_item_kind
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status armor_arrays(mc_registry_classes *classes)
-{
+static mc_registry_status armor_arrays(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 1);
     int32_t *protection = mc_registry_allocate(classes, 4u * sizeof(*protection));
     if (protection == NULL)
@@ -168,8 +162,7 @@ static mc_registry_status armor_arrays(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status dye_arrays(mc_registry_classes *classes)
-{
+static mc_registry_status dye_arrays(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 2);
     const mc_registry_string **names = mc_registry_allocate(classes, 16u * sizeof(*names));
     if (names == NULL)
@@ -237,8 +230,7 @@ static mc_registry_status dye_arrays(mc_registry_classes *classes)
 }
 
 mc_registry_status mc_registry_item_class_initialize(mc_registry_classes *classes,
-                                                     mc_item_kind kind)
-{
+                                                     mc_item_kind kind) {
     static const char *const clients[MC_ITEM_KIND_COUNT] = {
         "gm", "wc", "au", "ta", "ye", "yw", "qz", "rx", "qd", "la", "rk", "wa", "ym",
         "vc", "hu", "bc", "rl", "sa", "ie", "dm", "vd", "lv", "mo", "cs", "km", "lp",
@@ -290,8 +282,7 @@ static mc_registry_status tool_entry(mc_registry_classes *classes, const char *n
                                      int32_t ordinal, int32_t f, int32_t g, float h, int32_t i,
                                      int32_t allocation_pc, int32_t literal_pc,
                                      int32_t constructor_pc, int32_t publication_pc,
-                                     mc_item_tool_material **destination)
-{
+                                     mc_item_tool_material **destination) {
     mc_registry_initializer_stage(classes, allocation_pc);
     mc_item_tool_material *value = mc_registry_allocate(classes, sizeof(*value));
     if (value == NULL)
@@ -315,8 +306,7 @@ static mc_registry_status tool_entry(mc_registry_classes *classes, const char *n
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status tool_body(mc_registry_classes *classes)
-{
+static mc_registry_status tool_body(mc_registry_classes *classes) {
     mc_registry_status status;
 #define TOOL(name, ordinal, f, g, h, i, allocation, literal, constructor, publication, field)      \
     do {                                                                                           \
@@ -361,8 +351,7 @@ static mc_registry_status tool_body(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_item_tool_initialize(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_item_tool_initialize(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_class_state *state = &classes->item_tool_state;

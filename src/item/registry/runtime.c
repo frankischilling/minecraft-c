@@ -5,8 +5,7 @@
 #include <string.h>
 
 static mc_registry_status result(mc_registry_error *error, mc_registry_status status,
-                                 const char *message)
-{
+                                 const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -21,8 +20,7 @@ static mc_registry_status result(mc_registry_error *error, mc_registry_status st
     return status;
 }
 
-static mc_registry_status quiescent(const mc_registry_classes *classes, mc_registry_error *error)
-{
+static mc_registry_status quiescent(const mc_registry_classes *classes, mc_registry_error *error) {
     if (classes == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item runtime registry owner");
     if (classes->entered != 0)
@@ -30,8 +28,7 @@ static mc_registry_status quiescent(const mc_registry_classes *classes, mc_regis
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status enter_items(mc_registry_classes *classes, mc_registry_error *error)
-{
+static mc_registry_status enter_items(mc_registry_classes *classes, mc_registry_error *error) {
     const mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -42,8 +39,7 @@ static mc_registry_status enter_items(mc_registry_classes *classes, mc_registry_
 }
 
 static mc_registry_status leave_items(mc_registry_classes *classes, mc_registry_status status,
-                                      mc_registry_error *error)
-{
+                                      mc_registry_error *error) {
     --classes->entered;
     if (status != MC_REGISTRY_OK) {
         if (error != NULL)
@@ -54,8 +50,7 @@ static mc_registry_status leave_items(mc_registry_classes *classes, mc_registry_
 }
 
 mc_registry_status mc_registry_item_static_get(mc_registry_classes *classes, const char *name,
-                                               const mc_item **out, mc_registry_error *error)
-{
+                                               const mc_item **out, mc_registry_error *error) {
     if (name == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item runtime static arguments");
     mc_registry_status status = enter_items(classes, error);
@@ -83,8 +78,7 @@ mc_registry_status mc_registry_item_static_get(mc_registry_classes *classes, con
 
 mc_registry_status mc_registry_item_c_get(mc_registry_classes *classes,
                                           const mc_registry_item_array **out,
-                                          mc_registry_error *error)
-{
+                                          mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item runtime c output");
     mc_registry_status status = enter_items(classes, error);
@@ -103,8 +97,7 @@ mc_registry_status mc_registry_item_c_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_item_c_at(mc_registry_classes *classes,
                                          const mc_registry_item_array *captured_array,
                                          int32_t index, const mc_item **out,
-                                         mc_registry_error *error)
-{
+                                         mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Item runtime c element output");
     mc_registry_status status = quiescent(classes, error);

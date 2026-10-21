@@ -19,8 +19,7 @@ struct mc_scheduled_ordered {
     size_t allocation_bytes;
 };
 
-const char *mc_scheduled_ordered_status_string(mc_scheduled_ordered_status status)
-{
+const char *mc_scheduled_ordered_status_string(mc_scheduled_ordered_status status) {
     switch (status) {
         case MC_SCHEDULED_ORDERED_OK:
             return "ok";
@@ -38,8 +37,7 @@ const char *mc_scheduled_ordered_status_string(mc_scheduled_ordered_status statu
     return "unknown scheduled ordered status";
 }
 
-static mc_scheduled_ordered_status ordered_record_status(mc_scheduled_tick_status status)
-{
+static mc_scheduled_ordered_status ordered_record_status(mc_scheduled_tick_status status) {
     switch (status) {
         case MC_SCHEDULED_TICK_OK:
             return MC_SCHEDULED_ORDERED_OK;
@@ -53,23 +51,19 @@ static mc_scheduled_ordered_status ordered_record_status(mc_scheduled_tick_statu
     return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
 }
 
-static bool ordered_black(const ordered_node *node)
-{
+static bool ordered_black(const ordered_node *node) {
     return node == NULL || node->black;
 }
 
-static ordered_node *ordered_parent(const ordered_node *node)
-{
+static ordered_node *ordered_parent(const ordered_node *node) {
     return node == NULL ? NULL : node->parent;
 }
 
-static ordered_node *ordered_child(const ordered_node *node, unsigned side)
-{
+static ordered_node *ordered_child(const ordered_node *node, unsigned side) {
     return node == NULL ? NULL : node->child[side];
 }
 
-static void ordered_color(ordered_node *node, bool black)
-{
+static void ordered_color(ordered_node *node, bool black) {
     if (node != NULL) {
         node->black = black;
     }
@@ -79,8 +73,7 @@ static void ordered_color(ordered_node *node, bool black)
  * Valid red-black topology supplies the promoted nonnull child. No key is
  * compared/copied/retained here, even when current keys disagree with links. */
 static void ordered_rotate(mc_scheduled_ordered *ordered, ordered_node *pivot,
-                           unsigned promoted_side)
-{
+                           unsigned promoted_side) {
     if (pivot == NULL) {
         return;
     }
@@ -102,8 +95,7 @@ static void ordered_rotate(mc_scheduled_ordered *ordered, ordered_node *pivot,
     pivot->parent = promoted;
 }
 
-static void ordered_insert_fix(mc_scheduled_ordered *ordered, ordered_node *focus)
-{
+static void ordered_insert_fix(mc_scheduled_ordered *ordered, ordered_node *focus) {
     focus->black = false;
     while (focus != NULL && focus != ordered->root && !focus->parent->black) {
         ordered_node *parent = focus->parent;
@@ -130,8 +122,7 @@ static void ordered_insert_fix(mc_scheduled_ordered *ordered, ordered_node *focu
     ordered->root->black = true;
 }
 
-static void ordered_delete_fix(mc_scheduled_ordered *ordered, ordered_node *focus)
-{
+static void ordered_delete_fix(mc_scheduled_ordered *ordered, ordered_node *focus) {
     while (focus != ordered->root && ordered_black(focus)) {
         ordered_node *parent = ordered_parent(focus);
         const unsigned side = focus == ordered_child(parent, 0) ? 0u : 1u;
@@ -165,8 +156,7 @@ static void ordered_delete_fix(mc_scheduled_ordered *ordered, ordered_node *focu
     ordered_color(focus, true);
 }
 
-static ordered_node *ordered_successor(ordered_node *node)
-{
+static ordered_node *ordered_successor(ordered_node *node) {
     if (node == NULL) {
         return NULL;
     }
@@ -190,8 +180,7 @@ static ordered_node *ordered_successor(ordered_node *node)
  * Never scan for an identity/equal key in other historical branches. */
 static mc_scheduled_ordered_status
 ordered_search(const mc_scheduled_ordered *ordered, const mc_scheduled_tick *query,
-               ordered_node **match, ordered_node **terminal_parent, unsigned *terminal_side)
-{
+               ordered_node **match, ordered_node **terminal_parent, unsigned *terminal_side) {
     ordered_node *node = ordered->root;
     ordered_node *parent = NULL;
     unsigned side = 0;
@@ -218,8 +207,7 @@ ordered_search(const mc_scheduled_ordered *ordered, const mc_scheduled_tick *que
     return MC_SCHEDULED_ORDERED_OK;
 }
 
-static void ordered_delete_node(mc_scheduled_ordered *ordered, ordered_node *matched)
-{
+static void ordered_delete_node(mc_scheduled_ordered *ordered, ordered_node *matched) {
     /* Original size decrement precedes topology changes. No allocation,
      * retain, comparison or callback can fail inside this deletion. */
     ordered->count -= 1;
@@ -272,8 +260,7 @@ static void ordered_delete_node(mc_scheduled_ordered *ordered, ordered_node *mat
 
 mc_scheduled_ordered_status mc_scheduled_ordered_create(size_t max_entries,
                                                         size_t max_allocation_bytes,
-                                                        mc_scheduled_ordered **out)
-{
+                                                        mc_scheduled_ordered **out) {
     if (out == NULL || max_entries > (size_t)INT32_MAX) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }
@@ -295,8 +282,7 @@ mc_scheduled_ordered_status mc_scheduled_ordered_create(size_t max_entries,
     return MC_SCHEDULED_ORDERED_OK;
 }
 
-void mc_scheduled_ordered_destroy(mc_scheduled_ordered *ordered)
-{
+void mc_scheduled_ordered_destroy(mc_scheduled_ordered *ordered) {
     if (ordered == NULL) {
         return;
     }
@@ -323,8 +309,7 @@ void mc_scheduled_ordered_destroy(mc_scheduled_ordered *ordered)
 }
 
 mc_scheduled_ordered_status mc_scheduled_ordered_size(const mc_scheduled_ordered *ordered,
-                                                      int32_t *out)
-{
+                                                      int32_t *out) {
     if (ordered == NULL || out == NULL) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }
@@ -334,8 +319,7 @@ mc_scheduled_ordered_status mc_scheduled_ordered_size(const mc_scheduled_ordered
 }
 
 mc_scheduled_ordered_status mc_scheduled_ordered_native_bytes(const mc_scheduled_ordered *ordered,
-                                                              size_t *out)
-{
+                                                              size_t *out) {
     if (ordered == NULL || out == NULL) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }
@@ -345,8 +329,7 @@ mc_scheduled_ordered_status mc_scheduled_ordered_native_bytes(const mc_scheduled
 
 mc_scheduled_ordered_status mc_scheduled_ordered_snapshot(const mc_scheduled_ordered *ordered,
                                                           const mc_scheduled_tick **entries,
-                                                          size_t capacity, size_t *written)
-{
+                                                          size_t capacity, size_t *written) {
     if (ordered == NULL || written == NULL || (entries == NULL && capacity != 0)) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }
@@ -367,8 +350,7 @@ mc_scheduled_ordered_status mc_scheduled_ordered_snapshot(const mc_scheduled_ord
 }
 
 mc_scheduled_ordered_status mc_scheduled_ordered_add(mc_scheduled_ordered *ordered,
-                                                     mc_scheduled_tick *tick, bool *added)
-{
+                                                     mc_scheduled_tick *tick, bool *added) {
     if (ordered == NULL || tick == NULL || added == NULL) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }
@@ -426,8 +408,7 @@ mc_scheduled_ordered_status mc_scheduled_ordered_add(mc_scheduled_ordered *order
 }
 
 mc_scheduled_ordered_status mc_scheduled_ordered_first(const mc_scheduled_ordered *ordered,
-                                                       mc_scheduled_tick **out)
-{
+                                                       mc_scheduled_tick **out) {
     if (ordered == NULL || out == NULL) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }
@@ -448,8 +429,7 @@ mc_scheduled_ordered_status mc_scheduled_ordered_first(const mc_scheduled_ordere
 
 mc_scheduled_ordered_status mc_scheduled_ordered_remove(mc_scheduled_ordered *ordered,
                                                         const mc_scheduled_tick *query,
-                                                        bool *removed)
-{
+                                                        bool *removed) {
     if (ordered == NULL || query == NULL || removed == NULL) {
         return MC_SCHEDULED_ORDERED_INVALID_ARGUMENT;
     }

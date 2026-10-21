@@ -18,10 +18,12 @@ union mc_biome_allocation {
         size_t references;
         biome_buffer_kind kind;
     } metadata;
+
     double double_alignment;
     mc_biome_id biome_alignment;
     void *pointer_alignment;
 };
+
 typedef mc_biome_allocation biome_allocation;
 
 typedef struct biome_replacement {
@@ -29,8 +31,7 @@ typedef struct biome_replacement {
     size_t length;
 } biome_replacement;
 
-const char *mc_biome_status_string(mc_biome_status status)
-{
+const char *mc_biome_status_string(mc_biome_status status) {
     switch (status) {
         case MC_BIOME_OK:
             return "ok";
@@ -44,8 +45,7 @@ const char *mc_biome_status_string(mc_biome_status status)
     return "unknown biome status";
 }
 
-const char *mc_biome_name(mc_biome_id biome)
-{
+const char *mc_biome_name(mc_biome_id biome) {
     static const char *const names[] = {
         "Rainforest", "Swampland", "Seasonal Forest", "Forest", "Savanna", "Shrubland", "Taiga",
         "Desert",     "Plains",    "Ice Desert",      "Tundra", "Hell",    "Sky"};
@@ -55,14 +55,12 @@ const char *mc_biome_name(mc_biome_id biome)
     return names[(size_t)biome - 1];
 }
 
-char mc_biome_field(mc_biome_id biome)
-{
+char mc_biome_field(mc_biome_id biome) {
     return biome < MC_BIOME_RAINFOREST || biome > MC_BIOME_SKY ? '\0'
                                                                : (char)('a' + (int)biome - 1);
 }
 
-static mc_biome_id biome_classify(float temperature, float rainfall)
-{
+static mc_biome_id biome_classify(float temperature, float rainfall) {
     float moisture = rainfall * temperature;
     if (temperature < 0.1f) {
         return MC_BIOME_TUNDRA;
@@ -88,8 +86,7 @@ static mc_biome_id biome_classify(float temperature, float rainfall)
     return moisture < 0.9f ? MC_BIOME_SEASONAL_FOREST : MC_BIOME_RAINFOREST;
 }
 
-mc_biome_status mc_biome_classify_float(float temperature, float rainfall, mc_biome_id *out)
-{
+mc_biome_status mc_biome_classify_float(float temperature, float rainfall, mc_biome_id *out) {
     if (out == NULL ||
         !(temperature >= 0.0f && temperature <= 1.0f && rainfall >= 0.0f && rainfall <= 1.0f)) {
         return MC_BIOME_INVALID_ARGUMENT;
@@ -98,8 +95,7 @@ mc_biome_status mc_biome_classify_float(float temperature, float rainfall, mc_bi
     return MC_BIOME_OK;
 }
 
-mc_biome_status mc_biome_classifier_init(mc_biome_classifier *classifier)
-{
+mc_biome_status mc_biome_classifier_init(mc_biome_classifier *classifier) {
     if (classifier == NULL) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
@@ -114,16 +110,14 @@ mc_biome_status mc_biome_classifier_init(mc_biome_classifier *classifier)
 }
 
 static mc_biome_id biome_lookup(const mc_biome_classifier *classifier, double temperature,
-                                double rainfall)
-{
+                                double rainfall) {
     size_t t = (size_t)mc_java_double_to_i32(temperature * 63.0);
     size_t r = (size_t)mc_java_double_to_i32(rainfall * 63.0);
     return classifier->table[t + r * 64u];
 }
 
 mc_biome_status mc_biome_lookup(const mc_biome_classifier *classifier, double temperature,
-                                double rainfall, mc_biome_id *out)
-{
+                                double rainfall, mc_biome_id *out) {
     if (classifier == NULL || out == NULL ||
         !(temperature >= 0.0 && temperature <= 1.0 && rainfall >= 0.0 && rainfall <= 1.0)) {
         return MC_BIOME_INVALID_ARGUMENT;
@@ -132,13 +126,11 @@ mc_biome_status mc_biome_lookup(const mc_biome_classifier *classifier, double te
     return MC_BIOME_OK;
 }
 
-static bool biome_memory_valid(const mc_biome_memory *memory)
-{
+static bool biome_memory_valid(const mc_biome_memory *memory) {
     return memory != NULL && memory->live_allocation_bytes <= memory->max_allocation_bytes;
 }
 
-mc_biome_status mc_biome_memory_init(mc_biome_memory *memory, size_t max_allocation_bytes)
-{
+mc_biome_status mc_biome_memory_init(mc_biome_memory *memory, size_t max_allocation_bytes) {
     if (memory == NULL || memory->live_allocation_bytes != 0) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
@@ -147,8 +139,7 @@ mc_biome_status mc_biome_memory_init(mc_biome_memory *memory, size_t max_allocat
 }
 
 static bool biome_buffer_valid(const mc_biome_memory *memory, const void *data, size_t length,
-                               biome_buffer_kind kind)
-{
+                               biome_buffer_kind kind) {
     if (data == NULL) {
         return length == 0;
     }
@@ -158,8 +149,7 @@ static bool biome_buffer_valid(const mc_biome_memory *memory, const void *data, 
 }
 
 static mc_biome_status biome_allocate(mc_biome_memory *memory, size_t length,
-                                      biome_buffer_kind kind, void **out)
-{
+                                      biome_buffer_kind kind, void **out) {
     size_t element_bytes = kind == BIOME_DOUBLE_BUFFER ? sizeof(double) : sizeof(mc_biome_id);
     if (length > INT32_MAX || length > SIZE_MAX / element_bytes ||
         length * element_bytes > SIZE_MAX - sizeof(biome_allocation)) {
@@ -183,8 +173,7 @@ static mc_biome_status biome_allocate(mc_biome_memory *memory, size_t length,
     return MC_BIOME_OK;
 }
 
-static void biome_release(void *data)
-{
+static void biome_release(void *data) {
     if (data != NULL) {
         biome_allocation *allocation = (biome_allocation *)data - 1;
         if (--allocation->metadata.references != 0)
@@ -195,8 +184,7 @@ static void biome_release(void *data)
 }
 
 mc_biome_status mc_biome_double_capture(const mc_biome_double_buffer *array,
-                                        mc_biome_double_reference *out)
-{
+                                        mc_biome_double_reference *out) {
     if (out == NULL || (array != NULL && array->data == NULL && array->length != 0))
         return MC_BIOME_INVALID_ARGUMENT;
     if (array == NULL || array->data == NULL) {
@@ -215,8 +203,7 @@ mc_biome_status mc_biome_double_capture(const mc_biome_double_buffer *array,
     return MC_BIOME_OK;
 }
 
-void mc_biome_double_release(mc_biome_double_reference *reference)
-{
+void mc_biome_double_release(mc_biome_double_reference *reference) {
     if (reference == NULL)
         return;
     if (reference->allocation != NULL)
@@ -224,8 +211,7 @@ void mc_biome_double_release(mc_biome_double_reference *reference)
     *reference = (mc_biome_double_reference){0};
 }
 
-void mc_biome_double_buffer_free(mc_biome_double_buffer *buffer)
-{
+void mc_biome_double_buffer_free(mc_biome_double_buffer *buffer) {
     if (buffer != NULL) {
         biome_release(buffer->data);
         buffer->data = NULL;
@@ -233,8 +219,7 @@ void mc_biome_double_buffer_free(mc_biome_double_buffer *buffer)
     }
 }
 
-void mc_biome_buffer_free(mc_biome_buffer *buffer)
-{
+void mc_biome_buffer_free(mc_biome_buffer *buffer) {
     if (buffer != NULL) {
         biome_release(buffer->data);
         buffer->data = NULL;
@@ -243,8 +228,7 @@ void mc_biome_buffer_free(mc_biome_buffer *buffer)
 }
 
 mc_biome_status mc_biome_double_buffer_resize(mc_biome_memory *memory,
-                                              mc_biome_double_buffer *buffer, size_t length)
-{
+                                              mc_biome_double_buffer *buffer, size_t length) {
     if (!biome_memory_valid(memory) || buffer == NULL ||
         !biome_buffer_valid(memory, buffer->data, buffer->length, BIOME_DOUBLE_BUFFER)) {
         return MC_BIOME_INVALID_ARGUMENT;
@@ -264,8 +248,7 @@ mc_biome_status mc_biome_double_buffer_resize(mc_biome_memory *memory,
 }
 
 mc_biome_status mc_biome_buffer_resize(mc_biome_memory *memory, mc_biome_buffer *buffer,
-                                       size_t length)
-{
+                                       size_t length) {
     if (!biome_memory_valid(memory) || buffer == NULL ||
         !biome_buffer_valid(memory, buffer->data, buffer->length, BIOME_ID_BUFFER)) {
         return MC_BIOME_INVALID_ARGUMENT;
@@ -284,8 +267,7 @@ mc_biome_status mc_biome_buffer_resize(mc_biome_memory *memory, mc_biome_buffer 
     return MC_BIOME_OK;
 }
 
-static bool biome_manager_valid(const mc_biome_manager *manager)
-{
+static bool biome_manager_valid(const mc_biome_manager *manager) {
     return manager != NULL && manager->initialized == 1 && biome_memory_valid(manager->memory) &&
            biome_buffer_valid(manager->memory, manager->a.data, manager->a.length,
                               BIOME_DOUBLE_BUFFER) &&
@@ -296,14 +278,12 @@ static bool biome_manager_valid(const mc_biome_manager *manager)
            biome_buffer_valid(manager->memory, manager->d.data, manager->d.length, BIOME_ID_BUFFER);
 }
 
-bool mc_biome_manager_sampling_valid(const mc_biome_manager *manager)
-{
+bool mc_biome_manager_sampling_valid(const mc_biome_manager *manager) {
     return biome_manager_valid(manager);
 }
 
 mc_biome_status mc_biome_manager_construct_channel(mc_biome_manager *manager, int64_t seed,
-                                                   mc_biome_construction_channel channel)
-{
+                                                   mc_biome_construction_channel channel) {
     if (manager == NULL) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
@@ -338,8 +318,7 @@ mc_biome_status mc_biome_manager_construct_channel(mc_biome_manager *manager, in
 }
 
 mc_biome_status mc_biome_manager_finish_construction(mc_biome_manager *manager,
-                                                     mc_biome_memory *memory)
-{
+                                                     mc_biome_memory *memory) {
     if (manager == NULL || !biome_memory_valid(memory)) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
@@ -353,8 +332,7 @@ mc_biome_status mc_biome_manager_finish_construction(mc_biome_manager *manager,
 }
 
 mc_biome_status mc_biome_manager_init(mc_biome_manager *manager, int64_t seed,
-                                      mc_biome_memory *memory)
-{
+                                      mc_biome_memory *memory) {
     if (manager == NULL || !biome_memory_valid(memory) || manager->initialized != 0 ||
         manager->memory != NULL || manager->a.data != NULL || manager->b.data != NULL ||
         manager->c.data != NULL || manager->d.data != NULL || manager->a.length != 0 ||
@@ -380,8 +358,7 @@ mc_biome_status mc_biome_manager_init(mc_biome_manager *manager, int64_t seed,
     return MC_BIOME_OK;
 }
 
-void mc_biome_manager_free(mc_biome_manager *manager)
-{
+void mc_biome_manager_free(mc_biome_manager *manager) {
     if (manager != NULL) {
         mc_biome_double_buffer_free(&manager->a);
         mc_biome_double_buffer_free(&manager->b);
@@ -391,8 +368,7 @@ void mc_biome_manager_free(mc_biome_manager *manager)
     }
 }
 
-static mc_biome_status biome_dimensions(size_t width, size_t height, size_t *elements)
-{
+static mc_biome_status biome_dimensions(size_t width, size_t height, size_t *elements) {
     if (width > INT32_MAX || height > INT32_MAX ||
         (height != 0 && width > (size_t)INT32_MAX / height)) {
         return MC_BIOME_LIMIT;
@@ -407,23 +383,20 @@ static mc_biome_status biome_dimensions(size_t width, size_t height, size_t *ele
 
 static mc_biome_status biome_prepare(mc_biome_memory *memory, const void *data,
                                      size_t current_length, size_t needed, biome_buffer_kind kind,
-                                     biome_replacement *replacement)
-{
+                                     biome_replacement *replacement) {
     replacement->length = needed;
     return data == NULL || current_length < needed
                ? biome_allocate(memory, needed, kind, &replacement->data)
                : MC_BIOME_OK;
 }
 
-static void biome_rollback(biome_replacement *replacements, size_t count)
-{
+static void biome_rollback(biome_replacement *replacements, size_t count) {
     for (size_t i = 0; i < count; ++i) {
         biome_release(replacements[i].data);
     }
 }
 
-static void biome_commit_double(mc_biome_double_buffer *buffer, biome_replacement *replacement)
-{
+static void biome_commit_double(mc_biome_double_buffer *buffer, biome_replacement *replacement) {
     if (replacement->data != NULL) {
         biome_release(buffer->data);
         buffer->data = replacement->data;
@@ -432,8 +405,7 @@ static void biome_commit_double(mc_biome_double_buffer *buffer, biome_replacemen
     }
 }
 
-static void biome_commit_ids(mc_biome_buffer *buffer, biome_replacement *replacement)
-{
+static void biome_commit_ids(mc_biome_buffer *buffer, biome_replacement *replacement) {
     if (replacement->data != NULL) {
         biome_release(buffer->data);
         buffer->data = replacement->data;
@@ -444,8 +416,7 @@ static void biome_commit_ids(mc_biome_buffer *buffer, biome_replacement *replace
 
 static void biome_channel(mc_noise_simplex *layers, size_t layer_count, int32_t x, int32_t z,
                           size_t width, size_t height, double scale, double frequency,
-                          mc_biome_double_buffer *buffer)
-{
+                          mc_biome_double_buffer *buffer) {
     mc_noise_simplex_octaves channel = {layers, layer_count};
     mc_noise_simplex_grid grid = {(double)x, (double)z, width, height, scale, scale};
     /* All dimensions, spans, layer counts and pointers have been validated
@@ -456,8 +427,7 @@ static void biome_channel(mc_noise_simplex *layers, size_t layer_count, int32_t 
 }
 
 mc_biome_status mc_biome_sample_channel_direct(mc_biome_manager *manager, int32_t x, int32_t z,
-                                               size_t size, mc_biome_construction_channel channel)
-{
+                                               size_t size, mc_biome_construction_channel channel) {
     if (!biome_manager_valid(manager)) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
@@ -521,15 +491,13 @@ mc_biome_status mc_biome_sample_channel_direct(mc_biome_manager *manager, int32_
     return MC_BIOME_OK;
 }
 
-static double biome_temperature_mix(double raw_temperature, double auxiliary)
-{
+static double biome_temperature_mix(double raw_temperature, double auxiliary) {
     double weight = 0.01;
     double complement = 1.0 - weight;
     return ((raw_temperature * 0.15) + 0.7) * complement + auxiliary * weight;
 }
 
-void mc_biome_sample_process_cell(mc_biome_manager *manager, size_t index)
-{
+void mc_biome_sample_process_cell(mc_biome_manager *manager, size_t index) {
     double auxiliary = manager->c.data[index] * 1.1 + 0.5;
     double mixed = biome_temperature_mix(manager->a.data[index], auxiliary);
     double weight = 0.002;
@@ -553,8 +521,7 @@ void mc_biome_sample_process_cell(mc_biome_manager *manager, size_t index)
 }
 
 mc_biome_status mc_biome_temperatures(mc_biome_manager *manager, int32_t x, int32_t z, size_t width,
-                                      size_t height, mc_biome_double_buffer *output)
-{
+                                      size_t height, mc_biome_double_buffer *output) {
     if (!biome_manager_valid(manager) || output == NULL || output == &manager->a ||
         output == &manager->b || output == &manager->c ||
         !biome_buffer_valid(manager->memory, output->data, output->length, BIOME_DOUBLE_BUFFER) ||
@@ -601,8 +568,7 @@ mc_biome_status mc_biome_temperatures(mc_biome_manager *manager, int32_t x, int3
 }
 
 static mc_biome_status biome_square(mc_biome_manager *manager, int32_t x, int32_t z, size_t size,
-                                    mc_biome_buffer *output)
-{
+                                    mc_biome_buffer *output) {
     size_t elements;
     mc_biome_status status = biome_dimensions(size, size, &elements);
     if (status != MC_BIOME_OK) {
@@ -640,8 +606,7 @@ static mc_biome_status biome_square(mc_biome_manager *manager, int32_t x, int32_
 }
 
 mc_biome_status mc_biome_sample_square(mc_biome_manager *manager, int32_t x, int32_t z, size_t size,
-                                       mc_biome_buffer *output)
-{
+                                       mc_biome_buffer *output) {
     if (!biome_manager_valid(manager) || output == NULL || output == &manager->d ||
         !biome_buffer_valid(manager->memory, output->data, output->length, BIOME_ID_BUFFER) ||
         (output->data != NULL && output->data == manager->d.data)) {
@@ -650,16 +615,15 @@ mc_biome_status mc_biome_sample_square(mc_biome_manager *manager, int32_t x, int
     return biome_square(manager, x, z, size, output);
 }
 
-mc_biome_status mc_biome_cached_square(mc_biome_manager *manager, int32_t x, int32_t z, size_t size)
-{
+mc_biome_status mc_biome_cached_square(mc_biome_manager *manager, int32_t x, int32_t z,
+                                       size_t size) {
     if (!biome_manager_valid(manager)) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
     return biome_square(manager, x, z, size, &manager->d);
 }
 
-mc_biome_status mc_biome_point(mc_biome_manager *manager, int32_t x, int32_t z, mc_biome_id *out)
-{
+mc_biome_status mc_biome_point(mc_biome_manager *manager, int32_t x, int32_t z, mc_biome_id *out) {
     if (out == NULL) {
         return MC_BIOME_INVALID_ARGUMENT;
     }
@@ -671,14 +635,12 @@ mc_biome_status mc_biome_point(mc_biome_manager *manager, int32_t x, int32_t z, 
 }
 
 mc_biome_status mc_biome_chunk(mc_biome_manager *manager, int32_t chunk_x, int32_t chunk_z,
-                               mc_biome_id *out)
-{
+                               mc_biome_id *out) {
     return mc_biome_point(manager, mc_java_i32_shl(chunk_x, 4), mc_java_i32_shl(chunk_z, 4), out);
 }
 
 mc_biome_status mc_biome_client_raw_temperature(mc_biome_manager *manager, int32_t x, int32_t z,
-                                                double *out)
-{
+                                                double *out) {
     if (!biome_manager_valid(manager) || out == NULL) {
         return MC_BIOME_INVALID_ARGUMENT;
     }

@@ -101,11 +101,13 @@ struct mc_tile {
     int32_t x, y, z;
     bool invalid;
     mc_nbt_tree *source;
+
     union {
         struct {
             mc_item_stack **slots;
             size_t capacity;
         } chest;
+
         struct {
             int32_t delay;
             double rotation, previous_rotation;
@@ -133,19 +135,16 @@ static mc_tile_status tile_import_measure(const mc_tile *tile, const tile_import
 static bool live_graph_has_name(const mc_world_chunk *chunk, const mc_tile *extra,
                                 const mc_tile_name *name);
 
-static mc_registry_error live_empty_registry(void)
-{
+static mc_registry_error live_empty_registry(void) {
     return mc_tile_empty_error().registry;
 }
 
-static mc_live_tile_error live_empty_error(void)
-{
+static mc_live_tile_error live_empty_error(void) {
     return mc_live_tiles_empty_error();
 }
 
 static mc_tile_status tile_inventory_result(mc_live_tile_error *error, mc_tile_status status,
-                                            unsigned int pc)
-{
+                                            unsigned int pc) {
     if (status != MC_TILE_OK && error != NULL) {
         if (error->status == MC_WORLD_STORAGE_OK)
             live_tile_error(error, status, "Chest native owner/slot/Stack operation");
@@ -169,8 +168,7 @@ static const uint16_t tile_delay_name[] = {'D', 'e', 'l', 'a', 'y'};
 static const uint16_t tile_id_name[] = {'i', 'd'};
 
 static mc_tile_status tile_status(mc_tile_error *error, mc_tile_status status, const char *field,
-                                  size_t index)
-{
+                                  size_t index) {
     if (error != NULL) {
         *error = (mc_tile_error){
             .status = status,
@@ -185,8 +183,7 @@ static mc_tile_status tile_status(mc_tile_error *error, mc_tile_status status, c
 }
 
 static mc_tile_status tile_item_error(mc_tile_error *error, mc_item_stack_status status,
-                                      const mc_item_stack_error *item, size_t index)
-{
+                                      const mc_item_stack_error *item, size_t index) {
     const mc_tile_status result = status == MC_ITEM_STACK_ALLOCATION_FAILED
                                       ? MC_TILE_ALLOCATION_FAILED
                                   : status == MC_ITEM_STACK_LIMIT         ? MC_TILE_LIMIT
@@ -206,8 +203,7 @@ static mc_tile_status tile_item_error(mc_tile_error *error, mc_item_stack_status
 }
 
 static mc_tile_status tile_nbt_error(mc_tile_error *error, mc_nbt_status status, mc_nbt_error nbt,
-                                     const char *field, size_t index)
-{
+                                     const char *field, size_t index) {
     const mc_tile_status result = status == MC_NBT_LIMIT               ? MC_TILE_LIMIT
                                   : status == MC_NBT_ALLOCATION_FAILED ? MC_TILE_ALLOCATION_FAILED
                                                                        : MC_TILE_NBT_ERROR;
@@ -218,16 +214,14 @@ static mc_tile_status tile_nbt_error(mc_tile_error *error, mc_nbt_status status,
     return result;
 }
 
-static mc_tile_status tile_ready(const mc_tile *tile)
-{
+static mc_tile_status tile_ready(const mc_tile *tile) {
     if (tile == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
     return tile->phase == MC_TILE_READY ? MC_TILE_OK : MC_TILE_INVALID_PHASE;
 }
 
-static mc_tile_status tile_kind_ready(const mc_tile *tile, mc_tile_kind kind)
-{
+static mc_tile_status tile_kind_ready(const mc_tile *tile, mc_tile_kind kind) {
     const mc_tile_status status = tile_ready(tile);
     if (status != MC_TILE_OK) {
         return status;
@@ -235,8 +229,7 @@ static mc_tile_status tile_kind_ready(const mc_tile *tile, mc_tile_kind kind)
     return tile->kind == kind ? MC_TILE_OK : MC_TILE_INVALID_KIND;
 }
 
-static mc_tile_status tile_chest_slot(const mc_tile *tile, int32_t slot)
-{
+static mc_tile_status tile_chest_slot(const mc_tile *tile, int32_t slot) {
     const mc_tile_status status = tile_kind_ready(tile, MC_TILE_CHEST);
     if (status != MC_TILE_OK) {
         return status;
@@ -245,8 +238,7 @@ static mc_tile_status tile_chest_slot(const mc_tile *tile, int32_t slot)
                                                                     : MC_TILE_OK;
 }
 
-static mc_tile_status tile_item_status(mc_item_stack_status status)
-{
+static mc_tile_status tile_item_status(mc_item_stack_status status) {
     if (status == MC_ITEM_STACK_OK) {
         return MC_TILE_OK;
     }
@@ -259,8 +251,7 @@ static mc_tile_status tile_item_status(mc_item_stack_status status)
     return MC_TILE_ITEM_FAILED;
 }
 
-mc_tile_status mc_tile_name_create(const uint16_t *units, size_t length, mc_tile_name **out)
-{
+mc_tile_status mc_tile_name_create(const uint16_t *units, size_t length, mc_tile_name **out) {
     if (out == NULL || (units == NULL && length != 0)) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -285,8 +276,7 @@ mc_tile_status mc_tile_name_create(const uint16_t *units, size_t length, mc_tile
     return MC_TILE_OK;
 }
 
-mc_tile_status mc_tile_name_retain(mc_tile_name *name)
-{
+mc_tile_status mc_tile_name_retain(mc_tile_name *name) {
     if (name == NULL || name->immortal) {
         return MC_TILE_OK;
     }
@@ -297,15 +287,13 @@ mc_tile_status mc_tile_name_retain(mc_tile_name *name)
     return MC_TILE_OK;
 }
 
-void mc_tile_name_release(mc_tile_name *name)
-{
+void mc_tile_name_release(mc_tile_name *name) {
     if (name != NULL && !name->immortal && --name->holds == 0) {
         free(name);
     }
 }
 
-mc_tile_status mc_tile_name_get_view(const mc_tile_name *name, mc_tile_name_view *out)
-{
+mc_tile_status mc_tile_name_get_view(const mc_tile_name *name, mc_tile_name_view *out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -314,13 +302,11 @@ mc_tile_status mc_tile_name_get_view(const mc_tile_name *name, mc_tile_name_view
     return MC_TILE_OK;
 }
 
-size_t mc_tile_name_native_bytes(const mc_tile_name *name)
-{
+size_t mc_tile_name_native_bytes(const mc_tile_name *name) {
     return name == NULL ? 0 : name->allocation_bytes;
 }
 
-mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out)
-{
+mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -347,8 +333,7 @@ mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_t
 }
 
 static mc_tile_status tile_construct(mc_tile *raw, const tile_import_context *context,
-                                     mc_tile_error *error)
-{
+                                     mc_tile_error *error) {
     if (raw == NULL) {
         return tile_status(error, MC_TILE_INVALID_ARGUMENT, NULL, SIZE_MAX);
     }
@@ -388,18 +373,15 @@ static mc_tile_status tile_construct(mc_tile *raw, const tile_import_context *co
     return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
 }
 
-mc_tile_status mc_tile_construct(mc_tile *raw)
-{
+mc_tile_status mc_tile_construct(mc_tile *raw) {
     return tile_construct(raw, NULL, NULL);
 }
 
-mc_tile_status mc_tile_construct_detailed(mc_tile *raw, mc_tile_error *error)
-{
+mc_tile_status mc_tile_construct_detailed(mc_tile *raw, mc_tile_error *error) {
     return tile_construct(raw, NULL, error);
 }
 
-mc_tile_status mc_tile_retain(mc_tile *tile)
-{
+mc_tile_status mc_tile_retain(mc_tile *tile) {
     if (tile == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -410,16 +392,14 @@ mc_tile_status mc_tile_retain(mc_tile *tile)
     return MC_TILE_OK;
 }
 
-static void tile_slots_release(mc_item_stack **slots, size_t capacity)
-{
+static void tile_slots_release(mc_item_stack **slots, size_t capacity) {
     for (size_t i = 0; i < capacity; ++i) {
         mc_item_stack_release(slots[i]);
     }
     free(slots);
 }
 
-void mc_tile_release(mc_tile *tile)
-{
+void mc_tile_release(mc_tile *tile) {
     if (tile == NULL || --tile->holds != 0) {
         return;
     }
@@ -436,8 +416,7 @@ void mc_tile_release(mc_tile *tile)
     free(tile);
 }
 
-mc_tile_status mc_tile_get_snapshot(const mc_tile *tile, mc_tile_snapshot *out)
-{
+mc_tile_status mc_tile_get_snapshot(const mc_tile *tile, mc_tile_snapshot *out) {
     if (tile == NULL || out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -463,8 +442,7 @@ mc_tile_status mc_tile_get_snapshot(const mc_tile *tile, mc_tile_snapshot *out)
     return MC_TILE_OK;
 }
 
-size_t mc_tile_native_bytes(const mc_tile *tile)
-{
+size_t mc_tile_native_bytes(const mc_tile *tile) {
     if (tile == NULL) {
         return 0;
     }
@@ -472,18 +450,15 @@ size_t mc_tile_native_bytes(const mc_tile *tile)
            (tile->kind == MC_TILE_CHEST ? tile->state.chest.capacity * sizeof(mc_item_stack *) : 0);
 }
 
-const mc_nbt_tag *mc_tile_source(const mc_tile *tile)
-{
+const mc_nbt_tag *mc_tile_source(const mc_tile *tile) {
     return tile == NULL ? NULL : mc_nbt_tree_root(tile->source);
 }
 
-size_t mc_tile_source_bytes(const mc_tile *tile)
-{
+size_t mc_tile_source_bytes(const mc_tile *tile) {
     return tile == NULL ? 0 : mc_nbt_tree_allocation_bytes(tile->source);
 }
 
-static bool tile_size_add(size_t *total, size_t amount)
-{
+static bool tile_size_add(size_t *total, size_t amount) {
     if (amount > SIZE_MAX - *total) {
         return false;
     }
@@ -491,8 +466,7 @@ static bool tile_size_add(size_t *total, size_t amount)
     return true;
 }
 
-static bool tile_size_multiply(size_t left, size_t right, size_t *out)
-{
+static bool tile_size_multiply(size_t left, size_t right, size_t *out) {
     if (right != 0 && left > SIZE_MAX / right) {
         return false;
     }
@@ -500,8 +474,7 @@ static bool tile_size_multiply(size_t left, size_t right, size_t *out)
     return true;
 }
 
-mc_tile_status mc_tile_storage_bytes(const mc_tile *tile, size_t *out)
-{
+mc_tile_status mc_tile_storage_bytes(const mc_tile *tile, size_t *out) {
     if (tile == NULL || out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -555,16 +528,14 @@ mc_tile_status mc_tile_storage_bytes(const mc_tile *tile, size_t *out)
     return MC_TILE_OK;
 }
 
-static bool tile_limits(const mc_nbt_limits *requested, mc_nbt_limits *out)
-{
+static bool tile_limits(const mc_nbt_limits *requested, mc_nbt_limits *out) {
     *out = requested == NULL ? mc_nbt_default_limits() : *requested;
     return out->max_depth != 0 && out->max_depth <= 128;
 }
 
 static mc_tile_status tile_import_admit(const mc_tile *tile, const tile_import_context *context,
                                         size_t additional, mc_tile_error *error, const char *field,
-                                        size_t index)
-{
+                                        size_t index) {
     if (context == NULL) {
         return MC_TILE_OK;
     }
@@ -580,8 +551,7 @@ static mc_tile_status tile_import_admit(const mc_tile *tile, const tile_import_c
     return MC_TILE_OK;
 }
 
-mc_tile_status mc_tile_bind_world(mc_tile *tile, mc_world_runtime *world)
-{
+mc_tile_status mc_tile_bind_world(mc_tile *tile, mc_world_runtime *world) {
     const mc_tile_status status = tile_ready(tile);
     if (status != MC_TILE_OK) {
         return status;
@@ -603,8 +573,7 @@ mc_tile_status mc_tile_bind_world(mc_tile *tile, mc_world_runtime *world)
     return MC_TILE_OK;
 }
 
-mc_tile_status mc_tile_set_coordinates(mc_tile *tile, int32_t x, int32_t y, int32_t z)
-{
+mc_tile_status mc_tile_set_coordinates(mc_tile *tile, int32_t x, int32_t y, int32_t z) {
     const mc_tile_status status = tile_ready(tile);
     if (status == MC_TILE_OK) {
         tile->x = x;
@@ -614,8 +583,7 @@ mc_tile_status mc_tile_set_coordinates(mc_tile *tile, int32_t x, int32_t y, int3
     return status;
 }
 
-mc_tile_status mc_tile_set_invalid(mc_tile *tile, bool invalid)
-{
+mc_tile_status mc_tile_set_invalid(mc_tile *tile, bool invalid) {
     const mc_tile_status status = tile_ready(tile);
     if (status == MC_TILE_OK) {
         tile->invalid = invalid;
@@ -623,8 +591,7 @@ mc_tile_status mc_tile_set_invalid(mc_tile *tile, bool invalid)
     return status;
 }
 
-mc_tile_status mc_tile_dirty_detailed(mc_tile *tile, mc_live_tile_error *error)
-{
+mc_tile_status mc_tile_dirty_detailed(mc_tile *tile, mc_live_tile_error *error) {
     if (error != NULL)
         *error = live_empty_error();
     const mc_tile_status status = tile_ready(tile);
@@ -649,13 +616,11 @@ mc_tile_status mc_tile_dirty_detailed(mc_tile *tile, mc_live_tile_error *error)
     return dirty == MC_WORLD_STORAGE_OK ? MC_TILE_OK : MC_TILE_WORLD_FAILED;
 }
 
-mc_tile_status mc_tile_dirty(mc_tile *tile)
-{
+mc_tile_status mc_tile_dirty(mc_tile *tile) {
     return mc_tile_dirty_detailed(tile, NULL);
 }
 
-mc_tile_status mc_tile_chest_size(const mc_tile *tile, int32_t *out)
-{
+mc_tile_status mc_tile_chest_size(const mc_tile *tile, int32_t *out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -666,8 +631,7 @@ mc_tile_status mc_tile_chest_size(const mc_tile *tile, int32_t *out)
     return status;
 }
 
-mc_tile_status mc_tile_chest_limit(const mc_tile *tile, int32_t *out)
-{
+mc_tile_status mc_tile_chest_limit(const mc_tile *tile, int32_t *out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -678,8 +642,7 @@ mc_tile_status mc_tile_chest_limit(const mc_tile *tile, int32_t *out)
     return status;
 }
 
-mc_tile_status mc_tile_chest_capacity(const mc_tile *tile, size_t *out)
-{
+mc_tile_status mc_tile_chest_capacity(const mc_tile *tile, size_t *out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -690,8 +653,7 @@ mc_tile_status mc_tile_chest_capacity(const mc_tile *tile, size_t *out)
     return status;
 }
 
-mc_tile_status mc_tile_chest_get(mc_tile *tile, int32_t slot, mc_item_stack **out)
-{
+mc_tile_status mc_tile_chest_get(mc_tile *tile, int32_t slot, mc_item_stack **out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -711,16 +673,14 @@ mc_tile_status mc_tile_chest_get(mc_tile *tile, int32_t slot, mc_item_stack **ou
 }
 
 static mc_tile_status tile_inventory_item_result(mc_live_tile_error *error,
-                                                 mc_item_stack_status item)
-{
+                                                 mc_item_stack_status item) {
     if (error != NULL)
         error->tile.item.status = item;
     return tile_inventory_result(error, tile_item_status(item), 0);
 }
 
 mc_tile_status mc_tile_chest_set_detailed(mc_tile *tile, int32_t slot, mc_item_stack *stack,
-                                          mc_live_tile_error *error)
-{
+                                          mc_live_tile_error *error) {
     if (error != NULL)
         *error = live_empty_error();
     mc_tile_status status = tile_chest_slot(tile, slot);
@@ -779,14 +739,12 @@ mc_tile_status mc_tile_chest_set_detailed(mc_tile *tile, int32_t slot, mc_item_s
     return tile_inventory_result(error, status, 0);
 }
 
-mc_tile_status mc_tile_chest_set(mc_tile *tile, int32_t slot, mc_item_stack *stack)
-{
+mc_tile_status mc_tile_chest_set(mc_tile *tile, int32_t slot, mc_item_stack *stack) {
     return mc_tile_chest_set_detailed(tile, slot, stack, NULL);
 }
 
 mc_tile_status mc_tile_chest_remove_detailed(mc_tile *tile, int32_t slot, int32_t amount,
-                                             mc_item_stack **out, mc_live_tile_error *error)
-{
+                                             mc_item_stack **out, mc_live_tile_error *error) {
     if (error != NULL)
         *error = live_empty_error();
     if (out == NULL) {
@@ -846,13 +804,11 @@ mc_tile_status mc_tile_chest_remove_detailed(mc_tile *tile, int32_t slot, int32_
 }
 
 mc_tile_status mc_tile_chest_remove(mc_tile *tile, int32_t slot, int32_t amount,
-                                    mc_item_stack **out)
-{
+                                    mc_item_stack **out) {
     return mc_tile_chest_remove_detailed(tile, slot, amount, out, NULL);
 }
 
-mc_tile_status mc_tile_spawner_get_name(mc_tile *tile, mc_tile_name **out)
-{
+mc_tile_status mc_tile_spawner_get_name(mc_tile *tile, mc_tile_name **out) {
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
@@ -869,8 +825,7 @@ mc_tile_status mc_tile_spawner_get_name(mc_tile *tile, mc_tile_name **out)
     return MC_TILE_OK;
 }
 
-mc_tile_status mc_tile_spawner_set_name(mc_tile *tile, mc_tile_name *name)
-{
+mc_tile_status mc_tile_spawner_set_name(mc_tile *tile, mc_tile_name *name) {
     const mc_tile_status status = tile_kind_ready(tile, MC_TILE_SPAWNER);
     if (status != MC_TILE_OK) {
         return status;
@@ -885,8 +840,7 @@ mc_tile_status mc_tile_spawner_set_name(mc_tile *tile, mc_tile_name *name)
     return MC_TILE_OK;
 }
 
-mc_tile_status mc_tile_read_base(mc_tile *tile, const mc_nbt_tag *compound, mc_tile_error *error)
-{
+mc_tile_status mc_tile_read_base(mc_tile *tile, const mc_nbt_tag *compound, mc_tile_error *error) {
     const mc_tile_status status = tile_ready(tile);
     if (status != MC_TILE_OK) {
         return tile_status(error, status, NULL, SIZE_MAX);
@@ -913,8 +867,7 @@ mc_tile_status mc_tile_read_base(mc_tile *tile, const mc_nbt_tag *compound, mc_t
 }
 
 static mc_tile_status tile_chest_read(mc_tile *tile, const mc_nbt_tag *compound,
-                                      tile_import_context *context, mc_tile_error *error)
-{
+                                      tile_import_context *context, mc_tile_error *error) {
     const mc_nbt_tag *items = mc_nbt_compound_get(compound, tile_items_name, 5);
     if (items != NULL && items->type != MC_NBT_LIST) {
         return tile_status(error, MC_TILE_INVALID_FIELD, "Items", SIZE_MAX);
@@ -977,8 +930,7 @@ static mc_tile_status tile_chest_read(mc_tile *tile, const mc_nbt_tag *compound,
 }
 
 static mc_tile_status tile_spawner_read(mc_tile *tile, const mc_nbt_tag *compound,
-                                        tile_import_context *context, mc_tile_error *error)
-{
+                                        tile_import_context *context, mc_tile_error *error) {
     const mc_nbt_tag *tag = mc_nbt_compound_get(compound, tile_entity_name, 8);
     if (tag != NULL && tag->type != MC_NBT_STRING) {
         return tile_status(error, MC_TILE_INVALID_FIELD, "EntityId", SIZE_MAX);
@@ -1029,8 +981,7 @@ static mc_tile_status tile_spawner_read(mc_tile *tile, const mc_nbt_tag *compoun
 }
 
 static mc_tile_status tile_read_nbt(mc_tile *tile, const mc_nbt_tag *compound,
-                                    tile_import_context *context, mc_tile_error *error)
-{
+                                    tile_import_context *context, mc_tile_error *error) {
     const mc_tile_status status = mc_tile_read_base(tile, compound, error);
     if (status != MC_TILE_OK) {
         return status;
@@ -1039,15 +990,13 @@ static mc_tile_status tile_read_nbt(mc_tile *tile, const mc_nbt_tag *compound,
                                        : tile_spawner_read(tile, compound, context, error);
 }
 
-mc_tile_status mc_tile_read_nbt(mc_tile *tile, const mc_nbt_tag *compound, mc_tile_error *error)
-{
+mc_tile_status mc_tile_read_nbt(mc_tile *tile, const mc_nbt_tag *compound, mc_tile_error *error) {
     return tile_read_nbt(tile, compound, NULL, error);
 }
 
 static mc_tile_status tile_attach_import_sources(mc_tile *tile, const mc_nbt_tag *compound,
                                                  const tile_import_context *context,
-                                                 mc_tile_error *error)
-{
+                                                 mc_tile_error *error) {
     if (tile->source != NULL || tile->world != NULL || tile->phase != MC_TILE_READY) {
         return tile_status(error, MC_TILE_STATE_ERROR, NULL, SIZE_MAX);
     }
@@ -1146,8 +1095,7 @@ static mc_tile_status tile_attach_import_sources(mc_tile *tile, const mc_nbt_tag
 static mc_tile_status
 tile_import_storage_scoped(mc_world_runtime *world, mc_tile_kind resolved_kind,
                            const mc_nbt_tag *compound, const mc_nbt_limits *requested_limits,
-                           mc_tile **out, mc_tile_error *error, const mc_world_chunk *scope_chunk)
-{
+                           mc_tile **out, mc_tile_error *error, const mc_world_chunk *scope_chunk) {
     if (out == NULL) {
         return tile_status(error, MC_TILE_INVALID_ARGUMENT, NULL, SIZE_MAX);
     }
@@ -1207,22 +1155,19 @@ tile_import_storage_scoped(mc_world_runtime *world, mc_tile_kind resolved_kind,
 mc_tile_status mc_tile_import_storage(mc_world_runtime *world, mc_tile_kind resolved_kind,
                                       const mc_nbt_tag *compound,
                                       const mc_nbt_limits *requested_limits, mc_tile **out,
-                                      mc_tile_error *error)
-{
+                                      mc_tile_error *error) {
     return tile_import_storage_scoped(world, resolved_kind, compound, requested_limits, out, error,
                                       NULL);
 }
 
-static bool tile_names_equal(mc_nbt_string left, mc_nbt_string right)
-{
+static bool tile_names_equal(mc_nbt_string left, mc_nbt_string right) {
     return left.length == right.length &&
            (left.length == 0 ||
             memcmp(left.units, right.units, left.length * sizeof(uint16_t)) == 0);
 }
 
 static mc_tile_status tile_overlay_pointer_count(const mc_nbt_tag *source, const mc_nbt_tag *fields,
-                                                 size_t field_count, size_t *out)
-{
+                                                 size_t field_count, size_t *out) {
     size_t count = source == NULL ? 0 : source->value.compound.length;
     for (size_t i = 0; i < field_count; ++i) {
         const mc_nbt_string name = fields[i].name;
@@ -1240,8 +1185,7 @@ static mc_tile_status tile_overlay_pointer_count(const mc_nbt_tag *source, const
 }
 
 static void tile_overlay(const mc_nbt_tag *source, const mc_nbt_tag *fields, size_t field_count,
-                         const mc_nbt_tag **items)
-{
+                         const mc_nbt_tag **items) {
     size_t used = 0;
     if (source != NULL) {
         for (size_t i = 0; i < source->value.compound.length; ++i) {
@@ -1265,8 +1209,7 @@ static void tile_overlay(const mc_nbt_tag *source, const mc_nbt_tag *fields, siz
 }
 
 static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6],
-                                        size_t *field_count, mc_tile_error *error)
-{
+                                        size_t *field_count, mc_tile_error *error) {
     fields[0].type = MC_NBT_STRING;
     fields[0].name = (mc_nbt_string){tile_id_name, 2};
     mc_tile_name *registered = live_class_name(tile->classes, tile->kind);
@@ -1311,8 +1254,7 @@ static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6
 }
 
 mc_tile_status mc_tile_build(const mc_tile *tile, const mc_nbt_limits *requested_limits,
-                             mc_nbt_document **out, mc_tile_error *error)
-{
+                             mc_nbt_document **out, mc_tile_error *error) {
     if (out == NULL) {
         return tile_status(error, MC_TILE_INVALID_ARGUMENT, NULL, SIZE_MAX);
     }
@@ -1475,8 +1417,7 @@ mc_tile_status mc_tile_build(const mc_tile *tile, const mc_nbt_limits *requested
  * registry, not one registry per Tile or a separately bound class graph. */
 static mc_tile_status live_literal(mc_tile_classes *classes, const char *ascii, mc_tile_name **out,
                                    mc_registry_error *attempt, const mc_tile *scope_tile,
-                                   const tile_import_context *context)
-{
+                                   const tile_import_context *context) {
     *attempt = live_empty_registry();
     const mc_registry_string *identity = NULL;
     mc_registry_error cause = live_empty_registry();
@@ -1534,8 +1475,7 @@ static mc_tile_status live_literal(mc_tile_classes *classes, const char *ascii, 
     return MC_TILE_OK;
 }
 
-static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classes **out)
-{
+static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classes **out) {
     if (world == NULL || world->classes == NULL ||
         world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
@@ -1555,8 +1495,7 @@ static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classe
     return MC_TILE_OK;
 }
 
-static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes **out)
-{
+static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes **out) {
     mc_tile_classes *classes = NULL;
     mc_tile_status owned = live_classes_owner(world, &classes);
     if (owned != MC_TILE_OK)
@@ -1632,8 +1571,7 @@ static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes 
     return MC_TILE_OK;
 }
 
-static mc_tile_name *live_class_name(mc_tile_classes *classes, mc_tile_kind kind)
-{
+static mc_tile_name *live_class_name(mc_tile_classes *classes, mc_tile_kind kind) {
     const live_class_id selected = kind == MC_TILE_CHEST ? LIVE_CHEST : LIVE_SPAWNER;
     if (classes == NULL || classes->phase != 2)
         return NULL;
@@ -1644,8 +1582,7 @@ static mc_tile_name *live_class_name(mc_tile_classes *classes, mc_tile_kind kind
 }
 
 mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *parent,
-                                                     mc_world_storage_error *error)
-{
+                                                     mc_world_storage_error *error) {
     mc_world_storage_error cause = {0};
     if (parent != NULL && parent->tiles != NULL) {
         mc_tile_classes *classes = parent->tiles;
@@ -1676,16 +1613,14 @@ mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *p
 }
 
 static mc_world_storage_status live_fail(mc_live_tile_error *error, mc_world_storage_status status,
-                                         const char *operation)
-{
+                                         const char *operation) {
     error->status = status;
     error->operation = operation;
     error->cause = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static mc_world_storage_status live_cause(mc_live_tile_error *error, mc_world_storage_error cause)
-{
+static mc_world_storage_status live_cause(mc_live_tile_error *error, mc_world_storage_error cause) {
     error->status = cause.status;
     error->operation = cause.operation;
     error->cause = cause;
@@ -1693,8 +1628,7 @@ static mc_world_storage_status live_cause(mc_live_tile_error *error, mc_world_st
 }
 
 static bool live_registry_cause(mc_world_runtime *world, mc_live_tile_error *error,
-                                const mc_registry_error *cause, const char *operation)
-{
+                                const mc_registry_error *cause, const char *operation) {
     error->registry = *cause;
     const mc_world_storage_status status =
         mc_world_runtime_registry_result(world, cause->status, cause, operation, &error->cause);
@@ -1704,8 +1638,7 @@ static bool live_registry_cause(mc_world_runtime *world, mc_live_tile_error *err
 }
 
 static mc_world_storage_status live_tile_error(mc_live_tile_error *error, mc_tile_status status,
-                                               const char *operation)
-{
+                                               const char *operation) {
     error->tile.status = status;
     if (error->tile.registry.status != MC_REGISTRY_OK)
         error->registry = error->tile.registry;
@@ -1721,8 +1654,7 @@ static mc_world_storage_status live_tile_error(mc_live_tile_error *error, mc_til
 }
 
 static mc_world_storage_status live_finish(mc_world_runtime *world, mc_live_tile_error frame,
-                                           mc_live_tile_error *error)
-{
+                                           mc_live_tile_error *error) {
     if (frame.status == MC_WORLD_STORAGE_OK)
         frame = live_empty_error();
     if (world != NULL)
@@ -1732,8 +1664,7 @@ static mc_world_storage_status live_finish(mc_world_runtime *world, mc_live_tile
     return frame.status;
 }
 
-static bool live_enter(mc_world_runtime *world, mc_live_tile_error *error)
-{
+static bool live_enter(mc_world_runtime *world, mc_live_tile_error *error) {
     if (world == NULL || world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED || world->tile_containers_retired) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile World native admission");
@@ -1748,8 +1679,7 @@ static bool live_enter(mc_world_runtime *world, mc_live_tile_error *error)
 }
 
 mc_world_storage_status mc_live_tiles_new(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out,
-                                          mc_live_tile_error *error)
-{
+                                          mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Tile constructor output");
@@ -1778,23 +1708,20 @@ mc_world_storage_status mc_live_tiles_new(mc_world_runtime *world, mc_tile_kind 
     return live_finish(world, frame, error);
 }
 
-static bool live_list_shape(const mc_world_reference_list *list)
-{
+static bool live_list_shape(const mc_world_reference_list *list) {
     return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            ((list->capacity == 0) == (list->items == NULL));
 }
 
 void mc_live_tiles_capture_list(mc_world_runtime *world, bool deferred,
-                                mc_world_reference_list *identity)
-{
+                                mc_world_reference_list *identity) {
     /* Constructor-native hook: the same newly allocated empty descriptor. */
     mc_tile_list_ledger *ledger = &world->tile_membership[deferred ? 1u : 0u];
     ledger->identity = identity;
 }
 
-static bool live_list_valid(const mc_world_runtime *world, bool deferred)
-{
+static bool live_list_valid(const mc_world_runtime *world, bool deferred) {
     const mc_tile_list_ledger *ledger = &world->tile_membership[deferred ? 1u : 0u];
     const mc_world_reference_list *list = deferred ? world->fields.G : world->fields.c;
     if (list != ledger->identity)
@@ -1812,14 +1739,12 @@ static bool live_list_valid(const mc_world_runtime *world, bool deferred)
     return true;
 }
 
-bool mc_live_tiles_lists_valid(const mc_world_runtime *world)
-{
+bool mc_live_tiles_lists_valid(const mc_world_runtime *world) {
     return world != NULL && live_list_valid(world, false) && live_list_valid(world, true);
 }
 
 static bool live_list_add(mc_world_runtime *world, bool deferred, mc_tile *tile,
-                          mc_live_tile_error *error)
-{
+                          mc_live_tile_error *error) {
     mc_tile_list_ledger *ledger = &world->tile_membership[deferred ? 1u : 0u];
     mc_world_reference_list *list = deferred ? world->fields.G : world->fields.c;
     if (!live_list_valid(world, deferred) || list == NULL) {
@@ -1889,8 +1814,7 @@ static bool live_list_add(mc_world_runtime *world, bool deferred, mc_tile *tile,
 }
 
 static bool live_list_remove_first(mc_world_runtime *world, mc_tile *tile,
-                                   mc_live_tile_error *error)
-{
+                                   mc_live_tile_error *error) {
     if (!live_list_valid(world, false) || world->fields.c == NULL) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile List remove descriptor");
         return false;
@@ -1913,8 +1837,7 @@ static bool live_list_remove_first(mc_world_runtime *world, mc_tile *tile,
     return true;
 }
 
-void mc_live_tiles_lists_release(mc_world_runtime *world)
-{
+void mc_live_tiles_lists_release(mc_world_runtime *world) {
     world->tile_containers_retired = true;
     for (unsigned int selected = 0; selected < 2; ++selected) {
         mc_tile_list_ledger *ledger = &world->tile_membership[selected];
@@ -1937,6 +1860,7 @@ void mc_live_tiles_lists_release(mc_world_runtime *world)
     }
 }
 typedef struct live_map_node live_map_node;
+
 struct live_map_node {
     int32_t x, y, z;
     uint32_t hash;
@@ -1961,24 +1885,22 @@ struct mc_tile_map_backing {
  * equality and non-Comparable full-hash ties. A tie requiring identityHashCode
  * is rejected before native map mutation. No coordinate/pointer ordering
  * pretends to be that missing profile. */
-static bool live_map_before(uint32_t left, uint32_t right)
-{
+static bool live_map_before(uint32_t left, uint32_t right) {
     return (left ^ UINT32_C(0x80000000)) < (right ^ UINT32_C(0x80000000));
 }
-static uint32_t live_map_threshold(uint32_t capacity)
-{
+
+static uint32_t live_map_threshold(uint32_t capacity) {
     return capacity == UINT32_C(0x40000000) ? UINT32_C(0x7fffffff) : capacity - capacity / 4u;
 }
-static live_map_node *live_map_root(live_map_node *node)
-{
+
+static live_map_node *live_map_root(live_map_node *node) {
     while (node->parent != NULL)
         node = node->parent;
     return node;
 }
 
 /* Promote one child while preserving the separate traversal chain. */
-static live_map_node *live_map_rotate(live_map_node *root, live_map_node *node, unsigned side)
-{
+static live_map_node *live_map_rotate(live_map_node *root, live_map_node *node, unsigned side) {
     live_map_node *pivot = node->children[side];
     live_map_node *parent = node->parent;
     node->children[side] = pivot->children[1u - side];
@@ -1996,8 +1918,7 @@ static live_map_node *live_map_rotate(live_map_node *root, live_map_node *node, 
     return root;
 }
 
-static live_map_node *live_map_balance_add(live_map_node *root, live_map_node *node)
-{
+static live_map_node *live_map_balance_add(live_map_node *root, live_map_node *node) {
     node->red = true;
     for (;;) {
         live_map_node *parent = node->parent;
@@ -2029,13 +1950,11 @@ static live_map_node *live_map_balance_add(live_map_node *root, live_map_node *n
     }
 }
 
-static bool live_map_red(const live_map_node *node)
-{
+static bool live_map_red(const live_map_node *node) {
     return node != NULL && node->red;
 }
 
-static live_map_node *live_map_balance_remove(live_map_node *root, live_map_node *node)
-{
+static live_map_node *live_map_balance_remove(live_map_node *root, live_map_node *node) {
     while (node != NULL && node != root) {
         live_map_node *parent = node->parent;
         if (parent == NULL) {
@@ -2089,8 +2008,7 @@ static live_map_node *live_map_balance_remove(live_map_node *root, live_map_node
     return root;
 }
 
-static void live_map_front(live_map_node **buckets, uint32_t capacity, live_map_node *root)
-{
+static void live_map_front(live_map_node **buckets, uint32_t capacity, live_map_node *root) {
     uint32_t index = root->hash & (capacity - 1u);
     live_map_node *head = buckets[index];
     if (head == root)
@@ -2106,8 +2024,7 @@ static void live_map_front(live_map_node **buckets, uint32_t capacity, live_map_
     buckets[index] = root;
 }
 
-static void live_map_treeify(live_map_node **buckets, uint32_t capacity, uint32_t index)
-{
+static void live_map_treeify(live_map_node **buckets, uint32_t capacity, uint32_t index) {
     live_map_node *root = NULL, *previous = NULL;
     for (live_map_node *node = buckets[index]; node != NULL; node = node->next) {
         node->previous = previous;
@@ -2134,16 +2051,14 @@ static void live_map_treeify(live_map_node **buckets, uint32_t capacity, uint32_
     live_map_front(buckets, capacity, root);
 }
 
-static void live_map_plain(live_map_node *head)
-{
+static void live_map_plain(live_map_node *head) {
     for (live_map_node *node = head; node != NULL; node = node->next) {
         node->tree = node->red = false;
         node->parent = node->children[0] = node->children[1] = NULL;
     }
 }
 
-static void live_map_tree_add(mc_tile_map_backing *set, live_map_node *head, live_map_node *node)
-{
+static void live_map_tree_add(mc_tile_map_backing *set, live_map_node *head, live_map_node *node) {
     live_map_node *root = live_map_root(head), *parent = root;
     for (;;) {
         unsigned side = live_map_before(node->hash, parent->hash) ? 0u : 1u;
@@ -2162,8 +2077,7 @@ static void live_map_tree_add(mc_tile_map_backing *set, live_map_node *head, liv
     }
 }
 
-static void live_map_resize(mc_tile_map_backing *set, live_map_node **table, uint32_t capacity)
-{
+static void live_map_resize(mc_tile_map_backing *set, live_map_node **table, uint32_t capacity) {
     uint32_t old_capacity = set->capacity;
     for (uint32_t index = 0; index < old_capacity; ++index) {
         live_map_node *head = set->buckets[index];
@@ -2210,8 +2124,7 @@ static void live_map_resize(mc_tile_map_backing *set, live_map_node **table, uin
     set->threshold = live_map_threshold(capacity);
 }
 
-static void live_map_tree_remove(mc_tile_map_backing *set, live_map_node *node)
-{
+static void live_map_tree_remove(mc_tile_map_backing *set, live_map_node *node) {
     uint32_t index = node->hash & (set->capacity - 1u);
     live_map_node *root = live_map_root(set->buckets[index]);
     if (node->previous == NULL)
@@ -2287,8 +2200,7 @@ static void live_map_tree_remove(mc_tile_map_backing *set, live_map_node *node)
     live_map_front(set->buckets, set->capacity, root);
 }
 
-static uint32_t live_key_hash(int32_t x, int32_t y, int32_t z)
-{
+static uint32_t live_key_hash(int32_t x, int32_t y, int32_t z) {
     int32_t raw = mc_java_i32_add(
         mc_java_i32_add(mc_java_i32_mul(x, 8976890), mc_java_i32_mul(y, 981131)), z);
     uint32_t bits = (uint32_t)raw;
@@ -2296,8 +2208,7 @@ static uint32_t live_key_hash(int32_t x, int32_t y, int32_t z)
 }
 
 static live_map_node *live_map_find(const mc_tile_map_backing *map, int32_t x, int32_t y, int32_t z,
-                                    uint32_t hash)
-{
+                                    uint32_t hash) {
     if (map == NULL || map->capacity == 0)
         return NULL;
     /* The concrete wf/oa equals body is pure full-int comparison. Searching
@@ -2309,8 +2220,7 @@ static live_map_node *live_map_find(const mc_tile_map_backing *map, int32_t x, i
     return NULL;
 }
 
-static bool live_owned_map_valid(const mc_world_chunk *chunk)
-{
+static bool live_owned_map_valid(const mc_world_chunk *chunk) {
     if (chunk == NULL)
         return false;
     const mc_world_chunk_tile_map *descriptor = &chunk->tile_map;
@@ -2352,8 +2262,7 @@ static bool live_owned_map_valid(const mc_world_chunk *chunk)
            expected <= chunk->allocation_bytes;
 }
 
-bool mc_live_tiles_owned_map_bytes(const mc_world_chunk *chunk, size_t *out)
-{
+bool mc_live_tiles_owned_map_bytes(const mc_world_chunk *chunk, size_t *out) {
     /* This lower native inspector never evaluates source l or recursively
      * validates the common Chunk ledger that called it. */
     if (out == NULL || !live_owned_map_valid(chunk))
@@ -2362,14 +2271,12 @@ bool mc_live_tiles_owned_map_bytes(const mc_world_chunk *chunk, size_t *out)
     return true;
 }
 
-bool mc_live_tiles_map_valid(const mc_world_chunk *chunk)
-{
+bool mc_live_tiles_map_valid(const mc_world_chunk *chunk) {
     return chunk != NULL && chunk->l == &chunk->tile_map && live_owned_map_valid(chunk);
 }
 
 static bool live_map_put(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, mc_tile *tile,
-                         size_t requested_ceiling, mc_live_tile_error *error)
-{
+                         size_t requested_ceiling, mc_live_tile_error *error) {
     mc_world_chunk_tile_map *descriptor = chunk->l;
     if (!mc_live_tiles_map_valid(chunk) ||
         (descriptor->backing == NULL && descriptor->release_backing != NULL)) {
@@ -2507,8 +2414,7 @@ static bool live_map_put(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
     return true;
 }
 
-static mc_tile *live_map_remove(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z)
-{
+static mc_tile *live_map_remove(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z) {
     mc_tile_map_backing *map = chunk->l->backing;
     live_map_node *node = live_map_find(map, x, y, z, live_key_hash(x, y, z));
     if (node == NULL)
@@ -2532,8 +2438,7 @@ static mc_tile *live_map_remove(mc_world_chunk *chunk, int32_t x, int32_t y, int
     return value;
 }
 
-void mc_live_tiles_map_release(mc_world_chunk_tile_map *descriptor)
-{
+void mc_live_tiles_map_release(mc_world_chunk_tile_map *descriptor) {
     mc_tile_map_backing *map = descriptor->backing;
     descriptor->backing = NULL;
     descriptor->count = 0;
@@ -2563,8 +2468,7 @@ void mc_live_tiles_map_release(mc_world_chunk_tile_map *descriptor)
 }
 
 mc_world_storage_status mc_live_tiles_map_entry_at(const mc_world_chunk *chunk, size_t ordinal,
-                                                   mc_live_tile_map_entry *out)
-{
+                                                   mc_live_tile_map_entry *out) {
     if (out == NULL || !mc_live_tiles_map_valid(chunk) || ordinal >= chunk->l->count)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     const mc_tile_map_backing *map = chunk->l->backing;
@@ -2581,8 +2485,7 @@ mc_world_storage_status mc_live_tiles_map_entry_at(const mc_world_chunk *chunk, 
 }
 
 mc_world_storage_status mc_live_tiles_map_at(const mc_world_chunk *chunk, size_t ordinal,
-                                             mc_tile **out)
-{
+                                             mc_tile **out) {
     if (out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     mc_live_tile_map_entry entry;
@@ -2591,8 +2494,8 @@ mc_world_storage_status mc_live_tiles_map_at(const mc_world_chunk *chunk, size_t
         *out = entry.tile;
     return status;
 }
-static bool live_tile_block_kind(const mc_block *block)
-{
+
+static bool live_tile_block_kind(const mc_block *block) {
     if (block == NULL)
         return false;
     switch (block->kind) {
@@ -2611,8 +2514,7 @@ static bool live_tile_block_kind(const mc_block *block)
 }
 
 static bool live_chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t *out,
-                             mc_live_tile_error *error)
-{
+                             mc_live_tile_error *error) {
     const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
     mc_world_chunk_fields fields;
     if (mc_world_chunk_fields_get(chunk, &fields) != MC_WORLD_STORAGE_OK || fields.b == NULL ||
@@ -2625,8 +2527,7 @@ static bool live_chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_
 }
 
 static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state **out,
-                         mc_live_tile_error *error)
-{
+                         mc_live_tile_error *error) {
     /* Actual World.c reads v1 before provider.b6, including cached hits. */
     if (world->fields.v == NULL) {
         error->provider_bytecode = 6;
@@ -2669,8 +2570,7 @@ static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk
 }
 
 static bool live_lease(mc_world_runtime *world, mc_chunk_state *state, mc_world_chunk **out,
-                       mc_live_tile_error *error)
-{
+                       mc_live_tile_error *error) {
     mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, state);
     if (!mc_world_chunk_source_enabled(chunk)) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile actual Store Chunk owner");
@@ -2687,8 +2587,7 @@ static bool live_lease(mc_world_runtime *world, mc_chunk_state *state, mc_world_
 
 static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
                                     mc_tile *tile, size_t storage_ceiling,
-                                    mc_live_tile_error *error)
-{
+                                    mc_live_tile_error *error) {
     /* Native map admission precedes the source receiver fields. */
     if (!mc_live_tiles_map_valid(chunk) ||
         (chunk->l->backing == NULL && chunk->l->release_backing != NULL)) {
@@ -2757,8 +2656,7 @@ static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y,
 }
 
 static bool live_world_set_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                mc_tile *tile, mc_live_tile_error *error)
-{
+                                mc_tile *tile, mc_live_tile_error *error) {
     error->bytecode = 2;
     if (tile == NULL) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile World invalid receiver");
@@ -2792,8 +2690,7 @@ static bool live_world_set_held(mc_world_runtime *world, int32_t x, int32_t y, i
 }
 
 static bool live_block_added_held(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                  int32_t y, int32_t z, mc_live_tile_error *error)
-{
+                                  int32_t y, int32_t z, mc_live_tile_error *error) {
     error->bytecode = 6; /* Proved uu/na.c base body returns. */
     if (block == NULL) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile Block added receiver");
@@ -2833,8 +2730,7 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
 }
 
 static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                                mc_tile **out, mc_live_tile_error *error)
-{
+                                mc_tile **out, mc_live_tile_error *error) {
     error->chunk_bytecode = 18;
     if (!mc_live_tiles_map_valid(chunk) ||
         (chunk->l->backing == NULL && chunk->l->release_backing != NULL)) {
@@ -2921,8 +2817,7 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
 }
 
 static bool live_world_get_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                mc_tile **out, mc_live_tile_error *error)
-{
+                                mc_tile **out, mc_live_tile_error *error) {
     error->bytecode = 7;
     mc_chunk_state *state = NULL;
     if (!live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, error))
@@ -2941,8 +2836,7 @@ static bool live_world_get_held(mc_world_runtime *world, int32_t x, int32_t y, i
 }
 
 static bool live_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                                   mc_live_tile_error *error)
-{
+                                   mc_live_tile_error *error) {
     error->chunk_bytecode = 16;
     if (!mc_live_tiles_map_valid(chunk)) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile removal Map ownership");
@@ -2961,8 +2855,7 @@ static bool live_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y, 
 }
 
 mc_world_storage_status mc_live_tiles_get(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                          mc_tile **out, mc_live_tile_error *error)
-{
+                                          mc_tile **out, mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Tile lookup output");
@@ -2978,8 +2871,7 @@ mc_world_storage_status mc_live_tiles_get(mc_world_runtime *world, int32_t x, in
 }
 
 mc_world_storage_status mc_live_tiles_set(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                          mc_tile *tile, mc_live_tile_error *error)
-{
+                                          mc_tile *tile, mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
@@ -3005,8 +2897,7 @@ mc_world_storage_status mc_live_tiles_set(mc_world_runtime *world, int32_t x, in
 }
 
 mc_world_storage_status mc_live_tiles_remove(mc_world_runtime *world, int32_t x, int32_t y,
-                                             int32_t z, mc_live_tile_error *error)
-{
+                                             int32_t z, mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
@@ -3047,8 +2938,7 @@ mc_world_storage_status mc_live_tiles_remove(mc_world_runtime *world, int32_t x,
 
 mc_world_storage_status mc_live_tiles_block_added(mc_world_runtime *world, const mc_block *block,
                                                   int32_t x, int32_t y, int32_t z,
-                                                  mc_live_tile_error *error)
-{
+                                                  mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
@@ -3056,9 +2946,9 @@ mc_world_storage_status mc_live_tiles_block_added(mc_world_runtime *world, const
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
 }
+
 static bool live_list_add_map(mc_world_runtime *world, bool deferred, mc_world_chunk *chunk,
-                              mc_live_tile_error *error)
-{
+                              mc_live_tile_error *error) {
     if (!live_list_valid(world, deferred) || !mc_live_tiles_map_valid(chunk)) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                   "Tile addAll actual collection owners");
@@ -3149,8 +3039,7 @@ static bool live_list_add_map(mc_world_runtime *world, bool deferred, mc_world_c
 }
 
 static bool live_chunk_entry(mc_world_chunk *chunk, mc_world_runtime **world,
-                             mc_live_tile_error *error)
-{
+                             mc_live_tile_error *error) {
     if (chunk == NULL) {
         live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Tile Chunk receiver");
         return false;
@@ -3174,8 +3063,7 @@ static bool live_chunk_entry(mc_world_chunk *chunk, mc_world_runtime **world,
 }
 
 static mc_world_storage_status live_chunk_finish(mc_world_chunk *chunk, mc_live_tile_error frame,
-                                                 mc_live_tile_error *error)
-{
+                                                 mc_live_tile_error *error) {
     mc_world_runtime *world = chunk->d;
     (void)mc_world_store_release_chunk(world->fields.w, chunk->state, NULL);
     mc_world_runtime_call_leave(world);
@@ -3183,8 +3071,7 @@ static mc_world_storage_status live_chunk_finish(mc_world_chunk *chunk, mc_live_
 }
 
 mc_world_storage_status mc_live_tiles_chunk_import(mc_world_chunk *chunk, mc_tile *tile,
-                                                   mc_live_tile_error *error)
-{
+                                                   mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     mc_world_runtime *world;
     if (!live_chunk_entry(chunk, &world, &frame))
@@ -3211,8 +3098,7 @@ mc_world_storage_status mc_live_tiles_chunk_import(mc_world_chunk *chunk, mc_til
 }
 
 mc_world_storage_status mc_live_tiles_chunk_register(mc_world_chunk *chunk,
-                                                     mc_live_tile_error *error)
-{
+                                                     mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     mc_world_runtime *world;
     if (!live_chunk_entry(chunk, &world, &frame))
@@ -3224,8 +3110,7 @@ mc_world_storage_status mc_live_tiles_chunk_register(mc_world_chunk *chunk,
 }
 
 mc_world_storage_status mc_live_tiles_chunk_invalidate(mc_world_chunk *chunk,
-                                                       mc_live_tile_error *error)
-{
+                                                       mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     /* The caller holds the actual Chunk through this callback-free traversal.
      * Its source body never dereferences d, even when the Map is nonempty. */
@@ -3249,8 +3134,7 @@ mc_world_storage_status mc_live_tiles_chunk_invalidate(mc_world_chunk *chunk,
 
 mc_world_storage_status mc_world_runtime_tile_dirty_detailed(mc_world_runtime *world, int32_t x,
                                                              int32_t y, int32_t z, mc_tile *tile,
-                                                             mc_live_tile_error *error)
-{
+                                                             mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
@@ -3303,14 +3187,12 @@ mc_world_storage_status mc_world_runtime_tile_dirty_detailed(mc_world_runtime *w
 }
 
 bool mc_world_runtime_tile_dirty(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                 mc_tile *tile)
-{
+                                 mc_tile *tile) {
     return mc_world_runtime_tile_dirty_detailed(world, x, y, z, tile, NULL) == MC_WORLD_STORAGE_OK;
 }
 
 mc_world_storage_status mc_live_tiles_drain_deferred(mc_world_runtime *world,
-                                                     mc_live_tile_error *error)
-{
+                                                     mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
@@ -3401,12 +3283,12 @@ mc_world_storage_status mc_live_tiles_drain_deferred(mc_world_runtime *world,
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
 }
+
 static mc_world_storage_status live_tiles_factory_scoped(mc_world_runtime *world,
                                                          const mc_nbt_tag *compound,
                                                          const mc_nbt_limits *limits, bool preserve,
                                                          mc_tile **out, mc_live_tile_error *error,
-                                                         const mc_world_chunk *scope_chunk)
-{
+                                                         const mc_world_chunk *scope_chunk) {
     mc_live_tile_error frame = live_empty_error();
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Tile factory output");
@@ -3525,15 +3407,15 @@ static mc_world_storage_status live_tiles_factory_scoped(mc_world_runtime *world
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
 }
+
 mc_world_storage_status mc_live_tiles_factory(mc_world_runtime *world, const mc_nbt_tag *compound,
                                               const mc_nbt_limits *limits, bool preserve,
-                                              mc_tile **out, mc_live_tile_error *error)
-{
+                                              mc_tile **out, mc_live_tile_error *error) {
     return live_tiles_factory_scoped(world, compound, limits, preserve, out, error, NULL);
 }
+
 static bool live_drop_entity_error(mc_live_tile_error *error, mc_entity_status status,
-                                   const char *operation)
-{
+                                   const char *operation) {
     if (error->entity.status != status)
         error->entity = (mc_entity_error){.status = status, .operation = operation};
     live_fail(error,
@@ -3545,8 +3427,7 @@ static bool live_drop_entity_error(mc_live_tile_error *error, mc_entity_status s
 }
 
 static bool live_chest_drops_held(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                  int32_t y, int32_t z, mc_live_tile_error *error)
-{
+                                  int32_t y, int32_t z, mc_live_tile_error *error) {
     mc_tile *chest = NULL;
     error->bytecode = 5;
     if (!live_world_get_held(world, x, y, z, &chest, error))
@@ -3731,8 +3612,7 @@ static bool live_chest_drops_held(mc_world_runtime *world, const mc_block *block
 
 mc_world_storage_status mc_live_tiles_block_removed(mc_world_runtime *world, const mc_block *block,
                                                     int32_t x, int32_t y, int32_t z,
-                                                    mc_live_tile_error *error)
-{
+                                                    mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
@@ -3768,8 +3648,8 @@ mc_world_storage_status mc_live_tiles_block_removed(mc_world_runtime *world, con
 static const uint16_t live_records_name[] = {'T', 'i', 'l', 'e', 'E', 'n',
                                              't', 'i', 't', 'i', 'e', 's'};
 
-static bool live_map_ensure_header(mc_world_chunk *chunk, size_t ceiling, mc_live_tile_error *error)
-{
+static bool live_map_ensure_header(mc_world_chunk *chunk, size_t ceiling,
+                                   mc_live_tile_error *error) {
     if (!mc_live_tiles_map_valid(chunk) ||
         (chunk->l->backing == NULL && chunk->l->release_backing != NULL)) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile storage Map owner");
@@ -3800,8 +3680,7 @@ static bool live_map_ensure_header(mc_world_chunk *chunk, size_t ceiling, mc_liv
 
 mc_world_storage_status mc_live_tiles_load_records(mc_world_chunk *chunk, const mc_nbt_tag *records,
                                                    const mc_nbt_limits *requested,
-                                                   mc_live_tile_error *error)
-{
+                                                   mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     mc_world_runtime *world;
     if (!live_chunk_entry(chunk, &world, &frame))
@@ -3961,8 +3840,7 @@ typedef struct live_record_view {
 } live_record_view;
 
 static mc_tile_status live_record_plan(mc_tile *tile, live_record_view *view,
-                                       const mc_nbt_limits *limits, mc_tile_error *error)
-{
+                                       const mc_nbt_limits *limits, mc_tile_error *error) {
     mc_tile_status status = tile_ready(tile);
     if (status != MC_TILE_OK)
         return tile_status(error, status, NULL, SIZE_MAX);
@@ -4010,8 +3888,7 @@ static mc_tile_status live_record_plan(mc_tile *tile, live_record_view *view,
 }
 
 static mc_tile_status live_record_prepare(live_record_view *view, const mc_nbt_tag **scratch,
-                                          mc_tile_error *error)
-{
+                                          mc_tile_error *error) {
     size_t offset = view->root_count + view->occupied;
     for (size_t i = 0; i < view->occupied; ++i) {
         mc_item_stack_error item_error = {0};
@@ -4042,8 +3919,7 @@ static mc_tile_status live_record_prepare(live_record_view *view, const mc_nbt_t
 }
 
 /* Native accounting only: address hashing never selects source Map traversal. */
-static bool live_seen_insert(const void **seen, size_t capacity, const void *pointer)
-{
+static bool live_seen_insert(const void **seen, size_t capacity, const void *pointer) {
     if (pointer == NULL)
         return false;
     uintptr_t bits = (uintptr_t)pointer;
@@ -4060,8 +3936,7 @@ static bool live_seen_insert(const void **seen, size_t capacity, const void *poi
 
 mc_world_storage_status mc_live_tiles_build_records(const mc_world_chunk *chunk,
                                                     const mc_nbt_limits *requested,
-                                                    mc_nbt_tree **out, mc_live_tile_error *error)
-{
+                                                    mc_nbt_tree **out, mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     mc_nbt_limits limits;
     if (out == NULL || chunk == NULL || !tile_limits(requested, &limits) ||
@@ -4256,8 +4131,7 @@ mc_world_storage_status mc_live_tiles_build_records(const mc_world_chunk *chunk,
 }
 
 static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile *extra, size_t ceiling,
-                               size_t *out, mc_live_tile_error *error)
-{
+                               size_t *out, mc_live_tile_error *error) {
     const size_t count = chunk->l->count;
     if (!mc_live_tiles_map_valid(chunk) || count == SIZE_MAX) {
         live_fail(error, MC_WORLD_STORAGE_LIMIT, "Tile graph accounting count");
@@ -4361,8 +4235,7 @@ static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile *extra, size
 }
 
 static bool live_graph_has_name(const mc_world_chunk *chunk, const mc_tile *extra,
-                                const mc_tile_name *name)
-{
+                                const mc_tile_name *name) {
     if (name == NULL)
         return true;
     if (extra != NULL && extra->kind == MC_TILE_SPAWNER && extra->state.spawner.name == name)
@@ -4378,8 +4251,7 @@ static bool live_graph_has_name(const mc_world_chunk *chunk, const mc_tile *extr
 }
 
 static mc_tile_status tile_import_measure(const mc_tile *tile, const tile_import_context *context,
-                                          size_t *out)
-{
+                                          size_t *out) {
     if (context == NULL || context->scope_chunk == NULL)
         return mc_tile_storage_bytes(tile, out);
     mc_live_tile_error frame = live_empty_error();
@@ -4389,16 +4261,14 @@ static mc_tile_status tile_import_measure(const mc_tile *tile, const tile_import
     return frame.status == MC_WORLD_STORAGE_LIMIT ? MC_TILE_LIMIT : MC_TILE_STATE_ERROR;
 }
 
-const void *mc_live_tiles_name_identity(const mc_tile_name *name)
-{
+const void *mc_live_tiles_name_identity(const mc_tile_name *name) {
     return name == NULL                     ? NULL
            : name->literal_identity != NULL ? (const void *)name->literal_identity
                                             : (const void *)name;
 }
 
 mc_world_storage_status mc_live_tiles_literal(mc_world_runtime *world, const char *ascii,
-                                              mc_tile_name **out, mc_live_tile_error *error)
-{
+                                              mc_tile_name **out, mc_live_tile_error *error) {
     mc_live_tile_error frame = live_empty_error();
     if (ascii == NULL || out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Tile code literal arguments");

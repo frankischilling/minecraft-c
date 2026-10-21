@@ -10,23 +10,20 @@
 
 #include <stddef.h>
 
-static mc_world_schedule_error empty_error(void)
-{
+static mc_world_schedule_error empty_error(void) {
     const mc_world_mutation_error tick = mc_world_mutation_empty_error();
     return (mc_world_schedule_error){.registry = tick.registry, .tick = tick};
 }
 
 static mc_world_storage_status result(mc_world_schedule_error *out,
-                                      const mc_world_schedule_error *frame)
-{
+                                      const mc_world_schedule_error *frame) {
     if (out != NULL)
         *out = *frame;
     return frame->status;
 }
 
 static bool storage_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
-                         mc_world_storage_error cause)
-{
+                         mc_world_storage_error cause) {
     frame->status = cause.status;
     frame->operation = cause.operation;
     frame->cause = cause;
@@ -35,14 +32,12 @@ static bool storage_fail(mc_world_runtime *world, mc_world_schedule_error *frame
 }
 
 static bool fail(mc_world_runtime *world, mc_world_schedule_error *frame,
-                 mc_world_storage_status status, const char *operation)
-{
+                 mc_world_storage_status status, const char *operation) {
     return storage_fail(world, frame, (mc_world_storage_error){status, operation, 0});
 }
 
 static bool record_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
-                        const char *operation)
-{
+                        const char *operation) {
     mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     if (frame->record == MC_SCHEDULED_TICK_ALLOCATION_FAILED)
         status = MC_WORLD_STORAGE_ALLOCATION_FAILED;
@@ -52,8 +47,7 @@ static bool record_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
 }
 
 static bool membership_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
-                            const char *operation)
-{
+                            const char *operation) {
     mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     if (frame->membership == MC_SCHEDULED_MEMBERSHIP_ALLOCATION_FAILED)
         status = MC_WORLD_STORAGE_ALLOCATION_FAILED;
@@ -64,8 +58,7 @@ static bool membership_fail(mc_world_runtime *world, mc_world_schedule_error *fr
 }
 
 static bool ordered_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
-                         const char *operation)
-{
+                         const char *operation) {
     mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     if (frame->ordered == MC_SCHEDULED_ORDERED_ALLOCATION_FAILED)
         status = MC_WORLD_STORAGE_ALLOCATION_FAILED;
@@ -76,8 +69,7 @@ static bool ordered_fail(mc_world_runtime *world, mc_world_schedule_error *frame
 }
 
 static bool registry_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
-                          const mc_registry_error *cause, const char *operation)
-{
+                          const mc_registry_error *cause, const char *operation) {
     frame->registry = *cause;
     frame->status =
         mc_world_runtime_registry_result(world, cause->status, cause, operation, &frame->cause);
@@ -86,8 +78,7 @@ static bool registry_fail(mc_world_runtime *world, mc_world_schedule_error *fram
 }
 
 static bool radius_present(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                           unsigned int call_pc, bool *out, mc_world_schedule_error *frame)
-{
+                           unsigned int call_pc, bool *out, mc_world_schedule_error *frame) {
     const int32_t min_x = mc_java_i32_sub(x, 8);
     const int32_t min_y = mc_java_i32_sub(y, 8);
     const int32_t min_z = mc_java_i32_sub(z, 8);
@@ -110,8 +101,7 @@ static bool radius_present(mc_world_runtime *world, int32_t x, int32_t y, int32_
  * synchronous World call. Each snapshot below is a total read of that live
  * owner at the next source use, not an extra failure/preflight boundary. */
 static bool immediate(mc_world_runtime *world, mc_scheduled_tick *record,
-                      mc_world_schedule_error *frame)
-{
+                      mc_world_schedule_error *frame) {
     mc_scheduled_tick_fields fields;
     (void)mc_scheduled_tick_fields_get(record, &fields);
     bool present;
@@ -159,8 +149,7 @@ static bool immediate(mc_world_runtime *world, mc_scheduled_tick *record,
 }
 
 static bool deferred(mc_world_runtime *world, mc_scheduled_tick *record, int32_t x, int32_t y,
-                     int32_t z, int32_t block, int32_t delay, mc_world_schedule_error *frame)
-{
+                     int32_t z, int32_t block, int32_t delay, mc_world_schedule_error *frame) {
     bool present;
     if (!radius_present(world, x, y, z, 171, &present, frame))
         return false;
@@ -206,8 +195,7 @@ static bool deferred(mc_world_runtime *world, mc_scheduled_tick *record, int32_t
 }
 
 static bool schedule_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t block,
-                          int32_t delay, mc_world_schedule_error *frame)
-{
+                          int32_t delay, mc_world_schedule_error *frame) {
     frame->bytecode = 0;
     mc_world_runtime_classes *classes = world->classes;
     if (classes == NULL)
@@ -233,8 +221,7 @@ static bool schedule_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t
 }
 
 mc_world_storage_status mc_world_runtime_schedule_class_get(const mc_world_runtime_classes *classes,
-                                                            mc_world_schedule_class_state *out)
-{
+                                                            mc_world_schedule_class_state *out) {
     if (classes == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = (mc_world_schedule_class_state){.initialized = classes->scheduled_initialized,
@@ -244,8 +231,7 @@ mc_world_storage_status mc_world_runtime_schedule_class_get(const mc_world_runti
 
 mc_world_storage_status mc_world_runtime_schedule(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, int32_t block, int32_t delay,
-                                                  mc_world_schedule_error *error)
-{
+                                                  mc_world_schedule_error *error) {
     mc_world_schedule_error frame = empty_error();
     /* Native admission does not alter existing World diagnostics or execute
      * scheduled-record class initialization, allocation or counter effects. */

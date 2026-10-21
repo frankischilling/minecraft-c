@@ -32,20 +32,17 @@ static const char *const names[] = {
     "aV", "aW", "aX", "aY", "aZ", "ba", "bb", "bc", "bd", "be"};
 _Static_assert(COUNT(names) == 106, "actual named Item declaration count");
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t value, size_t count)
-{
+static uint64_t advanced(uint64_t value, size_t count) {
     while (count-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static bool text_is(const mc_registry_string *value, const char *expected)
-{
+static bool text_is(const mc_registry_string *value, const char *expected) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(value, &view) || view.length != strlen(expected) ||
         (view.length != 0 && view.units == NULL))
@@ -56,22 +53,19 @@ static bool text_is(const mc_registry_string *value, const char *expected)
     return true;
 }
 
-static const mc_item *item_at(const mc_registry_classes *owner, const char *name)
-{
+static const mc_item *item_at(const mc_registry_classes *owner, const char *name) {
     const mc_item *value = NULL;
     if (mc_registry_classes_inspect_item_static(owner, name, &value, NULL) != MC_REGISTRY_OK)
         return NULL;
     return value;
 }
 
-static bool same_view(const mc_registry_item_view *a, const mc_registry_item_view *b)
-{
+static bool same_view(const mc_registry_item_view *a, const mc_registry_item_view *b) {
     return a->phase == b->phase && a->initializer_pc == b->initializer_pc &&
            a->named_items == b->named_items && a->b == b->b && a->c == b->c;
 }
 
-static int retire(mc_registry_classes *owner, mc_registry_error *error)
-{
+static int retire(mc_registry_classes *owner, mc_registry_error *error) {
     if (owner == NULL || mc_registry_classes_free(owner, error) == MC_REGISTRY_OK)
         return 0;
     fprintf(stderr, "class owner retirement refused; preserving borrowed dependencies\n");
@@ -79,8 +73,7 @@ static int retire(mc_registry_classes *owner, mc_registry_error *error)
     return 1;
 }
 
-static int profile_is(const mc_java_random_profile *profile, uint64_t expected)
-{
+static int profile_is(const mc_java_random_profile *profile, uint64_t expected) {
     int result = 1;
     CHECK(uniquifier(profile) == expected);
     CHECK(profile->math == NULL);
@@ -91,8 +84,7 @@ cleanup:
     return result;
 }
 
-static int invalid_reads(const mc_registry_classes *owner)
-{
+static int invalid_reads(const mc_registry_classes *owner) {
     int result = 1;
     mc_item sentinel = {0};
     const mc_item *out = &sentinel;
@@ -138,8 +130,7 @@ cleanup:
 }
 
 static int test_cold(mc_registry_side side, mc_java_random_profile *profile,
-                     mc_materials *materials)
-{
+                     mc_materials *materials) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
@@ -173,8 +164,7 @@ cleanup:
     return result;
 }
 
-static bool ordinary_randoms(const mc_registry_classes *owner, const mc_java_random *out[5])
-{
+static bool ordinary_randoms(const mc_registry_classes *owner, const mc_java_random *out[5]) {
     if (owner->blocks.m == NULL || owner->blocks.m[23] == NULL || owner->blocks.m[54] == NULL ||
         owner->blocks.m[61] == NULL || owner->blocks.m[62] == NULL)
         return false;
@@ -192,8 +182,7 @@ static bool ordinary_randoms(const mc_registry_classes *owner, const mc_java_ran
     return true;
 }
 
-static int check_randoms(const mc_registry_classes *owner, uint64_t before)
-{
+static int check_randoms(const mc_registry_classes *owner, uint64_t before) {
     int result = 1;
     const mc_java_random *randoms[5];
     CHECK(ordinary_randoms(owner, randoms));
@@ -213,8 +202,7 @@ cleanup:
 }
 
 static int check_effective(const mc_registry_classes *owner, const mc_registry_block_array *array,
-                           const char *const *fields, size_t count)
-{
+                           const char *const *fields, size_t count) {
     int result = 1;
     CHECK(array != NULL && array->length == count && array->elements != NULL);
     for (size_t i = 0; i < count; ++i) {
@@ -228,8 +216,7 @@ cleanup:
     return result;
 }
 
-static int check_tools(const mc_registry_classes *owner)
-{
+static int check_tools(const mc_registry_classes *owner) {
     int result = 1;
     static const char *const tool_names[] = {"WOOD", "STONE", "IRON", "EMERALD", "GOLD"};
     static const int32_t f[] = {0, 1, 2, 3, 0};
@@ -280,8 +267,7 @@ cleanup:
     return result;
 }
 
-static int check_armor_dye(const mc_registry_classes *owner)
-{
+static int check_armor_dye(const mc_registry_classes *owner) {
     int result = 1;
     static const int32_t protection[] = {3, 8, 6, 3};
     static const int32_t durability[] = {11, 16, 15, 13};
@@ -336,8 +322,7 @@ typedef struct base_case {
     bool flag, subtypes;
 } base_case;
 
-static int check_base_and_subtypes(const mc_registry_classes *owner, mc_materials *materials)
-{
+static int check_base_and_subtypes(const mc_registry_classes *owner, mc_materials *materials) {
     int result = 1;
     /* Literal constructor/fluent outcomes, independently resolved through the
      * primary gm/ej base, selected descendants and registration instructions. */
@@ -420,8 +405,7 @@ cleanup:
 }
 
 static int check_statistics_prefix(const mc_registry_classes *owner, mc_registry_side side,
-                                   const mc_registry_error *failure)
-{
+                                   const mc_registry_error *failure) {
     int result = 1;
     mc_registry_statistic_base_view base;
     mc_registry_statistic_view statistics;
@@ -473,19 +457,20 @@ cleanup:
     return result;
 }
 
-static int check_retry(mc_registry_classes *owner)
-{
+static int check_retry(mc_registry_classes *owner) {
     int result = 1;
     const mc_item *entries[32000];
     const mc_item *named[106];
     mc_registry_item_view before, after;
     mc_registry_error error;
     const mc_java_random *randoms[5];
+
     struct {
         const mc_java_random *owner;
         uint64_t state, cache_bits;
         bool have_cache;
     } snapshots[5];
+
     CHECK(ordinary_randoms(owner, randoms));
     for (size_t i = 0; i < COUNT(snapshots); ++i) {
         snapshots[i].owner = randoms[i];
@@ -552,14 +537,15 @@ cleanup:
     return result;
 }
 
-static int check_fire(const mc_registry_classes *owner, bool hook_reached)
-{
+static int check_fire(const mc_registry_classes *owner, bool hook_reached) {
     int result = 1;
+
     static const struct {
         size_t id;
         int32_t encouragement, flammability;
     } entries[] = {{5, 5, 20},   {85, 5, 20},   {53, 5, 20},   {17, 5, 5},  {18, 30, 60},
                    {47, 30, 20}, {46, 15, 100}, {31, 60, 100}, {35, 30, 60}};
+
     CHECK(owner->blocks.m != NULL && owner->blocks.m[51] != NULL);
     const mc_block *fire = owner->blocks.m[51];
     CHECK(fire->kind == MC_BLOCK_YQ_PT);
@@ -581,8 +567,7 @@ cleanup:
 }
 
 static int test_block_first(mc_registry_side side, mc_java_random_profile *profile,
-                            mc_materials *materials)
-{
+                            mc_materials *materials) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
@@ -637,12 +622,12 @@ cleanup:
 }
 
 static int test_item_first(mc_registry_side side, mc_java_random_profile *profile,
-                           mc_materials *materials)
-{
+                           mc_materials *materials) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
     const mc_registry_options options = {side, profile, materials, 0, NULL};
+
     static const struct {
         size_t id;
         mc_item_kind kind;
@@ -655,6 +640,7 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
                     {18, MC_ITEM_UY_ND, "item.leaves", 52},
                     {33, MC_ITEM_QR_KC, NULL, 107},
                     {29, MC_ITEM_QR_KC, NULL, 106}};
+
     /* Side2 dispatch literals, including fluid increments, delegated stairs,
      * workbench, pumpkin, cake and repeater metadata-zero branches. */
     static const struct {
@@ -664,6 +650,7 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
                              {43, 5},  {53, 4},  {54, 26},  {58, 60},  {61, 45},
                              {62, 45}, {67, 16}, {86, 118}, {91, 118}, {92, 122},
                              {93, 5},  {94, 5},  {95, 26},  {96, 84}};
+
     uint64_t before = uniquifier(profile);
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_items(owner, &error) ==
@@ -740,8 +727,7 @@ cleanup:
 }
 
 static int test_metadata_budget(mc_registry_side side, mc_java_random_profile *profile,
-                                mc_materials *materials)
-{
+                                mc_materials *materials) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
@@ -768,8 +754,7 @@ cleanup:
     return result;
 }
 
-static int published_random_count(const mc_registry_classes *owner, size_t *out)
-{
+static int published_random_count(const mc_registry_classes *owner, size_t *out) {
     int result = 1;
     size_t count = owner->items.b != NULL ? 1u : 0u;
     static const size_t ids[] = {23, 54, 61, 62};
@@ -797,8 +782,7 @@ cleanup:
  * profile. Account genuine successful constructor publications, including any
  * Block recursion reached with a larger budget; never restore/reseed U. */
 static int budget_trial(mc_registry_side side, mc_java_random_profile *profile,
-                        mc_materials *materials, size_t budget, bool *published)
-{
+                        mc_materials *materials, size_t budget, bool *published) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
@@ -838,8 +822,7 @@ cleanup:
 }
 
 static int test_array_publication_budget(mc_registry_side side, mc_java_random_profile *profile,
-                                         mc_materials *materials)
-{
+                                         mc_materials *materials) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_registry_error error;
@@ -910,8 +893,7 @@ cleanup:
 }
 
 static int test_side(mc_registry_side side, mc_java_random_profile *profile,
-                     mc_materials *materials)
-{
+                     mc_materials *materials) {
     int result = 1;
     uint64_t before = uniquifier(profile);
     CHECK(test_cold(side, profile, materials) == 0);
@@ -927,8 +909,7 @@ cleanup:
     return result;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_materials *materials = NULL;

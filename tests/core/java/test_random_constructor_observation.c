@@ -25,22 +25,19 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint64_t double_bits(const double *value)
-{
+static uint64_t double_bits(const double *value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(*value), "binary64 storage required");
     memcpy(&bits, value, sizeof(bits));
     return bits;
 }
 
-static bool state_is(const mc_java_random *random, uint64_t state, uint64_t cache, bool flag)
-{
+static bool state_is(const mc_java_random *random, uint64_t state, uint64_t cache, bool flag) {
     return random->state == state && double_bits(&random->next_next_gaussian) == cache &&
            random->have_next_next_gaussian == flag;
 }
 
-static void poison_fresh(mc_java_random *random)
-{
+static void poison_fresh(mc_java_random *random) {
     memset(random, 0xa5, sizeof(*random));
     /* Keep every semantic representation valid if a fresh initializer omits a
      * write. Signed zero exposes a missing +0 cache write without NaN handling. */
@@ -48,8 +45,7 @@ static void poison_fresh(mc_java_random *random)
     random->have_next_next_gaussian = true;
 }
 
-int main(void)
-{
+int main(void) {
     mc_java_random a, e, m, b;
     double value;
     poison_fresh(&a);

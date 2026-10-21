@@ -8,8 +8,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
-mc_world_game_save_error mc_world_game_save_empty_error(void)
-{
+mc_world_game_save_error mc_world_game_save_empty_error(void) {
     return (mc_world_game_save_error){.status = MC_WORLD_STORAGE_OK,
                                       .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                       .entity_slice = SIZE_MAX,
@@ -19,8 +18,7 @@ mc_world_game_save_error mc_world_game_save_empty_error(void)
 }
 
 static mc_world_storage_status fail(mc_world_game_save_error *frame, mc_world_storage_status status,
-                                    const char *operation)
-{
+                                    const char *operation) {
     frame->status = status;
     frame->cause = (mc_world_storage_error){status, operation, 0};
     return status;
@@ -32,8 +30,7 @@ static mc_world_storage_status fail(mc_world_game_save_error *frame, mc_world_st
  * substitute arrays. Private mutable-NBT allocation prefixes remain separate
  * from this independent native-result representation. */
 static mc_world_storage_status source_prefix(mc_world_runtime *world, mc_world_chunk *chunk,
-                                             int64_t *time, mc_world_game_save_error *frame)
-{
+                                             int64_t *time, mc_world_game_save_error *frame) {
     frame->serializer_bytecode = 28;
     if (mc_world_info_time_get(world->fields.x, time) != MC_WORLD_INFO_OK)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME save World time receiver");
@@ -64,8 +61,7 @@ typedef struct entity_record {
 } entity_record;
 
 static mc_world_storage_status record_failure(mc_world_game_save_error *frame, mc_nbt_status status,
-                                              const char *operation)
-{
+                                              const char *operation) {
     frame->entity_records.status = status;
     return fail(frame,
                 status == MC_NBT_LIMIT               ? MC_WORLD_STORAGE_LIMIT
@@ -80,8 +76,7 @@ static mc_world_storage_status record_failure(mc_world_game_save_error *frame, m
  * this operation's ceiling. The storage wrapper additionally charges its own
  * current Entity/Stack/provenance graph, not unrelated World/container owners. */
 static mc_world_storage_status entities(mc_world_chunk *chunk, const mc_nbt_limits *limits,
-                                        mc_nbt_tree **out, mc_world_game_save_error *frame)
-{
+                                        mc_nbt_tree **out, mc_world_game_save_error *frame) {
     static const uint16_t name[] = {'E', 'n', 't', 'i', 't', 'i', 'e', 's'};
     entity_record *first = NULL, *last = NULL;
     size_t count = 0, live_bytes = 0;
@@ -223,8 +218,7 @@ done:
 mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *world,
                                                           mc_chunk_state *state, uint32_t timestamp,
                                                           uint32_t *growth,
-                                                          mc_world_game_save_error *error)
-{
+                                                          mc_world_game_save_error *error) {
     mc_world_game_save_error frame = mc_world_game_save_empty_error();
     mc_world_store_game_save *save = NULL;
     mc_world_store_game_save_view view = {0};

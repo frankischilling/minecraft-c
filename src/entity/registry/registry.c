@@ -29,9 +29,7 @@ static const uint16_t name_units[24][12] = {{'A', 'r', 'r', 'o', 'w'},
                                             {'B', 'o', 'a', 't'}};
 
 #define RECORD(kind, id, index, length, client, server)                                            \
-    {                                                                                              \
-        MC_ENTITY_CLASS_KIND_##kind, id, {name_units[index], length}, client, server               \
-    }
+    { MC_ENTITY_CLASS_KIND_##kind, id, {name_units[index], length}, client, server }
 static const mc_entity_registry_record records[] = {
     RECORD(ARROW, 10, 0, 5, 46, 46),         RECORD(SNOWBALL, 11, 1, 8, 55, 55),
     RECORD(ITEM, 1, 2, 4, 63, 63),           RECORD(PAINTING, 9, 3, 8, 72, 72),
@@ -48,23 +46,20 @@ static const mc_entity_registry_record records[] = {
 #undef RECORD
 
 static mc_entity_registry_status finish(mc_entity_registry_error frame,
-                                        mc_entity_registry_error *out)
-{
+                                        mc_entity_registry_error *out) {
     if (out != NULL)
         *out = frame;
     return frame.status;
 }
 
 static mc_entity_registry_status fail(mc_entity_registry_error *frame,
-                                      mc_entity_registry_status status, const char *operation)
-{
+                                      mc_entity_registry_status status, const char *operation) {
     frame->status = frame->cause = status;
     frame->operation = operation;
     return status;
 }
 
-static void *request(mc_entity_classes *classes, size_t bytes, mc_entity_registry_error *frame)
-{
+static void *request(mc_entity_classes *classes, size_t bytes, mc_entity_registry_error *frame) {
     if (classes->allocated_bytes > classes->limits.max_allocation_bytes ||
         bytes > classes->limits.max_allocation_bytes - classes->allocated_bytes) {
         fail(frame, MC_ENTITY_REGISTRY_LIMIT, "EntityList native map allocation budget");
@@ -80,8 +75,7 @@ static void *request(mc_entity_classes *classes, size_t bytes, mc_entity_registr
 }
 
 mc_entity_registry_status mc_entity_classes_initialize_registry(mc_entity_classes *classes,
-                                                                mc_entity_registry_error *out)
-{
+                                                                mc_entity_registry_error *out) {
     mc_entity_registry_error frame = {0};
     if (classes == NULL)
         return finish((mc_entity_registry_error){.status = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
@@ -143,8 +137,7 @@ failed:
 }
 
 mc_entity_registry_status mc_entity_registry_inspect(const mc_entity_classes *classes,
-                                                     mc_entity_registry_view *out)
-{
+                                                     mc_entity_registry_view *out) {
     if (classes == NULL || out == NULL)
         return MC_ENTITY_REGISTRY_INVALID_ARGUMENT;
     mc_entity_registry_view view = {.phase = classes->registry_phase,
@@ -157,8 +150,7 @@ mc_entity_registry_status mc_entity_registry_inspect(const mc_entity_classes *cl
     return MC_ENTITY_REGISTRY_OK;
 }
 
-static bool names_equal(mc_nbt_string left, mc_nbt_string right)
-{
+static bool names_equal(mc_nbt_string left, mc_nbt_string right) {
     if (left.length != right.length || (left.length != 0 && left.units == NULL))
         return false;
     for (size_t i = 0; i < left.length; ++i)
@@ -170,8 +162,7 @@ static bool names_equal(mc_nbt_string left, mc_nbt_string right)
 static mc_entity_registry_status lookup(mc_entity_classes *classes, mc_nbt_string name,
                                         const mc_entity_class_literal *type, int32_t id,
                                         size_t map_index, const mc_entity_registry_node **out,
-                                        mc_entity_registry_error *error)
-{
+                                        mc_entity_registry_error *error) {
     mc_entity_registry_status status = mc_entity_classes_initialize_registry(classes, error);
     if (status != MC_ENTITY_REGISTRY_OK)
         return status;
@@ -190,8 +181,7 @@ static mc_entity_registry_status lookup(mc_entity_classes *classes, mc_nbt_strin
 mc_entity_registry_status mc_entity_registry_named_class(mc_entity_classes *classes,
                                                          mc_nbt_string name,
                                                          const mc_entity_class_literal **out,
-                                                         mc_entity_registry_error *error)
-{
+                                                         mc_entity_registry_error *error) {
     if (out == NULL || (name.length != 0 && name.units == NULL))
         return finish((mc_entity_registry_error){.status = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
                                                  .cause = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
@@ -207,8 +197,7 @@ mc_entity_registry_status mc_entity_registry_named_class(mc_entity_classes *clas
 mc_entity_registry_status mc_entity_registry_class_name(mc_entity_classes *classes,
                                                         const mc_entity_class_literal *type,
                                                         mc_nbt_string *out,
-                                                        mc_entity_registry_error *error)
-{
+                                                        mc_entity_registry_error *error) {
     if (out == NULL)
         return finish((mc_entity_registry_error){.status = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
                                                  .cause = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
@@ -224,8 +213,7 @@ mc_entity_registry_status mc_entity_registry_class_name(mc_entity_classes *class
 
 mc_entity_registry_status mc_entity_registry_numeric_class(mc_entity_classes *classes, int32_t id,
                                                            const mc_entity_class_literal **out,
-                                                           mc_entity_registry_error *error)
-{
+                                                           mc_entity_registry_error *error) {
     if (out == NULL)
         return finish((mc_entity_registry_error){.status = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
                                                  .cause = MC_ENTITY_REGISTRY_INVALID_ARGUMENT,
@@ -239,8 +227,7 @@ mc_entity_registry_status mc_entity_registry_numeric_class(mc_entity_classes *cl
     return status;
 }
 
-void mc_entity_registry_dispose(mc_entity_classes *classes)
-{
+void mc_entity_registry_dispose(mc_entity_classes *classes) {
     for (size_t i = 0; i < 4; ++i) {
         mc_entity_registry_map *map = classes->registry_maps[i];
         if (map == NULL)

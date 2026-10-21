@@ -11,8 +11,7 @@
 /* Every prepared value is written before genuine GAME loading. The floor is
  * stone; separated unsupported columns avoid an artificial falling neighbor.
  * Numerical stored IDs are explicit fixture input, not a production palette. */
-static input_cell falling_input(int32_t x, int32_t y, int32_t z)
-{
+static input_cell falling_input(int32_t x, int32_t y, int32_t z) {
     if (y == 4)
         return (input_cell){1, 0};
     if (y == 50 && z == 4) {
@@ -32,8 +31,7 @@ static input_cell falling_input(int32_t x, int32_t y, int32_t z)
     return (input_cell){0, 0};
 }
 
-static bool falling_seed(fixture *f, size_t slot, int32_t cx, int32_t cz)
-{
+static bool falling_seed(fixture *f, size_t slot, int32_t cx, int32_t cz) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -90,8 +88,7 @@ cleanup:
     return ok;
 }
 
-static bool falling_load(fixture *f, size_t slot)
-{
+static bool falling_load(fixture *f, size_t slot) {
     bool ok = false;
     for (int32_t x = 0; x < 2; ++x)
         for (int32_t z = 0; z < 2; ++z)
@@ -117,8 +114,7 @@ cleanup:
  * fresh real frame, and leave on both success and failure. No source effects,
  * output rewriting or fallback happen in this adapter. */
 static bool falling_call(mc_world_runtime *w, const mc_block *block, int32_t x, int32_t y,
-                         int32_t z, mc_java_random *random, mc_world_mutation_error *error)
-{
+                         int32_t z, mc_java_random *random, mc_world_mutation_error *error) {
     if (mc_world_runtime_call_enter(w, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *error = mc_world_mutation_empty_error();
@@ -128,8 +124,7 @@ static bool falling_call(mc_world_runtime *w, const mc_block *block, int32_t x, 
 }
 
 static bool falling_pass(mc_world_runtime *w, mc_registry_classes *classes, int32_t x, int32_t y,
-                         int32_t z, bool *out, mc_world_mutation_error *error)
-{
+                         int32_t z, bool *out, mc_world_mutation_error *error) {
     if (mc_world_runtime_call_enter(w, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *error = mc_world_mutation_empty_error();
@@ -139,8 +134,7 @@ static bool falling_pass(mc_world_runtime *w, mc_registry_classes *classes, int3
 }
 
 static bool falling_hook(mc_world_runtime *w, const mc_block *block, int32_t x, int32_t y,
-                         int32_t z, bool neighbor, mc_world_mutation_error *error)
-{
+                         int32_t z, bool neighbor, mc_world_mutation_error *error) {
     if (mc_world_runtime_call_enter(w, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *error = mc_world_mutation_empty_error();
@@ -151,8 +145,7 @@ static bool falling_hook(mc_world_runtime *w, const mc_block *block, int32_t x, 
     return ok;
 }
 
-static bool falling_predicates(fixture *f, size_t side)
-{
+static bool falling_predicates(fixture *f, size_t side) {
     bool ok = false, out = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -232,8 +225,7 @@ cleanup:
     return ok;
 }
 
-static bool falling_moves(fixture *f, size_t side)
-{
+static bool falling_moves(fixture *f, size_t side) {
     bool ok = false, flag = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -294,8 +286,7 @@ cleanup:
     return ok;
 }
 
-static bool falling_schedules(fixture *f, size_t side)
-{
+static bool falling_schedules(fixture *f, size_t side) {
     bool ok = false, flag = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -385,8 +376,7 @@ cleanup:
     return ok;
 }
 
-static bool falling_failure_prefix(fixture *f, size_t side)
-{
+static bool falling_failure_prefix(fixture *f, size_t side) {
     bool ok = false, flag = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -410,8 +400,7 @@ cleanup:
     return ok;
 }
 
-static bool falling_quota(fixture *f, size_t slot)
-{
+static bool falling_quota(fixture *f, size_t slot) {
     bool ok = false, flag = false;
     const size_t side = slot % 2u;
     mc_world_runtime *w = f->worlds[slot];
@@ -442,8 +431,7 @@ cleanup:
     return ok;
 }
 
-static bool falling_entities(fixture *f, size_t side)
-{
+static bool falling_entities(fixture *f, size_t side) {
     bool ok = false, published = false, flag = false;
     mc_entity *entity = NULL, *world_only = NULL;
     mc_world_runtime *w = f->worlds[side];
@@ -531,8 +519,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

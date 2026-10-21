@@ -3,8 +3,7 @@
 static mc_registry_status sound(mc_registry_classes *classes, mc_block_sound **destination,
                                 unsigned int kind, const char *name, float pitch,
                                 int32_t allocation_pc, int32_t literal_pc, int32_t constructor_pc,
-                                int32_t publication_pc)
-{
+                                int32_t publication_pc) {
     classes->block_initializer_pc = allocation_pc;
     mc_block_sound *value = mc_registry_allocate(classes, sizeof(*value));
     if (value == NULL)
@@ -24,8 +23,7 @@ static mc_registry_status sound(mc_registry_classes *classes, mc_block_sound **d
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_block_prefix(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_block_prefix(mc_registry_classes *classes) {
     mc_registry_status status;
 #define SOUND(field, kind, name, pitch, allocation, literal, constructor, publication)             \
     do {                                                                                           \
@@ -67,8 +65,7 @@ mc_registry_status mc_registry_block_prefix(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status base_class(mc_registry_classes *classes)
-{
+static mc_registry_status base_class(mc_registry_classes *classes) {
     /* The real driver is already executing uu/na.<clinit> on this same flow.
      * A subclass's superclass initialization therefore sees that prefix.
      * No independent successful Block initializer is synthesized here. */
@@ -78,8 +75,7 @@ static mc_registry_status base_class(mc_registry_classes *classes)
 /* Private initialization runs on the shared owner's admitted synchronous flow.
  * Each declaring class keeps its own first failure before its frame unwinds. */
 static mc_registry_status cached_state(mc_registry_classes *classes,
-                                       const mc_registry_class_state *state, bool *done)
-{
+                                       const mc_registry_class_state *state, bool *done) {
     *done = state->phase != MC_REGISTRY_COLD;
     if (state->phase == MC_REGISTRY_FAILED) {
         classes->last_error = state->failure;
@@ -89,8 +85,7 @@ static mc_registry_status cached_state(mc_registry_classes *classes,
 }
 
 static void finish_state(mc_registry_classes *classes, mc_registry_class_state *state,
-                         mc_registry_initializer *frame, mc_registry_status status)
-{
+                         mc_registry_initializer *frame, mc_registry_status status) {
     if (status == MC_REGISTRY_OK)
         state->phase = MC_REGISTRY_READY;
     else {
@@ -101,8 +96,7 @@ static void finish_state(mc_registry_classes *classes, mc_registry_class_state *
 }
 
 static mc_registry_status intermediate(mc_registry_classes *classes, mc_registry_class_state *state,
-                                       const char *client, const char *server)
-{
+                                       const char *client, const char *server) {
     bool done = false;
     mc_registry_status status = cached_state(classes, state, &done);
     if (done)
@@ -117,8 +111,7 @@ static mc_registry_status intermediate(mc_registry_classes *classes, mc_registry
     return status;
 }
 
-static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_kind kind)
-{
+static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_kind kind) {
     switch (kind) {
         case MC_BLOCK_HE_EU:
         case MC_BLOCK_RU_KZ:
@@ -157,8 +150,7 @@ static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_ki
     }
 }
 
-static mc_registry_status directions(mc_registry_classes *classes)
-{
+static mc_registry_status directions(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 1);
     int32_t **rows = mc_registry_allocate(classes, 4u * sizeof(*rows));
     if (rows == NULL)
@@ -187,8 +179,7 @@ static mc_registry_status directions(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status slab_names(mc_registry_classes *classes)
-{
+static mc_registry_status slab_names(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 1);
     const mc_registry_string **array = mc_registry_allocate(classes, 4u * sizeof(*array));
     if (array == NULL)
@@ -215,8 +206,7 @@ static mc_registry_status slab_names(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status repeater_arrays(mc_registry_classes *classes)
-{
+static mc_registry_status repeater_arrays(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 1);
     double *offsets = mc_registry_allocate(classes, 4u * sizeof(*offsets));
     if (offsets == NULL)
@@ -258,8 +248,7 @@ static mc_registry_status repeater_arrays(mc_registry_classes *classes)
 }
 
 mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *classes,
-                                                      mc_block_kind kind)
-{
+                                                      mc_block_kind kind) {
     static const char *const clients[MC_BLOCK_KIND_COUNT] = {
         "uu", "eo", "wp", "ot", "he", "om", "nx", "gk", "ne", "mt", "vg", "bk", "xf", "fk",
         "xq", "rd", "pt", "ve", "pc", "ph", "jq", "rn", "ru", "jb", "h",  "ee", "ut", "wb",
@@ -336,8 +325,7 @@ static mc_registry_status pressure_category(mc_registry_classes *classes, const 
                                             int32_t ordinal, mc_pressure_category **destination,
                                             int32_t allocation_pc, int32_t literal_pc,
                                             int32_t ordinal_pc, int32_t constructor_pc,
-                                            int32_t publication_pc)
-{
+                                            int32_t publication_pc) {
     mc_registry_initializer_stage(classes, allocation_pc);
     mc_pressure_category *category = mc_registry_allocate(classes, sizeof(*category));
     if (category == NULL)
@@ -356,8 +344,7 @@ static mc_registry_status pressure_category(mc_registry_classes *classes, const 
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status pressure_body(mc_registry_classes *classes)
-{
+static mc_registry_status pressure_body(mc_registry_classes *classes) {
     mc_registry_status status =
         pressure_category(classes, "everything", 0, &classes->pressure_a, 0, 4, 6, 7, 10);
     if (status == MC_REGISTRY_OK)
@@ -388,8 +375,7 @@ static mc_registry_status pressure_body(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_pressure_initialize(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_pressure_initialize(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_class_state *state = &classes->pressure_state;

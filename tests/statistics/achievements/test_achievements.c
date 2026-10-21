@@ -48,6 +48,7 @@ typedef struct stream {
     size_t length, offset, opens, reads, closes;
     bool closed;
 } stream;
+
 typedef struct resources {
     stream streams[3];
     mc_registry_resources source;
@@ -57,8 +58,7 @@ typedef struct resources {
     bool missing_key, invalid;
 } resources;
 
-static bool key_prefix(resources *r)
-{
+static bool key_prefix(resources *r) {
     if (r->watch == NULL)
         return true;
     mc_registry_statistic_view stats;
@@ -85,8 +85,7 @@ static bool key_prefix(resources *r)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
@@ -104,8 +103,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     for (size_t i = 0; i < COUNT(names); ++i)
@@ -121,8 +119,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->invalid = true;
@@ -133,16 +130,14 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->invalid = true;
     return false;
 }
 
-static void resources_init(resources *r)
-{
+static void resources_init(resources *r) {
     *r = (resources){0};
     r->streams[0] = (stream){english, sizeof(english) - 1, 0, 0, 0, 0, false};
     r->streams[1] = (stream){english, 0, 0, 0, 0, 0, false};
@@ -152,8 +147,7 @@ static void resources_init(resources *r)
 
 static mc_registry_status create(mc_registry_side side, mc_materials *materials,
                                  mc_java_random_profile *profile, size_t limit, resources *r,
-                                 mc_registry_classes **out)
-{
+                                 mc_registry_classes **out) {
     const mc_registry_options options = {side, profile, materials, limit, &r->source};
     mc_registry_status status = mc_registry_classes_allocate(&options, out, NULL);
     if (status == MC_REGISTRY_OK)
@@ -161,8 +155,7 @@ static mc_registry_status create(mc_registry_side side, mc_materials *materials,
     return status;
 }
 
-static int retire(mc_registry_classes *owner, bool admitted)
-{
+static int retire(mc_registry_classes *owner, bool admitted) {
     if (owner != NULL && admitted)
         owner->entered = 0;
     if (mc_registry_classes_free(owner, NULL) == MC_REGISTRY_OK)
@@ -172,20 +165,17 @@ static int retire(mc_registry_classes *owner, bool admitted)
     return 1;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *p)
-{
+static uint64_t uniquifier(const mc_java_random_profile *p) {
     return atomic_load_explicit(&p->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t u, size_t n)
-{
+static uint64_t advanced(uint64_t u, size_t n) {
     while (n-- != 0)
         u *= UINT64_C(1181783497276652981);
     return u;
 }
 
-static bool text_is(const mc_registry_string *value, const char *expected)
-{
+static bool text_is(const mc_registry_string *value, const char *expected) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(value, &view) || view.length != strlen(expected))
         return false;
@@ -195,14 +185,12 @@ static bool text_is(const mc_registry_string *value, const char *expected)
     return true;
 }
 
-static const mc_registry_string *literal(mc_registry_classes *owner, const char *value)
-{
+static const mc_registry_string *literal(mc_registry_classes *owner, const char *value) {
     const mc_registry_string *out = NULL;
     return mc_registry_literal_ascii(owner, value, &out) == MC_REGISTRY_OK ? out : NULL;
 }
 
-static const mc_registry_string *property(const mc_translation *translation, const char *name)
-{
+static const mc_registry_string *property(const mc_translation *translation, const char *name) {
     uint16_t units[128];
     size_t n = strlen(name);
     if (n > COUNT(units))
@@ -214,25 +202,21 @@ static const mc_registry_string *property(const mc_translation *translation, con
                                                                                         : NULL;
 }
 
-static bool same_fields(const mc_item_stack_fields *a, const mc_item_stack_fields *b)
-{
+static bool same_fields(const mc_item_stack_fields *a, const mc_item_stack_fields *b) {
     return a->id == b->id && a->count == b->count && a->animation == b->animation &&
            a->damage == b->damage;
 }
 
-static bool same_achievement(const mc_achievement_fields *a, const mc_achievement_fields *b)
-{
+static bool same_achievement(const mc_achievement_fields *a, const mc_achievement_fields *b) {
     return a->a == b->a && a->b == b->b && a->c == b->c && a->d == b->d && a->l == b->l &&
            a->special == b->special && a->client_callback == b->client_callback;
 }
 
-static bool same_base(const mc_statistic_fields *a, const mc_statistic_fields *b)
-{
+static bool same_base(const mc_statistic_fields *a, const mc_statistic_fields *b) {
     return a->e == b->e && a->f == b->f && a->g == b->g && a->h == b->h && a->a == b->a;
 }
 
-static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_error(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -249,8 +233,7 @@ static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static bool contains(const mc_statistic_list *list, const mc_statistic *object)
-{
+static bool contains(const mc_statistic_list *list, const mc_statistic *object) {
     for (size_t i = 0; i < mc_statistic_list_size(list); ++i) {
         const mc_statistic *out = NULL;
         if (mc_statistic_list_get(list, i, &out) != MC_REGISTRY_OK)
@@ -261,8 +244,8 @@ static bool contains(const mc_statistic_list *list, const mc_statistic *object)
     return false;
 }
 
-static int published(mc_registry_classes *owner, const mc_registry_achievement_view *view, size_t n)
-{
+static int published(mc_registry_classes *owner, const mc_registry_achievement_view *view,
+                     size_t n) {
     int result = 1;
     CHECK(view->named != NULL && n <= 16 && mc_statistic_list_size(view->e) == n);
     for (size_t i = 0; i < 16; ++i) {
@@ -328,8 +311,7 @@ cleanup:
 }
 
 static int test_bootstrap(mc_registry_side side, mc_materials *materials,
-                          mc_java_random_profile *profile, bool item_first)
-{
+                          mc_java_random_profile *profile, bool item_first) {
     int result = 1;
     resources r;
     resources_init(&r);
@@ -412,8 +394,7 @@ cleanup:
 
 /* Retain values, not padded byte copies. Include registered-but-not-named
  * Achievement prefixes and every actual RAW/READY stack in the real ledger. */
-static int retry_snapshot(mc_registry_classes *owner, resources *r)
-{
+static int retry_snapshot(mc_registry_classes *owner, resources *r) {
     int result = 1;
     const mc_statistic *objects[16] = {0}, *named[16] = {0}, *listed[16] = {0};
     mc_statistic_fields bases[16];
@@ -510,8 +491,7 @@ cleanup:
 }
 
 static int bootstrap_budget(mc_registry_side side, mc_materials *materials,
-                            mc_java_random_profile *profile, size_t budget)
-{
+                            mc_java_random_profile *profile, size_t budget) {
     int result = 1;
     resources r;
     resources_init(&r);
@@ -545,8 +525,7 @@ cleanup:
 }
 
 static int test_bootstrap_budgets(mc_registry_side side, mc_materials *materials,
-                                  mc_java_random_profile *profile)
-{
+                                  mc_java_random_profile *profile) {
     int result = 1;
     const size_t extras[] = {0, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152};
     for (size_t i = 0; i < COUNT(extras); ++i)
@@ -562,8 +541,7 @@ cleanup:
  * The two actual INITIALIZING contexts own real collection storage. */
 static mc_registry_status isolated(mc_registry_side side, mc_materials *materials,
                                    mc_java_random_profile *profile, size_t limit, resources *r,
-                                   mc_registry_classes **out)
-{
+                                   mc_registry_classes **out) {
     mc_registry_status status = create(side, materials, profile, limit, r, out);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -588,8 +566,7 @@ static mc_registry_status isolated(mc_registry_side side, mc_materials *material
     return MC_REGISTRY_OK;
 }
 
-static bool unicode_key(const mc_registry_string *value, bool description)
-{
+static bool unicode_key(const mc_registry_string *value, bool description) {
     const char *prefix = "achievement.";
     mc_registry_string_view view;
     if (!mc_registry_string_read(value, &view) ||
@@ -609,8 +586,7 @@ static bool unicode_key(const mc_registry_string *value, bool description)
 }
 
 static int test_methods(mc_registry_side side, mc_materials *materials,
-                        mc_java_random_profile *profile, bool missing)
-{
+                        mc_java_random_profile *profile, bool missing) {
     int result = 1;
     resources r;
     resources_init(&r);
@@ -702,8 +678,7 @@ cleanup:
 }
 
 static int test_null_adapters(mc_registry_side side, mc_materials *materials,
-                              mc_java_random_profile *profile, bool block)
-{
+                              mc_java_random_profile *profile, bool block) {
     int result = 1;
     resources r;
     resources_init(&r);
@@ -753,8 +728,7 @@ cleanup:
 
 static int constructor_trial(mc_registry_side side, mc_materials *materials,
                              mc_java_random_profile *profile, mc_item_stack *icon, size_t budget,
-                             bool require_prefix, bool *complete)
-{
+                             bool require_prefix, bool *complete) {
     int result = 1;
     resources r;
     resources_init(&r);
@@ -794,8 +768,7 @@ cleanup:
 }
 
 static int test_constructor_limit(mc_registry_side side, mc_materials *materials,
-                                  mc_java_random_profile *profile)
-{
+                                  mc_java_random_profile *profile) {
     int result = 1;
     mc_item_stack *icon = NULL;
     CHECK(mc_item_stack_allocate(&icon) == MC_ITEM_STACK_OK &&
@@ -824,8 +797,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;

@@ -10,15 +10,14 @@
 #include <emmintrin.h>
 
 static mc_world_storage_status result(mc_world_storage_error *error, mc_world_storage_status status,
-                                      const char *operation)
-{
+                                      const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static mc_world_storage_status admit(const mc_world_runtime *runtime, mc_world_storage_error *error)
-{
+static mc_world_storage_status admit(const mc_world_runtime *runtime,
+                                     mc_world_storage_error *error) {
     if (runtime == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World environment arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -31,8 +30,7 @@ static mc_world_storage_status admit(const mc_world_runtime *runtime, mc_world_s
 
 mc_world_storage_status mc_world_runtime_rain_strength(const mc_world_runtime *runtime,
                                                        float partial_tick, float *out,
-                                                       mc_world_storage_error *error)
-{
+                                                       mc_world_storage_error *error) {
     if (out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World rain output");
     mc_world_storage_status status = admit(runtime, error);
@@ -49,8 +47,7 @@ mc_world_storage_status mc_world_runtime_rain_strength(const mc_world_runtime *r
 
 mc_world_storage_status mc_world_runtime_thunder_strength(const mc_world_runtime *runtime,
                                                           float partial_tick, float *out,
-                                                          mc_world_storage_error *error)
-{
+                                                          mc_world_storage_error *error) {
     if (out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World thunder output");
     mc_world_storage_status status = admit(runtime, error);
@@ -72,8 +69,7 @@ mc_world_storage_status mc_world_runtime_thunder_strength(const mc_world_runtime
 
 mc_world_storage_status mc_world_runtime_celestial_angle(const mc_world_runtime *runtime,
                                                          float partial_tick, float *out,
-                                                         mc_world_storage_error *error)
-{
+                                                         mc_world_storage_error *error) {
     if (out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World angle output");
     mc_world_storage_status status = admit(runtime, error);
@@ -94,8 +90,7 @@ mc_world_storage_status mc_world_runtime_celestial_angle(const mc_world_runtime 
 
 mc_world_storage_status mc_world_runtime_sky_subtraction(const mc_world_runtime *runtime,
                                                          float partial_tick, int32_t *out,
-                                                         mc_world_storage_error *error)
-{
+                                                         mc_world_storage_error *error) {
     if (out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World sky output");
     float angle;
@@ -144,8 +139,7 @@ mc_world_storage_status mc_world_runtime_sky_subtraction(const mc_world_runtime 
 }
 
 mc_world_storage_status mc_world_runtime_initialize_environment(mc_world_runtime *runtime,
-                                                                mc_world_storage_error *error)
-{
+                                                                mc_world_storage_error *error) {
     int32_t light;
     mc_world_storage_status status = mc_world_runtime_sky_subtraction(runtime, 1.0f, &light, error);
     if (status != MC_WORLD_STORAGE_OK)

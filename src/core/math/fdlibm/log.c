@@ -85,34 +85,29 @@ _Static_assert(FLT_RADIX == 2 && DBL_MANT_DIG == 53 && DBL_MIN_EXP == -1021 && D
 _Static_assert(DBL_HAS_SUBNORM == 1, "binary64 subnormal support required");
 _Static_assert(FLT_EVAL_METHOD == 0, "binary64 expression evaluation required");
 
-static uint64_t strict_log_bits(double value)
-{
+static uint64_t strict_log_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
 /* Decode a two's-complement word without an out-of-range signed cast. */
-static int32_t strict_log_signed_word(uint32_t word)
-{
+static int32_t strict_log_signed_word(uint32_t word) {
     if (word <= UINT32_C(0x7fffffff)) {
         return (int32_t)word;
     }
     return -INT32_C(1) - (int32_t)(UINT32_MAX - word);
 }
 
-static int32_t strict_log_high(double value)
-{
+static int32_t strict_log_high(double value) {
     return strict_log_signed_word((uint32_t)(strict_log_bits(value) >> 32));
 }
 
-static uint32_t strict_log_low(double value)
-{
+static uint32_t strict_log_low(double value) {
     return (uint32_t)strict_log_bits(value);
 }
 
-static double strict_log_replace_high(double value, uint32_t high)
-{
+static double strict_log_replace_high(double value, uint32_t high) {
     uint64_t bits = strict_log_bits(value);
     bits = (bits & UINT64_C(0x00000000ffffffff)) | ((uint64_t)high << 32);
     memcpy(&value, &bits, sizeof(value));
@@ -131,8 +126,7 @@ static const double Lg6 = 0x1.39a09d078c69fp-3;     /* 3FC39A09 D078C69F */
 static const double Lg7 = 0x1.2f112df3e5244p-3;     /* 3FC2F112 DF3E5244 */
 static double zero = 0.0;
 
-double mc_math_strict_log(double x)
-{
+double mc_math_strict_log(double x) {
     double hfsq, f, s, z, R, w, t1, t2, dk;
     int32_t k, hx, i, j;
     uint32_t lx;

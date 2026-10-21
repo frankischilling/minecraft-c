@@ -6,8 +6,7 @@
 #include "mc/world/dimension/dimension.h"
 
 static bool initial(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t *height,
-                    int32_t *old, mc_world_mutation_error *error)
-{
+                    int32_t *old, mc_world_mutation_error *error) {
     if (!mc_world_chunk_source_enabled(chunk))
         return mc_world_mutation_fail(NULL, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk mutation source is disabled");
@@ -31,8 +30,7 @@ static bool initial(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int3
 }
 
 static bool put(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id, unsigned int pc,
-                mc_world_mutation_error *error)
-{
+                mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
@@ -45,8 +43,7 @@ static bool put(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t 
 }
 
 static bool metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t value,
-                     unsigned int pc, mc_world_mutation_error *error)
-{
+                     unsigned int pc, mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     error->chunk_bytecode = pc;
@@ -59,8 +56,7 @@ static bool metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int
 
 static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_t z, bool added,
                  unsigned int capture_pc, unsigned int element_pc, unsigned int invoke_pc,
-                 mc_world_mutation_error *error)
-{
+                 mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     mc_world_runtime *world = fields.d;
@@ -89,8 +85,7 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
 
 static bool height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id,
                    int32_t old_height, unsigned int capture_pc, unsigned int element_pc,
-                   unsigned int raise_pc, unsigned int lower_pc, mc_world_mutation_error *error)
-{
+                   unsigned int raise_pc, unsigned int lower_pc, mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     int32_t opacity;
@@ -109,8 +104,7 @@ static bool height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32
 }
 
 static bool submit(mc_world_chunk *chunk, mc_light_kind kind, int32_t x, int32_t y, int32_t z,
-                   unsigned int type_pc, unsigned int call_pc, mc_world_mutation_error *error)
-{
+                   unsigned int type_pc, unsigned int call_pc, mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     const mc_light_bounds bounds = {x, y, z, x, y, z};
@@ -119,8 +113,7 @@ static bool submit(mc_world_chunk *chunk, mc_light_kind kind, int32_t x, int32_t
 }
 
 bool mc_world_mutation_chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                                   int32_t id, bool *out, mc_world_mutation_error *error)
-{
+                                   int32_t id, bool *out, mc_world_mutation_error *error) {
     int32_t old_height, old;
     if (!initial(chunk, x, y, z, &old_height, &old, error))
         return false;
@@ -160,8 +153,7 @@ bool mc_world_mutation_chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, 
 
 bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
                                             int32_t id, int32_t value, bool *out,
-                                            mc_world_mutation_error *error)
-{
+                                            mc_world_mutation_error *error) {
     int32_t old_height, old;
     if (!initial(chunk, x, y, z, &old_height, &old, error))
         return false;

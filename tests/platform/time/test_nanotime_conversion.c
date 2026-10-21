@@ -22,8 +22,7 @@ typedef struct guarded_output {
     uint64_t after;
 } guarded_output;
 
-static int test_vectors(const mc_nanotime_conversion_vector *vectors, size_t count, bool counter)
-{
+static int test_vectors(const mc_nanotime_conversion_vector *vectors, size_t count, bool counter) {
     for (size_t index = 0; index < count; ++index) {
         const mc_nanotime_conversion_vector *vector = &vectors[index];
         guarded_output out;
@@ -59,8 +58,7 @@ static int test_vectors(const mc_nanotime_conversion_vector *vectors, size_t cou
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     const size_t counter_count = sizeof(counter_vectors) / sizeof(counter_vectors[0]);
     const size_t timespec_count = sizeof(timespec_vectors) / sizeof(timespec_vectors[0]);
     const unsigned int initial_csr = _mm_getcsr();

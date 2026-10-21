@@ -1,8 +1,7 @@
 #include "../../block/registry/registry_internal.h"
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -17,8 +16,7 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
 
 /* Allocation already recorded the native first cause and active initializer.
  * The constructor is nested beneath nh/ii.<clinit> PC4, not a new initializer. */
-static mc_registry_status constructor_error(mc_translation *translation)
-{
+static mc_registry_status constructor_error(mc_translation *translation) {
     mc_registry_classes *classes = translation->classes;
     classes->last_error.constructor_class =
         classes->options.side == MC_REGISTRY_CLIENT ? "nh" : "ii";
@@ -27,14 +25,12 @@ static mc_registry_status constructor_error(mc_translation *translation)
 }
 
 static mc_registry_status constructor_fail(mc_translation *translation, mc_registry_status status,
-                                           const char *message)
-{
+                                           const char *message) {
     (void)mc_registry_fail(translation->classes, status, message, NULL);
     return constructor_error(translation);
 }
 
-static void *properties_allocate(void *context, size_t bytes)
-{
+static void *properties_allocate(void *context, size_t bytes) {
     mc_translation *translation = context;
     void *storage = mc_registry_allocate(translation->classes, bytes);
     if (storage == NULL)
@@ -43,8 +39,7 @@ static void *properties_allocate(void *context, size_t bytes)
 }
 
 static const mc_registry_string *bound_string(const mc_translation *translation,
-                                              const mc_java_properties_string *source)
-{
+                                              const mc_java_properties_string *source) {
     for (const mc_translation_string_binding *binding = translation->strings; binding != NULL;
          binding = binding->next)
         if (binding->source == source)
@@ -53,8 +48,7 @@ static const mc_registry_string *bound_string(const mc_translation *translation,
 }
 
 static mc_registry_status bind_string(mc_translation *translation,
-                                      const mc_java_properties_string *source)
-{
+                                      const mc_java_properties_string *source) {
     if (bound_string(translation, source) != NULL)
         return MC_REGISTRY_OK;
     mc_java_properties_string_view view;
@@ -79,8 +73,7 @@ static mc_registry_status bind_string(mc_translation *translation,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status bind_entries(mc_translation *translation)
-{
+static mc_registry_status bind_entries(mc_translation *translation) {
     const size_t count = mc_java_properties_size(translation->b);
     for (size_t i = 0; i < count; ++i) {
         const mc_java_properties_string *key = NULL, *value = NULL;
@@ -98,8 +91,7 @@ static mc_registry_status bind_entries(mc_translation *translation)
 }
 
 static mc_registry_status properties_failure(mc_translation *translation,
-                                             mc_java_properties_status status)
-{
+                                             mc_java_properties_status status) {
     switch (status) {
         case MC_JAVA_PROPERTIES_OK:
             return MC_REGISTRY_OK;
@@ -126,8 +118,7 @@ static mc_registry_status properties_failure(mc_translation *translation,
 }
 
 static mc_registry_status load_resource(mc_translation *translation, const char *name,
-                                        int32_t literal_pc, int32_t open_pc, int32_t load_pc)
-{
+                                        int32_t literal_pc, int32_t open_pc, int32_t load_pc) {
     mc_registry_classes *classes = translation->classes;
     /* ldc Class is a passive literal, not an initialization of another class.
      * The actual resource String belongs to the owner's shared literal pool. */
@@ -166,8 +157,7 @@ static mc_registry_status load_resource(mc_translation *translation, const char 
     return bound;
 }
 
-static mc_registry_status construct(mc_translation *translation)
-{
+static mc_registry_status construct(mc_translation *translation) {
     translation->constructor_pc = 1; /* Object.<init> has no reached game fields. */
     translation->constructor_pc = 5;
     mc_java_properties_allocator allocator = {translation, properties_allocate};
@@ -189,8 +179,7 @@ static mc_registry_status construct(mc_translation *translation)
 }
 
 static mc_registry_status cached_state(mc_registry_classes *classes,
-                                       const mc_registry_class_state *state)
-{
+                                       const mc_registry_class_state *state) {
     if (state->phase == MC_REGISTRY_FAILED) {
         classes->last_error = state->failure;
         classes->last_error.status = MC_REGISTRY_FAILED_INITIALIZATION;
@@ -202,16 +191,14 @@ static mc_registry_status cached_state(mc_registry_classes *classes,
 }
 
 static void finish_state(mc_registry_classes *classes, mc_registry_class_state *state,
-                         mc_registry_initializer *frame, mc_registry_status status)
-{
+                         mc_registry_initializer *frame, mc_registry_status status) {
     state->phase = status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED;
     if (status != MC_REGISTRY_OK)
         state->failure = classes->last_error;
     mc_registry_initializer_leave(classes, frame);
 }
 
-static mc_registry_status singleton_active_use(mc_registry_classes *classes)
-{
+static mc_registry_status singleton_active_use(mc_registry_classes *classes) {
     mc_registry_class_state *state = &classes->translation_state;
     if (state->phase != MC_REGISTRY_COLD)
         return cached_state(classes, state);
@@ -240,8 +227,7 @@ done:
     return status;
 }
 
-mc_registry_status mc_registry_translation_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_translation_active_use(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -268,8 +254,7 @@ mc_registry_status mc_registry_translation_active_use(mc_registry_classes *class
 }
 
 mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classes *classes,
-                                                              mc_registry_error *error)
-{
+                                                              mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Translation registry owner");
     if (classes->entered != 0)
@@ -298,8 +283,7 @@ mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classe
 
 mc_registry_status mc_registry_classes_inspect_translation(const mc_registry_classes *classes,
                                                            mc_registry_translation_view *out,
-                                                           mc_registry_error *error)
-{
+                                                           mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Translation view arguments");
     *out = (mc_registry_translation_view){.singleton_phase = classes->translation_state.phase,
@@ -312,8 +296,7 @@ mc_registry_status mc_registry_classes_inspect_translation(const mc_registry_cla
     return diagnostic(error, MC_REGISTRY_OK, NULL);
 }
 
-static bool published(const mc_translation *translation)
-{
+static bool published(const mc_translation *translation) {
     return translation != NULL && translation->classes != NULL && translation->b != NULL &&
            translation->classes->translations.singleton_a == translation &&
            translation->classes->translation_state.phase == MC_REGISTRY_READY;
@@ -321,8 +304,7 @@ static bool published(const mc_translation *translation)
 
 mc_registry_status mc_translation_property(const mc_translation *translation, const uint16_t *key,
                                            size_t length, const mc_registry_string **out,
-                                           mc_registry_error *error)
-{
+                                           mc_registry_error *error) {
     if (!published(translation) || out == NULL || (key == NULL && length != 0))
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT,
                           "published Translation property arguments");
@@ -344,15 +326,13 @@ mc_registry_status mc_translation_property(const mc_translation *translation, co
     return diagnostic(error, MC_REGISTRY_OK, NULL);
 }
 
-size_t mc_translation_property_count(const mc_translation *translation)
-{
+size_t mc_translation_property_count(const mc_translation *translation) {
     return published(translation) ? mc_java_properties_size(translation->b) : 0;
 }
 
 mc_registry_status mc_registry_translate(mc_registry_classes *classes,
                                          const mc_registry_string *key,
-                                         const mc_registry_string **out)
-{
+                                         const mc_registry_string **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (out == NULL)

@@ -19,29 +19,25 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static double from_bits(uint64_t bits)
-{
+static double from_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static void prefill(double *values, size_t length)
-{
+static void prefill(double *values, size_t length) {
     for (size_t i = 0; i < length; ++i)
         values[i] = (double)((int)(i % 11u) - 5) * 0.125;
 }
 
-static int test_constants_and_construction(void)
-{
+static int test_constants_and_construction(void) {
     /* Static f/g values observed independently in untouched client cc and
      * server bi on Temurin 17.0.17; observing them consumed no Random draws. */
     CHECK(bits_of(mc_noise_simplex_skew) == UINT64_C(0x3fd76cf5d0b09954));
@@ -69,8 +65,7 @@ static int test_constants_and_construction(void)
     return 0;
 }
 
-static int test_constructor_order(void)
-{
+static int test_constructor_order(void) {
     mc_java_random random;
     mc_java_random manual;
     mc_java_random_seed(&random, 7);
@@ -136,8 +131,7 @@ static const constructor_fixture constructor_fixtures[] = {
       UINT64_C(0xb835e983aae3a033)}},
 };
 
-static int test_observed_constructor_states(void)
-{
+static int test_observed_constructor_states(void) {
     for (size_t fixture = 0;
          fixture < sizeof(constructor_fixtures) / sizeof(constructor_fixtures[0]); ++fixture) {
         const constructor_fixture *expected = &constructor_fixtures[fixture];
@@ -337,8 +331,7 @@ static const grid_fixture grid_fixtures[] = {
       UINT64_C(0x7a5712a42bf2462a)}},
 };
 
-static int test_observed_grids(void)
-{
+static int test_observed_grids(void) {
     for (size_t fixture = 0; fixture < sizeof(grid_fixtures) / sizeof(grid_fixtures[0]);
          ++fixture) {
         const grid_fixture *expected = &grid_fixtures[fixture];
@@ -395,8 +388,7 @@ static int test_observed_grids(void)
     return 0;
 }
 
-static int test_invalid_constructors(void)
-{
+static int test_invalid_constructors(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 123);
     mc_java_random random_saved = random;
@@ -426,8 +418,7 @@ static int test_invalid_constructors(void)
 }
 
 static int expect_grid_failure(const mc_noise_simplex *layer, const mc_noise_simplex_octaves *noise,
-                               const mc_noise_simplex_grid *grid, size_t capacity)
-{
+                               const mc_noise_simplex_grid *grid, size_t capacity) {
     double output[16];
     double saved[16];
     mc_noise_simplex saved_layer = *layer;
@@ -442,8 +433,7 @@ static int expect_grid_failure(const mc_noise_simplex *layer, const mc_noise_sim
     return 0;
 }
 
-static int test_grid_validation_and_zero_sizes(void)
-{
+static int test_grid_validation_and_zero_sizes(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 0);
     mc_noise_simplex layer;
@@ -503,8 +493,7 @@ static int test_grid_validation_and_zero_sizes(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_constants_and_construction() || test_constructor_order() ||
         test_observed_constructor_states() || test_observed_grids() ||
         test_invalid_constructors() || test_grid_validation_and_zero_sizes())

@@ -29,8 +29,7 @@ typedef struct gaussian_probe_state {
     bool initialized[2];
 } gaussian_probe_state;
 
-static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u], bool *skip_lf)
-{
+static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u], bool *skip_lf) {
     size_t length = 0;
     for (;;) {
         const int character = fgetc(stdin);
@@ -67,8 +66,7 @@ static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u], bool *skip_
 }
 
 /* Keep empty fields, as Java split(" ", -1) does. No command has over four. */
-static bool split_words(char *line, char *words[4], size_t *out_count)
-{
+static bool split_words(char *line, char *words[4], size_t *out_count) {
     size_t count = 1;
     words[0] = line;
     for (char *cursor = line; *cursor != '\0'; ++cursor) {
@@ -84,8 +82,7 @@ static bool split_words(char *line, char *words[4], size_t *out_count)
     return true;
 }
 
-static bool parse_i64(const char *text, int64_t *out)
-{
+static bool parse_i64(const char *text, int64_t *out) {
     const char *cursor = text;
     if (*cursor == '+' || *cursor == '-') {
         ++cursor;
@@ -108,8 +105,7 @@ static bool parse_i64(const char *text, int64_t *out)
     return true;
 }
 
-static bool parse_id(const char *text, size_t *out)
-{
+static bool parse_id(const char *text, size_t *out) {
     int64_t value = 0;
     if (!parse_i64(text, &value) || value < 0 || value >= (int64_t)PROBE_RECORD_LIMIT) {
         return false;
@@ -118,15 +114,13 @@ static bool parse_id(const char *text, size_t *out)
     return true;
 }
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static bool positive_finite_hex(const char *text, double *out)
-{
+static bool positive_finite_hex(const char *text, double *out) {
     if (strlen(text) != 16) {
         return false;
     }
@@ -153,8 +147,7 @@ static bool positive_finite_hex(const char *text, double *out)
 }
 
 static bool execute_command(gaussian_probe_state *state, char *words[4], size_t count,
-                            char result[32])
-{
+                            char result[32]) {
     memcpy(result, "-", 2);
     if (strcmp(words[0], "log") == 0 || strcmp(words[0], "sqrt") == 0) {
         double input;
@@ -233,8 +226,7 @@ static bool execute_command(gaussian_probe_state *state, char *words[4], size_t 
 }
 
 static bool print_snapshot(const gaussian_probe_state *state, const char *command,
-                           const char *result)
-{
+                           const char *result) {
     if (printf("%s %s", command, result) < 0) {
         return false;
     }
@@ -255,8 +247,7 @@ static bool print_snapshot(const gaussian_probe_state *state, const char *comman
     return putchar('\n') != EOF && fflush(stdout) == 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     gaussian_probe_state state = {0};
     if (argc != 1) {

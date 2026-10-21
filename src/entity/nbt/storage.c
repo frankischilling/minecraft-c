@@ -7,24 +7,21 @@
 
 static const uint16_t item_units[] = {'I', 't', 'e', 'm'};
 
-static mc_entity_nbt_status publish(mc_entity_nbt_error frame, mc_entity_nbt_error *error)
-{
+static mc_entity_nbt_status publish(mc_entity_nbt_error frame, mc_entity_nbt_error *error) {
     if (error != NULL)
         *error = frame;
     return frame.status;
 }
 
 static mc_entity_nbt_status fail(mc_entity_nbt_error *frame, mc_entity_nbt_status status,
-                                 const char *operation)
-{
+                                 const char *operation) {
     frame->status = status;
     frame->operation = operation;
     return status;
 }
 
 static mc_entity_nbt_status nbt_failure(mc_entity_nbt_error *frame, mc_nbt_status status,
-                                        const char *operation)
-{
+                                        const char *operation) {
     return fail(frame,
                 status == MC_NBT_LIMIT               ? MC_ENTITY_NBT_LIMIT
                 : status == MC_NBT_ALLOCATION_FAILED ? MC_ENTITY_NBT_ALLOCATION_FAILED
@@ -33,8 +30,7 @@ static mc_entity_nbt_status nbt_failure(mc_entity_nbt_error *frame, mc_nbt_statu
 }
 
 static mc_entity_nbt_status stack_failure(mc_entity_nbt_error *frame, mc_item_stack_status status,
-                                          const char *operation)
-{
+                                          const char *operation) {
     frame->stack.status = status;
     frame->field = "Item";
     return fail(frame,
@@ -44,8 +40,7 @@ static mc_entity_nbt_status stack_failure(mc_entity_nbt_error *frame, mc_item_st
                 operation);
 }
 
-static bool add_size(size_t *sum, size_t bytes)
-{
+static bool add_size(size_t *sum, size_t bytes) {
     if (bytes > SIZE_MAX - *sum)
         return false;
     *sum += bytes;
@@ -53,8 +48,7 @@ static bool add_size(size_t *sum, size_t bytes)
 }
 
 mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, size_t *out,
-                                                    mc_entity_nbt_error *error)
-{
+                                                    mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (entity == NULL || out == NULL) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity storage byte inspection arguments");
@@ -82,15 +76,13 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
     return publish(frame, error);
 }
 
-const mc_nbt_tag *mc_entity_storage_source(const mc_entity *entity)
-{
+const mc_nbt_tag *mc_entity_storage_source(const mc_entity *entity) {
     return entity == NULL ? NULL : mc_nbt_tree_root(entity->storage_source);
 }
 
 mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_tag *compound,
                                                const mc_nbt_limits *requested,
-                                               mc_entity_nbt_error *error)
-{
+                                               mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (entity == NULL || compound == NULL || compound->type != MC_NBT_COMPOUND) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity storage provenance arguments");
@@ -187,8 +179,7 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
 
 mc_entity_nbt_status mc_entity_save_storage_nbt(mc_entity *entity, const mc_nbt_limits *requested,
                                                 bool *serialized, mc_nbt_tree **out,
-                                                mc_entity_nbt_error *error)
-{
+                                                mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (entity == NULL || serialized == NULL || out == NULL) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity storage Boolean save arguments");

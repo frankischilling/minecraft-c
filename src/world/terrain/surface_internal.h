@@ -14,18 +14,15 @@ bool mc_terrain_normal_surface_channel(const mc_terrain_normal_state *state,
                                        mc_terrain_surface_channel channel, int32_t x, int32_t z,
                                        mc_terrain_double_span out);
 
-static inline bool mc_terrain_surface_patch(double noise, double uniform, double threshold)
-{
+static inline bool mc_terrain_surface_patch(double noise, double uniform, double threshold) {
     return noise + uniform * 0.2 > threshold;
 }
 
-static inline double mc_terrain_surface_thickness_base(double noise)
-{
+static inline double mc_terrain_surface_thickness_base(double noise) {
     return noise / 3.0 + 3.0;
 }
 
-static inline int32_t mc_terrain_surface_thickness_finish(double base, double uniform)
-{
+static inline int32_t mc_terrain_surface_thickness_finish(double base, double uniform) {
     return mc_java_double_to_i32(base + uniform * 0.25);
 }
 

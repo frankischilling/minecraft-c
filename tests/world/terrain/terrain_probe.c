@@ -30,16 +30,14 @@ static int density_present;
 static int32_t density_x;
 static int32_t density_z;
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out)
-{
+static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out) {
     char *end = NULL;
     errno = 0;
     intmax_t value = strtoimax(text, &end, 10);
@@ -49,8 +47,7 @@ static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int6
     return 1;
 }
 
-static void print_values(const double *values, size_t length)
-{
+static void print_values(const double *values, size_t length) {
     putchar('[');
     for (size_t i = 0; i < length; ++i) {
         if (i != 0)
@@ -60,8 +57,7 @@ static void print_values(const double *values, size_t length)
     putchar(']');
 }
 
-static void print_span(const mc_terrain_double_span *span)
-{
+static void print_span(const mc_terrain_double_span *span) {
     if (span->data == NULL) {
         fputs("null", stdout);
         return;
@@ -71,8 +67,7 @@ static void print_span(const mc_terrain_double_span *span)
     putchar('}');
 }
 
-static void print_state(void)
-{
+static void print_state(void) {
     static const char names[] = "klmnoabc";
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
     const mc_noise_perlin *channels[] = {state.low_layers,
@@ -108,8 +103,7 @@ static void print_state(void)
     putchar('}');
 }
 
-static void print_response(int full_state, int fixture, const uintptr_t before[7])
-{
+static void print_response(int full_state, int fixture, const uintptr_t before[7]) {
     static const char *const names[] = {"d", "e", "f", "g", "h", "density"};
     fputs("OK\t{\"state\":", stdout);
     if (full_state)
@@ -159,8 +153,7 @@ static void print_response(int full_state, int fixture, const uintptr_t before[7
     puts("\"}");
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *fields[8];
     size_t count = 1;
     fields[0] = line;
@@ -265,8 +258,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     if (mc_biome_memory_init(&memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) != MC_BIOME_OK)
         return 2;
     size_t requests = 0;

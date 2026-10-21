@@ -13,8 +13,7 @@ static const int8_t simplex_gradients[12][2] = {{1, 1}, {-1, 1}, {1, -1}, {-1, -
                                                 {1, 0}, {-1, 0}, {1, 0},  {-1, 0},
                                                 {0, 1}, {0, -1}, {0, 1},  {0, -1}};
 
-static void simplex_construct(mc_noise_simplex *noise, mc_java_random *random)
-{
+static void simplex_construct(mc_noise_simplex *noise, mc_java_random *random) {
     noise->offset_x = mc_java_random_next_double(random) * 256.0;
     noise->offset_z = mc_java_random_next_double(random) * 256.0;
     noise->offset_unused = mc_java_random_next_double(random) * 256.0;
@@ -32,8 +31,7 @@ static void simplex_construct(mc_noise_simplex *noise, mc_java_random *random)
     }
 }
 
-bool mc_noise_simplex_init(mc_noise_simplex *noise, mc_java_random *random)
-{
+bool mc_noise_simplex_init(mc_noise_simplex *noise, mc_java_random *random) {
     if (noise == NULL || random == NULL) {
         return false;
     }
@@ -41,14 +39,12 @@ bool mc_noise_simplex_init(mc_noise_simplex *noise, mc_java_random *random)
     return true;
 }
 
-static int32_t simplex_floor(double value)
-{
+static int32_t simplex_floor(double value) {
     int32_t integer = mc_java_double_to_i32(value);
     return value > 0.0 ? integer : mc_java_i32_sub(integer, 1);
 }
 
-static double simplex_corner(size_t gradient, double x, double z)
-{
+static double simplex_corner(size_t gradient, double x, double z) {
     double attenuation = (0.5 - x * x) - z * z;
     if (attenuation < 0.0) {
         return 0.0;
@@ -62,8 +58,7 @@ static double simplex_corner(size_t gradient, double x, double z)
     return weight * dot;
 }
 
-static double simplex_sample(const mc_noise_simplex *noise, double x, double z)
-{
+static double simplex_sample(const mc_noise_simplex *noise, double x, double z) {
     double skew = (x + z) * mc_noise_simplex_skew;
     int32_t cell_x = simplex_floor(x + skew);
     int32_t cell_z = simplex_floor(z + skew);
@@ -98,8 +93,7 @@ static double simplex_sample(const mc_noise_simplex *noise, double x, double z)
 }
 
 static bool simplex_grid_valid(const mc_noise_simplex_grid *grid, const double *output,
-                               size_t length, size_t *elements)
-{
+                               size_t length, size_t *elements) {
     if (grid == NULL || (output == NULL && length != 0) || length > SIZE_MAX / sizeof(double) ||
         grid->size_x > INT32_MAX || grid->size_z > INT32_MAX) {
         return false;
@@ -119,8 +113,7 @@ static bool simplex_grid_valid(const mc_noise_simplex_grid *grid, const double *
 }
 
 static void simplex_add(const mc_noise_simplex *noise, const mc_noise_simplex_grid *grid,
-                        double amplitude, double *output)
-{
+                        double amplitude, double *output) {
     size_t index = 0;
     for (size_t x = 0; x < grid->size_x; ++x) {
         double sampled_x = (grid->origin_x + (double)x) * grid->scale_x + noise->offset_x;
@@ -134,8 +127,7 @@ static void simplex_add(const mc_noise_simplex *noise, const mc_noise_simplex_gr
 }
 
 bool mc_noise_simplex_add(const mc_noise_simplex *noise, const mc_noise_simplex_grid *grid,
-                          double amplitude, double *output, size_t output_length)
-{
+                          double amplitude, double *output, size_t output_length) {
     size_t elements;
     if (noise == NULL || !simplex_grid_valid(grid, output, output_length, &elements)) {
         return false;
@@ -147,8 +139,7 @@ bool mc_noise_simplex_add(const mc_noise_simplex *noise, const mc_noise_simplex_
 }
 
 bool mc_noise_simplex_octaves_init(mc_noise_simplex_octaves *noise, mc_noise_simplex *layers,
-                                   size_t count, mc_java_random *random)
-{
+                                   size_t count, mc_java_random *random) {
     if (noise == NULL || count > INT32_MAX || count > SIZE_MAX / sizeof(*layers) ||
         (count != 0 && (layers == NULL || random == NULL))) {
         return false;
@@ -164,8 +155,7 @@ bool mc_noise_simplex_octaves_init(mc_noise_simplex_octaves *noise, mc_noise_sim
 bool mc_noise_simplex_octaves_fill(const mc_noise_simplex_octaves *noise,
                                    const mc_noise_simplex_grid *grid, double frequency_multiplier,
                                    double amplitude_divisor_multiplier, double *output,
-                                   size_t output_length)
-{
+                                   size_t output_length) {
     size_t elements;
     if (noise == NULL || noise->count > INT32_MAX ||
         noise->count > SIZE_MAX / sizeof(*noise->layers) ||

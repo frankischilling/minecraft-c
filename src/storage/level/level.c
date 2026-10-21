@@ -14,8 +14,7 @@ static const mc_nbt_type level_types[LEVEL_FIELD_COUNT] = {
     MC_NBT_STRING, MC_NBT_INT, MC_NBT_INT, MC_NBT_BYTE, MC_NBT_INT,  MC_NBT_BYTE, MC_NBT_COMPOUND};
 
 static mc_level_status level_error(mc_level_error *error, mc_level_status status, const char *field,
-                                   mc_nbt_error nbt)
-{
+                                   mc_nbt_error nbt) {
     if (error != NULL) {
         *error = (mc_level_error){status, field, nbt};
     }
@@ -23,13 +22,11 @@ static mc_level_status level_error(mc_level_error *error, mc_level_status status
 }
 
 static mc_level_status level_status(mc_level_error *error, mc_level_status status,
-                                    const char *field)
-{
+                                    const char *field) {
     return level_error(error, status, field, (mc_nbt_error){MC_NBT_OK, 0});
 }
 
-const char *mc_level_status_string(mc_level_status status)
-{
+const char *mc_level_status_string(mc_level_status status) {
     switch (status) {
         case MC_LEVEL_OK:
             return "ok";
@@ -47,8 +44,7 @@ const char *mc_level_status_string(mc_level_status status)
     return "unknown level status";
 }
 
-static mc_nbt_string level_name(const char *ascii, uint16_t units[16])
-{
+static mc_nbt_string level_name(const char *ascii, uint16_t units[16]) {
     size_t length = strlen(ascii);
     for (size_t i = 0; i < length; ++i) {
         units[i] = (uint16_t)(unsigned char)ascii[i];
@@ -56,16 +52,14 @@ static mc_nbt_string level_name(const char *ascii, uint16_t units[16])
     return (mc_nbt_string){units, length};
 }
 
-static const mc_nbt_tag *level_get(const mc_nbt_tag *compound, const char *ascii)
-{
+static const mc_nbt_tag *level_get(const mc_nbt_tag *compound, const char *ascii) {
     uint16_t units[16];
     mc_nbt_string name = level_name(ascii, units);
     return mc_nbt_compound_get(compound, name.units, name.length);
 }
 
 static bool level_typed(const mc_nbt_tag *parent, const char *name, mc_nbt_type type,
-                        const mc_nbt_tag **out, mc_level_error *error)
-{
+                        const mc_nbt_tag **out, mc_level_error *error) {
     const mc_nbt_tag *tag = level_get(parent, name);
     if (tag != NULL && tag->type != type) {
         (void)level_status(error, MC_LEVEL_INVALID_FIELD, name);
@@ -75,8 +69,7 @@ static bool level_typed(const mc_nbt_tag *parent, const char *name, mc_nbt_type 
     return true;
 }
 
-mc_level_status mc_level_decode(const mc_nbt_tag *root, mc_level_info *out, mc_level_error *error)
-{
+mc_level_status mc_level_decode(const mc_nbt_tag *root, mc_level_info *out, mc_level_error *error) {
     if (root == NULL || root->type != MC_NBT_COMPOUND || out == NULL) {
         return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
     }
@@ -121,8 +114,7 @@ mc_level_status mc_level_decode(const mc_nbt_tag *root, mc_level_info *out, mc_l
 }
 
 static mc_level_status level_nbt_error(mc_level_error *error, mc_nbt_status status,
-                                       mc_nbt_error nbt)
-{
+                                       mc_nbt_error nbt) {
     mc_level_status result = status == MC_NBT_LIMIT               ? MC_LEVEL_LIMIT
                              : status == MC_NBT_ALLOCATION_FAILED ? MC_LEVEL_ALLOCATION_FAILED
                                                                   : MC_LEVEL_NBT_ERROR;
@@ -131,8 +123,7 @@ static mc_level_status level_nbt_error(mc_level_error *error, mc_nbt_status stat
 
 static void level_fields(const mc_level_info *info, int64_t saved_at_ms,
                          mc_nbt_tag fields[LEVEL_FIELD_COUNT],
-                         uint16_t names[LEVEL_FIELD_COUNT][16])
-{
+                         uint16_t names[LEVEL_FIELD_COUNT][16]) {
     for (size_t i = 0; i < LEVEL_FIELD_COUNT; ++i) {
         fields[i].name = level_name(level_names[i], names[i]);
     }
@@ -162,8 +153,7 @@ static void level_fields(const mc_level_info *info, int64_t saved_at_ms,
 }
 
 static size_t level_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *const *fields,
-                            size_t count, const mc_nbt_tag **items)
-{
+                            size_t count, const mc_nbt_tag **items) {
     bool used[LEVEL_FIELD_COUNT] = {false};
     size_t length = 0;
     size_t old_length = baseline == NULL ? 0 : baseline->value.compound.length;
@@ -199,8 +189,7 @@ static mc_level_status level_build_document(const mc_level_info *info, int64_t s
                                             const mc_nbt_tag *const *record_fields,
                                             const mc_nbt_tag *baseline, const mc_nbt_tag *data,
                                             const mc_nbt_limits *requested_limits,
-                                            mc_nbt_document **out, mc_level_error *error)
-{
+                                            mc_nbt_document **out, mc_level_error *error) {
     mc_nbt_limits limits = requested_limits == NULL ? mc_nbt_default_limits() : *requested_limits;
     if (limits.max_depth == 0 || limits.max_depth > 128) {
         return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
@@ -286,8 +275,7 @@ static mc_level_status level_build_document(const mc_level_info *info, int64_t s
 
 mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *baseline,
                                int64_t saved_at_ms, const mc_nbt_limits *requested_limits,
-                               mc_nbt_document **out, mc_level_error *error)
-{
+                               mc_nbt_document **out, mc_level_error *error) {
     if (info == NULL || out == NULL || (baseline != NULL && baseline->type != MC_NBT_COMPOUND)) {
         return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);
     }
@@ -309,8 +297,7 @@ mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *base
 
 mc_level_status mc_level_build_record(const mc_nbt_tag *record, const mc_nbt_tag *baseline,
                                       const mc_nbt_limits *requested_limits, mc_nbt_document **out,
-                                      mc_level_error *error)
-{
+                                      mc_level_error *error) {
     if (record == NULL || record->type != MC_NBT_COMPOUND || out == NULL ||
         (baseline != NULL && baseline->type != MC_NBT_COMPOUND)) {
         return level_status(error, MC_LEVEL_INVALID_ARGUMENT, NULL);

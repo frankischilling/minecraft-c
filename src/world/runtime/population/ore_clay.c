@@ -30,8 +30,7 @@ typedef struct feature_frame {
     mc_population_ore_clay_error error;
 } feature_frame;
 
-static mc_registry_error empty_registry(void)
-{
+static mc_registry_error empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
@@ -39,24 +38,21 @@ static mc_registry_error empty_registry(void)
                                .item_argument = -1};
 }
 
-static mc_population_ore_clay_error empty_error(void)
-{
+static mc_population_ore_clay_error empty_error(void) {
     const mc_registry_error registry = empty_registry();
     return (mc_population_ore_clay_error){.registry = registry,
                                           .material = {.registry = registry},
                                           .mutation = mc_world_mutation_empty_error()};
 }
 
-static bool fail(feature_frame *frame, mc_world_storage_status status, const char *operation)
-{
+static bool fail(feature_frame *frame, mc_world_storage_status status, const char *operation) {
     frame->error.status = status;
     frame->error.operation = operation;
     frame->error.cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cause)
-{
+static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cause) {
     frame->error.status = cause->status;
     frame->error.operation = cause->operation;
     frame->error.cause = *cause;
@@ -64,8 +60,7 @@ static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cau
 }
 
 static bool registry_fail(feature_frame *frame, const mc_registry_error *cause,
-                          const char *operation)
-{
+                          const char *operation) {
     frame->error.registry = *cause;
     frame->error.status = mc_world_runtime_registry_result(frame->world, cause->status, cause,
                                                            operation, &frame->error.cause);
@@ -75,8 +70,7 @@ static bool registry_fail(feature_frame *frame, const mc_registry_error *cause,
 
 static bool begin(feature_frame *frame, const void *feature, mc_world_runtime *world,
                   mc_java_random *random, bool *out, bool result_required, bool clay,
-                  const char *method)
-{
+                  const char *method) {
     *frame = (feature_frame){.world = world, .random = random, .error = empty_error()};
     if (feature == NULL || world == NULL || (result_required && out == NULL))
         return fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Ore/clay native arguments");
@@ -93,8 +87,7 @@ static bool begin(feature_frame *frame, const void *feature, mc_world_runtime *w
 }
 
 static mc_world_storage_status finish(feature_frame *frame, bool completed, bool ordinary,
-                                      bool *out, mc_population_ore_clay_error *error)
-{
+                                      bool *out, mc_population_ore_clay_error *error) {
     if (completed) {
         if (out != NULL)
             *out = ordinary;
@@ -110,8 +103,7 @@ static mc_world_storage_status finish(feature_frame *frame, bool completed, bool
 }
 
 static bool static_id(feature_frame *frame, const char *name, unsigned int load_pc,
-                      unsigned int field_pc, int32_t *out)
-{
+                      unsigned int field_pc, int32_t *out) {
     frame->error.bytecode = load_pc;
     const mc_block *block = NULL;
     mc_registry_error cause = empty_registry();
@@ -130,54 +122,52 @@ static bool static_id(feature_frame *frame, const char *name, unsigned int load_
 
 /* Each volatile local is one source arithmetic/narrowing operation. Do not
  * replace these with a ratio, fma, extended expression or libc trigonometry. */
-static float float_int(int32_t value)
-{
+static float float_int(int32_t value) {
     volatile float result = (float)value;
     return result;
 }
-static float add_f32(float a, float b)
-{
+
+static float add_f32(float a, float b) {
     volatile float r = a + b;
     return r;
 }
-static float sub_f32(float a, float b)
-{
+
+static float sub_f32(float a, float b) {
     volatile float r = a - b;
     return r;
 }
-static float mul_f32(float a, float b)
-{
+
+static float mul_f32(float a, float b) {
     volatile float r = a * b;
     return r;
 }
-static float div_f32(float a, float b)
-{
+
+static float div_f32(float a, float b) {
     volatile float r = a / b;
     return r;
 }
-static double add_f64(double a, double b)
-{
+
+static double add_f64(double a, double b) {
     volatile double r = a + b;
     return r;
 }
-static double sub_f64(double a, double b)
-{
+
+static double sub_f64(double a, double b) {
     volatile double r = a - b;
     return r;
 }
-static double mul_f64(double a, double b)
-{
+
+static double mul_f64(double a, double b) {
     volatile double r = a * b;
     return r;
 }
-static double div_f64(double a, double b)
-{
+
+static double div_f64(double a, double b) {
     volatile double r = a / b;
     return r;
 }
 
-static bool random_ready(feature_frame *frame, unsigned int pc)
-{
+static bool random_ready(feature_frame *frame, unsigned int pc) {
     frame->error.bytecode = pc;
     if (frame->random == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Ore/clay Random receiver");
@@ -186,8 +176,7 @@ static bool random_ready(feature_frame *frame, unsigned int pc)
     return true;
 }
 
-static bool sine(feature_frame *frame, unsigned int pc, float angle, bool cosine, float *out)
-{
+static bool sine(feature_frame *frame, unsigned int pc, float angle, bool cosine, float *out) {
     frame->error.bytecode = pc;
     const mc_math_trig *trig = mc_world_runtime_class_trig(frame->world);
     if (trig == NULL)
@@ -197,8 +186,7 @@ static bool sine(feature_frame *frame, unsigned int pc, float angle, bool cosine
     return true;
 }
 
-static bool water(feature_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool water(feature_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     frame->error.bytecode = 6;
     mc_material *actual = NULL;
     if (mc_world_runtime_material_get_detailed(frame->world, x, y, z, &actual,
@@ -217,8 +205,7 @@ static bool water(feature_frame *frame, int32_t x, int32_t y, int32_t z, bool *o
 }
 
 static bool candidate(feature_frame *frame, const int32_t *target, bool clay, int32_t x, int32_t y,
-                      int32_t z)
-{
+                      int32_t z) {
     frame->error.bytecode = clay ? 487u : 496u;
     int32_t existing;
     mc_world_storage_error cause = {0};
@@ -241,16 +228,14 @@ static bool candidate(feature_frame *frame, const int32_t *target, bool clay, in
     return true;
 }
 
-static double center(double start, double end, int32_t step, const int32_t *size)
-{
+static double center(double start, double end, int32_t step, const int32_t *size) {
     double value = sub_f64(end, start);
     value = mul_f64(value, (double)step);
     value = div_f64(value, (double)*size);
     return add_f64(start, value);
 }
 
-static double normalized(int32_t coordinate, double middle, double extent)
-{
+static double normalized(int32_t coordinate, double middle, double extent) {
     double value = add_f64((double)coordinate, 0.5);
     value = sub_f64(value, middle);
     const double half = div_f64(extent, 2.0);
@@ -258,8 +243,7 @@ static double normalized(int32_t coordinate, double middle, double extent)
 }
 
 static bool ore_candidates(feature_frame *frame, const int32_t *target, double cx, double cy,
-                           double cz, double horizontal, double vertical)
-{
+                           double cz, double horizontal, double vertical) {
     /* fl/dr floor invocations276,290,304,318,332,346, in this order. */
     const int32_t low_x = mc_math_floor_double(sub_f64(cx, div_f64(horizontal, 2.0)));
     const int32_t low_y = mc_math_floor_double(sub_f64(cy, div_f64(vertical, 2.0)));
@@ -294,8 +278,7 @@ static bool ore_candidates(feature_frame *frame, const int32_t *target, double c
 }
 
 static bool clay_candidates(feature_frame *frame, const int32_t *target, double cx, double cy,
-                            double cz, double horizontal, double vertical)
-{
+                            double cz, double horizontal, double vertical) {
     /* ms/ib has a different floor order and no X/XY pruning. */
     const int32_t low_x = mc_math_floor_double(sub_f64(cx, div_f64(horizontal, 2.0)));
     const int32_t high_x = mc_math_floor_double(add_f64(cx, div_f64(horizontal, 2.0)));
@@ -323,8 +306,7 @@ static bool clay_candidates(feature_frame *frame, const int32_t *target, double 
 }
 
 static bool geometry(feature_frame *frame, const int32_t *target, const int32_t *size, bool clay,
-                     int32_t x, int32_t y, int32_t z)
-{
+                     int32_t x, int32_t y, int32_t z) {
     /* The endpoint/segment bodies have the same instruction sequence, with
      * clay PCs17 higher until their distinct floor/loop bodies. */
     const unsigned int offset = clay ? 17u : 0u;
@@ -411,8 +393,7 @@ static bool geometry(feature_frame *frame, const int32_t *target, const int32_t 
 }
 
 mc_world_storage_status mc_population_ore_feature_init(mc_population_ore_feature *feature,
-                                                       int32_t target, int32_t size)
-{
+                                                       int32_t target, int32_t size) {
     if (feature == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     feature->a = target; /* fl/dr.<init>6 */
@@ -422,8 +403,7 @@ mc_world_storage_status mc_population_ore_feature_init(mc_population_ore_feature
 
 mc_world_storage_status mc_population_clay_feature_init(mc_population_clay_feature *feature,
                                                         mc_world_runtime *world, int32_t size,
-                                                        mc_population_ore_clay_error *error)
-{
+                                                        mc_population_ore_clay_error *error) {
     feature_frame frame;
     if (!begin(&frame, feature, world, NULL, NULL, false, true, "<init>"))
         return finish(&frame, false, false, NULL, error);
@@ -436,8 +416,7 @@ mc_world_storage_status mc_population_clay_feature_init(mc_population_clay_featu
 }
 
 mc_world_storage_status mc_population_ore_feature_scale(mc_population_ore_feature *feature,
-                                                        double x, double y, double z)
-{
+                                                        double x, double y, double z) {
     (void)x;
     (void)y;
     (void)z;
@@ -445,8 +424,7 @@ mc_world_storage_status mc_population_ore_feature_scale(mc_population_ore_featur
 }
 
 mc_world_storage_status mc_population_clay_feature_scale(mc_population_clay_feature *feature,
-                                                         double x, double y, double z)
-{
+                                                         double x, double y, double z) {
     (void)x;
     (void)y;
     (void)z;
@@ -456,8 +434,7 @@ mc_world_storage_status mc_population_clay_feature_scale(mc_population_clay_feat
 mc_world_storage_status mc_population_ore_place(const mc_population_ore_feature *feature,
                                                 mc_world_runtime *world, mc_java_random *random,
                                                 int32_t x, int32_t y, int32_t z, bool *out,
-                                                mc_population_ore_clay_error *error)
-{
+                                                mc_population_ore_clay_error *error) {
     feature_frame frame;
     if (!begin(&frame, feature, world, random, out, true, false, "a"))
         return finish(&frame, false, false, out, error);
@@ -468,8 +445,7 @@ mc_world_storage_status mc_population_ore_place(const mc_population_ore_feature 
 mc_world_storage_status mc_population_clay_place(const mc_population_clay_feature *feature,
                                                  mc_world_runtime *world, mc_java_random *random,
                                                  int32_t x, int32_t y, int32_t z, bool *out,
-                                                 mc_population_ore_clay_error *error)
-{
+                                                 mc_population_ore_clay_error *error) {
     feature_frame frame;
     if (!begin(&frame, feature, world, random, out, true, true, "a"))
         return finish(&frame, false, false, out, error);

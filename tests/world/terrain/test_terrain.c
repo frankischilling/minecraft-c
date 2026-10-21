@@ -33,23 +33,20 @@ static mc_terrain_normal_state saved_state;
 static double temperature[MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u];
 static double rainfall[MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u];
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static double from_bits(uint64_t bits)
-{
+static double from_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static mc_terrain_normal_workspace workspace_for(terrain_storage *target)
-{
+static mc_terrain_normal_workspace workspace_for(terrain_storage *target) {
     return (mc_terrain_normal_workspace){
         {target->volumes[0], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u},
         {target->volumes[1], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u},
@@ -58,14 +55,12 @@ static mc_terrain_normal_workspace workspace_for(terrain_storage *target)
         {target->columns[1], MC_TERRAIN_NORMAL_COLUMN_VALUES + 3u}};
 }
 
-static void prefill(double *values, size_t count)
-{
+static void prefill(double *values, size_t count) {
     for (size_t i = 0; i < count; ++i)
         values[i] = (double)((int)(i % 11u) - 5) * 0.125;
 }
 
-static void prepare_storage(void)
-{
+static void prepare_storage(void) {
     for (size_t i = 0; i < 3; ++i)
         prefill(storage.volumes[i], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u);
     for (size_t i = 0; i < 2; ++i)
@@ -3870,8 +3865,7 @@ static const original_terrain_fixture observed_terrain[] = {
 
 /* END_ORIGINAL_FIXED_VECTORS */
 
-static int test_constructor_order(void)
-{
+static int test_constructor_order(void) {
     static const int64_t seeds[] = {0, 1, -1, INT64_MIN, INT64_MAX};
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
     CHECK(!mc_terrain_normal_init(NULL, 0));
@@ -3899,8 +3893,7 @@ static int test_constructor_order(void)
     return 0;
 }
 
-static int test_original_constructor(void)
-{
+static int test_original_constructor(void) {
     CHECK(mc_terrain_normal_init(&state, 0));
     const mc_noise_perlin *channels[] = {state.low_layers,
                                          state.high_layers,
@@ -3930,8 +3923,7 @@ static int test_original_constructor(void)
     return 0;
 }
 
-static int test_original_density_and_base(void)
-{
+static int test_original_density_and_base(void) {
     for (size_t fixture = 0; fixture < sizeof(observed_terrain) / sizeof(observed_terrain[0]);
          ++fixture) {
         const original_terrain_fixture *expected = &observed_terrain[fixture];
@@ -3994,8 +3986,7 @@ static int test_original_density_and_base(void)
     return 0;
 }
 
-static int test_controlled_base_decisions(void)
-{
+static int test_controlled_base_decisions(void) {
     /* C-side explicit-field controls. These arrays are constructed inputs,
      * distinct from the untouched-method observations below. */
     static const uint64_t densities[] = {UINT64_C(0xbff0000000000000), UINT64_C(0x8000000000000000),
@@ -4026,8 +4017,7 @@ static int test_controlled_base_decisions(void)
     return 0;
 }
 
-static int test_repeated_addition_control(void)
-{
+static int test_repeated_addition_control(void) {
     /* Explicit C-only interpolation control. At sub-Z 3, repeated quarter
      * increments from nextUp(-3) toward 1 produce +2^-52; recomputing the
      * closed fraction a+(b-a)*0.75 produces zero and changes stone selection. */
@@ -4054,8 +4044,7 @@ static int test_repeated_addition_control(void)
     return 0;
 }
 
-static int expect_preserved(void)
-{
+static int expect_preserved(void) {
     CHECK(memcmp(&storage, &saved_storage, sizeof(storage)) == 0);
     CHECK(memcmp(&state, &saved_state, sizeof(state)) == 0);
     return 0;
@@ -4064,8 +4053,7 @@ static int expect_preserved(void)
 static int expect_density_failure(const mc_terrain_normal_state *input_state,
                                   const mc_terrain_normal_workspace *workspace,
                                   const mc_terrain_normal_climate *climate,
-                                  mc_terrain_double_span density)
-{
+                                  mc_terrain_double_span density) {
     CHECK(!mc_terrain_normal_density(input_state, workspace, 0, 0, climate, density));
     CHECK(expect_preserved() == 0);
     CHECK(!mc_terrain_normal_generate(input_state, workspace, 0, 0, climate, density,
@@ -4074,8 +4062,7 @@ static int expect_density_failure(const mc_terrain_normal_state *input_state,
     return 0;
 }
 
-static int test_capacity_validation(void)
-{
+static int test_capacity_validation(void) {
     CHECK(mc_terrain_normal_init(&state, 0));
     prepare_storage();
     memcpy(&saved_storage, &storage, sizeof(storage));
@@ -4151,8 +4138,7 @@ static int test_capacity_validation(void)
     return 0;
 }
 
-static int test_reuse_and_suffixes(void)
-{
+static int test_reuse_and_suffixes(void) {
     CHECK(mc_terrain_normal_init(&state, INT64_MAX));
     prepare_storage();
     memcpy(&saved_storage, &storage, sizeof(storage));
@@ -4199,8 +4185,7 @@ static int test_reuse_and_suffixes(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_constructor_order() || test_original_constructor() ||
         test_original_density_and_base() || test_controlled_base_decisions() ||
         test_repeated_addition_control() || test_capacity_validation() || test_reuse_and_suffixes())

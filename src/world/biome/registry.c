@@ -48,8 +48,7 @@ static const char *const client_classes[MC_BIOME_KIND_COUNT] = {"kd", "fs", "tf"
 static const char *const server_classes[MC_BIOME_KIND_COUNT] = {"gs", "dw", "ma", "m",
                                                                 "le", "pp", "kk", "f"};
 
-static mc_registry_error native_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error native_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -61,37 +60,32 @@ static mc_registry_error native_error(mc_registry_status status, const char *mes
 }
 
 static mc_registry_status result(mc_registry_error *error, mc_registry_status status,
-                                 const char *message)
-{
+                                 const char *message) {
     if (error != NULL)
         *error = native_error(status, message);
     return status;
 }
 
-static void stage(mc_biome *biome, mc_biome_kind declaring_kind, int32_t pc)
-{
+static void stage(mc_biome *biome, mc_biome_kind declaring_kind, int32_t pc) {
     biome->constructor_class = biome->classes->options.side == MC_REGISTRY_CLIENT
                                    ? client_classes[declaring_kind]
                                    : server_classes[declaring_kind];
     biome->constructor_pc = pc;
 }
 
-static mc_registry_status own_error(mc_biome *biome)
-{
+static mc_registry_status own_error(mc_biome *biome) {
     biome->classes->last_error.constructor_class = biome->constructor_class;
     biome->classes->last_error.constructor_pc = biome->constructor_pc;
     return biome->classes->last_error.status;
 }
 
-static mc_registry_status fail(mc_biome *biome, mc_registry_status status, const char *message)
-{
+static mc_registry_status fail(mc_biome *biome, mc_registry_status status, const char *message) {
     (void)mc_registry_fail(biome->classes, status, message, NULL);
     return own_error(biome);
 }
 
 static mc_registry_status method_fail(mc_registry_classes *classes, int32_t pc,
-                                      mc_registry_status status, const char *message)
-{
+                                      mc_registry_status status, const char *message) {
     (void)mc_registry_fail(classes, status, message, NULL);
     classes->last_error.constructor_class =
         classes->options.side == MC_REGISTRY_CLIENT ? "kd" : "gs";
@@ -99,13 +93,11 @@ static mc_registry_status method_fail(mc_registry_classes *classes, int32_t pc,
     return status;
 }
 
-static bool strict_fp(void)
-{
+static bool strict_fp(void) {
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u;
 }
 
-static mc_registry_status admitted(mc_registry_classes *classes)
-{
+static mc_registry_status admitted(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -124,8 +116,7 @@ static mc_registry_status admitted(mc_registry_classes *classes)
 static mc_registry_status class_initialize(mc_registry_classes *classes, mc_biome_kind kind);
 
 mc_registry_status mc_registry_biome_allocate(mc_registry_classes *classes, mc_biome_kind kind,
-                                              mc_biome **out)
-{
+                                              mc_biome **out) {
     TRY(admitted(classes));
     if (out == NULL || (unsigned int)kind >= (unsigned int)MC_BIOME_KIND_COUNT)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Biome allocation arguments",
@@ -140,8 +131,7 @@ mc_registry_status mc_registry_biome_allocate(mc_registry_classes *classes, mc_b
 }
 
 static mc_registry_status list_new(mc_biome *biome, int32_t allocation_pc, int32_t constructor_pc,
-                                   int32_t store_pc, const mc_biome_spawn_list **destination)
-{
+                                   int32_t store_pc, const mc_biome_spawn_list **destination) {
     stage(biome, MC_BIOME_KIND_KD_GS, allocation_pc);
     mc_biome_spawn_list *list = mc_registry_allocate(biome->classes, sizeof(*list));
     if (list == NULL)
@@ -154,8 +144,7 @@ static mc_registry_status list_new(mc_biome *biome, int32_t allocation_pc, int32
 }
 
 static mc_registry_status list_add(mc_biome *biome, const mc_biome_spawn_list *receiver,
-                                   mc_biome_spawn *spawn)
-{
+                                   mc_biome_spawn *spawn) {
     if (receiver == NULL)
         return fail(biome, MC_REGISTRY_NULL_REFERENCE, "Biome spawn List.add receiver");
     mc_registry_list *list = &((mc_biome_spawn_list *)receiver)->data;
@@ -185,8 +174,7 @@ static mc_registry_status list_add(mc_biome *biome, const mc_biome_spawn_list *r
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status list_clear(mc_biome *biome, const mc_biome_spawn_list *receiver)
-{
+static mc_registry_status list_clear(mc_biome *biome, const mc_biome_spawn_list *receiver) {
     if (receiver == NULL)
         return fail(biome, MC_REGISTRY_NULL_REFERENCE, "Biome spawn List.clear receiver");
     mc_registry_list *list = &((mc_biome_spawn_list *)receiver)->data;
@@ -196,8 +184,7 @@ static mc_registry_status list_clear(mc_biome *biome, const mc_biome_spawn_list 
     return MC_REGISTRY_OK;
 }
 
-static const mc_biome_entity_class *resolve_class(mc_registry_classes *classes, size_t index)
-{
+static const mc_biome_entity_class *resolve_class(mc_registry_classes *classes, size_t index) {
     static const char *const clients[13] = {"cn", "uz", "fr", "gb", "uw", "dl", "wh",
                                             "ww", "bx", "xt", "gi", "bp", "ya"};
     static const char *const servers[13] = {"bn", "ne", "dv", "ec", "nb", "ce", "oc",
@@ -211,8 +198,7 @@ static const mc_biome_entity_class *resolve_class(mc_registry_classes *classes, 
 static mc_registry_status append_spawn(mc_biome *biome, mc_biome_kind declaring_kind,
                                        const mc_biome_spawn_list *list, int32_t new_pc,
                                        int32_t class_pc, size_t entity_index,
-                                       int32_t constructor_pc, int32_t add_pc, int32_t weight)
-{
+                                       int32_t constructor_pc, int32_t add_pc, int32_t weight) {
     stage(biome, declaring_kind, new_pc);
     mc_biome_spawn *spawn = mc_registry_allocate(biome->classes, sizeof(*spawn));
     if (spawn == NULL)
@@ -227,8 +213,7 @@ static mc_registry_status append_spawn(mc_biome *biome, mc_biome_kind declaring_
     return list_add(biome, list, spawn);
 }
 
-static mc_registry_status base_construct(mc_biome *biome)
-{
+static mc_registry_status base_construct(mc_biome *biome) {
     mc_block *block = NULL;
     stage(biome, MC_BIOME_KIND_KD_GS, 5);
     TRY(mc_registry_block_static_load(biome->classes, "v", &block));
@@ -271,8 +256,7 @@ static mc_registry_status base_construct(mc_biome *biome)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status construct_body(mc_biome *biome)
-{
+static mc_registry_status construct_body(mc_biome *biome) {
     TRY(base_construct(biome));
     switch (biome->kind) {
         case MC_BIOME_KIND_RB_KK:
@@ -306,8 +290,7 @@ static mc_registry_status construct_body(mc_biome *biome)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_biome_construct(mc_biome *biome)
-{
+mc_registry_status mc_registry_biome_construct(mc_biome *biome) {
     if (biome == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_classes *classes = biome->classes;
@@ -322,8 +305,7 @@ mc_registry_status mc_registry_biome_construct(mc_biome *biome)
 }
 
 mc_registry_status mc_registry_biome_byte_store(mc_registry_classes *classes, mc_biome *biome,
-                                                char field, int8_t value)
-{
+                                                char field, int8_t value) {
     TRY(admitted(classes));
     if (biome == NULL || biome->classes != classes || (field != 'p' && field != 'q'))
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Biome byte-store arguments",
@@ -336,8 +318,7 @@ mc_registry_status mc_registry_biome_byte_store(mc_registry_classes *classes, mc
 }
 
 static mc_registry_status classify(mc_registry_classes *classes, float temperature, float rainfall,
-                                   const mc_biome **out)
-{
+                                   const mc_biome **out) {
     TRY(mc_registry_biomes_active_use(classes));
     if (!strict_fp())
         return method_fail(classes, 2, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
@@ -368,8 +349,7 @@ static mc_registry_status classify(mc_registry_classes *classes, float temperatu
 }
 
 mc_registry_status mc_registry_biome_lookup(mc_registry_classes *classes, double temperature,
-                                            double rainfall, const mc_biome **out)
-{
+                                            double rainfall, const mc_biome **out) {
     TRY(admitted(classes));
     if (out == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Biome lookup output", NULL);
@@ -392,8 +372,7 @@ mc_registry_status mc_registry_biome_lookup(mc_registry_classes *classes, double
 }
 
 static mc_registry_status sand_fields(mc_registry_classes *classes, size_t index, int32_t field_pc,
-                                      int32_t q_pc, int32_t p_pc)
-{
+                                      int32_t q_pc, int32_t p_pc) {
     /* Both evaluated receivers stay captured across the real Block active use. */
     mc_biome *first = classes->biomes.named[index];
     mc_biome *second = classes->biomes.named[index];
@@ -412,8 +391,7 @@ static mc_registry_status sand_fields(mc_registry_classes *classes, size_t index
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status table_body(mc_registry_classes *classes)
-{
+static mc_registry_status table_body(mc_registry_classes *classes) {
     for (int32_t t = 0; t < 64; ++t) {
         for (int32_t r = 0; r < 64; ++r) {
             const mc_biome **array = classes->biomes.x;
@@ -439,8 +417,7 @@ static mc_registry_status table_body(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status initialize_body(mc_registry_classes *classes)
-{
+static mc_registry_status initialize_body(mc_registry_classes *classes) {
     mc_biome *value = NULL;
     const mc_registry_string *name = NULL;
 #define AT(pc) mc_registry_initializer_stage(classes, (pc))
@@ -573,8 +550,7 @@ static mc_registry_status initialize_body(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status class_initialize(mc_registry_classes *classes, mc_biome_kind kind)
-{
+static mc_registry_status class_initialize(mc_registry_classes *classes, mc_biome_kind kind) {
     if ((unsigned int)kind >= (unsigned int)MC_BIOME_KIND_COUNT)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Biome class kind", NULL);
     mc_registry_class_state *state = &classes->biome_states[kind];
@@ -599,15 +575,13 @@ static mc_registry_status class_initialize(mc_registry_classes *classes, mc_biom
     return status;
 }
 
-mc_registry_status mc_registry_biomes_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_biomes_active_use(mc_registry_classes *classes) {
     TRY(admitted(classes));
     return class_initialize(classes, MC_BIOME_KIND_KD_GS);
 }
 
 mc_registry_status mc_registry_biome_static_load(mc_registry_classes *classes, char field,
-                                                 const mc_biome **out)
-{
+                                                 const mc_biome **out) {
     TRY(admitted(classes));
     if (out == NULL || field < 'a' || field > 'm')
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Biome static operand",
@@ -617,8 +591,7 @@ mc_registry_status mc_registry_biome_static_load(mc_registry_classes *classes, c
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status public_enter(mc_registry_classes *classes, mc_registry_error *error)
-{
+static mc_registry_status public_enter(mc_registry_classes *classes, mc_registry_error *error) {
     if (classes == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome class owner");
     if (classes->entered != 0)
@@ -628,8 +601,7 @@ static mc_registry_status public_enter(mc_registry_classes *classes, mc_registry
 }
 
 static mc_registry_status public_leave(mc_registry_classes *classes, mc_registry_status status,
-                                       mc_registry_error *error)
-{
+                                       mc_registry_error *error) {
     --classes->entered;
     if (status == MC_REGISTRY_OK)
         return result(error, status, NULL);
@@ -641,16 +613,15 @@ static mc_registry_status public_leave(mc_registry_classes *classes, mc_registry
 }
 
 mc_registry_status mc_registry_classes_initialize_biomes(mc_registry_classes *classes,
-                                                         mc_registry_error *error)
-{
+                                                         mc_registry_error *error) {
     TRY(public_enter(classes, error));
     const mc_registry_status status = mc_registry_biomes_active_use(classes);
     return public_leave(classes, status, error);
 }
 
 mc_registry_status mc_biome_registry_inspect(const mc_registry_classes *classes,
-                                             mc_biome_registry_view *out, mc_registry_error *error)
-{
+                                             mc_biome_registry_view *out,
+                                             mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome inspect arguments");
     const mc_registry_biome_storage *b = &classes->biomes;
@@ -675,8 +646,7 @@ mc_registry_status mc_biome_registry_inspect(const mc_registry_classes *classes,
 }
 
 mc_registry_status mc_biome_static_get(mc_registry_classes *classes, char field,
-                                       const mc_biome **out, mc_registry_error *error)
-{
+                                       const mc_biome **out, mc_registry_error *error) {
     if (out == NULL || field < 'a' || field > 'm')
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome static arguments");
     TRY(public_enter(classes, error));
@@ -686,8 +656,7 @@ mc_registry_status mc_biome_static_get(mc_registry_classes *classes, char field,
 
 mc_registry_status mc_biome_registry_classify_float(mc_registry_classes *classes, float temperature,
                                                     float rainfall, const mc_biome **out,
-                                                    mc_registry_error *error)
-{
+                                                    mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome float output");
     TRY(public_enter(classes, error));
@@ -697,8 +666,7 @@ mc_registry_status mc_biome_registry_classify_float(mc_registry_classes *classes
 
 mc_registry_status mc_biome_registry_lookup(mc_registry_classes *classes, double temperature,
                                             double rainfall, const mc_biome **out,
-                                            mc_registry_error *error)
-{
+                                            mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Biome lookup output");
     TRY(public_enter(classes, error));
@@ -706,8 +674,7 @@ mc_registry_status mc_biome_registry_lookup(mc_registry_classes *classes, double
     return public_leave(classes, status, error);
 }
 
-mc_registry_status mc_biome_table_rebuild(mc_registry_classes *classes, mc_registry_error *error)
-{
+mc_registry_status mc_biome_table_rebuild(mc_registry_classes *classes, mc_registry_error *error) {
     TRY(public_enter(classes, error));
     mc_registry_status status = mc_registry_biomes_active_use(classes);
     if (status == MC_REGISTRY_OK)
@@ -715,34 +682,28 @@ mc_registry_status mc_biome_table_rebuild(mc_registry_classes *classes, mc_regis
     return public_leave(classes, status, error);
 }
 
-mc_biome_kind mc_biome_kind_get(const mc_biome *biome)
-{
+mc_biome_kind mc_biome_kind_get(const mc_biome *biome) {
     return biome == NULL ? MC_BIOME_KIND_NONE : biome->kind;
 }
 
-const mc_biome_fields *mc_biome_fields_get(const mc_biome *biome)
-{
+const mc_biome_fields *mc_biome_fields_get(const mc_biome *biome) {
     return biome == NULL ? NULL : &biome->fields;
 }
 
-size_t mc_biome_spawn_list_size(const mc_biome_spawn_list *list)
-{
+size_t mc_biome_spawn_list_size(const mc_biome_spawn_list *list) {
     return list == NULL ? 0 : list->data.count;
 }
 
-const mc_biome_spawn *mc_biome_spawn_list_at(const mc_biome_spawn_list *list, size_t index)
-{
+const mc_biome_spawn *mc_biome_spawn_list_at(const mc_biome_spawn_list *list, size_t index) {
     return list == NULL || index >= list->data.count ? NULL : list->data.elements[index];
 }
 
-const mc_biome_spawn_fields *mc_biome_spawn_fields_get(const mc_biome_spawn *spawn)
-{
+const mc_biome_spawn_fields *mc_biome_spawn_fields_get(const mc_biome_spawn *spawn) {
     return spawn == NULL ? NULL : &spawn->fields;
 }
 
 const char *mc_biome_entity_class_name(const mc_biome_entity_class *entity_class,
-                                       mc_registry_side side)
-{
+                                       mc_registry_side side) {
     if (entity_class == NULL)
         return NULL;
     return side == MC_REGISTRY_CLIENT   ? entity_class->client_name
@@ -753,8 +714,7 @@ const char *mc_biome_entity_class_name(const mc_biome_entity_class *entity_class
 mc_registry_status mc_biome_entity_class_canonical(const mc_registry_classes *classes,
                                                    const mc_biome_entity_class *logical,
                                                    const mc_entity_class_literal **out,
-                                                   mc_registry_error *error)
-{
+                                                   mc_registry_error *error) {
     static const mc_entity_class_kind kinds[13] = {
         MC_ENTITY_CLASS_KIND_SPIDER,    MC_ENTITY_CLASS_KIND_ZOMBIE,  MC_ENTITY_CLASS_KIND_SKELETON,
         MC_ENTITY_CLASS_KIND_CREEPER,   MC_ENTITY_CLASS_KIND_SLIME,   MC_ENTITY_CLASS_KIND_SHEEP,

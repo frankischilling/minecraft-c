@@ -13,6 +13,7 @@ typedef enum pop_family {
     POP_PUMPKIN,
     POP_CACTUS
 } pop_family;
+
 typedef enum pop_control {
     POP_NORMAL,
     POP_REJECT,
@@ -31,6 +32,7 @@ typedef enum pop_control {
     POP_EQUAL_AIR,
     POP_LAYER_CONTINUE
 } pop_control;
+
 typedef struct pop_case {
     pop_family family;
     const char *receiver, *soil;
@@ -40,11 +42,13 @@ typedef struct pop_case {
     bool negative;
     int32_t metadata;
 } pop_case;
+
 typedef struct pop_probe {
     int64_t seed;
     int32_t x, y, z, inner, outer, height, orientation;
     mc_java_random coordinates, conditional;
 } pop_probe;
+
 typedef struct pop_snapshot {
     mc_chunk_data data;
     uint8_t blocks[MC_CHUNK_BLOCKS];
@@ -63,27 +67,23 @@ static const unsigned int pop_cast_pc[] = {82, 123, 121};
 static const char *const pop_client_class[] = {"be", "ap", "kt", "ir", "wx", "fx"};
 static const char *const pop_server_class[] = {"am", "ad", "gw", "fs", "op", "ea"};
 
-static size_t pop_index(int32_t x, int32_t y, int32_t z)
-{
+static size_t pop_index(int32_t x, int32_t y, int32_t z) {
     return (((size_t)(uint32_t)x & 15u) << 11u) | (((size_t)(uint32_t)z & 15u) << 7u) | (size_t)y;
 }
 
-static void pop_seed(mc_java_random *r, int64_t seed)
-{
+static void pop_seed(mc_java_random *r, int64_t seed) {
     mc_java_random_seed(r, seed);
     /* Prepare an actual seeded continuation through its owner API. Do not
      * forge the opaque LCG or Gaussian-cache protocol to select a test path. */
 }
 
-static bool pop_same_random(const mc_java_random *a, const mc_java_random *b)
-{
+static bool pop_same_random(const mc_java_random *a, const mc_java_random *b) {
     return a->state == b->state && a->have_next_next_gaussian == b->have_next_next_gaussian &&
            memcmp(&a->next_next_gaussian, &b->next_next_gaussian, sizeof(a->next_next_gaussian)) ==
                0;
 }
 
-static bool pop_steps(mc_java_random *r, unsigned int count)
-{
+static bool pop_steps(mc_java_random *r, unsigned int count) {
     int32_t ignored;
     /* All coordinate bounds are powers of two: one next(31) per invocation.
      * Bound2 is an independent continuation budget, not a coordinate replay. */
@@ -93,8 +93,7 @@ static bool pop_steps(mc_java_random *r, unsigned int count)
     return true;
 }
 
-static bool pop_axis(mc_java_random *r, int32_t origin, int32_t bound, int32_t *out)
-{
+static bool pop_axis(mc_java_random *r, int32_t origin, int32_t bound, int32_t *out) {
     int32_t plus, minus;
     if (!mc_java_random_next_bounded(r, bound, &plus) ||
         !mc_java_random_next_bounded(r, bound, &minus))
@@ -103,8 +102,7 @@ static bool pop_axis(mc_java_random *r, int32_t origin, int32_t bound, int32_t *
     return true;
 }
 
-static bool pop_layer_probe_no_revisit(const pop_case *t, const pop_probe *p)
-{
+static bool pop_layer_probe_no_revisit(const pop_case *t, const pop_probe *p) {
     if (t->family != POP_REED && t->family != POP_CACTUS)
         return false;
     mc_java_random later = p->conditional;
@@ -122,8 +120,7 @@ static bool pop_layer_probe_no_revisit(const pop_case *t, const pop_probe *p)
     return true;
 }
 
-static bool pop_find_probe(const pop_case *t, pop_probe *p)
-{
+static bool pop_find_probe(const pop_case *t, pop_probe *p) {
     const int32_t origin = t->negative ? -8 : 8;
     for (int64_t seed = 0; seed < 65536; ++seed) {
         mc_java_random r;
@@ -158,8 +155,7 @@ static bool pop_find_probe(const pop_case *t, pop_probe *p)
     return false; /* Test input search failure is never a feature success. */
 }
 
-static mc_block **pop_named_cell(mc_registry_classes *r, const char *name)
-{
+static mc_block **pop_named_cell(mc_registry_classes *r, const char *name) {
     for (size_t i = 0; i < COUNT(r->blocks.named); ++i) {
         const char *actual = mc_registry_block_static_name(i);
         if (actual != NULL && strcmp(actual, name) == 0)
@@ -168,14 +164,12 @@ static mc_block **pop_named_cell(mc_registry_classes *r, const char *name)
     return NULL;
 }
 
-static bool pop_block(fixture *f, size_t side, const char *name, const mc_block **out)
-{
+static bool pop_block(fixture *f, size_t side, const char *name, const mc_block **out) {
     return mc_registry_block_static_get(f->registry[side], name, out, NULL) == MC_REGISTRY_OK &&
            *out != NULL && (*out)->fields.bn > 0 && (*out)->fields.bn <= UINT8_MAX;
 }
 
-static void pop_save(pop_snapshot *s, mc_world_chunk *c, mc_registry_classes *r)
-{
+static void pop_save(pop_snapshot *s, mc_world_chunk *c, mc_registry_classes *r) {
     s->data = *c->data;
     memcpy(s->blocks, c->data->blocks, sizeof(s->blocks));
     s->e = c->e;
@@ -188,8 +182,7 @@ static void pop_save(pop_snapshot *s, mc_world_chunk *c, mc_registry_classes *r)
     memcpy(s->named, r->blocks.named, sizeof(s->named));
 }
 
-static void pop_restore(const pop_snapshot *s, mc_world_chunk *c, mc_registry_classes *r)
-{
+static void pop_restore(const pop_snapshot *s, mc_world_chunk *c, mc_registry_classes *r) {
     *c->data = s->data;
     memcpy(c->data->blocks, s->blocks, sizeof(s->blocks));
     c->e = s->e;
@@ -206,8 +199,7 @@ static void pop_restore(const pop_snapshot *s, mc_world_chunk *c, mc_registry_cl
 
 static mc_world_storage_status pop_call(const pop_case *t, mc_world_runtime *w, mc_java_random *r,
                                         int32_t id, int32_t x, int32_t y, int32_t z, bool *out,
-                                        mc_population_plant_feature_error *e)
-{
+                                        mc_population_plant_feature_error *e) {
     mc_population_flower_feature flower;
     mc_population_tall_grass_feature tall;
     mc_population_dead_bush_feature dead;
@@ -235,8 +227,7 @@ static mc_world_storage_status pop_call(const pop_case *t, mc_world_runtime *w, 
     return MC_WORLD_STORAGE_INVALID_ARGUMENT;
 }
 
-static bool pop_trial(fixture *f, size_t side, mc_world_chunk *negative, const pop_case *t)
-{
+static bool pop_trial(fixture *f, size_t side, mc_world_chunk *negative, const pop_case *t) {
     bool ok = false, prepared = false, out = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -447,8 +438,7 @@ cleanup:
     return ok;
 }
 
-static bool pop_wrapped_and_descent(fixture *f, size_t side)
-{
+static bool pop_wrapped_and_descent(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     /* Reach the installed provider's actual capacity through real acquisitions;
@@ -566,8 +556,7 @@ cleanup:
     return ok;
 }
 
-static bool pop_inherited_predicates(fixture *f, size_t side)
-{
+static bool pop_inherited_predicates(fixture *f, size_t side) {
     bool ok = false, prepared = false;
     pop_snapshot *saved = NULL;
     mc_world_chunk *c = NULL;
@@ -630,8 +619,7 @@ cleanup:
 /* Targets root's narrow B successor: frozen feature A wrongly attributed a
  * NULL Random invocation to Registry and overwrote the prior World diagnostic.
  * Keep A immutable; these cases must fail against that diagnostic defect. */
-static bool pop_null_random_diagnostics(fixture *f, size_t side)
-{
+static bool pop_null_random_diagnostics(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -699,14 +687,12 @@ cleanup:
     return ok;
 }
 
-static uint8_t pop_layer_metadata(const mc_world_chunk *c, size_t cell)
-{
+static uint8_t pop_layer_metadata(const mc_world_chunk *c, size_t cell) {
     const unsigned int shift = (unsigned int)(cell & 1u) * 4u;
     return (uint8_t)(((uint32_t)c->data->metadata[cell / 2u] >> shift) & 15u);
 }
 
-static bool pop_layer_continuation_one(fixture *f, size_t side, const pop_case *t)
-{
+static bool pop_layer_continuation_one(fixture *f, size_t side, const pop_case *t) {
     bool ok = false, prepared = false;
     pop_snapshot *saved = NULL;
     mc_world_runtime *w = f->worlds[side];
@@ -825,8 +811,7 @@ cleanup:
     return ok;
 }
 
-static bool pop_layer_continuation_contracts(fixture *f, size_t side)
-{
+static bool pop_layer_continuation_contracts(fixture *f, size_t side) {
     bool ok = false;
     const pop_case trials[] = {{.family = POP_REED,
                                 .receiver = "aY",
@@ -849,8 +834,7 @@ cleanup:
     return ok;
 }
 
-static bool population_plant_contracts(fixture *f, size_t side)
-{
+static bool population_plant_contracts(fixture *f, size_t side) {
     bool ok = false;
     mc_chunk_state *negative_state = NULL;
     /* A genuine negative-coordinate Chunk is encoded, loaded and owned by the

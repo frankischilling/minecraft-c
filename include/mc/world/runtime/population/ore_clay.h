@@ -10,6 +10,7 @@
 typedef struct mc_population_ore_feature {
     int32_t a, b;
 } mc_population_ore_feature;
+
 typedef struct mc_population_clay_feature {
     int32_t a, b;
 } mc_population_clay_feature;

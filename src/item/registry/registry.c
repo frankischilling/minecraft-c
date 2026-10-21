@@ -3,8 +3,7 @@
 #include <string.h>
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -18,8 +17,7 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
 }
 
 mc_registry_status mc_registry_classes_initialize_items(mc_registry_classes *classes,
-                                                        mc_registry_error *error)
-{
+                                                        mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "registry owner");
     if (classes->entered != 0)
@@ -47,8 +45,7 @@ mc_registry_status mc_registry_classes_initialize_items(mc_registry_classes *cla
     return status;
 }
 
-mc_registry_status mc_registry_items_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_items_active_use(mc_registry_classes *classes) {
     if (classes->entered == 0)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Item active use requires an admitted initialization flow", NULL);
@@ -105,8 +102,7 @@ done:
 
 mc_registry_status mc_registry_classes_inspect_items(const mc_registry_classes *classes,
                                                      mc_registry_item_view *out,
-                                                     mc_registry_error *error)
-{
+                                                     mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Item view arguments");
     const mc_registry_class_state *state = &classes->item_states[MC_ITEM_GM_EJ];
@@ -120,8 +116,7 @@ mc_registry_status mc_registry_classes_inspect_items(const mc_registry_classes *
 
 mc_registry_status mc_registry_classes_inspect_item_static(const mc_registry_classes *classes,
                                                            const char *name, const mc_item **out,
-                                                           mc_registry_error *error)
-{
+                                                           mc_registry_error *error) {
     if (classes == NULL || name == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Item static view arguments");
     for (size_t i = 0; i < 106; ++i)
@@ -132,19 +127,16 @@ mc_registry_status mc_registry_classes_inspect_item_static(const mc_registry_cla
     return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "unknown Item static name");
 }
 
-const mc_item_fields *mc_item_fields_get(const mc_item *item)
-{
+const mc_item_fields *mc_item_fields_get(const mc_item *item) {
     return item == NULL ? NULL : &item->fields;
 }
 
-size_t mc_registry_item_array_length(const mc_registry_item_array *array)
-{
+size_t mc_registry_item_array_length(const mc_registry_item_array *array) {
     return array == NULL ? 0 : array->length;
 }
 
 mc_registry_status mc_registry_item_array_get(const mc_registry_item_array *array, size_t index,
-                                              const mc_item **out, mc_registry_error *error)
-{
+                                              const mc_item **out, mc_registry_error *error) {
     if (array == NULL || out == NULL || (array->length != 0 && array->elements == NULL))
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Item array view arguments");
     if (index >= array->length)
@@ -154,8 +146,7 @@ mc_registry_status mc_registry_item_array_get(const mc_registry_item_array *arra
 }
 
 mc_registry_status mc_registry_item_allocate(mc_registry_classes *classes, mc_item_kind kind,
-                                             mc_item **out)
-{
+                                             mc_item **out) {
     if ((unsigned int)kind >= (unsigned int)MC_ITEM_KIND_COUNT || out == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Item allocation kind",
                                 NULL);
@@ -176,14 +167,12 @@ mc_registry_status mc_registry_item_allocate(mc_registry_classes *classes, mc_it
     return MC_REGISTRY_OK;
 }
 
-void mc_registry_item_stage(mc_item *item, const char *client, const char *server, int32_t pc)
-{
+void mc_registry_item_stage(mc_item *item, const char *client, const char *server, int32_t pc) {
     item->constructor_class = item->classes->options.side == MC_REGISTRY_CLIENT ? client : server;
     item->constructor_pc = pc;
 }
 
-mc_registry_status mc_registry_item_base(mc_registry_classes *classes, mc_item *item, int32_t id)
-{
+mc_registry_status mc_registry_item_base(mc_registry_classes *classes, mc_item *item, int32_t id) {
     mc_registry_item_stage(item, "gm", "ej", 7);
     item->fields.bg = 64;
     mc_registry_item_stage(item, "gm", "ej", 12);
@@ -223,39 +212,32 @@ mc_registry_status mc_registry_item_base(mc_registry_classes *classes, mc_item *
     return mc_registry_item_array_store(classes, second, second_index, item);
 }
 
-void mc_registry_item_icon(mc_item *item, int32_t x, int32_t y)
-{
+void mc_registry_item_icon(mc_item *item, int32_t x, int32_t y) {
     item->fields.bh = mc_java_i32_add(x, mc_java_i32_mul(y, 16));
 }
 
-void mc_registry_item_icon_direct(mc_item *item, int32_t icon)
-{
+void mc_registry_item_icon_direct(mc_item *item, int32_t icon) {
     item->fields.bh = icon;
 }
 
-void mc_registry_item_stack_limit(mc_item *item, int32_t count)
-{
+void mc_registry_item_stack_limit(mc_item *item, int32_t count) {
     item->fields.bg = count;
 }
 
-void mc_registry_item_subtypes(mc_item *item, bool value)
-{
+void mc_registry_item_subtypes(mc_item *item, bool value) {
     item->fields.bj = value;
 }
 
-void mc_registry_item_durability(mc_item *item, int32_t maximum)
-{
+void mc_registry_item_durability(mc_item *item, int32_t maximum) {
     item->fields.a = maximum;
 }
 
-void mc_registry_item_flag(mc_item *item)
-{
+void mc_registry_item_flag(mc_item *item) {
     item->fields.bi = true;
 }
 
 mc_registry_status mc_registry_item_name(mc_registry_classes *classes, mc_item *item,
-                                         const char *suffix)
-{
+                                         const char *suffix) {
     const mc_registry_string *name = NULL;
     mc_registry_status status =
         mc_registry_string_ascii(classes, "item.", suffix == NULL ? "null" : suffix, &name);
@@ -266,8 +248,7 @@ mc_registry_status mc_registry_item_name(mc_registry_classes *classes, mc_item *
 }
 
 mc_registry_status mc_registry_item_container(mc_registry_classes *classes, mc_item *item,
-                                              mc_item *container)
-{
+                                              mc_item *container) {
     mc_registry_item_stage(item, "gm", "ej", 5);
     if (item->fields.bg > 1) {
         mc_registry_item_stage(item, "gm", "ej", 8);
@@ -280,8 +261,7 @@ mc_registry_status mc_registry_item_container(mc_registry_classes *classes, mc_i
 }
 
 mc_registry_status mc_registry_item_array_create(mc_registry_classes *classes, size_t length,
-                                                 mc_registry_item_array **out)
-{
+                                                 mc_registry_item_array **out) {
     if (length > SIZE_MAX / sizeof(mc_item *) || length > INT32_MAX)
         return mc_registry_fail(classes, MC_REGISTRY_LIMIT, "Item array length", NULL);
     mc_registry_item_array *array = mc_registry_allocate(classes, sizeof(*array));
@@ -298,8 +278,7 @@ mc_registry_status mc_registry_item_array_create(mc_registry_classes *classes, s
 }
 
 static mc_registry_status item_index(mc_registry_classes *classes, mc_registry_item_array *array,
-                                     int32_t index)
-{
+                                     int32_t index) {
     if (array == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Item array reference", NULL);
     if (index < 0 || (size_t)index >= array->length)
@@ -312,8 +291,7 @@ static mc_registry_status item_index(mc_registry_classes *classes, mc_registry_i
 
 mc_registry_status mc_registry_item_array_load(mc_registry_classes *classes,
                                                mc_registry_item_array *array, int32_t index,
-                                               mc_item **out)
-{
+                                               mc_item **out) {
     mc_registry_status status = item_index(classes, array, index);
     if (status == MC_REGISTRY_OK)
         *out = array->elements[index];
@@ -322,8 +300,7 @@ mc_registry_status mc_registry_item_array_load(mc_registry_classes *classes,
 
 mc_registry_status mc_registry_item_array_store(mc_registry_classes *classes,
                                                 mc_registry_item_array *array, int32_t index,
-                                                mc_item *item)
-{
+                                                mc_item *item) {
     mc_registry_status status = item_index(classes, array, index);
     if (status == MC_REGISTRY_OK)
         array->elements[index] = item;
@@ -331,8 +308,7 @@ mc_registry_status mc_registry_item_array_store(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_array_create(mc_registry_classes *classes, size_t length,
-                                                  mc_registry_block_array **out)
-{
+                                                  mc_registry_block_array **out) {
     if (length > SIZE_MAX / sizeof(mc_block *) || length > INT32_MAX)
         return mc_registry_fail(classes, MC_REGISTRY_LIMIT, "Block operand array length", NULL);
     mc_registry_block_array *array = mc_registry_allocate(classes, sizeof(*array));
@@ -350,8 +326,7 @@ mc_registry_status mc_registry_block_array_create(mc_registry_classes *classes, 
 
 mc_registry_status mc_registry_block_array_load(mc_registry_classes *classes,
                                                 mc_registry_block_array *array, int32_t index,
-                                                mc_block **out)
-{
+                                                mc_block **out) {
     if (array == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Block operand array", NULL);
     if (index < 0 || (size_t)index >= array->length)
@@ -365,8 +340,7 @@ mc_registry_status mc_registry_block_array_load(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_static_load(mc_registry_classes *classes, const char *name,
-                                                 mc_block **out)
-{
+                                                 mc_block **out) {
     mc_registry_status status = mc_registry_blocks_active_use(classes);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -380,8 +354,7 @@ mc_registry_status mc_registry_block_static_load(mc_registry_classes *classes, c
 }
 
 mc_registry_status mc_registry_item_static_load(mc_registry_classes *classes, const char *name,
-                                                mc_item **out)
-{
+                                                mc_item **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (name == NULL || out == NULL)

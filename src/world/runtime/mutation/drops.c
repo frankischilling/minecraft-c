@@ -21,62 +21,53 @@ typedef struct drop_frame {
     const char *class_name, *method;
 } drop_frame;
 
-static const char *drop_probability_method(const mc_block *block)
-{
+static const char *drop_probability_method(const mc_block *block) {
     return block->classes->options.side == MC_REGISTRY_CLIENT ? "a(Lfd;IIIIF)V" : "a(Ldj;IIIIF)V";
 }
 
-static const char *drop_spawn_method(const mc_block *block)
-{
+static const char *drop_spawn_method(const mc_block *block) {
     return block->classes->options.side == MC_REGISTRY_CLIENT ? "a(Lfd;IIILiz;)V"
                                                               : "a(Ldj;IIILfy;)V";
 }
 
-static const char *drop_damage_method(const mc_block *block)
-{
+static const char *drop_damage_method(const mc_block *block) {
     return block->classes->options.side == MC_REGISTRY_CLIENT ? "b_(I)I" : "a_(I)I";
 }
 
 static drop_frame drop_frame_make(mc_world_runtime *world, const mc_block *block,
                                   const char *client, const char *server, const char *method,
-                                  mc_world_mutation_error *error)
-{
+                                  mc_world_mutation_error *error) {
     return (drop_frame){world, block, error,
                         block->classes->options.side == MC_REGISTRY_CLIENT ? client : server,
                         method};
 }
 
-static void drop_at(const drop_frame *frame, unsigned int pc)
-{
+static void drop_at(const drop_frame *frame, unsigned int pc) {
     frame->error->drop_class = frame->class_name;
     frame->error->drop_method = frame->method;
     frame->error->drop_bytecode = pc;
 }
 
-static bool drop_fail(const drop_frame *frame, unsigned int pc, const char *operation)
-{
+static bool drop_fail(const drop_frame *frame, unsigned int pc, const char *operation) {
     drop_at(frame, pc);
     return mc_world_mutation_fail(frame->world, frame->error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                   operation);
 }
 
 static bool drop_registry_fail(const drop_frame *frame, unsigned int pc,
-                               const mc_registry_error *cause)
-{
+                               const mc_registry_error *cause) {
     drop_at(frame, pc);
     return mc_world_mutation_registry_fail(frame->world, frame->error, cause, cause->message);
 }
 
-static bool drop_null(const drop_frame *frame, unsigned int pc, const char *operation)
-{
+static bool drop_null(const drop_frame *frame, unsigned int pc, const char *operation) {
     mc_registry_error cause = mc_world_mutation_empty_error().registry;
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return drop_registry_fail(frame, pc, &cause);
 }
 
-static bool drop_kind(const drop_frame *frame)
-{
+static bool drop_kind(const drop_frame *frame) {
     if ((unsigned int)frame->block->kind < (unsigned int)MC_BLOCK_KIND_COUNT)
         return true;
     drop_at(frame, 0);
@@ -85,8 +76,7 @@ static bool drop_kind(const drop_frame *frame)
 }
 
 static bool drop_random_int(const drop_frame *frame, mc_java_random *random, int32_t bound,
-                            unsigned int pc, int32_t *out)
-{
+                            unsigned int pc, int32_t *out) {
     drop_at(frame, pc);
     if (random == NULL)
         return drop_fail(frame, pc, "Block drop Random receiver is null");
@@ -96,8 +86,7 @@ static bool drop_random_int(const drop_frame *frame, mc_java_random *random, int
 }
 
 static bool drop_random_float(const drop_frame *frame, mc_java_random *random, unsigned int pc,
-                              float *out)
-{
+                              float *out) {
     drop_at(frame, pc);
     if (random == NULL)
         return drop_fail(frame, pc, "Block drop Random receiver is null");
@@ -105,8 +94,7 @@ static bool drop_random_float(const drop_frame *frame, mc_java_random *random, u
     return true;
 }
 
-static bool drop_remote(const drop_frame *frame, unsigned int pc, bool *out)
-{
+static bool drop_remote(const drop_frame *frame, unsigned int pc, bool *out) {
     drop_at(frame, pc);
     if (frame->world == NULL)
         return drop_fail(frame, pc, "Block drop World receiver is null");
@@ -115,8 +103,7 @@ static bool drop_remote(const drop_frame *frame, unsigned int pc, bool *out)
 }
 
 static bool drop_block_id(const drop_frame *frame, const char *name, unsigned int capture_pc,
-                          unsigned int field_pc, int32_t *out)
-{
+                          unsigned int field_pc, int32_t *out) {
     const mc_block *value;
     mc_registry_error cause = mc_world_mutation_empty_error().registry;
     drop_at(frame, capture_pc);
@@ -132,8 +119,7 @@ static bool drop_block_id(const drop_frame *frame, const char *name, unsigned in
  * initialize first, then read the current named cell. Inspection alone would
  * skip the real active use. No final numeric Item table is used. */
 static bool drop_item_static(const drop_frame *frame, const char *name, unsigned int pc,
-                             const mc_item **out)
-{
+                             const mc_item **out) {
     mc_registry_error cause = mc_world_mutation_empty_error().registry;
     drop_at(frame, pc);
     if (mc_registry_classes_initialize_items(frame->block->classes, &cause) != MC_REGISTRY_OK)
@@ -145,8 +131,7 @@ static bool drop_item_static(const drop_frame *frame, const char *name, unsigned
 }
 
 static bool drop_item_id(const drop_frame *frame, const char *name, unsigned int capture_pc,
-                         unsigned int field_pc, int32_t *out)
-{
+                         unsigned int field_pc, int32_t *out) {
     const mc_item *value;
     if (!drop_item_static(frame, name, capture_pc, &value))
         return false;
@@ -157,8 +142,7 @@ static bool drop_item_id(const drop_frame *frame, const char *name, unsigned int
 }
 
 static bool drop_quantity(mc_world_runtime *world, const mc_block *block, mc_java_random *random,
-                          int32_t *out, mc_world_mutation_error *error)
-{
+                          int32_t *out, mc_world_mutation_error *error) {
     drop_frame frame = drop_frame_make(world, block, "uu", "na", "a(Ljava/util/Random;)I", error);
     if (!drop_kind(&frame))
         return false;
@@ -233,8 +217,7 @@ static bool drop_quantity(mc_world_runtime *world, const mc_block *block, mc_jav
 }
 
 static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t metadata,
-                      mc_java_random *random, int32_t *out, mc_world_mutation_error *error)
-{
+                      mc_java_random *random, int32_t *out, mc_world_mutation_error *error) {
     drop_frame frame = drop_frame_make(world, block, "uu", "na", "a(ILjava/util/Random;)I", error);
     if (!drop_kind(&frame))
         return false;
@@ -398,8 +381,7 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
 }
 
 static bool drop_damage(mc_world_runtime *world, const mc_block *block, int32_t metadata,
-                        int32_t *out, mc_world_mutation_error *error)
-{
+                        int32_t *out, mc_world_mutation_error *error) {
     drop_frame frame = drop_frame_make(world, block, "uu", "na", drop_damage_method(block), error);
     if (!drop_kind(&frame))
         return false;
@@ -428,8 +410,7 @@ static bool drop_damage(mc_world_runtime *world, const mc_block *block, int32_t 
     }
 }
 
-static mc_world_storage_status drop_item_status(mc_item_stack_status status)
-{
+static mc_world_storage_status drop_item_status(mc_item_stack_status status) {
     switch (status) {
         case MC_ITEM_STACK_LIMIT:
             return MC_WORLD_STORAGE_LIMIT;
@@ -442,16 +423,15 @@ static mc_world_storage_status drop_item_status(mc_item_stack_status status)
     }
 }
 
-static bool drop_stack_failed(const drop_frame *frame, unsigned int pc, mc_item_stack_status status)
-{
+static bool drop_stack_failed(const drop_frame *frame, unsigned int pc,
+                              mc_item_stack_status status) {
     drop_at(frame, pc);
     frame->error->item = status;
     return mc_world_mutation_fail(frame->world, frame->error, drop_item_status(status),
                                   "Block drop ItemStack operation");
 }
 
-static bool drop_entity_failed(const drop_frame *frame, unsigned int pc, mc_entity_status status)
-{
+static bool drop_entity_failed(const drop_frame *frame, unsigned int pc, mc_entity_status status) {
     mc_world_storage_status mapped;
     switch (status) {
         case MC_ENTITY_LIMIT:
@@ -485,8 +465,7 @@ static bool drop_entity_failed(const drop_frame *frame, unsigned int pc, mc_enti
                                       : frame->error->entity.operation);
 }
 
-static bool drop_entity_allocate(const drop_frame *frame, unsigned int pc, mc_entity **out)
-{
+static bool drop_entity_allocate(const drop_frame *frame, unsigned int pc, mc_entity **out) {
     drop_at(frame, pc);
     mc_entity_classes *classes = mc_world_runtime_entities(frame->world);
     if (classes == NULL)
@@ -495,8 +474,7 @@ static bool drop_entity_allocate(const drop_frame *frame, unsigned int pc, mc_en
     return status == MC_ENTITY_OK || drop_entity_failed(frame, pc, status);
 }
 
-static bool drop_pickup_delay(const drop_frame *frame, unsigned int pc, mc_entity *entity)
-{
+static bool drop_pickup_delay(const drop_frame *frame, unsigned int pc, mc_entity *entity) {
     drop_at(frame, pc);
     const mc_entity_status status = mc_entity_item_pickup_delay_set(entity, 10);
     if (status == MC_ENTITY_OK)
@@ -506,15 +484,13 @@ static bool drop_pickup_delay(const drop_frame *frame, unsigned int pc, mc_entit
     return drop_entity_failed(frame, pc, status);
 }
 
-static bool drop_fp(const drop_frame *frame, unsigned int pc)
-{
+static bool drop_fp(const drop_frame *frame, unsigned int pc) {
     if ((_mm_getcsr() & 0xffc0u) == 0x1f80u)
         return true;
     return drop_fail(frame, pc, "Block drop floating-point admission");
 }
 
-static bool drop_done(mc_world_mutation_error *error)
-{
+static bool drop_done(mc_world_mutation_error *error) {
     error->drop_class = NULL;
     error->drop_method = NULL;
     error->drop_bytecode = 0;
@@ -524,8 +500,7 @@ static bool drop_done(mc_world_mutation_error *error)
     return true;
 }
 
-static bool drop_publish(const drop_frame *frame, unsigned int pc, mc_entity *entity)
-{
+static bool drop_publish(const drop_frame *frame, unsigned int pc, mc_entity *entity) {
     drop_at(frame, pc);
     bool inserted;
     mc_world_mutation_error *error = frame->error;
@@ -540,8 +515,7 @@ static bool drop_publish(const drop_frame *frame, unsigned int pc, mc_entity *en
     return false;
 }
 
-static void drop_spawn_at(const drop_frame *frame, unsigned int pc)
-{
+static void drop_spawn_at(const drop_frame *frame, unsigned int pc) {
     frame->error->drop_spawn_bytecode = pc;
     drop_at(frame, pc);
 }
@@ -550,8 +524,7 @@ static void drop_spawn_at(const drop_frame *frame, unsigned int pc)
  * body. new Entity precedes evaluation of its constructor coordinates; the
  * three offset calculations precede new Entity, as in the source. */
 static bool drop_spawn(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                       int32_t z, mc_item_stack *stack, mc_world_mutation_error *error)
-{
+                       int32_t z, mc_item_stack *stack, mc_world_mutation_error *error) {
     const drop_frame frame =
         drop_frame_make(world, block, "uu", "na", drop_spawn_method(block), error);
     bool remote;
@@ -621,8 +594,7 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
  * item, damage and spawn calls remain virtual on the original actual Block. */
 static bool drop_base_probability(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, int32_t metadata, float chance,
-                                  mc_world_mutation_error *error)
-{
+                                  mc_world_mutation_error *error) {
     const drop_frame frame =
         drop_frame_make(world, block, "uu", "na", drop_probability_method(block), error);
     bool remote;
@@ -684,8 +656,7 @@ static bool drop_base_probability(mc_world_runtime *world, const mc_block *block
  * 111 precedes new Stack135 and the actual Item.Q active use139. */
 static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, int32_t metadata, float chance,
-                                  mc_world_mutation_error *error)
-{
+                                  mc_world_mutation_error *error) {
     const drop_frame frame =
         drop_frame_make(world, block, "ni", "ij", drop_probability_method(block), error);
     drop_at(&frame, 10);
@@ -794,8 +765,7 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
 
 static bool drop_probability(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                              int32_t z, int32_t metadata, float chance,
-                             mc_world_mutation_error *error)
-{
+                             mc_world_mutation_error *error) {
     drop_frame frame =
         drop_frame_make(world, block, "uu", "na", drop_probability_method(block), error);
     if (!drop_kind(&frame))
@@ -846,8 +816,7 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
 }
 
 bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                            int32_t z, int32_t metadata, mc_world_mutation_error *error)
-{
+                            int32_t z, int32_t metadata, mc_world_mutation_error *error) {
     error->publication = (mc_world_entity_error){0};
     error->drop_class = NULL;
     error->drop_method = NULL;

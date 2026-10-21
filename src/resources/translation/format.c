@@ -9,8 +9,7 @@ typedef struct format_arena {
     bool failed;
 } format_arena;
 
-static void *allocate(void *context, size_t bytes)
-{
+static void *allocate(void *context, size_t bytes) {
     format_arena *arena = context;
     void *storage = mc_registry_allocate(arena->classes, bytes);
     if (storage == NULL)
@@ -18,8 +17,7 @@ static void *allocate(void *context, size_t bytes)
     return storage;
 }
 
-static mc_registry_status own_error(mc_registry_classes *classes)
-{
+static mc_registry_status own_error(mc_registry_classes *classes) {
     classes->last_error.constructor_class =
         classes->options.side == MC_REGISTRY_CLIENT ? "nh" : "ii";
     classes->last_error.constructor_pc = 12;
@@ -27,8 +25,7 @@ static mc_registry_status own_error(mc_registry_classes *classes)
 }
 
 static mc_registry_status fail(mc_registry_classes *classes, mc_registry_status status,
-                               const char *message)
-{
+                               const char *message) {
     (void)mc_registry_fail(classes, status, message, NULL);
     return own_error(classes);
 }
@@ -37,8 +34,7 @@ mc_registry_status mc_registry_translate_formatted(mc_registry_classes *classes,
                                                    const mc_registry_string *key,
                                                    const mc_registry_string *const *arguments,
                                                    size_t argument_count,
-                                                   const mc_registry_string **out)
-{
+                                                   const mc_registry_string **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (out == NULL || (arguments == NULL && argument_count != 0))

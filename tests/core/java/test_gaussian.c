@@ -16,16 +16,14 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static uint64_t cached_bits(const mc_java_random *random)
-{
+static uint64_t cached_bits(const mc_java_random *random) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(random->next_next_gaussian),
                    "binary64 cache storage required");
@@ -33,8 +31,7 @@ static uint64_t cached_bits(const mc_java_random *random)
     return bits;
 }
 
-static double double_from_bits(uint64_t bits)
-{
+static double double_from_bits(uint64_t bits) {
     double value;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&value, &bits, sizeof(value));
@@ -42,14 +39,12 @@ static double double_from_bits(uint64_t bits)
 }
 
 static bool random_matches(const mc_java_random *random, uint64_t state, uint64_t cached,
-                           bool have_cached)
-{
+                           bool have_cached) {
     return random->state == state && cached_bits(random) == cached &&
            random->have_next_next_gaussian == have_cached;
 }
 
-static int test_fresh_and_reseed(void)
-{
+static int test_fresh_and_reseed(void) {
     mc_java_random random;
     double value;
 
@@ -96,8 +91,7 @@ static int test_fresh_and_reseed(void)
     return 0;
 }
 
-static int test_captured_first_pairs(void)
-{
+static int test_captured_first_pairs(void) {
     /* random_gaussian_fixtures.json events 6003, 6348, 9828, 9843, 9858.
      * Expected results AND continuation/cache fields are actual JDK output. */
     static const struct {
@@ -131,8 +125,7 @@ static int test_captured_first_pairs(void)
     return 0;
 }
 
-static int test_captured_mixed_history(void)
-{
+static int test_captured_mixed_history(void) {
     /* Exact captured events 6002..6016, excluding only no-op snapshot 6004. */
     mc_java_random random;
     mc_java_random other;
@@ -196,8 +189,7 @@ static int test_captured_mixed_history(void)
     return 0;
 }
 
-static int test_copied_owner_independence(void)
-{
+static int test_copied_owner_independence(void) {
     mc_java_random original;
     mc_java_random copy;
     double value;
@@ -233,8 +225,7 @@ static int test_copied_owner_independence(void)
     return 0;
 }
 
-static int test_captured_strict_boundaries(void)
-{
+static int test_captured_strict_boundaries(void) {
     /* Actual StrictMath observations: positive subnormals, the normal boundary,
      * one and its neighbors, and maximum finite. No host-math expectations. */
     static const struct {
@@ -261,8 +252,7 @@ static int test_captured_strict_boundaries(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     /* Require the public backend's control environment without changing it.
      * Sticky status bits are deliberately ignored. */
     CHECK((_mm_getcsr() & 0xffc0u) == 0x1f80u);

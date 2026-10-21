@@ -10,8 +10,7 @@ _Static_assert(MC_BIOME_SKY - MC_BIOME_RAINFOREST + 1 == MC_NORMAL_GENERATOR_BIO
 _Static_assert(MC_TERRAIN_NORMAL_BLOCKS == MC_CHUNK_BLOCKS,
                "normal terrain and chunk data share the fixed block prefix");
 
-const char *mc_normal_generator_status_string(mc_normal_generator_status status)
-{
+const char *mc_normal_generator_status_string(mc_normal_generator_status status) {
     switch (status) {
         case MC_NORMAL_GENERATOR_OK:
             return "ok";
@@ -29,8 +28,7 @@ const char *mc_normal_generator_status_string(mc_normal_generator_status status)
     return "unknown normal generator status";
 }
 
-static bool manager_ready(const mc_biome_manager *manager)
-{
+static bool manager_ready(const mc_biome_manager *manager) {
     if (manager == NULL || manager->initialized != 1 || manager->memory == NULL ||
         manager->memory->live_allocation_bytes > manager->memory->max_allocation_bytes) {
         return false;
@@ -45,8 +43,7 @@ static bool manager_ready(const mc_biome_manager *manager)
 }
 
 static bool normal_raw(const mc_normal_generator *generator, const mc_biome_manager *manager,
-                       const mc_math_trig *trig)
-{
+                       const mc_math_trig *trig) {
     return generator != NULL && !generator->initialized &&
            generator->phase == MC_NORMAL_GENERATOR_PHASE_RAW && generator->biome_manager == NULL &&
            generator->trig == NULL && generator->biomes.data == NULL &&
@@ -58,8 +55,7 @@ static bool normal_raw(const mc_normal_generator *generator, const mc_biome_mana
 static mc_normal_generator_status normal_seeded_initialize(mc_normal_generator *generator,
                                                            int64_t world_seed,
                                                            mc_biome_manager *manager,
-                                                           const mc_math_trig *trig)
-{
+                                                           const mc_math_trig *trig) {
     if (!mc_terrain_normal_init(&generator->terrain, world_seed)) {
         generator->phase = MC_NORMAL_GENERATOR_PHASE_FAILED;
         return MC_NORMAL_GENERATOR_STATE_ERROR;
@@ -75,8 +71,7 @@ static mc_normal_generator_status normal_seeded_initialize(mc_normal_generator *
 
 mc_normal_generator_status mc_normal_generator_init(mc_normal_generator *generator,
                                                     int64_t world_seed, mc_biome_manager *manager,
-                                                    const mc_math_trig *trig)
-{
+                                                    const mc_math_trig *trig) {
     if (!normal_raw(generator, manager, trig)) {
         return MC_NORMAL_GENERATOR_INVALID_ARGUMENT;
     }
@@ -91,8 +86,7 @@ mc_normal_generator_status
 mc_normal_generator_construct_provider(mc_normal_generator *generator, int64_t world_seed,
                                        mc_biome_manager *manager, const mc_math_trig *trig,
                                        mc_java_random_profile *profile,
-                                       mc_java_random_profile_status *profile_cause)
-{
+                                       mc_java_random_profile_status *profile_cause) {
     if (profile == NULL || profile_cause == NULL || !normal_raw(generator, manager, trig)) {
         return MC_NORMAL_GENERATOR_INVALID_ARGUMENT;
     }
@@ -111,16 +105,14 @@ mc_normal_generator_construct_provider(mc_normal_generator *generator, int64_t w
     return normal_seeded_initialize(generator, world_seed, manager, trig);
 }
 
-void mc_normal_generator_free(mc_normal_generator *generator)
-{
+void mc_normal_generator_free(mc_normal_generator *generator) {
     if (generator != NULL) {
         mc_biome_buffer_free(&generator->biomes);
         memset(generator, 0, sizeof(*generator));
     }
 }
 
-static mc_normal_generator_status resources_ready(const mc_normal_generation_resources *resources)
-{
+static mc_normal_generator_status resources_ready(const mc_normal_generation_resources *resources) {
     if (resources == NULL || resources->lighting == NULL || resources->materials == NULL ||
         resources->opacity == NULL || resources->opacity_length < 256u ||
         resources->opacity_length > SIZE_MAX / sizeof(*resources->opacity)) {
@@ -155,13 +147,11 @@ static mc_normal_generator_status resources_ready(const mc_normal_generation_res
     return MC_NORMAL_GENERATOR_OK;
 }
 
-static bool fresh_identity(const mc_chunk_state *cached, const mc_normal_chunk *result)
-{
+static bool fresh_identity(const mc_chunk_state *cached, const mc_normal_chunk *result) {
     return cached != &result->chunk && cached->data != &result->data;
 }
 
-static bool result_unpublished(const mc_chunk_cache *cache, const mc_normal_chunk *result)
-{
+static bool result_unpublished(const mc_chunk_cache *cache, const mc_normal_chunk *result) {
     for (size_t i = 0; i < cache->count; ++i) {
         if (!fresh_identity(cache->entries[i].chunk, result)) {
             return false;
@@ -175,8 +165,7 @@ static bool result_unpublished(const mc_chunk_cache *cache, const mc_normal_chun
     return true;
 }
 
-static mc_normal_generator_status biome_status(mc_biome_status status)
-{
+static mc_normal_generator_status biome_status(mc_biome_status status) {
     switch (status) {
         case MC_BIOME_OK:
             return MC_NORMAL_GENERATOR_OK;
@@ -193,8 +182,7 @@ static mc_normal_generator_status biome_status(mc_biome_status status)
 mc_normal_generator_status
 mc_normal_generator_generate(mc_normal_generator *generator, int32_t chunk_x, int32_t chunk_z,
                              const mc_normal_generation_resources *resources,
-                             mc_normal_chunk *result, uint8_t *blocks, size_t blocks_capacity)
-{
+                             mc_normal_chunk *result, uint8_t *blocks, size_t blocks_capacity) {
     if (generator == NULL || !generator->initialized ||
         generator->phase != MC_NORMAL_GENERATOR_PHASE_READY ||
         (generator->origin != MC_NORMAL_GENERATOR_NUMERICAL &&

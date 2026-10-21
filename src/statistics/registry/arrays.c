@@ -8,8 +8,7 @@
 
 /* Helper-method diagnostics use the native source-operation channel. These
  * methods are not class initializers and never change the caller's frame PC. */
-static mc_registry_status array_error(mc_registry_classes *classes, int32_t pc)
-{
+static mc_registry_status array_error(mc_registry_classes *classes, int32_t pc) {
     classes->last_error.constructor_class =
         classes->options.side == MC_REGISTRY_CLIENT ? "jl" : "gg";
     classes->last_error.constructor_pc = pc;
@@ -17,15 +16,13 @@ static mc_registry_status array_error(mc_registry_classes *classes, int32_t pc)
 }
 
 static mc_registry_status array_fail(mc_registry_classes *classes, int32_t pc,
-                                     mc_registry_status status, const char *message)
-{
+                                     mc_registry_status status, const char *message) {
     (void)mc_registry_fail(classes, status, message, NULL);
     return array_error(classes, pc);
 }
 
 static mc_registry_status block_load(mc_registry_classes *classes, int32_t index, int32_t access_pc,
-                                     mc_block **out)
-{
+                                     mc_block **out) {
     mc_registry_status status = mc_registry_blocks_active_use(classes);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -41,8 +38,7 @@ static mc_registry_status block_load(mc_registry_classes *classes, int32_t index
 }
 
 static mc_registry_status block_length(mc_registry_classes *classes, int32_t access_pc,
-                                       int32_t *out)
-{
+                                       int32_t *out) {
     mc_registry_status status = mc_registry_blocks_active_use(classes);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -57,8 +53,7 @@ static mc_registry_status block_length(mc_registry_classes *classes, int32_t acc
 }
 
 static mc_registry_status item_load(mc_registry_classes *classes, int32_t index, int32_t access_pc,
-                                    mc_item **out)
-{
+                                    mc_item **out) {
     mc_registry_status status = mc_registry_items_active_use(classes);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -67,8 +62,7 @@ static mc_registry_status item_load(mc_registry_classes *classes, int32_t index,
 }
 
 static mc_registry_status new_array(mc_registry_classes *classes, size_t length, int32_t pc,
-                                    mc_statistic ***out)
-{
+                                    mc_statistic ***out) {
     if (length > SIZE_MAX / sizeof(mc_statistic *))
         return array_fail(classes, pc, MC_REGISTRY_LIMIT,
                           "Statistics native array allocation bound");
@@ -81,8 +75,7 @@ static mc_registry_status new_array(mc_registry_classes *classes, size_t length,
 }
 
 static mc_registry_status slot_load(mc_registry_classes *classes, mc_statistic **array,
-                                    size_t length, int32_t index, int32_t pc, mc_statistic **out)
-{
+                                    size_t length, int32_t index, int32_t pc, mc_statistic **out) {
     if (array == NULL)
         return array_fail(classes, pc, MC_REGISTRY_NULL_REFERENCE,
                           "Statistics local array is null");
@@ -94,8 +87,8 @@ static mc_registry_status slot_load(mc_registry_classes *classes, mc_statistic *
 }
 
 static mc_registry_status slot_store(mc_registry_classes *classes, mc_statistic **array,
-                                     size_t length, int32_t index, mc_statistic *value, int32_t pc)
-{
+                                     size_t length, int32_t index, mc_statistic *value,
+                                     int32_t pc) {
     if (array == NULL)
         return array_fail(classes, pc, MC_REGISTRY_NULL_REFERENCE,
                           "Statistics local array is null");
@@ -107,8 +100,7 @@ static mc_registry_status slot_store(mc_registry_classes *classes, mc_statistic 
 }
 
 static mc_registry_status list_remove(mc_registry_classes *classes, mc_registry_list *list,
-                                      mc_statistic *value, int32_t pc)
-{
+                                      mc_statistic *value, int32_t pc) {
     if (list == NULL)
         return array_fail(classes, pc, MC_REGISTRY_NULL_REFERENCE,
                           "Statistics List.remove null receiver");
@@ -128,8 +120,7 @@ static mc_registry_status list_remove(mc_registry_classes *classes, mc_registry_
 /* jl/gg.a(Stat[],int,int): preserve the reloads and b,e,c removal order.
  * In particular first==second does not eliminate the removal branch. */
 static mc_registry_status pair(mc_registry_classes *classes, mc_statistic **array, size_t length,
-                               int32_t first, int32_t second)
-{
+                               int32_t first, int32_t second) {
     mc_statistic *value = NULL;
     mc_registry_status status = slot_load(classes, array, length, first, 2, &value);
     if (status != MC_REGISTRY_OK)
@@ -173,13 +164,13 @@ static mc_registry_status pair(mc_registry_classes *classes, mc_statistic **arra
     return slot_store(classes, array, length, first, value, 60);
 }
 
-static mc_registry_status unify(mc_registry_classes *classes, mc_statistic **array, size_t length)
-{
+static mc_registry_status unify(mc_registry_classes *classes, mc_statistic **array, size_t length) {
     static const struct {
         const char *first;
         const char *second;
     } pairs[] = {{"C", "B"},   {"E", "E"},   {"bg", "bb"}, {"aD", "aC"}, {"aP", "aO"}, {"bj", "bi"},
                  {"aR", "aQ"}, {"ah", "ag"}, {"ak", "al"}, {"v", "w"},   {"aB", "w"}};
+
     for (size_t i = 0; i < sizeof(pairs) / sizeof(*pairs); ++i) {
         /* Each group is sixteen bytecodes apart. Static named-cell reads
          * independently perform Block active use before the following bn read. */
@@ -208,8 +199,7 @@ static mc_registry_status unify(mc_registry_classes *classes, mc_statistic **arr
 
 static mc_registry_status item_statistic(mc_registry_classes *classes, int32_t allocation_pc,
                                          int32_t base, int32_t index,
-                                         const mc_registry_string *name, mc_statistic **out)
-{
+                                         const mc_registry_string *name, mc_statistic **out) {
     mc_statistic *statistic = NULL;
     mc_registry_status status =
         mc_registry_statistic_allocate(classes, MC_STATISTIC_ITEM, &statistic);
@@ -232,8 +222,7 @@ static mc_registry_status item_statistic(mc_registry_classes *classes, int32_t a
 
 mc_registry_status mc_registry_statistic_block_array(mc_registry_classes *classes,
                                                      const mc_registry_string *key, int32_t base,
-                                                     mc_statistic ***out)
-{
+                                                     mc_statistic ***out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || out == NULL)
@@ -303,8 +292,7 @@ mc_registry_status mc_registry_statistic_block_array(mc_registry_classes *classe
 
 static mc_registry_status item_array(mc_registry_classes *classes, mc_statistic **array,
                                      const mc_registry_string *key, int32_t base, int32_t begin,
-                                     int32_t end, bool breaking, mc_statistic ***out)
-{
+                                     int32_t end, bool breaking, mc_statistic ***out) {
     mc_registry_status status;
     if (array == NULL) {
         status = new_array(classes, 32000u, 7, &array);
@@ -378,14 +366,12 @@ static mc_registry_status item_array(mc_registry_classes *classes, mc_statistic 
     return MC_REGISTRY_OK;
 }
 
-static void *set_allocate(void *context, size_t bytes)
-{
+static void *set_allocate(void *context, size_t bytes) {
     return mc_registry_allocate(context, bytes);
 }
 
 static mc_registry_status recipe_set_error(mc_registry_classes *classes,
-                                           mc_java_int_set_status status, int32_t pc)
-{
+                                           mc_java_int_set_status status, int32_t pc) {
     if (status == MC_JAVA_INT_SET_ALLOCATION_FAILED &&
         (classes->last_error.status == MC_REGISTRY_LIMIT ||
          classes->last_error.status == MC_REGISTRY_ALLOCATION_FAILED))
@@ -399,8 +385,7 @@ static mc_registry_status recipe_set_error(mc_registry_classes *classes,
 
 static mc_registry_status recipe_add_output(mc_registry_classes *classes, mc_java_int_set *set,
                                             const mc_item_stack *output, int32_t read_pc,
-                                            int32_t add_pc)
-{
+                                            int32_t add_pc) {
     if (output == NULL)
         return array_fail(classes, read_pc, MC_REGISTRY_NULL_REFERENCE,
                           "Statistics recipe output ID read on null");
@@ -414,8 +399,7 @@ static mc_registry_status recipe_add_output(mc_registry_classes *classes, mc_jav
                                         : recipe_set_error(classes, status, add_pc);
 }
 
-mc_registry_status mc_registry_statistic_recipes(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistic_recipes(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -552,8 +536,7 @@ mc_registry_status mc_registry_statistic_recipes(mc_registry_classes *classes)
     return unify(classes, classes->statistics.D, 32000u); /*current D224/call227*/
 }
 
-static mc_registry_status populate_items(mc_registry_classes *classes, bool other)
-{
+static mc_registry_status populate_items(mc_registry_classes *classes, bool other) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -598,12 +581,10 @@ static mc_registry_status populate_items(mc_registry_classes *classes, bool othe
     return mc_registry_statistic_recipes(classes); /* b40 / c44 */
 }
 
-mc_registry_status mc_registry_statistic_block_items(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistic_block_items(mc_registry_classes *classes) {
     return populate_items(classes, false);
 }
 
-mc_registry_status mc_registry_statistic_other_items(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistic_other_items(mc_registry_classes *classes) {
     return populate_items(classes, true);
 }

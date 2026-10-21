@@ -53,23 +53,20 @@ typedef struct sample_fixture {
     double raw[3][4];
 } sample_fixture;
 
-static uint64_t bits(double value)
-{
+static uint64_t bits(double value) {
     uint64_t result;
     memcpy(&result, &value, sizeof(result));
     return result;
 }
 
-static bool no_biomes(const mc_biome_registry_view *view)
-{
+static bool no_biomes(const mc_biome_registry_view *view) {
     return view->a == NULL && view->b == NULL && view->c == NULL && view->d == NULL &&
            view->e == NULL && view->f == NULL && view->g == NULL && view->h == NULL &&
            view->i == NULL && view->j == NULL && view->k == NULL && view->l == NULL &&
            view->m == NULL && view->x == NULL && view->x_length == 0;
 }
 
-static bool raw_2x2(mc_biome_manager *manager, double raw[3][4])
-{
+static bool raw_2x2(mc_biome_manager *manager, double raw[3][4]) {
     mc_noise_simplex *layers[] = {manager->temperature_layers, manager->rainfall_layers,
                                   manager->auxiliary_layers};
     const size_t counts[] = {4, 4, 2};
@@ -86,8 +83,7 @@ static bool raw_2x2(mc_biome_manager *manager, double raw[3][4])
     return true;
 }
 
-static bool first_cell_prefix(const mc_biome_manager *manager, double raw[3][4])
-{
+static bool first_cell_prefix(const mc_biome_manager *manager, double raw[3][4]) {
     const mc_biome_double_buffer *channels[] = {&manager->a, &manager->b, &manager->c};
     for (size_t channel = 0; channel < COUNT(channels); ++channel) {
         if (channels[channel]->data == NULL || channels[channel]->length != 4)
@@ -102,8 +98,7 @@ static bool first_cell_prefix(const mc_biome_manager *manager, double raw[3][4])
     return true;
 }
 
-static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_cause(const mc_registry_error *a, const mc_registry_error *b) {
     return a->message == b->message && a->initializer_pc == b->initializer_pc &&
            a->block_id == b->block_id && a->constructor_class == b->constructor_class &&
            a->constructor_pc == b->constructor_pc && a->profile_status == b->profile_status &&
@@ -119,8 +114,7 @@ static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static void observe(sample_fixture *fixture, bool condition, const char *message)
-{
+static void observe(sample_fixture *fixture, bool condition, const char *message) {
     ++checks;
     if (!condition) {
         fixture->invalid = true;
@@ -129,8 +123,7 @@ static void observe(sample_fixture *fixture, bool condition, const char *message
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     sample_stream *stream = context;
     ++stream->reads;
     if (out == NULL || count == NULL || capacity == 0 || stream->closed ||
@@ -149,8 +142,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     sample_fixture *fixture = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     size_t index = COUNT(names);
@@ -218,8 +210,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     sample_fixture *fixture = context;
     if (input == NULL || input->context != &fixture->streams[2] || input->read != read_bytes) {
         fixture->invalid = true;
@@ -230,8 +221,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     sample_fixture *fixture = context;
     if (input == NULL || input->read != read_bytes)
         fixture->invalid = true;
@@ -239,8 +229,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
 }
 
 static sample_fixture *create_fixture(mc_registry_side side, mc_materials *materials,
-                                      mc_java_random_profile *profile, bool missing)
-{
+                                      mc_java_random_profile *profile, bool missing) {
     sample_fixture *fixture = calloc(1, sizeof(*fixture));
     if (fixture == NULL)
         return NULL;
@@ -259,8 +248,7 @@ static sample_fixture *create_fixture(mc_registry_side side, mc_materials *mater
     return fixture;
 }
 
-static bool destroy_fixture(sample_fixture **slot)
-{
+static bool destroy_fixture(sample_fixture **slot) {
     sample_fixture *fixture = *slot;
     if (fixture == NULL)
         return true;
@@ -276,8 +264,7 @@ static bool destroy_fixture(sample_fixture **slot)
     return true;
 }
 
-static bool empty_array(sample_fixture *fixture, mc_biome_reference_array **out)
-{
+static bool empty_array(sample_fixture *fixture, mc_biome_reference_array **out) {
     bool ok = false;
     mc_biome_memory memory = {0};
     mc_biome_manager manager = {0};
@@ -296,8 +283,7 @@ cleanup:
 }
 
 static bool test_zero(mc_registry_side side, mc_materials *materials,
-                      mc_java_random_profile *profile)
-{
+                      mc_java_random_profile *profile) {
     bool ok = false;
     sample_fixture *fixture = NULL;
     mc_biome_memory memory = {0};
@@ -365,8 +351,7 @@ cleanup:
 }
 
 static bool test_missing(mc_registry_side side, mc_materials *materials,
-                         mc_java_random_profile *profile)
-{
+                         mc_java_random_profile *profile) {
     bool ok = false;
     sample_fixture *fixture = NULL;
     mc_biome_memory memory = {0};
@@ -446,8 +431,7 @@ cleanup:
     return ok;
 }
 
-static bool allocation_charges(size_t *double_charge, size_t *id_charge)
-{
+static bool allocation_charges(size_t *double_charge, size_t *id_charge) {
     bool ok = false;
     mc_biome_memory memory = {0};
     mc_biome_double_buffer doubles = {0};
@@ -469,8 +453,7 @@ cleanup:
 
 static bool test_channel_limits(mc_registry_side side, mc_materials *materials,
                                 mc_java_random_profile *profile, size_t double_charge,
-                                size_t id_charge)
-{
+                                size_t id_charge) {
     bool ok = false;
     sample_fixture *fixture = NULL;
     mc_biome_memory memory = {0};
@@ -537,8 +520,7 @@ cleanup:
     return ok;
 }
 
-static bool climate_equal(const mc_biome_manager *left, const mc_biome_manager *right)
-{
+static bool climate_equal(const mc_biome_manager *left, const mc_biome_manager *right) {
     const mc_biome_double_buffer *a[] = {&left->a, &left->b, &left->c};
     const mc_biome_double_buffer *b[] = {&right->a, &right->b, &right->c};
     for (size_t channel = 0; channel < COUNT(a); ++channel) {
@@ -553,8 +535,7 @@ static bool climate_equal(const mc_biome_manager *left, const mc_biome_manager *
 }
 
 static bool live_table_matches(const mc_biome_registry_view *view, const mc_biome_manager *manager,
-                               const mc_biome_reference_array *array, size_t count)
-{
+                               const mc_biome_reference_array *array, size_t count) {
     const mc_biome *const *data = mc_biome_reference_array_data(array);
     if (view->phase != MC_REGISTRY_READY || view->x == NULL || view->x_length != 4096 ||
         data == NULL || mc_biome_reference_array_length(array) < count)
@@ -570,8 +551,7 @@ static bool live_table_matches(const mc_biome_registry_view *view, const mc_biom
 }
 
 static bool test_warm_and_admission(mc_registry_side side, mc_materials *materials,
-                                    mc_java_random_profile *profile)
-{
+                                    mc_java_random_profile *profile) {
     bool ok = false;
     sample_fixture *fixture = NULL, *foreign = NULL;
     mc_biome_memory memory = {0}, numerical_memory = {0};
@@ -713,8 +693,7 @@ cleanup:
     return ok;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;

@@ -10,21 +10,18 @@ enum surface_block {
     SURFACE_SANDSTONE = 24
 };
 
-int64_t mc_terrain_normal_chunk_seed(int32_t chunk_x, int32_t chunk_z)
-{
+int64_t mc_terrain_normal_chunk_seed(int32_t chunk_x, int32_t chunk_z) {
     int64_t x = mc_java_i64_mul((int64_t)chunk_x, INT64_C(341873128712));
     int64_t z = mc_java_i64_mul((int64_t)chunk_z, INT64_C(132897987541));
     return mc_java_i64_add(x, z);
 }
 
-static bool surface_span_valid(mc_terrain_double_span span)
-{
+static bool surface_span_valid(mc_terrain_double_span span) {
     return span.data != NULL && span.length >= MC_TERRAIN_NORMAL_SURFACE_VALUES &&
            span.length <= SIZE_MAX / sizeof(*span.data);
 }
 
-static bool surface_fields_valid(const mc_terrain_normal_surface_workspace *fields)
-{
+static bool surface_fields_valid(const mc_terrain_normal_surface_workspace *fields) {
     return fields != NULL && surface_span_valid(fields->sand) &&
            surface_span_valid(fields->gravel) && surface_span_valid(fields->thickness);
 }
@@ -32,8 +29,7 @@ static bool surface_fields_valid(const mc_terrain_normal_surface_workspace *fiel
 static bool surface_apply_valid(const mc_terrain_normal_surface_workspace *fields,
                                 const mc_terrain_surface_material *materials,
                                 size_t materials_length, const mc_java_random *random,
-                                const uint8_t *blocks, size_t blocks_length)
-{
+                                const uint8_t *blocks, size_t blocks_length) {
     return surface_fields_valid(fields) && materials != NULL &&
            materials_length >= MC_TERRAIN_NORMAL_SURFACE_VALUES &&
            materials_length <= SIZE_MAX / sizeof(*materials) && random != NULL && blocks != NULL &&
@@ -42,8 +38,7 @@ static bool surface_apply_valid(const mc_terrain_normal_surface_workspace *field
 
 bool mc_terrain_normal_surface_channel(const mc_terrain_normal_state *state,
                                        mc_terrain_surface_channel selected, int32_t chunk_x,
-                                       int32_t chunk_z, mc_terrain_double_span out)
-{
+                                       int32_t chunk_z, mc_terrain_double_span out) {
     if (state == NULL || !surface_span_valid(out)) {
         return false;
     }
@@ -77,8 +72,7 @@ bool mc_terrain_normal_surface_channel(const mc_terrain_normal_state *state,
 
 static void surface_noise(const mc_terrain_normal_state *state,
                           const mc_terrain_normal_surface_workspace *workspace, int32_t chunk_x,
-                          int32_t chunk_z)
-{
+                          int32_t chunk_z) {
     /* Fixed shapes/counts and all full spans were validated before mutation;
      * each original octave request now has no remaining failure. */
     /* The public numerical operations validate ALL spans before mutation.
@@ -93,8 +87,7 @@ static void surface_noise(const mc_terrain_normal_state *state,
 
 static void surface_apply(const mc_terrain_normal_surface_workspace *fields,
                           const mc_terrain_surface_material *materials, mc_java_random *random,
-                          uint8_t *blocks)
-{
+                          uint8_t *blocks) {
     for (size_t z = 0; z < 16; ++z) {
         for (size_t x = 0; x < 16; ++x) {
             size_t column = x * 16u + z;
@@ -164,8 +157,7 @@ static void surface_apply(const mc_terrain_normal_surface_workspace *fields,
 
 bool mc_terrain_normal_surface_noise(const mc_terrain_normal_state *state,
                                      const mc_terrain_normal_surface_workspace *workspace,
-                                     int32_t chunk_x, int32_t chunk_z)
-{
+                                     int32_t chunk_x, int32_t chunk_z) {
     if (state == NULL || !surface_fields_valid(workspace)) {
         return false;
     }
@@ -176,8 +168,7 @@ bool mc_terrain_normal_surface_noise(const mc_terrain_normal_state *state,
 bool mc_terrain_normal_surface_apply(const mc_terrain_normal_surface_workspace *fields,
                                      const mc_terrain_surface_material *materials,
                                      size_t materials_length, mc_java_random *random,
-                                     uint8_t *blocks, size_t blocks_length)
-{
+                                     uint8_t *blocks, size_t blocks_length) {
     if (!surface_apply_valid(fields, materials, materials_length, random, blocks, blocks_length)) {
         return false;
     }
@@ -190,8 +181,7 @@ bool mc_terrain_normal_surface(const mc_terrain_normal_state *state,
                                int32_t chunk_x, int32_t chunk_z,
                                const mc_terrain_surface_material *materials,
                                size_t materials_length, mc_java_random *random, uint8_t *blocks,
-                               size_t blocks_length)
-{
+                               size_t blocks_length) {
     if (state == NULL || !surface_apply_valid(workspace, materials, materials_length, random,
                                               blocks, blocks_length)) {
         return false;

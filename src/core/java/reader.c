@@ -60,32 +60,27 @@ typedef struct decode_item {
     uint16_t first, second;
 } decode_item;
 
-static bool continuation(uint8_t byte)
-{
+static bool continuation(uint8_t byte) {
     return (byte & 0xc0u) == 0x80u;
 }
 
-static bool bad_second_of_three(uint8_t first, uint8_t second)
-{
+static bool bad_second_of_three(uint8_t first, uint8_t second) {
     return (first == 0xe0u && (second & 0xe0u) == 0x80u) || !continuation(second);
 }
 
-static bool bad_second_of_four(uint8_t first, uint8_t second)
-{
+static bool bad_second_of_four(uint8_t first, uint8_t second) {
     return (first == 0xf0u && (second < 0x90u || second > 0xbfu)) ||
            (first == 0xf4u && (second & 0xf0u) != 0x80u) || !continuation(second);
 }
 
-static decode_item flow(size_t available, size_t required)
-{
+static decode_item flow(size_t available, size_t required) {
     return (decode_item){.kind = available < required ? DECODE_UNDERFLOW : DECODE_OVERFLOW};
 }
 
 /* The array-backed UTF_8 decoder decides malformed prefix length before the
  * CharsetDecoder replacement wrapper advances the input. Output-space checks
  * deliberately retain their source order, including the four-byte branch. */
-static decode_item utf8_item(const uint8_t *bytes, size_t available, size_t room)
-{
+static decode_item utf8_item(const uint8_t *bytes, size_t available, size_t room) {
     const uint8_t first = bytes[0];
     if (first < 0x80u) {
         if (room == 0)
@@ -147,8 +142,7 @@ static decode_item utf8_item(const uint8_t *bytes, size_t available, size_t room
     return (decode_item){.kind = DECODE_MALFORMED, .consumed = 1};
 }
 
-static uint16_t single_byte(mc_java_reader_charset charset, uint8_t byte)
-{
+static uint16_t single_byte(mc_java_reader_charset charset, uint8_t byte) {
     static const uint16_t windows_controls[32] = {
         0x20ac, 0xfffd, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021, 0x02c6, 0x2030, 0x0160,
         0x2039, 0x0152, 0xfffd, 0x017d, 0xfffd, 0xfffd, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022,
@@ -160,8 +154,7 @@ static uint16_t single_byte(mc_java_reader_charset charset, uint8_t byte)
     return byte;
 }
 
-static decode_kind decode_buffer(mc_java_reader *reader, size_t *written, bool eof)
-{
+static decode_kind decode_buffer(mc_java_reader *reader, size_t *written, bool eof) {
     while (reader->byte_position < reader->byte_limit) {
         const size_t available = reader->byte_limit - reader->byte_position;
         const size_t room = READER_BUFFER_SIZE - *written;
@@ -200,8 +193,7 @@ static decode_kind decode_buffer(mc_java_reader *reader, size_t *written, bool e
     return DECODE_UNDERFLOW;
 }
 
-static mc_java_reader_status read_bytes(mc_java_reader *reader, bool *eof)
-{
+static mc_java_reader_status read_bytes(mc_java_reader *reader, bool *eof) {
     const size_t remaining = reader->byte_limit - reader->byte_position;
     if (remaining >= READER_BUFFER_SIZE)
         return MC_JAVA_READER_INVALID_ARGUMENT;
@@ -232,8 +224,7 @@ static mc_java_reader_status read_bytes(mc_java_reader *reader, bool *eof)
 /* The reached unmarked BufferedReader always asks its InputStreamReader for
  * 8192 characters. Its StreamDecoder leftover flag starts false, so neither
  * the len==1/read0 path nor a leftover-char branch is reached by this API. */
-static mc_java_reader_status fill_characters(mc_java_reader *reader)
-{
+static mc_java_reader_status fill_characters(mc_java_reader *reader) {
     size_t written = 0;
     bool eof = false;
     for (;;) {
@@ -264,8 +255,7 @@ static mc_java_reader_status fill_characters(mc_java_reader *reader)
 
 static mc_java_reader_status append_piece(mc_java_reader *reader, line_piece **first,
                                           line_piece **last, size_t *total, const uint16_t *units,
-                                          size_t length)
-{
+                                          size_t length) {
     if (length > (size_t)INT32_MAX - *total ||
         length > (SIZE_MAX - sizeof(line_piece)) / sizeof(uint16_t))
         return MC_JAVA_READER_LIMIT;
@@ -288,8 +278,7 @@ static mc_java_reader_status append_piece(mc_java_reader *reader, line_piece **f
 
 static mc_java_reader_status finish_line(mc_java_reader *reader, const line_piece *first,
                                          size_t prefix_length, const uint16_t *tail,
-                                         size_t tail_length, const mc_java_reader_line **out)
-{
+                                         size_t tail_length, const mc_java_reader_line **out) {
     if (tail_length > (size_t)INT32_MAX - prefix_length)
         return MC_JAVA_READER_LIMIT;
     const size_t length = prefix_length + tail_length;
@@ -318,8 +307,7 @@ static mc_java_reader_status finish_line(mc_java_reader *reader, const line_piec
 
 mc_java_reader_status mc_java_reader_create(const mc_java_properties_allocator *allocator,
                                             const mc_java_reader_input *input,
-                                            mc_java_reader_charset charset, mc_java_reader **out)
-{
+                                            mc_java_reader_charset charset, mc_java_reader **out) {
     if (allocator == NULL || allocator->allocate == NULL || input == NULL ||
         input->bytes.read == NULL || out == NULL ||
         (unsigned int)charset > (unsigned int)MC_JAVA_READER_US_ASCII)
@@ -350,8 +338,7 @@ mc_java_reader_status mc_java_reader_create(const mc_java_properties_allocator *
 }
 
 mc_java_reader_status mc_java_reader_read_line(mc_java_reader *reader,
-                                               const mc_java_reader_line **out)
-{
+                                               const mc_java_reader_line **out) {
     if (reader == NULL || out == NULL)
         return MC_JAVA_READER_INVALID_ARGUMENT;
     if (reader->closed)
@@ -400,8 +387,7 @@ mc_java_reader_status mc_java_reader_read_line(mc_java_reader *reader,
     }
 }
 
-mc_java_reader_status mc_java_reader_close(mc_java_reader *reader)
-{
+mc_java_reader_status mc_java_reader_close(mc_java_reader *reader) {
     if (reader == NULL)
         return MC_JAVA_READER_INVALID_ARGUMENT;
     if (reader->closed)

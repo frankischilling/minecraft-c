@@ -25,13 +25,11 @@ static const uint16_t payload_name[] = {'P', 'a', 'y', 'l', 'o', 'a', 'd'};
 static const uint16_t float_name[] = {'F'};
 static const uint16_t root_name[] = {0x2603};
 
-static const mc_nbt_tag *get(const mc_nbt_tag *root, const uint16_t *name, size_t length)
-{
+static const mc_nbt_tag *get(const mc_nbt_tag *root, const uint16_t *name, size_t length) {
     return mc_nbt_compound_get(root, name, length);
 }
 
-static int construction_prefixes(void)
-{
+static int construction_prefixes(void) {
     int result = 1;
     mc_item_stack *raw = NULL, *live = NULL;
     mc_nbt_tag id = {.type = MC_NBT_SHORT, .name = {id_name, 2}, .value.short_value = -42};
@@ -72,8 +70,7 @@ cleanup:
     return result;
 }
 
-static int provenance_overlay_and_retirement(void)
-{
+static int provenance_overlay_and_retirement(void) {
     int status = 1;
     mc_item_stack *stack = NULL;
     mc_nbt_document *result = NULL;
@@ -187,8 +184,7 @@ cleanup:
     return status;
 }
 
-static int split_clone_and_alias(void)
-{
+static int split_clone_and_alias(void) {
     int result = 1;
     mc_nbt_tag input = {.type = MC_NBT_COMPOUND};
     mc_item_stack *source = NULL, *split = NULL, *clone = NULL, *alias = NULL, *nullable = NULL;
@@ -226,8 +222,7 @@ cleanup:
     return result;
 }
 
-static int ignored_list_names(void)
-{
+static int ignored_list_names(void) {
     int result = 1;
     mc_item_stack *stack = NULL;
     const uint16_t list_name[] = {'L'};
@@ -253,8 +248,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (construction_prefixes() || provenance_overlay_and_retirement() || split_clone_and_alias() ||
         ignored_list_names())
         return 1;

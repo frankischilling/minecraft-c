@@ -15,11 +15,11 @@
 typedef struct cell {
     const mc_registry_string *key, *value;
 } cell;
+
 static const mc_registry_string *held[MAX_STRINGS];
 static size_t held_count, rows;
 
-static int compare_cells(const void *left, const void *right)
-{
+static int compare_cells(const void *left, const void *right) {
     const mc_registry_string *a = ((const cell *)left)->key;
     const mc_registry_string *b = ((const cell *)right)->key;
     const size_t common = a->length < b->length ? a->length : b->length;
@@ -29,8 +29,7 @@ static int compare_cells(const void *left, const void *right)
     return a->length < b->length ? -1 : a->length != b->length;
 }
 
-static size_t identity(const mc_registry_string *string)
-{
+static size_t identity(const mc_registry_string *string) {
     for (size_t i = 0; i < held_count; ++i)
         if (held[i] == string)
             return i + 1;
@@ -40,8 +39,7 @@ static size_t identity(const mc_registry_string *string)
     return held_count;
 }
 
-static void units(const mc_registry_string *string)
-{
+static void units(const mc_registry_string *string) {
     if (string->length == 0)
         fputc('-', stdout);
     for (size_t i = 0; i < string->length; ++i)
@@ -49,16 +47,14 @@ static void units(const mc_registry_string *string)
 }
 
 static const mc_registry_string *binding(const mc_translation *translation,
-                                         const mc_java_properties_string *source)
-{
+                                         const mc_java_properties_string *source) {
     for (const mc_translation_string_binding *b = translation->strings; b != NULL; b = b->next)
         if (b->source == source)
             return b->string;
     return NULL;
 }
 
-static char *root_argument(int argc, char **argv)
-{
+static char *root_argument(int argc, char **argv) {
     if (argc == 3) {
         const size_t length = strlen(argv[2]);
         char *copy = malloc(length + 1);
@@ -95,8 +91,7 @@ static char *root_argument(int argc, char **argv)
     return root;
 }
 
-static bool invalid_names(mc_resource_files *files)
-{
+static bool invalid_names(mc_resource_files *files) {
     const mc_registry_resources *source = mc_resource_files_source(files);
     const char *names[] = {
         NULL,   "",      "lang/en_US.lang",   "//lang", "/lang/../x", "/./x", "/lang/",
@@ -110,8 +105,7 @@ static bool invalid_names(mc_resource_files *files)
     return true;
 }
 
-static bool stream_lifecycle(mc_resource_files *files)
-{
+static bool stream_lifecycle(mc_resource_files *files) {
     const mc_registry_resources *source = mc_resource_files_source(files);
     mc_java_properties_input stream = {0};
     if (source->close == NULL || source->ready == NULL ||
@@ -135,8 +129,7 @@ static bool stream_lifecycle(mc_resource_files *files)
            !source->ready(source->context, &foreign) && !source->ready(source->context, NULL);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     mc_resource_files *files = NULL;
     mc_materials *materials = NULL;

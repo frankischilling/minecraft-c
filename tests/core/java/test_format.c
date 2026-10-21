@@ -31,8 +31,7 @@ typedef struct arena {
 
 /* Retained, distinct, genuinely uncleared malloc blocks. No shadow owner or
  * production failure hook is used. Views retire before this arena does. */
-static void *allocate(void *context, size_t bytes)
-{
+static void *allocate(void *context, size_t bytes) {
     arena *a = context;
     ++a->requests;
     if (a->fail_at != 0 && a->requests == a->fail_at) {
@@ -58,30 +57,26 @@ static void *allocate(void *context, size_t bytes)
     return p;
 }
 
-static void retire(arena *a)
-{
+static void retire(arena *a) {
     for (size_t i = 0; i < a->count; ++i)
         free(a->blocks[i]);
     *a = (arena){0};
 }
 
-static mc_java_format_options options(arena *a)
-{
+static mc_java_format_options options(arena *a) {
     static const uint16_t lf[] = {10};
     return (mc_java_format_options){
         {a, allocate}, MC_JAVA_FORMAT_LOCALE_ENGLISH, {lf, COUNT(lf)}, 4096};
 }
 
-static mc_java_format_text ascii(const char *source, uint16_t *storage)
-{
+static mc_java_format_text ascii(const char *source, uint16_t *storage) {
     size_t n = strlen(source);
     for (size_t i = 0; i < n; ++i)
         storage[i] = (unsigned char)source[i];
     return (mc_java_format_text){storage, n};
 }
 
-static bool equals(const mc_java_format_text *text, const uint16_t *units, size_t length)
-{
+static bool equals(const mc_java_format_text *text, const uint16_t *units, size_t length) {
     if (text->length != length || (length != 0 && text->units == NULL))
         return false;
     for (size_t i = 0; i < length; ++i)
@@ -90,8 +85,7 @@ static bool equals(const mc_java_format_text *text, const uint16_t *units, size_
     return true;
 }
 
-static bool is_ascii(const mc_java_format_text *text, const char *expected)
-{
+static bool is_ascii(const mc_java_format_text *text, const char *expected) {
     size_t n = strlen(expected);
     if (text->length != n || (n != 0 && text->units == NULL))
         return false;
@@ -103,8 +97,7 @@ static bool is_ascii(const mc_java_format_text *text, const char *expected)
 
 static int ascii_case(arena *a, const char *pattern, const char *first, const char *second,
                       size_t count, bool null_array, mc_java_format_status expected,
-                      const char *output)
-{
+                      const char *output) {
     int result = 1;
     uint16_t p[256], x[128], y[128];
     CHECK(strlen(pattern) < COUNT(p) && (first == NULL || strlen(first) < COUNT(x)) &&
@@ -133,8 +126,7 @@ cleanup:
     return result;
 }
 
-static int test_strings(void)
-{
+static int test_strings(void) {
     int result = 1;
     arena a = {0};
 #define OK(p, x, y, n, s) CHECK(ascii_case(&a, p, x, y, n, false, MC_JAVA_FORMAT_OK, s) == 0)
@@ -168,8 +160,7 @@ typedef struct failure_case {
     size_t arguments;
 } failure_case;
 
-static int test_validation(void)
-{
+static int test_validation(void) {
     int result = 1;
     arena a = {0};
     static const failure_case cases[] = {
@@ -237,8 +228,7 @@ cleanup:
     return result;
 }
 
-static int test_null_conversions(void)
-{
+static int test_null_conversions(void) {
     int result = 1;
     arena a = {0};
     /* String arguments are never numeric/date/Character values; NULL is
@@ -259,10 +249,10 @@ cleanup:
     return result;
 }
 
-static int test_error_operands(void)
-{
+static int test_error_operands(void) {
     int result = 1;
     arena a = {0};
+
     typedef struct operand_case {
         const char *pattern;
         mc_java_format_status status;
@@ -272,6 +262,7 @@ static int test_error_operands(void)
         uint16_t conversion;
         bool date_time;
     } operand_case;
+
     /* Source Flags bit values and original whole-specifier spans. These are
      * native diagnostic operands, never purported Java Throwable identities. */
     const operand_case cases[] = {
@@ -302,8 +293,7 @@ cleanup:
 }
 
 static int unicode_case(arena *a, const char *pattern, const uint16_t *input, size_t input_length,
-                        const uint16_t *expected, size_t expected_length)
-{
+                        const uint16_t *expected, size_t expected_length) {
     int result = 1;
     uint16_t p[64];
     CHECK(strlen(pattern) < COUNT(p));
@@ -317,8 +307,7 @@ cleanup:
     return result;
 }
 
-static int test_unicode(void)
-{
+static int test_unicode(void) {
     int result = 1;
     arena a = {0};
     const uint16_t sharp[] = {0xdf, 'x'}, ss[] = {'S', 'S'}, pad[] = {' ', 'S', 'S'},
@@ -348,8 +337,7 @@ cleanup:
     return result;
 }
 
-static int test_native_contracts(void)
-{
+static int test_native_contracts(void) {
     int result = 1;
     arena a = {0};
     uint16_t p[80], x[16];
@@ -419,8 +407,7 @@ cleanup:
     return result;
 }
 
-static mc_java_format_status complex(arena *a, mc_java_format_text *out)
-{
+static mc_java_format_status complex(arena *a, mc_java_format_text *out) {
     static const uint16_t p[] = {'[', '%', '1', '2', 'S', '|', '%', '1', '$', 'h',
                                  '|', '%', '.', '2', 's', '|', '%', 'n', ']'};
     static const uint16_t first[] = {0xdf, 'a', 'b', 'c'}, second[] = {'w', 'o', 'r', 'd'};
@@ -431,8 +418,7 @@ static mc_java_format_status complex(arena *a, mc_java_format_text *out)
     return mc_java_format_strings(&opt, &pattern, args, COUNT(args), out, NULL);
 }
 
-static int test_allocator(void)
-{
+static int test_allocator(void) {
     int result = 1;
     arena baseline = {0}, trial = {0};
     mc_java_format_text reference = {0};
@@ -465,8 +451,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_strings() != 0 || test_validation() != 0 || test_null_conversions() != 0 ||
         test_error_operands() != 0 || test_unicode() != 0 || test_native_contracts() != 0 ||
         test_allocator() != 0)

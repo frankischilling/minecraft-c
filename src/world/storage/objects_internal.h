@@ -18,6 +18,7 @@ mc_world_storage_status mc_world_store_load_game_chunk(mc_world_store *store,
                                                        mc_world_storage_error *error);
 
 typedef struct mc_world_store_game_stage mc_world_store_game_stage;
+
 typedef enum mc_world_store_game_stage_phase {
     MC_WORLD_STORE_GAME_PREPARED,
     MC_WORLD_STORE_GAME_IMPORTING,
@@ -115,6 +116,7 @@ mc_world_storage_status mc_world_store_game_stage_at(const mc_world_store *store
 bool mc_world_store_chunk_source_enabled(const mc_world_store *store, const mc_chunk_state *state);
 
 typedef struct mc_world_store_game_save mc_world_store_game_save;
+
 typedef struct mc_world_store_game_save_view {
     mc_world_chunk *chunk;
     mc_chunk_state *state;

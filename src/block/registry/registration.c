@@ -4,8 +4,7 @@
  * The individual constructor/mutator helpers own their reached effects.
  * No final-property table substitutes for the ordered calls below. */
 
-const char *mc_registry_block_static_name(size_t index)
-{
+const char *mc_registry_block_static_name(size_t index) {
     static const char *const names[] = {
         "u",  "v",  "w",  "x",  "y",  "z",  "A",  "B",  "C",  "D",  "E",  "F",  "G",  "H",
         "I",  "J",  "K",  "L",  "M",  "N",  "O",  "P",  "Q",  "R",  "S",  "T",  "U",  "V",
@@ -77,8 +76,7 @@ const char *mc_registry_block_static_name(size_t index)
         classes->named_blocks++;                                                                   \
     } while (0)
 
-mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     mc_registry_status status;
     mc_block *block;
     mc_block *source;

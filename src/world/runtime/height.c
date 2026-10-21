@@ -7,8 +7,7 @@
 static mc_world_storage_status result(mc_world_light_error *error,
                                       const mc_world_storage_error *cause, unsigned int bytecode,
                                       unsigned int provider_bytecode,
-                                      mc_chunk_acquire_status acquisition)
-{
+                                      mc_chunk_acquire_status acquisition) {
     if (error != NULL)
         *error = (mc_world_light_error){.status = cause->status,
                                         .operation = cause->operation,
@@ -19,14 +18,12 @@ static mc_world_storage_status result(mc_world_light_error *error,
     return cause->status;
 }
 
-static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation)
-{
+static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
     return (mc_world_storage_error){status, operation, 0};
 }
 
 mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32_t x, int32_t z,
-                                                int32_t *out, mc_world_light_error *error)
-{
+                                                int32_t *out, mc_world_light_error *error) {
     if (runtime == NULL || out == NULL) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World height owner/output");

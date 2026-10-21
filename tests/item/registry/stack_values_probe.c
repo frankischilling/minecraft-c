@@ -47,8 +47,7 @@ typedef struct protocol {
     size_t length, rows;
 } protocol;
 
-static bool row(protocol *output, const char *format, ...)
-{
+static bool row(protocol *output, const char *format, ...) {
     va_list arguments;
     va_start(arguments, format);
     int length = vsnprintf(output->bytes + output->length, sizeof(output->bytes) - output->length,
@@ -63,8 +62,7 @@ static bool row(protocol *output, const char *format, ...)
 
 /* IDs arise from actual live pointer identity at first emitted occurrence.
  * Equal field payloads do not merge objects. */
-static size_t identity(identities *ids, const mc_item_stack *object)
-{
+static size_t identity(identities *ids, const mc_item_stack *object) {
     if (object == NULL)
         return 0;
     for (size_t i = 0; i < ids->count; ++i)
@@ -77,8 +75,7 @@ static size_t identity(identities *ids, const mc_item_stack *object)
     return ids->count;
 }
 
-static bool fresh(const observation *observed, size_t complete, const mc_item_stack *object)
-{
+static bool fresh(const observation *observed, size_t complete, const mc_item_stack *object) {
     if (object == NULL)
         return false;
     for (size_t i = 0; i < complete; ++i)
@@ -87,8 +84,7 @@ static bool fresh(const observation *observed, size_t complete, const mc_item_st
     return true;
 }
 
-static bool cold(const mc_registry_classes *owner)
-{
+static bool cold(const mc_registry_classes *owner) {
     if (owner->blocks_phase != MC_REGISTRY_COLD || owner->nr_state.phase != MC_REGISTRY_COLD ||
         owner->jp_state.phase != MC_REGISTRY_COLD || owner->rp_state.phase != MC_REGISTRY_COLD ||
         owner->rw_state.phase != MC_REGISTRY_COLD ||
@@ -115,16 +111,14 @@ static bool cold(const mc_registry_classes *owner)
 }
 
 static bool emit_fields(protocol *output, identities *ids, const char *kind, size_t index,
-                        const mc_item_stack *object, const mc_item_stack_fields *fields)
-{
+                        const mc_item_stack *object, const mc_item_stack_fields *fields) {
     const size_t id = identity(ids, object);
     return id != 0 &&
            row(output, "%s\t%zu\tR:%zu\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\n", kind,
                index, id, fields->count, fields->animation, fields->id, fields->damage);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     const char *failure = "Stack values observation setup failed";
     mc_materials *materials = NULL;

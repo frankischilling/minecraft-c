@@ -52,51 +52,43 @@ typedef struct compression_helper {
             return family_status;                                                                  \
     } while (0)
 
-static void stage(family_source *source, int32_t pc)
-{
+static void stage(family_source *source, int32_t pc) {
     source->pc = pc;
 }
 
-static mc_registry_status own_error(family_source *source)
-{
+static mc_registry_status own_error(family_source *source) {
     source->classes->last_error.constructor_class = source->name;
     source->classes->last_error.constructor_pc = source->pc;
     return source->classes->last_error.status;
 }
 
 static mc_registry_status fail(family_source *source, mc_registry_status status,
-                               const char *message)
-{
+                               const char *message) {
     (void)mc_registry_fail(source->classes, status, message, NULL);
     return own_error(source);
 }
 
 static family_source context(mc_registry_classes *classes, mc_crafting_manager *manager,
-                             const char *client, const char *server)
-{
+                             const char *client, const char *server) {
     return (family_source){classes, manager,
                            classes->options.side == MC_REGISTRY_CLIENT ? client : server, 0};
 }
 
-static void *new_helper(mc_crafting_manager *manager, size_t bytes, int32_t pc)
-{
+static void *new_helper(mc_crafting_manager *manager, size_t bytes, int32_t pc) {
     mc_registry_crafting_stage(manager, pc);
     return mc_registry_allocate(manager->classes, bytes);
 }
 
-static mc_recipe_argument character(uint16_t value)
-{
+static mc_recipe_argument character(uint16_t value) {
     return (mc_recipe_argument){.kind = MC_RECIPE_ARGUMENT_CHARACTER, .value.character = value};
 }
 
-static mc_recipe_argument stack_argument(mc_item_stack *stack)
-{
+static mc_recipe_argument stack_argument(mc_item_stack *stack) {
     return (mc_recipe_argument){.kind = MC_RECIPE_ARGUMENT_STACK, .value.stack = stack};
 }
 
 static mc_registry_status literal(family_source *source, const char *text, int32_t pc,
-                                  mc_recipe_argument *out)
-{
+                                  mc_recipe_argument *out) {
     stage(source, pc);
     const mc_registry_string *string = NULL;
     mc_registry_status status = mc_registry_literal_ascii(source->classes, text, &string);
@@ -107,8 +99,7 @@ static mc_registry_status literal(family_source *source, const char *text, int32
 }
 
 static mc_registry_status named(family_source *source, bool block, const char *name, int32_t pc,
-                                mc_recipe_argument *out)
-{
+                                mc_recipe_argument *out) {
     stage(source, pc);
     if (block) {
         mc_block *value = NULL;
@@ -124,8 +115,7 @@ static mc_registry_status named(family_source *source, bool block, const char *n
 
 static mc_registry_status stack_from_value(family_source *source, bool block, int32_t new_pc,
                                            int32_t constructor_pc, mc_recipe_argument value,
-                                           int32_t count, int32_t damage, mc_item_stack **out)
-{
+                                           int32_t count, int32_t damage, mc_item_stack **out) {
     stage(source, new_pc);
     mc_item_stack *raw = NULL;
     if (mc_registry_stack_allocate(source->classes, &raw) != MC_REGISTRY_OK)
@@ -143,8 +133,7 @@ static mc_registry_status stack_from_value(family_source *source, bool block, in
 
 static mc_registry_status stack_named(family_source *source, bool block, const char *name,
                                       int32_t new_pc, int32_t load_pc, int32_t constructor_pc,
-                                      int32_t count, int32_t damage, mc_item_stack **out)
-{
+                                      int32_t count, int32_t damage, mc_item_stack **out) {
     stage(source, new_pc);
     mc_item_stack *raw = NULL;
     if (mc_registry_stack_allocate(source->classes, &raw) != MC_REGISTRY_OK)
@@ -163,15 +152,13 @@ static mc_registry_status stack_named(family_source *source, bool block, const c
 }
 
 static mc_registry_status shaped(family_source *source, mc_item_stack *output,
-                                 const mc_recipe_argument *arguments, size_t count, int32_t pc)
-{
+                                 const mc_recipe_argument *arguments, size_t count, int32_t pc) {
     stage(source, pc);
     return mc_registry_recipe_shaped(source->manager, output, arguments, count);
 }
 
 static mc_registry_status shapeless(family_source *source, mc_item_stack *output,
-                                    const mc_recipe_argument *arguments, size_t count, int32_t pc)
-{
+                                    const mc_recipe_argument *arguments, size_t count, int32_t pc) {
     stage(source, pc);
     return mc_registry_recipe_shapeless(source->manager, output, arguments, count);
 }
@@ -252,8 +239,7 @@ static const grid_specification armor = {
     .first_row_blocks = 2u,
     .armor = true};
 
-static mc_registry_status construct_grid(grid_helper *helper, const grid_specification *spec)
-{
+static mc_registry_status construct_grid(grid_helper *helper, const grid_specification *spec) {
     family_source *source = &helper->source;
     stage(source, 1); /* Actual Object constructor. */
     stage(source, 6);
@@ -303,8 +289,7 @@ static mc_registry_status construct_grid(grid_helper *helper, const grid_specifi
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status populate_grid(grid_helper *helper, bool is_armor)
-{
+static mc_registry_status populate_grid(grid_helper *helper, bool is_armor) {
     family_source *source = &helper->source;
     for (size_t column = 0; column < helper->b->values[0]->length; ++column) {
         stage(source, 20);
@@ -338,8 +323,7 @@ static mc_registry_status populate_grid(grid_helper *helper, bool is_armor)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status tools_tail(grid_helper *helper)
-{
+static mc_registry_status tools_tail(grid_helper *helper) {
     family_source *source = &helper->source;
     mc_item_stack *output = NULL;
     TRY(stack_named(source, false, "bc", 119, 123, 126, 1, 0, &output));
@@ -353,8 +337,7 @@ static mc_registry_status tools_tail(grid_helper *helper)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status weapons_tail(grid_helper *helper)
-{
+static mc_registry_status weapons_tail(grid_helper *helper) {
     family_source *source = &helper->source;
     mc_item_stack *output = NULL;
     TRY(stack_named(source, false, "i", 119, 123, 127, 1, 0, &output));
@@ -385,8 +368,7 @@ static mc_registry_status weapons_tail(grid_helper *helper)
 
 static mc_registry_status grid_family(mc_registry_classes *classes, mc_crafting_manager *manager,
                                       const grid_specification *spec, int32_t new_pc,
-                                      int32_t constructor_pc, int32_t populate_pc)
-{
+                                      int32_t constructor_pc, int32_t populate_pc) {
     grid_helper *helper = new_helper(manager, sizeof(*helper), new_pc);
     if (helper == NULL)
         return mc_registry_crafting_error(manager);
@@ -403,8 +385,7 @@ static mc_registry_status grid_family(mc_registry_classes *classes, mc_crafting_
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status construct_compression(compression_helper *helper)
-{
+static mc_registry_status construct_compression(compression_helper *helper) {
     family_source *source = &helper->source;
     static const char *const blocks[] = {"ai", "aj", "ay", "P"};
     static const char *const items[] = {"n", "m", "l", "aU"};
@@ -435,8 +416,7 @@ static mc_registry_status construct_compression(compression_helper *helper)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status populate_compression(compression_helper *helper)
-{
+static mc_registry_status populate_compression(compression_helper *helper) {
     family_source *source = &helper->source;
     for (size_t i = 0; i < helper->a->length; ++i) {
         stage(source, 19);
@@ -466,8 +446,7 @@ static mc_registry_status populate_compression(compression_helper *helper)
 }
 
 static mc_registry_status compression_family(mc_registry_classes *classes,
-                                             mc_crafting_manager *manager)
-{
+                                             mc_crafting_manager *manager) {
     compression_helper *helper = new_helper(manager, sizeof(*helper), 37);
     if (helper == NULL)
         return mc_registry_crafting_error(manager);
@@ -478,8 +457,7 @@ static mc_registry_status compression_family(mc_registry_classes *classes,
     return populate_compression(helper);
 }
 
-static mc_registry_status populate_food(family_source *source)
-{
+static mc_registry_status populate_food(family_source *source) {
     for (int32_t variant = 0; variant < 2; ++variant) {
         const int32_t offset = variant * 79;
         mc_item_stack *output = NULL;
@@ -519,8 +497,7 @@ typedef struct structure_step {
     int32_t ingredient_pc, call_pc;
 } structure_step;
 
-static mc_registry_status populate_structures(family_source *source)
-{
+static mc_registry_status populate_structures(family_source *source) {
     static const structure_step steps[] = {
         {"av", "y", 1, 5, 8, 3, {"###", "# #", "###"}, {17, 22, 27}, 40, 44},
         {"aC", "x", 48, 52, 55, 3, {"###", "# #", "###"}, {64, 69, 74}, 87, 91},
@@ -545,8 +522,7 @@ static mc_registry_status populate_structures(family_source *source)
 static mc_registry_status empty_family(mc_registry_classes *classes, mc_crafting_manager *manager,
                                        const char *client, const char *server, int32_t new_pc,
                                        int32_t constructor_pc, int32_t populate_pc,
-                                       mc_registry_status (*populate)(family_source *))
-{
+                                       mc_registry_status (*populate)(family_source *)) {
     /* These actual helper classes have no instance fields. The retained native
      * context carries identity/source metadata without inventing game state. */
     family_source *source = new_helper(manager, sizeof(*source), new_pc);
@@ -565,8 +541,7 @@ typedef struct dye_stack_step {
 } dye_stack_step;
 
 static mc_registry_status dye_stack(family_source *source, const dye_stack_step *step,
-                                    mc_item_stack **out)
-{
+                                    mc_item_stack **out) {
     return stack_named(source, false, "aU", step->new_pc, step->load_pc, step->constructor_pc,
                        step->count, step->damage, out);
 }
@@ -603,8 +578,7 @@ static const dye_mix_step dye_mixes[] = {
      {{775, 779, 784, 1, 4}, {790, 794, 799, 1, 1}, {805, 809, 814, 1, 1}, {820, 824, 830, 1, 15}},
      834}};
 
-static mc_registry_status dye_wool(family_source *source, int32_t color)
-{
+static mc_registry_status dye_wool(family_source *source, int32_t color) {
     stage(source, 9);
     mc_item_stack *output = NULL;
     if (mc_registry_stack_allocate(source->classes, &output) != MC_REGISTRY_OK)
@@ -647,8 +621,7 @@ static mc_registry_status dye_wool(family_source *source, int32_t color)
     return shapeless(source, output, arguments, 2, 65);
 }
 
-static mc_registry_status populate_dyes(family_source *source)
-{
+static mc_registry_status populate_dyes(family_source *source) {
     for (int32_t color = 0; color < 16; ++color)
         TRY(dye_wool(source, color));
 
@@ -660,6 +633,7 @@ static mc_registry_status populate_dyes(family_source *source)
     } extracts[] = {{{75, 79, 85, 2, 11}, true, "ae", 94, 98},
                     {{102, 106, 111, 2, 1}, true, "af", 120, 124},
                     {{128, 132, 138, 3, 15}, false, "aV", 147, 151}};
+
     for (size_t i = 0; i < sizeof(extracts) / sizeof(*extracts); ++i) {
         mc_item_stack *output = NULL;
         TRY(dye_stack(source, &extracts[i].output, &output));
@@ -685,8 +659,7 @@ static mc_registry_status populate_dyes(family_source *source)
 }
 
 mc_registry_status mc_registry_recipe_families(mc_registry_classes *classes,
-                                               mc_crafting_manager *manager)
-{
+                                               mc_crafting_manager *manager) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (manager == NULL || manager->classes != classes || classes->entered == 0)

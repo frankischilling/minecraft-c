@@ -46,8 +46,7 @@ typedef struct guarded_output {
     uint64_t after;
 } guarded_output;
 
-static guarded_output make_output(void)
-{
+static guarded_output make_output(void) {
     guarded_output out;
     memset(&out, 0xa5, sizeof(out));
     out.before = UINT64_C(0x0123456789abcdef);
@@ -56,14 +55,12 @@ static guarded_output make_output(void)
     return out;
 }
 
-static bool guards_unchanged(const guarded_output *out)
-{
+static bool guards_unchanged(const guarded_output *out) {
     return out->before == UINT64_C(0x0123456789abcdef) &&
            out->after == UINT64_C(0xfedcba9876543210);
 }
 
-static int test_counter_contracts(void)
-{
+static int test_counter_contracts(void) {
     /* These identities have certain exact binary64 results, independently of
      * any native/JDK rounded-vector capture. */
     static const struct {
@@ -76,6 +73,7 @@ static int test_counter_contracts(void)
                  {-1, 1, -INT64_C(1000000000)},
                  {3, 3, INT64_C(1000000000)},
                  {INT64_MAX, INT64_MAX, INT64_C(1000000000)}};
+
     static const struct {
         int64_t count;
         int64_t frequency;
@@ -104,8 +102,7 @@ static int test_counter_contracts(void)
     return 0;
 }
 
-static int test_timespec_contracts(void)
-{
+static int test_timespec_contracts(void) {
     /* Literal independently exact integer products/sums, with both the source
      * multiplication intermediate and final addition required to fit. */
     static const struct {
@@ -119,6 +116,7 @@ static int test_timespec_contracts(void)
                  {-1, INT64_C(999999999), -1},
                  {INT64_C(9223372036), INT64_C(854775807), INT64_MAX},
                  {-INT64_C(9223372036), 0, -INT64_C(9223372036000000000)}};
+
     static const struct {
         int64_t sec;
         int64_t nsec;
@@ -154,8 +152,7 @@ static int test_timespec_contracts(void)
     return 0;
 }
 
-static int test_rejected_arguments(void)
-{
+static int test_rejected_arguments(void) {
     mc_platform_nanotime invalid = {0, 0, false};
     unsigned char saved_clock[sizeof(invalid)];
     guarded_output out = make_output();
@@ -190,8 +187,7 @@ static int test_rejected_arguments(void)
     return 0;
 }
 
-static int test_live_clock(mc_platform_nanotime *timer)
-{
+static int test_live_clock(mc_platform_nanotime *timer) {
     guarded_output out = make_output();
     int64_t lower;
     int64_t upper;
@@ -289,8 +285,7 @@ static int test_live_clock(mc_platform_nanotime *timer)
     return 0;
 }
 
-static int test_unsupported_fp(const mc_platform_nanotime *timer)
-{
+static int test_unsupported_fp(const mc_platform_nanotime *timer) {
     const unsigned int saved_csr = _mm_getcsr();
     CHECK((saved_csr & 0xffc0u) == 0x1f80u);
     const unsigned int clean_csr = saved_csr & ~0x003fu;
@@ -354,8 +349,7 @@ static int test_unsupported_fp(const mc_platform_nanotime *timer)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     mc_platform_nanotime timer;
     const unsigned int initial_csr = _mm_getcsr();
     CHECK((initial_csr & 0xffc0u) == 0x1f80u);

@@ -43,16 +43,14 @@ static int32_t noise_x;
 static int32_t noise_z;
 static int64_t chunk_seed;
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out)
-{
+static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out) {
     const char *digits = *text == '-' || *text == '+' ? text + 1 : text;
     if (*digits == '\0')
         return 0;
@@ -69,16 +67,14 @@ static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int6
     return 1;
 }
 
-static void addresses(uintptr_t result[4])
-{
+static void addresses(uintptr_t result[4]) {
     result[0] = (uintptr_t)surface.sand.data;
     result[1] = (uintptr_t)surface.gravel.data;
     result[2] = (uintptr_t)surface.thickness.data;
     result[3] = (uintptr_t)blocks;
 }
 
-static void print_values(const double *values, size_t length)
-{
+static void print_values(const double *values, size_t length) {
     putchar('[');
     for (size_t i = 0; i < length; ++i) {
         if (i != 0)
@@ -88,8 +84,7 @@ static void print_values(const double *values, size_t length)
     putchar(']');
 }
 
-static void print_continuation(mc_java_random random)
-{
+static void print_continuation(mc_java_random random) {
     putchar('[');
     for (size_t i = 0; i < 4; ++i) {
         if (i != 0)
@@ -99,15 +94,13 @@ static void print_continuation(mc_java_random random)
     putchar(']');
 }
 
-static void print_span(mc_terrain_double_span span)
-{
+static void print_span(mc_terrain_double_span span) {
     printf("{\"length\":%zu,\"values\":", span.length);
     print_values(span.data, span.length);
     putchar('}');
 }
 
-static void print_state(void)
-{
+static void print_state(void) {
     static const char names[] = "klmnoabc";
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
     const mc_noise_perlin *channels[] = {state.low_layers,
@@ -143,8 +136,7 @@ static void print_state(void)
     putchar('}');
 }
 
-static void print_response(int full_state, int fixture, const uintptr_t before[4])
-{
+static void print_response(int full_state, int fixture, const uintptr_t before[4]) {
     fputs("OK\t{\"state\":", stdout);
     if (full_state)
         print_state();
@@ -211,8 +203,7 @@ static void print_response(int full_state, int fixture, const uintptr_t before[4
     puts("\"}");
 }
 
-static int generate_base(int32_t x, int32_t z)
-{
+static int generate_base(int32_t x, int32_t z) {
     if (mc_biome_sample_square(&manager, mc_java_i32_mul(x, 16), mc_java_i32_mul(z, 16), 16,
                                &biomes) != MC_BIOME_OK)
         return 0;
@@ -245,8 +236,7 @@ static int generate_base(int32_t x, int32_t z)
     return 1;
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *fields[5];
     size_t count = 1;
     fields[0] = line;
@@ -358,8 +348,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     if (mc_biome_memory_init(&memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) != MC_BIOME_OK)
         return 2;
     size_t requests = 0;

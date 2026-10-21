@@ -23,6 +23,7 @@ typedef struct block {
     unsigned int releases;
     bool live;
 } block;
+
 typedef struct tracking {
     block blocks[RECORDS];
     size_t count, requests, fail_at, release_calls;
@@ -31,8 +32,7 @@ typedef struct tracking {
 
 /* Actual dirty, suitably aligned malloc storage. There is no private set
  * layout, production fault hook, or alternate set algorithm in this unit. */
-static void *allocate(void *context, size_t bytes)
-{
+static void *allocate(void *context, size_t bytes) {
     tracking *t = context;
     ++t->requests;
     if (t->fail_at != 0 && t->requests == t->fail_at) {
@@ -59,8 +59,7 @@ static void *allocate(void *context, size_t bytes)
     return p;
 }
 
-static void deallocate(void *context, void *storage)
-{
+static void deallocate(void *context, void *storage) {
     tracking *t = context;
     ++t->release_calls;
     for (size_t i = t->count; i != 0; --i)
@@ -73,8 +72,7 @@ static void deallocate(void *context, void *storage)
     t->invalid = true; /* NULL, foreign or already released: never free it. */
 }
 
-static void caller_cleanup(tracking *t)
-{
+static void caller_cleanup(tracking *t) {
     for (size_t i = 0; i < t->count; ++i)
         if (t->blocks[i].live) {
             free(t->blocks[i].pointer);
@@ -83,13 +81,13 @@ static void caller_cleanup(tracking *t)
 }
 
 typedef enum kind { ADD, REMOVE, REMOVE_FIRST, CLEAR } kind;
+
 typedef struct operation {
     kind action;
     int32_t key;
 } operation;
 
-static size_t script(operation *ops)
-{
+static size_t script(operation *ops) {
     size_t n = 0;
     for (int32_t i = 0; i < 80; ++i)
         ops[n++] = (operation){ADD, i * 1024};
@@ -121,8 +119,7 @@ static size_t script(operation *ops)
     return n;
 }
 
-static int equal_sets(const mc_java_int_set *actual, const mc_java_int_set *control)
-{
+static int equal_sets(const mc_java_int_set *actual, const mc_java_int_set *control) {
     int result = 1;
     int32_t a[CAPACITY], b[CAPACITY];
     size_t an = SIZE_MAX, bn = SIZE_MAX;
@@ -151,8 +148,7 @@ cleanup:
     return result;
 }
 
-static int released(const tracking *t, bool retained)
-{
+static int released(const tracking *t, bool retained) {
     int result = 1;
     CHECK(!t->invalid && !t->malloc_failed);
     CHECK(t->release_calls == (retained ? 0 : t->count));
@@ -164,8 +160,7 @@ cleanup:
     return result;
 }
 
-static int history(bool retained, size_t fail_at, size_t *request_count)
-{
+static int history(bool retained, size_t fail_at, size_t *request_count) {
     int result = 1;
     tracking t = {0};
     t.fail_at = fail_at;
@@ -250,8 +245,7 @@ cleanup:
     return result;
 }
 
-static int arguments(bool retained)
-{
+static int arguments(bool retained) {
     int result = 1;
     tracking t = {0};
     mc_java_int_set *existing = NULL, *out = NULL;
@@ -287,8 +281,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     for (unsigned int mode = 0; mode < 2; ++mode) {
         size_t requests = 0, ignored = 0;
         if (arguments(mode != 0) != 0 || history(mode != 0, 0, &requests) != 0)

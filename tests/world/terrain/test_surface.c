@@ -35,22 +35,19 @@ static uint8_t expected_blocks[32771];
 static mc_terrain_normal_state state;
 static mc_terrain_normal_state saved_state;
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static mc_terrain_normal_surface_workspace workspace(void)
-{
+static mc_terrain_normal_surface_workspace workspace(void) {
     return (mc_terrain_normal_surface_workspace){
         {storage.fields[0], 259}, {storage.fields[1], 259}, {storage.fields[2], 259}};
 }
 
-static void prepare(void)
-{
+static void prepare(void) {
     memset(&storage, 0, sizeof(storage));
     for (size_t i = 0; i < 259; ++i) {
         for (size_t field = 0; field < 3; ++field)
@@ -60,8 +57,7 @@ static void prepare(void)
     memset(storage.blocks, 0xa5, sizeof(storage.blocks));
 }
 
-static void fields(double sand, double gravel, double thickness)
-{
+static void fields(double sand, double gravel, double thickness) {
     for (size_t i = 0; i < 256; ++i) {
         storage.fields[0][i] = sand;
         storage.fields[1][i] = gravel;
@@ -69,15 +65,13 @@ static void fields(double sand, double gravel, double thickness)
     }
 }
 
-static int check_continuation(mc_java_random random, const uint64_t expected[4])
-{
+static int check_continuation(mc_java_random random, const uint64_t expected[4]) {
     for (size_t i = 0; i < 4; ++i)
         CHECK((uint64_t)mc_java_random_next_i64(&random) == expected[i]);
     return 0;
 }
 
-static int decode_runs(const surface_block_run *runs, size_t count, uint8_t output[32771])
-{
+static int decode_runs(const surface_block_run *runs, size_t count, uint8_t output[32771]) {
     size_t position = 0;
     for (size_t i = 0; i < count; ++i) {
         CHECK(runs[i].length != 0 && runs[i].length <= 32771u - position);
@@ -88,8 +82,7 @@ static int decode_runs(const surface_block_run *runs, size_t count, uint8_t outp
     return 0;
 }
 
-static int check_observed(const surface_fixture *fixture)
-{
+static int check_observed(const surface_fixture *fixture) {
     for (size_t channel = 0; channel < 3; ++channel) {
         for (size_t i = 0; i < 259; ++i)
             CHECK(bits_of(storage.fields[channel][i]) == fixture->scratch[channel][i]);
@@ -102,8 +95,7 @@ static int check_observed(const surface_fixture *fixture)
     return 0;
 }
 
-static int test_original_composed_and_split(void)
-{
+static int test_original_composed_and_split(void) {
     for (size_t f = 0; f < sizeof(observed_surface) / sizeof(observed_surface[0]); ++f) {
         const surface_fixture *fixture = &observed_surface[f];
         CHECK(mc_terrain_normal_init(&state, fixture->seed));
@@ -148,8 +140,7 @@ static int test_original_composed_and_split(void)
     return 0;
 }
 
-static int test_chunk_seed_boundaries(void)
-{
+static int test_chunk_seed_boundaries(void) {
     for (size_t i = 0; i < sizeof(controlled_chunk_seeds) / sizeof(controlled_chunk_seeds[0]);
          ++i) {
         const chunk_seed_fixture *fixture = &controlled_chunk_seeds[i];
@@ -158,8 +149,7 @@ static int test_chunk_seed_boundaries(void)
     return 0;
 }
 
-static int test_minimum_spans_and_wrapped_origins(void)
-{
+static int test_minimum_spans_and_wrapped_origins(void) {
     const surface_fixture *fixture = &observed_surface[0];
     CHECK(mc_terrain_normal_init(&state, fixture->seed));
     memcpy(&saved_state, &state, sizeof(state));
@@ -204,8 +194,7 @@ static int test_minimum_spans_and_wrapped_origins(void)
 /* The following tests use constructed C inputs. Their field constants and
  * block arrangements are separate from the original-only fixtures above.
  * Fixed Random continuations come from java.util.Random-only observations. */
-static int test_bedrock_and_nonstone_draws(void)
-{
+static int test_bedrock_and_nonstone_draws(void) {
     static const uint8_t values[] = {0, 49, 128, 255};
     for (size_t value = 0; value < sizeof(values) / sizeof(values[0]); ++value) {
         prepare();
@@ -244,8 +233,7 @@ static int test_bedrock_and_nonstone_draws(void)
     return 0;
 }
 
-static int test_sea_band_and_sand_precedence(void)
-{
+static int test_sea_band_and_sand_precedence(void) {
     static const size_t caps[] = {59, 60, 62, 63, 64, 65, 66};
     for (size_t cap_index = 0; cap_index < sizeof(caps) / sizeof(caps[0]); ++cap_index) {
         size_t cap = caps[cap_index];
@@ -289,8 +277,7 @@ static int test_sea_band_and_sand_precedence(void)
     return 0;
 }
 
-static int test_zero_and_negative_thickness(void)
-{
+static int test_zero_and_negative_thickness(void) {
     static const size_t caps[] = {63, 127};
     for (size_t i = 0; i < sizeof(caps) / sizeof(caps[0]); ++i) {
         prepare();
@@ -328,8 +315,7 @@ static int test_zero_and_negative_thickness(void)
     return 0;
 }
 
-static int test_sandstone_and_persistent_materials(void)
-{
+static int test_sandstone_and_persistent_materials(void) {
     for (int seed = 0; seed < 2; ++seed) {
         for (int gap = 0; gap < 2; ++gap) {
             prepare();
@@ -364,8 +350,7 @@ static int test_sandstone_and_persistent_materials(void)
     return 0;
 }
 
-static int test_material_byte_patterns_and_read_alias(void)
-{
+static int test_material_byte_patterns_and_read_alias(void) {
     prepare();
     fields(-1, 2, 0);
     memset(storage.blocks, 255, 32768);
@@ -411,16 +396,14 @@ static int test_material_byte_patterns_and_read_alias(void)
     return 0;
 }
 
-static int check_preserved(mc_java_random random, mc_java_random saved_random)
-{
+static int check_preserved(mc_java_random random, mc_java_random saved_random) {
     CHECK(memcmp(&storage, &saved_storage, sizeof(storage)) == 0);
     CHECK(memcmp(&state, &saved_state, sizeof(state)) == 0);
     CHECK(mc_test_java_random_equal(&random, &saved_random));
     return 0;
 }
 
-static int expect_bad_fields(const mc_terrain_normal_surface_workspace *bad)
-{
+static int expect_bad_fields(const mc_terrain_normal_surface_workspace *bad) {
     mc_java_random random;
     mc_java_random_seed(&random, 0);
     mc_java_random saved_random = random;
@@ -435,8 +418,7 @@ static int expect_bad_fields(const mc_terrain_normal_surface_workspace *bad)
     return 0;
 }
 
-static int test_preflight_preservation(void)
-{
+static int test_preflight_preservation(void) {
     CHECK(mc_terrain_normal_init(&state, 0));
     prepare();
     memcpy(&saved_storage, &storage, sizeof(storage));
@@ -480,8 +462,7 @@ static int test_preflight_preservation(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_original_composed_and_split() || test_chunk_seed_boundaries() ||
         test_minimum_spans_and_wrapped_origins() || test_bedrock_and_nonstone_draws() ||
         test_sea_band_and_sand_precedence() || test_zero_and_negative_thickness() ||

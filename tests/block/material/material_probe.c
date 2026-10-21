@@ -8,8 +8,7 @@
 #include <io.h>
 #endif
 
-static int palette_id(const mc_materials *owner, const mc_material_palette *palette)
-{
+static int palette_id(const mc_materials *owner, const mc_material_palette *palette) {
     if (palette == NULL)
         return -1;
     for (int id = 0; id < MC_PALETTE_COUNT; ++id)
@@ -19,8 +18,7 @@ static int palette_id(const mc_materials *owner, const mc_material_palette *pale
 }
 
 static void observe(const mc_materials *owner, char name, const mc_material *material,
-                    const char *phase)
-{
+                    const char *phase) {
     printf("M\t%s\t%c\t%d\t%d%d%d%d%d%d%d%d\t%" PRId32 "\n", phase, name,
            palette_id(owner, mc_material_palette_of(material)), mc_material_a(material),
            mc_material_b(material), mc_material_c(material), mc_material_d(material),
@@ -28,8 +26,7 @@ static void observe(const mc_materials *owner, char name, const mc_material *mat
            mc_material_i(material), mc_material_j(material));
 }
 
-int main(void)
-{
+int main(void) {
 #ifdef _WIN32
     if (_setmode(_fileno(stdout), _O_BINARY) == -1)
         return 1;

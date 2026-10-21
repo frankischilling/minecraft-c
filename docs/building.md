@@ -191,7 +191,7 @@ and duplicate-label controls.
 Runtime code is organized as `src/<system>/<subsystem>/`, with matching public
 headers under `include/mc/` and tests under `tests/`. See [architecture](architecture.md)
 for current and planned modules. `.clang-format` sets four spaces, a 100-column
-limit, and Linux-style braces. CI uses clang-format18:
+limit, attached braces, and blank lines between definitions. CI uses clang-format18:
 
 ```sh
 python scripts/development/format_code.py --clang-format clang-format-18

@@ -20,8 +20,7 @@
  * a serialization traversal or a claim about Java String argument identity. */
 typedef enum line_status { LINE_OK, LINE_EOF, LINE_INVALID, LINE_IO } line_status;
 
-static line_status read_line(char *line, bool *skip_lf)
-{
+static line_status read_line(char *line, bool *skip_lf) {
     size_t length = 0;
     for (;;) {
         const int c = fgetc(stdin);
@@ -49,8 +48,7 @@ static line_status read_line(char *line, bool *skip_lf)
     }
 }
 
-static bool words_split(char *line, char *words[4], size_t *count)
-{
+static bool words_split(char *line, char *words[4], size_t *count) {
     size_t length = 1;
     words[0] = line;
     for (char *p = line; *p != '\0'; ++p) {
@@ -68,8 +66,7 @@ static bool words_split(char *line, char *words[4], size_t *count)
     return true;
 }
 
-static bool number(const char *text, size_t maximum, size_t *out)
-{
+static bool number(const char *text, size_t maximum, size_t *out) {
     size_t value = 0;
     if (*text == '\0')
         return false;
@@ -85,8 +82,7 @@ static bool number(const char *text, size_t maximum, size_t *out)
     return true;
 }
 
-static unsigned int hex_digit(unsigned char c)
-{
+static unsigned int hex_digit(unsigned char c) {
     if (c >= '0' && c <= '9')
         return (unsigned int)(c - '0');
     if (c >= 'a' && c <= 'f')
@@ -97,8 +93,7 @@ static unsigned int hex_digit(unsigned char c)
 }
 
 static bool parse_key(const char *text, uint16_t *units, mc_nbt_string *key,
-                      const mc_nbt_string **argument)
-{
+                      const mc_nbt_string **argument) {
     if (strcmp(text, "NULL") == 0) {
         *argument = NULL;
         return true;
@@ -126,8 +121,7 @@ static bool parse_key(const char *text, uint16_t *units, mc_nbt_string *key,
     return true;
 }
 
-static int entry_order(const void *left, const void *right)
-{
+static int entry_order(const void *left, const void *right) {
     const mc_world_saved_id *a = *(const mc_world_saved_id *const *)left;
     const mc_world_saved_id *b = *(const mc_world_saved_id *const *)right;
     if (a->null_name != b->null_name)
@@ -142,8 +136,7 @@ static int entry_order(const void *left, const void *right)
     return a->name.length < b->name.length ? -1 : a->name.length > b->name.length ? 1 : 0;
 }
 
-static bool print_key(const mc_world_saved_id *entry)
-{
+static bool print_key(const mc_world_saved_id *entry) {
     if (entry->null_name)
         return fputs("NULL", stdout) >= 0;
     if (entry->name.length == 0)
@@ -159,8 +152,7 @@ static bool print_key(const mc_world_saved_id *entry)
     return true;
 }
 
-static bool print_map(mc_world_saved_data *owner, size_t slot)
-{
+static bool print_map(mc_world_saved_data *owner, size_t slot) {
     const size_t count = mc_world_saved_data_count(owner);
     if (count > SIZE_MAX / sizeof(const mc_world_saved_id *))
         return false;
@@ -188,16 +180,14 @@ cleanup:
     return ok;
 }
 
-static void free_owners(mc_world_saved_data *owners[PROBE_SLOTS])
-{
+static void free_owners(mc_world_saved_data *owners[PROBE_SLOTS]) {
     for (size_t i = 0; i < PROBE_SLOTS; ++i) {
         mc_world_saved_data_free(owners[i]);
         owners[i] = NULL;
     }
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     mc_world_saved_data *owners[PROBE_SLOTS] = {0};
     char *line = NULL;

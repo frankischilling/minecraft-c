@@ -2,6 +2,7 @@
 #define MC_ENTITY_ENTITY_H
 
 #include "mc/core/java/random_profile.h"
+#include "mc/entity/bounds/bounds.h"
 #include "mc/entity/classes/classes.h"
 #include "mc/entity/errors.h"
 #include "mc/item/stack/stack.h"
@@ -50,6 +51,7 @@ typedef struct mc_entity_base_fields {
     bool bF;
     int32_t bG, bH, bI;
     bool bM;
+
     struct {
         const void *bA, *bB;
         int32_t bJ, bK, bL;
@@ -65,10 +67,6 @@ typedef struct mc_item_entity_fields {
 typedef struct mc_falling_entity_fields {
     int32_t a, b;
 } mc_falling_entity_fields;
-
-typedef struct mc_entity_bounds {
-    double min_x, min_y, min_z, max_x, max_y, max_z;
-} mc_entity_bounds;
 
 typedef struct mc_entity_snapshot {
     mc_entity_source source;

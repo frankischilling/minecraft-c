@@ -7,23 +7,20 @@
 
 static const uint16_t id_units[] = {'i', 'd'};
 
-static mc_entity_nbt_status finish(mc_entity_nbt_error frame, mc_entity_nbt_error *error)
-{
+static mc_entity_nbt_status finish(mc_entity_nbt_error frame, mc_entity_nbt_error *error) {
     if (error != NULL)
         *error = frame;
     return frame.status;
 }
 
 static mc_entity_nbt_status fail(mc_entity_nbt_error *frame, mc_entity_nbt_status status,
-                                 const char *operation)
-{
+                                 const char *operation) {
     frame->status = status;
     frame->operation = operation;
     return status;
 }
 
-static mc_entity_nbt_status registry_failure(mc_entity_nbt_error *frame)
-{
+static mc_entity_nbt_status registry_failure(mc_entity_nbt_error *frame) {
     frame->initializer_bytecode = frame->registry.initializer_bytecode;
     frame->registration_bytecode = frame->registry.registration_bytecode;
     const mc_entity_registry_status status = frame->registry.status;
@@ -34,8 +31,7 @@ static mc_entity_nbt_status registry_failure(mc_entity_nbt_error *frame)
                 "EntityList active use");
 }
 
-static mc_entity_nbt_status construction_failure(mc_entity_nbt_error *frame)
-{
+static mc_entity_nbt_status construction_failure(mc_entity_nbt_error *frame) {
     const mc_entity_status status = frame->construction.status;
     return fail(frame,
                 status == MC_ENTITY_LIMIT               ? MC_ENTITY_NBT_LIMIT
@@ -47,8 +43,7 @@ static mc_entity_nbt_status construction_failure(mc_entity_nbt_error *frame)
 
 mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *limits,
                                         bool *serialized, mc_nbt_tree **out,
-                                        mc_entity_nbt_error *error)
-{
+                                        mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (entity == NULL || serialized == NULL || out == NULL) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity NBT Boolean save arguments");
@@ -134,8 +129,7 @@ done:
     return finish(frame, error);
 }
 
-static bool read_id(const mc_nbt_tag *compound, mc_nbt_string *out, mc_entity_nbt_error *frame)
-{
+static bool read_id(const mc_nbt_tag *compound, mc_nbt_string *out, mc_entity_nbt_error *frame) {
     frame->field = "id";
     if (compound == NULL || compound->type != MC_NBT_COMPOUND) {
         fail(frame, compound == NULL ? MC_ENTITY_NBT_NULL_REFERENCE : MC_ENTITY_NBT_WRONG_TAG,
@@ -155,8 +149,7 @@ static bool read_id(const mc_nbt_tag *compound, mc_nbt_string *out, mc_entity_nb
     return true;
 }
 
-static bool skipped(const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
-{
+static bool skipped(const mc_nbt_tag *compound, mc_entity_nbt_error *frame) {
     frame->factory_bytecode = 72;
     mc_text_stdout stream;
     if (mc_text_stdout_capture(&stream) != MC_TEXT_STDOUT_OK) {
@@ -197,8 +190,7 @@ static bool skipped(const mc_nbt_tag *compound, mc_entity_nbt_error *frame)
 
 mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_runtime *world,
                                            const mc_nbt_tag *compound, mc_entity **out,
-                                           mc_entity_nbt_error *error)
-{
+                                           mc_entity_nbt_error *error) {
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (classes == NULL || out == NULL) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity NBT factory arguments");

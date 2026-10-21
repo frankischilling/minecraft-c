@@ -43,11 +43,13 @@ mc_world_storage_status mc_world_tree_taiga_dense(mc_world_runtime *, mc_java_ra
                                                   mc_world_tree_error *error);
 
 typedef struct mc_world_tree_big_oak mc_world_tree_big_oak;
+
 typedef struct mc_world_tree_limits {
     /* Actual native owner and simultaneously live coordinate rows. NULL
      * limits selects 1 MiB. Explicit zero admits no allocation. No scan cap. */
     size_t max_allocation_bytes;
 } mc_world_tree_limits;
+
 void mc_world_tree_limits_default(mc_world_tree_limits *out);
 
 /* constructor_world provides its actual application DefaultRandom service;

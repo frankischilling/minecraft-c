@@ -3,13 +3,11 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "mc/core/java/java.h"
 
-static int32_t or_bits(int32_t a, int32_t b)
-{
+static int32_t or_bits(int32_t a, int32_t b) {
     return mc_java_i32_narrow((int64_t)((uint32_t)a | (uint32_t)b));
 }
 
-static mc_registry_error registry_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error registry_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -23,8 +21,7 @@ static mc_registry_error registry_error(mc_registry_status status, const char *m
  * already evaluated ID to a combined helper would move that read before the
  * source getstatic and its actual initializer callbacks. */
 static bool capture_q(mc_world_runtime *world, unsigned int pc, mc_registry_block_q_view *out,
-                      mc_world_mutation_error *error)
-{
+                      mc_world_mutation_error *error) {
     error->height_bytecode = pc;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     mc_registry_error cause = registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
@@ -38,8 +35,7 @@ static bool capture_q(mc_world_runtime *world, unsigned int pc, mc_registry_bloc
 }
 
 static bool opacity_at(mc_world_runtime *world, const mc_registry_block_q_view *array, int32_t id,
-                       unsigned int pc, int32_t *out, mc_world_mutation_error *error)
-{
+                       unsigned int pc, int32_t *out, mc_world_mutation_error *error) {
     error->height_bytecode = pc;
     mc_registry_error cause = registry_error(MC_REGISTRY_OK, NULL);
     if (mc_registry_block_q_at(array, id, out, &cause) != MC_REGISTRY_OK)
@@ -50,8 +46,7 @@ static bool opacity_at(mc_world_runtime *world, const mc_registry_block_q_view *
 
 static bool height_byte(mc_world_chunk *chunk, mc_world_runtime *world, int32_t index,
                         unsigned int field_pc, unsigned int access_pc, int32_t *out,
-                        mc_world_mutation_error *error)
-{
+                        mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     error->height_bytecode = field_pc;
     (void)mc_world_chunk_fields_get(chunk, &fields);
@@ -68,8 +63,7 @@ static bool height_byte(mc_world_chunk *chunk, mc_world_runtime *world, int32_t 
 
 static bool block_byte(mc_world_chunk *chunk, mc_world_runtime *world, int32_t index,
                        unsigned int field_pc, unsigned int access_pc, int32_t *out,
-                       mc_world_mutation_error *error)
-{
+                       mc_world_mutation_error *error) {
     mc_world_chunk_fields fields;
     error->height_bytecode = field_pc;
     (void)mc_world_chunk_fields_get(chunk, &fields);
@@ -87,15 +81,13 @@ static bool block_byte(mc_world_chunk *chunk, mc_world_runtime *world, int32_t i
 /* The actual a(III) getter has OR-composed Java indexing and no numerical XYZ
  * gate. Its failure belongs to the invoking g PC349/409 in this error frame. */
 static bool block_get(mc_world_chunk *chunk, mc_world_runtime *world, int32_t x, int32_t y,
-                      int32_t z, unsigned int pc, int32_t *out, mc_world_mutation_error *error)
-{
+                      int32_t z, unsigned int pc, int32_t *out, mc_world_mutation_error *error) {
     const int32_t index = or_bits(or_bits(mc_java_i32_shl(x, 11), mc_java_i32_shl(z, 7)), y);
     return block_byte(chunk, world, index, pc, pc, out, error);
 }
 
 bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                              mc_world_mutation_error *error)
-{
+                              mc_world_mutation_error *error) {
     /* Enclosing concrete setter already holds this World and exact Chunk.
      * This passive binding supplies the native Registry/error context only;
      * each reached source field below is still evaluated at its own point. */

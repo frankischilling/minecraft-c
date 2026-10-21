@@ -19,13 +19,11 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static bool nullable_text_equal(const char *a, const char *b)
-{
+static bool nullable_text_equal(const char *a, const char *b) {
     return a == NULL || b == NULL ? a == b : strcmp(a, b) == 0;
 }
 
-static bool same_error(mc_registry_error a, mc_registry_error b)
-{
+static bool same_error(mc_registry_error a, mc_registry_error b) {
     return a.status == b.status && nullable_text_equal(a.message, b.message) &&
            a.initializer_pc == b.initializer_pc && a.block_id == b.block_id &&
            nullable_text_equal(a.constructor_class, b.constructor_class) &&
@@ -41,8 +39,7 @@ static bool same_error(mc_registry_error a, mc_registry_error b)
            a.format_error.date_time == b.format_error.date_time;
 }
 
-static mc_registry_error poison_error(void)
-{
+static mc_registry_error poison_error(void) {
     return (mc_registry_error){.status = MC_REGISTRY_DUPLICATE_STATISTIC,
                                .message = "poison message",
                                .initializer_pc = 71,
@@ -62,8 +59,7 @@ static mc_registry_error poison_error(void)
                                                 .date_time = true}};
 }
 
-static bool fresh_error(mc_registry_error error, mc_registry_status status)
-{
+static bool fresh_error(mc_registry_error error, mc_registry_status status) {
     return error.status == status && error.initializer_pc == -1 && error.block_id == -1 &&
            error.constructor_class == NULL && error.constructor_pc == -1 &&
            error.profile_status == MC_JAVA_RANDOM_PROFILE_OK &&
@@ -75,8 +71,7 @@ static bool fresh_error(mc_registry_error error, mc_registry_status status)
            (status == MC_REGISTRY_OK ? error.message == NULL : error.message != NULL);
 }
 
-static bool text_is(const mc_registry_string *string, const char *text)
-{
+static bool text_is(const mc_registry_string *string, const char *text) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length != strlen(text) ||
         (view.length != 0 && view.units == NULL))
@@ -87,14 +82,12 @@ static bool text_is(const mc_registry_string *string, const char *text)
     return true;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     /* Exclusive tests; no profile operation overlaps these private reads. */
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static bool cold_except_literals(const mc_registry_classes *owner)
-{
+static bool cold_except_literals(const mc_registry_classes *owner) {
     return owner->blocks_phase == MC_REGISTRY_COLD && owner->block_initializer_pc == -1 &&
            owner->named_blocks == 0 && owner->blocks.m == NULL && owner->blocks.q == NULL &&
            owner->items.b == NULL && owner->translation_state.phase == MC_REGISTRY_COLD &&
@@ -108,8 +101,7 @@ static bool cold_except_literals(const mc_registry_classes *owner)
            owner->initializer == NULL;
 }
 
-static int test_cold(mc_registry_options options)
-{
+static int test_cold(mc_registry_options options) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     const mc_registry_string *first = NULL, *same = NULL, *different = NULL, *empty = NULL;
@@ -165,8 +157,7 @@ cleanup:
     return result;
 }
 
-static int test_literal_budgets(mc_registry_options options)
-{
+static int test_literal_budgets(mc_registry_options options) {
     int result = 1;
     mc_registry_classes *measure = NULL, *owner = NULL;
     const mc_registry_string *keep = NULL, *target = NULL, *candidate = NULL;
@@ -254,8 +245,7 @@ typedef struct entered_fixture {
     } while (0)
 
 static mc_registry_status missing_resource(void *context, const char *name,
-                                           mc_java_properties_input *out)
-{
+                                           mc_java_properties_input *out) {
     entered_fixture *fixture = context;
     mc_registry_classes *owner = fixture->owner;
     ++fixture->opens;
@@ -309,8 +299,7 @@ static mc_registry_status missing_resource(void *context, const char *name,
     return MC_REGISTRY_NULL_REFERENCE;
 }
 
-static int test_entered(mc_registry_options options)
-{
+static int test_entered(mc_registry_options options) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     entered_fixture fixture = {.valid = true};
@@ -374,8 +363,7 @@ cleanup:
     return result;
 }
 
-static int test_fresh_failure(mc_registry_options options)
-{
+static int test_fresh_failure(mc_registry_options options) {
     int result = 1;
     mc_registry_classes *measure = NULL, *owner = NULL;
     const mc_registry_string *anchor = NULL, *literal = NULL, *candidate = NULL;
@@ -471,8 +459,7 @@ typedef struct p_entered_fixture {
 } p_entered_fixture;
 
 static mc_registry_status p_missing_resource(void *context, const char *name,
-                                             mc_java_properties_input *out)
-{
+                                             mc_java_properties_input *out) {
     p_entered_fixture *fixture = context;
     mc_registry_classes *owner = fixture->owner;
     ++fixture->opens;
@@ -558,8 +545,7 @@ static mc_registry_status p_missing_resource(void *context, const char *name,
     return MC_REGISTRY_NULL_REFERENCE;
 }
 
-static int test_p_entered_failure(mc_registry_options options)
-{
+static int test_p_entered_failure(mc_registry_options options) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     p_entered_fixture fixture = {.valid = true};
@@ -650,8 +636,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_materials *materials = NULL;

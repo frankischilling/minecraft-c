@@ -32,10 +32,10 @@ typedef struct normal_frame {
 typedef struct normal_point {
     int32_t x, y, z;
 } normal_point;
+
 typedef enum selected_tree { TREE_OAK, TREE_BIRCH, TREE_TALL, TREE_DENSE, TREE_BIG } selected_tree;
 
-static mc_registry_error empty_registry(void)
-{
+static mc_registry_error empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
@@ -43,13 +43,11 @@ static mc_registry_error empty_registry(void)
                                .item_argument = -1};
 }
 
-static mc_world_normal_population_error empty_error(void)
-{
+static mc_world_normal_population_error empty_error(void) {
     return (mc_world_normal_population_error){.iteration = SIZE_MAX, .registry = empty_registry()};
 }
 
-static void stage(normal_frame *f, unsigned int pc)
-{
+static void stage(normal_frame *f, unsigned int pc) {
     f->error.bytecode = pc;
     f->error.world_bytecode = 0u;
     f->error.selector_class = NULL;
@@ -62,8 +60,7 @@ static void stage(normal_frame *f, unsigned int pc)
 }
 
 static bool fail(normal_frame *f, mc_world_storage_status status, const char *operation,
-                 bool native)
-{
+                 bool native) {
     f->error.status = status;
     f->error.operation = operation;
     f->error.native_boundary = native;
@@ -71,15 +68,13 @@ static bool fail(normal_frame *f, mc_world_storage_status status, const char *op
     return false;
 }
 
-static mc_world_population_context mutation_context(const mc_world_mutation_error *error)
-{
+static mc_world_population_context mutation_context(const mc_world_mutation_error *error) {
     return error->population.reached ? error->population : error->light.population;
 }
 
 /* Read only the active union member. Feature errors already own finite typed
  * children; carry only their explicitly returned failed acquisition context. */
-static mc_world_population_context child_context(const mc_world_normal_population_error *error)
-{
+static mc_world_population_context child_context(const mc_world_normal_population_error *error) {
     switch (error->child) {
         case MC_NORMAL_CHILD_ORE_CLAY:
             return mutation_context(&error->ore_clay.mutation);
@@ -107,8 +102,7 @@ static mc_world_population_context child_context(const mc_world_normal_populatio
 }
 
 static bool child_result(normal_frame *f, mc_world_storage_status status,
-                         const mc_world_storage_error *cause, const mc_registry_error *registry)
-{
+                         const mc_world_storage_error *cause, const mc_registry_error *registry) {
     if (status == MC_WORLD_STORAGE_OK) {
         f->error.child = MC_NORMAL_CHILD_NONE;
         return true;
@@ -125,8 +119,7 @@ static bool child_result(normal_frame *f, mc_world_storage_status status,
 }
 
 mc_world_population_context
-mc_world_normal_population_context_get(const mc_world_normal_population_error *error)
-{
+mc_world_normal_population_context_get(const mc_world_normal_population_error *error) {
     if (error == NULL || error->status == MC_WORLD_STORAGE_OK)
         return (mc_world_population_context){0};
     const mc_world_population_site site = {.provider_class = error->provider_class,
@@ -147,8 +140,7 @@ mc_world_normal_population_context_get(const mc_world_normal_population_error *e
 }
 
 static bool registry_failure(normal_frame *f, mc_registry_status status,
-                             const mc_registry_error *cause, const char *operation)
-{
+                             const mc_registry_error *cause, const char *operation) {
     f->error.child = MC_NORMAL_CHILD_REGISTRY;
     f->error.registry = *cause;
     f->error.status =
@@ -157,22 +149,19 @@ static bool registry_failure(normal_frame *f, mc_registry_status status,
     return false;
 }
 
-static mc_world_storage_status dimension_status(mc_world_dimension_status status)
-{
+static mc_world_storage_status dimension_status(mc_world_dimension_status status) {
     return status == MC_WORLD_DIMENSION_LIMIT               ? MC_WORLD_STORAGE_LIMIT
            : status == MC_WORLD_DIMENSION_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
                                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
 }
 
-static mc_world_storage_status climate_status(mc_biome_status status)
-{
+static mc_world_storage_status climate_status(mc_biome_status status) {
     return status == MC_BIOME_LIMIT               ? MC_WORLD_STORAGE_LIMIT
            : status == MC_BIOME_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
                                                   : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
 }
 
-static bool flag(normal_frame *f, bool value, unsigned int pc)
-{
+static bool flag(normal_frame *f, bool value, unsigned int pc) {
     stage(f, pc);
     mc_registry_classes *classes = mc_world_runtime_registry(f->world);
     mc_registry_error cause = empty_registry();
@@ -189,8 +178,7 @@ static bool flag(normal_frame *f, bool value, unsigned int pc)
 }
 
 static bool block_id(normal_frame *f, const char *name, unsigned int static_pc,
-                     unsigned int field_pc, int32_t *out)
-{
+                     unsigned int field_pc, int32_t *out) {
     stage(f, static_pc);
     const mc_block *block = NULL;
     mc_registry_error cause = empty_registry();
@@ -210,8 +198,8 @@ static bool block_id(normal_frame *f, const char *name, unsigned int static_pc,
     return true;
 }
 
-static bool biome_is(normal_frame *f, const mc_biome *biome, char field, unsigned int pc, bool *out)
-{
+static bool biome_is(normal_frame *f, const mc_biome *biome, char field, unsigned int pc,
+                     bool *out) {
     stage(f, pc);
     const mc_biome *expected = NULL;
     mc_registry_error cause = empty_registry();
@@ -225,8 +213,7 @@ static bool biome_is(normal_frame *f, const mc_biome *biome, char field, unsigne
 
 /* World.a: t1, Dimension.b4, return7. NULL b is a successful returned value;
  * it is dereferenced only by the later point33 or temperature2681 invocation. */
-static bool manager_capture(normal_frame *f, unsigned int pc, mc_world_dimension_biome **out)
-{
+static bool manager_capture(normal_frame *f, unsigned int pc, mc_world_dimension_biome **out) {
     stage(f, pc);
     f->error.world_bytecode = 4u;
     mc_world_dimension_fields fields;
@@ -247,8 +234,7 @@ static bool manager_capture(normal_frame *f, unsigned int pc, mc_world_dimension
     return true;
 }
 
-static bool world_seed(normal_frame *f, unsigned int pc, int64_t *out)
-{
+static bool world_seed(normal_frame *f, unsigned int pc, int64_t *out) {
     stage(f, pc);
     f->error.world_bytecode = 4u;
     mc_world_info_fields fields;
@@ -259,8 +245,7 @@ static bool world_seed(normal_frame *f, unsigned int pc, int64_t *out)
     return true;
 }
 
-static bool bounded(normal_frame *f, unsigned int pc, int32_t bound, int32_t *out)
-{
+static bool bounded(normal_frame *f, unsigned int pc, int32_t bound, int32_t *out) {
     stage(f, pc);
     if (!mc_java_random_next_bounded(&f->provider->generator.generator_random, bound, out))
         return fail(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "normal population Random.nextInt",
@@ -268,45 +253,41 @@ static bool bounded(normal_frame *f, unsigned int pc, int32_t bound, int32_t *ou
     return true;
 }
 
-static bool fp(normal_frame *f, unsigned int pc)
-{
+static bool fp(normal_frame *f, unsigned int pc) {
     stage(f, pc);
     return ((_mm_getcsr() & 0xffc0u) == 0x1f80u) ||
            fail(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "normal population strict floating profile",
                 true);
 }
 
-static double add(double a, double b)
-{
+static double add(double a, double b) {
     volatile double r = a + b;
     return r;
 }
-static double sub(double a, double b)
-{
+
+static double sub(double a, double b) {
     volatile double r = a - b;
     return r;
 }
-static double mul(double a, double b)
-{
+
+static double mul(double a, double b) {
     volatile double r = a * b;
     return r;
 }
-static double divide(double a, double b)
-{
+
+static double divide(double a, double b) {
     volatile double r = a / b;
     return r;
 }
 
-static int64_t signed_bits(uint64_t bits)
-{
+static int64_t signed_bits(uint64_t bits) {
     if (bits <= (uint64_t)INT64_MAX)
         return (int64_t)bits;
     return mc_java_i64_add(INT64_MIN, (int64_t)(bits - (UINT64_C(1) << 63)));
 }
 
 static bool point(normal_frame *f, int32_t ox, int32_t oz, int32_t offset, int32_t y_bound,
-                  unsigned int xpc, unsigned int ypc, unsigned int zpc, normal_point *out)
-{
+                  unsigned int xpc, unsigned int ypc, unsigned int zpc, normal_point *out) {
     int32_t value;
     if (!bounded(f, xpc, 16, &value))
         return false;
@@ -321,8 +302,7 @@ static bool point(normal_frame *f, int32_t ox, int32_t oz, int32_t offset, int32
 
 static bool nested_point(normal_frame *f, int32_t ox, int32_t oz, int32_t first_bound,
                          unsigned int xpc, const unsigned int *ypc, size_t y_count,
-                         unsigned int zpc, normal_point *out)
-{
+                         unsigned int zpc, normal_point *out) {
     int32_t value;
     if (!bounded(f, xpc, 16, &value))
         return false;
@@ -342,8 +322,7 @@ static bool nested_point(normal_frame *f, int32_t ox, int32_t oz, int32_t first_
 }
 
 static bool lake(normal_frame *f, normal_point p, const char *target, unsigned int spc,
-                 unsigned int fpc, unsigned int cpc, unsigned int ppc)
-{
+                 unsigned int fpc, unsigned int cpc, unsigned int ppc) {
     int32_t id;
     if (!block_id(f, target, spc, fpc, &id))
         return false;
@@ -366,8 +345,7 @@ typedef struct ore_schedule {
     unsigned int xpc, ypc, zpc, spc, fpc, cpc, ppc;
 } ore_schedule;
 
-static bool ores(normal_frame *f, int32_t ox, int32_t oz)
-{
+static bool ores(normal_frame *f, int32_t ox, int32_t oz) {
     /* Bytecode operands and sites, not cached Blocks/IDs or property palettes. */
     static const ore_schedule schedule[] = {
         {20, 128, 32, "w", 514, 527, 540, 550, 553, 558, 575},
@@ -424,8 +402,7 @@ static bool ores(normal_frame *f, int32_t ox, int32_t oz)
 
 static bool flowers(normal_frame *f, int32_t ox, int32_t oz, int32_t count, bool source_loop,
                     const char *target, unsigned int xpc, unsigned int ypc, unsigned int zpc,
-                    unsigned int spc, unsigned int fpc, unsigned int cpc, unsigned int ppc)
-{
+                    unsigned int spc, unsigned int fpc, unsigned int cpc, unsigned int ppc) {
     for (int32_t i = 0; i < count; i = mc_java_i32_add(i, 1)) {
         f->error.iteration = source_loop ? (size_t)i : SIZE_MAX;
         normal_point p;
@@ -452,8 +429,7 @@ static bool flowers(normal_frame *f, int32_t ox, int32_t oz, int32_t count, bool
     return true;
 }
 
-static bool selector_draw(normal_frame *f, unsigned int pc, int32_t bound, int32_t *out)
-{
+static bool selector_draw(normal_frame *f, unsigned int pc, int32_t bound, int32_t *out) {
     f->error.child = MC_NORMAL_CHILD_NONE;
     f->error.selector_bytecode = pc;
     if (!mc_java_random_next_bounded(&f->provider->generator.generator_random, bound, out))
@@ -462,8 +438,7 @@ static bool selector_draw(normal_frame *f, unsigned int pc, int32_t bound, int32
 }
 
 static bool select_tree(normal_frame *f, const mc_biome *biome, selected_tree *out,
-                        mc_world_tree_big_oak **big)
-{
+                        mc_world_tree_big_oak **big) {
     stage(f, 1430);
     if (biome == NULL)
         return fail(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Biome tree selector receiver", false);
@@ -529,8 +504,7 @@ static bool select_tree(normal_frame *f, const mc_biome *biome, selected_tree *o
     return true;
 }
 
-static bool tree_iteration(normal_frame *f, const mc_biome *biome, int32_t ox, int32_t oz)
-{
+static bool tree_iteration(normal_frame *f, const mc_biome *biome, int32_t ox, int32_t oz) {
     int32_t value, x, z;
     if (!bounded(f, 1398, 16, &value))
         return false;
@@ -591,8 +565,8 @@ leave:
     return success;
 }
 
-static bool tree_count(normal_frame *f, const mc_biome *biome, int32_t ox, int32_t oz, int32_t *out)
-{
+static bool tree_count(normal_frame *f, const mc_biome *biome, int32_t ox, int32_t oz,
+                       int32_t *out) {
     if (!fp(f, 1231))
         return false;
     const mc_noise_octaves noise = {f->provider->generator.terrain.later_layers, 8u};
@@ -623,8 +597,7 @@ static bool tree_count(normal_frame *f, const mc_biome *biome, int32_t ox, int32
     return true;
 }
 
-static bool temperature_refresh(normal_frame *f, int32_t ox, int32_t oz)
-{
+static bool temperature_refresh(normal_frame *f, int32_t ox, int32_t oz) {
     mc_world_dimension_biome *receiver = NULL;
     if (!manager_capture(f, 2660, &receiver))
         return false;
@@ -687,8 +660,7 @@ leave:
     return success;
 }
 
-static bool snow(normal_frame *f, int32_t ox, int32_t oz)
-{
+static bool snow(normal_frame *f, int32_t ox, int32_t oz) {
     if (!temperature_refresh(f, ox, oz))
         return false;
     const int32_t start_x = mc_java_i32_add(ox, 8), start_z = mc_java_i32_add(oz, 8);
@@ -785,9 +757,9 @@ static bool snow(normal_frame *f, int32_t ox, int32_t oz)
 }
 
 typedef enum stateless_plant { PLANT_REED, PLANT_PUMPKIN, PLANT_CACTUS } stateless_plant;
+
 static bool plant_place(normal_frame *f, stateless_plant kind, normal_point p,
-                        unsigned int constructor_pc, unsigned int place_pc)
-{
+                        unsigned int constructor_pc, unsigned int place_pc) {
     stage(f, constructor_pc); /* real empty pg/jm base-only constructor */
     stage(f, place_pc);
     f->error.child = MC_NORMAL_CHILD_PLANT;
@@ -815,8 +787,7 @@ static bool plant_place(normal_frame *f, stateless_plant kind, normal_point p,
 }
 
 static bool spring(normal_frame *f, normal_point p, const char *target, unsigned int spc,
-                   unsigned int fpc, unsigned int cpc, unsigned int ppc)
-{
+                   unsigned int fpc, unsigned int cpc, unsigned int ppc) {
     int32_t id;
     if (!block_id(f, target, spc, fpc, &id))
         return false;
@@ -836,8 +807,7 @@ static bool spring(normal_frame *f, normal_point p, const char *target, unsigned
 
 mc_world_storage_status mc_world_provider_populate_game(mc_world_provider *provider,
                                                         int32_t chunk_x, int32_t chunk_z,
-                                                        mc_world_normal_population_error *error)
-{
+                                                        mc_world_normal_population_error *error) {
     normal_frame f = {.provider = provider, .error = empty_error()};
     mc_world_dimension_biome *point_owner = NULL;
     bool success = false;

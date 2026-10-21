@@ -47,8 +47,7 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static int decode(caves_block_fixture fixture, uint8_t output[GOLDEN_LENGTH])
-{
+static int decode(caves_block_fixture fixture, uint8_t output[GOLDEN_LENGTH]) {
     CHECK(fixture.offset <= ARRAY_LENGTH(observed_caves_runs));
     CHECK(fixture.count <= ARRAY_LENGTH(observed_caves_runs) - fixture.offset);
     size_t position = 0;
@@ -62,8 +61,7 @@ static int decode(caves_block_fixture fixture, uint8_t output[GOLDEN_LENGTH])
     return 0;
 }
 
-static int check_bytes(const uint8_t *actual, const uint8_t *wanted, size_t length)
-{
+static int check_bytes(const uint8_t *actual, const uint8_t *wanted, size_t length) {
     for (size_t i = 0; i < length; ++i) {
         ++checks;
         if (actual[i] != wanted[i]) {
@@ -75,8 +73,7 @@ static int check_bytes(const uint8_t *actual, const uint8_t *wanted, size_t leng
     return 0;
 }
 
-static int check_following(const mc_java_random *random, const uint64_t following[4])
-{
+static int check_following(const mc_java_random *random, const uint64_t following[4]) {
     mc_java_random copy = *random;
     mc_java_random before = *random;
     for (size_t i = 0; i < 4; ++i) {
@@ -86,8 +83,7 @@ static int check_following(const mc_java_random *random, const uint64_t followin
     return 0;
 }
 
-static size_t changed_bytes(const uint8_t *before, const uint8_t *after)
-{
+static size_t changed_bytes(const uint8_t *before, const uint8_t *after) {
     size_t changed = 0;
     for (size_t i = 0; i < BLOCKS; ++i) {
         if (before[i] != after[i]) {
@@ -97,8 +93,7 @@ static size_t changed_bytes(const uint8_t *before, const uint8_t *after)
     return changed;
 }
 
-static int check_ineligible(const uint8_t *before, const uint8_t *after)
-{
+static int check_ineligible(const uint8_t *before, const uint8_t *after) {
     for (size_t i = 0; i < BLOCKS; ++i) {
         if (before[i] != 1 && before[i] != 2 && before[i] != 3) {
             CHECK(before[i] == after[i]);
@@ -107,8 +102,7 @@ static int check_ineligible(const uint8_t *before, const uint8_t *after)
     return 0;
 }
 
-static int check_empty_gaussian_cache(const mc_java_random *random)
-{
+static int check_empty_gaussian_cache(const mc_java_random *random) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(random->next_next_gaussian), "binary64 storage required");
     memcpy(&bits, &random->next_next_gaussian, sizeof(bits));
@@ -118,8 +112,7 @@ static int check_empty_gaussian_cache(const mc_java_random *random)
 }
 
 static int check_golden(const caves_case_fixture *fixture, size_t pass, const uint8_t *actual,
-                        const mc_java_random *random)
-{
+                        const mc_java_random *random) {
     CHECK(decode(fixture->arrays[pass + 1], expected) == 0);
     CHECK(check_bytes(actual, expected, GOLDEN_LENGTH) == 0);
     CHECK(check_empty_gaussian_cache(random) == 0);
@@ -128,8 +121,7 @@ static int check_golden(const caves_case_fixture *fixture, size_t pass, const ui
     return 0;
 }
 
-static int test_original_public_cases(void)
-{
+static int test_original_public_cases(void) {
     mc_java_random cave_random;
     mc_java_random surface_random;
     mc_java_random surface_before;
@@ -182,8 +174,7 @@ static int test_original_public_cases(void)
     return 0;
 }
 
-static int test_independent_owners(void)
-{
+static int test_independent_owners(void) {
     const caves_case_fixture *a = &observed_caves_cases[2];
     const caves_case_fixture *b = &observed_caves_cases[6];
     mc_java_random random_a;
@@ -217,8 +208,7 @@ static int test_independent_owners(void)
 
 /* Everything below uses explicitly constructed C inputs, not original-derived
  * numerical cave fixtures. None of these tests calls an invalid original. */
-static void fill_guarded(int eligible)
-{
+static void fill_guarded(int eligible) {
     static const uint8_t ineligible[] = {0, 4, 5, 7, 10, 11, 12, 13, 24, 79, 127, 128, 254, 255};
     memset(guarded.before, 0x93, sizeof(guarded.before));
     memset(guarded.after, 0xe7, sizeof(guarded.after));
@@ -230,8 +220,7 @@ static void fill_guarded(int eligible)
     }
 }
 
-static int check_guards_and_suffix(void)
-{
+static int check_guards_and_suffix(void) {
     CHECK(memcmp(guarded.before, guarded_before.before, sizeof(guarded.before)) == 0);
     CHECK(memcmp(guarded.after, guarded_before.after, sizeof(guarded.after)) == 0);
     CHECK(memcmp(guarded.blocks + BLOCKS, guarded_before.blocks + BLOCKS, CAPACITY - BLOCKS) == 0);
@@ -239,8 +228,7 @@ static int check_guards_and_suffix(void)
     return 0;
 }
 
-static int property_call(int32_t x, int32_t z, size_t capacity, int eligible)
-{
+static int property_call(int32_t x, int32_t z, size_t capacity, int eligible) {
     mc_java_random random;
     mc_java_random first_random;
     fill_guarded(eligible);
@@ -262,8 +250,7 @@ static int property_call(int32_t x, int32_t z, size_t capacity, int eligible)
     return 0;
 }
 
-static int test_constructed_boundaries_and_bytes(void)
-{
+static int test_constructed_boundaries_and_bytes(void) {
     static const int32_t endpoints[] = {INT32_MIN + 8, 0, INT32_MAX - 9};
     static const int32_t transitions[] = {INT32_C(134217727), INT32_C(134217728),
                                           -INT32_C(134217728), -INT32_C(134217729)};
@@ -302,8 +289,7 @@ static int test_constructed_boundaries_and_bytes(void)
 }
 
 static int rejected(const mc_math_trig *input_table, int32_t x, int32_t z, mc_java_random *random,
-                    uint8_t *blocks, size_t length)
-{
+                    uint8_t *blocks, size_t length) {
     /* Rejected calls preserve even deliberately poisoned prior storage. */
     unsigned char before[sizeof(rejected_random)];
     memcpy(before, &rejected_random, sizeof(before));
@@ -315,8 +301,7 @@ static int rejected(const mc_math_trig *input_table, int32_t x, int32_t z, mc_ja
     return 0;
 }
 
-static int test_preflight_preservation(void)
-{
+static int test_preflight_preservation(void) {
     static const int32_t invalid[] = {INT32_MIN, INT32_MIN + 7, INT32_MAX - 8, INT32_MAX};
     static const int32_t valid[] = {INT32_MIN + 8, 0, INT32_MAX - 9};
     fill_guarded(1);
@@ -343,8 +328,7 @@ static int test_preflight_preservation(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     CHECK(mc_math_trig_init(&table));
     memcpy(&table_before, &table, sizeof(table_before));
     if (test_original_public_cases() != 0 || test_independent_owners() != 0 ||

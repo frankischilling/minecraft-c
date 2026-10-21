@@ -3,8 +3,7 @@
 /* gm/ej.<clinit> PCs19..2661. These are actual ordered construction and
  * property calls; the following statistics active use belongs to the driver. */
 
-const char *mc_registry_item_static_name(size_t index)
-{
+const char *mc_registry_item_static_name(size_t index) {
     static const char *const names[] = {
         "d",  "e",  "f",  "g",  "h",  "i",  "j",  "k",  "l",  "m",  "n",  "o",  "p",  "q",
         "r",  "s",  "t",  "u",  "v",  "w",  "x",  "y",  "z",  "A",  "B",  "C",  "D",  "E",
@@ -92,8 +91,7 @@ const char *mc_registry_item_static_name(size_t index)
         classes->items.named_items++;                                                              \
     } while (0)
 
-mc_registry_status mc_registry_register_items(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     mc_registry_status status;
     mc_item *item;
     mc_item *container;

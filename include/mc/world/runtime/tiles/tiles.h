@@ -18,6 +18,7 @@ typedef struct mc_tile mc_tile;
 typedef struct mc_tile_name mc_tile_name;
 typedef struct mc_tile_classes mc_tile_classes;
 typedef struct mc_tile_map_backing mc_tile_map_backing;
+
 typedef enum mc_tile_kind { MC_TILE_CHEST = 0, MC_TILE_SPAWNER } mc_tile_kind;
 
 typedef enum mc_tile_phase {

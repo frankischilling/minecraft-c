@@ -18,8 +18,7 @@ typedef struct batch_mark {
     mc_java_random random;
 } batch_mark;
 
-static bool batch_mark_get(mc_entity *entity, batch_mark *mark)
-{
+static bool batch_mark_get(mc_entity *entity, batch_mark *mark) {
     if (mc_entity_get_snapshot(entity, &mark->state) != MC_ENTITY_OK)
         return false;
     if (mark->state.random != NULL)
@@ -27,8 +26,7 @@ static bool batch_mark_get(mc_entity *entity, batch_mark *mark)
     return true;
 }
 
-static bool batch_entity_unchanged(mc_entity *entity, const batch_mark *mark)
-{
+static bool batch_entity_unchanged(mc_entity *entity, const batch_mark *mark) {
     mc_entity_snapshot now;
     return mc_entity_get_snapshot(entity, &now) == MC_ENTITY_OK && now.phase == mark->state.phase &&
            now.base_bytecode == mark->state.base_bytecode &&
@@ -42,8 +40,7 @@ static bool batch_entity_unchanged(mc_entity *entity, const batch_mark *mark)
            (now.random == NULL || mc_test_java_random_equal(now.random, &mark->random));
 }
 
-static bool batch_clear(const mc_world_entity_batch_error *error)
-{
+static bool batch_clear(const mc_world_entity_batch_error *error) {
     return error->index == SIZE_MAX && error->publication.status == MC_WORLD_STORAGE_OK &&
            error->publication.bytecode == 0 && error->publication.observer_bytecode == 0 &&
            error->publication.cause.status == MC_WORLD_STORAGE_OK &&
@@ -51,8 +48,7 @@ static bool batch_clear(const mc_world_entity_batch_error *error)
 }
 
 static bool batch_values(const mc_world_reference_list *list, size_t prefix, mc_entity *const *tail,
-                         size_t count)
-{
+                         size_t count) {
     if (list == NULL || list->count != prefix + count)
         return false;
     for (size_t i = 0; i < count; ++i)
@@ -65,8 +61,7 @@ static bool batch_values(const mc_world_reference_list *list, size_t prefix, mc_
  * real native World call guard, with no observer/provider/allocator callback. */
 static mc_world_storage_status batch_call(mc_world_runtime *world,
                                           const mc_world_chunk_entity_list *source, bool deferred,
-                                          mc_world_entity_batch_error *error)
-{
+                                          mc_world_entity_batch_error *error) {
     mc_world_storage_error cause = {0};
     mc_world_storage_status status = mc_world_runtime_call_enter(world, &cause);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -80,8 +75,7 @@ static mc_world_storage_status batch_call(mc_world_runtime *world,
     return status;
 }
 
-static bool batch_actual_order(fixture *f, size_t side, mc_entity **primary)
-{
+static bool batch_actual_order(fixture *f, size_t side, mc_entity **primary) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_entity *a = NULL, *b = NULL;
@@ -131,8 +125,7 @@ cleanup:
     return ok;
 }
 
-static bool batch_cross_world_raw(fixture *f, size_t side)
-{
+static bool batch_cross_world_raw(fixture *f, size_t side) {
     bool ok = false;
     const size_t source_slot = side + 2u, target_slot = side;
     mc_world_runtime *target = f->worlds[target_slot];
@@ -181,8 +174,7 @@ cleanup:
     return ok;
 }
 
-static bool batch_nullable_control(fixture *f, size_t side)
-{
+static bool batch_nullable_control(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side + 2u];
     mc_entity *entity = NULL;
@@ -222,8 +214,7 @@ cleanup:
     return ok;
 }
 
-static bool batch_limits_and_empty_frontier(fixture *f, size_t side, mc_entity *primary)
-{
+static bool batch_limits_and_empty_frontier(fixture *f, size_t side, mc_entity *primary) {
     bool ok = false;
     mc_world_runtime *limited = f->worlds[side + 4u], *w = f->worlds[side + 6u];
     const size_t holds = primary->holds;
@@ -280,8 +271,7 @@ cleanup:
     return ok;
 }
 
-static bool batch_combined_retirement(fixture *f, size_t side, mc_entity *primary)
-{
+static bool batch_combined_retirement(fixture *f, size_t side, mc_entity *primary) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     const size_t b_count = w->fields.b->count, d_count = w->fields.D->count;
@@ -326,8 +316,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

@@ -1,3 +1,4 @@
+#include "bounds/bounds_internal.h"
 #include "entity_internal.h"
 
 #include <float.h>
@@ -24,16 +25,14 @@ _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128 && DBL
                "strict binary32/binary64 evaluation required");
 
 static mc_entity_status result(mc_entity_error *error, mc_entity_status status,
-                               const char *operation, uint16_t bytecode)
-{
+                               const char *operation, uint16_t bytecode) {
     if (error != NULL)
         *error = (mc_entity_error){.status = status, .operation = operation, .bytecode = bytecode};
     return status;
 }
 
 static void *allocate(mc_entity_classes *classes, mc_entity *entity, size_t bytes,
-                      mc_entity_error *error, const char *operation, uint16_t bytecode)
-{
+                      mc_entity_error *error, const char *operation, uint16_t bytecode) {
     if (classes->allocated_bytes > classes->limits.max_allocation_bytes ||
         bytes > classes->limits.max_allocation_bytes - classes->allocated_bytes) {
         result(error, MC_ENTITY_LIMIT, operation, bytecode);
@@ -50,8 +49,7 @@ static void *allocate(mc_entity_classes *classes, mc_entity *entity, size_t byte
     return storage;
 }
 
-static void retire(mc_entity_classes *classes, mc_entity *entity, void *storage, size_t bytes)
-{
+static void retire(mc_entity_classes *classes, mc_entity *entity, void *storage, size_t bytes) {
     if (storage != NULL) {
         free(storage);
         classes->allocated_bytes -= bytes;
@@ -60,8 +58,7 @@ static void retire(mc_entity_classes *classes, mc_entity *entity, void *storage,
     }
 }
 
-static mc_entity_status ensure_entity_class(mc_entity_classes *classes, mc_entity_error *error)
-{
+static mc_entity_status ensure_entity_class(mc_entity_classes *classes, mc_entity_error *error) {
     if (classes->entity_phase == MC_ENTITY_CLASS_READY)
         return MC_ENTITY_OK;
     if (classes->entity_phase == MC_ENTITY_CLASS_FAILED)
@@ -75,30 +72,7 @@ static mc_entity_status ensure_entity_class(mc_entity_classes *classes, mc_entit
     return MC_ENTITY_OK;
 }
 
-static mc_entity_status ensure_bounds_class(mc_entity_classes *classes, mc_entity_error *error)
-{
-    if (classes->bounds_phase == MC_ENTITY_CLASS_READY)
-        return MC_ENTITY_OK;
-    if (classes->bounds_phase == MC_ENTITY_CLASS_FAILED)
-        return result(error, MC_ENTITY_CLASS_FAILED_STATUS, "bounds class initialization", 0);
-    if (classes->bounds_phase != MC_ENTITY_CLASS_COLD)
-        return result(error, MC_ENTITY_STATE_ERROR, "bounds class initialization", 0);
-    classes->bounds_phase = MC_ENTITY_CLASS_INITIALIZING;
-    mc_entity_bounds_pool *pool =
-        allocate(classes, NULL, sizeof(*pool), error, "bounds class initialization", 0);
-    if (pool == NULL) {
-        classes->bounds_phase = MC_ENTITY_CLASS_FAILED;
-        return error->status;
-    }
-    *pool = (mc_entity_bounds_pool){0};
-    classes->bounds_pool = pool; /* Original pool publication precedes cursor. */
-    classes->bounds_cursor = 0;
-    classes->bounds_phase = MC_ENTITY_CLASS_READY;
-    return MC_ENTITY_OK;
-}
-
-static mc_entity_status ensure_watcher_class(mc_entity_classes *classes, mc_entity_error *error)
-{
+static mc_entity_status ensure_watcher_class(mc_entity_classes *classes, mc_entity_error *error) {
     static const uint16_t put_bytecodes[] = {19, 32, 45, 58, 71, 84, 98};
     if (classes->watcher_phase == MC_ENTITY_CLASS_READY)
         return MC_ENTITY_OK;
@@ -136,8 +110,7 @@ static mc_entity_status ensure_watcher_class(mc_entity_classes *classes, mc_enti
     return MC_ENTITY_OK;
 }
 
-const char *mc_entity_status_string(mc_entity_status status)
-{
+const char *mc_entity_status_string(mc_entity_status status) {
     switch (status) {
         case MC_ENTITY_OK:
             return "ok";
@@ -167,30 +140,26 @@ const char *mc_entity_status_string(mc_entity_status status)
     return "unknown Entity status";
 }
 
-bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind)
-{
+bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind) {
     return entity != NULL && entity->classes != NULL &&
            (unsigned int)kind < (unsigned int)MC_ENTITY_CLASS_KIND_COUNT &&
            entity->class_literal == &entity->classes->literals[(size_t)kind];
 }
 
-mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay)
-{
+mc_entity_status mc_entity_item_pickup_delay_set(mc_entity *entity, int32_t delay) {
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return MC_ENTITY_INVALID_ARGUMENT;
     entity->item.c = delay;
     return MC_ENTITY_OK;
 }
 
-mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity)
-{
+mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity) {
     return entity == NULL ? NULL : &entity->base;
 }
 
 static mc_entity_status entity_allocate(mc_entity_classes *classes, mc_entity_class_kind kind,
                                         const char *operation, mc_entity **out,
-                                        mc_entity_error *error)
-{
+                                        mc_entity_error *error) {
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
@@ -215,20 +184,17 @@ static mc_entity_status entity_allocate(mc_entity_classes *classes, mc_entity_cl
 }
 
 mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity **out,
-                                         mc_entity_error *error)
-{
+                                         mc_entity_error *error) {
     return entity_allocate(classes, MC_ENTITY_CLASS_KIND_ITEM, "item allocation", out, error);
 }
 
 mc_entity_status mc_falling_entity_allocate(mc_entity_classes *classes, mc_entity **out,
-                                            mc_entity_error *error)
-{
+                                            mc_entity_error *error) {
     return entity_allocate(classes, MC_ENTITY_CLASS_KIND_FALLING_SAND, "falling allocation", out,
                            error);
 }
 
-void mc_entity_source_position(mc_entity *entity, double x, double y, double z)
-{
+void mc_entity_source_position(mc_entity *entity, double x, double y, double z) {
     entity->base.x = x;
     entity->base.y = y;
     entity->base.z = z;
@@ -245,8 +211,7 @@ void mc_entity_source_position(mc_entity *entity, double x, double y, double z)
                                          x + (double)half_width, maximum_y, z + (double)half_width};
 }
 
-static mc_entity_status make_watcher(mc_entity *entity, mc_entity_error *error)
-{
+static mc_entity_status make_watcher(mc_entity *entity, mc_entity_error *error) {
     mc_entity_classes *classes = entity->classes;
     mc_entity_status status = ensure_watcher_class(classes, error);
     if (status != MC_ENTITY_OK)
@@ -268,8 +233,7 @@ static mc_entity_status make_watcher(mc_entity *entity, mc_entity_error *error)
     return MC_ENTITY_OK;
 }
 
-static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *error)
-{
+static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *error) {
     const mc_entity_type_entry *type = entity->classes->types->head;
     while (type != NULL && type->kind != 0)
         type = type->next;
@@ -297,8 +261,7 @@ static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *e
 }
 
 static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *world,
-                                         mc_entity_error *error)
-{
+                                         mc_entity_error *error) {
     mc_entity_classes *classes = entity->classes;
     const int32_t id = classes->next_id;
     classes->next_id = mc_java_i32_add(id, 1);
@@ -307,7 +270,7 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
     entity->base.aE = 1.0;
     entity->base.aF = false;
     entity->base_bytecode = 24;
-    mc_entity_status status = ensure_bounds_class(classes, error);
+    mc_entity_status status = mc_entity_bounds_initialize(classes, error);
     if (status != MC_ENTITY_OK)
         return status;
     mc_entity_bounds *bounds =
@@ -386,21 +349,18 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
     return MC_ENTITY_OK;
 }
 
-float mc_entity_item_phase_from_draw(double draw)
-{
+float mc_entity_item_phase_from_draw(double draw) {
     const double radians = draw * 3.141592653589793;
     const double doubled = radians * 2.0;
     return (float)doubled;
 }
 
-float mc_entity_item_yaw_from_draw(double draw)
-{
+float mc_entity_item_yaw_from_draw(double draw) {
     const double degrees = draw * 360.0;
     return (float)degrees;
 }
 
-double mc_entity_item_velocity_from_draw(double draw)
-{
+double mc_entity_item_velocity_from_draw(double draw) {
     const double scaled = draw * 0.20000000298023224;
     const double centered = scaled - 0.10000000149011612;
     const float narrowed = (float)centered;
@@ -408,8 +368,7 @@ double mc_entity_item_velocity_from_draw(double draw)
 }
 
 static mc_entity_status math_draw(mc_entity *entity, double *out, mc_entity_error *error,
-                                  uint16_t bytecode)
-{
+                                  uint16_t bytecode) {
     const mc_java_random_profile_status status = mc_java_math_random(entity->classes->profile, out);
     if (status == MC_JAVA_RANDOM_PROFILE_OK)
         return MC_ENTITY_OK;
@@ -418,8 +377,7 @@ static mc_entity_status math_draw(mc_entity *entity, double *out, mc_entity_erro
     return error->status;
 }
 
-static mc_entity_status item_prefix(mc_entity *entity, mc_entity_error *error)
-{
+static mc_entity_status item_prefix(mc_entity *entity, mc_entity_error *error) {
     entity->item.b = 0;
     entity->item.f = 5;
     entity->item_bytecode = 12;
@@ -438,8 +396,8 @@ static mc_entity_status item_prefix(mc_entity *entity, mc_entity_error *error)
 }
 
 static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, double x, double y,
-                                  double z, mc_item_stack *stack, bool full, mc_entity_error *error)
-{
+                                  double z, mc_item_stack *stack, bool full,
+                                  mc_entity_error *error) {
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
@@ -497,21 +455,18 @@ static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, do
 
 mc_entity_status mc_item_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,
                                           double y, double z, mc_item_stack *stack,
-                                          mc_entity_error *error)
-{
+                                          mc_entity_error *error) {
     return construct(raw, world, x, y, z, stack, true, error);
 }
 
 mc_entity_status mc_item_entity_construct_world(mc_entity *raw, mc_world_runtime *world,
-                                                mc_entity_error *error)
-{
+                                                mc_entity_error *error) {
     return construct(raw, world, 0.0, 0.0, 0.0, NULL, false, error);
 }
 
 static mc_entity_status construct_falling(mc_entity *entity, mc_world_runtime *world, double x,
                                           double y, double z, int32_t id, bool full,
-                                          mc_entity_error *error)
-{
+                                          mc_entity_error *error) {
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
@@ -561,19 +516,17 @@ static mc_entity_status construct_falling(mc_entity *entity, mc_world_runtime *w
 }
 
 mc_entity_status mc_falling_entity_construct_world(mc_entity *raw, mc_world_runtime *world,
-                                                   mc_entity_error *error)
-{
+                                                   mc_entity_error *error) {
     return construct_falling(raw, world, 0.0, 0.0, 0.0, 0, false, error);
 }
 
 mc_entity_status mc_falling_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,
-                                             double y, double z, int32_t id, mc_entity_error *error)
-{
+                                             double y, double z, int32_t id,
+                                             mc_entity_error *error) {
     return construct_falling(raw, world, x, y, z, id, true, error);
 }
 
-mc_entity_status mc_entity_retain(mc_entity *entity)
-{
+mc_entity_status mc_entity_retain(mc_entity *entity) {
     if (entity == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->holds == SIZE_MAX)
@@ -582,8 +535,7 @@ mc_entity_status mc_entity_retain(mc_entity *entity)
     return MC_ENTITY_OK;
 }
 
-void mc_entity_release(mc_entity *entity)
-{
+void mc_entity_release(mc_entity *entity) {
     if (entity == NULL)
         return;
     if (--entity->holds != 0)
@@ -609,8 +561,7 @@ void mc_entity_release(mc_entity *entity)
     retire(classes, NULL, entity, sizeof(*entity));
 }
 
-mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snapshot *out)
-{
+mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snapshot *out) {
     if (entity == NULL || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     *out = (mc_entity_snapshot){.source = entity->classes->source,
@@ -630,8 +581,7 @@ mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snaps
 }
 
 mc_entity_status mc_entity_watcher_get_snapshot(const mc_entity_watcher *watcher,
-                                                mc_entity_watcher_snapshot *out)
-{
+                                                mc_entity_watcher_snapshot *out) {
     if (watcher == NULL || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     mc_entity_watcher_snapshot snapshot = {.dirty = watcher->dirty, .size = watcher->map->size};
@@ -649,8 +599,7 @@ mc_entity_status mc_entity_watcher_get_snapshot(const mc_entity_watcher *watcher
     return MC_ENTITY_OK;
 }
 
-mc_entity_status mc_item_entity_stack_get(mc_entity *entity, mc_item_stack **out)
-{
+mc_entity_status mc_item_entity_stack_get(mc_entity *entity, mc_item_stack **out) {
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->stack != NULL && mc_item_stack_retain(entity->stack) != MC_ITEM_STACK_OK)
@@ -659,13 +608,11 @@ mc_entity_status mc_item_entity_stack_get(mc_entity *entity, mc_item_stack **out
     return MC_ENTITY_OK;
 }
 
-size_t mc_entity_native_bytes(const mc_entity *entity)
-{
+size_t mc_entity_native_bytes(const mc_entity *entity) {
     return entity == NULL ? 0 : entity->direct_bytes;
 }
 
-mc_entity_status mc_entity_set_velocity(mc_entity *entity, unsigned int axis, double value)
-{
+mc_entity_status mc_entity_set_velocity(mc_entity *entity, unsigned int axis, double value) {
     if (entity == NULL || axis > 2)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->phase != MC_ENTITY_READY)
@@ -679,8 +626,7 @@ mc_entity_status mc_entity_set_velocity(mc_entity *entity, unsigned int axis, do
     return MC_ENTITY_OK;
 }
 
-mc_entity_status mc_entity_set_position(mc_entity *entity, double x, double y, double z)
-{
+mc_entity_status mc_entity_set_position(mc_entity *entity, double x, double y, double z) {
     if (entity == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->phase != MC_ENTITY_READY)
@@ -691,8 +637,7 @@ mc_entity_status mc_entity_set_position(mc_entity *entity, double x, double y, d
     return MC_ENTITY_OK;
 }
 
-mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height)
-{
+mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height) {
     if (entity == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->phase != MC_ENTITY_READY)
@@ -702,12 +647,10 @@ mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height
     return MC_ENTITY_OK;
 }
 
-bool mc_entity_equals(const mc_entity *left, const mc_entity *right)
-{
+bool mc_entity_equals(const mc_entity *left, const mc_entity *right) {
     return right != NULL && left->classes == right->classes && left->base.id == right->base.id;
 }
 
-int32_t mc_entity_hash_code(const mc_entity *entity)
-{
+int32_t mc_entity_hash_code(const mc_entity *entity) {
     return entity->base.id;
 }

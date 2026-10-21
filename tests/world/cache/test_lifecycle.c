@@ -54,16 +54,14 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
-static size_t identity(const mc_chunk_state *chunk)
-{
+static size_t identity(const mc_chunk_state *chunk) {
     for (size_t i = 0; i < CHUNKS; ++i)
         if (chunk == &f.chunks[i])
             return i;
     return CHUNKS;
 }
 
-static void record(char kind, mc_chunk_state *chunk, size_t slice)
-{
+static void record(char kind, mc_chunk_state *chunk, size_t slice) {
     size_t id = chunk == NULL ? CHUNKS : identity(chunk);
     if (f.event_count == EVENTS || (chunk != NULL && (id == CHUNKS || f.leases[id] == 0))) {
         f.callback_error = 1;
@@ -73,8 +71,7 @@ static void record(char kind, mc_chunk_state *chunk, size_t slice)
         kind, id, slice, f.time, chunk != NULL && chunk->dirty, chunk != NULL && chunk->active};
 }
 
-static bool hold(void *owner, mc_chunk_state *chunk)
-{
+static bool hold(void *owner, mc_chunk_state *chunk) {
     (void)owner;
     size_t id = identity(chunk);
     if (id == CHUNKS || f.fail_hold)
@@ -86,8 +83,7 @@ static bool hold(void *owner, mc_chunk_state *chunk)
     return true;
 }
 
-static void release(void *owner, mc_chunk_state *chunk)
-{
+static void release(void *owner, mc_chunk_state *chunk) {
     (void)owner;
     size_t id = identity(chunk);
     if (id == CHUNKS || f.leases[id] == 0) {
@@ -99,8 +95,7 @@ static void release(void *owner, mc_chunk_state *chunk)
 }
 
 static mc_chunk_callback_result main_save(void *owner, const mc_chunk_lifecycle_context *context,
-                                          mc_chunk_state *chunk)
-{
+                                          mc_chunk_state *chunk) {
     (void)owner;
     record('m', chunk, 0);
     if (!f.mutated) {
@@ -132,8 +127,7 @@ static mc_chunk_callback_result main_save(void *owner, const mc_chunk_lifecycle_
 }
 
 static mc_chunk_callback_result extra_save(void *owner, const mc_chunk_lifecycle_context *context,
-                                           mc_chunk_state *chunk)
-{
+                                           mc_chunk_state *chunk) {
     (void)owner;
     (void)context;
     record('x', chunk, 0);
@@ -142,8 +136,7 @@ static mc_chunk_callback_result extra_save(void *owner, const mc_chunk_lifecycle
     return f.extra_result;
 }
 
-static mc_chunk_callback_result flush(void *owner, const mc_chunk_lifecycle_context *context)
-{
+static mc_chunk_callback_result flush(void *owner, const mc_chunk_lifecycle_context *context) {
     (void)owner;
     (void)context;
     record('f', NULL, 0);
@@ -151,8 +144,7 @@ static mc_chunk_callback_result flush(void *owner, const mc_chunk_lifecycle_cont
 }
 
 static mc_chunk_callback_result loader_maintenance(void *owner,
-                                                   const mc_chunk_lifecycle_context *context)
-{
+                                                   const mc_chunk_lifecycle_context *context) {
     (void)owner;
     (void)context;
     record('l', NULL, 0);
@@ -160,8 +152,7 @@ static mc_chunk_callback_result loader_maintenance(void *owner,
 }
 
 static mc_chunk_callback_result tiles(void *owner, const mc_chunk_lifecycle_context *context,
-                                      mc_chunk_state *chunk)
-{
+                                      mc_chunk_state *chunk) {
     (void)owner;
     (void)context;
     record('t', chunk, 0);
@@ -179,8 +170,7 @@ static mc_chunk_callback_result tiles(void *owner, const mc_chunk_lifecycle_cont
 }
 
 static mc_chunk_callback_result entities(void *owner, const mc_chunk_lifecycle_context *context,
-                                         mc_chunk_state *chunk, size_t slice)
-{
+                                         mc_chunk_state *chunk, size_t slice) {
     (void)owner;
     (void)context;
     record('e', chunk, slice);
@@ -190,8 +180,7 @@ static mc_chunk_callback_result entities(void *owner, const mc_chunk_lifecycle_c
 }
 
 static mc_chunk_callback_result
-provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *result)
-{
+provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *result) {
     (void)owner;
     (void)context;
     record('p', NULL, 0);
@@ -199,16 +188,14 @@ provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, boo
     return f.maintenance_result;
 }
 
-static mc_chunk_callback_result session(void *owner, const mc_world_save_context *context)
-{
+static mc_chunk_callback_result session(void *owner, const mc_world_save_context *context) {
     (void)owner;
     (void)context;
     record('s', NULL, 0);
     return f.session_result;
 }
 
-static mc_chunk_callback_result metadata(void *owner, const mc_world_save_context *context)
-{
+static mc_chunk_callback_result metadata(void *owner, const mc_world_save_context *context) {
     (void)owner;
     (void)context;
     record('d', NULL, 0);
@@ -217,8 +204,7 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
     return f.metadata_result;
 }
 
-static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context)
-{
+static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context) {
     (void)owner;
     (void)context;
     record('a', NULL, 0);
@@ -226,16 +212,14 @@ static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_conte
 }
 
 static mc_chunk_callback_result progress(void *owner, const mc_world_save_context *context,
-                                         mc_world_save_stage stage)
-{
+                                         mc_world_save_stage stage) {
     (void)owner;
     (void)context;
     record(stage == MC_WORLD_SAVE_LEVEL ? 'L' : 'C', NULL, 0);
     return f.progress_result;
 }
 
-static int setup(size_t count)
-{
+static int setup(size_t count) {
     mc_java_int_set_free(f.history);
     memset(&f, 0, sizeof(f));
     CHECK(mc_java_int_set_create(NULL, &f.history) == MC_JAVA_INT_SET_OK);
@@ -266,16 +250,14 @@ static int setup(size_t count)
     return 0;
 }
 
-static int balanced(void)
-{
+static int balanced(void) {
     CHECK(!f.callback_error && f.holds == f.releases);
     for (size_t i = 0; i < CHUNKS; ++i)
         CHECK(f.leases[i] == 0);
     return 0;
 }
 
-static int eligibility(void)
-{
+static int eligibility(void) {
     mc_chunk_state chunk = {0};
     static const int64_t times[] = {0, 599, 600, 601, -1, INT64_MIN, INT64_MAX};
     for (unsigned flags = 0; flags < 128; ++flags) {
@@ -300,8 +282,7 @@ static int eligibility(void)
     return 0;
 }
 
-static int save_passes(void)
-{
+static int save_passes(void) {
     static const size_t counts[] = {0, 23, 24, 25};
     for (size_t i = 0; i < sizeof(counts) / sizeof(*counts); ++i) {
         size_t count = counts[i];
@@ -370,8 +351,7 @@ static int save_passes(void)
     return 0;
 }
 
-static int add_pending(int32_t x)
-{
+static int add_pending(int32_t x) {
     bool changed = false;
     CHECK(mc_chunk_pending_add(&f.pending, mc_chunk_cache_key(x, 0), &changed) ==
               MC_CHUNK_ACQUIRE_OK &&
@@ -379,8 +359,7 @@ static int add_pending(int32_t x)
     return 0;
 }
 
-static int unloads(void)
-{
+static int unloads(void) {
     CHECK(setup(101) == 0);
     for (int32_t i = 0; i < 101; ++i)
         CHECK(add_pending(i) == 0);
@@ -447,8 +426,7 @@ static int unloads(void)
     return 0;
 }
 
-static int recursive_lifetimes(void)
-{
+static int recursive_lifetimes(void) {
     bool completed = false;
     CHECK(setup(1) == 0);
     f.mutation = 6;
@@ -480,8 +458,7 @@ static int recursive_lifetimes(void)
     return 0;
 }
 
-static int direct_detachment(void)
-{
+static int direct_detachment(void) {
     CHECK(setup(1) == 0 && add_pending(0) == 0);
     f.chunks[0].never_save = f.chunks[0].has_entities = true;
     f.chunks[0].last_save_time = -77;
@@ -576,8 +553,7 @@ static int direct_detachment(void)
     return 0;
 }
 
-static int world_saves(void)
-{
+static int world_saves(void) {
     CHECK(setup(25) == 0);
     mc_world_save_context context = {.chunks = &f.context,
                                      .check_session = session,
@@ -629,8 +605,7 @@ static int world_saves(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     int result = eligibility() != 0 || save_passes() != 0 || unloads() != 0 ||
                  recursive_lifetimes() != 0 || direct_detachment() != 0 || world_saves() != 0;
     mc_java_int_set_free(f.history);

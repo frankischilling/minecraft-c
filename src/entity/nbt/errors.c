@@ -1,7 +1,6 @@
 #include "mc/entity/nbt/errors.h"
 
-mc_entity_nbt_error mc_entity_nbt_empty_error(void)
-{
+mc_entity_nbt_error mc_entity_nbt_empty_error(void) {
     return (mc_entity_nbt_error){.status = MC_ENTITY_NBT_OK,
                                  .index = SIZE_MAX,
                                  .construction = {.status = MC_ENTITY_OK,
@@ -12,8 +11,7 @@ mc_entity_nbt_error mc_entity_nbt_empty_error(void)
                                  .nbt = {MC_NBT_OK, 0}};
 }
 
-const char *mc_entity_nbt_status_string(mc_entity_nbt_status status)
-{
+const char *mc_entity_nbt_status_string(mc_entity_nbt_status status) {
     switch (status) {
         case MC_ENTITY_NBT_OK:
             return "ok";

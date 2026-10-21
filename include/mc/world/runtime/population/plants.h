@@ -9,9 +9,11 @@
 typedef struct mc_population_flower_feature {
     int32_t a;
 } mc_population_flower_feature;
+
 typedef struct mc_population_tall_grass_feature {
     int32_t a, b;
 } mc_population_tall_grass_feature;
+
 typedef struct mc_population_dead_bush_feature {
     int32_t a;
 } mc_population_dead_bush_feature;

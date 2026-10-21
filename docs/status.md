@@ -1,5 +1,18 @@
 # Development status
 
+The [shared bounds module](entity/bounds.md) implements actual pooled box
+identities, reset, client clear and complete movement geometry. Native holds
+preserve detached boxes and allow aliases to observe reuse. Its focused case
+passes 4,601 checks on MSVC and sanitized GCC/Clang. All 160/162/162 configured
+cases pass without skips. The exact rebuilt probes match all 17,388 client and
+16,146 server original raw-bit rows on each compiler, including the full
+quiet/signaling NaN matrix. Earlier payload mismatches remain retained.
+The requested attached-brace style and separated definitions are applied;
+all 443 C source/header files pass formatting. Entity movement, World collision
+collection, ray/vector/text helpers and FallingSand physics remain unfinished.
+
+The following snow checkpoint predates bounds integration.
+
 The [snow-layer subsystem](world/snow.md) implements concrete support,
 neighbor survival and saved Block-light melting. Its focused native case
 passes 380 checks on MSVC and sanitized GCC/Clang. All 159 configured MSVC cases

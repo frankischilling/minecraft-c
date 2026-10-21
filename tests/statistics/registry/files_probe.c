@@ -21,8 +21,7 @@ typedef struct common_row {
     char formatter;
 } common_row;
 
-static char *root_argument(int argc, char **argv)
-{
+static char *root_argument(int argc, char **argv) {
     if (argc == 3) {
         const size_t length = strlen(argv[2]);
         if (length == SIZE_MAX)
@@ -61,8 +60,7 @@ static char *root_argument(int argc, char **argv)
     return root;
 }
 
-static bool string_valid(const mc_registry_string *string)
-{
+static bool string_valid(const mc_registry_string *string) {
     if (string == NULL)
         return true;
     mc_registry_string_view view;
@@ -70,8 +68,7 @@ static bool string_valid(const mc_registry_string *string)
            (view.length == 0 || view.units != NULL);
 }
 
-static bool print_string(const mc_registry_string *string)
-{
+static bool print_string(const mc_registry_string *string) {
     if (string == NULL) {
         fputs("NULL", stdout);
         return true;
@@ -87,8 +84,7 @@ static bool print_string(const mc_registry_string *string)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     char *root = NULL;
     mc_resource_files *files = NULL;

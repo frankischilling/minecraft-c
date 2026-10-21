@@ -24,21 +24,18 @@ typedef struct np_record {
     uint16_t names[14][16], item_name[4];
 } np_record;
 
-static bool np_is(const char *scenario, const char *name)
-{
+static bool np_is(const char *scenario, const char *name) {
     return strcmp(scenario, name) == 0;
 }
 
-static mc_nbt_string np_ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string np_ascii(const char *text, uint16_t *units) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, length};
 }
 
-static void np_record_init(np_record *r, const char *scenario)
-{
+static void np_record_init(np_record *r, const char *scenario) {
     const char *const names[] = {"id",   "Pos", "Motion",   "Rotation", "FallDistance",
                                  "Fire", "Air", "OnGround", "Health",   "Age",
                                  "Item", "id",  "Count",    "Damage"};
@@ -145,8 +142,7 @@ static void np_record_init(np_record *r, const char *scenario)
     }
 }
 
-static void np_prepare(mc_entity *entity, bool saving)
-{
+static void np_prepare(mc_entity *entity, bool saving) {
     /* Explicit actual instance scalar fixture inputs only. */
     mc_entity_base_fields *b = &entity->base;
     b->x = -101;
@@ -174,21 +170,19 @@ static void np_prepare(mc_entity *entity, bool saving)
     entity->item.b = saving ? 98305 : 41;
 }
 
-static void np_double(const char *scenario, const char *stage, const char *name, double value)
-{
+static void np_double(const char *scenario, const char *stage, const char *name, double value) {
     printf("FIELD\t%s\t%s\t%s\t%016" PRIx64 "\n", scenario, stage, name, double_bits(value));
 }
-static void np_float(const char *scenario, const char *stage, const char *name, float value)
-{
+
+static void np_float(const char *scenario, const char *stage, const char *name, float value) {
     printf("FIELD\t%s\t%s\t%s\t%08" PRIx32 "\n", scenario, stage, name, float_bits(value));
 }
-static void np_int(const char *scenario, const char *stage, const char *name, int32_t value)
-{
+
+static void np_int(const char *scenario, const char *stage, const char *name, int32_t value) {
     printf("FIELD\t%s\t%s\t%s\t%08" PRIx32 "\n", scenario, stage, name, (uint32_t)value);
 }
 
-static bool np_snapshot(const char *scenario, const char *stage, mc_entity *entity)
-{
+static bool np_snapshot(const char *scenario, const char *stage, mc_entity *entity) {
     mc_entity_snapshot e;
     if (mc_entity_get_snapshot(entity, &e) != MC_ENTITY_OK || e.bounds == NULL ||
         e.base.world != NULL)
@@ -262,8 +256,7 @@ static bool np_snapshot(const char *scenario, const char *stage, mc_entity *enti
     return true;
 }
 
-static int np_name_compare(const void *left, const void *right)
-{
+static int np_name_compare(const void *left, const void *right) {
     const mc_nbt_tag *a = *(const mc_nbt_tag *const *)left, *b = *(const mc_nbt_tag *const *)right;
     const size_t common = a->name.length < b->name.length ? a->name.length : b->name.length;
     for (size_t i = 0; i < common; ++i)
@@ -273,8 +266,7 @@ static int np_name_compare(const void *left, const void *right)
 }
 
 static bool np_tags(const char *scenario, const char *stage, const char *path,
-                    const mc_nbt_tag *tag)
-{
+                    const mc_nbt_tag *tag) {
     if (tag == NULL) {
         printf("TAG\t%s\t%s\t%s\tNULL\t-\n", scenario, stage, path);
         return true;
@@ -349,8 +341,7 @@ static bool np_tags(const char *scenario, const char *stage, const char *path,
     return !ferror(stdout);
 }
 
-static bool np_bytes(const char *scenario, const mc_nbt_tag *root)
-{
+static bool np_bytes(const char *scenario, const mc_nbt_tag *root) {
     size_t length = 0, written = 0;
     if (mc_nbt_measure(root, NULL, &length, NULL) != MC_NBT_OK || length > 65536)
         return false;
@@ -369,8 +360,7 @@ static bool np_bytes(const char *scenario, const mc_nbt_tag *root)
     return ok;
 }
 
-static const char *np_outcome(mc_entity_nbt_status status, const mc_entity_nbt_error *error)
-{
+static const char *np_outcome(mc_entity_nbt_status status, const mc_entity_nbt_error *error) {
     if (status == MC_ENTITY_NBT_OK)
         return "OK";
     if (status == MC_ENTITY_NBT_WRONG_TAG || (status == MC_ENTITY_NBT_STACK_FAILED &&
@@ -381,8 +371,7 @@ static const char *np_outcome(mc_entity_nbt_status status, const mc_entity_nbt_e
     return status == MC_ENTITY_NBT_NULL_REFERENCE ? "NULL" : NULL;
 }
 
-static bool np_case(mc_entity_classes *classes, const char *scenario)
-{
+static bool np_case(mc_entity_classes *classes, const char *scenario) {
     bool ok = false;
     const bool saving = strncmp(scenario, "save_", 5) == 0,
                factory = strncmp(scenario, "factory", 7) == 0;
@@ -478,8 +467,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;

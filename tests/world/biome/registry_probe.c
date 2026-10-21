@@ -72,8 +72,7 @@ typedef struct empty_resources {
     mc_registry_resources source;
 } empty_resources;
 
-static FILE *open_file(const char *path, const char *mode)
-{
+static FILE *open_file(const char *path, const char *mode) {
 #ifdef _MSC_VER
     FILE *file = NULL;
     return fopen_s(&file, path, mode) == 0 ? file : NULL;
@@ -83,8 +82,7 @@ static FILE *open_file(const char *path, const char *mode)
 }
 
 static mc_java_properties_status empty_read(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     const empty_stream *stream = context;
     if (stream == NULL || out == NULL || capacity == 0 || count == NULL || !stream->opened ||
         stream->closed)
@@ -93,8 +91,8 @@ static mc_java_properties_status empty_read(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static mc_registry_status empty_open(void *context, const char *name, mc_java_properties_input *out)
-{
+static mc_registry_status empty_open(void *context, const char *name,
+                                     mc_java_properties_input *out) {
     empty_resources *resources = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL)
@@ -110,8 +108,7 @@ static mc_registry_status empty_open(void *context, const char *name, mc_java_pr
     return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
 }
 
-static mc_registry_status empty_close(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status empty_close(void *context, const mc_java_properties_input *input) {
     empty_resources *resources = context;
     if (input == NULL || input->read != empty_read)
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -124,15 +121,13 @@ static mc_registry_status empty_close(void *context, const mc_java_properties_in
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static bool empty_ready(void *context, const mc_java_properties_input *input)
-{
+static bool empty_ready(void *context, const mc_java_properties_input *input) {
     (void)context;
     (void)input;
     return false;
 }
 
-static bool emit(writer *out, const char *format, ...)
-{
+static bool emit(writer *out, const char *format, ...) {
     char line[1024];
     va_list arguments;
     va_start(arguments, format);
@@ -147,8 +142,7 @@ static bool emit(writer *out, const char *format, ...)
 }
 
 static bool ref(references *refs, const void *value, reference_kind kind, char text[24],
-                size_t *identity)
-{
+                size_t *identity) {
     if (value == NULL) {
         memcpy(text, "NULL", 5);
         *identity = 0;
@@ -171,8 +165,7 @@ static bool ref(references *refs, const void *value, reference_kind kind, char t
     return length > 0 && length < 24;
 }
 
-static bool decimal(const char *text, int32_t minimum, int32_t maximum, int32_t *out)
-{
+static bool decimal(const char *text, int32_t minimum, int32_t maximum, int32_t *out) {
     bool negative = *text == '-';
     const char *digits = text + (negative ? 1 : 0);
     size_t length = strlen(digits);
@@ -191,8 +184,7 @@ static bool decimal(const char *text, int32_t minimum, int32_t maximum, int32_t 
     return true;
 }
 
-static bool hexadecimal(const char *text, size_t digits, uint64_t *out)
-{
+static bool hexadecimal(const char *text, size_t digits, uint64_t *out) {
     if (strlen(text) != digits)
         return false;
     uint64_t value = 0;
@@ -210,13 +202,11 @@ static bool hexadecimal(const char *text, size_t digits, uint64_t *out)
     return true;
 }
 
-static bool selector(const char *text)
-{
+static bool selector(const char *text) {
     return text[0] >= 'a' && text[0] <= 'm' && text[1] == '\0';
 }
 
-static bool label(const char *text)
-{
+static bool label(const char *text) {
     size_t length = strlen(text);
     if (length == 0 || length > 48 || strcmp(text, "baseline") == 0 ||
         strcmp(text, "warm-rebuild") == 0)
@@ -229,8 +219,7 @@ static bool label(const char *text)
     return true;
 }
 
-static char *next_line(char **cursor)
-{
+static char *next_line(char **cursor) {
     char *line = *cursor;
     char *end = strchr(line, '\n');
     if (end == NULL)
@@ -240,8 +229,7 @@ static char *next_line(char **cursor)
     return line;
 }
 
-static bool parse_requests(requests *input, const char *path)
-{
+static bool parse_requests(requests *input, const char *path) {
     FILE *file = open_file(path, "rb");
     if (file == NULL)
         return false;
@@ -321,8 +309,7 @@ static bool parse_requests(requests *input, const char *path)
     return false;
 }
 
-static const char *biome_class(const mc_biome *biome, mc_registry_side side)
-{
+static const char *biome_class(const mc_biome *biome, mc_registry_side side) {
     static const char *const client[] = {"kd", "fs", "tf", "t", "ry", "yj", "rb", "g"};
     static const char *const server[] = {"gs", "dw", "ma", "m", "le", "pp", "kk", "f"};
     mc_biome_kind kind = mc_biome_kind_get(biome);
@@ -331,8 +318,7 @@ static const char *biome_class(const mc_biome *biome, mc_registry_side side)
     return side == MC_REGISTRY_CLIENT ? client[(size_t)kind] : server[(size_t)kind];
 }
 
-static bool string_units(const mc_registry_string *string, size_t *length, char text[61])
-{
+static bool string_units(const mc_registry_string *string, size_t *length, char text[61]) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length > 15 ||
         (view.length != 0 && view.units == NULL))
@@ -352,8 +338,7 @@ static bool string_units(const mc_registry_string *string, size_t *length, char 
 
 static bool snapshot(writer *out, references *refs, mc_registry_classes *owner,
                      mc_registry_side side, const char *name, bool controlled,
-                     const void **original_table)
-{
+                     const void **original_table) {
     mc_biome_registry_view view;
     if (mc_biome_registry_inspect(owner, &view, NULL) != MC_REGISTRY_OK ||
         view.phase != MC_REGISTRY_READY || view.x == NULL || view.x_length != 4096)
@@ -458,8 +443,7 @@ static bool snapshot(writer *out, references *refs, mc_registry_classes *owner,
 
 /* A comparison projection of actual native statuses, never C Throwable identity.
  * Resource, FP, native budget/admission and initialization failures remain fatal. */
-static const char *target_exception(mc_registry_status status)
-{
+static const char *target_exception(mc_registry_status status) {
     if (status == MC_REGISTRY_NULL_REFERENCE)
         return "java.lang.NullPointerException";
     if (status == MC_REGISTRY_INDEX_OUT_OF_RANGE)
@@ -468,8 +452,7 @@ static const char *target_exception(mc_registry_status status)
 }
 
 static bool query(writer *out, references *refs, mc_registry_classes *owner, const operation *op,
-                  mc_registry_error *error)
-{
+                  mc_registry_error *error) {
     const mc_biome *result = NULL;
     mc_registry_status status;
     if (op->kind == OP_FLOAT) {
@@ -500,8 +483,7 @@ static bool query(writer *out, references *refs, mc_registry_classes *owner, con
                 op->fields[2], op->fields[3], value);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     requests *input = NULL;
     references *refs = NULL;

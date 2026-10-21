@@ -39,21 +39,18 @@ typedef struct holds {
     size_t count;
 } holds;
 
-static bool same_fields(const mc_item_stack_fields *a, const mc_item_stack_fields *b)
-{
+static bool same_fields(const mc_item_stack_fields *a, const mc_item_stack_fields *b) {
     return a->id == b->id && a->count == b->count && a->damage == b->damage &&
            a->animation == b->animation;
 }
 
-static bool fields_are(const mc_item_stack *stack, int32_t id, int32_t count, int32_t damage)
-{
+static bool fields_are(const mc_item_stack *stack, int32_t id, int32_t count, int32_t damage) {
     mc_item_stack_fields fields;
     return mc_item_stack_fields_get(stack, &fields) == MC_ITEM_STACK_OK && fields.id == id &&
            fields.count == count && fields.damage == damage && fields.animation == 0;
 }
 
-static bool keep(holds *held, mc_item_stack *stack)
-{
+static bool keep(holds *held, mc_item_stack *stack) {
     if (held->count == COUNT(held->objects))
         return false;
     for (size_t i = 0; i < held->count; ++i)
@@ -65,8 +62,7 @@ static bool keep(holds *held, mc_item_stack *stack)
     return true;
 }
 
-static bool capture(holds *held)
-{
+static bool capture(holds *held) {
     for (size_t i = 0; i < held->count; ++i)
         if (mc_item_stack_fields_get(held->objects[i], &held->fields[i]) != MC_ITEM_STACK_OK ||
             mc_item_stack_phase_get(held->objects[i], &held->phases[i]) != MC_ITEM_STACK_OK)
@@ -74,8 +70,7 @@ static bool capture(holds *held)
     return true;
 }
 
-static bool preserved(const holds *held)
-{
+static bool preserved(const holds *held) {
     for (size_t i = 0; i < held->count; ++i) {
         mc_item_stack_fields fields;
         mc_item_stack_phase phase;
@@ -88,15 +83,13 @@ static bool preserved(const holds *held)
     return true;
 }
 
-static void release_holds(holds *held)
-{
+static void release_holds(holds *held) {
     for (size_t i = 0; i < held->count; ++i)
         mc_item_stack_release(held->objects[i]);
     held->count = 0;
 }
 
-static bool retire(mc_registry_classes **owner)
-{
+static bool retire(mc_registry_classes **owner) {
     if (*owner == NULL)
         return true;
     (*owner)->entered = 0;
@@ -113,8 +106,7 @@ static bool retire(mc_registry_classes **owner)
  * iz/fy has no own clinit, and numeric construction does not active-use Items. */
 static mc_registry_status isolated(mc_registry_side side, mc_materials *materials,
                                    mc_java_random_profile *profile, size_t budget,
-                                   mc_registry_classes **out)
-{
+                                   mc_registry_classes **out) {
     const mc_registry_options options = {side, profile, materials, budget, NULL};
     mc_registry_status status = mc_registry_classes_allocate(&options, out, NULL);
     if (status == MC_REGISTRY_OK)
@@ -123,8 +115,7 @@ static mc_registry_status isolated(mc_registry_side side, mc_materials *material
 }
 
 static int numeric_and_copy(mc_registry_side side, mc_materials *materials,
-                            mc_java_random_profile *profile)
-{
+                            mc_java_random_profile *profile) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     mc_item_stack *foreign = NULL;
@@ -247,8 +238,7 @@ cleanup:
 }
 
 static int actual_object_values(mc_registry_side side, mc_materials *materials,
-                                mc_java_random_profile *profile)
-{
+                                mc_java_random_profile *profile) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     holds held = {0};
@@ -330,8 +320,7 @@ cleanup:
 }
 
 static int natural_limit(mc_registry_side side, mc_materials *materials,
-                         mc_java_random_profile *profile)
-{
+                         mc_java_random_profile *profile) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     holds held = {0};
@@ -372,8 +361,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;

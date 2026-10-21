@@ -36,6 +36,7 @@
  * temporary and restored before assertions. No Entity phase/position fields,
  * holds, World/cache counts, limits, Random or returned results are injected. */
 enum { WORLD_COUNT = 8, ENTITY_COUNT = 32 };
+
 static unsigned int checks;
 static mc_math_trig trig;
 static const uint32_t fixture_timestamp = UINT32_C(0xfedcba98);
@@ -47,12 +48,14 @@ typedef struct stream {
     size_t length, offset;
     bool closed;
 } stream;
+
 typedef struct resources {
     stream streams[3];
     mc_registry_resources api;
     size_t opens, closes;
     bool bad;
 } resources;
+
 typedef struct fixture {
     mc_materials *materials;
     mc_java_random_profile *profile;
@@ -79,6 +82,7 @@ typedef struct fixture {
     mc_entity *entities[ENTITY_COUNT];
     size_t entity_count;
 } fixture;
+
 typedef struct fixture_record {
     mc_nbt_tag root, level, fields[11];
     const mc_nbt_tag *root_fields[1], *level_fields[11];
@@ -90,8 +94,7 @@ typedef struct fixture_record {
  * with no observer, allocator, clock or gameplay callback injected. */
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (s == NULL || out == NULL || capacity == 0 || count == NULL || s->closed ||
         s->offset > s->length)
@@ -108,8 +111,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -120,24 +122,21 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *units) {
     const size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, n};
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name) {
     if (tag == NULL || tag->type != MC_NBT_COMPOUND)
         return NULL;
     for (size_t i = 0; i < tag->value.compound.length; ++i) {
@@ -153,13 +152,11 @@ static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
     return NULL;
 }
 
-static uint32_t be32(const uint8_t *p)
-{
+static uint32_t be32(const uint8_t *p) {
     return ((uint32_t)p[0] << 24u) | ((uint32_t)p[1] << 16u) | ((uint32_t)p[2] << 8u) | p[3];
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -183,8 +180,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || r->opens >= COUNT(names) ||
@@ -196,14 +192,12 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static bool region_path(fixture *f, size_t slot, char **out)
-{
+static bool region_path(fixture *f, size_t slot, char **out) {
     return mc_ws_path_join(mc_world_store_root(f->stores[slot]), "region/r.0.0.mcr", out, NULL) ==
            MC_WORLD_STORAGE_OK;
 }
 
-static bool open_store(fixture *f, size_t slot, const char *root)
-{
+static bool open_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -232,8 +226,7 @@ cleanup:
     return ok;
 }
 
-static bool seed_record(fixture *f, size_t slot)
-{
+static bool seed_record(fixture *f, size_t slot) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -284,8 +277,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t slot)
-{
+static bool create_world(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime_construction state = {0};
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
@@ -345,8 +337,7 @@ cleanup:
     return ok;
 }
 
-static bool files_unchanged(fixture *f, size_t slot)
-{
+static bool files_unchanged(fixture *f, size_t slot) {
     bool ok = false;
     char *path = NULL;
     mc_ws_file_bytes current = {0};
@@ -361,8 +352,7 @@ cleanup:
     return ok;
 }
 
-static bool save_before_publication(fixture *f, size_t slot, const char *root)
-{
+static bool save_before_publication(fixture *f, size_t slot, const char *root) {
     bool ok = false, changed = false, completed = false;
     char *path = NULL, *snapshot_path = NULL;
     char leaf[80];
@@ -420,8 +410,7 @@ cleanup:
 }
 
 static bool make_entity(fixture *f, size_t side, mc_world_runtime *world, double x, double y,
-                        double z, mc_entity **out)
-{
+                        double z, mc_entity **out) {
     bool ok = false;
     CHECK(f->entity_count < COUNT(f->entities));
     mc_entity *entity = NULL;
@@ -438,8 +427,7 @@ cleanup:
 }
 
 static bool slice_is(fixture *f, size_t slot, size_t slice, mc_entity *const *expected,
-                     size_t count)
-{
+                     size_t count) {
     mc_world_chunk_fields fields = {0};
     const mc_world_chunk_entity_list *list = NULL;
     size_t actual = SIZE_MAX;
@@ -457,8 +445,7 @@ static bool slice_is(fixture *f, size_t slot, size_t slice, mc_entity *const *ex
     return true;
 }
 
-static bool world_is(fixture *f, size_t slot, mc_entity *const *expected, size_t count)
-{
+static bool world_is(fixture *f, size_t slot, mc_entity *const *expected, size_t count) {
     mc_world_runtime *w = f->worlds[slot];
     const mc_world_reference_list *list = w->fields.b;
     if (list != f->world_lists[slot] || list->count != count || w->entity_membership.list != list ||
@@ -470,16 +457,14 @@ static bool world_is(fixture *f, size_t slot, mc_entity *const *expected, size_t
     return true;
 }
 
-static bool membership(mc_entity *entity, mc_world_runtime *origin, int32_t slice)
-{
+static bool membership(mc_entity *entity, mc_world_runtime *origin, int32_t slice) {
     mc_entity_snapshot snapshot = {0};
     return mc_entity_get_snapshot(entity, &snapshot) == MC_ENTITY_OK &&
            snapshot.phase == MC_ENTITY_READY && snapshot.base.world == origin && snapshot.base.bF &&
            snapshot.base.bG == 0 && snapshot.base.bH == slice && snapshot.base.bI == 0;
 }
 
-static bool payload_is(fixture *f, mc_entity *entity)
-{
+static bool payload_is(fixture *f, mc_entity *entity) {
     mc_entity_snapshot snapshot = {0};
     mc_item_stack *stack = NULL;
     mc_item_stack_fields fields = {0};
@@ -493,8 +478,7 @@ static bool payload_is(fixture *f, mc_entity *entity)
     return same;
 }
 
-static bool publication(fixture *f, size_t side, mc_entity **primary)
-{
+static bool publication(fixture *f, size_t side, mc_entity **primary) {
     bool ok = false, value = true;
     const size_t slot = side, other = side + 2u;
     mc_world_runtime *w = f->worlds[slot];
@@ -579,8 +563,7 @@ cleanup:
     return ok;
 }
 
-static bool observer_prefix(fixture *f, size_t side, mc_entity *primary)
-{
+static bool observer_prefix(fixture *f, size_t side, mc_entity *primary) {
     bool ok = false;
     const size_t slot = side + 2u;
     mc_world_runtime *w = f->worlds[slot];
@@ -624,8 +607,7 @@ cleanup:
     return ok;
 }
 
-static bool world_limit(fixture *f, size_t side)
-{
+static bool world_limit(fixture *f, size_t side) {
     bool ok = false, value = true;
     const size_t slot = side + 4u;
     mc_world_runtime *w = f->worlds[slot];
@@ -647,8 +629,7 @@ cleanup:
     return ok;
 }
 
-static bool chunk_limit(fixture *f, size_t side)
-{
+static bool chunk_limit(fixture *f, size_t side) {
     bool ok = false;
     const size_t slot = side + 6u;
     mc_world_runtime *w = f->worlds[slot];
@@ -691,8 +672,7 @@ cleanup:
     return ok;
 }
 
-static bool opaque_and_failed_saves(fixture *f, size_t slot)
-{
+static bool opaque_and_failed_saves(fixture *f, size_t slot) {
     bool ok = false, completed = true;
     mc_world_storage_error error = {0};
     uint32_t growth = UINT32_MAX;
@@ -740,8 +720,7 @@ cleanup:
     return ok;
 }
 
-static bool lease_blocks_retirement(fixture *f, size_t side, mc_entity *primary)
-{
+static bool lease_blocks_retirement(fixture *f, size_t side, mc_entity *primary) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_world_runtime_construction before = {0}, after = {0};
@@ -776,8 +755,7 @@ cleanup:
 /* Explicit native retirement of the real cache/pending descriptors. This is
  * legal only AFTER terminal container teardown, never source Chunk unload.
  * It invokes no save/detach/Entity callback and never clears state.active. */
-static bool retire_descriptors(fixture *f, size_t slot)
-{
+static bool retire_descriptors(fixture *f, size_t slot) {
     if (!f->bound[slot] || f->descriptors_retired[slot])
         return true;
     if (!f->terminal[slot])
@@ -792,8 +770,7 @@ static bool retire_descriptors(fixture *f, size_t slot)
     return true;
 }
 
-static bool terminal_retirement(fixture *f, mc_entity *const primary[2])
-{
+static bool terminal_retirement(fixture *f, mc_entity *const primary[2]) {
     bool ok = false;
     mc_entity_snapshot before[ENTITY_COUNT] = {0};
     for (size_t i = 0; i < f->entity_count; ++i)
@@ -865,8 +842,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t slot = 0; slot < WORLD_COUNT; ++slot)
@@ -929,8 +905,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

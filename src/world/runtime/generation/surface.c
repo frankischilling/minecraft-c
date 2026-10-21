@@ -3,8 +3,7 @@
 #include "../../terrain/surface_internal.h"
 
 static bool reference_failure(mc_world_provider *provider, mc_world_generation_error *error,
-                              mc_registry_status status, unsigned int pc, const char *operation)
-{
+                              mc_registry_status status, unsigned int pc, const char *operation) {
     error->surface_bytecode = pc;
     error->registry = (mc_registry_error){.status = status,
                                           .message = operation,
@@ -18,8 +17,7 @@ static bool reference_failure(mc_world_provider *provider, mc_world_generation_e
 
 bool mc_world_generation_surface(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
                                  const mc_biome_reference_array *biomes,
-                                 mc_world_generation_error *error)
-{
+                                 mc_world_generation_error *error) {
     mc_normal_generator *generator = &provider->generator;
     mc_java_random *random = &generator->generator_random;
 

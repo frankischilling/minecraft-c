@@ -63,6 +63,7 @@ typedef struct stream {
     size_t size, offset, opens, reads, closes;
     bool closed;
 } stream;
+
 typedef struct resources {
     stream streams[3];
     mc_registry_resources source;
@@ -70,8 +71,7 @@ typedef struct resources {
 } resources;
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->size)
@@ -89,8 +89,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     for (size_t i = 0; i < COUNT(names); ++i)
@@ -104,8 +103,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->invalid = true;
@@ -116,16 +114,14 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->invalid = true;
     return false;
 }
 
-static void resources_init(resources *r, bool bad)
-{
+static void resources_init(resources *r, bool bad) {
     *r = (resources){0};
     r->streams[0] = (stream){bad ? malformed : language,
                              bad ? sizeof(malformed) - 1 : sizeof(language) - 1,
@@ -139,20 +135,17 @@ static void resources_init(resources *r, bool bad)
     r->source = (mc_registry_resources){r, open_resource, close_resource, ready_resource};
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *p)
-{
+static uint64_t uniquifier(const mc_java_random_profile *p) {
     return atomic_load_explicit(&p->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t value, size_t count)
-{
+static uint64_t advanced(uint64_t value, size_t count) {
     while (count-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static int retire(mc_registry_classes *owner)
-{
+static int retire(mc_registry_classes *owner) {
     if (mc_registry_classes_free(owner, NULL) == MC_REGISTRY_OK)
         return 0;
     retirement_failed = true;
@@ -161,8 +154,7 @@ static int retire(mc_registry_classes *owner)
 }
 
 static mc_registry_status initialize(mc_registry_classes *owner, int entry,
-                                     mc_registry_error *error)
-{
+                                     mc_registry_error *error) {
     return entry == 0   ? mc_registry_classes_initialize_statistics(owner, error)
            : entry == 1 ? mc_registry_classes_initialize_blocks(owner, error)
                         : mc_registry_classes_initialize_items(owner, error);
@@ -170,20 +162,17 @@ static mc_registry_status initialize(mc_registry_classes *owner, int entry,
 
 static mc_registry_status create(mc_registry_side side, mc_materials *materials,
                                  mc_java_random_profile *profile, resources *r, size_t bytes,
-                                 mc_registry_classes **out)
-{
+                                 mc_registry_classes **out) {
     const mc_registry_options options = {side, profile, materials, bytes, &r->source};
     return mc_registry_classes_allocate(&options, out, NULL);
 }
 
-static const mc_statistic *find(const mc_registry_classes *owner, int32_t id)
-{
+static const mc_statistic *find(const mc_registry_classes *owner, int32_t id) {
     const mc_statistic *out = NULL;
     return mc_registry_classes_find_statistic(owner, id, &out) == MC_REGISTRY_OK ? out : NULL;
 }
 
-static bool contains(const mc_statistic_list *list, const mc_statistic *object)
-{
+static bool contains(const mc_statistic_list *list, const mc_statistic *object) {
     for (size_t i = 0; i < mc_statistic_list_size(list); ++i) {
         const mc_statistic *out = NULL;
         if (mc_statistic_list_get(list, i, &out) != MC_REGISTRY_OK)
@@ -194,8 +183,7 @@ static bool contains(const mc_statistic_list *list, const mc_statistic *object)
     return false;
 }
 
-static bool text_is(const mc_registry_string *string, const char *expected)
-{
+static bool text_is(const mc_registry_string *string, const char *expected) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length != strlen(expected))
         return false;
@@ -205,14 +193,12 @@ static bool text_is(const mc_registry_string *string, const char *expected)
     return true;
 }
 
-static const mc_registry_string *literal(mc_registry_classes *owner, const char *text)
-{
+static const mc_registry_string *literal(mc_registry_classes *owner, const char *text) {
     const mc_registry_string *value = NULL;
     return mc_registry_literal_ascii(owner, text, &value) == MC_REGISTRY_OK ? value : NULL;
 }
 
-static const mc_registry_string *property(const mc_translation *translation, const char *name)
-{
+static const mc_registry_string *property(const mc_translation *translation, const char *name) {
     uint16_t key[80];
     size_t n = strlen(name);
     if (n > COUNT(key))
@@ -223,8 +209,7 @@ static const mc_registry_string *property(const mc_translation *translation, con
     return mc_translation_property(translation, key, n, &out, NULL) == MC_REGISTRY_OK ? out : NULL;
 }
 
-static int check_randoms(const mc_registry_classes *owner, uint64_t before)
-{
+static int check_randoms(const mc_registry_classes *owner, uint64_t before) {
     int result = 1;
     CHECK(uniquifier(owner->options.random_profile) == advanced(before, 5));
     CHECK(owner->options.random_profile->math == NULL &&
@@ -249,8 +234,7 @@ cleanup:
 }
 
 static int check_unification(mc_registry_classes *owner, mc_statistic *const *array, int32_t base,
-                             const mc_statistic_list *all, const mc_statistic_list *mined)
-{
+                             const mc_statistic_list *all, const mc_statistic_list *mined) {
     int result = 1;
     CHECK(array != NULL);
     for (size_t i = 0; i < COUNT(firsts); ++i) {
@@ -283,8 +267,7 @@ cleanup:
     return result;
 }
 
-static int record_output(const mc_item_stack *stack, bool *produced)
-{
+static int record_output(const mc_item_stack *stack, bool *produced) {
     int result = 1;
     mc_item_stack_fields fields;
     CHECK(stack != NULL && mc_item_stack_fields_get(stack, &fields) == MC_ITEM_STACK_OK);
@@ -296,8 +279,7 @@ cleanup:
 }
 
 static int check_recipe_array(mc_registry_classes *owner, const mc_registry_statistic_view *view,
-                              size_t *expected)
-{
+                              size_t *expected) {
     int result = 1;
     bool produced[32000] = {false};
     mc_registry_crafting_view crafting;
@@ -363,8 +345,7 @@ cleanup:
     return result;
 }
 
-static int check_graph(mc_registry_classes *owner, int entry)
-{
+static int check_graph(mc_registry_classes *owner, int entry) {
     int result = 1;
     mc_registry_statistic_view view;
     CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK);
@@ -490,8 +471,7 @@ cleanup:
 }
 
 static int check_retry(mc_registry_classes *owner, resources *r, int entry,
-                       mc_registry_status previous)
-{
+                       mc_registry_status previous) {
     int result = 1;
     mc_statistic **saved[4] = {0};
     const mc_statistic **list[4] = {0};
@@ -563,8 +543,7 @@ cleanup:
 }
 
 static int test_route(mc_registry_side side, mc_materials *materials,
-                      mc_java_random_profile *profile, int entry, bool bad)
-{
+                      mc_java_random_profile *profile, int entry, bool bad) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -616,8 +595,7 @@ cleanup:
 }
 
 static int test_formatted(mc_registry_side side, mc_materials *materials,
-                          mc_java_random_profile *profile)
-{
+                          mc_java_random_profile *profile) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -680,8 +658,7 @@ cleanup:
 }
 
 static int budget_trial(mc_registry_side side, mc_materials *materials,
-                        mc_java_random_profile *profile, int entry, size_t limit, bool *complete)
-{
+                        mc_java_random_profile *profile, int entry, size_t limit, bool *complete) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -725,8 +702,7 @@ cleanup:
 }
 
 static int test_budgets(mc_registry_side side, mc_materials *materials,
-                        mc_java_random_profile *profile, int entry)
-{
+                        mc_java_random_profile *profile, int entry) {
     int result = 1;
     size_t low = sizeof(mc_registry_classes), high = 4u * 1024u * 1024u;
     bool complete;
@@ -750,8 +726,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;

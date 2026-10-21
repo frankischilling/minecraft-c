@@ -37,16 +37,19 @@
  * inputs are restored before CHECK. Counts, holds, phases and leases are never
  * manufactured. No successful gameplay/resource backend is supplied. */
 enum { WORLD_COUNT = 4 };
+
 static unsigned int checks;
 static mc_math_trig trig;
 static const uint32_t fixture_timestamp = UINT32_C(0xfedcba98);
 static const uint8_t language[] = "stat.mineBlock=Mine %1$s\nstat.useItem=Use %1$s\n"
                                   "stat.breakItem=Break %1$s\nstat.craftItem=Craft %1$s\n";
+
 typedef struct stream {
     const uint8_t *bytes;
     size_t length, offset;
     bool closed;
 } stream;
+
 typedef struct resources {
     stream streams[3];
     mc_registry_resources api;
@@ -55,6 +58,7 @@ typedef struct resources {
     mc_world_runtime_classes *retirement_owner;
     size_t retirement_checks;
 } resources;
+
 typedef struct fixture {
     const char *root;
     mc_materials *materials;
@@ -77,6 +81,7 @@ typedef struct fixture {
     bool bound[WORLD_COUNT], terminal[WORLD_COUNT], retired[WORLD_COUNT];
     bool descriptors_retired[WORLD_COUNT];
 } fixture;
+
 typedef struct fixture_record {
     mc_nbt_tag root, level, fields[11];
     const mc_nbt_tag *root_fields[1], *level_fields[11];
@@ -87,8 +92,7 @@ typedef struct fixture_record {
 /* Native UTF-8 transport/properties helpers reused from the real publication
  * fixture. These open actual byte streams and never replace game operations. */
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (s == NULL || out == NULL || capacity == 0 || count == NULL || s->closed ||
         s->offset > s->length)
@@ -105,8 +109,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -117,24 +120,21 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *units) {
     const size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, n};
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name) {
     if (tag == NULL || tag->type != MC_NBT_COMPOUND)
         return NULL;
     for (size_t i = 0; i < tag->value.compound.length; ++i) {
@@ -150,8 +150,7 @@ static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
     return NULL;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -175,8 +174,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     if (r->retirement_owner != NULL) {
         mc_world_runtime_classes *owner = r->retirement_owner;
@@ -206,8 +204,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static bool class_retirement_callback(fixture *f, size_t side)
-{
+static bool class_retirement_callback(fixture *f, size_t side) {
     bool ok = false;
     resources source = {0};
     mc_registry_classes *registry = NULL;
@@ -266,8 +263,7 @@ cleanup:
     return ok;
 }
 
-static bool open_store(fixture *f, size_t slot, const char *root)
-{
+static bool open_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -308,8 +304,7 @@ typedef struct tile_record {
     uint16_t names[18][24], strings[3][16];
 } tile_record;
 
-static void prepare_tiles(tile_record *r)
-{
+static void prepare_tiles(tile_record *r) {
     const char *const chest_names[] = {"id", "x", "y", "z", "Items", "TileExtra"};
     const char *const spawner_names[] = {"id", "x", "y", "z", "EntityId", "Delay", "TileExtra"};
     const char *const item_names[] = {"Slot", "id", "Count", "Damage", "ItemExtra"};
@@ -363,13 +358,11 @@ static void prepare_tiles(tile_record *r)
     r->spawner[6].value.int_value = 88;
 }
 
-static size_t cell(int32_t x, int32_t y, int32_t z)
-{
+static size_t cell(int32_t x, int32_t y, int32_t z) {
     return ((size_t)x << 11u) | ((size_t)z << 7u) | (size_t)y;
 }
 
-static bool name_is(const mc_tile_name *name, const char *text)
-{
+static bool name_is(const mc_tile_name *name, const char *text) {
     mc_tile_name_view view;
     if (mc_tile_name_get_view(name, &view) != MC_TILE_OK || view.is_null ||
         view.text.length != strlen(text))
@@ -380,8 +373,7 @@ static bool name_is(const mc_tile_name *name, const char *text)
     return true;
 }
 
-static bool fresh_registry(const mc_registry_error *e, mc_registry_status status)
-{
+static bool fresh_registry(const mc_registry_error *e, mc_registry_status status) {
     return e->status == status && e->initializer_pc == -1 && e->block_id == -1 &&
            e->constructor_class == NULL && e->constructor_pc == -1 &&
            e->profile_status == MC_JAVA_RANDOM_PROFILE_OK && e->active_initializer_class == NULL &&
@@ -393,8 +385,7 @@ static bool fresh_registry(const mc_registry_error *e, mc_registry_status status
            (status == MC_REGISTRY_OK ? e->message == NULL : e->message != NULL);
 }
 
-static bool empty_entity_error(const mc_entity_error *e)
-{
+static bool empty_entity_error(const mc_entity_error *e) {
     return e->status == MC_ENTITY_OK && e->operation == NULL && e->bytecode == 0 &&
            e->profile == MC_JAVA_RANDOM_PROFILE_OK && e->item == MC_ITEM_STACK_OK &&
            e->world == MC_WORLD_STORAGE_OK;
@@ -403,8 +394,7 @@ static bool empty_entity_error(const mc_entity_error *e)
 /* Every independent child/caller field is checked; no padding comparison and
  * no reconstruction from ambient World last-error state. Outer failure PCs and
  * cause are checked separately at the actual acquisition call site. */
-static bool empty_tile_children(const mc_live_tile_error *e)
-{
+static bool empty_tile_children(const mc_live_tile_error *e) {
     const mc_tile_error *t = &e->tile;
     const mc_world_entity_error *p = &e->publication;
     return fresh_registry(&e->registry, MC_REGISTRY_OK) && t->status == MC_TILE_OK &&
@@ -432,8 +422,7 @@ static bool empty_tile_children(const mc_live_tile_error *e)
            e->acquisition_parent.provider_bytecode == 0;
 }
 
-static bool baseline(fixture *f, size_t slot)
-{
+static bool baseline(fixture *f, size_t slot) {
     bool ok = false;
     char *region = NULL, *saved = NULL;
     char leaf[64];
@@ -453,8 +442,7 @@ cleanup:
     return ok;
 }
 
-static bool seed_record(fixture *f, size_t slot)
-{
+static bool seed_record(fixture *f, size_t slot) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     tile_record tiles = {0};
@@ -519,8 +507,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t slot)
-{
+static bool create_world(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime_construction state = {0};
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
@@ -545,8 +532,7 @@ cleanup:
     return ok;
 }
 
-static bool shared_and_fresh(fixture *f, size_t side)
-{
+static bool shared_and_fresh(fixture *f, size_t side) {
     bool ok = false;
     mc_tile_name *same = NULL, *name = NULL;
     mc_tile *chest = NULL, *spawner = NULL;
@@ -605,8 +591,7 @@ cleanup:
     return ok;
 }
 
-static bool load_world(fixture *f, size_t slot)
-{
+static bool load_world(fixture *f, size_t slot) {
     bool ok = false;
     if (slot < 2) {
         mc_chunk_state *loaded = NULL;
@@ -687,8 +672,7 @@ cleanup:
     return ok;
 }
 
-static bool install_primary(fixture *f, size_t side)
-{
+static bool install_primary(fixture *f, size_t side) {
     bool ok = false, changed = false;
     mc_world_mutation_error mutation;
     mc_live_tile_error error;
@@ -707,8 +691,7 @@ cleanup:
     return ok;
 }
 
-static bool nbt_copy(fixture *f, size_t side)
-{
+static bool nbt_copy(fixture *f, size_t side) {
     bool ok = false;
     tile_record r = {0};
     mc_nbt_tag item = {.type = MC_NBT_COMPOUND};
@@ -759,8 +742,7 @@ cleanup:
     return ok;
 }
 
-static bool lookup_and_hooks(fixture *f, size_t side)
-{
+static bool lookup_and_hooks(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *registry = f->registry[side];
@@ -852,8 +834,7 @@ cleanup:
     return ok;
 }
 
-static bool containers_and_records(fixture *f, size_t slot)
-{
+static bool containers_and_records(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_world_chunk *chunk = f->chunks[slot];
@@ -921,8 +902,7 @@ cleanup:
     return ok;
 }
 
-static bool drops_and_empty(fixture *f, size_t side)
-{
+static bool drops_and_empty(fixture *f, size_t side) {
     bool ok = false;
     mc_tile *chest = NULL;
     mc_item_stack *stack = NULL;
@@ -967,8 +947,7 @@ cleanup:
     return ok;
 }
 
-static bool retire_descriptors(fixture *f, size_t slot)
-{
+static bool retire_descriptors(fixture *f, size_t slot) {
     if (!f->bound[slot] || f->descriptors_retired[slot])
         return true;
     if (!f->terminal[slot])
@@ -983,8 +962,7 @@ static bool retire_descriptors(fixture *f, size_t slot)
     return true;
 }
 
-static bool retirement(fixture *f, size_t slot)
-{
+static bool retirement(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_item_stack *stack = NULL;
@@ -1030,8 +1008,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t slot = 0; slot < WORLD_COUNT; ++slot) {
@@ -1083,8 +1060,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

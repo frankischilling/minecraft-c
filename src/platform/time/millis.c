@@ -36,8 +36,7 @@ _Static_assert(CHAR_BIT == 8, "8-bit bytes required");
 #define MILLIS_PER_SECOND INT64_C(1000)
 #define NANOS_PER_MILLI INT64_C(1000000)
 
-mc_platform_millis_status mc_platform_millis_from_filetime(uint64_t ticks, int64_t *out)
-{
+mc_platform_millis_status mc_platform_millis_from_filetime(uint64_t ticks, int64_t *out) {
     if (out == NULL)
         return MC_PLATFORM_MILLIS_INVALID_ARGUMENT;
     if (ticks > (uint64_t)INT64_MAX)
@@ -48,8 +47,8 @@ mc_platform_millis_status mc_platform_millis_from_filetime(uint64_t ticks, int64
     return MC_PLATFORM_MILLIS_OK;
 }
 
-mc_platform_millis_status mc_platform_millis_from_timespec(int64_t sec, int64_t nsec, int64_t *out)
-{
+mc_platform_millis_status mc_platform_millis_from_timespec(int64_t sec, int64_t nsec,
+                                                           int64_t *out) {
     if (out == NULL)
         return MC_PLATFORM_MILLIS_INVALID_ARGUMENT;
     if (nsec < 0 || nsec >= INT64_C(1000000000) || sec < INT64_MIN / MILLIS_PER_SECOND ||
@@ -63,8 +62,7 @@ mc_platform_millis_status mc_platform_millis_from_timespec(int64_t sec, int64_t 
     return MC_PLATFORM_MILLIS_OK;
 }
 
-mc_platform_millis_status mc_platform_current_time_millis(int64_t *out)
-{
+mc_platform_millis_status mc_platform_current_time_millis(int64_t *out) {
     if (out == NULL)
         return MC_PLATFORM_MILLIS_INVALID_ARGUMENT;
 #if defined(_WIN32)

@@ -77,22 +77,19 @@ typedef struct fixture {
     uint8_t map[256];
 } fixture;
 
-static uint64_t bits(double value)
-{
+static uint64_t bits(double value) {
     uint64_t result;
     memcpy(&result, &value, sizeof(result));
     return result;
 }
 
-static double value_of(uint64_t value)
-{
+static double value_of(uint64_t value) {
     double result;
     memcpy(&result, &value, sizeof(result));
     return result;
 }
 
-static void poison_error(mc_temperature_error *error)
-{
+static void poison_error(mc_temperature_error *error) {
     *error = (mc_temperature_error){.status = MC_BIOME_LIMIT,
                                     .operation = "previous caller diagnostic",
                                     .body = MC_TEMPERATURE_BODY_FIXED,
@@ -106,8 +103,7 @@ static void poison_error(mc_temperature_error *error)
                                     .cells_completed = SIZE_MAX};
 }
 
-static bool fresh_error(const mc_temperature_error *error)
-{
+static bool fresh_error(const mc_temperature_error *error) {
     return error->status == MC_BIOME_OK && error->operation == NULL &&
            error->body == MC_TEMPERATURE_BODY_NONE && error->bytecode == 0 &&
            error->raw_bytecode == 0 && !error->native_boundary &&
@@ -115,8 +111,7 @@ static bool fresh_error(const mc_temperature_error *error)
            !error->temperature_filled && !error->auxiliary_published && error->cells_completed == 0;
 }
 
-static bool owner_same(const mc_temperature_owner_state *a, const mc_temperature_owner_state *b)
-{
+static bool owner_same(const mc_temperature_owner_state *a, const mc_temperature_owner_state *b) {
     return a->holds == b->holds && a->arrays == b->arrays &&
            a->direct_allocation_bytes == b->direct_allocation_bytes &&
            a->buffer_allocation_bytes == b->buffer_allocation_bytes &&
@@ -126,8 +121,7 @@ static bool owner_same(const mc_temperature_owner_state *a, const mc_temperature
 
 static bool failure_at(const mc_temperature_error *error, mc_biome_status status,
                        mc_temperature_body body, unsigned int pc, unsigned int raw_pc, bool reused,
-                       bool filled)
-{
+                       bool filled) {
     return error->status == status && error->operation != NULL && error->body == body &&
            error->bytecode == pc && error->raw_bytecode == raw_pc && error->native_boundary &&
            error->manager_status == MC_WORLD_DIMENSION_OK && error->reused_input == reused &&
@@ -135,8 +129,7 @@ static bool failure_at(const mc_temperature_error *error, mc_biome_status status
            error->cells_completed == 0;
 }
 
-static bool close_world(fixture *f)
-{
+static bool close_world(fixture *f) {
     mc_world_dimension_unbind(f->normal);
     if (f->world != NULL) {
         if (mc_world_runtime_retire_world(f->world, NULL) != MC_WORLD_STORAGE_OK ||
@@ -149,8 +142,7 @@ static bool close_world(fixture *f)
     return true;
 }
 
-static bool open_world(fixture *f, int64_t seed)
-{
+static bool open_world(fixture *f, int64_t seed) {
     bool ok = false;
     CHECK(f->world == NULL && f->normal == NULL);
     CHECK(mc_world_dimension_create(0, NULL, &f->normal, NULL) == MC_WORLD_DIMENSION_OK);
@@ -169,8 +161,7 @@ cleanup:
     return ok;
 }
 
-static bool normal_manager(fixture *f, mc_world_dimension_biome **out)
-{
+static bool normal_manager(fixture *f, mc_world_dimension_biome **out) {
     mc_world_dimension_fields fields;
     mc_world_dimension_biome_fields biome;
     if (mc_world_dimension_fields_get(f->normal, &fields) != MC_WORLD_DIMENSION_OK ||
@@ -184,8 +175,7 @@ static bool normal_manager(fixture *f, mc_world_dimension_biome **out)
 
 /* Calibration observes only real allocation accounting, never sampled values
  * or private header sizes. The resulting limits are explicit native controls. */
-static bool double_request(size_t length, size_t *out)
-{
+static bool double_request(size_t length, size_t *out) {
     bool ok = false;
     mc_biome_memory memory = {0};
     mc_biome_double_buffer buffer = {0};
@@ -202,8 +192,7 @@ cleanup:
 }
 
 static bool make_limited_manager(fixture *f, size_t buffer_limit, mc_world_dimension **dimension,
-                                 mc_world_dimension_biome **manager)
-{
+                                 mc_world_dimension_biome **manager) {
     mc_world_dimension_limits limits = mc_world_dimension_default_limits();
     limits.max_biome_buffer_bytes = buffer_limit;
     if (mc_world_dimension_create(0, &limits, dimension, NULL) != MC_WORLD_DIMENSION_OK ||
@@ -216,8 +205,7 @@ static bool make_limited_manager(fixture *f, size_t buffer_limit, mc_world_dimen
     return true;
 }
 
-static bool test_original_rectangles(fixture *f)
-{
+static bool test_original_rectangles(fixture *f) {
     bool ok = false;
     mc_temperature_owner *owner = NULL;
     mc_temperature_array *array = NULL, *result = NULL, *fresh = NULL, *short_input = NULL;
@@ -327,8 +315,7 @@ cleanup:
     return ok;
 }
 
-static bool test_empty_fixed_and_admission(fixture *f)
-{
+static bool test_empty_fixed_and_admission(fixture *f) {
     bool ok = false, result_owned = false;
     mc_temperature_owner *owner = NULL;
     mc_temperature_array *empty = NULL, *array = NULL, *result = NULL;
@@ -436,8 +423,7 @@ cleanup:
     return ok;
 }
 
-static bool test_lifetime_and_rebinding(fixture *f)
-{
+static bool test_lifetime_and_rebinding(fixture *f) {
     bool ok = false;
     mc_temperature_owner *owner = NULL;
     mc_temperature_array *field = NULL, *alias = NULL, *result = NULL;
@@ -524,8 +510,7 @@ cleanup:
     return ok;
 }
 
-static bool test_quota_and_raw_prefix(fixture *f)
-{
+static bool test_quota_and_raw_prefix(fixture *f) {
     bool ok = false, result_owned = false;
     mc_temperature_owner *owner = NULL, *limited = NULL;
     mc_temperature_array *array = NULL, *result = NULL, *empty = NULL;
@@ -673,8 +658,7 @@ cleanup:
     return ok;
 }
 
-static bool test_fp_order(fixture *f)
-{
+static bool test_fp_order(fixture *f) {
     bool ok = false, result_owned = false;
     const unsigned int saved_csr = _mm_getcsr();
     mc_temperature_owner *owner = NULL, *limited = NULL;
@@ -749,8 +733,7 @@ cleanup:
     return ok;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t length = strlen(hex);
     if (length == 0 || length % 2u != 0 || length / 2u >= capacity)
         return false;
@@ -773,8 +756,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-static bool fixture_close(fixture *f)
-{
+static bool fixture_close(fixture *f) {
     if (f == NULL)
         return true;
     if (!close_world(f))
@@ -794,8 +776,7 @@ static bool fixture_close(fixture *f)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

@@ -19,13 +19,13 @@ typedef struct geometry_request {
     int32_t step, end;
     int pattern[5];
 } geometry_request;
+
 static geometry_request requests[PROBE_CASES];
 static size_t request_count;
 static mc_math_trig table, original_table;
 static uint8_t blocks[PROBE_BLOCKS], before_blocks[PROBE_BLOCKS];
 
-static int integer(const char *text, int64_t low, int64_t high, int64_t *out)
-{
+static int integer(const char *text, int64_t low, int64_t high, int64_t *out) {
     const char *digits = *text == '-' ? text + 1 : text;
     if (*digits == '\0' || (*digits == '0' && digits[1] != '\0'))
         return 0;
@@ -40,8 +40,8 @@ static int integer(const char *text, int64_t low, int64_t high, int64_t *out)
     *out = (int64_t)value;
     return 1;
 }
-static int raw_bits(const char *text, size_t digits, uint64_t *out)
-{
+
+static int raw_bits(const char *text, size_t digits, uint64_t *out) {
     if (strlen(text) != digits)
         return 0;
     uint64_t value = 0;
@@ -55,8 +55,8 @@ static int raw_bits(const char *text, size_t digits, uint64_t *out)
     *out = value;
     return 1;
 }
-static int binary64(const char *text, double *out)
-{
+
+static int binary64(const char *text, double *out) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(*out), "binary64 required");
     if (!raw_bits(text, 16, &bits) ||
@@ -65,8 +65,8 @@ static int binary64(const char *text, double *out)
     memcpy(out, &bits, sizeof(bits));
     return 1;
 }
-static int binary32(const char *text, float *out)
-{
+
+static int binary32(const char *text, float *out) {
     uint64_t wide;
     _Static_assert(sizeof(uint32_t) == sizeof(*out), "binary32 required");
     if (!raw_bits(text, 8, &wide))
@@ -77,8 +77,8 @@ static int binary32(const char *text, float *out)
     memcpy(out, &bits, sizeof(bits));
     return 1;
 }
-static int pattern(const char *text, int result[5])
-{
+
+static int pattern(const char *text, int result[5]) {
     char copy[257];
     if (strlen(text) >= sizeof(copy))
         return 0;
@@ -133,8 +133,8 @@ static int pattern(const char *text, int result[5])
     }
     return 0;
 }
-static int parse_request(geometry_request *request)
-{
+
+static int parse_request(geometry_request *request) {
     request->fields[0] = request->text;
     request->count = 1;
     for (char *p = request->text; *p != '\0'; ++p)
@@ -171,8 +171,8 @@ static int parse_request(geometry_request *request)
     }
     return 1;
 }
-static int read_requests(void)
-{
+
+static int read_requests(void) {
     char line[260];
     size_t total = 0;
     while (fgets(line, (int)sizeof(line), stdin) != NULL) {
@@ -194,8 +194,8 @@ static int read_requests(void)
     }
     return !ferror(stdin) && request_count != 0;
 }
-static void prepare_blocks(const geometry_request *request)
-{
+
+static void prepare_blocks(const geometry_request *request) {
     memset(blocks, 1, 32768);
     const int *p = request->pattern;
     if (p[0] == 1)
@@ -218,14 +218,14 @@ static void prepare_blocks(const geometry_request *request)
     blocks[32769] = 0x8b;
     blocks[32770] = 0x8c;
 }
-static void continuation(mc_java_random random, uint64_t out[4])
-{
+
+static void continuation(mc_java_random random, uint64_t out[4]) {
     for (size_t i = 0; i < 4; ++i)
         out[i] = (uint64_t)mc_java_random_next_i64(&random);
 }
+
 static int infer_consumption(const geometry_request *request, const uint64_t observed[4],
-                             int *selected)
-{
+                             int *selected) {
     int room = strcmp(request->fields[0], "room") == 0, matches = 0;
     for (int count = 1; count <= (room ? 1 : 3); count += 2) {
         mc_java_random trial;
@@ -243,8 +243,8 @@ static int infer_consumption(const geometry_request *request, const uint64_t obs
     }
     return matches == 1;
 }
-static void print_continuation(const uint64_t values[4])
-{
+
+static void print_continuation(const uint64_t values[4]) {
     putchar('[');
     for (size_t i = 0; i < 4; ++i) {
         if (i != 0)
@@ -253,15 +253,15 @@ static void print_continuation(const uint64_t values[4])
     }
     putchar(']');
 }
-static void print_blocks(const uint8_t *values)
-{
+
+static void print_blocks(const uint8_t *values) {
     fputs("{\"length\":32771,\"values\":\"", stdout);
     for (size_t i = 0; i < PROBE_BLOCKS; ++i)
         printf("%02x", (unsigned int)values[i]);
     fputs("\"}", stdout);
 }
-static int observe(const geometry_request *request, size_t index)
-{
+
+static int observe(const geometry_request *request, size_t index) {
     mc_java_random random;
     mc_java_random_seed(&random, request->seed);
     uint64_t before[4], after[4];
@@ -314,8 +314,8 @@ static int observe(const geometry_request *request, size_t index)
             index);
     return !ferror(stdout) && !ferror(stderr);
 }
-int main(void)
-{
+
+int main(void) {
     if (!read_requests() || !mc_math_trig_init(&table) || MC_TERRAIN_NORMAL_CAVE_RANGE != 8u) {
         fputs("invalid bounded protected cave request\n", stderr);
         return 1;

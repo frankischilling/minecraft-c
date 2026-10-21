@@ -3,8 +3,7 @@
 #include "registry_internal.h"
 
 static mc_registry_status result(mc_registry_error *error, mc_registry_status status,
-                                 const char *message)
-{
+                                 const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -20,8 +19,7 @@ static mc_registry_status result(mc_registry_error *error, mc_registry_status st
 }
 
 static mc_registry_status access(mc_registry_classes *classes, bool store, bool value, bool *out,
-                                 mc_registry_error *error)
-{
+                                 mc_registry_error *error) {
     if (classes == NULL || (!store && out == NULL))
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "falling flag owner/output");
     if (classes->entered != 0 || classes->blocks_phase == MC_REGISTRY_INITIALIZING)
@@ -46,13 +44,11 @@ static mc_registry_status access(mc_registry_classes *classes, bool store, bool 
 }
 
 mc_registry_status mc_registry_falling_flag_get(mc_registry_classes *classes, bool *out,
-                                                mc_registry_error *error)
-{
+                                                mc_registry_error *error) {
     return access(classes, false, false, out, error);
 }
 
 mc_registry_status mc_registry_falling_flag_set(mc_registry_classes *classes, bool value,
-                                                mc_registry_error *error)
-{
+                                                mc_registry_error *error) {
     return access(classes, true, value, NULL, error);
 }

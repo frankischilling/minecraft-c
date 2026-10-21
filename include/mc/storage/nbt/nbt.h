@@ -24,9 +24,11 @@ typedef struct mc_nbt_string {
 } mc_nbt_string;
 
 typedef struct mc_nbt_tag mc_nbt_tag;
+
 struct mc_nbt_tag {
     mc_nbt_type type;
     mc_nbt_string name;
+
     union {
         int8_t byte_value;
         int16_t short_value;
@@ -36,16 +38,20 @@ struct mc_nbt_tag {
          * normal writer canonicalizes NaNs as Java data streams do. */
         uint32_t float_bits;
         uint64_t double_bits;
+
         struct {
             const uint8_t *data;
             size_t length;
         } byte_array;
+
         mc_nbt_string string;
+
         struct {
             uint8_t element_type;
             const mc_nbt_tag *const *items;
             size_t length;
         } list;
+
         struct {
             const mc_nbt_tag *const *items;
             size_t length;

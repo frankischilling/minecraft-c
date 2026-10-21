@@ -17,6 +17,7 @@
 #endif
 
 #define GRAPH_LIMIT 4096u
+
 typedef struct cell {
     int32_t id;
     const mc_statistic *object;
@@ -27,8 +28,7 @@ typedef struct icon_table {
     size_t count;
 } icon_table;
 
-static bool row(const char *format, ...)
-{
+static bool row(const char *format, ...) {
     va_list args;
     va_start(args, format);
     int result = vprintf(format, args);
@@ -36,14 +36,12 @@ static bool row(const char *format, ...)
     return result >= 0;
 }
 
-static int compare(const void *left, const void *right)
-{
+static int compare(const void *left, const void *right) {
     int32_t a = ((const cell *)left)->id, b = ((const cell *)right)->id;
     return a < b ? -1 : a != b;
 }
 
-static const cell *reference(const cell *cells, size_t count, const mc_statistic *object)
-{
+static const cell *reference(const cell *cells, size_t count, const mc_statistic *object) {
     if (object == NULL)
         return NULL;
     for (size_t i = 0; i < count; ++i)
@@ -52,15 +50,13 @@ static const cell *reference(const cell *cells, size_t count, const mc_statistic
     return NULL;
 }
 
-static char formatter(const mc_statistic *object, const mc_registry_statistic_base_view *base)
-{
+static char formatter(const mc_statistic *object, const mc_registry_statistic_base_view *base) {
     const mc_statistic_fields *f = mc_statistic_fields_get(object);
     return f->a == base->i ? 'i' : f->a == base->j ? 'j' : f->a == base->k ? 'k' : 0;
 }
 
 static bool graph(mc_registry_classes *owner, const mc_registry_statistic_view *view,
-                  const mc_registry_statistic_base_view *base, cell *cells)
-{
+                  const mc_registry_statistic_base_view *base, cell *cells) {
     if (view->map_size > GRAPH_LIMIT || view->named == NULL || base->i == NULL || base->j == NULL ||
         base->k == NULL || base->i == base->j || base->i == base->k || base->j == base->k)
         return false;
@@ -117,8 +113,7 @@ static bool graph(mc_registry_classes *owner, const mc_registry_statistic_view *
 
 static bool emit(const char *side, const char *entry, const cell *cells,
                  const mc_registry_statistic_view *view,
-                 const mc_registry_statistic_base_view *base)
-{
+                 const mc_registry_statistic_base_view *base) {
     const char *boundary = strcmp(entry, "item") == 0       ? "item-icon-null2"
                            : strcmp(entry, "crafting") == 0 ? "crafting-null24"
                            : strcmp(entry, "smelting") == 0 ? "smelting-null75"
@@ -190,8 +185,7 @@ static bool emit(const char *side, const char *entry, const cell *cells,
     return true;
 }
 
-static size_t icon_reference(const icon_table *icons, const mc_item_stack *stack)
-{
+static size_t icon_reference(const icon_table *icons, const mc_item_stack *stack) {
     for (size_t i = 0; i < icons->count; ++i)
         if (icons->objects[i] == stack)
             return i + 1;
@@ -199,8 +193,7 @@ static size_t icon_reference(const icon_table *icons, const mc_item_stack *stack
 }
 
 static bool achievement_graph(const cell *cells, const mc_registry_statistic_view *stats,
-                              const mc_registry_achievement_view *view, icon_table *icons)
-{
+                              const mc_registry_achievement_view *view, icon_table *icons) {
     if (view->named == NULL || mc_statistic_list_size(view->e) > GRAPH_LIMIT ||
         (view->e != NULL && (view->e == stats->b || view->e == stats->c || view->e == stats->d ||
                              view->e == stats->e)))
@@ -241,14 +234,12 @@ static bool achievement_graph(const cell *cells, const mc_registry_statistic_vie
     return true;
 }
 
-static bool emit_reference(const cell *cells, size_t count, const mc_statistic *object)
-{
+static bool emit_reference(const cell *cells, size_t count, const mc_statistic *object) {
     return object == NULL ? row("NULL") : row("%" PRId32, reference(cells, count, object)->id);
 }
 
 static bool emit_achievements(const cell *cells, const mc_registry_statistic_view *stats,
-                              const mc_registry_achievement_view *view, const icon_table *icons)
-{
+                              const mc_registry_achievement_view *view, const icon_table *icons) {
     if (!row("ACHIEVEMENTS\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t%" PRId32 "\t", view->a, view->b,
              view->c, view->d) ||
         !(view->e == NULL ? row("NULL\n") : row("%zu\n", mc_statistic_list_size(view->e))))
@@ -284,8 +275,7 @@ static bool emit_achievements(const cell *cells, const mc_registry_statistic_vie
     return row("END\n");
 }
 
-static char *root_argument(int argc, char **argv)
-{
+static char *root_argument(int argc, char **argv) {
     if (argc == 4) {
         size_t length = strlen(argv[3]);
         if (length == 0 || length > 32768)
@@ -324,8 +314,7 @@ static char *root_argument(int argc, char **argv)
     return root;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     mc_resource_files *files = NULL;
     mc_materials *materials = NULL;

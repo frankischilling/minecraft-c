@@ -22,8 +22,7 @@ static const uint16_t item_stack_damage_name[] = {'D', 'a', 'm', 'a', 'g', 'e'};
 
 static mc_item_stack_status item_stack_error(mc_item_stack_error *error,
                                              mc_item_stack_status status, const char *field,
-                                             mc_nbt_error nbt)
-{
+                                             mc_nbt_error nbt) {
     if (error != NULL) {
         *error = (mc_item_stack_error){status, field, nbt};
     }
@@ -31,14 +30,12 @@ static mc_item_stack_status item_stack_error(mc_item_stack_error *error,
 }
 
 static mc_item_stack_status item_stack_status(mc_item_stack_error *error,
-                                              mc_item_stack_status status, const char *field)
-{
+                                              mc_item_stack_status status, const char *field) {
     return item_stack_error(error, status, field, (mc_nbt_error){MC_NBT_OK, 0});
 }
 
 static mc_item_stack_status item_stack_nbt_error(mc_item_stack_error *error, mc_nbt_status status,
-                                                 mc_nbt_error nbt)
-{
+                                                 mc_nbt_error nbt) {
     const mc_item_stack_status result = status == MC_NBT_LIMIT ? MC_ITEM_STACK_LIMIT
                                         : status == MC_NBT_ALLOCATION_FAILED
                                             ? MC_ITEM_STACK_ALLOCATION_FAILED
@@ -46,8 +43,7 @@ static mc_item_stack_status item_stack_nbt_error(mc_item_stack_error *error, mc_
     return item_stack_error(error, result, NULL, nbt);
 }
 
-const char *mc_item_stack_status_string(mc_item_stack_status status)
-{
+const char *mc_item_stack_status_string(mc_item_stack_status status) {
     switch (status) {
         case MC_ITEM_STACK_OK:
             return "ok";
@@ -67,16 +63,14 @@ const char *mc_item_stack_status_string(mc_item_stack_status status)
     return "unknown item stack status";
 }
 
-static mc_item_stack_status item_stack_ready(const mc_item_stack *stack)
-{
+static mc_item_stack_status item_stack_ready(const mc_item_stack *stack) {
     if (stack == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
     return stack->phase == MC_ITEM_STACK_READY ? MC_ITEM_STACK_OK : MC_ITEM_STACK_INVALID_PHASE;
 }
 
-mc_item_stack_status mc_item_stack_allocate(mc_item_stack **out)
-{
+mc_item_stack_status mc_item_stack_allocate(mc_item_stack **out) {
     if (out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -91,8 +85,7 @@ mc_item_stack_status mc_item_stack_allocate(mc_item_stack **out)
 }
 
 mc_item_stack_status mc_item_stack_construct(mc_item_stack *raw, int32_t id, int32_t count,
-                                             int32_t damage)
-{
+                                             int32_t damage) {
     if (raw == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -108,8 +101,7 @@ mc_item_stack_status mc_item_stack_construct(mc_item_stack *raw, int32_t id, int
 }
 
 static mc_item_stack_status item_stack_read_fields(mc_item_stack *stack, const mc_nbt_tag *compound,
-                                                   mc_item_stack_error *error)
-{
+                                                   mc_item_stack_error *error) {
     if (compound == NULL || compound->type != MC_NBT_COMPOUND) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, "id");
     }
@@ -132,8 +124,7 @@ static mc_item_stack_status item_stack_read_fields(mc_item_stack *stack, const m
 }
 
 mc_item_stack_status mc_item_stack_construct_nbt(mc_item_stack *raw, const mc_nbt_tag *compound,
-                                                 mc_item_stack_error *error)
-{
+                                                 mc_item_stack_error *error) {
     if (raw == NULL) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
     }
@@ -150,8 +141,7 @@ mc_item_stack_status mc_item_stack_construct_nbt(mc_item_stack *raw, const mc_nb
 }
 
 mc_item_stack_status mc_item_stack_read_nbt(mc_item_stack *stack, const mc_nbt_tag *compound,
-                                            mc_item_stack_error *error)
-{
+                                            mc_item_stack_error *error) {
     const mc_item_stack_status status = item_stack_ready(stack);
     if (status != MC_ITEM_STACK_OK) {
         return item_stack_status(error, status, NULL);
@@ -159,8 +149,7 @@ mc_item_stack_status mc_item_stack_read_nbt(mc_item_stack *stack, const mc_nbt_t
     return item_stack_read_fields(stack, compound, error);
 }
 
-mc_item_stack_status mc_item_stack_retain(mc_item_stack *stack)
-{
+mc_item_stack_status mc_item_stack_retain(mc_item_stack *stack) {
     if (stack == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -171,8 +160,7 @@ mc_item_stack_status mc_item_stack_retain(mc_item_stack *stack)
     return MC_ITEM_STACK_OK;
 }
 
-void mc_item_stack_release(mc_item_stack *stack)
-{
+void mc_item_stack_release(mc_item_stack *stack) {
     if (stack == NULL) {
         return;
     }
@@ -182,8 +170,8 @@ void mc_item_stack_release(mc_item_stack *stack)
     }
 }
 
-mc_item_stack_status mc_item_stack_fields_get(const mc_item_stack *stack, mc_item_stack_fields *out)
-{
+mc_item_stack_status mc_item_stack_fields_get(const mc_item_stack *stack,
+                                              mc_item_stack_fields *out) {
     if (stack == NULL || out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -191,8 +179,7 @@ mc_item_stack_status mc_item_stack_fields_get(const mc_item_stack *stack, mc_ite
     return MC_ITEM_STACK_OK;
 }
 
-mc_item_stack_status mc_item_stack_phase_get(const mc_item_stack *stack, mc_item_stack_phase *out)
-{
+mc_item_stack_status mc_item_stack_phase_get(const mc_item_stack *stack, mc_item_stack_phase *out) {
     if (stack == NULL || out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -200,13 +187,11 @@ mc_item_stack_status mc_item_stack_phase_get(const mc_item_stack *stack, mc_item
     return MC_ITEM_STACK_OK;
 }
 
-size_t mc_item_stack_object_bytes(void)
-{
+size_t mc_item_stack_object_bytes(void) {
     return sizeof(mc_item_stack);
 }
 
-mc_item_stack_status mc_item_stack_native_bytes(const mc_item_stack *stack, size_t *out)
-{
+mc_item_stack_status mc_item_stack_native_bytes(const mc_item_stack *stack, size_t *out) {
     if (stack == NULL || out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -218,8 +203,7 @@ mc_item_stack_status mc_item_stack_native_bytes(const mc_item_stack *stack, size
     return MC_ITEM_STACK_OK;
 }
 
-mc_item_stack_status mc_item_stack_count_set(mc_item_stack *stack, int32_t count)
-{
+mc_item_stack_status mc_item_stack_count_set(mc_item_stack *stack, int32_t count) {
     const mc_item_stack_status status = item_stack_ready(stack);
     if (status == MC_ITEM_STACK_OK) {
         stack->fields.count = count;
@@ -227,8 +211,7 @@ mc_item_stack_status mc_item_stack_count_set(mc_item_stack *stack, int32_t count
     return status;
 }
 
-mc_item_stack_status mc_item_stack_damage_set(mc_item_stack *stack, int32_t damage)
-{
+mc_item_stack_status mc_item_stack_damage_set(mc_item_stack *stack, int32_t damage) {
     const mc_item_stack_status status = item_stack_ready(stack);
     if (status == MC_ITEM_STACK_OK) {
         stack->fields.damage = damage;
@@ -236,8 +219,7 @@ mc_item_stack_status mc_item_stack_damage_set(mc_item_stack *stack, int32_t dama
     return status;
 }
 
-mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_stack **out)
-{
+mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_stack **out) {
     if (out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -260,8 +242,7 @@ mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_sta
     return MC_ITEM_STACK_OK;
 }
 
-mc_item_stack_status mc_item_stack_clone_nullable(const mc_item_stack *stack, mc_item_stack **out)
-{
+mc_item_stack_status mc_item_stack_clone_nullable(const mc_item_stack *stack, mc_item_stack **out) {
     if (out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -272,8 +253,8 @@ mc_item_stack_status mc_item_stack_clone_nullable(const mc_item_stack *stack, mc
     return mc_item_stack_clone(stack, out);
 }
 
-mc_item_stack_status mc_item_stack_split(mc_item_stack *stack, int32_t amount, mc_item_stack **out)
-{
+mc_item_stack_status mc_item_stack_split(mc_item_stack *stack, int32_t amount,
+                                         mc_item_stack **out) {
     if (out == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
@@ -298,8 +279,8 @@ mc_item_stack_status mc_item_stack_split(mc_item_stack *stack, int32_t amount, m
 
 static mc_item_stack_status item_stack_limits(const mc_item_stack *stack,
                                               const mc_nbt_limits *requested,
-                                              mc_nbt_limits *remaining, mc_item_stack_error *error)
-{
+                                              mc_nbt_limits *remaining,
+                                              mc_item_stack_error *error) {
     *remaining = requested == NULL ? mc_nbt_default_limits() : *requested;
     if (remaining->max_depth == 0 || remaining->max_depth > 128) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
@@ -318,8 +299,7 @@ static mc_item_stack_status item_stack_limits(const mc_item_stack *stack,
 
 mc_item_stack_status mc_item_stack_preserve_source(mc_item_stack *stack, const mc_nbt_tag *compound,
                                                    const mc_nbt_limits *requested_limits,
-                                                   mc_item_stack_error *error)
-{
+                                                   mc_item_stack_error *error) {
     mc_item_stack_status status = item_stack_ready(stack);
     if (status != MC_ITEM_STACK_OK) {
         return item_stack_status(error, status, NULL);
@@ -344,20 +324,17 @@ mc_item_stack_status mc_item_stack_preserve_source(mc_item_stack *stack, const m
     return item_stack_status(error, MC_ITEM_STACK_OK, NULL);
 }
 
-const mc_nbt_tag *mc_item_stack_source(const mc_item_stack *stack)
-{
+const mc_nbt_tag *mc_item_stack_source(const mc_item_stack *stack) {
     return stack == NULL ? NULL : mc_nbt_tree_root(stack->source);
 }
 
-static bool item_stack_names_equal(mc_nbt_string left, mc_nbt_string right)
-{
+static bool item_stack_names_equal(mc_nbt_string left, mc_nbt_string right) {
     return left.length == right.length &&
            (left.length == 0 ||
             memcmp(left.units, right.units, left.length * sizeof(uint16_t)) == 0);
 }
 
-static mc_nbt_string item_stack_field_name(size_t index)
-{
+static mc_nbt_string item_stack_field_name(size_t index) {
     if (index == 0) {
         return (mc_nbt_string){item_stack_id_name, 2};
     }
@@ -370,8 +347,7 @@ static mc_nbt_string item_stack_field_name(size_t index)
 mc_item_stack_status mc_item_stack_record_pointer_count(const mc_item_stack *stack,
                                                         const mc_nbt_tag *extra_fields,
                                                         size_t extra_count, size_t *out,
-                                                        mc_item_stack_error *error)
-{
+                                                        mc_item_stack_error *error) {
     if (out == NULL || (extra_fields == NULL && extra_count != 0)) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
     }
@@ -433,8 +409,7 @@ mc_item_stack_status
 mc_item_stack_record_overlay(const mc_item_stack *stack, const mc_nbt_tag *extra_fields,
                              size_t extra_count, const mc_nbt_tag **child_scratch,
                              size_t scratch_count, mc_item_stack_record_view *out,
-                             mc_item_stack_error *error)
-{
+                             mc_item_stack_error *error) {
     if (out == NULL) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
     }
@@ -508,8 +483,7 @@ mc_item_stack_record_overlay(const mc_item_stack *stack, const mc_nbt_tag *extra
 }
 
 static size_t item_stack_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag fields[3],
-                                 const mc_nbt_tag **items)
-{
+                                 const mc_nbt_tag **items) {
     bool used[3] = {false};
     size_t count = 0;
     if (baseline != NULL) {
@@ -540,8 +514,7 @@ static size_t item_stack_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag fi
 
 mc_item_stack_status mc_item_stack_build(const mc_item_stack *stack,
                                          const mc_nbt_limits *requested_limits,
-                                         mc_nbt_document **out, mc_item_stack_error *error)
-{
+                                         mc_nbt_document **out, mc_item_stack_error *error) {
     if (out == NULL) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
     }

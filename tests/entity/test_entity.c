@@ -93,24 +93,21 @@ static unsigned int checks;
     X(client_only.bA);                                                                             \
     X(client_only.bB);
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary32 required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static bool base_equal(const mc_entity_base_fields *left, const mc_entity_base_fields *right)
-{
+static bool base_equal(const mc_entity_base_fields *left, const mc_entity_base_fields *right) {
 #define EQUAL_SCALAR(field)                                                                        \
     if (left->field != right->field)                                                               \
     return false
@@ -131,8 +128,7 @@ static bool base_equal(const mc_entity_base_fields *left, const mc_entity_base_f
     return true;
 }
 
-static bool bounds_equal(const mc_entity_bounds *left, const mc_entity_bounds *right)
-{
+static bool bounds_equal(const mc_entity_bounds *left, const mc_entity_bounds *right) {
     return double_bits(left->min_x) == double_bits(right->min_x) &&
            double_bits(left->min_y) == double_bits(right->min_y) &&
            double_bits(left->min_z) == double_bits(right->min_z) &&
@@ -141,8 +137,7 @@ static bool bounds_equal(const mc_entity_bounds *left, const mc_entity_bounds *r
            double_bits(left->max_z) == double_bits(right->max_z);
 }
 
-static bool raw_is(const mc_entity_snapshot *value, mc_entity_source source)
-{
+static bool raw_is(const mc_entity_snapshot *value, mc_entity_source source) {
     const mc_entity_base_fields zero = {0};
     return value->source == source && value->phase == MC_ENTITY_RAW && value->base_bytecode == 0 &&
            value->item_bytecode == 0 && base_equal(&value->base, &zero) && value->item.b == 0 &&
@@ -151,8 +146,7 @@ static bool raw_is(const mc_entity_snapshot *value, mc_entity_source source)
            value->watcher == NULL && value->stack == NULL;
 }
 
-static mc_entity_base_fields base_literals(int32_t id)
-{
+static mc_entity_base_fields base_literals(int32_t id) {
     /* Original complete base constructor scalar state; every omitted field is
      * an independently required raw zero/null, including all five client slots. */
     const mc_entity_base_fields value = {.id = id,
@@ -168,37 +162,31 @@ static mc_entity_base_fields base_literals(int32_t id)
     return value;
 }
 
-static bool fresh_random(const mc_java_random *value)
-{
+static bool fresh_random(const mc_java_random *value) {
     return value != NULL && value->state <= UINT64_C(0xffffffffffff) &&
            double_bits(value->next_next_gaussian) == 0 && !value->have_next_next_gaussian;
 }
 
-static size_t profile_budget(void)
-{
+static size_t profile_budget(void) {
     return sizeof(mc_java_random_profile) + sizeof(mc_java_math_random_owner);
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t before, unsigned int count)
-{
+static uint64_t advanced(uint64_t before, unsigned int count) {
     for (unsigned int i = 0; i < count; ++i)
         before *= UINT64_C(1181783497276652981);
     return before;
 }
 
-static bool holder_is(const mc_java_random_profile *profile, mc_java_random_holder_phase phase)
-{
+static bool holder_is(const mc_java_random_profile *profile, mc_java_random_holder_phase phase) {
     return atomic_load_explicit(&profile->holder_phase, memory_order_acquire) ==
            (unsigned int)phase;
 }
 
-static mc_java_random math_snapshot(const mc_java_random_profile *profile)
-{
+static mc_java_random math_snapshot(const mc_java_random_profile *profile) {
     const mc_java_random value = {
         .state = atomic_load_explicit(&profile->math->state, memory_order_relaxed),
         .next_next_gaussian = profile->math->next_next_gaussian,
@@ -206,14 +194,12 @@ static mc_java_random math_snapshot(const mc_java_random_profile *profile)
     return value;
 }
 
-static bool math_equal(const mc_java_random_profile *profile, const mc_java_random *expected)
-{
+static bool math_equal(const mc_java_random_profile *profile, const mc_java_random *expected) {
     const mc_java_random actual = math_snapshot(profile);
     return mc_test_java_random_equal(&actual, expected);
 }
 
-static bool watcher_is(const mc_entity_snapshot *value, bool installed)
-{
+static bool watcher_is(const mc_entity_snapshot *value, bool installed) {
     mc_entity_watcher_snapshot watch = {0};
     if (value->watcher == NULL ||
         mc_entity_watcher_get_snapshot(value->watcher, &watch) != MC_ENTITY_OK)
@@ -226,8 +212,7 @@ static bool watcher_is(const mc_entity_snapshot *value, bool installed)
 }
 
 static bool ready_is(const mc_entity_snapshot *value, mc_entity_source source, int32_t id,
-                     bool full, const double *draws)
-{
+                     bool full, const double *draws) {
     mc_entity_base_fields expected = base_literals(id);
     mc_entity_bounds box = {-(double)0.3f, 0.0,          -(double)0.3f,
                             (double)0.3f,  (double)1.8f, (double)0.3f};
@@ -263,8 +248,7 @@ static bool ready_is(const mc_entity_snapshot *value, mc_entity_source source, i
            watcher_is(value, true);
 }
 
-static int retire_classes(mc_entity_classes **classes)
-{
+static int retire_classes(mc_entity_classes **classes) {
     const mc_entity_status status = mc_entity_classes_free(*classes);
     if (status != MC_ENTITY_OK) {
         fprintf(stderr, "class cleanup: %s\n", mc_entity_status_string(status));
@@ -274,8 +258,7 @@ static int retire_classes(mc_entity_classes **classes)
     return 0;
 }
 
-static int test_raw(mc_entity_source source)
-{
+static int test_raw(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL, *candidate_classes = NULL, *limited = NULL;
@@ -375,8 +358,7 @@ cleanup:
     return result;
 }
 
-static int test_constructors(mc_entity_source source, bool cold_full)
-{
+static int test_constructors(mc_entity_source source, bool cold_full) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -470,8 +452,7 @@ cleanup:
     return result;
 }
 
-static int test_stack_mutators(mc_entity_source source)
-{
+static int test_stack_mutators(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -569,8 +550,7 @@ cleanup:
     return result;
 }
 
-static int test_ids(mc_entity_source source)
-{
+static int test_ids(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL, *same_source_class = NULL, *other_source = NULL;
@@ -631,8 +611,7 @@ typedef struct budget_case {
     bool random, watcher, bounds_latched, watcher_latched;
 } budget_case;
 
-static int test_budget_case(mc_entity_source source, const budget_case *test)
-{
+static int test_budget_case(mc_entity_source source, const budget_case *test) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -748,8 +727,7 @@ cleanup:
     return result;
 }
 
-static int test_budgets(mc_entity_source source)
-{
+static int test_budgets(mc_entity_source source) {
     const size_t pool = sizeof(mc_entity_bounds_pool), box = sizeof(mc_entity_bounds);
     const size_t random = sizeof(mc_java_random), types = sizeof(mc_entity_type_map);
     const size_t entry = sizeof(mc_entity_type_entry), watcher = sizeof(mc_entity_watcher);
@@ -793,8 +771,7 @@ static int test_budgets(mc_entity_source source)
 }
 
 static mc_entity_status construct_with_control(mc_entity *entity, unsigned int control,
-                                               mc_entity_error *error)
-{
+                                               mc_entity_error *error) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_entity_status status = mc_item_entity_construct_world(entity, NULL, error);
@@ -802,8 +779,7 @@ static mc_entity_status construct_with_control(mc_entity *entity, unsigned int c
     return status;
 }
 
-static int test_fp_prefix(mc_entity_source source)
-{
+static int test_fp_prefix(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -847,8 +823,7 @@ cleanup:
     return result;
 }
 
-static int test_math_limit(mc_entity_source source)
-{
+static int test_math_limit(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -897,8 +872,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         fprintf(stderr, "entity tests require the qualified strict SSE environment\n");
         return 1;

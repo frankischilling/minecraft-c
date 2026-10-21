@@ -26,35 +26,30 @@ static const uint8_t zero_blocks[MC_CHUNK_BLOCKS] = {0};
         }                                                                                          \
     } while (0)
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t value, unsigned int constructors)
-{
+static uint64_t advanced(uint64_t value, unsigned int constructors) {
     while (constructors-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static bool cold(const mc_java_random_profile *profile)
-{
+static bool cold(const mc_java_random_profile *profile) {
     return profile->math == NULL &&
            atomic_load_explicit(&profile->holder_phase, memory_order_acquire) ==
                (unsigned int)MC_JAVA_RANDOM_HOLDER_COLD;
 }
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static bool same_info(const mc_level_info *left, const mc_level_info *right)
-{
+static bool same_info(const mc_level_info *left, const mc_level_info *right) {
     return left->seed == right->seed && left->spawn_x == right->spawn_x &&
            left->spawn_y == right->spawn_y && left->spawn_z == right->spawn_z &&
            left->time == right->time && left->last_played == right->last_played &&
@@ -66,8 +61,7 @@ static bool same_info(const mc_level_info *left, const mc_level_info *right)
            left->player == right->player && left->player_dimension == right->player_dimension;
 }
 
-static bool make_player(mc_world_info_player **out)
-{
+static bool make_player(mc_world_info_player **out) {
     const uint16_t key[] = {'D', 'i', 'm', 'e', 'n', 's', 'i', 'o', 'n'};
     const uint16_t name[] = {'B', 'e', 'f', 'o', 'r', 'e'};
     mc_nbt_tag dimension = {.type = MC_NBT_INT, .name = {key, 9}};
@@ -79,8 +73,7 @@ static bool make_player(mc_world_info_player **out)
 }
 
 static bool make_metadata(mc_world_info_name *name, mc_world_info_player *player,
-                          mc_world_info **out)
-{
+                          mc_world_info **out) {
     mc_world_info *info = NULL;
     bool ok = false;
     if (mc_world_info_allocate(MC_WORLD_INFO_CLIENT, &info) != MC_WORLD_INFO_OK ||
@@ -100,8 +93,7 @@ cleanup:
 }
 
 static int check_provider(mc_world_runtime *world, mc_world_store *store,
-                          mc_world_provider_fields *out)
-{
+                          mc_world_provider_fields *out) {
     int result = 1;
     mc_world_runtime_fields f;
     mc_world_dimension_fields dimension;
@@ -155,13 +147,11 @@ cleanup:
     return result;
 }
 
-static size_t index_of(size_t x, size_t y, size_t z)
-{
+static size_t index_of(size_t x, size_t y, size_t z) {
     return (x * 16u + z) * 128u + y;
 }
 
-static bool same_chunk_except_dirty(const mc_chunk_state *left, const mc_chunk_state *right)
-{
+static bool same_chunk_except_dirty(const mc_chunk_state *left, const mc_chunk_state *right) {
     return left->data == right->data && left->x == right->x && left->z == right->z &&
            left->blank == right->blank && left->active == right->active &&
            left->terrain_populated == right->terrain_populated &&
@@ -170,8 +160,7 @@ static bool same_chunk_except_dirty(const mc_chunk_state *left, const mc_chunk_s
 }
 
 static bool same_nonmetadata(const mc_chunk_data *data, const mc_chunk_data *before,
-                             const uint8_t before_blocks[MC_CHUNK_BLOCKS])
-{
+                             const uint8_t before_blocks[MC_CHUNK_BLOCKS]) {
     return data->blocks == before->blocks && data->blocks_capacity == before->blocks_capacity &&
            memcmp(data->blocks, before_blocks, MC_CHUNK_BLOCKS) == 0 &&
            memcmp(data->skylight, before->skylight, MC_CHUNK_NIBBLE_BYTES) == 0 &&
@@ -182,8 +171,7 @@ static bool same_nonmetadata(const mc_chunk_data *data, const mc_chunk_data *bef
 
 /* Actual in-memory typed storage round trip of the edited chunk. No World save,
  * file output, session check or original-runtime observation is introduced. */
-static int test_metadata_codec(const mc_chunk_state *chunk)
-{
+static int test_metadata_codec(const mc_chunk_state *chunk) {
     int result = 1;
     mc_stored_chunk *copy = NULL, *decoded = NULL;
     mc_nbt_document *document = NULL;
@@ -231,8 +219,7 @@ cleanup:
 }
 
 static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_world_regions *regions,
-                         const mc_world_provider_fields *provider, mc_chunk_state *chunks[4])
-{
+                         const mc_world_provider_fields *provider, mc_chunk_state *chunks[4]) {
     int result = 1;
     int32_t value = -999;
     int32_t ordered_size = -1, membership_size = -1;
@@ -379,8 +366,7 @@ cleanup:
     return result;
 }
 
-static int test_blank_metadata(mc_world_runtime *world, const mc_world_provider_fields *provider)
-{
+static int test_blank_metadata(mc_world_runtime *world, const mc_world_provider_fields *provider) {
     int result = 1;
     bool published = false, changed = false;
     int32_t value = -999;
@@ -419,8 +405,7 @@ cleanup:
 }
 
 static int test_blocks(mc_world_runtime *world, mc_world_store *store, mc_world_regions *regions,
-                       mc_chunk_state *chunks[4])
-{
+                       mc_chunk_state *chunks[4]) {
     int result = 1;
     bool provider_bound = false;
     mc_world_storage_error error;
@@ -563,8 +548,7 @@ cleanup:
     return result;
 }
 
-static void drop_world(mc_world_runtime **world)
-{
+static void drop_world(mc_world_runtime **world) {
     if (*world != NULL) {
         (void)mc_world_runtime_retire_world(*world, NULL);
         (void)mc_world_runtime_free(*world, NULL);
@@ -572,8 +556,7 @@ static void drop_world(mc_world_runtime **world)
     }
 }
 
-static int test_scheduled_retirement(mc_world_runtime *world)
-{
+static int test_scheduled_retirement(mc_world_runtime *world) {
     int result = 1;
     mc_scheduled_tick *tick = NULL;
     mc_scheduled_tick_sequence sequence = {0};
@@ -615,8 +598,7 @@ cleanup:
     return result;
 }
 
-static int test_game(const char *root)
-{
+static int test_game(const char *root) {
     int result = 1;
     mc_world_regions *regions = NULL;
     mc_world_store *store = NULL;
@@ -924,8 +906,7 @@ cleanup:
     return result;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t length = strlen(hex);
     if (length == 0 || length % 2u != 0 || length / 2u >= capacity)
         return false;
@@ -948,8 +929,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char root[8192];
     if (argc != 3 || strcmp(argv[1], "game-world") != 0 ||
         !decode_path(argv[2], root, sizeof(root)) || !mc_math_trig_init(&trig))

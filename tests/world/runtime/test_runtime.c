@@ -56,26 +56,22 @@ static uint8_t saved_blocks[MC_CHUNK_BLOCKS];
 static unsigned char saved_generator[sizeof(mc_normal_generator)];
 static mc_chunk_cache registered_caches[257];
 
-static uint32_t region_clock(void *owner)
-{
+static uint32_t region_clock(void *owner) {
     (void)owner;
     return UINT32_C(0xfedcba98);
 }
 
-static int64_t metadata_clock(void *owner)
-{
+static int64_t metadata_clock(void *owner) {
     (void)owner;
     return INT64_C(900000123);
 }
 
-static void check_busy(void)
-{
+static void check_busy(void) {
     if (f.runtime == NULL || mc_world_runtime_free(f.runtime, NULL) != MC_WORLD_STORAGE_BUSY)
         f.callback_error = true;
 }
 
-static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context)
-{
+static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context) {
     (void)owner;
     (void)context;
     ++f.auxiliary_calls;
@@ -84,8 +80,7 @@ static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_conte
 }
 
 static mc_chunk_callback_result progress(void *owner, const mc_world_save_context *context,
-                                         mc_world_save_stage stage)
-{
+                                         mc_world_save_stage stage) {
     (void)owner;
     (void)context;
     (void)stage;
@@ -95,8 +90,7 @@ static mc_chunk_callback_result progress(void *owner, const mc_world_save_contex
 }
 
 static mc_chunk_callback_result provider(void *owner, const mc_chunk_lifecycle_context *context,
-                                         bool *result)
-{
+                                         bool *result) {
     (void)owner;
     (void)context;
     ++f.provider_calls;
@@ -105,8 +99,7 @@ static mc_chunk_callback_result provider(void *owner, const mc_chunk_lifecycle_c
     return MC_CHUNK_CALLBACK_OK;
 }
 
-static bool populate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z)
-{
+static bool populate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z) {
     (void)owner;
     (void)context;
     (void)x;
@@ -116,8 +109,7 @@ static bool populate(void *owner, const mc_chunk_acquire_context *context, int32
     return true;
 }
 
-static int open_fixture(const char *root, size_t max_chunks, size_t nbt_budget)
-{
+static int open_fixture(const char *root, size_t max_chunks, size_t nbt_budget) {
     memset(&f, 0, sizeof(f));
     for (size_t i = 0; i < 256; ++i)
         f.map[i] = (uint8_t)i;
@@ -146,8 +138,7 @@ static int open_fixture(const char *root, size_t max_chunks, size_t nbt_budget)
     return 0;
 }
 
-static void close_fixture(void)
-{
+static void close_fixture(void) {
     mc_normal_generator_free(&f.generator);
     mc_biome_manager_free(&f.manager);
     mc_java_int_set_free(f.history);
@@ -155,8 +146,7 @@ static void close_fixture(void)
     mc_world_regions_free(f.regions);
 }
 
-static int create_runtime(bool generation)
-{
+static int create_runtime(bool generation) {
     mc_world_runtime_options options = {.store = f.store,
                                         .cache = &f.cache,
                                         .pending = &f.pending,
@@ -180,8 +170,7 @@ static int create_runtime(bool generation)
     return 0;
 }
 
-static int ownership(void)
-{
+static int ownership(void) {
     mc_chunk_state *a = NULL, *b = NULL, *c = NULL;
     CHECK(mc_world_store_retain_chunk(f.store, 0, &f.source, &a, &f.error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_store_retain_chunk(f.store, 0, &f.source, &b, &f.error) == MC_WORLD_STORAGE_OK);
@@ -263,8 +252,7 @@ static int ownership(void)
     return 0;
 }
 
-static int load_save_unload(const char *root)
-{
+static int load_save_unload(const char *root) {
     mc_chunk_state *baseline = NULL;
     CHECK(mc_world_store_retain_chunk(f.store, 0, &f.source, &baseline, &f.error) ==
           MC_WORLD_STORAGE_OK);
@@ -396,8 +384,7 @@ static int load_save_unload(const char *root)
     return 0;
 }
 
-static int init_generator(void)
-{
+static int init_generator(void) {
     CHECK(mc_math_trig_init(&f.trig));
     CHECK(mc_biome_memory_init(&f.memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) == MC_BIOME_OK);
     CHECK(mc_biome_manager_init(&f.manager, 23, &f.memory) == MC_BIOME_OK);
@@ -416,8 +403,7 @@ static int init_generator(void)
     return 0;
 }
 
-static int generation(bool copy_fails)
-{
+static int generation(bool copy_fails) {
     CHECK(init_generator() == 0 && create_runtime(true) == 0);
     memcpy(saved_generator, &f.generator, sizeof(f.generator));
     mc_chunk_state *first = NULL;
@@ -472,31 +458,27 @@ static int generation(bool copy_fails)
         }                                                                                          \
     } while (0)
 
-static uint64_t binding_double_bits(const double *value)
-{
+static uint64_t binding_double_bits(const double *value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(*value), "binary64 storage required");
     memcpy(&bits, value, sizeof(bits));
     return bits;
 }
 
-static void binding_poison_random(mc_java_random *random)
-{
+static void binding_poison_random(mc_java_random *random) {
     memset(random, 0xa5, sizeof(*random));
     random->next_next_gaussian = -0.0;
     random->have_next_next_gaussian = true;
 }
 
 static bool binding_same_error(const mc_world_storage_error *left,
-                               const mc_world_storage_error *right)
-{
+                               const mc_world_storage_error *right) {
     return left->status == right->status && left->operation == right->operation &&
            left->system_error == right->system_error;
 }
 
 static mc_java_random_profile_status binding_random_with_control(unsigned int control,
-                                                                 mc_java_random *out)
-{
+                                                                 mc_java_random *out) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_java_random_profile_status status =
@@ -506,16 +488,14 @@ static mc_java_random_profile_status binding_random_with_control(unsigned int co
     return status;
 }
 
-static mc_world_storage_status binding_free_runtime(void)
-{
+static mc_world_storage_status binding_free_runtime(void) {
     const mc_world_storage_status status = mc_world_runtime_free(f.runtime, &f.error);
     if (status == MC_WORLD_STORAGE_OK)
         f.runtime = NULL;
     return status;
 }
 
-static bool binding_runtime_is_busy(void)
-{
+static bool binding_runtime_is_busy(void) {
     const mc_world_storage_status status = binding_free_runtime();
     if (status == MC_WORLD_STORAGE_OK) {
         /* A broken lifetime guard has already freed a world borrowed by an
@@ -526,8 +506,7 @@ static bool binding_runtime_is_busy(void)
     return status == MC_WORLD_STORAGE_BUSY;
 }
 
-static int profile_and_entity_bindings(void)
-{
+static int profile_and_entity_bindings(void) {
     int result = 1;
     size_t manual_bindings = 0;
     mc_java_random_profile *profile = NULL, *limited_profile = NULL;
@@ -751,8 +730,7 @@ cleanup:
     return result;
 }
 
-static bool decode_path(const char *hex, char *path, size_t capacity)
-{
+static bool decode_path(const char *hex, char *path, size_t capacity) {
     size_t length = strlen(hex);
     if (length == 0 || length % 2 != 0 || length / 2 >= capacity)
         return false;
@@ -775,8 +753,7 @@ static bool decode_path(const char *hex, char *path, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char root[8192];
     if (argc != 3 || !decode_path(argv[2], root, sizeof(root)))
         return 1;

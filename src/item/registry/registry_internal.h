@@ -84,6 +84,7 @@ struct mc_item {
     const char *constructor_class;
     int32_t constructor_pc;
     mc_item_fields fields;
+
     /* dq/cj fields are inherited independently of base bl/bk and own subtype
      * fields. No two declaring-class same-letter fields share a union slot. */
     struct {
@@ -92,33 +93,43 @@ struct mc_item {
         int32_t bm;
         const mc_item_tool_material *a;
     } dq;
+
     struct {
         int32_t a;
         bool bk;
     } yw;
+
     int32_t ck_a;
+
     union {
         struct {
             int32_t a;
         } qd;
+
         struct {
             int32_t a;
         } rk;
+
         struct {
             int32_t a, bk, bl, bm;
         } wa;
+
         struct {
             mc_material *a;
         } hu;
+
         struct {
             int32_t a;
         } bc;
+
         struct {
             int32_t a;
         } rl;
+
         struct {
             int32_t a;
         } lv;
+
         struct {
             const mc_registry_string *a;
         } tr;

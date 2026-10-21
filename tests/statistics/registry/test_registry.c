@@ -41,8 +41,7 @@ static const uint8_t english[] =
 static const uint8_t statistics[] = "stat.startGame=Started\nstat.damageDealt=Damage\n";
 static const uint8_t key_bytes[] = "1000,key.start\n1001,key.world\n2025,key.fish\n";
 
-static bool units_are(const mc_registry_string *string, const uint16_t *units, size_t length)
-{
+static bool units_are(const mc_registry_string *string, const uint16_t *units, size_t length) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length != length ||
         (length != 0 && view.units == NULL))
@@ -53,8 +52,7 @@ static bool units_are(const mc_registry_string *string, const uint16_t *units, s
     return true;
 }
 
-static bool text_is(const mc_registry_string *string, const char *text)
-{
+static bool text_is(const mc_registry_string *string, const char *text) {
     mc_registry_string_view view;
     size_t length = strlen(text);
     if (!mc_registry_string_read(string, &view) || view.length != length ||
@@ -67,8 +65,7 @@ static bool text_is(const mc_registry_string *string, const char *text)
 }
 
 static mc_registry_status property(const mc_translation *translation, const char *key,
-                                   const mc_registry_string **out)
-{
+                                   const mc_registry_string **out) {
     uint16_t units[80];
     size_t length = strlen(key);
     if (length > COUNT(units))
@@ -78,8 +75,7 @@ static mc_registry_status property(const mc_translation *translation, const char
     return mc_translation_property(translation, units, length, out, NULL);
 }
 
-static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_error(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -97,8 +93,7 @@ static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
 }
 
 static bool same_base(const mc_registry_statistic_base_view *a,
-                      const mc_registry_statistic_base_view *b)
-{
+                      const mc_registry_statistic_base_view *b) {
     return a->phase == b->phase && a->initializer_pc == b->initializer_pc && a->b == b->b &&
            a->c == b->c && a->i == b->i && a->j == b->j && a->k == b->k;
 }
@@ -119,8 +114,7 @@ typedef struct resources {
     const mc_statistic *first;
 } resources;
 
-static bool first_registration(resources *r)
-{
+static bool first_registration(resources *r) {
     mc_registry_statistic_view view;
     mc_registry_statistic_key_view key;
     mc_registry_error error;
@@ -153,8 +147,7 @@ static bool first_registration(resources *r)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     byte_stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || capacity > 8192 || s->offset > s->length)
@@ -175,8 +168,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     static const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang",
                                         "/achievement/map.txt"};
@@ -198,8 +190,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->stream[2] || input->read != read_bytes) {
         r->invalid = true;
@@ -210,16 +201,14 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->invalid = true;
     return false;
 }
 
-static void resources_init(resources *r)
-{
+static void resources_init(resources *r) {
     *r = (resources){.missing = -1};
     r->stream[0] = (byte_stream){.bytes = english, .length = sizeof(english) - 1, .chunk = 7};
     r->stream[1] = (byte_stream){.bytes = statistics, .length = sizeof(statistics) - 1, .chunk = 7};
@@ -237,15 +226,13 @@ typedef struct dependencies {
     mc_text_number_locale locale;
 } dependencies;
 
-static uint64_t advanced(uint64_t value, size_t count)
-{
+static uint64_t advanced(uint64_t value, size_t count) {
     while (count-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static mc_java_random *random_at(const mc_registry_classes *owner, size_t id)
-{
+static mc_java_random *random_at(const mc_registry_classes *owner, size_t id) {
     if (owner->blocks.m == NULL || id >= owner->blocks.m_length || owner->blocks.m[id] == NULL)
         return NULL;
     if (id == 23)
@@ -255,8 +242,7 @@ static mc_java_random *random_at(const mc_registry_classes *owner, size_t id)
     return owner->blocks.m[id]->subtype.tc.a;
 }
 
-static size_t random_owners(const mc_registry_classes *owner, mc_java_random **out)
-{
+static size_t random_owners(const mc_registry_classes *owner, mc_java_random **out) {
     size_t count = 0;
     if (owner != NULL) {
         static const size_t block_ids[] = {23, 54, 61, 62};
@@ -271,8 +257,7 @@ static size_t random_owners(const mc_registry_classes *owner, mc_java_random **o
     return count;
 }
 
-static bool same_random(const mc_java_random *a, const mc_java_random *b)
-{
+static bool same_random(const mc_java_random *a, const mc_java_random *b) {
     uint64_t left, right;
     memcpy(&left, &a->next_next_gaussian, sizeof(left));
     memcpy(&right, &b->next_next_gaussian, sizeof(right));
@@ -280,8 +265,7 @@ static bool same_random(const mc_java_random *a, const mc_java_random *b)
            a->have_next_next_gaussian == b->have_next_next_gaussian;
 }
 
-static bool dependencies_cold(const mc_registry_classes *owner)
-{
+static bool dependencies_cold(const mc_registry_classes *owner) {
     mc_registry_block_view block;
     mc_registry_item_view item;
     return mc_registry_classes_inspect_blocks(owner, &block, NULL) == MC_REGISTRY_OK &&
@@ -291,8 +275,7 @@ static bool dependencies_cold(const mc_registry_classes *owner)
            item.b == NULL && item.c == NULL;
 }
 
-static bool dependencies_unchanged(const dependencies *d, const mc_registry_classes *owner)
-{
+static bool dependencies_unchanged(const dependencies *d, const mc_registry_classes *owner) {
     mc_java_random *randoms[5] = {0};
     size_t count = random_owners(owner, randoms);
     if (atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed) !=
@@ -336,8 +319,7 @@ static bool dependencies_unchanged(const dependencies *d, const mc_registry_clas
 
 /* Move the next owner's baseline only after checking the real publications,
  * exact wrapped U advance and untouched Math/material dependencies. */
-static bool accept_dependencies(dependencies *d, const mc_registry_classes *owner)
-{
+static bool accept_dependencies(dependencies *d, const mc_registry_classes *owner) {
     if (!dependencies_unchanged(d, owner))
         return false;
     d->uniquifier = atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed);
@@ -345,8 +327,7 @@ static bool accept_dependencies(dependencies *d, const mc_registry_classes *owne
 }
 
 static mc_registry_status allocate(mc_registry_side side, const dependencies *d, resources *r,
-                                   size_t limit, mc_registry_classes **out)
-{
+                                   size_t limit, mc_registry_classes **out) {
     const mc_registry_options options = {side, d->profile, d->materials, limit,
                                          r == NULL ? NULL : &r->source};
     mc_registry_status status = mc_registry_classes_allocate(&options, out, NULL);
@@ -355,8 +336,7 @@ static mc_registry_status allocate(mc_registry_side side, const dependencies *d,
     return status;
 }
 
-static int retire(mc_registry_classes *owner)
-{
+static int retire(mc_registry_classes *owner) {
     if (owner == NULL || mc_registry_classes_free(owner, NULL) == MC_REGISTRY_OK)
         return 0;
     retirement_failed = true;
@@ -365,8 +345,7 @@ static int retire(mc_registry_classes *owner)
 }
 
 static int check_number(const mc_statistic_number_format *format, bool integer_us,
-                        mc_text_number_locale locale)
-{
+                        mc_text_number_locale locale) {
     int result = 1;
     const mc_statistic_number_format_fields *f = mc_statistic_number_format_fields_get(format);
     CHECK(f != NULL);
@@ -392,8 +371,7 @@ cleanup:
     return result;
 }
 
-static int check_base(mc_registry_classes *owner, const dependencies *d)
-{
+static int check_base(mc_registry_classes *owner, const dependencies *d) {
     int result = 1;
     mc_registry_statistic_base_view view;
     CHECK(mc_registry_classes_inspect_statistic_base(owner, &view, NULL) == MC_REGISTRY_OK);
@@ -420,8 +398,7 @@ cleanup:
     return result;
 }
 
-static int test_base(mc_registry_side side, const dependencies *d)
-{
+static int test_base(mc_registry_side side, const dependencies *d) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -459,8 +436,7 @@ cleanup:
     return result;
 }
 
-static int check_retry(mc_registry_classes *owner, const resources *r)
-{
+static int check_retry(mc_registry_classes *owner, const resources *r) {
     int result = 1;
     mc_registry_statistic_view before, after;
     CHECK(mc_registry_classes_inspect_statistics(owner, &before, NULL) == MC_REGISTRY_OK &&
@@ -529,8 +505,7 @@ cleanup:
     return result;
 }
 
-static int check_prefix(mc_registry_classes *owner, size_t *published)
-{
+static int check_prefix(mc_registry_classes *owner, size_t *published) {
     int result = 1;
     mc_registry_statistic_view view;
     CHECK(mc_registry_classes_inspect_statistics(owner, &view, NULL) == MC_REGISTRY_OK);
@@ -588,8 +563,7 @@ cleanup:
     return result;
 }
 
-static bool completed_initialization(mc_registry_classes *owner)
-{
+static bool completed_initialization(mc_registry_classes *owner) {
     mc_registry_statistic_view view;
     mc_registry_block_view block;
     mc_registry_item_view item;
@@ -614,8 +588,7 @@ static bool completed_initialization(mc_registry_classes *owner)
            owner->recipes.smelting != NULL && random_owners(owner, randoms) == 5;
 }
 
-static int test_common(mc_registry_side side, dependencies *d, int mode)
-{
+static int test_common(mc_registry_side side, dependencies *d, int mode) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -714,8 +687,7 @@ cleanup:
 
 /* Exact UTF16 duplicate message with a nonempty name containing NUL/surrogate.
  * Suffix trailing space comes from original CONSTANT_String, not javap text. */
-static bool duplicate_units(const mc_registry_string *message)
-{
+static bool duplicate_units(const mc_registry_string *message) {
     const char *prefix = "Duplicate stat id: \"null\" and \"";
     const char *suffix = "\" at id -5";
     uint16_t expected[96];
@@ -730,8 +702,7 @@ static bool duplicate_units(const mc_registry_string *message)
     return units_are(message, expected, length);
 }
 
-static int test_methods(mc_registry_side side, const dependencies *d, bool missing_key)
-{
+static int test_methods(mc_registry_side side, const dependencies *d, bool missing_key) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -841,8 +812,8 @@ typedef struct budget_result {
     bool end;
 } budget_result;
 
-static int budget_trial(mc_registry_side side, dependencies *d, size_t maximum, budget_result *out)
-{
+static int budget_trial(mc_registry_side side, dependencies *d, size_t maximum,
+                        budget_result *out) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resources r;
@@ -876,8 +847,7 @@ cleanup:
     return result;
 }
 
-static int test_budgets(mc_registry_side side, dependencies *d)
-{
+static int test_budgets(mc_registry_side side, dependencies *d) {
     int result = 1;
     size_t low = sizeof(mc_registry_classes), high = 4u * 1024u * 1024u;
     budget_result current;
@@ -912,8 +882,7 @@ cleanup:
     return result;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     dependencies d = {0};
     CHECK(argc == 1 ||

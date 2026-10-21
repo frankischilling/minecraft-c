@@ -35,8 +35,7 @@ typedef union arena_alignment {
 
 /* Real arena storage: malloc supplies distinct live, max-aligned blocks. Do
  * not clear returned memory; production must initialize all of its own state. */
-static void *arena_allocate(void *context, size_t size)
-{
+static void *arena_allocate(void *context, size_t size) {
     arena *a = context;
     ++a->requests;
     if (a->fail_at != 0 && a->requests == a->fail_at) {
@@ -68,15 +67,13 @@ static void *arena_allocate(void *context, size_t size)
     return block;
 }
 
-static void arena_release(arena *a)
-{
+static void arena_release(arena *a) {
     for (size_t i = 0; i < a->count; ++i)
         free(a->blocks[i]);
     *a = (arena){0};
 }
 
-static bool arena_healthy(const arena *a)
-{
+static bool arena_healthy(const arena *a) {
     return !a->invalid_request && !a->malloc_failure;
 }
 
@@ -89,8 +86,7 @@ typedef struct byte_stream {
 /* Finite actual byte-stream adapter. A selected read fails before returning
  * any bytes; successful reads may be short, including a zero-byte EOF. */
 static mc_java_properties_status stream_read(void *context, uint8_t *destination, size_t capacity,
-                                             size_t *count)
-{
+                                             size_t *count) {
     byte_stream *s = context;
     ++s->calls;
     if (capacity == 0 || capacity > 8192 || destination == NULL || count == NULL) {
@@ -116,8 +112,7 @@ static mc_java_properties_status stream_read(void *context, uint8_t *destination
 
 static mc_java_properties_status load_bytes(mc_java_properties *properties, const uint8_t *bytes,
                                             size_t length, size_t chunk, size_t fail_call,
-                                            byte_stream *observed)
-{
+                                            byte_stream *observed) {
     byte_stream stream = {bytes, length, 0, chunk, 0, fail_call, 0, false};
     const mc_java_properties_input input = {&stream, stream_read};
     mc_java_properties_status status = mc_java_properties_load(properties, &input);
@@ -127,14 +122,12 @@ static mc_java_properties_status load_bytes(mc_java_properties *properties, cons
 }
 
 static mc_java_properties_status load_text(mc_java_properties *properties, const char *text,
-                                           size_t chunk, size_t fail_call, byte_stream *observed)
-{
+                                           size_t chunk, size_t fail_call, byte_stream *observed) {
     return load_bytes(properties, (const uint8_t *)text, strlen(text), chunk, fail_call, observed);
 }
 
 static mc_java_properties_status lookup(const mc_java_properties *properties, const char *key,
-                                        const mc_java_properties_string **out)
-{
+                                        const mc_java_properties_string **out) {
     uint16_t units[128];
     size_t length = strlen(key);
     if (length > COUNT(units))
@@ -144,8 +137,8 @@ static mc_java_properties_status lookup(const mc_java_properties *properties, co
     return mc_java_properties_get(properties, units, length, out);
 }
 
-static bool units_are(const mc_java_properties_string *string, const uint16_t *units, size_t length)
-{
+static bool units_are(const mc_java_properties_string *string, const uint16_t *units,
+                      size_t length) {
     mc_java_properties_string_view view;
     if (!mc_java_properties_string_read(string, &view) || view.length != length ||
         (length != 0 && view.units == NULL))
@@ -156,8 +149,7 @@ static bool units_are(const mc_java_properties_string *string, const uint16_t *u
     return true;
 }
 
-static bool text_is(const mc_java_properties_string *string, const char *text)
-{
+static bool text_is(const mc_java_properties_string *string, const char *text) {
     mc_java_properties_string_view view;
     size_t length = strlen(text);
     if (!mc_java_properties_string_read(string, &view) || view.length != length ||
@@ -169,20 +161,17 @@ static bool text_is(const mc_java_properties_string *string, const char *text)
     return true;
 }
 
-static bool property_is(const mc_java_properties *properties, const char *key, const char *value)
-{
+static bool property_is(const mc_java_properties *properties, const char *key, const char *value) {
     const mc_java_properties_string *actual = NULL;
     return lookup(properties, key, &actual) == MC_JAVA_PROPERTIES_OK && text_is(actual, value);
 }
 
-static bool missing(const mc_java_properties *properties, const char *key)
-{
+static bool missing(const mc_java_properties *properties, const char *key) {
     const mc_java_properties_string *actual = NULL;
     return lookup(properties, key, &actual) == MC_JAVA_PROPERTIES_OK && actual == NULL;
 }
 
-static int arguments(void)
-{
+static int arguments(void) {
     int result = 1;
     arena a = {0};
     const mc_java_properties_allocator allocator = {&a, arena_allocate};
@@ -248,8 +237,7 @@ cleanup:
     return result;
 }
 
-static int syntax_chunk(size_t chunk)
-{
+static int syntax_chunk(size_t chunk) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
@@ -291,8 +279,7 @@ cleanup:
     return result;
 }
 
-static int unicode_chunk(size_t chunk)
-{
+static int unicode_chunk(size_t chunk) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
@@ -331,12 +318,12 @@ cleanup:
     return result;
 }
 
-static int eof_chunk(size_t chunk)
-{
+static int eof_chunk(size_t chunk) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
     const mc_java_properties_allocator allocator = {&a, arena_allocate};
+
     static const struct {
         const char *input, *key, *value;
     } cases[] = {{"", NULL, NULL},
@@ -349,6 +336,7 @@ static int eof_chunk(size_t chunk)
                  {"only\\", "only", ""},
                  {"end=x\\\\", "end", "x\\"},
                  {"key=value\\\n", "key", "value"}};
+
     for (size_t i = 0; i < COUNT(cases); ++i) {
         CHECK(mc_java_properties_create(&allocator, &properties) == MC_JAVA_PROPERTIES_OK);
         CHECK(load_text(properties, cases[i].input, chunk, 0, NULL) == MC_JAVA_PROPERTIES_OK);
@@ -365,8 +353,7 @@ cleanup:
     return result;
 }
 
-static int retained_identities(void)
-{
+static int retained_identities(void) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
@@ -405,8 +392,7 @@ cleanup:
     return result;
 }
 
-static int malformed_chunk(size_t chunk)
-{
+static int malformed_chunk(size_t chunk) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
@@ -440,8 +426,7 @@ cleanup:
     return result;
 }
 
-static int io_prefix(size_t chunk, size_t committed, size_t crlf_committed)
-{
+static int io_prefix(size_t chunk, size_t committed, size_t crlf_committed) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
@@ -472,8 +457,7 @@ cleanup:
     return result;
 }
 
-static int long_lines(size_t chunk)
-{
+static int long_lines(size_t chunk) {
     int result = 1;
     arena a = {0};
     mc_java_properties *properties = NULL;
@@ -508,8 +492,7 @@ cleanup:
     return result;
 }
 
-static int allocation_failures(void)
-{
+static int allocation_failures(void) {
     int result = 1;
     arena baseline = {0}, trial = {0};
     mc_java_properties *base_owner = NULL, *owner = NULL;
@@ -568,8 +551,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     static const size_t chunks[] = {SIZE_MAX, 1, 7, 8192};
     /* Independent readLine/load0 expectations for failure on read-call2.

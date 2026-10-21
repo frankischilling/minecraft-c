@@ -7,22 +7,20 @@
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 
-static bool hook_return(mc_world_mutation_error *error)
-{
+static bool hook_return(mc_world_mutation_error *error) {
     error->hook_class = NULL;
     error->hook_bytecode = 0;
     return true;
 }
 
 static void hook_stage(const mc_block *block, const char *client, const char *server,
-                       unsigned int pc, mc_world_mutation_error *error)
-{
+                       unsigned int pc, mc_world_mutation_error *error) {
     error->hook_class = block->classes->options.side == MC_REGISTRY_CLIENT ? client : server;
     error->hook_bytecode = pc;
 }
 
-static bool receiver(mc_world_runtime *world, const mc_block *block, mc_world_mutation_error *error)
-{
+static bool receiver(mc_world_runtime *world, const mc_block *block,
+                     mc_world_mutation_error *error) {
     if (block != NULL)
         return true;
     error->hook_class = NULL;
@@ -32,15 +30,13 @@ static bool receiver(mc_world_runtime *world, const mc_block *block, mc_world_mu
 }
 
 static bool unavailable(mc_world_runtime *world, const mc_block *block, const char *client,
-                        const char *server, const char *operation, mc_world_mutation_error *error)
-{
+                        const char *server, const char *operation, mc_world_mutation_error *error) {
     hook_stage(block, client, server, 0, error);
     return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
 }
 
 static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *error,
-                         mc_world_storage_error cause)
-{
+                         mc_world_storage_error cause) {
     error->status = cause.status;
     error->operation = cause.operation;
     error->cause = cause;
@@ -49,8 +45,7 @@ static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *error
 }
 
 static bool tile_hook(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                      int32_t z, bool added, mc_world_mutation_error *error)
-{
+                      int32_t z, bool added, mc_world_mutation_error *error) {
     mc_live_tile_error detail = mc_live_tiles_empty_error();
     const mc_world_storage_status status =
         added ? mc_live_tiles_block_added(world, block, x, y, z, &detail)
@@ -73,8 +68,7 @@ static bool tile_hook(mc_world_runtime *world, const mc_block *block, int32_t x,
  * All six source shifts remain in their original order, including unused Y. */
 static bool region_present(mc_world_runtime *world, int32_t min_x, int32_t min_y, int32_t min_z,
                            int32_t max_x, int32_t max_y, int32_t max_z, bool *out,
-                           mc_world_mutation_error *error)
-{
+                           mc_world_mutation_error *error) {
     mc_world_presence_error frame = {0};
     mc_world_storage_status status = mc_world_runtime_region_present_held(
         world, min_x, min_y, min_z, max_x, max_y, max_z, out, &frame);
@@ -87,8 +81,7 @@ static bool region_present(mc_world_runtime *world, int32_t min_x, int32_t min_y
  * whereas every absolute coordinate addition/subtraction is a wrapped int.
  * Log skips an already-set bit; leaf still reaches an equal metadata write. */
 static bool mark_leaves(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                        int32_t z, bool log, mc_world_mutation_error *error)
-{
+                        int32_t z, bool log, mc_world_mutation_error *error) {
     const int32_t radius = log ? 4 : 1;
     const int32_t margin = radius + 1;
     hook_stage(block, log ? "vg" : "bk", log ? "nk" : "ar", 36, error);
@@ -149,8 +142,7 @@ static bool mark_leaves(mc_world_runtime *world, const mc_block *block, int32_t 
 }
 
 bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                     int32_t y, int32_t z, mc_world_mutation_error *error)
-{
+                                     int32_t y, int32_t z, mc_world_mutation_error *error) {
     if (!receiver(world, block, error))
         return false;
     switch (block->kind) {
@@ -248,8 +240,7 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
 }
 
 bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                   int32_t y, int32_t z, mc_world_mutation_error *error)
-{
+                                   int32_t y, int32_t z, mc_world_mutation_error *error) {
     (void)x;
     (void)y;
     (void)z;
@@ -355,8 +346,7 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
 
 bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, int32_t source_id,
-                                      mc_world_mutation_error *error)
-{
+                                      mc_world_mutation_error *error) {
     (void)x;
     (void)y;
     (void)z;

@@ -87,20 +87,17 @@ typedef struct dp_json {
     bool ok;
 } dp_json;
 
-static uint64_t dp_double_bits(double value)
-{
+static uint64_t dp_double_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static const char *dp_bool(bool value)
-{
+static const char *dp_bool(bool value) {
     return value ? "true" : "false";
 }
 
-static bool dp_seed(const char *text, uint64_t *bits, int64_t *seed)
-{
+static bool dp_seed(const char *text, uint64_t *bits, int64_t *seed) {
     if (strlen(text) != 16u)
         return false;
     uint64_t value = 0;
@@ -121,8 +118,7 @@ static bool dp_seed(const char *text, uint64_t *bits, int64_t *seed)
     return true;
 }
 
-static bool dp_index(const char *text, size_t *out)
-{
+static bool dp_index(const char *text, size_t *out) {
     const size_t length = strlen(text);
     if (length == 0 || length > 2u)
         return false;
@@ -140,8 +136,7 @@ static bool dp_index(const char *text, size_t *out)
 
 /* IDs are only same-process identity joins. Each new actual identity receives
  * an ordinary hold until all before/after values have been copied. */
-static bool dp_tile_identity(dp_capture *capture, mc_tile *tile, size_t *out)
-{
+static bool dp_tile_identity(dp_capture *capture, mc_tile *tile, size_t *out) {
     if (tile == NULL) {
         *out = 0;
         return true;
@@ -158,8 +153,7 @@ static bool dp_tile_identity(dp_capture *capture, mc_tile *tile, size_t *out)
     return true;
 }
 
-static bool dp_stack_identity(dp_capture *capture, mc_item_stack *stack, size_t *out)
-{
+static bool dp_stack_identity(dp_capture *capture, mc_item_stack *stack, size_t *out) {
     if (stack == NULL) {
         *out = 0;
         return true;
@@ -176,8 +170,7 @@ static bool dp_stack_identity(dp_capture *capture, mc_item_stack *stack, size_t 
     return true;
 }
 
-static void dp_release(dp_capture *capture)
-{
+static void dp_release(dp_capture *capture) {
     if (capture == NULL)
         return;
     for (size_t i = 0; i < capture->held_stack_count; ++i)
@@ -188,8 +181,7 @@ static void dp_release(dp_capture *capture)
 }
 
 static bool dp_copy_tile(dp_capture *capture, mc_world_runtime *world, size_t identity,
-                         dp_tile *out)
-{
+                         dp_tile *out) {
     mc_tile *tile = capture->held_tiles[identity - 1u];
     out->identity = identity;
     if (mc_tile_get_snapshot(tile, &out->fields) != MC_TILE_OK)
@@ -240,8 +232,7 @@ static bool dp_copy_tile(dp_capture *capture, mc_world_runtime *world, size_t id
 }
 
 static bool dp_collect_list(dp_capture *capture, const mc_world_reference_list *list, size_t *count,
-                            size_t identities[DP_TILES])
-{
+                            size_t identities[DP_TILES]) {
     if (list == NULL || list->count > DP_TILES || list->count > list->capacity ||
         (list->count != 0 && list->items == NULL))
         return false;
@@ -252,8 +243,7 @@ static bool dp_collect_list(dp_capture *capture, const mc_world_reference_list *
     return true;
 }
 
-static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out)
-{
+static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out) {
     mc_world_chunk *chunk = f->chunks[capture->side];
     mc_world_runtime *world = f->worlds[capture->side];
     if (chunk == NULL || mc_world_chunk_fields_get(chunk, &out->fields) != MC_WORLD_STORAGE_OK ||
@@ -376,8 +366,7 @@ static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out)
 
 /* Fixed-capacity construction keeps one bounded complete JSON document in
  * memory; no capture bytes are emitted before real checked teardown succeeds. */
-static void dp_write(dp_json *json, const char *format, ...)
-{
+static void dp_write(dp_json *json, const char *format, ...) {
     if (!json->ok)
         return;
     va_list arguments;
@@ -391,8 +380,7 @@ static void dp_write(dp_json *json, const char *format, ...)
         json->length += (size_t)length;
 }
 
-static void dp_string(dp_json *json, const char *text)
-{
+static void dp_string(dp_json *json, const char *text) {
     if (text == NULL) {
         dp_write(json, "null");
         return;
@@ -409,8 +397,7 @@ static void dp_string(dp_json *json, const char *text)
     dp_write(json, "\"");
 }
 
-static void dp_hex(dp_json *json, const uint8_t *bytes, size_t length)
-{
+static void dp_hex(dp_json *json, const uint8_t *bytes, size_t length) {
     static const char digits[] = "0123456789abcdef";
     if (!json->ok || length > ((size_t)DP_JSON_BYTES - json->length - 1u) / 2u ||
         (size_t)DP_JSON_BYTES - json->length - 1u - 2u * length < 2u) {
@@ -426,8 +413,7 @@ static void dp_hex(dp_json *json, const uint8_t *bytes, size_t length)
     json->bytes[json->length] = '\0';
 }
 
-static void dp_random(dp_json *json, const mc_java_random *random)
-{
+static void dp_random(dp_json *json, const mc_java_random *random) {
     dp_write(json,
              "{\"state_hex\":\"%016" PRIx64 "\",\"gaussian_valid\":%s,"
              "\"stored_gaussian_bits\":\"%016" PRIx64 "\"}",
@@ -435,16 +421,14 @@ static void dp_random(dp_json *json, const mc_java_random *random)
              dp_double_bits(random->next_next_gaussian));
 }
 
-static void dp_ids(dp_json *json, const size_t *identities, size_t count)
-{
+static void dp_ids(dp_json *json, const size_t *identities, size_t count) {
     dp_write(json, "[");
     for (size_t i = 0; i < count; ++i)
         dp_write(json, "%s%zu", i == 0 ? "" : ",", identities[i]);
     dp_write(json, "]");
 }
 
-static void dp_tile_json(dp_json *json, const dp_tile *tile)
-{
+static void dp_tile_json(dp_json *json, const dp_tile *tile) {
     const mc_tile_snapshot *s = &tile->fields;
     dp_write(json,
              "{\"tile_id\":%zu,\"kind\":\"%s\",\"phase\":%d,"
@@ -485,8 +469,7 @@ static void dp_tile_json(dp_json *json, const dp_tile *tile)
     dp_write(json, "}");
 }
 
-static void dp_image_json(dp_json *json, const dp_image *image)
-{
+static void dp_image_json(dp_json *json, const dp_image *image) {
     const mc_world_chunk_fields *s = &image->fields;
     dp_write(json, "{\"blocks_hex\":");
     dp_hex(json, image->blocks, sizeof(image->blocks));
@@ -553,8 +536,7 @@ static void dp_image_json(dp_json *json, const dp_image *image)
              (uint64_t)image->scheduling.next);
 }
 
-static bool dp_document(dp_json *json, const dp_capture *capture)
-{
+static bool dp_document(dp_json *json, const dp_capture *capture) {
     const mc_population_dungeon_error *error = &capture->error;
     dp_write(json,
              "{\"schema\":\"dungeon-placement-native-a\",\"side\":\"%s\","
@@ -604,8 +586,7 @@ static bool dp_document(dp_json *json, const dp_capture *capture)
     return json->ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     dp_capture *capture = NULL;

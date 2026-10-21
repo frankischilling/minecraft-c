@@ -16,8 +16,7 @@ typedef struct query_chunk {
     bool leased;
 } query_chunk;
 
-static mc_world_query_error empty_error(void)
-{
+static mc_world_query_error empty_error(void) {
     return (mc_world_query_error){.registry = {.initializer_pc = -1,
                                                .block_id = -1,
                                                .constructor_pc = -1,
@@ -25,16 +24,15 @@ static mc_world_query_error empty_error(void)
                                                .item_argument = -1}};
 }
 
-static bool fail(mc_world_query_error *error, mc_world_storage_status status, const char *operation)
-{
+static bool fail(mc_world_query_error *error, mc_world_storage_status status,
+                 const char *operation) {
     error->status = status;
     error->operation = operation;
     error->cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool storage_fail(mc_world_query_error *error, const mc_world_storage_error *cause)
-{
+static bool storage_fail(mc_world_query_error *error, const mc_world_storage_error *cause) {
     error->status = cause->status;
     error->operation = cause->operation;
     error->cause = *cause;
@@ -42,8 +40,7 @@ static bool storage_fail(mc_world_query_error *error, const mc_world_storage_err
 }
 
 static bool registry_fail(mc_world_runtime *world, mc_world_query_error *error,
-                          const mc_registry_error *cause, const char *operation)
-{
+                          const mc_registry_error *cause, const char *operation) {
     error->registry = *cause;
     error->status =
         mc_world_runtime_registry_result(world, cause->status, cause, operation, &error->cause);
@@ -52,16 +49,14 @@ static bool registry_fail(mc_world_runtime *world, mc_world_query_error *error,
 }
 
 static bool registry_null(mc_world_runtime *world, mc_world_query_error *error,
-                          const char *operation)
-{
+                          const char *operation) {
     mc_registry_error cause = empty_error().registry;
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return registry_fail(world, error, &cause, operation);
 }
 
-static bool admit(mc_world_runtime *world, bool has_out, mc_world_query_error *error)
-{
+static bool admit(mc_world_runtime *world, bool has_out, mc_world_query_error *error) {
     if (world == NULL || !has_out)
         return fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World query arguments");
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -74,8 +69,7 @@ static bool admit(mc_world_runtime *world, bool has_out, mc_world_query_error *e
 }
 
 static mc_world_storage_status finish(mc_world_runtime *world, query_chunk *chunk,
-                                      mc_world_query_error *frame, mc_world_query_error *error)
-{
+                                      mc_world_query_error *frame, mc_world_query_error *error) {
     if (chunk->leased)
         (void)mc_world_store_release_chunk(chunk->store, chunk->state, NULL);
     if (frame->status == MC_WORLD_STORAGE_OK)
@@ -92,8 +86,7 @@ static mc_world_storage_status finish(mc_world_runtime *world, query_chunk *chun
  * and the dedicated denied-load fallback. Store leases protect the captured
  * source local across later Registry active use, without blocking reentry. */
 static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
-                    mc_world_query_error *error)
-{
+                    mc_world_query_error *error) {
     error->provider_bytecode = 6;
     if (world->fields.v == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
@@ -127,8 +120,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
 }
 
 static bool nibble(const mc_world_chunk_nibble *owner, int32_t x, int32_t y, int32_t z,
-                   int32_t *out, mc_world_query_error *error)
-{
+                   int32_t *out, mc_world_query_error *error) {
     if (owner == NULL || owner->a == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk query Nibble backing");
     const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
@@ -140,8 +132,7 @@ static bool nibble(const mc_world_chunk_nibble *owner, int32_t x, int32_t y, int
 }
 
 static bool top_material(mc_world_runtime *world, int32_t id, mc_material **out,
-                         mc_world_query_error *error)
-{
+                         mc_world_query_error *error) {
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     mc_registry_error cause = empty_error().registry;
     error->bytecode = id == 0 ? 41u : 47u;
@@ -172,8 +163,7 @@ static bool top_material(mc_world_runtime *world, int32_t id, mc_material **out,
 
 mc_world_storage_status mc_world_runtime_top_solid_liquid(mc_world_runtime *world, int32_t x,
                                                           int32_t z, int32_t *out,
-                                                          mc_world_query_error *error)
-{
+                                                          mc_world_query_error *error) {
     mc_world_query_error frame = empty_error();
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
@@ -226,8 +216,7 @@ mc_world_storage_status mc_world_runtime_top_solid_liquid(mc_world_runtime *worl
 }
 
 static bool same_type_class(const mc_world_runtime_classes *classes,
-                            const mc_world_light_type *type)
-{
+                            const mc_world_light_type *type) {
     return type == NULL || (classes != NULL && classes->light_types_initialized &&
                             (type == &classes->light_types[0] || type == &classes->light_types[1]));
 }
@@ -235,8 +224,7 @@ static bool same_type_class(const mc_world_runtime_classes *classes,
 mc_world_storage_status mc_world_runtime_saved_light(mc_world_runtime *world,
                                                      const mc_world_light_type *type, int32_t x,
                                                      int32_t y, int32_t z, int32_t *out,
-                                                     mc_world_query_error *error)
-{
+                                                     mc_world_query_error *error) {
     mc_world_query_error frame = empty_error();
     if (world != NULL && !same_type_class(world->classes, type)) {
         (void)fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World query Light class");
@@ -310,8 +298,7 @@ done:
 
 mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, int32_t *out,
-                                                     mc_world_query_error *error)
-{
+                                                     mc_world_query_error *error) {
     mc_world_query_error frame = empty_error();
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
@@ -350,8 +337,7 @@ done:
 
 mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, bool *out,
-                                                     mc_world_query_error *error)
-{
+                                                     mc_world_query_error *error) {
     mc_world_query_error frame = empty_error();
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
@@ -380,7 +366,6 @@ done:
     return finish(world, &chunk, &frame, error);
 }
 
-bool mc_world_runtime_chunk_light_seen(const mc_world_runtime_classes *classes)
-{
+bool mc_world_runtime_chunk_light_seen(const mc_world_runtime_classes *classes) {
     return classes != NULL && classes->chunk_a;
 }

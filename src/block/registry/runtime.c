@@ -6,8 +6,7 @@
 #include <stdint.h>
 
 static mc_registry_status result(mc_registry_error *error, mc_registry_status status,
-                                 const char *message)
-{
+                                 const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -22,8 +21,7 @@ static mc_registry_status result(mc_registry_error *error, mc_registry_status st
     return status;
 }
 
-static mc_registry_status quiescent(const mc_registry_classes *classes, mc_registry_error *error)
-{
+static mc_registry_status quiescent(const mc_registry_classes *classes, mc_registry_error *error) {
     if (classes == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry owner");
     if (classes->entered != 0)
@@ -33,8 +31,7 @@ static mc_registry_status quiescent(const mc_registry_classes *classes, mc_regis
 
 mc_registry_status mc_registry_runtime_literal_ascii(mc_registry_classes *classes, const char *text,
                                                      const mc_registry_string **out,
-                                                     mc_registry_error *error)
-{
+                                                     mc_registry_error *error) {
     if (classes == NULL || text == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "runtime literal arguments");
     const mc_registry_string *literal = NULL;
@@ -52,8 +49,7 @@ mc_registry_status mc_registry_runtime_literal_ascii(mc_registry_classes *classe
     return result(error, MC_REGISTRY_OK, NULL);
 }
 
-bool mc_registry_runtime_borrow_release(mc_registry_classes *classes)
-{
+bool mc_registry_runtime_borrow_release(mc_registry_classes *classes) {
     if (classes == NULL || classes->runtime_borrows == 0)
         return false;
     --classes->runtime_borrows;
@@ -63,8 +59,7 @@ bool mc_registry_runtime_borrow_release(mc_registry_classes *classes)
 mc_registry_status mc_registry_classes_retain(mc_registry_classes *classes,
                                               mc_registry_side expected_side,
                                               mc_java_random_profile *expected_profile,
-                                              mc_registry_error *error)
-{
+                                              mc_registry_error *error) {
     mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -79,8 +74,7 @@ mc_registry_status mc_registry_classes_retain(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_runtime_borrow_release_admit(const mc_registry_classes *classes,
-                                                            mc_registry_error *error)
-{
+                                                            mc_registry_error *error) {
     mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -90,8 +84,7 @@ mc_registry_status mc_registry_runtime_borrow_release_admit(const mc_registry_cl
 }
 
 mc_registry_status mc_registry_classes_release(mc_registry_classes *classes,
-                                               mc_registry_error *error)
-{
+                                               mc_registry_error *error) {
     const mc_registry_status status = mc_registry_runtime_borrow_release_admit(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -99,8 +92,7 @@ mc_registry_status mc_registry_classes_release(mc_registry_classes *classes,
     return status;
 }
 
-static mc_registry_status enter_blocks(mc_registry_classes *classes, mc_registry_error *error)
-{
+static mc_registry_status enter_blocks(mc_registry_classes *classes, mc_registry_error *error) {
     mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -111,8 +103,7 @@ static mc_registry_status enter_blocks(mc_registry_classes *classes, mc_registry
 }
 
 static mc_registry_status leave_blocks(mc_registry_classes *classes, mc_registry_status status,
-                                       mc_registry_error *error)
-{
+                                       mc_registry_error *error) {
     --classes->entered;
     if (status != MC_REGISTRY_OK) {
         if (error != NULL)
@@ -123,8 +114,7 @@ static mc_registry_status leave_blocks(mc_registry_classes *classes, mc_registry
 }
 
 mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, const char *name,
-                                                const mc_block **out, mc_registry_error *error)
-{
+                                                const mc_block **out, mc_registry_error *error) {
     if (name == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime static arguments");
     mc_registry_status status = enter_blocks(classes, error);
@@ -139,8 +129,7 @@ mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, co
 }
 
 mc_registry_status mc_registry_block_get(mc_registry_classes *classes, int32_t id,
-                                         const mc_block **out, mc_registry_error *error)
-{
+                                         const mc_block **out, mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime array output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -166,8 +155,7 @@ mc_registry_status mc_registry_block_get(mc_registry_classes *classes, int32_t i
 }
 
 mc_registry_status mc_registry_block_opaque_get(mc_registry_classes *classes, int32_t id, bool *out,
-                                                mc_registry_error *error)
-{
+                                                mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime opacity output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -193,8 +181,7 @@ mc_registry_status mc_registry_block_opaque_get(mc_registry_classes *classes, in
 }
 
 mc_registry_status mc_registry_material_get(mc_registry_classes *classes, mc_material_id id,
-                                            mc_material **out, mc_registry_error *error)
-{
+                                            mc_material **out, mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Material runtime output");
     mc_registry_status status = quiescent(classes, error);
@@ -210,8 +197,8 @@ mc_registry_status mc_registry_material_get(mc_registry_classes *classes, mc_mat
 }
 
 mc_registry_status mc_registry_block_q_get(mc_registry_classes *classes,
-                                           mc_registry_block_q_view *out, mc_registry_error *error)
-{
+                                           mc_registry_block_q_view *out,
+                                           mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime q output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -231,8 +218,7 @@ mc_registry_status mc_registry_block_q_get(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array, int32_t index,
-                                          int32_t *out, mc_registry_error *error)
-{
+                                          int32_t *out, mc_registry_error *error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime q element arguments");
     mc_registry_status status;
@@ -256,8 +242,8 @@ mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array,
 }
 
 mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
-                                           mc_registry_block_m_view *out, mc_registry_error *error)
-{
+                                           mc_registry_block_m_view *out,
+                                           mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -275,8 +261,7 @@ mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
-                                          const mc_block **out, mc_registry_error *error)
-{
+                                          const mc_block **out, mc_registry_error *error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m element arguments");
     mc_registry_status status;
@@ -298,8 +283,8 @@ mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array,
 }
 
 mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,
-                                           mc_registry_block_o_view *out, mc_registry_error *error)
-{
+                                           mc_registry_block_o_view *out,
+                                           mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime o output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -317,8 +302,7 @@ mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_o_at(const mc_registry_block_o_view *array, int32_t index,
-                                          bool *out, mc_registry_error *error)
-{
+                                          bool *out, mc_registry_error *error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime o element arguments");
     mc_registry_status status;
@@ -340,8 +324,8 @@ mc_registry_status mc_registry_block_o_at(const mc_registry_block_o_view *array,
 }
 
 mc_registry_status mc_registry_block_p_get(mc_registry_classes *classes,
-                                           mc_registry_block_p_view *out, mc_registry_error *error)
-{
+                                           mc_registry_block_p_view *out,
+                                           mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime p output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -359,8 +343,7 @@ mc_registry_status mc_registry_block_p_get(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_p_at(const mc_registry_block_p_view *array, int32_t index,
-                                          bool *out, mc_registry_error *error)
-{
+                                          bool *out, mc_registry_error *error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime p element arguments");
     mc_registry_status status;
@@ -382,8 +365,8 @@ mc_registry_status mc_registry_block_p_at(const mc_registry_block_p_view *array,
 }
 
 mc_registry_status mc_registry_block_t_get(mc_registry_classes *classes,
-                                           mc_registry_block_t_view *out, mc_registry_error *error)
-{
+                                           mc_registry_block_t_view *out,
+                                           mc_registry_error *error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime t output");
     mc_registry_status status = enter_blocks(classes, error);
@@ -401,8 +384,7 @@ mc_registry_status mc_registry_block_t_get(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_block_t_at(const mc_registry_block_t_view *array, int32_t index,
-                                          bool *out, mc_registry_error *error)
-{
+                                          bool *out, mc_registry_error *error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime t element arguments");
     mc_registry_status status;

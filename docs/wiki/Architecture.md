@@ -1,5 +1,11 @@
 # Systems and subsystems
 
+The [shared bounds module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
+owns real pooled boxes, cursor reset and client clear through the existing
+Entity classes owner. Native holds preserve detached boxes and let aliases
+observe slot reuse. Complete movement geometry is implemented; ray/vector/text
+helpers, native outer reset routes and Entity physics remain unfinished.
+
 The [snow-layer module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
 implements support, neighbor survival and light melting with actual World
 queries and notifying setters. Virtual opacity precedes a separate material
@@ -363,7 +369,7 @@ initialization, and shared simulation must retain evidenced original side
 differences.
 
 Strict project diagnostics and floating-point rules are configured in CMake.
-`.clang-format` specifies four spaces, 100 columns, and Linux-style braces; CI
+`.clang-format` specifies four spaces, 100 columns, attached braces and separated definitions; CI
 checks project C files with clang-format18. Reference tooling is kept under
 `scripts/reference/<subsystem>/` and `tests/reference/<subsystem>/`. Ignored
 original research inputs are excluded from formatting and publication.

@@ -2,15 +2,13 @@
 
 #include <stdbool.h>
 
-static mc_nbt_status result(mc_nbt_error *error, mc_nbt_status status)
-{
+static mc_nbt_status result(mc_nbt_error *error, mc_nbt_status status) {
     if (error != NULL)
         *error = (mc_nbt_error){status, 0};
     return status;
 }
 
-static mc_nbt_status name_admit(mc_nbt_string name)
-{
+static mc_nbt_status name_admit(mc_nbt_string name) {
     if (name.length > UINT16_MAX)
         return MC_NBT_INVALID_LENGTH;
     if (name.length != 0 && name.units == NULL)
@@ -18,8 +16,7 @@ static mc_nbt_status name_admit(mc_nbt_string name)
     return MC_NBT_OK;
 }
 
-static mc_nbt_status compound_admit(const mc_nbt_tag *compound)
-{
+static mc_nbt_status compound_admit(const mc_nbt_tag *compound) {
     if (compound->type != MC_NBT_COMPOUND)
         return MC_NBT_ROOT_TYPE;
     mc_nbt_status status = name_admit(compound->name);
@@ -43,8 +40,7 @@ static mc_nbt_status compound_admit(const mc_nbt_tag *compound)
     return MC_NBT_OK;
 }
 
-static bool names_equal(mc_nbt_string left, mc_nbt_string right)
-{
+static bool names_equal(mc_nbt_string left, mc_nbt_string right) {
     if (left.length != right.length)
         return false;
     for (size_t index = 0; index < left.length; ++index)
@@ -53,8 +49,7 @@ static bool names_equal(mc_nbt_string left, mc_nbt_string right)
     return true;
 }
 
-static const mc_nbt_tag *find(const mc_nbt_tag *compound, mc_nbt_string name)
-{
+static const mc_nbt_tag *find(const mc_nbt_tag *compound, mc_nbt_string name) {
     if (compound == NULL)
         return NULL;
     for (size_t index = 0; index < compound->value.compound.length; ++index) {
@@ -66,8 +61,7 @@ static const mc_nbt_tag *find(const mc_nbt_tag *compound, mc_nbt_string name)
 }
 
 mc_nbt_status mc_nbt_compound_overlay_count(const mc_nbt_tag *source, const mc_nbt_tag *fields,
-                                            size_t *out, mc_nbt_error *error)
-{
+                                            size_t *out, mc_nbt_error *error) {
     if (fields == NULL || out == NULL)
         return result(error, MC_NBT_INVALID_ARGUMENT);
     mc_nbt_status status = compound_admit(fields);
@@ -92,8 +86,7 @@ mc_nbt_status mc_nbt_compound_overlay_count(const mc_nbt_tag *source, const mc_n
 
 mc_nbt_status mc_nbt_compound_overlay(const mc_nbt_tag *source, const mc_nbt_tag *fields,
                                       const mc_nbt_tag **scratch, size_t scratch_count,
-                                      mc_nbt_tag *out, mc_nbt_error *error)
-{
+                                      mc_nbt_tag *out, mc_nbt_error *error) {
     if (out == NULL)
         return result(error, MC_NBT_INVALID_ARGUMENT);
     size_t count;

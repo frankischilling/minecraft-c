@@ -1,7 +1,6 @@
 #include "registry_internal.h"
 
-bool mc_registry_block_opaque(const mc_block *block)
-{
+bool mc_registry_block_opaque(const mc_block *block) {
     if (block == NULL)
         return false;
 

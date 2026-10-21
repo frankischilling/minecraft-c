@@ -14,8 +14,7 @@ typedef struct feature_frame {
     mc_population_plant_feature_error error;
 } feature_frame;
 
-static mc_registry_error empty_registry(void)
-{
+static mc_registry_error empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
@@ -23,8 +22,7 @@ static mc_registry_error empty_registry(void)
                                .item_argument = -1};
 }
 
-static mc_population_plant_feature_error empty_error(void)
-{
+static mc_population_plant_feature_error empty_error(void) {
     const mc_registry_error registry = empty_registry();
     return (mc_population_plant_feature_error){.registry = registry,
                                                .material = {.registry = registry},
@@ -35,16 +33,14 @@ static mc_population_plant_feature_error empty_error(void)
                                                .mutation = mc_world_mutation_empty_error()};
 }
 
-static bool fail(feature_frame *frame, mc_world_storage_status status, const char *operation)
-{
+static bool fail(feature_frame *frame, mc_world_storage_status status, const char *operation) {
     frame->error.status = status;
     frame->error.operation = operation;
     frame->error.cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cause)
-{
+static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cause) {
     frame->error.status = cause->status;
     frame->error.operation = cause->operation;
     frame->error.cause = *cause;
@@ -52,8 +48,7 @@ static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cau
 }
 
 static bool registry_fail(feature_frame *frame, const mc_registry_error *cause,
-                          const char *operation)
-{
+                          const char *operation) {
     frame->error.registry = *cause;
     frame->error.status = mc_world_runtime_registry_result(frame->world, cause->status, cause,
                                                            operation, &frame->error.cause);
@@ -61,24 +56,21 @@ static bool registry_fail(feature_frame *frame, const mc_registry_error *cause,
     return false;
 }
 
-static bool null_reference(feature_frame *frame, const char *operation)
-{
+static bool null_reference(feature_frame *frame, const char *operation) {
     mc_registry_error cause = empty_registry();
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return registry_fail(frame, &cause, operation);
 }
 
-static void stage(feature_frame *frame, unsigned int pc)
-{
+static void stage(feature_frame *frame, unsigned int pc) {
     frame->error.bytecode = pc;
     frame->error.air_bytecode = 0;
 }
 
 static bool begin(feature_frame *frame, mc_world_runtime *world, mc_java_random *random,
                   const void *feature, bool requires_feature, bool *out, const char *client_class,
-                  const char *server_class)
-{
+                  const char *server_class) {
     *frame = (feature_frame){.world = world, .random = random, .error = empty_error()};
     if (world == NULL || out == NULL || (requires_feature && feature == NULL))
         return fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Population plant arguments");
@@ -97,8 +89,7 @@ static bool begin(feature_frame *frame, mc_world_runtime *world, mc_java_random 
 }
 
 static mc_world_storage_status finish(feature_frame *frame, bool completed, bool *out,
-                                      mc_population_plant_feature_error *error)
-{
+                                      mc_population_plant_feature_error *error) {
     if (completed) {
         *out = true;
         frame->error = empty_error();
@@ -112,8 +103,7 @@ static mc_world_storage_status finish(feature_frame *frame, bool completed, bool
     return frame->error.status;
 }
 
-static bool draw(feature_frame *frame, unsigned int pc, int32_t bound, int32_t *out)
-{
+static bool draw(feature_frame *frame, unsigned int pc, int32_t bound, int32_t *out) {
     stage(frame, pc);
     if (frame->random == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Population plant Random receiver");
@@ -125,8 +115,7 @@ static bool draw(feature_frame *frame, unsigned int pc, int32_t bound, int32_t *
 }
 
 static bool axis(feature_frame *frame, int32_t origin, int32_t bound, unsigned int positive_pc,
-                 unsigned int negative_pc, int32_t *out)
-{
+                 unsigned int negative_pc, int32_t *out) {
     int32_t positive, negative;
     if (!draw(frame, positive_pc, bound, &positive))
         return false;
@@ -138,8 +127,7 @@ static bool axis(feature_frame *frame, int32_t origin, int32_t bound, unsigned i
 }
 
 static bool block_get(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                      int32_t *out)
-{
+                      int32_t *out) {
     stage(frame, pc);
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_block_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
@@ -149,8 +137,7 @@ static bool block_get(feature_frame *frame, unsigned int pc, int32_t x, int32_t 
 
 /* Exact fd.d/dj.f(III)Z: actual World.a ID invocation at4, compare with zero.
  * No separate public air API exists; this bounded concrete helper is its body. */
-static bool air(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool air(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, pc);
     frame->error.air_bytecode = 4;
     int32_t id;
@@ -162,8 +149,7 @@ static bool air(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int
 }
 
 static bool static_block(feature_frame *frame, const char *name, unsigned int pc,
-                         const mc_block **out)
-{
+                         const mc_block **out) {
     stage(frame, pc);
     mc_registry_error cause = empty_registry();
     if (mc_registry_block_static_get(mc_world_runtime_registry(frame->world), name, out, &cause) !=
@@ -173,8 +159,7 @@ static bool static_block(feature_frame *frame, const char *name, unsigned int pc
 }
 
 static bool static_id(feature_frame *frame, const char *name, unsigned int load_pc,
-                      unsigned int field_pc, int32_t *out)
-{
+                      unsigned int field_pc, int32_t *out) {
     const mc_block *block = NULL;
     if (!static_block(frame, name, load_pc, &block))
         return false;
@@ -185,8 +170,7 @@ static bool static_id(feature_frame *frame, const char *name, unsigned int load_
     return true;
 }
 
-static bool flower_table(feature_frame *frame, unsigned int pc, mc_registry_block_m_view *out)
-{
+static bool flower_table(feature_frame *frame, unsigned int pc, mc_registry_block_m_view *out) {
     stage(frame, pc);
     mc_registry_error cause = empty_registry();
     if (mc_registry_block_m_get(mc_world_runtime_registry(frame->world), out, &cause) !=
@@ -197,8 +181,7 @@ static bool flower_table(feature_frame *frame, unsigned int pc, mc_registry_bloc
 
 static bool flower_element(feature_frame *frame, const mc_registry_block_m_view *array,
                            int32_t index, unsigned int element_pc, unsigned int cast_pc,
-                           const mc_block **out)
-{
+                           const mc_block **out) {
     stage(frame, element_pc);
     mc_registry_error cause = empty_registry();
     const mc_block *block = NULL;
@@ -228,8 +211,7 @@ static bool flower_element(feature_frame *frame, const mc_registry_block_m_view 
 }
 
 static bool predicate(feature_frame *frame, unsigned int pc, const mc_block *receiver, int32_t x,
-                      int32_t y, int32_t z, bool placement, bool *out)
-{
+                      int32_t y, int32_t z, bool placement, bool *out) {
     stage(frame, pc);
     mc_world_storage_status status;
     if (placement)
@@ -245,8 +227,7 @@ static bool predicate(feature_frame *frame, unsigned int pc, const mc_block *rec
 }
 
 static bool write_block(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                        int32_t id)
-{
+                        int32_t id) {
     stage(frame, pc);
     bool changed;
     if (mc_world_runtime_block_set_quiet(frame->world, x, y, z, id, &changed,
@@ -257,8 +238,7 @@ static bool write_block(feature_frame *frame, unsigned int pc, int32_t x, int32_
 }
 
 static bool write_metadata(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                           int32_t id, int32_t metadata)
-{
+                           int32_t id, int32_t metadata) {
     stage(frame, pc);
     bool changed;
     if (mc_world_runtime_block_metadata_set_quiet(frame->world, x, y, z, id, metadata, &changed,
@@ -269,8 +249,7 @@ static bool write_metadata(feature_frame *frame, unsigned int pc, int32_t x, int
 }
 
 static bool water(feature_frame *frame, unsigned int query_pc, unsigned int static_pc, int32_t x,
-                  int32_t y, int32_t z, bool *out)
-{
+                  int32_t y, int32_t z, bool *out) {
     stage(frame, query_pc);
     mc_material *actual = NULL;
     if (mc_world_runtime_material_get_detailed(frame->world, x, y, z, &actual,
@@ -290,8 +269,7 @@ static bool water(feature_frame *frame, unsigned int query_pc, unsigned int stat
 
 /* Identical ap/ad and kt/gw prefix. ID read occurs even for y<=0. Nonair
  * activates and reads actual leaves L before testing the y bound. */
-static bool descend(feature_frame *frame, int32_t x, int32_t *y, int32_t z)
-{
+static bool descend(feature_frame *frame, int32_t x, int32_t *y, int32_t z) {
     for (;;) {
         int32_t id;
         if (!block_get(frame, 9, x, *y, z, &id))
@@ -310,8 +288,7 @@ static bool descend(feature_frame *frame, int32_t x, int32_t *y, int32_t z)
 }
 
 static bool flowers(feature_frame *frame, const mc_population_flower_feature *feature, int32_t x,
-                    int32_t y, int32_t z)
-{
+                    int32_t y, int32_t z) {
     for (int32_t attempt = 0; attempt < 64; ++attempt) {
         int32_t px, py, pz;
         if (!axis(frame, x, 8, 14, 21, &px) || !axis(frame, y, 4, 31, 37, &py) ||
@@ -344,8 +321,7 @@ static bool flowers(feature_frame *frame, const mc_population_flower_feature *fe
 }
 
 static bool tall_grass(feature_frame *frame, const mc_population_tall_grass_feature *feature,
-                       int32_t x, int32_t y, int32_t z)
-{
+                       int32_t x, int32_t y, int32_t z) {
     if (!descend(frame, x, &y, z))
         return false;
     for (int32_t attempt = 0; attempt < 128; ++attempt) {
@@ -382,8 +358,7 @@ static bool tall_grass(feature_frame *frame, const mc_population_tall_grass_feat
 }
 
 static bool dead_bush(feature_frame *frame, const mc_population_dead_bush_feature *feature,
-                      int32_t x, int32_t y, int32_t z)
-{
+                      int32_t x, int32_t y, int32_t z) {
     if (!descend(frame, x, &y, z))
         return false;
     for (int32_t attempt = 0; attempt < 4; ++attempt) {
@@ -417,8 +392,7 @@ static bool dead_bush(feature_frame *frame, const mc_population_dead_bush_featur
     return true;
 }
 
-static bool reeds(feature_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool reeds(feature_frame *frame, int32_t x, int32_t y, int32_t z) {
     for (int32_t attempt = 0; attempt < 20; ++attempt) {
         int32_t px, pz;
         if (!axis(frame, x, 4, 13, 19, &px) || !axis(frame, z, 4, 33, 39, &pz))
@@ -461,8 +435,7 @@ static bool reeds(feature_frame *frame, int32_t x, int32_t y, int32_t z)
     return true;
 }
 
-static bool pumpkins(feature_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool pumpkins(feature_frame *frame, int32_t x, int32_t y, int32_t z) {
     for (int32_t attempt = 0; attempt < 64; ++attempt) {
         int32_t px, py, pz;
         if (!axis(frame, x, 8, 14, 21, &px) || !axis(frame, y, 4, 31, 37, &py) ||
@@ -494,8 +467,7 @@ static bool pumpkins(feature_frame *frame, int32_t x, int32_t y, int32_t z)
     return true;
 }
 
-static bool cacti(feature_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool cacti(feature_frame *frame, int32_t x, int32_t y, int32_t z) {
     for (int32_t attempt = 0; attempt < 10; ++attempt) {
         int32_t px, py, pz;
         if (!axis(frame, x, 8, 14, 21, &px) || !axis(frame, y, 4, 31, 37, &py) ||
@@ -529,8 +501,7 @@ static bool cacti(feature_frame *frame, int32_t x, int32_t y, int32_t z)
 }
 
 mc_world_storage_status mc_population_flower_feature_init(mc_population_flower_feature *feature,
-                                                          int32_t id)
-{
+                                                          int32_t id) {
     if (feature == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     feature->a = id;
@@ -539,8 +510,7 @@ mc_world_storage_status mc_population_flower_feature_init(mc_population_flower_f
 
 mc_world_storage_status
 mc_population_tall_grass_feature_init(mc_population_tall_grass_feature *feature, int32_t id,
-                                      int32_t metadata)
-{
+                                      int32_t metadata) {
     if (feature == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     feature->a = id;
@@ -549,8 +519,7 @@ mc_population_tall_grass_feature_init(mc_population_tall_grass_feature *feature,
 }
 
 mc_world_storage_status
-mc_population_dead_bush_feature_init(mc_population_dead_bush_feature *feature, int32_t id)
-{
+mc_population_dead_bush_feature_init(mc_population_dead_bush_feature *feature, int32_t id) {
     if (feature == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     feature->a = id;
@@ -560,8 +529,7 @@ mc_population_dead_bush_feature_init(mc_population_dead_bush_feature *feature, i
 mc_world_storage_status mc_population_flowers_place(const mc_population_flower_feature *feature,
                                                     mc_world_runtime *world, mc_java_random *random,
                                                     int32_t x, int32_t y, int32_t z, bool *out,
-                                                    mc_population_plant_feature_error *error)
-{
+                                                    mc_population_plant_feature_error *error) {
     feature_frame frame;
     const bool completed = begin(&frame, world, random, feature, true, out, "be", "am") &&
                            flowers(&frame, feature, x, y, z);
@@ -572,8 +540,7 @@ mc_world_storage_status
 mc_population_tall_grass_place(const mc_population_tall_grass_feature *feature,
                                mc_world_runtime *world, mc_java_random *random, int32_t x,
                                int32_t y, int32_t z, bool *out,
-                               mc_population_plant_feature_error *error)
-{
+                               mc_population_plant_feature_error *error) {
     feature_frame frame;
     const bool completed = begin(&frame, world, random, feature, true, out, "ap", "ad") &&
                            tall_grass(&frame, feature, x, y, z);
@@ -583,8 +550,7 @@ mc_population_tall_grass_place(const mc_population_tall_grass_feature *feature,
 mc_world_storage_status
 mc_population_dead_bush_place(const mc_population_dead_bush_feature *feature,
                               mc_world_runtime *world, mc_java_random *random, int32_t x, int32_t y,
-                              int32_t z, bool *out, mc_population_plant_feature_error *error)
-{
+                              int32_t z, bool *out, mc_population_plant_feature_error *error) {
     feature_frame frame;
     const bool completed = begin(&frame, world, random, feature, true, out, "kt", "gw") &&
                            dead_bush(&frame, feature, x, y, z);
@@ -593,8 +559,7 @@ mc_population_dead_bush_place(const mc_population_dead_bush_feature *feature,
 
 mc_world_storage_status mc_population_reeds_place(mc_world_runtime *world, mc_java_random *random,
                                                   int32_t x, int32_t y, int32_t z, bool *out,
-                                                  mc_population_plant_feature_error *error)
-{
+                                                  mc_population_plant_feature_error *error) {
     feature_frame frame;
     const bool completed =
         begin(&frame, world, random, NULL, false, out, "ir", "fs") && reeds(&frame, x, y, z);
@@ -604,8 +569,7 @@ mc_world_storage_status mc_population_reeds_place(mc_world_runtime *world, mc_ja
 mc_world_storage_status mc_population_pumpkins_place(mc_world_runtime *world,
                                                      mc_java_random *random, int32_t x, int32_t y,
                                                      int32_t z, bool *out,
-                                                     mc_population_plant_feature_error *error)
-{
+                                                     mc_population_plant_feature_error *error) {
     feature_frame frame;
     const bool completed =
         begin(&frame, world, random, NULL, false, out, "wx", "op") && pumpkins(&frame, x, y, z);
@@ -614,8 +578,7 @@ mc_world_storage_status mc_population_pumpkins_place(mc_world_runtime *world,
 
 mc_world_storage_status mc_population_cacti_place(mc_world_runtime *world, mc_java_random *random,
                                                   int32_t x, int32_t y, int32_t z, bool *out,
-                                                  mc_population_plant_feature_error *error)
-{
+                                                  mc_population_plant_feature_error *error) {
     feature_frame frame;
     const bool completed =
         begin(&frame, world, random, NULL, false, out, "fx", "ea") && cacti(&frame, x, y, z);

@@ -40,15 +40,13 @@ typedef enum probe_line_status {
     PROBE_LINE_IO_ERROR
 } probe_line_status;
 
-static bool fail(dimension_observation *observation, const char *message)
-{
+static bool fail(dimension_observation *observation, const char *message) {
     if (observation->failure == NULL)
         observation->failure = message;
     return false;
 }
 
-static bool emit(dimension_observation *observation, const char *format, ...)
-{
+static bool emit(dimension_observation *observation, const char *format, ...) {
     const size_t remaining = sizeof(observation->output) - observation->length;
     va_list arguments;
     va_start(arguments, format);
@@ -68,8 +66,7 @@ static bool emit(dimension_observation *observation, const char *format, ...)
     return true;
 }
 
-static bool reference(dimension_observation *observation, const void *value, unsigned int *out)
-{
+static bool reference(dimension_observation *observation, const void *value, unsigned int *out) {
     if (value == NULL) {
         *out = 0;
         return true;
@@ -87,16 +84,14 @@ static bool reference(dimension_observation *observation, const void *value, uns
     return true;
 }
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
 /* Literal LF terminators are required, including on the final END line. */
-static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u])
-{
+static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u]) {
     size_t length = 0;
     for (;;) {
         const int character = fgetc(stdin);
@@ -116,8 +111,7 @@ static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u])
     }
 }
 
-static bool split_fields(char *line, char *fields[4], size_t *out_count)
-{
+static bool split_fields(char *line, char *fields[4], size_t *out_count) {
     size_t count = 1;
     fields[0] = line;
     for (char *cursor = line; *cursor != '\0'; ++cursor) {
@@ -137,8 +131,7 @@ static bool split_fields(char *line, char *fields[4], size_t *out_count)
 }
 
 /* Canonical signed decimal only: no plus, leading zeros or negative zero. */
-static bool parse_i64(const char *text, int64_t *out)
-{
+static bool parse_i64(const char *text, int64_t *out) {
     const char *digits = text;
     if (*digits == '-')
         ++digits;
@@ -157,8 +150,7 @@ static bool parse_i64(const char *text, int64_t *out)
     return true;
 }
 
-static bool parse_slot(const char *text, size_t *out)
-{
+static bool parse_slot(const char *text, size_t *out) {
     int64_t value = 0;
     if (!parse_i64(text, &value) || value < 0 || value >= (int64_t)PROBE_SLOT_LIMIT)
         return false;
@@ -166,8 +158,7 @@ static bool parse_slot(const char *text, size_t *out)
     return true;
 }
 
-static bool parse_float_bits(const char *text, uint32_t *out)
-{
+static bool parse_float_bits(const char *text, uint32_t *out) {
     if (strlen(text) != 8u)
         return false;
     uint32_t value = 0;
@@ -187,8 +178,7 @@ static bool parse_float_bits(const char *text, uint32_t *out)
     return true;
 }
 
-static bool factory(dimension_observation *observation, size_t slot, int32_t requested)
-{
+static bool factory(dimension_observation *observation, size_t slot, int32_t requested) {
     if (observation->assigned[slot])
         return fail(observation, "factory slot already assigned");
     mc_world_dimension_error error = {0};
@@ -216,8 +206,7 @@ static bool factory(dimension_observation *observation, size_t slot, int32_t req
 }
 
 static bool array(dimension_observation *observation, size_t slot, const char *field,
-                  const float *values, size_t length)
-{
+                  const float *values, size_t length) {
     unsigned int id = 0;
     if (!reference(observation, values, &id) ||
         !emit(observation, "ARRAY\t%zu\t%s\t%u\t", slot, field, id))
@@ -233,8 +222,7 @@ static bool array(dimension_observation *observation, size_t slot, const char *f
     return emit(observation, "\n");
 }
 
-static bool snapshot(dimension_observation *observation, size_t slot)
-{
+static bool snapshot(dimension_observation *observation, size_t slot) {
     mc_world_dimension_fields fields = {0};
     mc_world_dimension_state state = {0};
     if (mc_world_dimension_fields_get(observation->owners[slot], &fields) !=
@@ -257,8 +245,7 @@ static bool snapshot(dimension_observation *observation, size_t slot)
     return true;
 }
 
-static bool table(dimension_observation *observation, size_t slot)
-{
+static bool table(dimension_observation *observation, size_t slot) {
     mc_world_dimension_error error = {0};
     if (mc_world_dimension_initialize_light_table(observation->owners[slot], &error) !=
         MC_WORLD_DIMENSION_OK)
@@ -270,8 +257,7 @@ static bool table(dimension_observation *observation, size_t slot)
 }
 
 static bool angle(dimension_observation *observation, size_t slot, int64_t time,
-                  uint32_t partial_bits)
-{
+                  uint32_t partial_bits) {
     float partial;
     memcpy(&partial, &partial_bits, sizeof(partial));
     float value = 0.0f;
@@ -286,8 +272,7 @@ static bool angle(dimension_observation *observation, size_t slot, int64_t time,
     return true;
 }
 
-static bool execute(dimension_observation *observation, char *fields[4], size_t count)
-{
+static bool execute(dimension_observation *observation, char *fields[4], size_t count) {
     size_t slot = 0;
     if (count < 2u || !parse_slot(fields[1], &slot))
         return fail(observation, "invalid command or slot");
@@ -315,8 +300,7 @@ static bool execute(dimension_observation *observation, char *fields[4], size_t 
     return fail(observation, "unknown command");
 }
 
-static bool run(dimension_observation *observation)
-{
+static bool run(dimension_observation *observation) {
     char line[PROBE_LINE_LIMIT + 1u];
     if (read_line(line) != PROBE_LINE_OK || strcmp(line, "DIMENSION_NATIVE_REQUEST_V1") != 0)
         return fail(observation, "missing exact request header");
@@ -344,8 +328,7 @@ static bool run(dimension_observation *observation)
     }
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     static dimension_observation observation;
     int result = 1;

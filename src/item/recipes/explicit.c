@@ -8,8 +8,7 @@
  * Each live static load remains after its reached Stack allocation. */
 static mc_registry_status item_stack(mc_crafting_manager *manager, int32_t new_pc, int32_t field_pc,
                                      const char *field, int32_t count, int32_t damage,
-                                     int32_t constructor_pc, mc_item_stack **out)
-{
+                                     int32_t constructor_pc, mc_item_stack **out) {
     mc_registry_classes *classes = manager->classes;
     mc_item_stack *raw = NULL;
     mc_registry_crafting_stage(manager, new_pc);
@@ -31,8 +30,7 @@ static mc_registry_status item_stack(mc_crafting_manager *manager, int32_t new_p
 
 static mc_registry_status block_stack(mc_crafting_manager *manager, int32_t new_pc,
                                       int32_t field_pc, const char *field, int32_t count,
-                                      int32_t damage, int32_t constructor_pc, mc_item_stack **out)
-{
+                                      int32_t damage, int32_t constructor_pc, mc_item_stack **out) {
     mc_registry_classes *classes = manager->classes;
     mc_item_stack *raw = NULL;
     mc_registry_crafting_stage(manager, new_pc);
@@ -53,8 +51,7 @@ static mc_registry_status block_stack(mc_crafting_manager *manager, int32_t new_
 }
 
 static mc_registry_status row(mc_crafting_manager *manager, mc_recipe_argument *argument,
-                              int32_t pc, const char *text)
-{
+                              int32_t pc, const char *text) {
     mc_registry_crafting_stage(manager, pc);
     const mc_registry_string *literal = NULL;
     const mc_registry_status status = mc_registry_literal_ascii(manager->classes, text, &literal);
@@ -65,8 +62,7 @@ static mc_registry_status row(mc_crafting_manager *manager, mc_recipe_argument *
 }
 
 static mc_registry_status item_argument(mc_crafting_manager *manager, mc_recipe_argument *argument,
-                                        int32_t pc, const char *field)
-{
+                                        int32_t pc, const char *field) {
     mc_registry_crafting_stage(manager, pc);
     mc_item *item = NULL;
     const mc_registry_status status = mc_registry_item_static_load(manager->classes, field, &item);
@@ -77,8 +73,7 @@ static mc_registry_status item_argument(mc_crafting_manager *manager, mc_recipe_
 }
 
 static mc_registry_status block_argument(mc_crafting_manager *manager, mc_recipe_argument *argument,
-                                         int32_t pc, const char *field)
-{
+                                         int32_t pc, const char *field) {
     mc_registry_crafting_stage(manager, pc);
     mc_block *block = NULL;
     const mc_registry_status status =
@@ -122,8 +117,7 @@ static mc_registry_status block_argument(mc_crafting_manager *manager, mc_recipe
     } while (0)
 
 mc_registry_status mc_registry_recipe_explicit(mc_registry_classes *classes,
-                                               mc_crafting_manager *manager)
-{
+                                               mc_crafting_manager *manager) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (manager == NULL || manager->classes != classes || classes->entered == 0)

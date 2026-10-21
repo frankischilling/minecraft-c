@@ -76,27 +76,23 @@ struct mc_world_dimension {
 
 static mc_world_dimension_status result(mc_world_dimension_error *error,
                                         mc_world_dimension_status status, const char *operation,
-                                        unsigned int bytecode)
-{
+                                        unsigned int bytecode) {
     if (error != NULL)
         *error = (mc_world_dimension_error){
             .status = status, .operation = operation, .bytecode = bytecode};
     return status;
 }
 
-static bool valid_kind(mc_world_dimension_kind kind)
-{
+static bool valid_kind(mc_world_dimension_kind kind) {
     return kind == MC_WORLD_DIMENSION_OVERWORLD || kind == MC_WORLD_DIMENSION_NETHER ||
            kind == MC_WORLD_DIMENSION_SKY;
 }
 
-static bool valid_fp(void)
-{
+static bool valid_fp(void) {
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u;
 }
 
-static mc_world_dimension_status request(dimension_ledger *ledger, size_t bytes, void **out)
-{
+static mc_world_dimension_status request(dimension_ledger *ledger, size_t bytes, void **out) {
     if (bytes > ledger->max_bytes - ledger->live_bytes)
         return MC_WORLD_DIMENSION_LIMIT;
     void *allocation = malloc(bytes);
@@ -107,21 +103,18 @@ static mc_world_dimension_status request(dimension_ledger *ledger, size_t bytes,
     return MC_WORLD_DIMENSION_OK;
 }
 
-static void retire(dimension_ledger *ledger, void *allocation, size_t bytes)
-{
+static void retire(dimension_ledger *ledger, void *allocation, size_t bytes) {
     free(allocation);
     ledger->live_bytes -= bytes;
 }
 
-static void ledger_release(dimension_ledger *ledger)
-{
+static void ledger_release(dimension_ledger *ledger) {
     --ledger->holds;
     if (ledger->holds == 0)
         free(ledger);
 }
 
-const char *mc_world_dimension_status_string(mc_world_dimension_status status)
-{
+const char *mc_world_dimension_status_string(mc_world_dimension_status status) {
     switch (status) {
         case MC_WORLD_DIMENSION_OK:
             return "ok";
@@ -145,8 +138,7 @@ const char *mc_world_dimension_status_string(mc_world_dimension_status status)
     return "unknown dimension status";
 }
 
-mc_world_dimension_limits mc_world_dimension_default_limits(void)
-{
+mc_world_dimension_limits mc_world_dimension_default_limits(void) {
     return (mc_world_dimension_limits){.max_direct_allocation_bytes = 4u * 1024u * 1024u,
                                        .max_biome_buffer_bytes = MC_BIOME_DEFAULT_ALLOCATION_BYTES};
 }
@@ -154,8 +146,7 @@ mc_world_dimension_limits mc_world_dimension_default_limits(void)
 mc_world_dimension_status mc_world_dimension_allocate(mc_world_dimension_kind kind,
                                                       const mc_world_dimension_limits *limits,
                                                       mc_world_dimension **out,
-                                                      mc_world_dimension_error *error)
-{
+                                                      mc_world_dimension_error *error) {
     if (!valid_kind(kind) || out == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension allocation", 0);
     mc_world_dimension_limits admitted =
@@ -186,8 +177,7 @@ mc_world_dimension_status mc_world_dimension_allocate(mc_world_dimension_kind ki
 }
 
 mc_world_dimension_status mc_world_dimension_construct(mc_world_dimension *raw,
-                                                       mc_world_dimension_error *error)
-{
+                                                       mc_world_dimension_error *error) {
     if (raw == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension constructor", 0);
     if (raw->phase != MC_WORLD_DIMENSION_RAW)
@@ -230,8 +220,7 @@ mc_world_dimension_status mc_world_dimension_construct(mc_world_dimension *raw,
 mc_world_dimension_status mc_world_dimension_create(int32_t dimension_id,
                                                     const mc_world_dimension_limits *limits,
                                                     mc_world_dimension **out,
-                                                    mc_world_dimension_error *error)
-{
+                                                    mc_world_dimension_error *error) {
     if (out == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension factory", 0);
     mc_world_dimension_kind kind;
@@ -258,8 +247,7 @@ mc_world_dimension_status mc_world_dimension_create(int32_t dimension_id,
     return MC_WORLD_DIMENSION_OK;
 }
 
-mc_world_dimension_status mc_world_dimension_retain(mc_world_dimension *dimension)
-{
+mc_world_dimension_status mc_world_dimension_retain(mc_world_dimension *dimension) {
     if (dimension == NULL)
         return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
     if (dimension->holds == SIZE_MAX)
@@ -268,8 +256,7 @@ mc_world_dimension_status mc_world_dimension_retain(mc_world_dimension *dimensio
     return MC_WORLD_DIMENSION_OK;
 }
 
-void mc_world_dimension_release(mc_world_dimension *dimension)
-{
+void mc_world_dimension_release(mc_world_dimension *dimension) {
     if (dimension == NULL)
         return;
     --dimension->holds;
@@ -286,8 +273,7 @@ void mc_world_dimension_release(mc_world_dimension *dimension)
     ledger_release(ledger);
 }
 
-mc_world_dimension_status mc_world_dimension_biome_retain(mc_world_dimension_biome *biome)
-{
+mc_world_dimension_status mc_world_dimension_biome_retain(mc_world_dimension_biome *biome) {
     if (biome == NULL)
         return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
     if (biome->holds == SIZE_MAX)
@@ -296,8 +282,7 @@ mc_world_dimension_status mc_world_dimension_biome_retain(mc_world_dimension_bio
     return MC_WORLD_DIMENSION_OK;
 }
 
-void mc_world_dimension_biome_release(mc_world_dimension_biome *biome)
-{
+void mc_world_dimension_biome_release(mc_world_dimension_biome *biome) {
     if (biome == NULL)
         return;
     --biome->holds;
@@ -323,8 +308,7 @@ void mc_world_dimension_biome_release(mc_world_dimension_biome *biome)
 }
 
 mc_world_dimension_status mc_world_dimension_fields_get(const mc_world_dimension *dimension,
-                                                        mc_world_dimension_fields *out)
-{
+                                                        mc_world_dimension_fields *out) {
     if (dimension == NULL || out == NULL)
         return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
     *out = (mc_world_dimension_fields){.a = dimension->a,
@@ -339,8 +323,7 @@ mc_world_dimension_status mc_world_dimension_fields_get(const mc_world_dimension
 }
 
 mc_world_dimension_status mc_world_dimension_state_get(const mc_world_dimension *dimension,
-                                                       mc_world_dimension_state *out)
-{
+                                                       mc_world_dimension_state *out) {
     if (dimension == NULL || out == NULL)
         return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
     *out = (mc_world_dimension_state){.kind = dimension->kind,
@@ -353,18 +336,15 @@ mc_world_dimension_status mc_world_dimension_state_get(const mc_world_dimension 
     return MC_WORLD_DIMENSION_OK;
 }
 
-mc_world_runtime *mc_world_dimension_world(const mc_world_dimension *dimension)
-{
+mc_world_runtime *mc_world_dimension_world(const mc_world_dimension *dimension) {
     return dimension == NULL ? NULL : dimension->a;
 }
 
-size_t mc_world_dimension_hold_count(const mc_world_dimension *dimension)
-{
+size_t mc_world_dimension_hold_count(const mc_world_dimension *dimension) {
     return dimension == NULL ? 0 : dimension->holds;
 }
 
-void mc_world_dimension_unbind(mc_world_dimension *dimension)
-{
+void mc_world_dimension_unbind(mc_world_dimension *dimension) {
     if (dimension != NULL) {
         mc_world_runtime *previous = dimension->a;
         dimension->a = NULL;
@@ -372,9 +352,9 @@ void mc_world_dimension_unbind(mc_world_dimension *dimension)
     }
 }
 
-mc_world_dimension_status mc_world_dimension_biome_fields_get(const mc_world_dimension_biome *biome,
-                                                              mc_world_dimension_biome_fields *out)
-{
+mc_world_dimension_status
+mc_world_dimension_biome_fields_get(const mc_world_dimension_biome *biome,
+                                    mc_world_dimension_biome_fields *out) {
     if (biome == NULL || out == NULL)
         return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
     mc_world_dimension_biome_fields fields = {.fixed = biome->fixed, .holds = biome->holds};
@@ -400,8 +380,7 @@ mc_world_dimension_status mc_world_dimension_biome_fields_get(const mc_world_dim
 }
 
 static mc_world_dimension_status new_biome(mc_world_dimension *dimension, bool fixed,
-                                           mc_world_dimension_biome **out)
-{
+                                           mc_world_dimension_biome **out) {
     dimension_ledger *ledger = dimension->ledger;
     if (ledger->holds == SIZE_MAX)
         return MC_WORLD_DIMENSION_LIMIT;
@@ -425,9 +404,9 @@ static mc_world_dimension_status new_biome(mc_world_dimension *dimension, bool f
     return MC_WORLD_DIMENSION_OK;
 }
 
-mc_world_dimension_status mc_world_dimension_initialize_light_table(mc_world_dimension *dimension,
-                                                                    mc_world_dimension_error *error)
-{
+mc_world_dimension_status
+mc_world_dimension_initialize_light_table(mc_world_dimension *dimension,
+                                          mc_world_dimension_error *error) {
     if (dimension == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension light table", 0);
     if (dimension->phase != MC_WORLD_DIMENSION_READY || dimension->f == NULL)
@@ -453,8 +432,7 @@ mc_world_dimension_status mc_world_dimension_initialize_light_table(mc_world_dim
 
 mc_world_dimension_status mc_world_dimension_bind(mc_world_dimension *dimension,
                                                   mc_world_runtime *world,
-                                                  mc_world_dimension_error *error)
-{
+                                                  mc_world_dimension_error *error) {
     if (dimension == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension bind", 0);
     if (dimension->phase != MC_WORLD_DIMENSION_READY)
@@ -552,8 +530,7 @@ mc_world_dimension_status mc_world_dimension_bind(mc_world_dimension *dimension,
 mc_world_dimension_status
 mc_world_dimension_bind_game(mc_world_dimension *dimension, mc_world_runtime *world,
                              const mc_world_dimension_registry_binding *binding,
-                             mc_world_dimension_error *error)
-{
+                             mc_world_dimension_error *error) {
     if (dimension == NULL || binding == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension GAME bind", 0);
     if (dimension->phase != MC_WORLD_DIMENSION_READY)
@@ -728,8 +705,7 @@ leave:
 
 mc_world_dimension_status
 mc_world_dimension_biome_game_fields_get(const mc_world_dimension_biome *biome,
-                                         mc_world_biome_game_fields *out)
-{
+                                         mc_world_biome_game_fields *out) {
     if (biome == NULL || out == NULL)
         return MC_WORLD_DIMENSION_INVALID_ARGUMENT;
     *out = (mc_world_biome_game_fields){
@@ -743,8 +719,7 @@ static mc_world_dimension_status biome_native_result(mc_world_biome_error *error
                                                      mc_world_dimension_status status,
                                                      mc_registry_status registry_status,
                                                      mc_biome_status climate_status,
-                                                     const char *operation, unsigned int bytecode)
-{
+                                                     const char *operation, unsigned int bytecode) {
     if (error != NULL)
         *error = (mc_world_biome_error){.status = status,
                                         .operation = operation,
@@ -763,8 +738,8 @@ static mc_world_dimension_status biome_native_result(mc_world_biome_error *error
 
 static mc_world_dimension_status biome_sampling_result(mc_world_biome_error *error,
                                                        const mc_biome_sampling_error *sampling,
-                                                       const char *operation, unsigned int bytecode)
-{
+                                                       const char *operation,
+                                                       unsigned int bytecode) {
     mc_world_dimension_status status =
         sampling->registry.status == MC_REGISTRY_OK ? MC_WORLD_DIMENSION_OK
         : sampling->climate_status != MC_BIOME_OK   ? MC_WORLD_DIMENSION_BIOME_FAILED
@@ -776,8 +751,7 @@ static mc_world_dimension_status biome_sampling_result(mc_world_biome_error *err
 }
 
 static mc_world_dimension_status biome_call_enter(mc_world_dimension_biome *biome, const void *out,
-                                                  mc_world_biome_error *error)
-{
+                                                  mc_world_biome_error *error) {
     if (biome == NULL || out == NULL)
         return biome_native_result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT,
                                    MC_REGISTRY_INVALID_ARGUMENT, MC_BIOME_OK,
@@ -790,8 +764,7 @@ static mc_world_dimension_status biome_call_enter(mc_world_dimension_biome *biom
 }
 
 static mc_world_dimension_status biome_reference_capability(const mc_world_dimension_biome *biome,
-                                                            mc_world_biome_error *error)
-{
+                                                            mc_world_biome_error *error) {
     if (biome->registry == NULL)
         return biome_native_result(error, MC_WORLD_DIMENSION_REGISTRY_FAILED,
                                    MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, MC_BIOME_OK,
@@ -803,8 +776,7 @@ static mc_world_dimension_status biome_sample_admitted(mc_world_dimension_biome 
                                                        int32_t z, size_t width, size_t height,
                                                        mc_biome_reference_array *input,
                                                        mc_biome_reference_array **out,
-                                                       mc_world_biome_error *error)
-{
+                                                       mc_world_biome_error *error) {
     mc_world_dimension_status status = biome_reference_capability(biome, error);
     if (status != MC_WORLD_DIMENSION_OK)
         return status;
@@ -831,8 +803,7 @@ static mc_world_dimension_status biome_sample_admitted(mc_world_dimension_biome 
 mc_world_dimension_status
 mc_world_dimension_biome_sample(mc_world_dimension_biome *biome, int32_t x, int32_t z, size_t width,
                                 size_t height, mc_biome_reference_array *input,
-                                mc_biome_reference_array **out, mc_world_biome_error *error)
-{
+                                mc_biome_reference_array **out, mc_world_biome_error *error) {
     mc_world_dimension_status status = biome_call_enter(biome, out, error);
     if (status != MC_WORLD_DIMENSION_OK)
         return status;
@@ -844,8 +815,7 @@ mc_world_dimension_biome_sample(mc_world_dimension_biome *biome, int32_t x, int3
 static mc_world_dimension_status biome_cached_admitted(mc_world_dimension_biome *biome, int32_t x,
                                                        int32_t z, size_t width, size_t height,
                                                        mc_biome_reference_array **out,
-                                                       mc_world_biome_error *error)
-{
+                                                       mc_world_biome_error *error) {
     mc_biome_reference_array *input = biome->reference_d;
     mc_biome_reference_array *sampled = NULL;
     mc_world_dimension_status status =
@@ -870,8 +840,7 @@ mc_world_dimension_status mc_world_dimension_biome_cached(mc_world_dimension_bio
                                                           int32_t x, int32_t z, size_t width,
                                                           size_t height,
                                                           mc_biome_reference_array **out,
-                                                          mc_world_biome_error *error)
-{
+                                                          mc_world_biome_error *error) {
     mc_world_dimension_status status = biome_call_enter(biome, out, error);
     if (status != MC_WORLD_DIMENSION_OK)
         return status;
@@ -882,8 +851,7 @@ mc_world_dimension_status mc_world_dimension_biome_cached(mc_world_dimension_bio
 
 static mc_world_dimension_status biome_point_admitted(mc_world_dimension_biome *biome, int32_t x,
                                                       int32_t z, const mc_biome **out,
-                                                      mc_world_biome_error *error)
-{
+                                                      mc_world_biome_error *error) {
     mc_world_dimension_status status = biome_reference_capability(biome, error);
     if (status != MC_WORLD_DIMENSION_OK)
         return status;
@@ -917,8 +885,7 @@ static mc_world_dimension_status biome_point_admitted(mc_world_dimension_biome *
 
 mc_world_dimension_status mc_world_dimension_biome_point(mc_world_dimension_biome *biome, int32_t x,
                                                          int32_t z, const mc_biome **out,
-                                                         mc_world_biome_error *error)
-{
+                                                         mc_world_biome_error *error) {
     mc_world_dimension_status status = biome_call_enter(biome, out, error);
     if (status != MC_WORLD_DIMENSION_OK)
         return status;
@@ -930,8 +897,7 @@ mc_world_dimension_status mc_world_dimension_biome_point(mc_world_dimension_biom
 mc_world_dimension_status mc_world_dimension_biome_chunk(mc_world_dimension_biome *biome,
                                                          int32_t chunk_x, int32_t chunk_z,
                                                          const mc_biome **out,
-                                                         mc_world_biome_error *error)
-{
+                                                         mc_world_biome_error *error) {
     mc_world_dimension_status status = biome_call_enter(biome, out, error);
     if (status != MC_WORLD_DIMENSION_OK)
         return status;
@@ -956,8 +922,7 @@ mc_world_dimension_status mc_world_dimension_biome_chunk(mc_world_dimension_biom
 mc_world_dimension_status mc_world_dimension_celestial_angle(const mc_world_dimension *dimension,
                                                              int64_t time, float partial_tick,
                                                              float *out,
-                                                             mc_world_dimension_error *error)
-{
+                                                             mc_world_dimension_error *error) {
     if (dimension == NULL || out == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension celestial angle", 0);
     if (dimension->phase != MC_WORLD_DIMENSION_READY)
@@ -1005,8 +970,7 @@ mc_world_dimension_status mc_world_dimension_celestial_angle(const mc_world_dime
 static mc_world_dimension_status spawn_registry_failure(mc_world_dimension_error *error,
                                                         const char *operation,
                                                         unsigned int bytecode,
-                                                        const mc_registry_error *registry_error)
-{
+                                                        const mc_registry_error *registry_error) {
     mc_world_dimension_status status =
         result(error, MC_WORLD_DIMENSION_REGISTRY_FAILED, operation, bytecode);
     if (error != NULL)
@@ -1016,8 +980,7 @@ static mc_world_dimension_status spawn_registry_failure(mc_world_dimension_error
 
 static mc_world_dimension_status
 spawn_registry_source_failure(mc_world_dimension_error *error, mc_registry_status registry_status,
-                              const char *operation, unsigned int bytecode, int32_t block_id)
-{
+                              const char *operation, unsigned int bytecode, int32_t block_id) {
     mc_registry_error registry_error = {.status = registry_status,
                                         .message = operation,
                                         .initializer_pc = -1,
@@ -1030,8 +993,7 @@ spawn_registry_source_failure(mc_world_dimension_error *error, mc_registry_statu
 
 static unsigned int spawn_array_failure_pc(mc_registry_status status,
                                            const mc_registry_error *registry_error,
-                                           unsigned int static_pc, unsigned int array_pc)
-{
+                                           unsigned int static_pc, unsigned int array_pc) {
     /* Active-use failures retain their actual initializer class, even when
      * their first cause is NULL/index. Only the accessor's subsequent array
      * failures clear that context; native entry failures are at the static use. */
@@ -1045,8 +1007,7 @@ static mc_world_dimension_status can_spawn_admitted(mc_world_dimension_kind kind
                                                     mc_world_runtime *world,
                                                     mc_registry_classes *classes, int32_t x,
                                                     int32_t z, bool *out,
-                                                    mc_world_dimension_error *error)
-{
+                                                    mc_world_dimension_error *error) {
     int32_t top;
     mc_world_storage_error world_error = {0};
     if (mc_world_runtime_top_block(world, x, z, &top, &world_error) != MC_WORLD_STORAGE_OK) {
@@ -1115,8 +1076,7 @@ static mc_world_dimension_status can_spawn_admitted(mc_world_dimension_kind kind
 
 mc_world_dimension_status mc_world_dimension_can_spawn(mc_world_dimension *dimension, int32_t x,
                                                        int32_t z, bool *out,
-                                                       mc_world_dimension_error *error)
-{
+                                                       mc_world_dimension_error *error) {
     if (dimension == NULL || out == NULL)
         return result(error, MC_WORLD_DIMENSION_INVALID_ARGUMENT, "dimension can spawn", 0);
     if (dimension->phase != MC_WORLD_DIMENSION_READY)

@@ -32,66 +32,56 @@ static unsigned int checks;
 _Static_assert(sizeof(mc_java_random_profile) <= SIZE_MAX - sizeof(mc_java_math_random_owner),
                "profile and separate Math owner must fit size_t");
 
-static size_t full_budget(void)
-{
+static size_t full_budget(void) {
     return sizeof(mc_java_random_profile) + sizeof(mc_java_math_random_owner);
 }
 
-static uint64_t double_bits(const double *value)
-{
+static uint64_t double_bits(const double *value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(*value), "binary64 storage required");
     memcpy(&bits, value, sizeof(bits));
     return bits;
 }
 
-static uint64_t advance_uniquifier(uint64_t value, size_t count)
-{
+static uint64_t advance_uniquifier(uint64_t value, size_t count) {
     for (size_t i = 0; i < count; ++i) {
         value *= UNIQUIFIER_MULTIPLIER;
     }
     return value;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static bool holder_is(const mc_java_random_profile *profile, mc_java_random_holder_phase phase)
-{
+static bool holder_is(const mc_java_random_profile *profile, mc_java_random_holder_phase phase) {
     return atomic_load_explicit(&profile->holder_phase, memory_order_acquire) ==
            (unsigned int)phase;
 }
 
-static bool cold_is(const mc_java_random_profile *profile, uint64_t expected)
-{
+static bool cold_is(const mc_java_random_profile *profile, uint64_t expected) {
     return holder_is(profile, MC_JAVA_RANDOM_HOLDER_COLD) && profile->math == NULL &&
            uniquifier(profile) == expected &&
            mc_java_random_profile_allocation_bytes(profile) == sizeof(*profile) &&
            profile->allocated_bytes == sizeof(*profile);
 }
 
-static bool fresh_is(const mc_java_random *random)
-{
+static bool fresh_is(const mc_java_random *random) {
     return random->state <= LCG_MASK && double_bits(&random->next_next_gaussian) == 0 &&
            !random->have_next_next_gaussian;
 }
 
-static bool unit_double(double value)
-{
+static bool unit_double(double value) {
     return isfinite(value) && value >= 0.0 && value < 1.0;
 }
 
-static void poison_random(mc_java_random *random)
-{
+static void poison_random(mc_java_random *random) {
     memset(random, 0xa5, sizeof(*random));
     /* An omitted success-path bool write must fail without an invalid bool read. */
     random->have_next_next_gaussian = true;
 }
 
-static mc_java_random math_snapshot(const mc_java_random_profile *profile)
-{
+static mc_java_random math_snapshot(const mc_java_random_profile *profile) {
     mc_java_random result = {
         .state = atomic_load_explicit(&profile->math->state, memory_order_relaxed),
         .next_next_gaussian = profile->math->next_next_gaussian,
@@ -100,14 +90,12 @@ static mc_java_random math_snapshot(const mc_java_random_profile *profile)
     return result;
 }
 
-static bool math_matches(const mc_java_random_profile *profile, const mc_java_random *expected)
-{
+static bool math_matches(const mc_java_random_profile *profile, const mc_java_random *expected) {
     const mc_java_random actual = math_snapshot(profile);
     return mc_test_java_random_equal(&actual, expected);
 }
 
-static int test_arguments_and_budget(void)
-{
+static int test_arguments_and_budget(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL, *candidate = NULL, *tight = NULL;
     mc_java_random output;
@@ -169,8 +157,7 @@ cleanup:
     return result;
 }
 
-static int test_sequential_owners_and_math(void)
-{
+static int test_sequential_owners_and_math(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_java_math_random_owner *retained = NULL;
@@ -233,8 +220,7 @@ cleanup:
 /* Each wrapper restores the exact incoming control/status word before any
  * assertion, diagnostic, destruction or return, including rejected calls. */
 static mc_java_random_profile_status create_with_control(unsigned int control,
-                                                         mc_java_random_profile **out)
-{
+                                                         mc_java_random_profile **out) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_java_random_profile_status status = mc_java_random_profile_create(full_budget(), out);
@@ -243,8 +229,7 @@ static mc_java_random_profile_status create_with_control(unsigned int control,
 }
 
 static mc_java_random_profile_status
-default_with_control(unsigned int control, mc_java_random_profile *profile, mc_java_random *out)
-{
+default_with_control(unsigned int control, mc_java_random_profile *profile, mc_java_random *out) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_java_random_profile_status status = mc_java_random_construct_default(profile, out);
@@ -252,9 +237,8 @@ default_with_control(unsigned int control, mc_java_random_profile *profile, mc_j
     return status;
 }
 
-static mc_java_random_profile_status math_with_control(unsigned int control,
-                                                       mc_java_random_profile *profile, double *out)
-{
+static mc_java_random_profile_status
+math_with_control(unsigned int control, mc_java_random_profile *profile, double *out) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_java_random_profile_status status = mc_java_math_random(profile, out);
@@ -262,14 +246,14 @@ static mc_java_random_profile_status math_with_control(unsigned int control,
     return status;
 }
 
-static int test_fp_rejection(void)
-{
+static int test_fp_rejection(void) {
     static const struct {
         unsigned int clear;
         unsigned int set;
     } cases[] = {{0, 0x0040u},       {0, 0x8000u}, {0x6000u, 0x2000u}, {0x6000u, 0x4000u},
                  {0x6000u, 0x6000u}, {0x0080u, 0}, {0x0100u, 0},       {0x0200u, 0},
                  {0x0400u, 0},       {0x0800u, 0}, {0x1000u, 0}};
+
     int result = 1;
     mc_java_random_profile *profile = NULL, *candidate = NULL;
     mc_java_random output;
@@ -327,15 +311,13 @@ typedef struct worker {
     double values[CALLS];
 } worker;
 
-static bool default_call(worker_mode mode, size_t call)
-{
+static bool default_call(worker_mode mode, size_t call) {
     return mode == WORKER_DEFAULT || (mode == WORKER_MIXED && call % 2u == 0);
 }
 
 static void require_thread_success(int status);
 
-static int worker_main(void *argument)
-{
+static int worker_main(void *argument) {
     worker *work = argument;
     require_thread_success(mtx_lock(&work->gate->mutex));
     while (!work->gate->open) {
@@ -359,8 +341,7 @@ static int worker_main(void *argument)
     return result;
 }
 
-static void require_thread_success(int status)
-{
+static void require_thread_success(int status) {
     /* A broken synchronization/join primitive cannot permit teardown beneath
      * a potentially live borrower. Fail the process rather than return unsafely. */
     if (status != thrd_success) {
@@ -369,8 +350,7 @@ static void require_thread_success(int status)
     }
 }
 
-static bool run_workers(mc_java_random_profile *profile, worker_mode mode, worker work[WORKERS])
-{
+static bool run_workers(mc_java_random_profile *profile, worker_mode mode, worker work[WORKERS]) {
     start_gate gate;
     thrd_t threads[WORKERS];
     size_t created = 0;
@@ -417,8 +397,7 @@ static bool run_workers(mc_java_random_profile *profile, worker_mode mode, worke
     return complete;
 }
 
-static bool worker_outputs_are_valid(const worker work[WORKERS], worker_mode mode)
-{
+static bool worker_outputs_are_valid(const worker work[WORKERS], worker_mode mode) {
     for (size_t i = 0; i < WORKERS; ++i) {
         for (size_t call = 0; call < CALLS; ++call) {
             if (work[i].status[call] != MC_JAVA_RANDOM_PROFILE_OK) {
@@ -436,15 +415,13 @@ static bool worker_outputs_are_valid(const worker work[WORKERS], worker_mode mod
     return true;
 }
 
-static void consume_doubles(mc_java_random *random, size_t count)
-{
+static void consume_doubles(mc_java_random *random, size_t count) {
     for (size_t i = 0; i < count; ++i) {
         (void)mc_java_random_next_double(random);
     }
 }
 
-static int test_concurrent_groups(void)
-{
+static int test_concurrent_groups(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL, *defaults = NULL;
     mc_java_math_random_owner *retained = NULL;
@@ -501,8 +478,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         fprintf(stderr, "Random profile test requires the strict SSE2 control environment\n");
         return 1;

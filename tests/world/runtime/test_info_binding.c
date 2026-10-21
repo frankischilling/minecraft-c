@@ -26,16 +26,14 @@ static const mc_nbt_type types[] = {
     MC_NBT_LONG,   MC_NBT_INT, MC_NBT_INT, MC_NBT_INT,  MC_NBT_LONG, MC_NBT_LONG, MC_NBT_LONG,
     MC_NBT_STRING, MC_NBT_INT, MC_NBT_INT, MC_NBT_BYTE, MC_NBT_INT,  MC_NBT_BYTE, MC_NBT_COMPOUND};
 
-static mc_nbt_string ascii(const char *text, uint16_t units[16])
-{
+static mc_nbt_string ascii(const char *text, uint16_t units[16]) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, length};
 }
 
-static const mc_nbt_tag *get(const mc_nbt_tag *root, const char *key)
-{
+static const mc_nbt_tag *get(const mc_nbt_tag *root, const char *key) {
     uint16_t units[16];
     if (root == NULL)
         return NULL;
@@ -43,22 +41,19 @@ static const mc_nbt_tag *get(const mc_nbt_tag *root, const char *key)
     return mc_nbt_compound_get(root, name.units, name.length);
 }
 
-static bool text_equal(mc_nbt_string left, mc_nbt_string right)
-{
+static bool text_equal(mc_nbt_string left, mc_nbt_string right) {
     return left.length == right.length &&
            (left.length == 0 ||
             (left.units != NULL && right.units != NULL &&
              memcmp(left.units, right.units, left.length * sizeof(uint16_t)) == 0));
 }
 
-static bool tag_name_is(const mc_nbt_tag *tag, const char *text)
-{
+static bool tag_name_is(const mc_nbt_tag *tag, const char *text) {
     uint16_t units[16];
     return tag != NULL && text_equal(tag->name, ascii(text, units));
 }
 
-static bool same_values(const mc_level_info *a, const mc_level_info *b)
-{
+static bool same_values(const mc_level_info *a, const mc_level_info *b) {
     return a->seed == b->seed && a->spawn_x == b->spawn_x && a->spawn_y == b->spawn_y &&
            a->spawn_z == b->spawn_z && a->time == b->time && a->last_played == b->last_played &&
            a->size_on_disk == b->size_on_disk && a->player_dimension == b->player_dimension &&
@@ -67,8 +62,7 @@ static bool same_values(const mc_level_info *a, const mc_level_info *b)
            a->thundering == b->thundering && text_equal(a->level_name, b->level_name);
 }
 
-static bool matches_info(const mc_level_info *value, const mc_world_info_fields *fields)
-{
+static bool matches_info(const mc_level_info *value, const mc_world_info_fields *fields) {
     const mc_world_info_scalars *v = &fields->value;
     const mc_level_info expected = {.seed = v->seed,
                                     .spawn_x = v->spawn_x,
@@ -88,8 +82,7 @@ static bool matches_info(const mc_level_info *value, const mc_world_info_fields 
            value->player == mc_world_info_player_root(fields->player);
 }
 
-static bool make_info(mc_world_info **out)
-{
+static bool make_info(mc_world_info **out) {
     mc_nbt_tag fields[14] = {0}, dimension = {.type = MC_NBT_INT}, data = {.type = MC_NBT_COMPOUND};
     uint16_t names[15][16];
     const mc_nbt_tag *items[14], *children[1] = {&dimension};
@@ -134,8 +127,7 @@ cleanup:
     return ok;
 }
 
-static bool make_wrong_dimension_player(mc_world_info_player **out)
-{
+static bool make_wrong_dimension_player(mc_world_info_player **out) {
     uint16_t units[16];
     mc_nbt_tag dimension = {.type = MC_NBT_BYTE}, root = {.type = MC_NBT_COMPOUND};
     const mc_nbt_tag *items[1] = {&dimension};
@@ -162,22 +154,19 @@ typedef struct context {
     bool fail_provider, callback_error;
 } context;
 
-static uint32_t region_timestamp(void *owner)
-{
+static uint32_t region_timestamp(void *owner) {
     context *c = owner;
     ++c->region_calls;
     return UINT32_C(0xfedcba98); /* Explicit existing region-transport fixture input. */
 }
 
-static int64_t forbidden_metadata_timestamp(void *owner)
-{
+static int64_t forbidden_metadata_timestamp(void *owner) {
     context *c = owner;
     ++c->metadata_calls;
     return 0; /* Any invocation fails the Info-bound test; never an Info clock sample. */
 }
 
-static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *save)
-{
+static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *save) {
     context *c = owner;
     ++c->auxiliary_calls;
     if (save != mc_world_runtime_saving(c->runtime) || save->world != c->runtime)
@@ -186,8 +175,7 @@ static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_conte
 }
 
 static mc_chunk_callback_result provider(void *owner, const mc_chunk_lifecycle_context *life,
-                                         bool *out)
-{
+                                         bool *out) {
     context *c = owner;
     ++c->provider_calls;
     if (life != mc_world_runtime_lifecycle(c->runtime) || life->world != c->runtime ||
@@ -213,8 +201,8 @@ static mc_chunk_callback_result provider(void *owner, const mc_chunk_lifecycle_c
     return MC_CHUNK_CALLBACK_OK;
 }
 
-static bool context_init(context *c, mc_world_store *store, mc_world_info *info, bool omit_metadata)
-{
+static bool context_init(context *c, mc_world_store *store, mc_world_info *info,
+                         bool omit_metadata) {
     if (!mc_chunk_cache_init(&c->cache, c->entries, 4, c->list, 4) ||
         mc_java_int_set_create(NULL, &c->history) != MC_JAVA_INT_SET_OK ||
         !mc_chunk_pending_init_ordered(&c->pending, c->keys, 4, c->history))
@@ -237,8 +225,7 @@ static bool context_init(context *c, mc_world_store *store, mc_world_info *info,
     return true;
 }
 
-static bool context_close(context *c)
-{
+static bool context_close(context *c) {
     /* Only caller-published fixture entries exist; retire their references.
      * No acquired/active chunk, lease or pending key is hidden by this reset. */
     c->cache.count = 0;
@@ -254,8 +241,7 @@ static bool context_close(context *c)
     return true;
 }
 
-static int test_runtime_binding(const char *root)
-{
+static int test_runtime_binding(const char *root) {
     int result = 1;
     mc_world_regions *regions = NULL;
     mc_world_store *store = NULL, *observer = NULL, *conflict = NULL, *limited = NULL;
@@ -568,8 +554,7 @@ cleanup:
     return result;
 }
 
-static int test_record_builder(void)
-{
+static int test_record_builder(void) {
     int result = 1;
     mc_world_info *info = NULL;
     mc_world_info_player *player = NULL;
@@ -745,8 +730,7 @@ cleanup:
     return result;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t length = strlen(hex);
     if (length == 0 || length % 2u != 0 || length / 2u >= capacity)
         return false;
@@ -769,8 +753,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char root[8192];
     if (argc != 3 || strcmp(argv[1], "world-info-bindings") != 0 ||
         !decode_path(argv[2], root, sizeof(root)))

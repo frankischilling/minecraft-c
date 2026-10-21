@@ -31,15 +31,14 @@ struct mc_world_saved_data {
 };
 
 static mc_world_storage_status saved_error(mc_world_storage_error *error,
-                                           mc_world_storage_status status, const char *operation)
-{
+                                           mc_world_storage_status status, const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static mc_world_storage_status saved_nbt_error(mc_world_storage_error *error, mc_nbt_status status)
-{
+static mc_world_storage_status saved_nbt_error(mc_world_storage_error *error,
+                                               mc_nbt_status status) {
     mc_world_storage_status mapped = status == MC_NBT_ALLOCATION_FAILED
                                          ? MC_WORLD_STORAGE_ALLOCATION_FAILED
                                      : status == MC_NBT_LIMIT ? MC_WORLD_STORAGE_LIMIT
@@ -48,8 +47,7 @@ static mc_world_storage_status saved_nbt_error(mc_world_storage_error *error, mc
 }
 
 static bool saved_catch(mc_world_saved_data *owner, mc_world_storage_status status,
-                        const mc_world_storage_error *error)
-{
+                        const mc_world_storage_error *error) {
     if (status != MC_WORLD_STORAGE_IO_ERROR && status != MC_WORLD_STORAGE_MISSING &&
         status != MC_WORLD_STORAGE_INVALID_DATA)
         return false;
@@ -57,19 +55,16 @@ static bool saved_catch(mc_world_saved_data *owner, mc_world_storage_status stat
     return true;
 }
 
-mc_world_saved_data_limits mc_world_saved_data_default_limits(void)
-{
+mc_world_saved_data_limits mc_world_saved_data_default_limits(void) {
     return (mc_world_saved_data_limits){4096, 65536, 4u * 1024u * 1024u, mc_nbt_default_limits()};
 }
 
-static bool saved_key_valid(const mc_nbt_string *key)
-{
+static bool saved_key_valid(const mc_nbt_string *key) {
     return key == NULL || ((key->length == 0 || key->units != NULL) &&
                            key->length <= SIZE_MAX / sizeof(*key->units));
 }
 
-static saved_id_entry *saved_find(mc_world_saved_data *owner, const mc_nbt_string *key)
-{
+static saved_id_entry *saved_find(mc_world_saved_data *owner, const mc_nbt_string *key) {
     for (saved_id_entry *entry = owner->first; entry != NULL; entry = entry->next) {
         if (entry->id.null_name != (key == NULL))
             continue;
@@ -83,8 +78,7 @@ static saved_id_entry *saved_find(mc_world_saved_data *owner, const mc_nbt_strin
 
 static mc_world_storage_status saved_insert(mc_world_saved_data *owner, const mc_nbt_string *key,
                                             int16_t value, saved_id_entry **out,
-                                            mc_world_storage_error *error)
-{
+                                            mc_world_storage_error *error) {
     size_t units = key == NULL ? 0 : key->length;
     if (owner->count >= owner->limits.max_ids ||
         units > owner->limits.max_key_units - owner->key_units ||
@@ -114,8 +108,8 @@ static mc_world_storage_status saved_insert(mc_world_saved_data *owner, const mc
     return MC_WORLD_STORAGE_OK;
 }
 
-static mc_world_storage_status saved_load(mc_world_saved_data *owner, mc_world_storage_error *error)
-{
+static mc_world_storage_status saved_load(mc_world_saved_data *owner,
+                                          mc_world_storage_error *error) {
     if (owner->path == NULL)
         return MC_WORLD_STORAGE_OK;
     mc_ws_file_bytes bytes = {0};
@@ -152,8 +146,7 @@ static mc_world_storage_status saved_load(mc_world_saved_data *owner, mc_world_s
 mc_world_storage_status mc_world_saved_data_create(const mc_world_store *store,
                                                    const mc_world_saved_data_limits *limits,
                                                    mc_world_saved_data **out,
-                                                   mc_world_storage_error *error)
-{
+                                                   mc_world_storage_error *error) {
     mc_world_saved_data_limits chosen =
         limits == NULL ? mc_world_saved_data_default_limits() : *limits;
     if (out == NULL || chosen.nbt.max_depth == 0 || chosen.nbt.max_depth > 128 ||
@@ -195,8 +188,7 @@ mc_world_storage_status mc_world_saved_data_create(const mc_world_store *store,
 }
 
 static mc_world_storage_status saved_write_name(mc_ws_output *output, mc_nbt_string name,
-                                                mc_world_storage_error *error)
-{
+                                                mc_world_storage_error *error) {
     size_t encoded = 0;
     if (mc_mutf8_encoded_length(name.units, name.length, &encoded) != MC_MUTF8_OK ||
         encoded > UINT16_MAX)
@@ -213,8 +205,7 @@ static mc_world_storage_status saved_write_name(mc_ws_output *output, mc_nbt_str
 }
 
 static mc_world_storage_status saved_write(mc_world_saved_data *owner,
-                                           mc_world_storage_error *error)
-{
+                                           mc_world_storage_error *error) {
     if (owner->path == NULL)
         return MC_WORLD_STORAGE_OK;
     const mc_nbt_string empty = {0};
@@ -260,8 +251,7 @@ static mc_world_storage_status saved_write(mc_world_saved_data *owner,
 
 mc_world_storage_status mc_world_saved_data_next_id(mc_world_saved_data *owner,
                                                     const mc_nbt_string *key, int32_t *out,
-                                                    mc_world_storage_error *error)
-{
+                                                    mc_world_storage_error *error) {
     if (owner == NULL || out == NULL || !saved_key_valid(key))
         return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data ID arguments");
     owner->last_caught = (mc_world_storage_error){0};
@@ -285,13 +275,11 @@ mc_world_storage_status mc_world_saved_data_next_id(mc_world_saved_data *owner,
     return saved_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-size_t mc_world_saved_data_count(const mc_world_saved_data *owner)
-{
+size_t mc_world_saved_data_count(const mc_world_saved_data *owner) {
     return owner == NULL ? 0 : owner->count;
 }
 
-const mc_world_saved_id *mc_world_saved_data_id_at(const mc_world_saved_data *owner, size_t index)
-{
+const mc_world_saved_id *mc_world_saved_data_id_at(const mc_world_saved_data *owner, size_t index) {
     if (owner == NULL)
         return NULL;
     const saved_id_entry *entry = owner->first;
@@ -302,13 +290,11 @@ const mc_world_saved_id *mc_world_saved_data_id_at(const mc_world_saved_data *ow
     return entry == NULL ? NULL : &entry->id;
 }
 
-const mc_world_storage_error *mc_world_saved_data_last_caught(const mc_world_saved_data *owner)
-{
+const mc_world_storage_error *mc_world_saved_data_last_caught(const mc_world_saved_data *owner) {
     return owner == NULL ? NULL : &owner->last_caught;
 }
 
-void mc_world_saved_data_free(mc_world_saved_data *owner)
-{
+void mc_world_saved_data_free(mc_world_saved_data *owner) {
     if (owner == NULL)
         return;
     while (owner->first != NULL) {

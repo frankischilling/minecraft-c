@@ -18,8 +18,7 @@ struct mc_registry_literal {
     mc_registry_literal *next;
 };
 
-static mc_registry_error native_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error native_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -33,16 +32,14 @@ static mc_registry_error native_error(mc_registry_status status, const char *mes
 }
 
 static mc_registry_status result(mc_registry_error *error, mc_registry_status status,
-                                 const char *message)
-{
+                                 const char *message) {
     if (error != NULL)
         *error = native_error(status, message);
     return status;
 }
 
 mc_registry_status mc_registry_fail(mc_registry_classes *classes, mc_registry_status status,
-                                    const char *message, const mc_block *block)
-{
+                                    const char *message, const mc_block *block) {
     classes->last_error = native_error(status, message);
     classes->last_error.initializer_pc = classes->block_initializer_pc;
     if (classes->initializer != NULL) {
@@ -69,8 +66,7 @@ mc_registry_status mc_registry_fail(mc_registry_classes *classes, mc_registry_st
 }
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,
-                                   const char *client, const char *server, int32_t *pc)
-{
+                                   const char *client, const char *server, int32_t *pc) {
     *frame = (mc_registry_initializer){.parent = classes->initializer,
                                        .client_class = client,
                                        .server_class = server,
@@ -82,29 +78,25 @@ void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_ini
     classes->current_item = NULL;
 }
 
-void mc_registry_initializer_leave(mc_registry_classes *classes, mc_registry_initializer *frame)
-{
+void mc_registry_initializer_leave(mc_registry_classes *classes, mc_registry_initializer *frame) {
     classes->current_block = frame->saved_block;
     classes->current_item = frame->saved_item;
     classes->initializer = frame->parent;
 }
 
-void mc_registry_initializer_stage(mc_registry_classes *classes, int32_t pc)
-{
+void mc_registry_initializer_stage(mc_registry_classes *classes, int32_t pc) {
     if (classes->initializer != NULL && classes->initializer->pc != NULL)
         *classes->initializer->pc = pc;
 }
 
 void mc_registry_block_stage(mc_block *block, const char *client_class, const char *server_class,
-                             int32_t pc)
-{
+                             int32_t pc) {
     block->constructor_class =
         block->classes->options.side == MC_REGISTRY_CLIENT ? client_class : server_class;
     block->constructor_pc = pc;
 }
 
-void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes)
-{
+void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes) {
     if (bytes == 0) {
         (void)mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "empty native request", NULL);
         return NULL;
@@ -136,8 +128,7 @@ void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes)
 }
 
 mc_registry_status mc_registry_string_ascii(mc_registry_classes *classes, const char *prefix,
-                                            const char *suffix, const mc_registry_string **out)
-{
+                                            const char *suffix, const mc_registry_string **out) {
     const size_t prefix_length = strlen(prefix);
     const size_t suffix_length = strlen(suffix);
     if (suffix_length > SIZE_MAX - prefix_length ||
@@ -163,8 +154,7 @@ mc_registry_status mc_registry_string_ascii(mc_registry_classes *classes, const 
     return MC_REGISTRY_OK;
 }
 
-static bool literal_equal(const mc_registry_string *string, const char *text)
-{
+static bool literal_equal(const mc_registry_string *string, const char *text) {
     const size_t length = strlen(text);
     if (length != string->length)
         return false;
@@ -175,8 +165,7 @@ static bool literal_equal(const mc_registry_string *string, const char *text)
 }
 
 mc_registry_status mc_registry_literal_ascii(mc_registry_classes *classes, const char *text,
-                                             const mc_registry_string **out)
-{
+                                             const mc_registry_string **out) {
     for (mc_registry_literal *literal = classes->literals; literal != NULL; literal = literal->next)
         if (literal_equal(literal->string, text)) {
             *out = literal->string;
@@ -197,8 +186,7 @@ mc_registry_status mc_registry_literal_ascii(mc_registry_classes *classes, const
 }
 
 mc_registry_status mc_registry_name(mc_registry_classes *classes, mc_block *block,
-                                    const char *suffix)
-{
+                                    const char *suffix) {
     /* Each builder result is a distinct String identity. These constructor
      * call sites use ASCII literals; this is not a resource/UTF-8 parser.
      * Native string admission precedes any assignment to the Block field. */
@@ -212,8 +200,8 @@ mc_registry_status mc_registry_name(mc_registry_classes *classes, mc_block *bloc
 }
 
 mc_registry_status mc_registry_classes_allocate(const mc_registry_options *options,
-                                                mc_registry_classes **out, mc_registry_error *error)
-{
+                                                mc_registry_classes **out,
+                                                mc_registry_error *error) {
     if (options == NULL || out == NULL || options->random_profile == NULL ||
         options->materials == NULL ||
         (options->resources != NULL && options->resources->open == NULL) ||
@@ -270,8 +258,7 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
 }
 
 mc_registry_status mc_registry_classes_initialize_blocks(mc_registry_classes *classes,
-                                                         mc_registry_error *error)
-{
+                                                         mc_registry_error *error) {
     if (classes == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry owner");
     if (classes->entered != 0)
@@ -298,8 +285,7 @@ mc_registry_status mc_registry_classes_initialize_blocks(mc_registry_classes *cl
     return status;
 }
 
-mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes) {
     if (classes->entered == 0)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Block active use requires an admitted initialization flow", NULL);
@@ -335,8 +321,7 @@ mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes)
 
 mc_registry_status mc_registry_classes_inspect_blocks(const mc_registry_classes *classes,
                                                       mc_registry_block_view *out,
-                                                      mc_registry_error *error)
-{
+                                                      mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry view arguments");
     *out = (mc_registry_block_view){.phase = classes->blocks_phase,
@@ -365,8 +350,7 @@ mc_registry_status mc_registry_classes_inspect_blocks(const mc_registry_classes 
 
 mc_registry_status mc_registry_classes_inspect_block_static(const mc_registry_classes *classes,
                                                             const char *name, const mc_block **out,
-                                                            mc_registry_error *error)
-{
+                                                            mc_registry_error *error) {
     if (classes == NULL || name == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block static view arguments");
     for (size_t i = 0; i < 96; ++i)
@@ -377,18 +361,15 @@ mc_registry_status mc_registry_classes_inspect_block_static(const mc_registry_cl
     return result(error, MC_REGISTRY_INVALID_ARGUMENT, "unknown Block static name");
 }
 
-const mc_block_fields *mc_block_fields_get(const mc_block *block)
-{
+const mc_block_fields *mc_block_fields_get(const mc_block *block) {
     return block == NULL ? NULL : &block->fields;
 }
 
-const mc_block_sound_fields *mc_block_sound_fields_get(const mc_block_sound *sound)
-{
+const mc_block_sound_fields *mc_block_sound_fields_get(const mc_block_sound *sound) {
     return sound == NULL ? NULL : &sound->fields;
 }
 
-bool mc_registry_string_read(const mc_registry_string *string, mc_registry_string_view *out)
-{
+bool mc_registry_string_read(const mc_registry_string *string, mc_registry_string_view *out) {
     if (string == NULL || out == NULL)
         return false;
     *out = (mc_registry_string_view){.units = string->units, .length = string->length};
@@ -397,8 +378,7 @@ bool mc_registry_string_read(const mc_registry_string *string, mc_registry_strin
 
 mc_registry_status mc_registry_classes_bind_entities(mc_registry_classes *classes,
                                                      mc_entity_classes *entities,
-                                                     mc_registry_error *error)
-{
+                                                     mc_registry_error *error) {
     if (classes == NULL || entities == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding arguments");
     if (classes->entered != 0)
@@ -421,8 +401,8 @@ mc_registry_status mc_registry_classes_bind_entities(mc_registry_classes *classe
     return result(error, MC_REGISTRY_OK, NULL);
 }
 
-mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_registry_error *error)
-{
+mc_registry_status mc_registry_classes_free(mc_registry_classes *classes,
+                                            mc_registry_error *error) {
     if (classes == NULL)
         return result(error, MC_REGISTRY_OK, NULL);
     if (classes->entered != 0)
@@ -451,8 +431,7 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes, mc_reg
 }
 
 mc_registry_status mc_registry_block_allocate(mc_registry_classes *classes, mc_block_kind kind,
-                                              mc_block **out)
-{
+                                              mc_block **out) {
     if ((unsigned int)kind >= (unsigned int)MC_BLOCK_KIND_COUNT || out == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Block allocation kind",
                                 NULL);
@@ -474,8 +453,7 @@ mc_registry_status mc_registry_block_allocate(mc_registry_classes *classes, mc_b
 }
 
 mc_registry_status mc_registry_block_base(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                          mc_material *material)
-{
+                                          mc_material *material) {
     mc_registry_block_stage(block, "uu", "na", 6);
     block->fields.bq = true;
     mc_registry_block_stage(block, "uu", "na", 11);
@@ -540,8 +518,7 @@ mc_registry_status mc_registry_block_base(mc_registry_classes *classes, mc_block
 
 mc_registry_status mc_registry_block_base_texture(mc_registry_classes *classes, mc_block *block,
                                                   int32_t id, int32_t texture,
-                                                  mc_material *material)
-{
+                                                  mc_material *material) {
     mc_registry_status status = mc_registry_block_base(classes, block, id, material);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -551,8 +528,7 @@ mc_registry_status mc_registry_block_base_texture(mc_registry_classes *classes, 
 }
 
 void mc_registry_block_bounds(mc_block *block, float x0, float y0, float z0, float x1, float y1,
-                              float z1)
-{
+                              float z1) {
     block->fields.bs = (double)x0;
     block->fields.bt = (double)y0;
     block->fields.bu = (double)z0;
@@ -562,8 +538,7 @@ void mc_registry_block_bounds(mc_block *block, float x0, float y0, float z0, flo
 }
 
 static mc_registry_status array_index(mc_registry_classes *classes, const mc_block *block,
-                                      const void *array, const char *message)
-{
+                                      const void *array, const char *message) {
     if (array == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, message, block);
     if (block->fields.bn < 0 || block->fields.bn >= (int32_t)MC_REGISTRY_BLOCK_SLOTS)
@@ -572,8 +547,8 @@ static mc_registry_status array_index(mc_registry_classes *classes, const mc_blo
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_block_tick(mc_registry_classes *classes, mc_block *block, bool tick)
-{
+mc_registry_status mc_registry_block_tick(mc_registry_classes *classes, mc_block *block,
+                                          bool tick) {
     bool *array = classes->blocks.n;
     mc_registry_status status = array_index(classes, block, array, "Block tick array");
     if (status == MC_REGISTRY_OK)
@@ -582,8 +557,7 @@ mc_registry_status mc_registry_block_tick(mc_registry_classes *classes, mc_block
 }
 
 mc_registry_status mc_registry_block_opacity(mc_registry_classes *classes, mc_block *block,
-                                             int32_t opacity)
-{
+                                             int32_t opacity) {
     int32_t *array = classes->blocks.q;
     mc_registry_status status = array_index(classes, block, array, "Block light-opacity array");
     if (status == MC_REGISTRY_OK)
@@ -592,8 +566,7 @@ mc_registry_status mc_registry_block_opacity(mc_registry_classes *classes, mc_bl
 }
 
 mc_registry_status mc_registry_block_emission(mc_registry_classes *classes, mc_block *block,
-                                              float emission)
-{
+                                              float emission) {
     int32_t *array = classes->blocks.s;
     mc_registry_status status = array_index(classes, block, array, "Block emission array");
     if (status == MC_REGISTRY_OK) {
@@ -603,8 +576,7 @@ mc_registry_status mc_registry_block_emission(mc_registry_classes *classes, mc_b
     return status;
 }
 
-mc_registry_status mc_registry_block_metadata(mc_registry_classes *classes, mc_block *block)
-{
+mc_registry_status mc_registry_block_metadata(mc_registry_classes *classes, mc_block *block) {
     bool *array = classes->blocks.t;
     mc_registry_status status = array_index(classes, block, array, "Block metadata array");
     if (status == MC_REGISTRY_OK)
@@ -612,37 +584,31 @@ mc_registry_status mc_registry_block_metadata(mc_registry_classes *classes, mc_b
     return status;
 }
 
-void mc_registry_block_sound(mc_block *block, const mc_block_sound *sound)
-{
+void mc_registry_block_sound(mc_block *block, const mc_block_sound *sound) {
     block->fields.by = sound;
 }
 
-void mc_registry_block_resistance(mc_block *block, float resistance)
-{
+void mc_registry_block_resistance(mc_block *block, float resistance) {
     block->fields.bp = resistance * 3.0f;
 }
 
-void mc_registry_block_hardness(mc_block *block, float hardness)
-{
+void mc_registry_block_hardness(mc_block *block, float hardness) {
     block->fields.bo = hardness;
     const float candidate = hardness * 5.0f;
     if (block->fields.bp < candidate)
         block->fields.bp = hardness * 5.0f;
 }
 
-void mc_registry_block_unbreakable(mc_block *block)
-{
+void mc_registry_block_unbreakable(mc_block *block) {
     mc_registry_block_hardness(block, -1.0f);
 }
 
-void mc_registry_block_no_stats(mc_block *block)
-{
+void mc_registry_block_no_stats(mc_block *block) {
     block->fields.br = false;
 }
 
 mc_registry_status mc_registry_block_random(mc_registry_classes *classes, mc_block *block,
-                                            mc_java_random **destination)
-{
+                                            mc_java_random **destination) {
     block->constructor_pc = 9;
     mc_java_random *random = mc_registry_allocate(classes, sizeof(*random));
     if (random == NULL)
@@ -661,8 +627,7 @@ mc_registry_status mc_registry_block_random(mc_registry_classes *classes, mc_blo
 }
 
 mc_registry_status mc_registry_wire_set_create(mc_registry_classes *classes,
-                                               mc_registry_wire_set **out)
-{
+                                               mc_registry_wire_set **out) {
     mc_registry_wire_set *set = mc_registry_allocate(classes, sizeof(*set));
     if (set == NULL)
         return classes->last_error.status;
@@ -675,8 +640,7 @@ mc_registry_status mc_registry_wire_set_create(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-const mc_tile_class_identity *mc_registry_sign_class(mc_registry_classes *classes)
-{
+const mc_tile_class_identity *mc_registry_sign_class(mc_registry_classes *classes) {
     classes->sign_class.client_name = "yk";
     classes->sign_class.server_name = "pq";
     return &classes->sign_class;

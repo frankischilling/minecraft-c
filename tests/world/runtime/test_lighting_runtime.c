@@ -57,19 +57,16 @@ typedef struct passive_snapshot {
     mc_java_random_profile_status random_status;
 } passive_snapshot;
 
-static bool same_storage_error(const mc_world_storage_error *a, const mc_world_storage_error *b)
-{
+static bool same_storage_error(const mc_world_storage_error *a, const mc_world_storage_error *b) {
     return a->status == b->status && a->operation == b->operation &&
            a->system_error == b->system_error;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static bool snapshot(fixture *f, passive_snapshot *out)
-{
+static bool snapshot(fixture *f, passive_snapshot *out) {
     const mc_chunk_cache *cache = f->provider.cache;
     const mc_chunk_pending *pending = f->provider.pending;
     mc_world_runtime_fields fields;
@@ -102,8 +99,7 @@ static bool snapshot(fixture *f, passive_snapshot *out)
     return true;
 }
 
-static bool snapshot_same(fixture *f, const passive_snapshot *before)
-{
+static bool snapshot_same(fixture *f, const passive_snapshot *before) {
     passive_snapshot after;
     if (!snapshot(f, &after) || before->count != after.count ||
         before->insertions != after.insertions || before->pending_count != after.pending_count ||
@@ -134,8 +130,7 @@ static bool snapshot_same(fixture *f, const passive_snapshot *before)
 }
 
 static mc_chunk_callback_result
-forbidden_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *out)
-{
+forbidden_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *out) {
     fixture *f = owner;
     (void)context;
     (void)out;
@@ -144,23 +139,20 @@ forbidden_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bo
 }
 
 static mc_chunk_callback_result forbidden_auxiliary(void *owner,
-                                                    const mc_world_save_context *context)
-{
+                                                    const mc_world_save_context *context) {
     fixture *f = owner;
     (void)context;
     ++f->forbidden_calls;
     return MC_CHUNK_CALLBACK_FATAL;
 }
 
-static uint32_t forbidden_timestamp(void *owner)
-{
+static uint32_t forbidden_timestamp(void *owner) {
     fixture *f = owner;
     ++f->forbidden_calls;
     return 0; /* Admission must reject before reaching this native callback. */
 }
 
-static bool test_raw(fixture *f)
-{
+static bool test_raw(fixture *f) {
     bool ok = false;
     mc_world_light_error error;
     const int32_t outside[][2] = {{-32000001, 0}, {32000000, 0},  {0, -32000001}, {0, 32000001},
@@ -207,8 +199,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f)
-{
+static bool create_world(fixture *f) {
     bool ok = false;
     mc_world_runtime_fields fields;
     mc_world_runtime_construction construction;
@@ -235,8 +226,7 @@ cleanup:
     return ok;
 }
 
-static bool test_composition(fixture *f)
-{
+static bool test_composition(fixture *f) {
     bool ok = false;
     mc_world_light_error error;
     CHECK(mc_chunk_cache_init(&f->composition_cache, f->composition_entries, 1, f->composition_list,
@@ -275,8 +265,7 @@ cleanup:
     return ok;
 }
 
-static bool retain_chunk(fixture *f, size_t index, int32_t x, int32_t z, uint8_t height)
-{
+static bool retain_chunk(fixture *f, size_t index, int32_t x, int32_t z, uint8_t height) {
     if (index >= COUNT(f->chunks) || !mc_chunk_data_init(&f->scratch, f->blocks, sizeof(f->blocks)))
         return false;
     memset(f->scratch.heightmap, height, sizeof(f->scratch.heightmap));
@@ -298,8 +287,7 @@ static bool retain_chunk(fixture *f, size_t index, int32_t x, int32_t z, uint8_t
            MC_WORLD_STORAGE_OK;
 }
 
-static bool create_chunks(fixture *f)
-{
+static bool create_chunks(fixture *f) {
     bool ok = false;
     const int32_t coordinates[][3] = {{0, 0, 73},        {-1, -1, 77},     {-2000000, 0, 129},
                                       {1999999, 0, 222}, {0, -2000000, 7}, {0, 2000000, 250},
@@ -325,8 +313,7 @@ cleanup:
     return ok;
 }
 
-static bool test_empty(fixture *f)
-{
+static bool test_empty(fixture *f) {
     bool ok = false;
     passive_snapshot before;
     mc_world_light_error error;
@@ -352,8 +339,7 @@ cleanup:
     return ok;
 }
 
-static bool test_present(fixture *f)
-{
+static bool test_present(fixture *f) {
     bool ok = false;
     passive_snapshot before;
     mc_world_light_error error;
@@ -419,8 +405,7 @@ cleanup:
     return ok;
 }
 
-static bool clear_restored(fixture *f)
-{
+static bool clear_restored(fixture *f) {
     if (!f->provider_live)
         return true;
     mc_chunk_cache *cache = f->provider.cache;
@@ -441,8 +426,7 @@ static bool clear_restored(fixture *f)
     return mc_chunk_pending_clear(f->provider.pending) == MC_CHUNK_ACQUIRE_OK;
 }
 
-static bool test_retirement(fixture *f)
-{
+static bool test_retirement(fixture *f) {
     bool ok = false;
     CHECK(mc_world_runtime_binding_retain(f->world));
     f->world_binding = true;
@@ -475,8 +459,7 @@ cleanup:
     return ok;
 }
 
-static bool close_fixture(fixture *f)
-{
+static bool close_fixture(fixture *f) {
     if (f == NULL)
         return true;
     if (f->composition != NULL &&
@@ -518,8 +501,7 @@ static bool close_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -542,8 +524,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

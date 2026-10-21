@@ -61,20 +61,17 @@ typedef struct fixture {
     mc_chunk_state *chunk;
 } fixture;
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t value, unsigned int count)
-{
+static uint64_t advanced(uint64_t value, unsigned int count) {
     while (count-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_error(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -92,8 +89,7 @@ static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     byte_stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
@@ -111,8 +107,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     for (size_t i = 0; i < COUNT(names); ++i) {
@@ -139,8 +134,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->invalid = true;
@@ -151,8 +145,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->invalid = true;
@@ -160,8 +153,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
 }
 
 static mc_registry_status registry_create(fixture *f, size_t index, mc_registry_side side,
-                                          mc_java_random_profile *profile, bool missing)
-{
+                                          mc_java_random_profile *profile, bool missing) {
     resources *r = &f->sources[index];
     *r = (resources){.missing_first = missing};
     r->streams[0] = (byte_stream){.bytes = english, .length = sizeof(english) - 1};
@@ -175,16 +167,14 @@ static mc_registry_status registry_create(fixture *f, size_t index, mc_registry_
     return status;
 }
 
-static bool resources_unread(const resources *r)
-{
+static bool resources_unread(const resources *r) {
     for (size_t i = 0; i < COUNT(r->streams); ++i)
         if (r->streams[i].opens != 0 || r->streams[i].reads != 0 || r->streams[i].closes != 0)
             return false;
     return !r->invalid && r->protected_calls == 0;
 }
 
-static bool registry_cold(mc_registry_classes *registry)
-{
+static bool registry_cold(mc_registry_classes *registry) {
     mc_registry_block_view block;
     mc_registry_item_view item;
     return mc_registry_classes_inspect_blocks(registry, &block, NULL) == MC_REGISTRY_OK &&
@@ -194,16 +184,14 @@ static bool registry_cold(mc_registry_classes *registry)
            item.named_items == 0;
 }
 
-static bool class_drop(mc_world_runtime_classes **classes)
-{
+static bool class_drop(mc_world_runtime_classes **classes) {
     if (mc_world_runtime_classes_free(*classes, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *classes = NULL;
     return true;
 }
 
-static bool world_drop(mc_world_runtime **world)
-{
+static bool world_drop(mc_world_runtime **world) {
     if (*world == NULL)
         return true;
     if (mc_world_runtime_retire_world(*world, NULL) != MC_WORLD_STORAGE_OK ||
@@ -213,8 +201,7 @@ static bool world_drop(mc_world_runtime **world)
     return true;
 }
 
-static int test_bindings(fixture *f)
-{
+static int test_bindings(fixture *f) {
     int result = 1;
     mc_world_storage_error error;
     mc_registry_error registry_error;
@@ -319,13 +306,11 @@ cleanup:
     return result;
 }
 
-static size_t block_index(size_t x, size_t y, size_t z)
-{
+static size_t block_index(size_t x, size_t y, size_t z) {
     return (x * 16u + z) * 128u + y;
 }
 
-static int create_query_worlds(fixture *f)
-{
+static int create_query_worlds(fixture *f) {
     int result = 1;
     mc_world_storage_error error;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
@@ -390,8 +375,7 @@ cleanup:
     return result;
 }
 
-static int test_queries(fixture *f)
-{
+static int test_queries(fixture *f) {
     int result = 1;
     mc_material *air = mc_materials_get(f->materials, MC_MATERIAL_a), *material = air;
     mc_world_storage_error error;
@@ -547,8 +531,7 @@ cleanup:
     return result;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     for (size_t i = 0; i < COUNT(f->restored); ++i) {
         if (!f->restored[i])
             continue;
@@ -593,8 +576,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -617,8 +599,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     char root[8192];
     fixture *f = NULL;

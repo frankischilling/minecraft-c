@@ -42,8 +42,7 @@ static const char selectors[] = "abcdefghijklmno";
 static const char field_types[] = "JIIIJJJCISIZIZI";
 static const uint16_t name_units[] = {'A', 0, 0x03a9, 0xd800};
 
-static bool fail(observation *o, const char *message)
-{
+static bool fail(observation *o, const char *message) {
     if (o->failure == NULL)
         o->failure = message;
     return false;
@@ -55,8 +54,7 @@ static bool fail(observation *o, const char *message)
             return fail((o), #condition);                                                          \
     } while (0)
 
-static bool emit(observation *o, const char *format, ...)
-{
+static bool emit(observation *o, const char *format, ...) {
     if (o->failure != NULL)
         return false;
     va_list arguments;
@@ -74,8 +72,7 @@ static bool emit(observation *o, const char *format, ...)
 
 /* IDs are allocated only at observation sites, in Java evaluation order.
  * Actual owners below stay held through END, including obsolete root names. */
-static unsigned int identity(observation *o, const void *pointer)
-{
+static unsigned int identity(observation *o, const void *pointer) {
     if (pointer == NULL)
         return 0;
     for (unsigned int index = 0; index < o->identity_count; ++index)
@@ -89,8 +86,7 @@ static unsigned int identity(observation *o, const void *pointer)
     return o->identity_count;
 }
 
-static bool hold_name(observation *o, mc_world_info_name *name)
-{
+static bool hold_name(observation *o, mc_world_info_name *name) {
     if (name == NULL)
         return true;
     for (size_t index = 0; index < o->name_count; ++index)
@@ -102,8 +98,7 @@ static bool hold_name(observation *o, mc_world_info_name *name)
     return true;
 }
 
-static bool new_name(observation *o, mc_nbt_string text, mc_world_info_name **out)
-{
+static bool new_name(observation *o, mc_nbt_string text, mc_world_info_name **out) {
     REQUIRE(o, o->name_count < MAX_HOLDS);
     mc_world_info_name *name = NULL;
     REQUIRE(o, mc_world_info_name_copy(text, SIZE_MAX, &name) == MC_WORLD_INFO_OK);
@@ -112,8 +107,7 @@ static bool new_name(observation *o, mc_nbt_string text, mc_world_info_name **ou
     return true;
 }
 
-static bool ascii_name(observation *o, const char *text, mc_world_info_name **out)
-{
+static bool ascii_name(observation *o, const char *text, mc_world_info_name **out) {
     uint16_t units[64];
     const size_t length = strlen(text);
     REQUIRE(o, length <= sizeof(units) / sizeof(units[0]));
@@ -122,8 +116,7 @@ static bool ascii_name(observation *o, const char *text, mc_world_info_name **ou
     return new_name(o, (mc_nbt_string){units, length}, out);
 }
 
-static bool new_info(observation *o, mc_world_info_side side, mc_world_info **out)
-{
+static bool new_info(observation *o, mc_world_info_side side, mc_world_info **out) {
     REQUIRE(o, o->info_count < MAX_HOLDS);
     mc_world_info *info = NULL;
     REQUIRE(o, mc_world_info_allocate(side, &info) == MC_WORLD_INFO_OK);
@@ -132,8 +125,7 @@ static bool new_info(observation *o, mc_world_info_side side, mc_world_info **ou
     return true;
 }
 
-static bool new_data(observation *o, const mc_nbt_tag *root, mc_world_info_data **out)
-{
+static bool new_data(observation *o, const mc_nbt_tag *root, mc_world_info_data **out) {
     REQUIRE(o, o->data_count < MAX_HOLDS);
     mc_world_info_data *data = NULL;
     mc_world_info_error error = {0};
@@ -143,16 +135,14 @@ static bool new_data(observation *o, const mc_nbt_tag *root, mc_world_info_data 
     return true;
 }
 
-static mc_nbt_string ascii_units(uint16_t *units, const char *text)
-{
+static mc_nbt_string ascii_units(uint16_t *units, const char *text) {
     const size_t length = strlen(text);
     for (size_t index = 0; index < length; ++index)
         units[index] = (uint16_t)(unsigned char)text[index];
     return (mc_nbt_string){units, length};
 }
 
-static void prepare(prepared_data *p)
-{
+static void prepare(prepared_data *p) {
     memset(p, 0, sizeof(*p));
     p->root.type = MC_NBT_COMPOUND;
     p->root.value.compound.items = p->items;
@@ -190,8 +180,7 @@ static void prepare(prepared_data *p)
 }
 
 static bool new_player(observation *o, int32_t dimension, int32_t marker, const char *name,
-                       mc_world_info_player **out)
-{
+                       mc_world_info_player **out) {
     REQUIRE(o, o->player_count < MAX_HOLDS);
     prepared_data p;
     prepare(&p);
@@ -208,8 +197,7 @@ static bool new_player(observation *o, int32_t dimension, int32_t marker, const 
     return true;
 }
 
-static const mc_nbt_tag *find(const mc_nbt_tag *root, const char *key)
-{
+static const mc_nbt_tag *find(const mc_nbt_tag *root, const char *key) {
     uint16_t units[32];
     if (strlen(key) > sizeof(units) / sizeof(units[0]))
         return NULL;
@@ -217,8 +205,7 @@ static const mc_nbt_tag *find(const mc_nbt_tag *root, const char *key)
     return mc_nbt_compound_get(root, name.units, name.length);
 }
 
-static bool emit_units(observation *o, mc_nbt_string text)
-{
+static bool emit_units(observation *o, mc_nbt_string text) {
     REQUIRE(o, text.length <= 64 && (text.length == 0 || text.units != NULL));
     if (text.length == 0)
         return emit(o, "-");
@@ -227,8 +214,8 @@ static bool emit_units(observation *o, mc_nbt_string text)
     return true;
 }
 
-static bool emit_name(observation *o, const char *kind, unsigned int step, mc_world_info_name *name)
-{
+static bool emit_name(observation *o, const char *kind, unsigned int step,
+                      mc_world_info_name *name) {
     REQUIRE(o, hold_name(o, name));
     const unsigned int id = identity(o, name);
     const mc_nbt_string text = mc_world_info_name_text(name);
@@ -241,8 +228,7 @@ static bool emit_name(observation *o, const char *kind, unsigned int step, mc_wo
     return emit(o, "\n");
 }
 
-static bool emit_player(observation *o, unsigned int step, mc_world_info_player *player)
-{
+static bool emit_player(observation *o, unsigned int step, mc_world_info_player *player) {
     if (player == NULL)
         return emit(o, "PLAYER\t%u\t0\t0\t-1\t-\t0\t-\t0\t-\n", step);
     const mc_nbt_tag *root = mc_world_info_player_root(player);
@@ -264,8 +250,7 @@ static bool emit_player(observation *o, unsigned int step, mc_world_info_player 
                 (uint32_t)dimension->value.int_value, keep_id, (uint32_t)keep->value.int_value);
 }
 
-static bool same_fields(const mc_world_info_fields *a, const mc_world_info_fields *b)
-{
+static bool same_fields(const mc_world_info_fields *a, const mc_world_info_fields *b) {
     return a->value.seed == b->value.seed && a->value.spawn_x == b->value.spawn_x &&
            a->value.spawn_y == b->value.spawn_y && a->value.spawn_z == b->value.spawn_z &&
            a->value.time == b->value.time && a->value.last_played == b->value.last_played &&
@@ -276,8 +261,7 @@ static bool same_fields(const mc_world_info_fields *a, const mc_world_info_field
            a->value.thunder_time == b->value.thunder_time;
 }
 
-static bool snapshot(observation *o, unsigned int step, const mc_world_info *info)
-{
+static bool snapshot(observation *o, unsigned int step, const mc_world_info *info) {
     mc_world_info_fields f = {0};
     REQUIRE(o, mc_world_info_fields_get(info, &f) == MC_WORLD_INFO_OK);
     const unsigned int info_id = identity(o, info);
@@ -345,8 +329,7 @@ static bool snapshot(observation *o, unsigned int step, const mc_world_info *inf
     return true;
 }
 
-static bool serialize(observation *o, unsigned int serial, const mc_world_info *info)
-{
+static bool serialize(observation *o, unsigned int serial, const mc_world_info *info) {
     REQUIRE(o, o->record_count < MAX_HOLDS);
     mc_world_info_fields before = {0}, after = {0};
     mc_world_info_error error = {0};
@@ -412,8 +395,7 @@ static bool serialize(observation *o, unsigned int serial, const mc_world_info *
     return true;
 }
 
-static bool refuse_null_name(observation *o, unsigned int serial, const mc_world_info *info)
-{
+static bool refuse_null_name(observation *o, unsigned int serial, const mc_world_info *info) {
     mc_world_info_fields before = {0}, after = {0};
     mc_world_info_error error = {0};
     REQUIRE(o, mc_world_info_fields_get(info, &before) == MC_WORLD_INFO_OK && before.name == NULL &&
@@ -444,8 +426,7 @@ static bool refuse_null_name(observation *o, unsigned int serial, const mc_world
     return true;
 }
 
-static bool run(observation *o, mc_world_info_side side)
-{
+static bool run(observation *o, mc_world_info_side side) {
     const bool client = side == MC_WORLD_INFO_CLIENT;
     mc_world_info_name *name_a = NULL, *name_b = NULL, *before_name = NULL, *before_null = NULL;
     mc_world_info *fresh = NULL, *null_name = NULL, *loaded = NULL, *copy = NULL, *empty = NULL,
@@ -540,8 +521,7 @@ static bool run(observation *o, mc_world_info_side side)
     return true;
 }
 
-static void cleanup(observation *o)
-{
+static void cleanup(observation *o) {
     while (o->record_count != 0)
         mc_world_info_record_release(o->records[--o->record_count]);
     while (o->info_count != 0)
@@ -554,8 +534,7 @@ static void cleanup(observation *o)
         mc_world_info_name_release(o->names[--o->name_count]);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc != 2 || (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0)) {
         fprintf(stderr, "observation_probe: expected client|server\n");
         return 1;

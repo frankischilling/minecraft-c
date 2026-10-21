@@ -21,8 +21,7 @@ typedef struct references {
     size_t count;
 } references;
 
-static bool reference(references *refs, const mc_item_stack *stack)
-{
+static bool reference(references *refs, const mc_item_stack *stack) {
     if (stack == NULL)
         return printf("\tNULL") >= 0;
     size_t i = 0;
@@ -36,8 +35,7 @@ static bool reference(references *refs, const mc_item_stack *stack)
     return printf("\tR:%zu", i + 1) >= 0;
 }
 
-static bool crafting_graph(const mc_crafting_manager *manager, references *refs)
-{
+static bool crafting_graph(const mc_crafting_manager *manager, references *refs) {
     if (manager == NULL)
         return printf("CRAFTING\tNULL\n") >= 0;
     const size_t count = mc_crafting_manager_size(manager);
@@ -82,8 +80,7 @@ static bool crafting_graph(const mc_crafting_manager *manager, references *refs)
     return true;
 }
 
-static bool smelting_graph(const mc_smelting_manager *manager, references *refs)
-{
+static bool smelting_graph(const mc_smelting_manager *manager, references *refs) {
     if (manager == NULL)
         return printf("SMELTING\tNULL\n") >= 0;
     const size_t count = mc_smelting_manager_size(manager);
@@ -105,8 +102,7 @@ static bool smelting_graph(const mc_smelting_manager *manager, references *refs)
     return ok;
 }
 
-static char *root_argument(int argc, char **argv)
-{
+static char *root_argument(int argc, char **argv) {
     if (argc == 4) {
         size_t length = strlen(argv[3]);
         if (length == 0 || length > 32768)
@@ -145,8 +141,7 @@ static char *root_argument(int argc, char **argv)
     return root;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     mc_resource_files *files = NULL;
     mc_materials *materials = NULL;

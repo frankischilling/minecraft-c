@@ -40,6 +40,7 @@ typedef struct tree_pcs {
     unsigned int trunk_get, trunk_leaf_static, trunk_leaf_field;
     unsigned int trunk_log_static, trunk_log_field, trunk_set;
 } tree_pcs;
+
 static const tree_pcs small_pcs[4] = {{141, 153, 156, 204, 211, 214, 222, 225, 254, 257, 260, 382,
                                        392, 395, 406, 409, 412, 453, 465, 468, 483, 486, 489},
                                       {141, 153, 156, 204, 211, 214, 222, 225, 254, 257, 260, 382,
@@ -59,72 +60,71 @@ typedef struct tree_context {
     bool big;
 } tree_context;
 
-static mc_registry_error tree_empty_registry(void)
-{
+static mc_registry_error tree_empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
                                .active_initializer_pc = -1,
                                .item_argument = -1};
 }
-static mc_world_tree_error tree_empty_error(void)
-{
+
+static mc_world_tree_error tree_empty_error(void) {
     const mc_registry_error registry = tree_empty_registry();
     mc_world_tree_error error = {0};
     error.registry = registry;
     error.mutation.registry = registry;
     return error;
 }
-static void tree_stage(tree_context *context, const char *method, unsigned int pc)
-{
+
+static void tree_stage(tree_context *context, const char *method, unsigned int pc) {
     context->error->method = method;
     context->error->bytecode = pc;
     if (!context->big)
         context->error->entry_bytecode = pc;
 }
-static void tree_pc(tree_context *context, unsigned int pc)
-{
+
+static void tree_pc(tree_context *context, unsigned int pc) {
     context->error->bytecode = pc;
     if (!context->big)
         context->error->entry_bytecode = pc;
 }
+
 static bool tree_fail(tree_context *context, mc_world_storage_status status, const char *operation,
-                      bool native_boundary)
-{
+                      bool native_boundary) {
     context->error->status = status;
     context->error->operation = operation;
     context->error->native_boundary = native_boundary;
     context->error->cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
-static bool tree_storage_fail(tree_context *context, const mc_world_storage_error *cause)
-{
+
+static bool tree_storage_fail(tree_context *context, const mc_world_storage_error *cause) {
     context->error->status = cause->status;
     context->error->operation = cause->operation;
     context->error->cause = *cause;
     return false;
 }
+
 static bool tree_registry_fail(tree_context *context, const mc_registry_error *cause,
-                               const char *operation)
-{
+                               const char *operation) {
     context->error->registry = *cause;
     context->error->status = mc_world_runtime_registry_result(context->world, cause->status, cause,
                                                               operation, &context->error->cause);
     context->error->operation = context->error->cause.operation;
     return false;
 }
+
 static bool tree_get(tree_context *context, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                     int32_t *out)
-{
+                     int32_t *out) {
     tree_pc(context, pc);
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_block_get(context->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
         return tree_storage_fail(context, &cause);
     return true;
 }
+
 static bool tree_set(tree_context *context, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                     int32_t id, bool metadata_write, int32_t metadata)
-{
+                     int32_t id, bool metadata_write, int32_t metadata) {
     tree_pc(context, pc);
     bool changed;
     mc_world_mutation_error cause = {0};
@@ -140,9 +140,9 @@ static bool tree_set(tree_context *context, unsigned int pc, int32_t x, int32_t 
     }
     return true; /* Source discards changed, including ordinary false. */
 }
+
 static bool tree_static_id(tree_context *context, const char *name, unsigned int load_pc,
-                           unsigned int field_pc, int32_t *out)
-{
+                           unsigned int field_pc, int32_t *out) {
     tree_pc(context, load_pc);
     const mc_block *block = NULL;
     mc_registry_error cause = tree_empty_registry();
@@ -160,9 +160,9 @@ static bool tree_static_id(tree_context *context, const char *name, unsigned int
     *out = fields->bn;
     return true;
 }
+
 static bool tree_air_or_leaf(tree_context *context, int32_t block, unsigned int load_pc,
-                             unsigned int field_pc, bool *out)
-{
+                             unsigned int field_pc, bool *out) {
     if (block == 0) {
         *out = true;
         return true;
@@ -173,9 +173,9 @@ static bool tree_air_or_leaf(tree_context *context, int32_t block, unsigned int 
     *out = block == leaf;
     return true;
 }
+
 static bool tree_bounded(tree_context *context, unsigned int pc, mc_java_random *random,
-                         int32_t bound, int32_t *out)
-{
+                         int32_t bound, int32_t *out) {
     tree_pc(context, pc);
     if (random == NULL)
         return tree_fail(context, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tree reached NULL Random",
@@ -185,16 +185,16 @@ static bool tree_bounded(tree_context *context, unsigned int pc, mc_java_random 
                          "Tree reached nonpositive Random bound", false);
     return true;
 }
-static bool tree_fp(tree_context *context, const char *method, unsigned int pc)
-{
+
+static bool tree_fp(tree_context *context, const char *method, unsigned int pc) {
     tree_stage(context, method, pc);
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return tree_fail(context, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                          "Tree requires nearest masked SSE2 without FTZ/DAZ", true);
     return true;
 }
-static bool tree_enter(tree_context *context)
-{
+
+static bool tree_enter(tree_context *context) {
     if (context->world == NULL || context->world->construction.mode != MC_WORLD_RUNTIME_GAME)
         return tree_fail(context, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Tree requires GAME World",
                          true);
@@ -205,9 +205,9 @@ static bool tree_enter(tree_context *context)
     }
     return true;
 }
+
 static mc_world_storage_status tree_finish(tree_context *context, bool completed,
-                                           mc_world_tree_error *out_error)
-{
+                                           mc_world_tree_error *out_error) {
     if (completed)
         *context->error = tree_empty_error();
     else if (context->world != NULL && context->error->bytecode != 0)
@@ -216,13 +216,13 @@ static mc_world_storage_status tree_finish(tree_context *context, bool completed
         *out_error = *context->error;
     return context->error->status;
 }
-static int32_t tree_abs(int32_t value)
-{
+
+static int32_t tree_abs(int32_t value) {
     return value < 0 ? mc_java_i32_neg(value) : value;
 }
+
 static bool tree_soil(tree_context *context, int32_t x, int32_t y, int32_t z, int32_t height,
-                      bool *accepted)
-{
+                      bool *accepted) {
     const tree_pcs *pc = context->pcs;
     int32_t below, grass, dirt;
     if (!tree_get(context, pc->soil, x, mc_java_i32_sub(y, 1), z, &below) ||
@@ -244,9 +244,9 @@ static bool tree_soil(tree_context *context, int32_t x, int32_t y, int32_t z, in
     *accepted = true;
     return true;
 }
+
 static bool tree_leaf(tree_context *context, int32_t x, int32_t y, int32_t z, bool metadata_write,
-                      int32_t metadata)
-{
+                      int32_t metadata) {
     const tree_pcs *pc = context->pcs;
     mc_registry_block_o_view array;
     mc_registry_error cause = tree_empty_registry();
@@ -267,9 +267,9 @@ static bool tree_leaf(tree_context *context, int32_t x, int32_t y, int32_t z, bo
     return tree_static_id(context, "L", pc->leaf_static, pc->leaf_field, &leaf) &&
            tree_set(context, pc->leaf_set, x, y, z, leaf, metadata_write, metadata);
 }
+
 static bool tree_trunk(tree_context *context, int32_t x, int32_t y, int32_t z, int32_t height,
-                       bool metadata_write, int32_t metadata)
-{
+                       bool metadata_write, int32_t metadata) {
     const tree_pcs *pc = context->pcs;
     for (int32_t layer = 0; layer < height; layer = mc_java_i32_add(layer, 1)) {
         const int32_t ty = mc_java_i32_add(y, layer);
@@ -289,8 +289,7 @@ static bool tree_trunk(tree_context *context, int32_t x, int32_t y, int32_t z, i
 }
 
 static bool tree_broadleaf_space(tree_context *context, int32_t x, int32_t y, int32_t z,
-                                 int32_t height, bool *clear)
-{
+                                 int32_t height, bool *clear) {
     bool available = true;
     const int32_t ceiling = mc_java_i32_add(mc_java_i32_add(y, 1), height);
     for (int32_t scan_y = y; scan_y <= ceiling; scan_y = mc_java_i32_add(scan_y, 1)) {
@@ -331,8 +330,7 @@ static bool tree_broadleaf_space(tree_context *context, int32_t x, int32_t y, in
 }
 
 static bool tree_broadleaf(tree_context *context, int32_t x, int32_t y, int32_t z, bool birch,
-                           bool *result)
-{
+                           bool *result) {
     int32_t draw;
     if (!tree_bounded(context, 2, context->random, 3, &draw)) {
         return false;
@@ -395,20 +393,17 @@ static bool tree_broadleaf(tree_context *context, int32_t x, int32_t y, int32_t 
     return true;
 }
 
-static bool tree_oak_body(tree_context *context, int32_t x, int32_t y, int32_t z, bool *result)
-{
+static bool tree_oak_body(tree_context *context, int32_t x, int32_t y, int32_t z, bool *result) {
     return tree_broadleaf(context, x, y, z, false, result);
 }
 
-static bool tree_birch_body(tree_context *context, int32_t x, int32_t y, int32_t z, bool *result)
-{
+static bool tree_birch_body(tree_context *context, int32_t x, int32_t y, int32_t z, bool *result) {
     return tree_broadleaf(context, x, y, z, true, result);
 }
 
 static bool tree_conifer_space(tree_context *context, int32_t x, int32_t y, int32_t z,
                                int32_t height, int32_t foliage_start, int32_t maximum_radius,
-                               bool *clear)
-{
+                               bool *clear) {
     bool available = true;
     const int32_t ceiling = mc_java_i32_add(mc_java_i32_add(y, 1), height);
     for (int32_t scan_y = y; scan_y <= ceiling && available; scan_y = mc_java_i32_add(scan_y, 1)) {
@@ -442,8 +437,7 @@ static bool tree_conifer_space(tree_context *context, int32_t x, int32_t y, int3
 }
 
 static bool tree_conifer_layer(tree_context *context, int32_t x, int32_t y, int32_t z,
-                               int32_t radius)
-{
+                               int32_t radius) {
     for (int32_t leaf_x = mc_java_i32_sub(x, radius); leaf_x <= mc_java_i32_add(x, radius);
          leaf_x = mc_java_i32_add(leaf_x, 1)) {
         const int32_t offset_x = mc_java_i32_sub(leaf_x, x);
@@ -462,8 +456,7 @@ static bool tree_conifer_layer(tree_context *context, int32_t x, int32_t y, int3
 }
 
 static bool tree_taiga_tall_body(tree_context *context, int32_t x, int32_t y, int32_t z,
-                                 bool *result)
-{
+                                 bool *result) {
     int32_t height_draw;
     if (!tree_bounded(context, 2, context->random, 5, &height_draw)) {
         return false;
@@ -522,8 +515,7 @@ static bool tree_taiga_tall_body(tree_context *context, int32_t x, int32_t y, in
 }
 
 static bool tree_taiga_dense_body(tree_context *context, int32_t x, int32_t y, int32_t z,
-                                  bool *result)
-{
+                                  bool *result) {
     int32_t height_draw;
     if (!tree_bounded(context, 2, context->random, 4, &height_draw)) {
         return false;
@@ -594,11 +586,11 @@ static bool tree_taiga_dense_body(tree_context *context, int32_t x, int32_t y, i
 }
 
 typedef bool (*tree_small_body)(tree_context *, int32_t, int32_t, int32_t, bool *);
+
 static mc_world_storage_status tree_small_entry(unsigned int shape, tree_small_body body,
                                                 mc_world_runtime *world, mc_java_random *random,
                                                 int32_t x, int32_t y, int32_t z, bool *out,
-                                                mc_world_tree_error *error)
-{
+                                                mc_world_tree_error *error) {
     mc_world_tree_error local = tree_empty_error();
     tree_context context = {world, random, &local, &small_pcs[shape], false};
     if (out == NULL) {
@@ -618,11 +610,11 @@ static mc_world_storage_status tree_small_entry(unsigned int shape, tree_small_b
     mc_world_runtime_call_leave(world);
     return tree_finish(&context, completed, error);
 }
+
 #define TREE_SMALL_ENTRY(name, index)                                                              \
     mc_world_storage_status mc_world_tree_##name(mc_world_runtime *world, mc_java_random *random,  \
                                                  int32_t x, int32_t y, int32_t z, bool *out,       \
-                                                 mc_world_tree_error *error)                       \
-    {                                                                                              \
+                                                 mc_world_tree_error *error) {                     \
         return tree_small_entry(index, tree_##name##_body, world, random, x, y, z, out, error);    \
     }
 TREE_SMALL_ENTRY(oak, 0)
@@ -633,14 +625,13 @@ TREE_SMALL_ENTRY(taiga_dense, 3)
 
 static const int32_t big_axes[6] = {2, 0, 0, 1, 2, 1};
 
-void mc_world_tree_limits_default(mc_world_tree_limits *out)
-{
+void mc_world_tree_limits_default(mc_world_tree_limits *out) {
     if (out != NULL)
         *out = (mc_world_tree_limits){1024u * 1024u};
 }
+
 static bool big_rows_allocate(mc_world_tree_big_oak *state, int32_t count, unsigned int pc,
-                              int32_t (**out)[4])
-{
+                              int32_t (**out)[4]) {
     tree_context *context = state->context;
     tree_stage(context, "a()V", pc);
     if (count < 0)
@@ -665,15 +656,15 @@ static bool big_rows_allocate(mc_world_tree_big_oak *state, int32_t count, unsig
     *out = rows;
     return true;
 }
-static void big_rows_free(mc_world_tree_big_oak *state, int32_t (*rows)[4], int32_t count)
-{
+
+static void big_rows_free(mc_world_tree_big_oak *state, int32_t (*rows)[4], int32_t count) {
     if (rows != NULL) {
         state->allocation_bytes -= (size_t)count * sizeof(*rows);
         free(rows);
     }
 }
-static int32_t big_major_axis(const int32_t start[3], const int32_t end[3], int32_t delta[3])
-{
+
+static int32_t big_major_axis(const int32_t start[3], const int32_t end[3], int32_t delta[3]) {
     int32_t major = 0;
     for (int32_t axis = 0; axis < 3; axis = (int32_t)mc_java_i8_narrow(mc_java_i32_add(axis, 1))) {
         delta[axis] = mc_java_i32_sub(end[axis], start[axis]);
@@ -687,8 +678,7 @@ static int32_t big_major_axis(const int32_t start[3], const int32_t end[3], int3
 /* Original a([I[I)I. Clearance floors only the two secondary coordinates;
  * its primary coordinate is wrapped integer addition without half rounding. */
 static bool big_check_line(mc_world_tree_big_oak *state, const int32_t start[3],
-                           const int32_t end[3], int32_t *obstruction)
-{
+                           const int32_t end[3], int32_t *obstruction) {
     int32_t delta[3] = {0, 0, 0};
     const int32_t major = big_major_axis(start, end, delta);
     if (delta[major] == 0) {
@@ -729,8 +719,7 @@ static bool big_check_line(mc_world_tree_big_oak *state, const int32_t start[3],
 /* Original a([I[II)V. Logs are written without a preceding block query.
  * All three coordinates use the original floor(value + 0.5) sequence. */
 static bool big_write_line(mc_world_tree_big_oak *state, const int32_t start[3],
-                           const int32_t end[3], int32_t block)
-{
+                           const int32_t end[3], int32_t block) {
     int32_t delta[3] = {0, 0, 0};
     const int32_t major = big_major_axis(start, end, delta);
     if (delta[major] == 0) {
@@ -764,8 +753,7 @@ static bool big_write_line(mc_world_tree_big_oak *state, const int32_t start[3],
     return true;
 }
 
-static float big_layer_size(mc_world_tree_big_oak *state, int32_t layer)
-{
+static float big_layer_size(mc_world_tree_big_oak *state, int32_t layer) {
     const float float_height = (float)state->height_limit;
     const double lower_boundary = (double)float_height * 0.3;
     if ((double)layer < lower_boundary) {
@@ -790,8 +778,7 @@ static float big_layer_size(mc_world_tree_big_oak *state, int32_t layer)
     return scaled_radius;
 }
 
-static float big_leaf_size(mc_world_tree_big_oak *state, int32_t layer)
-{
+static float big_leaf_size(mc_world_tree_big_oak *state, int32_t layer) {
     if (layer < 0 || layer >= state->leaf_distance) {
         return -1.0f;
     }
@@ -802,8 +789,7 @@ static float big_leaf_size(mc_world_tree_big_oak *state, int32_t layer)
 }
 
 static bool big_leaf_disc(mc_world_tree_big_oak *state, int32_t x, int32_t y, int32_t z,
-                          float radius, int32_t axis, int32_t block)
-{
+                          float radius, int32_t axis, int32_t block) {
     if (!tree_fp(state->context, "a(IIIFBI)V", 6))
         return false;
     const double expanded_radius = (double)radius + 0.618;
@@ -842,8 +828,7 @@ static bool big_leaf_disc(mc_world_tree_big_oak *state, int32_t x, int32_t y, in
     return true;
 }
 
-static bool big_leaf_node(mc_world_tree_big_oak *state, int32_t x, int32_t y, int32_t z)
-{
+static bool big_leaf_node(mc_world_tree_big_oak *state, int32_t x, int32_t y, int32_t z) {
     const int32_t stop = mc_java_i32_add(y, state->leaf_distance);
     for (int32_t layer_y = y; layer_y < stop; layer_y = mc_java_i32_add(layer_y, 1)) {
         const float radius = big_leaf_size(state, mc_java_i32_sub(layer_y, y));
@@ -854,8 +839,7 @@ static bool big_leaf_node(mc_world_tree_big_oak *state, int32_t x, int32_t y, in
     return true;
 }
 
-static bool big_plan(mc_world_tree_big_oak *state)
-{
+static bool big_plan(mc_world_tree_big_oak *state) {
     if (!tree_fp(state->context, "a()V", 10))
         return false;
     const double scaled_trunk = (double)state->height_limit * state->height_attenuation;
@@ -980,8 +964,7 @@ static bool big_plan(mc_world_tree_big_oak *state)
     return true;
 }
 
-static bool big_leaves(mc_world_tree_big_oak *state)
-{
+static bool big_leaves(mc_world_tree_big_oak *state) {
     const int32_t count = state->node_count;
     for (int32_t index = 0; index < count; index = mc_java_i32_add(index, 1)) {
         const int32_t x = state->nodes[index][0];
@@ -994,8 +977,7 @@ static bool big_leaves(mc_world_tree_big_oak *state)
     return true;
 }
 
-static bool big_trunk(mc_world_tree_big_oak *state)
-{
+static bool big_trunk(mc_world_tree_big_oak *state) {
     const int32_t x = state->base[0];
     const int32_t y = state->base[1];
     const int32_t top = mc_java_i32_add(state->base[1], state->trunk_height);
@@ -1025,14 +1007,12 @@ static bool big_trunk(mc_world_tree_big_oak *state)
     return true;
 }
 
-static bool big_branch_needed(mc_world_tree_big_oak *state, int32_t height)
-{
+static bool big_branch_needed(mc_world_tree_big_oak *state, int32_t height) {
     const double threshold = (double)state->height_limit * 0.2;
     return !((double)height < threshold);
 }
 
-static bool big_branches(mc_world_tree_big_oak *state)
-{
+static bool big_branches(mc_world_tree_big_oak *state) {
     const int32_t count = state->node_count;
     int32_t start[3] = {state->base[0], state->base[1], state->base[2]};
     for (int32_t index = 0; index < count; index = mc_java_i32_add(index, 1)) {
@@ -1049,8 +1029,7 @@ static bool big_branches(mc_world_tree_big_oak *state)
     return true;
 }
 
-static bool big_location(mc_world_tree_big_oak *state, bool *accepted)
-{
+static bool big_location(mc_world_tree_big_oak *state, bool *accepted) {
     tree_stage(state->context, "e()Z", 93);
     const int32_t start[3] = {state->base[0], state->base[1], state->base[2]};
     const int32_t end[3] = {
@@ -1085,8 +1064,7 @@ static bool big_location(mc_world_tree_big_oak *state, bool *accepted)
 mc_world_storage_status mc_world_tree_big_oak_create(mc_world_runtime *world,
                                                      const mc_world_tree_limits *limits,
                                                      mc_world_tree_big_oak **out,
-                                                     mc_world_tree_error *error)
-{
+                                                     mc_world_tree_error *error) {
     mc_world_tree_error local = tree_empty_error();
     tree_context context = {world, NULL, &local, NULL, true};
     if (out == NULL) {
@@ -1134,10 +1112,10 @@ mc_world_storage_status mc_world_tree_big_oak_create(mc_world_runtime *world,
     mc_world_runtime_call_leave(world);
     return tree_finish(&context, true, error);
 }
+
 mc_world_storage_status mc_world_tree_big_oak_scale(mc_world_tree_big_oak *state, double height,
                                                     double width, double density,
-                                                    mc_world_tree_error *error)
-{
+                                                    mc_world_tree_error *error) {
     mc_world_tree_error local = tree_empty_error();
     tree_context context = {NULL, NULL, &local, NULL, true};
     if (state == NULL || state->entered) {
@@ -1156,17 +1134,17 @@ mc_world_storage_status mc_world_tree_big_oak_scale(mc_world_tree_big_oak *state
     state->leaf_density = density;
     return tree_finish(&context, true, error);
 }
-void mc_world_tree_big_oak_dispose(mc_world_tree_big_oak *state)
-{
+
+void mc_world_tree_big_oak_dispose(mc_world_tree_big_oak *state) {
     if (state == NULL || state->entered)
         return; /* Requires quiescent owner. */
     big_rows_free(state, state->nodes, state->node_count);
     mc_world_runtime_binding_release(state->world);
     free(state);
 }
+
 static bool big_place_body(mc_world_tree_big_oak *state, tree_context *context, int32_t x,
-                           int32_t y, int32_t z, bool *result)
-{
+                           int32_t y, int32_t z, bool *result) {
     mc_world_runtime *world = context->world;
     const char *entry = world->classes->side == MC_WORLD_INFO_CLIENT
                             ? "a(Lfd;Ljava/util/Random;III)Z"
@@ -1223,11 +1201,11 @@ static bool big_place_body(mc_world_tree_big_oak *state, tree_context *context, 
     *result = true;
     return true;
 }
+
 mc_world_storage_status mc_world_tree_big_oak_place(mc_world_tree_big_oak *state,
                                                     mc_world_runtime *world, mc_java_random *random,
                                                     int32_t x, int32_t y, int32_t z, bool *out,
-                                                    mc_world_tree_error *error)
-{
+                                                    mc_world_tree_error *error) {
     mc_world_tree_error local = tree_empty_error();
     tree_context context = {world, random, &local, NULL, true};
     if (state == NULL || out == NULL || state->entered) {

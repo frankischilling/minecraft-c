@@ -15,14 +15,13 @@ struct mc_world_light_region {
     mc_world_light_region_fields fields;
 };
 
-static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation)
-{
+static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
     return (mc_world_storage_error){status, operation, 0};
 }
 
 static mc_world_storage_status storage_result(mc_world_storage_error *error,
-                                              mc_world_storage_status status, const char *operation)
-{
+                                              mc_world_storage_status status,
+                                              const char *operation) {
     if (error != NULL)
         *error = native_error(status, operation);
     return status;
@@ -31,8 +30,7 @@ static mc_world_storage_status storage_result(mc_world_storage_error *error,
 static mc_world_storage_status result(mc_world_light_error *error,
                                       const mc_world_storage_error *cause, unsigned int bytecode,
                                       unsigned int provider_bytecode,
-                                      mc_chunk_acquire_status acquisition)
-{
+                                      mc_chunk_acquire_status acquisition) {
     if (error != NULL)
         *error = (mc_world_light_error){.status = cause->status,
                                         .operation = cause->operation,
@@ -46,8 +44,7 @@ static mc_world_storage_status result(mc_world_light_error *error,
 mc_world_storage_status mc_world_runtime_light_type_get(mc_world_runtime_classes *classes,
                                                         mc_light_kind kind,
                                                         const mc_world_light_type **out,
-                                                        mc_world_storage_error *error)
-{
+                                                        mc_world_storage_error *error) {
     if (classes == NULL || out == NULL || (kind != MC_LIGHT_SKY && kind != MC_LIGHT_BLOCK))
         return storage_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                               "World Light class arguments");
@@ -65,19 +62,16 @@ mc_world_storage_status mc_world_runtime_light_type_get(mc_world_runtime_classes
 }
 
 const mc_world_light_type_fields *
-mc_world_runtime_light_type_fields_get(const mc_world_light_type *type)
-{
+mc_world_runtime_light_type_fields_get(const mc_world_light_type *type) {
     return type == NULL ? NULL : &type->fields;
 }
 
 const mc_world_light_region_fields *
-mc_world_runtime_light_region_fields_get(const mc_world_light_region *region)
-{
+mc_world_runtime_light_region_fields_get(const mc_world_light_region *region) {
     return region == NULL ? NULL : &region->fields;
 }
 
-static bool list_metadata_valid(const mc_world_reference_list *list)
-{
+static bool list_metadata_valid(const mc_world_reference_list *list) {
     return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            (list->capacity == 0 || list->items != NULL);
@@ -85,8 +79,7 @@ static bool list_metadata_valid(const mc_world_reference_list *list)
 
 mc_world_storage_status mc_world_runtime_light_list_get(const mc_world_runtime *runtime,
                                                         mc_world_light_list_view *out,
-                                                        mc_world_storage_error *error)
-{
+                                                        mc_world_storage_error *error) {
     if (runtime == NULL || out == NULL)
         return storage_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                               "World light list arguments");
@@ -104,8 +97,7 @@ mc_world_storage_status mc_world_runtime_light_list_get(const mc_world_runtime *
 
 mc_world_storage_status mc_world_runtime_light_at(const mc_world_runtime *runtime, size_t index,
                                                   const mc_world_light_region **out,
-                                                  mc_world_storage_error *error)
-{
+                                                  mc_world_storage_error *error) {
     if (runtime == NULL || out == NULL)
         return storage_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                               "World light index arguments");
@@ -121,8 +113,7 @@ mc_world_storage_status mc_world_runtime_light_at(const mc_world_runtime *runtim
 }
 
 static void *request(mc_world_runtime *runtime, size_t bytes, mc_world_storage_error *cause,
-                     const char *operation)
-{
+                     const char *operation) {
     const size_t used = runtime->construction.direct_allocation_bytes;
     const size_t limit = runtime->construction_limits.max_direct_allocation_bytes;
     if (used > limit) {
@@ -143,8 +134,7 @@ static void *request(mc_world_runtime *runtime, size_t bytes, mc_world_storage_e
     return allocation;
 }
 
-static void retire(mc_world_runtime *runtime, void *allocation, size_t bytes)
-{
+static void retire(mc_world_runtime *runtime, void *allocation, size_t bytes) {
     if (allocation != NULL) {
         free(allocation);
         runtime->construction.direct_allocation_bytes -= bytes;
@@ -152,8 +142,7 @@ static void retire(mc_world_runtime *runtime, void *allocation, size_t bytes)
 }
 
 static bool list_load(mc_world_runtime *runtime, mc_world_reference_list **out,
-                      mc_world_storage_error *cause)
-{
+                      mc_world_storage_error *cause) {
     mc_world_reference_list *list = runtime->fields.C;
     if (list == NULL) {
         *cause = native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World light C receiver is null");
@@ -168,8 +157,7 @@ static bool list_load(mc_world_runtime *runtime, mc_world_reference_list **out,
 }
 
 static bool list_grow(mc_world_runtime *runtime, mc_world_reference_list *list,
-                      mc_world_storage_error *cause)
-{
+                      mc_world_storage_error *cause) {
     if (list->count < list->capacity)
         return true;
     if (list->count == (size_t)INT32_MAX) {
@@ -207,8 +195,7 @@ static bool list_grow(mc_world_runtime *runtime, mc_world_reference_list *list,
     return true;
 }
 
-static void list_clear(mc_world_runtime *runtime, mc_world_reference_list *list)
-{
+static void list_clear(mc_world_runtime *runtime, mc_world_reference_list *list) {
     for (size_t i = 0; i < list->count; ++i) {
         retire(runtime, list->items[i], sizeof(mc_world_light_region));
         list->items[i] = NULL;
@@ -216,8 +203,7 @@ static void list_clear(mc_world_runtime *runtime, mc_world_reference_list *list)
     list->count = 0;
 }
 
-void mc_world_runtime_lighting_free(mc_world_runtime *runtime)
-{
+void mc_world_runtime_lighting_free(mc_world_runtime *runtime) {
     if (runtime == NULL || runtime->fields.C == NULL)
         return;
     mc_world_reference_list *list = runtime->fields.C;
@@ -228,8 +214,7 @@ void mc_world_runtime_lighting_free(mc_world_runtime *runtime)
 }
 
 static bool same_class_type(const mc_world_runtime_classes *classes,
-                            const mc_world_light_type *type)
-{
+                            const mc_world_light_type *type) {
     if (type == NULL)
         return true;
     if (!classes->light_types_initialized ||
@@ -242,8 +227,7 @@ mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
                                                       const mc_world_light_type *type,
                                                       const mc_light_bounds *bounds, bool coalesce,
                                                       mc_light_submit_result *out,
-                                                      mc_world_light_error *error)
-{
+                                                      mc_world_light_error *error) {
     if (runtime == NULL || bounds == NULL || out == NULL || runtime->classes == NULL) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World light submit arguments");

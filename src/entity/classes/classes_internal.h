@@ -5,6 +5,7 @@
 #include "mc/entity/classes/classes.h"
 
 struct mc_entity_bounds;
+struct mc_entity_bounds_object;
 
 /* Actual class-owned production layouts, shared with the concrete constructors
  * and native invariant tests. No World/simulation operation belongs here. */
@@ -38,6 +39,8 @@ struct mc_entity_classes {
     mc_entity_class_phase entity_phase, bounds_phase, watcher_phase;
     int32_t next_id, bounds_cursor;
     mc_entity_bounds_pool *bounds_pool;
+    struct mc_entity_bounds_object *bounds_objects;
+    size_t bounds_holds;
     mc_entity_type_map *types;
     mc_entity_class_literal literals[MC_ENTITY_CLASS_KIND_COUNT];
     mc_entity_class_phase registry_phase;

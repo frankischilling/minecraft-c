@@ -19,8 +19,7 @@ typedef struct dungeon_frame {
     mc_population_dungeon_error error;
 } dungeon_frame;
 
-static mc_registry_error empty_registry(void)
-{
+static mc_registry_error empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
@@ -28,8 +27,7 @@ static mc_registry_error empty_registry(void)
                                .item_argument = -1};
 }
 
-static mc_population_dungeon_error empty_error(void)
-{
+static mc_population_dungeon_error empty_error(void) {
     const mc_registry_error registry = empty_registry();
     return (mc_population_dungeon_error){.chest_group = SIZE_MAX,
                                          .chest_trial = SIZE_MAX,
@@ -40,24 +38,21 @@ static mc_population_dungeon_error empty_error(void)
                                          .tile = mc_live_tiles_empty_error()};
 }
 
-void mc_population_dungeon_limits_default(mc_population_dungeon_limits *out)
-{
+void mc_population_dungeon_limits_default(mc_population_dungeon_limits *out) {
     if (out != NULL) {
         const size_t bytes = mc_item_stack_object_bytes();
         out->max_stack_allocation_bytes = bytes > SIZE_MAX / 16u ? SIZE_MAX : bytes * 16u;
     }
 }
 
-static bool fail(dungeon_frame *frame, mc_world_storage_status status, const char *operation)
-{
+static bool fail(dungeon_frame *frame, mc_world_storage_status status, const char *operation) {
     frame->error.status = status;
     frame->error.operation = operation;
     frame->error.cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool storage_fail(dungeon_frame *frame, const mc_world_storage_error *cause)
-{
+static bool storage_fail(dungeon_frame *frame, const mc_world_storage_error *cause) {
     frame->error.status = cause->status;
     frame->error.operation = cause->operation;
     frame->error.cause = *cause;
@@ -65,8 +60,7 @@ static bool storage_fail(dungeon_frame *frame, const mc_world_storage_error *cau
 }
 
 static bool registry_fail(dungeon_frame *frame, const mc_registry_error *cause,
-                          const char *operation)
-{
+                          const char *operation) {
     frame->error.registry = *cause;
     frame->error.status = mc_world_runtime_registry_result(frame->world, cause->status, cause,
                                                            operation, &frame->error.cause);
@@ -74,8 +68,7 @@ static bool registry_fail(dungeon_frame *frame, const mc_registry_error *cause,
     return false;
 }
 
-static bool item_fail(dungeon_frame *frame, mc_item_stack_status status, const char *operation)
-{
+static bool item_fail(dungeon_frame *frame, mc_item_stack_status status, const char *operation) {
     frame->error.item.status = status;
     return fail(frame,
                 status == MC_ITEM_STACK_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
@@ -84,8 +77,7 @@ static bool item_fail(dungeon_frame *frame, mc_item_stack_status status, const c
                 operation);
 }
 
-static bool tile_fail(dungeon_frame *frame, mc_tile_status status, const char *operation)
-{
+static bool tile_fail(dungeon_frame *frame, mc_tile_status status, const char *operation) {
     if (frame->error.tile.status != MC_WORLD_STORAGE_OK)
         return storage_fail(frame, &frame->error.tile.cause);
     frame->error.tile.tile.status = status;
@@ -100,8 +92,7 @@ static bool tile_fail(dungeon_frame *frame, mc_tile_status status, const char *o
 }
 
 static bool begin(dungeon_frame *frame, mc_world_runtime *world, mc_java_random *random,
-                  const mc_population_dungeon_limits *limits, const void *out, const char *method)
-{
+                  const mc_population_dungeon_limits *limits, const void *out, const char *method) {
     mc_population_dungeon_limits selected;
     mc_population_dungeon_limits_default(&selected);
     if (limits != NULL)
@@ -124,8 +115,7 @@ static bool begin(dungeon_frame *frame, mc_world_runtime *world, mc_java_random 
 }
 
 static mc_world_storage_status finish(dungeon_frame *frame, bool completed,
-                                      mc_population_dungeon_error *error)
-{
+                                      mc_population_dungeon_error *error) {
     mc_item_stack_release(frame->stack);
     mc_tile_release(frame->tile);
     mc_tile_name_release(frame->name);
@@ -140,14 +130,12 @@ static mc_world_storage_status finish(dungeon_frame *frame, bool completed,
     return frame->error.status;
 }
 
-static void stage(dungeon_frame *frame, unsigned int pc)
-{
+static void stage(dungeon_frame *frame, unsigned int pc) {
     frame->error.bytecode = pc;
     frame->error.air_bytecode = 0;
 }
 
-static bool bounded(dungeon_frame *frame, int32_t bound, int32_t *out)
-{
+static bool bounded(dungeon_frame *frame, int32_t bound, int32_t *out) {
     if (frame->random == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Dungeon Random receiver is null");
     if (!mc_java_random_next_bounded(frame->random, bound, out))
@@ -155,14 +143,12 @@ static bool bounded(dungeon_frame *frame, int32_t bound, int32_t *out)
     return true;
 }
 
-static bool draw(dungeon_frame *frame, unsigned int pc, int32_t bound, int32_t *out)
-{
+static bool draw(dungeon_frame *frame, unsigned int pc, int32_t bound, int32_t *out) {
     stage(frame, pc);
     return bounded(frame, bound, out);
 }
 
-static bool air(dungeon_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool air(dungeon_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, pc);
     frame->error.air_bytecode = 4;
     int32_t id;
@@ -174,8 +160,7 @@ static bool air(dungeon_frame *frame, unsigned int pc, int32_t x, int32_t y, int
 }
 
 static bool material_get(dungeon_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                         mc_material **out)
-{
+                         mc_material **out) {
     stage(frame, pc);
     if (mc_world_runtime_material_get_detailed(frame->world, x, y, z, out,
                                                &frame->error.material) != MC_WORLD_STORAGE_OK)
@@ -183,8 +168,7 @@ static bool material_get(dungeon_frame *frame, unsigned int pc, int32_t x, int32
     return true;
 }
 
-static bool solid(dungeon_frame *frame, unsigned int pc, mc_material *material, bool *out)
-{
+static bool solid(dungeon_frame *frame, unsigned int pc, mc_material *material, bool *out) {
     stage(frame, pc);
     if (material == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -194,16 +178,14 @@ static bool solid(dungeon_frame *frame, unsigned int pc, mc_material *material, 
 }
 
 static bool solid_at(dungeon_frame *frame, unsigned int query_pc, unsigned int call_pc, int32_t x,
-                     int32_t y, int32_t z, bool *out)
-{
+                     int32_t y, int32_t z, bool *out) {
     mc_material *material;
     return material_get(frame, query_pc, x, y, z, &material) &&
            solid(frame, call_pc, material, out);
 }
 
 static bool static_id(dungeon_frame *frame, const char *name, unsigned int load_pc,
-                      unsigned int field_pc, int32_t *out)
-{
+                      unsigned int field_pc, int32_t *out) {
     stage(frame, load_pc);
     const mc_block *block = NULL;
     mc_registry_error cause = empty_registry();
@@ -218,8 +200,7 @@ static bool static_id(dungeon_frame *frame, const char *name, unsigned int load_
 }
 
 static bool write_block(dungeon_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                        int32_t id)
-{
+                        int32_t id) {
     stage(frame, pc);
     bool ignored;
     if (mc_world_runtime_block_set(frame->world, x, y, z, id, &ignored, &frame->error.mutation) !=
@@ -229,8 +210,7 @@ static bool write_block(dungeon_frame *frame, unsigned int pc, int32_t x, int32_
 }
 
 static bool validate(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_t rx, int32_t rz,
-                     bool *out)
-{
+                     bool *out) {
     const int32_t x0 = mc_java_i32_sub(mc_java_i32_sub(x, rx), 1);
     const int32_t x1 = mc_java_i32_add(mc_java_i32_add(x, rx), 1);
     const int32_t y0 = mc_java_i32_sub(y, 1), y1 = mc_java_i32_add(y, 4);
@@ -278,8 +258,8 @@ static bool validate(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int3
     return true;
 }
 
-static bool construct(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_t rx, int32_t rz)
-{
+static bool construct(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_t rx,
+                      int32_t rz) {
     const int32_t x0 = mc_java_i32_sub(mc_java_i32_sub(x, rx), 1);
     const int32_t x1 = mc_java_i32_add(mc_java_i32_add(x, rx), 1);
     const int32_t y0 = mc_java_i32_sub(y, 1), y1 = mc_java_i32_add(y, 4);
@@ -327,14 +307,12 @@ static bool construct(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int
     return true;
 }
 
-static bool loot_draw(dungeon_frame *frame, unsigned int pc, int32_t bound, int32_t *out)
-{
+static bool loot_draw(dungeon_frame *frame, unsigned int pc, int32_t bound, int32_t *out) {
     frame->error.loot_bytecode = pc;
     return bounded(frame, bound, out);
 }
 
-static bool allocate_stack(dungeon_frame *frame, unsigned int pc)
-{
+static bool allocate_stack(dungeon_frame *frame, unsigned int pc) {
     frame->error.loot_bytecode = pc;
     frame->error.allocation_bytecode = pc;
     const size_t bytes = mc_item_stack_object_bytes();
@@ -348,8 +326,7 @@ static bool allocate_stack(dungeon_frame *frame, unsigned int pc)
 }
 
 static bool item_static(dungeon_frame *frame, const char *name, unsigned int pc,
-                        const mc_item **out)
-{
+                        const mc_item **out) {
     frame->error.loot_bytecode = pc;
     mc_registry_error cause = empty_registry();
     if (mc_registry_item_static_get(mc_world_runtime_registry(frame->world), name, out, &cause) !=
@@ -359,8 +336,7 @@ static bool item_static(dungeon_frame *frame, const char *name, unsigned int pc,
 }
 
 static bool construct_stack(dungeon_frame *frame, unsigned int pc, const mc_item *item,
-                            int32_t count, int32_t damage, unsigned int arguments)
-{
+                            int32_t count, int32_t damage, unsigned int arguments) {
     frame->error.loot_bytecode = pc;
     const bool client = frame->world->classes->side == MC_WORLD_INFO_CLIENT;
     const char *descriptor = arguments == 3   ? (client ? "(Lgm;II)V" : "(Lej;II)V")
@@ -386,8 +362,7 @@ static bool construct_stack(dungeon_frame *frame, unsigned int pc, const mc_item
     return true;
 }
 
-static bool loot(dungeon_frame *frame)
-{
+static bool loot(dungeon_frame *frame) {
     int32_t selector;
     if (!loot_draw(frame, 3, 11, &selector))
         return false;
@@ -525,8 +500,7 @@ static bool loot(dungeon_frame *frame)
                                            : 1u);
 }
 
-static void loot_completed(dungeon_frame *frame)
-{
+static void loot_completed(dungeon_frame *frame) {
     frame->error.loot_bytecode = 0;
     frame->error.allocation_bytecode = 0;
     frame->error.stack_constructor_bytecode = 0;
@@ -535,8 +509,7 @@ static void loot_completed(dungeon_frame *frame)
 }
 
 static bool tile_get(dungeon_frame *frame, unsigned int pc, unsigned int cast_pc, mc_tile_kind kind,
-                     int32_t x, int32_t y, int32_t z)
-{
+                     int32_t x, int32_t y, int32_t z) {
     stage(frame, pc);
     if (mc_live_tiles_get(frame->world, x, y, z, &frame->tile, &frame->error.tile) !=
         MC_WORLD_STORAGE_OK)
@@ -553,8 +526,7 @@ static bool tile_get(dungeon_frame *frame, unsigned int pc, unsigned int cast_pc
     return true;
 }
 
-static bool fill_chest(dungeon_frame *frame)
-{
+static bool fill_chest(dungeon_frame *frame) {
     for (size_t fill = 0; fill < 8u; ++fill) {
         frame->error.fill_index = fill;
         stage(frame, 728);
@@ -582,8 +554,7 @@ static bool fill_chest(dungeon_frame *frame)
     return true;
 }
 
-static bool chests(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_t rx, int32_t rz)
-{
+static bool chests(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_t rx, int32_t rz) {
     static const unsigned int queries[4] = {600, 621, 642, 663};
     static const unsigned int predicates[4] = {603, 624, 645, 666};
     for (size_t group = 0; group < 2u; ++group) {
@@ -632,8 +603,7 @@ static bool chests(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_
     return true;
 }
 
-static bool mob(dungeon_frame *frame)
-{
+static bool mob(dungeon_frame *frame) {
     frame->error.mob_bytecode = 2;
     int32_t choice;
     if (!bounded(frame, 4, &choice))
@@ -670,8 +640,7 @@ static bool mob(dungeon_frame *frame)
 mc_world_storage_status mc_population_dungeon_place(mc_world_runtime *world, mc_java_random *random,
                                                     const mc_population_dungeon_limits *limits,
                                                     int32_t x, int32_t y, int32_t z, bool *out,
-                                                    mc_population_dungeon_error *error)
-{
+                                                    mc_population_dungeon_error *error) {
     dungeon_frame frame;
     if (!begin(&frame, world, random, limits, out, "a(World,Random,III)Z"))
         return finish(&frame, false, error);
@@ -710,8 +679,7 @@ mc_world_storage_status mc_population_dungeon_place(mc_world_runtime *world, mc_
 mc_world_storage_status mc_population_dungeon_loot(mc_world_runtime *world, mc_java_random *random,
                                                    const mc_population_dungeon_limits *limits,
                                                    mc_item_stack **out,
-                                                   mc_population_dungeon_error *error)
-{
+                                                   mc_population_dungeon_error *error) {
     dungeon_frame frame;
     if (!begin(&frame, world, random, limits, out, "a(Random)ItemStack") || !loot(&frame))
         return finish(&frame, false, error);
@@ -722,8 +690,7 @@ mc_world_storage_status mc_population_dungeon_loot(mc_world_runtime *world, mc_j
 
 mc_world_storage_status mc_population_dungeon_mob(mc_world_runtime *world, mc_java_random *random,
                                                   mc_tile_name **out,
-                                                  mc_population_dungeon_error *error)
-{
+                                                  mc_population_dungeon_error *error) {
     dungeon_frame frame;
     if (!begin(&frame, world, random, NULL, out, "b(Random)String") || !mob(&frame))
         return finish(&frame, false, error);

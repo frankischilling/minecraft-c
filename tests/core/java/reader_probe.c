@@ -64,22 +64,19 @@ typedef struct output {
     size_t length, rows;
 } output;
 
-static bool fail(const char *message)
-{
+static bool fail(const char *message) {
     fprintf(stderr, "reader probe: %s\n", message);
     return false;
 }
 
-static bool increment(size_t *value)
-{
+static bool increment(size_t *value) {
     if (*value == SIZE_MAX)
         return false;
     ++*value;
     return true;
 }
 
-static bool callback(finite_stream *stream, size_t *counter)
-{
+static bool callback(finite_stream *stream, size_t *counter) {
     if (*counter >= MAX_CALLBACKS || !increment(counter)) {
         stream->invalid = true;
         return false;
@@ -87,8 +84,7 @@ static bool callback(finite_stream *stream, size_t *counter)
     return true;
 }
 
-static void *arena_allocate(void *context, size_t bytes)
-{
+static void *arena_allocate(void *context, size_t bytes) {
     arena *memory = context;
     /* At least one byte also supplies distinct storage for a zero-size
      * request under the public allocator contract. No storage is cleared. */
@@ -117,8 +113,7 @@ static void *arena_allocate(void *context, size_t bytes)
     return allocation;
 }
 
-static void arena_free(arena *memory)
-{
+static void arena_free(arena *memory) {
     arena_node *node = memory->first;
     while (node != NULL) {
         arena_node *next = node->next;
@@ -129,8 +124,7 @@ static void arena_free(arena *memory)
     *memory = (arena){0};
 }
 
-static const char *status_name(mc_java_reader_status status)
-{
+static const char *status_name(mc_java_reader_status status) {
     switch (status) {
         case MC_JAVA_READER_OK:
             return "OK";
@@ -152,8 +146,7 @@ static const char *status_name(mc_java_reader_status status)
 }
 
 static bool native_failure(size_t owner, size_t control, mc_java_reader_status status,
-                           const arena *memory)
-{
+                           const arena *memory) {
     fprintf(stderr,
             "reader probe: native failure owner=%zu control=%zu status=%s "
             "arena_limit=%d arena_allocation=%d\n",
@@ -163,8 +156,7 @@ static bool native_failure(size_t owner, size_t control, mc_java_reader_status s
 }
 
 /* 1 is a complete LF row, 0 clean EOF, -1 invalid transport or I/O. */
-static int read_row(FILE *file, char *line, size_t *total, size_t *rows)
-{
+static int read_row(FILE *file, char *line, size_t *total, size_t *rows) {
     size_t length = 0;
     for (;;) {
         int c = fgetc(file);
@@ -184,8 +176,7 @@ static int read_row(FILE *file, char *line, size_t *total, size_t *rows)
     }
 }
 
-static size_t fields(char *line, char *parts[7])
-{
+static size_t fields(char *line, char *parts[7]) {
     size_t count = 1;
     parts[0] = line;
     for (char *cursor = line; *cursor != '\0'; ++cursor) {
@@ -202,8 +193,7 @@ static size_t fields(char *line, char *parts[7])
     return count;
 }
 
-static bool number(const char *text, int64_t minimum, int64_t maximum, int64_t *out)
-{
+static bool number(const char *text, int64_t minimum, int64_t maximum, int64_t *out) {
     const char *digits = text;
     if (*digits == '-') {
         if (minimum >= 0)
@@ -226,14 +216,12 @@ static bool number(const char *text, int64_t minimum, int64_t maximum, int64_t *
     return true;
 }
 
-static bool expected_number(const char *text, size_t expected)
-{
+static bool expected_number(const char *text, size_t expected) {
     int64_t parsed = 0;
     return number(text, 0, INT32_MAX, &parsed) && (uint64_t)parsed == (uint64_t)expected;
 }
 
-static bool label(const char *text)
-{
+static bool label(const char *text) {
     size_t length = strlen(text);
     if (length == 0 || length > 64)
         return false;
@@ -244,8 +232,7 @@ static bool label(const char *text)
     return true;
 }
 
-static bool charset(declaration *item, const char *name)
-{
+static bool charset(declaration *item, const char *name) {
     static const char *const names[] = {"UTF-8", "windows-1252", "ISO-8859-1", "US-ASCII"};
     static const mc_java_reader_charset values[] = {MC_JAVA_READER_UTF8, MC_JAVA_READER_WINDOWS1252,
                                                     MC_JAVA_READER_ISO8859_1,
@@ -259,8 +246,7 @@ static bool charset(declaration *item, const char *name)
     return false;
 }
 
-static bool shape(declaration *item, const char *name)
-{
+static bool shape(declaration *item, const char *name) {
     static const char *const names[] = {"ALL", "1", "7", "8192"};
     static const size_t values[] = {INT32_MAX, 1, 7, 8192};
     for (size_t i = 0; i < sizeof(values) / sizeof(*values); ++i)
@@ -272,8 +258,7 @@ static bool shape(declaration *item, const char *name)
     return false;
 }
 
-static bool mode(declaration *item, const char *name)
-{
+static bool mode(declaration *item, const char *name) {
     static const char *const names[] = {"ZERO", "REMAINING", "ERROR"};
     for (size_t i = 0; i < sizeof(names) / sizeof(*names); ++i)
         if (strcmp(name, names[i]) == 0) {
@@ -283,8 +268,7 @@ static bool mode(declaration *item, const char *name)
     return false;
 }
 
-static int nibble(char value)
-{
+static int nibble(char value) {
     if (value >= '0' && value <= '9')
         return value - '0';
     if (value >= 'a' && value <= 'f')
@@ -292,8 +276,7 @@ static int nibble(char value)
     return -1;
 }
 
-static bool bytes(declaration *item, const char *hex)
-{
+static bool bytes(declaration *item, const char *hex) {
     if (item->length == 0)
         return strcmp(hex, "-") == 0;
     if (strlen(hex) != 2u * item->length)
@@ -310,8 +293,7 @@ static bool bytes(declaration *item, const char *hex)
     return true;
 }
 
-static bool parse(FILE *file, trace *input, char *line)
-{
+static bool parse(FILE *file, trace *input, char *line) {
     size_t total = 0, rows = 0;
     if (read_row(file, line, &total, &rows) != 1 || strcmp(line, "READER_INPUT_V1") != 0)
         return false;
@@ -385,8 +367,7 @@ static bool parse(FILE *file, trace *input, char *line)
 }
 
 static mc_java_properties_status stream_read(void *context, uint8_t *destination, size_t capacity,
-                                             size_t *count)
-{
+                                             size_t *count) {
     finite_stream *stream = context;
     if (!callback(stream, &stream->bulk_calls) || count == NULL || destination == NULL ||
         capacity > 8192) {
@@ -422,8 +403,7 @@ static mc_java_properties_status stream_read(void *context, uint8_t *destination
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static bool stream_ready(void *context)
-{
+static bool stream_ready(void *context) {
     finite_stream *stream = context;
     if (!callback(stream, &stream->available_calls))
         return false;
@@ -433,8 +413,7 @@ static bool stream_ready(void *context)
            stream->consumed < stream->input->length;
 }
 
-static mc_java_reader_status stream_close(void *context)
-{
+static mc_java_reader_status stream_close(void *context) {
     finite_stream *stream = context;
     if (!callback(stream, &stream->close_calls))
         return MC_JAVA_READER_LIMIT;
@@ -442,8 +421,7 @@ static mc_java_reader_status stream_close(void *context)
     return stream->input->close_fault ? MC_JAVA_READER_IO_ERROR : MC_JAVA_READER_OK;
 }
 
-static bool append(output *out, const char *format, ...)
-{
+static bool append(output *out, const char *format, ...) {
     size_t remaining = MAX_OUTPUT_BYTES - out->length + 1;
     va_list arguments;
     va_start(arguments, format);
@@ -455,8 +433,7 @@ static bool append(output *out, const char *format, ...)
     return true;
 }
 
-static bool row(output *out, const char *format, ...)
-{
+static bool row(output *out, const char *format, ...) {
     if (out->rows >= MAX_ROWS)
         return false;
     size_t remaining = MAX_OUTPUT_BYTES - out->length + 1;
@@ -472,8 +449,7 @@ static bool row(output *out, const char *format, ...)
     return increment(&out->rows);
 }
 
-static bool declaration_rows(output *out, const declaration *item, size_t owner)
-{
+static bool declaration_rows(output *out, const declaration *item, size_t owner) {
     if (!row(out, "CASE\t%zu\t%s\t%s\t%s\t%s\t%zu", owner, item->label, item->charset_name,
              item->shape_name, item->availability_name, item->controls) ||
         !append(out, "INPUT\t%zu\t%" PRId64 "\t%d\t%zu\t", owner, item->fail_after,
@@ -496,8 +472,7 @@ static bool declaration_rows(output *out, const declaration *item, size_t owner)
     return true;
 }
 
-static bool counters(output *out, const finite_stream *stream)
-{
+static bool counters(output *out, const finite_stream *stream) {
     return append(out, "\t%zu\t%zu\t0\t%zu\t%zu\t%zu\t%d", stream->consumed, stream->bulk_calls,
                   stream->bulk_calls, stream->available_calls, stream->close_calls,
                   stream->closed ? 1 : 0) &&
@@ -505,8 +480,7 @@ static bool counters(output *out, const finite_stream *stream)
 }
 
 static bool line_token(const mc_java_reader_line *line, const mc_java_reader_line **held,
-                       size_t *count, char token[24])
-{
+                       size_t *count, char token[24]) {
     if (line == NULL) {
         memcpy(token, "NULL", sizeof("NULL"));
         return true;
@@ -525,8 +499,7 @@ static bool line_token(const mc_java_reader_line *line, const mc_java_reader_lin
 }
 
 static bool string_rows(output *out, size_t owner, const mc_java_reader_line *const *held,
-                        size_t count)
-{
+                        size_t count) {
     if (!row(out, "STRINGS\t%zu\t%zu", owner, count))
         return false;
     for (size_t i = 0; i < count; ++i) {
@@ -548,8 +521,7 @@ static bool string_rows(output *out, size_t owner, const mc_java_reader_line *co
     return true;
 }
 
-static bool run_case(output *out, const declaration *item, size_t owner)
-{
+static bool run_case(output *out, const declaration *item, size_t owner) {
     bool complete = false;
     arena memory = {0};
     finite_stream stream = {.input = item};
@@ -613,8 +585,7 @@ done:
     return complete;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     FILE *file = NULL;
     char *line = NULL;

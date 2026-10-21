@@ -45,8 +45,7 @@ typedef struct guarded_output {
     uint64_t after;
 } guarded_output;
 
-static guarded_output make_output(void)
-{
+static guarded_output make_output(void) {
     guarded_output out;
     memset(&out, 0xa5, sizeof(out));
     out.before = UINT64_C(0x0123456789abcdef);
@@ -55,14 +54,12 @@ static guarded_output make_output(void)
     return out;
 }
 
-static bool guards_unchanged(const guarded_output *out)
-{
+static bool guards_unchanged(const guarded_output *out) {
     return out->before == UINT64_C(0x0123456789abcdef) &&
            out->after == UINT64_C(0xfedcba9876543210);
 }
 
-static int test_filetime(void)
-{
+static int test_filetime(void) {
     /* Literal arithmetic witnesses, including signed division before 1970.
      * INT64_MAX ticks minus 116444736000000000 is 9106927300854775807;
      * truncating by 10000 gives 910692730085477, with remainder 5807. */
@@ -86,6 +83,7 @@ static int test_filetime(void)
                  {UINT64_C(116444736010000000), 1000},
                  {UINT64_C(9223372036854775806), INT64_C(910692730085477)},
                  {UINT64_C(9223372036854775807), INT64_C(910692730085477)}};
+
     static const uint64_t rejected[] = {UINT64_C(0x8000000000000000), UINT64_C(0x8000000000000001),
                                         UINT64_MAX};
     for (size_t i = 0; i < sizeof(exact) / sizeof(exact[0]); ++i) {
@@ -109,8 +107,7 @@ static int test_filetime(void)
     return 0;
 }
 
-static int test_timespec(void)
-{
+static int test_timespec(void) {
     /* Independent decimal literals: seconds*1000 must fit before adding the
      * truncated fraction. At the upper boundary only 807 further ms fit. */
     static const struct {
@@ -134,6 +131,7 @@ static int test_timespec(void)
                  {INT64_C(9223372036854775), INT64_C(807999999), INT64_MAX},
                  {-INT64_C(9223372036854775), 0, -INT64_C(9223372036854775000)},
                  {-INT64_C(9223372036854775), INT64_C(999999999), -INT64_C(9223372036854774001)}};
+
     static const struct {
         int64_t sec, nsec;
     } rejected[] = {{INT64_C(9223372036854775), INT64_C(808000000)},
@@ -150,6 +148,7 @@ static int test_timespec(void)
                     {0, INT64_C(1000000000)},
                     {0, INT64_MAX},
                     {0, INT64_MIN}};
+
     for (size_t i = 0; i < sizeof(exact) / sizeof(exact[0]); ++i) {
         guarded_output out = make_output();
         CHECK(mc_platform_millis_from_timespec(exact[i].sec, exact[i].nsec, &out.value) ==
@@ -171,8 +170,7 @@ static int test_timespec(void)
     return 0;
 }
 
-static mc_platform_millis_status read_os_millis(int64_t *out)
-{
+static mc_platform_millis_status read_os_millis(int64_t *out) {
 #if defined(_WIN32)
     FILETIME value;
     GetSystemTimeAsFileTime(&value);
@@ -187,8 +185,7 @@ static mc_platform_millis_status read_os_millis(int64_t *out)
 #endif
 }
 
-static int test_live_clock(void)
-{
+static int test_live_clock(void) {
     CHECK(mc_platform_current_time_millis(NULL) == MC_PLATFORM_MILLIS_INVALID_ARGUMENT);
     unsigned int ordered_brackets = 0;
     for (size_t i = 0; i < 4u; ++i) {
@@ -214,8 +211,7 @@ static int test_live_clock(void)
     return 0;
 }
 
-static int test_fp_independence(void)
-{
+static int test_fp_independence(void) {
     const unsigned int saved_csr = _mm_getcsr();
     /* Mask traps and clear status/rounding/FTZ/DAZ in each installed baseline.
      * Restore the complete original register before CHECK or diagnostics. */
@@ -272,8 +268,7 @@ static int test_fp_independence(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     const unsigned int initial_csr = _mm_getcsr();
     if (test_filetime() != 0 || test_timespec() != 0 || test_live_clock() != 0 ||
         test_fp_independence() != 0) {

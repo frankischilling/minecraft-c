@@ -3,8 +3,7 @@
 #include "mc/core/java/java.h"
 #include "provider_internal.h"
 
-static mc_world_storage_status completed(bool value, bool *out, mc_world_presence_error *error)
-{
+static mc_world_storage_status completed(bool value, bool *out, mc_world_presence_error *error) {
     *out = value;
     *error = (mc_world_presence_error){0};
     return MC_WORLD_STORAGE_OK;
@@ -14,8 +13,7 @@ mc_world_storage_status mc_world_runtime_region_present_held(mc_world_runtime *w
                                                              int32_t min_y, int32_t min_z,
                                                              int32_t max_x, int32_t max_y,
                                                              int32_t max_z, bool *out,
-                                                             mc_world_presence_error *error)
-{
+                                                             mc_world_presence_error *error) {
     if (max_y < 0 || min_y >= 128)
         return completed(false, out, error);
     /* Preserve all six shifts, including the unused vertical endpoints.

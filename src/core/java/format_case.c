@@ -10,8 +10,7 @@ typedef struct uppercase_mapping {
 
 #include "format_case_data.h"
 
-static const uppercase_mapping *mapping(uint32_t point)
-{
+static const uppercase_mapping *mapping(uint32_t point) {
     size_t low = 0, high = sizeof(uppercase_mappings) / sizeof(*uppercase_mappings);
     while (low < high) {
         const size_t middle = low + (high - low) / 2;
@@ -26,8 +25,7 @@ static const uppercase_mapping *mapping(uint32_t point)
     return NULL;
 }
 
-static uint32_t next_point(const mc_java_format_text *text, size_t *index)
-{
+static uint32_t next_point(const mc_java_format_text *text, size_t *index) {
     const uint16_t first = text->units[(*index)++];
     if (first >= UINT16_C(0xd800) && first <= UINT16_C(0xdbff) && *index < text->length) {
         const uint16_t second = text->units[*index];
@@ -42,8 +40,7 @@ static uint32_t next_point(const mc_java_format_text *text, size_t *index)
 
 mc_java_format_status mc_java_format_upper(const mc_java_format_options *options,
                                            const mc_java_format_text *input,
-                                           mc_java_format_text *out)
-{
+                                           mc_java_format_text *out) {
     if (options == NULL || options->allocator.allocate == NULL || input == NULL || out == NULL ||
         (input->units == NULL && input->length != 0))
         return MC_JAVA_FORMAT_INVALID_ARGUMENT;

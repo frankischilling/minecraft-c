@@ -15,10 +15,12 @@ _Static_assert(CHAR_BIT == 8, "NBT requires eight-bit bytes");
 /* A union header keeps arena payloads aligned for tags, pointer arrays and
  * decoded units. Old buffers remain owned after growth and replacement. */
 typedef union nbt_allocation nbt_allocation;
+
 union nbt_allocation {
     struct {
         nbt_allocation *next;
     } link;
+
     mc_nbt_tag alignment;
 };
 
@@ -61,28 +63,24 @@ typedef struct nbt_validator {
     mc_nbt_error error;
 } nbt_validator;
 
-static void nbt_set_error(mc_nbt_error *error, mc_nbt_status status, size_t offset)
-{
+static void nbt_set_error(mc_nbt_error *error, mc_nbt_status status, size_t offset) {
     if (error != NULL) {
         error->status = status;
         error->offset = offset;
     }
 }
 
-static bool nbt_limits_valid(const mc_nbt_limits *limits)
-{
+static bool nbt_limits_valid(const mc_nbt_limits *limits) {
     return limits->max_depth != 0 && limits->max_depth <= NBT_MAX_DEPTH;
 }
 
-mc_nbt_limits mc_nbt_default_limits(void)
-{
+mc_nbt_limits mc_nbt_default_limits(void) {
     const mc_nbt_limits limits = {
         64u * 1024u * 1024u, 64u * 1024u * 1024u, 128u * 1024u * 1024u, 1000000u, 1000000u, 64u};
     return limits;
 }
 
-const char *mc_nbt_status_string(mc_nbt_status status)
-{
+const char *mc_nbt_status_string(mc_nbt_status status) {
     switch (status) {
         case MC_NBT_OK:
             return "ok";
@@ -110,8 +108,7 @@ const char *mc_nbt_status_string(mc_nbt_status status)
     return "unknown NBT status";
 }
 
-static void nbt_arena_free(nbt_arena *arena)
-{
+static void nbt_arena_free(nbt_arena *arena) {
     nbt_allocation *allocation = arena->allocations;
     while (allocation != NULL) {
         nbt_allocation *next = allocation->link.next;
@@ -121,8 +118,8 @@ static void nbt_arena_free(nbt_arena *arena)
     arena->allocations = NULL;
 }
 
-static void *nbt_arena_allocate(nbt_arena *arena, size_t count, size_t size, mc_nbt_status *status)
-{
+static void *nbt_arena_allocate(nbt_arena *arena, size_t count, size_t size,
+                                mc_nbt_status *status) {
     if (size != 0 && count > SIZE_MAX / size) {
         *status = MC_NBT_LIMIT;
         return NULL;
@@ -150,27 +147,23 @@ static void *nbt_arena_allocate(nbt_arena *arena, size_t count, size_t size, mc_
     return payload;
 }
 
-void mc_nbt_document_free(mc_nbt_document *document)
-{
+void mc_nbt_document_free(mc_nbt_document *document) {
     if (document != NULL) {
         nbt_arena_free(&document->arena);
         free(document);
     }
 }
 
-const mc_nbt_tag *mc_nbt_document_root(const mc_nbt_document *document)
-{
+const mc_nbt_tag *mc_nbt_document_root(const mc_nbt_document *document) {
     return document == NULL ? NULL : document->root;
 }
 
-static bool nbt_string_equal(mc_nbt_string a, mc_nbt_string b)
-{
+static bool nbt_string_equal(mc_nbt_string a, mc_nbt_string b) {
     return a.length == b.length &&
            (a.length == 0 || memcmp(a.units, b.units, a.length * sizeof(uint16_t)) == 0);
 }
 
-static size_t nbt_string_hash(mc_nbt_string string)
-{
+static size_t nbt_string_hash(mc_nbt_string string) {
     uint64_t hash = UINT64_C(14695981039346656037);
     for (size_t i = 0; i < string.length; ++i) {
         hash ^= string.units[i];
@@ -180,8 +173,7 @@ static size_t nbt_string_hash(mc_nbt_string string)
 }
 
 const mc_nbt_tag *mc_nbt_compound_get(const mc_nbt_tag *compound, const uint16_t *name,
-                                      size_t length)
-{
+                                      size_t length) {
     if (compound == NULL || compound->type != MC_NBT_COMPOUND || (length != 0 && name == NULL) ||
         length > SIZE_MAX / sizeof(uint16_t) ||
         (compound->value.compound.length != 0 && compound->value.compound.items == NULL)) {
@@ -198,16 +190,14 @@ const mc_nbt_tag *mc_nbt_compound_get(const mc_nbt_tag *compound, const uint16_t
     return NULL;
 }
 
-static bool nbt_reader_fail(nbt_reader *reader, mc_nbt_status status, size_t offset)
-{
+static bool nbt_reader_fail(nbt_reader *reader, mc_nbt_status status, size_t offset) {
     if (reader->error.status == MC_NBT_OK) {
         nbt_set_error(&reader->error, status, offset);
     }
     return false;
 }
 
-static void *nbt_reader_allocate(nbt_reader *reader, size_t count, size_t size)
-{
+static void *nbt_reader_allocate(nbt_reader *reader, size_t count, size_t size) {
     mc_nbt_status status = MC_NBT_OK;
     void *payload = nbt_arena_allocate(&reader->document->arena, count, size, &status);
     if (payload == NULL) {
@@ -216,16 +206,14 @@ static void *nbt_reader_allocate(nbt_reader *reader, size_t count, size_t size)
     return payload;
 }
 
-static bool nbt_reader_available(nbt_reader *reader, size_t count)
-{
+static bool nbt_reader_available(nbt_reader *reader, size_t count) {
     if (count > reader->length - reader->position) {
         return nbt_reader_fail(reader, MC_NBT_TRUNCATED, reader->position);
     }
     return true;
 }
 
-static bool nbt_read_u8(nbt_reader *reader, uint8_t *value)
-{
+static bool nbt_read_u8(nbt_reader *reader, uint8_t *value) {
     if (!nbt_reader_available(reader, 1)) {
         return false;
     }
@@ -233,8 +221,7 @@ static bool nbt_read_u8(nbt_reader *reader, uint8_t *value)
     return true;
 }
 
-static bool nbt_read_u16(nbt_reader *reader, uint16_t *value)
-{
+static bool nbt_read_u16(nbt_reader *reader, uint16_t *value) {
     if (!nbt_reader_available(reader, 2)) {
         return false;
     }
@@ -244,8 +231,7 @@ static bool nbt_read_u16(nbt_reader *reader, uint16_t *value)
     return true;
 }
 
-static bool nbt_read_u32(nbt_reader *reader, uint32_t *value)
-{
+static bool nbt_read_u32(nbt_reader *reader, uint32_t *value) {
     if (!nbt_reader_available(reader, 4)) {
         return false;
     }
@@ -258,8 +244,7 @@ static bool nbt_read_u32(nbt_reader *reader, uint32_t *value)
     return true;
 }
 
-static bool nbt_read_u64(nbt_reader *reader, uint64_t *value)
-{
+static bool nbt_read_u64(nbt_reader *reader, uint64_t *value) {
     if (!nbt_reader_available(reader, 8)) {
         return false;
     }
@@ -272,8 +257,7 @@ static bool nbt_read_u64(nbt_reader *reader, uint64_t *value)
     return true;
 }
 
-static bool nbt_read_count(nbt_reader *reader, size_t *count)
-{
+static bool nbt_read_count(nbt_reader *reader, size_t *count) {
     size_t offset = reader->position;
     uint32_t bits;
     if (!nbt_read_u32(reader, &bits)) {
@@ -290,8 +274,7 @@ static bool nbt_read_count(nbt_reader *reader, size_t *count)
     return true;
 }
 
-static bool nbt_read_string(nbt_reader *reader, mc_nbt_string *string)
-{
+static bool nbt_read_string(nbt_reader *reader, mc_nbt_string *string) {
     uint16_t wire_length;
     if (!nbt_read_u16(reader, &wire_length) || !nbt_reader_available(reader, wire_length)) {
         return false;
@@ -318,8 +301,7 @@ static bool nbt_read_string(nbt_reader *reader, mc_nbt_string *string)
     return true;
 }
 
-static bool nbt_grow_capacity(size_t current, size_t needed, size_t *capacity)
-{
+static bool nbt_grow_capacity(size_t current, size_t needed, size_t *capacity) {
     size_t grown = current == 0 ? 1 : current;
     while (grown < needed) {
         if (grown > SIZE_MAX / 2) {
@@ -332,8 +314,7 @@ static bool nbt_grow_capacity(size_t current, size_t needed, size_t *capacity)
 }
 
 static bool nbt_compound_insert(nbt_reader *reader, nbt_compound_builder *builder,
-                                const mc_nbt_tag *tag)
-{
+                                const mc_nbt_tag *tag) {
     size_t slot = 0;
     if (builder->index_capacity != 0) {
         slot = nbt_string_hash(tag->name) & (builder->index_capacity - 1);
@@ -396,8 +377,7 @@ static bool nbt_compound_insert(nbt_reader *reader, nbt_compound_builder *builde
 
 static mc_nbt_tag *nbt_read_tag(nbt_reader *reader, uint8_t type, bool named, size_t depth);
 
-static bool nbt_read_list(nbt_reader *reader, mc_nbt_tag *tag, size_t depth)
-{
+static bool nbt_read_list(nbt_reader *reader, mc_nbt_tag *tag, size_t depth) {
     size_t type_offset = reader->position;
     uint8_t type;
     size_t count;
@@ -429,8 +409,7 @@ static bool nbt_read_list(nbt_reader *reader, mc_nbt_tag *tag, size_t depth)
     return true;
 }
 
-static bool nbt_read_compound_payload(nbt_reader *reader, mc_nbt_tag *tag, size_t depth)
-{
+static bool nbt_read_compound_payload(nbt_reader *reader, mc_nbt_tag *tag, size_t depth) {
     nbt_compound_builder builder = {0};
     size_t physical_count = 0;
     for (;;) {
@@ -455,8 +434,7 @@ static bool nbt_read_compound_payload(nbt_reader *reader, mc_nbt_tag *tag, size_
     }
 }
 
-static mc_nbt_tag *nbt_read_tag(nbt_reader *reader, uint8_t type, bool named, size_t depth)
-{
+static mc_nbt_tag *nbt_read_tag(nbt_reader *reader, uint8_t type, bool named, size_t depth) {
     if (type > MC_NBT_COMPOUND) {
         nbt_reader_fail(reader, MC_NBT_INVALID_TYPE,
                         named ? reader->position - 1 : reader->position);
@@ -557,8 +535,8 @@ static mc_nbt_tag *nbt_read_tag(nbt_reader *reader, uint8_t type, bool named, si
 
 static mc_nbt_status nbt_read_document(const uint8_t *input, size_t length,
                                        const mc_nbt_limits *requested_limits, bool compound,
-                                       mc_nbt_document **out, size_t *consumed, mc_nbt_error *error)
-{
+                                       mc_nbt_document **out, size_t *consumed,
+                                       mc_nbt_error *error) {
     mc_nbt_limits limits = requested_limits == NULL ? mc_nbt_default_limits() : *requested_limits;
     if (out == NULL || (input == NULL && length != 0) || !nbt_limits_valid(&limits)) {
         nbt_set_error(error, MC_NBT_INVALID_ARGUMENT, 0);
@@ -598,27 +576,23 @@ static mc_nbt_status nbt_read_document(const uint8_t *input, size_t length,
 }
 
 mc_nbt_status mc_nbt_read(const uint8_t *input, size_t length, const mc_nbt_limits *limits,
-                          mc_nbt_document **out, size_t *consumed, mc_nbt_error *error)
-{
+                          mc_nbt_document **out, size_t *consumed, mc_nbt_error *error) {
     return nbt_read_document(input, length, limits, false, out, consumed, error);
 }
 
 mc_nbt_status mc_nbt_read_compound(const uint8_t *input, size_t length, const mc_nbt_limits *limits,
-                                   mc_nbt_document **out, size_t *consumed, mc_nbt_error *error)
-{
+                                   mc_nbt_document **out, size_t *consumed, mc_nbt_error *error) {
     return nbt_read_document(input, length, limits, true, out, consumed, error);
 }
 
-static bool nbt_validator_fail(nbt_validator *validator, mc_nbt_status status)
-{
+static bool nbt_validator_fail(nbt_validator *validator, mc_nbt_status status) {
     if (validator->error.status == MC_NBT_OK) {
         nbt_set_error(&validator->error, status, validator->length);
     }
     return false;
 }
 
-static bool nbt_measure_add(nbt_validator *validator, size_t length)
-{
+static bool nbt_measure_add(nbt_validator *validator, size_t length) {
     if (length > validator->limits.max_output_bytes - validator->length) {
         return nbt_validator_fail(validator, MC_NBT_LIMIT);
     }
@@ -626,8 +600,7 @@ static bool nbt_measure_add(nbt_validator *validator, size_t length)
     return true;
 }
 
-static bool nbt_measure_string(nbt_validator *validator, mc_nbt_string string)
-{
+static bool nbt_measure_string(nbt_validator *validator, mc_nbt_string string) {
     if (string.length != 0 && string.units == NULL) {
         return nbt_validator_fail(validator, MC_NBT_INVALID_TREE);
     }
@@ -645,8 +618,7 @@ static bool nbt_measure_string(nbt_validator *validator, mc_nbt_string string)
 static bool nbt_measure_tag(nbt_validator *validator, const mc_nbt_tag *tag, bool named,
                             size_t depth);
 
-static bool nbt_measure_list(nbt_validator *validator, const mc_nbt_tag *tag, size_t depth)
-{
+static bool nbt_measure_list(nbt_validator *validator, const mc_nbt_tag *tag, size_t depth) {
     size_t count = tag->value.list.length;
     if (count > INT32_MAX) {
         return nbt_validator_fail(validator, MC_NBT_INVALID_LENGTH);
@@ -676,8 +648,7 @@ static bool nbt_measure_list(nbt_validator *validator, const mc_nbt_tag *tag, si
     return true;
 }
 
-static bool nbt_measure_compound(nbt_validator *validator, const mc_nbt_tag *tag, size_t depth)
-{
+static bool nbt_measure_compound(nbt_validator *validator, const mc_nbt_tag *tag, size_t depth) {
     size_t count = tag->value.compound.length;
     if (count > validator->limits.max_elements ||
         count > validator->limits.max_tags - validator->tags) {
@@ -725,8 +696,7 @@ static bool nbt_measure_compound(nbt_validator *validator, const mc_nbt_tag *tag
 }
 
 static bool nbt_measure_tag(nbt_validator *validator, const mc_nbt_tag *tag, bool named,
-                            size_t depth)
-{
+                            size_t depth) {
     if (tag == NULL) {
         return nbt_validator_fail(validator, MC_NBT_INVALID_TREE);
     }
@@ -788,8 +758,7 @@ static bool nbt_measure_tag(nbt_validator *validator, const mc_nbt_tag *tag, boo
 }
 
 mc_nbt_status mc_nbt_measure(const mc_nbt_tag *root, const mc_nbt_limits *requested_limits,
-                             size_t *written, mc_nbt_error *error)
-{
+                             size_t *written, mc_nbt_error *error) {
     mc_nbt_limits limits = requested_limits == NULL ? mc_nbt_default_limits() : *requested_limits;
     if (root == NULL || written == NULL || !nbt_limits_valid(&limits)) {
         nbt_set_error(error, MC_NBT_INVALID_ARGUMENT, 0);
@@ -809,28 +778,24 @@ mc_nbt_status mc_nbt_measure(const mc_nbt_tag *root, const mc_nbt_limits *reques
     return MC_NBT_OK;
 }
 
-static void nbt_write_u16(uint8_t *output, size_t *position, uint16_t value)
-{
+static void nbt_write_u16(uint8_t *output, size_t *position, uint16_t value) {
     output[(*position)++] = (uint8_t)(value >> 8u);
     output[(*position)++] = (uint8_t)value;
 }
 
-static void nbt_write_u32(uint8_t *output, size_t *position, uint32_t value)
-{
+static void nbt_write_u32(uint8_t *output, size_t *position, uint32_t value) {
     for (unsigned int i = 0; i < 4; ++i) {
         output[(*position)++] = (uint8_t)(value >> ((3u - i) * 8u));
     }
 }
 
-static void nbt_write_u64(uint8_t *output, size_t *position, uint64_t value)
-{
+static void nbt_write_u64(uint8_t *output, size_t *position, uint64_t value) {
     for (unsigned int i = 0; i < 8; ++i) {
         output[(*position)++] = (uint8_t)(value >> ((7u - i) * 8u));
     }
 }
 
-static void nbt_write_string(uint8_t *output, size_t *position, mc_nbt_string string)
-{
+static void nbt_write_string(uint8_t *output, size_t *position, mc_nbt_string string) {
     size_t encoded = 0;
     size_t written = 0;
     (void)mc_mutf8_encoded_length(string.units, string.length, &encoded);
@@ -841,8 +806,7 @@ static void nbt_write_string(uint8_t *output, size_t *position, mc_nbt_string st
 
 /* Validation already established every bound, pointer and tree invariant.
  * Emission has no allocation or failure path for the immutable borrowed tree. */
-static void nbt_write_tag(uint8_t *output, size_t *position, const mc_nbt_tag *tag, bool named)
-{
+static void nbt_write_tag(uint8_t *output, size_t *position, const mc_nbt_tag *tag, bool named) {
     if (named) {
         output[(*position)++] = (uint8_t)tag->type;
     }
@@ -914,8 +878,7 @@ static void nbt_write_tag(uint8_t *output, size_t *position, const mc_nbt_tag *t
 }
 
 mc_nbt_status mc_nbt_write(const mc_nbt_tag *root, const mc_nbt_limits *limits, uint8_t *output,
-                           size_t capacity, size_t *written, mc_nbt_error *error)
-{
+                           size_t capacity, size_t *written, mc_nbt_error *error) {
     if (written == NULL || (output == NULL && capacity != 0)) {
         nbt_set_error(error, MC_NBT_INVALID_ARGUMENT, 0);
         return MC_NBT_INVALID_ARGUMENT;

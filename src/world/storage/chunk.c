@@ -20,22 +20,19 @@ static const char *const stored_names[STORED_FIELD_COUNT] = {
 
 static mc_stored_chunk_status stored_error(mc_stored_chunk_error *error,
                                            mc_stored_chunk_status status, const char *field,
-                                           mc_nbt_error nbt)
-{
+                                           mc_nbt_error nbt) {
     if (error != NULL)
         *error = (mc_stored_chunk_error){status, field, nbt};
     return status;
 }
 
 static mc_stored_chunk_status stored_status(mc_stored_chunk_error *error,
-                                            mc_stored_chunk_status status, const char *field)
-{
+                                            mc_stored_chunk_status status, const char *field) {
     return stored_error(error, status, field, (mc_nbt_error){MC_NBT_OK, 0});
 }
 
 static mc_stored_chunk_status stored_nbt_error(mc_stored_chunk_error *error, mc_nbt_status status,
-                                               mc_nbt_error nbt)
-{
+                                               mc_nbt_error nbt) {
     mc_stored_chunk_status result = status == MC_NBT_LIMIT ? MC_STORED_CHUNK_LIMIT
                                     : status == MC_NBT_ALLOCATION_FAILED
                                         ? MC_STORED_CHUNK_ALLOCATION_FAILED
@@ -43,8 +40,7 @@ static mc_stored_chunk_status stored_nbt_error(mc_stored_chunk_error *error, mc_
     return stored_error(error, result, NULL, nbt);
 }
 
-const char *mc_stored_chunk_status_string(mc_stored_chunk_status status)
-{
+const char *mc_stored_chunk_status_string(mc_stored_chunk_status status) {
     switch (status) {
         case MC_STORED_CHUNK_OK:
             return "ok";
@@ -70,24 +66,21 @@ const char *mc_stored_chunk_status_string(mc_stored_chunk_status status)
     return "unknown stored chunk status";
 }
 
-static mc_nbt_string stored_name(const char *ascii, uint16_t units[16])
-{
+static mc_nbt_string stored_name(const char *ascii, uint16_t units[16]) {
     size_t length = strlen(ascii);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)ascii[i];
     return (mc_nbt_string){units, length};
 }
 
-static const mc_nbt_tag *stored_get(const mc_nbt_tag *compound, const char *ascii)
-{
+static const mc_nbt_tag *stored_get(const mc_nbt_tag *compound, const char *ascii) {
     uint16_t units[16];
     mc_nbt_string name = stored_name(ascii, units);
     return mc_nbt_compound_get(compound, name.units, name.length);
 }
 
 static bool stored_typed(const mc_nbt_tag *parent, const char *name, mc_nbt_type type,
-                         const mc_nbt_tag **out, mc_stored_chunk_error *error)
-{
+                         const mc_nbt_tag **out, mc_stored_chunk_error *error) {
     const mc_nbt_tag *tag = stored_get(parent, name);
     if (tag != NULL && tag->type != type) {
         (void)stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, name);
@@ -98,8 +91,7 @@ static bool stored_typed(const mc_nbt_tag *parent, const char *name, mc_nbt_type
 }
 
 static bool stored_array(const mc_nbt_tag *level, const char *name, uint8_t *output, size_t length,
-                         mc_stored_chunk_error *error)
-{
+                         mc_stored_chunk_error *error) {
     const mc_nbt_tag *tag;
     if (!stored_typed(level, name, MC_NBT_BYTE_ARRAY, &tag, error))
         return false;
@@ -112,8 +104,7 @@ static bool stored_array(const mc_nbt_tag *level, const char *name, uint8_t *out
 }
 
 static bool stored_list(const mc_nbt_tag *level, const char *name, const mc_nbt_tag **out,
-                        mc_stored_chunk_error *error)
-{
+                        mc_stored_chunk_error *error) {
     if (!stored_typed(level, name, MC_NBT_LIST, out, error))
         return false;
     if (*out != NULL) {
@@ -127,22 +118,19 @@ static bool stored_list(const mc_nbt_tag *level, const char *name, const mc_nbt_
     return true;
 }
 
-static bool stored_limits(const mc_nbt_limits *requested, mc_nbt_limits *limits)
-{
+static bool stored_limits(const mc_nbt_limits *requested, mc_nbt_limits *limits) {
     *limits = requested == NULL ? mc_nbt_default_limits() : *requested;
     return limits->max_depth != 0 && limits->max_depth <= 128;
 }
 
-static void stored_bind(mc_stored_chunk *chunk)
-{
+static void stored_bind(mc_stored_chunk *chunk) {
     chunk->state.data = &chunk->data;
     chunk->data.blocks = chunk->blocks;
     chunk->data.blocks_capacity = sizeof(chunk->blocks);
 }
 
 static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk, bool game,
-                                                   mc_stored_chunk_error *error)
-{
+                                                   mc_stored_chunk_error *error) {
     const mc_nbt_tag *root = mc_nbt_document_root(chunk->source);
     const mc_nbt_tag *level;
     if (!stored_typed(root, "Level", MC_NBT_COMPOUND, &level, error))
@@ -180,8 +168,7 @@ static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk, bool 
 static mc_stored_chunk_status stored_decode(const uint8_t *input, size_t length,
                                             const mc_nbt_limits *requested, bool game,
                                             mc_stored_chunk **out, size_t *consumed,
-                                            mc_stored_chunk_error *error)
-{
+                                            mc_stored_chunk_error *error) {
     mc_nbt_limits limits;
     if (out == NULL || (input == NULL && length != 0) || !stored_limits(requested, &limits))
         return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
@@ -216,23 +203,20 @@ static mc_stored_chunk_status stored_decode(const uint8_t *input, size_t length,
 
 mc_stored_chunk_status mc_stored_chunk_decode(const uint8_t *input, size_t length,
                                               const mc_nbt_limits *requested, mc_stored_chunk **out,
-                                              size_t *consumed, mc_stored_chunk_error *error)
-{
+                                              size_t *consumed, mc_stored_chunk_error *error) {
     return stored_decode(input, length, requested, false, out, consumed, error);
 }
 
 mc_stored_chunk_status mc_stored_chunk_decode_game(const uint8_t *input, size_t length,
                                                    const mc_nbt_limits *requested,
                                                    mc_stored_chunk **out, size_t *consumed,
-                                                   mc_stored_chunk_error *error)
-{
+                                                   mc_stored_chunk_error *error) {
     return stored_decode(input, length, requested, true, out, consumed, error);
 }
 
 mc_stored_chunk_status mc_stored_chunk_create(const mc_chunk_state *state,
                                               const mc_nbt_limits *requested, mc_stored_chunk **out,
-                                              mc_stored_chunk_error *error)
-{
+                                              mc_stored_chunk_error *error) {
     mc_nbt_limits limits;
     if (state == NULL || out == NULL || state->blank || state->data == NULL ||
         state->data->blocks == NULL || state->data->blocks_capacity < MC_CHUNK_BLOCKS ||
@@ -254,31 +238,26 @@ mc_stored_chunk_status mc_stored_chunk_create(const mc_chunk_state *state,
     return stored_status(error, MC_STORED_CHUNK_OK, NULL);
 }
 
-mc_chunk_state *mc_stored_chunk_state(mc_stored_chunk *chunk)
-{
+mc_chunk_state *mc_stored_chunk_state(mc_stored_chunk *chunk) {
     return chunk == NULL ? NULL : &chunk->state;
 }
 
-const mc_nbt_tag *mc_stored_chunk_root(const mc_stored_chunk *chunk)
-{
+const mc_nbt_tag *mc_stored_chunk_root(const mc_stored_chunk *chunk) {
     return chunk == NULL ? NULL : mc_nbt_document_root(chunk->source);
 }
 
-static bool stored_valid(const mc_stored_chunk *chunk)
-{
+static bool stored_valid(const mc_stored_chunk *chunk) {
     return chunk != NULL && !chunk->state.blank && chunk->state.data == &chunk->data &&
            chunk->data.blocks == chunk->blocks &&
            chunk->data.blocks_capacity == sizeof(chunk->blocks);
 }
 
-bool mc_stored_chunk_storage_valid(const mc_stored_chunk *chunk)
-{
+bool mc_stored_chunk_storage_valid(const mc_stored_chunk *chunk) {
     return stored_valid(chunk);
 }
 
 mc_stored_chunk_status mc_stored_chunk_normalize(mc_stored_chunk *chunk, const uint8_t *map,
-                                                 size_t length)
-{
+                                                 size_t length) {
     if (!stored_valid(chunk) || map == NULL || length < 256)
         return MC_STORED_CHUNK_INVALID_ARGUMENT;
     for (size_t i = 0; i < 256; ++i) {
@@ -291,15 +270,13 @@ mc_stored_chunk_status mc_stored_chunk_normalize(mc_stored_chunk *chunk, const u
 }
 
 static bool stored_same_array(const mc_nbt_tag *level, const char *name, const uint8_t *data,
-                              size_t length)
-{
+                              size_t length) {
     const mc_nbt_tag *tag = stored_get(level, name);
     return tag != NULL && tag->value.byte_array.length == length &&
            memcmp(tag->value.byte_array.data, data, length) == 0;
 }
 
-static bool stored_supported(const mc_stored_chunk *chunk, const mc_nbt_tag *level)
-{
+static bool stored_supported(const mc_stored_chunk *chunk, const mc_nbt_tag *level) {
     const mc_nbt_tag *entities = stored_get(level, "Entities");
     const mc_nbt_tag *tiles = stored_get(level, "TileEntities");
     bool has_entities = entities != NULL && entities->value.list.length != 0;
@@ -326,8 +303,7 @@ static bool stored_supported(const mc_stored_chunk *chunk, const mc_nbt_tag *lev
 
 static void stored_fields(const mc_chunk_state *state, const mc_nbt_tag *level, int64_t world_time,
                           bool retain_lists, mc_nbt_tag fields[STORED_FIELD_COUNT],
-                          uint16_t names[STORED_FIELD_COUNT][16])
-{
+                          uint16_t names[STORED_FIELD_COUNT][16]) {
     for (size_t i = 0; i < STORED_FIELD_COUNT; ++i)
         fields[i].name = stored_name(stored_names[i], names[i]);
     fields[0].type = fields[1].type = MC_NBT_INT;
@@ -359,8 +335,7 @@ static void stored_fields(const mc_chunk_state *state, const mc_nbt_tag *level, 
 }
 
 static size_t stored_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *fields, size_t count,
-                             const mc_nbt_tag **items)
-{
+                             const mc_nbt_tag **items) {
     bool used[STORED_FIELD_COUNT] = {false};
     size_t length = 0;
     size_t old_length = baseline == NULL ? 0 : baseline->value.compound.length;
@@ -392,8 +367,7 @@ static size_t stored_overlay(const mc_nbt_tag *baseline, const mc_nbt_tag *field
 static mc_stored_chunk_status stored_build(const mc_chunk_state *state, const mc_nbt_tag *baseline,
                                            const mc_nbt_tag *level, int64_t world_time,
                                            mc_nbt_limits limits, mc_nbt_document **out,
-                                           mc_stored_chunk_error *error)
-{
+                                           mc_stored_chunk_error *error) {
     size_t root_count = baseline == NULL ? 0 : baseline->value.compound.length;
     size_t level_count = level == NULL ? 0 : level->value.compound.length;
     if (root_count > limits.max_elements || level_count > limits.max_elements ||
@@ -459,8 +433,7 @@ static mc_stored_chunk_status stored_build(const mc_chunk_state *state, const mc
 
 mc_stored_chunk_status mc_stored_chunk_build(const mc_stored_chunk *chunk, int64_t world_time,
                                              const mc_nbt_limits *requested, mc_nbt_document **out,
-                                             mc_stored_chunk_error *error)
-{
+                                             mc_stored_chunk_error *error) {
     mc_nbt_limits limits;
     if (!stored_valid(chunk) || out == NULL || !stored_limits(requested, &limits))
         return stored_status(error, MC_STORED_CHUNK_INVALID_ARGUMENT, NULL);
@@ -474,8 +447,7 @@ mc_stored_chunk_status mc_stored_chunk_build(const mc_stored_chunk *chunk, int64
 mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, int64_t world_time,
                                                    const mc_nbt_limits *requested,
                                                    mc_nbt_document **out,
-                                                   mc_stored_chunk_error *error)
-{
+                                                   mc_stored_chunk_error *error) {
     mc_nbt_limits limits;
     if (state == NULL || out == NULL || state->blank || state->data == NULL ||
         state->data->blocks == NULL || state->data->blocks_capacity < MC_CHUNK_BLOCKS ||
@@ -490,8 +462,7 @@ mc_stored_chunk_status mc_stored_chunk_build_game_records(
     const mc_stored_chunk *stored, const mc_chunk_state *state, const mc_world_chunk *chunk,
     int64_t world_time, const mc_nbt_tag *entity_records, const mc_nbt_tag *tile_records,
     const mc_nbt_tag *baseline_entities, const bool *consumed, size_t consumed_count,
-    const mc_nbt_limits *requested, mc_nbt_tree **out, mc_stored_chunk_error *error)
-{
+    const mc_nbt_limits *requested, mc_nbt_tree **out, mc_stored_chunk_error *error) {
     mc_nbt_limits limits;
     if (state == NULL || chunk == NULL || out == NULL || state->blank || state->data == NULL ||
         state->data->blocks == NULL || state->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS ||
@@ -622,8 +593,7 @@ mc_stored_chunk_status mc_stored_chunk_build_game_records(
     return stored_status(error, MC_STORED_CHUNK_OK, NULL);
 }
 
-void mc_stored_chunk_free(mc_stored_chunk *chunk)
-{
+void mc_stored_chunk_free(mc_stored_chunk *chunk) {
     if (chunk != NULL) {
         mc_nbt_document_free(chunk->source);
         free(chunk);

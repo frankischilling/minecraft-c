@@ -78,8 +78,7 @@ _Static_assert(MATERIAL_CASES == 28, "all original material fields required");
 _Static_assert(PALETTE_CASES == 14, "all original palette fields required");
 
 static int check_material(const mc_material *material, const material_case *expected,
-                          bool expected_g, const mc_material_palette *palette)
-{
+                          bool expected_g, const mc_material_palette *palette) {
     int result = 1;
     CHECK(material != NULL);
     CHECK(mc_material_a(material) == expected->a);
@@ -97,8 +96,7 @@ cleanup:
     return result;
 }
 
-static int check_palette(const mc_material_palette *palette, const palette_case *expected)
-{
+static int check_palette(const mc_material_palette *palette, const palette_case *expected) {
     int result = 1;
     CHECK(palette != NULL);
     CHECK(mc_material_palette_index(palette) == expected->index);
@@ -108,8 +106,7 @@ cleanup:
     return result;
 }
 
-static int test_material_owners(void)
-{
+static int test_material_owners(void) {
     int result = 1;
     mc_materials *owner = NULL, *other = NULL;
     mc_material *materials[MATERIAL_CASES];
@@ -244,8 +241,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_material_owners() != 0) {
         return 1;
     }

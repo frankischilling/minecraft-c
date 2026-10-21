@@ -31,6 +31,7 @@ typedef struct stream {
     size_t length, offset, opens, reads, closes;
     bool closed;
 } stream;
+
 typedef struct fixture {
     mc_registry_classes *owner;
     mc_registry_resources source;
@@ -39,8 +40,7 @@ typedef struct fixture {
 } fixture;
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
@@ -58,8 +58,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     fixture *f = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     for (size_t i = 0; i < COUNT(names); ++i)
@@ -78,8 +77,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->context != &f->streams[2] || input->read != read_bytes) {
         f->invalid = true;
@@ -90,8 +88,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->read != read_bytes)
         f->invalid = true;
@@ -99,8 +96,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
 }
 
 static mc_registry_status create(fixture *f, mc_registry_side side, mc_materials *materials,
-                                 mc_java_random_profile *profile, size_t budget)
-{
+                                 mc_java_random_profile *profile, size_t budget) {
     *f = (fixture){0};
     f->streams[0] = (stream){english, sizeof(english) - 1, 0, 0, 0, 0, false};
     f->streams[1] = (stream){english, 0, 0, 0, 0, 0, false};
@@ -110,8 +106,7 @@ static mc_registry_status create(fixture *f, mc_registry_side side, mc_materials
     return mc_registry_classes_allocate(&options, &f->owner, NULL);
 }
 
-static bool retire(fixture *f)
-{
+static bool retire(fixture *f) {
     if (f->owner == NULL)
         return true;
     f->owner->entered = 0;
@@ -124,27 +119,23 @@ static bool retire(fixture *f)
     return true;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advance_five(uint64_t value)
-{
+static uint64_t advance_five(uint64_t value) {
     for (int i = 0; i < 5; ++i)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static bool fields_are(const mc_item_stack *stack, int32_t id, int32_t count, int32_t damage)
-{
+static bool fields_are(const mc_item_stack *stack, int32_t id, int32_t count, int32_t damage) {
     mc_item_stack_fields f;
     return mc_item_stack_fields_get(stack, &f) == MC_ITEM_STACK_OK && f.id == id &&
            f.count == count && f.damage == damage && f.animation == 0;
 }
 
-static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_cause(const mc_registry_error *a, const mc_registry_error *b) {
     return a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
            a->active_initializer_class == b->active_initializer_class &&
@@ -159,13 +150,11 @@ static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_error(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message && same_cause(a, b);
 }
 
-static const mc_registry_string *property(mc_registry_classes *owner, const char *key)
-{
+static const mc_registry_string *property(mc_registry_classes *owner, const char *key) {
     uint16_t units[64];
     size_t length = strlen(key);
     if (length > COUNT(units))
@@ -179,8 +168,7 @@ static const mc_registry_string *property(mc_registry_classes *owner, const char
                : NULL;
 }
 
-static bool starts_with(const mc_registry_string *string, const char *prefix)
-{
+static bool starts_with(const mc_registry_string *string, const char *prefix) {
     mc_registry_string_view view;
     size_t n = strlen(prefix);
     if (!mc_registry_string_read(string, &view) || view.length < n)
@@ -191,15 +179,13 @@ static bool starts_with(const mc_registry_string *string, const char *prefix)
     return true;
 }
 
-static const mc_recipe *at(const mc_crafting_manager *manager, size_t index)
-{
+static const mc_recipe *at(const mc_crafting_manager *manager, size_t index) {
     const mc_recipe *out = NULL;
     return mc_crafting_manager_get(manager, index, &out) == MC_REGISTRY_OK ? out : NULL;
 }
 
 static mc_item_stack *new_stack(mc_registry_classes *owner, int32_t id, int32_t count,
-                                int32_t damage)
-{
+                                int32_t damage) {
     mc_item_stack *out = NULL;
     if (mc_registry_stack_allocate(owner, &out) != MC_REGISTRY_OK ||
         mc_registry_stack_construct_numeric(owner, out, id, count, damage) != MC_REGISTRY_OK)
@@ -214,8 +200,7 @@ typedef struct identity_set {
     size_t count;
 } identity_set;
 
-static bool enroll(identity_set *set, const mc_item_stack *stack)
-{
+static bool enroll(identity_set *set, const mc_item_stack *stack) {
     if (stack == NULL || set->count == COUNT(set->objects))
         return false;
     mc_item_stack_fields fields;
@@ -232,8 +217,7 @@ static bool enroll(identity_set *set, const mc_item_stack *stack)
 }
 
 static bool inspect_recipe(const mc_recipe *recipe, identity_set *identities, bool *ids,
-                           int32_t *size)
-{
+                           int32_t *size) {
     mc_item_stack_fields output;
     const mc_item_stack *stack = mc_recipe_output(recipe);
     if (!enroll(identities, stack) ||
@@ -281,8 +265,7 @@ static const struct smelt_case {
               {true, "x", true, "u", 0},     {false, "aG", false, "aF", 0},
               {true, "aW", false, "aU", 2},  {true, "K", false, "k", 1}};
 
-static bool selected_id(mc_registry_classes *owner, bool block, const char *name, int32_t *id)
-{
+static bool selected_id(mc_registry_classes *owner, bool block, const char *name, int32_t *id) {
     if (block) {
         const mc_block *object = NULL;
         if (mc_registry_classes_inspect_block_static(owner, name, &object, NULL) !=
@@ -301,8 +284,7 @@ static bool selected_id(mc_registry_classes *owner, bool block, const char *name
 }
 
 static int bootstrap(mc_registry_side side, mc_materials *materials,
-                     mc_java_random_profile *profile)
-{
+                     mc_java_random_profile *profile) {
     int result = 1;
     fixture f = {0};
     identity_set identities = {0};
@@ -389,16 +371,14 @@ cleanup:
     return result;
 }
 
-static mc_registry_status enter_route(fixture *f, int route, mc_registry_error *error)
-{
+static mc_registry_status enter_route(fixture *f, int route, mc_registry_error *error) {
     return route == 0   ? mc_registry_classes_initialize_items(f->owner, error)
            : route == 1 ? mc_registry_classes_initialize_crafting(f->owner, error)
                         : mc_registry_classes_initialize_smelting(f->owner, error);
 }
 
 static int entry_failures(mc_registry_side side, mc_materials *materials,
-                          mc_java_random_profile *profile, int route)
-{
+                          mc_java_random_profile *profile, int route) {
     int result = 1;
     fixture f = {0};
     mc_registry_error first, retry;
@@ -459,26 +439,24 @@ cleanup:
     return result;
 }
 
-static mc_recipe_argument text(const mc_registry_string *string)
-{
+static mc_recipe_argument text(const mc_registry_string *string) {
     return (mc_recipe_argument){.kind = MC_RECIPE_ARGUMENT_STRING, .value.string = string};
 }
-static mc_recipe_argument character(uint16_t value)
-{
+
+static mc_recipe_argument character(uint16_t value) {
     return (mc_recipe_argument){.kind = MC_RECIPE_ARGUMENT_CHARACTER, .value.character = value};
 }
-static mc_recipe_argument stack_arg(mc_item_stack *stack)
-{
+
+static mc_recipe_argument stack_arg(mc_item_stack *stack) {
     return (mc_recipe_argument){.kind = MC_RECIPE_ARGUMENT_STACK, .value.stack = stack};
 }
-static mc_recipe_argument rows(const mc_registry_string *const *values, size_t count)
-{
+
+static mc_recipe_argument rows(const mc_registry_string *const *values, size_t count) {
     return (mc_recipe_argument){.kind = MC_RECIPE_ARGUMENT_STRINGS,
                                 .value.strings = {values, count}};
 }
 
-static bool shape(const mc_recipe *recipe, mc_item_stack *output, int32_t width, int32_t height)
-{
+static bool shape(const mc_recipe *recipe, mc_item_stack *output, int32_t width, int32_t height) {
     const mc_shaped_recipe_fields *s = mc_recipe_shaped_fields_get(recipe);
     mc_item_stack_fields fields;
     return s != NULL && mc_item_stack_fields_get(output, &fields) == MC_ITEM_STACK_OK &&
@@ -489,8 +467,7 @@ static bool shape(const mc_recipe *recipe, mc_item_stack *output, int32_t width,
 
 static bool failure(mc_crafting_manager *manager, bool shapeless, mc_item_stack *output,
                     const mc_recipe_argument *args, size_t count, mc_registry_status status,
-                    int32_t pc)
-{
+                    int32_t pc) {
     size_t size = mc_crafting_manager_size(manager);
     const mc_recipe *first = at(manager, 0);
     mc_registry_status actual = shapeless
@@ -501,8 +478,7 @@ static bool failure(mc_crafting_manager *manager, bool shapeless, mc_item_stack 
 }
 
 static int parser_contracts(mc_registry_side side, mc_materials *materials,
-                            mc_java_random_profile *profile)
-{
+                            mc_java_random_profile *profile) {
     int result = 1;
     fixture f = {0};
     mc_item_stack *held_output = NULL, *held_ingredient = NULL;
@@ -741,8 +717,7 @@ cleanup:
 }
 
 static int repeated_statistics(mc_registry_side side, mc_materials *materials,
-                               mc_java_random_profile *profile)
-{
+                               mc_java_random_profile *profile) {
     int result = 1;
     fixture f = {0};
     CHECK(create(&f, side, materials, profile, 0) == MC_REGISTRY_OK &&
@@ -796,8 +771,7 @@ cleanup:
 }
 
 static int natural_limit(mc_registry_side side, mc_materials *materials,
-                         mc_java_random_profile *profile)
-{
+                         mc_java_random_profile *profile) {
     int result = 1;
     fixture f = {0};
     mc_item_stack *held = NULL;
@@ -853,8 +827,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;

@@ -12,32 +12,28 @@ enum cave_block {
     CAVE_FLOWING_LAVA = 10
 };
 
-static int32_t cave_bounded(mc_java_random *random, int32_t bound)
-{
+static int32_t cave_bounded(mc_java_random *random, int32_t bound) {
     int32_t result = 0;
     /* Normal runtime and the private adapter domain keep every bound positive. */
     (void)mc_java_random_next_bounded(random, bound, &result);
     return result;
 }
 
-static int64_t cave_i64_from_bits(uint64_t bits)
-{
+static int64_t cave_i64_from_bits(uint64_t bits) {
     if (bits <= INT64_MAX) {
         return (int64_t)bits;
     }
     return -1 - (int64_t)(UINT64_MAX - bits);
 }
 
-void mc_terrain_cave_room(mc_terrain_cave_context *context, double x, double y, double z)
-{
+void mc_terrain_cave_room(mc_terrain_cave_context *context, double x, double y, double z) {
     float width = mc_java_random_next_float(context->random) * 6.0f;
     width = 1.0f + width;
     mc_terrain_cave_path(context, x, y, z, width, 0.0f, 0.0f, -1, -1, 0.5);
 }
 
 void mc_terrain_cave_path_begin(mc_terrain_cave_path_frame *frame, mc_java_random *shared,
-                                const mc_terrain_cave_path_args *args)
-{
+                                const mc_terrain_cave_path_args *args) {
     frame->current = *args;
     frame->origin_x = mc_java_i32_mul(args->chunk_x, 16);
     frame->origin_z = mc_java_i32_mul(args->chunk_z, 16);
@@ -60,8 +56,7 @@ void mc_terrain_cave_path_begin(mc_terrain_cave_path_frame *frame, mc_java_rando
 
 mc_terrain_cave_step mc_terrain_cave_path_step(mc_terrain_cave_path_frame *frame,
                                                const mc_math_trig *trig,
-                                               mc_terrain_cave_ellipsoid *out)
-{
+                                               mc_terrain_cave_ellipsoid *out) {
     mc_terrain_cave_path_args *current = &frame->current;
     if (current->step >= current->end)
         return MC_TERRAIN_CAVE_END;
@@ -160,8 +155,7 @@ mc_terrain_cave_step mc_terrain_cave_path_step(mc_terrain_cave_path_frame *frame
 }
 
 void mc_terrain_cave_path_child(mc_terrain_cave_path_frame *parent, unsigned int index,
-                                mc_terrain_cave_path_args *out)
-{
+                                mc_terrain_cave_path_args *out) {
     float width = mc_java_random_next_float(&parent->local) * 0.5f;
     width = width + 0.5f;
     float yaw = index == 0 ? parent->current.yaw - 1.5707964f : parent->current.yaw + 1.5707964f;
@@ -173,8 +167,7 @@ void mc_terrain_cave_path_child(mc_terrain_cave_path_frame *parent, unsigned int
     out->vertical_ratio = 1.0;
 }
 
-double mc_terrain_cave_ellipsoid_x(const mc_terrain_cave_ellipsoid *ellipse, int32_t local_x)
-{
+double mc_terrain_cave_ellipsoid_x(const mc_terrain_cave_ellipsoid *ellipse, int32_t local_x) {
     double normalized = (double)mc_java_i32_add(local_x, ellipse->origin_x) + 0.5;
     normalized = normalized - ellipse->x;
     normalized = normalized / ellipse->radius;
@@ -182,8 +175,8 @@ double mc_terrain_cave_ellipsoid_x(const mc_terrain_cave_ellipsoid *ellipse, int
 }
 
 bool mc_terrain_cave_ellipsoid_column(const mc_terrain_cave_ellipsoid *ellipse, double normalized_x,
-                                      int32_t local_x, int32_t local_z, mc_terrain_cave_column *out)
-{
+                                      int32_t local_x, int32_t local_z,
+                                      mc_terrain_cave_column *out) {
     double normalized_z = (double)mc_java_i32_add(local_z, ellipse->origin_z) + 0.5;
     normalized_z = normalized_z - ellipse->z;
     normalized_z = normalized_z / ellipse->radius;
@@ -195,8 +188,7 @@ bool mc_terrain_cave_ellipsoid_column(const mc_terrain_cave_ellipsoid *ellipse, 
 }
 
 bool mc_terrain_cave_ellipsoid_contains(const mc_terrain_cave_ellipsoid *ellipse,
-                                        const mc_terrain_cave_column *column, int32_t geometric_y)
-{
+                                        const mc_terrain_cave_column *column, int32_t geometric_y) {
     double normalized_y = (double)geometric_y + 0.5;
     normalized_y = normalized_y - ellipse->y;
     normalized_y = normalized_y / ellipse->vertical_radius;
@@ -209,8 +201,7 @@ bool mc_terrain_cave_ellipsoid_contains(const mc_terrain_cave_ellipsoid *ellipse
 
 void mc_terrain_cave_path(mc_terrain_cave_context *context, double x, double y, double z,
                           float width, float yaw, float pitch, int32_t step, int32_t end,
-                          double vertical_ratio)
-{
+                          double vertical_ratio) {
     const mc_terrain_cave_path_args args = {.chunk_x = context->chunk_x,
                                             .chunk_z = context->chunk_z,
                                             .x = x,
@@ -298,8 +289,7 @@ void mc_terrain_cave_path(mc_terrain_cave_context *context, double x, double y, 
     }
 }
 
-static void cave_neighbor(mc_terrain_cave_context *context, int32_t source_x, int32_t source_z)
-{
+static void cave_neighbor(mc_terrain_cave_context *context, int32_t source_x, int32_t source_z) {
     int32_t bound = cave_bounded(context->random, 40) + 1;
     bound = cave_bounded(context->random, bound) + 1;
     int32_t systems = cave_bounded(context->random, bound);
@@ -334,8 +324,7 @@ static void cave_neighbor(mc_terrain_cave_context *context, int32_t source_x, in
 
 static bool cave_normal(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
                         int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                        size_t blocks_length, bool fresh)
-{
+                        size_t blocks_length, bool fresh) {
     if (table == NULL || cave_random == NULL || blocks == NULL ||
         blocks_length < MC_TERRAIN_CAVE_BLOCKS || chunk_x < INT32_MIN + 8 ||
         chunk_x > INT32_MAX - 9 || chunk_z < INT32_MIN + 8 || chunk_z > INT32_MAX - 9) {
@@ -364,16 +353,14 @@ static bool cave_normal(const mc_math_trig *table, int64_t world_seed, int32_t c
 
 bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
                              int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                             size_t blocks_length)
-{
+                             size_t blocks_length) {
     return cave_normal(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
                        true);
 }
 
 bool mc_terrain_normal_caves_reseed(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
                                     int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                                    size_t blocks_length)
-{
+                                    size_t blocks_length) {
     return cave_normal(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
                        false);
 }

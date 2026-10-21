@@ -23,8 +23,7 @@ static mc_math_trig trig;
  * storage failure after Info and Dimension binding. No READY World is forged;
  * private field edits exercise these helpers on that retained failed owner.
  * Constants below are dyadic/cardinal cases, not original observation goldens. */
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;

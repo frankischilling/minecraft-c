@@ -9,8 +9,7 @@
 #include <limits.h>
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -23,14 +22,12 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
     return status;
 }
 
-static void stage(mc_statistic *statistic, int32_t pc)
-{
+static void stage(mc_statistic *statistic, int32_t pc) {
     statistic->source_class = statistic->classes->options.side == MC_REGISTRY_CLIENT ? "ny" : "it";
     statistic->source_pc = pc;
 }
 
-static mc_registry_status own_error(mc_statistic *statistic)
-{
+static mc_registry_status own_error(mc_statistic *statistic) {
     mc_registry_error *error = &statistic->classes->last_error;
     error->constructor_class = statistic->source_class;
     error->constructor_pc = statistic->source_pc;
@@ -38,14 +35,12 @@ static mc_registry_status own_error(mc_statistic *statistic)
 }
 
 static mc_registry_status fail(mc_statistic *statistic, mc_registry_status status,
-                               const char *message)
-{
+                               const char *message) {
     (void)mc_registry_fail(statistic->classes, status, message, NULL);
     return own_error(statistic);
 }
 
-static mc_registry_status admitted(mc_statistic *statistic)
-{
+static mc_registry_status admitted(mc_statistic *statistic) {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (statistic->classes->entered == 0 || statistic->kind != MC_STATISTIC_ACHIEVEMENT)
@@ -64,8 +59,7 @@ typedef struct key_builder {
 } key_builder;
 
 static mc_registry_status append_key(mc_statistic *statistic, key_builder *builder,
-                                     const mc_registry_string *part)
-{
+                                     const mc_registry_string *part) {
     static const uint16_t null_units[] = {'n', 'u', 'l', 'l'};
     const uint16_t *units = part == NULL ? null_units : part->units;
     const size_t length = part == NULL ? sizeof(null_units) / sizeof(*null_units) : part->length;
@@ -81,8 +75,7 @@ static mc_registry_status append_key(mc_statistic *statistic, key_builder *build
 }
 
 static mc_registry_status finish_key(mc_statistic *statistic, const key_builder *builder,
-                                     const mc_registry_string **out)
-{
+                                     const mc_registry_string **out) {
     if (builder->length > SIZE_MAX / sizeof(uint16_t))
         return fail(statistic, MC_REGISTRY_LIMIT, "Achievement String native allocation bound");
     mc_registry_classes *classes = statistic->classes;
@@ -105,8 +98,7 @@ static mc_registry_status finish_key(mc_statistic *statistic, const key_builder 
 }
 
 static mc_registry_status achievement_key(mc_statistic *statistic, const mc_registry_string *suffix,
-                                          bool description, const mc_registry_string **out)
-{
+                                          bool description, const mc_registry_string **out) {
     mc_registry_classes *classes = statistic->classes;
     key_builder builder = {0};
     stage(statistic, description ? 37 : 5);
@@ -145,8 +137,7 @@ mc_registry_status mc_registry_achievement_construct_stack(mc_statistic *statist
                                                            const mc_registry_string *suffix,
                                                            int32_t x, int32_t y,
                                                            mc_item_stack *icon,
-                                                           const mc_statistic *parent)
-{
+                                                           const mc_statistic *parent) {
     mc_registry_status status = admitted(statistic);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -227,8 +218,7 @@ mc_registry_status mc_registry_achievement_construct_stack(mc_statistic *statist
 mc_registry_status mc_registry_achievement_construct_item(mc_statistic *statistic, int32_t raw_id,
                                                           const mc_registry_string *suffix,
                                                           int32_t x, int32_t y, const mc_item *icon,
-                                                          const mc_statistic *parent)
-{
+                                                          const mc_statistic *parent) {
     mc_registry_status status = admitted(statistic);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -254,8 +244,7 @@ mc_registry_status mc_registry_achievement_construct_block(mc_statistic *statist
                                                            const mc_registry_string *suffix,
                                                            int32_t x, int32_t y,
                                                            const mc_block *icon,
-                                                           const mc_statistic *parent)
-{
+                                                           const mc_statistic *parent) {
     mc_registry_status status = admitted(statistic);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -277,8 +266,7 @@ mc_registry_status mc_registry_achievement_construct_block(mc_statistic *statist
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_achievement_flag(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_achievement_flag(mc_statistic *statistic) {
     mc_registry_status status = admitted(statistic);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -288,8 +276,7 @@ mc_registry_status mc_registry_achievement_flag(mc_statistic *statistic)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_achievement_special(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_achievement_special(mc_statistic *statistic) {
     mc_registry_status status = admitted(statistic);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -299,8 +286,7 @@ mc_registry_status mc_registry_achievement_special(mc_statistic *statistic)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_achievement_register(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_achievement_register(mc_statistic *statistic) {
     mc_registry_status status = admitted(statistic);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -364,8 +350,7 @@ static const achievement_step steps[] = {
 _Static_assert(sizeof(steps) / sizeof(*steps) == 16, "ep/cy have sixteen named chains");
 
 static mc_registry_status initialize_step(mc_registry_classes *classes,
-                                          const achievement_step *step, size_t index)
-{
+                                          const achievement_step *step, size_t index) {
     mc_registry_initializer_stage(classes, step->allocation_pc);
     mc_statistic *statistic = NULL;
     mc_registry_status status =
@@ -430,8 +415,7 @@ static mc_registry_status initialize_step(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-static size_t decimal_ascii(int32_t value, char *out)
-{
+static size_t decimal_ascii(int32_t value, char *out) {
     char reversed[10];
     size_t count = 0, length = 0;
     uint32_t magnitude = value < 0 ? UINT32_C(0) - (uint32_t)value : (uint32_t)value;
@@ -446,16 +430,15 @@ static size_t decimal_ascii(int32_t value, char *out)
     return length;
 }
 
-static mc_registry_status stdout_status(mc_registry_classes *classes, mc_text_stdout_status status)
-{
+static mc_registry_status stdout_status(mc_registry_classes *classes,
+                                        mc_text_stdout_status status) {
     return mc_registry_fail(classes,
                             status == MC_TEXT_STDOUT_INVALID_ARGUMENT ? MC_REGISTRY_INVALID_ARGUMENT
                                                                       : MC_REGISTRY_IO_FAILED,
                             "Achievement process stdout native operation", NULL);
 }
 
-static mc_registry_status print_count(mc_registry_classes *classes)
-{
+static mc_registry_status print_count(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 422);
     mc_text_stdout output;
     mc_text_stdout_status text_status = mc_text_stdout_capture(&output);
@@ -509,8 +492,7 @@ static mc_registry_status print_count(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status initialize(mc_registry_classes *classes)
-{
+static mc_registry_status initialize(mc_registry_classes *classes) {
     mc_registry_initializer_stage(classes, 0);
     /* This native list combines storage and initialization at its actual
      * constructor4, before e publication7. */
@@ -533,8 +515,7 @@ static mc_registry_status initialize(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_achievements_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_achievements_active_use(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -561,8 +542,7 @@ mc_registry_status mc_registry_achievements_active_use(mc_registry_classes *clas
 }
 
 mc_registry_status mc_registry_classes_initialize_achievements(mc_registry_classes *classes,
-                                                               mc_registry_error *error)
-{
+                                                               mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Achievement registry owner");
     if (classes->entered != 0 || classes->achievements_state.phase == MC_REGISTRY_INITIALIZING)
@@ -589,8 +569,7 @@ mc_registry_status mc_registry_classes_initialize_achievements(mc_registry_class
 
 mc_registry_status mc_registry_classes_inspect_achievements(const mc_registry_classes *classes,
                                                             mc_registry_achievement_view *out,
-                                                            mc_registry_error *error)
-{
+                                                            mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Achievement view arguments");
     *out = (mc_registry_achievement_view){.phase = classes->achievements_state.phase,
@@ -604,8 +583,7 @@ mc_registry_status mc_registry_classes_inspect_achievements(const mc_registry_cl
     return diagnostic(error, MC_REGISTRY_OK, NULL);
 }
 
-const mc_achievement_fields *mc_statistic_achievement_fields_get(const mc_statistic *statistic)
-{
+const mc_achievement_fields *mc_statistic_achievement_fields_get(const mc_statistic *statistic) {
     return statistic == NULL || statistic->kind != MC_STATISTIC_ACHIEVEMENT
                ? NULL
                : &statistic->achievement;

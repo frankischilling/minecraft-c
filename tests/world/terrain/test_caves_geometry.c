@@ -42,38 +42,33 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static float float_from_bits(uint32_t bits)
-{
+static float float_from_bits(uint32_t bits) {
     float value;
     _Static_assert(sizeof(bits) == sizeof(value), "binary32 storage required");
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static double double_from_bits(uint64_t bits)
-{
+static double double_from_bits(uint64_t bits) {
     double value;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static int decode(caves_geometry_blocks reference, uint8_t output[LENGTH])
-{
+static int decode(caves_geometry_blocks reference, uint8_t output[LENGTH]) {
     CHECK(reference.offset <= ARRAY_LENGTH(observed_geometry_runs));
     CHECK(reference.count <= ARRAY_LENGTH(observed_geometry_runs) - reference.offset);
     size_t position = 0;
@@ -88,8 +83,7 @@ static int decode(caves_geometry_blocks reference, uint8_t output[LENGTH])
 }
 
 static int check_bytes(const uint8_t *actual, const uint8_t *wanted, size_t length,
-                       const char *label)
-{
+                       const char *label) {
     for (size_t i = 0; i < length; ++i) {
         ++checks;
         if (actual[i] != wanted[i]) {
@@ -101,8 +95,7 @@ static int check_bytes(const uint8_t *actual, const uint8_t *wanted, size_t leng
     return 0;
 }
 
-static int check_following(const mc_java_random *random, const uint64_t following[4])
-{
+static int check_following(const mc_java_random *random, const uint64_t following[4]) {
     mc_java_random copy = *random;
     mc_java_random before = *random;
     for (size_t i = 0; i < 4; ++i) {
@@ -112,8 +105,7 @@ static int check_following(const mc_java_random *random, const uint64_t followin
     return 0;
 }
 
-static int check_consumption(const caves_geometry_fixture *fixture)
-{
+static int check_consumption(const caves_geometry_fixture *fixture) {
     const caves_geometry_consumption *observed = &fixture->consumption;
     CHECK(strcmp(observed->basis, "continuation_match") == 0);
     CHECK(observed->candidates_matched == 1);
@@ -139,8 +131,7 @@ static int check_consumption(const caves_geometry_fixture *fixture)
 
 static int invoke_fixture(const caves_geometry_fixture *fixture, geometry_buffer *buffer,
                           mc_java_random *random, const geometry_buffer *peer,
-                          const mc_java_random *peer_random)
-{
+                          const mc_java_random *peer_random) {
     memset(buffer->before, 0x9c, sizeof(buffer->before));
     memset(buffer->after, 0xe6, sizeof(buffer->after));
     CHECK(decode(fixture->arrays[0], buffer->blocks) == 0);
@@ -207,8 +198,7 @@ static int invoke_fixture(const caves_geometry_fixture *fixture, geometry_buffer
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     CHECK(mc_math_trig_init(&table));
     memcpy(&table_before, &table, sizeof(table));
     memset(&first, 0x39, sizeof(first));

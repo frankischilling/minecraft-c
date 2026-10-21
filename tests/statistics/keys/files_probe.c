@@ -21,14 +21,12 @@ typedef struct cell {
 static const mc_registry_string *held[MAX_ENTRIES];
 static size_t held_count, rows, queries;
 
-static int compare_cells(const void *left, const void *right)
-{
+static int compare_cells(const void *left, const void *right) {
     const int32_t a = ((const cell *)left)->id, b = ((const cell *)right)->id;
     return a < b ? -1 : a != b;
 }
 
-static size_t identity(const mc_registry_string *string)
-{
+static size_t identity(const mc_registry_string *string) {
     for (size_t i = 0; i < held_count; ++i)
         if (held[i] == string)
             return i + 1;
@@ -38,8 +36,7 @@ static size_t identity(const mc_registry_string *string)
     return held_count;
 }
 
-static bool query(mc_registry_classes *classes, int32_t id)
-{
+static bool query(mc_registry_classes *classes, int32_t id) {
     const mc_registry_string *value = NULL;
     if (mc_registry_classes_statistic_key(classes, id, &value, NULL) != MC_REGISTRY_OK)
         return false;
@@ -57,8 +54,7 @@ static bool query(mc_registry_classes *classes, int32_t id)
     return true;
 }
 
-static char *root_argument(int argc, char **argv)
-{
+static char *root_argument(int argc, char **argv) {
     if (argc == 3) {
         const size_t length = strlen(argv[2]);
         char *copy = malloc(length + 1);
@@ -95,8 +91,7 @@ static char *root_argument(int argc, char **argv)
     return root;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     mc_resource_files *files = NULL;
     mc_materials *materials = NULL;

@@ -29,8 +29,7 @@ typedef enum probe_line_status {
     PROBE_LINE_IO_ERROR
 } probe_line_status;
 
-static void clear_state(ordered_probe_state *state)
-{
+static void clear_state(ordered_probe_state *state) {
     mc_scheduled_ordered_destroy(state->ordered);
     state->ordered = NULL;
     for (size_t i = 0; i < PROBE_RECORD_LIMIT; ++i) {
@@ -39,16 +38,14 @@ static void clear_state(ordered_probe_state *state)
     }
 }
 
-static bool reset_state(ordered_probe_state *state)
-{
+static bool reset_state(ordered_probe_state *state) {
     clear_state(state);
     return mc_scheduled_ordered_create(PROBE_OPERATION_LIMIT, PROBE_ALLOCATION_LIMIT,
                                        &state->ordered) == MC_SCHEDULED_ORDERED_OK;
 }
 
 /* BufferedReader.readLine accepts LF, CR and CRLF, excluding the terminator. */
-static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u], bool *skip_lf)
-{
+static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u], bool *skip_lf) {
     size_t length = 0;
     for (;;) {
         const int character = fgetc(stdin);
@@ -85,8 +82,7 @@ static probe_line_status read_line(char line[PROBE_LINE_LIMIT + 1u], bool *skip_
 }
 
 /* Keep empty fields, as Java split(" ", -1) does. No command has over four. */
-static bool split_words(char *line, char *words[4], size_t *out_count)
-{
+static bool split_words(char *line, char *words[4], size_t *out_count) {
     size_t count = 1;
     words[0] = line;
     for (char *cursor = line; *cursor != '\0'; ++cursor) {
@@ -102,8 +98,7 @@ static bool split_words(char *line, char *words[4], size_t *out_count)
     return true;
 }
 
-static bool parse_i64(const char *text, int64_t *out)
-{
+static bool parse_i64(const char *text, int64_t *out) {
     const char *cursor = text;
     if (*cursor == '+' || *cursor == '-') {
         ++cursor;
@@ -126,8 +121,7 @@ static bool parse_i64(const char *text, int64_t *out)
     return true;
 }
 
-static bool parse_id(const char *text, size_t *out)
-{
+static bool parse_id(const char *text, size_t *out) {
     int64_t value = 0;
     if (!parse_i64(text, &value) || value < 0 || value >= (int64_t)PROBE_RECORD_LIMIT) {
         return false;
@@ -136,14 +130,12 @@ static bool parse_id(const char *text, size_t *out)
     return true;
 }
 
-static mc_scheduled_tick *require_record(ordered_probe_state *state, const char *text)
-{
+static mc_scheduled_tick *require_record(ordered_probe_state *state, const char *text) {
     size_t id = 0;
     return parse_id(text, &id) ? state->records[id] : NULL;
 }
 
-static bool create_record(ordered_probe_state *state, char *words[4])
-{
+static bool create_record(ordered_probe_state *state, char *words[4]) {
     size_t id = 0;
     int64_t time = 0, sequence_value = 0;
     if (!parse_id(words[1], &id) || state->records[id] != NULL || !parse_i64(words[2], &time) ||
@@ -165,8 +157,7 @@ static bool create_record(ordered_probe_state *state, char *words[4])
 }
 
 static bool execute_command(ordered_probe_state *state, char *words[4], size_t count,
-                            const char **result)
-{
+                            const char **result) {
     *result = "-";
     if (strcmp(words[0], "new") == 0) {
         return count == 1u && reset_state(state);
@@ -219,8 +210,7 @@ static bool execute_command(ordered_probe_state *state, char *words[4], size_t c
 }
 
 static bool print_snapshot(const ordered_probe_state *state, const char *command,
-                           const char *result)
-{
+                           const char *result) {
     mc_scheduled_tick *first = NULL;
     mc_scheduled_tick_fields fields = {0};
     const mc_scheduled_ordered_status status = mc_scheduled_ordered_first(state->ordered, &first);
@@ -245,8 +235,7 @@ static bool print_snapshot(const ordered_probe_state *state, const char *command
     return written >= 0 && fflush(stdout) == 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     ordered_probe_state state = {0};
     int result = 1;

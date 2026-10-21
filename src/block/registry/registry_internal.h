@@ -146,64 +146,82 @@ struct mc_block {
     /* nr/in.b and jp/gh.a belong to distinct declaring classes. */
     bool nr_b;
     bool jp_a;
+
     union {
         struct {
             int32_t a;
             bool *b;
             int32_t *c;
         } om;
+
         struct {
             int32_t c;
             int32_t *a;
         } bk;
+
         struct {
             mc_java_random *a;
         } xq;
+
         struct {
             bool a;
         } pc;
+
         struct {
             bool a, b;
         } jq;
+
         struct {
             int32_t a;
         } h;
+
         struct {
             bool b;
         } ys;
+
         struct {
             int32_t *a, *b;
         } yq;
+
         struct {
             mc_block *a;
         } ss;
+
         struct {
             mc_java_random *a;
         } e;
+
         struct {
             bool a;
             mc_registry_wire_set *b;
         } sm;
+
         struct {
             mc_java_random *a;
             bool b;
         } tc;
+
         struct {
             const mc_tile_class_identity *a;
             bool b;
         } uj;
+
         struct {
             const mc_pressure_category *a;
         } bv;
+
         struct {
             bool a;
         } bs;
+
         struct {
             bool a;
         } db;
+
         struct {
             bool a;
         } fc;
+
         struct {
             bool c;
         } wo;

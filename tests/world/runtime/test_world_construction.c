@@ -21,36 +21,31 @@ static mc_math_trig trig;
         }                                                                                          \
     } while (0)
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary32 required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static bool cold(const mc_java_random_profile *profile)
-{
+static bool cold(const mc_java_random_profile *profile) {
     return profile->math == NULL &&
            atomic_load_explicit(&profile->holder_phase, memory_order_acquire) ==
                (unsigned int)MC_JAVA_RANDOM_HOLDER_COLD;
 }
 
-static bool same_fields(const mc_world_runtime_fields *left, const mc_world_runtime_fields *right)
-{
+static bool same_fields(const mc_world_runtime_fields *left, const mc_world_runtime_fields *right) {
 #define SAME(field) (left->field == right->field)
     return SAME(a) && SAME(C) && SAME(b) && SAME(D) && SAME(E) && SAME(F) && SAME(c) && SAME(G) &&
            SAME(d) && SAME(e) && SAME(H) && SAME(f) && SAME(g) && SAME(h) &&
@@ -65,8 +60,7 @@ static bool same_fields(const mc_world_runtime_fields *left, const mc_world_runt
 }
 
 static bool same_construction(const mc_world_runtime_construction *left,
-                              const mc_world_runtime_construction *right)
-{
+                              const mc_world_runtime_construction *right) {
     return left->mode == right->mode && left->phase == right->phase &&
            left->entry == right->entry && left->last_store_pc == right->last_store_pc &&
            left->failed_call_pc == right->failed_call_pc &&
@@ -80,8 +74,7 @@ static bool same_construction(const mc_world_runtime_construction *left,
  * All selected tails keep Dimension/provider/store null. g and I are genuine
  * unrepeatable values after their stores, so no guessed numeric value is used. */
 static int check_fields(const mc_world_runtime_fields *f, unsigned int pc, bool has_info,
-                        bool has_saved)
-{
+                        bool has_saved) {
     int result = 1;
     int32_t count = -1;
     mc_scheduled_tick *first = NULL;
@@ -141,8 +134,7 @@ cleanup:
     return result;
 }
 
-static void drop_world(mc_world_runtime **world)
-{
+static void drop_world(mc_world_runtime **world) {
     if (*world != NULL) {
         (void)mc_world_runtime_retire_world(*world, NULL);
         (void)mc_world_runtime_free(*world, NULL);
@@ -150,8 +142,7 @@ static void drop_world(mc_world_runtime **world)
     }
 }
 
-static int test_raw(mc_world_info_side side)
-{
+static int test_raw(mc_world_info_side side) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;
@@ -273,8 +264,7 @@ cleanup:
     return result;
 }
 
-static int test_tail(mc_world_runtime_entry entry, mc_world_info_side side)
-{
+static int test_tail(mc_world_runtime_entry entry, mc_world_info_side side) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;
@@ -408,8 +398,7 @@ cleanup:
     return result;
 }
 
-static int test_budget_prefixes(void)
-{
+static int test_budget_prefixes(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;
@@ -485,8 +474,7 @@ cleanup:
 
 static mc_world_storage_status construct_fp(mc_world_runtime *world,
                                             const mc_world_runtime_world_arguments *arguments,
-                                            unsigned int control, mc_world_storage_error *error)
-{
+                                            unsigned int control, mc_world_storage_error *error) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_world_storage_status status =
@@ -495,8 +483,7 @@ static mc_world_storage_status construct_fp(mc_world_runtime *world,
     return status;
 }
 
-static int test_random_failure(void)
-{
+static int test_random_failure(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;
@@ -549,8 +536,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (!mc_math_trig_init(&trig))
         return 1;
     if (test_raw(MC_WORLD_INFO_CLIENT) != 0 || test_raw(MC_WORLD_INFO_SERVER) != 0 ||

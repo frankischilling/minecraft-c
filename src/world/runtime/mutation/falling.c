@@ -40,8 +40,7 @@ typedef struct falling_frame {
     unsigned int tick_bytecode;
 } falling_frame;
 
-static const char *falling_method_name(const falling_frame *frame)
-{
+static const char *falling_method_name(const falling_frame *frame) {
     const bool client = frame->classes->options.side == MC_REGISTRY_CLIENT;
     switch (frame->method) {
         case FALLING_ADDED:
@@ -56,8 +55,7 @@ static const char *falling_method_name(const falling_frame *frame)
     return NULL;
 }
 
-static void falling_at(const falling_frame *frame, unsigned int pc)
-{
+static void falling_at(const falling_frame *frame, unsigned int pc) {
     frame->error->hook_class = frame->classes->options.side == MC_REGISTRY_CLIENT ? "gk" : "ei";
     frame->error->hook_method = falling_method_name(frame);
     frame->error->hook_bytecode = pc;
@@ -69,8 +67,7 @@ static void falling_at(const falling_frame *frame, unsigned int pc)
         frame->error->falling_predicate_bytecode = pc;
 }
 
-static bool falling_return(const falling_frame *frame)
-{
+static bool falling_return(const falling_frame *frame) {
     frame->error->hook_class = NULL;
     frame->error->hook_method = NULL;
     frame->error->hook_bytecode = 0;
@@ -81,15 +78,13 @@ static bool falling_return(const falling_frame *frame)
 }
 
 static bool falling_fail(const falling_frame *frame, unsigned int pc,
-                         mc_world_storage_status status, const char *operation)
-{
+                         mc_world_storage_status status, const char *operation) {
     falling_at(frame, pc);
     return mc_world_mutation_fail(frame->world, frame->error, status, operation);
 }
 
 static bool falling_storage_fail(const falling_frame *frame, unsigned int pc,
-                                 mc_world_storage_error cause)
-{
+                                 mc_world_storage_error cause) {
     falling_at(frame, pc);
     frame->error->status = cause.status;
     frame->error->operation = cause.operation;
@@ -103,8 +98,7 @@ static bool falling_storage_fail(const falling_frame *frame, unsigned int pc,
  * concrete hook. This is the existing finite projection, not a source stack
  * or a gameplay recursion limit. lower may alias the destination. */
 static bool falling_nested(const falling_frame *frame, unsigned int pc,
-                           const mc_world_mutation_error *lower)
-{
+                           const mc_world_mutation_error *lower) {
     const mc_world_mutation_error captured = *lower;
     *frame->error = captured;
     if (captured.cause_hook_class == NULL) {
@@ -120,8 +114,7 @@ static bool falling_nested(const falling_frame *frame, unsigned int pc,
 
 static bool falling_registry_fail(const falling_frame *frame, unsigned int pc,
                                   mc_registry_status status, const mc_registry_error *cause,
-                                  const char *operation)
-{
+                                  const char *operation) {
     falling_at(frame, pc);
     frame->error->registry = *cause;
     if (frame->world != NULL) {
@@ -136,8 +129,7 @@ static bool falling_registry_fail(const falling_frame *frame, unsigned int pc,
     return false;
 }
 
-static bool falling_null(const falling_frame *frame, unsigned int pc, const char *operation)
-{
+static bool falling_null(const falling_frame *frame, unsigned int pc, const char *operation) {
     mc_registry_error cause = mc_world_mutation_empty_error().registry;
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
@@ -147,8 +139,7 @@ static bool falling_null(const falling_frame *frame, unsigned int pc, const char
 /* invokestatic initializes its actual declaring class at the CALLER's invoke
  * site, before any c_ body instruction. This narrow admission has no extra
  * flag read, Block-only initialization, owner copy or synthetic class state. */
-static bool falling_predicate_active_use(const falling_frame *frame)
-{
+static bool falling_predicate_active_use(const falling_frame *frame) {
     mc_registry_classes *classes = frame->classes;
     mc_registry_error cause = mc_world_mutation_empty_error().registry;
     if (classes->entered != 0 || classes->blocks_phase == MC_REGISTRY_INITIALIZING) {
@@ -168,8 +159,7 @@ static bool falling_predicate_active_use(const falling_frame *frame)
 
 bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_classes *classes,
                                         int32_t x, int32_t y, int32_t z, bool *out,
-                                        mc_world_mutation_error *error)
-{
+                                        mc_world_mutation_error *error) {
     if (classes == NULL || out == NULL)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                       "Falling predicate native arguments");
@@ -236,8 +226,7 @@ bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_cla
 }
 
 static bool falling_predicate_call(const falling_frame *frame, unsigned int pc, int32_t x,
-                                   int32_t y, int32_t z, bool *out)
-{
+                                   int32_t y, int32_t z, bool *out) {
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     falling_at(frame, pc);
     return mc_world_mutation_falling_can_pass(frame->world, frame->classes, x, y, z, out, &lower)
@@ -246,8 +235,7 @@ static bool falling_predicate_call(const falling_frame *frame, unsigned int pc, 
 }
 
 static bool falling_write(const falling_frame *frame, unsigned int pc, int32_t x, int32_t y,
-                          int32_t z, int32_t id)
-{
+                          int32_t z, int32_t id) {
     mc_world_mutation_error lower = mc_world_mutation_empty_error();
     bool written;
     falling_at(frame, pc);
@@ -257,8 +245,7 @@ static bool falling_write(const falling_frame *frame, unsigned int pc, int32_t x
     return true; /* Both actual setter booleans are discarded by the source. */
 }
 
-static bool falling_region(const falling_frame *frame, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool falling_region(const falling_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     mc_world_presence_error presence = {0};
     falling_at(frame, 67);
     if (mc_world_runtime_region_present_held(
@@ -272,8 +259,7 @@ static bool falling_region(const falling_frame *frame, int32_t x, int32_t y, int
 }
 
 static bool falling_entity_failed(const falling_frame *frame, unsigned int pc,
-                                  mc_entity_status status)
-{
+                                  mc_entity_status status) {
     mc_world_storage_status mapped;
     switch (status) {
         case MC_ENTITY_LIMIT:
@@ -302,8 +288,7 @@ static bool falling_entity_failed(const falling_frame *frame, unsigned int pc,
                                                                : frame->error->entity.operation);
 }
 
-static bool falling_publish(const falling_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool falling_publish(const falling_frame *frame, int32_t x, int32_t y, int32_t z) {
     falling_at(frame, 126);
     mc_entity_classes *classes =
         frame->world->classes == NULL ? NULL : frame->world->classes->entities;
@@ -354,8 +339,7 @@ static bool falling_publish(const falling_frame *frame, int32_t x, int32_t y, in
     return true;
 }
 
-static bool falling_private(const falling_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool falling_private(const falling_frame *frame, int32_t x, int32_t y, int32_t z) {
     bool pass;
     if (!falling_predicate_call(frame, 19, x, mc_java_i32_sub(y, 1), z, &pass))
         return false;
@@ -395,8 +379,7 @@ static bool falling_private(const falling_frame *frame, int32_t x, int32_t y, in
     return falling_return(frame);
 }
 
-static bool falling_delay(const falling_frame *frame, int32_t *out)
-{
+static bool falling_delay(const falling_frame *frame, int32_t *out) {
     falling_at(frame, 10);
     switch (frame->block->kind) {
         case MC_BLOCK_GK_EI:
@@ -409,8 +392,7 @@ static bool falling_delay(const falling_frame *frame, int32_t *out)
     }
 }
 
-static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, int32_t z) {
     falling_at(frame, 6);
     const int32_t id = frame->block->fields.bn;
     int32_t delay;
@@ -449,16 +431,14 @@ static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, i
 }
 
 bool mc_world_mutation_falling_added(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                     int32_t y, int32_t z, mc_world_mutation_error *error)
-{
+                                     int32_t y, int32_t z, mc_world_mutation_error *error) {
     const falling_frame frame = {world, block->classes, block, error, FALLING_ADDED, 0};
     return falling_schedule(&frame, x, y, z);
 }
 
 bool mc_world_mutation_falling_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                         int32_t y, int32_t z, int32_t source_id,
-                                        mc_world_mutation_error *error)
-{
+                                        mc_world_mutation_error *error) {
     (void)source_id; /* The actual inherited neighbor body never reads it. */
     const falling_frame frame = {world, block->classes, block, error, FALLING_NEIGHBOR, 0};
     return falling_schedule(&frame, x, y, z);
@@ -466,8 +446,7 @@ bool mc_world_mutation_falling_neighbor(mc_world_runtime *world, const mc_block 
 
 bool mc_world_mutation_falling_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                     int32_t y, int32_t z, mc_java_random *random,
-                                    mc_world_mutation_error *error)
-{
+                                    mc_world_mutation_error *error) {
     (void)random; /* NULL is valid: a(World,III,Random) does not read this argument. */
     const falling_frame frame = {world, block->classes, block, error, FALLING_PRIVATE, 6};
     error->falling_tick_bytecode = 6; /* Actual invokespecial private h/g6. */

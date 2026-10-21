@@ -48,16 +48,19 @@ typedef struct stream {
     size_t length, offset;
     bool closed;
 } stream;
+
 typedef struct resources {
     stream streams[3];
     mc_registry_resources api;
     size_t opens, closes;
     bool bad;
 } resources;
+
 typedef struct child {
     mc_world_store *store;
     mc_chunk_state *state;
 } child;
+
 typedef struct fixture {
     mc_materials *materials;
     mc_java_random_profile *profile;
@@ -75,6 +78,7 @@ typedef struct fixture {
     child children[32];
     mc_chunk_state *chunks[4][2][2];
 } fixture;
+
 typedef struct fixture_record {
     mc_nbt_tag root, level, fields[11];
     const mc_nbt_tag *root_fields[1], *level_fields[11];
@@ -82,13 +86,11 @@ typedef struct fixture_record {
     uint8_t arrays[5][MC_CHUNK_BLOCKS];
 } fixture_record;
 
-static size_t cell(int32_t x, int32_t y, int32_t z)
-{
+static size_t cell(int32_t x, int32_t y, int32_t z) {
     return (((size_t)(uint32_t)x & 15u) << 11u) | (((size_t)(uint32_t)z & 15u) << 7u) | (size_t)y;
 }
 
-static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b)
-{
+static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b) {
     return a->status == b->status && a->operation == b->operation &&
            a->system_error == b->system_error;
 }
@@ -96,8 +98,7 @@ static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_e
 /* Common ownership/transport helpers below are copied from the frozen native
  * support test's genuine fixture, not from the fluid implementation. */
 
-static bool remember(fixture *f, size_t slot)
-{
+static bool remember(fixture *f, size_t slot) {
     if (!f->bound[slot])
         return true;
     const mc_chunk_cache *cache = f->providers[slot].cache;
@@ -121,8 +122,7 @@ static bool remember(fixture *f, size_t slot)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (s == NULL || out == NULL || capacity == 0 || count == NULL || s->closed ||
         s->offset > s->length)
@@ -139,8 +139,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -151,24 +150,21 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *units) {
     const size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, n};
 }
 
-static bool drain(fixture *f, size_t slot)
-{
+static bool drain(fixture *f, size_t slot) {
     if (!f->bound[slot])
         return true;
     mc_chunk_cache *cache = f->providers[slot].cache;
@@ -190,8 +186,7 @@ static bool drain(fixture *f, size_t slot)
     return cache->count == 0 && cache->insertion_count == 0;
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name) {
     if (tag == NULL || tag->type != MC_NBT_COMPOUND)
         return NULL;
     for (size_t i = 0; i < tag->value.compound.length; ++i) {
@@ -207,19 +202,16 @@ static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
     return NULL;
 }
 
-static uint32_t be32(const uint8_t *p)
-{
+static uint32_t be32(const uint8_t *p) {
     return ((uint32_t)p[0] << 24u) | ((uint32_t)p[1] << 16u) | ((uint32_t)p[2] << 8u) | p[3];
 }
 
-static bool region_path(fixture *f, size_t slot, char **out)
-{
+static bool region_path(fixture *f, size_t slot, char **out) {
     return mc_ws_path_join(mc_world_store_root(f->stores[slot]), "region/r.0.0.mcr", out, NULL) ==
            MC_WORLD_STORAGE_OK;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -243,8 +235,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || r->opens >= COUNT(names) ||
@@ -276,10 +267,12 @@ enum pattern {
     CACHE_FRONTIER,
     NULL_RANDOM
 };
+
 typedef struct patch {
     int32_t x, y, z;
     enum pattern kind;
 } patch;
+
 static const patch patches[] = {
     /* Normal cells and their immediate neighbors need the complete source
      * radius-eight footprint inside loaded coordinates0..31. The separate
@@ -291,8 +284,7 @@ static const patch patches[] = {
     {9, 56, 22, MIX_DEEP},       {9, 72, 22, DROP_FRONTIER},  {22, 24, 22, QUOTA},
     {22, 88, 22, FIRE_FRONTIER}, {1, 104, 8, CACHE_FRONTIER}, {22, 104, 22, NULL_RANDOM}};
 
-static const patch *location(enum pattern kind)
-{
+static const patch *location(enum pattern kind) {
     for (size_t i = 0; i < COUNT(patches); ++i)
         if (patches[i].kind == kind)
             return &patches[i];
@@ -304,8 +296,7 @@ typedef struct input_cell {
 } input_cell;
 
 /* Constructed stored inputs only. No caller runs this over live Chunk storage. */
-static input_cell prepared(int32_t x, int32_t y, int32_t z)
-{
+static input_cell prepared(int32_t x, int32_t y, int32_t z) {
     input_cell v = {0};
     for (size_t i = 0; i < COUNT(patches); ++i) {
         const patch *p = &patches[i];
@@ -380,8 +371,7 @@ static input_cell prepared(int32_t x, int32_t y, int32_t z)
     return v;
 }
 
-static bool open_store(fixture *f, size_t slot, const char *root)
-{
+static bool open_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -408,8 +398,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t slot)
-{
+static bool create_world(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime_construction state;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
@@ -435,8 +424,7 @@ cleanup:
     return ok;
 }
 
-static bool seed_record(fixture *f, size_t slot, int32_t cx, int32_t cz)
-{
+static bool seed_record(fixture *f, size_t slot, int32_t cx, int32_t cz) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -499,8 +487,7 @@ cleanup:
     return ok;
 }
 
-static bool load_square(fixture *f, size_t slot)
-{
+static bool load_square(fixture *f, size_t slot) {
     bool ok = false;
     for (int32_t x = 0; x < 2; ++x)
         for (int32_t z = 0; z < 2; ++z)
@@ -527,8 +514,7 @@ typedef struct schedule_state {
     int32_t e, f;
 } schedule_state;
 
-static bool scheduled(mc_world_runtime *world, schedule_state *out)
-{
+static bool scheduled(mc_world_runtime *world, schedule_state *out) {
     mc_world_schedule_class_state state;
     return mc_world_runtime_schedule_class_get(world->classes, &state) == MC_WORLD_STORAGE_OK &&
            mc_scheduled_ordered_size(world->fields.E, &out->e) == MC_SCHEDULED_ORDERED_OK &&
@@ -537,16 +523,14 @@ static bool scheduled(mc_world_runtime *world, schedule_state *out)
 }
 
 static bool delta(mc_world_runtime *world, const schedule_state *before, int64_t requests,
-                  int32_t queued)
-{
+                  int32_t queued) {
     schedule_state after;
     return scheduled(world, &after) && after.next == mc_java_i64_add(before->next, requests) &&
            after.e == before->e + queued && after.f == before->f + queued;
 }
 
 static bool at(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
-               int32_t metadata)
-{
+               int32_t metadata) {
     int32_t actual_id = -1, actual_metadata = -1;
     return mc_world_runtime_block_get(world, x, y, z, &actual_id, NULL) == MC_WORLD_STORAGE_OK &&
            mc_world_runtime_metadata_get(world, x, y, z, &actual_metadata, NULL) ==
@@ -558,8 +542,7 @@ static bool at(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t
  * a pretend World scheduler. The receiver and caller-supplied Random are kept;
  * the real World has a hold across dispatch/reentry. No current-ID gate added. */
 static mc_world_storage_status tick(fixture *f, size_t slot, int32_t id, const patch *p,
-                                    mc_java_random *random, mc_world_mutation_error *error)
-{
+                                    mc_java_random *random, mc_world_mutation_error *error) {
     mc_world_runtime *world = f->worlds[slot];
     *error = mc_world_mutation_empty_error();
     mc_world_storage_status status = mc_world_runtime_call_enter(world, &error->cause);
@@ -581,22 +564,19 @@ static mc_world_storage_status tick(fixture *f, size_t slot, int32_t id, const p
     return status;
 }
 
-static mc_java_random math_snapshot(const fixture *f)
-{
+static mc_java_random math_snapshot(const fixture *f) {
     return (mc_java_random){
         .state = atomic_load_explicit(&f->profile->math->state, memory_order_relaxed),
         .next_next_gaussian = f->profile->math->next_next_gaussian,
         .have_next_next_gaussian = f->profile->math->have_next_next_gaussian};
 }
 
-static bool math_is(const fixture *f, const mc_java_random *expected)
-{
+static bool math_is(const fixture *f, const mc_java_random *expected) {
     const mc_java_random actual = math_snapshot(f);
     return mc_test_java_random_equal(&actual, expected);
 }
 
-static bool source_and_below(fixture *f, size_t slot)
-{
+static bool source_and_below(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_block *flow = f->registry[slot % 2u]->blocks.m[8];
@@ -639,8 +619,7 @@ cleanup:
     return ok;
 }
 
-static bool routes_and_regeneration(fixture *f, size_t slot)
-{
+static bool routes_and_regeneration(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_block *flow = f->registry[slot % 2u]->blocks.m[8];
@@ -681,8 +660,7 @@ cleanup:
     return ok;
 }
 
-static bool still_conversions(fixture *f, size_t slot)
-{
+static bool still_conversions(fixture *f, size_t slot) {
     bool ok = false, value = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_world_mutation_error error;
@@ -711,8 +689,7 @@ cleanup:
     return ok;
 }
 
-static bool lava_randoms(fixture *f, size_t slot)
-{
+static bool lava_randoms(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     const mc_java_random world_random = *w->fields.r;
@@ -784,11 +761,12 @@ cleanup:
     return ok;
 }
 
-static bool mixing(fixture *f, size_t slot)
-{
+static bool mixing(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
+
     const enum pattern kinds[] = {MIX_SOURCE, MIX_LEVEL, MIX_DEEP};
+
     for (size_t i = 0; i < COUNT(kinds); ++i) {
         const patch *p = location(kinds[i]);
         mc_java_random world_expected = *w->fields.r;
@@ -828,8 +806,7 @@ cleanup:
     return ok;
 }
 
-static bool frontiers(fixture *f, size_t slot)
-{
+static bool frontiers(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_registry_classes *registry = f->registry[slot % 2u];
@@ -894,8 +871,7 @@ cleanup:
     return ok;
 }
 
-static bool quota_prefix(fixture *f, size_t slot)
-{
+static bool quota_prefix(fixture *f, size_t slot) {
     bool ok = false, value = true;
     mc_world_runtime *w = f->worlds[slot];
     const patch *p = location(QUOTA);
@@ -920,8 +896,7 @@ cleanup:
     return ok;
 }
 
-static bool check_disk(fixture *f, size_t slot, uint32_t low, uint32_t high)
-{
+static bool check_disk(fixture *f, size_t slot, uint32_t low, uint32_t high) {
     bool ok = false;
     char *path = NULL;
     mc_ws_file_bytes bytes = {0};
@@ -979,8 +954,7 @@ cleanup:
     return ok;
 }
 
-static bool maintained(fixture *f)
-{
+static bool maintained(fixture *f) {
     bool ok = false;
     for (size_t slot = 0; slot < COUNT(f->worlds); ++slot) {
         for (int32_t x = 0; x < 2; ++x)
@@ -1013,8 +987,7 @@ cleanup:
 /* Run after the genuine empty-Entity maintenance round trip. A displaced flower
  * now publishes its real ItemEntity in both source containers and flow resumes.
  * Persistence must refuse this live Entity rather than silently erase it. */
-static bool drop_publication(fixture *f, size_t slot)
-{
+static bool drop_publication(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     const patch *p = location(DROP_FRONTIER);
@@ -1086,8 +1059,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < COUNT(f->worlds); ++i) {
@@ -1141,8 +1113,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

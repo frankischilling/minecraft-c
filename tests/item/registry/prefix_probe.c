@@ -31,16 +31,14 @@ typedef struct probe {
     bool failed;
 } probe;
 
-static bool fail(probe *p, const char *message)
-{
+static bool fail(probe *p, const char *message) {
     if (!p->failed)
         fprintf(stderr, "Item prefix probe: %s\n", message);
     p->failed = true;
     return false;
 }
 
-static bool write_text(probe *p, bool complete_row, const char *format, ...)
-{
+static bool write_text(probe *p, bool complete_row, const char *format, ...) {
     if (p->failed)
         return false;
     va_list arguments;
@@ -54,16 +52,14 @@ static bool write_text(probe *p, bool complete_row, const char *format, ...)
     return true;
 }
 
-static size_t find(const probe *p, const void *pointer)
-{
+static size_t find(const probe *p, const void *pointer) {
     for (size_t i = 0; i < p->reference_count; ++i)
         if (p->references[i] == pointer)
             return i + 1;
     return 0;
 }
 
-static size_t enroll(probe *p, const void *pointer)
-{
+static size_t enroll(probe *p, const void *pointer) {
     size_t known = find(p, pointer);
     if (known != 0)
         return known;
@@ -75,8 +71,7 @@ static size_t enroll(probe *p, const void *pointer)
     return p->reference_count;
 }
 
-static bool item_token(probe *p, const mc_item *item, char token[32])
-{
+static bool item_token(probe *p, const mc_item *item, char token[32]) {
     if (item == NULL) {
         memcpy(token, "NULL", sizeof("NULL"));
         return true;
@@ -88,15 +83,13 @@ static bool item_token(probe *p, const mc_item *item, char token[32])
     return length > 0 && length < 32 ? true : fail(p, "reference formatting failed");
 }
 
-static bool integer(probe *p, size_t rank, const char *field, int32_t value)
-{
+static bool integer(probe *p, size_t rank, const char *field, int32_t value) {
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return write_text(p, true, "FIELD\t%zu\t%s\tI:%08" PRIx32 "\n", rank, field, bits);
 }
 
-static bool fields(probe *p, size_t rank, const mc_item *item)
-{
+static bool fields(probe *p, size_t rank, const mc_item *item) {
     const mc_item_fields *f = mc_item_fields_get(item);
     if (f == NULL)
         return fail(p, "actual Item fields missing");
@@ -119,8 +112,7 @@ static bool fields(probe *p, size_t rank, const mc_item *item)
     return write_text(p, true, "FIELD\t%zu\tbl\tR:%zu\n", rank, string_rank);
 }
 
-static bool strings(probe *p)
-{
+static bool strings(probe *p) {
     for (size_t i = 107; i < p->reference_count; ++i) {
         const mc_registry_string *string = p->strings[i];
         mc_registry_string_view view;
@@ -143,8 +135,7 @@ static bool strings(probe *p)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     probe p = {0};
     mc_java_random_profile *profile = NULL;

@@ -25,8 +25,7 @@ _Static_assert(FLT_RADIX == 2 && DBL_MANT_DIG == 53 && DBL_MIN_EXP == -1021 && D
 _Static_assert(DBL_HAS_SUBNORM == 1, "binary64 subnormal support required");
 _Static_assert(FLT_EVAL_METHOD == 0, "binary64 expression evaluation required");
 
-double mc_math_strict_sqrt(double value)
-{
+double mc_math_strict_sqrt(double value) {
     const __m128d input = _mm_set_sd(value);
     const __m128d result = _mm_sqrt_sd(input, input);
     return _mm_cvtsd_f64(result);

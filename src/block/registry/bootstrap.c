@@ -11,16 +11,14 @@
             return status_;                                                                        \
     } while (0)
 
-static mc_registry_status block_id(mc_registry_classes *classes, mc_block *block, int32_t *out)
-{
+static mc_registry_status block_id(mc_registry_classes *classes, mc_block *block, int32_t *out) {
     if (block == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "bootstrap Block ID", NULL);
     *out = block->fields.bn;
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status block_slot(mc_registry_classes *classes, int32_t index, mc_block **out)
-{
+static mc_registry_status block_slot(mc_registry_classes *classes, int32_t index, mc_block **out) {
     mc_block **array = classes->blocks.m;
     if (array == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "bootstrap Block array", NULL);
@@ -32,8 +30,7 @@ static mc_registry_status block_slot(mc_registry_classes *classes, int32_t index
 }
 
 static mc_registry_status explicit_item(mc_registry_classes *classes, int32_t pc, const char *field,
-                                        mc_item_kind kind, const char *name)
-{
+                                        mc_item_kind kind, const char *name) {
     AT(pc);
     TRY(mc_registry_items_active_use(classes));
     mc_registry_item_array *destination = classes->items.c;
@@ -75,8 +72,7 @@ static mc_registry_status explicit_item(mc_registry_classes *classes, int32_t pc
 /* pt/yq.a(III)V writes a[index] at6 before even reading b at8. Both actual
  * constructor arrays have 256 cells; a later failure retains the first store. */
 static mc_registry_status fire_values(mc_registry_classes *classes, mc_block *fire, int32_t index,
-                                      int32_t encouragement, int32_t flammability)
-{
+                                      int32_t encouragement, int32_t flammability) {
     int32_t *first = fire->subtype.yq.a;
     if (first == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "fire a(III) array a at6",
@@ -94,8 +90,8 @@ static mc_registry_status fire_values(mc_registry_classes *classes, mc_block *fi
 }
 
 static mc_registry_status fire_entry(mc_registry_classes *classes, mc_block *fire,
-                                     const char *field, int32_t encouragement, int32_t flammability)
-{
+                                     const char *field, int32_t encouragement,
+                                     int32_t flammability) {
     mc_block *block = NULL;
     TRY(mc_registry_block_static_load(classes, field, &block));
     int32_t id = 0;
@@ -103,8 +99,7 @@ static mc_registry_status fire_entry(mc_registry_classes *classes, mc_block *fir
     return fire_values(classes, fire, id, encouragement, flammability);
 }
 
-static mc_registry_status block_post_item(mc_registry_classes *classes, mc_block *block)
-{
+static mc_registry_status block_post_item(mc_registry_classes *classes, mc_block *block) {
     if (block == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Block post-Item receiver",
                                 NULL);
@@ -127,8 +122,7 @@ static mc_registry_status block_post_item(mc_registry_classes *classes, mc_block
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_finish_blocks(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_finish_blocks(mc_registry_classes *classes) {
     TRY(explicit_item(classes, 3398, "ac", MC_ITEM_BI_AP, "cloth"));
     TRY(explicit_item(classes, 3430, "K", MC_ITEM_GO_EK, "log"));
     TRY(explicit_item(classes, 3462, "al", MC_ITEM_EN_CW, "stoneSlab"));

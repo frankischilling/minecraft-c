@@ -10,15 +10,18 @@ typedef struct mc_entity_classes mc_entity_classes;
 typedef struct mc_entity_class_literal mc_entity_class_literal;
 
 typedef enum mc_entity_source { MC_ENTITY_CLIENT = 0, MC_ENTITY_SERVER } mc_entity_source;
+
 typedef enum mc_entity_class_phase {
     MC_ENTITY_CLASS_COLD = 0,
     MC_ENTITY_CLASS_INITIALIZING,
     MC_ENTITY_CLASS_READY,
     MC_ENTITY_CLASS_FAILED
 } mc_entity_class_phase;
+
 typedef struct mc_entity_limits {
     size_t max_allocation_bytes, max_live_entities;
 } mc_entity_limits;
+
 #define MC_ENTITY_DEFAULT_ALLOCATION_BYTES (64u * 1024u * 1024u)
 
 typedef struct mc_entity_class_snapshot {
@@ -97,7 +100,8 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes);
  * Identity equality is pointer equality, never name/profile/kind equality
  * between different owners. The diagnostic view has no runtime String owner.
  * Hold classes (or its counted application binding) throughout every borrowed
- * literal/view use. Free is BUSY while borrowers or live Entities remain.
+ * literal/view use. Free is BUSY while borrowers, live Entities or native
+ * pooled-bounds holds remain.
  * Failure preserves out; arguments/outputs and owners must be disjoint. */
 mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,
                                              mc_entity_class_kind kind,

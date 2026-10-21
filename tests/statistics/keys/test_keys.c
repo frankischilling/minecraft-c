@@ -33,8 +33,7 @@ static const char *const valid_values[] = {"new",    "min",  "max",  "zero-final
                                            "padded", "neg",  NULL};
 static const uint16_t nul_value[] = {'n', 'u', 'l', 0, 'v', 'a', 'l', 'u', 'e'};
 
-static bool units_are(const mc_registry_string *string, const uint16_t *units, size_t length)
-{
+static bool units_are(const mc_registry_string *string, const uint16_t *units, size_t length) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length != length ||
         (length != 0 && view.units == NULL))
@@ -45,8 +44,7 @@ static bool units_are(const mc_registry_string *string, const uint16_t *units, s
     return true;
 }
 
-static bool text_is(const mc_registry_string *string, const char *text)
-{
+static bool text_is(const mc_registry_string *string, const char *text) {
     mc_registry_string_view view;
     size_t length = strlen(text);
     if (!mc_registry_string_read(string, &view) || view.length != length ||
@@ -59,16 +57,14 @@ static bool text_is(const mc_registry_string *string, const char *text)
 }
 
 static bool same_view(const mc_registry_statistic_key_view *a,
-                      const mc_registry_statistic_key_view *b)
-{
+                      const mc_registry_statistic_key_view *b) {
     return a->phase == b->phase && a->initializer_pc == b->initializer_pc && a->a == b->a &&
            a->construction == b->construction && a->map_published == b->map_published &&
            a->constructor_pc == b->constructor_pc && a->caught_status == b->caught_status &&
            a->caught_pc == b->caught_pc;
 }
 
-static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_error(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -78,8 +74,7 @@ static bool same_error(const mc_registry_error *a, const mc_registry_error *b)
            a->item_argument == b->item_argument;
 }
 
-static const mc_registry_string *entry_at(const mc_statistic_keys *keys, int32_t wanted)
-{
+static const mc_registry_string *entry_at(const mc_statistic_keys *keys, int32_t wanted) {
     for (size_t i = 0; i < mc_statistic_keys_size(keys); ++i) {
         int32_t id;
         const mc_registry_string *value = NULL;
@@ -103,8 +98,7 @@ typedef struct resource {
     const uint16_t *old_units;
 } resource;
 
-static bool observe(resource *r, int32_t pc)
-{
+static bool observe(resource *r, int32_t pc) {
     mc_registry_statistic_key_view view;
     mc_registry_error error;
     if (mc_registry_classes_inspect_statistic_keys(r->owner, &view, &error) != MC_REGISTRY_OK ||
@@ -147,8 +141,7 @@ static bool observe(resource *r, int32_t pc)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     resource *r = context;
     ++r->reads;
     if (!observe(r, 38))
@@ -173,8 +166,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resource *r = context;
     ++r->opens;
     if (r->opens != 1 || name == NULL || strcmp(name, "/achievement/map.txt") != 0 || out == NULL ||
@@ -190,8 +182,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resource *r = context;
     ++r->closes;
     if (input == NULL || input->context != r || input->read != read_bytes || !observe(r, 83))
@@ -200,8 +191,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return r->close_status;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resource *r = context;
     ++r->ready_calls;
     if (input == NULL || input->context != r || input->read != read_bytes)
@@ -209,8 +199,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
     return r->advertised && r->offset < r->length;
 }
 
-static void resource_init(resource *r, const uint8_t *bytes, size_t length, size_t chunk)
-{
+static void resource_init(resource *r, const uint8_t *bytes, size_t length, size_t chunk) {
     *r = (resource){
         .bytes = bytes, .length = length, .chunk = chunk, .close_status = MC_REGISTRY_OK};
     r->source = (mc_registry_resources){r, open_resource, close_resource, ready_resource};
@@ -231,8 +220,7 @@ typedef struct dependencies {
     material_snapshot material[MC_MATERIAL_COUNT];
 } dependencies;
 
-static material_snapshot material_read(mc_material *m)
-{
+static material_snapshot material_read(mc_material *m) {
     return (material_snapshot){m,
                                mc_material_palette_of(m),
                                mc_material_a(m),
@@ -246,8 +234,7 @@ static material_snapshot material_read(mc_material *m)
                                mc_material_j(m)};
 }
 
-static bool dependencies_unchanged(const dependencies *d, const mc_registry_classes *owner)
-{
+static bool dependencies_unchanged(const dependencies *d, const mc_registry_classes *owner) {
     if (atomic_load_explicit(&d->profile->uniquifier, memory_order_relaxed) != d->uniquifier ||
         atomic_load_explicit(&d->profile->holder_phase, memory_order_relaxed) !=
             MC_JAVA_RANDOM_HOLDER_COLD ||
@@ -282,8 +269,7 @@ static bool dependencies_unchanged(const dependencies *d, const mc_registry_clas
 }
 
 static mc_registry_status allocate(mc_registry_side side, const dependencies *d, resource *r,
-                                   size_t limit, mc_registry_classes **out)
-{
+                                   size_t limit, mc_registry_classes **out) {
     const mc_registry_options options = {side, d->profile, d->materials, limit,
                                          r == NULL ? NULL : &r->source};
     mc_registry_status status = mc_registry_classes_allocate(&options, out, NULL);
@@ -292,8 +278,7 @@ static mc_registry_status allocate(mc_registry_side side, const dependencies *d,
     return status;
 }
 
-static int retire(mc_registry_classes *owner)
-{
+static int retire(mc_registry_classes *owner) {
     if (owner == NULL || mc_registry_classes_free(owner, NULL) == MC_REGISTRY_OK)
         return 0;
     retirement_failed = true;
@@ -301,8 +286,7 @@ static int retire(mc_registry_classes *owner)
     return 1;
 }
 
-static int test_cold(mc_registry_side side, const dependencies *d)
-{
+static int test_cold(mc_registry_side side, const dependencies *d) {
     int result = 1;
     resource r;
     resource_init(&r, valid_bytes, sizeof(valid_bytes) - 1, 6);
@@ -331,8 +315,7 @@ cleanup:
     return result;
 }
 
-static int check_ready(mc_registry_classes *owner, const resource *r)
-{
+static int check_ready(mc_registry_classes *owner, const resource *r) {
     int result = 1;
     mc_registry_statistic_key_view view;
     mc_registry_error error;
@@ -389,8 +372,8 @@ cleanup:
     return result;
 }
 
-static int test_success(mc_registry_side side, const dependencies *d, size_t chunk, bool advertised)
-{
+static int test_success(mc_registry_side side, const dependencies *d, size_t chunk,
+                        bool advertised) {
     int result = 1;
     mc_registry_classes *a = NULL, *b = NULL;
     resource x, y;
@@ -424,8 +407,7 @@ cleanup:
     return result;
 }
 
-static int check_retry(mc_registry_classes *owner, const resource *r)
-{
+static int check_retry(mc_registry_classes *owner, const resource *r) {
     int result = 1;
     mc_registry_statistic_key_view before, after;
     CHECK(mc_registry_classes_inspect_statistic_keys(owner, &before, NULL) == MC_REGISTRY_OK);
@@ -464,8 +446,7 @@ cleanup:
     return result;
 }
 
-static int test_empty_resource(mc_registry_side side, const dependencies *d)
-{
+static int test_empty_resource(mc_registry_side side, const dependencies *d) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     resource r;
@@ -510,8 +491,7 @@ static const failure_case bad_lines[] = {{"nodelimiter", MC_REGISTRY_ILLEGAL_ARG
                                          {"0x10,x", MC_REGISTRY_ILLEGAL_ARGUMENT, 56}};
 
 static int check_caught(mc_registry_classes *owner, const resource *r, mc_registry_status caught,
-                        int32_t pc, size_t expected_entries, size_t expected_closes)
-{
+                        int32_t pc, size_t expected_entries, size_t expected_closes) {
     int result = 1;
     mc_registry_statistic_key_view view;
     CHECK(mc_registry_classes_inspect_statistic_keys(owner, &view, NULL) == MC_REGISTRY_OK);
@@ -528,8 +508,7 @@ cleanup:
     return result;
 }
 
-static int test_bad_line(mc_registry_side side, const dependencies *d, size_t index)
-{
+static int test_bad_line(mc_registry_side side, const dependencies *d, size_t index) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     uint8_t bytes[160];
@@ -561,8 +540,7 @@ cleanup:
 
 enum transport_case { MISSING, READ_IO, CLOSE_IO, NO_CLOSE, NO_SOURCE };
 
-static int test_transport(mc_registry_side side, const dependencies *d, enum transport_case which)
-{
+static int test_transport(mc_registry_side side, const dependencies *d, enum transport_case which) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     static const uint8_t bytes[] = "10,kept\n11,notreached\n";
@@ -606,8 +584,7 @@ typedef struct budget_view {
 } budget_view;
 
 static int budget_trial(mc_registry_side side, const dependencies *d, size_t maximum,
-                        budget_view *out)
-{
+                        budget_view *out) {
     int result = 1;
     mc_registry_classes *owner = NULL;
     static const uint8_t bytes[] = "1,a\n2,b\n3,c\n";
@@ -657,8 +634,7 @@ cleanup:
     return result;
 }
 
-static int test_budgets(mc_registry_side side, const dependencies *d)
-{
+static int test_budgets(mc_registry_side side, const dependencies *d) {
     int result = 1;
     size_t low = sizeof(mc_registry_classes), high = 4u * 1024u * 1024u;
     budget_view current;
@@ -693,8 +669,7 @@ cleanup:
     return result;
 }
 
-static int test_side(mc_registry_side side, const dependencies *d)
-{
+static int test_side(mc_registry_side side, const dependencies *d) {
     int result = 1;
     CHECK(test_cold(side, d) == 0 && test_empty_resource(side, d) == 0);
     const size_t chunks[] = {SIZE_MAX, 1, 6, 7, 8192};
@@ -711,8 +686,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     dependencies d = {0};
     mc_java_reader_charset charset;

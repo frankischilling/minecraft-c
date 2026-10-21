@@ -4,8 +4,7 @@
 
 #include <string.h>
 
-const char *mc_chunk_lifecycle_status_string(mc_chunk_lifecycle_status status)
-{
+const char *mc_chunk_lifecycle_status_string(mc_chunk_lifecycle_status status) {
     switch (status) {
         case MC_CHUNK_LIFECYCLE_OK:
             return "ok";
@@ -21,13 +20,11 @@ const char *mc_chunk_lifecycle_status_string(mc_chunk_lifecycle_status status)
     return "unknown chunk lifecycle status";
 }
 
-static bool chunk_valid(const mc_chunk_state *chunk)
-{
+static bool chunk_valid(const mc_chunk_state *chunk) {
     return chunk != NULL && (chunk->blank || chunk->data != NULL);
 }
 
-bool mc_chunk_lifecycle_validate(const mc_chunk_lifecycle_context *context)
-{
+bool mc_chunk_lifecycle_validate(const mc_chunk_lifecycle_context *context) {
     if (context == NULL || context->world_time == NULL ||
         !mc_chunk_cache_validate(context->cache) || !mc_chunk_pending_validate(context->pending) ||
         context->cache->capacity > SIZE_MAX / sizeof(*context->cache->entries) ||
@@ -45,14 +42,12 @@ bool mc_chunk_lifecycle_validate(const mc_chunk_lifecycle_context *context)
     return context->policy == MC_CHUNK_ACQUIRE_BASE;
 }
 
-bool mc_chunk_lifecycle_saving_enabled(const mc_chunk_lifecycle_context *context)
-{
+bool mc_chunk_lifecycle_saving_enabled(const mc_chunk_lifecycle_context *context) {
     return mc_chunk_lifecycle_validate(context) &&
            (context->policy == MC_CHUNK_ACQUIRE_BASE || !*context->saving_disabled);
 }
 
-bool mc_chunk_save_eligible(const mc_chunk_state *chunk, int64_t now, bool force)
-{
+bool mc_chunk_save_eligible(const mc_chunk_state *chunk, int64_t now, bool force) {
     if (chunk == NULL || chunk->blank || chunk->never_save)
         return false;
     return chunk->dirty ||
@@ -60,22 +55,19 @@ bool mc_chunk_save_eligible(const mc_chunk_state *chunk, int64_t now, bool force
                                           : now >= mc_java_i64_add(chunk->last_save_time, 600)));
 }
 
-static bool retain(const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk)
-{
+static bool retain(const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk) {
     return context->references == NULL ||
            context->references->retain(context->references->owner, chunk);
 }
 
-static void release(const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk)
-{
+static void release(const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk) {
     if (context->references != NULL)
         context->references->release(context->references->owner, chunk);
 }
 
 static mc_chunk_lifecycle_status checked(const mc_chunk_lifecycle_context *context,
                                          mc_chunk_callback_result result, bool catch_io,
-                                         bool catch_exception)
-{
+                                         bool catch_exception) {
     if (!mc_chunk_lifecycle_validate(context))
         return MC_CHUNK_LIFECYCLE_STATE_ERROR;
     switch (result) {
@@ -92,8 +84,7 @@ static mc_chunk_lifecycle_status checked(const mc_chunk_lifecycle_context *conte
 }
 
 static mc_chunk_lifecycle_status save_main(const mc_chunk_lifecycle_context *context,
-                                           mc_chunk_state *chunk)
-{
+                                           mc_chunk_state *chunk) {
     if (context->save_main == NULL)
         return MC_CHUNK_LIFECYCLE_OK;
     chunk->last_save_time = *context->world_time;
@@ -101,16 +92,14 @@ static mc_chunk_lifecycle_status save_main(const mc_chunk_lifecycle_context *con
 }
 
 static mc_chunk_lifecycle_status save_extra(const mc_chunk_lifecycle_context *context,
-                                            mc_chunk_state *chunk)
-{
+                                            mc_chunk_state *chunk) {
     return context->save_extra == NULL
                ? MC_CHUNK_LIFECYCLE_OK
                : checked(context, context->save_extra(context->loader, context, chunk), true, true);
 }
 
 mc_chunk_lifecycle_status mc_chunk_lifecycle_save(const mc_chunk_lifecycle_context *context,
-                                                  bool force, bool *completed)
-{
+                                                  bool force, bool *completed) {
     if (completed == NULL || !mc_chunk_lifecycle_validate(context))
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
     size_t attempted = 0;
@@ -149,8 +138,7 @@ mc_chunk_lifecycle_status mc_chunk_lifecycle_save(const mc_chunk_lifecycle_conte
 }
 
 static mc_chunk_lifecycle_status detach(const mc_chunk_lifecycle_context *context,
-                                        mc_chunk_state *chunk)
-{
+                                        mc_chunk_state *chunk) {
     if (chunk->blank)
         return MC_CHUNK_LIFECYCLE_OK;
     chunk->active = false;
@@ -163,8 +151,7 @@ static mc_chunk_lifecycle_status detach(const mc_chunk_lifecycle_context *contex
 }
 
 mc_chunk_lifecycle_status mc_chunk_lifecycle_detach(const mc_chunk_lifecycle_context *context,
-                                                    mc_chunk_state *chunk)
-{
+                                                    mc_chunk_state *chunk) {
     if (!mc_chunk_lifecycle_validate(context) || !chunk_valid(chunk) ||
         context->invalidate_tiles == NULL || context->defer_entities == NULL)
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
@@ -175,16 +162,14 @@ mc_chunk_lifecycle_status mc_chunk_lifecycle_detach(const mc_chunk_lifecycle_con
     return status;
 }
 
-static size_t entry_index(const mc_chunk_cache *cache, int32_t key)
-{
+static size_t entry_index(const mc_chunk_cache *cache, int32_t key) {
     size_t index = 0;
     while (index < cache->count && cache->entries[index].key != key)
         ++index;
     return index;
 }
 
-static void unpublish(mc_chunk_cache *cache, int32_t key, mc_chunk_state *chunk)
-{
+static void unpublish(mc_chunk_cache *cache, int32_t key, mc_chunk_state *chunk) {
     size_t index = entry_index(cache, key);
     if (index != cache->count) {
         memmove(cache->entries + index, cache->entries + index + 1,
@@ -202,8 +187,7 @@ static void unpublish(mc_chunk_cache *cache, int32_t key, mc_chunk_state *chunk)
 }
 
 mc_chunk_lifecycle_status mc_chunk_lifecycle_maintain(const mc_chunk_lifecycle_context *context,
-                                                      bool *provider_result)
-{
+                                                      bool *provider_result) {
     if (provider_result == NULL || !mc_chunk_lifecycle_validate(context) ||
         context->pending->history == NULL || context->invalidate_tiles == NULL ||
         context->defer_entities == NULL || context->provider_maintenance == NULL)
@@ -255,23 +239,20 @@ mc_chunk_lifecycle_status mc_chunk_lifecycle_maintain(const mc_chunk_lifecycle_c
     return status;
 }
 
-bool mc_world_save_validate(const mc_world_save_context *context)
-{
+bool mc_world_save_validate(const mc_world_save_context *context) {
     return context != NULL && mc_chunk_lifecycle_validate(context->chunks) &&
            context->check_session != NULL && context->save_metadata != NULL &&
            context->save_auxiliary != NULL;
 }
 
 static mc_chunk_lifecycle_status world_checked(const mc_world_save_context *context,
-                                               mc_chunk_callback_result result)
-{
+                                               mc_chunk_callback_result result) {
     if (!mc_world_save_validate(context))
         return MC_CHUNK_LIFECYCLE_STATE_ERROR;
     return checked(context->chunks, result, false, false);
 }
 
-static mc_chunk_lifecycle_status world_metadata(const mc_world_save_context *context)
-{
+static mc_chunk_lifecycle_status world_metadata(const mc_world_save_context *context) {
     mc_chunk_lifecycle_status status =
         world_checked(context, context->check_session(context->world, context));
     if (status == MC_CHUNK_LIFECYCLE_OK)
@@ -281,8 +262,8 @@ static mc_chunk_lifecycle_status world_metadata(const mc_world_save_context *con
     return status;
 }
 
-mc_chunk_lifecycle_status mc_world_lifecycle_save(const mc_world_save_context *context, bool force)
-{
+mc_chunk_lifecycle_status mc_world_lifecycle_save(const mc_world_save_context *context,
+                                                  bool force) {
     if (!mc_world_save_validate(context))
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
     if (!mc_chunk_lifecycle_saving_enabled(context->chunks))
@@ -303,8 +284,7 @@ mc_chunk_lifecycle_status mc_world_lifecycle_save(const mc_world_save_context *c
 }
 
 mc_chunk_lifecycle_status mc_world_lifecycle_save_client(const mc_world_save_context *context,
-                                                         int32_t pass, bool *completed)
-{
+                                                         int32_t pass, bool *completed) {
     if (completed == NULL || !mc_world_save_validate(context) ||
         context->chunks->policy != MC_CHUNK_ACQUIRE_BASE)
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;

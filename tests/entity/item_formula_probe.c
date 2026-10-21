@@ -13,14 +13,12 @@
 _Static_assert(sizeof(double) == sizeof(uint64_t), "binary64 storage required");
 _Static_assert(sizeof(float) == sizeof(uint32_t), "binary32 storage required");
 
-static int fail(const char *message)
-{
+static int fail(const char *message) {
     fprintf(stderr, "item_formula_probe: %s\n", message);
     return 1;
 }
 
-static bool parse_draw(const char *text, double *out)
-{
+static bool parse_draw(const char *text, double *out) {
     if (strlen(text) != 16u) {
         return false;
     }
@@ -49,22 +47,19 @@ static bool parse_draw(const char *text, double *out)
     return true;
 }
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     bool full;
     if (argc == 3 && strcmp(argv[1], "WORLD") == 0) {
         full = false;

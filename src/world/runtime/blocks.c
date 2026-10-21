@@ -4,21 +4,18 @@
 #include "runtime_internal.h"
 
 static mc_world_storage_status result(mc_world_storage_error *error, mc_world_storage_status status,
-                                      const char *operation)
-{
+                                      const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static bool in_domain(int32_t x, int32_t y, int32_t z)
-{
+static bool in_domain(int32_t x, int32_t y, int32_t z) {
     return x >= -32000000 && x < 32000000 && z >= -32000000 && z <= 32000000 && y >= 0 && y < 128;
 }
 
 static mc_world_storage_status acquire_chunk(mc_world_runtime *runtime, int32_t x, int32_t z,
-                                             mc_chunk_state **out, mc_world_storage_error *error)
-{
+                                             mc_chunk_state **out, mc_world_storage_error *error) {
     /* World.c reads v before invoking provider.b, including a cached hit. */
     if (runtime->fields.v == NULL)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block provider receiver");
@@ -39,8 +36,7 @@ static mc_world_storage_status acquire_chunk(mc_world_runtime *runtime, int32_t 
 
 mc_world_storage_status mc_world_runtime_block_get(mc_world_runtime *runtime, int32_t x, int32_t y,
                                                    int32_t z, int32_t *out,
-                                                   mc_world_storage_error *error)
-{
+                                                   mc_world_storage_error *error) {
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World block arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -68,8 +64,7 @@ mc_world_storage_status mc_world_runtime_block_get(mc_world_runtime *runtime, in
 
 mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
                                                       int32_t y, int32_t z, int32_t *out,
-                                                      mc_world_storage_error *error)
-{
+                                                      mc_world_storage_error *error) {
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World metadata arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -101,8 +96,7 @@ mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime,
 mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *runtime, int32_t x,
                                                             int32_t y, int32_t z, int32_t metadata,
                                                             bool *out,
-                                                            mc_world_storage_error *error)
-{
+                                                            mc_world_storage_error *error) {
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World metadata arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -130,8 +124,7 @@ mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *ru
 }
 
 mc_world_storage_status mc_world_runtime_top_block(mc_world_runtime *runtime, int32_t x, int32_t z,
-                                                   int32_t *out, mc_world_storage_error *error)
-{
+                                                   int32_t *out, mc_world_storage_error *error) {
     if (out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World top-block output");
     int32_t y = 63;

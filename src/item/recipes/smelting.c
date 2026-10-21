@@ -16,8 +16,7 @@ struct mc_smelting_map {
     smelting_entry *entries;
 };
 
-static mc_registry_status own_error(mc_smelting_manager *manager, int32_t pc)
-{
+static mc_registry_status own_error(mc_smelting_manager *manager, int32_t pc) {
     mc_registry_error *error = &manager->classes->last_error;
     error->constructor_class = manager->classes->options.side == MC_REGISTRY_CLIENT ? "ey" : "de";
     error->constructor_pc = pc;
@@ -25,19 +24,16 @@ static mc_registry_status own_error(mc_smelting_manager *manager, int32_t pc)
 }
 
 static mc_registry_status fail(mc_smelting_manager *manager, int32_t pc, mc_registry_status status,
-                               const char *message)
-{
+                               const char *message) {
     (void)mc_registry_fail(manager->classes, status, message, NULL);
     return own_error(manager, pc);
 }
 
-static void *set_allocate(void *context, size_t bytes)
-{
+static void *set_allocate(void *context, size_t bytes) {
     return mc_registry_allocate(context, bytes);
 }
 
-static mc_registry_status set_error(mc_registry_classes *classes, mc_java_int_set_status status)
-{
+static mc_registry_status set_error(mc_registry_classes *classes, mc_java_int_set_status status) {
     if (status == MC_JAVA_INT_SET_ALLOCATION_FAILED &&
         (classes->last_error.status == MC_REGISTRY_LIMIT ||
          classes->last_error.status == MC_REGISTRY_ALLOCATION_FAILED))
@@ -50,8 +46,7 @@ static mc_registry_status set_error(mc_registry_classes *classes, mc_java_int_se
                             "Smelting Integer-key traversal storage", NULL);
 }
 
-static smelting_entry *find(const struct mc_smelting_map *map, int32_t key)
-{
+static smelting_entry *find(const struct mc_smelting_map *map, int32_t key) {
     if (map != NULL)
         for (smelting_entry *entry = map->entries; entry != NULL; entry = entry->next)
             if (entry->key == key)
@@ -60,8 +55,7 @@ static smelting_entry *find(const struct mc_smelting_map *map, int32_t key)
 }
 
 mc_registry_status mc_registry_smelting_put(mc_smelting_manager *manager, int32_t input,
-                                            mc_item_stack *output)
-{
+                                            mc_item_stack *output) {
     if (manager == NULL || manager->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_classes *classes = manager->classes;
@@ -121,8 +115,7 @@ static const smelting_step steps[] = {
     {176, 179, true, "aW", 182, 186, false, "aU", 191, 194, 1, 2},
     {198, 201, true, "K", 204, 208, false, "k", 213, 216, 1, 1}};
 
-static mc_registry_status initialize_step(mc_smelting_manager *manager, const smelting_step *step)
-{
+static mc_registry_status initialize_step(mc_smelting_manager *manager, const smelting_step *step) {
     mc_registry_classes *classes = manager->classes;
     manager->constructor_pc = step->key_pc;
     mc_block *block = NULL;
@@ -161,8 +154,7 @@ static mc_registry_status initialize_step(mc_smelting_manager *manager, const sm
     return mc_registry_smelting_put(manager, key, output);
 }
 
-mc_registry_status mc_registry_smelting_construct(mc_smelting_manager *manager)
-{
+mc_registry_status mc_registry_smelting_construct(mc_smelting_manager *manager) {
     if (manager == NULL || manager->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_classes *classes = manager->classes;
@@ -194,14 +186,12 @@ mc_registry_status mc_registry_smelting_construct(mc_smelting_manager *manager)
     return MC_REGISTRY_OK;
 }
 
-size_t mc_smelting_manager_size(const mc_smelting_manager *manager)
-{
+size_t mc_smelting_manager_size(const mc_smelting_manager *manager) {
     return manager == NULL || manager->b == NULL ? 0 : mc_java_int_set_size(manager->b->keys);
 }
 
 mc_registry_status mc_smelting_manager_find(const mc_smelting_manager *manager, int32_t input,
-                                            const mc_item_stack **out)
-{
+                                            const mc_item_stack **out) {
     if (manager == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (manager->b == NULL)
@@ -213,8 +203,7 @@ mc_registry_status mc_smelting_manager_find(const mc_smelting_manager *manager, 
 
 mc_registry_status mc_registry_smelting_keys(mc_registry_classes *classes,
                                              const mc_smelting_manager *manager, int32_t **out,
-                                             size_t *count)
-{
+                                             size_t *count) {
     if (classes == NULL || manager == NULL || out == NULL || count == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || manager->classes != classes)
@@ -247,8 +236,7 @@ mc_registry_status mc_registry_smelting_keys(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_smelting_manager_keys(const mc_smelting_manager *manager, int32_t *output,
-                                            size_t capacity, size_t *count)
-{
+                                            size_t capacity, size_t *count) {
     if (manager == NULL || count == NULL || (output == NULL && capacity != 0))
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (manager->b == NULL)

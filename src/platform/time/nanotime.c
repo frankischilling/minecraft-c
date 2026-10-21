@@ -59,8 +59,7 @@ _Static_assert(sizeof(long) <= sizeof(int64_t), "Linux tv_nsec must fit int64_t"
 
 #define NANOSECONDS_PER_SECOND INT64_C(1000000000)
 
-static mc_platform_nanotime_status check_fp(void)
-{
+static mc_platform_nanotime_status check_fp(void) {
     /* Ignore sticky exception status bits; do not change any controls. */
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         return MC_PLATFORM_NANOTIME_UNSUPPORTED_FP;
@@ -69,8 +68,7 @@ static mc_platform_nanotime_status check_fp(void)
 }
 
 mc_platform_nanotime_status mc_platform_nanotime_from_counter(int64_t count, int64_t frequency,
-                                                              int64_t *out)
-{
+                                                              int64_t *out) {
     if (out == NULL) {
         return MC_PLATFORM_NANOTIME_INVALID_ARGUMENT;
     }
@@ -94,8 +92,7 @@ mc_platform_nanotime_status mc_platform_nanotime_from_counter(int64_t count, int
 }
 
 mc_platform_nanotime_status mc_platform_nanotime_from_timespec(int64_t sec, int64_t nsec,
-                                                               int64_t *out)
-{
+                                                               int64_t *out) {
     if (out == NULL) {
         return MC_PLATFORM_NANOTIME_INVALID_ARGUMENT;
     }
@@ -115,8 +112,7 @@ mc_platform_nanotime_status mc_platform_nanotime_from_timespec(int64_t sec, int6
 }
 
 #if !defined(_WIN32)
-static mc_platform_nanotime_status sample_monotonic(int64_t *out)
-{
+static mc_platform_nanotime_status sample_monotonic(int64_t *out) {
     struct timespec value;
     if (clock_gettime(CLOCK_MONOTONIC, &value) != 0) {
         return MC_PLATFORM_NANOTIME_PLATFORM_FAILURE;
@@ -128,8 +124,7 @@ static mc_platform_nanotime_status sample_monotonic(int64_t *out)
 }
 #endif
 
-mc_platform_nanotime_status mc_platform_nanotime_init(mc_platform_nanotime *out)
-{
+mc_platform_nanotime_status mc_platform_nanotime_init(mc_platform_nanotime *out) {
     if (out == NULL) {
         return MC_PLATFORM_NANOTIME_INVALID_ARGUMENT;
     }
@@ -167,8 +162,7 @@ mc_platform_nanotime_status mc_platform_nanotime_init(mc_platform_nanotime *out)
     return MC_PLATFORM_NANOTIME_OK;
 }
 
-mc_platform_nanotime_status mc_platform_nanotime_check(const mc_platform_nanotime *clock)
-{
+mc_platform_nanotime_status mc_platform_nanotime_check(const mc_platform_nanotime *clock) {
     if (clock == NULL || !clock->initialized) {
         return MC_PLATFORM_NANOTIME_INVALID_ARGUMENT;
     }
@@ -185,8 +179,7 @@ mc_platform_nanotime_status mc_platform_nanotime_check(const mc_platform_nanotim
 }
 
 mc_platform_nanotime_status mc_platform_nanotime_sample(const mc_platform_nanotime *clock,
-                                                        int64_t *out)
-{
+                                                        int64_t *out) {
     if (out == NULL) {
         return MC_PLATFORM_NANOTIME_INVALID_ARGUMENT;
     }

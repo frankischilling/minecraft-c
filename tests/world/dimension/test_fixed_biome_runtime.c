@@ -52,15 +52,13 @@ typedef struct fixture {
     mc_world_dimension_biome *aliases[2];
 } fixture;
 
-static bool no_biomes(const mc_biome_registry_view *v)
-{
+static bool no_biomes(const mc_biome_registry_view *v) {
     return v->a == NULL && v->b == NULL && v->c == NULL && v->d == NULL && v->e == NULL &&
            v->f == NULL && v->g == NULL && v->h == NULL && v->i == NULL && v->j == NULL &&
            v->k == NULL && v->l == NULL && v->m == NULL && v->x == NULL && v->x_length == 0;
 }
 
-static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_cause(const mc_registry_error *a, const mc_registry_error *b) {
     return a->message == b->message && a->initializer_pc == b->initializer_pc &&
            a->block_id == b->block_id && a->constructor_class == b->constructor_class &&
            a->constructor_pc == b->constructor_pc && a->profile_status == b->profile_status &&
@@ -77,8 +75,7 @@ static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     byte_stream *stream = context;
     ++stream->reads;
     if (out == NULL || count == NULL || capacity == 0 || stream->closed ||
@@ -97,8 +94,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resource_source *source = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     size_t index = COUNT(names);
@@ -134,8 +130,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resource_source *source = context;
     if (input == NULL || input->context != &source->streams[2] || input->read != read_bytes) {
         source->invalid = true;
@@ -146,16 +141,14 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resource_source *source = context;
     if (input == NULL || input->read != read_bytes)
         source->invalid = true;
     return false;
 }
 
-static bool registry_create(fixture *f, size_t index, mc_registry_side side, bool missing)
-{
+static bool registry_create(fixture *f, size_t index, mc_registry_side side, bool missing) {
     resource_source *source = &f->sources[index];
     source->missing = missing;
     source->streams[0] = (byte_stream){.bytes = language, .length = sizeof(language) - 1};
@@ -170,8 +163,7 @@ static bool registry_create(fixture *f, size_t index, mc_registry_side side, boo
     return true;
 }
 
-static bool resources_unread(const resource_source *source)
-{
+static bool resources_unread(const resource_source *source) {
     for (size_t i = 0; i < COUNT(source->streams); ++i)
         if (source->streams[i].opens != 0 || source->streams[i].reads != 0 ||
             source->streams[i].closes != 0)
@@ -179,8 +171,7 @@ static bool resources_unread(const resource_source *source)
     return source->callbacks == 0 && !source->invalid;
 }
 
-static bool resources_complete(const resource_source *source)
-{
+static bool resources_complete(const resource_source *source) {
     return !source->invalid && source->callbacks == 3 && source->streams[0].opens == 1 &&
            source->streams[1].opens == 1 && source->streams[2].opens == 1 &&
            source->streams[0].reads != 0 && source->streams[1].reads != 0 &&
@@ -189,8 +180,7 @@ static bool resources_complete(const resource_source *source)
 }
 
 static bool references_are(const mc_biome_reference_array *array, size_t first, size_t end,
-                           const mc_biome *value)
-{
+                           const mc_biome *value) {
     const mc_biome *const *data = mc_biome_reference_array_data(array);
     if (array == NULL || data == NULL || end > mc_biome_reference_array_length(array))
         return false;
@@ -201,8 +191,7 @@ static bool references_are(const mc_biome_reference_array *array, size_t first, 
 }
 
 static bool doubles_are(const mc_biome_double_buffer *buffer, size_t first, size_t end,
-                        double value)
-{
+                        double value) {
     if (buffer == NULL || buffer->data == NULL || end > buffer->length)
         return false;
     for (size_t i = first; i < end; ++i)
@@ -213,8 +202,7 @@ static bool doubles_are(const mc_biome_double_buffer *buffer, size_t first, size
 
 static bool manager_fields(mc_world_dimension_biome *manager, mc_registry_classes *registry,
                            const mc_biome *actual, double temperature,
-                           mc_world_dimension_biome_fields *fields)
-{
+                           mc_world_dimension_biome_fields *fields) {
     mc_world_biome_game_fields game;
     return mc_world_dimension_biome_fields_get(manager, fields) == MC_WORLD_DIMENSION_OK &&
            mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
@@ -225,8 +213,7 @@ static bool manager_fields(mc_world_dimension_biome *manager, mc_registry_classe
            fields->d->length == 0;
 }
 
-static bool measure_charge(size_t length, size_t *out)
-{
+static bool measure_charge(size_t length, size_t *out) {
     bool ok = false;
     mc_biome_memory memory = {0};
     mc_biome_double_buffer buffer = {0};
@@ -242,8 +229,7 @@ cleanup:
 
 /* The fixed paired body returns e without allocating or sampling in point and
  * chunk. Its direct rectangle is e-fill76, b-fill93, a-fill110, return114. */
-static bool test_arrays(fixture *f)
-{
+static bool test_arrays(fixture *f) {
     bool ok = false;
     mc_world_dimension_biome_fields numeric[2];
     mc_world_biome_game_fields game[2];
@@ -342,8 +328,7 @@ cleanup:
 /* Public buffer accounting supplies real platform-specific charges. No limit,
  * descriptor, class phase or owning layout is modified to force a failure. */
 static bool test_budget(fixture *f, mc_registry_side side, size_t kind, bool short_b,
-                        size_t charge_one, size_t charge_four)
-{
+                        size_t charge_one, size_t charge_four) {
     bool ok = false;
     const size_t slot = 2 + kind * 2 + (short_b ? 1 : 0);
     mc_world_dimension_limits limits = mc_world_dimension_default_limits();
@@ -430,8 +415,7 @@ cleanup:
     return ok;
 }
 
-static bool test_failed_rebind(fixture *f, mc_registry_side side)
-{
+static bool test_failed_rebind(fixture *f, mc_registry_side side) {
     bool ok = false;
     const mc_world_dimension_registry_binding binding = {f->registries[2], side, f->profile};
     mc_world_dimension_error error;
@@ -485,8 +469,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < COUNT(f->aliases); ++i) {
@@ -510,8 +493,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool test_side(mc_registry_side side, size_t charge_one, size_t charge_four)
-{
+static bool test_side(mc_registry_side side, size_t charge_one, size_t charge_four) {
     bool ok = false;
     fixture *f = calloc(1, sizeof(*f));
     mc_world_dimension_error error;
@@ -609,8 +591,7 @@ cleanup:
     return ok;
 }
 
-int main(void)
-{
+int main(void) {
     size_t charge_one = 0, charge_four = 0;
     if (!measure_charge(1, &charge_one) || !measure_charge(4, &charge_four) ||
         charge_four <= charge_one || charge_one > (SIZE_MAX - charge_four) / 2)

@@ -5,8 +5,7 @@
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 
-static bool list_metadata(const mc_world_reference_list *list)
-{
+static bool list_metadata(const mc_world_reference_list *list) {
     return list != NULL && list->count <= list->capacity &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            (list->capacity == 0 || list->items != NULL);
@@ -17,8 +16,7 @@ static bool list_metadata(const mc_world_reference_list *list)
  * an untyped nonnull element cannot establish the source pm/jp cast at28.
  * No successful stand-in observer or Java collection internals are supplied. */
 static bool observe(mc_world_runtime *world, unsigned int invocation_pc,
-                    mc_world_mutation_error *error)
-{
+                    mc_world_mutation_error *error) {
     error->observer_bytecode = 9;
     const mc_world_reference_list *list = world->fields.u;
     if (!list_metadata(list))
@@ -50,8 +48,7 @@ static bool observe(mc_world_runtime *world, unsigned int invocation_pc,
 }
 
 bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                    mc_world_mutation_error *error)
-{
+                                    mc_world_mutation_error *error) {
     /* Coordinates would be passed unchanged at34. No observer body is reached
      * successfully in the supported empty/cast-unavailable domain. */
     (void)x;
@@ -62,8 +59,7 @@ bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t 
 
 bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int32_t min_y,
                                      int32_t min_z, int32_t max_x, int32_t max_y, int32_t max_z,
-                                     mc_world_mutation_error *error)
-{
+                                     mc_world_mutation_error *error) {
     /* The full range interface invocation is40, not the separate same-cell
      * range observer method's37. No coordinate clipping is performed. */
     (void)min_x;
@@ -76,8 +72,7 @@ bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int
 }
 
 bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_t z, int32_t a,
-                                      int32_t b, mc_world_mutation_error *error)
-{
+                                      int32_t b, mc_world_mutation_error *error) {
     /* fd.h/dj.g(IIII)V: source arguments are x,z,yA,yB. In particular callers
      * in incremental Chunk.g supply LOCAL x/z; do not correct them here. */
     if (a > b) {
@@ -88,16 +83,14 @@ bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_
     return mc_world_mutation_observe_range(world, x, a, z, x, b, z, error);
 }
 
-static bool neighbor_success(mc_world_mutation_error *error)
-{
+static bool neighbor_success(mc_world_mutation_error *error) {
     error->neighbor_bytecode = 0;
     error->neighbor_call_bytecode = 0;
     return true;
 }
 
 static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t source_id,
-                     unsigned int call_pc, mc_world_mutation_error *error)
-{
+                     unsigned int call_pc, mc_world_mutation_error *error) {
     error->neighbor_call_bytecode = call_pc;
     error->neighbor_bytecode = 1;
     if (world->fields.o)
@@ -151,8 +144,7 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
 }
 
 bool mc_world_mutation_neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                 int32_t id, mc_world_mutation_error *error)
-{
+                                 int32_t id, mc_world_mutation_error *error) {
     /* The source invokes each private operation synchronously. Each later
      * call rereads flags/registry/World and observes completed earlier effects. */
     return neighbor(world, mc_java_i32_sub(x, 1), y, z, id, 8, error) &&

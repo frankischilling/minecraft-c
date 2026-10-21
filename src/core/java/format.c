@@ -33,8 +33,7 @@ typedef struct format_context {
 } format_context;
 
 static mc_java_format_status failure(format_context *context, mc_java_format_status status,
-                                     const format_part *part, int32_t value, uint32_t flags)
-{
+                                     const format_part *part, int32_t value, uint32_t flags) {
     context->status = status;
     if (context->error != NULL)
         *context->error = (mc_java_format_error){.status = status,
@@ -47,8 +46,7 @@ static mc_java_format_status failure(format_context *context, mc_java_format_sta
     return status;
 }
 
-static void *allocate(format_context *context, size_t bytes, const format_part *part)
-{
+static void *allocate(format_context *context, size_t bytes, const format_part *part) {
     void *storage =
         context->options->allocator.allocate(context->options->allocator.context, bytes);
     if (storage == NULL)
@@ -57,19 +55,16 @@ static void *allocate(format_context *context, size_t bytes, const format_part *
     return storage;
 }
 
-static bool digit(uint16_t unit)
-{
+static bool digit(uint16_t unit) {
     /* Formatter's regex uses the default ASCII \d class. */
     return unit >= '0' && unit <= '9';
 }
 
-static bool letter_or_percent(uint16_t unit)
-{
+static bool letter_or_percent(uint16_t unit) {
     return (unit >= 'a' && unit <= 'z') || (unit >= 'A' && unit <= 'Z') || unit == '%';
 }
 
-static uint32_t flag(uint16_t unit)
-{
+static uint32_t flag(uint16_t unit) {
     switch (unit) {
         case '-':
             return F_LEFT;
@@ -92,8 +87,7 @@ static uint32_t flag(uint16_t unit)
     }
 }
 
-static bool valid_conversion(uint16_t unit)
-{
+static bool valid_conversion(uint16_t unit) {
     switch (unit) {
         case 'b':
         case 'B':
@@ -122,8 +116,7 @@ static bool valid_conversion(uint16_t unit)
     }
 }
 
-static bool valid_date(uint16_t unit)
-{
+static bool valid_date(uint16_t unit) {
     switch (unit) {
         case 'H':
         case 'I':
@@ -162,8 +155,7 @@ static bool valid_date(uint16_t unit)
     }
 }
 
-static bool decimal(const uint16_t *units, size_t start, size_t end, int32_t *out)
-{
+static bool decimal(const uint16_t *units, size_t start, size_t end, int32_t *out) {
     int32_t value = 0;
     for (size_t index = start; index < end; ++index) {
         const int32_t next = (int32_t)(units[index] - '0');
@@ -175,23 +167,20 @@ static bool decimal(const uint16_t *units, size_t start, size_t end, int32_t *ou
     return true;
 }
 
-static bool mismatch(format_context *context, const format_part *part, uint32_t flags)
-{
+static bool mismatch(format_context *context, const format_part *part, uint32_t flags) {
     (void)failure(context, MC_JAVA_FORMAT_FLAGS_CONVERSION_MISMATCH, part, 0, flags);
     return false;
 }
 
 static bool bad_flags(format_context *context, const format_part *part, const uint32_t *bad,
-                      size_t count)
-{
+                      size_t count) {
     for (size_t index = 0; index < count; ++index)
         if ((part->flags & bad[index]) != 0)
             return mismatch(context, part, bad[index]);
     return true;
 }
 
-static bool check(format_context *context, const format_part *part)
-{
+static bool check(format_context *context, const format_part *part) {
     const uint32_t flags = part->flags;
     const uint16_t conversion = part->conversion;
     static const uint32_t general_bad[] = {F_PLUS, F_SPACE, F_ZERO, F_GROUP, F_PARENTHESES};
@@ -273,8 +262,7 @@ static bool check(format_context *context, const format_part *part)
     return true;
 }
 
-static void normalize_conversion(format_part *part)
-{
+static void normalize_conversion(format_part *part) {
     if (part->conversion >= 'A' && part->conversion <= 'Z') {
         part->flags |= F_UPPER;
         part->conversion = (uint16_t)(part->conversion + ('a' - 'A'));
@@ -283,8 +271,7 @@ static void normalize_conversion(format_part *part)
         part->index = -2;
 }
 
-static bool specifier(format_context *context, size_t start, format_part *part)
-{
+static bool specifier(format_context *context, size_t start, format_part *part) {
     const uint16_t *units = context->pattern->units;
     const size_t length = context->pattern->length;
     *part = (format_part){.offset = start, .width = -1, .precision = -1};
@@ -383,8 +370,7 @@ static bool specifier(format_context *context, size_t start, format_part *part)
     return check(context, part);
 }
 
-static bool parse(format_context *context, format_part **out)
-{
+static bool parse(format_context *context, format_part **out) {
     format_part *head = NULL;
     format_part **tail = &head;
     size_t offset = 0;
@@ -415,8 +401,7 @@ static bool parse(format_context *context, format_part **out)
     return true;
 }
 
-static bool reserve(format_context *context, size_t additional, const format_part *part)
-{
+static bool reserve(format_context *context, size_t additional, const format_part *part) {
     if (additional > context->limit - context->length) {
         (void)failure(context, MC_JAVA_FORMAT_LIMIT, part, 0, part->flags);
         return false;
@@ -446,8 +431,7 @@ static bool reserve(format_context *context, size_t additional, const format_par
 }
 
 static bool append(format_context *context, const mc_java_format_text *text,
-                   const format_part *part)
-{
+                   const format_part *part) {
     if (!reserve(context, text->length, part))
         return false;
     for (size_t index = 0; index < text->length; ++index)
@@ -455,8 +439,7 @@ static bool append(format_context *context, const mc_java_format_text *text,
     return true;
 }
 
-static bool spaces(format_context *context, size_t count, const format_part *part)
-{
+static bool spaces(format_context *context, size_t count, const format_part *part) {
     if (!reserve(context, count, part))
         return false;
     for (size_t index = 0; index < count; ++index)
@@ -465,8 +448,7 @@ static bool spaces(format_context *context, size_t count, const format_part *par
 }
 
 static bool valid_text(format_context *context, const mc_java_format_text *text,
-                       const format_part *part)
-{
+                       const format_part *part) {
     if (text->units == NULL && text->length != 0) {
         (void)failure(context, MC_JAVA_FORMAT_INVALID_ARGUMENT, part, 0, part->flags);
         return false;
@@ -478,8 +460,7 @@ static bool valid_text(format_context *context, const mc_java_format_text *text,
     return true;
 }
 
-static mc_java_format_text hash_text(const mc_java_format_text *argument, uint16_t units[8])
-{
+static mc_java_format_text hash_text(const mc_java_format_text *argument, uint16_t units[8]) {
     uint32_t hash = 0;
     for (size_t index = 0; index < argument->length; ++index)
         hash = hash * UINT32_C(31) + argument->units[index];
@@ -494,8 +475,7 @@ static mc_java_format_text hash_text(const mc_java_format_text *argument, uint16
 }
 
 static bool render(format_context *context, const format_part *part,
-                   const mc_java_format_text *argument)
-{
+                   const mc_java_format_text *argument) {
     if (part->fixed) {
         const mc_java_format_text literal = {.units = context->pattern->units + part->offset,
                                              .length = part->length};
@@ -558,8 +538,7 @@ mc_java_format_status mc_java_format_strings(const mc_java_format_options *optio
                                              const mc_java_format_text *pattern,
                                              const mc_java_format_text *const *arguments,
                                              size_t argument_count, mc_java_format_text *result,
-                                             mc_java_format_error *error)
-{
+                                             mc_java_format_error *error) {
     format_context context = {.options = options, .pattern = pattern, .error = error};
     if (options == NULL || result == NULL || options->allocator.allocate == NULL ||
         (arguments == NULL && argument_count != 0))

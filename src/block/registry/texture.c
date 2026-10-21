@@ -4,8 +4,8 @@
  * queries do not latch native failures or change game/class state. The caller
  * owns its source failure context; out must be disjoint from owner storage. */
 mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
-                                                  const mc_block *block, int32_t side, int32_t *out)
-{
+                                                  const mc_block *block, int32_t side,
+                                                  int32_t *out) {
     if (classes == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (block == NULL)

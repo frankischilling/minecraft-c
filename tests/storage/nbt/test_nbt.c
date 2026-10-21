@@ -16,8 +16,7 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static size_t decode_hex(const char *hex, uint8_t *bytes)
-{
+static size_t decode_hex(const char *hex, uint8_t *bytes) {
     size_t length = strlen(hex) / 2u;
     for (size_t i = 0; i < length; ++i) {
         unsigned int value = 0;
@@ -37,8 +36,7 @@ static size_t decode_hex(const char *hex, uint8_t *bytes)
     return length;
 }
 
-static int expect_write(const mc_nbt_tag *tag, const char *hex)
-{
+static int expect_write(const mc_nbt_tag *tag, const char *hex) {
     uint8_t expected[1024];
     uint8_t actual[1024];
     size_t length = decode_hex(hex, expected);
@@ -58,8 +56,7 @@ static int expect_write(const mc_nbt_tag *tag, const char *hex)
 }
 
 static int expect_read_failure(const uint8_t *bytes, size_t length, const mc_nbt_limits *limits,
-                               mc_nbt_status expected)
-{
+                               mc_nbt_status expected) {
     static const uint8_t end[] = {0};
     mc_nbt_document *existing = NULL;
     mc_nbt_document *result;
@@ -80,8 +77,7 @@ static int expect_read_failure(const uint8_t *bytes, size_t length, const mc_nbt
 }
 
 static int expect_write_failure(const mc_nbt_tag *tag, const mc_nbt_limits *limits,
-                                mc_nbt_status expected)
-{
+                                mc_nbt_status expected) {
     uint8_t output[32];
     uint8_t saved[32];
     size_t written = 98765;
@@ -103,8 +99,7 @@ static int expect_write_failure(const mc_nbt_tag *tag, const mc_nbt_limits *limi
     return 0;
 }
 
-static int test_signed_scalars(void)
-{
+static int test_signed_scalars(void) {
     static const struct {
         mc_nbt_type type;
         int64_t value;
@@ -125,6 +120,7 @@ static int test_signed_scalars(void)
         {MC_NBT_LONG, INT64_C(0x0123456789abcdef), "0400000123456789abcdef"},
         {MC_NBT_LONG, -2, "040000fffffffffffffffe"},
     };
+
     for (size_t i = 0; i < sizeof(fixtures) / sizeof(fixtures[0]); ++i) {
         uint8_t bytes[16];
         size_t length = decode_hex(fixtures[i].hex, bytes);
@@ -174,8 +170,7 @@ static int test_signed_scalars(void)
     return 0;
 }
 
-static int test_float_bits(void)
-{
+static int test_float_bits(void) {
     static const struct {
         uint32_t bits;
         const char *input;
@@ -190,6 +185,7 @@ static int test_float_bits(void)
         {UINT32_C(0x7fc12345), "0500007fc12345", "0500007fc00000"},
         {UINT32_C(0xff800001), "050000ff800001", "0500007fc00000"},
     };
+
     static const struct {
         uint64_t bits;
         const char *input;
@@ -204,6 +200,7 @@ static int test_float_bits(void)
         {UINT64_C(0x7ff123456789abcd), "0600007ff123456789abcd", "0600007ff8000000000000"},
         {UINT64_C(0xfff8000000000001), "060000fff8000000000001", "0600007ff8000000000000"},
     };
+
     for (size_t i = 0; i < sizeof(floats) / sizeof(floats[0]); ++i) {
         uint8_t bytes[16];
         mc_nbt_document *document = NULL;
@@ -231,8 +228,7 @@ static int test_float_bits(void)
     return 0;
 }
 
-static int test_text_and_names(void)
-{
+static int test_text_and_names(void) {
     static const uint16_t units[] = {0,      1,      0x7f,   0x80,   0x7ff, 0x800,
                                      0xffff, 0xd800, 0xdc00, 0xd83d, 0xde00};
     static const char string_hex[] =
@@ -272,6 +268,7 @@ static int test_text_and_names(void)
     tag.name.units = units;
     tag.name.length = sizeof(units) / sizeof(units[0]);
     CHECK(expect_write(&tag, "00") == 0);
+
     static const struct {
         const char *input;
         const char *output;
@@ -281,6 +278,7 @@ static int test_text_and_names(void)
         {"0800000002c181", "080000000141", 0x41},   {"0800000003e08080", "0800000002c080", 0},
         {"0800000003e08181", "080000000141", 0x41},
     };
+
     for (size_t i = 0; i < sizeof(accepted) / sizeof(accepted[0]); ++i) {
         document = NULL;
         length = decode_hex(accepted[i].input, bytes);
@@ -293,8 +291,7 @@ static int test_text_and_names(void)
     return 0;
 }
 
-static int test_text_boundaries(void)
-{
+static int test_text_boundaries(void) {
     const size_t max_length = 65535;
     uint16_t *units = malloc((max_length + 1u) * sizeof(*units));
     uint8_t *bytes = malloc(max_length + 8u);
@@ -355,8 +352,7 @@ static int test_text_boundaries(void)
     return 0;
 }
 
-static int test_arrays_and_lists(void)
-{
+static int test_arrays_and_lists(void) {
     static const char *const fixtures[] = {
         "07000000000000",
         "07000000000004007f80ff",
@@ -420,8 +416,7 @@ static int test_arrays_and_lists(void)
     return 0;
 }
 
-static int test_compounds_and_ownership(void)
-{
+static int test_compounds_and_ownership(void) {
     static const char input_hex[] =
         "0a000172010001780103000178123456780800066675747572650001760100000700deadbeef";
     static const uint16_t x[] = {'x'};
@@ -471,8 +466,7 @@ static int test_compounds_and_ownership(void)
     return 0;
 }
 
-static int test_root_modes_and_arguments(void)
-{
+static int test_root_modes_and_arguments(void) {
     static const uint8_t end_with_tail[] = {0, 0xff, 0xff};
     static const uint8_t byte[] = {1, 0, 0, 1};
     mc_nbt_document *document = NULL;
@@ -512,8 +506,7 @@ static int test_root_modes_and_arguments(void)
     return 0;
 }
 
-static int test_malformed_and_truncated(void)
-{
+static int test_malformed_and_truncated(void) {
     static const struct {
         const char *hex;
         mc_nbt_status status;
@@ -531,6 +524,7 @@ static int test_malformed_and_truncated(void)
         {"0800000004f0908080", MC_NBT_INVALID_UTF},
         {"0100018000", MC_NBT_INVALID_UTF},
     };
+
     for (size_t i = 0; i < sizeof(malformed) / sizeof(malformed[0]); ++i) {
         uint8_t bytes[64];
         size_t length = decode_hex(malformed[i].hex, bytes);
@@ -563,8 +557,7 @@ static int test_malformed_and_truncated(void)
     return 0;
 }
 
-static int test_limits(void)
-{
+static int test_limits(void) {
     static const uint8_t byte[] = {1, 0, 0, 42};
     static const uint8_t list[] = {9, 0, 0, 1, 0, 0, 0, 2, 11, 12};
     static const uint8_t array[] = {7, 0, 0, 0, 0, 0, 3, 1, 2, 3};
@@ -679,8 +672,7 @@ static int test_limits(void)
     return 0;
 }
 
-static int test_depth(void)
-{
+static int test_depth(void) {
     mc_nbt_tag tags[129] = {0};
     const mc_nbt_tag *links[128];
     uint8_t bytes[1024];
@@ -721,8 +713,7 @@ static int test_depth(void)
     return 0;
 }
 
-static int test_writer_validation_and_capacity(void)
-{
+static int test_writer_validation_and_capacity(void) {
     mc_nbt_tag tag = {0};
     tag.type = MC_NBT_INT;
     tag.value.int_value = 42;
@@ -797,8 +788,7 @@ static int test_writer_validation_and_capacity(void)
     return 0;
 }
 
-static int test_bounded_mutations(void)
-{
+static int test_bounded_mutations(void) {
     static const char *const seeds[] = {
         "00",
         "0100017880",
@@ -863,8 +853,7 @@ static int test_bounded_mutations(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_signed_scalars() || test_float_bits() || test_text_and_names() ||
         test_text_boundaries() || test_arrays_and_lists() || test_compounds_and_ownership() ||
         test_root_modes_and_arguments() || test_malformed_and_truncated() || test_limits() ||

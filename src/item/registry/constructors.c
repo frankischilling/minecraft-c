@@ -14,8 +14,7 @@
     } while (0)
 
 static mc_registry_status base_prefix(mc_registry_classes *classes, mc_item *item, int32_t id,
-                                      const char *client, const char *server)
-{
+                                      const char *client, const char *server) {
     STAGE(client, server, 0);
     STAGE(client, server, 2);
     TRY(mc_registry_item_base(classes, item, id));
@@ -25,8 +24,7 @@ static mc_registry_status base_prefix(mc_registry_classes *classes, mc_item *ite
 
 static mc_registry_status dq_construct(mc_registry_classes *classes, mc_item *item, int32_t id,
                                        int32_t attack, const mc_item_tool_material *tool,
-                                       mc_registry_block_array *effective)
-{
+                                       mc_registry_block_array *effective) {
     TRY(base_prefix(classes, item, id, "dq", "cj"));
     STAGE("dq", "cj", 8);
     item->dq.bl = 4.0f;
@@ -57,8 +55,7 @@ static mc_registry_status dq_construct(mc_registry_classes *classes, mc_item *it
 }
 
 static mc_registry_status yw_construct(mc_registry_classes *classes, mc_item *item, int32_t id,
-                                       int32_t amount, bool flag)
-{
+                                       int32_t amount, bool flag) {
     TRY(base_prefix(classes, item, id, "yw", "px"));
     STAGE("yw", "px", 7);
     item->yw.a = amount;
@@ -70,8 +67,7 @@ static mc_registry_status yw_construct(mc_registry_classes *classes, mc_item *it
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_item_ck(mc_registry_classes *classes, mc_item *item, int32_t id)
-{
+mc_registry_status mc_registry_item_ck(mc_registry_classes *classes, mc_item *item, int32_t id) {
     TRY(base_prefix(classes, item, id, "ck", "bk"));
     int32_t block_id = mc_java_i32_add(id, 256);
     STAGE("ck", "bk", 11);
@@ -98,8 +94,7 @@ mc_registry_status mc_registry_item_ck(mc_registry_classes *classes, mc_item *it
 }
 
 static mc_registry_status block_item(mc_registry_classes *classes, mc_item *item, int32_t id,
-                                     const char *client, const char *server, bool subtypes)
-{
+                                     const char *client, const char *server, bool subtypes) {
     STAGE(client, server, 0);
     STAGE(client, server, 2);
     TRY(mc_registry_item_ck(classes, item, id));
@@ -115,8 +110,7 @@ static mc_registry_status block_item(mc_registry_classes *classes, mc_item *item
 }
 
 static mc_registry_status armor(mc_registry_classes *classes, mc_item *item,
-                                const mc_item_arguments *a)
-{
+                                const mc_item_arguments *a) {
     TRY(base_prefix(classes, item, a->id, "wa", "nx"));
     STAGE("wa", "nx", 7);
     item->subtype.wa.a = a->integers[0];
@@ -155,8 +149,7 @@ static mc_registry_status armor(mc_registry_classes *classes, mc_item *item,
 }
 
 static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item *item,
-                                           const mc_item_arguments *a)
-{
+                                           const mc_item_arguments *a) {
     mc_registry_block_array *effective;
     switch (item->kind) {
         case MC_ITEM_GM_EJ:
@@ -399,8 +392,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
 }
 
 mc_registry_status mc_registry_item_construct(mc_registry_classes *classes, mc_item *item,
-                                              const mc_item_arguments *arguments)
-{
+                                              const mc_item_arguments *arguments) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (item == NULL || arguments == NULL || item->classes != classes ||

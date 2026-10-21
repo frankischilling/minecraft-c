@@ -1,5 +1,16 @@
 # minecraft-c
 
+The [shared collision bounds](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
+now own actual pooled identities, reset, client clear and complete movement
+geometry. Native holds preserve detached aliases. All 160/162/162 configured
+MSVC/GCC/Clang cases pass, including 4,601 focused checks per host. Each exact
+rebuilt probe matches 33,534 original client/server raw rows, including the
+quiet/signaling NaN matrix. The requested attached-brace style is applied and
+all 443 C source/header files pass formatting. World collision, Entity movement,
+ray/vector/text helpers and later FallingSand physics remain unfinished.
+
+The following snow checkpoint predates bounds integration.
+
 The [snow-layer subsystem](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
 implements support, neighbor survival and saved Block-light melting. Its
 focused case passes 380 checks per native compiler. All 159/161/161 configured

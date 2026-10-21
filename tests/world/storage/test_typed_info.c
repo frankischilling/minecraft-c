@@ -38,16 +38,14 @@ typedef enum fixture_kind {
     BAD_DIMENSION
 } fixture_kind;
 
-static mc_nbt_string ascii(const char *text, uint16_t units[16])
-{
+static mc_nbt_string ascii(const char *text, uint16_t units[16]) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, length};
 }
 
-static const mc_nbt_tag *get(const mc_nbt_tag *root, const char *key)
-{
+static const mc_nbt_tag *get(const mc_nbt_tag *root, const char *key) {
     uint16_t units[16];
     if (root == NULL || root->type != MC_NBT_COMPOUND)
         return NULL;
@@ -55,21 +53,18 @@ static const mc_nbt_tag *get(const mc_nbt_tag *root, const char *key)
     return mc_nbt_compound_get(root, name.units, name.length);
 }
 
-static bool int_is(const mc_nbt_tag *root, const char *key, int32_t expected)
-{
+static bool int_is(const mc_nbt_tag *root, const char *key, int32_t expected) {
     const mc_nbt_tag *tag = get(root, key);
     return tag != NULL && tag->type == MC_NBT_INT && tag->value.int_value == expected;
 }
 
-static bool text_is(mc_nbt_string text, const uint16_t *units, size_t length)
-{
+static bool text_is(mc_nbt_string text, const uint16_t *units, size_t length) {
     return text.length == length &&
            (length == 0 ||
             (text.units != NULL && memcmp(text.units, units, length * sizeof(*units)) == 0));
 }
 
-static bool same_view(const mc_level_info *a, const mc_level_info *b)
-{
+static bool same_view(const mc_level_info *a, const mc_level_info *b) {
     return a->seed == b->seed && a->spawn_x == b->spawn_x && a->spawn_y == b->spawn_y &&
            a->spawn_z == b->spawn_z && a->time == b->time && a->last_played == b->last_played &&
            a->size_on_disk == b->size_on_disk && a->version == b->version &&
@@ -80,8 +75,7 @@ static bool same_view(const mc_level_info *a, const mc_level_info *b)
            a->level_name.length == b->level_name.length;
 }
 
-static bool fields_are(const mc_world_info *info, int64_t seed)
-{
+static bool fields_are(const mc_world_info *info, int64_t seed) {
     mc_world_info_fields f;
     if (mc_world_info_fields_get(info, &f) != MC_WORLD_INFO_OK)
         return false;
@@ -95,8 +89,7 @@ static bool fields_are(const mc_world_info *info, int64_t seed)
            dimension != NULL && dimension->type == MC_NBT_INT && dimension->value.int_value == -7;
 }
 
-static bool encode_fixture(fixture_kind kind, int64_t seed, mc_compression_buffer *out)
-{
+static bool encode_fixture(fixture_kind kind, int64_t seed, mc_compression_buffer *out) {
     uint16_t names[18][16];
     mc_nbt_tag fields[14] = {0}, dimension = {.type = MC_NBT_INT};
     mc_nbt_tag root = {.type = MC_NBT_COMPOUND}, data = {.type = MC_NBT_COMPOUND};
@@ -179,8 +172,7 @@ cleanup:
 }
 
 static bool open_store(const char *root, const char *leaf, mc_world_regions *regions,
-                       const mc_world_store_limits *limits, mc_world_store **out)
-{
+                       const mc_world_store_limits *limits, mc_world_store **out) {
     char *path = NULL;
     uint8_t map[256];
     for (size_t i = 0; i < 256; ++i)
@@ -197,8 +189,7 @@ static bool open_store(const char *root, const char *leaf, mc_world_regions *reg
 }
 
 static bool write_bytes(const mc_world_store *store, const char *leaf, const uint8_t *bytes,
-                        size_t length)
-{
+                        size_t length) {
     char *path = NULL;
     const bool ok =
         mc_ws_path_join(mc_world_store_root(store), leaf, &path, NULL) == MC_WORLD_STORAGE_OK &&
@@ -208,8 +199,7 @@ static bool write_bytes(const mc_world_store *store, const char *leaf, const uin
 }
 
 static bool file_is(const mc_world_store *store, const char *leaf, const uint8_t *expected,
-                    size_t length)
-{
+                    size_t length) {
     char *path = NULL;
     mc_ws_file_bytes bytes = {0};
     const bool ok =
@@ -221,8 +211,7 @@ static bool file_is(const mc_world_store *store, const char *leaf, const uint8_t
     return ok;
 }
 
-static bool file_missing(const mc_world_store *store, const char *leaf)
-{
+static bool file_missing(const mc_world_store *store, const char *leaf) {
     char *path = NULL;
     bool exists = true;
     const bool ok =
@@ -233,8 +222,7 @@ static bool file_missing(const mc_world_store *store, const char *leaf)
 }
 
 static bool expect_failure(mc_world_store *store, mc_world_info_side side, mc_world_info *sentinel,
-                           mc_world_storage_status expected, const char *operation)
-{
+                           mc_world_storage_status expected, const char *operation) {
     mc_world_info *out = sentinel;
     mc_world_storage_error error = {0};
     const mc_nbt_tag *root = mc_world_store_metadata_root(store);
@@ -264,8 +252,7 @@ cleanup:
 }
 
 static int test_loads(const char *root, const char *leaf, mc_world_regions *regions,
-                      mc_world_info_side side)
-{
+                      mc_world_info_side side) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_info *first = NULL, *second = NULL;
@@ -357,8 +344,7 @@ cleanup:
 }
 
 static int test_lifetimes(const char *root, const char *leaf, mc_world_regions *regions,
-                          mc_world_info_side side)
-{
+                          mc_world_info_side side) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_info *held = NULL, *next = NULL;
@@ -424,8 +410,7 @@ cleanup:
 }
 
 static int test_limits(const char *root, const char *leaf, mc_world_regions *regions,
-                       mc_world_info_side side, bool file_limit)
-{
+                       mc_world_info_side side, bool file_limit) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_info *held = NULL;
@@ -454,8 +439,7 @@ cleanup:
     return result;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t length = strlen(hex);
     if (length == 0 || length % 2u != 0 || length / 2u >= capacity)
         return false;
@@ -478,8 +462,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char root[8192];
     mc_world_regions *regions = NULL;
     bool exists = false;

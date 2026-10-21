@@ -6,8 +6,7 @@
 #include <limits.h>
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -20,13 +19,11 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
     return status;
 }
 
-void mc_registry_crafting_stage(mc_crafting_manager *manager, int32_t pc)
-{
+void mc_registry_crafting_stage(mc_crafting_manager *manager, int32_t pc) {
     manager->constructor_pc = pc;
 }
 
-mc_registry_status mc_registry_crafting_error(mc_crafting_manager *manager)
-{
+mc_registry_status mc_registry_crafting_error(mc_crafting_manager *manager) {
     mc_registry_error *error = &manager->classes->last_error;
     error->constructor_class = manager->classes->options.side == MC_REGISTRY_CLIENT ? "hk" : "ey";
     error->constructor_pc = manager->constructor_pc;
@@ -34,14 +31,12 @@ mc_registry_status mc_registry_crafting_error(mc_crafting_manager *manager)
 }
 
 static mc_registry_status crafting_fail(mc_crafting_manager *manager, mc_registry_status status,
-                                        const char *message)
-{
+                                        const char *message) {
     (void)mc_registry_fail(manager->classes, status, message, NULL);
     return mc_registry_crafting_error(manager);
 }
 
-static size_t decimal_ascii(int32_t value, char *out)
-{
+static size_t decimal_ascii(int32_t value, char *out) {
     char reversed[10];
     size_t count = 0, length = 0;
     uint32_t magnitude = value < 0 ? UINT32_C(0) - (uint32_t)value : (uint32_t)value;
@@ -56,8 +51,7 @@ static size_t decimal_ascii(int32_t value, char *out)
     return length;
 }
 
-static mc_registry_status print_count(mc_crafting_manager *manager)
-{
+static mc_registry_status print_count(mc_crafting_manager *manager) {
     mc_registry_classes *classes = manager->classes;
     mc_registry_crafting_stage(manager, 3204);
     mc_text_stdout output;
@@ -109,8 +103,7 @@ static mc_registry_status print_count(mc_crafting_manager *manager)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status construct_crafting(mc_crafting_manager *manager)
-{
+static mc_registry_status construct_crafting(mc_crafting_manager *manager) {
     mc_registry_crafting_stage(manager, 1);
     mc_registry_crafting_stage(manager, 5);
     mc_registry_crafting_stage(manager, 9);
@@ -137,8 +130,7 @@ static mc_registry_status construct_crafting(mc_crafting_manager *manager)
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status active_use(mc_registry_classes *classes, bool smelting)
-{
+static mc_registry_status active_use(mc_registry_classes *classes, bool smelting) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -194,19 +186,16 @@ static mc_registry_status active_use(mc_registry_classes *classes, bool smelting
     return status;
 }
 
-mc_registry_status mc_registry_crafting_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_crafting_active_use(mc_registry_classes *classes) {
     return active_use(classes, false);
 }
 
-mc_registry_status mc_registry_smelting_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_smelting_active_use(mc_registry_classes *classes) {
     return active_use(classes, true);
 }
 
 static mc_registry_status initialize(mc_registry_classes *classes, bool smelting,
-                                     mc_registry_error *error)
-{
+                                     mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Recipe registry owner");
     if (classes->entered != 0)
@@ -234,21 +223,18 @@ static mc_registry_status initialize(mc_registry_classes *classes, bool smelting
 }
 
 mc_registry_status mc_registry_classes_initialize_crafting(mc_registry_classes *classes,
-                                                           mc_registry_error *error)
-{
+                                                           mc_registry_error *error) {
     return initialize(classes, false, error);
 }
 
 mc_registry_status mc_registry_classes_initialize_smelting(mc_registry_classes *classes,
-                                                           mc_registry_error *error)
-{
+                                                           mc_registry_error *error) {
     return initialize(classes, true, error);
 }
 
 mc_registry_status mc_registry_classes_inspect_crafting(const mc_registry_classes *classes,
                                                         mc_registry_crafting_view *out,
-                                                        mc_registry_error *error)
-{
+                                                        mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Crafting view arguments");
     *out = (mc_registry_crafting_view){classes->crafting_state.phase, classes->crafting_state.pc,
@@ -258,8 +244,7 @@ mc_registry_status mc_registry_classes_inspect_crafting(const mc_registry_classe
 
 mc_registry_status mc_registry_classes_inspect_smelting(const mc_registry_classes *classes,
                                                         mc_registry_smelting_view *out,
-                                                        mc_registry_error *error)
-{
+                                                        mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Smelting view arguments");
     *out = (mc_registry_smelting_view){classes->smelting_state.phase, classes->smelting_state.pc,

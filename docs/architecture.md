@@ -1,5 +1,11 @@
 # Runtime boundaries
 
+The [shared bounds module](entity/bounds.md) owns the existing Entity classes
+pool, actual temporary identities and native holds that survive client clear.
+Movement geometry captures all arguments before possible reuse of its source
+slot. Entity's permanent constructor box stays separate. Original outer reset
+routes are mapped; native Entity movement and the game loop remain unfinished.
+
 The [shared Biome registry](world/biome-registry.md) stores actual objects,
 spawn lists, record/Class references and its mutable table on the existing
 class owner. Its direct sampler retains reference arrays and invokes the real

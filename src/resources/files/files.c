@@ -33,8 +33,7 @@ struct mc_resource_files {
     resource_stream *streams;
 };
 
-static bool utf8(const unsigned char *text, size_t length)
-{
+static bool utf8(const unsigned char *text, size_t length) {
     for (size_t i = 0; i < length;) {
         const unsigned int first = text[i++];
         if (first < 128u)
@@ -68,8 +67,7 @@ static bool utf8(const unsigned char *text, size_t length)
     return true;
 }
 
-static bool resource_name(const char *name)
-{
+static bool resource_name(const char *name) {
     if (name == NULL || name[0] != '/' || name[1] == '\0')
         return false;
     size_t start = 1;
@@ -91,8 +89,7 @@ static bool resource_name(const char *name)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *destination, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     resource_stream *stream = context;
     if (destination == NULL || count == NULL || capacity == 0)
         return MC_JAVA_PROPERTIES_INVALID_ARGUMENT;
@@ -109,8 +106,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *destination,
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static mc_registry_status open_file(const char *path, FILE **out)
-{
+static mc_registry_status open_file(const char *path, FILE **out) {
     FILE *file = NULL;
     int code;
 #ifdef _WIN32
@@ -153,8 +149,7 @@ static mc_registry_status open_file(const char *path, FILE **out)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     mc_resource_files *files = context;
     if (out == NULL || !resource_name(name))
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -194,8 +189,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     mc_resource_files *files = context;
     if (input == NULL || input->read != read_bytes)
         return MC_REGISTRY_INVALID_ARGUMENT;
@@ -211,8 +205,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     mc_resource_files *files = context;
     if (input == NULL || input->read != read_bytes)
         return false;
@@ -239,8 +232,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
     return false;
 }
 
-mc_registry_status mc_resource_files_create(const char *root, mc_resource_files **out)
-{
+mc_registry_status mc_resource_files_create(const char *root, mc_resource_files **out) {
     if (root == NULL || out == NULL || root[0] == '\0')
         return MC_REGISTRY_INVALID_ARGUMENT;
     const size_t length = strlen(root);
@@ -268,13 +260,11 @@ mc_registry_status mc_resource_files_create(const char *root, mc_resource_files 
     return MC_REGISTRY_OK;
 }
 
-const mc_registry_resources *mc_resource_files_source(mc_resource_files *files)
-{
+const mc_registry_resources *mc_resource_files_source(mc_resource_files *files) {
     return files == NULL ? NULL : &files->source;
 }
 
-mc_registry_status mc_resource_files_free(mc_resource_files *files)
-{
+mc_registry_status mc_resource_files_free(mc_resource_files *files) {
     if (files == NULL)
         return MC_REGISTRY_OK;
     mc_registry_status status = MC_REGISTRY_OK;

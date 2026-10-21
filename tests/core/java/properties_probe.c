@@ -103,8 +103,7 @@ typedef struct cell {
     mc_java_properties_string_view key_view;
 } cell;
 
-static void *arena_allocate(void *context, size_t bytes)
-{
+static void *arena_allocate(void *context, size_t bytes) {
     arena *memory = context;
     if (bytes == 0 || bytes > MAX_ARENA_BYTES - sizeof(arena_node))
         return NULL;
@@ -127,8 +126,7 @@ static void *arena_allocate(void *context, size_t bytes)
     return allocation;
 }
 
-static void retire_owner(owner *current)
-{
+static void retire_owner(owner *current) {
     arena_node *node = current->memory.first;
     while (node != NULL) {
         arena_node *next = node->next;
@@ -139,8 +137,7 @@ static void retire_owner(owner *current)
     *current = (owner){0};
 }
 
-static bool append_format(output *out, const char *format, ...)
-{
+static bool append_format(output *out, const char *format, ...) {
     const size_t remaining = MAX_OUTPUT_BYTES - out->length + 1u;
     va_list arguments;
     va_start(arguments, format);
@@ -152,16 +149,14 @@ static bool append_format(output *out, const char *format, ...)
     return true;
 }
 
-static bool finish_row(output *out)
-{
+static bool finish_row(output *out) {
     if (out->rows >= MAX_ROWS || !append_format(out, "\n"))
         return false;
     ++out->rows;
     return true;
 }
 
-static bool row(output *out, const char *format, ...)
-{
+static bool row(output *out, const char *format, ...) {
     const size_t remaining = MAX_OUTPUT_BYTES - out->length + 1u;
     va_list arguments;
     va_start(arguments, format);
@@ -174,8 +169,7 @@ static bool row(output *out, const char *format, ...)
 }
 
 /* 1 is a complete literal-LF row, 0 is clean EOF, -1 is invalid/failed input. */
-static int read_row(FILE *file, char *line, size_t *total)
-{
+static int read_row(FILE *file, char *line, size_t *total) {
     size_t length = 0;
     for (;;) {
         const int c = fgetc(file);
@@ -194,8 +188,7 @@ static int read_row(FILE *file, char *line, size_t *total)
     }
 }
 
-static size_t fields(char *line, char **parts)
-{
+static size_t fields(char *line, char **parts) {
     size_t count = 1;
     parts[0] = line;
     for (char *cursor = line; *cursor != '\0'; ++cursor) {
@@ -209,8 +202,7 @@ static size_t fields(char *line, char **parts)
     return count;
 }
 
-static bool number(const char *text, int64_t minimum, int64_t maximum, int64_t *out)
-{
+static bool number(const char *text, int64_t minimum, int64_t maximum, int64_t *out) {
     const char *digits = text;
     if (*digits == '-') {
         if (minimum >= 0)
@@ -234,14 +226,12 @@ static bool number(const char *text, int64_t minimum, int64_t maximum, int64_t *
     return true;
 }
 
-static bool expected_number(const char *text, size_t expected)
-{
+static bool expected_number(const char *text, size_t expected) {
     int64_t value = 0;
     return number(text, 0, INT32_MAX, &value) && (uint64_t)value == (uint64_t)expected;
 }
 
-static int nibble(char c)
-{
+static int nibble(char c) {
     if (c >= '0' && c <= '9')
         return c - '0';
     if (c >= 'a' && c <= 'f')
@@ -249,8 +239,7 @@ static int nibble(char c)
     return -1;
 }
 
-static bool byte_input(arena *memory, const char *text, size_t length, const uint8_t **out)
-{
+static bool byte_input(arena *memory, const char *text, size_t length, const uint8_t **out) {
     if (length == 0) {
         if (strcmp(text, "-") != 0)
             return false;
@@ -273,8 +262,8 @@ static bool byte_input(arena *memory, const char *text, size_t length, const uin
     return true;
 }
 
-static bool string_input(arena *memory, const char *text, size_t length, const helper_string **out)
-{
+static bool string_input(arena *memory, const char *text, size_t length,
+                         const helper_string **out) {
     if (length > MAX_STRING_UNITS || length > (SIZE_MAX - sizeof(helper_string)) / sizeof(uint16_t))
         return false;
     if ((length == 0 && strcmp(text, "-") != 0) || (length != 0 && strlen(text) != length * 4u))
@@ -299,8 +288,7 @@ static bool string_input(arena *memory, const char *text, size_t length, const h
 }
 
 static mc_java_properties_status stream_read(void *context, uint8_t *destination, size_t capacity,
-                                             size_t *count)
-{
+                                             size_t *count) {
     finite_stream *stream = context;
     if (stream->bulk_calls >= MAX_INPUT_BYTES + 8u || capacity > 8192u || destination == NULL ||
         count == NULL) {
@@ -335,8 +323,7 @@ static mc_java_properties_status stream_read(void *context, uint8_t *destination
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static bool enroll(owner *current, identity_kind kind, const void *reference, size_t *id)
-{
+static bool enroll(owner *current, identity_kind kind, const void *reference, size_t *id) {
     if (reference == NULL) {
         *id = 0;
         return true;
@@ -355,15 +342,13 @@ static bool enroll(owner *current, identity_kind kind, const void *reference, si
     return true;
 }
 
-static bool token(char *buffer, size_t capacity, size_t id)
-{
+static bool token(char *buffer, size_t capacity, size_t id) {
     const int length =
         id == 0 ? snprintf(buffer, capacity, "NULL") : snprintf(buffer, capacity, "R:%zu", id);
     return length >= 0 && (size_t)length < capacity;
 }
 
-static int compare_cells(const void *left, const void *right)
-{
+static int compare_cells(const void *left, const void *right) {
     const cell *a = left;
     const cell *b = right;
     const size_t length =
@@ -380,8 +365,7 @@ static int compare_cells(const void *left, const void *right)
 }
 
 static bool string_row(output *out, size_t owner_id, size_t step, size_t id,
-                       mc_java_properties_string_view view)
-{
+                       mc_java_properties_string_view view) {
     static const char hex[] = "0123456789abcdef";
     if (view.length > MAX_STRING_UNITS ||
         !append_format(out, "STRING\t%zu\t%zu\t%zu\t%zu\t", owner_id, step, id, view.length))
@@ -404,8 +388,7 @@ static bool string_row(output *out, size_t owner_id, size_t step, size_t id,
     return finish_row(out);
 }
 
-static bool snapshot(owner *current, output *out)
-{
+static bool snapshot(owner *current, output *out) {
     const size_t count = mc_java_properties_size(current->properties);
     if (count > MAX_CELLS)
         return false;
@@ -471,8 +454,7 @@ static bool snapshot(owner *current, output *out)
     return row(out, "END_LOAD\t%zu\t%zu", current->id, current->steps);
 }
 
-static bool run_load(owner *current, output *out)
-{
+static bool run_load(owner *current, output *out) {
     finite_stream stream = {.bytes = current->input,
                             .length = current->input_length,
                             .chunk = current->chunk,
@@ -496,8 +478,7 @@ static bool run_load(owner *current, output *out)
     return snapshot(current, out);
 }
 
-static bool case_label(const char *label)
-{
+static bool case_label(const char *label) {
     const size_t length = strlen(label);
     if (length == 0 || length > 64u)
         return false;
@@ -509,8 +490,7 @@ static bool case_label(const char *label)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     FILE *file = NULL;
     char *line = NULL;

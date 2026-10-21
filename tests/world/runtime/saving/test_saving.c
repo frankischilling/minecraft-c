@@ -15,13 +15,11 @@ typedef struct save_snapshot {
     int64_t size, convenience_size;
 } save_snapshot;
 
-static uint32_t direct_stamp(size_t slot)
-{
+static uint32_t direct_stamp(size_t slot) {
     return UINT32_C(0x53000000) + (uint32_t)slot;
 }
 
-static bool open_saving_store(fixture *f, size_t slot, const char *root)
-{
+static bool open_saving_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -51,8 +49,7 @@ cleanup:
     return ok;
 }
 
-static bool read_named(fixture *f, size_t slot, const char *leaf, mc_ws_file_bytes *out)
-{
+static bool read_named(fixture *f, size_t slot, const char *leaf, mc_ws_file_bytes *out) {
     char *path = NULL;
     if (mc_ws_path_join(mc_world_store_root(f->stores[slot]), leaf, &path, NULL) !=
         MC_WORLD_STORAGE_OK)
@@ -62,14 +59,12 @@ static bool read_named(fixture *f, size_t slot, const char *leaf, mc_ws_file_byt
     return status == MC_WORLD_STORAGE_OK;
 }
 
-static void snapshot_free(save_snapshot *s)
-{
+static void snapshot_free(save_snapshot *s) {
     mc_ws_free_file_bytes(&s->region);
     mc_ws_free_file_bytes(&s->level);
 }
 
-static bool snapshot_take(fixture *f, size_t slot, save_snapshot *s)
-{
+static bool snapshot_take(fixture *f, size_t slot, save_snapshot *s) {
     mc_world_info_fields info;
     const mc_level_info *convenience = mc_world_store_info(f->stores[slot]);
     if (convenience == NULL ||
@@ -82,8 +77,7 @@ static bool snapshot_take(fixture *f, size_t slot, save_snapshot *s)
     return true;
 }
 
-static bool snapshot_same(fixture *f, size_t slot, const save_snapshot *before)
-{
+static bool snapshot_same(fixture *f, size_t slot, const save_snapshot *before) {
     save_snapshot after = {0};
     const bool captured = snapshot_take(f, slot, &after);
     const bool equal = captured && after.size == before->size &&
@@ -96,8 +90,7 @@ static bool snapshot_same(fixture *f, size_t slot, const save_snapshot *before)
     return equal;
 }
 
-static bool fresh_live_save(const mc_live_tile_error *e)
-{
+static bool fresh_live_save(const mc_live_tile_error *e) {
     return e->status == MC_WORLD_STORAGE_OK && e->operation == NULL && e->bytecode == 0 &&
            e->chunk_bytecode == 0 && e->cause.status == MC_WORLD_STORAGE_OK &&
            e->cause.operation == NULL && e->cause.system_error == 0 && empty_tile_children(e) &&
@@ -105,8 +98,7 @@ static bool fresh_live_save(const mc_live_tile_error *e)
            e->tile.item_save_bytecode == 0;
 }
 
-static bool fresh_save(const mc_world_game_save_error *e)
-{
+static bool fresh_save(const mc_world_game_save_error *e) {
     return e->status == MC_WORLD_STORAGE_OK && e->cause.status == MC_WORLD_STORAGE_OK &&
            e->cause.operation == NULL && e->cause.system_error == 0 && e->region_bytecode == 0 &&
            e->serializer_bytecode == 0 && e->entity_slice == SIZE_MAX &&
@@ -116,21 +108,18 @@ static bool fresh_save(const mc_world_game_save_error *e)
            e->encoding.status == MC_NBT_OK && e->encoding.offset == 0;
 }
 
-static bool fresh_save_codecs(const mc_world_game_save_error *e)
-{
+static bool fresh_save_codecs(const mc_world_game_save_error *e) {
     return e->composition.status == MC_STORED_CHUNK_OK && e->composition.field == NULL &&
            e->composition.nbt.status == MC_NBT_OK && e->composition.nbt.offset == 0 &&
            e->encoding.status == MC_NBT_OK && e->encoding.offset == 0;
 }
 
-static bool fresh_lifecycle(const mc_world_runtime_lifecycle_error *e)
-{
+static bool fresh_lifecycle(const mc_world_runtime_lifecycle_error *e) {
     return e->status == MC_CHUNK_LIFECYCLE_OK && e->cause.status == MC_WORLD_STORAGE_OK &&
            e->cause.operation == NULL && e->cause.system_error == 0 && fresh_save(&e->save);
 }
 
-static bool seed_saving(fixture *f, size_t slot)
-{
+static bool seed_saving(fixture *f, size_t slot) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     tile_record tiles = {0};
@@ -202,8 +191,7 @@ cleanup:
     return ok;
 }
 
-static bool load_saving(fixture *f, size_t slot)
-{
+static bool load_saving(fixture *f, size_t slot) {
     bool ok = false;
     mc_chunk_state *loaded = NULL;
     const mc_chunk_acquire_status status = mc_world_runtime_get(f->worlds[slot], 0, 0, &loaded);
@@ -224,8 +212,7 @@ cleanup:
     return ok;
 }
 
-static bool decoded_save(fixture *f, size_t slot)
-{
+static bool decoded_save(fixture *f, size_t slot) {
     bool ok = false;
     mc_compression_buffer bytes = {0};
     mc_nbt_document *doc = NULL;
@@ -332,8 +319,7 @@ cleanup:
     return ok;
 }
 
-static bool write_success(fixture *f, size_t slot, uint32_t stamp, bool grows)
-{
+static bool write_success(fixture *f, size_t slot, uint32_t stamp, bool grows) {
     bool ok = false;
     save_snapshot before = {0}, after = {0};
     mc_world_game_save_error error;
@@ -366,8 +352,7 @@ cleanup:
     return ok;
 }
 
-static bool edit_live(fixture *f, size_t slot)
-{
+static bool edit_live(fixture *f, size_t slot) {
     bool ok = false, changed = false;
     mc_item_stack *stack = NULL;
     mc_tile *spawner = NULL;
@@ -420,8 +405,7 @@ cleanup:
     return ok;
 }
 
-static bool set_q_by_source(fixture *f, size_t slot)
-{
+static bool set_q_by_source(fixture *f, size_t slot) {
     mc_world_entity_error error;
     if (mc_world_runtime_chunk_add_entity(f->chunks[slot], NULL, &error) == MC_WORLD_STORAGE_OK ||
         !f->states[slot]->has_entities)
@@ -436,8 +420,7 @@ static bool set_q_by_source(fixture *f, size_t slot)
     return true;
 }
 
-static bool failure_prefixes(fixture *f, size_t slot)
-{
+static bool failure_prefixes(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_chunk *chunk = f->chunks[slot];
     save_snapshot before = {0};
@@ -515,8 +498,7 @@ cleanup:
     return ok;
 }
 
-static bool spawner_and_lifecycle(fixture *f, size_t slot)
-{
+static bool spawner_and_lifecycle(fixture *f, size_t slot) {
     bool ok = false;
     mc_tile *spawner = NULL;
     mc_tile_name *old = NULL;
@@ -568,12 +550,13 @@ cleanup:
     return ok;
 }
 
-static bool late_depth(fixture *f, size_t slot)
-{
+static bool late_depth(fixture *f, size_t slot) {
     bool ok = false, changed = false;
+
     /* Default depth is 64: Tile result reaches 64, outer Level reaches 65.
      * Import alone reaches 62, so this input must fail only at composition. */
     enum { DEPTH_NODES = 61 };
+
     mc_nbt_tag deep[DEPTH_NODES] = {0}, values[5] = {0}, root = {.type = MC_NBT_COMPOUND};
     const mc_nbt_tag *links[DEPTH_NODES], *fields[5];
     uint16_t names[6][12], chest_name[5];
@@ -628,8 +611,7 @@ cleanup:
     return ok;
 }
 
-static bool reload_same_world(fixture *f, size_t slot, int32_t chest_x, bool empty)
-{
+static bool reload_same_world(fixture *f, size_t slot, int32_t chest_x, bool empty) {
     bool ok = false;
     if (slot % 2 == 0)
         return true; /* No invented client/base unload route. */
@@ -702,8 +684,7 @@ cleanup:
     return ok;
 }
 
-static bool empty_records(fixture *f, size_t slot)
-{
+static bool empty_records(fixture *f, size_t slot) {
     bool ok = false;
     const int32_t xs[] = {8, 9, 12};
     for (size_t i = 0; i < COUNT(xs); ++i)
@@ -718,8 +699,7 @@ cleanup:
     return ok;
 }
 
-static bool entity_boundary(fixture *f, size_t slot)
-{
+static bool entity_boundary(fixture *f, size_t slot) {
     bool ok = false, ordinary = false;
     mc_entity *entity = NULL;
     mc_item_stack *stack = NULL;
@@ -761,8 +741,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

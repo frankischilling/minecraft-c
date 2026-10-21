@@ -1,5 +1,18 @@
 # Build and tests
 
+The [bounds case](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
+passes 4,601 checks on each native compiler. Final fresh builds pass all
+160 MSVC and 162 per sanitized GCC/Clang configured cases, without skips.
+Byte audits verify 749 source inputs, 254 dependencies, 220 products and
+40 captures per host. All 33,534 original client/server raw rows match each
+exact final probe; independent joins verify complete rows, streams and products.
+Earlier NaN payload failures remain retained, with no normalization of results.
+Attached braces and separated definitions are applied; all 443 C source/header
+files pass clang-format18. Full Entity movement and FallingSand physics remain
+unfinished.
+
+The following snow checkpoint predates bounds integration.
+
 The [snow case](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
 passes all 159 configured MSVC cases and 161 per sanitized GCC/Clang build in
 focused/complementary partitions, without skips and with numerical Java checks.

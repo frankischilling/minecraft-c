@@ -90,19 +90,16 @@ typedef struct record {
     uint8_t arrays[5][MC_CHUNK_BLOCKS];
 } record;
 
-static size_t block_index(int32_t y)
-{
+static size_t block_index(int32_t y) {
     return ((size_t)8u << 11u) | ((size_t)8u << 7u) | (size_t)y;
 }
 
-static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b)
-{
+static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b) {
     return a->status == b->status && a->operation == b->operation &&
            a->system_error == b->system_error;
 }
 
-static bool same_registry(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_registry(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -119,8 +116,7 @@ static bool same_registry(const mc_registry_error *a, const mc_registry_error *b
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static bool cleared(const mc_world_query_error *e)
-{
+static bool cleared(const mc_world_query_error *e) {
     const mc_registry_error registry = {.initializer_pc = -1,
                                         .block_id = -1,
                                         .constructor_pc = -1,
@@ -134,8 +130,7 @@ static bool cleared(const mc_world_query_error *e)
 }
 
 static bool failure_is(mc_world_runtime *w, const mc_world_query_error *e, unsigned int pc,
-                       unsigned int chunk_pc, mc_registry_status registry)
-{
+                       unsigned int chunk_pc, mc_registry_status registry) {
     return e->status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && e->bytecode == pc &&
            e->provider_bytecode == 0 && e->chunk_bytecode == chunk_pc &&
            e->registry.status == registry &&
@@ -145,8 +140,7 @@ static bool failure_is(mc_world_runtime *w, const mc_world_query_error *e, unsig
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (s == NULL || out == NULL || count == NULL || capacity == 0 || s->closed ||
         s->offset > s->length)
@@ -164,8 +158,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resource *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || r->opens >= COUNT(names) ||
@@ -211,8 +204,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resource *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -223,24 +215,21 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resource *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *units) {
     const size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, n};
 }
 
-static bool open_store(fixture *f, size_t slot, const char *root)
-{
+static bool open_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -266,8 +255,7 @@ cleanup:
     return ok;
 }
 
-static bool seed_record(fixture *f, size_t slot, int32_t chunk_x)
-{
+static bool seed_record(fixture *f, size_t slot, int32_t chunk_x) {
     bool ok = false;
     record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -325,8 +313,7 @@ cleanup:
     return ok;
 }
 
-static bool image(fixture *f, const char *root, size_t slot, bool negative, bool retain)
-{
+static bool image(fixture *f, const char *root, size_t slot, bool negative, bool retain) {
     bool ok = false;
     char name[64], relative[64];
     char *path = NULL, *copy = NULL;
@@ -357,8 +344,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t slot)
-{
+static bool create_world(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime_construction state;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
@@ -385,8 +371,7 @@ cleanup:
     return ok;
 }
 
-static bool remember(fixture *f, size_t slot)
-{
+static bool remember(fixture *f, size_t slot) {
     if (!f->bound[slot])
         return true;
     const mc_chunk_cache *cache = f->providers[slot].cache;
@@ -408,8 +393,7 @@ static bool remember(fixture *f, size_t slot)
     return true;
 }
 
-static bool load_normals(fixture *f, size_t slot, size_t count)
-{
+static bool load_normals(fixture *f, size_t slot, size_t count) {
     bool ok = false;
     for (size_t i = 0; i < count; ++i) {
         CHECK(mc_world_runtime_acquire(f->worlds[slot], (int32_t)i, 0, &f->normal[slot][i]) ==
@@ -425,8 +409,7 @@ cleanup:
     return ok;
 }
 
-static bool cold_paths(fixture *f, size_t side)
-{
+static bool cold_paths(fixture *f, size_t side) {
     bool ok = false, visible = true;
     int32_t value = 777;
     mc_world_query_error e;
@@ -467,8 +450,7 @@ cleanup:
     return ok;
 }
 
-static bool capture_and_pending(fixture *f, size_t side)
-{
+static bool capture_and_pending(fixture *f, size_t side) {
     bool ok = false, changed = false;
     mc_world_runtime *w = f->worlds[side];
     resource *r = &f->resources[side];
@@ -503,8 +485,7 @@ cleanup:
     return ok;
 }
 
-static bool column_case(fixture *f, size_t side, const uint8_t *column, int32_t expected)
-{
+static bool column_case(fixture *f, size_t side, const uint8_t *column, int32_t expected) {
     bool ok = false;
     uint8_t saved[128];
     uint8_t *blocks = f->normal[side][0]->data->blocks;
@@ -524,8 +505,7 @@ cleanup:
     return ok;
 }
 
-static bool top_contracts(fixture *f, size_t side)
-{
+static bool top_contracts(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -575,8 +555,7 @@ cleanup:
     return ok;
 }
 
-static bool light_and_height(fixture *f, size_t side)
-{
+static bool light_and_height(fixture *f, size_t side) {
     bool ok = false, visible = true;
     mc_world_runtime *w = f->worlds[side];
     mc_world_chunk *chunk = mc_world_store_chunk_object(f->stores[side], f->normal[side][0]);
@@ -679,8 +658,7 @@ cleanup:
     return ok;
 }
 
-static bool plant_flag(fixture *f, size_t side)
-{
+static bool plant_flag(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_world_chunk *chunk = mc_world_store_chunk_object(f->stores[side], f->normal[side][0]);
@@ -743,8 +721,7 @@ cleanup:
     return ok;
 }
 
-static bool denied_native_policy(fixture *f, size_t side)
-{
+static bool denied_native_policy(fixture *f, size_t side) {
     bool ok = false, visible = true;
     mc_world_runtime *w = f->worlds[side];
     CHECK(w->acquisition.policy == MC_CHUNK_ACQUIRE_BASE && !*w->acquisition.world_force_load &&
@@ -781,8 +758,7 @@ cleanup:
     return ok;
 }
 
-static bool prefixes_and_admission(fixture *f, size_t side)
-{
+static bool prefixes_and_admission(fixture *f, size_t side) {
     bool ok = false, visible = true;
     mc_world_query_error e;
     int32_t value = 777;
@@ -858,8 +834,7 @@ cleanup:
     return ok;
 }
 
-static bool retired_contract(mc_world_runtime *w)
-{
+static bool retired_contract(mc_world_runtime *w) {
     bool ok = false, visible = true;
     int32_t value = 777;
     mc_world_query_error e;
@@ -881,8 +856,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f, bool verify_retired)
-{
+static bool cleanup_fixture(fixture *f, bool verify_retired) {
     if (f == NULL)
         return true;
     for (size_t slot = 0; slot < COUNT(f->bound); ++slot) {
@@ -940,8 +914,7 @@ static bool cleanup_fixture(fixture *f, bool verify_retired)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -964,8 +937,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-static bool query_registry_fresh(const mc_registry_error *error, mc_registry_status status)
-{
+static bool query_registry_fresh(const mc_registry_error *error, mc_registry_status status) {
     const mc_registry_error expected = {.status = status,
                                         .message = error->message,
                                         .initializer_pc = -1,
@@ -977,8 +949,7 @@ static bool query_registry_fresh(const mc_registry_error *error, mc_registry_sta
            same_registry(error, &expected);
 }
 
-static bool detailed_material_contracts(fixture *f, size_t side)
-{
+static bool detailed_material_contracts(fixture *f, size_t side) {
     bool ok = false, supported = true;
     mc_world_runtime *ready = f->worlds[side];
     mc_world_runtime *raw = f->worlds[4u + side];
@@ -1064,8 +1035,7 @@ cleanup:
     return ok;
 }
 
-static bool captured_o_contracts(fixture *f, size_t side)
-{
+static bool captured_o_contracts(fixture *f, size_t side) {
     bool ok = false;
     mc_registry_classes *registry = f->registry[side];
     CHECK(registry != NULL && registry->blocks.o != NULL && f->resources[side].opens == 3 &&
@@ -1160,8 +1130,7 @@ cleanup:
     return ok;
 }
 
-static bool captured_p_contracts(fixture *f, size_t side)
-{
+static bool captured_p_contracts(fixture *f, size_t side) {
     bool ok = false;
     mc_registry_classes *registry = f->registry[side];
     CHECK(registry != NULL && registry->blocks.p != NULL && f->resources[side].opens == 3 &&
@@ -1318,8 +1287,7 @@ typedef struct plant_case {
     unsigned int pc, caller_pc;
 } plant_case;
 
-static bool plant_cleared(const mc_world_plant_error *e)
-{
+static bool plant_cleared(const mc_world_plant_error *e) {
     const mc_registry_error empty = {.initializer_pc = -1,
                                      .block_id = -1,
                                      .constructor_pc = -1,
@@ -1338,8 +1306,7 @@ static bool plant_cleared(const mc_world_plant_error *e)
 }
 
 static bool plant_trial(fixture *f, size_t side, const plant_case *t, uint8_t water_id,
-                        uint8_t stone_id)
-{
+                        uint8_t stone_id) {
     bool ok = false, value = true;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -1444,8 +1411,7 @@ cleanup:
     return ok;
 }
 
-static bool plant_predicate_contracts(fixture *f, size_t side)
-{
+static bool plant_predicate_contracts(fixture *f, size_t side) {
     bool ok = false, value = true;
     const char *const names[] = {"ae", "Y", "Z",  "ag", "aY", "aW", "bb",
                                  "v",  "w", "aB", "u",  "F",  "C"};
@@ -1647,8 +1613,7 @@ cleanup:
     return ok;
 }
 
-static bool nullable_block_provider(fixture *f, size_t side)
-{
+static bool nullable_block_provider(fixture *f, size_t side) {
     bool ok = false, changed = true;
     mc_world_runtime *w = f->worlds[side];
     mc_world_provider *provider = w->fields.v;
@@ -1678,8 +1643,7 @@ cleanup:
 #include "population/plants_contracts.h"
 #include "population/trees_contracts.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

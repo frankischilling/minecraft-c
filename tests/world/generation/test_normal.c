@@ -47,28 +47,24 @@ static mc_terrain_normal_state saved_terrain;
 static const uint64_t generator_cache_bits = UINT64_C(0xc0023456789abcde);
 static const uint64_t cave_cache_bits = UINT64_C(0x3fdabcdef0123456);
 
-static void install_gaussian_cache(mc_java_random *random, uint64_t bits)
-{
+static void install_gaussian_cache(mc_java_random *random, uint64_t bits) {
     _Static_assert(sizeof(bits) == sizeof(random->next_next_gaussian), "binary64 storage required");
     memcpy(&random->next_next_gaussian, &bits, sizeof(bits));
     random->have_next_next_gaussian = true;
 }
 
-static uint64_t gaussian_cache_bits(const mc_java_random *random)
-{
+static uint64_t gaussian_cache_bits(const mc_java_random *random) {
     uint64_t bits;
     memcpy(&bits, &random->next_next_gaussian, sizeof(bits));
     return bits;
 }
 
-static void populate_generator_caches(void)
-{
+static void populate_generator_caches(void) {
     install_gaussian_cache(&f.generator.generator_random, generator_cache_bits);
     install_gaussian_cache(&f.generator.cave_random, cave_cache_bits);
 }
 
-static int reset_fixture(size_t budget)
-{
+static int reset_fixture(size_t budget) {
     mc_normal_generator_free(&f.generator);
     mc_biome_manager_free(&f.manager);
     CHECK(f.memory.live_allocation_bytes == 0);
@@ -97,14 +93,12 @@ static int reset_fixture(size_t budget)
     return 0;
 }
 
-static mc_normal_generator_status generate(size_t output, int32_t x, int32_t z)
-{
+static mc_normal_generator_status generate(size_t output, int32_t x, int32_t z) {
     return mc_normal_generator_generate(&f.generator, x, z, &f.resources, &f.results[output],
                                         f.blocks[output], sizeof(f.blocks[output]));
 }
 
-static int test_init_and_allocation_failure(void)
-{
+static int test_init_and_allocation_failure(void) {
     static const size_t budgets[] = {0u, 4096u, 7000u};
     for (size_t i = 0; i < sizeof(budgets) / sizeof(*budgets); ++i) {
         CHECK(reset_fixture(budgets[i]) == 0);
@@ -124,8 +118,7 @@ static int test_init_and_allocation_failure(void)
     return 0;
 }
 
-static int test_preflight_preservation(void)
-{
+static int test_preflight_preservation(void) {
     for (unsigned failure = 0; failure < 9u; ++failure) {
         CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
         populate_generator_caches();
@@ -160,8 +153,7 @@ static int test_preflight_preservation(void)
     return 0;
 }
 
-static int test_existing_allocations_survive_failure(void)
-{
+static int test_existing_allocations_survive_failure(void) {
     CHECK(reset_fixture(7000u) == 0);
     populate_generator_caches();
     CHECK(mc_biome_cached_square(&f.manager, 5, 6, 3) == MC_BIOME_OK);
@@ -181,8 +173,7 @@ static int test_existing_allocations_survive_failure(void)
     return 0;
 }
 
-static int test_unpublished_identity(void)
-{
+static int test_unpublished_identity(void) {
     for (unsigned location = 0; location < 3u; ++location) {
         CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
         populate_generator_caches();
@@ -206,8 +197,7 @@ static int test_unpublished_identity(void)
     return 0;
 }
 
-static int test_repeated_generation_and_borrowed_owners(void)
-{
+static int test_repeated_generation_and_borrowed_owners(void) {
     CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
     CHECK(mc_biome_cached_square(&f.manager, 700, -800, 3) == MC_BIOME_OK);
     mc_biome_buffer cached = f.manager.d;
@@ -290,8 +280,7 @@ static int test_repeated_generation_and_borrowed_owners(void)
     return 0;
 }
 
-static int test_current_materials_and_no_sky(void)
-{
+static int test_current_materials_and_no_sky(void) {
     CHECK(reset_fixture(MC_BIOME_DEFAULT_ALLOCATION_BYTES) == 0);
     CHECK(generate(0, 1, 0) == MC_NORMAL_GENERATOR_OK);
     size_t original_soil = 0;
@@ -322,8 +311,7 @@ static int test_current_materials_and_no_sky(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (!mc_math_trig_init(&trig))
         return 1;
     memcpy(&saved_trig, &trig, sizeof(trig));

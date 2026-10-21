@@ -18,8 +18,7 @@ struct mc_biome_reference_array {
 _Static_assert(sizeof(mc_biome_reference_array) % _Alignof(const mc_biome *) == 0,
                "reference array tail alignment");
 
-static mc_registry_error native_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error native_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -33,8 +32,7 @@ static mc_registry_error native_error(mc_registry_status status, const char *mes
 static mc_registry_status finish(mc_biome_sampling_error *error, const mc_registry_error *registry,
                                  mc_biome_status climate_status, int32_t pc,
                                  const mc_biome_reference_array *array, size_t completed,
-                                 size_t next_index)
-{
+                                 size_t next_index) {
     if (error != NULL)
         *error = (mc_biome_sampling_error){.registry = *registry,
                                            .climate_status = climate_status,
@@ -45,8 +43,7 @@ static mc_registry_status finish(mc_biome_sampling_error *error, const mc_regist
     return registry->status;
 }
 
-static bool owns_array(const mc_registry_classes *classes, const mc_biome_reference_array *array)
-{
+static bool owns_array(const mc_registry_classes *classes, const mc_biome_reference_array *array) {
     for (const mc_biome_reference_array *owned = classes->biomes.sample_arrays; owned != NULL;
          owned = owned->next)
         if (owned == array)
@@ -55,8 +52,7 @@ static bool owns_array(const mc_registry_classes *classes, const mc_biome_refere
 }
 
 static mc_registry_status array_failure(mc_registry_classes *classes, mc_registry_status status,
-                                        const char *message)
-{
+                                        const char *message) {
     if (classes != NULL)
         classes->last_error = native_error(status, message);
     return status;
@@ -64,8 +60,7 @@ static mc_registry_status array_failure(mc_registry_classes *classes, mc_registr
 
 mc_registry_status mc_registry_biome_array_prepare(mc_registry_classes *classes,
                                                    mc_biome_reference_array *input, size_t length,
-                                                   mc_biome_reference_array **out)
-{
+                                                   mc_biome_reference_array **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || out == NULL || (input != NULL && !owns_array(classes, input)))
@@ -95,8 +90,7 @@ mc_registry_status mc_registry_biome_array_prepare(mc_registry_classes *classes,
 
 mc_registry_status mc_registry_biome_array_fill(mc_registry_classes *classes,
                                                 mc_biome_reference_array *array, size_t length,
-                                                const mc_biome *value)
-{
+                                                const mc_biome *value) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -115,8 +109,7 @@ mc_registry_status mc_registry_biome_array_fill(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status climate_result(mc_biome_status status)
-{
+static mc_registry_status climate_result(mc_biome_status status) {
     switch (status) {
         case MC_BIOME_OK:
             return MC_REGISTRY_OK;
@@ -134,8 +127,7 @@ mc_registry_status mc_biome_sample_references(mc_registry_classes *classes,
                                               mc_biome_manager *manager, int32_t x, int32_t z,
                                               size_t size, mc_biome_reference_array *input,
                                               mc_biome_reference_array **out,
-                                              mc_biome_sampling_error *error)
-{
+                                              mc_biome_sampling_error *error) {
     mc_registry_error cause = native_error(MC_REGISTRY_OK, NULL);
     if (classes == NULL || out == NULL) {
         cause = native_error(MC_REGISTRY_INVALID_ARGUMENT, "Biome sampler owner/output");
@@ -217,12 +209,10 @@ leave:
     return finish(error, &cause, climate_status, pc, array, completed, next_index);
 }
 
-size_t mc_biome_reference_array_length(const mc_biome_reference_array *array)
-{
+size_t mc_biome_reference_array_length(const mc_biome_reference_array *array) {
     return array == NULL ? 0 : array->length;
 }
 
-const mc_biome *const *mc_biome_reference_array_data(const mc_biome_reference_array *array)
-{
+const mc_biome *const *mc_biome_reference_array_data(const mc_biome_reference_array *array) {
     return array == NULL ? NULL : array->elements;
 }

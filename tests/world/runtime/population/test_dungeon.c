@@ -13,17 +13,20 @@
  * two prescribed first-trial wall sites; no second dungeon geometry algorithm
  * or successful World/backend substitute supplies expected terrain. */
 enum { DG_X = 8, DG_Y = 64, DG_Z = 8, DG_SEARCH = 1000000 };
+
 typedef struct dg_pick {
     int32_t selector, count, damage, variant;
     bool present;
     unsigned int allocation;
     mc_java_random before_new, after;
 } dg_pick;
+
 typedef struct dg_event {
     dg_pick pick;
     size_t group, fill;
     int32_t slot;
 } dg_event;
+
 typedef struct dg_plan {
     int64_t seed;
     int32_t rx, rz, mob, floor[9][9];
@@ -32,29 +35,27 @@ typedef struct dg_plan {
     dg_event events[16];
     size_t quota_count, quota_event;
 } dg_plan;
+
 typedef struct dg_image {
     uint8_t blocks[MC_CHUNK_BLOCKS];
     mc_chunk_data data;
     bool dirty, entities;
 } dg_image;
 
-static bool dg_rng_equal(const mc_java_random *a, const mc_java_random *b)
-{
+static bool dg_rng_equal(const mc_java_random *a, const mc_java_random *b) {
     return a->state == b->state && a->have_next_next_gaussian == b->have_next_next_gaussian &&
            memcmp(&a->next_next_gaussian, &b->next_next_gaussian, sizeof(a->next_next_gaussian)) ==
                0;
 }
 
-static void dg_start(mc_java_random *random, int64_t seed)
-{
+static void dg_start(mc_java_random *random, int64_t seed) {
     mc_java_random_seed(random, seed);
     (void)mc_java_random_next_gaussian(random); /* Genuine valid cached Gaussian. */
 }
 
 /* This table is the finite private-helper contract from er/da bytecode, not
  * values learned from the production helper or an original capture. */
-static bool dg_pick_contract(mc_java_random *r, dg_pick *p)
-{
+static bool dg_pick_contract(mc_java_random *r, dg_pick *p) {
     static const unsigned int allocations[] = {11, 27, 50, 66, 89, 112, 136, 162, 187, 220, 250};
     memset(p, 0, sizeof(*p));
     if (!mc_java_random_next_bounded(r, 11, &p->selector))
@@ -87,8 +88,7 @@ static bool dg_pick_contract(mc_java_random *r, dg_pick *p)
 }
 
 static bool dg_find_pick(int32_t selector, bool present, int32_t count, int32_t variant,
-                         int64_t *seed, dg_pick *pick)
-{
+                         int64_t *seed, dg_pick *pick) {
     for (int64_t candidate = 0; candidate < DG_SEARCH; ++candidate) {
         mc_java_random r;
         dg_start(&r, candidate);
@@ -105,8 +105,7 @@ static bool dg_find_pick(int32_t selector, bool present, int32_t count, int32_t 
     return false;
 }
 
-static bool dg_find_plan(int32_t rx, int32_t rz, bool chests, dg_plan *out)
-{
+static bool dg_find_plan(int32_t rx, int32_t rz, bool chests, dg_plan *out) {
     for (int64_t seed = 0; seed < DG_SEARCH; ++seed) {
         dg_plan p = {.seed = seed, .quota_event = SIZE_MAX};
         mc_java_random r;
@@ -185,24 +184,21 @@ static bool dg_find_plan(int32_t rx, int32_t rz, bool chests, dg_plan *out)
     return false;
 }
 
-static mc_block **dg_block_cell(mc_registry_classes *r, const char *name)
-{
+static mc_block **dg_block_cell(mc_registry_classes *r, const char *name) {
     for (size_t i = 0; i < COUNT(r->blocks.named); ++i)
         if (strcmp(mc_registry_block_static_name(i), name) == 0)
             return &r->blocks.named[i];
     return NULL;
 }
 
-static mc_item **dg_item_cell(mc_registry_classes *r, const char *name)
-{
+static mc_item **dg_item_cell(mc_registry_classes *r, const char *name) {
     for (size_t i = 0; i < COUNT(r->items.named); ++i)
         if (strcmp(mc_registry_item_static_name(i), name) == 0)
             return &r->items.named[i];
     return NULL;
 }
 
-static bool dg_fields(fixture *f, size_t side, const dg_pick *p, mc_item_stack_fields *out)
-{
+static bool dg_fields(fixture *f, size_t side, const dg_pick *p, mc_item_stack_fields *out) {
     static const char *const names[] = {"ay", "m",  "S",  "R",  "K", "I",
                                         "au", "ar", "aA", "bd", "aU"};
     const mc_item *item = NULL;
@@ -224,8 +220,7 @@ static bool dg_fields(fixture *f, size_t side, const dg_pick *p, mc_item_stack_f
     return true;
 }
 
-static bool dg_open(fixture *f, size_t slot, const char *root)
-{
+static bool dg_open(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -249,8 +244,7 @@ cleanup:
     return ok;
 }
 
-static bool dg_setup(fixture **out, const char *root)
-{
+static bool dg_setup(fixture **out, const char *root) {
     bool ok = false;
     fixture *f = calloc(1, sizeof(*f));
     *out = f; /* Partial real ownership remains available to checked cleanup. */
@@ -298,8 +292,7 @@ cleanup:
 
 /* Seed a real encoded known-empty source chunk. Source bytes are prepared
  * before actual GAME decoding/normalization/activation, never as a fake cache. */
-static bool dg_room(fixture *f, size_t slot, const dg_plan *p, size_t openings, int reject)
-{
+static bool dg_room(fixture *f, size_t slot, const dg_plan *p, size_t openings, int reject) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -366,16 +359,14 @@ cleanup:
     return ok;
 }
 
-static void dg_snapshot(const mc_chunk_state *s, dg_image *out)
-{
+static void dg_snapshot(const mc_chunk_state *s, dg_image *out) {
     memcpy(out->blocks, s->data->blocks, sizeof(out->blocks));
     out->data = *s->data;
     out->dirty = s->dirty;
     out->entities = s->has_entities;
 }
 
-static bool dg_unchanged(const mc_chunk_state *s, const dg_image *before)
-{
+static bool dg_unchanged(const mc_chunk_state *s, const dg_image *before) {
     return memcmp(s->data->blocks, before->blocks, sizeof(before->blocks)) == 0 &&
            memcmp(s->data->metadata, before->data.metadata, sizeof(s->data->metadata)) == 0 &&
            memcmp(s->data->skylight, before->data.skylight, sizeof(s->data->skylight)) == 0 &&
@@ -385,8 +376,7 @@ static bool dg_unchanged(const mc_chunk_state *s, const dg_image *before)
            s->dirty == before->dirty && s->has_entities == before->entities;
 }
 
-static bool dg_inventory(fixture *f, size_t slot, const dg_plan *p, bool reloaded)
-{
+static bool dg_inventory(fixture *f, size_t slot, const dg_plan *p, bool reloaded) {
     bool ok = false;
     mc_tile *tile = NULL;
     mc_item_stack *stack = NULL;
@@ -440,8 +430,7 @@ cleanup:
     return ok;
 }
 
-static bool dg_roundtrip(fixture *f, size_t slot, const dg_plan *p)
-{
+static bool dg_roundtrip(fixture *f, size_t slot, const dg_plan *p) {
     bool ok = false;
     mc_world_runtime *world = f->worlds[slot];
     mc_tile *old = NULL, *fresh = NULL;
@@ -478,8 +467,7 @@ cleanup:
 }
 
 static bool dg_whole(fixture *f, size_t side, const dg_plan *p, size_t openings, int reject,
-                     bool roundtrip)
-{
+                     bool roundtrip) {
     bool ok = false, out = true;
     dg_image *before = malloc(sizeof(*before));
     mc_java_random random;
@@ -516,8 +504,7 @@ cleanup:
 
 /* Helper contracts include every selector, all four variable counts, both
  * record choices, every probability miss and all four mob draws. */
-static bool dg_helpers(fixture *f, size_t side)
-{
+static bool dg_helpers(fixture *f, size_t side) {
     bool ok = false;
     mc_item_stack *stack = NULL;
     mc_tile_name *name = NULL;
@@ -592,8 +579,7 @@ cleanup:
     return ok;
 }
 
-static bool dg_helper_failures(fixture *f, size_t side)
-{
+static bool dg_helper_failures(fixture *f, size_t side) {
     bool ok = false;
     mc_item_stack *sentinel = NULL, *out = NULL;
     mc_population_dungeon_error error;
@@ -675,8 +661,7 @@ enum dg_failure {
     DG_CUMULATIVE
 };
 
-static bool dg_failure_case(fixture *f, size_t side, const dg_plan *p, enum dg_failure which)
-{
+static bool dg_failure_case(fixture *f, size_t side, const dg_plan *p, enum dg_failure which) {
     bool ok = false, out = true;
     dg_image *before = malloc(sizeof(*before));
     mc_java_random r, expected;
@@ -804,8 +789,7 @@ cleanup:
 
 /* A declared helper-to-inventory API control: no artificial mid-generation
  * callback is installed just to change u after construction. */
-static bool dg_dirty_prefix(fixture *f, size_t side)
-{
+static bool dg_dirty_prefix(fixture *f, size_t side) {
     bool ok = false;
     mc_tile *chest = NULL;
     mc_item_stack *stack = NULL, *held = NULL;
@@ -845,8 +829,7 @@ cleanup:
 #ifndef MC_DUNGEON_TEST_MAIN
 #define MC_DUNGEON_TEST_MAIN main
 #endif
-int MC_DUNGEON_TEST_MAIN(int argc, char **argv)
-{
+int MC_DUNGEON_TEST_MAIN(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char base[8192], root[8192];

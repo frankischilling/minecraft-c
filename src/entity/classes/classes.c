@@ -1,3 +1,4 @@
+#include "../bounds/bounds_internal.h"
 #include "classes_internal.h"
 
 #include <stdlib.h>
@@ -11,8 +12,7 @@ static const char *const literal_names[MC_ENTITY_CLASS_KIND_COUNT][2] = {
     {"xt", "pf"}, {"gi", "eh"}, {"qw", "kg"}, {"ju", "gl"}, {"yl", "pr"}, {"fz", "eb"}};
 
 mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
-                                          const mc_entity_limits *limits, mc_entity_classes **out)
-{
+                                          const mc_entity_limits *limits, mc_entity_classes **out) {
     if ((source != MC_ENTITY_CLIENT && source != MC_ENTITY_SERVER) || profile == NULL ||
         out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
@@ -39,8 +39,7 @@ mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_rando
 }
 
 mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes,
-                                                mc_entity_class_snapshot *out)
-{
+                                                mc_entity_class_snapshot *out) {
     if (classes == NULL || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     *out = (mc_entity_class_snapshot){.source = classes->source,
@@ -59,8 +58,7 @@ mc_entity_status mc_entity_classes_get_snapshot(const mc_entity_classes *classes
 }
 
 mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_source source,
-                                          mc_java_random_profile *profile)
-{
+                                          mc_java_random_profile *profile) {
     if (classes == NULL || classes->source != source || classes->profile != profile)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (classes->borrowers == SIZE_MAX)
@@ -69,8 +67,7 @@ mc_entity_status mc_entity_classes_retain(mc_entity_classes *classes, mc_entity_
     return MC_ENTITY_OK;
 }
 
-mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes *classes)
-{
+mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes *classes) {
     if (classes == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (classes->borrowers == 0)
@@ -78,8 +75,7 @@ mc_entity_status mc_entity_classes_runtime_release_admit(const mc_entity_classes
     return MC_ENTITY_OK;
 }
 
-mc_entity_status mc_entity_classes_release(mc_entity_classes *classes)
-{
+mc_entity_status mc_entity_classes_release(mc_entity_classes *classes) {
     const mc_entity_status status = mc_entity_classes_runtime_release_admit(classes);
     if (status != MC_ENTITY_OK)
         return status;
@@ -87,19 +83,17 @@ mc_entity_status mc_entity_classes_release(mc_entity_classes *classes)
     return status;
 }
 
-static void class_retire(mc_entity_classes *classes, void *storage, size_t bytes)
-{
+static void class_retire(mc_entity_classes *classes, void *storage, size_t bytes) {
     if (storage != NULL) {
         free(storage);
         classes->allocated_bytes -= bytes;
     }
 }
 
-mc_entity_status mc_entity_classes_free(mc_entity_classes *classes)
-{
+mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
     if (classes == NULL)
         return MC_ENTITY_OK;
-    if (classes->live_entities != 0 || classes->borrowers != 0)
+    if (classes->live_entities != 0 || classes->borrowers != 0 || classes->bounds_holds != 0)
         return MC_ENTITY_BUSY;
     mc_entity_registry_dispose(classes);
     if (classes->types != NULL) {
@@ -111,15 +105,14 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes)
         }
         class_retire(classes, classes->types, sizeof(*classes->types));
     }
-    class_retire(classes, classes->bounds_pool, sizeof(*classes->bounds_pool));
+    mc_entity_bounds_dispose(classes);
     free(classes);
     return MC_ENTITY_OK;
 }
 
 mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,
                                              mc_entity_class_kind kind,
-                                             const mc_entity_class_literal **out)
-{
+                                             const mc_entity_class_literal **out) {
     if (classes == NULL || out == NULL ||
         (unsigned int)kind >= (unsigned int)MC_ENTITY_CLASS_KIND_COUNT)
         return MC_ENTITY_INVALID_ARGUMENT;
@@ -128,8 +121,7 @@ mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,
 }
 
 mc_entity_status mc_entity_class_literal_inspect(const mc_entity_class_literal *literal,
-                                                 mc_entity_class_literal_view *out)
-{
+                                                 mc_entity_class_literal_view *out) {
     if (literal == NULL || out == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     *out = (mc_entity_class_literal_view){.owner = literal->owner,

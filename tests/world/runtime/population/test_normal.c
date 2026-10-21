@@ -31,6 +31,7 @@
  * feature returns are exercised through the real controller. These checks
  * supply no original/native full-call or RNG-continuation oracle. */
 enum { WORLD_COUNT = 4, ROOM_COUNT = 4 };
+
 static unsigned int checks;
 static mc_math_trig trig;
 static const int32_t room_x[ROOM_COUNT] = {0, 1, 0, 1};
@@ -86,8 +87,7 @@ typedef struct room_record {
 } room_record;
 
 static mc_java_properties_status read_bytes(void *owner, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     byte_stream *s = owner;
     if (s == NULL || out == NULL || capacity == 0 || count == NULL || s->closed ||
         s->offset > s->length)
@@ -105,8 +105,7 @@ static mc_java_properties_status read_bytes(void *owner, uint8_t *out, size_t ca
 }
 
 static mc_registry_status open_resource(void *owner, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = owner;
     static const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang",
                                         "/achievement/map.txt"};
@@ -124,8 +123,7 @@ static mc_registry_status open_resource(void *owner, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *owner, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *owner, const mc_java_properties_input *input) {
     resources *r = owner;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -136,24 +134,21 @@ static mc_registry_status close_resource(void *owner, const mc_java_properties_i
     return MC_REGISTRY_OK;
 }
 
-static bool resource_ready(void *owner, const mc_java_properties_input *input)
-{
+static bool resource_ready(void *owner, const mc_java_properties_input *input) {
     resources *r = owner;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *units) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, length};
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t length = strlen(hex);
     if (length == 0 || length % 2u != 0 || length / 2u >= capacity)
         return false;
@@ -177,8 +172,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-static bool registry_same(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool registry_same(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -195,21 +189,18 @@ static bool registry_same(const mc_registry_error *a, const mc_registry_error *b
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static bool bytes_are(const uint8_t *bytes, size_t length, uint8_t value)
-{
+static bool bytes_are(const uint8_t *bytes, size_t length, uint8_t value) {
     for (size_t i = 0; i < length; ++i)
         if (bytes[i] != value)
             return false;
     return true;
 }
 
-static bool refresh(world_slot *s)
-{
+static bool refresh(world_slot *s) {
     return mc_world_provider_bind_fields(s->provider, &s->view, NULL) == MC_WORLD_STORAGE_OK;
 }
 
-static bool open_world(fixture *f, size_t index, const char *root)
-{
+static bool open_world(fixture *f, size_t index, const char *root) {
     bool ok = false;
     world_slot *s = &f->slots[index];
     const bool client = index % 2u == 0;
@@ -295,8 +286,7 @@ cleanup:
  * height zero are explicit serialized inputs, with all blocks/metadata/light
  * zero. Every TerrainPopulated byte is zero; no neighbor skips its callback by
  * being premarked populated. Empty source lists are real decoded Lists. */
-static bool save_air_room(fixture *f, world_slot *s, size_t index)
-{
+static bool save_air_room(fixture *f, world_slot *s, size_t index) {
     bool ok = false;
     room_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -350,8 +340,7 @@ cleanup:
 
 /* Remember actual cache-owned identities even when a call fails after source
  * publication. This is cleanup bookkeeping, never publication or a cache edit. */
-static bool remember_rooms(world_slot *s)
-{
+static bool remember_rooms(world_slot *s) {
     if (!s->bound)
         return true;
     if (!mc_chunk_cache_validate(s->view.cache))
@@ -374,8 +363,7 @@ static bool remember_rooms(world_slot *s)
     return true;
 }
 
-static bool air_image(world_slot *s, size_t index, bool populated)
-{
+static bool air_image(world_slot *s, size_t index, bool populated) {
     bool ok = false;
     mc_chunk_state *state = s->rooms[index];
     mc_world_chunk_fields fields = {0};
@@ -418,8 +406,7 @@ cleanup:
     return ok;
 }
 
-static bool success_gate(fixture *f, size_t index)
-{
+static bool success_gate(fixture *f, size_t index) {
     bool ok = false;
     world_slot *s = &f->slots[index];
     mc_world_runtime_fields fields = {0};
@@ -518,8 +505,7 @@ cleanup:
     return ok;
 }
 
-static bool cold_entry_failure(fixture *f, size_t index)
-{
+static bool cold_entry_failure(fixture *f, size_t index) {
     bool ok = false;
     world_slot *s = &f->slots[index];
     mc_world_normal_population_error first = {0}, retry = {0};
@@ -586,8 +572,7 @@ cleanup:
     return ok;
 }
 
-static bool drain(world_slot *s)
-{
+static bool drain(world_slot *s) {
     if (!s->bound || s->retired)
         return true;
     if (!remember_rooms(s) || !mc_chunk_pending_validate(s->view.pending))
@@ -608,8 +593,7 @@ static bool drain(world_slot *s)
     return s->view.cache->count == 0 && s->view.cache->insertion_count == 0;
 }
 
-static bool retirement(world_slot *s)
-{
+static bool retirement(world_slot *s) {
     bool ok = false, leased = false;
     mc_chunk_state *const target = s->rooms[0];
     mc_temperature_array_view before = {0}, after = {0};
@@ -663,8 +647,7 @@ cleanup:
 /* Checked teardown never forges collection counts or drops dependencies after
  * a refused owner retirement. A failed run leaves its real files/evidence for
  * the controlling harness; no cleanup here deletes files. */
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < WORLD_COUNT; ++i) {
@@ -713,8 +696,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

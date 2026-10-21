@@ -50,8 +50,7 @@ _Static_assert(sizeof(common_steps) / sizeof(*common_steps) == 23,
                "jl/gg f..B have twenty-three distinct source publications");
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -65,8 +64,7 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
 }
 
 static mc_registry_status common_statistic(mc_registry_classes *classes,
-                                           const common_statistic_step *step, size_t index)
-{
+                                           const common_statistic_step *step, size_t index) {
     mc_registry_initializer_stage(classes, step->allocation_pc);
     mc_statistic *statistic = NULL;
     /* new yd/pm actively initializes vr/ns before evaluating any display
@@ -121,8 +119,7 @@ static mc_registry_status common_statistic(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status initialize(mc_registry_classes *classes)
-{
+static mc_registry_status initialize(mc_registry_classes *classes) {
     mc_registry_status status = mc_registry_statistic_collections(classes);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -158,8 +155,7 @@ static mc_registry_status initialize(mc_registry_classes *classes)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistics_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistics_active_use(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -186,8 +182,7 @@ mc_registry_status mc_registry_statistics_active_use(mc_registry_classes *classe
 }
 
 mc_registry_status mc_registry_classes_initialize_statistics(mc_registry_classes *classes,
-                                                             mc_registry_error *error)
-{
+                                                             mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistics registry owner");
     if (classes->entered != 0 || classes->statistics_state.phase == MC_REGISTRY_INITIALIZING)

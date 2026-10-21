@@ -3,8 +3,7 @@
 #include "registry_internal.h"
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -18,8 +17,7 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
 }
 
 static mc_registry_status cached_state(mc_registry_classes *classes,
-                                       const mc_registry_class_state *state)
-{
+                                       const mc_registry_class_state *state) {
     if (state->phase == MC_REGISTRY_FAILED) {
         classes->last_error = state->failure;
         classes->last_error.status = MC_REGISTRY_FAILED_INITIALIZATION;
@@ -28,21 +26,18 @@ static mc_registry_status cached_state(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-static mc_statistic_formatter *formatter_allocate(mc_registry_classes *classes)
-{
+static mc_statistic_formatter *formatter_allocate(mc_registry_classes *classes) {
     return mc_registry_allocate(classes, sizeof(mc_statistic_formatter));
 }
 
 static void formatter_construct(mc_statistic_formatter *formatter, mc_registry_classes *classes,
-                                mc_statistic_formatter_kind kind)
-{
+                                mc_statistic_formatter_kind kind) {
     /* bq/ax, bo/av and bn/at constructors call only Object.<init>. The kind
      * and owner are native type information, not additional game fields. */
     *formatter = (mc_statistic_formatter){.classes = classes, .kind = kind};
 }
 
-mc_registry_status mc_registry_statistic_base_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistic_base_active_use(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -125,8 +120,7 @@ done:
 }
 
 mc_registry_status mc_registry_classes_initialize_statistic_base(mc_registry_classes *classes,
-                                                                 mc_registry_error *error)
-{
+                                                                 mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistic base registry owner");
     if (classes->entered != 0 || classes->statistic_base_state.phase == MC_REGISTRY_INITIALIZING)
@@ -153,8 +147,7 @@ mc_registry_status mc_registry_classes_initialize_statistic_base(mc_registry_cla
 
 mc_registry_status mc_registry_classes_inspect_statistic_base(const mc_registry_classes *classes,
                                                               mc_registry_statistic_base_view *out,
-                                                              mc_registry_error *error)
-{
+                                                              mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistic base view arguments");
     *out = (mc_registry_statistic_base_view){.phase = classes->statistic_base_state.phase,
@@ -168,16 +161,14 @@ mc_registry_status mc_registry_classes_inspect_statistic_base(const mc_registry_
 }
 
 mc_registry_status mc_statistic_formatter_kind_get(const mc_statistic_formatter *formatter,
-                                                   mc_statistic_formatter_kind *out)
-{
+                                                   mc_statistic_formatter_kind *out) {
     if (formatter == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     *out = formatter->kind;
     return MC_REGISTRY_OK;
 }
 
-static const char *source_class(mc_registry_classes *classes, mc_statistic_kind kind)
-{
+static const char *source_class(mc_registry_classes *classes, mc_statistic_kind kind) {
     if (kind == MC_STATISTIC_GENERAL)
         return classes->options.side == MC_REGISTRY_CLIENT ? "yd" : "pm";
     if (kind == MC_STATISTIC_ITEM)
@@ -188,8 +179,7 @@ static const char *source_class(mc_registry_classes *classes, mc_statistic_kind 
 }
 
 mc_registry_status mc_registry_statistic_allocate(mc_registry_classes *classes,
-                                                  mc_statistic_kind kind, mc_statistic **out)
-{
+                                                  mc_statistic_kind kind, mc_statistic **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (out == NULL || (unsigned int)kind >= (unsigned int)MC_STATISTIC_KIND_COUNT)
@@ -211,8 +201,7 @@ mc_registry_status mc_registry_statistic_allocate(mc_registry_classes *classes,
 
 mc_registry_status mc_registry_statistic_construct_base(mc_statistic *statistic, int32_t id,
                                                         const mc_registry_string *name,
-                                                        const mc_statistic_formatter *formatter)
-{
+                                                        const mc_statistic_formatter *formatter) {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_classes *classes = statistic->classes;
@@ -238,8 +227,7 @@ mc_registry_status mc_registry_statistic_construct_base(mc_statistic *statistic,
 mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int32_t id,
                                                    const mc_registry_string *name,
                                                    const mc_statistic_formatter *formatter,
-                                                   int32_t associated_id)
-{
+                                                   int32_t associated_id) {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (statistic->kind == MC_STATISTIC_ACHIEVEMENT)
@@ -259,8 +247,7 @@ mc_registry_status mc_registry_statistic_construct(mc_statistic *statistic, int3
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistic_base_flag(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_statistic_base_flag(mc_statistic *statistic) {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_classes *classes = statistic->classes;
@@ -274,25 +261,21 @@ mc_registry_status mc_registry_statistic_base_flag(mc_statistic *statistic)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistic_flag(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_statistic_flag(mc_statistic *statistic) {
     if (statistic != NULL && statistic->kind == MC_STATISTIC_ACHIEVEMENT)
         return mc_registry_achievement_flag(statistic);
     return mc_registry_statistic_base_flag(statistic);
 }
 
-const mc_statistic_fields *mc_statistic_fields_get(const mc_statistic *statistic)
-{
+const mc_statistic_fields *mc_statistic_fields_get(const mc_statistic *statistic) {
     return statistic == NULL ? NULL : &statistic->fields;
 }
 
-mc_statistic_kind mc_statistic_kind_get(const mc_statistic *statistic)
-{
+mc_statistic_kind mc_statistic_kind_get(const mc_statistic *statistic) {
     return statistic == NULL ? MC_STATISTIC_KIND_COUNT : statistic->kind;
 }
 
-mc_registry_status mc_statistic_item_id(const mc_statistic *statistic, int32_t *out)
-{
+mc_registry_status mc_statistic_item_id(const mc_statistic *statistic, int32_t *out) {
     if (statistic == NULL || out == NULL || statistic->kind != MC_STATISTIC_ITEM)
         return MC_REGISTRY_INVALID_ARGUMENT;
     *out = statistic->associated_id;

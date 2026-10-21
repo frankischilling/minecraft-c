@@ -65,6 +65,7 @@ static const struct expected_class {
                 {MC_ENTITY_CLASS_KIND_FALLING_SAND, 21, "FallingSand", "ju", "gl"},
                 {MC_ENTITY_CLASS_KIND_MINECART, 40, "Minecart", "yl", "pr"},
                 {MC_ENTITY_CLASS_KIND_BOAT, 41, "Boat", "fz", "eb"}};
+
 _Static_assert(COUNT(expected) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
                "one expected record per Entity Class");
 static const mc_entity_class_kind biome_kinds[] = {
@@ -83,8 +84,7 @@ typedef struct profile_state {
     size_t bytes, limit;
 } profile_state;
 
-static profile_state profile_get(const mc_java_random_profile *p)
-{
+static profile_state profile_get(const mc_java_random_profile *p) {
     profile_state s = {.uniquifier = atomic_load_explicit(&p->uniquifier, memory_order_relaxed),
                        .holder = atomic_load_explicit(&p->holder_phase, memory_order_acquire),
                        .math = p->math,
@@ -101,8 +101,7 @@ static profile_state profile_get(const mc_java_random_profile *p)
     return s;
 }
 
-static bool profile_equal(profile_state a, profile_state b)
-{
+static bool profile_equal(profile_state a, profile_state b) {
     return a.uniquifier == b.uniquifier && a.math_state == b.math_state &&
            a.gaussian_bits == b.gaussian_bits && a.holder == b.holder && a.math == b.math &&
            a.gaussian == b.gaussian && a.clock_ready == b.clock_ready &&
@@ -110,8 +109,7 @@ static bool profile_equal(profile_state a, profile_state b)
            a.bytes == b.bytes && a.limit == b.limit;
 }
 
-static bool counter_equal(const mc_entity_class_snapshot *a, const mc_entity_class_snapshot *b)
-{
+static bool counter_equal(const mc_entity_class_snapshot *a, const mc_entity_class_snapshot *b) {
     return a->source == b->source && a->entity_class == b->entity_class &&
            a->bounds_class == b->bounds_class && a->watcher_class == b->watcher_class &&
            a->next_id == b->next_id && a->bounds_pool_cursor == b->bounds_pool_cursor &&
@@ -121,15 +119,13 @@ static bool counter_equal(const mc_entity_class_snapshot *a, const mc_entity_cla
 }
 
 static bool registry_error_equal(const mc_entity_registry_error *a,
-                                 const mc_entity_registry_error *b)
-{
+                                 const mc_entity_registry_error *b) {
     return a->status == b->status && a->cause == b->cause && a->operation == b->operation &&
            a->initializer_bytecode == b->initializer_bytecode &&
            a->registration_bytecode == b->registration_bytecode && a->class_cause == b->class_cause;
 }
 
-static bool name_equal(mc_nbt_string value, const char *ascii)
-{
+static bool name_equal(mc_nbt_string value, const char *ascii) {
     if (value.length != strlen(ascii) || (value.length != 0 && value.units == NULL))
         return false;
     for (size_t i = 0; i < value.length; ++i)
@@ -138,16 +134,14 @@ static bool name_equal(mc_nbt_string value, const char *ascii)
     return true;
 }
 
-static mc_nbt_string name_input(const char *ascii, uint16_t units[16])
-{
+static mc_nbt_string name_input(const char *ascii, uint16_t units[16]) {
     size_t length = strlen(ascii);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)ascii[i];
     return (mc_nbt_string){units, length};
 }
 
-static bool retire_entity_classes(mc_entity_classes **owner)
-{
+static bool retire_entity_classes(mc_entity_classes **owner) {
     if (*owner == NULL)
         return true;
     if (mc_entity_classes_free(*owner) != MC_ENTITY_OK) {
@@ -159,8 +153,7 @@ static bool retire_entity_classes(mc_entity_classes **owner)
     return true;
 }
 
-static bool retire_world_classes(mc_world_runtime_classes **owner)
-{
+static bool retire_world_classes(mc_world_runtime_classes **owner) {
     if (*owner == NULL)
         return true;
     if (mc_world_runtime_classes_free(*owner, NULL) != MC_WORLD_STORAGE_OK) {
@@ -172,8 +165,7 @@ static bool retire_world_classes(mc_world_runtime_classes **owner)
     return true;
 }
 
-static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_source source)
-{
+static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_source source) {
     const mc_entity_class_literal *seen[MC_ENTITY_CLASS_KIND_COUNT] = {0};
     mc_entity_class_snapshot before, after, other_before, other_after;
     VERIFY(mc_entity_classes_get_snapshot(a, &before) == MC_ENTITY_OK &&
@@ -224,8 +216,7 @@ static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_so
     return true;
 }
 
-static bool initialize_namespace(mc_entity_classes *owner)
-{
+static bool initialize_namespace(mc_entity_classes *owner) {
     mc_entity_class_snapshot before, after;
     mc_entity_registry_view view;
     VERIFY(mc_entity_classes_get_snapshot(owner, &before) == MC_ENTITY_OK);
@@ -246,8 +237,7 @@ static bool initialize_namespace(mc_entity_classes *owner)
     return true;
 }
 
-static bool check_namespace(mc_entity_classes *owner, mc_entity_classes *other)
-{
+static bool check_namespace(mc_entity_classes *owner, mc_entity_classes *other) {
     const profile_state p = profile_get(owner->profile);
     mc_entity_class_snapshot before, after;
     VERIFY(mc_entity_classes_get_snapshot(owner, &before) == MC_ENTITY_OK);
@@ -306,11 +296,13 @@ static bool check_namespace(mc_entity_classes *owner, mc_entity_classes *other)
  * exercise real Registry initialization; no expected registry objects exist. */
 static const uint8_t language[] = "stat.mineBlock=Mine %1$s\nstat.useItem=Use %1$s\n"
                                   "stat.breakItem=Break %1$s\nstat.craftItem=Craft %1$s\n";
+
 typedef struct stream {
     const uint8_t *bytes;
     size_t length, offset, opens, closes;
     bool closed;
 } stream;
+
 typedef struct registry_fixture {
     mc_registry_classes *owner;
     mc_registry_resources resources;
@@ -321,8 +313,7 @@ typedef struct registry_fixture {
 } registry_fixture;
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
         return MC_JAVA_PROPERTIES_IO_ERROR;
@@ -339,8 +330,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     registry_fixture *f = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     size_t index = COUNT(names);
@@ -372,8 +362,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     registry_fixture *f = context;
     if (input == NULL || input->context != &f->streams[2] || input->read != read_bytes) {
         f->bad = true;
@@ -384,8 +373,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     registry_fixture *f = context;
     if (input == NULL || input->read != read_bytes)
         f->bad = true;
@@ -393,8 +381,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
 }
 
 static registry_fixture *new_registry(mc_entity_source source, mc_materials *materials,
-                                      mc_java_random_profile *profile, mc_entity_classes *probe)
-{
+                                      mc_java_random_profile *profile, mc_entity_classes *probe) {
     registry_fixture *f = calloc(1, sizeof(*f));
     if (f == NULL)
         return NULL;
@@ -412,8 +399,7 @@ static registry_fixture *new_registry(mc_entity_source source, mc_materials *mat
     return f;
 }
 
-static bool retire_registry(registry_fixture **owner)
-{
+static bool retire_registry(registry_fixture **owner) {
     if (*owner == NULL)
         return true;
     if (mc_registry_classes_free((*owner)->owner, NULL) != MC_REGISTRY_OK) {
@@ -427,8 +413,7 @@ static bool retire_registry(registry_fixture **owner)
 }
 
 static bool logical_at(const mc_biome_spawn_list *list, size_t index,
-                       const mc_biome_entity_class **out)
-{
+                       const mc_biome_entity_class **out) {
     const mc_biome_spawn *spawn = mc_biome_spawn_list_at(list, index);
     const mc_biome_spawn_fields *fields = mc_biome_spawn_fields_get(spawn);
     VERIFY(fields != NULL && fields->a != NULL);
@@ -436,8 +421,7 @@ static bool logical_at(const mc_biome_spawn_list *list, size_t index,
     return true;
 }
 
-static bool collect_logical(mc_registry_classes *owner, const mc_biome_entity_class *out[13])
-{
+static bool collect_logical(mc_registry_classes *owner, const mc_biome_entity_class *out[13]) {
     mc_biome_registry_view view;
     VERIFY(mc_biome_registry_inspect(owner, &view, NULL) == MC_REGISTRY_OK &&
            view.phase == MC_REGISTRY_READY);
@@ -459,8 +443,7 @@ static bool collect_logical(mc_registry_classes *owner, const mc_biome_entity_cl
 }
 
 static bool check_join(mc_registry_classes *registry, mc_entity_classes *entities,
-                       const mc_biome_entity_class *const logical[13], bool names)
-{
+                       const mc_biome_entity_class *const logical[13], bool names) {
     for (size_t i = 0; i < 13; ++i) {
         const mc_entity_class_literal *expected_literal = NULL, *canonical = NULL;
         VERIFY(mc_entity_class_literal_get(entities, biome_kinds[i], &expected_literal) ==
@@ -478,8 +461,7 @@ static bool check_join(mc_registry_classes *registry, mc_entity_classes *entitie
     return true;
 }
 
-static bool test_passive(mc_entity_source source, mc_java_random_profile *profile)
-{
+static bool test_passive(mc_entity_source source, mc_java_random_profile *profile) {
     bool ok = false;
     mc_entity_classes *a = NULL, *b = NULL;
     mc_entity *entity = NULL;
@@ -515,8 +497,7 @@ cleanup:
 }
 
 static bool test_binding(mc_entity_source source, bool registry_first, mc_materials *materials,
-                         mc_java_random_profile *profile)
-{
+                         mc_java_random_profile *profile) {
     bool ok = false, external_hold = false;
     registry_fixture *f = NULL, *foreign = NULL;
     mc_entity_classes *entities = NULL, *other = NULL, *wrong_side = NULL, *wrong_profile = NULL;
@@ -641,8 +622,7 @@ cleanup:
 }
 
 static bool test_limits(mc_entity_source source, mc_materials *materials,
-                        mc_java_random_profile *profile)
-{
+                        mc_java_random_profile *profile) {
     bool ok = false;
     mc_entity_classes *tight = NULL, *partial = NULL;
     registry_fixture *f = NULL;
@@ -727,8 +707,7 @@ cleanup:
 }
 
 static bool test_world_binding(mc_entity_source source, bool registry_first,
-                               mc_materials *materials, mc_java_random_profile *profile)
-{
+                               mc_materials *materials, mc_java_random_profile *profile) {
     bool ok = false;
     mc_entity_classes *entities = NULL, *other = NULL;
     mc_world_runtime_classes *worlds = NULL, *conflict = NULL;
@@ -825,8 +804,7 @@ cleanup:
     return ok;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;

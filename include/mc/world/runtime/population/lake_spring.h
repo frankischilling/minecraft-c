@@ -10,6 +10,7 @@
 typedef struct mc_population_lake_feature {
     int32_t a;
 } mc_population_lake_feature;
+
 typedef struct mc_population_spring_feature {
     int32_t a;
 } mc_population_spring_feature;

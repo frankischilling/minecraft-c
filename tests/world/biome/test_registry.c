@@ -40,6 +40,7 @@ typedef struct stream {
     size_t length, offset, opens, reads, closes;
     bool closed;
 } stream;
+
 typedef struct fixture {
     mc_registry_classes *owner;
     mc_registry_resources resources;
@@ -48,15 +49,13 @@ typedef struct fixture {
     size_t observed_callbacks;
 } fixture;
 
-static void named_cells(const mc_biome_registry_view *v, const mc_biome **out)
-{
+static void named_cells(const mc_biome_registry_view *v, const mc_biome **out) {
     const mc_biome *const values[] = {v->a, v->b, v->c, v->d, v->e, v->f, v->g,
                                       v->h, v->i, v->j, v->k, v->l, v->m};
     memcpy(out, values, sizeof(values));
 }
 
-static bool same_view(const mc_biome_registry_view *a, const mc_biome_registry_view *b)
-{
+static bool same_view(const mc_biome_registry_view *a, const mc_biome_registry_view *b) {
     const mc_biome *left[13], *right[13];
     named_cells(a, left);
     named_cells(b, right);
@@ -69,8 +68,7 @@ static bool same_view(const mc_biome_registry_view *a, const mc_biome_registry_v
     return true;
 }
 
-static bool no_named(const mc_biome_registry_view *v)
-{
+static bool no_named(const mc_biome_registry_view *v) {
     const mc_biome *values[13];
     named_cells(v, values);
     for (size_t i = 0; i < COUNT(values); ++i)
@@ -79,20 +77,17 @@ static bool no_named(const mc_biome_registry_view *v)
     return true;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advance_five(uint64_t value)
-{
+static uint64_t advance_five(uint64_t value) {
     for (unsigned int i = 0; i < 5; ++i)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_cause(const mc_registry_error *a, const mc_registry_error *b) {
     return a->message == b->message && a->initializer_pc == b->initializer_pc &&
            a->block_id == b->block_id && a->constructor_class == b->constructor_class &&
            a->constructor_pc == b->constructor_pc &&
@@ -109,8 +104,7 @@ static bool same_cause(const mc_registry_error *a, const mc_registry_error *b)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     ++s->reads;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
@@ -128,8 +122,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     fixture *f = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     size_t index = COUNT(names);
@@ -174,8 +167,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->context != &f->streams[2] || input->read != read_bytes) {
         f->invalid = true;
@@ -186,8 +178,7 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->read != read_bytes)
         f->invalid = true;
@@ -195,8 +186,7 @@ static bool ready_resource(void *context, const mc_java_properties_input *input)
 }
 
 static fixture *new_fixture(mc_registry_side side, mc_materials *materials,
-                            mc_java_random_profile *profile, size_t budget, bool missing)
-{
+                            mc_java_random_profile *profile, size_t budget, bool missing) {
     fixture *f = calloc(1, sizeof(*f));
     if (f == NULL)
         return NULL;
@@ -213,16 +203,14 @@ static fixture *new_fixture(mc_registry_side side, mc_materials *materials,
     return f;
 }
 
-static void leave_method(fixture *f)
-{
+static void leave_method(fixture *f) {
     if (f != NULL && f->method_entered) {
         f->owner->entered = 0;
         f->method_entered = false;
     }
 }
 
-static bool destroy_fixture(fixture *f)
-{
+static bool destroy_fixture(fixture *f) {
     if (f == NULL)
         return true;
     leave_method(f); /* Only our explicitly admitted ordinary-method fixture. */
@@ -235,18 +223,15 @@ static bool destroy_fixture(fixture *f)
     return true;
 }
 
-static size_t opens(const fixture *f)
-{
+static size_t opens(const fixture *f) {
     return f->streams[0].opens + f->streams[1].opens + f->streams[2].opens;
 }
 
-static size_t reads(const fixture *f)
-{
+static size_t reads(const fixture *f) {
     return f->streams[0].reads + f->streams[1].reads + f->streams[2].reads;
 }
 
-static bool ascii_is(const mc_registry_string *string, const char *expected)
-{
+static bool ascii_is(const mc_registry_string *string, const char *expected) {
     mc_registry_string_view view;
     if (!mc_registry_string_read(string, &view) || view.length != strlen(expected))
         return false;
@@ -275,14 +260,14 @@ static const struct expected_biome {
                 {MC_BIOME_KIND_KD_GS, "Tundra", 5762041, 12899129, true, true},
                 {MC_BIOME_KIND_T_M, "Hell", 16711680, 5169201, false, false},
                 {MC_BIOME_KIND_RY_LE, "Sky", 8421631, 5169201, false, false}};
+
 static const char *const class_names[2][13] = {
     {"cn", "uz", "fr", "gb", "uw", "dl", "wh", "ww", "bx", "xt", "gi", "bp", "ya"},
     {"bn", "ne", "dv", "ec", "nb", "ce", "oc", "or", "bd", "pf", "eh", "aw", "pi"}};
 static const int32_t weights[] = {10, 10, 10, 10, 10, 12, 10, 10, 8, 10, 2, 10, 10};
 
 static bool check_graph(const mc_biome_registry_view *view, bool sand_tail,
-                        const mc_biome_entity_class **classes_out)
-{
+                        const mc_biome_entity_class **classes_out) {
     const mc_biome *biomes[13];
     const mc_biome_spawn_list *lists[39];
     const mc_biome_spawn *records[115];
@@ -355,24 +340,22 @@ static bool check_graph(const mc_biome_registry_view *view, bool sand_tail,
     return true;
 }
 
-static float float_bits(uint32_t bits)
-{
+static float float_bits(uint32_t bits) {
     float value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static double double_bits(uint64_t bits)
-{
+static double double_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static bool check_queries(fixture *f, const mc_biome_registry_view *view)
-{
+static bool check_queries(fixture *f, const mc_biome_registry_view *view) {
     const mc_biome *biomes[13];
     named_cells(view, biomes);
+
     /* Every branch and comparison boundary uses independently literal inputs.
      * Rainfall is multiplied by temperature in binary32 before branching. */
     const struct {
@@ -410,6 +393,7 @@ static bool check_queries(fixture *f, const mc_biome_registry_view *view)
                   {float_bits(UINT32_C(0x7f800000)), 0.0f, 'a'},
                   {float_bits(UINT32_C(0x7f800000)), -1.0f, 'h'},
                   {float_bits(UINT32_C(0xff800000)), 1.0f, 'k'}};
+
     const mc_biome *result = NULL;
     for (size_t i = 0; i < COUNT(points); ++i) {
         VERIFY(mc_biome_registry_classify_float(f->owner, points[i].t, points[i].r, &result,
@@ -435,6 +419,7 @@ static bool check_queries(fixture *f, const mc_biome_registry_view *view)
 
     const double inf = double_bits(UINT64_C(0x7ff0000000000000));
     const double nan = double_bits(UINT64_C(0x7ff8000000000001));
+
     /* Literal expected wrapped indices: neither floor nor unit clamping. */
     const struct {
         double t, r;
@@ -450,6 +435,7 @@ static bool check_queries(fixture *f, const mc_biome_registry_view *view)
                    {0.0, 2.0, 8064},       {0.0, inf, -64},
                    {1.0, inf, -1},         {inf, 0.0, INT32_MAX},
                    {-inf, 0.0, INT32_MIN}, {inf, inf, INT32_MAX - 64}};
+
     for (size_t i = 0; i < COUNT(lookups); ++i) {
         result = biomes[0];
         mc_registry_error error;
@@ -482,8 +468,7 @@ static bool check_queries(fixture *f, const mc_biome_registry_view *view)
 
 static bool test_success(mc_registry_side side, mc_materials *materials,
                          mc_java_random_profile *profile, size_t *complete_bytes, size_t *raw_cost,
-                         size_t *cold_bytes)
-{
+                         size_t *cold_bytes) {
     bool ok = false;
     fixture *f = NULL;
     fixture *other = NULL;
@@ -633,8 +618,7 @@ cleanup:
 }
 
 static bool test_missing(mc_registry_side side, mc_materials *materials,
-                         mc_java_random_profile *profile)
-{
+                         mc_java_random_profile *profile) {
     bool ok = false;
     fixture *f = new_fixture(side, materials, profile, 0, true);
     mc_registry_error first, retry;
@@ -680,8 +664,7 @@ cleanup:
 
 static bool test_budgets(mc_registry_side side, mc_materials *materials,
                          mc_java_random_profile *profile, size_t complete_bytes, size_t raw_cost,
-                         size_t cold_bytes)
-{
+                         size_t cold_bytes) {
     bool ok = false;
     fixture *early = NULL, *late = NULL, *ordinary = NULL;
     mc_biome_registry_view view, after;
@@ -757,8 +740,7 @@ cleanup:
     return ok;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_materials *materials = NULL;
     mc_java_random_profile *profile = NULL;
@@ -767,10 +749,12 @@ int main(void)
               sizeof(mc_java_random_profile) + sizeof(mc_java_math_random_owner), &profile) ==
           MC_JAVA_RANDOM_PROFILE_OK);
     mc_material *material_ids[MC_MATERIAL_COUNT];
+
     struct material_snapshot {
         bool a, b, c, d, e, g, h, i;
         int32_t j;
     } material_fields[MC_MATERIAL_COUNT];
+
     for (int i = 0; i < MC_MATERIAL_COUNT; ++i)
         material_ids[i] = mc_materials_get(materials, (mc_material_id)i);
     for (int i = 0; i < MC_MATERIAL_COUNT; ++i) {

@@ -23,21 +23,18 @@ struct mc_world_active_chunks {
     size_t count, capacity;
 };
 
-const mc_math_trig *mc_world_runtime_class_trig(const mc_world_runtime *runtime)
-{
+const mc_math_trig *mc_world_runtime_class_trig(const mc_world_runtime *runtime) {
     return runtime->classes->trig;
 }
 
 static mc_world_storage_status result(mc_world_storage_error *error, mc_world_storage_status status,
-                                      const char *operation)
-{
+                                      const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-mc_world_runtime_construction_limits mc_world_runtime_default_construction_limits(void)
-{
+mc_world_runtime_construction_limits mc_world_runtime_default_construction_limits(void) {
     return (mc_world_runtime_construction_limits){
         .max_direct_allocation_bytes = 16u * 1024u * 1024u,
         .max_scheduled_entries = 65536u,
@@ -50,8 +47,7 @@ mc_world_storage_status mc_world_runtime_classes_create(mc_world_info_side side,
                                                         mc_java_random_profile *profile,
                                                         const mc_math_trig *trig,
                                                         mc_world_runtime_classes **out,
-                                                        mc_world_storage_error *error)
-{
+                                                        mc_world_storage_error *error) {
     if ((side != MC_WORLD_INFO_CLIENT && side != MC_WORLD_INFO_SERVER) || profile == NULL ||
         trig == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World class arguments");
@@ -66,8 +62,7 @@ mc_world_storage_status mc_world_runtime_classes_create(mc_world_info_side side,
 }
 
 mc_world_storage_status mc_world_runtime_classes_get(const mc_world_runtime_classes *classes,
-                                                     mc_world_runtime_class_state *out)
-{
+                                                     mc_world_runtime_class_state *out) {
     if (classes == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = (mc_world_runtime_class_state){classes->side, classes->initialized,
@@ -76,8 +71,7 @@ mc_world_storage_status mc_world_runtime_classes_get(const mc_world_runtime_clas
 }
 
 mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *classes,
-                                                      mc_world_storage_error *error)
-{
+                                                      mc_world_storage_error *error) {
     if (classes == NULL)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     if (classes->live_worlds != 0)
@@ -113,8 +107,7 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
 
 mc_registry_status mc_world_runtime_classes_bind_registry(mc_world_runtime_classes *classes,
                                                           mc_registry_classes *registry,
-                                                          mc_registry_error *error)
-{
+                                                          mc_registry_error *error) {
     mc_registry_status status = MC_REGISTRY_INVALID_ARGUMENT;
     const char *message = "World registry binding arguments";
     if (classes != NULL && registry != NULL) {
@@ -150,14 +143,12 @@ mc_registry_status mc_world_runtime_classes_bind_registry(mc_world_runtime_class
     return status;
 }
 
-mc_registry_classes *mc_world_runtime_registry(const mc_world_runtime *runtime)
-{
+mc_registry_classes *mc_world_runtime_registry(const mc_world_runtime *runtime) {
     return runtime == NULL || runtime->classes == NULL ? NULL : runtime->classes->registry;
 }
 
 mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes *classes,
-                                                        mc_entity_classes *entities)
-{
+                                                        mc_entity_classes *entities) {
     if (classes == NULL || entities == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (classes->entities != NULL || classes->initialized || classes->live_worlds != 0)
@@ -181,16 +172,14 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
     return MC_ENTITY_OK;
 }
 
-mc_entity_classes *mc_world_runtime_entities(const mc_world_runtime *runtime)
-{
+mc_entity_classes *mc_world_runtime_entities(const mc_world_runtime *runtime) {
     return runtime == NULL || runtime->classes == NULL ? NULL : runtime->classes->entities;
 }
 
 mc_world_storage_status
 mc_world_runtime_allocate_world(mc_world_runtime_entry entry, mc_world_runtime_classes *classes,
                                 const mc_world_runtime_construction_limits *limits,
-                                mc_world_runtime **out, mc_world_storage_error *error)
-{
+                                mc_world_runtime **out, mc_world_storage_error *error) {
     if (out == NULL || classes == NULL || entry < MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE ||
         entry > MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World allocation arguments");
@@ -225,8 +214,7 @@ mc_world_runtime_allocate_world(mc_world_runtime_entry entry, mc_world_runtime_c
 }
 
 mc_world_storage_status mc_world_runtime_construction_get(const mc_world_runtime *runtime,
-                                                          mc_world_runtime_construction *out)
-{
+                                                          mc_world_runtime_construction *out) {
     if (runtime == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     mc_world_runtime_construction state = runtime->construction;
@@ -236,8 +224,7 @@ mc_world_storage_status mc_world_runtime_construction_get(const mc_world_runtime
 }
 
 mc_world_storage_status mc_world_runtime_fields_get(const mc_world_runtime *runtime,
-                                                    mc_world_runtime_fields *out)
-{
+                                                    mc_world_runtime_fields *out) {
     if (runtime == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
@@ -247,8 +234,7 @@ mc_world_storage_status mc_world_runtime_fields_get(const mc_world_runtime *runt
 }
 
 static void *world_allocate(mc_world_runtime *runtime, size_t bytes, unsigned int call_pc,
-                            const char *operation)
-{
+                            const char *operation) {
     size_t used = runtime->construction.direct_allocation_bytes;
     if (bytes > runtime->construction_limits.max_direct_allocation_bytes - used) {
         runtime->construction.failed_call_pc = call_pc;
@@ -266,8 +252,7 @@ static void *world_allocate(mc_world_runtime *runtime, size_t bytes, unsigned in
 }
 
 static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **field,
-                       unsigned int call_pc, unsigned int store_pc)
-{
+                       unsigned int call_pc, unsigned int store_pc) {
     mc_world_reference_list *list =
         world_allocate(runtime, sizeof(*list), call_pc, "World ArrayList");
     if (list == NULL)
@@ -286,8 +271,7 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
 }
 
 static bool world_random(mc_world_runtime *runtime, mc_java_random **out,
-                         unsigned int allocation_pc, unsigned int call_pc)
-{
+                         unsigned int allocation_pc, unsigned int call_pc) {
     mc_java_random *random =
         world_allocate(runtime, sizeof(*random), allocation_pc, "World Random owner");
     if (random == NULL)
@@ -312,8 +296,7 @@ static bool world_random(mc_world_runtime *runtime, mc_java_random **out,
     return true;
 }
 
-static bool world_prefix(mc_world_runtime *runtime)
-{
+static bool world_prefix(mc_world_runtime *runtime) {
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_runtime_construction *state = &runtime->construction;
     f->a = false;
@@ -415,8 +398,7 @@ static bool world_prefix(mc_world_runtime *runtime)
 }
 
 static bool world_info_result(mc_world_runtime *runtime, mc_world_info_status status,
-                              unsigned int call_pc)
-{
+                              unsigned int call_pc) {
     if (status == MC_WORLD_INFO_OK)
         return true;
     runtime->construction.failed_call_pc = call_pc;
@@ -429,8 +411,7 @@ static bool world_info_result(mc_world_runtime *runtime, mc_world_info_status st
     return false;
 }
 
-static void world_bind_info_cells(mc_world_runtime *runtime)
-{
+static void world_bind_info_cells(mc_world_runtime *runtime) {
     const mc_world_info_live *cells = mc_world_info_live_get(runtime->fields.x);
     runtime->live = (mc_world_runtime_state){.time = cells->time,
                                              .spawn_x = cells->spawn_x,
@@ -444,8 +425,7 @@ static void world_bind_info_cells(mc_world_runtime *runtime)
 static bool world_new_info(mc_world_runtime *runtime,
                            const mc_world_runtime_world_arguments *arguments,
                            const mc_world_info *copy, bool copying, unsigned int call_pc,
-                           unsigned int store_pc)
-{
+                           unsigned int store_pc) {
     mc_world_info *info = NULL;
     mc_world_info_status status = mc_world_info_allocate(runtime->classes->side, &info);
     if (status == MC_WORLD_INFO_OK)
@@ -461,8 +441,8 @@ static bool world_new_info(mc_world_runtime *runtime,
     return true;
 }
 
-static bool world_saved_data(mc_world_runtime *runtime, unsigned int call_pc, unsigned int store_pc)
-{
+static bool world_saved_data(mc_world_runtime *runtime, unsigned int call_pc,
+                             unsigned int store_pc) {
     mc_world_saved_data *saved = NULL;
     mc_world_storage_status status = mc_world_saved_data_create(
         runtime->fields.w, &runtime->construction_limits.saved_data, &saved, &runtime->last_error);
@@ -476,8 +456,7 @@ static bool world_saved_data(mc_world_runtime *runtime, unsigned int call_pc, un
 }
 
 static bool world_dimension_result(mc_world_runtime *runtime, mc_world_dimension_status status,
-                                   unsigned int call_pc)
-{
+                                   unsigned int call_pc) {
     if (status == MC_WORLD_DIMENSION_OK)
         return true;
     runtime->construction.failed_call_pc = call_pc;
@@ -491,8 +470,7 @@ static bool world_dimension_result(mc_world_runtime *runtime, mc_world_dimension
 }
 
 static bool world_set_dimension(mc_world_runtime *runtime, mc_world_dimension *dimension,
-                                unsigned int store_pc)
-{
+                                unsigned int store_pc) {
     if (dimension != NULL &&
         !world_dimension_result(runtime, mc_world_dimension_retain(dimension), store_pc))
         return false;
@@ -502,8 +480,8 @@ static bool world_set_dimension(mc_world_runtime *runtime, mc_world_dimension *d
 }
 
 static bool world_metadata_tail(mc_world_runtime *runtime,
-                                const mc_world_runtime_world_arguments *arguments, bool *new_world)
-{
+                                const mc_world_runtime_world_arguments *arguments,
+                                bool *new_world) {
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_runtime_construction *state = &runtime->construction;
     *new_world = false;
@@ -579,8 +557,7 @@ static bool world_metadata_tail(mc_world_runtime *runtime,
     return true;
 }
 
-static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc)
-{
+static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc) {
     runtime->construction.failed_call_pc = call_pc;
     if (runtime->fields.w == NULL) {
         result(&runtime->last_error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World loader storage");
@@ -628,8 +605,7 @@ static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc)
     return true;
 }
 
-static bool world_spawn_draw(mc_world_runtime *runtime, int32_t *out)
-{
+static bool world_spawn_draw(mc_world_runtime *runtime, int32_t *out) {
     if (runtime->fields.r == NULL || !mc_java_random_next_bounded(runtime->fields.r, 64, out)) {
         result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                "World spawn Random receiver");
@@ -638,8 +614,7 @@ static bool world_spawn_draw(mc_world_runtime *runtime, int32_t *out)
     return true;
 }
 
-static bool world_initial_spawn(mc_world_runtime *runtime)
-{
+static bool world_initial_spawn(mc_world_runtime *runtime) {
     runtime->fields.y = true;
     int32_t x = 0, z = 0;
     for (;;) {
@@ -684,8 +659,7 @@ static bool world_initial_spawn(mc_world_runtime *runtime)
 mc_world_storage_status
 mc_world_runtime_construct_world(mc_world_runtime *runtime,
                                  const mc_world_runtime_world_arguments *arguments,
-                                 mc_world_storage_error *error)
-{
+                                 mc_world_storage_error *error) {
     if (runtime == NULL || arguments == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World constructor arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -753,8 +727,7 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
 }
 
 mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
-                                                   mc_world_storage_error *error)
-{
+                                                   mc_world_storage_error *error) {
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
     if (!mc_world_runtime_entity_list_valid(runtime))
@@ -802,8 +775,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
 }
 
 mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
-                                                      mc_world_storage_error *error)
-{
+                                                      mc_world_storage_error *error) {
     if (runtime == NULL || runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World retirement arguments");
     if (runtime->active_calls != 0 || runtime->local_leases != 0)
@@ -859,8 +831,7 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-static bool entity_retirement_other_collections_empty(const mc_world_runtime *world)
-{
+static bool entity_retirement_other_collections_empty(const mc_world_runtime *world) {
     const mc_world_runtime_fields *fields = &world->fields;
     /* C/E/F are already concrete typed owners retained until final native free.
      * b/D/c/G are admitted separately. Never reinterpret entries of these remaining
@@ -877,8 +848,7 @@ static bool entity_retirement_other_collections_empty(const mc_world_runtime *wo
 }
 
 mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runtime *world,
-                                                                  mc_world_storage_error *error)
-{
+                                                                  mc_world_storage_error *error) {
     if (world == NULL || world->construction.mode != MC_WORLD_RUNTIME_GAME)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World entity retirement arguments");

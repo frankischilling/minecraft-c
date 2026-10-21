@@ -5,22 +5,19 @@
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 
-static bool in_domain(int32_t x, int32_t y, int32_t z)
-{
+static bool in_domain(int32_t x, int32_t y, int32_t z) {
     return x >= -32000000 && x < 32000000 && z >= -32000000 && z <= 32000000 && y >= 0 && y < 128;
 }
 
 static mc_world_storage_status result(mc_world_mutation_error *out,
-                                      const mc_world_mutation_error *frame)
-{
+                                      const mc_world_mutation_error *frame) {
     if (out != NULL)
         *out = *frame;
     return frame->status;
 }
 
 static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *frame,
-                         mc_world_storage_error cause)
-{
+                         mc_world_storage_error cause) {
     frame->status = cause.status;
     frame->operation = cause.operation;
     frame->cause = cause;
@@ -28,8 +25,7 @@ static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *frame
     return false;
 }
 
-static bool admit(mc_world_runtime *world, bool has_out, mc_world_mutation_error *frame)
-{
+static bool admit(mc_world_runtime *world, bool has_out, mc_world_mutation_error *frame) {
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
     const char *operation = NULL;
     if (world == NULL || !has_out) {
@@ -54,8 +50,7 @@ static bool admit(mc_world_runtime *world, bool has_out, mc_world_mutation_error
  * even when the concrete setter will return false. The captured Chunk remains
  * leased across all synchronous descendants of that one concrete invocation. */
 static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
-                  bool with_metadata, int32_t metadata, bool *out, mc_world_mutation_error *frame)
-{
+                  bool with_metadata, int32_t metadata, bool *out, mc_world_mutation_error *frame) {
     frame->bytecode = 48;
     if (world->fields.v == NULL) {
         frame->provider_bytecode = 6;
@@ -124,8 +119,7 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
 
 static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                    int32_t id, bool with_metadata, int32_t metadata, bool notify,
-                                   bool *out, mc_world_mutation_error *error)
-{
+                                   bool *out, mc_world_mutation_error *error) {
     mc_world_mutation_error frame = mc_world_mutation_empty_error();
     if (!admit(world, out != NULL, &frame))
         return result(error, &frame);
@@ -159,8 +153,8 @@ static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y
 
 mc_world_storage_status mc_world_runtime_block_set_quiet(mc_world_runtime *world, int32_t x,
                                                          int32_t y, int32_t z, int32_t id,
-                                                         bool *out, mc_world_mutation_error *error)
-{
+                                                         bool *out,
+                                                         mc_world_mutation_error *error) {
     return set(world, x, y, z, id, false, 0, false, out, error);
 }
 
@@ -168,30 +162,26 @@ mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runti
                                                                   int32_t x, int32_t y, int32_t z,
                                                                   int32_t id, int32_t metadata,
                                                                   bool *out,
-                                                                  mc_world_mutation_error *error)
-{
+                                                                  mc_world_mutation_error *error) {
     return set(world, x, y, z, id, true, metadata, false, out, error);
 }
 
 mc_world_storage_status mc_world_runtime_block_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                    int32_t z, int32_t id, bool *out,
-                                                   mc_world_mutation_error *error)
-{
+                                                   mc_world_mutation_error *error) {
     return set(world, x, y, z, id, false, 0, true, out, error);
 }
 
 mc_world_storage_status mc_world_runtime_block_metadata_set(mc_world_runtime *world, int32_t x,
                                                             int32_t y, int32_t z, int32_t id,
                                                             int32_t metadata, bool *out,
-                                                            mc_world_mutation_error *error)
-{
+                                                            mc_world_mutation_error *error) {
     return set(world, x, y, z, id, true, metadata, true, out, error);
 }
 
 mc_world_storage_status mc_world_runtime_metadata_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                       int32_t z, int32_t metadata,
-                                                      mc_world_mutation_error *error)
-{
+                                                      mc_world_mutation_error *error) {
     mc_world_mutation_error frame = mc_world_mutation_empty_error();
     if (!admit(world, true, &frame))
         return result(error, &frame);

@@ -7,8 +7,7 @@
 
 #include "../../../src/world/chunk/object_state_internal.h"
 
-static input_cell snow_input(int32_t x, int32_t y, int32_t z)
-{
+static input_cell snow_input(int32_t x, int32_t y, int32_t z) {
     if (z == 4 && y == 10) {
         switch (x) {
             case 5:
@@ -47,8 +46,7 @@ static input_cell snow_input(int32_t x, int32_t y, int32_t z)
     return (input_cell){0, 0};
 }
 
-static bool snow_seed(fixture *f, size_t slot, int32_t cx, int32_t cz)
-{
+static bool snow_seed(fixture *f, size_t slot, int32_t cx, int32_t cz) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -121,8 +119,7 @@ cleanup:
     return ok;
 }
 
-static bool snow_load(fixture *f, size_t slot)
-{
+static bool snow_load(fixture *f, size_t slot) {
     bool ok = false;
     for (int32_t x = 0; x < 2; ++x)
         for (int32_t z = 0; z < 2; ++z) {
@@ -144,8 +141,7 @@ cleanup:
 /* Each internal body receives a genuine held World. The generic virtual
  * neighbor/tick dispatch remains part of the tested path. */
 static bool snow_support_call(mc_world_runtime *w, const mc_block *snow, int32_t x, int32_t y,
-                              int32_t z, bool *out, mc_world_mutation_error *error)
-{
+                              int32_t z, bool *out, mc_world_mutation_error *error) {
     if (mc_world_runtime_call_enter(w, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *error = mc_world_mutation_empty_error();
@@ -155,8 +151,7 @@ static bool snow_support_call(mc_world_runtime *w, const mc_block *snow, int32_t
 }
 
 static bool snow_neighbor_call(mc_world_runtime *w, const mc_block *snow, int32_t x, int32_t y,
-                               int32_t z, int32_t source, mc_world_mutation_error *error)
-{
+                               int32_t z, int32_t source, mc_world_mutation_error *error) {
     if (mc_world_runtime_call_enter(w, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *error = mc_world_mutation_empty_error();
@@ -166,8 +161,7 @@ static bool snow_neighbor_call(mc_world_runtime *w, const mc_block *snow, int32_
 }
 
 static bool snow_tick_call(mc_world_runtime *w, const mc_block *snow, int32_t x, int32_t y,
-                           int32_t z, mc_java_random *random, mc_world_mutation_error *error)
-{
+                           int32_t z, mc_java_random *random, mc_world_mutation_error *error) {
     if (mc_world_runtime_call_enter(w, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     *error = mc_world_mutation_empty_error();
@@ -176,15 +170,13 @@ static bool snow_tick_call(mc_world_runtime *w, const mc_block *snow, int32_t x,
     return completed;
 }
 
-static bool snow_clear(const mc_world_mutation_error *e)
-{
+static bool snow_clear(const mc_world_mutation_error *e) {
     return e->status == MC_WORLD_STORAGE_OK && e->hook_class == NULL && e->hook_method == NULL &&
            e->hook_bytecode == 0 && e->snow_neighbor_bytecode == 0 && e->snow_bytecode == 0 &&
            e->snow_support_bytecode == 0 && e->snow_tick_bytecode == 0;
 }
 
-static bool snow_supports(fixture *f, size_t slot, const mc_block *snow)
-{
+static bool snow_supports(fixture *f, size_t slot, const mc_block *snow) {
     bool ok = false, out = true;
     mc_world_runtime *w = f->worlds[slot];
     mc_registry_classes *r = f->registry[slot % 2u];
@@ -294,8 +286,7 @@ cleanup:
     return ok;
 }
 
-static bool snow_neighbors(fixture *f, size_t slot, const mc_block *snow)
-{
+static bool snow_neighbors(fixture *f, size_t slot, const mc_block *snow) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_world_mutation_error e = mc_world_mutation_empty_error();
@@ -367,8 +358,7 @@ cleanup:
     return ok;
 }
 
-static bool snow_ticks(fixture *f, size_t slot, const mc_block *snow)
-{
+static bool snow_ticks(fixture *f, size_t slot, const mc_block *snow) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_registry_classes *r = f->registry[slot % 2u];
@@ -456,8 +446,7 @@ cleanup:
 }
 
 static bool snow_entities_equal(const mc_entity_class_snapshot *a,
-                                const mc_entity_class_snapshot *b)
-{
+                                const mc_entity_class_snapshot *b) {
     return a->source == b->source && a->entity_class == b->entity_class &&
            a->bounds_class == b->bounds_class && a->watcher_class == b->watcher_class &&
            a->next_id == b->next_id && a->bounds_pool_cursor == b->bounds_pool_cursor &&
@@ -467,8 +456,7 @@ static bool snow_entities_equal(const mc_entity_class_snapshot *a,
            a->allocation_bytes == b->allocation_bytes;
 }
 
-static bool snow_world(fixture *f, size_t slot)
-{
+static bool snow_world(fixture *f, size_t slot) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[slot];
     mc_registry_classes *r = f->registry[slot % 2u];
@@ -499,8 +487,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

@@ -10,10 +10,12 @@ struct mc_smelting_map;
 struct mc_recipe {
     mc_registry_classes *classes;
     mc_recipe_kind kind;
+
     union {
         mc_shaped_recipe_fields shaped;
         mc_shapeless_recipe_fields shapeless;
     } fields;
+
     size_t ingredient_count; /* native shaped-array extent, not a game field */
 };
 
@@ -54,15 +56,18 @@ typedef enum mc_recipe_argument_kind {
 
 typedef struct mc_recipe_argument {
     mc_recipe_argument_kind kind;
+
     union {
         const mc_item *item;
         const mc_block *block;
         mc_item_stack *stack;
         const mc_registry_string *string;
+
         struct {
             const mc_registry_string *const *values;
             size_t count;
         } strings;
+
         uint16_t character;
     } value;
 } mc_recipe_argument;

@@ -5,8 +5,7 @@
 #include <stdint.h>
 
 static mc_registry_status infinity_string(mc_registry_classes *classes,
-                                          const mc_registry_string **out)
-{
+                                          const mc_registry_string **out) {
     mc_registry_string *string = mc_registry_allocate(classes, sizeof(*string));
     if (string == NULL)
         return classes->last_error.status;
@@ -20,8 +19,7 @@ static mc_registry_status infinity_string(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_number_format_create(mc_registry_classes *classes, bool integer_us,
-                                                    mc_statistic_number_format **out)
-{
+                                                    mc_statistic_number_format **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (out == NULL || classes->entered == 0)
@@ -95,7 +93,6 @@ mc_registry_status mc_registry_number_format_create(mc_registry_classes *classes
 }
 
 const mc_statistic_number_format_fields *
-mc_statistic_number_format_fields_get(const mc_statistic_number_format *format)
-{
+mc_statistic_number_format_fields_get(const mc_statistic_number_format *format) {
     return format == NULL ? NULL : &format->fields;
 }

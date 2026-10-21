@@ -86,19 +86,16 @@ typedef struct fixture_record {
     uint8_t arrays[5][MC_CHUNK_BLOCKS];
 } fixture_record;
 
-static size_t cell(void)
-{
+static size_t cell(void) {
     return ((size_t)8 << 11u) | ((size_t)8 << 7u) | 64u;
 }
 
-static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b)
-{
+static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b) {
     return a->status == b->status && a->operation == b->operation &&
            a->system_error == b->system_error;
 }
 
-static bool same_registry(const mc_registry_error *a, const mc_registry_error *b)
-{
+static bool same_registry(const mc_registry_error *a, const mc_registry_error *b) {
     return a->status == b->status && a->message == b->message &&
            a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
            a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
@@ -115,8 +112,7 @@ static bool same_registry(const mc_registry_error *a, const mc_registry_error *b
            a->format_error.date_time == b->format_error.date_time;
 }
 
-static bool fresh_registry(const mc_registry_error *error, mc_registry_status status)
-{
+static bool fresh_registry(const mc_registry_error *error, mc_registry_status status) {
     const mc_registry_error expected = {.status = status,
                                         .message = error->message,
                                         .initializer_pc = -1,
@@ -128,8 +124,7 @@ static bool fresh_registry(const mc_registry_error *error, mc_registry_status st
            same_registry(error, &expected);
 }
 
-static bool remember(fixture *f, size_t slot)
-{
+static bool remember(fixture *f, size_t slot) {
     if (!f->bound[slot])
         return true;
     const mc_chunk_cache *cache = f->providers[slot].cache;
@@ -153,8 +148,7 @@ static bool remember(fixture *f, size_t slot)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (s == NULL || out == NULL || capacity == 0 || count == NULL || s->closed ||
         s->offset > s->length)
@@ -172,8 +166,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || r->opens >= COUNT(names) ||
@@ -207,8 +200,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -219,24 +211,21 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *units) {
     const size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, n};
 }
 
-static bool open_store(fixture *f, size_t slot, const char *root)
-{
+static bool open_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -265,8 +254,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t slot)
-{
+static bool create_world(fixture *f, size_t slot) {
     bool ok = false;
     const size_t class_index = slot < 4u ? slot : slot - 4u;
     const bool server = slot % 2u != 0;
@@ -294,8 +282,7 @@ cleanup:
     return ok;
 }
 
-static bool seed_record(fixture *f, size_t slot)
-{
+static bool seed_record(fixture *f, size_t slot) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -347,14 +334,12 @@ cleanup:
     return ok;
 }
 
-static bool region_path(fixture *f, size_t slot, char **out)
-{
+static bool region_path(fixture *f, size_t slot, char **out) {
     return mc_ws_path_join(mc_world_store_root(f->stores[slot]), "region/r.0.0.mcr", out, NULL) ==
            MC_WORLD_STORAGE_OK;
 }
 
-static bool retain_seed(fixture *f, const char *root, size_t slot)
-{
+static bool retain_seed(fixture *f, const char *root, size_t slot) {
     bool ok = false;
     char *path = NULL, *copy = NULL;
     char name[64];
@@ -373,8 +358,7 @@ cleanup:
     return ok;
 }
 
-static bool cold_and_admission(fixture *f)
-{
+static bool cold_and_admission(fixture *f) {
     bool ok = false;
     mc_world_solid_support_error error;
     bool value = true;
@@ -444,8 +428,7 @@ cleanup:
     return ok;
 }
 
-static bool late_array(fixture *f, size_t side)
-{
+static bool late_array(fixture *f, size_t side) {
     bool ok = false, value = true;
     mc_registry_classes *r = f->registry[side];
     mc_world_runtime *w = f->worlds[side];
@@ -493,16 +476,14 @@ cleanup:
     return ok;
 }
 
-static mc_block *find_kind(mc_registry_classes *registry, mc_block_kind kind)
-{
+static mc_block *find_kind(mc_registry_classes *registry, mc_block_kind kind) {
     for (size_t i = 0; i < MC_REGISTRY_BLOCK_SLOTS; ++i)
         if (registry->blocks.m[i] != NULL && registry->blocks.m[i]->kind == kind)
             return registry->blocks.m[i];
     return NULL;
 }
 
-static bool selected_predicates(fixture *f, size_t side)
-{
+static bool selected_predicates(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
@@ -599,8 +580,7 @@ cleanup:
     return ok;
 }
 
-static bool drain(fixture *f, size_t slot)
-{
+static bool drain(fixture *f, size_t slot) {
     if (!f->bound[slot])
         return true;
     mc_chunk_cache *cache = f->providers[slot].cache;
@@ -622,8 +602,7 @@ static bool drain(fixture *f, size_t slot)
     return cache->count == 0 && cache->insertion_count == 0;
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name) {
     if (tag == NULL || tag->type != MC_NBT_COMPOUND)
         return NULL;
     for (size_t i = 0; i < tag->value.compound.length; ++i) {
@@ -639,13 +618,11 @@ static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
     return NULL;
 }
 
-static uint32_t be32(const uint8_t *p)
-{
+static uint32_t be32(const uint8_t *p) {
     return ((uint32_t)p[0] << 24u) | ((uint32_t)p[1] << 16u) | ((uint32_t)p[2] << 8u) | p[3];
 }
 
-static bool check_disk(fixture *f, size_t slot, int64_t time, uint32_t low, uint32_t high)
-{
+static bool check_disk(fixture *f, size_t slot, int64_t time, uint32_t low, uint32_t high) {
     bool ok = false;
     char *path = NULL;
     mc_ws_file_bytes bytes = {0};
@@ -690,8 +667,7 @@ cleanup:
     return ok;
 }
 
-static bool maintained_and_retired(fixture *f)
-{
+static bool maintained_and_retired(fixture *f) {
     bool ok = false;
     for (size_t side = 0; side < 2; ++side) {
         mc_world_runtime *w = f->worlds[side];
@@ -750,8 +726,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < COUNT(f->bound); ++i)
@@ -789,8 +764,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -813,8 +787,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

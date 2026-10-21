@@ -41,8 +41,7 @@ typedef struct key_part {
 } key_part;
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -55,23 +54,20 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
     return status;
 }
 
-static mc_registry_status constructor_error(mc_statistic_keys *keys)
-{
+static mc_registry_status constructor_error(mc_statistic_keys *keys) {
     keys->classes->last_error.constructor_class = "b";
     keys->classes->last_error.constructor_pc = keys->constructor_pc;
     return keys->classes->last_error.status;
 }
 
 static mc_registry_status constructor_fail(mc_statistic_keys *keys, mc_registry_status status,
-                                           const char *message)
-{
+                                           const char *message) {
     (void)mc_registry_fail(keys->classes, status, message, NULL);
     return constructor_error(keys);
 }
 
 static mc_registry_status caught_exception(mc_statistic_keys *keys, mc_registry_status status,
-                                           int32_t pc)
-{
+                                           int32_t pc) {
     keys->caught_status = status;
     keys->caught_pc = pc;
     keys->constructor_pc = 89;
@@ -80,8 +76,7 @@ static mc_registry_status caught_exception(mc_statistic_keys *keys, mc_registry_
                             "Statistic keys caught Exception.printStackTrace at91 unfinished");
 }
 
-static void *reader_allocate(void *context, size_t bytes)
-{
+static void *reader_allocate(void *context, size_t bytes) {
     mc_statistic_keys *keys = context;
     void *storage = mc_registry_allocate(keys->classes, bytes);
     if (storage == NULL) {
@@ -92,20 +87,17 @@ static void *reader_allocate(void *context, size_t bytes)
 }
 
 static mc_java_properties_status stream_read(void *context, uint8_t *destination, size_t capacity,
-                                             size_t *count)
-{
+                                             size_t *count) {
     key_stream *stream = context;
     return stream->input.read(stream->input.context, destination, capacity, count);
 }
 
-static bool stream_ready(void *context)
-{
+static bool stream_ready(void *context) {
     const key_stream *stream = context;
     return stream->resources->ready(stream->resources->context, &stream->input);
 }
 
-static mc_java_reader_status stream_close(void *context)
-{
+static mc_java_reader_status stream_close(void *context) {
     key_stream *stream = context;
     stream->close_status = stream->resources->close(stream->resources->context, &stream->input);
     if (stream->close_status == MC_REGISTRY_OK)
@@ -116,8 +108,7 @@ static mc_java_reader_status stream_close(void *context)
 }
 
 static mc_registry_status reader_failure(mc_statistic_keys *keys, mc_java_reader_status status,
-                                         bool catch_io)
-{
+                                         bool catch_io) {
     switch (status) {
         case MC_JAVA_READER_OK:
             return MC_REGISTRY_OK;
@@ -147,8 +138,7 @@ static mc_registry_status reader_failure(mc_statistic_keys *keys, mc_java_reader
 }
 
 static mc_registry_status substring(mc_statistic_keys *keys, const uint16_t *units, size_t length,
-                                    const mc_registry_string **out)
-{
+                                    const mc_registry_string **out) {
     if (length == 0) {
         if (keys->empty == NULL) {
             mc_registry_status status = mc_registry_literal_ascii(keys->classes, "", &keys->empty);
@@ -170,8 +160,7 @@ static mc_registry_status substring(mc_statistic_keys *keys, const uint16_t *uni
 }
 
 static mc_registry_status split_line(mc_statistic_keys *keys, const mc_java_reader_line *line,
-                                     key_part **out, size_t *count)
-{
+                                     key_part **out, size_t *count) {
     size_t commas = 0;
     for (size_t i = 0; i < line->length; ++i) {
         if (line->units[i] == ',') {
@@ -219,8 +208,7 @@ static mc_registry_status split_line(mc_statistic_keys *keys, const mc_java_read
     return MC_REGISTRY_OK;
 }
 
-static int32_t decimal_digit(uint16_t unit)
-{
+static int32_t decimal_digit(uint16_t unit) {
     /* Actual installed-JDK17 Character.digit(char,10) observations: every
      * BMP unit, identical in the three retained JVM modes. */
     static const uint16_t starts[37] = {
@@ -235,8 +223,7 @@ static int32_t decimal_digit(uint16_t unit)
     return -1;
 }
 
-static bool parse_integer(const key_part *part, int32_t *out)
-{
+static bool parse_integer(const key_part *part, int32_t *out) {
     if (part->length == 0)
         return false;
     bool negative = false;
@@ -269,8 +256,7 @@ static bool parse_integer(const key_part *part, int32_t *out)
     return true;
 }
 
-static key_entry *find_entry(const key_map *map, int32_t id)
-{
+static key_entry *find_entry(const key_map *map, int32_t id) {
     for (key_entry *entry = map->first; entry != NULL; entry = entry->next) {
         if (entry->id == id)
             return entry;
@@ -279,8 +265,7 @@ static key_entry *find_entry(const key_map *map, int32_t id)
 }
 
 static mc_registry_status put(mc_statistic_keys *keys, key_map *map, int32_t id,
-                              const mc_registry_string *value)
-{
+                              const mc_registry_string *value) {
     key_entry *entry = find_entry(map, id);
     if (entry != NULL) {
         entry->value = value;
@@ -301,8 +286,7 @@ static mc_registry_status put(mc_statistic_keys *keys, key_map *map, int32_t id,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status construct(mc_statistic_keys *keys)
-{
+static mc_registry_status construct(mc_statistic_keys *keys) {
     mc_registry_classes *classes = keys->classes;
     keys->constructor_pc = 1;
     keys->constructor_pc = 5;
@@ -407,8 +391,7 @@ static mc_registry_status construct(mc_statistic_keys *keys)
 }
 
 static mc_registry_status cached_state(mc_registry_classes *classes,
-                                       const mc_registry_class_state *state)
-{
+                                       const mc_registry_class_state *state) {
     if (state->phase == MC_REGISTRY_FAILED) {
         classes->last_error = state->failure;
         classes->last_error.status = MC_REGISTRY_FAILED_INITIALIZATION;
@@ -417,8 +400,7 @@ static mc_registry_status cached_state(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistic_keys_active_use(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistic_keys_active_use(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -456,8 +438,7 @@ done:
 }
 
 mc_registry_status mc_registry_statistic_key(mc_registry_classes *classes, int32_t id,
-                                             const mc_registry_string **out)
-{
+                                             const mc_registry_string **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (out == NULL)
@@ -479,8 +460,7 @@ mc_registry_status mc_registry_statistic_key(mc_registry_classes *classes, int32
 }
 
 mc_registry_status mc_registry_classes_initialize_statistic_keys(mc_registry_classes *classes,
-                                                                 mc_registry_error *error)
-{
+                                                                 mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistic keys registry owner");
     if (classes->entered != 0 || classes->statistic_key_state.phase == MC_REGISTRY_INITIALIZING)
@@ -507,8 +487,7 @@ mc_registry_status mc_registry_classes_initialize_statistic_keys(mc_registry_cla
 
 mc_registry_status mc_registry_classes_inspect_statistic_keys(const mc_registry_classes *classes,
                                                               mc_registry_statistic_key_view *out,
-                                                              mc_registry_error *error)
-{
+                                                              mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistic keys view arguments");
     const mc_statistic_keys *keys = classes->statistic_keys.pending;
@@ -526,8 +505,7 @@ mc_registry_status mc_registry_classes_inspect_statistic_keys(const mc_registry_
 
 mc_registry_status mc_registry_classes_statistic_key(mc_registry_classes *classes, int32_t id,
                                                      const mc_registry_string **out,
-                                                     mc_registry_error *error)
-{
+                                                     mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistic key arguments");
     if (classes->entered != 0 || classes->statistic_key_state.phase == MC_REGISTRY_INITIALIZING)
@@ -545,14 +523,12 @@ mc_registry_status mc_registry_classes_statistic_key(mc_registry_classes *classe
     return diagnostic(error, MC_REGISTRY_OK, NULL);
 }
 
-size_t mc_statistic_keys_size(const mc_statistic_keys *keys)
-{
+size_t mc_statistic_keys_size(const mc_statistic_keys *keys) {
     return keys == NULL || keys->b == NULL ? 0 : keys->b->size;
 }
 
 mc_registry_status mc_statistic_keys_entry(const mc_statistic_keys *keys, size_t index, int32_t *id,
-                                           const mc_registry_string **value)
-{
+                                           const mc_registry_string **value) {
     if (keys == NULL || id == NULL || value == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (keys->b == NULL || index >= keys->b->size)

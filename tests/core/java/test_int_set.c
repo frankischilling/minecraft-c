@@ -15,8 +15,7 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
-static int arguments(void)
-{
+static int arguments(void) {
     mc_java_int_set *set = NULL;
     bool changed = true;
     int32_t first = 123;
@@ -57,8 +56,7 @@ static int arguments(void)
     return 0;
 }
 
-static int entry_bound(void)
-{
+static int entry_bound(void) {
     mc_java_int_set_limits limits = mc_java_int_set_default_limits();
     mc_java_int_set *set = NULL;
     limits.max_entries = 0;
@@ -89,8 +87,7 @@ static int entry_bound(void)
     return 0;
 }
 
-static int same_order(const mc_java_int_set *left, const mc_java_int_set *right)
-{
+static int same_order(const mc_java_int_set *left, const mc_java_int_set *right) {
     int32_t a[160], b[160];
     size_t an = 0, bn = 0;
     CHECK(mc_java_int_set_copy_order(left, a, 160, &an) == MC_JAVA_INT_SET_OK);
@@ -102,8 +99,7 @@ static int same_order(const mc_java_int_set *left, const mc_java_int_set *right)
     return 0;
 }
 
-static int byte_bounds(void)
-{
+static int byte_bounds(void) {
     /* Sweep both byte budgets around node/table growth. The control omits every
      * rejected add, then follows the same removals/reinsertions. Equal subsequent
      * traversal checks that failed growth did not alter hidden capacity/history. */
@@ -167,8 +163,7 @@ static int byte_bounds(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (arguments() != 0 || entry_bound() != 0 || byte_bounds() != 0) {
         return 1;
     }

@@ -4,8 +4,7 @@
 #include <limits.h>
 
 static mc_registry_status name_error(mc_registry_classes *classes, const char *client,
-                                     const char *server, int32_t pc)
-{
+                                     const char *server, int32_t pc) {
     classes->last_error.constructor_class =
         classes->options.side == MC_REGISTRY_CLIENT ? client : server;
     classes->last_error.constructor_pc = pc;
@@ -14,8 +13,7 @@ static mc_registry_status name_error(mc_registry_classes *classes, const char *c
 
 static mc_registry_status name_fail(mc_registry_classes *classes, const char *client,
                                     const char *server, int32_t pc, mc_registry_status status,
-                                    const char *message)
-{
+                                    const char *message) {
     (void)mc_registry_fail(classes, status, message, NULL);
     return name_error(classes, client, server, pc);
 }
@@ -26,8 +24,7 @@ static mc_registry_status name_fail(mc_registry_classes *classes, const char *cl
  * it is charged to the same retained class arena. */
 static mc_registry_status translated_name(mc_registry_classes *classes,
                                           const mc_registry_string *raw, const char *client,
-                                          const char *server, const mc_registry_string **out)
-{
+                                          const char *server, const mc_registry_string **out) {
     static const uint16_t null_units[] = {'n', 'u', 'l', 'l'};
     const mc_registry_string *suffix = NULL;
     mc_registry_status status = mc_registry_literal_ascii(classes, ".name", &suffix);
@@ -64,8 +61,7 @@ static mc_registry_status translated_name(mc_registry_classes *classes,
 
 mc_registry_status mc_registry_statistic_block_name(mc_registry_classes *classes,
                                                     const mc_block *block,
-                                                    const mc_registry_string **out)
-{
+                                                    const mc_registry_string **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || block == NULL || block->classes != classes || out == NULL)
@@ -76,8 +72,7 @@ mc_registry_status mc_registry_statistic_block_name(mc_registry_classes *classes
     return translated_name(classes, raw, "uu", "na", out);
 }
 
-static bool block_item_name(mc_item_kind kind)
-{
+static bool block_item_name(mc_item_kind kind) {
     switch (kind) {
         case MC_ITEM_CK_BK:
         case MC_ITEM_BI_AP:
@@ -94,8 +89,7 @@ static bool block_item_name(mc_item_kind kind)
 
 mc_registry_status mc_registry_statistic_item_name(mc_registry_classes *classes,
                                                    const mc_item *item,
-                                                   const mc_registry_string **out)
-{
+                                                   const mc_registry_string **out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || item == NULL || item->classes != classes || out == NULL)
@@ -128,8 +122,7 @@ mc_registry_status mc_registry_statistic_item_name(mc_registry_classes *classes,
 }
 
 mc_registry_status mc_registry_statistic_block_admitted(mc_registry_classes *classes,
-                                                        const mc_block *block, bool *out)
-{
+                                                        const mc_block *block, bool *out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || block == NULL || block->classes != classes || out == NULL)
@@ -140,8 +133,7 @@ mc_registry_status mc_registry_statistic_block_admitted(mc_registry_classes *cla
 }
 
 mc_registry_status mc_registry_statistic_item_damageable(mc_registry_classes *classes,
-                                                         const mc_item *item, bool *out)
-{
+                                                         const mc_item *item, bool *out) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || item == NULL || item->classes != classes || out == NULL)

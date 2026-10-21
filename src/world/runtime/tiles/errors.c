@@ -1,7 +1,6 @@
 #include "mc/world/runtime/tiles/errors.h"
 
-static mc_registry_error empty_registry_error(void)
-{
+static mc_registry_error empty_registry_error(void) {
     return (mc_registry_error){.status = MC_REGISTRY_OK,
                                .message = NULL,
                                .initializer_pc = -1,
@@ -15,8 +14,7 @@ static mc_registry_error empty_registry_error(void)
                                .format_error = {.status = MC_JAVA_FORMAT_OK}};
 }
 
-static mc_entity_error empty_entity_error(void)
-{
+static mc_entity_error empty_entity_error(void) {
     return (mc_entity_error){.status = MC_ENTITY_OK,
                              .operation = NULL,
                              .bytecode = 0,
@@ -25,8 +23,7 @@ static mc_entity_error empty_entity_error(void)
                              .world = MC_WORLD_STORAGE_OK};
 }
 
-mc_tile_error mc_tile_empty_error(void)
-{
+mc_tile_error mc_tile_empty_error(void) {
     return (mc_tile_error){.status = MC_TILE_OK,
                            .field = NULL,
                            .item_index = SIZE_MAX,
@@ -40,8 +37,7 @@ mc_tile_error mc_tile_empty_error(void)
                            .initializer_bytecode = 0};
 }
 
-mc_live_tile_error mc_live_tiles_empty_error(void)
-{
+mc_live_tile_error mc_live_tiles_empty_error(void) {
     return (mc_live_tile_error){
         .status = MC_WORLD_STORAGE_OK,
         .operation = NULL,
@@ -74,8 +70,7 @@ mc_live_tile_error mc_live_tiles_empty_error(void)
         .inventory_bytecode = 0};
 }
 
-const char *mc_tile_status_string(mc_tile_status status)
-{
+const char *mc_tile_status_string(mc_tile_status status) {
     switch (status) {
         case MC_TILE_OK:
             return "ok";

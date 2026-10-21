@@ -31,36 +31,31 @@ static mc_terrain_normal_state explicit_terrain;
 static uint8_t live_blocks[MC_CHUNK_BLOCKS + 3u], fresh_blocks[MC_CHUNK_BLOCKS + 3u];
 static uint8_t saved_blocks[MC_CHUNK_BLOCKS + 3u];
 
-static uint64_t bits(const double *value)
-{
+static uint64_t bits(const double *value) {
     uint64_t result;
     _Static_assert(sizeof(result) == sizeof(*value), "binary64 required");
     memcpy(&result, value, sizeof(result));
     return result;
 }
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static bool cold(const mc_java_random_profile *profile)
-{
+static bool cold(const mc_java_random_profile *profile) {
     return profile->math == NULL &&
            atomic_load_explicit(&profile->holder_phase, memory_order_acquire) ==
                (unsigned int)MC_JAVA_RANDOM_HOLDER_COLD;
 }
 
-static bool fresh_random(const mc_java_random *random)
-{
+static bool fresh_random(const mc_java_random *random) {
     /* Zero LCG state is valid; no expected clock-derived state is synthesized. */
     return random->state <= UINT64_C(0xffffffffffff) && bits(&random->next_next_gaussian) == 0 &&
            !random->have_next_next_gaussian;
 }
 
 static int terrain_matches(const mc_terrain_normal_state *actual,
-                           const mc_terrain_normal_state *expected)
-{
+                           const mc_terrain_normal_state *expected) {
     int result = 1;
     const mc_noise_perlin *left[] = {actual->low_layers,
                                      actual->high_layers,
@@ -94,8 +89,7 @@ cleanup:
     return result;
 }
 
-static int test_construction(void)
-{
+static int test_construction(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_java_random_profile_status cause = MC_JAVA_RANDOM_PROFILE_HOLDER_FAILED;
@@ -156,8 +150,7 @@ cleanup:
 
 static mc_normal_generator_status construct_fp(mc_java_random_profile *profile,
                                                unsigned int control,
-                                               mc_java_random_profile_status *cause)
-{
+                                               mc_java_random_profile_status *cause) {
     const unsigned int saved = _mm_getcsr();
     _mm_setcsr(control);
     const mc_normal_generator_status status =
@@ -166,8 +159,7 @@ static mc_normal_generator_status construct_fp(mc_java_random_profile *profile,
     return status;
 }
 
-static int test_failure_prefix(void)
-{
+static int test_failure_prefix(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_java_random_profile_status cause = MC_JAVA_RANDOM_PROFILE_HOLDER_FAILED;
@@ -225,8 +217,7 @@ cleanup:
     return result;
 }
 
-static int test_cave_reseed(void)
-{
+static int test_cave_reseed(void) {
     int result = 1;
     const caves_case_fixture *fixture = &observed_caves_cases[0];
     const caves_block_fixture input = fixture->arrays[0];
@@ -279,8 +270,7 @@ cleanup:
     return result;
 }
 
-static int test_generation_dispatch(void)
-{
+static int test_generation_dispatch(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_java_random_profile_status cause = MC_JAVA_RANDOM_PROFILE_HOLDER_FAILED;
@@ -343,8 +333,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u || !mc_math_trig_init(&trig))
         return 1;

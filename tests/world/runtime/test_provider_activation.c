@@ -88,13 +88,11 @@ typedef struct record {
     uint8_t arrays[5][MC_CHUNK_BLOCKS];
 } record;
 
-static uint64_t profile_u(const fixture *f)
-{
+static uint64_t profile_u(const fixture *f) {
     return atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed);
 }
 
-static bool remember(fixture *f, mc_world_store *store, mc_chunk_state *state)
-{
+static bool remember(fixture *f, mc_world_store *store, mc_chunk_state *state) {
     if (state == NULL || !mc_world_store_owns_chunk(store, state))
         return false;
     for (size_t i = 0; i < COUNT(f->children); ++i) {
@@ -108,8 +106,7 @@ static bool remember(fixture *f, mc_world_store *store, mc_chunk_state *state)
     return false;
 }
 
-static bool observe_cache(fixture *f, size_t world)
-{
+static bool observe_cache(fixture *f, size_t world) {
     const mc_world_provider_fields *p = &f->provider[world];
     if (!mc_chunk_cache_validate(p->cache))
         return false;
@@ -123,8 +120,7 @@ static bool observe_cache(fixture *f, size_t world)
 }
 
 static mc_chunk_acquire_status acquire(fixture *f, size_t world, int32_t x, int32_t z, bool getter,
-                                       mc_chunk_state **out)
-{
+                                       mc_chunk_state **out) {
     const mc_chunk_acquire_status status =
         getter ? mc_world_runtime_get(f->worlds[world], x, z, out)
                : mc_world_runtime_acquire(f->worlds[world], x, z, out);
@@ -134,8 +130,7 @@ static mc_chunk_acquire_status acquire(fixture *f, size_t world, int32_t x, int3
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
         return MC_JAVA_PROPERTIES_IO_ERROR;
@@ -152,8 +147,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     resources *r = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || r->opens >= COUNT(names) ||
@@ -180,8 +174,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->context != &r->streams[2] || input->read != read_bytes) {
         r->bad = true;
@@ -192,16 +185,15 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool resource_ready(void *context, const mc_java_properties_input *input)
-{
+static bool resource_ready(void *context, const mc_java_properties_input *input) {
     resources *r = context;
     if (input == NULL || input->read != read_bytes)
         r->bad = true;
     return false;
 }
 
-static bool open_store(fixture *f, size_t slot, const char *root, const char *suffix, size_t limit)
-{
+static bool open_store(fixture *f, size_t slot, const char *root, const char *suffix,
+                       size_t limit) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -221,8 +213,7 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t world, size_t registry, size_t store, size_t capacity)
-{
+static bool create_world(fixture *f, size_t world, size_t registry, size_t store, size_t capacity) {
     bool ok = false;
     mc_world_runtime_fields fields;
     mc_world_runtime_construction state;
@@ -253,8 +244,7 @@ cleanup:
     return ok;
 }
 
-static bool check_children(fixture *f, size_t world, mc_chunk_state *state)
-{
+static bool check_children(fixture *f, size_t world, mc_chunk_state *state) {
     bool ok = false;
     mc_world_chunk_fields fields;
     mc_world_chunk_nibble_fields metadata, sky, light;
@@ -289,8 +279,7 @@ cleanup:
     return ok;
 }
 
-static bool generated_and_cached(fixture *f)
-{
+static bool generated_and_cached(fixture *f) {
     bool ok = false;
     mc_chunk_state *out = NULL, *first = NULL;
     mc_world_runtime_fields fields;
@@ -354,8 +343,7 @@ cleanup:
     return ok;
 }
 
-static bool population_completion(fixture *f)
-{
+static bool population_completion(fixture *f) {
     bool ok = false, completed = false;
     mc_world_info_fields info_before, info_after;
     mc_chunk_state *square[4] = {NULL};
@@ -419,36 +407,31 @@ cleanup:
     return ok;
 }
 
-static mc_nbt_string ascii(const char *text, uint16_t *out)
-{
+static mc_nbt_string ascii(const char *text, uint16_t *out) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         out[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){out, length};
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *tag, const char *name) {
     uint16_t units[32];
     const mc_nbt_string key = ascii(name, units);
     return mc_nbt_compound_get(tag, key.units, key.length);
 }
 
-static bool text_is(mc_nbt_string value, const uint16_t *text, size_t length)
-{
+static bool text_is(mc_nbt_string value, const uint16_t *text, size_t length) {
     return value.length == length &&
            (length == 0 ||
             (value.units != NULL && memcmp(value.units, text, length * sizeof(*text)) == 0));
 }
 
-static uint8_t input_byte(size_t array, size_t i)
-{
+static uint8_t input_byte(size_t array, size_t i) {
     return (uint8_t)((i * (2u * array + 1u) + array * 37u + 11u) & 255u);
 }
 
 static bool write_record_at(fixture *f, int32_t x, int32_t z, int32_t stored_x, int32_t stored_z,
-                            bool entities, bool tiles)
-{
+                            bool entities, bool tiles) {
     bool ok = false;
     record *r = NULL;
     uint8_t *encoded = NULL;
@@ -530,13 +513,11 @@ cleanup:
     return ok;
 }
 
-static bool write_record(fixture *f, int32_t x, int32_t z, bool entities, bool tiles)
-{
+static bool write_record(fixture *f, int32_t x, int32_t z, bool entities, bool tiles) {
     return write_record_at(f, x, z, x, z, entities, tiles);
 }
 
-static bool patterned(const mc_chunk_data *data)
-{
+static bool patterned(const mc_chunk_data *data) {
     const uint8_t *const arrays[] = {data->blocks, data->metadata, data->skylight,
                                      data->block_light, data->heightmap};
     const size_t lengths[] = {MC_CHUNK_BLOCKS, MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_NIBBLE_BYTES,
@@ -548,8 +529,7 @@ static bool patterned(const mc_chunk_data *data)
     return true;
 }
 
-static bool disk_unknowns(fixture *f, int32_t x, int32_t z, const mc_chunk_state *current)
-{
+static bool disk_unknowns(fixture *f, int32_t x, int32_t z, const mc_chunk_state *current) {
     bool ok = false;
     mc_compression_buffer bytes = {0};
     mc_nbt_document *document = NULL;
@@ -594,8 +574,7 @@ cleanup:
     return ok;
 }
 
-static bool loaded_and_persisted(fixture *f)
-{
+static bool loaded_and_persisted(fixture *f) {
     bool ok = false, completed = false;
     mc_chunk_state *raw = NULL, *loaded = NULL, *again = NULL;
     mc_world_runtime_fields world;
@@ -663,8 +642,7 @@ cleanup:
     return ok;
 }
 
-static bool opaque_refusal(fixture *f)
-{
+static bool opaque_refusal(fixture *f) {
     bool ok = false;
     mc_compression_buffer before = {0}, after = {0};
     mc_chunk_state *const sentinel = f->children[0].state;
@@ -737,8 +715,7 @@ cleanup:
     return ok;
 }
 
-static bool relocation_frontier(fixture *f)
-{
+static bool relocation_frontier(fixture *f) {
     bool ok = false, leased = false;
     mc_compression_buffer before = {0}, after = {0};
     mc_chunk_state *out = f->children[0].state;
@@ -782,8 +759,7 @@ cleanup:
     return ok;
 }
 
-static bool limits(fixture *f)
-{
+static bool limits(fixture *f) {
     bool ok = false, changed = false;
     mc_chunk_state *first = NULL, *out = f->children[0].state;
     CHECK(create_world(f, 2, 0, 0, 1));
@@ -814,8 +790,7 @@ cleanup:
     return ok;
 }
 
-static bool drain_world(fixture *f, size_t world)
-{
+static bool drain_world(fixture *f, size_t world) {
     if (!f->bound[world])
         return true;
     mc_chunk_cache *cache = f->provider[world].cache;
@@ -837,8 +812,7 @@ static bool drain_world(fixture *f, size_t world)
     return cache->count == 0 && cache->insertion_count == 0;
 }
 
-static bool retirement(fixture *f)
-{
+static bool retirement(fixture *f) {
     bool ok = false, leased = false;
     mc_chunk_state *const loaded = f->provider[1].cache->insertions[0];
     CHECK(mc_world_store_lease_chunk(f->stores[1], loaded, NULL) == MC_WORLD_STORAGE_OK);
@@ -875,8 +849,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
@@ -918,8 +891,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -942,8 +914,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

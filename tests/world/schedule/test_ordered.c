@@ -16,22 +16,20 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
-static bool size_is(const mc_scheduled_ordered *ordered, int32_t expected)
-{
+static bool size_is(const mc_scheduled_ordered *ordered, int32_t expected) {
     int32_t actual = -1;
     return mc_scheduled_ordered_size(ordered, &actual) == MC_SCHEDULED_ORDERED_OK &&
            actual == expected;
 }
 
-static bool bytes_is(const mc_scheduled_ordered *ordered, size_t expected)
-{
+static bool bytes_is(const mc_scheduled_ordered *ordered, size_t expected) {
     size_t actual = SIZE_MAX;
     return mc_scheduled_ordered_native_bytes(ordered, &actual) == MC_SCHEDULED_ORDERED_OK &&
            actual == expected;
 }
 
-static bool record_matches(const mc_scheduled_tick *tick, const mc_scheduled_tick_fields *expected)
-{
+static bool record_matches(const mc_scheduled_tick *tick,
+                           const mc_scheduled_tick_fields *expected) {
     mc_scheduled_tick_fields actual = {0};
     return mc_scheduled_tick_fields_get(tick, &actual) == MC_SCHEDULED_TICK_OK &&
            actual.x == expected->x && actual.y == expected->y && actual.z == expected->z &&
@@ -39,8 +37,7 @@ static bool record_matches(const mc_scheduled_tick *tick, const mc_scheduled_tic
            actual.sequence == expected->sequence;
 }
 
-static bool first_is(const mc_scheduled_ordered *ordered, const mc_scheduled_tick *expected)
-{
+static bool first_is(const mc_scheduled_ordered *ordered, const mc_scheduled_tick *expected) {
     mc_scheduled_tick *held = NULL;
     const mc_scheduled_ordered_status status = mc_scheduled_ordered_first(ordered, &held);
     const bool result = status == MC_SCHEDULED_ORDERED_OK && held == expected;
@@ -48,8 +45,7 @@ static bool first_is(const mc_scheduled_ordered *ordered, const mc_scheduled_tic
     return result;
 }
 
-static int test_invalid_empty_identity_and_limits(void)
-{
+static int test_invalid_empty_identity_and_limits(void) {
     int result = 1;
     mc_scheduled_ordered *zero = NULL, *failed = NULL, *reference = NULL;
     mc_scheduled_ordered *capacity = NULL, *tight = NULL;
@@ -185,8 +181,7 @@ cleanup:
     return result;
 }
 
-static int test_successor_hold_transfer(void)
-{
+static int test_successor_hold_transfer(void) {
     int result = 1;
     mc_scheduled_ordered *ordered = NULL;
     mc_scheduled_tick *ticks[3] = {NULL}, *first_hold = NULL, *successor_hold = NULL;
@@ -241,8 +236,7 @@ cleanup:
     return result;
 }
 
-static int test_deletion_permutations(void)
-{
+static int test_deletion_permutations(void) {
     static const unsigned insertion[3][15] = {{7, 3, 11, 1, 5, 9, 13, 0, 2, 4, 6, 8, 10, 12, 14},
                                               {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
                                               {14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}};
@@ -326,8 +320,7 @@ cleanup:
     return result;
 }
 
-static int test_mirrored_deletion_history(void)
-{
+static int test_mirrored_deletion_history(void) {
     static const unsigned insertion[] = {4, 2, 6, 1, 3, 5, 7};
     static const unsigned pruning[] = {1, 3, 2};
     int result = 1;
@@ -400,8 +393,7 @@ cleanup:
     return result;
 }
 
-static int test_wrapped_and_individually_mutated_paths(void)
-{
+static int test_wrapped_and_individually_mutated_paths(void) {
     int result = 1;
     mc_scheduled_ordered *ordered = NULL;
     mc_scheduled_membership *membership = NULL;
@@ -496,8 +488,7 @@ cleanup:
     return result;
 }
 
-static int test_readonly_snapshot(void)
-{
+static int test_readonly_snapshot(void) {
     int result = 1;
     mc_scheduled_ordered *ordered = NULL;
     mc_scheduled_tick *ticks[3] = {NULL};
@@ -581,8 +572,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_invalid_empty_identity_and_limits() != 0 || test_successor_hold_transfer() != 0 ||
         test_deletion_permutations() != 0 || test_mirrored_deletion_history() != 0 ||
         test_wrapped_and_individually_mutated_paths() != 0 || test_readonly_snapshot() != 0) {

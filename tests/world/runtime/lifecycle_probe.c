@@ -77,8 +77,7 @@ static uint8_t payload_scratch[PAYLOAD_BYTES];
 static size_t output_bytes;
 static bool output_ok = true;
 
-static void emit(const char *text)
-{
+static void emit(const char *text) {
     size_t length = strlen(text);
     if (!output_ok || length > OUTPUT_LIMIT - output_bytes) {
         output_ok = false;
@@ -89,8 +88,7 @@ static void emit(const char *text)
         output_ok = false;
 }
 
-static void format(const char *pattern, ...)
-{
+static void format(const char *pattern, ...) {
     char text[1024];
     va_list arguments;
     va_start(arguments, pattern);
@@ -102,8 +100,7 @@ static void format(const char *pattern, ...)
         emit(text);
 }
 
-static void hex(const uint8_t *bytes, size_t length)
-{
+static void hex(const uint8_t *bytes, size_t length) {
     static const char digits[] = "0123456789abcdef";
     char text[257];
     for (size_t offset = 0; offset < length;) {
@@ -118,8 +115,7 @@ static void hex(const uint8_t *bytes, size_t length)
     }
 }
 
-static void json_string(const char *text)
-{
+static void json_string(const char *text) {
     if (text == NULL) {
         emit("null");
         return;
@@ -137,8 +133,7 @@ static void json_string(const char *text)
     emit("\"");
 }
 
-static bool number(const char *text, uint64_t limit, uint64_t *out)
-{
+static bool number(const char *text, uint64_t limit, uint64_t *out) {
     if (*text == '\0' || (text[0] == '0' && text[1] != '\0'))
         return false;
     uint64_t value = 0;
@@ -154,8 +149,7 @@ static bool number(const char *text, uint64_t limit, uint64_t *out)
     return true;
 }
 
-static bool integer(const char *text, int32_t *out)
-{
+static bool integer(const char *text, int32_t *out) {
     bool negative = *text == '-';
     uint64_t value;
     if (!number(text + (negative ? 1 : 0), negative ? UINT64_C(2147483648) : INT32_MAX, &value) ||
@@ -165,15 +159,13 @@ static bool integer(const char *text, int32_t *out)
     return true;
 }
 
-static int digit(unsigned char byte)
-{
+static int digit(unsigned char byte) {
     return byte >= '0' && byte <= '9'   ? byte - '0'
            : byte >= 'a' && byte <= 'f' ? byte - 'a' + 10
                                         : -1;
 }
 
-static bool bits(const char *text, size_t digits, uint64_t *out)
-{
+static bool bits(const char *text, size_t digits, uint64_t *out) {
     if (strlen(text) != digits)
         return false;
     uint64_t value = 0;
@@ -187,13 +179,11 @@ static bool bits(const char *text, size_t digits, uint64_t *out)
     return true;
 }
 
-static int64_t signed_bits(uint64_t value)
-{
+static int64_t signed_bits(uint64_t value) {
     return value <= INT64_MAX ? (int64_t)value : -1 - (int64_t)(UINT64_MAX - value);
 }
 
-static bool decode(const char *text, uint8_t *out, size_t length)
-{
+static bool decode(const char *text, uint8_t *out, size_t length) {
     if (strlen(text) != length * 2u)
         return false;
     for (size_t i = 0; i < length; ++i) {
@@ -206,8 +196,7 @@ static bool decode(const char *text, uint8_t *out, size_t length)
     return true;
 }
 
-static bool utf8(const uint8_t *bytes, size_t length)
-{
+static bool utf8(const uint8_t *bytes, size_t length) {
     for (size_t i = 0; i < length;) {
         unsigned first = bytes[i++];
         if (first < 128u)
@@ -242,14 +231,12 @@ static bool utf8(const uint8_t *bytes, size_t length)
 }
 
 static mc_world_storage_status error_status(mc_world_storage_error *error,
-                                            mc_world_storage_status status, const char *operation)
-{
+                                            mc_world_storage_status status, const char *operation) {
     *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
-static bool callback(const char *kind, int stage, size_t ordinal)
-{
+static bool callback(const char *kind, int stage, size_t ordinal) {
     if (owner.callback_count == CALLBACK_LIMIT) {
         owner.callback_ok = false;
         return false;
@@ -259,8 +246,7 @@ static bool callback(const char *kind, int stage, size_t ordinal)
 }
 
 static mc_chunk_callback_result
-provider_maintenance(void *provider, const mc_chunk_lifecycle_context *context, bool *result)
-{
+provider_maintenance(void *provider, const mc_chunk_lifecycle_context *context, bool *result) {
     if (provider != &owner || context != mc_world_runtime_lifecycle(owner.runtime) ||
         result == NULL) {
         owner.callback_ok = false;
@@ -272,8 +258,7 @@ provider_maintenance(void *provider, const mc_chunk_lifecycle_context *context, 
     return MC_CHUNK_CALLBACK_OK;
 }
 
-static mc_chunk_callback_result auxiliary(void *world, const mc_world_save_context *context)
-{
+static mc_chunk_callback_result auxiliary(void *world, const mc_world_save_context *context) {
     if (world != &owner || context != mc_world_runtime_saving(owner.runtime)) {
         owner.callback_ok = false;
         return MC_CHUNK_CALLBACK_FATAL;
@@ -283,8 +268,7 @@ static mc_chunk_callback_result auxiliary(void *world, const mc_world_save_conte
 }
 
 static mc_chunk_callback_result progress(void *target, const mc_world_save_context *context,
-                                         mc_world_save_stage stage)
-{
+                                         mc_world_save_stage stage) {
     if (target != &owner || context != mc_world_runtime_saving(owner.runtime) ||
         (stage != MC_WORLD_SAVE_LEVEL && stage != MC_WORLD_SAVE_CHUNKS)) {
         owner.callback_ok = false;
@@ -295,8 +279,7 @@ static mc_chunk_callback_result progress(void *target, const mc_world_save_conte
                                                      : MC_CHUNK_CALLBACK_FATAL;
 }
 
-static uint32_t region_clock(void *clock)
-{
+static uint32_t region_clock(void *clock) {
     /* Only the external test-input cursor advances, without changing any
      * runtime/store binding or inferring which attempted write committed. */
     probe *state = clock;
@@ -305,14 +288,12 @@ static uint32_t region_clock(void *clock)
                : state->timestamp;
 }
 
-static int64_t metadata_clock(void *clock)
-{
+static int64_t metadata_clock(void *clock) {
     const probe *state = clock;
     return state->saved_at_ms;
 }
 
-static chunk_handle *find_handle(size_t id)
-{
+static chunk_handle *find_handle(size_t id) {
     for (size_t i = 0; i < owner.handle_count; ++i) {
         if (owner.handles[i].id == id)
             return &owner.handles[i];
@@ -320,8 +301,7 @@ static chunk_handle *find_handle(size_t id)
     return NULL;
 }
 
-static bool identity(mc_chunk_state *chunk, size_t *id)
-{
+static bool identity(mc_chunk_state *chunk, size_t *id) {
     const mc_chunk_acquire_context *context = mc_world_runtime_acquisition(owner.runtime);
     if (context == NULL || chunk == NULL)
         return false;
@@ -348,8 +328,7 @@ static bool identity(mc_chunk_state *chunk, size_t *id)
     return true;
 }
 
-static bool discover(mc_chunk_state *returned)
-{
+static bool discover(mc_chunk_state *returned) {
     if (owner.runtime == NULL)
         return owner.store == NULL && owner.regions == NULL && owner.history == NULL &&
                owner.handle_count == 0;
@@ -383,16 +362,14 @@ static bool discover(mc_chunk_state *returned)
     return true;
 }
 
-static void forget_handles(void)
-{
+static void forget_handles(void) {
     for (size_t i = 0; i < owner.handle_count; ++i)
         free(owner.handles[i].payload);
     memset(owner.handles, 0, sizeof(owner.handles));
     owner.handle_count = 0;
 }
 
-static void free_storage(void)
-{
+static void free_storage(void) {
     forget_handles();
     mc_world_store_free(owner.store);
     owner.store = NULL;
@@ -407,8 +384,7 @@ static void free_storage(void)
     memset(owner.keys, 0, sizeof(owner.keys));
 }
 
-static bool cleanup(void)
-{
+static bool cleanup(void) {
     /* End-of-process teardown explicitly retires all adapter/cache views. It
      * is neither an unload command nor an implicit save/GC observation. */
     forget_handles();
@@ -429,8 +405,7 @@ static bool cleanup(void)
 
 static mc_world_storage_status open_world(const char *root, int64_t token, const uint8_t *map,
                                           int32_t dimension, mc_chunk_acquire_policy policy,
-                                          mc_world_storage_error *error)
-{
+                                          mc_world_storage_error *error) {
     if (owner.runtime != NULL)
         return error_status(error, MC_WORLD_STORAGE_BUSY, "probe already open");
     mc_world_storage_status status = mc_world_regions_create(NULL, &owner.regions, error);
@@ -486,8 +461,7 @@ static mc_world_storage_status open_world(const char *root, int64_t token, const
     return status;
 }
 
-static void print_error(const mc_world_storage_error *error)
-{
+static void print_error(const mc_world_storage_error *error) {
     if (error == NULL) {
         emit("null");
         return;
@@ -497,8 +471,7 @@ static void print_error(const mc_world_storage_error *error)
     format(",\"system_error\":%" PRIu32 "}", error->system_error);
 }
 
-static void print_info(const mc_level_info *info)
-{
+static void print_info(const mc_level_info *info) {
     if (info == NULL) {
         emit("null");
         return;
@@ -518,8 +491,7 @@ static void print_info(const mc_level_info *info)
            info->player_dimension);
 }
 
-static void print_chunk(const mc_chunk_state *chunk, size_t id, size_t version)
-{
+static void print_chunk(const mc_chunk_state *chunk, size_t id, size_t version) {
     format("{\"id\":%zu,\"coordinates\":[%" PRId32 ",%" PRId32
            "],\"blank\":%s,\"flags\":{\"c\":%s,\"n\":%s,\"o\":%s,\"p\":%s,\"q\":%s},"
            "\"last_save_time\":\"%016" PRIx64 "\",\"minimum_height\":",
@@ -533,8 +505,7 @@ static void print_chunk(const mc_chunk_state *chunk, size_t id, size_t version)
         format("%" PRId32 ",\"payload_version\":%zu}", chunk->data->minimum_height, version);
 }
 
-static bool print_payloads(void)
-{
+static bool print_payloads(void) {
     static const char *names[] = {"blocks", "metadata", "skylight", "block_light", "heightmap"};
     const size_t lengths[] = {MC_CHUNK_BLOCKS, MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_NIBBLE_BYTES,
                               MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_HEIGHTMAP_BYTES};
@@ -569,8 +540,7 @@ static bool print_payloads(void)
 
 static bool response(size_t index, const char *command, const char *category, unsigned status,
                      const mc_world_storage_error *error, int result, int completed,
-                     mc_chunk_state *returned)
-{
+                     mc_chunk_state *returned) {
     if (!owner.callback_ok || !discover(returned))
         return false;
     const mc_nbt_tag *root = mc_world_store_metadata_root(owner.store);
@@ -710,8 +680,7 @@ static bool response(size_t index, const char *command, const char *category, un
     return output_ok && fflush(stdout) == 0 && !ferror(stdout);
 }
 
-int main(void)
-{
+int main(void) {
 #ifdef _WIN32
     if (_setmode(_fileno(stdin), _O_BINARY) == -1 || _setmode(_fileno(stdout), _O_BINARY) == -1)
         return 1;

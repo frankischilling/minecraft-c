@@ -19,8 +19,7 @@ struct mc_scheduled_membership {
     size_t allocation_bytes;
 };
 
-const char *mc_scheduled_membership_status_string(mc_scheduled_membership_status status)
-{
+const char *mc_scheduled_membership_status_string(mc_scheduled_membership_status status) {
     switch (status) {
         case MC_SCHEDULED_MEMBERSHIP_OK:
             return "ok";
@@ -36,8 +35,7 @@ const char *mc_scheduled_membership_status_string(mc_scheduled_membership_status
     return "unknown scheduled membership status";
 }
 
-static mc_scheduled_membership_status membership_record_status(mc_scheduled_tick_status status)
-{
+static mc_scheduled_membership_status membership_record_status(mc_scheduled_tick_status status) {
     switch (status) {
         case MC_SCHEDULED_TICK_OK:
             return MC_SCHEDULED_MEMBERSHIP_OK;
@@ -51,8 +49,8 @@ static mc_scheduled_membership_status membership_record_status(mc_scheduled_tick
     return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
 }
 
-static mc_scheduled_membership_status membership_hash(const mc_scheduled_tick *tick, uint32_t *out)
-{
+static mc_scheduled_membership_status membership_hash(const mc_scheduled_tick *tick,
+                                                      uint32_t *out) {
     int32_t hash;
     const mc_scheduled_tick_status status = mc_scheduled_tick_hash(tick, &hash);
     if (status != MC_SCHEDULED_TICK_OK) {
@@ -62,8 +60,7 @@ static mc_scheduled_membership_status membership_hash(const mc_scheduled_tick *t
     return MC_SCHEDULED_MEMBERSHIP_OK;
 }
 
-static size_t membership_bucket(uint32_t hash, size_t bucket_count)
-{
+static size_t membership_bucket(uint32_t hash, size_t bucket_count) {
     /* Native spread/index only. Equality is never replaced with this hash.
      * Nonzero bucket counts are checked powers of two, initially 16. */
     const uint32_t spread = hash ^ (hash >> 16);
@@ -72,8 +69,7 @@ static size_t membership_bucket(uint32_t hash, size_t bucket_count)
 
 static mc_scheduled_membership_status membership_contains(const mc_scheduled_membership *membership,
                                                           const mc_scheduled_tick *query,
-                                                          uint32_t hash, bool *out)
-{
+                                                          uint32_t hash, bool *out) {
     if (membership->bucket_count != 0) {
         const size_t bucket = membership_bucket(hash, membership->bucket_count);
         const scheduled_membership_node *node = membership->buckets[bucket];
@@ -98,8 +94,7 @@ static mc_scheduled_membership_status membership_contains(const mc_scheduled_mem
 
 mc_scheduled_membership_status mc_scheduled_membership_create(size_t max_entries,
                                                               size_t max_allocation_bytes,
-                                                              mc_scheduled_membership **out)
-{
+                                                              mc_scheduled_membership **out) {
     if (out == NULL || max_entries > (size_t)INT32_MAX) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -122,8 +117,7 @@ mc_scheduled_membership_status mc_scheduled_membership_create(size_t max_entries
     return MC_SCHEDULED_MEMBERSHIP_OK;
 }
 
-void mc_scheduled_membership_destroy(mc_scheduled_membership *membership)
-{
+void mc_scheduled_membership_destroy(mc_scheduled_membership *membership) {
     if (membership == NULL) {
         return;
     }
@@ -142,8 +136,7 @@ void mc_scheduled_membership_destroy(mc_scheduled_membership *membership)
 
 mc_scheduled_membership_status
 mc_scheduled_membership_contains(const mc_scheduled_membership *membership,
-                                 const mc_scheduled_tick *query, bool *out)
-{
+                                 const mc_scheduled_tick *query, bool *out) {
     if (membership == NULL || query == NULL || out == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -156,8 +149,7 @@ mc_scheduled_membership_contains(const mc_scheduled_membership *membership,
 }
 
 mc_scheduled_membership_status
-mc_scheduled_membership_size(const mc_scheduled_membership *membership, int32_t *out)
-{
+mc_scheduled_membership_size(const mc_scheduled_membership *membership, int32_t *out) {
     if (membership == NULL || out == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -167,8 +159,7 @@ mc_scheduled_membership_size(const mc_scheduled_membership *membership, int32_t 
 }
 
 mc_scheduled_membership_status
-mc_scheduled_membership_native_bytes(const mc_scheduled_membership *membership, size_t *out)
-{
+mc_scheduled_membership_native_bytes(const mc_scheduled_membership *membership, size_t *out) {
     if (membership == NULL || out == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -179,8 +170,7 @@ mc_scheduled_membership_native_bytes(const mc_scheduled_membership *membership, 
 mc_scheduled_membership_status
 mc_scheduled_membership_snapshot(const mc_scheduled_membership *membership,
                                  const mc_scheduled_tick **entries, size_t capacity,
-                                 size_t *written)
-{
+                                 size_t *written) {
     if (membership == NULL || written == NULL || (entries == NULL && capacity != 0)) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -199,8 +189,7 @@ mc_scheduled_membership_snapshot(const mc_scheduled_membership *membership,
 }
 
 mc_scheduled_membership_status mc_scheduled_membership_add(mc_scheduled_membership *membership,
-                                                           mc_scheduled_tick *tick, bool *added)
-{
+                                                           mc_scheduled_tick *tick, bool *added) {
     if (membership == NULL || tick == NULL || added == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -307,8 +296,7 @@ mc_scheduled_membership_status mc_scheduled_membership_add(mc_scheduled_membersh
 
 mc_scheduled_membership_status mc_scheduled_membership_remove(mc_scheduled_membership *membership,
                                                               const mc_scheduled_tick *query,
-                                                              bool *removed)
-{
+                                                              bool *removed) {
     if (membership == NULL || query == NULL || removed == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
@@ -347,8 +335,7 @@ mc_scheduled_membership_status mc_scheduled_membership_remove(mc_scheduled_membe
 }
 
 mc_scheduled_membership_status
-mc_scheduled_membership_shift_time(mc_scheduled_membership *membership, int64_t delta)
-{
+mc_scheduled_membership_shift_time(mc_scheduled_membership *membership, int64_t delta) {
     if (membership == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }

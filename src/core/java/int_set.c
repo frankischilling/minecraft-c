@@ -24,73 +24,62 @@ struct mc_java_int_set {
     uint32_t capacity, threshold;
 };
 
-static void *int_set_default_allocate(void *context, size_t bytes)
-{
+static void *int_set_default_allocate(void *context, size_t bytes) {
     (void)context;
     return malloc(bytes);
 }
 
-static void int_set_default_deallocate(void *context, void *storage)
-{
+static void int_set_default_deallocate(void *context, void *storage) {
     (void)context;
     free(storage);
 }
 
-static void int_set_release(const mc_java_int_set_allocator *allocator, void *storage)
-{
+static void int_set_release(const mc_java_int_set_allocator *allocator, void *storage) {
     if (storage != NULL && allocator->deallocate != NULL)
         allocator->deallocate(allocator->context, storage);
 }
 
-static bool int_set_sum(size_t left, size_t right, size_t *out)
-{
+static bool int_set_sum(size_t left, size_t right, size_t *out) {
     if (right > SIZE_MAX - left)
         return false;
     *out = left + right;
     return true;
 }
 
-static bool int_set_product(size_t count, size_t width, size_t *out)
-{
+static bool int_set_product(size_t count, size_t width, size_t *out) {
     if (count > SIZE_MAX / width)
         return false;
     *out = count * width;
     return true;
 }
 
-static bool int_set_bytes(uint32_t capacity, size_t count, size_t *out)
-{
+static bool int_set_bytes(uint32_t capacity, size_t count, size_t *out) {
     size_t table, nodes, total;
     return int_set_product((size_t)capacity, sizeof(int_set_node *), &table) &&
            int_set_product(count, sizeof(int_set_node), &nodes) &&
            int_set_sum(sizeof(mc_java_int_set), table, &total) && int_set_sum(total, nodes, out);
 }
 
-static uint32_t int_set_hash(int32_t key)
-{
+static uint32_t int_set_hash(int32_t key) {
     uint32_t bits = (uint32_t)key;
     return bits ^ (bits >> 16u);
 }
 
-static bool int_set_before(uint32_t left, uint32_t right)
-{
+static bool int_set_before(uint32_t left, uint32_t right) {
     return (left ^ UINT32_C(0x80000000)) < (right ^ UINT32_C(0x80000000));
 }
 
-static uint32_t int_set_threshold(uint32_t capacity)
-{
+static uint32_t int_set_threshold(uint32_t capacity) {
     return capacity == INT_SET_MAX_CAPACITY ? UINT32_C(0x7fffffff) : capacity - capacity / 4u;
 }
 
-static int_set_node *int_set_root(int_set_node *node)
-{
+static int_set_node *int_set_root(int_set_node *node) {
     while (node->parent != NULL)
         node = node->parent;
     return node;
 }
 
-static int_set_node *int_set_find(const mc_java_int_set *set, int32_t key, uint32_t hash)
-{
+static int_set_node *int_set_find(const mc_java_int_set *set, int32_t key, uint32_t hash) {
     if (set->capacity == 0)
         return NULL;
     int_set_node *node = set->buckets[hash & (set->capacity - 1u)];
@@ -106,8 +95,7 @@ static int_set_node *int_set_find(const mc_java_int_set *set, int32_t key, uint3
 }
 
 /* Promote one child while preserving the separate traversal chain. */
-static int_set_node *int_set_rotate(int_set_node *root, int_set_node *node, unsigned side)
-{
+static int_set_node *int_set_rotate(int_set_node *root, int_set_node *node, unsigned side) {
     int_set_node *pivot = node->children[side];
     int_set_node *parent = node->parent;
     node->children[side] = pivot->children[1u - side];
@@ -125,8 +113,7 @@ static int_set_node *int_set_rotate(int_set_node *root, int_set_node *node, unsi
     return root;
 }
 
-static int_set_node *int_set_balance_add(int_set_node *root, int_set_node *node)
-{
+static int_set_node *int_set_balance_add(int_set_node *root, int_set_node *node) {
     node->red = true;
     for (;;) {
         int_set_node *parent = node->parent;
@@ -158,13 +145,11 @@ static int_set_node *int_set_balance_add(int_set_node *root, int_set_node *node)
     }
 }
 
-static bool int_set_red(const int_set_node *node)
-{
+static bool int_set_red(const int_set_node *node) {
     return node != NULL && node->red;
 }
 
-static int_set_node *int_set_balance_remove(int_set_node *root, int_set_node *node)
-{
+static int_set_node *int_set_balance_remove(int_set_node *root, int_set_node *node) {
     while (node != NULL && node != root) {
         int_set_node *parent = node->parent;
         if (parent == NULL) {
@@ -218,8 +203,7 @@ static int_set_node *int_set_balance_remove(int_set_node *root, int_set_node *no
     return root;
 }
 
-static void int_set_front(int_set_node **buckets, uint32_t capacity, int_set_node *root)
-{
+static void int_set_front(int_set_node **buckets, uint32_t capacity, int_set_node *root) {
     uint32_t index = root->hash & (capacity - 1u);
     int_set_node *head = buckets[index];
     if (head == root)
@@ -235,8 +219,7 @@ static void int_set_front(int_set_node **buckets, uint32_t capacity, int_set_nod
     buckets[index] = root;
 }
 
-static void int_set_treeify(int_set_node **buckets, uint32_t capacity, uint32_t index)
-{
+static void int_set_treeify(int_set_node **buckets, uint32_t capacity, uint32_t index) {
     int_set_node *root = NULL, *previous = NULL;
     for (int_set_node *node = buckets[index]; node != NULL; node = node->next) {
         node->previous = previous;
@@ -263,16 +246,14 @@ static void int_set_treeify(int_set_node **buckets, uint32_t capacity, uint32_t 
     int_set_front(buckets, capacity, root);
 }
 
-static void int_set_plain(int_set_node *head)
-{
+static void int_set_plain(int_set_node *head) {
     for (int_set_node *node = head; node != NULL; node = node->next) {
         node->tree = node->red = false;
         node->parent = node->children[0] = node->children[1] = NULL;
     }
 }
 
-static void int_set_tree_add(mc_java_int_set *set, int_set_node *head, int_set_node *node)
-{
+static void int_set_tree_add(mc_java_int_set *set, int_set_node *head, int_set_node *node) {
     int_set_node *root = int_set_root(head), *parent = root;
     for (;;) {
         unsigned side = int_set_before(node->hash, parent->hash) ? 0u : 1u;
@@ -291,8 +272,7 @@ static void int_set_tree_add(mc_java_int_set *set, int_set_node *head, int_set_n
     }
 }
 
-static void int_set_resize(mc_java_int_set *set, int_set_node **table, uint32_t capacity)
-{
+static void int_set_resize(mc_java_int_set *set, int_set_node **table, uint32_t capacity) {
     uint32_t old_capacity = set->capacity;
     for (uint32_t index = 0; index < old_capacity; ++index) {
         int_set_node *head = set->buckets[index];
@@ -337,8 +317,7 @@ static void int_set_resize(mc_java_int_set *set, int_set_node **table, uint32_t 
     set->threshold = int_set_threshold(capacity);
 }
 
-static void int_set_tree_remove(mc_java_int_set *set, int_set_node *node)
-{
+static void int_set_tree_remove(mc_java_int_set *set, int_set_node *node) {
     uint32_t index = node->hash & (set->capacity - 1u);
     int_set_node *root = int_set_root(set->buckets[index]);
     if (node->previous == NULL)
@@ -414,14 +393,12 @@ static void int_set_tree_remove(mc_java_int_set *set, int_set_node *node)
     int_set_front(set->buckets, set->capacity, root);
 }
 
-mc_java_int_set_limits mc_java_int_set_default_limits(void)
-{
+mc_java_int_set_limits mc_java_int_set_default_limits(void) {
     const mc_java_int_set_limits limits = {65536u, 8u * 1024u * 1024u, 16u * 1024u * 1024u};
     return limits;
 }
 
-const char *mc_java_int_set_status_string(mc_java_int_set_status status)
-{
+const char *mc_java_int_set_status_string(mc_java_int_set_status status) {
     switch (status) {
         case MC_JAVA_INT_SET_OK:
             return "ok";
@@ -438,8 +415,7 @@ const char *mc_java_int_set_status_string(mc_java_int_set_status status)
 }
 
 mc_java_int_set_status mc_java_int_set_create(const mc_java_int_set_limits *requested,
-                                              mc_java_int_set **out)
-{
+                                              mc_java_int_set **out) {
     const mc_java_int_set_allocator allocator = {.context = NULL,
                                                  .allocate = int_set_default_allocate,
                                                  .deallocate = int_set_default_deallocate};
@@ -449,8 +425,7 @@ mc_java_int_set_status mc_java_int_set_create(const mc_java_int_set_limits *requ
 mc_java_int_set_status
 mc_java_int_set_create_with_allocator(const mc_java_int_set_limits *requested,
                                       const mc_java_int_set_allocator *allocator,
-                                      mc_java_int_set **out)
-{
+                                      mc_java_int_set **out) {
     if (out == NULL || allocator == NULL || allocator->allocate == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     const mc_java_int_set_allocator selected = *allocator;
@@ -469,18 +444,15 @@ mc_java_int_set_create_with_allocator(const mc_java_int_set_limits *requested,
     return MC_JAVA_INT_SET_OK;
 }
 
-size_t mc_java_int_set_size(const mc_java_int_set *set)
-{
+size_t mc_java_int_set_size(const mc_java_int_set *set) {
     return set == NULL ? 0 : set->size;
 }
 
-bool mc_java_int_set_contains(const mc_java_int_set *set, int32_t key)
-{
+bool mc_java_int_set_contains(const mc_java_int_set *set, int32_t key) {
     return set != NULL && int_set_find(set, key, int_set_hash(key)) != NULL;
 }
 
-mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bool *changed)
-{
+mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bool *changed) {
     if (set == NULL || changed == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     uint32_t hash = int_set_hash(key);
@@ -573,8 +545,7 @@ mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bo
     return MC_JAVA_INT_SET_OK;
 }
 
-mc_java_int_set_status mc_java_int_set_remove(mc_java_int_set *set, int32_t key, bool *changed)
-{
+mc_java_int_set_status mc_java_int_set_remove(mc_java_int_set *set, int32_t key, bool *changed) {
     if (set == NULL || changed == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     uint32_t hash = int_set_hash(key);
@@ -599,8 +570,7 @@ mc_java_int_set_status mc_java_int_set_remove(mc_java_int_set *set, int32_t key,
     return MC_JAVA_INT_SET_OK;
 }
 
-mc_java_int_set_status mc_java_int_set_first(const mc_java_int_set *set, int32_t *key)
-{
+mc_java_int_set_status mc_java_int_set_first(const mc_java_int_set *set, int32_t *key) {
     if (set == NULL || key == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     for (uint32_t i = 0; i < set->capacity; ++i) {
@@ -613,8 +583,7 @@ mc_java_int_set_status mc_java_int_set_first(const mc_java_int_set *set, int32_t
 }
 
 mc_java_int_set_status mc_java_int_set_copy_order(const mc_java_int_set *set, int32_t *output,
-                                                  size_t capacity, size_t *count)
-{
+                                                  size_t capacity, size_t *count) {
     if (set == NULL || count == NULL || (output == NULL && capacity != 0))
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     if (capacity < set->size)
@@ -628,8 +597,7 @@ mc_java_int_set_status mc_java_int_set_copy_order(const mc_java_int_set *set, in
     return MC_JAVA_INT_SET_OK;
 }
 
-void mc_java_int_set_clear(mc_java_int_set *set)
-{
+void mc_java_int_set_clear(mc_java_int_set *set) {
     if (set == NULL)
         return;
     for (uint32_t i = 0; i < set->capacity; ++i) {
@@ -644,8 +612,7 @@ void mc_java_int_set_clear(mc_java_int_set *set)
     set->size = 0;
 }
 
-void mc_java_int_set_free(mc_java_int_set *set)
-{
+void mc_java_int_set_free(mc_java_int_set *set) {
     if (set == NULL)
         return;
     const mc_java_int_set_allocator allocator = set->allocator;

@@ -1,7 +1,6 @@
 #include "terrain_internal.h"
 
-bool mc_terrain_normal_init(mc_terrain_normal_state *state, int64_t seed)
-{
+bool mc_terrain_normal_init(mc_terrain_normal_state *state, int64_t seed) {
     if (state == NULL) {
         return false;
     }
@@ -20,16 +19,14 @@ bool mc_terrain_normal_init(mc_terrain_normal_state *state, int64_t seed)
     return true;
 }
 
-static bool terrain_span_valid(const double *data, size_t length, size_t minimum)
-{
+static bool terrain_span_valid(const double *data, size_t length, size_t minimum) {
     return data != NULL && length >= minimum && length <= SIZE_MAX / sizeof(*data);
 }
 
 static bool terrain_density_valid(const mc_terrain_normal_state *state,
                                   const mc_terrain_normal_workspace *workspace,
                                   const mc_terrain_normal_climate *climate,
-                                  mc_terrain_double_span density)
-{
+                                  mc_terrain_double_span density) {
     return state != NULL && workspace != NULL && climate != NULL &&
            terrain_span_valid(climate->temperature, climate->temperature_length,
                               MC_TERRAIN_NORMAL_CLIMATE_VALUES) &&
@@ -50,8 +47,7 @@ static bool terrain_density_valid(const mc_terrain_normal_state *state,
 
 static bool terrain_base_valid(const double *density, size_t density_length,
                                const double *temperature, size_t temperature_length,
-                               const uint8_t *blocks, size_t blocks_length)
-{
+                               const uint8_t *blocks, size_t blocks_length) {
     return terrain_span_valid(density, density_length, MC_TERRAIN_NORMAL_DENSITY_VALUES) &&
            terrain_span_valid(temperature, temperature_length, MC_TERRAIN_NORMAL_CLIMATE_VALUES) &&
            blocks != NULL && blocks_length >= MC_TERRAIN_NORMAL_BLOCKS;
@@ -59,8 +55,7 @@ static bool terrain_base_valid(const double *density, size_t density_length,
 
 bool mc_terrain_normal_density_channel(const mc_terrain_normal_state *state,
                                        mc_terrain_density_channel requested, int32_t chunk_x,
-                                       int32_t chunk_z, mc_terrain_double_span out)
-{
+                                       int32_t chunk_z, mc_terrain_double_span out) {
     if (state == NULL) {
         return false;
     }
@@ -126,8 +121,7 @@ bool mc_terrain_normal_density_channel(const mc_terrain_normal_state *state,
 
 static void terrain_channels(const mc_terrain_normal_state *state,
                              const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
-                             int32_t chunk_z)
-{
+                             int32_t chunk_z) {
     /* All counts and spans were validated before mutation. The short original
      * overload supplies Y=10, height=1, Y scale=1; its last double is unused. */
     (void)mc_terrain_normal_density_channel(state, MC_TERRAIN_DENSITY_SCALE, chunk_x, chunk_z,
@@ -143,8 +137,7 @@ static void terrain_channels(const mc_terrain_normal_state *state,
 }
 
 void mc_terrain_normal_density_column(const mc_terrain_normal_workspace *workspace, size_t column,
-                                      double temperature, double rainfall, double *density)
-{
+                                      double temperature, double rainfall, double *density) {
     size_t index = column * 17;
     double wetness = rainfall * temperature;
     wetness = 1.0 - wetness;
@@ -212,8 +205,7 @@ void mc_terrain_normal_density_column(const mc_terrain_normal_workspace *workspa
 }
 
 static void terrain_compose(const mc_terrain_normal_workspace *workspace,
-                            const mc_terrain_normal_climate *climate, double *density)
-{
+                            const mc_terrain_normal_climate *climate, double *density) {
     size_t column = 0;
     for (size_t x = 0; x < 5; ++x) {
         size_t climate_x = x * 3 + 1;
@@ -231,8 +223,7 @@ static void terrain_compose(const mc_terrain_normal_workspace *workspace,
 static void terrain_density_fill(const mc_terrain_normal_state *state,
                                  const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
                                  int32_t chunk_z, const mc_terrain_normal_climate *climate,
-                                 double *density)
-{
+                                 double *density) {
     terrain_channels(state, workspace, chunk_x, chunk_z);
     terrain_compose(workspace, climate, density);
 }
@@ -240,8 +231,7 @@ static void terrain_density_fill(const mc_terrain_normal_state *state,
 bool mc_terrain_normal_density(const mc_terrain_normal_state *state,
                                const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
                                int32_t chunk_z, const mc_terrain_normal_climate *climate,
-                               mc_terrain_double_span density)
-{
+                               mc_terrain_double_span density) {
     if (!terrain_density_valid(state, workspace, climate, density)) {
         return false;
     }
@@ -249,14 +239,12 @@ bool mc_terrain_normal_density(const mc_terrain_normal_state *state,
     return true;
 }
 
-static void terrain_base_cursor_row(mc_terrain_base_cursor *cursor)
-{
+static void terrain_base_cursor_row(mc_terrain_base_cursor *cursor) {
     cursor->value = cursor->edge0;
     cursor->step = (cursor->edge1 - cursor->edge0) * 0.25;
 }
 
-static void terrain_base_cursor_slice(mc_terrain_base_cursor *cursor)
-{
+static void terrain_base_cursor_slice(mc_terrain_base_cursor *cursor) {
     cursor->edge0 = cursor->corner00;
     cursor->edge1 = cursor->corner01;
     cursor->edge_step0 = (cursor->corner10 - cursor->corner00) * 0.25;
@@ -264,8 +252,7 @@ static void terrain_base_cursor_slice(mc_terrain_base_cursor *cursor)
     terrain_base_cursor_row(cursor);
 }
 
-static void terrain_base_cursor_cell(mc_terrain_base_cursor *cursor)
-{
+static void terrain_base_cursor_cell(mc_terrain_base_cursor *cursor) {
     size_t left = (cursor->coarse_x * 5 + cursor->coarse_z) * 17 + cursor->coarse_y;
     size_t right = ((cursor->coarse_x + 1) * 5 + cursor->coarse_z) * 17 + cursor->coarse_y;
     cursor->corner00 = cursor->density[left];
@@ -279,15 +266,13 @@ static void terrain_base_cursor_cell(mc_terrain_base_cursor *cursor)
     terrain_base_cursor_slice(cursor);
 }
 
-void mc_terrain_normal_base_cursor_init(mc_terrain_base_cursor *cursor, const double *density)
-{
+void mc_terrain_normal_base_cursor_init(mc_terrain_base_cursor *cursor, const double *density) {
     *cursor = (mc_terrain_base_cursor){.density = density};
     terrain_base_cursor_cell(cursor);
 }
 
 bool mc_terrain_normal_base_cursor_get(const mc_terrain_base_cursor *cursor,
-                                       mc_terrain_base_voxel *out)
-{
+                                       mc_terrain_base_voxel *out) {
     if (cursor->done) {
         return false;
     }
@@ -303,8 +288,7 @@ bool mc_terrain_normal_base_cursor_get(const mc_terrain_base_cursor *cursor,
     return true;
 }
 
-void mc_terrain_normal_base_cursor_advance(mc_terrain_base_cursor *cursor)
-{
+void mc_terrain_normal_base_cursor_advance(mc_terrain_base_cursor *cursor) {
     if (cursor->done) {
         return;
     }
@@ -346,8 +330,7 @@ void mc_terrain_normal_base_cursor_advance(mc_terrain_base_cursor *cursor)
     cursor->done = true;
 }
 
-static void terrain_base_fill(const double *density, const double *temperature, uint8_t *blocks)
-{
+static void terrain_base_fill(const double *density, const double *temperature, uint8_t *blocks) {
     mc_terrain_base_cursor cursor;
     mc_terrain_normal_base_cursor_init(&cursor, density);
     mc_terrain_base_voxel voxel;
@@ -366,8 +349,7 @@ static void terrain_base_fill(const double *density, const double *temperature, 
 }
 
 bool mc_terrain_normal_base(const double *density, size_t density_length, const double *temperature,
-                            size_t temperature_length, uint8_t *blocks, size_t blocks_length)
-{
+                            size_t temperature_length, uint8_t *blocks, size_t blocks_length) {
     if (!terrain_base_valid(density, density_length, temperature, temperature_length, blocks,
                             blocks_length)) {
         return false;
@@ -380,8 +362,7 @@ bool mc_terrain_normal_generate(const mc_terrain_normal_state *state,
                                 const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
                                 int32_t chunk_z, const mc_terrain_normal_climate *climate,
                                 mc_terrain_double_span density, uint8_t *blocks,
-                                size_t blocks_length)
-{
+                                size_t blocks_length) {
     if (!terrain_density_valid(state, workspace, climate, density) ||
         !terrain_base_valid(density.data, density.length, climate->temperature,
                             climate->temperature_length, blocks, blocks_length)) {

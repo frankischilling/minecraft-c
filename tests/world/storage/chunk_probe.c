@@ -7,8 +7,7 @@
 
 enum { PROBE_BYTES = 2 * 1024 * 1024 };
 
-static int digit(int value)
-{
+static int digit(int value) {
     if (value >= '0' && value <= '9')
         return value - '0';
     if (value >= 'a' && value <= 'f')
@@ -16,8 +15,7 @@ static int digit(int value)
     return -1;
 }
 
-static bool hex_bytes(const char *text, uint8_t *out, size_t length)
-{
+static bool hex_bytes(const char *text, uint8_t *out, size_t length) {
     if (strlen(text) != length * 2u)
         return false;
     for (size_t i = 0; i < length; ++i) {
@@ -30,8 +28,7 @@ static bool hex_bytes(const char *text, uint8_t *out, size_t length)
     return true;
 }
 
-static bool time_bits(const char *text, int64_t *out)
-{
+static bool time_bits(const char *text, int64_t *out) {
     uint8_t bytes[8];
     if (!hex_bytes(text, bytes, sizeof(bytes)))
         return false;
@@ -42,21 +39,18 @@ static bool time_bits(const char *text, int64_t *out)
     return true;
 }
 
-static void print_hex(const uint8_t *bytes, size_t length)
-{
+static void print_hex(const uint8_t *bytes, size_t length) {
     for (size_t i = 0; i < length; ++i)
         printf("%02x", (unsigned int)bytes[i]);
 }
 
-static void array(const char *name, const uint8_t *bytes, size_t length)
-{
+static void array(const char *name, const uint8_t *bytes, size_t length) {
     printf("\"%s\":{\"length\":%zu,\"values\":\"", name, length);
     print_hex(bytes, length);
     fputs("\"}", stdout);
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name) {
     uint16_t units[16];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i)
@@ -64,8 +58,7 @@ static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name)
     return mc_nbt_compound_get(parent, units, length);
 }
 
-static bool opaque_records(const mc_stored_chunk *owner)
-{
+static bool opaque_records(const mc_stored_chunk *owner) {
     const mc_nbt_tag *level = field(mc_stored_chunk_root(owner), "Level");
     const mc_nbt_tag *entities = field(level, "Entities");
     const mc_nbt_tag *tiles = field(level, "TileEntities");
@@ -73,8 +66,7 @@ static bool opaque_records(const mc_stored_chunk *owner)
            (tiles != NULL && tiles->value.list.length != 0);
 }
 
-static void state(const mc_chunk_state *value)
-{
+static void state(const mc_chunk_state *value) {
     const mc_chunk_data *data = value->data;
     printf("{\"coordinates\":[%" PRId32 ",%" PRId32 "],\"blank\":%s,\"flags\":{\"c\":%s,\"n\":%s,"
            "\"o\":%s,\"p\":%s,\"q\":%s},\"last_save_time\":\"%016" PRIx64 "\",\"data\":{",
@@ -94,8 +86,7 @@ static void state(const mc_chunk_state *value)
     printf(",\"minimum_height\":%" PRId32 "}}", data->minimum_height);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     bool build = argc == 6 && strcmp(argv[1], "build") == 0;
     if (!build && !(argc == 3 && strcmp(argv[1], "decode") == 0)) {
         fputs("usage: chunk_probe decode MAP|- | build TIME_HEX MAP|- keep|fresh "

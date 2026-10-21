@@ -1,21 +1,18 @@
 #include "mc/world/chunk/nibbles.h"
 
-static bool nibbles_coordinates_valid(int32_t x, int32_t y, int32_t z)
-{
+static bool nibbles_coordinates_valid(int32_t x, int32_t y, int32_t z) {
     return x >= 0 && x < (int32_t)MC_CHUNK_WIDTH && y >= 0 && y < (int32_t)MC_CHUNK_HEIGHT &&
            z >= 0 && z < (int32_t)MC_CHUNK_WIDTH;
 }
 
-static size_t nibbles_packed_index(int32_t x, int32_t y, int32_t z)
-{
+static size_t nibbles_packed_index(int32_t x, int32_t y, int32_t z) {
     size_t block_index =
         (size_t)x * MC_CHUNK_WIDTH * MC_CHUNK_HEIGHT + (size_t)z * MC_CHUNK_HEIGHT + (size_t)y;
     return block_index / 2u;
 }
 
 bool mc_chunk_nibbles_get(const uint8_t *packed, size_t capacity, int32_t x, int32_t y, int32_t z,
-                          uint8_t *out)
-{
+                          uint8_t *out) {
     if (packed == NULL || out == NULL || capacity < MC_CHUNK_NIBBLE_BYTES ||
         !nibbles_coordinates_valid(x, y, z)) {
         return false;
@@ -30,8 +27,7 @@ bool mc_chunk_nibbles_get(const uint8_t *packed, size_t capacity, int32_t x, int
 }
 
 bool mc_chunk_nibbles_set(uint8_t *packed, size_t capacity, int32_t x, int32_t y, int32_t z,
-                          int32_t value)
-{
+                          int32_t value) {
     if (packed == NULL || capacity < MC_CHUNK_NIBBLE_BYTES || !nibbles_coordinates_valid(x, y, z)) {
         return false;
     }

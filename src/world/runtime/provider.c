@@ -7,8 +7,7 @@
 #include <stdlib.h>
 
 static mc_world_storage_status result(mc_world_storage_error *error, mc_world_storage_status status,
-                                      const char *operation)
-{
+                                      const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
@@ -17,8 +16,7 @@ static mc_world_storage_status result(mc_world_storage_error *error, mc_world_st
 /* No request changes accounting until its allocation succeeds. Zero-length
  * arrays are represented by NULL and consume no direct bytes. */
 static void *request(mc_world_provider *provider, size_t count, size_t width,
-                     mc_world_storage_status *status)
-{
+                     mc_world_storage_status *status) {
     *status = MC_WORLD_STORAGE_OK;
     if (count == 0)
         return NULL;
@@ -40,8 +38,7 @@ static void *request(mc_world_provider *provider, size_t count, size_t width,
     return allocation;
 }
 
-static mc_world_storage_status profile_status(mc_java_random_profile_status status)
-{
+static mc_world_storage_status profile_status(mc_java_random_profile_status status) {
     switch (status) {
         case MC_JAVA_RANDOM_PROFILE_OK:
             return MC_WORLD_STORAGE_OK;
@@ -61,8 +58,7 @@ static mc_world_storage_status profile_status(mc_java_random_profile_status stat
 }
 
 static mc_world_storage_status generator_status(mc_normal_generator_status status,
-                                                mc_java_random_profile_status cause)
-{
+                                                mc_java_random_profile_status cause) {
     switch (status) {
         case MC_NORMAL_GENERATOR_OK:
             return MC_WORLD_STORAGE_OK;
@@ -80,8 +76,7 @@ static mc_world_storage_status generator_status(mc_normal_generator_status statu
     return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
 }
 
-void mc_world_provider_free(mc_world_provider *provider)
-{
+void mc_world_provider_free(mc_world_provider *provider) {
     if (provider == NULL)
         return;
     if (provider->fallback_data != NULL &&
@@ -107,8 +102,7 @@ mc_world_storage_status mc_world_provider_create(mc_world_runtime *runtime,
                                                  mc_java_random_profile *profile, size_t max_chunks,
                                                  size_t max_direct_bytes, mc_world_provider **out,
                                                  mc_java_random_profile_status *profile_cause,
-                                                 mc_world_storage_error *error)
-{
+                                                 mc_world_storage_error *error) {
     if (runtime == NULL || dimension == NULL || trig == NULL || profile == NULL || out == NULL ||
         profile_cause == NULL || max_chunks > (size_t)INT32_MAX)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "provider arguments");
@@ -265,8 +259,7 @@ fail:
 
 mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provider,
                                                       mc_world_provider_fields *out,
-                                                      mc_world_storage_error *error)
-{
+                                                      mc_world_storage_error *error) {
     if (provider == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "provider field arguments");
     *out = (mc_world_provider_fields){.world = provider->world,
@@ -290,8 +283,7 @@ mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provide
 }
 
 mc_world_storage_status mc_world_provider_maintenance(mc_world_provider *provider, bool *out,
-                                                      mc_world_storage_error *error)
-{
+                                                      mc_world_storage_error *error) {
     if (provider == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "provider maintenance arguments");
     *out = false;
@@ -300,8 +292,8 @@ mc_world_storage_status mc_world_provider_maintenance(mc_world_provider *provide
 
 mc_world_storage_status mc_world_runtime_provider_contains(mc_world_runtime *runtime,
                                                            int32_t chunk_x, int32_t chunk_z,
-                                                           bool *out, mc_world_storage_error *error)
-{
+                                                           bool *out,
+                                                           mc_world_storage_error *error) {
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World provider presence arguments");

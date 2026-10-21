@@ -9,8 +9,7 @@
 /* Both inputs must be nonnull, initialized Random values. Compare retained
  * cached-double bits even while the cache is invalid; ignore struct padding. */
 static inline bool mc_test_java_random_equal(const mc_java_random *left,
-                                             const mc_java_random *right)
-{
+                                             const mc_java_random *right) {
     uint64_t left_bits;
     uint64_t right_bits;
     _Static_assert(sizeof(left_bits) == sizeof(left->next_next_gaussian),

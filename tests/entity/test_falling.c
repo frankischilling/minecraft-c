@@ -28,16 +28,14 @@ typedef struct ff_guard {
     size_t holds, borrowers;
 } ff_guard;
 
-static mc_nbt_string ff_ascii(const char *text, uint16_t *units)
-{
+static mc_nbt_string ff_ascii(const char *text, uint16_t *units) {
     const size_t length = strlen(text);
     for (size_t i = 0; i < length; ++i)
         units[i] = (uint16_t)(unsigned char)text[i];
     return (mc_nbt_string){units, length};
 }
 
-static bool ff_text(mc_nbt_string text, const char *expected)
-{
+static bool ff_text(mc_nbt_string text, const char *expected) {
     if (text.length != strlen(expected) || (text.length != 0 && text.units == NULL))
         return false;
     for (size_t i = 0; i < text.length; ++i)
@@ -46,15 +44,13 @@ static bool ff_text(mc_nbt_string text, const char *expected)
     return true;
 }
 
-static const mc_nbt_tag *ff_field(const mc_nbt_tag *root, const char *name)
-{
+static const mc_nbt_tag *ff_field(const mc_nbt_tag *root, const char *name) {
     uint16_t units[16];
     const mc_nbt_string key = ff_ascii(name, units);
     return mc_nbt_compound_get(root, key.units, key.length);
 }
 
-static bool ff_class_same(const mc_entity_class_snapshot *a, const mc_entity_class_snapshot *b)
-{
+static bool ff_class_same(const mc_entity_class_snapshot *a, const mc_entity_class_snapshot *b) {
     return a->source == b->source && a->entity_class == b->entity_class &&
            a->bounds_class == b->bounds_class && a->watcher_class == b->watcher_class &&
            a->next_id == b->next_id && a->bounds_pool_cursor == b->bounds_pool_cursor &&
@@ -64,8 +60,7 @@ static bool ff_class_same(const mc_entity_class_snapshot *a, const mc_entity_cla
            a->allocation_bytes == b->allocation_bytes;
 }
 
-static bool ff_capture(mc_entity *entity, ff_guard *g)
-{
+static bool ff_capture(mc_entity *entity, ff_guard *g) {
     if (mc_entity_get_snapshot(entity, &g->entity) != MC_ENTITY_OK || g->entity.bounds == NULL ||
         g->entity.random == NULL ||
         mc_entity_classes_get_snapshot(entity->classes, &g->classes) != MC_ENTITY_OK ||
@@ -80,8 +75,7 @@ static bool ff_capture(mc_entity *entity, ff_guard *g)
            entity->classes->profile->math == NULL;
 }
 
-static bool ff_unchanged(mc_entity *entity, const ff_guard *g)
-{
+static bool ff_unchanged(mc_entity *entity, const ff_guard *g) {
     ff_guard now;
     return ff_capture(entity, &now) && base_equal(&now.entity.base, &g->entity.base) &&
            now.entity.source == g->entity.source &&
@@ -105,8 +99,7 @@ static bool ff_unchanged(mc_entity *entity, const ff_guard *g)
            now.holds == g->holds && now.borrowers == g->borrowers;
 }
 
-static bool ff_nbt_fresh(const mc_entity_nbt_error *e)
-{
+static bool ff_nbt_fresh(const mc_entity_nbt_error *e) {
     return e->status == MC_ENTITY_NBT_OK && e->operation == NULL && e->field == NULL &&
            e->index == SIZE_MAX && e->wrapper_bytecode == 0 && e->name_bytecode == 0 &&
            e->factory_bytecode == 0 && e->base_bytecode == 0 && e->item_bytecode == 0 &&
@@ -124,8 +117,7 @@ static bool ff_nbt_fresh(const mc_entity_nbt_error *e)
            e->registry.class_cause == MC_ENTITY_OK;
 }
 
-static mc_entity_nbt_error ff_poison(void)
-{
+static mc_entity_nbt_error ff_poison(void) {
     return (mc_entity_nbt_error){
         .status = MC_ENTITY_NBT_UNSUPPORTED_TYPE,
         .operation = "old",
@@ -156,21 +148,18 @@ static mc_entity_nbt_error ff_poison(void)
                      .class_cause = MC_ENTITY_LIMIT}};
 }
 
-static size_t ff_direct_bytes(void)
-{
+static size_t ff_direct_bytes(void) {
     return sizeof(mc_entity) + sizeof(mc_entity_bounds) + sizeof(mc_java_random) +
            sizeof(mc_entity_watcher) + sizeof(mc_entity_watch_map) +
            sizeof(mc_entity_watch_record) + sizeof(mc_entity_watch_node);
 }
 
-static size_t ff_static_bytes(void)
-{
+static size_t ff_static_bytes(void) {
     return sizeof(mc_entity_classes) + sizeof(mc_entity_bounds_pool) + sizeof(mc_entity_type_map) +
            7u * sizeof(mc_entity_type_entry);
 }
 
-static mc_entity_bounds ff_box(double x, double y, double z, bool full)
-{
+static mc_entity_bounds ff_box(double x, double y, double z, bool full) {
     /* Source-derived constructor bounds, not a movement/voxel oracle. */
     const double half = full ? (double)0.49f : (double)0.3f;
     const double minimum = full ? y - (double)0.49f : y;
@@ -180,8 +169,7 @@ static mc_entity_bounds ff_box(double x, double y, double z, bool full)
 }
 
 static bool ff_ready(const mc_entity_snapshot *v, mc_entity_source source, int32_t instance,
-                     int32_t carried, bool full, double x, double y, double z)
-{
+                     int32_t carried, bool full, double x, double y, double z) {
     mc_entity_base_fields expected = base_literals(instance);
     if (full) {
         expected.aF = true;
@@ -200,8 +188,7 @@ static bool ff_ready(const mc_entity_snapshot *v, mc_entity_source source, int32
            bounds_equal(v->bounds, &bounds) && fresh_random(v->random) && watcher_is(v, true);
 }
 
-static int ff_constructors(mc_entity_source source)
-{
+static int ff_constructors(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -309,8 +296,7 @@ cleanup:
     return result;
 }
 
-static int ff_limits(mc_entity_source source)
-{
+static int ff_limits(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -393,8 +379,7 @@ cleanup:
     return result;
 }
 
-static void ff_record_init(ff_record *r)
-{
+static void ff_record_init(ff_record *r) {
     const char *const names[] = {"Extra",    "Tile",         "id",   "Pos", "Motion",
                                  "Rotation", "FallDistance", "Fire", "Air", "OnGround"};
     const mc_nbt_type types[] = {MC_NBT_DOUBLE, MC_NBT_BYTE, MC_NBT_STRING, MC_NBT_LIST,
@@ -443,8 +428,7 @@ static void ff_record_init(ff_record *r)
     r->fields[9].value.byte_value = -2;
 }
 
-static bool ff_read_values(const mc_entity_snapshot *v, int32_t carried, int32_t age)
-{
+static bool ff_read_values(const mc_entity_snapshot *v, int32_t carried, int32_t age) {
     return v->falling.a == carried && v->falling.b == age && v->stack == NULL && v->item.b == 0 &&
            v->item.f == 0 && v->item.e == 0 && v->item.c == 0 && float_bits(v->item.d) == 0 &&
            v->base.x == -8.25 && v->base.y == -16.5 && v->base.z == 32.75 && v->base.aJ == -8.25 &&
@@ -457,8 +441,7 @@ static bool ff_read_values(const mc_entity_snapshot *v, int32_t carried, int32_t
            v->base.aX;
 }
 
-static bool ff_known(const mc_nbt_tag *root, bool named, int8_t tile)
-{
+static bool ff_known(const mc_nbt_tag *root, bool named, int8_t tile) {
     static const char *const names[] = {"Pos",  "Motion", "Rotation", "FallDistance",
                                         "Fire", "Air",    "OnGround", "Tile"};
     if (root == NULL || root->type != MC_NBT_COMPOUND ||
@@ -481,8 +464,7 @@ static bool ff_known(const mc_nbt_tag *root, bool named, int8_t tile)
            ff_field(root, "Item") == NULL && ff_field(root, "Extra") == NULL;
 }
 
-static bool ff_saved_constructor(const mc_nbt_tag *root)
-{
+static bool ff_saved_constructor(const mc_nbt_tag *root) {
     const mc_nbt_tag *pos = ff_field(root, "Pos"), *motion = ff_field(root, "Motion");
     const mc_nbt_tag *rotation = ff_field(root, "Rotation");
     const double expected[] = {-1.25, -2.5, 4.75};
@@ -511,8 +493,7 @@ static bool ff_saved_constructor(const mc_nbt_tag *root)
            ground != NULL && ground->type == MC_NBT_BYTE && ground->value.byte_value == 0;
 }
 
-static int ff_nbt(mc_entity_source source)
-{
+static int ff_nbt(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -722,8 +703,7 @@ cleanup:
     return result;
 }
 
-static int ff_dead_namespace(mc_entity_source source)
-{
+static int ff_dead_namespace(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -772,8 +752,7 @@ cleanup:
     return result;
 }
 
-static int ff_world_binding(mc_entity_source source)
-{
+static int ff_world_binding(mc_entity_source source) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *classes = NULL;
@@ -852,8 +831,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         fprintf(stderr, "falling tests require the qualified strict SSE environment\n");
         return 1;

@@ -61,8 +61,7 @@ typedef struct fixture {
 } fixture;
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *s = context;
     if (out == NULL || count == NULL || capacity == 0 || s->closed || s->offset > s->length)
         return MC_JAVA_PROPERTIES_IO_ERROR;
@@ -79,8 +78,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     fixture *f = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     for (size_t i = 0; i < COUNT(names); ++i) {
@@ -98,8 +96,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_INVALID_ARGUMENT;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->context != &f->streams[2] || input->read != read_bytes) {
         f->resource_error = true;
@@ -110,35 +107,31 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->read != read_bytes)
         f->resource_error = true;
     return false;
 }
 
-static bool same_bounds(const mc_light_bounds *a, const mc_light_bounds *b)
-{
+static bool same_bounds(const mc_light_bounds *a, const mc_light_bounds *b) {
     return a->min_x == b->min_x && a->min_y == b->min_y && a->min_z == b->min_z &&
            a->max_x == b->max_x && a->max_y == b->max_y && a->max_z == b->max_z;
 }
 
-static bool same_error(const mc_world_storage_error *a, const mc_world_storage_error *b)
-{
+static bool same_error(const mc_world_storage_error *a, const mc_world_storage_error *b) {
     return a != NULL && b != NULL && a->status == b->status && a->operation == b->operation &&
            a->system_error == b->system_error;
 }
 
-static bool depth_is(fixture *f, int32_t expected)
-{
+static bool depth_is(fixture *f, int32_t expected) {
     mc_world_runtime_class_state state;
     return mc_world_runtime_classes_get(f->classes[0], &state) == MC_WORLD_STORAGE_OK &&
            state.enqueue_depth == expected;
 }
 
-static bool list_is(mc_world_runtime *world, const mc_world_reference_list *identity, size_t count)
-{
+static bool list_is(mc_world_runtime *world, const mc_world_reference_list *identity,
+                    size_t count) {
     mc_world_light_list_view view;
     mc_world_runtime_fields fields;
     return mc_world_runtime_light_list_get(world, &view, NULL) == MC_WORLD_STORAGE_OK &&
@@ -148,8 +141,7 @@ static bool list_is(mc_world_runtime *world, const mc_world_reference_list *iden
 }
 
 static bool region_is(mc_world_runtime *world, size_t index, const mc_world_light_region *identity,
-                      const mc_world_light_type *type, const mc_light_bounds *bounds)
-{
+                      const mc_world_light_type *type, const mc_light_bounds *bounds) {
     const mc_world_light_region *region = NULL;
     if (mc_world_runtime_light_at(world, index, &region, NULL) != MC_WORLD_STORAGE_OK ||
         region == NULL || (identity != NULL && identity != region))
@@ -159,8 +151,7 @@ static bool region_is(mc_world_runtime *world, size_t index, const mc_world_ligh
 }
 
 static bool create_world(fixture *f, size_t slot, int32_t dimension_id, size_t direct_limit,
-                         mc_world_storage_status expected)
-{
+                         mc_world_storage_status expected) {
     bool ok = false;
     mc_world_storage_error error;
     mc_world_runtime_fields fields;
@@ -195,14 +186,12 @@ cleanup:
     return ok;
 }
 
-static bool publish(fixture *f, size_t slot, size_t chunk, int32_t x, int32_t z)
-{
+static bool publish(fixture *f, size_t slot, size_t chunk, int32_t x, int32_t z) {
     return mc_chunk_cache_publish(f->providers[slot].cache, x, z, f->chunks[chunk]) &&
            mc_chunk_cache_validate(f->providers[slot].cache);
 }
 
-static bool test_types(fixture *f)
-{
+static bool test_types(fixture *f) {
     bool ok = false;
     mc_world_runtime_class_state before, after;
     for (size_t c = 0; c < COUNT(f->classes); ++c) {
@@ -244,8 +233,7 @@ cleanup:
     return ok;
 }
 
-static bool test_presence_and_measure(fixture *f, size_t *base, size_t *record, size_t *pointers)
-{
+static bool test_presence_and_measure(fixture *f, size_t *base, size_t *record, size_t *pointers) {
     bool ok = false;
     mc_world_light_list_view view;
     mc_world_runtime_construction before, first, second;
@@ -336,8 +324,7 @@ cleanup:
     return ok;
 }
 
-static bool test_merges(fixture *f)
-{
+static bool test_merges(fixture *f) {
     bool ok = false;
     mc_world_light_list_view view;
     mc_world_light_error error;
@@ -427,8 +414,7 @@ cleanup:
     return ok;
 }
 
-static bool test_depth_controls(fixture *f)
-{
+static bool test_depth_controls(fixture *f) {
     bool ok = false;
     mc_world_light_list_view before[2], after;
     mc_world_light_error error;
@@ -469,8 +455,7 @@ cleanup:
     return ok;
 }
 
-static bool test_budgets(fixture *f, size_t base, size_t record, size_t pointers)
-{
+static bool test_budgets(fixture *f, size_t base, size_t record, size_t pointers) {
     bool ok = false;
     const size_t limits[] = {base + record - 1, base + record + pointers - 1};
     const unsigned int pcs[] = {219, 237};
@@ -513,8 +498,7 @@ cleanup:
 /* Exercise a NONEMPTY list growth whose final retained size fits the limit
  * but whose real old+new pointer-array peak does not. All charges come from
  * actual successful append history, never a private region/allocation size. */
-static bool test_nonempty_growth(fixture *f, size_t base, size_t record)
-{
+static bool test_nonempty_growth(fixture *f, size_t base, size_t record) {
     bool ok = false;
     const mc_world_light_region **records = NULL;
     mc_world_light_list_view full, grown, limited;
@@ -612,8 +596,7 @@ cleanup:
     return ok;
 }
 
-static bool test_no_sky_and_raw(fixture *f)
-{
+static bool test_no_sky_and_raw(fixture *f) {
     bool ok = false;
     mc_world_runtime_fields fields;
     mc_world_dimension_fields dimension;
@@ -666,8 +649,7 @@ cleanup:
     return ok;
 }
 
-static bool test_million(fixture *f)
-{
+static bool test_million(fixture *f) {
     bool ok = false;
     mc_world_light_list_view initial, full, cleared;
     mc_light_submit_result result;
@@ -700,8 +682,7 @@ cleanup:
     return ok;
 }
 
-static bool retire_one(fixture *f, size_t slot)
-{
+static bool retire_one(fixture *f, size_t slot) {
     if (f->worlds[slot] == NULL)
         return true;
     /* Public cache storage permits explicit, validated fixture retirement.
@@ -720,8 +701,7 @@ static bool retire_one(fixture *f, size_t slot)
     return true;
 }
 
-static bool test_retained_queue_retirement(fixture *f)
-{
+static bool test_retained_queue_retirement(fixture *f) {
     bool ok = false;
     mc_world_light_list_view before, retired;
     mc_world_runtime_construction state;
@@ -760,8 +740,7 @@ cleanup:
     return ok;
 }
 
-static bool cleanup_fixture(fixture *f)
-{
+static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     if (f->classes[0] != NULL)
@@ -797,8 +776,7 @@ static bool cleanup_fixture(fixture *f)
     return true;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t n = strlen(hex);
     if (n == 0 || n % 2u != 0 || n / 2u >= capacity)
         return false;
@@ -821,8 +799,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

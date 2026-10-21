@@ -27,8 +27,7 @@
         }                                                                                          \
     } while (0)
 
-static const char *status_name(mc_text_stdout_status status)
-{
+static const char *status_name(mc_text_stdout_status status) {
     switch (status) {
         case MC_TEXT_STDOUT_OK:
             return "OK";
@@ -40,15 +39,13 @@ static const char *status_name(mc_text_stdout_status status)
     return "UNKNOWN";
 }
 
-static bool report(mc_text_stdout_status status, const char *flag)
-{
+static bool report(mc_text_stdout_status status, const char *flag) {
     return fprintf(stderr, "STATUS\t%s\t%s\n", status_name(status), flag) >= 0 &&
            fflush(stderr) == 0 && !ferror(stderr);
 }
 
 #ifndef _WIN32
-static bool equal_mask(const sigset_t *left, const sigset_t *right)
-{
+static bool equal_mask(const sigset_t *left, const sigset_t *right) {
     for (int signal_number = 1; signal_number <= SIGRTMAX; ++signal_number) {
         int a = sigismember(left, signal_number), b = sigismember(right, signal_number);
         if (a < 0 || b < 0 || a != b)
@@ -58,8 +55,7 @@ static bool equal_mask(const sigset_t *left, const sigset_t *right)
 }
 #endif
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     bool io_failed = true;
     mc_text_stdout stream;

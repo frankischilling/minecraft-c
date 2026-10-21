@@ -23,14 +23,17 @@ typedef struct declaration {
 } declaration;
 
 typedef union allocation allocation;
+
 union allocation {
     struct {
         allocation *next;
     } link;
+
     long double floating;
     void *pointer;
     uint64_t integer;
 };
+
 typedef struct arena {
     allocation *head;
     size_t bytes;
@@ -38,8 +41,7 @@ typedef struct arena {
 
 /* Header storage is separate from the uninitialized max-aligned payload.
  * Every successful allocation remains live until this one case retires. */
-static void *allocate(void *context, size_t bytes)
-{
+static void *allocate(void *context, size_t bytes) {
     arena *a = context;
     size_t payload = bytes == 0 ? 1 : bytes;
     if (payload > RUNTIME_BYTES - sizeof(allocation) ||
@@ -54,8 +56,7 @@ static void *allocate(void *context, size_t bytes)
     return block + 1;
 }
 
-static void retire(arena *a)
-{
+static void retire(arena *a) {
     while (a->head != NULL) {
         allocation *next = a->head->link.next;
         free(a->head);
@@ -66,8 +67,7 @@ static void retire(arena *a)
 
 /* Exactly ASCII/TAB records terminated by LF. Missing final LF, CRLF,
  * embedded controls, overlong lines and I/O errors are rejected. */
-static int read_line(char *line)
-{
+static int read_line(char *line) {
     size_t length = 0;
     for (;;) {
         int c = fgetc(stdin);
@@ -83,8 +83,7 @@ static int read_line(char *line)
     }
 }
 
-static size_t fields(char *line, char **out)
-{
+static size_t fields(char *line, char **out) {
     size_t count = 1;
     out[0] = line;
     for (char *p = line; *p != 0; ++p) {
@@ -101,8 +100,7 @@ static size_t fields(char *line, char **out)
     return count;
 }
 
-static bool decimal(const char *text, size_t maximum, size_t *out)
-{
+static bool decimal(const char *text, size_t maximum, size_t *out) {
     if (*text == 0 || (text[0] == '0' && text[1] != 0))
         return false;
     size_t value = 0;
@@ -118,15 +116,13 @@ static bool decimal(const char *text, size_t maximum, size_t *out)
     return true;
 }
 
-static int hex_digit(char c)
-{
+static int hex_digit(char c) {
     if (c >= '0' && c <= '9')
         return c - '0';
     return c >= 'a' && c <= 'f' ? c - 'a' + 10 : -1;
 }
 
-static bool text(const char *encoded, bool allow_null, mc_java_format_text *out, bool *is_null)
-{
+static bool text(const char *encoded, bool allow_null, mc_java_format_text *out, bool *is_null) {
     *is_null = false;
     if (strcmp(encoded, "NULL") == 0) {
         *is_null = allow_null;
@@ -155,8 +151,7 @@ static bool text(const char *encoded, bool allow_null, mc_java_format_text *out,
     return true;
 }
 
-static bool parse(char *line, declaration *cases, size_t *count, mc_java_format_text *separator)
-{
+static bool parse(char *line, declaration *cases, size_t *count, mc_java_format_text *separator) {
     char *f[5];
     bool unused;
     if (read_line(line) != 1 || strcmp(line, "FORMAT_INPUT_V1") != 0 || read_line(line) != 1 ||
@@ -189,8 +184,7 @@ static bool parse(char *line, declaration *cases, size_t *count, mc_java_format_
     }
 }
 
-static bool print_text(const mc_java_format_text *value)
-{
+static bool print_text(const mc_java_format_text *value) {
     static const char digits[] = "0123456789abcdef";
     if (value->length == 0)
         return fputc('-', stdout) != EOF;
@@ -203,8 +197,7 @@ static bool print_text(const mc_java_format_text *value)
     return true;
 }
 
-static bool run(const declaration *c, size_t index, const mc_java_format_text *separator)
-{
+static bool run(const declaration *c, size_t index, const mc_java_format_text *separator) {
     arena a = {0};
     const mc_java_format_text *arguments[ARGUMENTS];
     for (size_t i = 0; i < c->count; ++i)
@@ -229,8 +222,7 @@ static bool run(const declaration *c, size_t index, const mc_java_format_text *s
     return good;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     bool accepted = false;
     size_t count = 0;

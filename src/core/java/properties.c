@@ -42,8 +42,8 @@ typedef struct properties_line_reader {
     size_t input_limit;
 } properties_line_reader;
 
-static bool key_equal(const mc_java_properties_string *string, const uint16_t *units, size_t length)
-{
+static bool key_equal(const mc_java_properties_string *string, const uint16_t *units,
+                      size_t length) {
     if (string->length != length)
         return false;
     for (size_t i = 0; i < length; ++i) {
@@ -54,8 +54,7 @@ static bool key_equal(const mc_java_properties_string *string, const uint16_t *u
 }
 
 static properties_entry *find_entry(const mc_java_properties *properties, const uint16_t *key,
-                                    size_t length)
-{
+                                    size_t length) {
     for (properties_entry *entry = properties->first; entry != NULL; entry = entry->next) {
         if (key_equal(entry->key, key, length))
             return entry;
@@ -64,8 +63,7 @@ static properties_entry *find_entry(const mc_java_properties *properties, const 
 }
 
 mc_java_properties_status mc_java_properties_create(const mc_java_properties_allocator *allocator,
-                                                    mc_java_properties **out)
-{
+                                                    mc_java_properties **out) {
     if (allocator == NULL || allocator->allocate == NULL || out == NULL)
         return MC_JAVA_PROPERTIES_INVALID_ARGUMENT;
     const mc_java_properties_allocator selected = *allocator;
@@ -81,8 +79,7 @@ mc_java_properties_status mc_java_properties_create(const mc_java_properties_all
 /* This is the reached ArraysSupport.newLength(old, 1, old) policy. The
  * widened arithmetic selects the same positive Java-int results without
  * evaluating a signed-overflow expression in C. */
-static mc_java_properties_status grow_line(properties_line_reader *reader)
-{
+static mc_java_properties_status grow_line(properties_line_reader *reader) {
     const uint64_t old_length = (uint64_t)reader->capacity;
     const uint64_t soft_maximum = (uint64_t)INT32_MAX - UINT64_C(8);
     const uint64_t preferred = old_length + old_length;
@@ -108,8 +105,7 @@ static mc_java_properties_status grow_line(properties_line_reader *reader)
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static mc_java_properties_status refill(properties_line_reader *reader, size_t *limit)
-{
+static mc_java_properties_status refill(properties_line_reader *reader, size_t *limit) {
     size_t count = 0;
     const mc_java_properties_status status =
         reader->input.read(reader->input.context, reader->bytes, 8192u, &count);
@@ -127,14 +123,12 @@ static mc_java_properties_status refill(properties_line_reader *reader, size_t *
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static bool properties_space(uint16_t c)
-{
+static bool properties_space(uint16_t c) {
     return c == ' ' || c == '\t' || c == '\f';
 }
 
 static mc_java_properties_status read_line(properties_line_reader *reader, size_t *length,
-                                           bool *present)
-{
+                                           bool *present) {
     size_t used = 0;
     size_t offset = reader->input_offset;
     size_t limit = reader->input_limit;
@@ -236,8 +230,7 @@ static mc_java_properties_status read_line(properties_line_reader *reader, size_
 /* A validation/count pass precedes the immutable String allocation. The same
  * decoder fills that String on a second pass; no mutable buffer is exposed. */
 static mc_java_properties_status decode_units(const uint16_t *input, size_t length,
-                                              uint16_t *output, size_t *decoded_length)
-{
+                                              uint16_t *output, size_t *decoded_length) {
     size_t offset = 0;
     while (offset < length) {
         if (input[offset++] == '\\')
@@ -298,8 +291,7 @@ static mc_java_properties_status decode_units(const uint16_t *input, size_t leng
 
 static mc_java_properties_status convert_string(mc_java_properties *properties,
                                                 const uint16_t *input, size_t length,
-                                                const mc_java_properties_string **out)
-{
+                                                const mc_java_properties_string **out) {
     size_t decoded_length = 0;
     mc_java_properties_status status = decode_units(input, length, NULL, &decoded_length);
     if (status != MC_JAVA_PROPERTIES_OK)
@@ -322,8 +314,7 @@ static mc_java_properties_status convert_string(mc_java_properties *properties,
 
 static mc_java_properties_status put_entry(mc_java_properties *properties,
                                            const mc_java_properties_string *key,
-                                           const mc_java_properties_string *value)
-{
+                                           const mc_java_properties_string *value) {
     properties_entry *entry = find_entry(properties, key->units, key->length);
     if (entry != NULL) {
         entry->value = value;
@@ -345,8 +336,7 @@ static mc_java_properties_status put_entry(mc_java_properties *properties,
 }
 
 static mc_java_properties_status put_line(mc_java_properties *properties, const uint16_t *line,
-                                          size_t length)
-{
+                                          size_t length) {
     size_t key_length = 0;
     size_t value_start = length;
     bool separator = false;
@@ -387,8 +377,7 @@ static mc_java_properties_status put_line(mc_java_properties *properties, const 
 }
 
 mc_java_properties_status mc_java_properties_load(mc_java_properties *properties,
-                                                  const mc_java_properties_input *input)
-{
+                                                  const mc_java_properties_input *input) {
     if (properties == NULL || input == NULL || input->read == NULL)
         return MC_JAVA_PROPERTIES_INVALID_ARGUMENT;
     properties_line_reader reader = {.properties = properties, .input = *input};
@@ -418,8 +407,7 @@ mc_java_properties_status mc_java_properties_load(mc_java_properties *properties
 
 mc_java_properties_status mc_java_properties_get(const mc_java_properties *properties,
                                                  const uint16_t *key, size_t length,
-                                                 const mc_java_properties_string **out)
-{
+                                                 const mc_java_properties_string **out) {
     if (properties == NULL || out == NULL || (key == NULL && length != 0))
         return MC_JAVA_PROPERTIES_INVALID_ARGUMENT;
     if ((uintmax_t)length > (uintmax_t)INT32_MAX)
@@ -430,24 +418,21 @@ mc_java_properties_status mc_java_properties_get(const mc_java_properties *prope
 }
 
 bool mc_java_properties_string_read(const mc_java_properties_string *string,
-                                    mc_java_properties_string_view *out)
-{
+                                    mc_java_properties_string_view *out) {
     if (string == NULL || out == NULL)
         return false;
     *out = (mc_java_properties_string_view){.units = string->units, .length = string->length};
     return true;
 }
 
-size_t mc_java_properties_size(const mc_java_properties *properties)
-{
+size_t mc_java_properties_size(const mc_java_properties *properties) {
     return properties == NULL ? 0 : properties->size;
 }
 
 mc_java_properties_status mc_java_properties_entry(const mc_java_properties *properties,
                                                    size_t index,
                                                    const mc_java_properties_string **key,
-                                                   const mc_java_properties_string **value)
-{
+                                                   const mc_java_properties_string **value) {
     if (properties == NULL || key == NULL || value == NULL || key == value)
         return MC_JAVA_PROPERTIES_INVALID_ARGUMENT;
     if (index >= properties->size)

@@ -23,8 +23,7 @@ typedef struct arena {
 /* Each call receives distinct live malloc blocks. Only after a complete
  * iteration has stopped using its result may reset reuse them; old contents
  * are not cleared. No pool storage is an input or output slot. */
-static void *allocate(void *context, size_t bytes)
-{
+static void *allocate(void *context, size_t bytes) {
     arena *a = context;
     if (a->cursor == BLOCKS || bytes > MAX_BYTES) {
         a->failed = true;
@@ -49,14 +48,12 @@ static void *allocate(void *context, size_t bytes)
     return a->blocks[slot];
 }
 
-static void retire(arena *a)
-{
+static void retire(arena *a) {
     for (size_t i = 0; i < BLOCKS; ++i)
         free(a->blocks[i]);
 }
 
-static bool hex(const mc_java_format_text *text)
-{
+static bool hex(const mc_java_format_text *text) {
     static const char digits[] = "0123456789abcdef";
     if (text->length > MAX_RESULT_UNITS || (text->length != 0 && text->units == NULL))
         return false;
@@ -67,8 +64,7 @@ static bool hex(const mc_java_format_text *text)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     int result = 1;
     arena a = {0};

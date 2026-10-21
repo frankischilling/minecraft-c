@@ -8,8 +8,7 @@
 
 static mc_world_storage_status result(mc_world_activation_error *error, mc_world_runtime *world,
                                       unsigned int bytecode, unsigned int world_bytecode,
-                                      mc_world_storage_error cause)
-{
+                                      mc_world_storage_error cause) {
     if (cause.status != MC_WORLD_STORAGE_OK && world != NULL)
         world->last_error = cause;
     if (error != NULL)
@@ -25,20 +24,17 @@ static mc_world_storage_status result(mc_world_activation_error *error, mc_world
 
 static mc_world_storage_status failed(mc_world_activation_error *error, mc_world_runtime *world,
                                       unsigned int bytecode, unsigned int world_bytecode,
-                                      const char *operation)
-{
+                                      const char *operation) {
     return result(error, world, bytecode, world_bytecode,
                   (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation, 0});
 }
 
-static mc_world_storage_status completed(mc_world_activation_error *error)
-{
+static mc_world_storage_status completed(mc_world_activation_error *error) {
     return result(error, NULL, 0, 0, (mc_world_storage_error){MC_WORLD_STORAGE_OK, NULL, 0});
 }
 
 static mc_world_storage_status fields_get(mc_world_chunk *chunk, mc_world_chunk_fields *fields,
-                                          mc_world_activation_error *error)
-{
+                                          mc_world_activation_error *error) {
     if (chunk != NULL && !mc_world_chunk_source_enabled(chunk))
         return failed(error, NULL, 0, 0, "Chunk source operations are disabled");
     mc_world_storage_status status = mc_world_chunk_fields_get(chunk, fields);
@@ -52,8 +48,7 @@ static mc_world_storage_status fields_get(mc_world_chunk *chunk, mc_world_chunk_
  * at its actual World invocation, not while evaluating l or m. Success owns
  * one hold; every caller releases it after its concrete callee finishes. */
 static mc_world_storage_status enter_world(mc_world_runtime *world, unsigned int bytecode,
-                                           mc_world_activation_error *error)
-{
+                                           mc_world_activation_error *error) {
     if (world == NULL)
         return failed(error, NULL, bytecode, 0, "Chunk World receiver is null");
     mc_world_storage_error cause = {0};
@@ -70,8 +65,7 @@ static mc_world_storage_status enter_world(mc_world_runtime *world, unsigned int
 }
 
 mc_world_storage_status mc_world_runtime_register_chunk_tiles(mc_world_chunk *chunk,
-                                                              mc_world_activation_error *error)
-{
+                                                              mc_world_activation_error *error) {
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
@@ -98,8 +92,7 @@ mc_world_storage_status mc_world_runtime_register_chunk_tiles(mc_world_chunk *ch
 
 mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk *chunk,
                                                                  size_t slice,
-                                                                 mc_world_activation_error *error)
-{
+                                                                 mc_world_activation_error *error) {
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
@@ -127,8 +120,7 @@ mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk 
 }
 
 mc_world_storage_status mc_world_runtime_invalidate_chunk_tiles(mc_world_chunk *chunk,
-                                                                mc_world_activation_error *error)
-{
+                                                                mc_world_activation_error *error) {
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
@@ -148,8 +140,7 @@ mc_world_storage_status mc_world_runtime_invalidate_chunk_tiles(mc_world_chunk *
 }
 
 mc_world_storage_status mc_world_runtime_defer_chunk_entities(mc_world_chunk *chunk, size_t slice,
-                                                              mc_world_activation_error *error)
-{
+                                                              mc_world_activation_error *error) {
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)

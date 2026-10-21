@@ -15,8 +15,7 @@
             return status;                                                                         \
     } while (0)
 
-static mc_material *material(mc_registry_classes *classes, mc_material_id id)
-{
+static mc_material *material(mc_registry_classes *classes, mc_material_id id) {
     return mc_materials_get(classes->options.materials, id);
 }
 
@@ -25,8 +24,7 @@ static mc_material *material(mc_registry_classes *classes, mc_material_id id)
  * Names remain the actual declaring class. */
 static mc_registry_status direct_texture(mc_registry_classes *classes, mc_block *block, int32_t id,
                                          int32_t texture, mc_material_id selector,
-                                         const char *client, const char *server)
-{
+                                         const char *client, const char *server) {
     STAGE(client, server, 0);
     STAGE(client, server, 3);
     mc_material *selected = material(classes, selector);
@@ -37,8 +35,7 @@ static mc_registry_status direct_texture(mc_registry_classes *classes, mc_block 
 }
 
 static mc_registry_status nr_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       int32_t texture, mc_material *selected, bool flag)
-{
+                                       int32_t texture, mc_material *selected, bool flag) {
     STAGE("nr", "in", 0);
     STAGE("nr", "in", 4);
     TRY(mc_registry_block_base_texture(classes, block, id, texture, selected));
@@ -49,8 +46,7 @@ static mc_registry_status nr_construct(mc_registry_classes *classes, mc_block *b
 }
 
 static mc_registry_status jp_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       int32_t texture, mc_material *selected, bool flag)
-{
+                                       int32_t texture, mc_material *selected, bool flag) {
     STAGE("jp", "gh", 0);
     STAGE("jp", "gh", 4);
     TRY(mc_registry_block_base_texture(classes, block, id, texture, selected));
@@ -61,8 +57,7 @@ static mc_registry_status jp_construct(mc_registry_classes *classes, mc_block *b
 }
 
 static mc_registry_status rp_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       mc_material *selected)
-{
+                                       mc_material *selected) {
     STAGE("rp", "kv", 0);
     STAGE("rp", "kv", 3);
     mc_material *lava = material(classes, MC_MATERIAL_h);
@@ -88,8 +83,7 @@ static mc_registry_status rp_construct(mc_registry_classes *classes, mc_block *b
 }
 
 static mc_registry_status tile_flag(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                    int32_t pc)
-{
+                                    int32_t pc) {
     STAGE("rw", "lb", pc);
     if (classes->blocks.p == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "tile block array", block);
@@ -100,8 +94,7 @@ static mc_registry_status tile_flag(mc_registry_classes *classes, mc_block *bloc
 }
 
 static mc_registry_status rw_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       mc_material *selected)
-{
+                                       mc_material *selected) {
     STAGE("rw", "lb", 0);
     STAGE("rw", "lb", 3);
     TRY(mc_registry_block_base(classes, block, id, selected));
@@ -111,8 +104,7 @@ static mc_registry_status rw_construct(mc_registry_classes *classes, mc_block *b
 }
 
 static mc_registry_status rw_texture_construct(mc_registry_classes *classes, mc_block *block,
-                                               int32_t id, int32_t texture, mc_material *selected)
-{
+                                               int32_t id, int32_t texture, mc_material *selected) {
     STAGE("rw", "lb", 0);
     STAGE("rw", "lb", 4);
     TRY(mc_registry_block_base_texture(classes, block, id, texture, selected));
@@ -122,8 +114,7 @@ static mc_registry_status rw_texture_construct(mc_registry_classes *classes, mc_
 }
 
 static mc_registry_status wb_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       int32_t texture)
-{
+                                       int32_t texture) {
     STAGE("wb", "nw", 0);
     mc_material *selected = material(classes, MC_MATERIAL_j);
     STAGE("wb", "nw", 5);
@@ -145,8 +136,7 @@ static mc_registry_status wb_construct(mc_registry_classes *classes, mc_block *b
 }
 
 static mc_registry_status pc_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       int32_t texture, bool flag)
-{
+                                       int32_t texture, bool flag) {
     TRY(direct_texture(classes, block, id, texture, MC_MATERIAL_o, "pc", "jj"));
     STAGE("pc", "jj", 11);
     block->subtype.pc.a = flag;
@@ -157,8 +147,7 @@ static mc_registry_status pc_construct(mc_registry_classes *classes, mc_block *b
 }
 
 static mc_registry_status vm_construct(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                       int32_t texture)
-{
+                                       int32_t texture) {
     TRY(direct_texture(classes, block, id, texture, MC_MATERIAL_o, "vm", "np"));
     STAGE("vm", "np", 11);
     TRY(mc_registry_block_tick(classes, block, true));
@@ -169,8 +158,7 @@ static mc_registry_status vm_construct(mc_registry_classes *classes, mc_block *b
 /* These I constructors load a material at2, call B5 and store bm11. */
 static mc_registry_status fixed_texture(mc_registry_classes *classes, mc_block *block, int32_t id,
                                         mc_material_id selector, int32_t texture,
-                                        const char *client, const char *server)
-{
+                                        const char *client, const char *server) {
     STAGE(client, server, 0);
     STAGE(client, server, 2);
     mc_material *selected = material(classes, selector);
@@ -182,8 +170,7 @@ static mc_registry_status fixed_texture(mc_registry_classes *classes, mc_block *
     return MC_REGISTRY_OK;
 }
 
-static void ve_bounds(mc_block *block)
-{
+static void ve_bounds(mc_block *block) {
     STAGE("ve", "nj", 0);
     STAGE("ve", "nj", 8);
     mc_registry_block_bounds(block, 0.0f, 0.0f, 0.0f, 1.0f, 0.5625f, 1.0f);
@@ -191,8 +178,7 @@ static void ve_bounds(mc_block *block)
 }
 
 static mc_registry_status constructor_body(mc_registry_classes *classes, mc_block *block,
-                                           const mc_block_arguments *a)
-{
+                                           const mc_block_arguments *a) {
     mc_material *selected;
     switch (block->kind) {
         case MC_BLOCK_UU_NA:
@@ -804,8 +790,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
 }
 
 mc_registry_status mc_registry_block_construct(mc_registry_classes *classes, mc_block *block,
-                                               const mc_block_arguments *arguments)
-{
+                                               const mc_block_arguments *arguments) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (block == NULL || arguments == NULL || block->classes != classes ||

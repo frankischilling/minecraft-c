@@ -4,8 +4,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "mc/world/runtime/blocks.h"
 
-static mc_world_solid_support_error empty_error(void)
-{
+static mc_world_solid_support_error empty_error(void) {
     return (mc_world_solid_support_error){.registry = {.initializer_pc = -1,
                                                        .block_id = -1,
                                                        .constructor_pc = -1,
@@ -16,8 +15,7 @@ static mc_world_solid_support_error empty_error(void)
 /* Native admission failures do not attribute a nonexistent Java operation
  * or change World diagnostics. */
 static mc_world_storage_status admission(mc_world_solid_support_error *error,
-                                         mc_world_storage_status status, const char *operation)
-{
+                                         mc_world_storage_status status, const char *operation) {
     error->status = status;
     error->operation = operation;
     error->cause = (mc_world_storage_error){status, operation, 0};
@@ -27,8 +25,7 @@ static mc_world_storage_status admission(mc_world_solid_support_error *error,
 static mc_world_storage_status registry_failure(mc_world_runtime *world,
                                                 mc_world_solid_support_error *error,
                                                 const mc_registry_error *cause,
-                                                const char *operation)
-{
+                                                const char *operation) {
     error->registry = *cause;
     error->status =
         mc_world_runtime_registry_result(world, cause->status, cause, operation, &error->cause);
@@ -42,8 +39,7 @@ static mc_world_storage_status registry_failure(mc_world_runtime *world,
  * ys/pw reads a live subtype field. No registry ID or final-property table is
  * involved, and a constructing slab still reads its current own b field. */
 static mc_registry_status block_predicate(const mc_block *block, bool *out,
-                                          mc_registry_error *error)
-{
+                                          mc_registry_error *error) {
     switch (block->kind) {
         case MC_BLOCK_UU_NA:
         case MC_BLOCK_EO_CX:
@@ -137,8 +133,7 @@ static mc_registry_status block_predicate(const mc_block *block, bool *out,
  * No new borrow, array snapshot or coordinate preflight is introduced here. */
 static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x, int32_t y,
                                              int32_t z, bool *out,
-                                             mc_world_solid_support_error *error)
-{
+                                             mc_world_solid_support_error *error) {
     error->bytecode = 0;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     mc_registry_error cause = empty_error().registry;
@@ -198,8 +193,7 @@ static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x,
 
 mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *world, int32_t x,
                                                            int32_t y, int32_t z, bool *out,
-                                                           mc_world_solid_support_error *error)
-{
+                                                           mc_world_solid_support_error *error) {
     mc_world_solid_support_error frame = empty_error();
     mc_world_storage_status status;
     if (world == NULL || out == NULL) {

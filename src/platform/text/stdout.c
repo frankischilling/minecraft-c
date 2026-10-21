@@ -18,8 +18,7 @@
 #include <unistd.h>
 #endif
 
-mc_text_stdout_status mc_text_stdout_capture(mc_text_stdout *out)
-{
+mc_text_stdout_status mc_text_stdout_capture(mc_text_stdout *out) {
     if (out == NULL)
         return MC_TEXT_STDOUT_INVALID_ARGUMENT;
 #ifdef _WIN32
@@ -32,8 +31,7 @@ mc_text_stdout_status mc_text_stdout_capture(mc_text_stdout *out)
 }
 
 mc_text_stdout_status mc_text_stdout_println(const mc_text_stdout *stream, const char *ascii,
-                                             size_t length, bool *io_failed)
-{
+                                             size_t length, bool *io_failed) {
     if (stream == NULL || io_failed == NULL || length > 64 || (ascii == NULL && length != 0))
         return MC_TEXT_STDOUT_INVALID_ARGUMENT;
     char bytes[66];

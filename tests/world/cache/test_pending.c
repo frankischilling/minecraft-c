@@ -27,21 +27,18 @@ typedef struct pending_snapshot {
     size_t key_count, order_count;
 } pending_snapshot;
 
-static bool same_descriptor(const mc_chunk_pending *left, const mc_chunk_pending *right)
-{
+static bool same_descriptor(const mc_chunk_pending *left, const mc_chunk_pending *right) {
     return left->keys == right->keys && left->capacity == right->capacity &&
            left->count == right->count && left->history == right->history;
 }
 
-static void fill_keys(int32_t *keys)
-{
+static void fill_keys(int32_t *keys) {
     for (size_t i = 0; i < KEYS; ++i)
         keys[i] = 1000 + (int32_t)i;
 }
 
 static int take_snapshot(const mc_chunk_pending *pending, const int32_t *keys, size_t key_count,
-                         pending_snapshot *snapshot)
-{
+                         pending_snapshot *snapshot) {
     CHECK(key_count <= KEYS);
     snapshot->descriptor = *pending;
     snapshot->key_count = key_count;
@@ -57,8 +54,7 @@ static int take_snapshot(const mc_chunk_pending *pending, const int32_t *keys, s
 }
 
 static int check_snapshot(const mc_chunk_pending *pending, const int32_t *keys,
-                          const pending_snapshot *snapshot)
-{
+                          const pending_snapshot *snapshot) {
     CHECK(same_descriptor(pending, &snapshot->descriptor));
     if (snapshot->key_count != 0)
         CHECK(memcmp(keys, snapshot->keys, snapshot->key_count * sizeof(*keys)) == 0);
@@ -74,8 +70,7 @@ static int check_snapshot(const mc_chunk_pending *pending, const int32_t *keys,
     return 0;
 }
 
-static int check_order(const mc_chunk_pending *pending, const int32_t *expected, size_t count)
-{
+static int check_order(const mc_chunk_pending *pending, const int32_t *expected, size_t count) {
     int32_t actual[ORDER], complete[ORDER];
     CHECK(count <= ORDER && pending->history != NULL);
     for (size_t i = 0; i < ORDER; ++i)
@@ -95,8 +90,7 @@ static int check_order(const mc_chunk_pending *pending, const int32_t *expected,
     return 0;
 }
 
-static int check_same(const mc_chunk_pending *left, const mc_chunk_pending *right)
-{
+static int check_same(const mc_chunk_pending *left, const mc_chunk_pending *right) {
     CHECK(mc_chunk_pending_validate(left) && mc_chunk_pending_validate(right));
     CHECK(left->count == right->count);
     CHECK(memcmp(left->keys, right->keys, KEYS * sizeof(*left->keys)) == 0);
@@ -108,8 +102,7 @@ static int check_same(const mc_chunk_pending *left, const mc_chunk_pending *righ
     return 0;
 }
 
-static int test_arguments(void)
-{
+static int test_arguments(void) {
     mc_java_int_set *history = NULL;
     CHECK(mc_java_int_set_create(NULL, &history) == MC_JAVA_INT_SET_OK);
     int32_t keys[KEYS];
@@ -161,8 +154,7 @@ static int test_arguments(void)
     return 0;
 }
 
-static int test_legacy(void)
-{
+static int test_legacy(void) {
     int32_t keys[KEYS];
     fill_keys(keys);
     int32_t original[KEYS];
@@ -196,8 +188,7 @@ static int test_legacy(void)
     return 0;
 }
 
-static int test_ordered(void)
-{
+static int test_ordered(void) {
     mc_java_int_set *history = NULL;
     CHECK(mc_java_int_set_create(NULL, &history) == MC_JAVA_INT_SET_OK);
     int32_t keys[KEYS];
@@ -229,8 +220,7 @@ static int test_ordered(void)
     return 0;
 }
 
-static int test_survivors_and_clear(void)
-{
+static int test_survivors_and_clear(void) {
     mc_java_int_set *fresh = NULL, *grown = NULL;
     CHECK(mc_java_int_set_create(NULL, &fresh) == MC_JAVA_INT_SET_OK);
     CHECK(mc_java_int_set_create(NULL, &grown) == MC_JAVA_INT_SET_OK);
@@ -276,8 +266,7 @@ static int test_survivors_and_clear(void)
     return 0;
 }
 
-static int test_capacity_and_history_entry_limit(void)
-{
+static int test_capacity_and_history_entry_limit(void) {
     for (unsigned mode = 0; mode < 2; ++mode) {
         mc_java_int_set_limits limits = mc_java_int_set_default_limits();
         if (mode == 1)
@@ -307,8 +296,7 @@ static int test_capacity_and_history_entry_limit(void)
     return 0;
 }
 
-static int test_history_byte_limits(void)
-{
+static int test_history_byte_limits(void) {
     size_t create_limits = 0, add_limits = 0, successes = 0, recovered = 0;
     /* Constructed paired controls omit failed mutations. Later removal/readd
      * compares hidden-history preservation, not new reference expectations. */
@@ -379,8 +367,7 @@ static int test_history_byte_limits(void)
     return 0;
 }
 
-static int test_invalid_pairing(void)
-{
+static int test_invalid_pairing(void) {
     mc_java_int_set *history = NULL;
     CHECK(mc_java_int_set_create(NULL, &history) == MC_JAVA_INT_SET_OK);
     int32_t keys[KEYS];
@@ -430,8 +417,7 @@ static int test_invalid_pairing(void)
 }
 
 static bool register_tiles(void *world, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk)
-{
+                           mc_chunk_state *chunk) {
     (void)context;
     (void)chunk;
     ++*(unsigned *)world;
@@ -439,8 +425,7 @@ static bool register_tiles(void *world, const mc_chunk_acquire_context *context,
 }
 
 static bool register_entities(void *world, const mc_chunk_acquire_context *context,
-                              mc_chunk_state *chunk, size_t slice)
-{
+                              mc_chunk_state *chunk, size_t slice) {
     (void)context;
     (void)chunk;
     (void)slice;
@@ -448,8 +433,7 @@ static bool register_entities(void *world, const mc_chunk_acquire_context *conte
     return true;
 }
 
-static int test_acquire_mutations(void)
-{
+static int test_acquire_mutations(void) {
     mc_java_int_set *history = NULL;
     CHECK(mc_java_int_set_create(NULL, &history) == MC_JAVA_INT_SET_OK);
     int32_t keys[KEYS];
@@ -509,8 +493,7 @@ static int test_acquire_mutations(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_arguments() || test_legacy() || test_ordered() || test_survivors_and_clear() ||
         test_capacity_and_history_entry_limit() || test_history_byte_limits() ||
         test_invalid_pairing() || test_acquire_mutations())

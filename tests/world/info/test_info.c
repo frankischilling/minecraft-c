@@ -18,6 +18,7 @@ static unsigned int ordered_brackets;
     } while (0)
 
 enum { DATA_FIELDS = 14 };
+
 static const char *const keys[DATA_FIELDS] = {
     "RandomSeed", "SpawnX",  "SpawnY",   "SpawnZ",  "Time",        "LastPlayed", "SizeOnDisk",
     "LevelName",  "version", "rainTime", "raining", "thunderTime", "thundering", "Player"};
@@ -35,16 +36,14 @@ typedef struct fixture {
     size_t name_count;
 } fixture;
 
-static bool text_equal(mc_nbt_string left, mc_nbt_string right)
-{
+static bool text_equal(mc_nbt_string left, mc_nbt_string right) {
     return left.length == right.length &&
            (left.length == 0 ||
             (left.units != NULL && right.units != NULL &&
              memcmp(left.units, right.units, left.length * sizeof(uint16_t)) == 0));
 }
 
-static bool named_ascii(const mc_nbt_tag *tag, const char *name)
-{
+static bool named_ascii(const mc_nbt_tag *tag, const char *name) {
     if (tag == NULL || tag->name.length != strlen(name) ||
         (tag->name.length != 0 && tag->name.units == NULL))
         return false;
@@ -54,8 +53,7 @@ static bool named_ascii(const mc_nbt_tag *tag, const char *name)
     return true;
 }
 
-static const mc_nbt_tag *find(const mc_nbt_tag *root, const char *name)
-{
+static const mc_nbt_tag *find(const mc_nbt_tag *root, const char *name) {
     uint16_t units[32];
     const size_t length = strlen(name);
     if (length > sizeof(units) / sizeof(units[0]))
@@ -65,8 +63,7 @@ static const mc_nbt_tag *find(const mc_nbt_tag *root, const char *name)
     return mc_nbt_compound_get(root, units, length);
 }
 
-static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type type)
-{
+static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type type) {
     uint16_t *units = value->names[value->name_count++];
     const size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i)
@@ -75,8 +72,7 @@ static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type
     tag->type = type;
 }
 
-static void fixture_init(fixture *value)
-{
+static void fixture_init(fixture *value) {
     memset(value, 0, sizeof(*value));
     value->data.type = MC_NBT_COMPOUND;
     value->data.name =
@@ -116,8 +112,7 @@ static void fixture_init(fixture *value)
     value->data.value.compound.length = DATA_FIELDS + 2u;
 }
 
-static mc_world_info_scalars prefix(size_t count)
-{
+static mc_world_info_scalars prefix(size_t count) {
     mc_world_info_scalars value = {0};
     if (count > 0)
         value.seed = INT64_MIN + 3;
@@ -146,8 +141,7 @@ static mc_world_info_scalars prefix(size_t count)
     return value;
 }
 
-static bool scalars_equal(const mc_world_info_scalars *left, const mc_world_info_scalars *right)
-{
+static bool scalars_equal(const mc_world_info_scalars *left, const mc_world_info_scalars *right) {
     return left->seed == right->seed && left->spawn_x == right->spawn_x &&
            left->spawn_y == right->spawn_y && left->spawn_z == right->spawn_z &&
            left->time == right->time && left->last_played == right->last_played &&
@@ -157,14 +151,12 @@ static bool scalars_equal(const mc_world_info_scalars *left, const mc_world_info
            left->raining == right->raining && left->thundering == right->thundering;
 }
 
-static bool same_fields(const mc_world_info_fields *left, const mc_world_info_fields *right)
-{
+static bool same_fields(const mc_world_info_fields *left, const mc_world_info_fields *right) {
     return scalars_equal(&left->value, &right->value) && left->name == right->name &&
            left->player == right->player;
 }
 
-static bool source_is(const mc_nbt_tag *root)
-{
+static bool source_is(const mc_nbt_tag *root) {
     if (root == NULL || root->type != MC_NBT_COMPOUND)
         return false;
     const mc_nbt_tag *a = find(root, "UnknownF"), *b = find(root, "UnknownD");
@@ -176,8 +168,7 @@ static bool source_is(const mc_nbt_tag *root)
            b->value.double_bits == UINT64_C(0x7ff0000000001234);
 }
 
-static int test_fresh(mc_world_info_side side)
-{
+static int test_fresh(mc_world_info_side side) {
     int result = 1;
     int64_t time = 123;
     mc_world_info *info = NULL, *held = NULL;
@@ -185,11 +176,13 @@ static int test_fresh(mc_world_info_side side)
     mc_world_info_fields fields = {0};
     mc_world_info_scalars expected = {0};
     mc_world_info_state state = {0};
+
     struct {
         uint64_t before;
         mc_world_info_fields value;
         uint64_t after;
     } guarded = {0}, saved;
+
     guarded.before = UINT64_C(0x0123456789abcdef);
     guarded.after = UINT64_C(0xfedcba9876543210);
     guarded.value.value.seed = 77;
@@ -254,8 +247,7 @@ cleanup:
     return result;
 }
 
-static int test_wrong_type(mc_world_info_side side, size_t bad)
-{
+static int test_wrong_type(mc_world_info_side side, size_t bad) {
     int result = 1;
     int64_t time = 123;
     fixture input;
@@ -305,8 +297,7 @@ cleanup:
     return result;
 }
 
-static int test_copy_lifetimes(mc_world_info_side side)
-{
+static int test_copy_lifetimes(mc_world_info_side side) {
     int result = 1;
     fixture input;
     mc_world_info_data *data = NULL, *other = NULL, *data_alias = NULL;
@@ -414,8 +405,7 @@ cleanup:
 }
 
 static bool record_is(const mc_nbt_tag *root, const mc_world_info_fields *fields,
-                      int64_t last_played, bool same_player)
-{
+                      int64_t last_played, bool same_player) {
     static const size_t order[] = {0, 1, 2, 3, 4, 6, 5, 7, 8, 9, 10, 11, 12};
     if (root == NULL || root->type != MC_NBT_COMPOUND || root->name.length != 0 ||
         root->value.compound.length != (fields->player == NULL ? 13u : 14u))
@@ -503,8 +493,7 @@ static bool record_is(const mc_nbt_tag *root, const mc_world_info_fields *fields
     return true;
 }
 
-static int test_records(mc_world_info_side side)
-{
+static int test_records(mc_world_info_side side) {
     int result = 1;
     fixture input;
     mc_world_info_data *data = NULL;
@@ -623,8 +612,7 @@ cleanup:
     return result;
 }
 
-static int test_missing_and_phases(mc_world_info_side side)
-{
+static int test_missing_and_phases(mc_world_info_side side) {
     int result = 1;
     fixture input;
     mc_world_info_data *data = NULL;
@@ -707,8 +695,7 @@ cleanup:
     return result;
 }
 
-static int test_native_contracts(void)
-{
+static int test_native_contracts(void) {
     int result = 1;
     fixture input;
     mc_world_info_name *name = NULL, *name_out = NULL;
@@ -796,8 +783,7 @@ cleanup:
     return result;
 }
 
-static int test_data_reference_setters(mc_world_info_side side)
-{
+static int test_data_reference_setters(mc_world_info_side side) {
     int result = 1;
     fixture input, wrong;
     mc_world_info_data *data = NULL, *broken = NULL;
@@ -968,8 +954,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_native_contracts() != 0)
         return 1;
     for (unsigned int s = 0; s < 2; ++s) {

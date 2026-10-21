@@ -8,8 +8,7 @@
 #include <limits.h>
 #include <string.h>
 
-static const mc_nbt_tag *field(const mc_nbt_tag *compound, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *compound, const char *name) {
     uint16_t units[16];
     const size_t length = strlen(name);
     for (size_t index = 0; index < length; ++index)
@@ -18,15 +17,13 @@ static const mc_nbt_tag *field(const mc_nbt_tag *compound, const char *name)
 }
 
 static mc_world_storage_status fail(mc_world_game_load_error *frame, mc_world_storage_status status,
-                                    const char *operation)
-{
+                                    const char *operation) {
     frame->cause = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
 static mc_world_storage_status entity_failure(mc_world_game_load_error *frame,
-                                              mc_entity_nbt_status status, const char *operation)
-{
+                                              mc_entity_nbt_status status, const char *operation) {
     return fail(frame,
                 status == MC_ENTITY_NBT_LIMIT               ? MC_WORLD_STORAGE_LIMIT
                 : status == MC_ENTITY_NBT_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
@@ -37,8 +34,7 @@ static mc_world_storage_status entity_failure(mc_world_game_load_error *frame,
 static mc_world_storage_status import_entities(mc_world_runtime *world, mc_world_store *store,
                                                mc_world_store_game_stage *stage,
                                                const mc_world_store_game_stage_view *view,
-                                               mc_world_game_load_error *frame)
-{
+                                               mc_world_game_load_error *frame) {
     frame->builder_bytecode = 231;
     const mc_nbt_tag *records = field(view->level, "Entities");
     if (records != NULL && records->type != MC_NBT_LIST)
@@ -103,8 +99,7 @@ static mc_world_storage_status import_entities(mc_world_runtime *world, mc_world
 }
 
 static mc_world_storage_status import_tiles(const mc_world_store_game_stage_view *view,
-                                            mc_world_game_load_error *frame)
-{
+                                            mc_world_game_load_error *frame) {
     frame->builder_bytecode = 301;
     const mc_nbt_tag *records = field(view->level, "TileEntities");
     if (records != NULL && records->type != MC_NBT_LIST)
@@ -128,8 +123,7 @@ static mc_world_storage_status import_tiles(const mc_world_store_game_stage_view
 
 mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int32_t x, int32_t z,
                                                    mc_chunk_state **out,
-                                                   mc_world_game_load_error *error)
-{
+                                                   mc_world_game_load_error *error) {
     mc_world_game_load_error frame = {.status = MC_WORLD_STORAGE_OK,
                                       .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                       .tile = mc_live_tiles_empty_error()};

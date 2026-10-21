@@ -13,8 +13,7 @@ struct mc_scheduled_tick {
 
 mc_scheduled_tick_status mc_scheduled_tick_create(mc_scheduled_tick_sequence *sequence, int32_t x,
                                                   int32_t y, int32_t z, int32_t block,
-                                                  mc_scheduled_tick **out)
-{
+                                                  mc_scheduled_tick **out) {
     if (sequence == NULL || out == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -36,8 +35,7 @@ mc_scheduled_tick_status mc_scheduled_tick_create(mc_scheduled_tick_sequence *se
     return MC_SCHEDULED_TICK_OK;
 }
 
-mc_scheduled_tick_status mc_scheduled_tick_retain(mc_scheduled_tick *tick)
-{
+mc_scheduled_tick_status mc_scheduled_tick_retain(mc_scheduled_tick *tick) {
     if (tick == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -48,8 +46,7 @@ mc_scheduled_tick_status mc_scheduled_tick_retain(mc_scheduled_tick *tick)
     return MC_SCHEDULED_TICK_OK;
 }
 
-void mc_scheduled_tick_release(mc_scheduled_tick *tick)
-{
+void mc_scheduled_tick_release(mc_scheduled_tick *tick) {
     if (tick == NULL) {
         return;
     }
@@ -60,8 +57,7 @@ void mc_scheduled_tick_release(mc_scheduled_tick *tick)
 }
 
 mc_scheduled_tick_status mc_scheduled_tick_fields_get(const mc_scheduled_tick *tick,
-                                                      mc_scheduled_tick_fields *out)
-{
+                                                      mc_scheduled_tick_fields *out) {
     if (tick == NULL || out == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -69,8 +65,7 @@ mc_scheduled_tick_status mc_scheduled_tick_fields_get(const mc_scheduled_tick *t
     return MC_SCHEDULED_TICK_OK;
 }
 
-mc_scheduled_tick_status mc_scheduled_tick_time_set(mc_scheduled_tick *tick, int64_t time)
-{
+mc_scheduled_tick_status mc_scheduled_tick_time_set(mc_scheduled_tick *tick, int64_t time) {
     if (tick == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -78,8 +73,7 @@ mc_scheduled_tick_status mc_scheduled_tick_time_set(mc_scheduled_tick *tick, int
     return MC_SCHEDULED_TICK_OK;
 }
 
-mc_scheduled_tick_status mc_scheduled_tick_time_shift(mc_scheduled_tick *tick, int64_t delta)
-{
+mc_scheduled_tick_status mc_scheduled_tick_time_shift(mc_scheduled_tick *tick, int64_t delta) {
     if (tick == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -88,8 +82,7 @@ mc_scheduled_tick_status mc_scheduled_tick_time_shift(mc_scheduled_tick *tick, i
 }
 
 mc_scheduled_tick_status mc_scheduled_tick_equals(const mc_scheduled_tick *tick,
-                                                  const mc_scheduled_tick *other, bool *out)
-{
+                                                  const mc_scheduled_tick *other, bool *out) {
     if (tick == NULL || out == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -102,8 +95,7 @@ mc_scheduled_tick_status mc_scheduled_tick_equals(const mc_scheduled_tick *tick,
     return MC_SCHEDULED_TICK_OK;
 }
 
-mc_scheduled_tick_status mc_scheduled_tick_hash(const mc_scheduled_tick *tick, int32_t *out)
-{
+mc_scheduled_tick_status mc_scheduled_tick_hash(const mc_scheduled_tick *tick, int32_t *out) {
     if (tick == NULL || out == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }
@@ -119,8 +111,7 @@ mc_scheduled_tick_status mc_scheduled_tick_hash(const mc_scheduled_tick *tick, i
 }
 
 mc_scheduled_tick_status mc_scheduled_tick_compare(const mc_scheduled_tick *tick,
-                                                   const mc_scheduled_tick *other, int32_t *out)
-{
+                                                   const mc_scheduled_tick *other, int32_t *out) {
     if (tick == NULL || other == NULL || out == NULL) {
         return MC_SCHEDULED_TICK_INVALID_ARGUMENT;
     }

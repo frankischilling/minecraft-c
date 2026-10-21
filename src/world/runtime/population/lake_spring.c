@@ -32,8 +32,7 @@ typedef struct feature_frame {
     mc_population_lake_spring_error error;
 } feature_frame;
 
-static mc_registry_error empty_registry(void)
-{
+static mc_registry_error empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
@@ -41,8 +40,7 @@ static mc_registry_error empty_registry(void)
                                .item_argument = -1};
 }
 
-static mc_population_lake_spring_error empty_error(void)
-{
+static mc_population_lake_spring_error empty_error(void) {
     const mc_registry_error registry = empty_registry();
     return (mc_population_lake_spring_error){.registry = registry,
                                              .material = {.registry = registry},
@@ -50,16 +48,14 @@ static mc_population_lake_spring_error empty_error(void)
                                              .mutation = mc_world_mutation_empty_error()};
 }
 
-static bool fail(feature_frame *frame, mc_world_storage_status status, const char *operation)
-{
+static bool fail(feature_frame *frame, mc_world_storage_status status, const char *operation) {
     frame->error.status = status;
     frame->error.operation = operation;
     frame->error.cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cause)
-{
+static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cause) {
     frame->error.status = cause->status;
     frame->error.operation = cause->operation;
     frame->error.cause = *cause;
@@ -67,8 +63,7 @@ static bool storage_fail(feature_frame *frame, const mc_world_storage_error *cau
 }
 
 static bool registry_fail(feature_frame *frame, const mc_registry_error *cause,
-                          const char *operation)
-{
+                          const char *operation) {
     frame->error.registry = *cause;
     frame->error.status = mc_world_runtime_registry_result(frame->world, cause->status, cause,
                                                            operation, &frame->error.cause);
@@ -76,23 +71,20 @@ static bool registry_fail(feature_frame *frame, const mc_registry_error *cause,
     return false;
 }
 
-static bool null_reference(feature_frame *frame, const char *operation)
-{
+static bool null_reference(feature_frame *frame, const char *operation) {
     mc_registry_error cause = empty_registry();
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return registry_fail(frame, &cause, operation);
 }
 
-static void stage(feature_frame *frame, unsigned int pc)
-{
+static void stage(feature_frame *frame, unsigned int pc) {
     frame->error.bytecode = pc;
     frame->error.air_bytecode = 0;
 }
 
 static bool begin(feature_frame *frame, const void *feature, mc_world_runtime *world,
-                  mc_java_random *random, bool *out, bool lake)
-{
+                  mc_java_random *random, bool *out, bool lake) {
     *frame = (feature_frame){.world = world, .random = random, .error = empty_error()};
     if (feature == NULL || world == NULL || out == NULL)
         return fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Lake/spring native arguments");
@@ -109,8 +101,7 @@ static bool begin(feature_frame *frame, const void *feature, mc_world_runtime *w
 }
 
 static mc_world_storage_status finish(feature_frame *frame, bool completed, bool ordinary,
-                                      bool *out, mc_population_lake_spring_error *error)
-{
+                                      bool *out, mc_population_lake_spring_error *error) {
     free(frame->mask);
     if (completed) {
         *out = ordinary;
@@ -126,8 +117,7 @@ static mc_world_storage_status finish(feature_frame *frame, bool completed, bool
 }
 
 static bool block_get(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                      int32_t *out)
-{
+                      int32_t *out) {
     stage(frame, pc);
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_block_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
@@ -136,8 +126,7 @@ static bool block_get(feature_frame *frame, unsigned int pc, int32_t x, int32_t 
 }
 
 /* Complete fd.d/dj.f(III)Z: World ID invocation4, comparison with zero. */
-static bool air(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z, bool *out)
-{
+static bool air(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, pc);
     frame->error.air_bytecode = 4;
     int32_t id;
@@ -149,8 +138,7 @@ static bool air(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int
 }
 
 static bool static_id(feature_frame *frame, const char *name, unsigned int load_pc,
-                      unsigned int field_pc, int32_t *out)
-{
+                      unsigned int field_pc, int32_t *out) {
     stage(frame, load_pc);
     const mc_block *block = NULL;
     mc_registry_error cause = empty_registry();
@@ -164,8 +152,7 @@ static bool static_id(feature_frame *frame, const char *name, unsigned int load_
     return true;
 }
 
-static bool block_table(feature_frame *frame, unsigned int pc, mc_registry_block_m_view *out)
-{
+static bool block_table(feature_frame *frame, unsigned int pc, mc_registry_block_m_view *out) {
     stage(frame, pc);
     mc_registry_error cause = empty_registry();
     if (mc_registry_block_m_get(mc_world_runtime_registry(frame->world), out, &cause) !=
@@ -175,8 +162,7 @@ static bool block_table(feature_frame *frame, unsigned int pc, mc_registry_block
 }
 
 static bool block_element(feature_frame *frame, unsigned int pc,
-                          const mc_registry_block_m_view *array, int32_t id, const mc_block **out)
-{
+                          const mc_registry_block_m_view *array, int32_t id, const mc_block **out) {
     stage(frame, pc);
     mc_registry_error cause = empty_registry();
     if (mc_registry_block_m_at(array, id, out, &cause) != MC_REGISTRY_OK)
@@ -185,8 +171,7 @@ static bool block_element(feature_frame *frame, unsigned int pc,
 }
 
 static bool material_get(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                         mc_material **out)
-{
+                         mc_material **out) {
     stage(frame, pc);
     if (mc_world_runtime_material_get_detailed(frame->world, x, y, z, out,
                                                &frame->error.material) != MC_WORLD_STORAGE_OK)
@@ -195,8 +180,7 @@ static bool material_get(feature_frame *frame, unsigned int pc, int32_t x, int32
 }
 
 static bool material_predicate(feature_frame *frame, unsigned int pc, mc_material *material,
-                               bool liquid, bool *out)
-{
+                               bool liquid, bool *out) {
     stage(frame, pc);
     if (material == NULL)
         return null_reference(frame, "Lake Material predicate receiver");
@@ -205,8 +189,7 @@ static bool material_predicate(feature_frame *frame, unsigned int pc, mc_materia
 }
 
 static bool write_block(feature_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
-                        int32_t id, bool notify)
-{
+                        int32_t id, bool notify) {
     stage(frame, pc);
     bool ignored;
     const mc_world_storage_status status =
@@ -217,8 +200,7 @@ static bool write_block(feature_frame *frame, unsigned int pc, int32_t x, int32_
     return status == MC_WORLD_STORAGE_OK || storage_fail(frame, &frame->error.mutation.cause);
 }
 
-static bool bounded(feature_frame *frame, unsigned int pc, int32_t bound, int32_t *out)
-{
+static bool bounded(feature_frame *frame, unsigned int pc, int32_t bound, int32_t *out) {
     stage(frame, pc);
     if (frame->random == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Lake Random receiver");
@@ -227,8 +209,7 @@ static bool bounded(feature_frame *frame, unsigned int pc, int32_t bound, int32_
     return true;
 }
 
-static bool draw_double(feature_frame *frame, unsigned int pc, double *out)
-{
+static bool draw_double(feature_frame *frame, unsigned int pc, double *out) {
     stage(frame, pc);
     if (frame->random == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Lake Random receiver");
@@ -239,35 +220,32 @@ static bool draw_double(feature_frame *frame, unsigned int pc, double *out)
 }
 
 /* Explicit source-width, single-operation rounding barriers. */
-static double add_f64(double a, double b)
-{
+static double add_f64(double a, double b) {
     volatile double r = a + b;
     return r;
 }
-static double sub_f64(double a, double b)
-{
+
+static double sub_f64(double a, double b) {
     volatile double r = a - b;
     return r;
 }
-static double mul_f64(double a, double b)
-{
+
+static double mul_f64(double a, double b) {
     volatile double r = a * b;
     return r;
 }
-static double div_f64(double a, double b)
-{
+
+static double div_f64(double a, double b) {
     volatile double r = a / b;
     return r;
 }
 
-static size_t index_of(int32_t x, int32_t z, int32_t y)
-{
+static size_t index_of(int32_t x, int32_t z, int32_t y) {
     /* All three are bounded source loop locals; largest result is2047. */
     return (size_t)((x * 16 + z) * 8 + y);
 }
 
-static bool boundary(const bool *mask, int32_t x, int32_t z, int32_t y)
-{
+static bool boundary(const bool *mask, int32_t x, int32_t z, int32_t y) {
     /* Source short-circuit order: center, +X, -X, +Z, -Z, +Y, -Y. */
     return !mask[index_of(x, z, y)] &&
            ((x < 15 && mask[index_of(x + 1, z, y)]) || (x > 0 && mask[index_of(x - 1, z, y)]) ||
@@ -275,8 +253,7 @@ static bool boundary(const bool *mask, int32_t x, int32_t z, int32_t y)
             (y < 7 && mask[index_of(x, z, y + 1)]) || (y > 0 && mask[index_of(x, z, y - 1)]));
 }
 
-static bool build_mask(feature_frame *frame)
-{
+static bool build_mask(feature_frame *frame) {
     int32_t count;
     if (!bounded(frame, 41, 4, &count))
         return false;
@@ -339,8 +316,7 @@ static bool build_mask(feature_frame *frame)
 }
 
 static bool validate_lake(feature_frame *frame, const mc_population_lake_feature *feature,
-                          int32_t x, int32_t y, int32_t z, bool *out)
-{
+                          int32_t x, int32_t y, int32_t z, bool *out) {
     for (int32_t lx = 0; lx < 16; lx = mc_java_i32_add(lx, 1)) {
         for (int32_t lz = 0; lz < 16; lz = mc_java_i32_add(lz, 1)) {
             for (int32_t ly = 0; ly < 8; ly = mc_java_i32_add(ly, 1)) {
@@ -382,8 +358,7 @@ static bool validate_lake(feature_frame *frame, const mc_population_lake_feature
 }
 
 static bool fill_lake(feature_frame *frame, const mc_population_lake_feature *feature, int32_t x,
-                      int32_t y, int32_t z)
-{
+                      int32_t y, int32_t z) {
     for (int32_t lx = 0; lx < 16; lx = mc_java_i32_add(lx, 1)) {
         for (int32_t lz = 0; lz < 16; lz = mc_java_i32_add(lz, 1)) {
             for (int32_t ly = 0; ly < 8; ly = mc_java_i32_add(ly, 1)) {
@@ -399,8 +374,7 @@ static bool fill_lake(feature_frame *frame, const mc_population_lake_feature *fe
     return true;
 }
 
-static bool grass_lake(feature_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool grass_lake(feature_frame *frame, int32_t x, int32_t y, int32_t z) {
     for (int32_t lx = 0; lx < 16; lx = mc_java_i32_add(lx, 1)) {
         for (int32_t lz = 0; lz < 16; lz = mc_java_i32_add(lz, 1)) {
             for (int32_t ly = 4; ly < 8; ly = mc_java_i32_add(ly, 1)) {
@@ -439,8 +413,7 @@ static bool grass_lake(feature_frame *frame, int32_t x, int32_t y, int32_t z)
 }
 
 static bool target_is_lava(feature_frame *frame, const mc_population_lake_feature *feature,
-                           bool *out)
-{
+                           bool *out) {
     mc_registry_block_m_view array;
     if (!block_table(frame, 897, &array))
         return false;
@@ -462,8 +435,7 @@ static bool target_is_lava(feature_frame *frame, const mc_population_lake_featur
     return true;
 }
 
-static bool rim_lake(feature_frame *frame, int32_t x, int32_t y, int32_t z)
-{
+static bool rim_lake(feature_frame *frame, int32_t x, int32_t y, int32_t z) {
     for (int32_t lx = 0; lx < 16; lx = mc_java_i32_add(lx, 1)) {
         for (int32_t lz = 0; lz < 16; lz = mc_java_i32_add(lz, 1)) {
             for (int32_t ly = 0; ly < 8; ly = mc_java_i32_add(ly, 1)) {
@@ -497,8 +469,7 @@ static bool rim_lake(feature_frame *frame, int32_t x, int32_t y, int32_t z)
 }
 
 static bool stone(feature_frame *frame, unsigned int query_pc, unsigned int static_pc,
-                  unsigned int field_pc, int32_t x, int32_t y, int32_t z, bool *out)
-{
+                  unsigned int field_pc, int32_t x, int32_t y, int32_t z, bool *out) {
     int32_t id, stone_id;
     if (!block_get(frame, query_pc, x, y, z, &id) ||
         !static_id(frame, "u", static_pc, field_pc, &stone_id))
@@ -508,8 +479,7 @@ static bool stone(feature_frame *frame, unsigned int query_pc, unsigned int stat
 }
 
 mc_world_storage_status mc_population_lake_feature_init(mc_population_lake_feature *feature,
-                                                        int32_t target)
-{
+                                                        int32_t target) {
     if (feature == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     feature->a = target; /* dj/cd.<init>6 */
@@ -517,8 +487,7 @@ mc_world_storage_status mc_population_lake_feature_init(mc_population_lake_featu
 }
 
 mc_world_storage_status mc_population_spring_feature_init(mc_population_spring_feature *feature,
-                                                          int32_t target)
-{
+                                                          int32_t target) {
     if (feature == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     feature->a = target; /* xo/pc.<init>6 */
@@ -526,8 +495,7 @@ mc_world_storage_status mc_population_spring_feature_init(mc_population_spring_f
 }
 
 mc_world_storage_status mc_population_lake_feature_scale(mc_population_lake_feature *feature,
-                                                         double x, double y, double z)
-{
+                                                         double x, double y, double z) {
     (void)x;
     (void)y;
     (void)z;
@@ -535,8 +503,7 @@ mc_world_storage_status mc_population_lake_feature_scale(mc_population_lake_feat
 }
 
 mc_world_storage_status mc_population_spring_feature_scale(mc_population_spring_feature *feature,
-                                                           double x, double y, double z)
-{
+                                                           double x, double y, double z) {
     (void)x;
     (void)y;
     (void)z;
@@ -546,8 +513,7 @@ mc_world_storage_status mc_population_spring_feature_scale(mc_population_spring_
 mc_world_storage_status mc_population_lake_place(const mc_population_lake_feature *feature,
                                                  mc_world_runtime *world, mc_java_random *random,
                                                  int32_t x, int32_t y, int32_t z, bool *out,
-                                                 mc_population_lake_spring_error *error)
-{
+                                                 mc_population_lake_spring_error *error) {
     feature_frame frame;
     if (!begin(&frame, feature, world, random, out, true))
         return finish(&frame, false, false, out, error);
@@ -586,8 +552,7 @@ mc_world_storage_status mc_population_lake_place(const mc_population_lake_featur
 mc_world_storage_status mc_population_spring_place(const mc_population_spring_feature *feature,
                                                    mc_world_runtime *world, mc_java_random *random,
                                                    int32_t x, int32_t y, int32_t z, bool *out,
-                                                   mc_population_lake_spring_error *error)
-{
+                                                   mc_population_lake_spring_error *error) {
     feature_frame frame;
     if (!begin(&frame, feature, world, random, out, false))
         return finish(&frame, false, false, out, error);

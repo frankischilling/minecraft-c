@@ -20,6 +20,7 @@ typedef struct tt_profile {
     mc_platform_nanotime clock;
     bool math_cached;
 } tt_profile;
+
 typedef struct tt_saved {
     mc_chunk_data data;
     uint8_t blocks[MC_CHUNK_BLOCKS];
@@ -28,6 +29,7 @@ typedef struct tt_saved {
     mc_block **m, *elements[MC_REGISTRY_BLOCK_SLOTS], *named[96];
     bool *o, opacity[MC_REGISTRY_BLOCK_SLOTS];
 } tt_saved;
+
 typedef enum tt_control {
     TT_FULL,
     TT_DIRT_ALREADY,
@@ -43,11 +45,14 @@ typedef enum tt_control {
     TT_NULL_METADATA,
     TT_LATE_LOG_HOOK
 } tt_control;
+
 typedef enum tt_budget { TT_INITIAL, TT_FIRST_LEAF, TT_COMPLETE } tt_budget;
+
 typedef struct tt_draws {
     int32_t height, trunk, foliage_start, maximum_radius;
     unsigned int corners;
 } tt_draws;
+
 static const unsigned int tt_clearance_pc[] = {141, 141, 171, 165};
 static const unsigned int tt_clearance_field[] = {156, 156, 186, 180};
 static const unsigned int tt_grass_field[] = {214, 214, 244, 238};
@@ -60,14 +65,13 @@ static const unsigned int tt_trunk_set_pc[] = {489, 491, 532, 550};
 static const char *const tt_client[] = {"yh", "k", "pw", "ws"};
 static const char *const tt_server[] = {"pn", "h", "jt", "on"};
 
-static uint64_t tt_double_bits(double value)
-{
+static uint64_t tt_double_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
-static tt_profile tt_profile_read(const mc_java_random_profile *p)
-{
+
+static tt_profile tt_profile_read(const mc_java_random_profile *p) {
     tt_profile s = {.unique = atomic_load_explicit(&p->uniquifier, memory_order_relaxed),
                     .phase = atomic_load_explicit(&p->holder_phase, memory_order_acquire),
                     .math = p->math,
@@ -80,9 +84,9 @@ static tt_profile tt_profile_read(const mc_java_random_profile *p)
     }
     return s;
 }
+
 static bool tt_profile_is(const mc_java_random_profile *p, const tt_profile *before,
-                          unsigned int constructors)
-{
+                          unsigned int constructors) {
     tt_profile after = tt_profile_read(p);
     uint64_t expected = before->unique;
     for (unsigned int i = 0; i < constructors; ++i)
@@ -94,16 +98,16 @@ static bool tt_profile_is(const mc_java_random_profile *p, const tt_profile *bef
            after.clock.initial_sample == before->clock.initial_sample &&
            after.clock.initialized == before->clock.initialized;
 }
-static mc_registry_error tt_empty_registry(void)
-{
+
+static mc_registry_error tt_empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
                                .constructor_pc = -1,
                                .active_initializer_pc = -1,
                                .item_argument = -1};
 }
-static bool tt_cleared(const mc_world_tree_error *e)
-{
+
+static bool tt_cleared(const mc_world_tree_error *e) {
     const mc_registry_error registry = tt_empty_registry();
     return e->status == MC_WORLD_STORAGE_OK && e->operation == NULL && e->feature_class == NULL &&
            e->method == NULL && e->bytecode == 0 && e->entry_bytecode == 0 && !e->native_boundary &&
@@ -113,15 +117,15 @@ static bool tt_cleared(const mc_world_tree_error *e)
            same_registry(&e->mutation.registry, &registry) &&
            e->mutation.status == MC_WORLD_STORAGE_OK && e->mutation.operation == NULL;
 }
+
 /* Read the actual production-private definition, shared with trees.c. No
  * copied feature layout, inspector backend, private field write or clock input. */
-static bool tt_big_quiescent(const mc_world_tree_big_oak *tree)
-{
+static bool tt_big_quiescent(const mc_world_tree_big_oak *tree) {
     return tree != NULL && !tree->entered && tree->context == NULL;
 }
+
 static bool tt_big_fresh(const mc_world_tree_big_oak *tree, mc_world_runtime *constructor_world,
-                         size_t limit)
-{
+                         size_t limit) {
     return tt_big_quiescent(tree) && tree->classes == constructor_world->classes &&
            tree->world == NULL && tree->base[0] == 0 && tree->base[1] == 0 && tree->base[2] == 0 &&
            tree->height_limit == 0 && tree->trunk_height == 0 &&
@@ -133,12 +137,12 @@ static bool tt_big_fresh(const mc_world_tree_big_oak *tree, mc_world_runtime *co
            !tree->random.have_next_next_gaussian &&
            tt_double_bits(tree->random.next_next_gaussian) == UINT64_C(0);
 }
-static size_t tt_index(int32_t x, int32_t y, int32_t z)
-{
+
+static size_t tt_index(int32_t x, int32_t y, int32_t z) {
     return ((((size_t)(uint32_t)x & 15u) * 16u) + ((uint32_t)z & 15u)) * 128u + (size_t)y;
 }
-static mc_block **tt_named(mc_registry_classes *r, const char *name)
-{
+
+static mc_block **tt_named(mc_registry_classes *r, const char *name) {
     for (size_t i = 0; i < COUNT(r->blocks.named); ++i) {
         const char *n = mc_registry_block_static_name(i);
         if (n != NULL && strcmp(n, name) == 0)
@@ -146,8 +150,8 @@ static mc_block **tt_named(mc_registry_classes *r, const char *name)
     }
     return NULL;
 }
-static bool tt_id(fixture *f, size_t side, const char *name, int32_t *id)
-{
+
+static bool tt_id(fixture *f, size_t side, const char *name, int32_t *id) {
     const mc_block *b = NULL;
     if (mc_registry_block_static_get(f->registry[side], name, &b, NULL) != MC_REGISTRY_OK ||
         b == NULL)
@@ -155,8 +159,8 @@ static bool tt_id(fixture *f, size_t side, const char *name, int32_t *id)
     *id = b->fields.bn;
     return *id > 0 && *id <= UINT8_MAX;
 }
-static bool tt_prepare(tt_saved *s, mc_world_chunk *c, mc_registry_classes *r, int32_t soil)
-{
+
+static bool tt_prepare(tt_saved *s, mc_world_chunk *c, mc_registry_classes *r, int32_t soil) {
     if (c == NULL || c->data == NULL || c->data->blocks == NULL ||
         c->data->blocks_capacity < MC_CHUNK_BLOCKS || c->e == NULL || c->f == NULL ||
         c->g == NULL || c->e->a != c->data->metadata || c->f->a != c->data->skylight ||
@@ -187,8 +191,8 @@ static bool tt_prepare(tt_saved *s, mc_world_chunk *c, mc_registry_classes *r, i
             c->data->blocks[tt_index(x, 63, z)] = (uint8_t)soil;
     return true;
 }
-static void tt_restore(const tt_saved *s, mc_world_chunk *c, mc_registry_classes *r)
-{
+
+static void tt_restore(const tt_saved *s, mc_world_chunk *c, mc_registry_classes *r) {
     *c->data = s->data;
     memcpy(c->data->blocks, s->blocks, sizeof(s->blocks));
     c->e = s->e;
@@ -203,8 +207,8 @@ static void tt_restore(const tt_saved *s, mc_world_chunk *c, mc_registry_classes
     /* Restore prepared bytes/references only. Reached lighting queues, dirty
      * flags, diagnostics, bindings and Random continuations are retained. */
 }
-static bool tt_stale_registry(mc_world_runtime *w, mc_world_chunk *c, mc_registry_classes *r)
-{
+
+static bool tt_stale_registry(mc_world_runtime *w, mc_world_chunk *c, mc_registry_classes *r) {
     const size_t index = tt_index(8, 64, 8);
     const uint8_t old = c->data->blocks[index];
     mc_block **m = r->blocks.m;
@@ -219,16 +223,16 @@ static bool tt_stale_registry(mc_world_runtime *w, mc_world_chunk *c, mc_registr
     return status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == NULL && e.bytecode == 23 &&
            e.registry.status == MC_REGISTRY_NULL_REFERENCE;
 }
-static void tt_random(mc_java_random *r, int64_t seed)
-{
+
+static void tt_random(mc_java_random *r, int64_t seed) {
     mc_java_random_seed(r, seed);
     (void)mc_java_random_next_gaussian(r); /* Actual API prepares a valid cached continuation. */
 }
+
 /* This is an invocation-budget oracle, not a second tree/voxel algorithm.
  * Broadleaf has exactly sixteen corner invocations over four admitted layers.
  * Tall foliage has none. Dense's fourth/fifth draws straddle all foliage. */
-static bool tt_expected(unsigned int kind, tt_budget budget, mc_java_random *r, tt_draws *d)
-{
+static bool tt_expected(unsigned int kind, tt_budget budget, mc_java_random *r, tt_draws *d) {
     int32_t a, b;
     *d = (tt_draws){0};
     if (!mc_java_random_next_bounded(r, kind < 2 ? 3 : kind == 2 ? 5 : 4, &a))
@@ -271,9 +275,9 @@ static bool tt_expected(unsigned int kind, tt_budget budget, mc_java_random *r, 
     }
     return true;
 }
+
 static mc_world_storage_status tt_small(unsigned int kind, mc_world_runtime *w, mc_java_random *r,
-                                        int32_t y, bool *out, mc_world_tree_error *e)
-{
+                                        int32_t y, bool *out, mc_world_tree_error *e) {
     switch (kind) {
         case 0:
             return mc_world_tree_oak(w, r, 8, y, 8, out, e);
@@ -286,9 +290,9 @@ static mc_world_storage_status tt_small(unsigned int kind, mc_world_runtime *w, 
     }
     return MC_WORLD_STORAGE_INVALID_ARGUMENT;
 }
+
 static bool tt_small_trial(fixture *f, size_t side, unsigned int kind, tt_control control,
-                           int64_t seed, bool alias_world_random)
-{
+                           int64_t seed, bool alias_world_random) {
     bool ok = false, prepared = false;
     tt_saved *saved = NULL;
     uint8_t *before = NULL;
@@ -459,12 +463,12 @@ cleanup:
     free(saved);
     return ok;
 }
+
 /* Select a prepared provider continuation by actual Random APIs only. The
  * spread control chooses a first candidate analytically away from the trunk:
  * radial>.8 and angle in (.2,.3) turns, at retained height10. No tree algorithm
  * or voxel replay is used to select or predict a complete result. */
-static bool tt_big_seed(int32_t height, bool spread, int64_t *out)
-{
+static bool tt_big_seed(int32_t height, bool spread, int64_t *out) {
     for (int64_t seed = 0; seed < 65536; ++seed) {
         mc_java_random provider, private_random;
         tt_random(&provider, seed);
@@ -485,12 +489,12 @@ static bool tt_big_seed(int32_t height, bool spread, int64_t *out)
     }
     return false;
 }
+
 /* Discover the native opaque owner's documented allocation threshold through
  * real admitted budgets. This does not cast a shadow private layout, inject an
  * allocator/clock, or infer Java heap size. Every successful calibration create
  * must consume exactly one real DefaultRandom constructor prefix. */
-static bool tt_big_owner_bytes(fixture *f, size_t side, size_t *out)
-{
+static bool tt_big_owner_bytes(fixture *f, size_t side, size_t *out) {
     bool ok = false;
     mc_world_tree_big_oak *tree = NULL;
     size_t low = 0, high = 4096;
@@ -528,8 +532,8 @@ cleanup:
     mc_world_tree_big_oak_dispose(tree);
     return ok;
 }
-static bool tt_native_admission(fixture *f, size_t side)
-{
+
+static bool tt_native_admission(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *retired = NULL;
     mc_world_tree_big_oak *tree = NULL;
@@ -594,8 +598,8 @@ cleanup:
         ok = false;
     return ok;
 }
-static bool tt_big_ownership(fixture *f, size_t side)
-{
+
+static bool tt_big_ownership(fixture *f, size_t side) {
     bool ok = false;
     mc_world_tree_big_oak *tree = NULL, *candidate = NULL;
     mc_world_runtime *peer = NULL;
@@ -696,8 +700,8 @@ typedef enum tt_big_control {
     TT_BIG_LATE_LOG,
     TT_BIG_RETAINED_CANDIDATE
 } tt_big_control;
-static bool tt_big_trial(fixture *f, size_t side, size_t owner_bytes, tt_big_control control)
-{
+
+static bool tt_big_trial(fixture *f, size_t side, size_t owner_bytes, tt_big_control control) {
     bool ok = false, prepared = false;
     tt_saved *saved = NULL;
     mc_world_tree_big_oak *tree = NULL;
@@ -972,8 +976,8 @@ cleanup:
     free(saved);
     return ok;
 }
-static bool tt_big_bounds_and_guards(fixture *f, size_t side)
-{
+
+static bool tt_big_bounds_and_guards(fixture *f, size_t side) {
     bool ok = false, prepared = false;
     tt_saved *saved = NULL;
     mc_world_tree_big_oak *tree = NULL;
@@ -1106,8 +1110,8 @@ cleanup:
     free(saved);
     return ok;
 }
-static bool population_tree_contracts(fixture *f, size_t side)
-{
+
+static bool population_tree_contracts(fixture *f, size_t side) {
     bool ok = false;
     CHECK(side < 2 && f->resources[side].opens == 3 && !f->resources[side].bad &&
           f->worlds[side]->fields.r != NULL && f->worlds[side]->active_calls == 0 &&

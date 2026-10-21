@@ -23,17 +23,16 @@ typedef struct ge_disk {
 } ge_disk;
 
 enum { GE_MIXED, GE_BAD_ITEM, GE_BAD_TILES, GE_ONE_ITEM };
+
 enum { GE_ORIGINAL_STACK, GE_REPLACED_STACK, GE_RAW_STACK };
 
-static uint64_t ge_double_bits(double value)
-{
+static uint64_t ge_double_bits(double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static bool ge_text(mc_nbt_string value, const char *text)
-{
+static bool ge_text(mc_nbt_string value, const char *text) {
     const size_t length = strlen(text);
     if (value.length != length || (length != 0 && value.units == NULL))
         return false;
@@ -43,8 +42,8 @@ static bool ge_text(mc_nbt_string value, const char *text)
     return true;
 }
 
-static void ge_prepare(ge_record *r, int64_t marker, bool unknown, bool bad_count, bool item_extra)
-{
+static void ge_prepare(ge_record *r, int64_t marker, bool unknown, bool bad_count,
+                       bool item_extra) {
     memset(r, 0, sizeof(*r));
     r->root.type = MC_NBT_COMPOUND;
     r->root.value.compound.items = r->children;
@@ -111,8 +110,7 @@ static void ge_prepare(ge_record *r, int64_t marker, bool unknown, bool bad_coun
 }
 
 static bool ge_open(fixture *f, size_t slot, const char *root, size_t max_tags,
-                    bool normalize_marker)
-{
+                    bool normalize_marker) {
     bool ok = false;
     char path[8192];
     uint8_t map[256];
@@ -139,8 +137,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_setup(fixture **out, const char *root, size_t max_tags, bool normalize_marker)
-{
+static bool ge_setup(fixture **out, const char *root, size_t max_tags, bool normalize_marker) {
     bool ok = false;
     fixture *f = calloc(1, sizeof(*f));
     *out = f; /* Preserve partial genuine ownership for the common cleanup. */
@@ -180,8 +177,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_seed(fixture *f, size_t slot, int scenario)
-{
+static bool ge_seed(fixture *f, size_t slot, int scenario) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     ge_record records[5];
@@ -264,15 +260,13 @@ cleanup:
     return ok;
 }
 
-static void ge_disk_free(ge_disk *disk)
-{
+static void ge_disk_free(ge_disk *disk) {
     mc_nbt_document_free(disk->document);
     mc_compression_buffer_free(&disk->bytes);
     memset(disk, 0, sizeof(*disk));
 }
 
-static bool ge_read(fixture *f, size_t slot, ge_disk *disk)
-{
+static bool ge_read(fixture *f, size_t slot, ge_disk *disk) {
     size_t consumed = 0;
     return mc_world_regions_read(f->regions, mc_world_store_root(f->stores[slot]), 0, 0,
                                  &disk->bytes, NULL) == MC_WORLD_STORAGE_OK &&
@@ -281,8 +275,7 @@ static bool ge_read(fixture *f, size_t slot, ge_disk *disk)
            consumed == disk->bytes.length;
 }
 
-static bool ge_same_disk(fixture *f, size_t slot, const ge_disk *before)
-{
+static bool ge_same_disk(fixture *f, size_t slot, const ge_disk *before) {
     ge_disk after = {0};
     const bool read = ge_read(f, slot, &after);
     const bool equal = read && after.bytes.length == before->bytes.length &&
@@ -291,8 +284,7 @@ static bool ge_same_disk(fixture *f, size_t slot, const ge_disk *before)
     return equal;
 }
 
-static bool ge_output(fixture *f, size_t slot, const int64_t *markers, size_t count, int mode)
-{
+static bool ge_output(fixture *f, size_t slot, const int64_t *markers, size_t count, int mode) {
     bool ok = false;
     ge_disk disk = {0};
     CHECK(ge_read(f, slot, &disk));
@@ -347,8 +339,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_load(fixture *f, size_t slot, size_t expected)
-{
+static bool ge_load(fixture *f, size_t slot, size_t expected) {
     bool ok = false;
     mc_chunk_state *loaded = NULL;
     mc_world_runtime_acquisition_error error;
@@ -371,8 +362,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_hold(fixture *f, size_t slot, size_t index, mc_entity **out)
-{
+static bool ge_hold(fixture *f, size_t slot, size_t index, mc_entity **out) {
     /* Fixture identity selectors: A, B, the second A occurrence. These do not
      * replace or reorder the real lists; disk assertions check source order. */
     const size_t slice = index == 1 ? 1 : 4, offset = index == 2 ? 1 : 0;
@@ -386,8 +376,7 @@ static bool ge_hold(fixture *f, size_t slot, size_t index, mc_entity **out)
     return true;
 }
 
-static bool ge_write(fixture *f, size_t slot)
-{
+static bool ge_write(fixture *f, size_t slot) {
     bool ok = false;
     uint32_t growth = UINT32_MAX;
     mc_world_game_save_error error;
@@ -403,8 +392,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_save_controls(fixture *f, size_t slot)
-{
+static bool ge_save_controls(fixture *f, size_t slot) {
     bool ok = false;
     mc_entity *a = NULL, *b = NULL;
     mc_item_stack *old_stack = NULL, *raw = NULL;
@@ -504,8 +492,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_copy_reload(fixture *f, size_t source, size_t target)
-{
+static bool ge_copy_reload(fixture *f, size_t source, size_t target) {
     bool ok = false;
     ge_disk disk = {0};
     mc_entity *old = NULL, *a = NULL, *b = NULL, *duplicate = NULL;
@@ -536,8 +523,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_failed_import(fixture *f, size_t slot, bool bad_item)
-{
+static bool ge_failed_import(fixture *f, size_t slot, bool bad_item) {
     bool ok = false;
     mc_world_store_game_stage *stage = NULL;
     mc_world_store_game_stage_view view = {0};
@@ -599,8 +585,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_session_and_quota(fixture *f, size_t slot)
-{
+static bool ge_session_and_quota(fixture *f, size_t slot) {
     bool ok = false;
     mc_entity *a = NULL;
     ge_disk before = {0};
@@ -644,8 +629,7 @@ cleanup:
     return ok;
 }
 
-static bool ge_journal_protocol(fixture *f, size_t slot)
-{
+static bool ge_journal_protocol(fixture *f, size_t slot) {
     bool ok = false, entered = false, begun = false;
     mc_world_store_game_stage *stage = NULL;
     mc_world_store_game_stage_view view = {0};
@@ -699,8 +683,7 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char base[8192], root[8192];

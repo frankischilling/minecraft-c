@@ -6,6 +6,7 @@
 /* The production owner definition is shared by the implementation and
  * private state inspections. Keep the public owner opaque. */
 struct tree_context;
+
 struct mc_world_tree_big_oak {
     mc_java_random random;
     struct tree_context *context;      /* Transient native frame, never a World adapter. */

@@ -1,5 +1,28 @@
 # Test scope and reproduction
 
+The [bounds contracts](entity/bounds.md) pass 4,601 native checks per compiler.
+Fresh final-source MSVC/GCC/Clang builds pass all 160/162/162 configured cases
+in bounds-first and complementary partitions, without skips and with numerical
+Java comparisons enabled. Linux uses ASan/UBSan/leak checks and strict FP.
+Each graph verifies 749 source inputs, 254 dependency pins, 220 products and
+40 captures, complete case rows and selected strict compile commands.
+
+The public [original comparison tool](../tests/tools/entity/bounds/compare_bounds.py)
+invokes the genuine pinned JAR bodies and the exact final native probes. All
+17,388 client and 16,146 server rows match exactly on all three compilers.
+An independent audit regenerates the complete corpus and checks every raw row,
+command/stream outcome, selected tool and compiled-product join. No NaN
+canonicalization or tolerance hides a mismatch. Earlier raw payload failures
+remain unchanged; a narrow compatibility operation fixes two-NaN addition.
+These are numerical/pool scenarios, without Entity movement, World collision,
+ray/Vec3/HitResult/String or full-game qualification.
+
+The requested clang-format settings use attached braces and separate definition
+blocks. Applying them changes 308 files among 443 scanned C sources/headers;
+the final check passes all 443. All earlier evidence remains retained.
+
+The following snow checkpoint predates bounds integration.
+
 The [snow contracts](world/snow.md) pass all 159 configured MSVC cases and 161
 per sanitized GCC/Clang build, without skips and with numerical Java comparisons
 enabled. Each fresh build runs the Snow case first, then the complementary

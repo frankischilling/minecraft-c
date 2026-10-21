@@ -7,15 +7,13 @@
 #include <stdint.h>
 
 static mc_world_storage_status presentation_result(mc_world_mutation_error *out,
-                                                   const mc_world_mutation_error *frame)
-{
+                                                   const mc_world_mutation_error *frame) {
     if (out != NULL)
         *out = *frame;
     return frame->status;
 }
 
-static bool presentation_admit(mc_world_runtime *world, mc_world_mutation_error *frame)
-{
+static bool presentation_admit(mc_world_runtime *world, mc_world_mutation_error *frame) {
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
     const char *operation = NULL;
     if (world == NULL) {
@@ -37,8 +35,7 @@ static bool presentation_admit(mc_world_runtime *world, mc_world_mutation_error 
     return false;
 }
 
-static bool presentation_list_metadata(const mc_world_reference_list *list)
-{
+static bool presentation_list_metadata(const mc_world_reference_list *list) {
     return list != NULL && list->count <= list->capacity &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            (list->capacity == 0 || list->items != NULL);
@@ -50,8 +47,7 @@ static bool presentation_list_metadata(const mc_world_reference_list *list)
  * so only source index0 is reachable. Successful future concrete observers
  * would require the real iinc46/48 and size9 reload on every next iteration. */
 static bool presentation_observe_held(mc_world_runtime *world, unsigned int invocation_pc,
-                                      const char *operation, mc_world_mutation_error *frame)
-{
+                                      const char *operation, mc_world_mutation_error *frame) {
     frame->observer_bytecode = 9;
     const mc_world_reference_list *list = world->fields.u; /* getfield6 */
     if (!presentation_list_metadata(list))
@@ -81,8 +77,7 @@ static bool presentation_observe_held(mc_world_runtime *world, unsigned int invo
     return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
 }
 
-static bool presentation_enter(mc_world_runtime *world, mc_world_mutation_error *frame)
-{
+static bool presentation_enter(mc_world_runtime *world, mc_world_mutation_error *frame) {
     if (!presentation_admit(world, frame))
         return false;
 
@@ -98,8 +93,7 @@ static bool presentation_enter(mc_world_runtime *world, mc_world_mutation_error 
 
 static mc_world_storage_status presentation_finish(mc_world_runtime *world, bool completed,
                                                    mc_world_mutation_error *frame,
-                                                   mc_world_mutation_error *error)
-{
+                                                   mc_world_mutation_error *error) {
     if (completed)
         *frame = mc_world_mutation_empty_error();
     mc_world_runtime_call_leave(world);
@@ -108,8 +102,7 @@ static mc_world_storage_status presentation_finish(mc_world_runtime *world, bool
 
 bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double z,
                              const mc_registry_string *name, float volume, float pitch,
-                             mc_world_mutation_error *error)
-{
+                             mc_world_mutation_error *error) {
     /* Preserve source values, including NULL String and all floating bits.
      * No observer can currently return normally from a nonempty iteration.
      * Thus the arguments require no conversion, read, clipping or validation.
@@ -125,8 +118,7 @@ bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double
 
 bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_string *name, double x,
                                 double y, double z, double velocity_x, double velocity_y,
-                                double velocity_z, mc_world_mutation_error *error)
-{
+                                double velocity_z, mc_world_mutation_error *error) {
     /* No Math.random, default-Random construction or velocity adjustment is
      * performed here. Every caller draw retains its original interleaving. */
     (void)name;
@@ -142,8 +134,7 @@ bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_strin
 mc_world_storage_status mc_world_runtime_sound(mc_world_runtime *world, double x, double y,
                                                double z, const mc_registry_string *name,
                                                float volume, float pitch,
-                                               mc_world_mutation_error *error)
-{
+                                               mc_world_mutation_error *error) {
     mc_world_mutation_error frame = mc_world_mutation_empty_error();
     if (!presentation_enter(world, &frame))
         return presentation_result(error, &frame);
@@ -155,8 +146,7 @@ mc_world_storage_status mc_world_runtime_particle(mc_world_runtime *world,
                                                   const mc_registry_string *name, double x,
                                                   double y, double z, double velocity_x,
                                                   double velocity_y, double velocity_z,
-                                                  mc_world_mutation_error *error)
-{
+                                                  mc_world_mutation_error *error) {
     mc_world_mutation_error frame = mc_world_mutation_empty_error();
     if (!presentation_enter(world, &frame))
         return presentation_result(error, &frame);

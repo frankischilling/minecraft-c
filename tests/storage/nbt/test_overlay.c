@@ -16,23 +16,18 @@ static unsigned int checks;
     } while (0)
 
 #define SPAN(array)                                                                                \
-    {                                                                                              \
-        (array), sizeof(array) / sizeof((array)[0])                                                \
-    }
+    { (array), sizeof(array) / sizeof((array)[0]) }
 
-static int error_is(mc_nbt_error error, mc_nbt_status status)
-{
+static int error_is(mc_nbt_error error, mc_nbt_status status) {
     return error.status == status && error.offset == 0;
 }
 
-static int name_is(mc_nbt_string actual, const uint16_t *units, size_t length)
-{
+static int name_is(mc_nbt_string actual, const uint16_t *units, size_t length) {
     return actual.length == length &&
            (length == 0 || memcmp(actual.units, units, length * sizeof(*units)) == 0);
 }
 
-static int test_fixed_order_and_owners(void)
-{
+static int test_fixed_order_and_owners(void) {
     static const uint16_t source_name[] = {'R', 0, 0xd800};
     static const uint16_t fields_name[] = {'G'};
     static const uint16_t raw_name[] = {'r', 'a', 'w'};
@@ -167,8 +162,7 @@ static int test_fixed_order_and_owners(void)
     return 0;
 }
 
-static int test_empty_null_and_shared_inputs(void)
-{
+static int test_empty_null_and_shared_inputs(void) {
     static const uint16_t source_name[] = {'S'};
     static const uint16_t fields_name[] = {'F'};
     static const uint16_t a_name[] = {'a'};
@@ -226,8 +220,7 @@ static int test_empty_null_and_shared_inputs(void)
     return 0;
 }
 
-static int test_disjoint_scratch_composition(void)
-{
+static int test_disjoint_scratch_composition(void) {
     static const uint16_t item_name[] = {'I', 't', 'e', 'm'};
     static const uint16_t old_item_root_name[] = {'x'};
     static const uint16_t custom_name[] = {'u'};
@@ -285,8 +278,7 @@ static int test_disjoint_scratch_composition(void)
 }
 
 static int expect_shape_failure(const mc_nbt_tag *source, const mc_nbt_tag *fields,
-                                mc_nbt_status expected)
-{
+                                mc_nbt_status expected) {
     const mc_nbt_tag sentinel = {.type = MC_NBT_BYTE, .value.byte_value = 21};
     const mc_nbt_tag *scratch[4] = {&sentinel, &sentinel, &sentinel, &sentinel};
     mc_nbt_tag out;
@@ -306,8 +298,7 @@ static int expect_shape_failure(const mc_nbt_tag *source, const mc_nbt_tag *fiel
     return 0;
 }
 
-static int test_shallow_failures(void)
-{
+static int test_shallow_failures(void) {
     static const uint16_t name[] = {'v'};
     const mc_nbt_tag good = {.type = MC_NBT_INT, .name = SPAN(name), .value.int_value = 1};
     const mc_nbt_tag *good_items[] = {&good};
@@ -380,8 +371,7 @@ static int test_shallow_failures(void)
     return 0;
 }
 
-static int test_deferred_descendant_validation(void)
-{
+static int test_deferred_descendant_validation(void) {
     static const uint16_t unknown_name[] = {'u'};
     const mc_nbt_tag malformed_descendant = {
         .type = MC_NBT_LIST,
@@ -414,8 +404,7 @@ static int test_deferred_descendant_validation(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_fixed_order_and_owners() || test_empty_null_and_shared_inputs() ||
         test_disjoint_scratch_composition() || test_shallow_failures() ||
         test_deferred_descendant_validation())

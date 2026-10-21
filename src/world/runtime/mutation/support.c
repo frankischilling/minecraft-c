@@ -4,8 +4,7 @@
 #include "../chunks_internal.h"
 #include "mc/core/java/java.h"
 
-mc_world_mutation_error mc_world_mutation_empty_error(void)
-{
+mc_world_mutation_error mc_world_mutation_empty_error(void) {
     const mc_registry_error registry = {.initializer_pc = -1,
                                         .block_id = -1,
                                         .constructor_pc = -1,
@@ -19,8 +18,7 @@ mc_world_mutation_error mc_world_mutation_empty_error(void)
 }
 
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,
-                            mc_world_storage_status status, const char *operation)
-{
+                            mc_world_storage_status status, const char *operation) {
     error->status = status;
     error->operation = operation;
     error->cause = (mc_world_storage_error){status, operation, 0};
@@ -30,8 +28,7 @@ bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *er
 }
 
 bool mc_world_mutation_registry_fail(mc_world_runtime *world, mc_world_mutation_error *error,
-                                     const mc_registry_error *cause, const char *operation)
-{
+                                     const mc_registry_error *cause, const char *operation) {
     error->registry = *cause;
     error->status =
         mc_world_runtime_registry_result(world, cause->status, cause, operation, &error->cause);
@@ -41,8 +38,7 @@ bool mc_world_mutation_registry_fail(mc_world_runtime *world, mc_world_mutation_
 
 static bool nibble_byte(const mc_world_chunk_nibble *nibble, int32_t x, int32_t y, int32_t z,
                         mc_world_chunk_nibble_fields *fields, size_t *index,
-                        mc_world_mutation_error *error)
-{
+                        mc_world_mutation_error *error) {
     const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
     const int32_t packed = mc_java_i32_shr(cell, 1);
     if (mc_world_chunk_nibble_fields_get(nibble, fields) != MC_WORLD_STORAGE_OK ||
@@ -57,8 +53,7 @@ static bool nibble_byte(const mc_world_chunk_nibble *nibble, int32_t x, int32_t 
 }
 
 bool mc_world_mutation_nibble_get(const mc_world_chunk_nibble *nibble, int32_t x, int32_t y,
-                                  int32_t z, int32_t *out, mc_world_mutation_error *error)
-{
+                                  int32_t z, int32_t *out, mc_world_mutation_error *error) {
     mc_world_chunk_nibble_fields fields;
     size_t index;
     if (!nibble_byte(nibble, x, y, z, &fields, &index, error))
@@ -69,8 +64,7 @@ bool mc_world_mutation_nibble_get(const mc_world_chunk_nibble *nibble, int32_t x
 }
 
 bool mc_world_mutation_nibble_set(const mc_world_chunk_nibble *nibble, int32_t x, int32_t y,
-                                  int32_t z, int32_t value, mc_world_mutation_error *error)
-{
+                                  int32_t z, int32_t value, mc_world_mutation_error *error) {
     mc_world_chunk_nibble_fields fields;
     size_t index;
     if (!nibble_byte(nibble, x, y, z, &fields, &index, error))
@@ -84,8 +78,7 @@ bool mc_world_mutation_nibble_set(const mc_world_chunk_nibble *nibble, int32_t x
 
 bool mc_world_mutation_q(mc_world_runtime *world, int32_t id, unsigned int *bytecode,
                          unsigned int capture_pc, unsigned int element_pc, int32_t *out,
-                         mc_world_mutation_error *error)
-{
+                         mc_world_mutation_error *error) {
     mc_registry_block_q_view array;
     mc_registry_error cause = mc_world_mutation_empty_error().registry;
     *bytecode = capture_pc;
@@ -108,8 +101,7 @@ bool mc_world_mutation_q(mc_world_runtime *world, int32_t id, unsigned int *byte
 bool mc_world_mutation_submit(mc_world_runtime *world, mc_light_kind kind,
                               const mc_light_bounds *bounds, unsigned int *bytecode,
                               unsigned int type_pc, unsigned int call_pc,
-                              mc_world_mutation_error *error)
-{
+                              mc_world_mutation_error *error) {
     const mc_world_light_type *type;
     mc_world_storage_error cause = {0};
     *bytecode = type_pc;
@@ -134,8 +126,7 @@ bool mc_world_mutation_submit(mc_world_runtime *world, mc_light_kind kind,
 }
 
 bool mc_world_mutation_column(mc_world_chunk *chunk, int32_t x, int32_t z,
-                              mc_world_mutation_error *error)
-{
+                              mc_world_mutation_error *error) {
     mc_world_chunk_error frame = {.registry = mc_world_mutation_empty_error().registry};
     if (mc_world_runtime_chunk_column(chunk, x, z, &frame)) {
         error->column_bytecode = 0;

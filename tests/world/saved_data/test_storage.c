@@ -36,16 +36,14 @@ static const uint8_t fixture[] = {10,   0,    1,    'I',  2,    0,    1,    'a',
                                   0xff, 0xff, 2,    0,    12,   0xc0, 0x80, 0xed, 0xa0, 0x80, 'n',
                                   0xed, 0xb0, 0x80, 0xef, 0xbf, 0xbf, 0x80, 0,    0,    0xde, 0xad};
 
-static bool text_is(mc_nbt_string actual, const uint16_t *units, size_t length)
-{
+static bool text_is(mc_nbt_string actual, const uint16_t *units, size_t length) {
     return actual.length == length &&
            (length == 0 ||
             (actual.units != NULL && memcmp(actual.units, units, length * sizeof(*units)) == 0));
 }
 
 static const mc_world_saved_id *find_id(const mc_world_saved_data *owner, bool null_name,
-                                        const uint16_t *units, size_t length)
-{
+                                        const uint16_t *units, size_t length) {
     for (size_t i = 0; i < mc_world_saved_data_count(owner); ++i) {
         const mc_world_saved_id *id = mc_world_saved_data_id_at(owner, i);
         if (id != NULL && id->null_name == null_name && text_is(id->name, units, length))
@@ -55,15 +53,13 @@ static const mc_world_saved_id *find_id(const mc_world_saved_data *owner, bool n
 }
 
 static bool id_is(const mc_world_saved_data *owner, bool null_name, const uint16_t *units,
-                  size_t length, int16_t value)
-{
+                  size_t length, int16_t value) {
     const mc_world_saved_id *id = find_id(owner, null_name, units, length);
     return id != NULL && id->value == value;
 }
 
 static mc_world_storage_status open_store(const char *root, const char *leaf,
-                                          mc_world_regions *regions, mc_world_store **out)
-{
+                                          mc_world_regions *regions, mc_world_store **out) {
     char *path = NULL;
     uint8_t map[256];
     mc_world_storage_error error = {0};
@@ -81,13 +77,11 @@ static mc_world_storage_status open_store(const char *root, const char *leaf,
     return status;
 }
 
-static mc_world_storage_status id_path(const mc_world_store *store, char **out)
-{
+static mc_world_storage_status id_path(const mc_world_store *store, char **out) {
     return mc_ws_path_join(mc_world_store_root(store), "data/idcounts.dat", out, NULL);
 }
 
-static bool file_is(const char *path, const uint8_t *expected, size_t length)
-{
+static bool file_is(const char *path, const uint8_t *expected, size_t length) {
     mc_ws_file_bytes bytes = {0};
     const mc_world_storage_status status = mc_ws_read_file(path, 1024 * 1024, &bytes, NULL);
     const bool equal = status == MC_WORLD_STORAGE_OK && bytes.length == length &&
@@ -96,8 +90,7 @@ static bool file_is(const char *path, const uint8_t *expected, size_t length)
     return equal;
 }
 
-static int test_memory(void)
-{
+static int test_memory(void) {
     int result = 1;
     mc_world_saved_data *owner = NULL, *limited = NULL, *candidate = NULL;
     mc_world_saved_data_limits limits = mc_world_saved_data_default_limits();
@@ -211,8 +204,7 @@ cleanup:
     return result;
 }
 
-static int test_roundtrip(const char *root, mc_world_regions *regions)
-{
+static int test_roundtrip(const char *root, mc_world_regions *regions) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_saved_data *owner = NULL, *peer = NULL, *reload = NULL, *candidate = NULL;
@@ -306,8 +298,7 @@ cleanup:
     return result;
 }
 
-static int test_nullable_file(const char *root, mc_world_regions *regions)
-{
+static int test_nullable_file(const char *root, mc_world_regions *regions) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_saved_data *owner = NULL, *reload = NULL;
@@ -370,8 +361,7 @@ cleanup:
     return result;
 }
 
-static int test_caught(const char *root, mc_world_regions *regions)
-{
+static int test_caught(const char *root, mc_world_regions *regions) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_saved_data *owner = NULL;
@@ -431,8 +421,7 @@ cleanup:
     return result;
 }
 
-static int test_write_limits(const char *root, mc_world_regions *regions)
-{
+static int test_write_limits(const char *root, mc_world_regions *regions) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_saved_data *owner = NULL;
@@ -493,8 +482,7 @@ cleanup:
     return result;
 }
 
-static int test_long_name(const char *root, mc_world_regions *regions)
-{
+static int test_long_name(const char *root, mc_world_regions *regions) {
     int result = 1;
     mc_world_store *store = NULL;
     mc_world_saved_data *owner = NULL;
@@ -530,8 +518,7 @@ cleanup:
     return result;
 }
 
-static int test_output_api(const char *root)
-{
+static int test_output_api(const char *root) {
     int result = 1;
     char *path = NULL, *directory = NULL;
     mc_ws_output output = {NULL, 777};
@@ -582,8 +569,7 @@ cleanup:
     return result;
 }
 
-static bool decode_path(const char *hex, char *out, size_t capacity)
-{
+static bool decode_path(const char *hex, char *out, size_t capacity) {
     const size_t length = strlen(hex);
     if (length == 0 || length % 2u != 0 || length / 2u >= capacity)
         return false;
@@ -606,8 +592,7 @@ static bool decode_path(const char *hex, char *out, size_t capacity)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char root[8192];
     mc_world_regions *regions = NULL;
     int result = 1;

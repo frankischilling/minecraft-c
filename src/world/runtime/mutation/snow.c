@@ -14,8 +14,7 @@ typedef struct snow_frame {
     snow_method method;
 } snow_frame;
 
-static void snow_at(const snow_frame *frame, unsigned int pc)
-{
+static void snow_at(const snow_frame *frame, unsigned int pc) {
     const bool client = frame->block->classes->options.side == MC_REGISTRY_CLIENT;
     mc_world_mutation_error *error = frame->error;
     error->hook_class = client ? "jr" : "gj";
@@ -41,8 +40,7 @@ static void snow_at(const snow_frame *frame, unsigned int pc)
     }
 }
 
-static bool snow_done(mc_world_mutation_error *error)
-{
+static bool snow_done(mc_world_mutation_error *error) {
     error->hook_class = NULL;
     error->hook_method = NULL;
     error->hook_bytecode = 0;
@@ -54,8 +52,7 @@ static bool snow_done(mc_world_mutation_error *error)
 }
 
 static bool snow_storage_fail(const snow_frame *frame, unsigned int pc,
-                              mc_world_storage_error cause)
-{
+                              mc_world_storage_error cause) {
     snow_at(frame, pc);
     frame->error->status = cause.status;
     frame->error->operation = cause.operation;
@@ -66,14 +63,12 @@ static bool snow_storage_fail(const snow_frame *frame, unsigned int pc,
 }
 
 static bool snow_registry_fail(const snow_frame *frame, unsigned int pc,
-                               const mc_registry_error *registry, const char *operation)
-{
+                               const mc_registry_error *registry, const char *operation) {
     snow_at(frame, pc);
     return mc_world_mutation_registry_fail(frame->world, frame->error, registry, operation);
 }
 
-static bool snow_null(const snow_frame *frame, unsigned int pc, const char *operation)
-{
+static bool snow_null(const snow_frame *frame, unsigned int pc, const char *operation) {
     mc_registry_error registry = mc_world_mutation_empty_error().registry;
     registry.status = MC_REGISTRY_NULL_REFERENCE;
     registry.message = operation;
@@ -83,8 +78,7 @@ static bool snow_null(const snow_frame *frame, unsigned int pc, const char *oper
 /* Keep the current caller and deepest concrete hook, alongside the explicit
  * snow frames. This diagnostic projection does not cap source recursion. */
 static bool snow_nested(const snow_frame *frame, unsigned int pc,
-                        const mc_world_mutation_error *lower)
-{
+                        const mc_world_mutation_error *lower) {
     const mc_world_mutation_error captured = *lower;
     *frame->error = captured;
     if (captured.cause_hook_class == NULL) {
@@ -100,8 +94,7 @@ static bool snow_nested(const snow_frame *frame, unsigned int pc,
 
 bool mc_world_mutation_snow_can_place(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, bool *out,
-                                      mc_world_mutation_error *error)
-{
+                                      mc_world_mutation_error *error) {
     const snow_frame frame = {world, block, error, SNOW_SUPPORT};
     const int32_t below = mc_java_i32_sub(y, 1);
     int32_t id;
@@ -152,8 +145,7 @@ bool mc_world_mutation_snow_can_place(mc_world_runtime *world, const mc_block *b
 /* Private h/client or g/server returns an ordinary boolean, discarded by its
  * only neighbor caller. Native completion is separate from that game value. */
 static bool snow_survive(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                         int32_t z, mc_world_mutation_error *error)
-{
+                         int32_t z, mc_world_mutation_error *error) {
     const snow_frame frame = {world, block, error, SNOW_PRIVATE};
     bool supported;
     if (!mc_world_mutation_snow_can_place(world, block, x, y, z, &supported, error))
@@ -179,8 +171,7 @@ static bool snow_survive(mc_world_runtime *world, const mc_block *block, int32_t
 
 bool mc_world_mutation_snow_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                      int32_t y, int32_t z, int32_t source_id,
-                                     mc_world_mutation_error *error)
-{
+                                     mc_world_mutation_error *error) {
     (void)source_id;
     const snow_frame frame = {world, block, error, SNOW_NEIGHBOR};
     if (!snow_survive(world, block, x, y, z, error))
@@ -190,8 +181,7 @@ bool mc_world_mutation_snow_neighbor(mc_world_runtime *world, const mc_block *bl
 
 bool mc_world_mutation_snow_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                  int32_t y, int32_t z, mc_java_random *random,
-                                 mc_world_mutation_error *error)
-{
+                                 mc_world_mutation_error *error) {
     (void)random;
     const snow_frame frame = {world, block, error, SNOW_TICK};
     const mc_world_light_type *type;

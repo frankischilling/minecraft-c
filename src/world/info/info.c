@@ -56,22 +56,19 @@ static mc_world_info_name info_empty_name = {SIZE_MAX, 0, NULL};
 static mc_world_info_name info_player_name = {SIZE_MAX, 6, info_player_key};
 
 static mc_world_info_status info_error(mc_world_info_error *error, mc_world_info_status status,
-                                       const char *field, mc_nbt_error nbt)
-{
+                                       const char *field, mc_nbt_error nbt) {
     if (error != NULL)
         *error = (mc_world_info_error){status, field, nbt};
     return status;
 }
 
 static mc_world_info_status info_status(mc_world_info_error *error, mc_world_info_status status,
-                                        const char *field)
-{
+                                        const char *field) {
     return info_error(error, status, field, (mc_nbt_error){MC_NBT_OK, 0});
 }
 
 static mc_world_info_status info_nbt_error(mc_world_info_error *error, mc_nbt_status status,
-                                           mc_nbt_error nbt)
-{
+                                           mc_nbt_error nbt) {
     const mc_world_info_status result =
         status == MC_NBT_INVALID_ARGUMENT    ? MC_WORLD_INFO_INVALID_ARGUMENT
         : status == MC_NBT_LIMIT             ? MC_WORLD_INFO_LIMIT
@@ -80,8 +77,7 @@ static mc_world_info_status info_nbt_error(mc_world_info_error *error, mc_nbt_st
     return info_error(error, result, NULL, nbt);
 }
 
-const char *mc_world_info_status_string(mc_world_info_status status)
-{
+const char *mc_world_info_status_string(mc_world_info_status status) {
     switch (status) {
         case MC_WORLD_INFO_OK:
             return "ok";
@@ -105,16 +101,14 @@ const char *mc_world_info_status_string(mc_world_info_status status)
     return "unknown world info status";
 }
 
-static bool info_add_size(size_t *total, size_t added)
-{
+static bool info_add_size(size_t *total, size_t added) {
     if (added > SIZE_MAX - *total)
         return false;
     *total += added;
     return true;
 }
 
-static const mc_nbt_tag *info_get(const mc_nbt_tag *compound, const char *key)
-{
+static const mc_nbt_tag *info_get(const mc_nbt_tag *compound, const char *key) {
     uint16_t units[INFO_KEY_UNITS];
     const size_t length = strlen(key);
     for (size_t i = 0; i < length; ++i)
@@ -123,8 +117,7 @@ static const mc_nbt_tag *info_get(const mc_nbt_tag *compound, const char *key)
 }
 
 mc_world_info_status mc_world_info_name_copy(mc_nbt_string text, size_t max_bytes,
-                                             mc_world_info_name **out)
-{
+                                             mc_world_info_name **out) {
     if (out == NULL || (text.length != 0 && text.units == NULL))
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (text.length > (SIZE_MAX - sizeof(mc_world_info_name)) / sizeof(uint16_t))
@@ -145,14 +138,12 @@ mc_world_info_status mc_world_info_name_copy(mc_nbt_string text, size_t max_byte
     return MC_WORLD_INFO_OK;
 }
 
-mc_nbt_string mc_world_info_name_text(const mc_world_info_name *name)
-{
+mc_nbt_string mc_world_info_name_text(const mc_world_info_name *name) {
     return name == NULL || name->length == 0 ? (mc_nbt_string){NULL, 0}
                                              : (mc_nbt_string){name->units, name->length};
 }
 
-mc_world_info_status mc_world_info_name_retain(mc_world_info_name *name)
-{
+mc_world_info_status mc_world_info_name_retain(mc_world_info_name *name) {
     if (name == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (name == &info_empty_name || name == &info_player_name)
@@ -163,30 +154,26 @@ mc_world_info_status mc_world_info_name_retain(mc_world_info_name *name)
     return MC_WORLD_INFO_OK;
 }
 
-void mc_world_info_name_release(mc_world_info_name *name)
-{
+void mc_world_info_name_release(mc_world_info_name *name) {
     if (name != NULL && name != &info_empty_name && name != &info_player_name && --name->holds == 0)
         free(name);
 }
 
-static mc_world_info_status info_backing_retain(info_backing *backing)
-{
+static mc_world_info_status info_backing_retain(info_backing *backing) {
     if (backing->holds == SIZE_MAX)
         return MC_WORLD_INFO_LIMIT;
     ++backing->holds;
     return MC_WORLD_INFO_OK;
 }
 
-static void info_backing_release(info_backing *backing)
-{
+static void info_backing_release(info_backing *backing) {
     if (backing != NULL && --backing->holds == 0) {
         mc_nbt_tree_free(backing->tree);
         free(backing);
     }
 }
 
-static info_backing *info_backing_create(mc_nbt_tree *tree)
-{
+static info_backing *info_backing_create(mc_nbt_tree *tree) {
     info_backing *backing = malloc(sizeof(*backing));
     if (backing != NULL) {
         backing->holds = 1;
@@ -196,8 +183,7 @@ static info_backing *info_backing_create(mc_nbt_tree *tree)
 }
 
 static mc_world_info_status info_player_wrap(info_backing *backing, const mc_nbt_tag *compound,
-                                             mc_world_info_player **out)
-{
+                                             mc_world_info_player **out) {
     mc_world_info_player *player = malloc(sizeof(*player));
     if (player == NULL)
         return MC_WORLD_INFO_ALLOCATION_FAILED;
@@ -227,8 +213,7 @@ static mc_world_info_status info_player_wrap(info_backing *backing, const mc_nbt
 mc_world_info_status mc_world_info_player_copy(const mc_nbt_tag *compound,
                                                const mc_nbt_limits *requested_limits,
                                                mc_world_info_player **out,
-                                               mc_world_info_error *error)
-{
+                                               mc_world_info_error *error) {
     if (out == NULL || compound == NULL || compound->type != MC_NBT_COMPOUND)
         return info_status(error, MC_WORLD_INFO_INVALID_ARGUMENT, NULL);
     const mc_nbt_limits limits =
@@ -267,14 +252,12 @@ mc_world_info_status mc_world_info_player_copy(const mc_nbt_tag *compound,
     return info_status(error, MC_WORLD_INFO_OK, NULL);
 }
 
-const mc_nbt_tag *mc_world_info_player_root(const mc_world_info_player *player)
-{
+const mc_nbt_tag *mc_world_info_player_root(const mc_world_info_player *player) {
     return player == NULL ? NULL : &player->root;
 }
 
 mc_world_info_status mc_world_info_player_name_set(mc_world_info_player *player,
-                                                   mc_world_info_name *name)
-{
+                                                   mc_world_info_name *name) {
     if (player == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (name != NULL) {
@@ -289,13 +272,11 @@ mc_world_info_status mc_world_info_player_name_set(mc_world_info_player *player,
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_name *mc_world_info_player_name(const mc_world_info_player *player)
-{
+mc_world_info_name *mc_world_info_player_name(const mc_world_info_player *player) {
     return player == NULL ? NULL : player->name == NULL ? &info_empty_name : player->name;
 }
 
-mc_world_info_status mc_world_info_player_retain(mc_world_info_player *player)
-{
+mc_world_info_status mc_world_info_player_retain(mc_world_info_player *player) {
     if (player == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (player->holds == SIZE_MAX)
@@ -304,8 +285,7 @@ mc_world_info_status mc_world_info_player_retain(mc_world_info_player *player)
     return MC_WORLD_INFO_OK;
 }
 
-void mc_world_info_player_release(mc_world_info_player *player)
-{
+void mc_world_info_player_release(mc_world_info_player *player) {
     if (player != NULL && --player->holds == 0) {
         mc_world_info_name_release(player->name);
         info_backing_release(player->backing);
@@ -315,8 +295,7 @@ void mc_world_info_player_release(mc_world_info_player *player)
 
 mc_world_info_status mc_world_info_data_copy(const mc_nbt_tag *data,
                                              const mc_nbt_limits *requested_limits,
-                                             mc_world_info_data **out, mc_world_info_error *error)
-{
+                                             mc_world_info_data **out, mc_world_info_error *error) {
     if (out == NULL || data == NULL || data->type != MC_NBT_COMPOUND)
         return info_status(error, MC_WORLD_INFO_INVALID_ARGUMENT, NULL);
     const mc_nbt_limits limits =
@@ -381,8 +360,7 @@ mc_world_info_status mc_world_info_data_copy(const mc_nbt_tag *data,
     return info_status(error, MC_WORLD_INFO_OK, NULL);
 }
 
-mc_world_info_status mc_world_info_data_retain(mc_world_info_data *data)
-{
+mc_world_info_status mc_world_info_data_retain(mc_world_info_data *data) {
     if (data == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (data->holds == SIZE_MAX)
@@ -391,8 +369,7 @@ mc_world_info_status mc_world_info_data_retain(mc_world_info_data *data)
     return MC_WORLD_INFO_OK;
 }
 
-void mc_world_info_data_release(mc_world_info_data *data)
-{
+void mc_world_info_data_release(mc_world_info_data *data) {
     if (data != NULL && --data->holds == 0) {
         mc_world_info_name_release(data->name);
         mc_world_info_player_release(data->player);
@@ -401,18 +378,16 @@ void mc_world_info_data_release(mc_world_info_data *data)
     }
 }
 
-mc_world_info_name *mc_world_info_data_name(const mc_world_info_data *data)
-{
+mc_world_info_name *mc_world_info_data_name(const mc_world_info_data *data) {
     return data == NULL ? NULL : data->name;
 }
 
-mc_world_info_player *mc_world_info_data_player(const mc_world_info_data *data)
-{
+mc_world_info_player *mc_world_info_data_player(const mc_world_info_data *data) {
     return data == NULL ? NULL : data->player;
 }
 
-mc_world_info_status mc_world_info_data_name_set(mc_world_info_data *data, mc_world_info_name *name)
-{
+mc_world_info_status mc_world_info_data_name_set(mc_world_info_data *data,
+                                                 mc_world_info_name *name) {
     if (data == NULL || name == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     const mc_world_info_status status = mc_world_info_name_retain(name);
@@ -426,8 +401,7 @@ mc_world_info_status mc_world_info_data_name_set(mc_world_info_data *data, mc_wo
 }
 
 mc_world_info_status mc_world_info_data_player_set(mc_world_info_data *data,
-                                                   mc_world_info_player *player)
-{
+                                                   mc_world_info_player *player) {
     if (data == NULL || player == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     mc_world_info_status status = mc_world_info_player_retain(player);
@@ -445,16 +419,14 @@ mc_world_info_status mc_world_info_data_player_set(mc_world_info_data *data,
     return MC_WORLD_INFO_OK;
 }
 
-static mc_world_info_status info_ready(const mc_world_info *info)
-{
+static mc_world_info_status info_ready(const mc_world_info *info) {
     if (info == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     return info->state.phase == MC_WORLD_INFO_READY ? MC_WORLD_INFO_OK
                                                     : MC_WORLD_INFO_INVALID_PHASE;
 }
 
-static mc_world_info_status info_begin(mc_world_info *raw)
-{
+static mc_world_info_status info_begin(mc_world_info *raw) {
     if (raw == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (raw->state.phase != MC_WORLD_INFO_RAW)
@@ -463,8 +435,7 @@ static mc_world_info_status info_begin(mc_world_info *raw)
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_status mc_world_info_allocate(mc_world_info_side side, mc_world_info **out)
-{
+mc_world_info_status mc_world_info_allocate(mc_world_info_side side, mc_world_info **out) {
     if (out == NULL || (side != MC_WORLD_INFO_CLIENT && side != MC_WORLD_INFO_SERVER))
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     mc_world_info *info = calloc(1, sizeof(*info));
@@ -482,8 +453,7 @@ mc_world_info_status mc_world_info_allocate(mc_world_info_side side, mc_world_in
 }
 
 mc_world_info_status mc_world_info_construct(mc_world_info *raw, int64_t seed,
-                                             mc_world_info_name *name)
-{
+                                             mc_world_info_name *name) {
     mc_world_info_status status = info_begin(raw);
     if (status != MC_WORLD_INFO_OK)
         return status;
@@ -501,8 +471,7 @@ mc_world_info_status mc_world_info_construct(mc_world_info *raw, int64_t seed,
 }
 
 mc_world_info_status mc_world_info_construct_nbt(mc_world_info *raw, mc_world_info_data *data,
-                                                 mc_world_info_error *error)
-{
+                                                 mc_world_info_error *error) {
     mc_world_info_status status = info_begin(raw);
     if (status != MC_WORLD_INFO_OK)
         return info_status(error, status, NULL);
@@ -562,8 +531,7 @@ mc_world_info_status mc_world_info_construct_nbt(mc_world_info *raw, mc_world_in
     return info_status(error, MC_WORLD_INFO_OK, NULL);
 }
 
-mc_world_info_status mc_world_info_construct_copy(mc_world_info *raw, const mc_world_info *source)
-{
+mc_world_info_status mc_world_info_construct_copy(mc_world_info *raw, const mc_world_info *source) {
     mc_world_info_status status = info_begin(raw);
     if (status != MC_WORLD_INFO_OK)
         return status;
@@ -615,8 +583,7 @@ mc_world_info_status mc_world_info_construct_copy(mc_world_info *raw, const mc_w
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_status mc_world_info_retain(mc_world_info *info)
-{
+mc_world_info_status mc_world_info_retain(mc_world_info *info) {
     if (info == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     if (info->holds == SIZE_MAX)
@@ -625,8 +592,7 @@ mc_world_info_status mc_world_info_retain(mc_world_info *info)
     return MC_WORLD_INFO_OK;
 }
 
-void mc_world_info_release(mc_world_info *info)
-{
+void mc_world_info_release(mc_world_info *info) {
     if (info != NULL && --info->holds == 0) {
         mc_world_info_name_release(info->fields.name);
         mc_world_info_player_release(info->fields.player);
@@ -635,29 +601,26 @@ void mc_world_info_release(mc_world_info *info)
     }
 }
 
-mc_world_info_status mc_world_info_fields_get(const mc_world_info *info, mc_world_info_fields *out)
-{
+mc_world_info_status mc_world_info_fields_get(const mc_world_info *info,
+                                              mc_world_info_fields *out) {
     if (info == NULL || out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     *out = info->fields;
     return MC_WORLD_INFO_OK;
 }
 
-const mc_world_info_live *mc_world_info_live_get(mc_world_info *info)
-{
+const mc_world_info_live *mc_world_info_live_get(mc_world_info *info) {
     return info_ready(info) == MC_WORLD_INFO_OK ? &info->live : NULL;
 }
 
-mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out)
-{
+mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out) {
     if (info == NULL || out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     *out = info->fields.value.time;
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out)
-{
+mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out) {
     if (out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     mc_world_info_status status = info_ready(info);
@@ -667,8 +630,7 @@ mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, bool *out)
-{
+mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, bool *out) {
     if (out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     mc_world_info_status status = info_ready(info);
@@ -678,21 +640,18 @@ mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, boo
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world_info_state *out)
-{
+mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world_info_state *out) {
     if (info == NULL || out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     *out = info->state;
     return MC_WORLD_INFO_OK;
 }
 
-const mc_nbt_tag *mc_world_info_source(const mc_world_info *info)
-{
+const mc_nbt_tag *mc_world_info_source(const mc_world_info *info) {
     return info == NULL || info->data == NULL ? NULL : mc_nbt_tree_root(info->data->backing->tree);
 }
 
-mc_world_info_status mc_world_info_name_set(mc_world_info *info, mc_world_info_name *name)
-{
+mc_world_info_status mc_world_info_name_set(mc_world_info *info, mc_world_info_name *name) {
     mc_world_info_status status = info_ready(info);
     if (status != MC_WORLD_INFO_OK)
         return status;
@@ -707,8 +666,7 @@ mc_world_info_status mc_world_info_name_set(mc_world_info *info, mc_world_info_n
     return MC_WORLD_INFO_OK;
 }
 
-mc_world_info_status mc_world_info_player_set(mc_world_info *info, mc_world_info_player *player)
-{
+mc_world_info_status mc_world_info_player_set(mc_world_info *info, mc_world_info_player *player) {
     mc_world_info_status status = info_ready(info);
     if (status != MC_WORLD_INFO_OK)
         return status;
@@ -726,8 +684,7 @@ mc_world_info_status mc_world_info_player_set(mc_world_info *info, mc_world_info
 }
 
 #define INFO_SETTER(function, member, type)                                                        \
-    mc_world_info_status function(mc_world_info *info, type value)                                 \
-    {                                                                                              \
+    mc_world_info_status function(mc_world_info *info, type value) {                               \
         const mc_world_info_status status = info_ready(info);                                      \
         if (status != MC_WORLD_INFO_OK)                                                            \
             return status;                                                                         \
@@ -743,8 +700,7 @@ INFO_SETTER(mc_world_info_raining_set, raining, bool)
 INFO_SETTER(mc_world_info_thundering_set, thundering, bool)
 #undef INFO_SETTER
 
-mc_world_info_status mc_world_info_spawn_set(mc_world_info *info, int32_t x, int32_t y, int32_t z)
-{
+mc_world_info_status mc_world_info_spawn_set(mc_world_info *info, int32_t x, int32_t y, int32_t z) {
     const mc_world_info_status status = info_ready(info);
     if (status != MC_WORLD_INFO_OK)
         return status;
@@ -754,8 +710,8 @@ mc_world_info_status mc_world_info_spawn_set(mc_world_info *info, int32_t x, int
     return MC_WORLD_INFO_OK;
 }
 
-static mc_nbt_tag *info_record_add(mc_world_info_record *record, const char *key, mc_nbt_type type)
-{
+static mc_nbt_tag *info_record_add(mc_world_info_record *record, const char *key,
+                                   mc_nbt_type type) {
     const size_t index = record->root.value.compound.length;
     mc_nbt_tag *tag = &record->fields[index];
     const size_t length = strlen(key);
@@ -770,8 +726,7 @@ static mc_nbt_tag *info_record_add(mc_world_info_record *record, const char *key
 
 mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
                                                  mc_world_info_record **out,
-                                                 mc_world_info_error *error)
-{
+                                                 mc_world_info_error *error) {
     if (out == NULL)
         return info_status(error, MC_WORLD_INFO_INVALID_ARGUMENT, NULL);
     mc_world_info_status status = info_ready(info);
@@ -834,18 +789,15 @@ mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
     return info_status(error, MC_WORLD_INFO_OK, NULL);
 }
 
-const mc_nbt_tag *mc_world_info_record_root(const mc_world_info_record *record)
-{
+const mc_nbt_tag *mc_world_info_record_root(const mc_world_info_record *record) {
     return record == NULL ? NULL : &record->root;
 }
 
-mc_world_info_name *mc_world_info_record_name(const mc_world_info_record *record)
-{
+mc_world_info_name *mc_world_info_record_name(const mc_world_info_record *record) {
     return record == NULL ? NULL : record->name;
 }
 
-void mc_world_info_record_release(mc_world_info_record *record)
-{
+void mc_world_info_record_release(mc_world_info_record *record) {
     if (record != NULL) {
         mc_world_info_name_release(record->name);
         mc_world_info_player_release(record->player);

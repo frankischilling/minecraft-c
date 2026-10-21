@@ -5,8 +5,7 @@
 #include <limits.h>
 #include <string.h>
 
-static mc_registry_error native_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error native_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -19,8 +18,7 @@ static mc_registry_error native_error(mc_registry_status status, const char *mes
 
 static mc_registry_status finish(mc_biome_sampling_error *error, const mc_registry_error *cause,
                                  mc_biome_status climate_status, int32_t pc,
-                                 const mc_biome_reference_array *array, size_t completed)
-{
+                                 const mc_biome_reference_array *array, size_t completed) {
     if (error != NULL)
         *error = (mc_biome_sampling_error){.registry = *cause,
                                            .climate_status = climate_status,
@@ -31,8 +29,7 @@ static mc_registry_status finish(mc_biome_sampling_error *error, const mc_regist
     return cause->status;
 }
 
-static mc_registry_status climate_result(mc_biome_status status)
-{
+static mc_registry_status climate_result(mc_biome_status status) {
     switch (status) {
         case MC_BIOME_OK:
             return MC_REGISTRY_OK;
@@ -47,8 +44,7 @@ static mc_registry_status climate_result(mc_biome_status status)
 }
 
 static mc_biome_status fresh_buffer(mc_biome_memory *memory, mc_biome_double_buffer *field,
-                                    size_t length)
-{
+                                    size_t length) {
     mc_biome_double_buffer fresh = {0};
     const mc_biome_status status = mc_biome_double_buffer_resize(memory, &fresh, length);
     if (status != MC_BIOME_OK)
@@ -59,8 +55,7 @@ static mc_biome_status fresh_buffer(mc_biome_memory *memory, mc_biome_double_buf
     return MC_BIOME_OK;
 }
 
-static mc_registry_error fill_double(mc_biome_double_buffer *array, size_t length, double value)
-{
+static mc_registry_error fill_double(mc_biome_double_buffer *array, size_t length, double value) {
     /* Arrays.fill checks the actual array even for an empty requested range. */
     if (array->data == NULL)
         return native_error(MC_REGISTRY_NULL_REFERENCE, "Fixed Biome double fill array");
@@ -76,8 +71,7 @@ mc_registry_status mc_registry_biome_fixed_sample(mc_registry_classes *classes,
                                                   int32_t z, size_t width, size_t height,
                                                   mc_biome_reference_array *input,
                                                   mc_biome_reference_array **out,
-                                                  mc_biome_sampling_error *error)
-{
+                                                  mc_biome_sampling_error *error) {
     (void)x;
     (void)z;
     mc_registry_error cause = native_error(MC_REGISTRY_OK, NULL);

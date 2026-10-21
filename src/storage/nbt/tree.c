@@ -15,8 +15,7 @@ typedef struct nbt_tree_arena {
     size_t used, capacity, max_depth;
 } nbt_tree_arena;
 
-static mc_nbt_status nbt_tree_error(mc_nbt_error *error, mc_nbt_status status)
-{
+static mc_nbt_status nbt_tree_error(mc_nbt_error *error, mc_nbt_status status) {
     if (error != NULL) {
         *error = (mc_nbt_error){status, 0};
     }
@@ -24,8 +23,7 @@ static mc_nbt_status nbt_tree_error(mc_nbt_error *error, mc_nbt_status status)
 }
 
 static mc_nbt_status nbt_tree_take(nbt_tree_arena *arena, size_t count, size_t size,
-                                   size_t alignment, void **out)
-{
+                                   size_t alignment, void **out) {
     if (size != 0 && count > SIZE_MAX / size) {
         return MC_NBT_LIMIT;
     }
@@ -45,8 +43,7 @@ static mc_nbt_status nbt_tree_take(nbt_tree_arena *arena, size_t count, size_t s
 }
 
 static mc_nbt_status nbt_tree_string(nbt_tree_arena *arena, mc_nbt_string source,
-                                     mc_nbt_string *out)
-{
+                                     mc_nbt_string *out) {
     if (source.length == 0) {
         *out = (mc_nbt_string){NULL, 0};
         return MC_NBT_OK;
@@ -70,8 +67,7 @@ static mc_nbt_status nbt_tree_string(nbt_tree_arena *arena, mc_nbt_string source
 /* Validation precedes both passes. Planning and copying have identical order;
  * only the copying pass has nonnull destination storage. */
 static mc_nbt_status nbt_tree_copy(nbt_tree_arena *arena, const mc_nbt_tag *source, bool named,
-                                   size_t depth, const mc_nbt_tag **out)
-{
+                                   size_t depth, const mc_nbt_tag **out) {
     if (source == NULL || (named && source->type == MC_NBT_END)) {
         return MC_NBT_INVALID_TREE;
     }
@@ -182,8 +178,7 @@ static mc_nbt_status nbt_tree_copy(nbt_tree_arena *arena, const mc_nbt_tag *sour
 
 mc_nbt_status mc_nbt_tree_copy_compound(const mc_nbt_tag *compound,
                                         const mc_nbt_limits *requested_limits, mc_nbt_tree **out,
-                                        mc_nbt_error *error)
-{
+                                        mc_nbt_error *error) {
     if (compound == NULL || out == NULL) {
         return nbt_tree_error(error, MC_NBT_INVALID_ARGUMENT);
     }
@@ -228,17 +223,14 @@ mc_nbt_status mc_nbt_tree_copy_compound(const mc_nbt_tag *compound,
     return nbt_tree_error(error, MC_NBT_OK);
 }
 
-const mc_nbt_tag *mc_nbt_tree_root(const mc_nbt_tree *tree)
-{
+const mc_nbt_tag *mc_nbt_tree_root(const mc_nbt_tree *tree) {
     return tree == NULL ? NULL : tree->root;
 }
 
-size_t mc_nbt_tree_allocation_bytes(const mc_nbt_tree *tree)
-{
+size_t mc_nbt_tree_allocation_bytes(const mc_nbt_tree *tree) {
     return tree == NULL ? 0 : tree->allocation_bytes;
 }
 
-void mc_nbt_tree_free(mc_nbt_tree *tree)
-{
+void mc_nbt_tree_free(mc_nbt_tree *tree) {
     free(tree);
 }

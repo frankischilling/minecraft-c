@@ -20,8 +20,7 @@
 #include <locale.h>
 #endif
 
-mc_text_locale_status mc_text_number_locale_query(mc_text_number_locale *out)
-{
+mc_text_locale_status mc_text_number_locale_query(mc_text_number_locale *out) {
     if (out == NULL)
         return MC_TEXT_LOCALE_QUERY_FAILED;
     mc_text_number_locale selected = MC_TEXT_NUMBER_LOCALE_UNKNOWN;

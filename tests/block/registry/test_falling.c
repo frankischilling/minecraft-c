@@ -48,20 +48,17 @@ typedef struct fixture {
     bool missing, bad, retained;
 } fixture;
 
-static uint64_t uniquifier(const mc_java_random_profile *profile)
-{
+static uint64_t uniquifier(const mc_java_random_profile *profile) {
     return atomic_load_explicit(&profile->uniquifier, memory_order_relaxed);
 }
 
-static uint64_t advanced(uint64_t value, size_t count)
-{
+static uint64_t advanced(uint64_t value, size_t count) {
     while (count-- != 0)
         value *= UINT64_C(1181783497276652981);
     return value;
 }
 
-static mc_registry_error poison_error(void)
-{
+static mc_registry_error poison_error(void) {
     return (mc_registry_error){.status = MC_REGISTRY_DUPLICATE_STATISTIC,
                                .message = "old message",
                                .initializer_pc = 71,
@@ -81,8 +78,7 @@ static mc_registry_error poison_error(void)
                                                 .date_time = true}};
 }
 
-static bool fresh(mc_registry_error error, mc_registry_status status)
-{
+static bool fresh(mc_registry_error error, mc_registry_status status) {
     return error.status == status && error.initializer_pc == -1 && error.block_id == -1 &&
            error.constructor_class == NULL && error.constructor_pc == -1 &&
            error.profile_status == MC_JAVA_RANDOM_PROFILE_OK &&
@@ -94,13 +90,11 @@ static bool fresh(mc_registry_error error, mc_registry_status status)
            (status == MC_REGISTRY_OK ? error.message == NULL : error.message != NULL);
 }
 
-static bool same_text(const char *a, const char *b)
-{
+static bool same_text(const char *a, const char *b) {
     return a == b || (a != NULL && b != NULL && strcmp(a, b) == 0);
 }
 
-static bool same_error(mc_registry_error a, mc_registry_error b)
-{
+static bool same_error(mc_registry_error a, mc_registry_error b) {
     return a.status == b.status && same_text(a.message, b.message) &&
            a.initializer_pc == b.initializer_pc && a.block_id == b.block_id &&
            same_text(a.constructor_class, b.constructor_class) &&
@@ -117,8 +111,7 @@ static bool same_error(mc_registry_error a, mc_registry_error b)
 }
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
-                                            size_t *count)
-{
+                                            size_t *count) {
     stream *input = context;
     if (input == NULL || out == NULL || count == NULL || capacity == 0 || input->closed ||
         input->offset > input->length)
@@ -135,8 +128,7 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
     return MC_JAVA_PROPERTIES_OK;
 }
 
-static void entered_checks(fixture *f)
-{
+static void entered_checks(fixture *f) {
     mc_registry_classes *owner = f->owner;
     OBSERVE(f, owner != NULL && owner->entered != 0 && owner->initializer != NULL);
     if (owner == NULL || owner->initializer == NULL)
@@ -177,8 +169,7 @@ static void entered_checks(fixture *f)
 }
 
 static mc_registry_status open_resource(void *context, const char *name,
-                                        mc_java_properties_input *out)
-{
+                                        mc_java_properties_input *out) {
     fixture *f = context;
     const char *const names[] = {"/lang/en_US.lang", "/lang/stats_US.lang", "/achievement/map.txt"};
     if (name == NULL || out == NULL || f->opens >= COUNT(names) ||
@@ -194,8 +185,7 @@ static mc_registry_status open_resource(void *context, const char *name,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status close_resource(void *context, const mc_java_properties_input *input)
-{
+static mc_registry_status close_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->context != &f->streams[2] || input->read != read_bytes) {
         f->bad = true;
@@ -206,16 +196,14 @@ static mc_registry_status close_resource(void *context, const mc_java_properties
     return MC_REGISTRY_OK;
 }
 
-static bool ready_resource(void *context, const mc_java_properties_input *input)
-{
+static bool ready_resource(void *context, const mc_java_properties_input *input) {
     fixture *f = context;
     if (input == NULL || input->read != read_bytes)
         f->bad = true;
     return false;
 }
 
-static mc_registry_status allocate_fixture(fixture *f, mc_registry_options options)
-{
+static mc_registry_status allocate_fixture(fixture *f, mc_registry_options options) {
     f->streams[0] = (stream){.bytes = language, .length = sizeof(language) - 1};
     f->streams[1] = f->streams[2] = (stream){.bytes = language};
     f->resources = (mc_registry_resources){f, open_resource, close_resource, ready_resource};
@@ -223,8 +211,7 @@ static mc_registry_status allocate_fixture(fixture *f, mc_registry_options optio
     return mc_registry_classes_allocate(&options, &f->owner, NULL);
 }
 
-static bool retire(fixture *f)
-{
+static bool retire(fixture *f) {
     if (f->retained) {
         if (mc_registry_classes_release(f->owner, NULL) != MC_REGISTRY_OK)
             goto refused;
@@ -240,8 +227,7 @@ refused:
     return false;
 }
 
-static bool cold(const fixture *f)
-{
+static bool cold(const fixture *f) {
     return f->owner != NULL && f->owner->blocks_phase == MC_REGISTRY_COLD &&
            f->owner->block_states[MC_BLOCK_GK_EI].phase == MC_REGISTRY_COLD &&
            f->owner->block_states[MC_BLOCK_GK_EI].pc == -1 && !f->owner->gk_a &&
@@ -251,19 +237,16 @@ static bool cold(const fixture *f)
 
 /* Two ordinary callers share only the real Registry owner, never a local flag. */
 static mc_registry_status first_caller_write(mc_registry_classes *owner, bool value,
-                                             mc_registry_error *error)
-{
+                                             mc_registry_error *error) {
     return mc_registry_falling_flag_set(owner, value, error);
 }
 
 static mc_registry_status second_caller_read(mc_registry_classes *owner, bool *out,
-                                             mc_registry_error *error)
-{
+                                             mc_registry_error *error) {
     return mc_registry_falling_flag_get(owner, out, error);
 }
 
-static int arguments(mc_registry_options options)
-{
+static int arguments(mc_registry_options options) {
     int result = 1;
     fixture f = {0};
     mc_registry_error error = poison_error();
@@ -294,8 +277,7 @@ cleanup:
     return result;
 }
 
-static int cold_success(mc_registry_options options, bool first_store)
-{
+static int cold_success(mc_registry_options options, bool first_store) {
     int result = 1;
     fixture f = {0};
     mc_registry_error error = poison_error();
@@ -356,8 +338,7 @@ cleanup:
     return result;
 }
 
-static int cold_failure(mc_registry_options options, bool first_store)
-{
+static int cold_failure(mc_registry_options options, bool first_store) {
     int result = 1;
     fixture f = {.missing = true};
     mc_registry_error error = poison_error();
@@ -431,8 +412,7 @@ cleanup:
     return result;
 }
 
-int main(void)
-{
+int main(void) {
     int result = 1;
     mc_java_random_profile *profile = NULL;
     mc_materials *materials = NULL;

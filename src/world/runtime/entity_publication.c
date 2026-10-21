@@ -21,38 +21,33 @@
 #endif
 #include <emmintrin.h>
 
-mc_world_entity_batch_error mc_world_entity_batch_empty_error(void)
-{
+mc_world_entity_batch_error mc_world_entity_batch_empty_error(void) {
     return (mc_world_entity_batch_error){.index = SIZE_MAX};
 }
 
 static mc_world_storage_status entity_result(mc_world_entity_error *out,
-                                             const mc_world_entity_error *frame)
-{
+                                             const mc_world_entity_error *frame) {
     if (out != NULL)
         *out = *frame;
     return frame->status;
 }
 
 static bool entity_fail(mc_world_entity_error *frame, mc_world_storage_status status,
-                        const char *operation)
-{
+                        const char *operation) {
     frame->status = status;
     frame->operation = operation;
     frame->cause = (mc_world_storage_error){status, operation, 0};
     return false;
 }
 
-static bool entity_cause(mc_world_entity_error *frame, mc_world_storage_error cause)
-{
+static bool entity_cause(mc_world_entity_error *frame, mc_world_storage_error cause) {
     frame->status = cause.status;
     frame->operation = cause.operation;
     frame->cause = cause;
     return false;
 }
 
-static mc_world_storage_status ownership_status(mc_entity_status status)
-{
+static mc_world_storage_status ownership_status(mc_entity_status status) {
     switch (status) {
         case MC_ENTITY_LIMIT:
             return MC_WORLD_STORAGE_LIMIT;
@@ -67,8 +62,7 @@ static mc_world_storage_status ownership_status(mc_entity_status status)
     }
 }
 
-static bool list_shape(const mc_world_reference_list *list)
-{
+static bool list_shape(const mc_world_reference_list *list) {
     return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
            list->capacity <= SIZE_MAX / sizeof(*list->items) &&
            ((list->capacity == 0 && list->items == NULL) ||
@@ -76,8 +70,7 @@ static bool list_shape(const mc_world_reference_list *list)
 }
 
 static bool entity_ledger_valid(const mc_world_runtime *world,
-                                const mc_world_entity_list_ledger *ledger, size_t *out)
-{
+                                const mc_world_entity_list_ledger *ledger, size_t *out) {
     const mc_world_reference_list *list = ledger->list;
     if (list == NULL) {
         *out = 0;
@@ -102,8 +95,7 @@ static bool entity_ledger_valid(const mc_world_runtime *world,
     return true;
 }
 
-bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world)
-{
+bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world) {
     if (world == NULL)
         return false;
     const mc_world_entity_list_ledger *a = &world->entity_membership;
@@ -122,8 +114,7 @@ bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world)
     return true;
 }
 
-static void entity_ledger_release(mc_world_runtime *world, mc_world_entity_list_ledger *ledger)
-{
+static void entity_ledger_release(mc_world_runtime *world, mc_world_entity_list_ledger *ledger) {
     mc_world_reference_list *list = ledger->list;
     if (list == NULL)
         return;
@@ -147,14 +138,13 @@ static void entity_ledger_release(mc_world_runtime *world, mc_world_entity_list_
     world->construction.direct_allocation_bytes -= bytes;
 }
 
-void mc_world_runtime_entity_list_release(mc_world_runtime *world)
-{
+void mc_world_runtime_entity_list_release(mc_world_runtime *world) {
     entity_ledger_release(world, &world->entity_membership);
     entity_ledger_release(world, &world->entity_deferral);
 }
 
-static bool append_entity(mc_world_runtime *world, mc_entity *entity, mc_world_entity_error *frame)
-{
+static bool append_entity(mc_world_runtime *world, mc_entity *entity,
+                          mc_world_entity_error *frame) {
     mc_world_reference_list *list = world->fields.b; /* getfield91 */
     frame->bytecode = 95;
     if (!mc_world_runtime_entity_list_valid(world) || list == NULL ||
@@ -227,8 +217,7 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity, mc_world_e
 }
 
 static bool observe_entity_at(mc_world_runtime *world, mc_world_entity_error *frame,
-                              unsigned int caller_bytecode)
-{
+                              unsigned int caller_bytecode) {
     frame->bytecode = caller_bytecode;
     frame->observer_bytecode = 7;
     const mc_world_reference_list *list = world->fields.u; /* getfield4 */
@@ -246,14 +235,12 @@ static bool observe_entity_at(mc_world_runtime *world, mc_world_entity_error *fr
     return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity observer dispatch");
 }
 
-static bool observe_entity(mc_world_runtime *world, mc_world_entity_error *frame)
-{
+static bool observe_entity(mc_world_runtime *world, mc_world_entity_error *frame) {
     return observe_entity_at(world, frame, 103);
 }
 
 static bool append_entity_batch(mc_world_runtime *world, const mc_world_chunk_entity_list *source,
-                                bool deferred, mc_world_entity_batch_error *frame)
-{
+                                bool deferred, mc_world_entity_batch_error *frame) {
     mc_world_entity_error *publication = &frame->publication;
     publication->bytecode = 5;
     mc_world_reference_list *list = deferred ? world->fields.D : world->fields.b;
@@ -372,8 +359,7 @@ failed:
 mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *world,
                                                            const mc_world_chunk_entity_list *source,
                                                            bool deferred,
-                                                           mc_world_entity_batch_error *error)
-{
+                                                           mc_world_entity_batch_error *error) {
     mc_world_entity_batch_error frame = mc_world_entity_batch_empty_error();
     bool complete = false;
     if (world == NULL)
@@ -421,8 +407,7 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
     return frame.publication.status;
 }
 
-static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_entity_error *frame)
-{
+static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_entity_error *frame) {
     if (world == NULL)
         return entity_fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World Entity receiver");
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -450,8 +435,7 @@ static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_en
 }
 
 static bool add_to_chunk(mc_world_runtime *world, mc_chunk_state *state, mc_entity *entity,
-                         mc_world_entity_error *frame)
-{
+                         mc_world_entity_error *frame) {
     if (state->blank)
         return true; /* Actual li/hg.a(Entity)V return0, including NULL. */
     mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, state);
@@ -472,8 +456,7 @@ static bool add_to_chunk(mc_world_runtime *world, mc_chunk_state *state, mc_enti
 }
 
 static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *value,
-                          mc_world_entity_error *frame)
-{
+                          mc_world_entity_error *frame) {
     frame->bytecode = 1;
     mc_entity_base_fields *fields = mc_entity_runtime_fields(entity);
     if (fields == NULL)
@@ -533,8 +516,7 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
 
 static mc_world_storage_status finish_entity(mc_world_runtime *world, mc_entity *entity,
                                              bool completed, mc_world_entity_error *frame,
-                                             mc_world_entity_error *error)
-{
+                                             mc_world_entity_error *error) {
     if (completed) {
         *frame = (mc_world_entity_error){0};
         world->last_error = (mc_world_storage_error){0};
@@ -546,8 +528,7 @@ static mc_world_storage_status finish_entity(mc_world_runtime *world, mc_entity 
 }
 
 mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, mc_entity *entity,
-                                                       bool *out, mc_world_entity_error *error)
-{
+                                                       bool *out, mc_world_entity_error *error) {
     mc_world_entity_error frame = {0};
     if (out == NULL) {
         (void)entity_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World Entity output");
@@ -563,8 +544,7 @@ mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, 
 }
 
 mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk, mc_entity *entity,
-                                                          mc_world_entity_error *error)
-{
+                                                          mc_world_entity_error *error) {
     mc_world_entity_error frame = {0};
     mc_world_chunk_fields fields;
     if (mc_world_chunk_fields_get(chunk, &fields) != MC_WORLD_STORAGE_OK) {

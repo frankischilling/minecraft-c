@@ -45,13 +45,11 @@ static const int32_t coordinates[CALLS][2] = {{1, 0},
                                               {INT32_MIN + 8, 0},
                                               {INT32_MAX - 9, 0}};
 
-static bool read_bytes(FILE *file, void *data, size_t count)
-{
+static bool read_bytes(FILE *file, void *data, size_t count) {
     return fread(data, 1, count, file) == count;
 }
 
-static bool read_u32(FILE *file, uint32_t *value)
-{
+static bool read_u32(FILE *file, uint32_t *value) {
     uint8_t data[4];
     if (!read_bytes(file, data, sizeof(data)))
         return false;
@@ -60,8 +58,7 @@ static bool read_u32(FILE *file, uint32_t *value)
     return true;
 }
 
-static bool read_i32(FILE *file, int32_t *value)
-{
+static bool read_i32(FILE *file, int32_t *value) {
     uint32_t raw;
     if (!read_u32(file, &raw))
         return false;
@@ -69,8 +66,7 @@ static bool read_i32(FILE *file, int32_t *value)
     return true;
 }
 
-static bool read_u64(FILE *file, uint64_t *value)
-{
+static bool read_u64(FILE *file, uint64_t *value) {
     uint32_t high, low;
     if (!read_u32(file, &high) || !read_u32(file, &low))
         return false;
@@ -78,8 +74,7 @@ static bool read_u64(FILE *file, uint64_t *value)
     return true;
 }
 
-static bool read_boolean(FILE *file, bool *value)
-{
+static bool read_boolean(FILE *file, bool *value) {
     int byte = fgetc(file);
     if (byte != 0 && byte != 1)
         return false;
@@ -87,8 +82,7 @@ static bool read_boolean(FILE *file, bool *value)
     return true;
 }
 
-static bool read_doubles(FILE *file, mc_biome_double_buffer *buffer)
-{
+static bool read_doubles(FILE *file, mc_biome_double_buffer *buffer) {
     int32_t length;
     if (!read_i32(file, &length) || length < -1 || length > (int32_t)MAX_MANAGER_VALUES)
         return false;
@@ -105,8 +99,7 @@ static bool read_doubles(FILE *file, mc_biome_double_buffer *buffer)
     return true;
 }
 
-static bool read_biomes(FILE *file)
-{
+static bool read_biomes(FILE *file) {
     int32_t length;
     if (!read_i32(file, &length) || length < -1 || length > (int32_t)MAX_MANAGER_VALUES)
         return false;
@@ -124,8 +117,7 @@ static bool read_biomes(FILE *file)
 }
 
 static bool read_input(FILE *file, int64_t *seed, mc_chunk_cache *cache, mc_light_queue *queue,
-                       int32_t *depth, bool *no_sky, size_t *chunk_count)
-{
+                       int32_t *depth, bool *no_sky, size_t *chunk_count) {
     char magic[4];
     uint64_t raw_seed;
     uint32_t nc, ne, ni, nq;
@@ -192,20 +184,17 @@ static bool read_input(FILE *file, int64_t *seed, mc_chunk_cache *cache, mc_ligh
     return fgetc(file) == EOF && !ferror(file) && mc_chunk_cache_validate(cache);
 }
 
-static const char *json_boolean(bool value)
-{
+static const char *json_boolean(bool value) {
     return value ? "true" : "false";
 }
 
-static uint64_t double_bits(const double *value)
-{
+static uint64_t double_bits(const double *value) {
     uint64_t raw;
     memcpy(&raw, value, sizeof(raw));
     return raw;
 }
 
-static void print_doubles(const double *values, size_t length)
-{
+static void print_doubles(const double *values, size_t length) {
     if (values == NULL) {
         fputs("null", stdout);
         return;
@@ -216,8 +205,7 @@ static void print_doubles(const double *values, size_t length)
     fputs("\"}", stdout);
 }
 
-static void print_biomes(const mc_biome_id *values, size_t length)
-{
+static void print_biomes(const mc_biome_id *values, size_t length) {
     if (values == NULL) {
         fputs("null", stdout);
         return;
@@ -228,8 +216,7 @@ static void print_biomes(const mc_biome_id *values, size_t length)
     fputs("\"}", stdout);
 }
 
-static void print_manager(void)
-{
+static void print_manager(void) {
     fputs("{\"a\":", stdout);
     print_doubles(manager.a.data, manager.a.length);
     fputs(",\"b\":", stdout);
@@ -241,16 +228,14 @@ static void print_manager(void)
     putchar('}');
 }
 
-static void print_random(mc_java_random random)
-{
+static void print_random(mc_java_random random) {
     printf("{\"state\":\"%012" PRIx64 "\",\"next_longs\":[", random.state);
     for (size_t i = 0; i < 8u; ++i)
         printf("%s\"%016" PRIx64 "\"", i ? "," : "", (uint64_t)mc_java_random_next_i64(&random));
     fputs("]}", stdout);
 }
 
-static void print_noise(void)
-{
+static void print_noise(void) {
     static const char names[] = "klmnoabc";
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
     const mc_terrain_normal_state *state = &generator.terrain;
@@ -280,8 +265,7 @@ static void print_noise(void)
     putchar('}');
 }
 
-static void print_bytes(const char *name, const uint8_t *values, size_t length)
-{
+static void print_bytes(const char *name, const uint8_t *values, size_t length) {
     printf("\"%s\":{\"length\":%zu,\"values\":\"", name, length);
     for (size_t i = 0; i < length; ++i)
         printf("%02x", (unsigned int)values[i]);
@@ -290,8 +274,7 @@ static void print_bytes(const char *name, const uint8_t *values, size_t length)
 
 static void print_call(size_t index, const mc_light_queue *queue, int32_t depth,
                        const bool reused[3], bool biomes_reused, bool context_retained,
-                       bool prior_retained, bool immutable_retained, bool suffix_retained)
-{
+                       bool prior_retained, bool immutable_retained, bool suffix_retained) {
     const mc_normal_chunk *result = &results[index];
     const mc_chunk_data *data = &result->data;
     printf("%s{\"index\":%zu,\"coordinates\":[%" PRId32 ",%" PRId32 "],\"data\":{",
@@ -350,8 +333,7 @@ static void print_call(size_t index, const mc_light_queue *queue, int32_t depth,
            json_boolean(suffix_retained));
 }
 
-static bool immutable_retained(void)
-{
+static bool immutable_retained(void) {
     return memcmp(&generator.terrain, &saved_terrain, sizeof(saved_terrain)) == 0 &&
            memcmp(&trig, &saved_trig, sizeof(trig)) == 0 &&
            memcmp(&materials, &saved_materials, sizeof(materials)) == 0 &&
@@ -362,8 +344,7 @@ static bool immutable_retained(void)
            memcmp(&manager.classifier, &saved_classifier, sizeof(saved_classifier)) == 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc != 2)
         return 2;
     FILE *file = fopen(argv[1], "rb");

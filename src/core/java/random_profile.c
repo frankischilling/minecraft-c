@@ -38,8 +38,7 @@ _Static_assert(_Alignof(mc_java_math_random_owner) <= _Alignof(long double),
 #define LCG_MULTIPLIER UINT64_C(0x5deece66d)
 #define LCG_MASK UINT64_C(0xffffffffffff)
 
-static mc_java_random_profile_status nanotime_status(mc_platform_nanotime_status status)
-{
+static mc_java_random_profile_status nanotime_status(mc_platform_nanotime_status status) {
     switch (status) {
         case MC_PLATFORM_NANOTIME_OK:
             return MC_JAVA_RANDOM_PROFILE_OK;
@@ -55,8 +54,7 @@ static mc_java_random_profile_status nanotime_status(mc_platform_nanotime_status
     return MC_JAVA_RANDOM_PROFILE_PLATFORM_FAILURE;
 }
 
-void mc_java_random_finish_default(uint64_t committed, int64_t sample, mc_java_random *out)
-{
+void mc_java_random_finish_default(uint64_t committed, int64_t sample, mc_java_random *out) {
     const uint64_t bits = committed ^ (uint64_t)sample;
     /* Keep every signed conversion representable, including the sign-bit-only
      * value. An out-of-range unsigned-to-signed cast is implementation-defined. */
@@ -64,8 +62,7 @@ void mc_java_random_finish_default(uint64_t committed, int64_t sample, mc_java_r
     mc_java_random_seed(out, seed);
 }
 
-static uint64_t advance_uniquifier(mc_java_random_profile *profile)
-{
+static uint64_t advance_uniquifier(mc_java_random_profile *profile) {
     for (;;) {
         const uint64_t current = atomic_load_explicit(&profile->uniquifier, memory_order_seq_cst);
         const uint64_t next = current * UNIQUIFIER_MULTIPLIER;
@@ -79,8 +76,7 @@ static uint64_t advance_uniquifier(mc_java_random_profile *profile)
 }
 
 mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocation_bytes,
-                                                            mc_java_random_profile **out)
-{
+                                                            mc_java_random_profile **out) {
     if (out == NULL) {
         return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
     }
@@ -106,13 +102,11 @@ mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocatio
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
 
-size_t mc_java_random_profile_allocation_bytes(const mc_java_random_profile *profile)
-{
+size_t mc_java_random_profile_allocation_bytes(const mc_java_random_profile *profile) {
     return profile == NULL ? 0 : profile->allocated_bytes;
 }
 
-void mc_java_random_profile_free(mc_java_random_profile *profile)
-{
+void mc_java_random_profile_free(mc_java_random_profile *profile) {
     if (profile != NULL) {
         free(profile->math);
         free(profile);
@@ -120,8 +114,7 @@ void mc_java_random_profile_free(mc_java_random_profile *profile)
 }
 
 mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_profile *profile,
-                                                               mc_java_random *out)
-{
+                                                               mc_java_random *out) {
     if (profile == NULL || out == NULL) {
         return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
     }
@@ -141,8 +134,7 @@ mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_pr
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
 
-static mc_java_random_profile_status initialize_math(mc_java_random_profile *profile)
-{
+static mc_java_random_profile_status initialize_math(mc_java_random_profile *profile) {
     /* Only the elected initializer enters. No quiescent allocation query or
      * destruction may overlap this allocation, construction or publication. */
     if (profile->allocated_bytes > profile->max_allocation_bytes ||
@@ -179,8 +171,7 @@ static mc_java_random_profile_status initialize_math(mc_java_random_profile *pro
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
 
-static uint32_t math_next_bits(mc_java_math_random_owner *math, unsigned int bits)
-{
+static uint32_t math_next_bits(mc_java_math_random_owner *math, unsigned int bits) {
     for (;;) {
         const uint64_t current = atomic_load_explicit(&math->state, memory_order_seq_cst);
         const uint64_t next = (current * LCG_MULTIPLIER + UINT64_C(11)) & LCG_MASK;
@@ -192,8 +183,7 @@ static uint32_t math_next_bits(mc_java_math_random_owner *math, unsigned int bit
     }
 }
 
-mc_java_random_profile_status mc_java_math_random(mc_java_random_profile *profile, double *out)
-{
+mc_java_random_profile_status mc_java_math_random(mc_java_random_profile *profile, double *out) {
     if (profile == NULL || out == NULL) {
         return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
     }

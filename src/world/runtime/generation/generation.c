@@ -13,8 +13,7 @@
 #endif
 #include <emmintrin.h>
 
-static mc_registry_error registry_error(mc_registry_status status, const char *message)
-{
+static mc_registry_error registry_error(mc_registry_status status, const char *message) {
     return (mc_registry_error){.status = status,
                                .message = message,
                                .initializer_pc = -1,
@@ -25,8 +24,7 @@ static mc_registry_error registry_error(mc_registry_status status, const char *m
 }
 
 bool mc_world_generation_fail(mc_world_provider *provider, mc_world_generation_error *error,
-                              mc_world_storage_status status, const char *operation)
-{
+                              mc_world_storage_status status, const char *operation) {
     error->status = status;
     error->operation = operation;
     error->cause = (mc_world_storage_error){status, operation, 0};
@@ -36,8 +34,7 @@ bool mc_world_generation_fail(mc_world_provider *provider, mc_world_generation_e
 
 bool mc_world_generation_registry_fail(mc_world_provider *provider,
                                        mc_world_generation_error *error, mc_registry_status status,
-                                       const char *operation)
-{
+                                       const char *operation) {
     error->status = mc_world_runtime_registry_result(provider->world, status, &error->registry,
                                                      operation, &error->cause);
     error->operation = operation;
@@ -47,8 +44,7 @@ bool mc_world_generation_registry_fail(mc_world_provider *provider,
 bool mc_world_generation_block(mc_world_provider *provider, const char *name,
                                unsigned int static_pc, unsigned int field_pc,
                                unsigned int *inner_pc, int32_t *out,
-                               mc_world_generation_error *error)
-{
+                               mc_world_generation_error *error) {
     *inner_pc = static_pc;
     mc_registry_classes *registry = mc_world_runtime_registry(provider->world);
     mc_registry_error cause =
@@ -73,8 +69,7 @@ bool mc_world_generation_block(mc_world_provider *provider, const char *name,
 }
 
 bool mc_world_generation_seed(mc_world_provider *provider, unsigned int pc, unsigned int *inner_pc,
-                              int64_t *out, mc_world_generation_error *error)
-{
+                              int64_t *out, mc_world_generation_error *error) {
     *inner_pc = pc;
     mc_world_info_fields fields;
     if (mc_world_info_fields_get(provider->world->fields.x, &fields) != MC_WORLD_INFO_OK)
@@ -84,8 +79,7 @@ bool mc_world_generation_seed(mc_world_provider *provider, unsigned int pc, unsi
     return true;
 }
 
-static mc_world_storage_status dimension_status(mc_world_dimension_status status)
-{
+static mc_world_storage_status dimension_status(mc_world_dimension_status status) {
     if (status == MC_WORLD_DIMENSION_LIMIT)
         return MC_WORLD_STORAGE_LIMIT;
     if (status == MC_WORLD_DIMENSION_ALLOCATION_FAILED)
@@ -96,8 +90,7 @@ static mc_world_storage_status dimension_status(mc_world_dimension_status status
 /* Each invocation reloads World.t then that Dimension's actual b. A retained
  * receiver is not substituted for any later independent source getter. */
 static bool manager_capture(mc_world_provider *provider, mc_world_dimension_biome **out,
-                            mc_world_generation_error *error)
-{
+                            mc_world_generation_error *error) {
     mc_world_dimension_fields fields;
     mc_world_dimension_status status =
         mc_world_dimension_fields_get(provider->world->fields.t, &fields);
@@ -121,8 +114,7 @@ static bool manager_capture(mc_world_provider *provider, mc_world_dimension_biom
  * later callback must not invalidate an already captured climate array. */
 static bool climate_capture(mc_world_provider *provider, bool rainfall,
                             mc_world_dimension_biome **owner, mc_biome_double_reference *out,
-                            mc_world_generation_error *error)
-{
+                            mc_world_generation_error *error) {
     if (!manager_capture(provider, owner, error))
         return false;
     mc_world_dimension_biome_fields fields;
@@ -147,8 +139,7 @@ static bool climate_capture(mc_world_provider *provider, bool rainfall,
 
 static bool climate_at(mc_world_provider *provider, const mc_biome_double_reference *array,
                        size_t index, unsigned int pc, unsigned int *inner_pc, double *out,
-                       mc_world_generation_error *error)
-{
+                       mc_world_generation_error *error) {
     *inner_pc = pc;
     if (array->data == NULL || index >= array->length) {
         mc_registry_status status =
@@ -164,8 +155,7 @@ static bool climate_at(mc_world_provider *provider, const mc_biome_double_refere
 static bool density_channel(mc_world_provider *provider, mc_terrain_density_channel channel,
                             int32_t x, int32_t z, double *backing, size_t length,
                             mc_terrain_double_span *field, unsigned int pc,
-                            mc_world_generation_error *error)
-{
+                            mc_world_generation_error *error) {
     const mc_terrain_double_span output =
         field->data == NULL ? (mc_terrain_double_span){backing, length} : *field;
     error->density_bytecode = pc;
@@ -177,8 +167,7 @@ static bool density_channel(mc_world_provider *provider, mc_terrain_density_chan
 }
 
 static bool density(mc_world_provider *provider, int32_t x, int32_t z, mc_terrain_double_span *out,
-                    mc_world_generation_error *error)
-{
+                    mc_world_generation_error *error) {
     mc_world_provider_generation_fields *fields = &provider->generation;
     mc_normal_generator *generator = &provider->generator;
     /* q-local allocation12 uses reserved native backing. Publication to the
@@ -230,8 +219,7 @@ leave:
 }
 
 static bool base(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
-                 const mc_biome_double_reference *temperature, mc_world_generation_error *error)
-{
+                 const mc_biome_double_reference *temperature, mc_world_generation_error *error) {
     error->base_bytecode = 44;
     mc_terrain_double_span output;
     if (!density(provider, x, z, &output, error))
@@ -267,8 +255,7 @@ static bool base(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blo
 
 mc_world_storage_status mc_world_provider_generate_game(mc_world_provider *provider, int32_t x,
                                                         int32_t z, mc_chunk_state **out,
-                                                        mc_world_generation_error *error)
-{
+                                                        mc_world_generation_error *error) {
     mc_world_generation_error frame = {.registry = registry_error(MC_REGISTRY_OK, NULL)};
     if (provider == NULL || out == NULL || provider->world == NULL) {
         frame.status = MC_WORLD_STORAGE_INVALID_ARGUMENT;

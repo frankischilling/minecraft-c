@@ -16,8 +16,7 @@ struct mc_statistic_map {
 };
 
 static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_status status,
-                                     const char *message)
-{
+                                     const char *message) {
     if (error != NULL)
         *error = (mc_registry_error){.status = status,
                                      .message = message,
@@ -30,15 +29,13 @@ static mc_registry_status diagnostic(mc_registry_error *error, mc_registry_statu
     return status;
 }
 
-static void stage(mc_statistic *statistic, bool general, int32_t pc)
-{
+static void stage(mc_statistic *statistic, bool general, int32_t pc) {
     const bool client = statistic->classes->options.side == MC_REGISTRY_CLIENT;
     statistic->source_class = general ? (client ? "yd" : "pm") : (client ? "vr" : "ns");
     statistic->source_pc = pc;
 }
 
-static mc_registry_status own_error(mc_statistic *statistic)
-{
+static mc_registry_status own_error(mc_statistic *statistic) {
     mc_registry_error *error = &statistic->classes->last_error;
     error->constructor_class = statistic->source_class;
     error->constructor_pc = statistic->source_pc;
@@ -46,22 +43,19 @@ static mc_registry_status own_error(mc_statistic *statistic)
 }
 
 static mc_registry_status fail(mc_statistic *statistic, mc_registry_status status,
-                               const char *message)
-{
+                               const char *message) {
     (void)mc_registry_fail(statistic->classes, status, message, NULL);
     return own_error(statistic);
 }
 
-static statistic_map_entry *find_entry(const mc_statistic_map *map, int32_t id)
-{
+static statistic_map_entry *find_entry(const mc_statistic_map *map, int32_t id) {
     for (statistic_map_entry *entry = map->first; entry != NULL; entry = entry->next)
         if (entry->id == id)
             return entry;
     return NULL;
 }
 
-mc_registry_status mc_registry_statistic_collections(mc_registry_classes *classes)
-{
+mc_registry_status mc_registry_statistic_collections(mc_registry_classes *classes) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0 || classes->statistics_state.phase != MC_REGISTRY_INITIALIZING)
@@ -115,8 +109,7 @@ mc_registry_status mc_registry_statistic_collections(mc_registry_classes *classe
 }
 
 mc_registry_status mc_registry_statistic_list_add(mc_registry_classes *classes,
-                                                  mc_registry_list *list, mc_statistic *statistic)
-{
+                                                  mc_registry_list *list, mc_statistic *statistic) {
     if (classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (classes->entered == 0)
@@ -156,8 +149,7 @@ mc_registry_status mc_registry_statistic_list_add(mc_registry_classes *classes,
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status map_put(mc_statistic *statistic, mc_statistic_map *map, int32_t id)
-{
+static mc_registry_status map_put(mc_statistic *statistic, mc_statistic_map *map, int32_t id) {
     if (map == NULL)
         return fail(statistic, MC_REGISTRY_NULL_REFERENCE, "Statistic Map.put110 null receiver");
     statistic_map_entry *entry = find_entry(map, id);
@@ -180,8 +172,7 @@ static mc_registry_status map_put(mc_statistic *statistic, mc_statistic_map *map
     return MC_REGISTRY_OK;
 }
 
-static size_t decimal_units(int32_t value, uint16_t units[11])
-{
+static size_t decimal_units(int32_t value, uint16_t units[11]) {
     uint16_t reversed[10];
     size_t digits = 0, count = 0;
     uint32_t magnitude;
@@ -200,8 +191,7 @@ static size_t decimal_units(int32_t value, uint16_t units[11])
     return count;
 }
 
-static mc_registry_status duplicate_message(mc_statistic *statistic)
-{
+static mc_registry_status duplicate_message(mc_statistic *statistic) {
     mc_registry_classes *classes = statistic->classes;
     const mc_registry_string *prefix = NULL, *between = NULL, *suffix = NULL;
     stage(statistic, false, 29);
@@ -271,8 +261,7 @@ static mc_registry_status duplicate_message(mc_statistic *statistic)
     return fail(statistic, MC_REGISTRY_DUPLICATE_STATISTIC, "Duplicate statistic ID");
 }
 
-mc_registry_status mc_registry_statistic_register_base(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_statistic_register_base(mc_statistic *statistic) {
     if (statistic == NULL || statistic->classes == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     mc_registry_classes *classes = statistic->classes;
@@ -313,8 +302,7 @@ mc_registry_status mc_registry_statistic_register_base(mc_statistic *statistic)
     return MC_REGISTRY_OK;
 }
 
-mc_registry_status mc_registry_statistic_register(mc_statistic *statistic)
-{
+mc_registry_status mc_registry_statistic_register(mc_statistic *statistic) {
     if (statistic != NULL && statistic->kind == MC_STATISTIC_ACHIEVEMENT)
         return mc_registry_achievement_register(statistic);
     mc_registry_status status = mc_registry_statistic_register_base(statistic);
@@ -335,8 +323,7 @@ mc_registry_status mc_registry_statistic_register(mc_statistic *statistic)
 
 mc_registry_status mc_registry_classes_inspect_statistics(const mc_registry_classes *classes,
                                                           mc_registry_statistic_view *out,
-                                                          mc_registry_error *error)
-{
+                                                          mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Statistics view arguments");
     const mc_registry_statistic_storage *storage = &classes->statistics;
@@ -359,8 +346,7 @@ mc_registry_status mc_registry_classes_inspect_statistics(const mc_registry_clas
 }
 
 mc_registry_status mc_registry_classes_find_statistic(const mc_registry_classes *classes,
-                                                      int32_t id, const mc_statistic **out)
-{
+                                                      int32_t id, const mc_statistic **out) {
     if (classes == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     const statistic_map_entry *entry =
@@ -371,8 +357,7 @@ mc_registry_status mc_registry_classes_find_statistic(const mc_registry_classes 
 
 mc_registry_status mc_registry_classes_statistic_entry(const mc_registry_classes *classes,
                                                        size_t index, int32_t *id,
-                                                       const mc_statistic **out)
-{
+                                                       const mc_statistic **out) {
     if (classes == NULL || id == NULL || out == NULL || (const void *)id == (const void *)out)
         return MC_REGISTRY_INVALID_ARGUMENT;
     const mc_statistic_map *map = classes->statistics.a;
@@ -386,14 +371,12 @@ mc_registry_status mc_registry_classes_statistic_entry(const mc_registry_classes
     return MC_REGISTRY_OK;
 }
 
-size_t mc_statistic_list_size(const mc_statistic_list *list)
-{
+size_t mc_statistic_list_size(const mc_statistic_list *list) {
     return list == NULL ? 0 : list->count;
 }
 
 mc_registry_status mc_statistic_list_get(const mc_statistic_list *list, size_t index,
-                                         const mc_statistic **out)
-{
+                                         const mc_statistic **out) {
     if (list == NULL || out == NULL)
         return MC_REGISTRY_INVALID_ARGUMENT;
     if (index >= list->count)

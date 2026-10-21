@@ -20,13 +20,11 @@ static mc_light_region regions[MAX_QUEUE];
 static mc_chunk_height_query queries[MC_CHUNK_FINISH_QUERIES];
 static int32_t opacity[256];
 
-static bool bytes(FILE *file, void *data, size_t count)
-{
+static bool bytes(FILE *file, void *data, size_t count) {
     return fread(data, 1, count, file) == count;
 }
 
-static bool u32(FILE *file, uint32_t *value)
-{
+static bool u32(FILE *file, uint32_t *value) {
     uint8_t data[4];
     if (!bytes(file, data, sizeof(data)))
         return false;
@@ -35,8 +33,7 @@ static bool u32(FILE *file, uint32_t *value)
     return true;
 }
 
-static bool i32(FILE *file, int32_t *value)
-{
+static bool i32(FILE *file, int32_t *value) {
     uint32_t raw;
     if (!u32(file, &raw))
         return false;
@@ -44,8 +41,7 @@ static bool i32(FILE *file, int32_t *value)
     return true;
 }
 
-static bool boolean(FILE *file, bool *value)
-{
+static bool boolean(FILE *file, bool *value) {
     int byte = fgetc(file);
     if (byte != 0 && byte != 1)
         return false;
@@ -54,8 +50,7 @@ static bool boolean(FILE *file, bool *value)
 }
 
 static bool read_input(FILE *file, mc_chunk_cache *cache, mc_light_queue *queue, int32_t *depth,
-                       bool *no_sky, size_t *chunk_count)
-{
+                       bool *no_sky, size_t *chunk_count) {
     char magic[4];
     uint32_t nc, ne, ni, nq;
     if (!bytes(file, magic, sizeof(magic)) || memcmp(magic, "MCF1", 4) != 0 ||
@@ -128,16 +123,14 @@ static bool read_input(FILE *file, mc_chunk_cache *cache, mc_light_queue *queue,
     return fgetc(file) == EOF && !ferror(file) && mc_chunk_cache_validate(cache);
 }
 
-static void print_bytes(const char *name, const uint8_t *value, size_t count)
-{
+static void print_bytes(const char *name, const uint8_t *value, size_t count) {
     printf("\"%s\":{\"length\":%zu,\"values\":\"", name, count);
     for (size_t i = 0; i < count; ++i)
         printf("%02x", (unsigned)value[i]);
     printf("\"}");
 }
 
-static void stage(const char *name, const mc_light_queue *queue, int32_t depth, bool with_trace)
-{
+static void stage(const char *name, const mc_light_queue *queue, int32_t depth, bool with_trace) {
     printf("\"%s\":{\"data\":{", name);
     print_bytes("blocks", blocks, sizeof(blocks));
     printf(",");
@@ -167,8 +160,7 @@ static void stage(const char *name, const mc_light_queue *queue, int32_t depth, 
     printf("]}");
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc != 2)
         return 2;
     FILE *file = fopen(argv[1], "rb");

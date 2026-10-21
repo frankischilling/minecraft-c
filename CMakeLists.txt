@@ -120,6 +120,7 @@ target_link_libraries(mc_block PRIVATE mc_build_options)
 add_library(mc_entity_classes STATIC
     src/entity/nbt/errors.c
     src/entity/classes/classes.c
+    src/entity/bounds/bounds.c
     src/entity/registry/registry.c)
 target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 
@@ -367,6 +368,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME entity.construction COMMAND mc_test_entity)
     set_tests_properties(entity.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_entity_bounds tests/entity/bounds/test_bounds.c)
+    target_link_libraries(mc_test_entity_bounds PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.bounds COMMAND mc_test_entity_bounds)
+    set_tests_properties(entity.bounds PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_entity_bounds_values_probe tests/entity/bounds/values_probe.c)
+    target_link_libraries(mc_entity_bounds_values_probe PRIVATE mc_entity_classes mc_c_atomics mc_build_options)
 
     add_executable(mc_test_falling_entity tests/entity/test_falling.c)
     target_include_directories(mc_test_falling_entity PRIVATE src/entity src/core/java)

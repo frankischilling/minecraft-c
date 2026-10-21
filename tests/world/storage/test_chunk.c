@@ -53,8 +53,7 @@ typedef struct normal_input {
     uint8_t blocks[MC_CHUNK_BLOCKS + 7];
 } normal_input;
 
-static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type type)
-{
+static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type type) {
     uint16_t *units = value->names[value->name_count++];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i)
@@ -64,8 +63,7 @@ static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type
 }
 
 /* Constructed contract cases. These do not claim original-runtime parity. */
-static void fixture_init(fixture *value, bool entities, bool tiles)
-{
+static void fixture_init(fixture *value, bool entities, bool tiles) {
     memset(value, 0, sizeof(*value));
     value->root.type = MC_NBT_COMPOUND;
     value->root.name = (mc_nbt_string){root_name, sizeof(root_name) / sizeof(root_name[0])};
@@ -143,8 +141,7 @@ static void fixture_init(fixture *value, bool entities, bool tiles)
     value->root.value.compound.length = 3;
 }
 
-static const mc_nbt_tag *get(const mc_nbt_tag *parent, const char *name)
-{
+static const mc_nbt_tag *get(const mc_nbt_tag *parent, const char *name) {
     uint16_t units[16];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i)
@@ -152,8 +149,7 @@ static const mc_nbt_tag *get(const mc_nbt_tag *parent, const char *name)
     return mc_nbt_compound_get(parent, units, length);
 }
 
-static int tree_bytes(const mc_nbt_tag *root, uint8_t **out, size_t *length)
-{
+static int tree_bytes(const mc_nbt_tag *root, uint8_t **out, size_t *length) {
     size_t measured = 0;
     CHECK(mc_nbt_measure(root, NULL, &measured, NULL) == MC_NBT_OK);
     uint8_t *bytes = malloc(measured + 3u);
@@ -169,8 +165,7 @@ static int tree_bytes(const mc_nbt_tag *root, uint8_t **out, size_t *length)
     return 0;
 }
 
-static int decode_fixture(const fixture *value, mc_stored_chunk **out)
-{
+static int decode_fixture(const fixture *value, mc_stored_chunk **out) {
     uint8_t *bytes = NULL;
     size_t length = 0, consumed = 0;
     CHECK(tree_bytes(&value->root, &bytes, &length) == 0);
@@ -184,8 +179,7 @@ static int decode_fixture(const fixture *value, mc_stored_chunk **out)
     return 0;
 }
 
-static int same_tag(const mc_nbt_tag *left, const mc_nbt_tag *right)
-{
+static int same_tag(const mc_nbt_tag *left, const mc_nbt_tag *right) {
     uint8_t *a = NULL, *b = NULL;
     size_t a_length = 0, b_length = 0;
     CHECK(tree_bytes(left, &a, &a_length) == 0);
@@ -196,16 +190,14 @@ static int same_tag(const mc_nbt_tag *left, const mc_nbt_tag *right)
     return 0;
 }
 
-static int same_string(mc_nbt_string actual, const uint16_t *units, size_t length)
-{
+static int same_string(mc_nbt_string actual, const uint16_t *units, size_t length) {
     CHECK(actual.length == length);
     CHECK(length == 0 ||
           (actual.units != NULL && memcmp(actual.units, units, length * sizeof(*units)) == 0));
     return 0;
 }
 
-static uint8_t *data_array(mc_chunk_data *data, size_t array)
-{
+static uint8_t *data_array(mc_chunk_data *data, size_t array) {
     switch (array) {
         case 0:
             return data->blocks;
@@ -220,8 +212,7 @@ static uint8_t *data_array(mc_chunk_data *data, size_t array)
     }
 }
 
-static int expect_payload(const mc_chunk_state *state, const fixture *value)
-{
+static int expect_payload(const mc_chunk_state *state, const fixture *value) {
     CHECK(state != NULL && state->data != NULL && state->data->blocks != NULL);
     CHECK(state->data->blocks_capacity == MC_CHUNK_BLOCKS);
     for (size_t a = 0; a < ARRAY_COUNT; ++a)
@@ -229,16 +220,14 @@ static int expect_payload(const mc_chunk_state *state, const fixture *value)
     return 0;
 }
 
-static int expect_loaded_flags(const mc_chunk_state *state, bool entities)
-{
+static int expect_loaded_flags(const mc_chunk_state *state, bool entities) {
     CHECK(!state->blank && !state->dirty && !state->active && !state->never_save);
     CHECK(state->last_save_time == 0 && state->data->minimum_height == 0);
     CHECK(state->has_entities == entities);
     return 0;
 }
 
-static int expect_built_fields(const mc_nbt_tag *root, const mc_chunk_state *state, int64_t time)
-{
+static int expect_built_fields(const mc_nbt_tag *root, const mc_chunk_state *state, int64_t time) {
     const mc_nbt_tag *level = get(root, "Level");
     CHECK(root->type == MC_NBT_COMPOUND && level != NULL && level->type == MC_NBT_COMPOUND);
     CHECK(get(level, "xPos")->type == MC_NBT_INT &&
@@ -259,8 +248,7 @@ static int expect_built_fields(const mc_nbt_tag *root, const mc_chunk_state *sta
     return 0;
 }
 
-static void omit(fixture *value, size_t field)
-{
+static void omit(fixture *value, size_t field) {
     size_t length = value->level.value.compound.length;
     for (size_t i = 0; i < length; ++i) {
         if (value->level_items[i] == &value->fields[field]) {
@@ -273,8 +261,7 @@ static void omit(fixture *value, size_t field)
     abort();
 }
 
-static void normal_init(normal_input *value)
-{
+static void normal_init(normal_input *value) {
     memset(value, 0, sizeof(*value));
     value->state.data = &value->data;
     value->state.x = -33;
@@ -293,8 +280,7 @@ static void normal_init(normal_input *value)
     memset(value->blocks + MC_CHUNK_BLOCKS, 0xe7, 7);
 }
 
-static int test_create_and_independent_lifetimes(void)
-{
+static int test_create_and_independent_lifetimes(void) {
     normal_input *input = malloc(sizeof(*input));
     normal_input *expected = malloc(sizeof(*expected));
     CHECK(input != NULL && expected != NULL);
@@ -363,8 +349,7 @@ static int test_create_and_independent_lifetimes(void)
     return 0;
 }
 
-static int test_decode_defaults_and_ignored_time(void)
-{
+static int test_decode_defaults_and_ignored_time(void) {
     fixture *value = malloc(sizeof(*value));
     CHECK(value != NULL);
     fixture_init(value, false, false);
@@ -404,8 +389,7 @@ static int test_decode_defaults_and_ignored_time(void)
 }
 
 static int expect_decode_failure(const mc_nbt_tag *root, mc_stored_chunk *sentinel,
-                                 mc_stored_chunk_status expected, const char *field)
-{
+                                 mc_stored_chunk_status expected, const char *field) {
     uint8_t *bytes = NULL, *saved = NULL;
     size_t length = 0, consumed = 98765;
     CHECK(tree_bytes(root, &bytes, &length) == 0);
@@ -426,8 +410,7 @@ static int expect_decode_failure(const mc_nbt_tag *root, mc_stored_chunk *sentin
     return 0;
 }
 
-static int test_exact_types_missing_fields_and_shapes(void)
-{
+static int test_exact_types_missing_fields_and_shapes(void) {
     fixture *value = malloc(sizeof(*value));
     normal_input *input = malloc(sizeof(*input));
     CHECK(value != NULL && input != NULL);
@@ -486,8 +469,7 @@ static int test_exact_types_missing_fields_and_shapes(void)
     return 0;
 }
 
-static int test_opaque_utf16_preservation_and_result_ownership(void)
-{
+static int test_opaque_utf16_preservation_and_result_ownership(void) {
     fixture *value = malloc(sizeof(*value));
     CHECK(value != NULL);
     fixture_init(value, true, true);
@@ -569,8 +551,7 @@ static int test_opaque_utf16_preservation_and_result_ownership(void)
 }
 
 static int expect_build_failure(mc_stored_chunk *owner, const mc_nbt_limits *limits,
-                                mc_nbt_document *sentinel, mc_stored_chunk_status expected)
-{
+                                mc_nbt_document *sentinel, mc_stored_chunk_status expected) {
     mc_chunk_state *state = mc_stored_chunk_state(owner);
     mc_chunk_state saved_state = {0};
     mc_chunk_data saved_data = {0};
@@ -616,8 +597,7 @@ static int expect_build_failure(mc_stored_chunk *owner, const mc_nbt_limits *lim
     return 0;
 }
 
-static int test_opaque_edit_rejections_and_empty_editing(void)
-{
+static int test_opaque_edit_rejections_and_empty_editing(void) {
     fixture *value = malloc(sizeof(*value));
     CHECK(value != NULL);
     for (size_t mode = 0; mode < 3; ++mode) {
@@ -680,8 +660,7 @@ static int test_opaque_edit_rejections_and_empty_editing(void)
     return 0;
 }
 
-static int test_frozen_normalization_and_descriptor_guards(void)
-{
+static int test_frozen_normalization_and_descriptor_guards(void) {
     fixture *value = malloc(sizeof(*value));
     normal_input *alternate = malloc(sizeof(*alternate));
     CHECK(value != NULL && alternate != NULL);
@@ -755,8 +734,7 @@ static int test_frozen_normalization_and_descriptor_guards(void)
     return 0;
 }
 
-static int test_create_arguments_and_allocation_boundary(void)
-{
+static int test_create_arguments_and_allocation_boundary(void) {
     normal_input *input = malloc(sizeof(*input));
     normal_input *saved_input = malloc(sizeof(*saved_input));
     CHECK(input != NULL && saved_input != NULL);
@@ -828,8 +806,7 @@ static int test_create_arguments_and_allocation_boundary(void)
     return 0;
 }
 
-static int test_decode_and_build_limits_and_failures(void)
-{
+static int test_decode_and_build_limits_and_failures(void) {
     fixture *value = malloc(sizeof(*value));
     CHECK(value != NULL);
     fixture_init(value, false, false);
@@ -972,8 +949,7 @@ static int test_decode_and_build_limits_and_failures(void)
     return 0;
 }
 
-static int test_status_strings(void)
-{
+static int test_status_strings(void) {
     static const char *const expected[] = {"ok",
                                            "invalid argument",
                                            "missing Level",
@@ -991,8 +967,7 @@ static int test_status_strings(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_create_and_independent_lifetimes() != 0 ||
         test_decode_defaults_and_ignored_time() != 0 ||
         test_exact_types_missing_fields_and_shapes() != 0 ||

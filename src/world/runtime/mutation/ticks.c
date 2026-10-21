@@ -3,16 +3,14 @@
 #include "../../../block/registry/registry_internal.h"
 #include "mc/core/java/java.h"
 
-static bool tick_empty(mc_world_mutation_error *error)
-{
+static bool tick_empty(mc_world_mutation_error *error) {
     error->hook_class = NULL;
     error->hook_bytecode = 0;
     return true;
 }
 
 static bool tick_unavailable(mc_world_runtime *world, const mc_block *block, const char *client,
-                             const char *server, mc_world_mutation_error *error)
-{
+                             const char *server, mc_world_mutation_error *error) {
     error->hook_class = block->classes->options.side == MC_REGISTRY_CLIENT ? client : server;
     error->hook_bytecode = 0;
     return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -25,8 +23,7 @@ static bool tick_unavailable(mc_world_runtime *world, const mc_block *block, con
  * those concrete bodies are implemented. */
 bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, mc_java_random *random,
-                                  mc_world_mutation_error *error)
-{
+                                  mc_world_mutation_error *error) {
     (void)x;
     (void)y;
     (void)z;

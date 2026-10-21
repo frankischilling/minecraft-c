@@ -49,6 +49,7 @@ typedef struct mc_world_normal_population_error {
     mc_biome_status temperature_status;
     /* A bounded explicitly propagated nested population context. */
     mc_world_population_context nested;
+
     union {
         mc_world_biome_error biome;
         mc_temperature_error temperature;

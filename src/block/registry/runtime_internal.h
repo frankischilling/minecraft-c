@@ -57,6 +57,7 @@ typedef struct mc_registry_block_m_view {
     mc_block *const *identity;
     size_t length;
 } mc_registry_block_m_view;
+
 mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
                                            mc_registry_block_m_view *out, mc_registry_error *error);
 mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
@@ -71,6 +72,7 @@ typedef struct mc_registry_block_o_view {
     const bool *identity;
     size_t length;
 } mc_registry_block_o_view;
+
 mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,
                                            mc_registry_block_o_view *out, mc_registry_error *error);
 mc_registry_status mc_registry_block_o_at(const mc_registry_block_o_view *array, int32_t index,
@@ -86,6 +88,7 @@ typedef struct mc_registry_block_p_view {
     const bool *identity;
     size_t length;
 } mc_registry_block_p_view;
+
 mc_registry_status mc_registry_block_p_get(mc_registry_classes *classes,
                                            mc_registry_block_p_view *out, mc_registry_error *error);
 mc_registry_status mc_registry_block_p_at(const mc_registry_block_p_view *array, int32_t index,
@@ -98,6 +101,7 @@ typedef struct mc_registry_block_t_view {
     const bool *identity;
     size_t length;
 } mc_registry_block_t_view;
+
 mc_registry_status mc_registry_block_t_get(mc_registry_classes *classes,
                                            mc_registry_block_t_view *out, mc_registry_error *error);
 mc_registry_status mc_registry_block_t_at(const mc_registry_block_t_view *array, int32_t index,

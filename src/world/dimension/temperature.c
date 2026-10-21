@@ -34,16 +34,14 @@ struct mc_temperature_array {
     size_t holds;
 };
 
-static mc_biome_status finish(mc_temperature_error *out, const mc_temperature_error *frame)
-{
+static mc_biome_status finish(mc_temperature_error *out, const mc_temperature_error *frame) {
     if (out != NULL)
         *out = *frame;
     return frame->status;
 }
 
 static mc_biome_status fail(mc_temperature_error *frame, mc_biome_status status,
-                            const char *operation)
-{
+                            const char *operation) {
     frame->status = status;
     frame->operation = operation;
     frame->native_boundary = true;
@@ -51,8 +49,7 @@ static mc_biome_status fail(mc_temperature_error *frame, mc_biome_status status,
 }
 
 static mc_biome_status dimension_failure(mc_temperature_error *frame,
-                                         mc_world_dimension_status status, const char *operation)
-{
+                                         mc_world_dimension_status status, const char *operation) {
     frame->manager_status = status;
     return fail(frame,
                 status == MC_WORLD_DIMENSION_LIMIT               ? MC_BIOME_LIMIT
@@ -61,15 +58,14 @@ static mc_biome_status dimension_failure(mc_temperature_error *frame,
                 operation);
 }
 
-void mc_temperature_limits_default(mc_temperature_limits *out)
-{
+void mc_temperature_limits_default(mc_temperature_limits *out) {
     if (out != NULL)
         *out = (mc_temperature_limits){1024u * 1024u, MC_BIOME_DEFAULT_ALLOCATION_BYTES};
 }
 
 mc_biome_status mc_temperature_owner_create(const mc_temperature_limits *limits,
-                                            mc_temperature_owner **out, mc_temperature_error *error)
-{
+                                            mc_temperature_owner **out,
+                                            mc_temperature_error *error) {
     mc_temperature_error frame = {0};
     if (out == NULL) {
         (void)fail(&frame, MC_BIOME_INVALID_ARGUMENT, "temperature owner output");
@@ -102,8 +98,7 @@ mc_biome_status mc_temperature_owner_create(const mc_temperature_limits *limits,
     return finish(error, &frame);
 }
 
-mc_biome_status mc_temperature_owner_retain(mc_temperature_owner *owner)
-{
+mc_biome_status mc_temperature_owner_retain(mc_temperature_owner *owner) {
     if (owner == NULL)
         return MC_BIOME_INVALID_ARGUMENT;
     if (owner->holds == SIZE_MAX)
@@ -112,15 +107,13 @@ mc_biome_status mc_temperature_owner_retain(mc_temperature_owner *owner)
     return MC_BIOME_OK;
 }
 
-void mc_temperature_owner_release(mc_temperature_owner *owner)
-{
+void mc_temperature_owner_release(mc_temperature_owner *owner) {
     if (owner != NULL && --owner->holds == 0u)
         free(owner);
 }
 
 mc_biome_status mc_temperature_owner_get(const mc_temperature_owner *owner,
-                                         mc_temperature_owner_state *out)
-{
+                                         mc_temperature_owner_state *out) {
     if (owner == NULL || out == NULL)
         return MC_BIOME_INVALID_ARGUMENT;
     *out = (mc_temperature_owner_state){owner->holds, owner->arrays, owner->direct_bytes,
@@ -128,8 +121,7 @@ mc_biome_status mc_temperature_owner_get(const mc_temperature_owner *owner,
     return MC_BIOME_OK;
 }
 
-mc_biome_status mc_temperature_array_retain(mc_temperature_array *array)
-{
+mc_biome_status mc_temperature_array_retain(mc_temperature_array *array) {
     if (array == NULL)
         return MC_BIOME_INVALID_ARGUMENT;
     if (array->holds == SIZE_MAX)
@@ -138,8 +130,7 @@ mc_biome_status mc_temperature_array_retain(mc_temperature_array *array)
     return MC_BIOME_OK;
 }
 
-void mc_temperature_array_release(mc_temperature_array *array)
-{
+void mc_temperature_array_release(mc_temperature_array *array) {
     if (array == NULL || --array->holds != 0u)
         return;
     mc_temperature_owner *owner = array->owner;
@@ -151,8 +142,7 @@ void mc_temperature_array_release(mc_temperature_array *array)
 }
 
 mc_biome_status mc_temperature_array_get(const mc_temperature_array *array,
-                                         mc_temperature_array_view *out)
-{
+                                         mc_temperature_array_view *out) {
     if (array == NULL || out == NULL)
         return MC_BIOME_INVALID_ARGUMENT;
     *out = (mc_temperature_array_view){array->owner, array->buffer.data, array->buffer.length,
@@ -164,8 +154,7 @@ mc_biome_status mc_temperature_array_get(const mc_temperature_array *array,
  * ledger hold. Additional array aliases only retain the SAME native handle.
  * No manager allocation layout, magic header or detached double[] is copied. */
 static mc_biome_status array_create(mc_temperature_owner *owner, size_t length,
-                                    mc_temperature_array **out, mc_temperature_error *frame)
-{
+                                    mc_temperature_array **out, mc_temperature_error *frame) {
     if (owner == NULL)
         return fail(frame, MC_BIOME_INVALID_ARGUMENT, "temperature reached output allocator");
     if (owner->direct_bytes > owner->limits.max_direct_allocation_bytes ||
@@ -192,8 +181,7 @@ static mc_biome_status array_create(mc_temperature_owner *owner, size_t length,
     return MC_BIOME_OK;
 }
 
-static bool dimensions(size_t width, size_t height, size_t *count)
-{
+static bool dimensions(size_t width, size_t height, size_t *count) {
     if (width > INT32_MAX || height > INT32_MAX ||
         (height != 0u && width > (size_t)INT32_MAX / height))
         return false;
@@ -204,33 +192,28 @@ static bool dimensions(size_t width, size_t height, size_t *count)
     return true;
 }
 
-static bool strict_fp(void)
-{
+static bool strict_fp(void) {
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u;
 }
 
-static double add(double a, double b)
-{
+static double add(double a, double b) {
     volatile double value = a + b;
     return value;
 }
 
-static double subtract(double a, double b)
-{
+static double subtract(double a, double b) {
     volatile double value = a - b;
     return value;
 }
 
-static double multiply(double a, double b)
-{
+static double multiply(double a, double b) {
     volatile double value = a * b;
     return value;
 }
 
 static bool raw_fill(mc_noise_simplex *layers, size_t layer_count, int32_t x, int32_t z,
                      size_t width, size_t height, double scale, double frequency, double *data,
-                     size_t length)
-{
+                     size_t length) {
     const mc_noise_simplex_octaves noise = {layers, layer_count};
     const mc_noise_simplex_grid grid = {(double)x, (double)z, width, height, scale, scale};
     return mc_noise_simplex_octaves_fill(&noise, &grid, frequency,
@@ -242,8 +225,7 @@ static bool raw_fill(mc_noise_simplex *layers, size_t layer_count, int32_t x, in
  * real allocation preserves old+new peak charges until publication77 returns.
  * This call has no callbacks; fields remain exclusive throughout. */
 static mc_biome_status auxiliary(mc_biome_manager *manager, int32_t x, int32_t z, size_t width,
-                                 size_t height, size_t count, mc_temperature_error *frame)
-{
+                                 size_t height, size_t count, mc_temperature_error *frame) {
     mc_biome_double_reference old = {0};
     mc_biome_double_buffer fresh = {0};
     frame->bytecode = 74u;
@@ -285,8 +267,7 @@ mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
                                       mc_temperature_owner *allocation_owner,
                                       mc_temperature_array *input, int32_t x, int32_t z,
                                       size_t width, size_t height, mc_temperature_array **out,
-                                      mc_temperature_error *error)
-{
+                                      mc_temperature_error *error) {
     mc_temperature_error frame = {0};
     mc_temperature_array *input_hold = NULL;
     mc_temperature_array *fresh = NULL;

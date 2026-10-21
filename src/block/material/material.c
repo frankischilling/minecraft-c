@@ -33,39 +33,33 @@ struct mc_materials {
     mc_material materials[MC_MATERIAL_COUNT];
 };
 
-static mc_material *mc_material_m(mc_material *material)
-{
+static mc_material *mc_material_m(mc_material *material) {
     material->F = true;
     return material;
 }
 
-static mc_material *mc_material_n(mc_material *material)
-{
+static mc_material *mc_material_n(mc_material *material) {
     material->G = false;
     return material;
 }
 
-static mc_material *mc_material_o(mc_material *material)
-{
+static mc_material *mc_material_o(mc_material *material) {
     material->D = true;
     return material;
 }
 
-static mc_material *mc_material_k(mc_material *material)
-{
+static mc_material *mc_material_k(mc_material *material) {
     material->H = 1;
     return material;
 }
 
-static mc_material *mc_material_l(mc_material *material)
-{
+static mc_material *mc_material_l(mc_material *material) {
     material->H = 2;
     return material;
 }
 
 static void mc_material_palette_construct(mc_materials *owner, mc_material_palette_id id,
-                                          int32_t rgb)
-{
+                                          int32_t rgb) {
     mc_material_palette *palette = &owner->palettes[id];
     /* dx/cm constructor: q=index at PC6, p=RGB at PC11, a[index]=this at PC19. */
     palette->q = (int32_t)id;
@@ -74,8 +68,7 @@ static void mc_material_palette_construct(mc_materials *owner, mc_material_palet
 }
 
 static mc_material *mc_material_construct(mc_materials *owner, mc_material_id id,
-                                          mc_material_class kind, mc_material_palette_id palette)
-{
+                                          mc_material_class kind, mc_material_palette_id palette) {
     mc_material *material = &owner->materials[id];
     /* Java zero defaults, then the base constructor's G=true and final C. */
     *material = (mc_material){
@@ -96,8 +89,7 @@ static mc_material *mc_material_construct(mc_materials *owner, mc_material_id id
     return material;
 }
 
-bool mc_materials_create(mc_materials **out)
-{
+bool mc_materials_create(mc_materials **out) {
     if (out == NULL) {
         return false;
     }
@@ -182,98 +174,80 @@ bool mc_materials_create(mc_materials **out)
     return true;
 }
 
-void mc_materials_destroy(mc_materials *owner)
-{
+void mc_materials_destroy(mc_materials *owner) {
     free(owner);
 }
 
-mc_material *mc_materials_get(mc_materials *owner, mc_material_id id)
-{
+mc_material *mc_materials_get(mc_materials *owner, mc_material_id id) {
     return &owner->materials[id];
 }
 
 const mc_material_palette *mc_materials_palette(const mc_materials *owner,
-                                                mc_material_palette_id id)
-{
+                                                mc_material_palette_id id) {
     return &owner->palettes[id];
 }
 
-const mc_material_palette *const *mc_materials_palette_table(const mc_materials *owner)
-{
+const mc_material_palette *const *mc_materials_palette_table(const mc_materials *owner) {
     return owner->palette_table;
 }
 
-const mc_material_palette *mc_materials_palette_at(const mc_materials *owner, int32_t index)
-{
+const mc_material_palette *mc_materials_palette_at(const mc_materials *owner, int32_t index) {
     return owner->palette_table[index];
 }
 
-const mc_material_palette *mc_material_palette_of(const mc_material *material)
-{
+const mc_material_palette *mc_material_palette_of(const mc_material *material) {
     return material->C;
 }
 
-int32_t mc_material_palette_index(const mc_material_palette *palette)
-{
+int32_t mc_material_palette_index(const mc_material_palette *palette) {
     return palette->q;
 }
 
-int32_t mc_material_palette_rgb(const mc_material_palette *palette)
-{
+int32_t mc_material_palette_rgb(const mc_material_palette *palette) {
     return palette->p;
 }
 
-bool mc_material_a(const mc_material *material)
-{
+bool mc_material_a(const mc_material *material) {
     return material->kind == MC_MATERIAL_CLASS_LN_HJ;
 }
 
-bool mc_material_b(const mc_material *material)
-{
+bool mc_material_b(const mc_material *material) {
     /* sg/lk inherits the base b()=true while overriding a/c=false and d=true. */
     return material->kind == MC_MATERIAL_CLASS_LN_HJ || material->kind == MC_MATERIAL_CLASS_SG_LK;
 }
 
-bool mc_material_c(const mc_material *material)
-{
+bool mc_material_c(const mc_material *material) {
     return material->kind == MC_MATERIAL_CLASS_LN_HJ;
 }
 
-bool mc_material_d(const mc_material *material)
-{
+bool mc_material_d(const mc_material *material) {
     return material->kind == MC_MATERIAL_CLASS_SG_LK;
 }
 
-bool mc_material_e(const mc_material *material)
-{
+bool mc_material_e(const mc_material *material) {
     return material->D;
 }
 
-mc_material *mc_material_f(mc_material *material)
-{
+mc_material *mc_material_f(mc_material *material) {
     material->E = true;
     return material;
 }
 
-bool mc_material_g(const mc_material *material)
-{
+bool mc_material_g(const mc_material *material) {
     return material->E;
 }
 
-bool mc_material_h(const mc_material *material)
-{
+bool mc_material_h(const mc_material *material) {
     if (material->F) {
         return false;
     }
     return mc_material_c(material);
 }
 
-bool mc_material_i(const mc_material *material)
-{
+bool mc_material_i(const mc_material *material) {
     return material->G;
 }
 
-int32_t mc_material_j(const mc_material *material)
-{
+int32_t mc_material_j(const mc_material *material) {
     return material->H;
 }

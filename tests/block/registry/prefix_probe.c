@@ -36,16 +36,14 @@ typedef struct probe {
     bool failed;
 } probe;
 
-static bool fail(probe *p, const char *message)
-{
+static bool fail(probe *p, const char *message) {
     if (!p->failed)
         fprintf(stderr, "registry prefix probe: %s\n", message);
     p->failed = true;
     return false;
 }
 
-static bool fragment(probe *p, const char *format, ...)
-{
+static bool fragment(probe *p, const char *format, ...) {
     if (p->failed)
         return false;
     va_list arguments;
@@ -57,8 +55,7 @@ static bool fragment(probe *p, const char *format, ...)
     return true;
 }
 
-static bool row(probe *p, const char *format, ...)
-{
+static bool row(probe *p, const char *format, ...) {
     if (p->failed)
         return false;
     va_list arguments;
@@ -71,8 +68,8 @@ static bool row(probe *p, const char *format, ...)
     return true;
 }
 
-static bool reference(probe *p, const void *value, const mc_registry_string *string, char token[32])
-{
+static bool reference(probe *p, const void *value, const mc_registry_string *string,
+                      char token[32]) {
     if (value == NULL) {
         if (string != NULL)
             return fail(p, "invalid String reference enrollment");
@@ -98,8 +95,7 @@ static bool reference(probe *p, const void *value, const mc_registry_string *str
 }
 
 static bool reference_row(probe *p, const char *category, const char *root, const char *field,
-                          const void *value, const mc_registry_string *string)
-{
+                          const void *value, const mc_registry_string *string) {
     char token[32];
     if (!reference(p, value, string, token))
         return false;
@@ -109,36 +105,31 @@ static bool reference_row(probe *p, const char *category, const char *root, cons
 }
 
 static bool int_row(probe *p, const char *category, const char *root, const char *field,
-                    int32_t value)
-{
+                    int32_t value) {
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return row(p, "%s\t%s\t%s\tI:%08" PRIx32 "\n", category, root, field, bits);
 }
 
 static bool float_row(probe *p, const char *category, const char *root, const char *field,
-                      float value)
-{
+                      float value) {
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return row(p, "%s\t%s\t%s\tF:%08" PRIx32 "\n", category, root, field, bits);
 }
 
-static bool double_row(probe *p, const char *root, const char *field, double value)
-{
+static bool double_row(probe *p, const char *root, const char *field, double value) {
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     return row(p, "BLOCK\t%s\t%s\tD:%016" PRIx64 "\n", root, field, bits);
 }
 
 static bool bool_row(probe *p, const char *category, const char *root, const char *field,
-                     bool value)
-{
+                     bool value) {
     return row(p, "%s\t%s\t%s\tZ:%u\n", category, root, field, value ? 1u : 0u);
 }
 
-static bool sound_rows(probe *p, const char *root, const mc_block_sound *sound)
-{
+static bool sound_rows(probe *p, const char *root, const mc_block_sound *sound) {
     const mc_block_sound_fields *f = mc_block_sound_fields_get(sound);
     if (f == NULL)
         return fail(p, "missing sound fields");
@@ -146,8 +137,7 @@ static bool sound_rows(probe *p, const char *root, const mc_block_sound *sound)
            float_row(p, "SOUND", root, "b", f->b) && float_row(p, "SOUND", root, "c", f->c);
 }
 
-static bool block_rows(probe *p, const char *root, const mc_block *block)
-{
+static bool block_rows(probe *p, const char *root, const mc_block *block) {
     const mc_block_fields *f = mc_block_fields_get(block);
     if (f == NULL)
         return fail(p, "missing Block fields");
@@ -164,8 +154,7 @@ static bool block_rows(probe *p, const char *root, const mc_block *block)
            reference_row(p, "BLOCK", root, "a", f->a, f->a);
 }
 
-static bool element_rows(probe *p, const mc_registry_block_view *view)
-{
+static bool element_rows(probe *p, const mc_registry_block_view *view) {
     for (size_t array = 0; array < 8; ++array) {
         char root[2] = {(char)('m' + (int)array), '\0'};
         for (size_t i = 0; i < 256; ++i) {
@@ -209,8 +198,7 @@ static bool element_rows(probe *p, const mc_registry_block_view *view)
     return true;
 }
 
-static bool string_rows(probe *p)
-{
+static bool string_rows(probe *p) {
     for (size_t i = 0; i < p->reference_count; ++i) {
         if (p->strings[i] == NULL)
             continue;
@@ -235,8 +223,7 @@ static bool string_rows(probe *p)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int result = 1;
     probe p = {0};
     mc_java_random_profile *profile = NULL;
