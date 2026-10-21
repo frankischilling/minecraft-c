@@ -1,5 +1,15 @@
 # Systems and subsystems
 
+The [nearby Entity module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/entities.md)
+captures the actual constructor R List, owns each duplicate Entity occurrence,
+and returns held views of live mutable contents. The query reloads current R
+after real provider acquisition and at return. Actual Blank dispatch occurs
+before normal header and nullable argument access. Clear retains capacity;
+terminal retirement releases typed contents without gameplay removal or saves.
+World K and concrete collision shapes remain separate unfinished work.
+
+The following bounds checkpoint predates nearby integration.
+
 The [shared bounds module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
 owns real pooled boxes, cursor reset and client clear through the existing
 Entity classes owner. Native holds preserve detached boxes and let aliases

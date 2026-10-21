@@ -237,6 +237,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/solid_support.c
     src/world/runtime/presentation.c
     src/world/runtime/entity_publication.c
+    src/world/runtime/collision/entities.c
     src/world/chunk/entities.c
     src/world/runtime/scheduling.c
     src/world/runtime/mutation/support.c
@@ -499,6 +500,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_queries tests/world/runtime/test_queries.c)
     target_link_libraries(mc_test_world_queries PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_nearby tests/world/runtime/collision/test_nearby.c)
+    target_link_libraries(mc_test_world_nearby PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_world_nearby_values_probe tests/world/runtime/collision/nearby_probe.c)
+    target_link_libraries(mc_world_nearby_values_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1155,6 +1162,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-publication-contracts")
     set_tests_properties(world.entity_publication PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.nearby_entities
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_nearby>"
+        --scenario world-nearby
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-nearby-contracts")
+    set_tests_properties(world.nearby_entities PROPERTIES
+        LABELS "public;integration;ownership;collision" TIMEOUT 90)
 
     add_test(NAME world.tiles
         COMMAND "${Python3_EXECUTABLE}"

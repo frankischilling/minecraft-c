@@ -49,8 +49,8 @@ mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk,
 
 /* Explicit terminal native teardown, separate from game removal/save/unload.
  * First retire borrowed views/calls/leases. Admission validates the complete
- * typed World.b/c/G ledgers and every bound Chunk slice/embedded Tile Map
- * before releasing any hold. The historical name now admits both owner kinds.
+ * typed World.b/D/c/G/R ledgers and every bound Chunk slice/embedded Tile Map
+ * before releasing any hold. This includes each nearby-result occurrence.
  * Success terminates source operations and releases each actual occurrence;
  * it leaves gameplay q/membership/World bindings untouched. Retired containers
  * cannot serialize even when empty. Retire native cache/pending descriptors,

@@ -1,5 +1,19 @@
 # Runtime boundaries
 
+The [nearby Entity module](world/collision/entities.md) owns actual World R
+contents through a separate typed occurrence ledger. It captures the constructor
+List independently of the current source field. A query clears current R,
+uses real nonloading presence and acquiring getters, then captures current R
+for each actual normal/Blank gather call. Returned native views lease the
+descriptor and World while retaining the List's mutable source contents.
+Ordinary clear and terminal native retirement have separate effects.
+
+This supplies the candidate collection needed by later collision work. World K,
+concrete Block contribution shapes, Entity movement and FallingSand physics
+remain unfinished.
+
+The following bounds checkpoint predates nearby integration.
+
 The [shared bounds module](entity/bounds.md) owns the existing Entity classes
 pool, actual temporary identities and native holds that survive client clear.
 Movement geometry captures all arguments before possible reuse of its source

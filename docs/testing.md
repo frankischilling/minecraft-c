@@ -1,5 +1,40 @@
 # Test scope and reproduction
 
+The final LF-only correction to one test source was rebuilt and rerun on
+all three compilers. Complete regression evidence remains in the preceding
+full builds, whose runtime and probe source bytes are unchanged.
+
+The [nearby contracts](world/collision/entities.md) pass 606 checks per compiler.
+Fresh MSVC/GCC/Clang builds pass all 161/163/163 configured cases in focused and
+complementary partitions, with numerical Java checks and no skips. Linux runs
+use ASan, UBSan, leak checks and strict floating-point flags. Each host retains
+754 native inputs, 254 dependency files, 225 selected products and 41 captures.
+
+Tests cover actual GAME provider/cache acquisition, packed-key repeated Chunk
+identity, slice and candidate order, duplicate holds, exclusion, mutable returned
+views, capacity replacement, final Entity release during source clear, native
+budget/retain failures and terminal ownership. Private nullable/hold-overflow
+controls are labeled native invariants, rather than original gameplay evidence.
+
+The public [comparison tool](../tests/tools/world/collision/compare_nearby.py)
+compiles its adjacent reflection helper and runs untouched client/server JARs.
+Each fresh original capture has 364 rows per side. The native replay selects
+356: 353 successful rows compare exactly, while three nullable cases compare
+the reached native failure PC and unchanged/partial destination prefix. Eight
+malformed Java array/List cases are retained and explicitly excluded. Native
+Registry bootstrap output is checked separately and all raw streams remain
+retained. Independent qualification regenerates every input row and joins
+process, tool, original JAR, source and compiled-product identities.
+
+These experiments exercise actual Chunk gather projections. Original reflection
+sets slice contents and bounds on real null-World constructed objects; native
+setup uses real store-owned Chunks, construction/insertion and actual permanent
+bounds. They do not compare World construction, provider traversal, complete
+collision shapes, movement or whole-game state. The [source map](reference/nearby-entities.md)
+records the method boundaries and reproduction command.
+
+The following bounds checkpoint predates nearby integration.
+
 The [bounds contracts](entity/bounds.md) pass 4,601 native checks per compiler.
 Fresh final-source MSVC/GCC/Clang builds pass all 160/162/162 configured cases
 in bounds-first and complementary partitions, without skips and with numerical

@@ -18,7 +18,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-biome-runtime", "temperature-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
              "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
-             "world-queries", "world-entity-batch")
+             "world-queries", "world-entity-batch", "world-nearby")
 
 
 def provider_fixture(root):
@@ -251,6 +251,19 @@ def main():
                 "entity_class_internal": ROOT / "src/entity/classes/classes_internal.h",
                 "entity_errors": ROOT / "include/mc/world/runtime/entity_errors.h",
             })
+        if args.scenario == "world-nearby":
+            paths.update({
+                "nearby_test": ROOT / "tests/world/runtime/collision/test_nearby.c",
+                "entity_publication_fixture": ROOT / "tests/world/runtime/test_entity_publication.c",
+                "nearby": ROOT / "src/world/runtime/collision/entities.c",
+                "nearby_internal": ROOT / "src/world/runtime/collision/entities_internal.h",
+                "nearby_header": ROOT / "include/mc/world/runtime/collision/entities.h",
+                "chunk_entities": ROOT / "src/world/chunk/entities.c",
+                "chunk_object_state": ROOT / "src/world/chunk/object_state_internal.h",
+                "entity_publication": ROOT / "src/world/runtime/entity_publication.c",
+                "bounds": ROOT / "src/entity/bounds/bounds.c",
+                "bounds_header": ROOT / "include/mc/entity/bounds/bounds.h",
+            })
         if args.scenario == "world-scheduling":
             paths["scheduling_test"] = ROOT / "tests/world/runtime/test_scheduling.c"
             paths["scheduling_header"] = ROOT / "include/mc/world/runtime/scheduling.h"
@@ -287,7 +300,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch"):
+                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -362,9 +375,21 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-nearby":
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(8)}
+            for i in range(2):
+                expected_slots.update({(f"world{i}/region/r.0.0.mcr", 1),
+                                       (f"world{i}/region/r.-1.0.mcr", 31),
+                                       (f"world{i}/region/r.0.-1.mcr", 992)})
+            CAPTURE.require(len(timestamps) == 14 and
+                            {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                            "all fourteen prepared nearby-query Chunk records remain present")
+            CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
+                            {name for name, _ in expected_slots},
+                            "exact twelve nearby-query region files")
         if args.scenario == "world-entity-batch":
             CAPTURE.require(len(timestamps) == 8 and
                             {(row["file"], row["slot"]) for row in timestamps} ==

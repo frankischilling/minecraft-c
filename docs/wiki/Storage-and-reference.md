@@ -1,5 +1,16 @@
 # Storage and original references
 
+The [nearby source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/nearby-entities.md)
+records complete paired World query, normal/Blank gather, floor, presence,
+acquiring getter and strict intersection bodies. Public reflection tools use
+untouched original JAR classes, with real null-World constructors and explicit
+slice/bounds research inputs. Native replay uses real GAME/store-owned objects.
+Original/native constructor or World traversal equality is not claimed by those
+Chunk projections. Raw rows, bootstrap streams and native failure prefixes
+remain distinct retained evidence; malformed collection states stay explicit.
+
+The following bounds checkpoint predates nearby integration.
+
 The [normal population source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/normal-population.md)
 records the complete paired controller, shared-Random mixing, late Biome/static
 reads, tree constructor/height order and current-w snow operations. Native

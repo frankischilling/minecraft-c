@@ -3,6 +3,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../storage/objects_internal.h"
+#include "collision/entities_internal.h"
 #include "construction_internal.h"
 #include "entity_publication_internal.h"
 #include "lighting_internal.h"
@@ -262,6 +263,8 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
         runtime->entity_membership.list = list;
     else if (field == &runtime->fields.D)
         runtime->entity_deferral.list = list;
+    else if (field == &runtime->fields.R)
+        runtime->nearby_entities.list = list;
     else if (field == &runtime->fields.c)
         mc_live_tiles_capture_list(runtime, false, list);
     else if (field == &runtime->fields.G)
@@ -738,9 +741,14 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Tile ownership metadata");
     if (runtime->tile_membership[0].count != 0 || runtime->tile_membership[1].count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World Tile occurrences remain");
+    if (!mc_world_nearby_owned_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World nearby ownership metadata");
+    if (runtime->nearby_entities.count != 0)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World nearby occurrences remain");
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_runtime_entity_list_release(runtime);
     mc_live_tiles_lists_release(runtime);
+    mc_world_nearby_owned_release(runtime);
     mc_world_runtime_lighting_free(runtime);
     mc_world_reference_list *lists[] = {f->C,
                                         runtime->entity_membership.list,
@@ -751,7 +759,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                         f->e,
                                         f->u,
                                         f->K,
-                                        f->R};
+                                        runtime->nearby_entities.list};
     for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
         if (lists[i] != NULL) {
             free(lists[i]->items);
@@ -782,6 +790,8 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_BUSY, "World call or lease during retirement");
     if (!mc_world_runtime_entity_list_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
+    if (!mc_world_nearby_owned_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World nearby ownership metadata");
     if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED &&
         !runtime->construction.contexts_bound && !runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
@@ -795,7 +805,7 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
                                         f->e,
                                         f->u,
                                         f->K,
-                                        f->R};
+                                        runtime->nearby_entities.list};
     /* C contains typed World-owned records, retired at final native free.
      * Other unimplemented collection descendants still require emptiness. */
     for (size_t i = 1; i < sizeof(lists) / sizeof(lists[0]); ++i) {
@@ -834,10 +844,9 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
 static bool entity_retirement_other_collections_empty(const mc_world_runtime *world) {
     const mc_world_runtime_fields *fields = &world->fields;
     /* C/E/F are already concrete typed owners retained until final native free.
-     * b/D/c/G are admitted separately. Never reinterpret entries of these remaining
+     * b/D/c/G/R are admitted separately. Never reinterpret entries of these remaining
      * finite void* lists, clear their counts, or discard a nonempty active set. */
-    const mc_world_reference_list *lists[] = {fields->d, fields->e, fields->u, fields->K,
-                                              fields->R};
+    const mc_world_reference_list *lists[] = {fields->d, fields->e, fields->u, fields->K};
     for (size_t index = 0; index < sizeof(lists) / sizeof(lists[0]); ++index) {
         const mc_world_reference_list *list = lists[index];
         if (list != NULL && (list->count != 0 || list->capacity > SIZE_MAX / sizeof(*list->items) ||
@@ -861,6 +870,9 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     if (!mc_live_tiles_lists_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World Tile retirement ownership metadata");
+    if (!mc_world_nearby_owned_valid(world))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World nearby retirement ownership metadata");
     if (!entity_retirement_other_collections_empty(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement untyped collections");
@@ -884,5 +896,6 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
         mc_world_store_entity_containers_release(store, world);
     mc_world_runtime_entity_list_release(world);
     mc_live_tiles_lists_release(world);
+    mc_world_nearby_owned_release(world);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

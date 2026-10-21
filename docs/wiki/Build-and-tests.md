@@ -1,5 +1,23 @@
 # Build and tests
 
+The final LF-only correction to one test source was rebuilt and rerun on
+all three compilers. Complete regression evidence remains in the preceding
+full builds, whose runtime and probe source bytes are unchanged.
+
+The [nearby contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/entities.md)
+pass 606 checks per native compiler and all 161/163/163 configured cases, without
+skips and with numerical Java checks. Linux uses ASan/UBSan/leak checks. Final
+formatting passes 448 C source/header files. Each host retains 754 native inputs,
+254 dependency files, 225 selected products and 41 captures.
+
+The [public reproduction tool](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/tools/world/collision/compare_nearby.py)
+passes fresh original/native Chunk comparisons: 353 exact successful rows and
+three precise nullable-failure prefixes per side/compiler, with eight malformed
+Java collection cases explicitly excluded. Original World/provider-loop replay,
+full collision shapes, Entity movement and whole-game acceptance remain unfinished.
+
+The following bounds checkpoint predates nearby integration.
+
 The [bounds case](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
 passes 4,601 checks on each native compiler. Final fresh builds pass all
 160 MSVC and 162 per sanitized GCC/Clang configured cases, without skips.

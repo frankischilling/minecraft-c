@@ -44,6 +44,9 @@ struct mc_world_runtime {
     /* Separate actual D39 capture; one real hold per nonnull occurrence,
      * including duplicates. No source deferred-removal processing is implied. */
     mc_world_entity_list_ledger entity_deferral;
+    /* Actual constructor-created R254. Each query occurrence owns one real
+     * Entity hold, independently of b/D and replaceable source R. */
+    mc_world_entity_list_ledger nearby_entities;
     bool entity_containers_retired;
     mc_tile_list_ledger tile_membership[2];
     bool tile_containers_retired;

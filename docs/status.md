@@ -1,5 +1,23 @@
 # Development status
 
+The [nearby Entity module](world/collision/entities.md) implements the complete
+base World query and normal/Blank Chunk gather bodies. It preserves actual
+mutable List identities, duplicates, source ordering and late failure prefixes.
+Each occurrence owns a real Entity hold; returned views keep the owner live
+while allowing later queries to clear and refill the same List.
+
+All 161/163/163 configured MSVC/GCC/Clang cases pass without skips, including
+606 nearby checks per host. Fresh public original comparisons pass 353 exact
+successful Chunk rows and three precisely checked nullable-failure prefixes
+per side and compiler. Eight malformed Java collection cases remain explicitly
+excluded from native replay. Formatting passes all 448 C source/header files.
+
+Original World/provider traversal replay, collision K and concrete Block shapes,
+Entity movement/environment, application pool reset and FallingSand physics
+remain unfinished. Nearby collection does not close those gameplay routes.
+
+The following bounds checkpoint predates nearby integration.
+
 The [shared bounds module](entity/bounds.md) implements actual pooled box
 identities, reset, client clear and complete movement geometry. Native holds
 preserve detached boxes and allow aliases to observe reuse. Its focused case

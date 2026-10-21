@@ -1,5 +1,16 @@
 # minecraft-c
 
+The [nearby Entity module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/entities.md)
+now implements the complete World query and normal/Blank gather bodies with
+actual mutable List identities and typed duplicate ownership. All 161/163/163
+MSVC/GCC/Clang cases pass, including 606 focused checks per host. Fresh original
+Chunk comparisons pass 353 exact successful rows and three precise native
+nullable-failure prefixes per side/compiler. Eight malformed collection cases
+remain explicitly excluded. All 448 C source/header files pass formatting.
+World K/Block shapes, Entity movement and FallingSand physics remain unfinished.
+
+The following bounds checkpoint predates nearby integration.
+
 The [shared collision bounds](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
 now own actual pooled identities, reset, client clear and complete movement
 geometry. Native holds preserve detached aliases. All 160/162/162 configured

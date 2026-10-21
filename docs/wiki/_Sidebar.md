@@ -21,3 +21,6 @@
 - [Paired falling method map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/falling.md)
 - [Snow support and melting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/snow.md)
 - [Paired snow method map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/snow.md)
+
+- [Nearby Entity collection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/entities.md)
+- [Paired nearby method map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/nearby-entities.md)
