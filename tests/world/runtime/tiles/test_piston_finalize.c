@@ -266,8 +266,9 @@ static bool finalize_different_and_false(fixture *f, size_t side) {
     mc_tile_release(self);
     self = NULL;
 
-    CHECK(finalize_new(f, side, 36, 2, &self) && finalize_install(f, side, self, 8, 2));
-    CHECK(mc_world_runtime_block_metadata_set(w, 8, 40, 6, 36, 2, &changed, &error) ==
+    /* Keep this retained moving Block away from later notifying restorations. */
+    CHECK(finalize_new(f, side, 36, 2, &self) && finalize_install(f, side, self, 2, 2));
+    CHECK(mc_world_runtime_block_metadata_set(w, 2, 40, 6, 36, 2, &changed, &error) ==
               MC_WORLD_STORAGE_OK &&
           !changed && self->holds == 3 && !self->invalid);
     w->fields.u = NULL;
@@ -275,7 +276,7 @@ static bool finalize_different_and_false(fixture *f, size_t side) {
     w->fields.u = observers;
     CHECK(ordinary_false == MC_WORLD_STORAGE_OK && finalize_empty(&error) && self->invalid &&
           self->holds == 1 && w->fields.c->count == active && f->chunks[side]->l->count == 0 &&
-          finalize_cell_is(f, side, 8, 36, 2));
+          finalize_cell_is(f, side, 2, 36, 2));
     CHECK(mc_live_tiles_lists_valid(w) && mc_live_tiles_map_valid(f->chunks[side]));
     ok = true;
 cleanup:
@@ -362,17 +363,6 @@ static bool finalize_failure_prefixes(fixture *f, size_t side) {
     const bool retried_invalid = tile->invalid;
     tile->state.piston.progress_bits = current;
     tile->state.piston.previous_progress_bits = previous;
-    if (retried != MC_WORLD_STORAGE_OK || !finalize_empty(&error) || !retried_invalid ||
-        tile->holds != 1 || w->fields.c->count != active)
-        fprintf(
-            stderr,
-            "[DEBUG-piston-retry-a] side=%zu status=%d op=%s finalize=%u wrapper=%u "
-            "neighbor=%u/%u hook=%s/%u provider=%u invalid=%d holds=%zu tiles=%zu expected=%zu\n",
-            side, (int)retried, error.operation != NULL ? error.operation : "<none>",
-            error.piston_finalize_bytecode, error.wrapper_bytecode, error.neighbor_call_bytecode,
-            error.neighbor_bytecode, error.hook_class != NULL ? error.hook_class : "<none>",
-            error.hook_bytecode, error.provider_bytecode, (int)retried_invalid, (size_t)tile->holds,
-            w->fields.c->count, active);
     CHECK(retried == MC_WORLD_STORAGE_OK && finalize_empty(&error) && retried_invalid &&
           tile->holds == 1 && w->fields.c->count == active && finalize_cell_is(f, side, 9, 1, 9));
     mc_tile_release(tile);
