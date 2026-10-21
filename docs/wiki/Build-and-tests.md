@@ -14,7 +14,7 @@ Windows MSVC and sanitized GCC/Clang:
 GCC's final World test passes a fresh recheck after explicit output-structure
 initialization; production bytes are unchanged. Independent audits join retained
 source snapshots, compiled products and all five captures per host, plus the
-single-case recheck. All 475 C files and headers pass the requested format.
+single-case recheck. All 476 C files and headers pass the requested format.
 Full local suites were not run because retained builds exceeded available disk
 space. Hosted CI runs the configured 167 MSVC and 169 per Linux compiler cases;
 that full-suite scope is distinct from these focused local results.
@@ -22,9 +22,18 @@ that full-suite scope is distinct from these focused local results.
 The [movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) records native reproduction
 commands and a separate original family: all 59,654 client records and only
 24,109 intact, non-prefix server records qualify after disk exhaustion. Failed
-receipts and missing historical before-pin objects remain explicit. No native
-movement replay, complete original normal movement or whole-game parity is
-claimed by those observations.
+receipts and missing historical before-pin objects remain explicit.
+
+The [retained-original native replay](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md#retained-original-native-replay)
+passes all 83,763 selected rows on each of MSVC and sanitized GCC/Clang: 59,654
+client and 24,109 intact server rows, including 10,874/4,741 exact failure
+prefixes. Each server process also executes 11,639 unobserved state-only inputs
+to preserve pool history. New captures retain every raw byte through gzip,
+with raw/encoded hashes, decompression/CRC and natural-zero ownership closure.
+Probe objects relink unchanged qualified core archives; a subsequent Python-only
+fix has a separate unchanged-binary input binding. These results add no full
+current local-suite run, complete original server/normal movement or whole-game
+acceptance.
 
 The following Piston checkpoint predates Entity movement integration.
 

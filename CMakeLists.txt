@@ -527,6 +527,9 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_movement tests/entity/movement/test_world_movement.c)
     target_link_libraries(mc_test_world_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_entity_movement_probe tests/entity/movement/movement_probe.c)
+    target_link_libraries(mc_entity_movement_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_piston_float_probe tests/world/runtime/tiles/piston_float_probe.c)
     target_link_libraries(mc_piston_float_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 

@@ -4,15 +4,19 @@ The [Entity movement module](entity/movement.md) implements Item and FallingSand
 movement using their permanent bounds, actual pooled copies and mutable collision
 Lists. Typed effects, Block contacts and World rain/burning/sound queries preserve
 completed effects on failure. Five focused cases pass on MSVC, GCC and Clang,
-including 544 movement and 202 World dependency checks. All 475 C files and
+including 544 movement and 202 World dependency checks. All 476 C files and
 headers pass the requested formatting.
 
 Full local suites were not run because retained builds exceeded available disk
 space. Hosted CI runs the configured 167 MSVC and 169 GCC/Clang cases separately.
-Native/original movement replay remains unfinished. Separate observations qualify
-59,654 client records and 24,109 intact server records, with explicit disk and
-provenance limits. Other kinds, active ticks, positive pressure/detector helpers,
-nonempty sound observers and unowned passenger recursion remain unfinished.
+Native replay passes all 59,654 qualified client rows and 24,109 intact server
+rows on each compiler, including exact source-prefix failures and full pool
+history. It executes the intervening server inputs without claiming their
+missing original results. Fresh probe objects use unchanged qualified core
+archives; current full local suites remain unrun. Original disk/receipt and
+provenance limits remain explicit. Other kinds, active ticks, positive pressure/
+detector helpers, nonempty sound observers and unowned passenger recursion remain
+unfinished.
 
 The following Piston checkpoint predates Entity movement integration.
 

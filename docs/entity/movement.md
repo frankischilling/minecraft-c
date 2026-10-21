@@ -109,18 +109,29 @@ checks, `world.movement_dependencies` with 202, `world.nearby_entities` with 606
 ASan/UBSan/leak checks. These finite
 constructed contracts cover actual GAME owners, collision order, step/tie
 behavior, web delay, effects, late failures, native limits, mutable aliases and
-retirement. All 475 C files and headers pass the requested clang-format18 style.
+retirement. All 476 C files and headers pass the requested clang-format18 style.
 The final World test also passes a fresh GCC recheck after explicit test-output
 initialization; production bytes are unchanged. Full local suites were not run
 because retained builds exceeded available disk space. The configured native
 inventory is 167 MSVC and 169 per Linux compiler; hosted CI runs that complete
-inventory separately. Native/original movement replay remains unfinished.
+inventory separately.
 
-Separate original observations qualify all 59,654 client records and exactly
-24,109 intact server records from a disk-failed family. The server subset is
-not a complete prefix. Those null-World/helper observations do not prove
-completed original normal movement or compare it with native execution; their
-retained receipt/provenance limits are in the source map.
+The [native replay](../../tests/tools/entity/movement/compare_movement.py) passes
+all 59,654 qualified client rows and 24,109 intact server rows on MSVC, GCC and
+Clang. Each server process executes the complete 35,748-input prefix, including
+11,639 state-only rows, to preserve real pool history. All snapshot bits, pool
+tails, aliases and intermediate sequence snapshots compare exactly. The only
+row-field differences are independently guarded native-failure spelling and
+the disclosed native field-preparation provenance. Constructor Math entropy
+remains independently retained.
+
+These probes relink byte-identical qualified core archives with unchanged
+production/fixture inputs. A later Python-only bootstrap fix has a separate
+input binding to the unchanged C objects and binaries; it is not a new C build.
+This replay does not add a full current local-suite result. The original server
+family remains incomplete, with its disk/receipt/provenance limits retained.
+The source map records [reproduction and exact scope](../reference/entity-movement.md#retained-original-native-replay).
+Completed original normal movement and nonnull-World traversal remain unqualified.
 
 Other Entity kinds, walking-positive descendants, active Item/Falling ticks,
 landing/drop behavior, positive pressure/detector helpers, nonempty concrete

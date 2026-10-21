@@ -7,8 +7,14 @@ and corruption. Disk exhaustion left the original final/server receipts empty,
 with the server exit code unknown. Historical JAR/tool/class before-pin objects
 did not survive; independently checked current after pins remain distinct.
 The failed receipts and raw streams are retained, and no original process was
-restarted. These null-World/helper observations are not a native movement replay
-or proof of complete original normal movement.
+restarted. Native replay now passes all 59,654 client and 24,109 intact server
+rows on MSVC and sanitized GCC/Clang, including exact failure prefixes and full
+pool tails. Server execution includes 11,639 state-only rows to preserve history,
+without claiming their missing original outputs. New captures are losslessly
+retained as gzip with raw/encoded hashes and CRC checks. Probe objects relink
+unchanged qualified core archives; the later Python-only correction has a
+separate unchanged-binary binding. Complete original server/nonnull-World
+movement and gameplay acceptance remain open.
 
 The following Piston checkpoint predates Entity movement integration.
 

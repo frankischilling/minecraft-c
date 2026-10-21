@@ -91,8 +91,9 @@ Failed/empty receipts, corrupt rows and all raw streams remain retained.
 Only the actual complete composed bodies are observed. Numerical candidate
 analysis does not establish a universal primitive ABI or a compiled native
 comparison. Ordinary original collision/step/contact/environment completion,
-nonnull-World traversal, full server coverage and native movement replay remain
-unqualified. Direct fire-helper calls do not prove later World burning or fizz.
+nonnull-World traversal and full original server coverage remain unqualified.
+The native replay below separately qualifies the retained comparison scope.
+Direct fire-helper calls do not prove later World burning or fizz.
 
 ## Native reproduction
 
@@ -108,3 +109,48 @@ comparison. The focused host receipts and remaining validation limits are in
 the native contract. Full-suite hosted CI qualification remains separate from the focused local
 results. Original JARs, raw research and private machine receipts stay
 outside version control.
+
+## Retained-original native replay
+
+Build the `mc_entity_movement_probe` CMake target with the strict settings above.
+The public consumer requires the exact retained qualified family and a passed
+schema-1 build receipt binding the executable, compiled probe, current native
+input inventory, immutable qualified core archives, dependency inputs, selected
+tools and naturally completed compile/link commands. A Python-only input binding
+must also preserve and independently audit the original C build receipt, object,
+binary and every unchanged input. An arbitrary executable is insufficient.
+
+    python tests/tools/entity/movement/compare_movement.py --original <qualified-movement-family> --native <mc_entity_movement_probe> --build-receipt <qualified-build-receipt.json> --output <fresh-replay-root>
+
+MSVC and sanitized GCC/Clang each pass 83,763 exact selected rows: all 59,654
+client rows and precisely 24,109 intact server rows. Client failures include all
+10,874 source-derived prefixes; selected server rows include 4,741. The server
+executes all 35,748 ordered inputs through e035747, including 11,639 state-only
+rows and their 696 failures, before comparing only the intact selected IDs.
+State-only execution preserves actual pool List history and supplies no missing
+original server result. No original JVM is launched or restarted.
+
+The probe constructs fresh real Item/Falling owners with NULL World, controls
+and rereads actual fields, and runs production movement/effects/contact methods.
+All 25 positional fields are checked. Two exact differences are disclosed:
+original NullPointerException/native NATIVE_FAILURE spelling, with actual trace
+and structured child-prefix guards; and original watcher-updater/native private
+typed-Byte field preparation, with an immediate actual field reread. Every other
+field, full pool tail and sequence snapshot must match without numeric tolerance
+or NaN/zero normalization. Uncontrolled Item constructor entropy is retained in
+separate per-process TSV records and is not compared across processes.
+
+Native stdout/stderr are written directly to deterministic gzip captures with
+no raw-byte cap or timeout. Receipts retain raw and compressed byte counts and
+SHA-256 values, and check full decompression, CRC and record framing. Existing
+original evidence is unchanged. Actual Registry startup lines use the native
+platform separator; the probe header, observation rows and diagnostics use LF.
+Both native processes must exit naturally with code 0, complete entropy records,
+checked ownership cleanup and unchanged before/after evidence/build/source pins.
+
+Fresh probe objects relink the earlier byte-identical qualified core archives.
+The corrected Python bootstrap check is joined separately to those unchanged
+compiled artifacts. This is neither a fresh core build nor a complete current
+local test-suite run. The original server exit/receipt/before-pin limitations
+above remain explicit; full server, original nonnull-World movement and whole
+gameplay acceptance are still open.
