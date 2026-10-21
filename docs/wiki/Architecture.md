@@ -5,7 +5,11 @@ preserves actual K List and pooled/permanent box identities through a typed
 occurrence ledger. Views retain lifetime while allowing source mutation.
 Registered Block shapes, multipart order, captured-array acquisition and real
 nearby traversal are implemented for the documented native descendants.
-Positive piston geometry, other Entity constructors and movement remain open.
+[Positive Piston geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md)
+holds the actual Tile through field reads, invokes the real carrier getter and
+shifts the same pooled box through independently initialized Direction arrays.
+Other Entity constructors and movement, active piston ticking, finalization,
+pushing and the separate state-shape setter remain unfinished.
 
 The following nearby checkpoint predates collision integration.
 
@@ -111,7 +115,7 @@ retain the same Entity in actual ordered World.b and Chunk slices. Duplicate and
 cross-World occurrences preserve source identity and construction bindings.
 Terminal native disposal validates all leases before releasing any occurrence;
 nonempty and terminal Chunks refuse serialization. The [fluid implementation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md)
-now continues after real drop publication. Moving-piston lookup, fire/portal,
+now continues after real drop publication. Active piston mechanics, fire/portal,
 nonempty observers, falling and complete population remain unfinished. Whole
 batch activation and deferral now have their own supported native contract.
 

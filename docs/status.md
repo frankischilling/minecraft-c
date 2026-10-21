@@ -1,12 +1,29 @@
 # Development status
 
+The [Piston Tile and geometry module](world/tiles/piston.md) implements actual
+Piston constructors, separate class initialization, ordered NBT and GAME storage
+joins. MovingPiston collision holds the actual Tile, invokes the carried Block's
+real getter and shifts that same pooled box through independent Direction arrays.
+
+All 165/167/167 MSVC/GCC/Clang configured cases pass without skips. New cases
+pass 295 Direction, 296 Piston Tile and 144 geometry checks per host. Native
+replay matches 18,292 interpolation records and 10,986 geometry successes plus
+15 precise body-failure prefixes per side/compiler. Geometry keeps 25 explicit
+exclusions. All 464 C files and headers pass the requested formatting.
+
+Active piston ticking, finalization, Entity pushing, the separate state-shape
+setter, general Entity movement and original nonnull-World traversal remain
+unfinished. These helper comparisons do not establish whole-game acceptance.
+
+The following collision checkpoint predates Piston integration.
+
 The [collision module](world/collision/boxes.md) collects actual Block shapes
 into the World's mutable K List, then runs real nearby collection and the
 currently constructible Item/FallingSand inherited null virtuals. Typed
 occurrences preserve pooled-box or permanent-Entity ownership, duplicate
 identities, growth failures and terminal retirement. Multipart shapes preserve
-their reached singleton bounds on failure. Positive moving-piston Tile
-geometry, other Entity descendants and movement remain unfinished.
+their reached singleton bounds on failure. Other Entity descendants and
+movement remain unfinished.
 
 All 162/164/164 MSVC/GCC/Clang cases pass without skips, including 732 collision
 checks per host. Fresh original/native tools compare all 19 fields of 623

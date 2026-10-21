@@ -8,7 +8,7 @@
 
 #include <stdbool.h>
 
-/* Concrete chest/spawner Tile owner. Caller-facing runtime and persistence
+/* Concrete Chest/Spawner/Piston Tile owner. Caller-facing runtime and persistence
  * joins require the coordinated actual owners; reached missing descendants
  * remain explicit failures. Full gameplay/tick qualification is separate. */
 typedef struct mc_world_runtime mc_world_runtime;
@@ -19,7 +19,37 @@ typedef struct mc_tile_name mc_tile_name;
 typedef struct mc_tile_classes mc_tile_classes;
 typedef struct mc_tile_map_backing mc_tile_map_backing;
 
-typedef enum mc_tile_kind { MC_TILE_CHEST = 0, MC_TILE_SPAWNER } mc_tile_kind;
+typedef enum mc_tile_kind { MC_TILE_CHEST = 0, MC_TILE_SPAWNER, MC_TILE_PISTON } mc_tile_kind;
+
+typedef enum mc_tile_class_phase {
+    MC_TILE_CLASS_COLD = 0,
+    MC_TILE_CLASS_INITIALIZING,
+    MC_TILE_CLASS_READY,
+    MC_TILE_CLASS_FAILED
+} mc_tile_class_phase;
+
+/* Passive class-owner view. No active use, initialization, allocation or holds.
+ * List identity is borrowed until class retirement; it is not a mutable List
+ * API. allocation_bytes counts only the Piston static List's requested native
+ * bytes, independently of base Tile maps/literals and instance storage. */
+typedef struct mc_tile_piston_class_snapshot {
+    mc_tile_class_phase base_phase, piston_phase;
+    unsigned int base_initializer_bytecode, piston_initializer_bytecode;
+    mc_tile_status base_failure, piston_failure;
+    size_t base_name_count, base_class_count;
+    const mc_world_reference_list *list_identity;
+    size_t list_count, list_capacity, allocation_bytes, live_tiles;
+    size_t max_allocation_bytes;
+} mc_tile_piston_class_snapshot;
+
+/* Configure one immutable native requested-byte ceiling before Piston active
+ * use. This creates the native class owner without initializing base Tile or
+ * Piston. Default is 1 MiB. The current native ArrayList requests one empty
+ * descriptor (capacity0); this policy does not claim JDK allocation/OOM timing.
+ * A failed active use latches its first cause and cannot be configured/retried. */
+mc_tile_status mc_tile_piston_class_configure(mc_world_runtime *world, size_t max_allocation_bytes);
+mc_tile_status mc_tile_piston_class_get_snapshot(const mc_world_runtime_classes *classes,
+                                                 mc_tile_piston_class_snapshot *out);
 
 typedef enum mc_tile_phase {
     MC_TILE_RAW = 0,
@@ -46,6 +76,9 @@ typedef struct mc_tile_snapshot {
     int32_t spawner_delay;
     uint64_t spawner_rotation_bits, spawner_previous_rotation_bits;
     mc_tile_name *spawner_name;
+    int32_t piston_block_id, piston_block_data, piston_facing;
+    bool piston_extending, piston_render_head;
+    uint32_t piston_progress_bits, piston_previous_progress_bits;
 } mc_tile_snapshot;
 
 /* Concrete World dirty is implemented in this module. Existing persistent
@@ -72,7 +105,10 @@ size_t mc_tile_name_native_bytes(const mc_tile_name *name);
 
 /* Allocate raw zero fields before constructor work, with one native hold and
  * fixed concrete kind. Construct only RAW: chest allocates36 null physical
- * slots; spawner executes delay-1/previous0/Pig/delay20. Constructor failure
+ * slots; spawner executes delay-1/previous0/Pig/delay20; Piston default invokes
+ * only the empty base constructor and leaves every raw field zero. Piston's
+ * separate static ArrayList initializes before any instance allocation.
+ * Constructor failure
  * consumes RAW and remains FAILED_CONSTRUCTION; no transparent retry. Snapshot,
  * native-byte query and hold/release support every phase. All mutation/semantic
  * calls require READY and a caller hold stable throughout synchronous reentry.
@@ -83,6 +119,12 @@ size_t mc_tile_name_native_bytes(const mc_tile_name *name);
 mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out);
 mc_tile_status mc_tile_construct(mc_tile *raw);
 mc_tile_status mc_tile_construct_detailed(mc_tile *raw, mc_tile_error *error);
+/* Complete uk/mu(IIIZZ), only for a RAW Piston. Stores ID/data/facing/extending/
+ * render flag in source order, leaves both progress fields +0, and performs no
+ * World install, validation, clamp, dirty or RNG operation. */
+mc_tile_status mc_tile_piston_construct(mc_tile *raw, int32_t block_id, int32_t block_data,
+                                        int32_t facing, bool extending, bool render_head,
+                                        mc_tile_error *error);
 mc_tile_status mc_tile_retain(mc_tile *tile);
 void mc_tile_release(mc_tile *tile);
 mc_tile_status mc_tile_get_snapshot(const mc_tile *tile, mc_tile_snapshot *out);
@@ -138,6 +180,29 @@ mc_tile_status mc_tile_chest_remove_detailed(mc_tile *tile, int32_t slot, int32_
 mc_tile_status mc_tile_spawner_get_name(mc_tile *tile, mc_tile_name **out);
 mc_tile_status mc_tile_spawner_set_name(mc_tile *tile, mc_tile_name *name);
 
+/* Actual field-only Piston getters, requiring a held READY Piston. No World,
+ * dirty, class initialization or mutation. Metadata is the stored uk/mu.e(),
+ * rather than the inherited live World metadata getter. Progress bits preserve
+ * both raw binary32 representations; no interpolation is done by that getter.
+ * The render flag is stored on both sides; its original public getter k()Z
+ * exists only on the client. This native field view also inspects server state.
+ * All outputs are required, disjoint, and unchanged on failure. */
+mc_tile_status mc_tile_piston_block_id(const mc_tile *tile, int32_t *out);
+mc_tile_status mc_tile_piston_block_data(const mc_tile *tile, int32_t *out);
+mc_tile_status mc_tile_piston_facing(const mc_tile *tile, int32_t *out);
+mc_tile_status mc_tile_piston_extending(const mc_tile *tile, bool *out);
+mc_tile_status mc_tile_piston_render_head(const mc_tile *tile, bool *out);
+mc_tile_status mc_tile_piston_progress_bits(const mc_tile *tile, uint32_t *current,
+                                            uint32_t *previous);
+/* Actual uk/mu.a(F) interpolation with a raw factor. Only factor>1 clamps.
+ * Unsupported native floating environment fails at getter PC20, with no result
+ * or Tile field change. Separate binary32 operations preserve observed NaNs. */
+mc_tile_status mc_tile_piston_progress(const mc_tile *tile, uint32_t factor_bits,
+                                       uint32_t *out_bits, mc_tile_error *error);
+
+/* Piston push, tick and finalize/moving-block replacement have unreached
+ * descendants and are not provided as inherited base no-op successes. */
+
 /* Ordered semantic read on READY: base Int x/y/z, then subtype fields. Missing
  * exact-typed fields use original defaults; wrong present types fail at their
  * own reached lookup. Failure keeps READY and completed field/array/slot prefix.
@@ -146,7 +211,10 @@ mc_tile_status mc_tile_spawner_set_name(mc_tile *tile, mc_tile_name *name);
  * Slot Byte&255 record in list order, last duplicate wins. No clamp/dirty. New
  * stacks are constructed before their actual slot assignment. Spawner owns its
  * new EntityId value before reading Short Delay, retaining coordinate/name prefix
- * on later failure. Input is an immutable valid NBT tree. The caller must keep
+ * on later failure. Piston reads Int blockId/blockData/facing, Float progress
+ * into current k then previous l, and Byte extending in that order. It leaves
+ * the render/source flag j unchanged. Input is an immutable valid NBT tree.
+ * The caller must keep
  * every input owner and span alive throughout the call and all partial prefixes,
  * including replacement releasing old slot holds and their stack/source owners.
  * Input borrowing such a source requires an independent stack/source hold;
@@ -195,7 +263,9 @@ mc_tile_status mc_tile_storage_bytes(const mc_tile *tile, size_t *out);
 
 /* READY only. Build one independent document from the physical slots ascending
  * (including fresh27..35 and nonpositive counts), current base fields or current
- * spawner name/Short Delay. Null name fails before Delay preparation. Known
+ * spawner name/Short Delay, or the nine Piston base/ID/data/facing/previous
+ * progress/extending fields. Piston never writes current k or flag j. Null
+ * spawner name fails before Delay preparation. Known
  * fields replace retained positions; unknowns/names stay preserved. Current
  * container Slot Byte replaces a moved stack's old Slot. Earlier discarded
  * duplicates/out-of-range records never reappear; no extension keys are added.

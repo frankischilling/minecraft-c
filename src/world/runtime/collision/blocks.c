@@ -1,14 +1,17 @@
 #include "blocks_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
+#include "../../../block/registry/runtime_internal.h"
 #include "../../chunk/object_state_internal.h"
 #include "../../storage/objects_internal.h"
 #include "../construction_internal.h"
 #include "../provider_internal.h"
+#include "../tiles/piston_math_internal.h"
 #include "mc/core/java/java.h"
 
 #include <float.h>
 #include <stdint.h>
+#include <string.h>
 
 #if !defined(__SSE2__) && !defined(_M_X64) && !(defined(_M_IX86_FP) && _M_IX86_FP >= 2)
 #error "Block collision arithmetic requires SSE2"
@@ -304,11 +307,24 @@ static bool trapdoor_shape(mc_world_runtime *world, mc_block *block, int32_t x, 
     return true;
 }
 
-static mc_world_storage_status moving_piston_box(mc_world_runtime *world, int32_t x, int32_t y,
-                                                 int32_t z, mc_entity_bounds **out,
+static mc_world_storage_status piston_tile_failure(mc_world_collision_error *error,
+                                                   mc_tile_status status,
+                                                   const mc_tile_error *child) {
+    error->nearby.tile.tile = *child;
+    error->nearby.tile.tile.status = status;
+    return fail(error,
+                status == MC_TILE_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                                        : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                child->operation == NULL ? "Moving-piston Tile getter" : child->operation);
+}
+
+static mc_world_storage_status moving_piston_box(mc_world_runtime *world, const mc_block *moving,
+                                                 int32_t x, int32_t y, int32_t z,
+                                                 mc_entity_bounds **out,
                                                  mc_world_collision_error *error) {
     /* e invokes its actual private typed lookup6; the reached Tile query is5
      * inside that helper, before its null/instanceof tests. */
+    error->piston_bytecode = 6;
     stage(world, error, "ut", "mz", 5);
     mc_tile *tile = NULL;
     mc_live_tile_error child = mc_live_tiles_empty_error();
@@ -335,19 +351,65 @@ static mc_world_storage_status moving_piston_box(mc_world_runtime *world, int32_
     }
     mc_tile_snapshot snapshot;
     const mc_tile_status inspected = mc_tile_get_snapshot(tile, &snapshot);
-    mc_tile_release(tile);
     stage(world, error, "ut", "mz", 19);
     if (inspected != MC_TILE_OK) {
+        mc_tile_release(tile);
         error->nearby.tile.tile.status = inspected;
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "Moving-piston Tile concrete identity");
     }
     if (snapshot.kind == MC_TILE_CHEST || snapshot.kind == MC_TILE_SPAWNER) {
+        mc_tile_release(tile);
         *out = NULL; /* Actual instanceof uk/mu is false for these real types. */
         return MC_WORLD_STORAGE_OK;
     }
-    return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                "Moving-piston positive Tile geometry descendant");
+    if (snapshot.kind != MC_TILE_PISTON) {
+        mc_tile_release(tile);
+        return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "Moving-piston Tile concrete identity");
+    }
+    /* Retain the actual lookup result through every reached source getter.
+     * The snapshot above only identifies the concrete native kind. */
+    uint32_t progress_bits;
+    float progress;
+    bool extending;
+    int32_t carried_id = 0, facing = 0;
+    mc_tile_error lower = mc_tile_empty_error();
+    error->piston_bytecode = 21;
+    stage(world, error, "ut", "mz", 21);
+    mc_tile_status tile_status = mc_tile_piston_progress(tile, 0, &progress_bits, &lower);
+    if (tile_status != MC_TILE_OK) {
+        mc_tile_release(tile);
+        return piston_tile_failure(error, tile_status, &lower);
+    }
+    memcpy(&progress, &progress_bits, sizeof(progress));
+    error->piston_bytecode = 28;
+    stage(world, error, "ut", "mz", 28);
+    tile_status = mc_tile_piston_extending(tile, &extending);
+    if (tile_status == MC_TILE_OK && extending) {
+        stage(world, error, "ut", "mz", 37);
+        progress = mc_piston_float_subtract(1.0f, progress);
+    }
+    if (tile_status == MC_TILE_OK) {
+        error->piston_bytecode = 48;
+        stage(world, error, "ut", "mz", 48);
+        tile_status = mc_tile_piston_block_id(tile, &carried_id);
+    }
+    if (tile_status == MC_TILE_OK) {
+        error->piston_bytecode = 55;
+        stage(world, error, "ut", "mz", 55);
+        tile_status = mc_tile_piston_facing(tile, &facing);
+    }
+    mc_world_storage_status result;
+    if (tile_status != MC_TILE_OK)
+        result = piston_tile_failure(error, tile_status, &lower);
+    else {
+        error->piston_bytecode = 58;
+        result = mc_world_collision_piston_shifted_box_held(world, moving, x, y, z, carried_id,
+                                                            progress, facing, out, error);
+    }
+    mc_tile_release(tile);
+    return result;
 }
 
 static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
@@ -495,7 +557,7 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
                           (double)y1, (double)z1, out, error);
         }
         case MC_BLOCK_UT_MZ:
-            return moving_piston_box(world, x, y, z, out, error);
+            return moving_piston_box(world, block, x, y, z, out, error);
         case MC_BLOCK_VL_NO:
             return pooled(world, "vl", "no", 26, (double)x, (double)y, (double)z,
                           (double)mc_java_i32_add(x, 1), (double)mc_java_i32_add(y, 1),
@@ -582,6 +644,117 @@ mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *worl
         status = frame.nearby.query.status;
     else
         status = box(world, (mc_block *)block, x, y, z, out, &frame);
+    if (error != NULL)
+        *error = frame;
+    return status;
+}
+
+static bool piston_registry_result(mc_world_runtime *world, mc_world_collision_error *error,
+                                   mc_registry_status status, const mc_registry_error *child) {
+    if (status == MC_REGISTRY_OK)
+        return true;
+    error->nearby.query.registry = *child;
+    error->nearby.query.status = mc_world_runtime_registry_result(
+        world, status, child, "Moving-piston geometry Registry", &error->nearby.query.cause);
+    error->nearby.query.operation = error->nearby.query.cause.operation;
+    return false;
+}
+
+mc_world_storage_status
+mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_block *moving,
+                                           int32_t x, int32_t y, int32_t z, int32_t carried_id,
+                                           float progress, int32_t facing, mc_entity_bounds **out,
+                                           mc_world_collision_error *error) {
+    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    frame.nearby = mc_world_nearby_empty_error();
+    frame.bounds = (mc_entity_bounds_error){0};
+    frame.shifted_bytecode = 0;
+    frame.block_class = NULL;
+    frame.block_bytecode = 0;
+    frame.x = x;
+    frame.y = y;
+    frame.z = z;
+    mc_entity_bounds *bounds = NULL;
+    if (out == NULL)
+        status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston shifted-box output");
+    else if (!block_admit(world, moving, &frame))
+        status = frame.nearby.query.status;
+    else if (moving->kind != MC_BLOCK_UT_MZ)
+        status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston shifted-box receiver");
+    else if (carried_id == 0 || carried_id == moving->fields.bn)
+        *out = NULL;
+    else {
+        mc_registry_classes *const registry = mc_world_runtime_registry(world);
+        mc_registry_block_m_view array;
+        mc_registry_error child = frame.nearby.query.registry;
+        frame.shifted_bytecode = 16;
+        stage(world, &frame, "ut", "mz", 16);
+        if (!piston_registry_result(world, &frame,
+                                    mc_registry_block_m_get(registry, &array, &child), &child))
+            status = frame.nearby.query.status;
+        else {
+            const mc_block *carrier = NULL;
+            frame.shifted_bytecode = 21;
+            stage(world, &frame, "ut", "mz", 21);
+            if (!piston_registry_result(
+                    world, &frame, mc_registry_block_m_at(&array, carried_id, &carrier, &child),
+                    &child))
+                status = frame.nearby.query.status;
+            else {
+                frame.shifted_bytecode = 27;
+                stage(world, &frame, "ut", "mz", 27);
+                if (carrier == NULL)
+                    status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "Piston carried Block receiver");
+                else
+                    status =
+                        mc_world_collision_block_box_held(world, carrier, x, y, z, &bounds, &frame);
+            }
+        }
+        if (status == MC_WORLD_STORAGE_OK && bounds != NULL) {
+            static const mc_registry_direction_field fields[6] = {
+                MC_REGISTRY_DIRECTION_B, MC_REGISTRY_DIRECTION_B, MC_REGISTRY_DIRECTION_C,
+                MC_REGISTRY_DIRECTION_C, MC_REGISTRY_DIRECTION_D, MC_REGISTRY_DIRECTION_D};
+            static const unsigned int get_pc[6] = {45, 66, 87, 108, 129, 150};
+            double *const coordinates[6] = {&bounds->min_x, &bounds->max_x, &bounds->min_y,
+                                            &bounds->max_y, &bounds->min_z, &bounds->max_z};
+            for (size_t i = 0; i < 6; ++i) {
+                /* Source getfield precedes each independent getstatic. */
+                const double coordinate = *coordinates[i];
+                mc_registry_direction_view direction;
+                frame.shifted_bytecode = get_pc[i];
+                stage(world, &frame, "ut", "mz", get_pc[i]);
+                if (!piston_registry_result(
+                        world, &frame,
+                        mc_registry_direction_get(registry, fields[i], &direction, &child),
+                        &child)) {
+                    status = frame.nearby.query.status;
+                    break;
+                }
+                int32_t component;
+                frame.shifted_bytecode = get_pc[i] + 5u;
+                stage(world, &frame, "ut", "mz", get_pc[i] + 5u);
+                if (!piston_registry_result(
+                        world, &frame,
+                        mc_registry_direction_at(&direction, facing, &component, &child), &child)) {
+                    status = frame.nearby.query.status;
+                    break;
+                }
+                frame.shifted_bytecode = get_pc[i] + 9u;
+                if (!floating(world, &frame, "ut", "mz", get_pc[i] + 9u)) {
+                    status = frame.nearby.query.status;
+                    break;
+                }
+                const float offset = mc_piston_float_multiply((float)component, progress);
+                *coordinates[i] = mc_piston_coordinate_subtract(coordinate, offset);
+            }
+        }
+        if (status == MC_WORLD_STORAGE_OK)
+            *out = bounds;
+        else if (bounds != NULL)
+            (void)mc_entity_bounds_release(mc_world_runtime_entities(world), bounds);
+    }
     if (error != NULL)
         *error = frame;
     return status;

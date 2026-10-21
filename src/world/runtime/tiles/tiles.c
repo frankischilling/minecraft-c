@@ -13,6 +13,8 @@
 #include "../runtime_internal.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
+#include "piston_math_internal.h"
+#include "tiles_internal.h"
 
 #include "mc/core/java/java.h"
 
@@ -55,6 +57,11 @@ struct mc_tile_classes {
     size_t name_count, class_count, live_tiles, allocation_bytes;
     mc_tile_name *literals;
     bool stdout_error;
+    unsigned int piston_phase, piston_initializer_pc;
+    mc_tile_status piston_failure;
+    mc_world_reference_list *piston_list;
+    size_t piston_allocation_bytes, piston_max_allocation_bytes;
+    bool piston_configured;
 };
 
 struct tile_import_context;
@@ -62,6 +69,9 @@ static mc_registry_error live_empty_registry(void);
 static mc_live_tile_error live_empty_error(void);
 static mc_world_storage_status live_tile_error(mc_live_tile_error *, mc_tile_status, const char *);
 static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes **out);
+static mc_tile_status live_piston_classes_get(mc_tile_classes *classes);
+static void tile_allocation_error(mc_world_runtime *world, mc_tile_kind kind, mc_tile_status status,
+                                  mc_tile_error *error);
 static mc_tile_status live_literal(mc_tile_classes *classes, const char *ascii, mc_tile_name **out,
                                    mc_registry_error *attempt, const mc_tile *scope_tile,
                                    const struct tile_import_context *context);
@@ -91,30 +101,6 @@ struct mc_tile_name {
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-
-struct mc_tile {
-    size_t holds;
-    mc_tile_kind kind;
-    mc_tile_phase phase;
-    mc_tile_classes *classes;
-    mc_world_runtime *world;
-    int32_t x, y, z;
-    bool invalid;
-    mc_nbt_tree *source;
-
-    union {
-        struct {
-            mc_item_stack **slots;
-            size_t capacity;
-        } chest;
-
-        struct {
-            int32_t delay;
-            double rotation, previous_rotation;
-            mc_tile_name *name;
-        } spawner;
-    } state;
-};
 
 typedef struct tile_loaded_record {
     mc_item_stack *stack;
@@ -166,6 +152,11 @@ static const uint16_t tile_slot_name[] = {'S', 'l', 'o', 't'};
 static const uint16_t tile_entity_name[] = {'E', 'n', 't', 'i', 't', 'y', 'I', 'd'};
 static const uint16_t tile_delay_name[] = {'D', 'e', 'l', 'a', 'y'};
 static const uint16_t tile_id_name[] = {'i', 'd'};
+static const uint16_t tile_block_id_name[] = {'b', 'l', 'o', 'c', 'k', 'I', 'd'};
+static const uint16_t tile_block_data_name[] = {'b', 'l', 'o', 'c', 'k', 'D', 'a', 't', 'a'};
+static const uint16_t tile_facing_name[] = {'f', 'a', 'c', 'i', 'n', 'g'};
+static const uint16_t tile_progress_name[] = {'p', 'r', 'o', 'g', 'r', 'e', 's', 's'};
+static const uint16_t tile_extending_name[] = {'e', 'x', 't', 'e', 'n', 'd', 'i', 'n', 'g'};
 
 static mc_tile_status tile_status(mc_tile_error *error, mc_tile_status status, const char *field,
                                   size_t index) {
@@ -310,13 +301,18 @@ mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_t
     if (out == NULL) {
         return MC_TILE_INVALID_ARGUMENT;
     }
-    if (kind != MC_TILE_CHEST && kind != MC_TILE_SPAWNER) {
+    if (kind != MC_TILE_CHEST && kind != MC_TILE_SPAWNER && kind != MC_TILE_PISTON) {
         return MC_TILE_INVALID_KIND;
     }
     mc_tile_classes *classes = NULL;
     mc_tile_status active = live_classes_get(world, &classes);
     if (active != MC_TILE_OK)
         return active;
+    if (kind == MC_TILE_PISTON) {
+        active = live_piston_classes_get(classes);
+        if (active != MC_TILE_OK)
+            return active;
+    }
     if (classes->live_tiles == SIZE_MAX)
         return MC_TILE_LIMIT;
     mc_tile *tile = calloc(1, sizeof(*tile));
@@ -353,7 +349,7 @@ static mc_tile_status tile_construct(mc_tile *raw, const tile_import_context *co
         }
         raw->state.chest.slots = slots;
         raw->state.chest.capacity = 36;
-    } else {
+    } else if (raw->kind == MC_TILE_SPAWNER) {
         raw->state.spawner.delay = -1;
         raw->state.spawner.previous_rotation = 0.0;
         mc_registry_error attempt = live_empty_registry();
@@ -368,6 +364,8 @@ static mc_tile_status tile_construct(mc_tile *raw, const tile_import_context *co
             return named;
         }
         raw->state.spawner.delay = 20;
+    } else if (raw->kind != MC_TILE_PISTON) {
+        return tile_status(error, MC_TILE_INVALID_KIND, NULL, SIZE_MAX);
     }
     raw->phase = MC_TILE_READY;
     return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
@@ -379,6 +377,27 @@ mc_tile_status mc_tile_construct(mc_tile *raw) {
 
 mc_tile_status mc_tile_construct_detailed(mc_tile *raw, mc_tile_error *error) {
     return tile_construct(raw, NULL, error);
+}
+
+mc_tile_status mc_tile_piston_construct(mc_tile *raw, int32_t block_id, int32_t block_data,
+                                        int32_t facing, bool extending, bool render_head,
+                                        mc_tile_error *error) {
+    if (raw == NULL)
+        return tile_status(error, MC_TILE_INVALID_ARGUMENT, NULL, SIZE_MAX);
+    if (raw->kind != MC_TILE_PISTON)
+        return tile_status(error, MC_TILE_INVALID_KIND, NULL, SIZE_MAX);
+    if (raw->phase != MC_TILE_RAW)
+        return tile_status(error, MC_TILE_INVALID_PHASE, NULL, SIZE_MAX);
+    raw->phase = MC_TILE_FAILED_CONSTRUCTION;
+    /* Empty base constructor1, then actual uk/mu field stores6/12/16/22/28.
+     * Neither constructor writes k/l or binds/installs the Tile in a World. */
+    raw->state.piston.block_id = block_id;
+    raw->state.piston.block_data = block_data;
+    raw->state.piston.facing = facing;
+    raw->state.piston.extending = extending;
+    raw->state.piston.render_head = render_head;
+    raw->phase = MC_TILE_READY;
+    return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
 }
 
 mc_tile_status mc_tile_retain(mc_tile *tile) {
@@ -405,7 +424,7 @@ void mc_tile_release(mc_tile *tile) {
     }
     if (tile->kind == MC_TILE_CHEST) {
         tile_slots_release(tile->state.chest.slots, tile->state.chest.capacity);
-    } else {
+    } else if (tile->kind == MC_TILE_SPAWNER) {
         mc_tile_name_release(tile->state.spawner.name);
     }
     mc_nbt_tree_free(tile->source);
@@ -430,13 +449,21 @@ mc_tile_status mc_tile_get_snapshot(const mc_tile *tile, mc_tile_snapshot *out) 
     snapshot.invalid = tile->invalid;
     if (tile->kind == MC_TILE_CHEST) {
         snapshot.chest_capacity = tile->state.chest.capacity;
-    } else {
+    } else if (tile->kind == MC_TILE_SPAWNER) {
         snapshot.spawner_delay = tile->state.spawner.delay;
         memcpy(&snapshot.spawner_rotation_bits, &tile->state.spawner.rotation,
                sizeof(snapshot.spawner_rotation_bits));
         memcpy(&snapshot.spawner_previous_rotation_bits, &tile->state.spawner.previous_rotation,
                sizeof(snapshot.spawner_previous_rotation_bits));
         snapshot.spawner_name = tile->state.spawner.name;
+    } else if (tile->kind == MC_TILE_PISTON) {
+        snapshot.piston_block_id = tile->state.piston.block_id;
+        snapshot.piston_block_data = tile->state.piston.block_data;
+        snapshot.piston_facing = tile->state.piston.facing;
+        snapshot.piston_extending = tile->state.piston.extending;
+        snapshot.piston_render_head = tile->state.piston.render_head;
+        snapshot.piston_progress_bits = tile->state.piston.progress_bits;
+        snapshot.piston_previous_progress_bits = tile->state.piston.previous_progress_bits;
     }
     *out = snapshot;
     return MC_TILE_OK;
@@ -521,7 +548,7 @@ mc_tile_status mc_tile_storage_bytes(const mc_tile *tile, size_t *out) {
         if (!tile_size_add(&bytes, mc_tile_name_native_bytes(tile->state.spawner.name))) {
             return MC_TILE_LIMIT;
         }
-    } else {
+    } else if (tile->kind != MC_TILE_PISTON) {
         return MC_TILE_STATE_ERROR;
     }
     *out = bytes;
@@ -840,6 +867,95 @@ mc_tile_status mc_tile_spawner_set_name(mc_tile *tile, mc_tile_name *name) {
     return MC_TILE_OK;
 }
 
+mc_tile_status mc_tile_piston_block_id(const mc_tile *tile, int32_t *out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status == MC_TILE_OK)
+        *out = tile->state.piston.block_id;
+    return status;
+}
+
+mc_tile_status mc_tile_piston_block_data(const mc_tile *tile, int32_t *out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status == MC_TILE_OK)
+        *out = tile->state.piston.block_data;
+    return status;
+}
+
+mc_tile_status mc_tile_piston_facing(const mc_tile *tile, int32_t *out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status == MC_TILE_OK)
+        *out = tile->state.piston.facing;
+    return status;
+}
+
+mc_tile_status mc_tile_piston_extending(const mc_tile *tile, bool *out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status == MC_TILE_OK)
+        *out = tile->state.piston.extending;
+    return status;
+}
+
+mc_tile_status mc_tile_piston_render_head(const mc_tile *tile, bool *out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status == MC_TILE_OK)
+        *out = tile->state.piston.render_head;
+    return status;
+}
+
+mc_tile_status mc_tile_piston_progress_bits(const mc_tile *tile, uint32_t *current,
+                                            uint32_t *previous) {
+    if (current == NULL || previous == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status == MC_TILE_OK) {
+        *current = tile->state.piston.progress_bits;
+        *previous = tile->state.piston.previous_progress_bits;
+    }
+    return status;
+}
+
+mc_tile_status mc_tile_piston_progress(const mc_tile *tile, uint32_t factor_bits,
+                                       uint32_t *out_bits, mc_tile_error *error) {
+    if (out_bits == NULL)
+        return tile_status(error, MC_TILE_INVALID_ARGUMENT, NULL, SIZE_MAX);
+    const mc_tile_status status = tile_kind_ready(tile, MC_TILE_PISTON);
+    if (status != MC_TILE_OK)
+        return tile_status(error, status, NULL, SIZE_MAX);
+    if (!mc_piston_math_admitted()) {
+        tile_status(error, MC_TILE_UNSUPPORTED_FP, NULL, SIZE_MAX);
+        if (error != NULL) {
+            error->operation = "Piston interpolation floating environment";
+            error->getter_bytecode = 20;
+        }
+        return MC_TILE_UNSUPPORTED_FP;
+    }
+    *out_bits = mc_piston_interpolate_bits(tile->state.piston.progress_bits,
+                                           tile->state.piston.previous_progress_bits, factor_bits);
+    return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
+}
+
+static mc_tile_status tile_read_error(mc_tile_error *error, const char *field, unsigned int pc,
+                                      bool base) {
+    const mc_tile_status status = tile_status(error, MC_TILE_INVALID_FIELD, field, SIZE_MAX);
+    if (error != NULL) {
+        if (base)
+            error->base_read_bytecode = pc;
+        else
+            error->read_bytecode = pc;
+    }
+    return status;
+}
+
 mc_tile_status mc_tile_read_base(mc_tile *tile, const mc_nbt_tag *compound, mc_tile_error *error) {
     const mc_tile_status status = tile_ready(tile);
     if (status != MC_TILE_OK) {
@@ -850,17 +966,17 @@ mc_tile_status mc_tile_read_base(mc_tile *tile, const mc_nbt_tag *compound, mc_t
     }
     const mc_nbt_tag *tag = mc_nbt_compound_get(compound, tile_x_name, 1);
     if (tag != NULL && tag->type != MC_NBT_INT) {
-        return tile_status(error, MC_TILE_INVALID_FIELD, "x", SIZE_MAX);
+        return tile_read_error(error, "x", 4, true);
     }
     tile->x = tag == NULL ? 0 : tag->value.int_value;
     tag = mc_nbt_compound_get(compound, tile_y_name, 1);
     if (tag != NULL && tag->type != MC_NBT_INT) {
-        return tile_status(error, MC_TILE_INVALID_FIELD, "y", SIZE_MAX);
+        return tile_read_error(error, "y", 14, true);
     }
     tile->y = tag == NULL ? 0 : tag->value.int_value;
     tag = mc_nbt_compound_get(compound, tile_z_name, 1);
     if (tag != NULL && tag->type != MC_NBT_INT) {
-        return tile_status(error, MC_TILE_INVALID_FIELD, "z", SIZE_MAX);
+        return tile_read_error(error, "z", 24, true);
     }
     tile->z = tag == NULL ? 0 : tag->value.int_value;
     return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
@@ -980,14 +1096,49 @@ static mc_tile_status tile_spawner_read(mc_tile *tile, const mc_nbt_tag *compoun
     return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
 }
 
+static mc_tile_status tile_piston_read(mc_tile *tile, const mc_nbt_tag *compound,
+                                       mc_tile_error *error) {
+    const mc_nbt_tag *tag = mc_nbt_compound_get(compound, tile_block_id_name, 7);
+    if (tag != NULL && tag->type != MC_NBT_INT)
+        return tile_read_error(error, "blockId", 9, false);
+    tile->state.piston.block_id = tag == NULL ? 0 : tag->value.int_value;
+    tag = mc_nbt_compound_get(compound, tile_block_data_name, 9);
+    if (tag != NULL && tag->type != MC_NBT_INT)
+        return tile_read_error(error, "blockData", 19, false);
+    tile->state.piston.block_data = tag == NULL ? 0 : tag->value.int_value;
+    tag = mc_nbt_compound_get(compound, tile_facing_name, 6);
+    if (tag != NULL && tag->type != MC_NBT_INT)
+        return tile_read_error(error, "facing", 29, false);
+    tile->state.piston.facing = tag == NULL ? 0 : tag->value.int_value;
+    tag = mc_nbt_compound_get(compound, tile_progress_name, 8);
+    if (tag != NULL && tag->type != MC_NBT_FLOAT)
+        return tile_read_error(error, "progress", 40, false);
+    tile->state.piston.progress_bits = tag == NULL ? 0 : tag->value.float_bits;
+    tile->state.piston.previous_progress_bits = tile->state.piston.progress_bits;
+    tag = mc_nbt_compound_get(compound, tile_extending_name, 9);
+    if (tag != NULL && tag->type != MC_NBT_BYTE)
+        return tile_read_error(error, "extending", 54, false);
+    tile->state.piston.extending = tag != NULL && tag->value.byte_value != 0;
+    /* j is neither read nor reset: an existing full constructor flag survives. */
+    return tile_status(error, MC_TILE_OK, NULL, SIZE_MAX);
+}
+
 static mc_tile_status tile_read_nbt(mc_tile *tile, const mc_nbt_tag *compound,
                                     tile_import_context *context, mc_tile_error *error) {
     const mc_tile_status status = mc_tile_read_base(tile, compound, error);
     if (status != MC_TILE_OK) {
+        if (error != NULL && tile != NULL && tile->kind == MC_TILE_PISTON &&
+            error->base_read_bytecode != 0)
+            error->read_bytecode = 2;
         return status;
     }
-    return tile->kind == MC_TILE_CHEST ? tile_chest_read(tile, compound, context, error)
-                                       : tile_spawner_read(tile, compound, context, error);
+    if (tile->kind == MC_TILE_CHEST)
+        return tile_chest_read(tile, compound, context, error);
+    if (tile->kind == MC_TILE_SPAWNER)
+        return tile_spawner_read(tile, compound, context, error);
+    if (tile->kind == MC_TILE_PISTON)
+        return tile_piston_read(tile, compound, error);
+    return tile_status(error, MC_TILE_INVALID_KIND, NULL, SIZE_MAX);
 }
 
 mc_tile_status mc_tile_read_nbt(mc_tile *tile, const mc_nbt_tag *compound, mc_tile_error *error) {
@@ -1099,7 +1250,8 @@ tile_import_storage_scoped(mc_world_runtime *world, mc_tile_kind resolved_kind,
     if (out == NULL) {
         return tile_status(error, MC_TILE_INVALID_ARGUMENT, NULL, SIZE_MAX);
     }
-    if (resolved_kind != MC_TILE_CHEST && resolved_kind != MC_TILE_SPAWNER) {
+    if (resolved_kind != MC_TILE_CHEST && resolved_kind != MC_TILE_SPAWNER &&
+        resolved_kind != MC_TILE_PISTON) {
         return tile_status(error, MC_TILE_INVALID_KIND, NULL, SIZE_MAX);
     }
     tile_import_context context = {0};
@@ -1125,12 +1277,9 @@ tile_import_storage_scoped(mc_world_runtime *world, mc_tile_kind resolved_kind,
     mc_tile *tile;
     mc_tile_status status = mc_tile_allocate(world, resolved_kind, &tile);
     if (status != MC_TILE_OK) {
-        tile_status(error, status, NULL, SIZE_MAX);
-        if (error != NULL && world != NULL && world->classes != NULL &&
-            world->classes->tiles != NULL && world->classes->tiles->phase == 3) {
-            error->registry = world->classes->tiles->first_registry_failure;
-            error->initializer_bytecode = world->classes->tiles->initializer_pc;
-        }
+        tile_allocation_error(world, resolved_kind, status, error);
+        if (error != NULL)
+            error->source_bytecode = 25;
         return status;
     }
     unsigned int source_bytecode = 25;
@@ -1208,7 +1357,7 @@ static void tile_overlay(const mc_nbt_tag *source, const mc_nbt_tag *fields, siz
     }
 }
 
-static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6],
+static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[9],
                                         size_t *field_count, mc_tile_error *error) {
     fields[0].type = MC_NBT_STRING;
     fields[0].name = (mc_nbt_string){tile_id_name, 2};
@@ -1232,7 +1381,7 @@ static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6
         fields[4].name = (mc_nbt_string){tile_items_name, 5};
         fields[4].value.list.element_type = MC_NBT_COMPOUND;
         *field_count = 5;
-    } else {
+    } else if (tile->kind == MC_TILE_SPAWNER) {
         /* The original String construction rejects null before reaching Delay.
          * This independent result has no caller-visible mutable base prefix. */
         if (tile->state.spawner.name == NULL) {
@@ -1249,6 +1398,25 @@ static mc_tile_status tile_build_fields(const mc_tile *tile, mc_nbt_tag fields[6
         fields[5].name = (mc_nbt_string){tile_delay_name, 5};
         fields[5].value.short_value = mc_java_i16_narrow(tile->state.spawner.delay);
         *field_count = 6;
+    } else if (tile->kind == MC_TILE_PISTON) {
+        fields[4].type = fields[5].type = fields[6].type = MC_NBT_INT;
+        fields[4].name = (mc_nbt_string){tile_block_id_name, 7};
+        fields[5].name = (mc_nbt_string){tile_block_data_name, 9};
+        fields[6].name = (mc_nbt_string){tile_facing_name, 6};
+        fields[4].value.int_value = tile->state.piston.block_id;
+        fields[5].value.int_value = tile->state.piston.block_data;
+        fields[6].value.int_value = tile->state.piston.facing;
+        fields[7].type = MC_NBT_FLOAT;
+        fields[7].name = (mc_nbt_string){tile_progress_name, 8};
+        /* Actual b(Compound) serializes previous l, not current k. Encoding
+         * canonicalizes NaN using the existing ordinary FloatTag codec. */
+        fields[7].value.float_bits = tile->state.piston.previous_progress_bits;
+        fields[8].type = MC_NBT_BYTE;
+        fields[8].name = (mc_nbt_string){tile_extending_name, 9};
+        fields[8].value.byte_value = tile->state.piston.extending ? 1 : 0;
+        *field_count = 9;
+    } else {
+        return tile_status(error, MC_TILE_INVALID_KIND, NULL, SIZE_MAX);
     }
     return MC_TILE_OK;
 }
@@ -1276,7 +1444,7 @@ mc_tile_status mc_tile_build(const mc_tile *tile, const mc_nbt_limits *requested
     }
     limits.max_allocation_bytes -= live;
 
-    mc_nbt_tag fields[6] = {0};
+    mc_nbt_tag fields[9] = {0};
     size_t field_count;
     result = tile_build_fields(tile, fields, &field_count, error);
     if (result != MC_TILE_OK) {
@@ -1434,7 +1602,8 @@ static mc_tile_status live_literal(mc_tile_classes *classes, const char *ascii, 
             if (context != NULL && scope_tile != NULL) {
                 const bool already =
                     context->scope_chunk == NULL
-                        ? scope_tile->state.spawner.name == name
+                        ? scope_tile->kind == MC_TILE_SPAWNER &&
+                              scope_tile->state.spawner.name == name
                         : live_graph_has_name(context->scope_chunk, scope_tile, name);
                 const mc_tile_status admitted = tile_import_admit(
                     scope_tile, context, already ? 0 : mc_tile_name_native_bytes(name), NULL,
@@ -1488,11 +1657,101 @@ static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classe
         classes->parent = parent;
         classes->registry = parent->registry;
         classes->allocation_bytes = sizeof(*classes);
+        classes->piston_max_allocation_bytes = 1024u * 1024u;
         parent->tiles = classes; /* Native owner publication, no Java field. */
     }
     mc_tile_classes *classes = parent->tiles;
     *out = classes;
     return MC_TILE_OK;
+}
+
+mc_tile_status mc_tile_piston_class_configure(mc_world_runtime *world,
+                                              size_t max_allocation_bytes) {
+    mc_tile_classes *classes = NULL;
+    const mc_tile_status status = live_classes_owner(world, &classes);
+    if (status != MC_TILE_OK)
+        return status;
+    if (classes->piston_phase != MC_TILE_CLASS_COLD || classes->piston_configured)
+        return MC_TILE_INVALID_PHASE;
+    classes->piston_max_allocation_bytes = max_allocation_bytes;
+    classes->piston_configured = true;
+    return MC_TILE_OK;
+}
+
+mc_tile_status mc_tile_piston_class_get_snapshot(const mc_world_runtime_classes *parent,
+                                                 mc_tile_piston_class_snapshot *out) {
+    if (parent == NULL || out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    mc_tile_piston_class_snapshot view = {0};
+    view.max_allocation_bytes = 1024u * 1024u;
+    const mc_tile_classes *classes = parent->tiles;
+    if (classes != NULL) {
+        view.base_phase = (mc_tile_class_phase)classes->phase;
+        view.piston_phase = (mc_tile_class_phase)classes->piston_phase;
+        view.base_initializer_bytecode = classes->initializer_pc;
+        view.piston_initializer_bytecode = classes->piston_initializer_pc;
+        view.base_failure = classes->failure;
+        view.piston_failure = classes->piston_failure;
+        view.base_name_count = classes->name_count;
+        view.base_class_count = classes->class_count;
+        view.list_identity = classes->piston_list;
+        if (classes->piston_list != NULL) {
+            view.list_count = classes->piston_list->count;
+            view.list_capacity = classes->piston_list->capacity;
+        }
+        view.allocation_bytes = classes->piston_allocation_bytes;
+        view.max_allocation_bytes = classes->piston_max_allocation_bytes;
+        view.live_tiles = classes->live_tiles;
+    }
+    *out = view;
+    return MC_TILE_OK;
+}
+
+static mc_tile_status live_piston_classes_get(mc_tile_classes *classes) {
+    if (classes->piston_phase == MC_TILE_CLASS_READY)
+        return MC_TILE_OK;
+    if (classes->piston_phase == MC_TILE_CLASS_FAILED)
+        return classes->piston_failure;
+    if (classes->piston_phase != MC_TILE_CLASS_COLD || classes->phase != MC_TILE_CLASS_READY)
+        return MC_TILE_STATE_ERROR;
+    classes->piston_phase = MC_TILE_CLASS_INITIALIZING;
+    classes->piston_initializer_pc = 0; /* Actual new ArrayList, before publication7. */
+    mc_tile_status status = MC_TILE_OK;
+    mc_world_reference_list *list = NULL;
+    if (sizeof(*list) > classes->piston_max_allocation_bytes)
+        status = MC_TILE_LIMIT;
+    else {
+        list = calloc(1, sizeof(*list));
+        if (list == NULL)
+            status = MC_TILE_ALLOCATION_FAILED;
+    }
+    if (status != MC_TILE_OK) {
+        classes->piston_failure = status;
+        classes->piston_phase = MC_TILE_CLASS_FAILED;
+        return status;
+    }
+    classes->piston_allocation_bytes = sizeof(*list);
+    classes->piston_initializer_pc = 4; /* Empty native ArrayList constructor. */
+    classes->piston_initializer_pc = 7;
+    classes->piston_list = list; /* Actual shared static m, distinct from every World List. */
+    classes->piston_initializer_pc = 10;
+    classes->piston_phase = MC_TILE_CLASS_READY;
+    return MC_TILE_OK;
+}
+
+static void tile_allocation_error(mc_world_runtime *world, mc_tile_kind kind, mc_tile_status status,
+                                  mc_tile_error *error) {
+    tile_status(error, status, NULL, SIZE_MAX);
+    if (error == NULL || world == NULL || world->classes == NULL || world->classes->tiles == NULL)
+        return;
+    const mc_tile_classes *classes = world->classes->tiles;
+    if (classes->phase == MC_TILE_CLASS_FAILED) {
+        error->registry = classes->first_registry_failure;
+        error->initializer_bytecode = classes->initializer_pc;
+    } else if (kind == MC_TILE_PISTON && classes->piston_phase == MC_TILE_CLASS_FAILED) {
+        error->operation = "Piston class initializer";
+        error->piston_initializer_bytecode = classes->piston_initializer_pc;
+    }
 }
 
 static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes **out) {
@@ -1572,7 +1831,20 @@ static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes 
 }
 
 static mc_tile_name *live_class_name(mc_tile_classes *classes, mc_tile_kind kind) {
-    const live_class_id selected = kind == MC_TILE_CHEST ? LIVE_CHEST : LIVE_SPAWNER;
+    live_class_id selected;
+    switch (kind) {
+        case MC_TILE_CHEST:
+            selected = LIVE_CHEST;
+            break;
+        case MC_TILE_SPAWNER:
+            selected = LIVE_SPAWNER;
+            break;
+        case MC_TILE_PISTON:
+            selected = LIVE_PISTON;
+            break;
+        default:
+            return NULL;
+    }
     if (classes == NULL || classes->phase != 2)
         return NULL;
     for (size_t i = 0; i < classes->class_count; ++i)
@@ -1594,6 +1866,15 @@ mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *p
             if (name->holds != 1)
                 cause = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
                                                  "Tile class literal has external holds", 0};
+        if (cause.status == MC_WORLD_STORAGE_OK &&
+            ((classes->piston_phase == MC_TILE_CLASS_READY && classes->piston_list == NULL) ||
+             (classes->piston_list != NULL &&
+              (classes->piston_phase != MC_TILE_CLASS_READY ||
+               classes->piston_allocation_bytes != sizeof(*classes->piston_list) ||
+               classes->piston_list->items != NULL || classes->piston_list->count != 0 ||
+               classes->piston_list->capacity != 0))))
+            cause = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Piston static List native invariant", 0};
         if (cause.status == MC_WORLD_STORAGE_OK) {
             mc_tile_name *name = classes->literals;
             while (name != NULL) {
@@ -1603,6 +1884,7 @@ mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *p
             }
             free(classes->by_name);
             free(classes->by_class);
+            free(classes->piston_list);
             free(classes);
             parent->tiles = NULL;
         }
@@ -1692,6 +1974,8 @@ mc_world_storage_status mc_live_tiles_new(mc_world_runtime *world, mc_tile_kind 
     mc_tile_status status = mc_tile_allocate(world, kind, &tile);
     if (status == MC_TILE_OK)
         status = mc_tile_construct_detailed(tile, &detail);
+    else
+        tile_allocation_error(world, kind, status, &detail);
     if (status != MC_TILE_OK) {
         frame.tile = detail;
         live_tile_error(&frame, status, "Tile constructor");
@@ -3371,13 +3655,15 @@ static mc_world_storage_status live_tiles_factory_scoped(mc_world_runtime *world
                         *out = NULL; /* Ordinary unknown-ID return83. */
                     }
                 }
-            } else if (entry->kind != LIVE_CHEST && entry->kind != LIVE_SPAWNER) {
+            } else if (entry->kind != LIVE_CHEST && entry->kind != LIVE_SPAWNER &&
+                       entry->kind != LIVE_PISTON) {
                 frame.bytecode = 25;
                 live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "Tile registered concrete constructor");
             } else {
-                const mc_tile_kind kind =
-                    entry->kind == LIVE_CHEST ? MC_TILE_CHEST : MC_TILE_SPAWNER;
+                const mc_tile_kind kind = entry->kind == LIVE_CHEST     ? MC_TILE_CHEST
+                                          : entry->kind == LIVE_SPAWNER ? MC_TILE_SPAWNER
+                                                                        : MC_TILE_PISTON;
                 mc_tile *tile = NULL;
                 mc_tile_error detail = live_empty_error().tile;
                 mc_tile_status status;
@@ -3392,6 +3678,8 @@ static mc_world_storage_status live_tiles_factory_scoped(mc_world_runtime *world
                     status = mc_tile_allocate(world, kind, &tile);
                     if (status == MC_TILE_OK)
                         status = mc_tile_construct_detailed(tile, &detail);
+                    else
+                        tile_allocation_error(world, kind, status, &detail);
                     if (status == MC_TILE_OK) {
                         frame.bytecode = 46; /* Outside factory Exception catch2..32. */
                         status = mc_tile_read_nbt(tile, compound, &detail);
@@ -3837,7 +4125,7 @@ mc_world_storage_status mc_live_tiles_load_records(mc_world_chunk *chunk, const 
 
 typedef struct live_record_view {
     mc_tile *tile;
-    mc_nbt_tag root, fields[6], slots[36];
+    mc_nbt_tag root, fields[9], slots[36];
     mc_item_stack_record_view items[36];
     const mc_item_stack *stacks[36];
     size_t counts[36], occupied, root_count, pointer_count, field_count;
@@ -4054,7 +4342,8 @@ mc_world_storage_status mc_live_tiles_build_records(const mc_world_chunk *chunk,
                         }
                     }
                 }
-            } else if (live_seen_insert(seen, seen_capacity, tile->state.spawner.name)) {
+            } else if (tile->kind == MC_TILE_SPAWNER &&
+                       live_seen_insert(seen, seen_capacity, tile->state.spawner.name)) {
                 if (!tile_size_add(&live, mc_tile_name_native_bytes(tile->state.spawner.name)))
                     live_fail(&frame, MC_WORLD_STORAGE_LIMIT, "Tile records name graph");
             }
@@ -4213,7 +4502,7 @@ static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile *extra, size
                     }
                 }
             }
-        } else {
+        } else if (tile->kind == MC_TILE_SPAWNER) {
             mc_tile_name *name = tile->state.spawner.name;
             bool seen_name = name == NULL;
             for (size_t j = 0; j < i && !seen_name; ++j) {

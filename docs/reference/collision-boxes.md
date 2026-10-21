@@ -62,8 +62,10 @@ Moving `ut/mz.e` invokes the real typed Tile lookup before testing for absence
 or the wrong concrete Tile type. Positive geometry requires real `uk/mu`
 progress, direction, stored Block and the live `wj/od` Direction arrays. The
 separate added callback `ut/mz.c(World,III)` is literal return0. No native
-positive piston Tile or Direction initialization is implied by supporting
-this callback or the completed null lookup route.
+positive geometry follows from that callback alone. The separate
+[Piston closure](piston.md) supplies genuine Tile construction, interpolation,
+Direction initialization and held carrier-box translation. Active mechanics
+remain distinct unfinished descendants.
 
 The [original capture tool](../../tests/tools/world/collision/capture_block_shapes.py)
 uses untouched original classes, real registry bootstrap, actual virtual

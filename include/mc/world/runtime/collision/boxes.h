@@ -18,6 +18,9 @@ typedef struct mc_world_collision_error {
     mc_entity_bounds_error bounds;
     const char *block_class;
     unsigned int world_bytecode, block_bytecode;
+    /* Moving-piston e and its shifted-box helper remain independent enclosing
+     * frames when the carrier getter, Tile or Direction operation fails. */
+    unsigned int piston_bytecode, shifted_bytecode;
     int32_t x, y, z;
 } mc_world_collision_error;
 

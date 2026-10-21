@@ -107,4 +107,38 @@ mc_registry_status mc_registry_block_t_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_block_t_at(const mc_registry_block_t_view *array, int32_t index,
                                           bool *out, mc_registry_error *error);
 
+/* Actual wj/od fields a..d. Active use initializes only this independent class:
+ * four distinct six-int arrays, with retained earlier publications and a
+ * first-failure latch. No Block/Tile/Random/bed-table initialization occurs.
+ * Nested exclusive Registry initializer flows are admitted and restored.
+ * A successful capture may be NULL; no array element is inspected here. */
+typedef enum mc_registry_direction_field {
+    MC_REGISTRY_DIRECTION_A = 0,
+    MC_REGISTRY_DIRECTION_B,
+    MC_REGISTRY_DIRECTION_C,
+    MC_REGISTRY_DIRECTION_D
+} mc_registry_direction_field;
+
+typedef struct mc_registry_direction_view {
+    mc_registry_classes *classes;
+    const int32_t *identity;
+    size_t length;
+} mc_registry_direction_view;
+
+mc_registry_status mc_registry_direction_get(mc_registry_classes *classes,
+                                             mc_registry_direction_field field,
+                                             mc_registry_direction_view *out,
+                                             mc_registry_error *error);
+
+/* Reached iaload on the captured identity, with NULL before signed bounds.
+ * Never reloads current fields, initializes a class or consults its later
+ * phase. Nonnull arrays must be the supplying owner's actual retained
+ * six-int allocations; unknown projections are not adopted or dereferenced.
+ * The view is nonowning: keep that owner live/exclusive through every use,
+ * including field replacement. No hold/allocation/callback occurs. Failure
+ * preserves out, records a fresh runtime cause and never changes the class's
+ * first initializer failure. Fresh native admission leaves last_error alone. */
+mc_registry_status mc_registry_direction_at(const mc_registry_direction_view *array, int32_t index,
+                                            int32_t *out, mc_registry_error *error);
+
 #endif

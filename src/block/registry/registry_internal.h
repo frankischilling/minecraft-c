@@ -284,6 +284,12 @@ struct mc_registry_classes {
     mc_registry_block_storage blocks;
     mc_registry_class_state block_states[MC_BLOCK_KIND_COUNT];
     mc_registry_class_state nr_state, jp_state, rp_state, rw_state, pressure_state;
+    /* Independent wj/od class, distinct from ve/nj's bed-facing table. Source
+     * cells may be captured independently of these native arena provenance
+     * handles. Cold state is zero until this actual initializer first runs. */
+    mc_registry_class_state direction_state;
+    int32_t *direction_a, *direction_b, *direction_c, *direction_d;
+    int32_t *direction_storage[4];
     bool gk_a;
     int32_t **ve_a;
     const mc_registry_string **ys_a;

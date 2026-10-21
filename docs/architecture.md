@@ -11,7 +11,15 @@ bounds; metadata and multipart descendants preserve their source order.
 World traversal captures the actual Block array before each acquiring ID
 getter. It then gathers actual nearby results and performs two separate
 indexed Entity reads. Item/FallingSand inherit real null virtuals; other
-constructors and positive piston geometry remain dependencies.
+Entity constructors and movement remain dependencies.
+
+[Positive Piston geometry](world/tiles/piston.md) keeps the actual Tile held
+through interpolation and field reads. The shifted helper captures the Block
+array and invokes the actual carrier getter before Direction active use. Six
+ordered stores mutate that same pooled box; later failures preserve earlier
+coordinate and pool effects. Piston's shared List and Direction's four arrays
+initialize independently under their actual class owners. Piston ticking,
+finalization, Entity pushing and the separate state-shape setter remain unfinished.
 
 The following nearby checkpoint predates collision integration.
 

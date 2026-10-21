@@ -1,5 +1,15 @@
 # Storage and original references
 
+The [Piston source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
+records paired Tile, collision and independent Direction bodies. Retained
+original captures contain 19,140 float/constructor/NBT records and 11,026 direct
+geometry records per side. Native replay selects explicit helper projections;
+it does not compare original nonnull-World metadata or Tile traversal. The
+geometry producer's retained final pin-bookkeeping failure and separate
+qualification remain documented alongside the completed subject streams.
+
+The following collision checkpoint predates Piston integration.
+
 The [collision source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/collision-boxes.md)
 records complete World/Entity virtual ordering and the selected 61 paired Block
 bodies. Original capture runs the full actual registry and 2,200 scenarios per

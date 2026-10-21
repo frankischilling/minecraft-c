@@ -1,5 +1,17 @@
 # Build and tests
 
+The [Piston contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md)
+pass 295 Direction, 296 Tile and 144 geometry checks per native compiler. All
+165/167/167 MSVC/GCC/Clang cases pass without skips, with numerical Java checks;
+Linux enables ASan/UBSan/leak checks. Separate retained-original replays compare
+18,292 interpolation records and 10,986 geometry successes plus 15 native
+failure prefixes per side/compiler, keeping 25 explicit geometry exclusions.
+All children finish naturally. All 464 C files and headers pass formatting.
+Active piston mechanics, Entity movement and complete original World traversal
+remain unfinished.
+
+The following collision checkpoint predates Piston integration.
+
 The collision contracts pass 732 checks per compiler, with all
 162/164/164 MSVC/GCC/Clang cases passing without skips. Fresh original/native
 getter tools compare 623 complete record payloads per side/compiler, retaining

@@ -32,7 +32,8 @@ typedef enum mc_tile_status {
     MC_TILE_WORLD_FAILED,
     MC_TILE_ITEM_FAILED,
     MC_TILE_NBT_ERROR,
-    MC_TILE_STATE_ERROR
+    MC_TILE_STATE_ERROR,
+    MC_TILE_UNSUPPORTED_FP
 } mc_tile_status;
 
 typedef struct mc_tile_error {
@@ -42,8 +43,14 @@ typedef struct mc_tile_error {
     mc_item_stack_error item;
     mc_nbt_error nbt;             /* Whole-tree codec error, separate from item context. */
     unsigned int source_bytecode; /* Factory25 or read46 for composed imports. */
+    /* Base and concrete semantic read frames are distinct. Piston read invokes
+     * base at2, then reaches its own exact typed getters at9/19/29/40/54. */
+    unsigned int base_read_bytecode, read_bytecode;
+    /* Native arithmetic admission is separate from NBT/source field lookup. */
+    const char *operation;
+    unsigned int getter_bytecode;
     /* Reached serialization frames, independent of import/constructor frames.
-     * base is ow/jh.b; save is concrete Chest/Spawner.b; item is Stack.a.
+     * base is ow/jh.b; save is concrete Chest/Spawner/Piston.b; item is Stack.a.
      * Native planning/codec errors without a reached field leave these zero. */
     unsigned int base_save_bytecode, save_bytecode, item_save_bytecode;
     /* Fresh per-attempt Registry cause; empty sentinels on native-only errors.
@@ -51,6 +58,9 @@ typedef struct mc_tile_error {
      * base-class initialization; initializer PC remains a separate frame. */
     mc_registry_error registry;
     unsigned int constructor_bytecode, initializer_bytecode;
+    /* uk/mu owns a separate initializer; base ow/jh registration of its Class
+     * literal does not initialize this subclass. */
+    unsigned int piston_initializer_bytecode;
 } mc_tile_error;
 
 typedef struct mc_live_tile_call_frame {

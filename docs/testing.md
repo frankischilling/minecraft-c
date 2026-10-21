@@ -1,5 +1,29 @@
 # Test scope and reproduction
 
+The [Piston contracts](world/tiles/piston.md) pass on native Windows MSVC and
+sanitized GCC/Clang. All 165/167/167 configured cases pass in focused and
+complementary partitions, without skips and with numerical Java checks.
+The new cases pass 295 Direction, 296 Tile and 144 geometry checks per host.
+They exercise real class owners, ordered NBT, GAME save/readback, all six faces,
+installed extending/retracting Tiles, late failures and live pooled aliases.
+
+The [interpolation replay](../tests/tools/world/tiles/compare_piston_interpolation.py)
+compares 18,292 exact raw records per side/compiler. The separate
+[geometry replay](../tests/tools/world/collision/compare_piston_geometry.py)
+compares 10,986 exact successful payloads and 15 native failure prefixes per
+side/compiler. Three reflection receiver-admission failures and 22 null-World
+dependency failures remain explicit exclusions. Both tools consume the retained
+completed original captures without launching another original JVM. Raw streams,
+prior failures and the original geometry producer's final bookkeeping defect
+remain retained. All replay children exit naturally and finish ownership cleanup.
+
+All 464 C files and headers pass formatting. The [source map](reference/piston.md)
+keeps original helper projections separate from constructed nonnull-World tests.
+Active piston mechanics, complete original World traversal, Entity movement and
+whole-game behavior remain unfinished.
+
+The following collision checkpoint predates Piston integration.
+
 The [collision contracts](world/collision/boxes.md) pass 732 checks per
 compiler. All 162 MSVC and 164 GCC/Clang configured cases pass without skips,
 with numerical Java checks enabled. Linux uses ASan/UBSan/leak checks and
@@ -18,8 +42,9 @@ routes; native real GAME Worlds provide pool ownership. The 49 null-World
 failures and remaining 1,528 corpus rows are retained exclusions. Only strict
 LF/CRLF framing differs between hosts; coordinates, identities and counters
 receive no normalization. Native nearby probes are freshly compared too.
-Positive moving-piston geometry, original nonnull-World metadata/traversal,
-complete contributions, movement and whole-game behavior remain unverified.
+That getter comparison excludes positive Piston geometry, original
+nonnull-World metadata/traversal, complete contributions, movement and whole-game
+behavior. The separate Piston module records its later verification scope.
 
 The following nearby checkpoint predates collision integration.
 

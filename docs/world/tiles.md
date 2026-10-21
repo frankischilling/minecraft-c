@@ -1,8 +1,8 @@
-# Live Chest and Spawner owners
+# Live Chest, Spawner and Piston owners
 
 [`runtime/tiles/tiles.h`](../../include/mc/world/runtime/tiles/tiles.h) exposes
-the concrete Tile, shared class/literal owners, Chest inventory and Spawner
-fields. World lookup, installation, removal and block hooks use actual retained
+the concrete Tile, shared class/literal owners, Chest inventory, Spawner fields
+and [Piston state](tiles/piston.md). World lookup, installation, removal and block hooks use actual retained
 Chunks, Registry objects and World lists. This adds native gameplay bodies;
 complete original/native Tile equivalence and populated save/reload remain open.
 
@@ -11,7 +11,7 @@ complete original/native Tile equivalence and populated save/reload remain open.
 The application World-class owner holds one lazy Tile-class namespace shared
 by its Worlds. Code literals retain the Registry's actual string identity.
 The base class registers the original eight type names; reached constructors
-currently implement Chest and Spawner. Other registered constructors fail
+currently implement Chest, Spawner and Piston. Other registered constructors fail
 explicitly when reached. Class initialization preserves its completed prefix
 and first failure rather than replacing it with a final static lookup table.
 
@@ -21,6 +21,13 @@ shared Stack identity, replacement order, count clamping and the later dirty
 call. A failed dirty call can therefore leave the installed Stack and clamped
 count visible. Spawner construction and reads retain its actual name and delay;
 player/mob lookup and complete ticking are unfinished.
+
+Piston default/full construction preserves raw progress and unclamped carried
+ID, metadata and facing. Its own shared class List initializes independently of
+base registration. Ordered NBT reads preserve partial assignments; the nine-field
+writer saves previous progress. Positive collision uses the held actual Tile,
+live carrier getter and independent Direction arrays. Tick, finalization and
+Entity pushing remain unfinished.
 
 NBT import owns independent Tile and Stack source trees. Building overlays live
 typed fields while preserving supported unknown fields. It uses existing Stack
@@ -83,7 +90,10 @@ aliases keep their real World binding. Class destruction also admits Registry
 and Entity releases before retiring Tile literals; a genuine Registry BUSY
 result leaves the entire class owner intact.
 
-## Validation boundary
+## Earlier Chest/Spawner validation checkpoint
+
+The later [Piston verification scope](tiles/piston.md#verification-scope) adds
+296 Tile checks and the separately qualified Direction and geometry scenarios.
 
 All 144 configured public cases pass on native Windows MSVC and all 146 on each
 sanitized Ubuntu GCC/Clang build, with zero skips and local JDK comparisons.

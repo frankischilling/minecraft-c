@@ -127,6 +127,7 @@ target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 add_library(mc_registry STATIC
     src/block/registry/registry.c
     src/block/registry/runtime.c
+    src/block/registry/directions.c
     src/block/registry/falling.c
     src/block/registry/class_initializers.c
     src/block/registry/constructors.c
@@ -214,6 +215,7 @@ add_library(mc_simulation STATIC
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
     src/world/runtime/tiles/tiles.c
+    src/world/runtime/tiles/piston_math.c
     src/world/runtime/loading/loading.c
     src/world/runtime/saving/saving.c
     src/world/runtime/runtime.c
@@ -509,11 +511,28 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_collision_boxes tests/world/runtime/collision/test_boxes.c)
     target_link_libraries(mc_test_world_collision_boxes PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_piston_geometry tests/world/runtime/collision/test_piston_geometry.c)
+    target_link_libraries(mc_test_piston_geometry PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_piston_tiles tests/world/runtime/tiles/test_piston.c)
+    target_link_libraries(mc_test_piston_tiles PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_piston_float_probe tests/world/runtime/tiles/piston_float_probe.c)
+    target_link_libraries(mc_piston_float_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_directions tests/block/registry/test_directions.c)
+    target_link_libraries(mc_test_directions PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME block.directions COMMAND mc_test_directions)
+    set_tests_properties(block.directions PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
     add_executable(mc_world_nearby_values_probe tests/world/runtime/collision/nearby_probe.c)
     target_link_libraries(mc_world_nearby_values_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_world_block_shapes_probe tests/world/runtime/collision/block_shape_probe.c)
     target_link_libraries(mc_world_block_shapes_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_piston_geometry_probe tests/world/runtime/collision/piston_geometry_probe.c)
+    target_link_libraries(mc_piston_geometry_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1188,6 +1207,24 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-collision-boxes-contracts")
     set_tests_properties(world.collision_boxes PROPERTIES
         LABELS "public;integration;ownership;collision" TIMEOUT 90)
+
+    add_test(NAME world.piston_geometry
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_piston_geometry>"
+        --scenario world-piston-geometry
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-geometry-contracts")
+    set_tests_properties(world.piston_geometry PROPERTIES
+        LABELS "public;integration;ownership;collision" TIMEOUT 90)
+
+    add_test(NAME world.piston_tiles
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_piston_tiles>"
+        --scenario world-piston-tiles
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-tiles-contracts")
+    set_tests_properties(world.piston_tiles PROPERTIES
+        LABELS "public;integration;ownership;storage" TIMEOUT 90)
 
     add_test(NAME world.tiles
         COMMAND "${Python3_EXECUTABLE}"

@@ -68,9 +68,12 @@ constructor descriptor and never adopts or frees an unknown replacement List.
 Moving-piston lookup runs the real Tile getter. A completed absence or real
 chest/spawner fails the original piston-type test and yields a genuine null
 shape. Its block-added override is the original immediate return, allowing
-lazy lookup to reread an empty map. Positive piston Tile construction,
-interpolation, Direction arrays and stored-Block geometry are unfinished.
-Missing positive geometry is an explicit reached dependency failure.
+lazy lookup to reread an empty map. [Positive Piston geometry](../tiles/piston.md)
+uses actual Tile construction and progress fields, independent Direction class
+arrays and the carried Block's real getter. It shifts the same pooled box in
+source order and retains completed prefixes on a later failure. Active piston
+tick, finalization, Entity pushing and the separate state-shape setter remain
+unfinished.
 
 General provider replacement, complete original World traversal replay,
 application pool reset timing, other Entity descendants and movement remain

@@ -905,7 +905,10 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_COLLISION_BOXES_MAIN
+#define MC_COLLISION_BOXES_MAIN main
+#endif
+int MC_COLLISION_BOXES_MAIN(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

@@ -96,6 +96,8 @@ const char *mc_tile_status_string(mc_tile_status status) {
             return "invalid NBT result";
         case MC_TILE_STATE_ERROR:
             return "native tile state invariant failed";
+        case MC_TILE_UNSUPPORTED_FP:
+            return "unsupported floating environment";
     }
     return "unknown tile status";
 }
