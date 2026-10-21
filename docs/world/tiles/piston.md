@@ -3,8 +3,9 @@
 The [Tile interface](../../../include/mc/world/runtime/tiles/tiles.h) owns real
 Piston instances alongside Chest and Spawner. The [source map](../../reference/piston.md)
 records the paired original methods, floating-point observations and remaining
-dependencies. Explicit finalization is implemented but awaits fresh native and
-original verification. Active piston ticking and Entity pushing remain unfinished.
+dependencies. Explicit finalization has constructed native coverage on Windows
+and Linux; active original comparison remains pending. Active piston ticking
+and Entity pushing remain unfinished.
 
 ## Construction and class lifetime
 
@@ -72,11 +73,13 @@ World, cache, pending set and Store binding. An unsupported replacement fails
 before acquiring through a stale coordinator. This check belongs to the reached
 provider call, after any earlier progress stores.
 
-The new `world.piston_finalization` contract source covers installed owners,
+The `world.piston_finalization` contract covers installed owners,
 aliasing, list duplicates, ordinary false results and retained failure prefixes.
-It has not been executed for this change. Existing interpolation and geometry
-replays do not qualify this active body; tick, pushing and state-shape work are
-separate.
+It passes in fresh hosted MSVC and sanitized GCC/Clang builds. The ordinary-false
+fixture retains a moving Block at an isolated interior coordinate, so a later
+restoration does not enter its unfinished neighbor hook. Existing interpolation
+and geometry replays do not qualify this active body; tick, pushing, neighbor
+and state-shape work remain separate.
 
 ## Collision order
 
@@ -111,6 +114,11 @@ Direction frames separate through reached failures.
 
 ## Verification scope
 
+Fresh hosted builds pass all 168 MSVC and 170 GCC/Clang configured cases without
+skips, including `world.piston_finalization`. All 479 C files and headers pass
+the requested format. Controller mirrors and lifecycle checks also pass. Full
+local suites and active original finalization/removal comparison remain unrun.
+
 `block.directions` checks array values, separate initialization, failed prefixes,
 captured identities and native retirement. `world.piston_geometry` exercises all
 six faces, pool aliases, late failures, exact exceptional coordinates and both
@@ -118,9 +126,10 @@ extending states through installed Tiles and real World collision collection.
 `world.piston_tiles` exercises ordered NBT, native ownership and actual Store
 write/readback with unknown-field retention.
 
-All 165 MSVC and 167 GCC/Clang configured cases pass without skips. The three
-new cases pass 295 Direction, 296 Tile and 144 geometry checks per host. Linux
-uses ASan/UBSan/leak checks and strict floating-point compilation.
+The earlier geometry checkpoint passed all 165 MSVC and 167 GCC/Clang configured
+cases without skips. Its three new cases passed 295 Direction, 296 Tile and 144
+geometry checks per host. Linux uses ASan/UBSan/leak checks and strict
+floating-point compilation.
 
 The [interpolation replay](../../../tests/tools/world/tiles/compare_piston_interpolation.py)
 and [geometry replay](../../../tests/tools/world/collision/compare_piston_geometry.py)

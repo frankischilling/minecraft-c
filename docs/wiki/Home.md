@@ -1,5 +1,14 @@
 # minecraft-c
 
+Explicit Piston finalization and MovingPiston removal now pass their constructed
+native contract in fresh hosted MSVC and sanitized GCC/Clang builds. All 168
+Windows and 170 cases per Linux compiler pass without skips; all 479 C files
+and headers pass the requested format. Full local suites and active original
+finalization/removal comparison remain unrun. Tick, neighbor, Entity pushing
+and state-shape work remain unfinished.
+
+The following movement checkpoint predates finalization integration.
+
 The [Entity movement module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md) implements Item and FallingSand
 movement using their permanent bounds, actual pooled copies and mutable collision
 Lists. Typed effects, Block contacts and World rain/burning/sound queries preserve

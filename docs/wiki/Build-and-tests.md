@@ -1,5 +1,14 @@
 # Build and tests
 
+The finalization checkpoint passes all 168 MSVC and 170 sanitized GCC/Clang
+configured cases in fresh hosted builds, including `world.piston_finalization`.
+All 479 C files and headers pass formatting; controller mirrors and lifecycle
+checks also pass. These full hosted suites are separate from the earlier local
+and retained-original replay results below. Full local suites and active
+original finalization/removal comparison remain unrun.
+
+The following movement checkpoint predates finalization integration.
+
 The [movement contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md) pass five focused cases on native
 Windows MSVC and sanitized GCC/Clang:
 

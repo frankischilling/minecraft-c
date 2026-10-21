@@ -1,5 +1,12 @@
 # Storage and original references
 
+The paired Piston source map now includes explicit finalization and actual
+MovingPiston/container removal bodies. Their constructed native contract passes
+in fresh hosted MSVC and sanitized GCC/Clang builds. Active original comparison
+remains pending. Earlier interpolation and geometry observations establish only
+their stated helper scopes. Mappings provide navigation names; the separate
+client/server JAR descriptors and observed behavior remain the authority.
+
 The [movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) records complete paired Item/Falling base bodies
 and separately qualified original observations. All 59,654 client records and
 exactly 24,109 intact server records qualify; the server subset has interior gaps

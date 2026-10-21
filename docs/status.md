@@ -1,5 +1,16 @@
 # Development status
 
+Explicit [Piston finalization](world/tiles/piston.md#explicit-finalization) and
+MovingPiston removal pass their constructed native contract in fresh hosted
+MSVC and sanitized GCC/Clang builds. All 168 Windows and 170 cases per Linux
+compiler pass without skips, alongside 479-file formatting, controller mirrors
+and lifecycle checks. Full local suites remain unrun because of available disk
+space. Active original finalization/removal comparison remains pending; prior
+interpolation and geometry results do not qualify those bodies. Piston tick,
+neighbor, pushing and state-shape work remain unfinished.
+
+The following movement checkpoint predates finalization integration.
+
 The [Entity movement module](entity/movement.md) implements Item and FallingSand
 movement using their permanent bounds, actual pooled copies and mutable collision
 Lists. Typed effects, Block contacts and World rain/burning/sound queries preserve
@@ -17,11 +28,6 @@ archives; current full local suites remain unrun. Original disk/receipt and
 provenance limits remain explicit. Other kinds, active ticks, positive pressure/
 detector helpers, nonempty sound observers and unowned passenger recursion remain
 unfinished.
-
-Explicit [Piston finalization](world/tiles/piston.md#explicit-finalization) and
-MovingPiston removal are now implemented but unverified. Their new native
-contract has not run, and active original comparison remains pending. Earlier
-interpolation and geometry results do not qualify these operations.
 
 The following Piston checkpoint predates Entity movement integration.
 

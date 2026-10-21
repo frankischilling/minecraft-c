@@ -66,8 +66,10 @@ Each current coordinate is read before its Direction getstatic. Conversion to
 binary32 precedes multiplication; widening precedes subtraction. The helper
 does not allocate a coordinate copy or invoke a generic add-based translation.
 The separate MovingPiston state-shape update is a different body and remains
-unfinished, along with tick and Entity pushing. Explicit finalization is now
-implemented but has no fresh native execution or active original comparison.
+unfinished, along with tick and Entity pushing. Explicit finalization has
+constructed native coverage in fresh hosted MSVC and sanitized GCC/Clang builds.
+Active original finalization/removal comparison remains pending; the retained
+interpolation and geometry observations below do not qualify those bodies.
 
 ## Original observations
 

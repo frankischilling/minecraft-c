@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+Explicit Piston finalization preserves the raw progress guard, ordered progress
+stores, actual World Tile removal, receiver invalidation, current Block query
+and notifying carried-ID/metadata restoration. MovingPiston removal invokes the
+actual Piston finalizer or inherited container fallback. Held owners preserve
+reentrant lifetimes, and errors retain completed effects and distinct source
+frames. Constructed native contracts pass in fresh hosted builds; active
+original comparison, tick, neighbor, pushing and state-shape work remain pending.
+
 [Item/Falling movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md) operates on existing Entity fields
 and the same permanent box. Held pooled copies and collision views retain mutable
 identities across repeated queries. Each source call reloads its actual World
