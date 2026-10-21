@@ -108,6 +108,17 @@ static mc_entity_status hold(mc_entity_classes *classes, mc_entity_bounds_object
     return MC_ENTITY_OK;
 }
 
+size_t mc_entity_bounds_native_holds(const mc_entity_classes *classes,
+                                     const mc_entity_bounds *bounds) {
+    if (classes == NULL || bounds == NULL)
+        return 0;
+    for (const mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
+         object = object->next)
+        if (&object->value == bounds)
+            return object->holds;
+    return 0;
+}
+
 mc_entity_status mc_entity_bounds_retain(mc_entity_classes *classes, mc_entity_bounds *bounds) {
     if (classes == NULL || bounds == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;

@@ -18,4 +18,9 @@ mc_entity_status mc_entity_bounds_initialize(mc_entity_classes *classes, mc_enti
 /* Called only after classes_free has admitted zero native bounds holds. */
 void mc_entity_bounds_dispose(mc_entity_classes *classes);
 
+/* Passive native provenance/hold query. Never dereferences an unrecognized
+ * bounds pointer and performs no active use, allocation or hold mutation. */
+size_t mc_entity_bounds_native_holds(const mc_entity_classes *classes,
+                                     const mc_entity_bounds *bounds);
+
 #endif

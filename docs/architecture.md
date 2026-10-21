@@ -1,5 +1,20 @@
 # Runtime boundaries
 
+The [collision module](world/collision/boxes.md) owns the actual constructor
+K descriptor independently of source K. Each typed occurrence retains either
+its actual pooled bounds or the Entity owning its permanent bounds. Source
+clear, checked overlapping growth and quiescent native retirement have
+separate effects. Returned views retain mutable List identity and World
+lifetime. Block getter dispatch uses real registered kinds and live singleton
+bounds; metadata and multipart descendants preserve their source order.
+
+World traversal captures the actual Block array before each acquiring ID
+getter. It then gathers actual nearby results and performs two separate
+indexed Entity reads. Item/FallingSand inherit real null virtuals; other
+constructors and positive piston geometry remain dependencies.
+
+The following nearby checkpoint predates collision integration.
+
 The [nearby Entity module](world/collision/entities.md) owns actual World R
 contents through a separate typed occurrence ledger. It captures the constructor
 List independently of the current source field. A query clears current R,

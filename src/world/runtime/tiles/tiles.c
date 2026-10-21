@@ -2696,6 +2696,10 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile Block added receiver");
         return false;
     }
+    if (block->kind == MC_BLOCK_UT_MZ) {
+        error->bytecode = 0; /* Actual ut/mz.c(World,III) is literal return0. */
+        return true;
+    }
     error->bytecode = 15;
     mc_tile_kind kind;
     if (block->kind == MC_BLOCK_E_E)

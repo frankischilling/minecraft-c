@@ -1,5 +1,26 @@
 # Development status
 
+The [collision module](world/collision/boxes.md) collects actual Block shapes
+into the World's mutable K List, then runs real nearby collection and the
+currently constructible Item/FallingSand inherited null virtuals. Typed
+occurrences preserve pooled-box or permanent-Entity ownership, duplicate
+identities, growth failures and terminal retirement. Multipart shapes preserve
+their reached singleton bounds on failure. Positive moving-piston Tile
+geometry, other Entity descendants and movement remain unfinished.
+
+All 162/164/164 MSVC/GCC/Clang cases pass without skips, including 732 collision
+checks per host. Fresh original/native tools compare all 19 fields of 623
+successful source-unused-World Block getter records per side and compiler.
+Only verified LF/CRLF record terminators may differ; raw streams stay intact.
+The complete 2,200-row original corpus remains retained, with 1,577 rows per
+side explicitly outside this native replay. Native GAME Worlds supply pool
+ownership; this does not prove original nonnull-World metadata or traversal.
+Fresh nearby comparisons also pass 353 exact successful rows and three precise
+native nullable-failure prefixes per side/compiler. Formatting passes all 455
+C source/header files.
+
+The following nearby checkpoint predates collision integration.
+
 The [nearby Entity module](world/collision/entities.md) implements the complete
 base World query and normal/Blank Chunk gather bodies. It preserves actual
 mutable List identities, duplicates, source ordering and late failure prefixes.

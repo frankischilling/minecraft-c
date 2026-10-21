@@ -1,5 +1,28 @@
 # Test scope and reproduction
 
+The [collision contracts](world/collision/boxes.md) pass 732 checks per
+compiler. All 162 MSVC and 164 GCC/Clang configured cases pass without skips,
+with numerical Java checks enabled. Linux uses ASan/UBSan/leak checks and
+strict floating-point compilation. Tests exercise real GAME owners, all
+concrete getter families, multipart ordering, metadata and numeric edges,
+below-floor fences, mutable views, detached pooled boxes, permanent-owner
+release, late growth/retain failure and retirement of live results with a
+foreign source K projection. Eight prepared region records remain on disk;
+their slots and timestamps are checked, without claiming full persistence.
+
+The public [getter comparison tool](../tests/tools/world/collision/compare_block_getters.py)
+runs a fresh 2,200-row original capture, then compares the 623 successful rows
+from its first 672-case getter prefix. Both sides and all three compiled probes
+match all 19 record payload fields. Original null World is unused on selected
+routes; native real GAME Worlds provide pool ownership. The 49 null-World
+failures and remaining 1,528 corpus rows are retained exclusions. Only strict
+LF/CRLF framing differs between hosts; coordinates, identities and counters
+receive no normalization. Native nearby probes are freshly compared too.
+Positive moving-piston geometry, original nonnull-World metadata/traversal,
+complete contributions, movement and whole-game behavior remain unverified.
+
+The following nearby checkpoint predates collision integration.
+
 The final LF-only correction to one test source was rebuilt and rerun on
 all three compilers. Complete regression evidence remains in the preceding
 full builds, whose runtime and probe source bytes are unchanged.

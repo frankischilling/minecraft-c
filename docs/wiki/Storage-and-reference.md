@@ -1,5 +1,14 @@
 # Storage and original references
 
+The [collision source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/collision-boxes.md)
+records complete World/Entity virtual ordering and the selected 61 paired Block
+bodies. Original capture runs the full actual registry and 2,200 scenarios per
+side. Native replay qualifies 623 source-unused-World getter records, keeping
+other original results separate. Metadata/Tile traversal and complete gameplay
+still need original comparisons.
+
+The following nearby checkpoint predates collision integration.
+
 The [nearby source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/nearby-entities.md)
 records complete paired World query, normal/Blank gather, floor, presence,
 acquiring getter and strict intersection bodies. Public reflection tools use

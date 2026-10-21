@@ -13,6 +13,18 @@ typedef struct mc_world_entity_list_ledger {
     size_t count, capacity;
 } mc_world_entity_list_ledger;
 
+typedef struct mc_world_collision_reference {
+    struct mc_entity_bounds *bounds;
+    struct mc_entity_classes *pool;
+    struct mc_entity *entity;
+} mc_world_collision_reference;
+
+typedef struct mc_world_collision_list_ledger {
+    mc_world_reference_list *list;
+    mc_world_collision_reference *entries;
+    size_t count, capacity;
+} mc_world_collision_list_ledger;
+
 struct mc_world_runtime {
     mc_world_runtime_options options;
     mc_world_runtime_state live;
@@ -47,6 +59,9 @@ struct mc_world_runtime {
     /* Actual constructor-created R254. Each query occurrence owns one real
      * Entity hold, independently of b/D and replaceable source R. */
     mc_world_entity_list_ledger nearby_entities;
+    /* Actual K203, independent of current source K. Each occurrence owns
+     * either one pooled bounds hold or one permanent bounds' Entity hold. */
+    mc_world_collision_list_ledger collision_boxes;
     bool entity_containers_retired;
     mc_tile_list_ledger tile_membership[2];
     bool tile_containers_retired;

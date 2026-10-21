@@ -1,5 +1,14 @@
 # Systems and subsystems
 
+The [collision module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/boxes.md)
+preserves actual K List and pooled/permanent box identities through a typed
+occurrence ledger. Views retain lifetime while allowing source mutation.
+Registered Block shapes, multipart order, captured-array acquisition and real
+nearby traversal are implemented for the documented native descendants.
+Positive piston geometry, other Entity constructors and movement remain open.
+
+The following nearby checkpoint predates collision integration.
+
 The [nearby Entity module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/entities.md)
 captures the actual constructor R List, owns each duplicate Entity occurrence,
 and returns held views of live mutable contents. The query reloads current R

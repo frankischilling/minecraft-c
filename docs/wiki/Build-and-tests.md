@@ -1,5 +1,15 @@
 # Build and tests
 
+The collision contracts pass 732 checks per compiler, with all
+162/164/164 MSVC/GCC/Clang cases passing without skips. Fresh original/native
+getter tools compare 623 complete record payloads per side/compiler, retaining
+all 1,577 exclusions and raw streams. Nearby comparisons are freshly rerun on
+the rebuilt probes. All 455 C files and headers pass formatting.
+The [testing guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) records ownership,
+multipart failure, framing and native/original scope limits.
+
+The following nearby checkpoint predates collision integration.
+
 The final LF-only correction to one test source was rebuilt and rerun on
 all three compilers. Complete regression evidence remains in the preceding
 full builds, whose runtime and probe source bytes are unchanged.

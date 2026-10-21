@@ -69,8 +69,9 @@ static bool owned_shape(const mc_world_runtime *world) {
     if (list == NULL)
         return ledger->entries == NULL && ledger->count == 0 && ledger->capacity == 0;
     if (list == world->entity_membership.list || list == world->entity_deferral.list ||
-        list->count != ledger->count || list->capacity != ledger->capacity ||
-        list->count > list->capacity || list->capacity > (size_t)INT32_MAX ||
+        list == world->collision_boxes.list || list->count != ledger->count ||
+        list->capacity != ledger->capacity || list->count > list->capacity ||
+        list->capacity > (size_t)INT32_MAX ||
         list->capacity > SIZE_MAX / (sizeof(*list->items) + sizeof(*ledger->entries)) ||
         ((list->capacity == 0) != (list->items == NULL)) ||
         ((ledger->capacity == 0) != (ledger->entries == NULL)) ||
@@ -90,6 +91,13 @@ static bool owned_shape(const mc_world_runtime *world) {
                 if (a[j] != NULL && a[j] == b[k])
                     return false;
     }
+    const mc_world_collision_list_ledger *boxes = &world->collision_boxes;
+    const void *box_items = boxes->list == NULL ? NULL : boxes->list->items;
+    if ((list->items != NULL &&
+         ((void *)list->items == box_items || (void *)list->items == (void *)boxes->entries)) ||
+        (ledger->entries != NULL && ((void *)ledger->entries == box_items ||
+                                     (void *)ledger->entries == (void *)boxes->entries)))
+        return false;
     return true;
 }
 

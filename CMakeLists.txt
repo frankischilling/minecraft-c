@@ -238,6 +238,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/presentation.c
     src/world/runtime/entity_publication.c
     src/world/runtime/collision/entities.c
+    src/world/runtime/collision/boxes.c
+    src/world/runtime/collision/blocks.c
     src/world/chunk/entities.c
     src/world/runtime/scheduling.c
     src/world/runtime/mutation/support.c
@@ -504,8 +506,14 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_nearby tests/world/runtime/collision/test_nearby.c)
     target_link_libraries(mc_test_world_nearby PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_world_collision_boxes tests/world/runtime/collision/test_boxes.c)
+    target_link_libraries(mc_test_world_collision_boxes PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_world_nearby_values_probe tests/world/runtime/collision/nearby_probe.c)
     target_link_libraries(mc_world_nearby_values_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_world_block_shapes_probe tests/world/runtime/collision/block_shape_probe.c)
+    target_link_libraries(mc_world_block_shapes_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1170,6 +1178,15 @@ if(BUILD_TESTING)
         --scenario world-nearby
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-nearby-contracts")
     set_tests_properties(world.nearby_entities PROPERTIES
+        LABELS "public;integration;ownership;collision" TIMEOUT 90)
+
+    add_test(NAME world.collision_boxes
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_collision_boxes>"
+        --scenario world-collision-boxes
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-collision-boxes-contracts")
+    set_tests_properties(world.collision_boxes PROPERTIES
         LABELS "public;integration;ownership;collision" TIMEOUT 90)
 
     add_test(NAME world.tiles
