@@ -30,3 +30,6 @@
 
 - [Piston Tile and moving collision geometry](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md)
 - [Paired Piston source map and observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
+
+- [Entity movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md)
+- [Paired movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md)

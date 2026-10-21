@@ -90,6 +90,14 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
     error->provider_bytecode = 6;
     if (world->fields.v == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
+    mc_world_provider_fields provider;
+    mc_world_storage_error binding = {0};
+    if (mc_world_provider_bind_fields(world->fields.v, &provider, &binding) != MC_WORLD_STORAGE_OK)
+        return storage_fail(error, &binding);
+    if (provider.world != world || provider.cache != world->acquisition.cache ||
+        provider.pending != world->acquisition.pending || provider.store != world->options.store)
+        return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "World query replacement provider binding");
     mc_world_runtime_acquisition_error detail;
     error->acquisition = mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4),
                                                        mc_java_i32_shr(z, 4), &out->state, &detail);

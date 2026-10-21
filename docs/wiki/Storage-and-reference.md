@@ -1,5 +1,17 @@
 # Storage and original references
 
+The [movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) records complete paired Item/Falling base bodies
+and separately qualified original observations. All 59,654 client records and
+exactly 24,109 intact server records qualify; the server subset has interior gaps
+and corruption. Disk exhaustion left the original final/server receipts empty,
+with the server exit code unknown. Historical JAR/tool/class before-pin objects
+did not survive; independently checked current after pins remain distinct.
+The failed receipts and raw streams are retained, and no original process was
+restarted. These null-World/helper observations are not a native movement replay
+or proof of complete original normal movement.
+
+The following Piston checkpoint predates Entity movement integration.
+
 The [Piston source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
 records paired Tile, collision and independent Direction bodies. Retained
 original captures contain 19,140 float/constructor/NBT records and 11,026 direct

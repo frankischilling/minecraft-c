@@ -1,5 +1,21 @@
 # Development status
 
+The [Entity movement module](entity/movement.md) implements Item and FallingSand
+movement using their permanent bounds, actual pooled copies and mutable collision
+Lists. Typed effects, Block contacts and World rain/burning/sound queries preserve
+completed effects on failure. Five focused cases pass on MSVC, GCC and Clang,
+including 544 movement and 202 World dependency checks. All 475 C files and
+headers pass the requested formatting.
+
+Full local suites were not run because retained builds exceeded available disk
+space. Hosted CI runs the configured 167 MSVC and 169 GCC/Clang cases separately.
+Native/original movement replay remains unfinished. Separate observations qualify
+59,654 client records and 24,109 intact server records, with explicit disk and
+provenance limits. Other kinds, active ticks, positive pressure/detector helpers,
+nonempty sound observers and unowned passenger recursion remain unfinished.
+
+The following Piston checkpoint predates Entity movement integration.
+
 The [Piston Tile and geometry module](world/tiles/piston.md) implements actual
 Piston constructors, separate class initialization, ordered NBT and GAME storage
 joins. MovingPiston collision holds the actual Tile, invokes the carried Block's

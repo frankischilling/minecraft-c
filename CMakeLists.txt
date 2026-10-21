@@ -211,6 +211,8 @@ target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
 target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
 
 add_library(mc_simulation STATIC
+    src/entity/movement/movement.c
+    src/entity/movement/effects.c
     src/entity/nbt/factory.c
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
@@ -223,6 +225,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/registry.c
     src/world/runtime/construction.c
     src/world/runtime/environment.c
+    src/world/runtime/movement.c
+    src/world/runtime/contact.c
     src/world/runtime/blocks.c
     src/world/runtime/height.c
     src/world/runtime/queries.c
@@ -516,6 +520,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_piston_tiles tests/world/runtime/tiles/test_piston.c)
     target_link_libraries(mc_test_piston_tiles PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_entity_movement tests/entity/movement/test_movement.c)
+    target_link_libraries(mc_test_entity_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_movement tests/entity/movement/test_world_movement.c)
+    target_link_libraries(mc_test_world_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_piston_float_probe tests/world/runtime/tiles/piston_float_probe.c)
     target_link_libraries(mc_piston_float_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1225,6 +1235,24 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-tiles-contracts")
     set_tests_properties(world.piston_tiles PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 90)
+
+    add_test(NAME entity.movement
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_entity_movement>"
+        --scenario world-entity-movement
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-movement-contracts")
+    set_tests_properties(entity.movement PROPERTIES
+        LABELS "public;integration;ownership;collision" TIMEOUT 90)
+
+    add_test(NAME world.movement_dependencies
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_movement>"
+        --scenario world-movement-dependencies
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-movement-dependencies-contracts")
+    set_tests_properties(world.movement_dependencies PROPERTIES
+        LABELS "public;integration;ownership;environment" TIMEOUT 90)
 
     add_test(NAME world.tiles
         COMMAND "${Python3_EXECUTABLE}"

@@ -1,5 +1,14 @@
 # Runtime boundaries
 
+[Item/Falling movement](entity/movement.md) operates on existing Entity fields
+and the same permanent box. Held pooled copies and collision views retain mutable
+identities across repeated queries. Each source call reloads its actual World
+receiver, while reached code statics require the exact canonical Entity class
+owner. Typed effects, Block inheritance dispatch and actual World queries keep
+independent error frames. Other constructors, active ticks, positive pressure/
+detector helpers, nonempty sound observers and unowned passenger recursion remain
+unfinished. Movement does not implement Piston pushing or the game loop.
+
 The [collision module](world/collision/boxes.md) owns the actual constructor
 K descriptor independently of source K. Each typed occurrence retains either
 its actual pooled bounds or the Entity owning its permanent bounds. Source
@@ -11,7 +20,7 @@ bounds; metadata and multipart descendants preserve their source order.
 World traversal captures the actual Block array before each acquiring ID
 getter. It then gathers actual nearby results and performs two separate
 indexed Entity reads. Item/FallingSand inherit real null virtuals; other
-Entity constructors and movement remain dependencies.
+Entity constructors remain dependencies.
 
 [Positive Piston geometry](world/tiles/piston.md) keeps the actual Tile held
 through interpolation and field reads. The shifted helper captures the Block

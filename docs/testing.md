@@ -1,5 +1,33 @@
 # Test scope and reproduction
 
+The [movement contracts](entity/movement.md) pass five focused cases on native
+Windows MSVC and sanitized GCC/Clang:
+
+| Case | Checks per host | Scope |
+| --- | ---: | --- |
+| `entity.movement` | 544 | Actual Item/Falling owners, axes/step, effects, contacts and failure prefixes |
+| `world.movement_dependencies` | 202 | Actual area, rain, burning and Entity sound dependencies |
+| `world.nearby_entities` | 606 | Existing nearby ownership regressions |
+| `world.collision_boxes` | 732 | Existing mutable collision and shape regressions |
+| `world.queries` | 6,114 | Existing shared acquiring-query regressions |
+
+GCC's final World test passes a fresh recheck after explicit output-structure
+initialization; production bytes are unchanged. Independent audits join retained
+source snapshots, compiled products and all five captures per host, plus the
+single-case recheck. All 475 C files and headers pass the requested format.
+Full local suites were not run because retained builds exceeded available disk
+space. Hosted CI runs the configured 167 MSVC and 169 per Linux compiler cases;
+that full-suite scope is distinct from these focused local results.
+
+The [movement source map](reference/entity-movement.md) records native reproduction
+commands and a separate original family: all 59,654 client records and only
+24,109 intact, non-prefix server records qualify after disk exhaustion. Failed
+receipts and missing historical before-pin objects remain explicit. No native
+movement replay, complete original normal movement or whole-game parity is
+claimed by those observations.
+
+The following Piston checkpoint predates Entity movement integration.
+
 The [Piston contracts](world/tiles/piston.md) pass on native Windows MSVC and
 sanitized GCC/Clang. All 165/167/167 configured cases pass in focused and
 complementary partitions, without skips and with numerical Java checks.

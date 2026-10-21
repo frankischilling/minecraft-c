@@ -94,9 +94,10 @@ JDK garbage collection or allocation-failure behavior.
 
 Ray/segment intersection, Vec3 and HitResult pools, point containment through a
 real vector, client mean-edge length and Java text conversion remain unfinished.
-World collision Lists and concrete Block shapes, Entity movement/environment
-effects, FallingSand landing/drop and full original-game replay remain separate
-unfinished work.
+World collision Lists and concrete Block shapes have their own
+[collision contract](../world/collision/boxes.md). Current Item/Falling movement
+and environment effects have a separate [movement contract](movement.md).
+FallingSand landing/drop and full original-game replay remain unfinished.
 
 ## Verification
 

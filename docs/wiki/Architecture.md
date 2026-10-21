@@ -1,5 +1,16 @@
 # Systems and subsystems
 
+[Item/Falling movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md) operates on existing Entity fields
+and the same permanent box. Held pooled copies and collision views retain mutable
+identities across repeated queries. Each source call reloads its actual World
+receiver, while reached code statics require the exact canonical Entity class
+owner. Typed effects, Block inheritance dispatch and actual World queries keep
+independent error frames. Other constructors, active ticks, positive pressure/
+detector helpers, nonempty sound observers and unowned passenger recursion remain
+unfinished. Movement does not implement Piston pushing or the game loop.
+
+The following collision and Piston checkpoint predates Entity movement integration.
+
 The [collision module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/collision/boxes.md)
 preserves actual K List and pooled/permanent box identities through a typed
 occurrence ledger. Views retain lifetime while allowing source mutation.
