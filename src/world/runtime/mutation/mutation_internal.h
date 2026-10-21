@@ -37,6 +37,17 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error);
 
+/* Actual ut/mz.b(World,III). Caller holds the real World and nullable Block
+ * receiver has already been checked by virtual dispatch. The fetched Tile
+ * owns a temporary hold through finalization or the actual rw/lb fallback. */
+bool mc_world_mutation_piston_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, mc_world_mutation_error *error);
+
+/* Field-only private join to the actual admitted, held Tile's class Registry.
+ * No World lookup, allocation, initialization, or alternate class owner. The
+ * finalizer reaches this only at its getstatic61, after the actual ID query. */
+mc_registry_classes *mc_tile_piston_registry_held(const mc_tile *tile);
+
 /* Concrete flowing/still fluid bodies share the actual receiver scratch.
  * Internal callers already hold World and preserve the supplied Random. */
 bool mc_world_mutation_fluid_tick(mc_world_runtime *world, const mc_block *block, int32_t x,

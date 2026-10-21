@@ -4,6 +4,13 @@ The [verified original binaries](binaries.md) remain the behavioral authority.
 The [native module](../world/tiles/piston.md) preserves the reached class, Tile,
 Block and bounds identities. Mappings supply naming aliases only.
 
+For navigation, [jonkadelic's mappings](https://github.com/jonkadelic/b1.7.3-official-mappings)
+name client `uk` as `PistonTileEntity` and `uk.l()V` as `finalTick`.
+[BetterThanUpdates' Yarn Beta mappings](https://github.com/BetterThanUpdates/Mappings)
+name intermediary `class_283` as `PistonBlockEntity`. Those intermediary names
+need their own obfuscated-name join; they do not replace the separate client
+and server descriptors below. Neither name establishes behavior or coverage.
+
 ## Paired bodies
 
 | Behavior | Client | Server | Reached order |
@@ -15,6 +22,9 @@ Block and bounds identities. Mappings supply naming aliases only.
 | Interpolation | `uk.a(F)F` | `mu.a(F)F` | Only factor greater than1 clamps; previous9, current13, previous17; fsub20, fmul22, fadd23 |
 | NBT read | `uk.a(nu)` | `mu.a(iq)` | Base2; Int ID9/store12, data19/store22, facing29/store32; Float progress40/stores44,47; Boolean54/store57 |
 | NBT write | `uk.b(nu)` | `mu.b(iq)` | Base2; ID12, data22, facing32; previous progress42; extending52 |
+| Explicit finalization | `uk.l()V` | `mu.k()V` | `fcmpg` previous5; current/previous stores13/16; World removal35; own invalidation39; World ID58; live moving Block61/64; notifying setter94; discard97 |
+| Moving removed hook | `ut.b(fd,III)` | `mz.b(dj,III)` | Actual Tile lookup5; Piston finalizer28; inherited container removal40 |
+| Container removal fallback | `rw.b(fd,III)` | `lb.b(dj,III)` | Empty Block parent body6, then actual World Tile removal14 |
 | Moving collision getter | `ut.e(fd,III)` | `mz.e(dj,III)` | Typed lookup6; interpolation21, extending28, optional fsub37, ID48, facing55, shifted helper58 |
 | Typed Tile lookup | `ut.c(xp,III)` | `mz.b(pb,III)` | Actual BlockAccess Tile getter5, null/instanceof19, cast27 |
 | Shifted geometry | `ut.a(fd,IIIIFI)` | `mz.a(dj,IIIIFI)` | ID0/self return; capture Block array16, index21, actual carrier getter27; null returns38; six coordinate stores |
@@ -56,7 +66,8 @@ Each current coordinate is read before its Direction getstatic. Conversion to
 binary32 precedes multiplication; widening precedes subtraction. The helper
 does not allocate a coordinate copy or invoke a generic add-based translation.
 The separate MovingPiston state-shape update is a different body and remains
-unfinished, along with tick, finalize and Entity pushing.
+unfinished, along with tick and Entity pushing. Explicit finalization is now
+implemented but has no fresh native execution or active original comparison.
 
 ## Original observations
 

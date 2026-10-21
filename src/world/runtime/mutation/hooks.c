@@ -214,7 +214,7 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_H_G:
             return unavailable(world, block, "h", "g", "Block removal hook", error);
         case MC_BLOCK_UT_MZ:
-            return unavailable(world, block, "ut", "mz", "Block moving piston removal hook", error);
+            return mc_world_mutation_piston_removed(world, block, x, y, z, error);
         case MC_BLOCK_SS_LU:
             return unavailable(world, block, "ss", "lu", "Block removal hook", error);
         case MC_BLOCK_E_E:

@@ -18,6 +18,11 @@ provenance limits remain explicit. Other kinds, active ticks, positive pressure/
 detector helpers, nonempty sound observers and unowned passenger recursion remain
 unfinished.
 
+Explicit [Piston finalization](world/tiles/piston.md#explicit-finalization) and
+MovingPiston removal are now implemented but unverified. Their new native
+contract has not run, and active original comparison remains pending. Earlier
+interpolation and geometry results do not qualify these operations.
+
 The following Piston checkpoint predates Entity movement integration.
 
 The [Piston Tile and geometry module](world/tiles/piston.md) implements actual

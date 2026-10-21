@@ -42,6 +42,11 @@ typedef struct mc_world_mutation_error {
     /* Snow's neighbor, private survival, support and tick are distinct source
      * frames. Detailed material/light queries retain their own nested sites. */
     unsigned int snow_neighbor_bytecode, snow_bytecode, snow_support_bytecode, snow_tick_bytecode;
+    /* uk.l/mu.k and ut/mz.b(World,III) are distinct source frames. Preserve
+     * their current caller and deepest nested occurrence when a notifying
+     * setter reenters removal/finalization; this is not a recursive stack. */
+    unsigned int piston_finalize_bytecode, piston_removed_bytecode;
+    unsigned int cause_piston_finalize_bytecode, cause_piston_removed_bytecode;
     mc_world_material_error material;
     mc_world_query_error query;
     mc_world_schedule_prefix schedule;

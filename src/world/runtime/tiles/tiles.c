@@ -411,6 +411,10 @@ mc_tile_status mc_tile_retain(mc_tile *tile) {
     return MC_TILE_OK;
 }
 
+mc_registry_classes *mc_tile_piston_registry_held(const mc_tile *tile) {
+    return tile == NULL || tile->classes == NULL ? NULL : tile->classes->registry;
+}
+
 static void tile_slots_release(mc_item_stack **slots, size_t capacity) {
     for (size_t i = 0; i < capacity; ++i) {
         mc_item_stack_release(slots[i]);
@@ -2816,6 +2820,21 @@ static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk
     if (world->fields.v == NULL) {
         error->provider_bytecode = 6;
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Tile provider receiver");
+        return false;
+    }
+    mc_world_provider_fields provider;
+    mc_world_storage_error binding = {0};
+    if (mc_world_provider_bind_fields(world->fields.v, &provider, &binding) !=
+        MC_WORLD_STORAGE_OK) {
+        error->provider_bytecode = 6;
+        live_cause(error, binding);
+        return false;
+    }
+    if (provider.world != world || provider.cache != world->acquisition.cache ||
+        provider.pending != world->acquisition.pending || provider.store != world->options.store) {
+        error->provider_bytecode = 6;
+        live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "World Tile replacement provider binding");
         return false;
     }
     mc_world_runtime_acquisition_error acquired;

@@ -3,7 +3,8 @@
 The [Tile interface](../../../include/mc/world/runtime/tiles/tiles.h) owns real
 Piston instances alongside Chest and Spawner. The [source map](../../reference/piston.md)
 records the paired original methods, floating-point observations and remaining
-dependencies. Active piston ticking, finalization and Entity pushing remain unfinished.
+dependencies. Explicit finalization is implemented but awaits fresh native and
+original verification. Active piston ticking and Entity pushing remain unfinished.
 
 ## Construction and class lifetime
 
@@ -45,6 +46,37 @@ The normal NBT encoder canonicalizes encoded NaNs as Java data streams do.
 Semantic record trees and documents rebuilt through the codec therefore have
 different representation scopes. Whole-record provenance, graph budgets,
 existing Chunk Maps and World membership Lists use the same actual Tile owner.
+
+## Explicit finalization
+
+The [finalizer interface](../../../include/mc/world/runtime/tiles/piston.h)
+implements client `uk.l()` and server `mu.k()`. Previous progress below one
+enters the body; one, greater values and every NaN return without a World call.
+The guard uses raw binary32 classification without changing NaN payloads.
+
+Entered execution stores current then previous progress as one, removes the
+Tile at the current World coordinates, invalidates the finalizing receiver and
+independently queries the current Block ID. Only equality with the live moving
+Block's ID reaches the notifying carried-ID/metadata setter. Its ordinary
+boolean result is discarded. Later failures preserve completed effects.
+
+The finalizing Tile remains held through removal and synchronous reentry.
+World removal may fetch a different Tile, so that identity has its own hold and
+invalidation. MovingPiston removal now performs its actual Tile lookup and
+Piston dispatch, or the inherited container removal body for absent/wrong kinds.
+Current and deepest nested finalization/removal PCs accompany the full reached
+Tile, query, Registry and setter error records.
+
+Tile acquisition checks the currently reached provider against its actual
+World, cache, pending set and Store binding. An unsupported replacement fails
+before acquiring through a stale coordinator. This check belongs to the reached
+provider call, after any earlier progress stores.
+
+The new `world.piston_finalization` contract source covers installed owners,
+aliasing, list duplicates, ordinary false results and retained failure prefixes.
+It has not been executed for this change. Existing interpolation and geometry
+replays do not qualify this active body; tick, pushing and state-shape work are
+separate.
 
 ## Collision order
 
