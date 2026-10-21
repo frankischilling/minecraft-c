@@ -362,6 +362,17 @@ static bool finalize_failure_prefixes(fixture *f, size_t side) {
     const bool retried_invalid = tile->invalid;
     tile->state.piston.progress_bits = current;
     tile->state.piston.previous_progress_bits = previous;
+    if (retried != MC_WORLD_STORAGE_OK || !finalize_empty(&error) || !retried_invalid ||
+        tile->holds != 1 || w->fields.c->count != active)
+        fprintf(
+            stderr,
+            "[DEBUG-piston-retry-a] side=%zu status=%d op=%s finalize=%u wrapper=%u "
+            "neighbor=%u/%u hook=%s/%u provider=%u invalid=%d holds=%zu tiles=%zu expected=%zu\n",
+            side, (int)retried, error.operation != NULL ? error.operation : "<none>",
+            error.piston_finalize_bytecode, error.wrapper_bytecode, error.neighbor_call_bytecode,
+            error.neighbor_bytecode, error.hook_class != NULL ? error.hook_class : "<none>",
+            error.hook_bytecode, error.provider_bytecode, (int)retried_invalid, (size_t)tile->holds,
+            w->fields.c->count, active);
     CHECK(retried == MC_WORLD_STORAGE_OK && finalize_empty(&error) && retried_invalid &&
           tile->holds == 1 && w->fields.c->count == active && finalize_cell_is(f, side, 9, 1, 9));
     mc_tile_release(tile);
