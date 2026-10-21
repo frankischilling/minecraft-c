@@ -278,3 +278,31 @@ bool mc_world_mutation_piston_removed(mc_world_runtime *world, const mc_block *b
     }
     return completed;
 }
+
+/* Complete ut/mz.b(World,IIII): the unused Tile getter still owns acquisition,
+ * added-hook and invalid-Map cleanup effects. The enclosing caller holds the
+ * actual World/Block; the getter returns its own nullable temporary Tile hold. */
+bool mc_world_mutation_piston_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z, int32_t source_id,
+                                       mc_world_mutation_error *error) {
+    (void)source_id;
+    const bool client = block->classes->options.side == MC_REGISTRY_CLIENT;
+    error->hook_class = client ? "ut" : "mz";
+    error->hook_method = client ? "b(Lfd;IIII)V" : "b(Ldj;IIII)V";
+    error->hook_bytecode = 1;
+    if (world == NULL)
+        return mc_world_mutation_fail(NULL, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "Moving Piston neighbor World B receiver");
+    if (!world->fields.B) {
+        mc_tile *tile = NULL;
+        mc_live_tile_error lookup = mc_live_tiles_empty_error();
+        error->hook_bytecode = 12;
+        if (mc_live_tiles_get(world, x, y, z, &tile, &lookup) != MC_WORLD_STORAGE_OK)
+            return tile_failure(world, error, &lookup);
+        mc_tile_release(tile);
+    }
+    error->hook_class = NULL;
+    error->hook_method = NULL;
+    error->hook_bytecode = 0;
+    return true; /* ifnonnull15 and either branch both reach return18. */
+}

@@ -3,6 +3,7 @@
 #include "test_tiles.c"
 #undef main
 
+#include "../../../../src/world/runtime/mutation/mutation_internal.h"
 #include "../../../../src/world/runtime/tiles/tiles_internal.h"
 #include "mc/world/runtime/tiles/piston.h"
 
@@ -266,9 +267,10 @@ static bool finalize_different_and_false(fixture *f, size_t side) {
     mc_tile_release(self);
     self = NULL;
 
-    /* Keep this retained moving Block away from later notifying restorations. */
-    CHECK(finalize_new(f, side, 36, 2, &self) && finalize_install(f, side, self, 2, 2));
-    CHECK(mc_world_runtime_block_metadata_set(w, 2, 40, 6, 36, 2, &changed, &error) ==
+    /* Keep the real moving neighbor at8: the later notifying restoration at9
+     * must execute its acquiring Tile getter even though its result is unused. */
+    CHECK(finalize_new(f, side, 36, 2, &self) && finalize_install(f, side, self, 8, 2));
+    CHECK(mc_world_runtime_block_metadata_set(w, 8, 40, 6, 36, 2, &changed, &error) ==
               MC_WORLD_STORAGE_OK &&
           !changed && self->holds == 3 && !self->invalid);
     w->fields.u = NULL;
@@ -276,7 +278,7 @@ static bool finalize_different_and_false(fixture *f, size_t side) {
     w->fields.u = observers;
     CHECK(ordinary_false == MC_WORLD_STORAGE_OK && finalize_empty(&error) && self->invalid &&
           self->holds == 1 && w->fields.c->count == active && f->chunks[side]->l->count == 0 &&
-          finalize_cell_is(f, side, 2, 36, 2));
+          finalize_cell_is(f, side, 8, 36, 2));
     CHECK(mc_live_tiles_lists_valid(w) && mc_live_tiles_map_valid(f->chunks[side]));
     ok = true;
 cleanup:
@@ -508,6 +510,189 @@ cleanup:
     return ok;
 }
 
+static bool finalize_neighbor_guards(fixture *f, size_t side) {
+    bool ok = false, entered = false;
+    mc_world_runtime *const w = f->worlds[side];
+    mc_world_runtime *const other = f->worlds[side + 2u];
+    const mc_block *moving = NULL;
+    mc_world_mutation_error error;
+    const size_t active = w->fields.c->count;
+    CHECK(!w->fields.B && !w->fields.L && w->active_calls == 0 && f->chunks[side]->l->count == 0);
+    CHECK(mc_registry_block_static_get(f->registry[side], "ad", &moving, NULL) == MC_REGISTRY_OK &&
+          moving != NULL && moving->kind == MC_BLOCK_UT_MZ);
+    CHECK(mc_world_runtime_call_enter(w, NULL) == MC_WORLD_STORAGE_OK);
+    entered = true;
+
+    error = mc_world_mutation_empty_error();
+    CHECK(!mc_world_mutation_block_neighbor(NULL, moving, 8, 40, 6, INT32_MIN, &error) &&
+          error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.hook_bytecode == 1 &&
+          error.hook_class != NULL && strcmp(error.hook_class, side == 0 ? "ut" : "mz") == 0 &&
+          error.hook_method != NULL &&
+          strcmp(error.hook_method, side == 0 ? "b(Lfd;IIII)V" : "b(Ldj;IIII)V") == 0 &&
+          error.operation != NULL &&
+          strcmp(error.operation, "Moving Piston neighbor World B receiver") == 0 &&
+          empty_tile_children(&error.tile) && w->active_calls == 1);
+
+    mc_world_provider *const provider = w->fields.v;
+    const bool saved_b = w->fields.B, saved_o = w->fields.o;
+    const size_t own_cache = f->providers[side].cache->count;
+    const size_t own_insertions = f->providers[side].cache->insertion_count;
+    const size_t own_pending = f->providers[side].pending->count;
+    const size_t other_cache = f->providers[side + 2u].cache->count;
+    const size_t other_insertions = f->providers[side + 2u].cache->insertion_count;
+    const size_t other_pending = f->providers[side + 2u].pending->count;
+    const size_t bindings = w->persistent_bindings;
+    /* Native source-field controls. Restore before CHECK can leave the scope:
+     * B=true must not reach the nullable provider or interpret any coordinate. */
+    error = mc_world_mutation_empty_error();
+    w->fields.B = true;
+    w->fields.v = NULL;
+    const bool guarded = mc_world_mutation_block_neighbor(w, moving, INT32_MIN, INT32_MAX,
+                                                          INT32_MIN, INT32_MAX, &error);
+    w->fields.v = provider;
+    w->fields.B = saved_b;
+    CHECK(guarded && finalize_empty(&error) && w->active_calls == 1 &&
+          w->fields.c->count == active && f->chunks[side]->l->count == 0 &&
+          w->persistent_bindings == bindings);
+
+    /* This concrete callback reads B, not the enclosing World notification's o.
+     * Its reached getter must still fail at provider6 even with o=true. */
+    error = mc_world_mutation_empty_error();
+    w->fields.o = true;
+    w->fields.v = NULL;
+    const bool null_provider = mc_world_mutation_block_neighbor(w, moving, 8, 40, 6, 1, &error);
+    w->fields.v = provider;
+    w->fields.o = saved_o;
+    CHECK(!null_provider && error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.hook_bytecode == 12 && error.tile.bytecode == 7 && error.provider_bytecode == 6 &&
+          error.tile.provider_bytecode == 6 && error.tile.status == error.status &&
+          error.tile.cause.status == error.status && error.operation == error.tile.operation &&
+          error.cause.operation == error.tile.cause.operation && w->active_calls == 1 &&
+          w->fields.c->count == active && f->chunks[side]->l->count == 0 &&
+          w->persistent_bindings == bindings);
+
+    /* Actual complete same-side foreign provider, never a fabricated response. */
+    CHECK(other != w && other->fields.v != NULL && other->fields.v != provider);
+    error = mc_world_mutation_empty_error();
+    w->fields.v = other->fields.v;
+    const bool foreign = mc_world_mutation_block_neighbor(w, moving, 8, 40, 6, 1, &error);
+    w->fields.v = provider;
+    CHECK(!foreign && error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.hook_bytecode == 12 && error.tile.bytecode == 7 && error.provider_bytecode == 6 &&
+          error.tile.provider_bytecode == 6 && error.operation != NULL &&
+          strcmp(error.operation, "World Tile replacement provider binding") == 0 &&
+          error.tile.status == error.status && error.operation == error.tile.operation &&
+          f->providers[side].cache->count == own_cache &&
+          f->providers[side].cache->insertion_count == own_insertions &&
+          f->providers[side].pending->count == own_pending &&
+          f->providers[side + 2u].cache->count == other_cache &&
+          f->providers[side + 2u].cache->insertion_count == other_insertions &&
+          f->providers[side + 2u].pending->count == other_pending && other->active_calls == 0 &&
+          w->active_calls == 1 && w->persistent_bindings == bindings &&
+          w->fields.c->count == active && f->chunks[side]->l->count == 0);
+
+    /* A late real Chunk getter failure: an empty map still reaches Block.p42.
+     * This is the actual World-class Registry source binding, restored first. */
+    mc_registry_classes *const registry = f->classes[side]->registry;
+    error = mc_world_mutation_empty_error();
+    f->classes[side]->registry = NULL;
+    const bool late_registry = mc_world_mutation_block_neighbor(w, moving, 8, 40, 6, 1, &error);
+    f->classes[side]->registry = registry;
+    CHECK(!late_registry && error.status != MC_WORLD_STORAGE_OK && error.hook_bytecode == 12 &&
+          error.tile.bytecode == 28 && error.tile.chunk_bytecode == 42 &&
+          error.tile.status == error.status && error.registry.status != MC_REGISTRY_OK &&
+          error.registry.status == error.tile.registry.status &&
+          error.cause.status == error.tile.cause.status &&
+          error.cause.operation == error.tile.cause.operation && w->active_calls == 1 &&
+          w->fields.c->count == active && f->chunks[side]->l->count == 0 &&
+          w->persistent_bindings == bindings);
+
+    /* The fixture's real full Store rejects this nonresident Chunk. Preserve
+     * the detailed getter/acquisition prefix; do not replace it with NULL. */
+    error = mc_world_mutation_empty_error();
+    const bool absent_chunk = mc_world_mutation_block_neighbor(w, moving, 32, 40, 6, 1, &error);
+    CHECK(!absent_chunk && error.status != MC_WORLD_STORAGE_OK && error.hook_bytecode == 12 &&
+          error.tile.bytecode == 7 && error.tile.status == error.status &&
+          error.cause.status == error.tile.cause.status &&
+          error.cause.operation == error.tile.cause.operation &&
+          f->providers[side].cache->insertion_count == own_insertions && w->active_calls == 1 &&
+          w->fields.c->count == active && f->chunks[side]->l->count == 0 &&
+          w->persistent_bindings == bindings && mc_live_tiles_lists_valid(w) &&
+          mc_live_tiles_map_valid(f->chunks[side]));
+    ok = true;
+cleanup:
+    if (entered)
+        mc_world_runtime_call_leave(w);
+    return ok;
+}
+
+static bool finalize_neighbor_effects(fixture *f, size_t side) {
+    bool ok = false, entered = false, changed = false;
+    mc_tile *self = NULL, *other = NULL;
+    mc_world_runtime *const w = f->worlds[side];
+    mc_world_mutation_error error;
+    mc_live_tile_error live;
+    const size_t active = w->fields.c->count, bindings = w->persistent_bindings;
+    CHECK(!w->fields.B && !w->fields.L && w->active_calls == 0 && f->chunks[side]->l->count == 0);
+    CHECK(mc_world_runtime_call_enter(w, NULL) == MC_WORLD_STORAGE_OK);
+    entered = true;
+
+    /* Shared x8/x9: the actual notifying restoration at8 must query the live
+     * moving neighbor9 and release its temporary result without finalizing it. */
+    CHECK(finalize_new(f, side, 1, 4, &self) && finalize_new(f, side, 1, 6, &other) &&
+          finalize_install(f, side, other, 9, 0) && finalize_install(f, side, self, 8, 0));
+    CHECK(mc_tile_piston_finalize(self, &error) == MC_WORLD_STORAGE_OK && finalize_empty(&error) &&
+          self->invalid && self->holds == 1 && !other->invalid && other->holds == 3 &&
+          other->state.piston.progress_bits == 0 &&
+          other->state.piston.previous_progress_bits == 0 && f->chunks[side]->l->count == 1 &&
+          w->fields.c->count == active + 1u && finalize_cell_is(f, side, 8, 1, 4) &&
+          finalize_cell_is(f, side, 9, 36, 0) && w->active_calls == 1);
+    CHECK(mc_tile_piston_finalize(other, &error) == MC_WORLD_STORAGE_OK && finalize_empty(&error) &&
+          other->invalid && other->holds == 1 && f->chunks[side]->l->count == 0 &&
+          w->fields.c->count == active && finalize_cell_is(f, side, 9, 1, 6));
+    mc_tile_release(self);
+    self = NULL;
+    mc_tile_release(other);
+    other = NULL;
+    CHECK(w->persistent_bindings == bindings);
+
+    /* Genuine cross-cell alias: install the same real Chest at9 and then8.
+     * The separate Piston is only World-bound at8. Its remove invalidates the
+     * fetched Chest and removes map8; notifying neighbor9 must remove the
+     * invalid map9 alias. The surviving duplicate source c occurrence remains. */
+    CHECK(mc_tile_allocate(w, MC_TILE_CHEST, &other) == MC_TILE_OK &&
+          mc_tile_construct(other) == MC_TILE_OK && finalize_install(f, side, other, 9, 3));
+    CHECK(mc_world_runtime_block_metadata_set_quiet(w, 8, 40, 6, 36, 2, &changed, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          changed && mc_live_tiles_set(w, 8, 40, 6, other, &live) == MC_WORLD_STORAGE_OK &&
+          other->holds == 5 && other->x == 8 && !other->invalid && f->chunks[side]->l->count == 2 &&
+          w->fields.c->count == active + 2u);
+    CHECK(finalize_new(f, side, 1, 7, &self) && mc_tile_bind_world(self, w) == MC_TILE_OK &&
+          mc_tile_set_coordinates(self, 8, 40, 6) == MC_TILE_OK && self->holds == 1);
+    CHECK(mc_tile_piston_finalize(self, &error) == MC_WORLD_STORAGE_OK && finalize_empty(&error) &&
+          self->invalid && self->holds == 1 && other->invalid && other->holds == 2 &&
+          other->x == 8 && other->y == 40 && other->z == 6 && f->chunks[side]->l->count == 0 &&
+          w->fields.c->count == active + 1u && w->fields.c->items[active] == other &&
+          finalize_cell_is(f, side, 8, 1, 7) && finalize_cell_is(f, side, 9, 36, 3) &&
+          w->active_calls == 1 && mc_live_tiles_lists_valid(w) &&
+          mc_live_tiles_map_valid(f->chunks[side]));
+    /* No follow-up Tile getter is allowed to perform the cleanup being tested.
+     * Existing terminal retirement later releases the actual remaining c owner. */
+    mc_tile_release(self);
+    self = NULL;
+    mc_tile_release(other);
+    other = NULL;
+    CHECK(w->persistent_bindings == bindings + 1u && w->fields.c->count == active + 1u &&
+          f->chunks[side]->l->count == 0 && mc_live_tiles_lists_valid(w));
+    ok = true;
+cleanup:
+    mc_tile_release(self);
+    mc_tile_release(other);
+    if (entered)
+        mc_world_runtime_call_leave(w);
+    return ok;
+}
+
 static bool finalize_last_owners(fixture *f, size_t side) {
     bool ok = false;
     mc_tile *tile = NULL;
@@ -636,6 +821,7 @@ int main(int argc, char **argv) {
         CHECK(finalize_load(f, side) && finalize_receiver_and_guard(f, side) &&
               finalize_installed(f, side) && finalize_different_and_false(f, side) &&
               finalize_failure_prefixes(f, side) && finalize_removed_hook(f, side) &&
+              finalize_neighbor_guards(f, side) && finalize_neighbor_effects(f, side) &&
               finalize_disk_unchanged(f, side) && finalize_last_owners(f, side));
     result = 0;
 cleanup:

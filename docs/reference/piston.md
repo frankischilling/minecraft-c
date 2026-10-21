@@ -24,6 +24,7 @@ and server descriptors below. Neither name establishes behavior or coverage.
 | NBT write | `uk.b(nu)` | `mu.b(iq)` | Base2; ID12, data22, facing32; previous progress42; extending52 |
 | Explicit finalization | `uk.l()V` | `mu.k()V` | `fcmpg` previous5; current/previous stores13/16; World removal35; own invalidation39; World ID58; live moving Block61/64; notifying setter94; discard97 |
 | Moving removed hook | `ut.b(fd,III)` | `mz.b(dj,III)` | Actual Tile lookup5; Piston finalizer28; inherited container removal40 |
+| Moving neighbor hook | `ut.b(fd,IIII)` | `mz.b(dj,IIII)` | World B1; true guard4; actual acquiring Tile getter12; return18 |
 | Container removal fallback | `rw.b(fd,III)` | `lb.b(dj,III)` | Empty Block parent body6, then actual World Tile removal14 |
 | Moving collision getter | `ut.e(fd,III)` | `mz.e(dj,III)` | Typed lookup6; interpolation21, extending28, optional fsub37, ID48, facing55, shifted helper58 |
 | Typed Tile lookup | `ut.c(xp,III)` | `mz.b(pb,III)` | Actual BlockAccess Tile getter5, null/instanceof19, cast27 |
@@ -66,12 +67,46 @@ Each current coordinate is read before its Direction getstatic. Conversion to
 binary32 precedes multiplication; widening precedes subtraction. The helper
 does not allocate a coordinate copy or invoke a generic add-based translation.
 The separate MovingPiston state-shape update is a different body and remains
-unfinished, along with tick and Entity pushing. Explicit finalization has
-constructed native coverage in fresh hosted MSVC and sanitized GCC/Clang builds.
-Active original finalization/removal comparison remains pending; the retained
-interpolation and geometry observations below do not qualify those bodies.
+unfinished, along with tick and Entity pushing. Explicit finalization and both
+MovingPiston removal and neighbor hooks have constructed native coverage in
+fresh local MSVC and sanitized GCC/Clang contracts. The neighbor hook's true B
+guard skips acquisition; its false branch retains the real getter's effects,
+including lazy invalid-Tile Map cleanup, before discarding the returned hold.
+Active finite state projections and source-backed completion/failure-prefix
+joins match on all three compilers. Full native errors remain distinct from
+Java Throwables. The retained interpolation and geometry observations below
+keep their separate helper scopes.
 
 ## Original observations
+
+### Active finalization family
+
+A separately qualified original family retains 57 ordered finalization/removal
+inputs per side, including reused owners and declared before/after projections.
+Fresh native observations run those same inputs once per side/compiler on MSVC
+and sanitized GCC/Clang. All six processes finish naturally with complete streams
+and cleanup. Independent native qualification checks 4,809 before/after file-pin
+joins, including the recorded working-source capsule, tools, products, graphs
+and full streams.
+
+Finite comparison matches all 342 rows and 684 snapshots, including 2,100
+complete cached-array images and 1,050 full changed-offset/value delta lists.
+Each side/compiler agrees on 42 normal void completions, three true Boolean
+results and source-backed prefixes for nine actual null-World failures, two
+full signed-ID -1 failures and one null-Block255 failure. The three prior callback
+completion gaps and invalid Chest Map discrepancy are absent on all six runs.
+Full actual native errors and Java Throwable records are retained separately;
+these source-backed joins do not equate every descendant failure representation.
+
+The joined projection covers source-mapped owners, Tile/Chunk/World fields,
+ordered membership and light records, full cached arrays and action-preserved
+Random/scalar state. It does not qualify whole-graph parity or constructor/
+generation history. The observed Chest slots are empty; this family supplies no
+arbitrary nonempty inventory claim. The [full projection limits and artifact pins](../wiki/Storage-and-reference.md#piston-finalization-and-neighbor-observations)
+retain Registry, registration-map, Store/JDK, generation, entropy and missing
+identity domains explicitly.
+
+### Earlier interpolation and geometry families
 
 The retained float family executes 19,140 records per side: 25 constructor,
 18,292 interpolation, 676 writer and 147 reader records. Both payload streams

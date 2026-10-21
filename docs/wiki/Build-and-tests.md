@@ -1,11 +1,42 @@
 # Build and tests
 
-The finalization checkpoint passes all 168 MSVC and 170 sanitized GCC/Clang
-configured cases in fresh hosted builds, including `world.piston_finalization`.
-All 479 C files and headers pass formatting; controller mirrors and lifecycle
-checks also pass. These full hosted suites are separate from the earlier local
-and retained-original replay results below. Full local suites and active
-original finalization/removal comparison remain unrun.
+The current neighbor callback increment passes seven fresh local contracts on
+MSVC and GCC/Clang, with Linux ASan/UBSan/leak checks. Each selected production
+closure is rebuilt from current working source; the private observation probe
+is built separately with those same fresh libraries.
+
+| Case | Checks per host | Scope |
+| --- | ---: | --- |
+| `world.piston_finalization` | 460 | Real finalizer/removal/neighbor calls, alias cleanup, guards and failure prefixes |
+| `world.piston_tiles` | 296 | Piston class, NBT and actual persistence joins |
+| `world.piston_geometry` | 144 | Installed moving geometry and mutable pool effects |
+| `world.mutations` | 218 | Existing mutation regressions |
+| `world.collision_boxes` | 732 | Existing collision and ownership regressions |
+| `entity.movement` | 544 | Existing Item/Falling movement regressions |
+| `world.movement_dependencies` | 202 | Existing real World movement queries |
+
+The focused build receipt checks report/child closure, current binary pins and
+input-map equality. The separate full native qualification performs 4,809
+before/after file-pin joins over the recorded capsule's 936 public files,
+including 794 native inputs, plus 254 dependency files. Their bytes, tools,
+products, graphs, complete raw streams, probe, resources and the 57-input
+manifest are hashed and joined. It makes no full-suite claim.
+
+Independent finite comparison matches all 342 rows and 684 snapshots: 2,100
+complete cached-array images and 1,050 full delta lists. It finds no input,
+control, completion-prefix, finite-projection, delta, action RNG/scalar
+preservation or scope-gap mismatch. All six captures close naturally with full
+streams and cleanup. Original/native full errors remain distinct, and the
+[documented omissions](Storage-and-reference#piston-finalization-and-neighbor-observations)
+prevent a whole-graph or constructor-history claim. No original process is
+restarted for the native capture or offline comparison.
+
+The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 sanitized
+GCC/Clang configured cases in hosted CI, formatting for 479 C files and headers,
+controller mirrors and lifecycle checks. That historical full-suite result
+predates the neighbor callback. Full local suites remain unrun. See
+[PR #52](https://github.com/frankischilling/minecraft-c/pull/52) for current-head
+hosted status and results. Earlier retained-original helper replays keep their separate scope.
 
 The following movement checkpoint predates finalization integration.
 

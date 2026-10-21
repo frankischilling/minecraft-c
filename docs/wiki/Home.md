@@ -1,11 +1,18 @@
 # minecraft-c
 
-Explicit Piston finalization and MovingPiston removal now pass their constructed
-native contract in fresh hosted MSVC and sanitized GCC/Clang builds. All 168
-Windows and 170 cases per Linux compiler pass without skips; all 479 C files
-and headers pass the requested format. Full local suites and active original
-finalization/removal comparison remain unrun. Tick, neighbor, Entity pushing
-and state-shape work remain unfinished.
+MovingPiston's neighbor callback now executes the actual acquiring Tile getter
+and its lazy invalid-Map cleanup after the World B guard. Explicit finalization,
+removal and neighbor behavior pass seven focused local contracts on MSVC and
+sanitized GCC/Clang. Independently qualified active replay matches all 57
+source-mapped finite projections per side/compiler, with complete arrays and
+source-backed failure-prefix joins. Whole-graph parity and constructor/generation
+history remain outside that result. Tick, Entity pushing, the separate
+state-shape update and wider gameplay remain unfinished.
+
+The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 GCC/Clang
+hosted cases, plus formatting for 479 C files and headers. That full-suite result
+predates this callback. Full local suites remain unrun. See [PR #52](https://github.com/frankischilling/minecraft-c/pull/52)
+for current-head hosted status and results.
 
 The following movement checkpoint predates finalization integration.
 

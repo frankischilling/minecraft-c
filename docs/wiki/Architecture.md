@@ -5,8 +5,15 @@ stores, actual World Tile removal, receiver invalidation, current Block query
 and notifying carried-ID/metadata restoration. MovingPiston removal invokes the
 actual Piston finalizer or inherited container fallback. Held owners preserve
 reentrant lifetimes, and errors retain completed effects and distinct source
-frames. Constructed native contracts pass in fresh hosted builds; active
-original comparison, tick, neighbor, pushing and state-shape work remain pending.
+frames. MovingPiston's neighbor hook reads the current World B flag before any
+Tile getter. Its false branch performs real acquiring lookup, preserves the
+reached typed failures and lazy invalid-Map cleanup, then releases the nullable
+temporary Tile hold. Shared neighbor and different-cell Chest aliases exercise
+these effects in fresh local native contracts. Qualified original/native
+observations match the enumerated finite field, owner, array and action-prefix
+projection on all three compilers. Native-only lifetimes and omitted graph
+identities remain separate from Java equality. Tick, pushing, the separate
+state-shape update and wider gameplay remain unfinished.
 
 [Item/Falling movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md) operates on existing Entity fields
 and the same permanent box. Held pooled copies and collision views retain mutable

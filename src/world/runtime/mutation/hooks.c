@@ -414,8 +414,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_H_G:
             return unavailable(world, block, "h", "g", "Block neighbor hook", error);
         case MC_BLOCK_UT_MZ:
-            return unavailable(world, block, "ut", "mz", "Block moving piston neighbor hook",
-                               error);
+            return mc_world_mutation_piston_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_AH_T:
             return unavailable(world, block, "ah", "t", "Block neighbor hook", error);
         case MC_BLOCK_VM_NP:

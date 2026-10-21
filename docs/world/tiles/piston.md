@@ -3,9 +3,10 @@
 The [Tile interface](../../../include/mc/world/runtime/tiles/tiles.h) owns real
 Piston instances alongside Chest and Spawner. The [source map](../../reference/piston.md)
 records the paired original methods, floating-point observations and remaining
-dependencies. Explicit finalization has constructed native coverage on Windows
-and Linux; active original comparison remains pending. Active piston ticking
-and Entity pushing remain unfinished.
+dependencies. Explicit finalization, MovingPiston removal and its neighbor
+callback have native coverage on Windows and Linux. Qualified active original
+and native observations match in the documented finite source-mapped projection
+on all three compilers. Active piston ticking and Entity pushing remain unfinished.
 
 ## Construction and class lifetime
 
@@ -73,13 +74,22 @@ World, cache, pending set and Store binding. An unsupported replacement fails
 before acquiring through a stale coordinator. This check belongs to the reached
 provider call, after any earlier progress stores.
 
-The `world.piston_finalization` contract covers installed owners,
-aliasing, list duplicates, ordinary false results and retained failure prefixes.
-It passes in fresh hosted MSVC and sanitized GCC/Clang builds. The ordinary-false
-fixture retains a moving Block at an isolated interior coordinate, so a later
-restoration does not enter its unfinished neighbor hook. Existing interpolation
-and geometry replays do not qualify this active body; tick, pushing, neighbor
-and state-shape work remain separate.
+MovingPiston's neighbor callback reads the actual World `B` field first. True
+returns before Tile acquisition. False executes the actual acquiring Tile
+getter and discards its nullable result after releasing the temporary native
+hold. The getter retains its own acquisition, added-hook and lazy invalid-Map
+cleanup effects. Null World fails at hook1; reached getter failures retain
+hook12 and the full typed Tile cause. The source neighbor ID is unused.
+
+The `world.piston_finalization` contract passes 460 checks per compiler,
+including installed owners, aliases, duplicates, ordinary false results,
+neighbor guards, different-cell invalid Chest cleanup and retained failure
+prefixes. The ordinary-false fixture now keeps its shared moving neighbor, so
+later notifying restoration executes that real getter. Seven focused local
+contracts pass on MSVC and sanitized GCC/Clang. Active replay matches the 57
+finite projections per side/compiler, including source-backed failure-prefix
+joins. Full native errors and Java Throwables remain separate. Tick, pushing
+and the separate state-shape update remain unfinished.
 
 ## Collision order
 
@@ -114,10 +124,23 @@ Direction frames separate through reached failures.
 
 ## Verification scope
 
-Fresh hosted builds pass all 168 MSVC and 170 GCC/Clang configured cases without
-skips, including `world.piston_finalization`. All 479 C files and headers pass
-the requested format. Controller mirrors and lifecycle checks also pass. Full
-local suites and active original finalization/removal comparison remain unrun.
+The neighbor increment passes seven fresh local contracts on MSVC and GCC/Clang
+with Linux ASan/UBSan/leak checks: 460 finalization, 296 Piston Tile, 144 geometry,
+218 mutation, 732 collision, 544 movement and 202 World dependency checks per
+host. These focused runs rebuild the selected native closures from current
+source. Full local suites remain unrun. See [PR #52](https://github.com/frankischilling/minecraft-c/pull/52)
+for current-head hosted status and results.
+
+The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 GCC/Clang
+configured cases without skips, plus formatting for 479 C files and headers,
+controller mirrors and lifecycle checks. Those historical hosted results
+predate the neighbor callback. Original finalization/removal observations cover
+57 ordered inputs per side. Independent native qualification verifies 4,809
+before/after file-pin joins. Finite comparison matches all 342 rows, 684
+snapshots, 2,100 complete cached-array images and 1,050 full delta lists across
+six side/compiler processes. The [source map](../../reference/piston.md#active-finalization-family)
+records the compared projection and its material omissions; whole-graph parity
+and constructor/generation history are not established.
 
 `block.directions` checks array values, separate initialization, failed prefixes,
 captured identities and native retirement. `world.piston_geometry` exercises all

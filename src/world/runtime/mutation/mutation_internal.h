@@ -43,6 +43,13 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
 bool mc_world_mutation_piston_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, mc_world_mutation_error *error);
 
+/* Complete ut/mz.b(World,IIII). Caller holds the actual World/Block; NULL World
+ * is reached at B1, and B=true skips the acquiring Tile getter12 entirely.
+ * The nullable getter result is discarded only after releasing its native hold. */
+bool mc_world_mutation_piston_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z, int32_t source_id,
+                                       mc_world_mutation_error *error);
+
 /* Field-only private join to the actual admitted, held Tile's class Registry.
  * No World lookup, allocation, initialization, or alternate class owner. The
  * finalizer reaches this only at its getstatic61, after the actual ID query. */

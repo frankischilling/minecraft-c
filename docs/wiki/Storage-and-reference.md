@@ -1,11 +1,93 @@
 # Storage and original references
 
-The paired Piston source map now includes explicit finalization and actual
-MovingPiston/container removal bodies. Their constructed native contract passes
-in fresh hosted MSVC and sanitized GCC/Clang builds. Active original comparison
-remains pending. Earlier interpolation and geometry observations establish only
-their stated helper scopes. Mappings provide navigation names; the separate
-client/server JAR descriptors and observed behavior remain the authority.
+## Piston finalization and neighbor observations
+
+The [paired Piston source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
+includes explicit finalization, MovingPiston/container removal and the actual
+MovingPiston neighbor body. The neighbor's World B guard precedes its real
+acquiring Tile getter. Discarding the return preserves acquisition, the added
+hook, lazy invalid-Map cleanup and reached typed failures. Mappings
+provide navigation names; separate client/server JAR descriptors and observed
+behavior remain the authority. Tick, pushing, the separate state-shape update
+and wider gameplay remain unfinished.
+
+Seven fresh local contracts pass on MSVC and sanitized GCC/Clang, with 460
+finalization, 296 Piston Tile, 144 geometry, 218 mutation, 732 collision, 544
+movement and 202 World dependency checks per host. The 3,579-byte focused build
+receipt checks reports, actual child closure, current binary pins and input-map
+equality. The separate full native qualification performs 4,809 before/after
+file-pin joins over the recorded capsule's 936 public files, including 794
+native inputs, plus 254 dependency files. Their bytes, build tools/products/
+graphs, complete streams, process receipts, unchanged probe, resources and all
+57 caller inputs are hashed and joined. Neither establishes a full local or
+hosted suite for the callback. The earlier green `85441fe` 168/170 hosted checkpoint
+remains historical to its own source. Full local suites remain unrun. See
+[PR #52](https://github.com/frankischilling/minecraft-c/pull/52) for current-head hosted status and results.
+
+| Retained report | Bytes | SHA256 | Scope |
+| --- | ---: | --- | --- |
+| Focused build qualification | 3579 | `1a84e726504240a369693db2bf1e2e114b4f16a9b6408537eeb2508815b722a7` | Report/closure/current binary and map-equality joins |
+| Native qualification | 47097624 | `a1b82230abb7f35c9e16d8bd3f047eddff940fbb4f9d6d94a163a32182e1489c` | Complete enumerated capture and actual file/process audits |
+| Finite state comparison | 18084016 | `39e0ee4786dff14fa373f7394e42f430a1bf61c5121be2d02343e20b67243bb4` | Source-mapped finite projections and action-prefix joins |
+| Comparison findings | 9415 | `63935947e6ec718f68b5b31fcd68c21ee72263f58ada70bfa8b40baaa17eeec1` | Dynamic metrics, source rules and material omissions |
+
+The original family preserves all 57 ordered active inputs and declared
+projections per side. Fresh native captures execute them once on each of six
+side/compiler processes, with natural-zero exits, reaping, full lossless streams
+and cleanup. Independent comparison reports
+`finite_projection_matches_enumerated_observations`: all 342 rows, 684 snapshots,
+2,100 full cached-array images and 1,050 complete changed-offset/value delta lists
+match. No input/control, completion-prefix, finite-projection, delta, action
+Random/scalar-preservation or scope-gap mismatch was found.
+
+Each side/compiler joins 42 normal void completions, three true Boolean results,
+nine actual null-World failure prefixes, two full signed-ID -1 prefixes and one
+null-Block255 prefix. The prior `same_id_changed_data`, `hook_piston_next_down`
+and `installed_negative_inf` completion gaps and invalid Chest Map discrepancy
+are absent on all six runs. The old Chest key `(11,96,5)` is removed after
+`installed_negative_inf` and remains absent in later snapshots. Native full
+status/error records and Java full Throwable records remain separate. Failure
+joins use the pinned complete source bodies and retain completed effects; they
+do not equate every native descendant with a Java Throwable model.
+The signed-ID prefix joins retain byte/metadata writes before the full-ID
+lookup. A before/after dirty=true image does not prove that later PC299 ran.
+
+Persistent bidirectional owner joins cover current/other Tiles, logical Tile
+Map entries, ordered c/G occurrences, light owners/types/bounds/order, cached
+Chunks and Nibble/array owners, World/Dimension/coordinator and Random owners.
+Cached arrays compare complete bytes and every changed offset/value. Reused
+contexts retain prior identities, coordinates and progress; source-unused
+constructor columns are not reapplied.
+
+The comparison is limited to the enumerated source-mapped projection:
+
+- Registry Block, Material, Sound and subclass state is omitted except for all
+  four Block Randoms. Tile registration Maps compare counts, without their
+  entries or class-loader graph.
+- World SavedData, Store, save-handler, paths, sessions, JDK graphs and `World.P`
+  active-set contents are omitted. WorldInfo String alias identity and
+  unprojected Player contents are not established by names or null values.
+  Generic nonempty World Lists have no coverage in this family.
+- Generation noise, biome and work arrays and the fallback BlankChunk are
+  omitted. Actual cached Chunk arrays compare complete bytes and all deltas.
+- Native holds, phases, allocations and Store counters are outside Java field
+  equality. Map key-wrapper/bucket identities and native ChunkState allocations
+  are not equated with Java Chunk/key objects.
+- Native PFN1 omits Chest slots-array and insertion-List owner identities;
+  physical slot contents and ordered insertion contents are joined. The Chest
+  slots observed here are empty. Java AtomicLong seed-owner identity has no
+  asserted native counterpart; String alias identity remains unproved.
+- World `g`, `I`, `Q` and default World/Block Random initial values remain constructor
+  entropy. Every action must preserve its own actual owners and state. Generator
+  and cave Random values compare exactly; native `terrain_constructor_random` is
+  an extra native-only role, without a fabricated Java owner.
+- Early native World/Chunk static images are not equated where original images
+  are absent. Constructor and generation history and whole-graph replay parity
+  are not qualified by these finite action comparisons.
+
+Earlier interpolation and geometry replays retain only their stated helper
+scopes. Tick, pushing, the separate state-shape update and wider gameplay remain
+unfinished; finite projection agreement closes no broader acceptance gate.
 
 The [movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) records complete paired Item/Falling base bodies
 and separately qualified original observations. All 59,654 client records and
