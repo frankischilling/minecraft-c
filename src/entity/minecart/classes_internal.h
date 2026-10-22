@@ -5,6 +5,12 @@
 
 /* Each source newarray/anewarray is a distinct native owner. No interning or
  * flattened replacement of the source's 31 identities. */
+/* Older MSVC diagnoses these standard C17 flexible arrays as extension C4200.
+ * Keep the allocation layouts and scope the compatibility guard to these types. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 struct mc_minecart_int_array {
     size_t length;
     int32_t elements[];
@@ -19,6 +25,9 @@ struct mc_minecart_shape_array {
     size_t length;
     mc_minecart_row_array *elements[];
 };
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 /* mc_entity_classes library, not simulation. Initializes actual superclass
  * first, then every own allocation/store in source order, publishes j at439,

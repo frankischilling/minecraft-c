@@ -17,10 +17,19 @@ typedef struct mc_minecart_entity_object {
     struct mc_minecart_entity_state state;
 } mc_minecart_entity_object;
 
+/* Older MSVC diagnoses this standard C17 flexible array as extension C4200.
+ * Keep the allocation layout and scope the compatibility guard to this type. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 struct mc_minecart_stack_array {
     size_t length;
     mc_item_stack *elements[];
 };
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 /* Final native Entity release only. Retires the actual h owner when present;
  * these constructors never acquire any Stack-element hold. It does
