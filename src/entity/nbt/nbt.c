@@ -1,6 +1,7 @@
 #include "mc/entity/nbt/nbt.h"
 
 #include "../entity_internal.h"
+#include "../minecart/nbt_internal.h"
 #include "mc/core/java/java.h"
 
 #include <float.h>
@@ -194,6 +195,8 @@ static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound,
                          mc_entity_nbt_error *frame) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return read_item(entity, compound, frame);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
+        return mc_minecart_nbt_read_held(entity, compound, frame);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         const mc_nbt_tag *tag;
         frame->falling_bytecode = 4;
@@ -354,7 +357,7 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
     if (!enter(entity, &frame))
         return publish(&frame, error);
     mc_item_stack *held_stack = NULL;
-    mc_nbt_tree *tree = NULL;
+    mc_nbt_tree *tree = NULL, *minecart_fields = NULL;
     mc_nbt_tag fields[10] = {0};
     mc_nbt_tag vector[8] = {0};
     mc_nbt_tag stack_fields[3] = {0};
@@ -362,7 +365,7 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
     const mc_nbt_tag *motion_items[3] = {&vector[3], &vector[4], &vector[5]};
     const mc_nbt_tag *rotation_items[2] = {&vector[6], &vector[7]};
     const mc_nbt_tag *item_items[3] = {&stack_fields[0], &stack_fields[1], &stack_fields[2]};
-    const mc_nbt_tag *root_items[10];
+    const mc_nbt_tag *root_items[11];
     for (size_t index = 0; index < 10; ++index)
         root_items[index] = &fields[index];
     mc_nbt_tag root = {.type = MC_NBT_COMPOUND,
@@ -459,13 +462,38 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
                                  .value.byte_value = mc_java_i8_narrow(entity->falling.a)};
         frame.falling_bytecode = 11;
         root.value.compound.length = 8;
+    } else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)) {
+        if (!mc_minecart_nbt_build_fields_held(entity, limits, &minecart_fields, &frame))
+            goto done;
+        const mc_nbt_tag *own = mc_nbt_tree_root(minecart_fields);
+        if (own == NULL || own->type != MC_NBT_COMPOUND ||
+            (own->value.compound.length != 1 && own->value.compound.length != 2 &&
+             own->value.compound.length != 4)) {
+            fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Minecart NBT own-field result shape");
+            goto done;
+        }
+        for (size_t index = 0; index < own->value.compound.length; ++index)
+            root_items[7 + index] = own->value.compound.items[index];
+        root.value.compound.length = 7 + own->value.compound.length;
     } else {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete write hook");
         goto done;
     }
     frame.base_bytecode = 148;
     frame.field = NULL;
-    const mc_nbt_status copied = mc_nbt_tree_copy_compound(&root, limits, &tree, &frame.nbt);
+    mc_nbt_limits remaining;
+    const mc_nbt_limits *selected = limits;
+    if (minecart_fields != NULL) {
+        remaining = limits == NULL ? mc_nbt_default_limits() : *limits;
+        const size_t retained = mc_nbt_tree_allocation_bytes(minecart_fields);
+        if (retained > remaining.max_allocation_bytes) {
+            fail(&frame, MC_ENTITY_NBT_LIMIT, "Entity NBT retained Minecart fields budget");
+            goto done;
+        }
+        remaining.max_allocation_bytes -= retained;
+        selected = &remaining;
+    }
+    const mc_nbt_status copied = mc_nbt_tree_copy_compound(&root, selected, &tree, &frame.nbt);
     if (copied != MC_NBT_OK) {
         fail(&frame, nbt_status(copied), "Entity NBT independent tree build");
         goto done;
@@ -473,6 +501,7 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
     *out = tree;
     frame = mc_entity_nbt_empty_error();
 done:
+    mc_nbt_tree_free(minecart_fields);
     mc_item_stack_release(held_stack);
     mc_entity_release(entity);
     return publish(&frame, error);

@@ -5,6 +5,17 @@ readers and owning Lists. Their tests exercise source-ordered effects and
 failure prefixes. They do not provide a playable client, server or complete
 gameplay loop.
 
+## Minecart inventory, NBT and native storage
+
+The [inventory contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) and [native validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#native-validation) cover seven inventory operations, actual generic NBT hooks,
+named construction and fresh semantic saves. Optional per-occurrence provenance
+keeps unknown fields separate from shared Stack identity. The full local suites
+pass 180 MSVC and 182 GCC/Clang tests, 544 total, with zero failures, errors or
+skips. Inventory passes 598 checks/40 cases, NBT 558/40 and storage 335/14;
+314 independent disk checks cover six regions and eight metadata files.
+The current constructor/detector regressions pass 7,270/164 and 208/24.
+Original/native inventory, NBT and storage equality remains pending.
+
 ## Rails
 
 The [rail contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/rails.md)
@@ -27,6 +38,8 @@ comparison.
 
 ## Minecart construction and detection
 
+The construction and hosted results in this section are earlier checkpoints.
+
 The [Minecart contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart.md)
 implements the class array graph, both constructors and real World/Chunk
 publication. Actual Class-query membership now drives positive detector contact,
@@ -45,8 +58,9 @@ A separate [original/Windows MSVC constructor comparison](https://github.com/fra
 at `39edf12` matches all ten literal null-World inputs per client/server side,
 with zero mismatches across the full typed declared projections. Both capture
 sets passed all 22 protocol and ownership rules. These observations contain
-no World publication, detector or rail call. Inventory operations, NBT,
-concrete movement/collision, active Minecart ticks and rail travel remain
+no World publication, detector, rail, inventory or NBT call. The later native
+inventory/NBT/storage contracts are separate. Concrete movement/collision,
+active Minecart ticks and rail travel remain
 unfinished. The C runtime and native contract tests require no JVM; original
 archives and Java tools remain optional reference-development dependencies.
 

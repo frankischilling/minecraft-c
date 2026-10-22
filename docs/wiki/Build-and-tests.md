@@ -1,3 +1,21 @@
+Current local inventory/NBT/storage validation passes 180 MSVC, 182 GCC and
+182 Clang tests, 544 total, with zero failures, errors or skips. C17 profiles
+use MSVC 19.51.36260.0, GCC 13.3 and Clang 18.1.3; Linux uses ASan/UBSan and
+leak checks. Mirrors and lifecycle intervals pass, including 556 positive and
+2,011 negative interval checks per host. Formatting passes for 540 C/header
+files. See the [inventory contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) and [native validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#native-validation).
+
+Each host passes inventory 598 checks/40 cases, NBT 558/40 and storage 335/14;
+the storage driver adds 314 disk checks over six regions and eight metadata
+files. Constructor and detector regressions pass 7,270/164 and 208/24.
+The full runs retain thirteen tree inventories and use 1,009 source files based on
+`3fb0881`. Only the final storage Python REALPATH registration differs; its
+separate GCC storage probe preserves all 354 compile commands and 182 test
+registrations after root substitution. This is not another three-host full
+run or a new hosted result. Original inventory/NBT/storage equality is pending.
+
+## Previous committed checkpoint
+
 Current committed validation at `39edf12`: all 177 MSVC and 179 GCC/Clang
 tests pass, 535 total, with zero failures, errors or skips. Formatting passes
 for 527 C/header files; all three native jobs pass mirrors and lifecycle

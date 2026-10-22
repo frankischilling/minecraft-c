@@ -1,6 +1,7 @@
 #include "mc/entity/nbt/storage.h"
 
 #include "../entity_internal.h"
+#include "../minecart/storage_internal.h"
 #include "mc/storage/nbt/overlay.h"
 
 #include <stdlib.h>
@@ -54,6 +55,10 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity storage byte inspection arguments");
         return publish(frame, error);
     }
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)) {
+        (void)mc_minecart_storage_native_bytes(entity, out, &frame);
+        return publish(frame, error);
+    }
     size_t bytes = mc_entity_native_bytes(entity);
     if (!add_size(&bytes, mc_nbt_tree_allocation_bytes(entity->storage_source))) {
         fail(&frame, MC_ENTITY_NBT_LIMIT, "Entity storage source byte extent");
@@ -86,6 +91,10 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
     mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
     if (entity == NULL || compound == NULL || compound->type != MC_NBT_COMPOUND) {
         fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Entity storage provenance arguments");
+        return publish(frame, error);
+    }
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)) {
+        (void)mc_minecart_storage_preserve_source(entity, compound, requested, &frame);
         return publish(frame, error);
     }
     const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
@@ -218,6 +227,17 @@ mc_entity_nbt_status mc_entity_save_storage_nbt(mc_entity *entity, const mc_nbt_
         return publish(frame, error);
     }
     limits.max_allocation_bytes -= live + semantic_bytes;
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)) {
+        mc_nbt_tree *result = NULL;
+        const mc_entity_nbt_status overlaid =
+            mc_minecart_storage_overlay_after_semantic(entity, semantic, &limits, &result, &frame);
+        mc_nbt_tree_free(semantic);
+        if (overlaid != MC_ENTITY_NBT_OK)
+            return publish(frame, error);
+        *serialized = true;
+        *out = result;
+        return publish(mc_entity_nbt_empty_error(), error);
+    }
     const mc_nbt_tag *known = mc_nbt_tree_root(semantic);
     const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
     const bool falling_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND);

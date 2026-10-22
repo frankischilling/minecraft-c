@@ -29,7 +29,7 @@ typedef struct mc_minecart_entity_snapshot {
     uint16_t world_bytecode, bytecode;
     mc_minecart_entity_fields fields;
     size_t inventory_length;
-    mc_item_stack *inventory[36]; /* Borrowed actual references; constructors leave NULL. */
+    mc_item_stack *inventory[36]; /* Borrowed actual 27/36 entries; unused tail is NULL. */
 } mc_minecart_entity_snapshot;
 
 /* Allocate RAW with canonical MINECART identity from this exact owner. Active
@@ -54,7 +54,9 @@ mc_entity_status mc_minecart_entity_construct(mc_entity *raw, mc_world_runtime *
 
 /* All phases, exact canonical Minecart kind. Get the existing generic Entity
  * snapshot separately for actual base/bounds/Random/watcher references.
- * No initialization, allocation, source invocation or hold transfer. */
+ * Actual h may be NULL after a partial constructor, length36 after construction,
+ * or length27 after semantic NBT replacement. No initialization, allocation,
+ * source invocation or hold transfer. */
 mc_entity_status mc_minecart_entity_get_snapshot(const mc_entity *entity,
                                                  mc_minecart_entity_snapshot *out);
 
@@ -62,6 +64,6 @@ mc_entity_status mc_minecart_entity_get_snapshot(const mc_entity *entity,
  * release. Outputs/errors/owners must be disjoint. Native rejection preserves
  * the existing phase and outputs; reached failure retains FAILED_CONSTRUCTION and its actual
  * prefix. release/classes_free remain the existing lifetime operations.
- * This API offers no inventory writes or nonnull-slot ownership transfer. */
+ * Inventory operations and their occurrence transfers are in inventory.h. */
 
 #endif

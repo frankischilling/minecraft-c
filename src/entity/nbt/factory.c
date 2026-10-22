@@ -2,6 +2,7 @@
 
 #include "../../platform/text/stdout.h"
 #include "../entity_internal.h"
+#include "mc/entity/minecart/minecart.h"
 
 #include <string.h>
 
@@ -91,14 +92,22 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
         goto done;
     }
     const mc_nbt_tag *root = mc_nbt_tree_root(leaf);
-    const size_t field_count =
-        mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) ? 8u : 10u;
-    if (root == NULL || root->type != MC_NBT_COMPOUND ||
+    size_t field_count = 0;
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
+        field_count = 10;
+    else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND))
+        field_count = 8;
+    else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) && root != NULL &&
+             root->type == MC_NBT_COMPOUND &&
+             (root->value.compound.length == 8 || root->value.compound.length == 9 ||
+              root->value.compound.length == 11))
+        field_count = root->value.compound.length;
+    if (field_count == 0 || root == NULL || root->type != MC_NBT_COMPOUND ||
         root->value.compound.length != field_count) {
         fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Entity NBT Boolean save semantic shape");
         goto done;
     }
-    const mc_nbt_tag *items[11] = {&id};
+    const mc_nbt_tag *items[12] = {&id};
     for (size_t index = 0; index < field_count; ++index)
         items[index + 1] = root->value.compound.items[index];
     const mc_nbt_tag compound = {.type = MC_NBT_COMPOUND,
@@ -225,7 +234,8 @@ mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_
     }
     frame.factory_bytecode = 45;
     if (type->kind != MC_ENTITY_CLASS_KIND_ITEM &&
-        type->kind != MC_ENTITY_CLASS_KIND_FALLING_SAND) {
+        type->kind != MC_ENTITY_CLASS_KIND_FALLING_SAND &&
+        type->kind != MC_ENTITY_CLASS_KIND_MINECART) {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT factory concrete constructor");
         return finish(frame, error);
     }
@@ -235,6 +245,10 @@ mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_
         constructed = mc_falling_entity_allocate(classes, &entity, &frame.construction);
         if (constructed == MC_ENTITY_OK)
             constructed = mc_falling_entity_construct_world(entity, world, &frame.construction);
+    } else if (type->kind == MC_ENTITY_CLASS_KIND_MINECART) {
+        constructed = mc_minecart_entity_allocate(classes, &entity, &frame.construction);
+        if (constructed == MC_ENTITY_OK)
+            constructed = mc_minecart_entity_construct_world(entity, world, &frame.construction);
     } else {
         constructed = mc_item_entity_allocate(classes, &entity, &frame.construction);
         if (constructed == MC_ENTITY_OK)

@@ -20,11 +20,19 @@ separate from actual World state. Shape changes and reconnects use notifying
 metadata writes, with ordinary synchronous callbacks and retained partial
 effects. Inherited lifecycle and depth-guarded powered search read the live
 defining Registry independently of the supplied World. Detector contact/tick
-uses real pooled bounds and a fresh Class-query List; positive Minecart
-construction remains a separate dependency. Explicit current/deepest rail sites
+uses real pooled bounds and a fresh Class-query List with constructed
+Minecart membership and normal publication. Explicit current/deepest rail sites
 retain complete typed lower errors without inferring entry from class names or
 PC values. This source and native-contract coverage does not establish
 executed-original rail equality or a running game loop.
+
+[Minecart inventory](entity/minecart-inventory.md) owns each actual Stack
+occurrence in the constructor h36 or loaded h27 array. Generic Entity NBT calls
+reach the concrete late hooks; fresh semantic saves read actual fields in source
+order. Optional native storage keeps root generations and per-slot metadata
+separate from Stack identity, including aliases and borrowed older arrays. The
+[source and validation map](reference/minecart-inventory-nbt.md#native-validation)
+records the native cases; original inventory/NBT/storage equality remains pending.
 
 The following movement/collision checkpoint predates Piston tick/finalization
 and pressure-plate integration.

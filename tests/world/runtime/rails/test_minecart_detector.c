@@ -439,7 +439,8 @@ static bool unsupported_frontiers(fixture *f, size_t side) {
     mc_world_runtime *const world = f->worlds[side];
     mc_entity *const cart = f->carts[side];
     mc_entity_snapshot before = {0}, after = {0};
-    mc_entity_move_error move = mc_entity_move_empty_error();
+    mc_entity_move_error move;
+    mc_entity_move_error_init(&move);
     mc_entity_nbt_error nbt = mc_entity_nbt_empty_error();
     mc_nbt_tree *tree = NULL;
     mc_world_collision_list_view collision = {0};
@@ -451,9 +452,26 @@ static bool unsupported_frontiers(fixture *f, size_t side) {
     CHECK(mc_entity_move(cart, 0.0, 0.0, 0.0, NULL, &move) == MC_ENTITY_STATE_ERROR &&
           move.bytecode == 0 && move.operation != NULL &&
           strcmp(move.operation, "Entity movement concrete virtuals") == 0);
-    CHECK(mc_entity_build_nbt(cart, NULL, &tree, &nbt) == MC_ENTITY_NBT_UNSUPPORTED_TYPE &&
-          tree == NULL && nbt.operation != NULL &&
-          strcmp(nbt.operation, "Entity NBT concrete write hook") == 0);
+    CHECK(mc_entity_build_nbt(cart, NULL, &tree, &nbt) == MC_ENTITY_NBT_OK && tree != NULL &&
+          nbt.status == MC_ENTITY_NBT_OK && nbt.operation == NULL);
+    const mc_nbt_tag *root = mc_nbt_tree_root(tree);
+    CHECK(root != NULL && root->type == MC_NBT_COMPOUND && root->value.compound.length == 11);
+    static const uint16_t type_name[] = {'T', 'y', 'p', 'e'};
+    static const uint16_t push_x_name[] = {'P', 'u', 's', 'h', 'X'};
+    static const uint16_t push_z_name[] = {'P', 'u', 's', 'h', 'Z'};
+    static const uint16_t fuel_name[] = {'F', 'u', 'e', 'l'};
+    static const uint16_t items_name[] = {'I', 't', 'e', 'm', 's'};
+    const mc_nbt_tag *type = mc_nbt_compound_get(root, type_name, COUNT(type_name));
+    const mc_nbt_tag *push_x = mc_nbt_compound_get(root, push_x_name, COUNT(push_x_name));
+    const mc_nbt_tag *push_z = mc_nbt_compound_get(root, push_z_name, COUNT(push_z_name));
+    const mc_nbt_tag *fuel = mc_nbt_compound_get(root, fuel_name, COUNT(fuel_name));
+    CHECK(type != NULL && type->type == MC_NBT_INT && type->value.int_value == 2);
+    CHECK(push_x != NULL && push_x->type == MC_NBT_DOUBLE &&
+          push_x->value.double_bits == UINT64_C(0));
+    CHECK(push_z != NULL && push_z->type == MC_NBT_DOUBLE &&
+          push_z->value.double_bits == UINT64_C(0));
+    CHECK(fuel != NULL && fuel->type == MC_NBT_SHORT && fuel->value.short_value == 0);
+    CHECK(mc_nbt_compound_get(root, items_name, COUNT(items_name)) == NULL);
     CHECK(mc_world_runtime_collision_boxes(world, NULL, &detector_box, &collision, &error) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           collision.owner == NULL && error.world_bytecode == 218 &&

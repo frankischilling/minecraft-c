@@ -1,5 +1,40 @@
 # Test scope and reproduction
 
+## Current Minecart inventory, NBT and storage validation
+
+Full local suites pass all 180 MSVC, 182 GCC and 182 Clang tests, 544 total,
+with zero failures, errors or skips. The C17 profiles use MSVC 19.51.36260.0,
+GCC 13.3 and Clang 18.1.3; Linux enables ASan, UBSan and leak checks. Each host
+also passes controller mirrors and lifecycle intervals, including 556 positive
+and 2,011 negative interval checks with zero failures. All 540 C/header files
+pass clang-format 18.
+
+| Native case | Checks per host | Source cases |
+| --- | ---: | ---: |
+| `entity.minecart_inventory` | 598 | 40 |
+| `entity.minecart_nbt` | 558 | 40 |
+| `entity.minecart_storage` | 335 | 14 |
+| `entity.minecart` | 7,270 | 164 |
+| `world.minecart_detector` | 208 | 24 |
+
+The storage driver separately passes 314 disk checks over six region files and
+eight metadata files. The [inventory contract](entity/minecart-inventory.md) and
+[native validation record](reference/minecart-inventory-nbt.md#native-validation)
+separate semantic NBT, native preservation, genuine GAME reload and the staged
+native failure control. Original/native inventory, NBT and storage equality
+remains pending. The historical finite constructor comparison at `39edf12`
+retains its original inputs and projection.
+
+The full suites retain thirteen tree inventories and use a 1,009-file source copy
+based on public `3fb0881`. The final source changes only the storage test's
+Python REALPATH registration. A separate GCC one-test probe selects the real
+interpreter through `/usr/bin/python3`; all 354 compile commands and 182 test
+registrations match after source/build-root substitution. That probe is
+separate from the three full-suite runs and adds no new committed or hosted
+validation result.
+
+## Earlier power and rail checkpoint
+
 Full native suites pass all 175 MSVC and all 177 tests on each GCC/Clang build, with zero skips.
 Java standard-library numerical comparisons are enabled;
 original-JAR comparison options remain off. Linux enables ASan, UBSan and leak
@@ -29,8 +64,9 @@ separate error-transport case passes 1,444 checks across 94 constructed cases,
 covering explicit selections, current/deepest causes, PC0, unentered calls,
 aliases and refused plans. The Snow regression passes 392 checks, including
 a real null-Random rail-drop failure after both preceding Snow removals.
-These are native contracts; positive Minecart construction, ordinary positive
-rail drops and executed-original rail equality remain unverified.
+These are native contracts. Positive Minecart construction and detection now
+have the separate validation above; ordinary positive rail drops and
+executed-original rail equality remain unverified.
 
 The [Class-query case](world/class-entities.md) passes 373 checks per host using
 eight real Worlds and eight loaded Chunk records. It checks fresh result

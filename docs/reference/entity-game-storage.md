@@ -1,5 +1,12 @@
 # Ordinary GAME ItemEntity persistence
 
+The ItemEntity evidence below is a historical checkpoint with its original
+source bindings and comparison scope. Existing Item/Falling storage evidence
+is not extended by the new [Minecart inventory and storage contract](../entity/minecart-inventory.md).
+The separate [Minecart native validation](minecart-inventory-nbt.md#native-validation)
+covers genuine GAME load/save/reload, semantic NBT and occurrence provenance;
+original/native Minecart inventory, NBT and storage equality remains pending.
+
 Both pinned original archives use the same source order in their shared Chunk
 builder and serializer. Class names below are side-specific. Native disk joins
 and separate whole-Chunk original observations have their own checks below;

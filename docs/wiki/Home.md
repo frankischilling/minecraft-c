@@ -5,6 +5,15 @@ and Linux. There is no playable C client or server yet. The current libraries
 cover compatibility primitives, storage, terrain generation and parts of World
 simulation; the runtime does not require a JVM.
 
+Current Minecart inventory, semantic NBT and native storage have separate
+native contracts: [inventory contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) and [native validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#native-validation).
+Full local suites pass 180 MSVC and 182 GCC/Clang tests, 544 total, without
+failures, errors or skips. These results are separate from the earlier
+`39edf12` hosted checkpoint and finite constructor comparison. Original/native
+inventory, NBT and storage equality remains pending.
+
+## Previous committed checkpoint
+
 At `39edf12`, hosted validation passes all 177 MSVC and 179 GCC/Clang tests,
 with zero failures, errors or skips, plus 527-file formatting. Linux uses
 ASan/UBSan and leak checks. The separate native rail contracts pass 814 checks

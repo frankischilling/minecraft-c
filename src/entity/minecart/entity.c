@@ -1,6 +1,8 @@
 #include "../classes/memory_internal.h"
 #include "../construction_internal.h"
 #include "entity_internal.h"
+#include "inventory_internal.h"
+#include "storage_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -43,18 +45,14 @@ static mc_entity_status world_prefix(mc_entity *entity, mc_world_runtime *world,
     }
     struct mc_minecart_entity_state *state = entity->minecart;
     state->world_bytecode = 2;
-    const size_t length = 36;
-    mc_minecart_stack_array *inventory = mc_entity_construction_allocate(
-        entity, sizeof(*inventory) + length * sizeof(*inventory->elements), error,
-        "minecart constructor", 8);
-    if (inventory == NULL) {
+    mc_minecart_stack_array *inventory;
+    const mc_entity_status allocated = mc_minecart_inventory_array_allocate(
+        entity, 36, "minecart constructor", 8, &inventory, error);
+    if (allocated != MC_ENTITY_OK) {
         error->minecart_world_constructor = site(entity, false, 8);
-        return error->status;
+        return allocated;
     }
-    inventory->length = length;
-    for (size_t i = 0; i < length; ++i)
-        inventory->elements[i] = NULL;
-    state->fields.h = inventory;
+    (void)mc_minecart_inventory_array_swap(entity, inventory);
     state->world_bytecode = 11;
     state->fields.a = 0;
     state->world_bytecode = 16;
@@ -127,11 +125,8 @@ mc_entity_status mc_minecart_entity_construct(mc_entity *raw, mc_world_runtime *
 }
 
 void mc_minecart_entity_dispose(mc_entity *entity) {
-    mc_minecart_stack_array *inventory = entity->minecart->fields.h;
-    if (inventory != NULL)
-        mc_entity_construction_retire(entity, inventory,
-                                      sizeof(*inventory) +
-                                          inventory->length * sizeof(*inventory->elements));
+    mc_minecart_inventory_array_retire(entity, entity->minecart->fields.h);
+    mc_minecart_storage_root_retire(entity);
 }
 
 mc_entity_status mc_minecart_entity_get_snapshot(const mc_entity *entity,
@@ -146,10 +141,10 @@ mc_entity_status mc_minecart_entity_get_snapshot(const mc_entity *entity,
                                          .bytecode = state->bytecode,
                                          .fields = state->fields};
     if (state->fields.h != NULL) {
-        if (state->fields.h->length != 36)
+        if (state->fields.h->length != 27 && state->fields.h->length != 36)
             return MC_ENTITY_STATE_ERROR;
         value.inventory_length = state->fields.h->length;
-        for (size_t i = 0; i < 36; ++i)
+        for (size_t i = 0; i < state->fields.h->length; ++i)
             value.inventory[i] = state->fields.h->elements[i];
     }
     *out = value;

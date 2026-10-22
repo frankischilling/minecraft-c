@@ -8,7 +8,8 @@ mc_entity_nbt_error mc_entity_nbt_empty_error(void) {
                                                   .item = MC_ITEM_STACK_OK,
                                                   .world = MC_WORLD_STORAGE_OK},
                                  .stack = {.status = MC_ITEM_STACK_OK, .nbt = {MC_NBT_OK, 0}},
-                                 .nbt = {MC_NBT_OK, 0}};
+                                 .nbt = {MC_NBT_OK, 0},
+                                 .inventory = {.status = MC_MINECART_INVENTORY_OK}};
 }
 
 const char *mc_entity_nbt_status_string(mc_entity_nbt_status status) {

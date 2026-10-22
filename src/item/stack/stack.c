@@ -1,4 +1,5 @@
 #include "mc/item/stack/stack.h"
+#include "source_internal.h"
 
 #include "mc/storage/nbt/tree.h"
 
@@ -101,7 +102,10 @@ mc_item_stack_status mc_item_stack_construct(mc_item_stack *raw, int32_t id, int
 }
 
 static mc_item_stack_status item_stack_read_fields(mc_item_stack *stack, const mc_nbt_tag *compound,
-                                                   mc_item_stack_error *error) {
+                                                   mc_item_stack_error *error,
+                                                   mc_item_stack_source_context *context) {
+    if (context != NULL)
+        context->read = (mc_item_stack_source_site){true, true, 4};
     if (compound == NULL || compound->type != MC_NBT_COMPOUND) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, "id");
     }
@@ -110,11 +114,15 @@ static mc_item_stack_status item_stack_read_fields(mc_item_stack *stack, const m
         return item_stack_status(error, MC_ITEM_STACK_INVALID_FIELD, "id");
     }
     stack->fields.id = tag == NULL ? 0 : tag->value.short_value;
+    if (context != NULL)
+        context->read.bytecode = 14;
     tag = mc_nbt_compound_get(compound, item_stack_count_name, 5);
     if (tag != NULL && tag->type != MC_NBT_BYTE) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_FIELD, "Count");
     }
     stack->fields.count = tag == NULL ? 0 : tag->value.byte_value;
+    if (context != NULL)
+        context->read.bytecode = 24;
     tag = mc_nbt_compound_get(compound, item_stack_damage_name, 6);
     if (tag != NULL && tag->type != MC_NBT_SHORT) {
         return item_stack_status(error, MC_ITEM_STACK_INVALID_FIELD, "Damage");
@@ -123,20 +131,37 @@ static mc_item_stack_status item_stack_read_fields(mc_item_stack *stack, const m
     return item_stack_status(error, MC_ITEM_STACK_OK, NULL);
 }
 
+mc_item_stack_status mc_item_stack_source_construct_nbt(mc_item_stack *raw,
+                                                        const mc_nbt_tag *compound,
+                                                        mc_item_stack_source_error *error) {
+    mc_item_stack_source_error frame = {0};
+    frame.context.constructor_kind = MC_ITEM_STACK_SOURCE_CONSTRUCTOR_NBT;
+    frame.context.constructor.selected = true;
+    mc_item_stack_status status;
+    if (raw == NULL) {
+        status = item_stack_status(&frame.cause, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
+    } else if (raw->phase != MC_ITEM_STACK_RAW) {
+        status = item_stack_status(&frame.cause, MC_ITEM_STACK_INVALID_PHASE, NULL);
+    } else {
+        frame.context.constructor.entered = true;
+        raw->phase = MC_ITEM_STACK_FAILED_CONSTRUCTION;
+        raw->fields.count = 0;
+        frame.context.constructor.bytecode = 11;
+        status = item_stack_read_fields(raw, compound, &frame.cause, &frame.context);
+        if (status == MC_ITEM_STACK_OK)
+            raw->phase = MC_ITEM_STACK_READY;
+    }
+    if (error != NULL)
+        *error = status == MC_ITEM_STACK_OK ? (mc_item_stack_source_error){0} : frame;
+    return status;
+}
+
 mc_item_stack_status mc_item_stack_construct_nbt(mc_item_stack *raw, const mc_nbt_tag *compound,
                                                  mc_item_stack_error *error) {
-    if (raw == NULL) {
-        return item_stack_status(error, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
-    }
-    if (raw->phase != MC_ITEM_STACK_RAW) {
-        return item_stack_status(error, MC_ITEM_STACK_INVALID_PHASE, NULL);
-    }
-    raw->phase = MC_ITEM_STACK_FAILED_CONSTRUCTION;
-    raw->fields.count = 0;
-    const mc_item_stack_status status = item_stack_read_fields(raw, compound, error);
-    if (status == MC_ITEM_STACK_OK) {
-        raw->phase = MC_ITEM_STACK_READY;
-    }
+    mc_item_stack_source_error frame = {0};
+    const mc_item_stack_status status = mc_item_stack_source_construct_nbt(raw, compound, &frame);
+    if (error != NULL)
+        *error = frame.cause;
     return status;
 }
 
@@ -146,7 +171,7 @@ mc_item_stack_status mc_item_stack_read_nbt(mc_item_stack *stack, const mc_nbt_t
     if (status != MC_ITEM_STACK_OK) {
         return item_stack_status(error, status, NULL);
     }
-    return item_stack_read_fields(stack, compound, error);
+    return item_stack_read_fields(stack, compound, error, NULL);
 }
 
 mc_item_stack_status mc_item_stack_retain(mc_item_stack *stack) {
@@ -203,12 +228,23 @@ mc_item_stack_status mc_item_stack_native_bytes(const mc_item_stack *stack, size
     return MC_ITEM_STACK_OK;
 }
 
+mc_item_stack_status mc_item_stack_source_count_get(const mc_item_stack *stack, int32_t *out) {
+    if (stack == NULL || out == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    *out = stack->fields.count;
+    return MC_ITEM_STACK_OK;
+}
+
+mc_item_stack_status mc_item_stack_source_count_set(mc_item_stack *stack, int32_t count) {
+    if (stack == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    stack->fields.count = count;
+    return MC_ITEM_STACK_OK;
+}
+
 mc_item_stack_status mc_item_stack_count_set(mc_item_stack *stack, int32_t count) {
     const mc_item_stack_status status = item_stack_ready(stack);
-    if (status == MC_ITEM_STACK_OK) {
-        stack->fields.count = count;
-    }
-    return status;
+    return status == MC_ITEM_STACK_OK ? mc_item_stack_source_count_set(stack, count) : status;
 }
 
 mc_item_stack_status mc_item_stack_damage_set(mc_item_stack *stack, int32_t damage) {
@@ -253,28 +289,52 @@ mc_item_stack_status mc_item_stack_clone_nullable(const mc_item_stack *stack, mc
     return mc_item_stack_clone(stack, out);
 }
 
+mc_item_stack_status mc_item_stack_source_split(mc_item_stack *stack, int32_t amount,
+                                                mc_item_stack_source_allocator allocate,
+                                                mc_item_stack **out,
+                                                mc_item_stack_source_error *error) {
+    mc_item_stack_source_error frame = {0};
+    mc_item_stack_status status;
+    if (stack == NULL || allocate == NULL || out == NULL) {
+        status = item_stack_status(&frame.cause, MC_ITEM_STACK_INVALID_ARGUMENT, NULL);
+    } else {
+        frame.context.split = (mc_item_stack_source_site){true, true, 7};
+        stack->fields.count = mc_java_i32_sub(stack->fields.count, amount);
+        frame.context.split.bytecode = 10;
+        mc_item_stack *split = NULL;
+        status = allocate(&split);
+        if (status != MC_ITEM_STACK_OK) {
+            item_stack_status(&frame.cause, status, NULL);
+        } else {
+            /* Source id15/damage20 are read after the real new10 allocation. */
+            const int32_t id = stack->fields.id;
+            const int32_t damage = stack->fields.damage;
+            frame.context.split.bytecode = 23;
+            frame.context.constructor_kind = MC_ITEM_STACK_SOURCE_CONSTRUCTOR_NUMERIC;
+            frame.context.constructor.selected = true;
+            frame.context.constructor.entered = split != NULL && split->phase == MC_ITEM_STACK_RAW;
+            status = mc_item_stack_construct(split, id, amount, damage);
+            if (status == MC_ITEM_STACK_OK) {
+                *out = split;
+            } else {
+                item_stack_status(&frame.cause, status, NULL);
+                mc_item_stack_release(split);
+            }
+        }
+    }
+    if (error != NULL)
+        *error = status == MC_ITEM_STACK_OK ? (mc_item_stack_source_error){0} : frame;
+    return status;
+}
+
 mc_item_stack_status mc_item_stack_split(mc_item_stack *stack, int32_t amount,
                                          mc_item_stack **out) {
-    if (out == NULL) {
+    if (out == NULL)
         return MC_ITEM_STACK_INVALID_ARGUMENT;
-    }
-    mc_item_stack_status status = item_stack_ready(stack);
-    if (status != MC_ITEM_STACK_OK) {
+    const mc_item_stack_status status = item_stack_ready(stack);
+    if (status != MC_ITEM_STACK_OK)
         return status;
-    }
-    stack->fields.count = mc_java_i32_sub(stack->fields.count, amount);
-    mc_item_stack *split;
-    status = mc_item_stack_allocate(&split);
-    if (status != MC_ITEM_STACK_OK) {
-        return status;
-    }
-    status = mc_item_stack_construct(split, stack->fields.id, amount, stack->fields.damage);
-    if (status != MC_ITEM_STACK_OK) {
-        mc_item_stack_release(split);
-        return status;
-    }
-    *out = split;
-    return MC_ITEM_STACK_OK;
+    return mc_item_stack_source_split(stack, amount, mc_item_stack_allocate, out, NULL);
 }
 
 static mc_item_stack_status item_stack_limits(const mc_item_stack *stack,

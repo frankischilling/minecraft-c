@@ -1,11 +1,14 @@
 # Entity classes and subtype NBT
 
-The [NBT methods](../../include/mc/entity/nbt/nbt.h) operate on actual constructed
-Item and FallingSand Entities. The [save wrapper and NBT factory](../../include/mc/entity/nbt/factory.h)
-add the original class-name and world-only construction calls. GAME Chunk
-loading and saving dispatch through the actual concrete subtype. Other
-concrete Entity constructors, AI, ticking, source removal and
-complete save interoperability remain unfinished.
+The [NBT methods](../../include/mc/entity/nbt/nbt.h) operate on actual Item,
+FallingSand and Minecart owners. The
+[save wrapper and NBT factory](../../include/mc/entity/nbt/factory.h) add the
+original class-name and World-only construction calls. GAME Chunk loading and
+saving dispatch through the actual concrete subtype. Minecart has a separate
+[inventory, NBT and storage contract](minecart-inventory.md), with a
+[local native validation record](../reference/minecart-inventory-nbt.md#native-validation).
+Other concrete Entity behavior, ticking, source
+removal and complete save interoperability remain unfinished.
 
 ## Class identity and lifetime
 
@@ -84,7 +87,7 @@ and Stack; it does not publish either into a World or Chunk.
 Unknown names return NULL after the supported default process stdout diagnostic.
 That path currently supports at most 64 ASCII bytes including its fixed prefix.
 Known unsupported subclasses stop at their reached constructor frontier.
-Wrong-type getters stop at the catch diagnostic frontier. Java reflection,
+A wrong-type factory id getter stops at the catch diagnostic frontier. Java reflection,
 Throwable stack printing, arbitrary Unicode output, stream replacement and
 PrintStream error-state queries remain outside this finite implementation.
 
@@ -104,14 +107,50 @@ unknown Entity tags using the same native overlay policy. Replacement and
 save budgets include all overlapping live trees, generated trees and pointer
 scratch. Item provenance still belongs to the actual current Stack.
 
+## Minecart
+
+Client `yl` and server `pr` use the same base read before their own Type getter.
+Type2 reads PushX, PushZ and Short Fuel in order. Type1 captures Items before
+allocating and publishing a new 27-entry array. Missing Items still replaces h;
+a wrong List tag fails before replacement. Byte Slot is masked with 255; in-range
+records construct and install real Stacks in list order, so later duplicates
+replace earlier entries. A later failure retains the new array and earlier
+stores. Detached old h and its occurrence holds protect borrowed inputs until
+all reads finish on either outcome.
+
+The writer emits base fields plus Type and, for Type1, Items from every actual
+h slot; Type2 emits PushX/PushZ/Fuel instead. Its 8/9/11 known-field results become
+9/10/12 when the Boolean wrapper adds String `id=Minecart`. Actual Stack fields
+are accepted in every live phase without a READY-only provenance builder. The
+retained own-field tree stays charged while the final independent result is
+copied. Name lookup still precedes the dead decision; normal false changes only
+`serialized`.
+
+The named factory calls the real World-only Minecart constructor, then semantic
+read outside the constructor reflection catch. It returns the actual owner
+without World/Chunk publication. The [detailed contract](minecart-inventory.md)
+records actual 36 versus reported 27 slots, Stack hold transfers, signed split
+prefixes and native storage occurrence policy. It does not widen Minecart
+movement, collision, Player interaction or ticks.
+
+Local B passed all 544 CTest executions across MSVC/GCC/Clang with zero failures,
+errors or skips. The [validation record](../reference/minecart-inventory-nbt.md#native-validation)
+separates those full runs from the later one-test GCC CMake D portability probe.
+Original Minecart inventory/NBT/storage equality has not been established.
+
 ## Native contracts and verification
 
 Independent trees own their bytes. The Boolean wrapper charges its intermediate
 tree while constructing the final tree; it excludes separately owned live
 Entity/Stack graphs and bounded C-stack views. Output slots remain unchanged on
-failure. Error values retain independent save/name/factory/base/Item/Stack PCs,
-the whole namespace first failure, constructor cause and codec cause. These
-resource and output contracts do not claim Java allocation/OOME timing.
+failure. Error values retain independent save/name/factory/base and subtype
+sites, the selected complete Stack cause, namespace first failure, constructor
+cause and codec cause. Minecart carries explicit read/write and compact inventory sites;
+its Items-list index remains separate from the decoded slot. These resource
+and output contracts do not claim Java allocation/OOME timing.
+
+The following counts record the earlier Item/FallingSand increment, not the
+new Minecart inventory/NBT/storage runs.
 
 The native contracts cover both sides and real immutable allocation ceilings:
 `entity.nbt` passes 1,084 checks, `entity.classes` passes 7,759,
@@ -121,6 +160,8 @@ Linux compiler pass, with zero skips and local JDK comparisons enabled. They che
 signed narrowing, ordered partial reads, numeric edge bits, Stack replacement,
 all 24 namespace mappings, cached partial initialization, Class binding and
 whole-batch ownership. These are constructed native contracts.
+
+The original observations below retain that same earlier scope.
 
 Separately, twenty prepared cases per side match actual calls into both pinned
 original archives on all three native hosts. The comparison checks 52 selected
@@ -136,23 +177,42 @@ procedure](../reference/entity-nbt.md),
 ## Storage provenance and ordinary GAME coordination
 
 [`nbt/storage.h`](../../include/mc/entity/nbt/storage.h) adds native storage
-operations beside the semantic reader/writer. After successful direct Chunk
-adoption, a complete independent source tree belongs to that actual Entity and
-its current successfully read Stack receives a separate Item source copy.
-Replacement commits both attachments only after every fallible copy succeeds.
-The final Entity hold frees its own source. The direct Class allocation ledger
-keeps its prior meaning; a checked storage inspector adds actual source/Stack
+operations beside the semantic reader/writer. Preservation requires a successful
+semantic read of that same input; it does not perform the read. After direct
+Chunk adoption, ItemEntity receives a complete independent Entity source and its
+current successfully read Stack receives a separate Item source copy.
+FallingSand owns only its Entity source. Minecart uses the per-occurrence
+generation policy described below. For ItemEntity, replacement commits both
+attachments only after every fallible copy succeeds. The final Entity hold frees
+its own source. The direct Class allocation ledger keeps its prior meaning; a checked storage inspector adds actual source/Stack
 allocations without multiplying them by hold count.
 
 Storage saving calls the actual Boolean wrapper first. A normal false allocates
-no overlay even with a zero residual ceiling. A true result overlays generated
-fields over the Entity source and the generated Item over only its current
-Stack's source. Replacing that Stack cannot resurrect the prior Item's unknown
-fields. This uses a phase-neutral borrowed Compound overlay, so RAW/failed Stack
+no overlay even with a zero residual ceiling. For ItemEntity, a true result
+overlays generated fields over its Entity source and the generated Item over
+only its current Stack's source. Replacing that Stack cannot resurrect the prior
+Item's unknown fields. This uses a phase-neutral borrowed Compound overlay, so RAW/failed Stack
 fields accepted by the semantic writer remain accepted. The final tree is an
 independent copy; source owners and pointer scratch remain live until it finishes.
 Preserved unknown fields/order/raw bits are an intermediate native policy, not
 original fresh-writer behavior or encoded-byte/order equivalence.
+
+Minecart preservation prepares a copied root generation. For Type1, it also
+prepares each current slot's last accepted in-range record before committing
+attachments. Other Types replace the root while keeping older h metadata.
+Aliased Stacks can retain different metadata per occurrence. Set or whole removal invalidates only
+that occurrence; partial split retains it. Root and h may keep different live
+generations, and detached h protects any source borrowed by a semantic read.
+Storage save emits only current generated records, overlays their retained
+winner metadata and removes inactive Items/PushX/PushZ/Fuel. It never falls back
+to Stack.source or resurrects skipped/overwritten archive records. The budget
+counts distinct live Stacks/generations once, sidecars, overlapping semantic trees,
+overlay scratch and final copy/validation. Pure byte inspection selects the
+residual ceiling; its error is deferred until true assembly, so semantic name,
+dead and normal false behavior retains priority.
+
+The following GAME results also belong to the earlier Item/FallingSand record;
+they are not validation of the new Minecart generation/occurrence policy.
 
 The ordinary GAME loader now calls the actual factory and direct Chunk insertion;
 the saver traverses every actual slice/List occurrence. Their disk/failure

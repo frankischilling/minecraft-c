@@ -6,7 +6,14 @@ both constructors, their owned fields and native failure prefixes. It reuses the
 Class. Genuine instances can enter the normal [World and Chunk publication
 paths](../world/entities.md) and [Class-filtered queries](../world/class-entities.md).
 The [paired source map](../reference/minecart-construction.md) records the exact
-methods and separates this implementation from runtime verification.
+methods and separates this implementation from runtime verification. The
+[inventory, NBT and storage contract](minecart-inventory.md) adds seven
+Player-independent operations, semantic read/save/factory dispatch and native
+source preservation after a successful semantic read of the same input.
+The [local validation record](../reference/minecart-inventory-nbt.md#native-validation)
+keeps this extension separate from the constructor evidence below.
+
+The following constructor/publication record belongs to the `39edf12` increment.
 
 Native construction, publication and detector contracts pass on MSVC, GCC
 and Clang. [Hosted validation at `39edf12`](../reference/minecart-construction.md#committed-and-hosted-checkpoint)
@@ -66,22 +73,27 @@ Equal-valued endpoints still have different array identities. The
 identities and copies their lengths and values.
 
 Class-owned `j` survives instance release. Instance-owned `h` is separate from
-ItemEntity's singular Stack reference. All 36 entries remain null along these
-constructors; there is no API for installing inventory contents or transferring
-nonnull Stack holds. Subtype fields remain separate from the shadowed base and
-Item/Falling fields. The three client-only double fields are absent on server;
-inspect the snapshot's source before interpreting them.
+ItemEntity's singular Stack reference. All 36 entries start null along these
+constructors. The [inventory API](../../include/mc/entity/minecart/inventory.h)
+retains one Stack hold per installed occurrence; get adds a result hold and
+whole removal transfers the occurrence hold. Reported size 27 is separate from
+the constructor's 36-entry array; a Type1 NBT read replaces h with 27 entries.
+Subtype fields remain separate from the shadowed base and Item/Falling fields.
+The three client-only double fields are absent on server; inspect the snapshot's source before interpreting them.
 
-Native allocations charge the same class ledger at each actual request. A
+Constructor allocations charge the same class ledger at each actual request. A
 Minecart instance is one allocation containing its Entity header and own state;
 `h` is a later separate instance request. The initializer graph is charged to
 the class, not to each instance. Checked limits include the actual native sizes,
-without claiming Java heap or allocation-failure timing.
+without claiming Java heap or allocation-failure timing. Optional native
+storage generations and occurrence metadata have a separate
+[operation budget](minecart-inventory.md#native-preservation).
 
 Retain/release and snapshots support RAW, READY and failed instances. Final
-release retires the actual inventory array and base children and balances any
-construction-World binding. Class destruction remains BUSY while its Entity,
-bounds or application bindings are live, then retires `j` once. Borrowed views
+release retires every installed Stack occurrence, the actual inventory array,
+native source generations and base children, and balances any construction-World
+binding. Class destruction remains BUSY while its Entity, bounds or application
+bindings are live, then retires `j` once. Borrowed views
 require exclusive live owners and expire on mutation or final release.
 
 ## Failure prefixes
@@ -92,9 +104,9 @@ every completed ID, entropy, field, class and child-owner effect. It cannot be
 retried. A later failure does not release already published `h` or the base
 World/Random/watcher/bounds before final instance release.
 
-The four [diagnostic sites](../../include/mc/entity/minecart/sites.h) distinguish
-the World constructor, positioned constructor, current class initialization and
-its first failed cause. Selection and entry are explicit; PC0 does not imply an
+The four constructor [diagnostic sites](../../include/mc/entity/minecart/sites.h)
+distinguish the World constructor, positioned constructor, current class
+initialization and its first failed cause. Selection and entry are explicit; PC0 does not imply an
 unreached or neutral site. A base failure keeps its actual child error while
 the own frames identify the delegating calls. Allocation of `h` fails at the
 World constructor's8 beneath the positioned constructor's2 when applicable.
@@ -142,6 +154,14 @@ covers class/instance construction and native budgets.
 
 ## Native validation and remaining scope
 
+The local B inventory/NBT/storage composition passed all 544 CTest executions:
+180 MSVC, 182 GCC and 182 Clang, with zero failures, errors or skips. A separate
+GCC storage-only probe covers CMake D interpreter selection. The
+[new validation record](../reference/minecart-inventory-nbt.md#native-validation)
+keeps that probe separate from the full B runs. Commit and hosted validation
+for this increment remain pending. The older constructor/publication records
+below retain their own checkpoint scopes.
+
 The local D checkpoint passes 7,270 constructor checks across 164 cases,
 196 detector checks across 24 literal cases and all 177/179/179 native tests.
 The committed `39edf12` checkpoint also passes all 177 MSVC and 179 GCC/Clang
@@ -160,10 +180,11 @@ Entity IDs/counter and bounded identity roles. These observations cover no
 World publication or detector call; those retain the separate native contract
 scope above.
 
-Inventory operations, Minecart NBT/factory/provenance, concrete collision and
-movement virtuals, active Minecart ticks, rail travel, interaction, damage,
-death/drops, automatic relinking and scheduled-queue draining remain unfinished.
-The existing movement, NBT and collision gates continue to refuse unsupported
-Minecart paths. Construction and real detector membership do not establish
+Concrete Minecart collision and movement virtuals, active ticks, rail travel,
+Player usability and interaction, damage, death/drops, automatic relinking and
+scheduled-queue draining remain unfinished. The existing movement and collision
+gates continue to refuse their unsupported Minecart virtuals. Construction and real detector membership do not establish
 gameplay completeness. The finite null-World constructor result above does
 not establish equality for publication, detection or rail physics.
+
+Original Minecart inventory/NBT/storage equality has not been established.

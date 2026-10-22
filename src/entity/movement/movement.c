@@ -59,14 +59,21 @@ static float negate(float value) {
     return value;
 }
 
+void mc_entity_move_error_init(mc_entity_move_error *error) {
+    if (error == NULL)
+        return;
+    memset(error, 0, sizeof(*error));
+    error->collision = mc_world_collision_empty_error();
+    error->block_read = mc_world_collision_empty_error();
+    error->world = mc_world_movement_empty_error();
+    error->contact = mc_world_entity_contact_empty_error();
+    error->effect = mc_entity_effect_empty_error();
+    error->registry = error->collision.nearby.query.registry;
+}
+
 mc_entity_move_error mc_entity_move_empty_error(void) {
-    mc_entity_move_error error = {0};
-    error.collision = mc_world_collision_empty_error();
-    error.block_read = mc_world_collision_empty_error();
-    error.world = mc_world_movement_empty_error();
-    error.contact = mc_world_entity_contact_empty_error();
-    error.effect = mc_entity_effect_empty_error();
-    error.registry = error.collision.nearby.query.registry;
+    mc_entity_move_error error;
+    mc_entity_move_error_init(&error);
     return error;
 }
 
@@ -314,7 +321,8 @@ static bool finish_environment(mc_entity *entity, const mc_world_collision_list_
 
 mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
                                 const mc_entity_move_limits *limits, mc_entity_move_error *error) {
-    mc_entity_move_error frame = mc_entity_move_empty_error();
+    mc_entity_move_error frame;
+    mc_entity_move_error_init(&frame);
     frame.max_loop_work = limits == NULL ? MC_ENTITY_MOVE_DEFAULT_LOOP_WORK : limits->max_loop_work;
     if (entity == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, "Entity movement owner");

@@ -120,6 +120,7 @@ target_link_libraries(mc_block PRIVATE mc_build_options)
 # Concrete Entity construction and World/NBT methods remain in simulation.
 add_library(mc_entity_classes STATIC
     src/entity/nbt/errors.c
+    src/entity/minecart/inventory_errors.c
     src/entity/classes/classes.c
     src/entity/classes/memory.c
     src/entity/minecart/classes.c
@@ -284,7 +285,10 @@ add_library(mc_simulation STATIC
     src/world/dimension/dimension.c
     src/world/dimension/temperature.c
     src/entity/entity.c
-    src/entity/minecart/entity.c)
+    src/entity/minecart/entity.c
+    src/entity/minecart/inventory.c
+    src/entity/minecart/nbt.c
+    src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
     PRIVATE mc_platform_time mc_platform_text mc_build_options)
@@ -415,6 +419,19 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_entity_minecart PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME entity.minecart COMMAND mc_test_entity_minecart)
     set_tests_properties(entity.minecart PROPERTIES LABELS "public;unit;ownership;constructor")
+
+    add_executable(mc_test_entity_minecart_inventory tests/entity/minecart/test_inventory.c)
+    target_link_libraries(mc_test_entity_minecart_inventory PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.minecart_inventory COMMAND mc_test_entity_minecart_inventory)
+    set_tests_properties(entity.minecart_inventory PROPERTIES LABELS "public;unit;ownership")
+
+    add_executable(mc_test_entity_minecart_nbt tests/entity/minecart/test_nbt.c)
+    target_link_libraries(mc_test_entity_minecart_nbt PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.minecart_nbt COMMAND mc_test_entity_minecart_nbt)
+    set_tests_properties(entity.minecart_nbt PROPERTIES LABELS "public;unit;ownership")
+
+    add_executable(mc_test_entity_minecart_storage tests/entity/minecart/test_storage.c)
+    target_link_libraries(mc_test_entity_minecart_storage PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_entity_nbt tests/entity/nbt/test_nbt.c)
     target_include_directories(mc_test_entity_nbt PRIVATE src/entity src/core/java)
@@ -1399,6 +1416,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-game-entities-contracts")
     set_tests_properties(world.game_entities PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 120)
+
+    get_filename_component(MC_TEST_MINECART_STORAGE_PYTHON "${Python3_EXECUTABLE}" REALPATH)
+    add_test(NAME entity.minecart_storage
+        COMMAND "${MC_TEST_MINECART_STORAGE_PYTHON}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_minecart_storage.py"
+        --executable "$<TARGET_FILE:mc_test_entity_minecart_storage>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(entity.minecart_storage PROPERTIES
+        LABELS "public;integration;ownership;storage")
 
     add_test(NAME world.dungeon
         COMMAND "${Python3_EXECUTABLE}"

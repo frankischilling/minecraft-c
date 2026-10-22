@@ -2,6 +2,7 @@
 #define MC_ENTITY_NBT_ERRORS_H
 
 #include "mc/entity/errors.h"
+#include "mc/entity/minecart/inventory_errors.h"
 #include "mc/entity/registry/registry.h"
 #include "mc/storage/nbt/nbt.h"
 
@@ -28,7 +29,7 @@ typedef enum mc_entity_nbt_status {
  * unreached work; initializer0 is also the genuine first namespace allocation.
  * Use status/operation and the whole Registry cause to distinguish that site.
  * nested source calls retain their enclosing and child PCs independently.
- * index is SIZE_MAX unless an indexed vector access is selected. field and
+ * index is SIZE_MAX unless a vector/List occurrence is selected. field and
  * operation are static ASCII strings, never borrowed input-tree storage.
  * The construction, Stack, namespace and codec causes remain whole values.
  * name1 denotes the final class-name wrapper's active use; name7 is reached
@@ -44,6 +45,11 @@ typedef struct mc_entity_nbt_error {
     mc_item_stack_error stack;
     mc_nbt_error nbt;
     mc_entity_registry_error registry;
+    /* Concrete late hook selections; index is the Items list occurrence,
+     * while inventory.slot is meaningful only when slot_selected is true.
+     * Complete selected lower errors reuse construction/stack above. */
+    mc_minecart_site minecart_read, minecart_write;
+    mc_minecart_inventory_context inventory;
 } mc_entity_nbt_error;
 
 mc_entity_nbt_error mc_entity_nbt_empty_error(void);

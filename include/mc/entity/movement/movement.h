@@ -24,6 +24,11 @@ typedef struct mc_entity_move_error {
     mc_registry_error registry;
 } mc_entity_move_error;
 
+/* Passive full fresh initialization in caller storage; NULL is a no-op.
+ * Retains the same complete children/sentinels as the value-returning helper,
+ * without an additional automatic movement-error aggregate. No owner access,
+ * allocation, source operation or Class/World state change occurs. */
+void mc_entity_move_error_init(mc_entity_move_error *error);
 mc_entity_move_error mc_entity_move_empty_error(void);
 
 /* Actual sn.b/lq.a(DDD)V for held READY canonical Item/Falling owners. Move

@@ -1,3 +1,12 @@
+Current Minecart inventory, semantic NBT and native storage have separate
+native contracts: [inventory contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) and [native validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#native-validation).
+Full local suites pass 180 MSVC and 182 GCC/Clang tests, 544 total, without
+failures, errors or skips. These results are separate from the earlier
+`39edf12` hosted checkpoint and finite constructor comparison. Original/native
+inventory, NBT and storage equality remains pending.
+
+## Previous reference checkpoint
+
 Current reference guide: the [power evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/power.md)
 records a finite original/native MSVC comparison at source `9f9d3a2`, with 5,365
 literal rows per client/server side. Its seven snapshot fields, completion and

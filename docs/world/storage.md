@@ -11,6 +11,14 @@ The separate [SavedData ID owner](saved-data.md) copies the store's
 `data/idcounts.dat` path. Its raw direct-overwrite route has its own caught-error
 and partial-file contract, without a session check or metadata rotation.
 
+[Minecart inventory and storage](../entity/minecart-inventory.md) now has a
+separate native contract for semantic NBT, per-occurrence provenance and genuine
+GAME load/save/reload. Its [native validation](../reference/minecart-inventory-nbt.md#native-validation)
+keeps the staged native failure control separate from the full loader route.
+Existing Item/Falling storage evidence retains its recorded scope and source
+binding. Original/native Minecart inventory, NBT and storage equality remains
+pending; optional unknown-field preservation is native policy.
+
 ## Stable chunks
 
 [`storage/chunk.h`](../../include/mc/world/storage/chunk.h) owns the runtime

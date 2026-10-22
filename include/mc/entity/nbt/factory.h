@@ -7,8 +7,9 @@
  * Class name before testing dead; a dead or unmapped Entity returns OK with
  * serialized=false and leaves out unchanged. The runtime Class is the actual
  * immutable same-owner Entity literal, never a forced Item name. A true result
- * owns an independent compound containing id plus ten base/Item fields or
- * eight base/FallingSand fields. It contains no retained unknown tags.
+ * owns an independent compound containing id plus ten base/Item fields,
+ * eight base/FallingSand fields, or8/9/11 base/Minecart fields selected by its
+ * actual Type. It contains no retained unknown tags.
  * Entity, Stack and class owners are borrowed and excluded from tree budgets.
  * Peak allocation includes the intermediate leaf tree while copying the final
  * compound; bounded C-stack views are excluded. Output/count/error must be
@@ -20,10 +21,13 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
                                         mc_entity_nbt_error *error);
 
 /* Actual jc/ga NBT factory on the supplied application class owner. NULL World
- * is supported. A matched Item or FallingSand uses its real world-only
+ * is supported. A matched Item, FallingSand or Minecart uses its real world-only
  * constructor, then its semantic NBT read outside the source reflection catch.
  * FallingSand has no Item Math draws or Stack substitute. IDs/profile effects
  * survive a later failure; factory-local owners are released on failure.
+ * Minecart's array/earlier semantic prefixes remain real until that local
+ * owner's final release. This semantic factory neither attaches storage
+ * provenance nor advertises Minecart GAME-load/save support.
  * Input follows read_nbt's immutable readable-view contract and unique keys.
  * Missing id is the empty string. Unknown id returns OK/NULL after the default
  * process stdout diagnostic for lines of at most64 ASCII bytes. Default-stream
