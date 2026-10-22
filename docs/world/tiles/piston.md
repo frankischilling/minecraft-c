@@ -6,8 +6,12 @@ records the paired original methods, floating-point observations and remaining
 dependencies. Explicit finalization, MovingPiston removal, its neighbor callback
 and actual Tile ticking with supported Entity pushing have focused native coverage
 on Windows and Linux. Earlier finalization observations match their documented
-finite projection. The complete original tick input family is qualified; its C
-replay comparison remains pending.
+finite projection. At source `eab4533`, MSVC, GCC and Clang tick replays pass
+complete native protocol qualification and match an eleven-field projection
+against the same qualified original family. It includes the actual Tile's
+inherited x/y/z/invalid. Caller Context coordinates, World references or aliases,
+complete errors, World/Entity/Block tick graphs and original-runtime state-shape
+equivalence remain outside that comparison.
 
 ## Construction and class lifetime
 
@@ -131,8 +135,9 @@ reached Registry, Tile, geometry, nearby, movement and mutation records.
 The `world.piston_tick` contract passes 575 checks per compiler. It covers raw
 progress and null-World paths, code-owner geometry, all axes, duplicates, real
 Item/Falling movement, failed-prefix List history and completion effects. These
-are constructed native contracts. Full original tick replay and other Entity
-movement dispatches remain unfinished;
+are constructed native contracts. The finite original comparison at `eab4533`
+covers eleven Piston/Tile primitives and input/action joins. World/Entity/Block
+tick parity and other Entity movement dispatches remain unqualified;
 [current movement limits](../../entity/movement.md) still apply.
 
 ## Singleton state shape
@@ -232,11 +237,18 @@ registered 167/169/169 cases and executed only the selected nine; they do not
 establish a current full-suite or hosted result.
 
 The separately qualified original tick capture admits all 114 ordered cases and
-228 before/after snapshot phases per side. Native/original tick comparison is
-pending. Its full graphs and original action throws remain retained. Intact-field
-MSVC diagnostics match input/action classifications and selected progress bits,
-but malformed observer records and duplicate keys prevent full protocol
-qualification. Observation qualification does not establish C equality.
+228 before/after snapshot phases per side. At source `eab4533`, MSVC, GCC and
+Clang native streams pass complete protocol qualification against the same
+original family.
+Each compiler matches all 114 literal inputs and binary action classifications
+per side, and all 5,016 comparisons of eleven primitive fields: carried ID,
+metadata, facing, extending/render flags, raw current/previous progress bits and
+the actual Tile's inherited x/y/z/invalid.
+Earlier malformed MSVC streams, intact-field diagnostics and failed protocol
+audits remain retained. The finite projection excludes caller Context coordinates,
+World references or aliases, World/Entity/Block graph equality, complete error
+correspondence, constructor history,
+original-runtime state-shape equivalence or whole-engine parity.
 
 The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 GCC/Clang
 configured cases without skips, plus formatting for 479 C files and headers,

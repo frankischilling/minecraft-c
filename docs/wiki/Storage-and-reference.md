@@ -12,13 +12,24 @@ The
 [testing notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
 record exact-copy Linux validation and retained mounted-source timeouts.
 
-The separate MSVC tick execution preserves both complete lossless streams, but
-its full observer protocol is invalid. Production direct-handle output splits
-two records per side; 34,978 records per side repeat top-level keys. A diagnostic
-limited to intact records matches all 114 caller inputs, binary action outcomes
-and 456 raw progress-bit comparisons per side. It does not qualify the malformed
-protocol, native error sites or whole graphs. A reviewed emission fix remains
-unexecuted; all raw evidence and failed attempts remain intact.
+At source `eab4533`, MSVC, GCC and Clang tick replays pass complete protocol
+qualification for 114 caller inputs and 228 snapshots per side on each compiler.
+Against the same qualified original family, all inputs and binary action
+classifications match, as do all 5,016 comparisons per compiler of eleven
+primitives: carried ID, metadata, facing, extending/render flags, raw
+current/previous progress bits and the actual Tile's inherited x/y/z/invalid.
+
+| Host | Full native protocol | Finite Piston projection |
+| --- | --- | --- |
+| MSVC | Qualified | 5,016 primitive comparisons match |
+| GCC | Qualified | 5,016 primitive comparisons match |
+| Clang | Qualified | 5,016 primitive comparisons match |
+
+The earlier malformed MSVC streams and intact-record diagnostic remain retained
+unchanged. Caller Context coordinates, World references or aliases, World/Entity/
+Block graphs, complete error correspondence, constructor history and the original
+state-shape body remain outside this comparison. It establishes no whole-engine
+parity.
 
 The following tick/bounds checkpoint predates state-shape integration.
 

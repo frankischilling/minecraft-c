@@ -412,7 +412,7 @@ mc_tile_status mc_tile_piston_construct(mc_tile *raw, int32_t block_id, int32_t 
     if (raw->phase != MC_TILE_RAW)
         return tile_status(error, MC_TILE_INVALID_PHASE, NULL, SIZE_MAX);
     raw->phase = MC_TILE_FAILED_CONSTRUCTION;
-    /* Empty base constructor1, then actual uk/mu field stores6/12/16/22/28.
+    /* Empty base constructor1, then actual uk/mu field stores6/11/16/22/28.
      * Neither constructor writes k/l or binds/installs the Tile in a World. */
     raw->state.piston.block_id = block_id;
     raw->state.piston.block_data = block_data;

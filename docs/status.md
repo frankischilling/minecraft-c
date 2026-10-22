@@ -8,6 +8,7 @@ contract passes 386 checks per compiler. Tick/push, explicit finalization,
 removal, neighbor behavior and standalone bounds remain implemented.
 
 Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+[Hosted checks at `eab4533`](https://github.com/frankischilling/minecraft-c/actions/runs/39705949294) also pass.
 Controller mirrors, lifecycle checks and changed-file
 clang-format 18 checks also pass. Linux uses an exact 940-file source copy on
 Linux storage after mounted-source tool tests exceeded their existing deadlines.
@@ -15,11 +16,17 @@ The failed runs remain retained. These public checks do not establish original
 state-shape equivalence or complete local-original qualification.
 
 The separate original tick family qualifies 114 inputs and 228 snapshots per
-side. Intact-field MSVC diagnostics match all caller inputs, action classifications
-and 456 progress-bit comparisons per side. Malformed observer records and duplicate
-JSON keys leave the full native protocol unqualified. A reviewed emission fix
-still needs compilation and execution; the [source map](reference/piston.md)
-keeps that limit explicit.
+side. At source `eab4533`, MSVC, GCC and Clang replays pass complete native protocol
+qualification against the same original family. Each compiler matches all 114
+literal inputs and binary action classifications per side, and all 5,016
+comparisons of eleven Piston/Tile primitive fields, including the actual Tile's
+inherited x/y/z/invalid and raw progress bits.
+The earlier malformed MSVC streams, intact-field diagnostic and failed protocol
+audit remain retained. The [source map](reference/piston.md)
+records this finite scope. Caller Context coordinates, World references or
+aliases, complete errors, World/Entity/Block tick graphs,
+original-runtime state-shape equivalence and whole-engine parity remain
+unqualified.
 
 Other Entity descendants, complete population and persistence, native client and
 server operation, original interoperability, presentation and gameplay acceptance

@@ -9,16 +9,23 @@ Changed C files and headers pass clang-format 18 with the requested style.
 
 The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
 records commands, ownership, source-copy checks and remaining original-acceptance
-limits. At the earlier exact `ee5a52b` checkpoint,
+limits. [Hosted checks at `eab4533`](https://github.com/frankischilling/minecraft-c/actions/runs/39705949294) also pass.
+At the earlier exact `ee5a52b` checkpoint,
 [hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39700565668)
 passed 169 Windows and 171 tests per Linux compiler, plus 483-file formatting.
 That result predates singleton state-shape integration.
 
-The original tick family admits 114 inputs and 228 snapshots per side. The
-intact-field MSVC diagnostic matches inputs, action classifications and selected
-progress bits. Malformed records and duplicate JSON keys leave full native
-protocol qualification pending. Earlier finalization and movement replays retain
-their own source and comparison scope.
+The original tick family admits 114 inputs and 228 snapshots per side.
+At source `eab4533`, MSVC, GCC and Clang native protocols qualify against the same
+original family. The finite comparison matches all 114 literal inputs and binary
+action classifications per side, and all 5,016 comparisons of eleven primitive
+fields per compiler: the Piston's seven own fields, including raw progress bits,
+and the actual Tile's inherited x/y/z/invalid.
+Earlier malformed MSVC streams and their failed protocol audit remain retained.
+Caller Context coordinates, World references or aliases, complete errors,
+World/Entity/Block tick graphs, original-runtime state-shape equality
+and whole-engine parity remain unqualified. Earlier finalization and movement
+replays retain their own source and comparison scope.
 
 The following movement checkpoint predates finalization integration.
 

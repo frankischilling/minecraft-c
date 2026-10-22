@@ -17,7 +17,7 @@ and server descriptors below. Neither name establishes behavior or coverage.
 | --- | --- | --- | --- |
 | Piston Tile | `uk extends ow` | `mu extends jh` | Separate class List `m`; fields ID `a`, metadata `b`, facing `c`, extending `i`, render flag `j`, current `k`, previous `l` |
 | Default constructor | `uk()` | `mu()` | Empty base constructor1; return4 |
-| Full constructor | `uk(IIIZZ)` | `mu(IIIZZ)` | Base1; ID6, metadata12, facing16, extending22, render flag28; return31 |
+| Full constructor | `uk(IIIZZ)` | `mu(IIIZZ)` | Base1; ID6, metadata11, facing16, extending22, render flag28; return31 |
 | Class initializer | `uk.<clinit>` | `mu.<clinit>` | ArrayList new0, constructor4, publication7, return10 |
 | Interpolation | `uk.a(F)F` | `mu.a(F)F` | Only factor greater than1 clamps; previous9, current13, previous17; fsub20, fmul22, fadd23 |
 | NBT read | `uk.a(nu)` | `mu.a(iq)` | Base2; Int ID9/store12, data19/store22, facing29/store32; Float progress40/stores44,47; Boolean54/store57 |
@@ -162,19 +162,30 @@ helper seals, command environments/working directories, actual recorded closure
 controls, all input/action records and the admitted passive graphs. No subject
 is restarted by qualification.
 
-This qualifies the original observations. A separate MSVC native execution
-retains both complete lossless streams, but its observer protocol is invalid:
-production direct-handle messages split two observer records per side, and
-34,978 records per side contain duplicate top-level keys. The raw streams and
-failed protocol audit remain intact. No parser repair qualifies the whole stream.
+This qualifies the original observations. An earlier MSVC execution retains
+both complete lossless streams with an invalid observer protocol: production
+direct-handle messages split two observer records per side, and 34,978 records
+per side contain duplicate top-level keys. The raw streams and failed protocol
+audit remain intact. No parser repair qualifies that stream.
 
-A diagnostic restricted to intact records matches all 114 caller inputs and
-normal-return versus failure classifications per side. All 456 selected raw
-current/previous-progress comparisons per side match the qualified originals.
-It does not compare Java exception classes with native status codes, all error
-sites, complete graphs or constructor history. A reviewed record-buffer framing
-fix remains unexecuted. Complete native tick protocol qualification and broader
-comparison remain pending. Constructor Random/Math entropy and clocks are
+A diagnostic restricted to its intact records matches all 114 caller inputs,
+normal-return versus failure classifications and 456 selected raw
+current/previous-progress comparisons per side.
+
+At source `eab4533`, MSVC, GCC and Clang replays use buffered observer records
+with separate context keys. Both complete side streams on each compiler pass
+offline protocol qualification for all 114 inputs and 228 snapshots per side.
+Finite comparison against the same qualified original family matches carried ID,
+metadata, facing, extending/render flags, raw current/previous progress and the
+actual Tile's inherited x/y/z and invalid flag: 5,016 primitive comparisons per
+compiler, or 2,508 per side. All 114 literal inputs and normal-return
+versus failure classifications match per side on each compiler.
+
+Caller Context coordinates, World references and their nullness or aliases,
+World/Entity/Block graphs, complete error-site or Java/native error equivalence,
+constructor history and original-runtime state-shape behavior remain outside
+the comparison. It establishes no whole-engine parity. Constructor Random/Math
+entropy and clocks are
 natural inputs; seed23 does not fix all constructor or generation history.
 Snapshots are non-atomic, and unadmitted class statics remain outside the graph.
 Reference-field/array-component assignability and complete terminal inline

@@ -37,13 +37,19 @@ test limits. Failed mounted-source attempts and their complete streams remain
 retained; they are not relabeled as successful runs.
 
 The separate original tick family qualifies 114 inputs and 228 snapshots per
-side. Intact-record MSVC diagnostics match all inputs, binary action outcomes
-and 456 selected current/previous-progress bit comparisons per side. The full
-native observer protocol remains invalid because genuine production messages
-split records and payload keys collide with header keys. Raw streams remain
-unchanged. A checked record-buffer emitter is reviewed but unexecuted.
-[Original observations](reference/piston.md#active-tick-input-family) and these
-finite diagnostics do not establish whole-graph equality or state-shape parity.
+side. At source `eab4533`, MSVC, GCC and Clang replays pass complete native
+protocol qualification against the same original family. All 114 literal inputs
+and normal-return versus failure classifications match per side on each compiler.
+The eleven-field projection matches 5,016 primitive values per compiler across
+228 snapshots per side. It includes the Piston's seven own fields and inherited
+Tile x/y/z/invalid, with exact current/previous progress bits.
+
+The earlier malformed MSVC streams, failed protocol audit and intact-record
+diagnostic remain retained unchanged. The
+[original observations](reference/piston.md#active-tick-input-family) keep their separate qualification scope.
+The finite comparison excludes caller Context coordinates, World references or
+aliases, complete Java/native error equivalence, World/Entity/Block graph equality,
+original-runtime state-shape equivalence and whole-engine parity.
 
 The following movement checkpoint predates tick and standalone-factory integration.
 
