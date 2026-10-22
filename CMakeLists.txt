@@ -260,6 +260,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/falling.c
     src/world/runtime/mutation/snow.c
+    src/world/runtime/mutation/pressure_plate.c
+    src/world/runtime/mutation/pressure_lifecycle.c
     src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
@@ -502,6 +504,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_mutations tests/world/runtime/test_mutations.c)
     target_link_libraries(mc_test_world_mutations PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_pressure_plate tests/world/runtime/test_pressure_plate.c)
+    target_link_libraries(mc_test_world_pressure_plate PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_scheduling tests/world/runtime/test_scheduling.c)
     target_link_libraries(mc_test_world_scheduling PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1184,6 +1189,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-mutation-contracts")
     set_tests_properties(world.mutations PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.pressure_plate
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_pressure_plate>"
+        --scenario world-pressure-plate
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-pressure-plate-contracts")
+    set_tests_properties(world.pressure_plate PROPERTIES
+        LABELS "public;integration;ownership;mutation;scheduling" TIMEOUT 90)
 
     add_test(NAME world.scheduling
         COMMAND "${Python3_EXECUTABLE}"

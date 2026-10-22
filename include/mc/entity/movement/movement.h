@@ -45,7 +45,7 @@ mc_entity_move_error mc_entity_move_empty_error(void);
  * keeping its completed prefix; it never reports truncated work as success.
  * Existing allocation and descendant limits remain independent. Successful
  * diagnostics have status OK and the reached return PC88 or2028.
- * Other Entity kinds, positive pressure/detector mechanics, active ticks and
+ * Other Entity kinds, Class-filtered pressure/detector mechanics, active ticks and
  * unowned nonnull relationship dispatch remain explicit unfinished work. */
 mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
                                 const mc_entity_move_limits *limits, mc_entity_move_error *error);

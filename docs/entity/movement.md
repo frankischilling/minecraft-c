@@ -82,9 +82,11 @@ unsupported current provider binding instead of running an older context.
 canonical inheritance. The 63 native kinds inheriting the base body genuinely
 return without work. Portal relationship guards, soul-sand X/Z products, cactus
 damage and web's next-move flag use their actual bodies. Pressure and detector
-contacts execute their real remote/metadata guards, then stop explicitly at
-unfinished positive helpers. No empty Class query or substitute Entity supplies
-those missing mechanics.
+contacts execute their real remote/metadata guards. The
+[wooden pressure helper](../world/pressure-plates.md) queries actual published
+entities and performs ordered activation, notifications and scheduling. Stone
+and Player Class queries and the detector's positive helper remain explicit
+reached dependencies. No empty Class query or substitute Entity supplies them.
 
 ## Native limits
 
@@ -134,6 +136,6 @@ The source map records [reproduction and exact scope](../reference/entity-moveme
 Completed original normal movement and nonnull-World traversal remain unqualified.
 
 Other Entity kinds, walking-positive descendants, active Item/Falling ticks,
-landing/drop behavior, positive pressure/detector helpers, nonempty concrete
+landing/drop behavior, Class-filtered pressure/detector helpers, nonempty concrete
 sound observers, unowned passenger recursion and whole-game acceptance remain
 unfinished. Implementing movement does not complete those gameplay routes.

@@ -1,5 +1,15 @@
 # Systems and subsystems
 
+[Wooden pressure plates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
+query the real World entity slices and preserve pooled bounds, mutable List
+identity, metadata/neighbor/range/sound order and actual schedule insertion.
+Added, support-neighbor, removal and tick dispatch form the same synchronous
+lifecycle. Class-filtered categories, detector rails, nonempty concrete
+observers and a running tick loop remain unfinished. Original pressure-plate
+runtime equality remains unverified.
+
+The following Piston checkpoint predates pressure-plate integration.
+
 [MovingPiston singleton state shape](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md#singleton-state-shape)
 implements all 15 concrete overrides and the base empty body. It holds the actual
 Tile and captured carrier, performs real carrier shape dispatch, then reads

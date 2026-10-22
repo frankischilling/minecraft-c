@@ -9,7 +9,9 @@ result; native status reports failures separately.
 
 Reached concrete handlers without an implemented body fail explicitly after
 earlier effects. [Flowing and still fluids](fluids.md) now have concrete update,
-addition and neighbor bodies. Population, complete fluid/falling closure,
+addition and neighbor bodies. [Wooden pressure plates](pressure-plates.md) have
+their actual added, support-neighbor, removal and shared contact/tick bodies.
+Population, complete fluid/falling closure,
 tile/entity effects and general observer dispatch remain unfinished.
 
 ## Source order

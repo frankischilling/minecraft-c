@@ -109,7 +109,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_VL_NO:
             return tick_unavailable(world, block, "vl", "no", error);
         case MC_BLOCK_BV_BC:
-            return tick_unavailable(world, block, "bv", "bc", error);
+            return mc_world_mutation_pressure_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_BS_AZ:
             return tick_unavailable(world, block, "bs", "az", error);
         case MC_BLOCK_DB_BY:

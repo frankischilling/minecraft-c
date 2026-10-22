@@ -3,6 +3,7 @@
 
 #include "mc/entity/movement/effects.h"
 #include "mc/world/runtime/collision/boxes.h"
+#include "mc/world/runtime/mutations.h"
 
 typedef struct mc_world_entity_contact_error {
     mc_world_storage_status status;
@@ -14,11 +15,13 @@ typedef struct mc_world_entity_contact_error {
     mc_world_storage_error cause;
     mc_registry_error registry;
     mc_world_query_error query;
-    /* The full acquiring metadata-read attempt, including actual activation,
-     * loading and population children. query is its immediate World frame. */
+    /* The full outer metadata-guard read, including activation, loading and
+     * population children. query projects the failing World operation; helper
+     * acquisition/query children remain complete in mutation.nearby. */
     mc_world_collision_error metadata;
     mc_entity_error entity;
     mc_entity_effect_error effect;
+    mc_world_mutation_error mutation;
 } mc_world_entity_contact_error;
 
 mc_world_entity_contact_error mc_world_entity_contact_empty_error(void);
@@ -33,8 +36,10 @@ mc_world_entity_contact_error mc_world_entity_contact_empty_error(void);
  * passenger before actual Entity S/P; web only sets the next-move flag; soul
  * sand multiplies current X then Z velocity by exact double0.4; cactus invokes
  * actual nullable-source damage and discards its ordinary bool. Pressure and
- * detector execute remote/metadata guards, then fail explicitly at their
- * unimplemented positive helper calls. No fabricated Class query is used.
+ * detector execute remote/metadata guards. Wooden pressure plates query actual
+ * published entities, notify metadata/neighbors and schedule their release.
+ * Class-filtered pressure queries and the detector's positive helper remain
+ * explicit reached dependencies. No fabricated Class query is used.
  *
  * Unused nullable World/Entity arguments remain unread by the selected source
  * body. Reached World operations require GAME/nonretired owners; reached Entity

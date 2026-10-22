@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_MUTATIONS_H
 
 #include "mc/entity/entity.h"
+#include "mc/world/runtime/collision/entities.h"
 #include "mc/world/runtime/entities.h"
 
 #include "mc/world/runtime/lighting.h"
@@ -42,6 +43,12 @@ typedef struct mc_world_mutation_error {
     /* Snow's neighbor, private survival, support and tick are distinct source
      * frames. Detailed material/light queries retain their own nested sites. */
     unsigned int snow_neighbor_bytecode, snow_bytecode, snow_support_bytecode, snow_tick_bytecode;
+    /* Pressure contact/tick, private update and lifecycle calls are separate
+     * source frames. Bounds and nearby retain the actual reached children. */
+    unsigned int pressure_contact_bytecode, pressure_tick_bytecode, pressure_bytecode;
+    unsigned int pressure_neighbor_bytecode, pressure_removed_bytecode;
+    mc_entity_bounds_error bounds;
+    mc_world_nearby_error nearby;
     /* uk.l/mu.k and ut/mz.b(World,III) are distinct source frames. Preserve
      * their current caller and deepest nested occurrence when a notifying
      * setter reenters removal/finalization; this is not a recursive stack. */

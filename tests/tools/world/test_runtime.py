@@ -17,7 +17,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "temperature-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
-             "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
+             "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes",
              "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement",
              "world-movement-dependencies")
@@ -186,11 +186,11 @@ def main():
                 if args.scenario == "world-lighting-runtime" else "tests/world/runtime/test_light_queue_runtime.c")
         if args.scenario == "world-chunk-objects":
             paths["chunk_object_test"] = ROOT / "tests/world/runtime/test_chunk_objects.c"
-        if args.scenario in ("world-mutations", "world-scheduling", "world-solid-support", "world-fluids"):
+        if args.scenario in ("world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids"):
             paths["mutation_test"] = ROOT / "tests/world/runtime/test_mutations.c"
             paths["mutation_header"] = ROOT / "include/mc/world/runtime/mutations.h"
             paths["chunk_runtime_internal"] = ROOT / "src/world/runtime/chunks_internal.h"
-            for name in ("support", "chunk", "height", "observers", "hooks", "ticks", "fluids", "falling", "drops", "world", "mutation_internal"):
+            for name in ("support", "chunk", "height", "observers", "hooks", "ticks", "fluids", "falling", "snow", "pressure_plate", "pressure_lifecycle", "drops", "world", "mutation_internal"):
                 paths["mutation_" + name] = ROOT / ("src/world/runtime/mutation/" + name +
                     (".h" if name.endswith("_internal") else ".c"))
             paths["world_presence"] = ROOT / "src/world/runtime/presence.c"
@@ -341,7 +341,24 @@ def main():
             })
             if args.scenario == "world-entity-movement":
                 paths["effects_test"] = ROOT / "tests/entity/movement/test_effects.c"
-        if args.scenario == "world-scheduling":
+        if args.scenario in ("world-pressure-plate", "world-entity-movement", "world-piston-tick"):
+            paths.update({
+                "pressure": ROOT / "src/world/runtime/mutation/pressure_plate.c",
+                "pressure_lifecycle": ROOT / "src/world/runtime/mutation/pressure_lifecycle.c",
+                "pressure_fixture": ROOT / "tests/world/runtime/test_entity_publication.c",
+                "contact": ROOT / "src/world/runtime/contact.c",
+                "contact_header": ROOT / "include/mc/world/runtime/contact.h",
+                "mutation_header": ROOT / "include/mc/world/runtime/mutations.h",
+                "mutation_internal": ROOT / "src/world/runtime/mutation/mutation_internal.h",
+                "nearby": ROOT / "src/world/runtime/collision/entities.c",
+                "nearby_header": ROOT / "include/mc/world/runtime/collision/entities.h",
+                "bounds": ROOT / "src/entity/bounds/bounds.c",
+                "entity_publication": ROOT / "src/world/runtime/entity_publication.c",
+                "registry_internal": ROOT / "src/block/registry/registry_internal.h",
+            })
+        if args.scenario == "world-pressure-plate":
+            paths["pressure_test"] = ROOT / "tests/world/runtime/test_pressure_plate.c"
+        if args.scenario in ("world-scheduling", "world-pressure-plate"):
             paths["scheduling_test"] = ROOT / "tests/world/runtime/test_scheduling.c"
             paths["scheduling_header"] = ROOT / "include/mc/world/runtime/scheduling.h"
             paths["scheduling"] = ROOT / "src/world/runtime/scheduling.c"
@@ -377,7 +394,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies"):
+                             "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -402,7 +419,7 @@ def main():
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"],
                                 "complete one-owner acquisition bootstrap diagnostics")
             elif args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick",
-                                   "world-entity-movement", "world-movement-dependencies"):
+                                   "world-entity-movement", "world-movement-dependencies", "world-pressure-plate"):
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
                                 "complete two-owner Piston bootstrap diagnostics")
             text = lines[-1]
@@ -459,9 +476,19 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-pressure-plate":
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
+                              for i in range(8) for slot in (0, 1, 32, 33)}
+            CAPTURE.require(len(timestamps) == 32 and
+                            {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                            "all thirty-two pressure fixture Chunk records remain present")
+            CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
+                            {name for name, _ in expected_slots}, "exact pressure fixture region files")
+            CAPTURE.require({path.name for path in root.glob("world*") if path.is_dir()} ==
+                            {f"world{i}" for i in range(8)}, "exact pressure fixture World owners")
         if args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick",
                              "world-entity-movement", "world-movement-dependencies"):
             chunk_owners = 4 if args.scenario == "world-piston-tick" else 2

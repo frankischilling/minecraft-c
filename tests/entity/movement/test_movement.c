@@ -400,6 +400,16 @@ static bool movement_contacts(fixture *f, size_t side, mc_entity *e, bool item) 
               error.contact.block == f->registry[side]->blocks.m[ids[i]] && e->base.bv == 19 &&
               movement_quiet(f, side, e, 0));
     }
+    /* Contact alone is not query membership. The real wooden helper sees no
+     * published occurrence of this mover and leaves the plate off. */
+    movement_air(f, side);
+    CHECK(movement_input(e, 8.5, 8, 8.5) && movement_cell(f, side, 8, 8, 8, 72, 0));
+    CHECK(mc_entity_move(e, 0, 0, 0, NULL, &error) == MC_ENTITY_OK &&
+          movement_quiet(f, side, e, 0));
+    int32_t wood_metadata = -1;
+    CHECK(mc_world_runtime_metadata_get(f->worlds[side], 8, 8, 8, &wood_metadata, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          wood_metadata == 0 && f->worlds[side]->fields.R->count == 0);
     mc_world_runtime *const w = f->worlds[side];
     mc_world_provider *const provider = w->fields.v;
     const bool remote = w->fields.B;

@@ -97,6 +97,20 @@ bool mc_world_mutation_snow_tick(mc_world_runtime *world, const mc_block *block,
                                  int32_t y, int32_t z, mc_java_random *random,
                                  mc_world_mutation_error *error);
 
+/* Actual bv/bc private update and lifecycle bodies. The enclosing caller holds
+ * the same World and Block. The update owns its pooled bounds/query List lease
+ * until the reached source flow ends; no implicit pool reset or work cap. */
+bool mc_world_mutation_pressure_update(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_pressure_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                     int32_t y, int32_t z, mc_java_random *random,
+                                     mc_world_mutation_error *error);
+bool mc_world_mutation_pressure_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                         int32_t y, int32_t z, int32_t source_id,
+                                         mc_world_mutation_error *error);
+bool mc_world_mutation_pressure_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                        int32_t y, int32_t z, mc_world_mutation_error *error);
+
 /* Actual invokestatic c_(World,III)Z: perform gk/ei declaring active use at the
  * caller's reached invoke, then source body query4/fire18/m29/material42/52.
  * classes is that same application's actual Registry, not an ID palette.

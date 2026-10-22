@@ -226,7 +226,7 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_XR_PD:
             return unavailable(world, block, "xr", "pd", "Block removal hook", error);
         case MC_BLOCK_BV_BC:
-            return unavailable(world, block, "bv", "bc", "Block removal hook", error);
+            return mc_world_mutation_pressure_removed(world, block, x, y, z, error);
         case MC_BLOCK_DB_BY:
             return unavailable(world, block, "db", "by", "Block removal hook", error);
         case MC_BLOCK_OI_IZ:
@@ -333,7 +333,7 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
         case MC_BLOCK_TC_LZ:
             return unavailable(world, block, "tc", "lz", "Block furnace addition hook", error);
         case MC_BLOCK_BV_BC:
-            return unavailable(world, block, "bv", "bc", "Block addition hook", error);
+            return hook_return(error); /* bv/bc.c is itself return0. */
         case MC_BLOCK_DB_BY:
             return unavailable(world, block, "db", "by", "Block addition hook", error);
         case MC_BLOCK_WO_OI:
@@ -434,7 +434,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_XR_PD:
             return unavailable(world, block, "xr", "pd", "Block neighbor hook", error);
         case MC_BLOCK_BV_BC:
-            return unavailable(world, block, "bv", "bc", "Block neighbor hook", error);
+            return mc_world_mutation_pressure_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_DB_BY:
             return unavailable(world, block, "db", "by", "Block neighbor hook", error);
         case MC_BLOCK_OI_IZ:

@@ -14,6 +14,7 @@ mc_world_mutation_error mc_world_mutation_empty_error(void) {
                                      .load_entity = mc_world_entity_load_empty_error(),
                                      .batch = {.index = SIZE_MAX},
                                      .registry = registry,
+                                     .nearby = mc_world_nearby_empty_error(),
                                      .schedule = {.registry = registry}};
 }
 

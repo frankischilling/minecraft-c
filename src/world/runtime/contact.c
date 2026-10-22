@@ -3,6 +3,7 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../entity/entity_internal.h"
 #include "collision/blocks_internal.h"
+#include "mutation/mutation_internal.h"
 #include "runtime_internal.h"
 
 #include <float.h>
@@ -28,6 +29,7 @@ mc_world_entity_contact_error mc_world_entity_contact_empty_error(void) {
     return (mc_world_entity_contact_error){.registry = metadata.nearby.query.registry,
                                            .query = metadata.nearby.query,
                                            .metadata = metadata,
+                                           .mutation = mc_world_mutation_empty_error(),
                                            .effect = mc_entity_effect_empty_error()};
 }
 
@@ -149,9 +151,19 @@ static mc_world_storage_status guarded_plate(mc_world_runtime *world, const mc_b
             frame->cause = frame->query.cause;
         } else if (detector ? ((uint32_t)metadata & 8u) == 0u : metadata != 1) {
             frame->bytecode = detector ? 35u : 27u;
-            status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          detector ? "Detector contact positive helper f is not implemented"
-                                   : "Pressure contact positive helper h/g is not implemented");
+            if (detector) {
+                status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Detector contact positive helper f is not implemented");
+            } else if (!mc_world_mutation_pressure_update(world, block, x, y, z,
+                                                          &frame->mutation)) {
+                frame->mutation.pressure_contact_bytecode = 27;
+                frame->helper_bytecode = frame->mutation.pressure_bytecode;
+                status = frame->status = frame->mutation.status;
+                frame->operation = frame->mutation.operation;
+                frame->cause = frame->mutation.cause;
+                frame->query = frame->mutation.query;
+                frame->registry = frame->mutation.registry;
+            }
         }
     }
     mc_world_runtime_call_leave(world);

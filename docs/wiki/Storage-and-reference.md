@@ -1,5 +1,16 @@
 # Storage and original references
 
+## Wooden pressure-plate checkpoint
+
+The [pressure implementation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
+uses actual published entities, pooled bounds, ordered notifying transitions,
+support/removal hooks and shared contact/tick scheduling. Each host passes 529
+constructed pressure checks within complete 170/172/172 MSVC/GCC/Clang suites,
+with zero skips. Eight real Worlds retain thirty-two serialized fixture chunks.
+Those saved records are inputs, not final pressure state or original observations.
+Class-filtered categories, detector rails, concrete observers and tick draining
+remain unfinished; original pressure-plate runtime equality is unverified.
+
 ## Singleton state-shape checkpoint
 
 All 15 Block overrides and the base state-shape body are implemented. MovingPiston

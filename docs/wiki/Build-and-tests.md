@@ -1,15 +1,19 @@
 # Build and tests
 
-Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+Fresh full local suites pass all 170 MSVC and all 172 tests on each GCC/Clang build, with zero skips.
 Controller mirrors and lifecycle checks also pass.
-Linux uses ASan/UBSan/leak checks and a byte-identical 940-file source copy on
+Linux uses ASan/UBSan/leak checks and a byte-identical 945-file source copy on
 Linux storage. The mounted-source timeout attempts remain retained; no deadline
 was relaxed. The expanded Piston geometry contract passes 386 checks per compiler.
-Changed C files and headers pass clang-format 18 with the requested style.
+All 486 C files and headers pass clang-format 18 with the requested style.
+The wooden pressure-plate case passes 529 checks per host; movement passes 556.
+These native contracts do not establish original pressure-plate runtime equality.
+Validation prose was added after execution; implementation/test/driver bytes are
+unchanged. The [pressure contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md) records its scope.
 
 The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
 records commands, ownership, source-copy checks and remaining original-acceptance
-limits. [Hosted checks at `eab4533`](https://github.com/frankischilling/minecraft-c/actions/runs/39705949294) also pass.
+limits. Earlier [hosted checks at `eab4533`](https://github.com/frankischilling/minecraft-c/actions/runs/39705949294) also pass.
 At the earlier exact `ee5a52b` checkpoint,
 [hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39700565668)
 passed 169 Windows and 171 tests per Linux compiler, plus 483-file formatting.
