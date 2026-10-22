@@ -25,6 +25,8 @@ native failure control. Original/native inventory, NBT and storage equality
 remains pending. The historical finite constructor comparison at `39edf12`
 retains its original inputs and projection.
 
+### Earlier CMake D probe
+
 The full suites retain thirteen tree inventories and use a 1,009-file source copy
 based on public `3fb0881`. The final source changes only the storage test's
 Python REALPATH registration. A separate GCC one-test probe selects the real
@@ -32,6 +34,42 @@ interpreter through `/usr/bin/python3`; all 354 compile commands and 182 test
 registrations match after source/build-root substitution. That probe is
 separate from the three full-suite runs and adds no new committed or hosted
 validation result.
+
+### Hosted checkpoint and CMake E probes
+
+Hosted `5ddb4f0` run `39855800472` passed 543 of 544 CTests. Windows passed
+179/180, with the storage driver's redirected Python 3.12.10 `python3.exe`
+refused before native launch; GCC and Clang passed 182 each. All 540-file
+formatting and Linux mirror/interval checks passed. Windows mirror/interval
+checks were skipped after the failure.
+
+CMake E has separate passing one-test probes: MSVC through a directory-junction
+path to `C:\Python314\python.exe`, and sanitized GCC through the
+`/usr/bin/python3` file symlink to `/usr/bin/python3.12`. Each passes 335 native
+checks/14 cases plus 314 disk checks over six regions and eight metadata/session
+owners. Windows joins all 354 compile commands and 180 test names/properties to
+B after root substitution. GCC checks 354 configured commands, including 339
+strict project commands, and 182 retained B test names/properties; its historical
+B/C compile-command files were unavailable. Both probes retain stable 1,011-file
+source/public-parent maps and fifteen frozen input trees. CMake E alone differs.
+
+The [detailed record](reference/minecart-inventory-nbt.md#hosted-checkpoint-and-cmake-e-probes)
+keeps those probes separate from the full B suites. The Windows junction probe
+does not cover the hosted file-alias case. The CMake-only fix is committed at
+`dd560492`. Neither probe establishes original Minecart equality.
+
+### Corrected hosted checkpoint
+
+The [exact-head hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39859975602)
+at `dd560492` passes all 544 CTest executions: 180 MSVC 19.44.35229.0,
+182 GCC 13.3.0 and 182 Clang 18.1.3, with zero failures, errors or skips.
+Storage passes on every host. Formatting checks all 540 C/header files;
+all three hosts pass mirrors and 556 positive/2,011 negative lifecycle
+interval controls. All four actual checkouts share the merge tree matching
+that code commit, with all 1,011 source/blob pins stable. The
+[closed checkpoint record](reference/minecart-inventory-nbt.md#corrected-hosted-checkpoint)
+retains the full log/audit identities. This adds no new original-runtime
+inventory, NBT or storage equality.
 
 ## Earlier power and rail checkpoint
 

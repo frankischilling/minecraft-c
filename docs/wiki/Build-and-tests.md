@@ -8,11 +8,47 @@ files. See the [inventory contract](https://github.com/frankischilling/minecraft
 Each host passes inventory 598 checks/40 cases, NBT 558/40 and storage 335/14;
 the storage driver adds 314 disk checks over six regions and eight metadata
 files. Constructor and detector regressions pass 7,270/164 and 208/24.
+
+### Earlier CMake D probe
+
 The full runs retain thirteen tree inventories and use 1,009 source files based on
 `3fb0881`. Only the final storage Python REALPATH registration differs; its
 separate GCC storage probe preserves all 354 compile commands and 182 test
 registrations after root substitution. This is not another three-host full
 run or a new hosted result. Original inventory/NBT/storage equality is pending.
+
+### Hosted checkpoint and CMake E probes
+
+Hosted `5ddb4f0` run `39855800472` passed 543/544 CTests: Windows 179/180,
+GCC 182 and Clang 182. The Windows storage driver refused the redirected
+Python 3.12.10 `python3.exe` path before native launch. Formatting passed for
+540 files and Linux mirrors/intervals passed; Windows mirrors/intervals were
+skipped after the failure.
+
+Separate CMake E storage probes pass on MSVC through a directory junction and
+on sanitized GCC through the `/usr/bin/python3` file symlink. Each passes
+335 native checks/14 cases and 314 disk checks over six regions and eight
+metadata/session owners. The Windows probe joins all 354 compile commands and
+180 test registrations to B after root substitution. GCC checks all 354
+configured commands and 182 retained test names/properties, with historical
+B/C compile-command files unavailable. Both retain stable 1,011-file source
+and public-parent maps plus fifteen frozen trees; only CMake E differs.
+
+These are two one-test probes, not another full three-host suite. The Windows
+junction probe does not cover the hosted file alias. The CMake-only fix is
+committed at `dd560492`. See the [probe record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#hosted-checkpoint-and-cmake-e-probes).
+
+### Corrected hosted checkpoint
+
+The [hosted run at `dd560492`](https://github.com/frankischilling/minecraft-c/actions/runs/39859975602)
+passes all 544 CTest executions: 180 MSVC 19.44.35229.0, 182 GCC 13.3.0 and
+182 Clang 18.1.3, with zero failures, errors or skips. Storage passes on all
+three hosts. Formatting checks 540 C/header files; every host passes mirrors
+and all 556 positive/2,011 negative lifecycle interval controls. All four
+checkouts share the merge tree matching that code commit, with all 1,011
+source/blob pins stable. The [closed checkpoint record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#corrected-hosted-checkpoint)
+retains the full log/audit identities. Original inventory/NBT/storage equality
+remains unestablished.
 
 ## Previous committed checkpoint
 

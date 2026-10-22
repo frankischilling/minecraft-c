@@ -185,6 +185,80 @@ matched B after literal root replacement. Production C/H, fixtures and driver
 bytes remained identical to B; the 1,009 source files, 995 public-parent files
 and 14 frozen input trees stayed stable.
 
-This focused probe covers the interpreter change. The three-host table above
-is the full B run. A final committed-source binding and hosted CI result for
-this inventory/NBT/storage increment remain pending.
+### Hosted checkpoint and CMake E probes
+
+Hosted run `39855800472` at `5ddb4f0` passed 543 of 544 CTests. Windows passed
+179 of 180; its storage driver refused the redirected Python 3.12.10
+`python3.exe` path before launching the native child. GCC and Clang each passed
+182 tests. Formatting passed for 540 C/header files, as did Linux mirrors and
+intervals. Windows mirror/interval checks were skipped after the failure.
+This checkpoint is not an all-pass result.
+
+CMake E asks the selected Python to resolve its own `sys.executable` strictly,
+then uses that concrete path only for the storage test. Its two focused probes
+passed configuration, build and one storage CTest each:
+
+| Probe | Registered/executed interpreter | Storage result |
+| --- | --- | --- |
+| MSVC, directory-junction path | `C:\Python314\python.exe` | 335 native checks/14 source cases and 314 disk checks |
+| GCC, `/usr/bin/python3` file symlink | `/usr/bin/python3.12` | 335 native checks/14 source cases and 314 disk checks |
+
+Each driver checked six region files and eight metadata/session owners. The
+Windows audit joined all 354 compile commands and 180 registered test names
+and properties to full B after root substitution. Historical Linux B/C
+compile-command files were unavailable because their temporary builds were
+absent. The fresh GCC audit instead checked all 354 configured C commands,
+including 339 project-owned commands with strict C17 warnings, floating-point
+and sanitizer flags, and all 182 test names/properties against retained B.
+That missing historical file comparison is a validation limit, not a failed
+storage operation.
+
+Both probes kept their 1,011-file source maps, the 1,011-file `5ddb4f0` public
+parent and fifteen frozen input trees stable; CMake E was the only source
+difference. Driver, tool, control, archive, World-file and full-stream joins
+passed. The closed audit identities are:
+
+| Audit | Bytes | SHA256 |
+| --- | ---: | --- |
+| Windows junction probe | 2,454 | `e680931cc5ace7f90124783039b08e4cfa6745b9db081e0d472577475fc675c8` |
+| GCC file-symlink probe | 16,510 | `83bcd4b4fd0d595bcb88a14a46d865a6a10a011d385afc506629ba08f77c3dbd` |
+
+The CMake-only fix is committed at
+`dd560492c41695ccd933f58cd6e10ead3f004511`. Its 252,641-byte raw-Git/source
+binding, SHA256
+`7aca96e22a4c00f22551ee7ee00658b882122d6f6706552f3fbb69fd4957dd73`,
+joins all 1,011 files to the probed source tree.
+
+The Windows directory-junction probe does not cover the hosted file-alias case.
+These two probes remain separate from a complete three-host suite.
+
+## Corrected hosted checkpoint
+
+The [hosted run at `dd560492`](https://github.com/frankischilling/minecraft-c/actions/runs/39859975602)
+passed all 544 CTest executions, with zero failures, errors or skips:
+
+| Host | Compiler | Passing tests |
+| --- | --- | ---: |
+| Windows | MSVC 19.44.35229.0 | 180 |
+| Linux | GCC 13.3.0 | 182 |
+| Linux | Clang 18.1.3 | 182 |
+
+Storage passed on all three hosts. Formatting checked all 540 C/header files.
+Every host passed controller mirrors and lifecycle intervals, including all
+556 positive and 2,011 negative controls with zero failures. The complete
+individual test-name sets match the retained B inventories; no skipped case
+is counted as a pass.
+
+All four jobs checked out merge `fce01ba9cf5fb14d9640d7d13fb1f5293ef28e7d`.
+Its tree `150c70c058348bc9bdd53e0c6e81c905de9866fe` equals the committed
+`dd560492` tree, and its second parent is that exact code commit. All 1,011
+working-file and raw Git-blob pins remained stable. The complete unfiltered
+closed log contains 4,209 lines and 516,050 bytes, SHA256
+`a0e4e5739d3c35037482957cb05e599ff73e0bb768b1642300217183b02423c2`.
+Its separate 2,191-byte closed audit has SHA256
+`d2ff735936d98a30ee1a401c20eef31a26a169e32514c508f3f49102f5b9d7f5`.
+
+This is hosted native-contract validation. The B suites, earlier D probe,
+CMake E probes and finite constructor comparison retain their own bindings
+and scopes. Original Minecart inventory/NBT/storage equality remains
+unestablished.
