@@ -41,7 +41,7 @@ before its bounds factory. Its previous selected result remains held until the
 next query returns successfully.
 
 The `world.class_entities` case passes 373 checks per host; the Class identity
-and ancestry case passes 13,819. Full suites pass 171 MSVC and 173 tests on each
+and ancestry case passes 13,819. Full suites pass 173 MSVC and 175 tests on each
 sanitized GCC/Clang build without skips. The Class fixture uses both sides,
 eight real Worlds and eight explicit loaded Chunk records. Its retained regions
 are inputs, not final query state or original observations. Tests include result

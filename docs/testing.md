@@ -1,9 +1,17 @@
 # Test scope and reproduction
 
-Fresh full public suites pass all 171 MSVC and all 173 tests on each GCC/Clang build, with zero skips.
+Fresh full public suites pass all 173 MSVC and all 175 tests on each GCC/Clang build, with zero skips.
 Java standard-library numerical comparisons are enabled;
 original-JAR comparison options remain off. Linux enables ASan, UBSan and leak
 checks. The same per-test deadlines and output policies remain in force.
+
+The [power case](world/power.md) passes 7,593 checks per host using two real GAME
+Worlds and two loaded Chunk records. It covers all 69 kinds, metadata/side
+matrices, ordered neighbors, conduction, complete wire output/connectivity,
+late namespace reads, guarded getters and nested failure frames. The separate
+horizontal-direction case passes 359 checks, including all seven allocation
+failure cuts and retained-array captures. Existing public solid support passes
+4,359 checks. No executed-original power comparison is claimed.
 
 The [Class-query case](world/class-entities.md) passes 373 checks per host using
 eight real Worlds and eight loaded Chunk records. It checks fresh result
@@ -27,6 +35,9 @@ lazy invalid-Tile cleanup and hold/pool preservation.
 
 | Case | Checks per host |
 | --- | ---: |
+| `world.power` | 7,593 |
+| `block.horizontal_directions` | 359 |
+| `world.solid_support` | 4,359 |
 | `world.class_entities` | 373 |
 | `entity.classes` | 13,819 |
 | `world.pressure_plate` | 561 |
@@ -44,9 +55,9 @@ Reports retain complete configured/executed CTest names, zero-skip JUnit results
 command arguments, actual child PIDs/exits, full stdout/stderr and before/after
 source maps. Controller mirrors and lifecycle interval checks also pass. The
 Windows run uses the working tree. Linux uses a fresh native-filesystem source
-copy with all 950 public file bytes equal to the working tree before and after
+copy with all 961 public file bytes equal to the working tree before and after
 execution. Validation prose was added afterward; implementation, test and driver
-bytes remain unchanged. All 490 C files and headers pass clang-format 18. These
+bytes remain unchanged. All 499 C files and headers pass clang-format 18. These
 are public regression results, not complete original acceptance.
 
 Earlier Linux runs using `/mnt/c` sources each hit the existing 180-second

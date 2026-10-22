@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+[World power queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/power.md)
+preserve ordered neighbors, solid-block conduction and concrete Block outputs.
+Full wire connectivity uses the actual separate horizontal-direction class,
+including lazy allocation and failure prefixes. World and Block namespaces
+remain distinct, and nested failures retain their actual acquisition children.
+Propagation, redstone lifecycle, rail integration and original power-runtime
+equality remain unfinished.
+
 [Pressure plates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
 query the real World entity slices and preserve pooled bounds, mutable List
 identity, metadata/neighbor/range/sound order and actual schedule insertion.

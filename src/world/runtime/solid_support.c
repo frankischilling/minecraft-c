@@ -1,7 +1,9 @@
+#include "block_queries_internal.h"
 #include "runtime_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "collision/blocks_internal.h"
 #include "mc/world/runtime/blocks.h"
 
 static mc_world_solid_support_error empty_error(void) {
@@ -133,7 +135,8 @@ static mc_registry_status block_predicate(const mc_block *block, bool *out,
  * No new borrow, array snapshot or coordinate preflight is introduced here. */
 static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x, int32_t y,
                                              int32_t z, bool *out,
-                                             mc_world_solid_support_error *error) {
+                                             mc_world_solid_support_error *error,
+                                             mc_world_nearby_error *access) {
     error->bytecode = 0;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     mc_registry_error cause = empty_error().registry;
@@ -148,13 +151,25 @@ static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x,
 
     error->bytecode = 7;
     int32_t id;
-    mc_world_storage_status status = mc_world_runtime_block_get(world, x, y, z, &id, &error->cause);
+    mc_world_storage_status status;
+    if (access == NULL) {
+        status = mc_world_runtime_block_get(world, x, y, z, &id, &error->cause);
+    } else {
+        mc_world_collision_error lower = mc_world_collision_empty_error();
+        status = mc_world_collision_block_value_held(world, x, y, z, false, &id, &lower);
+        if (status != MC_WORLD_STORAGE_OK) {
+            *access = lower.nearby;
+            error->cause = lower.nearby.query.cause;
+            error->registry = lower.nearby.query.registry;
+        }
+    }
     if (status != MC_WORLD_STORAGE_OK) {
         error->status = status;
         error->operation = error->cause.operation;
         world->last_error = error->cause;
-        /* block_get exposes only its storage cause. Do not manufacture a
-         * newly reached Registry cause from World.last_registry_error. */
+        /* The public getter exposes only its storage cause. The held reader
+         * supplies its own complete child above; neither path infers a newly
+         * reached Registry cause from World.last_registry_error. */
         return status;
     }
 
@@ -191,6 +206,26 @@ static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x,
     return MC_WORLD_STORAGE_OK;
 }
 
+mc_world_storage_status
+mc_world_solid_support_detailed_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                     bool *out, mc_world_solid_support_detail *detail) {
+    mc_world_solid_support_detail frame = {.error = empty_error(),
+                                           .access = mc_world_nearby_empty_error()};
+    mc_world_storage_status status;
+    if (world == NULL || out == NULL) {
+        status = admission(&frame.error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                           "World solid-support held arguments");
+    } else {
+        status = solid_support(world, x, y, z, out, &frame.error, &frame.access);
+        if (status == MC_WORLD_STORAGE_OK)
+            frame = (mc_world_solid_support_detail){.error = empty_error(),
+                                                    .access = mc_world_nearby_empty_error()};
+    }
+    if (detail != NULL)
+        *detail = frame;
+    return status;
+}
+
 mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *world, int32_t x,
                                                            int32_t y, int32_t z, bool *out,
                                                            mc_world_solid_support_error *error) {
@@ -208,7 +243,7 @@ mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *wor
             frame.status = status;
             frame.operation = frame.cause.operation;
         } else {
-            status = solid_support(world, x, y, z, out, &frame);
+            status = solid_support(world, x, y, z, out, &frame, NULL);
             mc_world_runtime_call_leave(world);
             if (status == MC_WORLD_STORAGE_OK)
                 frame = empty_error();

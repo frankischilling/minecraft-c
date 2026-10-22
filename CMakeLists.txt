@@ -129,6 +129,7 @@ add_library(mc_registry STATIC
     src/block/registry/registry.c
     src/block/registry/runtime.c
     src/block/registry/directions.c
+    src/block/registry/horizontal_directions.c
     src/block/registry/falling.c
     src/block/registry/class_initializers.c
     src/block/registry/constructors.c
@@ -244,6 +245,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
     src/world/runtime/solid_support.c
+    src/world/runtime/power/world.c
+    src/world/runtime/power/blocks.c
     src/world/runtime/presentation.c
     src/world/runtime/entity_publication.c
     src/world/runtime/collision/entities.c
@@ -515,6 +518,9 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_solid_support tests/world/runtime/test_solid_support.c)
     target_link_libraries(mc_test_world_solid_support PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_world_power tests/world/runtime/power/test_power.c)
+    target_link_libraries(mc_test_world_power PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_world_queries tests/world/runtime/test_queries.c)
     target_link_libraries(mc_test_world_queries PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
@@ -555,6 +561,11 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_directions PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME block.directions COMMAND mc_test_directions)
     set_tests_properties(block.directions PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_horizontal_directions tests/block/registry/test_horizontal_directions.c)
+    target_link_libraries(mc_test_horizontal_directions PRIVATE mc_registry mc_c_atomics mc_build_options)
+    add_test(NAME block.horizontal_directions COMMAND mc_test_horizontal_directions)
+    set_tests_properties(block.horizontal_directions PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
     add_executable(mc_world_nearby_values_probe tests/world/runtime/collision/nearby_probe.c)
     target_link_libraries(mc_world_nearby_values_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1220,6 +1231,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-solid-support-contracts")
     set_tests_properties(world.solid_support PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.power
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_power>"
+        --scenario world-power
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-power-contracts")
+    set_tests_properties(world.power PROPERTIES
+        LABELS "public;integration;ownership;power" TIMEOUT 90)
 
     add_test(NAME world.entity_publication
         COMMAND "${Python3_EXECUTABLE}"

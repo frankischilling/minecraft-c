@@ -1,11 +1,14 @@
 # Build and tests
 
-Fresh full local suites pass all 171 MSVC and all 173 tests on each GCC/Clang build, with zero skips.
+Fresh full local suites pass all 173 MSVC and all 175 tests on each GCC/Clang build, with zero skips.
 Controller mirrors and lifecycle checks also pass.
-Linux uses ASan/UBSan/leak checks and a byte-identical 950-file source copy on
+Linux uses ASan/UBSan/leak checks and a byte-identical 961-file source copy on
 Linux storage. The mounted-source timeout attempts remain retained; no deadline
 was relaxed. The expanded Piston geometry contract passes 386 checks per compiler.
-All 490 C files and headers pass clang-format 18 with the requested style.
+All 499 C files and headers pass clang-format 18 with the requested style.
+Power queries pass 7,593 checks per host, horizontal directions 359 and existing
+public support 4,359. Power uses two real Worlds and two loaded records; its
+source and native checks do not establish original power-runtime equality.
 Class queries pass 373 checks per host; passive identity/ancestry passes 13,819,
 pressure plates pass 561 and movement passes 560. The Class fixture uses eight
 Worlds/eight loaded records; pressure uses eight Worlds/thirty-two records.

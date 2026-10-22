@@ -1,12 +1,22 @@
 # Storage and original references
 
+## World power queries
+
+The [power source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/power.md)
+records the four World methods, all concrete outputs, full wire connectivity
+and the independent horizontal-direction initializer. Each host passes 7,593
+power and 359 horizontal-direction checks. The real two-World fixture retains
+two input Chunk records and explicit clocks. Complete suites pass 173/175/175
+MSVC/GCC/Clang cases without skips. These are constructed native contracts;
+original power-runtime equality and redstone/rail lifecycle remain unfinished.
+
 ## Class queries and pressure plates
 
 The [pressure implementation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
 uses actual published entities, pooled bounds, ordered notifying transitions,
 support/removal hooks and shared contact/tick scheduling. Living/Player categories
 use actual Class traversal and fresh results independent of R. Each host passes
-373 Class-query and 561 pressure checks within complete 171/173/173
+373 Class-query and 561 pressure checks within complete 173/175/175
 MSVC/GCC/Clang suites, with zero skips. The passive Class identity/ancestry case
 passes 13,819 checks and preserves 24 registrations. The Class fixture has eight
 Worlds/eight serialized records; pressure has eight Worlds/thirty-two records.

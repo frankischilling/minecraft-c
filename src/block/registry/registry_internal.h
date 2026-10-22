@@ -321,6 +321,15 @@ struct mc_registry_classes {
     /* One native hold on the actual canonical Entity Class owner. Existing
      * logical Biome cells remain inline and are never moved or replaced. */
     mc_entity_classes *entities;
+    /* Independent jj/ge horizontal tables. Source projections may be replaced
+     * or NULL; arena provenance retains all original arrays, including the
+     * unpublished matrix/rows of a failed initializer prefix. */
+    mc_registry_class_state horizontal_state;
+    int32_t *horizontal_a, *horizontal_b;
+    int32_t **horizontal_c;
+    int32_t *horizontal_storage[2];
+    int32_t **horizontal_c_storage;
+    int32_t *horizontal_rows[4];
 };
 
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,

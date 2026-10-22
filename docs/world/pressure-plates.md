@@ -71,7 +71,7 @@ scheduler limits that retain metadata or F membership after a later failure.
 Native views, records, Worlds,
 Chunks and Entity holds retire through their real owner APIs.
 
-All 171 MSVC and 173 cases per GCC/Clang public suite pass without skips; the
+All 173 MSVC and 175 cases per GCC/Clang public suite pass without skips; the
 movement regression passes 560 checks per host. The retained capture includes
 inputs, complete streams and all thirty-two fixture region slots with their
 explicit timestamps. Those regions are fixture inputs, not saved final pressure

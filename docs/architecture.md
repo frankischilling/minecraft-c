@@ -1,5 +1,12 @@
 # Runtime boundaries
 
+[Power queries](world/power.md) own the ordered World/support/conductor/output
+chain. Concrete Block dispatch and full wire connectivity keep the receiver's
+defining Registry separate from the supplied World. The independent horizontal
+class owns its lazy tables and failure prefixes. Detailed held support shares
+the public predicate body while retaining complete acquisition errors. Queries
+preserve source effects and do not advance redstone state.
+
 [Pressure plates](world/pressure-plates.md) share one real update helper
 between contact and scheduled ticks. The Block's defining classes own the pooled
 query bounds; the passed World owns the actual entity slices. Category a uses

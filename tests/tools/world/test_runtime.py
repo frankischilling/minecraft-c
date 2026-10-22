@@ -17,7 +17,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "temperature-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
-             "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
+             "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes",
              "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement",
              "world-movement-dependencies")
@@ -200,6 +200,22 @@ def main():
             paths["solid_support"] = ROOT / "src/world/runtime/solid_support.c"
             paths["presentation"] = ROOT / "src/world/runtime/presentation.c"
             paths["presentation_header"] = ROOT / "include/mc/world/runtime/presentation.h"
+        if args.scenario == "world-power":
+            paths.update({
+                "power_test": ROOT / "tests/world/runtime/power/test_power.c",
+                "power_header": ROOT / "include/mc/world/runtime/power/power.h",
+                "power_internal": ROOT / "src/world/runtime/power/power_internal.h",
+                "power_world": ROOT / "src/world/runtime/power/world.c",
+                "power_blocks": ROOT / "src/world/runtime/power/blocks.c",
+                "solid_support": ROOT / "src/world/runtime/solid_support.c",
+                "block_queries_internal": ROOT / "src/world/runtime/block_queries_internal.h",
+                "collision_blocks": ROOT / "src/world/runtime/collision/blocks.c",
+                "collision_blocks_internal": ROOT / "src/world/runtime/collision/blocks_internal.h",
+                "horizontal_directions": ROOT / "src/block/registry/horizontal_directions.c",
+                "horizontal_directions_internal": ROOT / "src/block/registry/horizontal_directions_internal.h",
+                "registry_internal": ROOT / "src/block/registry/registry_internal.h",
+                "entity_publication_fixture": ROOT / "tests/world/runtime/test_entity_publication.c",
+            })
         if args.scenario == "world-queries":
             paths.update({
                 "query_test": ROOT / "tests/world/runtime/test_queries.c",
@@ -405,7 +421,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies"):
+                             "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -430,7 +446,7 @@ def main():
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"],
                                 "complete one-owner acquisition bootstrap diagnostics")
             elif args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick",
-                                   "world-entity-movement", "world-movement-dependencies", "world-pressure-plate", "world-class-entities"):
+                                   "world-entity-movement", "world-movement-dependencies", "world-pressure-plate", "world-class-entities", "world-power"):
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
                                 "complete two-owner Piston bootstrap diagnostics")
             text = lines[-1]
@@ -487,9 +503,22 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-power":
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(2)}
+            CAPTURE.require(len(timestamps) == 2 and
+                            {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                            "two exact power fixture Chunk records")
+            CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
+                            {name for name, _ in expected_slots}, "exact power fixture region files")
+            CAPTURE.require({path.name for path in root.glob("world*") if path.is_dir()} ==
+                            {"world0", "world1"}, "two exact power Store owners")
+            for i in range(2):
+                CAPTURE.require((root / f"world{i}/level.dat").is_file() and
+                                (root / f"world{i}/session.lock").read_bytes() == struct.pack(">q", 137),
+                                "power metadata and native session owner")
         if args.scenario == "world-class-entities":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(8)}
             CAPTURE.require(len(timestamps) == 8 and
