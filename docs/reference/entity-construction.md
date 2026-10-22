@@ -10,8 +10,11 @@ and recorded-input scalar formula replay.
 
 The [Minecart source map](minecart-construction.md) records its separate
 initializer, constructors and publication path, with passing native contracts
-on MSVC, GCC and Clang. Original Minecart runtime observations remain
-unverified; the Item results below retain their recorded inputs and source scope.
+on MSVC, GCC and Clang and an [exact committed hosted checkpoint](minecart-construction.md#committed-and-hosted-checkpoint)
+at `39edf12`. Its separate [original/Windows MSVC constructor comparison](minecart-construction.md#constructor-observations-and-qualification)
+matches all ten literal null-World inputs per client/server side, with zero
+mismatches across the complete declared projections. The Item results below
+retain their recorded inputs and source scope.
 
 ## Original methods and installed support
 

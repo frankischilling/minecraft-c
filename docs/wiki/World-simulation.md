@@ -18,12 +18,37 @@ sites and the actual lower errors.
 The native rail fixture passes 814 checks across 144 literal real-World cases
 per host. A separate pure error-transport fixture passes 1,444 checks across 94
 constructed records; those records are not observed gameplay errors. Complete
-suites pass 175 MSVC and 177 GCC/Clang tests without skips, with Linux sanitizers
-and leak checks. Formatting passes for 515 C/header files.
+suites at that rail checkpoint passed 175 MSVC and 177 GCC/Clang tests. Later
+Minecart validation has its own source and hosted checkpoint below.
 
-Positive Minecart construction and detection, ordinary positive rail-drop
-publication, gameplay rail physics, scheduled draining and rendering remain
-unverified. There is no executed-original rail comparison.
+Ordinary positive rail-drop publication, gameplay rail physics, scheduled
+draining and rendering remain unverified. There is no executed-original rail
+comparison.
+
+## Minecart construction and detection
+
+The [Minecart contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart.md)
+implements the class array graph, both constructors and real World/Chunk
+publication. Actual Class-query membership now drives positive detector contact,
+deferred scheduling and deactivation. The local contract tests pass 7,270
+constructor checks across 164 cases and 196 detector checks across 24 literal
+cases per compiler. These are constructed native scenarios, not original
+Minecart observations.
+
+[Hosted validation at `39edf12`](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#committed-and-hosted-checkpoint)
+passes all 177 MSVC and 179 GCC/Clang tests, zero failures/errors/skips,
+527-file formatting and the separate mirror/interval checks. Linux uses
+ASan/UBSan and leak checks. The linked source map keeps the earlier failed
+Windows build and local D result separate from that committed checkpoint.
+
+A separate [original/Windows MSVC constructor comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#constructor-observations-and-qualification)
+at `39edf12` matches all ten literal null-World inputs per client/server side,
+with zero mismatches across the full typed declared projections. Both capture
+sets passed all 22 protocol and ownership rules. These observations contain
+no World publication, detector or rail call. Inventory operations, NBT,
+concrete movement/collision, active Minecart ticks and rail travel remain
+unfinished. The C runtime and native contract tests require no JVM; original
+archives and Java tools remain optional reference-development dependencies.
 
 ## Power and reference observations
 

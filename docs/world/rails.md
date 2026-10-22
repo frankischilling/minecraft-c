@@ -142,10 +142,16 @@ binds the 977-file tested source, held public baseline and closed receipts.
 These results remain finite native contracts over constructed inputs.
 
 The later [Minecart validation](../reference/minecart-construction.md#native-validation)
-passes 196 detector checks across 24 literal cases on each host within full
-177/179/179 MSVC/GCC/Clang D suites, with zero failures, errors or skips. It
-covers real published membership, positive contact, duplicate scheduling,
-deactivation and retained failure prefixes. Gameplay rail physics, ordinary
+passes 196 detector checks across 24 literal cases on each host within local
+D's full 177/179/179 suites. The committed `39edf12` hosted checkpoint also
+passes all 177/179/179 MSVC/GCC/Clang tests with zero failures, errors or skips.
+The finite detector contract covers real published membership, positive
+contact, duplicate scheduling, deactivation and retained failure prefixes.
+A separate [original/Windows MSVC constructor comparison](../reference/minecart-construction.md#constructor-observations-and-qualification)
+matches all ten null-World inputs per client/server side at `39edf12`, with
+zero mismatches across the full declared projections. It contains no
+publication, detector or rail call.
+Gameplay rail physics, ordinary
 positive rail-drop publication, scheduler draining, rendering and
 original-runtime rail equality remain unverified. The native runtime and
 public contract tests do not require a JVM or original game archives.

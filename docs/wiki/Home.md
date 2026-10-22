@@ -5,14 +5,18 @@ and Linux. There is no playable C client or server yet. The current libraries
 cover compatibility primitives, storage, terrain generation and parts of World
 simulation; the runtime does not require a JVM.
 
-The latest complete native suites pass 175 tests on MSVC and 177 each on GCC and
-Clang, with zero failures or skips. Linux runs use ASan/UBSan and leak checks;
-formatting passes for 515 C/header files. Rail tests pass 814 checks across 144
-literal real-World cases. A separate error-transport fixture passes 1,444 checks
-across 94 constructed records. These results cover the specified native
-contracts, including topology, detector queries and powered search.
+At `39edf12`, hosted validation passes all 177 MSVC and 179 GCC/Clang tests,
+with zero failures, errors or skips, plus 527-file formatting. Linux uses
+ASan/UBSan and leak checks. The separate native rail contracts pass 814 checks
+across 144 literal real-World cases; error transport passes 1,444 checks across
+94 constructed records. Their scope covers topology, detector queries and
+powered search.
 
-A separate finite power comparison at source `9f9d3a2` matches 5,365 literal
+A separate [constructor comparison](World-simulation#minecart-construction-and-detection)
+matches ten null-World inputs per client/server side between the original
+programs and Windows MSVC at `39edf12`.
+
+The earlier finite power comparison at source `9f9d3a2` matches 5,365 literal
 rows per client/server side against the original programs. It compares seven
 snapshot fields, completion and normal-return booleans under the declared
 rules. It does not establish original-runtime rail equality or whole-game

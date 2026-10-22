@@ -1,10 +1,15 @@
-Current validation: all 175 MSVC and 177 GCC/Clang native tests pass with zero
-failures, errors or skips. Linux uses ASan/UBSan and leak checks. Formatting
-passes for 515 C/header files. The rail fixture passes 814 checks across 144
-literal cases; the separate error-transport fixture passes 1,444 checks across
-94 constructed records. Use the [build instructions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md)
+Current committed validation at `39edf12`: all 177 MSVC and 179 GCC/Clang
+tests pass, 535 total, with zero failures, errors or skips. Formatting passes
+for 527 C/header files; all three native jobs pass mirrors and lifecycle
+intervals. Linux uses ASan/UBSan and leak checks. The
+[Minecart validation record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#committed-and-hosted-checkpoint)
+separates this hosted result from earlier local suites and the Windows C4200
+failure. Use the [build instructions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md)
 and [testing guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
-for setup, source scope and the current validation record.
+for setup, source scope and the current validation record. A separate
+original/Windows MSVC constructor comparison at `39edf12` matches all ten
+null-World inputs per client/server side under the complete declared
+projection, with zero mismatches. It covers no publication or detector call.
 
 The complete text below preserves historical build and test checkpoints. Old
 counts, source bindings and limitations belong to those revisions; they are

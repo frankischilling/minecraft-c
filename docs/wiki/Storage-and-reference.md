@@ -4,7 +4,12 @@ literal rows per client/server side. Its seven snapshot fields, completion and
 normal-return booleans have a defined comparison scope. The
 [rail source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/rails.md)
 has separately tested native contracts; original-runtime rail equality remains
-unverified. See [World simulation](World-simulation) and the
+unverified. The [Minecart source and validation map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#committed-and-hosted-checkpoint)
+records the passing `39edf12` hosted checkpoint and native construction/detector
+scope. A separate original/Windows MSVC comparison at that source matches all
+ten null-World constructor inputs per client/server side, with zero mismatches
+across the complete declared projections after full qualification. See
+[World simulation](World-simulation) and the
 [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
 for the current distinctions.
 

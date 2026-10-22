@@ -1,7 +1,11 @@
-Current guide: [World simulation](World-simulation) links the implemented rail,
-power and population contracts. The latest native suites pass 175 MSVC and 177
-GCC/Clang tests without skips; rail tests cover 814 checks across 144 literal
-cases, with separate constructed error-transport tests. See the
+Current guide: [World simulation](World-simulation) links the Minecart, rail,
+power and population contracts. Hosted validation at `39edf12` passes all
+177 MSVC and 179 GCC/Clang tests without skips, plus 527-file formatting.
+Construction and detector membership have finite native contracts. Original
+and Windows MSVC null-World constructor projections match for all ten literal
+inputs per client/server side at `39edf12`. Rail physics and a complete game
+loop remain unfinished.
+See the
 [current architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 and [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
 for scope and remaining work.

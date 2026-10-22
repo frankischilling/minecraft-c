@@ -9,10 +9,12 @@ The [paired source map](../reference/minecart-construction.md) records the exact
 methods and separates this implementation from runtime verification.
 
 Native construction, publication and detector contracts pass on MSVC, GCC
-and Clang. The [validation record](../reference/minecart-construction.md#native-validation)
-gives the sealed source and finite scenario scope. Original Minecart runtime
-observations and equality remain unverified; the earlier Item observations
-and rail contracts retain their own scopes.
+and Clang. [Hosted validation at `39edf12`](../reference/minecart-construction.md#committed-and-hosted-checkpoint)
+passes all 535 configured tests across the three compiler jobs. A separate
+original/Windows MSVC comparison at `39edf12` matches the complete declared
+constructor projections for ten literal null-World inputs per client/server
+side, with zero mismatches. The earlier Item observations and rail contracts
+retain their own scopes.
 
 ## API and construction order
 
@@ -140,17 +142,28 @@ covers class/instance construction and native budgets.
 
 ## Native validation and remaining scope
 
-Each host passes 7,270 constructor checks across 164 cases and 196 detector
-checks across 24 literal cases. Complete D native suites pass all 177 MSVC
-and 179 GCC/Clang tests per host without failures, errors or skips. Controller
-mirrors and lifecycle intervals pass on every host; Linux also runs ASan,
-UBSan and leak checks. The separate focused Windows detector run passes its
-one configured test. The [source and result boundary](../reference/minecart-construction.md#native-validation)
-records the 993-file sealed tree and pending committed-source/hosted-CI binding.
+The local D checkpoint passes 7,270 constructor checks across 164 cases,
+196 detector checks across 24 literal cases and all 177/179/179 native tests.
+The committed `39edf12` checkpoint also passes all 177 MSVC and 179 GCC/Clang
+hosted tests, with zero failures, errors or skips, plus 527-file formatting,
+controller mirrors and lifecycle intervals. Linux uses ASan, UBSan and leak
+checks. A separate local MSVC 19.51 portability check passes both constructor
+and detector tests. The [validation record](../reference/minecart-construction.md#native-validation)
+keeps those results and their source bindings separate.
+
+The [constructor comparison](../reference/minecart-construction.md#constructor-observations-and-qualification)
+matches all ten literal null-World inputs per client/server side between the
+original programs and Windows MSVC at `39edf12`. Both capture sets passed all
+22 protocol and ownership rules before comparison. Full typed declared
+projections match with zero mismatches, including the actual arrays, raw
+Entity IDs/counter and bounded identity roles. These observations cover no
+World publication or detector call; those retain the separate native contract
+scope above.
 
 Inventory operations, Minecart NBT/factory/provenance, concrete collision and
 movement virtuals, active Minecart ticks, rail travel, interaction, damage,
 death/drops, automatic relinking and scheduled-queue draining remain unfinished.
 The existing movement, NBT and collision gates continue to refuse unsupported
 Minecart paths. Construction and real detector membership do not establish
-gameplay completeness or original-runtime equality.
+gameplay completeness. The finite null-World constructor result above does
+not establish equality for publication, detection or rail physics.

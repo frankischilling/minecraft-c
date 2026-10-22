@@ -2,17 +2,25 @@
 
 [Minecart construction](entity/minecart.md) implements both constructors, the
 real class array graph and normal World/Chunk publication. Actual Class-query
-membership supplies the detector's positive path. Full D native suites pass
-177 MSVC and 179 GCC/Clang tests per host without failures, errors or skips.
-Each host passes 7,270 constructor checks across 164 cases, 196 detector
-checks across 24 literal cases and the 575-check Piston regression. Controller
-mirrors and lifecycle intervals pass; Linux uses ASan, UBSan and leak checks.
-The [validation record](reference/minecart-construction.md#native-validation)
-identifies the sealed 993-file source and pending committed-source/hosted-CI
-binding. Original Minecart observation work remains at the protocol/source
-stage; runtime observations, original/native equality, movement, NBT, inventory
-operations and rail physics remain unfinished. The earlier rail/power results
-below retain their recorded source scope.
+membership supplies the detector's positive path. [Hosted validation at
+`39edf12`](https://github.com/frankischilling/minecraft-c/actions/runs/39805310937)
+passes all 177 MSVC and 179 GCC/Clang tests: 535 total, with zero failures,
+errors or skips. Formatting passes for 527 C/header files; controller mirrors
+and lifecycle intervals pass on all three jobs. Linux uses ASan, UBSan and
+leak checks. The [validation record](reference/minecart-construction.md#native-validation)
+separates the committed portability checkpoint from local D's 993-file source
+and full 177/179/179 suites, with 164 constructor cases/7,270 checks, 24 literal
+detector cases/196 checks and the 575-check Piston regression. The earlier
+Windows C4200 failure remains recorded as failed.
+
+A separate [Minecart constructor comparison](reference/minecart-construction.md#constructor-observations-and-qualification)
+at `39edf12` matches all ten literal null-World inputs per client/server side
+between the original programs and Windows MSVC, with zero mismatches across
+the full typed declared projections. Both capture sets passed all 22 protocol
+and ownership rules. This finite result covers no publication, detector,
+movement, NBT or rail call. Inventory operations and rail physics remain
+unfinished. The earlier rail/power results below retain their recorded source
+scope.
 
 [Rail topology and lifecycle](world/rails.md) implement the complete connection
 helper, ten shapes, inherited added/neighbor hooks, detector contact/tick/update

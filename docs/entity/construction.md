@@ -11,8 +11,12 @@ records, the class-name save wrapper and the world-only NBT factory.
 The separate [Minecart module](minecart.md) adds its class initializer,
 World-only and positioned constructors, and real detector membership.
 Native Minecart construction/publication/detector contracts pass on all three
-compiler profiles. The Item observations and formula replay described here
-retain their separate inputs and do not cover Minecart or rail physics.
+compiler profiles, including the [committed hosted checkpoint](../reference/minecart-construction.md#committed-and-hosted-checkpoint)
+at `39edf12`. A separate [Minecart constructor comparison](../reference/minecart-construction.md#constructor-observations-and-qualification)
+matches all ten literal null-World inputs per client/server side against
+Windows MSVC, under the complete declared projection with zero mismatches.
+The Item observations and formula replay described here retain their own
+inputs and do not cover Minecart or rail physics.
 
 ## Construction and ownership
 
