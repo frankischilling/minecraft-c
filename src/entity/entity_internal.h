@@ -28,6 +28,8 @@ struct mc_entity_watcher {
     bool dirty;
 };
 
+struct mc_minecart_entity_state;
+
 struct mc_entity {
     mc_entity_classes *classes;
     const mc_entity_class_literal *class_literal;
@@ -45,6 +47,8 @@ struct mc_entity {
      * allocation is outside the direct constructor ledger; the pointer cell
      * remains part of the actual Entity header. Its lifetime follows Entity. */
     mc_nbt_tree *storage_source;
+    /* A real embedded subobject of the Minecart native allocation, else NULL. */
+    struct mc_minecart_entity_state *minecart;
 };
 
 /* Passive actual subtype admission, valid in every phase. The immutable

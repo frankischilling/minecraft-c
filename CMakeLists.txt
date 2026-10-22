@@ -121,6 +121,8 @@ target_link_libraries(mc_block PRIVATE mc_build_options)
 add_library(mc_entity_classes STATIC
     src/entity/nbt/errors.c
     src/entity/classes/classes.c
+    src/entity/classes/memory.c
+    src/entity/minecart/classes.c
     src/entity/bounds/bounds.c
     src/entity/registry/registry.c)
 target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
@@ -281,7 +283,8 @@ add_library(mc_simulation STATIC
     src/world/runtime/generation/caves.c
     src/world/dimension/dimension.c
     src/world/dimension/temperature.c
-    src/entity/entity.c)
+    src/entity/entity.c
+    src/entity/minecart/entity.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
     PRIVATE mc_platform_time mc_platform_text mc_build_options)
@@ -408,6 +411,11 @@ if(BUILD_TESTING)
     add_test(NAME entity.falling COMMAND mc_test_falling_entity)
     set_tests_properties(entity.falling PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_entity_minecart tests/entity/minecart/test_minecart.c)
+    target_link_libraries(mc_test_entity_minecart PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.minecart COMMAND mc_test_entity_minecart)
+    set_tests_properties(entity.minecart PROPERTIES LABELS "public;unit;ownership;constructor")
+
     add_executable(mc_test_entity_nbt tests/entity/nbt/test_nbt.c)
     target_include_directories(mc_test_entity_nbt PRIVATE src/entity src/core/java)
     target_link_libraries(mc_test_entity_nbt PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -529,6 +537,11 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_world_power PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
     target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_minecart_detector
+        tests/world/runtime/rails/test_minecart_detector.c)
+    target_link_libraries(mc_test_world_minecart_detector PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_world_rail_errors tests/world/runtime/rails/test_error_sites.c)
     target_link_libraries(mc_test_world_rail_errors PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME world.rail_errors COMMAND mc_test_world_rail_errors)
@@ -1262,6 +1275,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-rail-contracts")
     set_tests_properties(world.rails PROPERTIES
         LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
+
+    add_test(NAME world.minecart_detector
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_minecart_detector>"
+        --scenario world-minecart-detector
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-minecart-detector-contracts")
+    set_tests_properties(world.minecart_detector PROPERTIES
+        LABELS "public;integration;ownership;entity;mutation")
 
     add_test(NAME world.entity_publication
         COMMAND "${Python3_EXECUTABLE}"

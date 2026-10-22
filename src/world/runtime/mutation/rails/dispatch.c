@@ -45,7 +45,8 @@ bool mc_world_mutation_rail_added_hook(mc_world_runtime *world, const mc_block *
     if (error == NULL)
         return false;
     const rail_caller_prefix caller = caller_prefix(error);
-    mc_rail_lifecycle_error detail = mc_world_mutation_rail_empty_error();
+    mc_rail_lifecycle_error detail;
+    mc_world_mutation_rail_error_init(&detail);
     const bool complete = mc_world_mutation_rail_added(world, block, x, y, z, &detail);
     return dispatch_result(complete, error, &detail.mutation, caller);
 }
@@ -56,7 +57,8 @@ bool mc_world_mutation_rail_neighbor_hook(mc_world_runtime *world, const mc_bloc
     if (error == NULL)
         return false;
     const rail_caller_prefix caller = caller_prefix(error);
-    mc_rail_lifecycle_error detail = mc_world_mutation_rail_empty_error();
+    mc_rail_lifecycle_error detail;
+    mc_world_mutation_rail_error_init(&detail);
     const bool complete =
         mc_world_mutation_rail_neighbor(world, block, x, y, z, source_id, &detail);
     return dispatch_result(complete, error, &detail.mutation, caller);

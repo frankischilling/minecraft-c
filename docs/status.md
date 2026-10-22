@@ -1,11 +1,26 @@
 # Development status
 
+[Minecart construction](entity/minecart.md) implements both constructors, the
+real class array graph and normal World/Chunk publication. Actual Class-query
+membership supplies the detector's positive path. Full D native suites pass
+177 MSVC and 179 GCC/Clang tests per host without failures, errors or skips.
+Each host passes 7,270 constructor checks across 164 cases, 196 detector
+checks across 24 literal cases and the 575-check Piston regression. Controller
+mirrors and lifecycle intervals pass; Linux uses ASan, UBSan and leak checks.
+The [validation record](reference/minecart-construction.md#native-validation)
+identifies the sealed 993-file source and pending committed-source/hosted-CI
+binding. Original Minecart observation work remains at the protocol/source
+stage; runtime observations, original/native equality, movement, NBT, inventory
+operations and rail physics remain unfinished. The earlier rail/power results
+below retain their recorded source scope.
+
 [Rail topology and lifecycle](world/rails.md) implement the complete connection
 helper, ten shapes, inherited added/neighbor hooks, detector contact/tick/update
 and depth-guarded powered search. Real notifying writes retain their earlier
 effects on failure. Explicit current/deepest diagnostic sites preserve typed
-lower errors. Genuine positive Minecart construction and an executed-original
-rail comparison remain unverified.
+lower errors. Real Minecart construction and positive detection have the
+separate native scope above; an executed-original rail comparison remains
+unverified.
 
 [World power queries](world/power.md) execute the four World bodies,
 solid-block conduction and all admitted output/capability bodies, including
@@ -16,7 +31,7 @@ completion and normally returned boolean rules. The 201 target failures per
 side retain separate Java/native error evidence. This finite result does not
 cover rail runtime equality, propagation or whole-game behavior.
 
-Full local native suites pass 175 MSVC and 177 GCC/Clang cases each, with zero
+The earlier rail checkpoint passed 175 MSVC and 177 GCC/Clang cases each, with zero
 skips. Rail contracts pass 814 checks across 144 literal cases per host;
 error transport passes 1,444 checks across 94 constructed cases. Snow and
 movement regressions pass 392 and 564 checks. Power, horizontal directions

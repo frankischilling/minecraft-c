@@ -1,5 +1,9 @@
 #include "bounds/bounds_internal.h"
+#include "classes/memory_internal.h"
+#include "construction_internal.h"
 #include "entity_internal.h"
+#include "minecart/classes_internal.h"
+#include "minecart/entity_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -24,52 +28,29 @@ _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128 && DBL
                    DBL_MAX_EXP == 1024 && FLT_EVAL_METHOD == 0,
                "strict binary32/binary64 evaluation required");
 
-static mc_entity_status result(mc_entity_error *error, mc_entity_status status,
-                               const char *operation, uint16_t bytecode) {
-    if (error != NULL)
-        *error = (mc_entity_error){.status = status, .operation = operation, .bytecode = bytecode};
-    return status;
-}
-
 static void *allocate(mc_entity_classes *classes, mc_entity *entity, size_t bytes,
                       mc_entity_error *error, const char *operation, uint16_t bytecode) {
-    if (classes->allocated_bytes > classes->limits.max_allocation_bytes ||
-        bytes > classes->limits.max_allocation_bytes - classes->allocated_bytes) {
-        result(error, MC_ENTITY_LIMIT, operation, bytecode);
-        return NULL;
-    }
-    void *storage = malloc(bytes);
-    if (storage == NULL) {
-        result(error, MC_ENTITY_ALLOCATION_FAILED, operation, bytecode);
-        return NULL;
-    }
-    classes->allocated_bytes += bytes;
-    if (entity != NULL)
+    void *storage = mc_entity_class_memory_allocate(classes, bytes, error, operation, bytecode);
+    if (storage != NULL && entity != NULL)
         entity->direct_bytes += bytes;
     return storage;
 }
 
 static void retire(mc_entity_classes *classes, mc_entity *entity, void *storage, size_t bytes) {
     if (storage != NULL) {
-        free(storage);
-        classes->allocated_bytes -= bytes;
+        mc_entity_class_memory_retire(classes, storage, bytes);
         if (entity != NULL)
             entity->direct_bytes -= bytes;
     }
 }
 
-static mc_entity_status ensure_entity_class(mc_entity_classes *classes, mc_entity_error *error) {
-    if (classes->entity_phase == MC_ENTITY_CLASS_READY)
-        return MC_ENTITY_OK;
-    if (classes->entity_phase == MC_ENTITY_CLASS_FAILED)
-        return result(error, MC_ENTITY_CLASS_FAILED_STATUS, "entity class initialization", 0);
-    if (classes->entity_phase != MC_ENTITY_CLASS_COLD)
-        return result(error, MC_ENTITY_STATE_ERROR, "entity class initialization", 0);
-    /* sn/lq.<clinit>: the sole effect is the shared plain int counter store. */
-    classes->entity_phase = MC_ENTITY_CLASS_INITIALIZING;
-    classes->next_id = 0;
-    classes->entity_phase = MC_ENTITY_CLASS_READY;
-    return MC_ENTITY_OK;
+void *mc_entity_construction_allocate(mc_entity *entity, size_t bytes, mc_entity_error *error,
+                                      const char *operation, uint16_t bytecode) {
+    return allocate(entity->classes, entity, bytes, error, operation, bytecode);
+}
+
+void mc_entity_construction_retire(mc_entity *entity, void *storage, size_t bytes) {
+    retire(entity->classes, entity, storage, bytes);
 }
 
 static mc_entity_status ensure_watcher_class(mc_entity_classes *classes, mc_entity_error *error) {
@@ -77,9 +58,10 @@ static mc_entity_status ensure_watcher_class(mc_entity_classes *classes, mc_enti
     if (classes->watcher_phase == MC_ENTITY_CLASS_READY)
         return MC_ENTITY_OK;
     if (classes->watcher_phase == MC_ENTITY_CLASS_FAILED)
-        return result(error, MC_ENTITY_CLASS_FAILED_STATUS, "watcher class initialization", 0);
+        return mc_entity_error_set(error, MC_ENTITY_CLASS_FAILED_STATUS,
+                                   "watcher class initialization", 0);
     if (classes->watcher_phase != MC_ENTITY_CLASS_COLD)
-        return result(error, MC_ENTITY_STATE_ERROR, "watcher class initialization", 0);
+        return mc_entity_error_set(error, MC_ENTITY_STATE_ERROR, "watcher class initialization", 0);
     classes->watcher_phase = MC_ENTITY_CLASS_INITIALIZING;
     mc_entity_type_map *map =
         allocate(classes, NULL, sizeof(*map), error, "watcher class initialization", 0);
@@ -157,41 +139,90 @@ mc_entity_base_fields *mc_entity_runtime_fields(mc_entity *entity) {
     return entity == NULL ? NULL : &entity->base;
 }
 
-static mc_entity_status entity_allocate(mc_entity_classes *classes, mc_entity_class_kind kind,
-                                        const char *operation, mc_entity **out,
-                                        mc_entity_error *error) {
+mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_entity_class_kind kind,
+                                              const char *operation, mc_entity **out,
+                                              mc_entity_error *error) {
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
     if (classes == NULL || out == NULL)
-        return result(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
-    mc_entity_status status = ensure_entity_class(classes, error);
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+    size_t bytes;
+    mc_entity_status status;
+    switch (kind) {
+        case MC_ENTITY_CLASS_KIND_ITEM:
+        case MC_ENTITY_CLASS_KIND_FALLING_SAND:
+            bytes = sizeof(mc_entity);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
+        case MC_ENTITY_CLASS_KIND_MINECART:
+            bytes = sizeof(mc_minecart_entity_object);
+            status = mc_minecart_class_initialize(classes, error);
+            break;
+        default:
+            return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+    }
     if (status != MC_ENTITY_OK)
         return status;
     if (classes->live_entities == SIZE_MAX ||
         classes->live_entities >= classes->limits.max_live_entities)
-        return result(error, MC_ENTITY_LIMIT, operation, 0);
-    mc_entity *entity = allocate(classes, NULL, sizeof(*entity), error, operation, 0);
-    if (entity == NULL)
+        return mc_entity_error_set(error, MC_ENTITY_LIMIT, operation, 0);
+    void *storage = allocate(classes, NULL, bytes, error, operation, 0);
+    if (storage == NULL)
         return error->status;
-    *entity = (mc_entity){.classes = classes,
-                          .class_literal = &classes->literals[(size_t)kind],
-                          .holds = 1,
-                          .direct_bytes = sizeof(*entity)};
+    mc_entity *entity;
+    if (kind == MC_ENTITY_CLASS_KIND_MINECART) {
+        mc_minecart_entity_object *object = storage;
+        *object = (mc_minecart_entity_object){0};
+        entity = &object->entity;
+        entity->minecart = &object->state;
+    } else {
+        entity = storage;
+        *entity = (mc_entity){0};
+    }
+    entity->classes = classes;
+    entity->class_literal = &classes->literals[(size_t)kind];
+    entity->holds = 1;
+    entity->direct_bytes = bytes;
     ++classes->live_entities;
     *out = entity;
-    return result(error, MC_ENTITY_OK, NULL, 0);
+    return mc_entity_error_set(error, MC_ENTITY_OK, NULL, 0);
+}
+
+mc_entity_status mc_entity_constructor_begin(mc_entity *entity, mc_entity_class_kind kind,
+                                             mc_world_runtime *world, const char *operation,
+                                             const char *profile_operation,
+                                             mc_entity_error *error) {
+    if (!mc_entity_is_kind(entity, kind))
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+    if (entity->phase != MC_ENTITY_RAW)
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_PHASE, operation, 0);
+    if (world != NULL && mc_world_runtime_random_profile(world) != entity->classes->profile)
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, profile_operation, 0);
+    entity->phase = MC_ENTITY_CONSTRUCTING;
+    return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_constructor_finish(mc_entity *entity, mc_entity_status status,
+                                              mc_entity_error *error) {
+    if (status != MC_ENTITY_OK) {
+        entity->phase = MC_ENTITY_FAILED_CONSTRUCTION;
+        return status;
+    }
+    entity->phase = MC_ENTITY_READY;
+    return mc_entity_error_set(error, MC_ENTITY_OK, NULL, 0);
 }
 
 mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity **out,
                                          mc_entity_error *error) {
-    return entity_allocate(classes, MC_ENTITY_CLASS_KIND_ITEM, "item allocation", out, error);
+    return mc_entity_allocate_canonical(classes, MC_ENTITY_CLASS_KIND_ITEM, "item allocation", out,
+                                        error);
 }
 
 mc_entity_status mc_falling_entity_allocate(mc_entity_classes *classes, mc_entity **out,
                                             mc_entity_error *error) {
-    return entity_allocate(classes, MC_ENTITY_CLASS_KIND_FALLING_SAND, "falling allocation", out,
-                           error);
+    return mc_entity_allocate_canonical(classes, MC_ENTITY_CLASS_KIND_FALLING_SAND,
+                                        "falling allocation", out, error);
 }
 
 void mc_entity_source_position(mc_entity *entity, double x, double y, double z) {
@@ -238,7 +269,7 @@ static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *e
     while (type != NULL && type->kind != 0)
         type = type->next;
     if (type == NULL || type->value != 0 || entity->watcher->map->size != 0)
-        return result(error, MC_ENTITY_STATE_ERROR, "watcher registration", 7);
+        return mc_entity_error_set(error, MC_ENTITY_STATE_ERROR, "watcher registration", 7);
     mc_entity_watch_record *record =
         allocate(entity->classes, entity, sizeof(*record), error, "watcher registration", 144);
     if (record == NULL)
@@ -260,8 +291,8 @@ static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *e
     return MC_ENTITY_OK;
 }
 
-static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *world,
-                                         mc_entity_error *error) {
+mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,
+                                          mc_entity_error *error) {
     mc_entity_classes *classes = entity->classes;
     const int32_t id = classes->next_id;
     classes->next_id = mc_java_i32_add(id, 1);
@@ -306,7 +337,7 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
                       : mc_world_runtime_construct_default_random(world, random);
     if (profile_status != MC_JAVA_RANDOM_PROFILE_OK) {
         retire(classes, entity, random, sizeof(*random));
-        result(error, MC_ENTITY_PROFILE_FAILED, "entity constructor", 127);
+        mc_entity_error_set(error, MC_ENTITY_PROFILE_FAILED, "entity constructor", 127);
         error->profile = profile_status;
         return error->status;
     }
@@ -330,7 +361,7 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
     entity->base.bF = false;
     entity->base_bytecode = 200;
     if (world != NULL && !mc_world_runtime_binding_retain(world)) {
-        result(error, MC_ENTITY_WORLD_FAILED, "entity constructor", 205);
+        mc_entity_error_set(error, MC_ENTITY_WORLD_FAILED, "entity constructor", 205);
         error->world = mc_world_runtime_last_error(world)->status;
         return error->status;
     }
@@ -344,7 +375,7 @@ static mc_entity_status base_constructor(mc_entity *entity, mc_world_runtime *wo
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez and ju/gl initialization hooks are empty returns. */
+    /* Actual hl/ez, ju/gl and yl/pr b()V hooks are empty returns. */
     entity->base_bytecode = 231;
     return MC_ENTITY_OK;
 }
@@ -372,7 +403,7 @@ static mc_entity_status math_draw(mc_entity *entity, double *out, mc_entity_erro
     const mc_java_random_profile_status status = mc_java_math_random(entity->classes->profile, out);
     if (status == MC_JAVA_RANDOM_PROFILE_OK)
         return MC_ENTITY_OK;
-    result(error, MC_ENTITY_PROFILE_FAILED, "item constructor", bytecode);
+    mc_entity_error_set(error, MC_ENTITY_PROFILE_FAILED, "item constructor", bytecode);
     error->profile = status;
     return error->status;
 }
@@ -401,14 +432,11 @@ static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, do
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
-    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
-        return result(error, MC_ENTITY_INVALID_ARGUMENT, "item constructor", 0);
-    if (entity->phase != MC_ENTITY_RAW)
-        return result(error, MC_ENTITY_INVALID_PHASE, "item constructor", 0);
-    if (world != NULL && mc_world_runtime_random_profile(world) != entity->classes->profile)
-        return result(error, MC_ENTITY_INVALID_ARGUMENT, "item world profile", 0);
-    entity->phase = MC_ENTITY_CONSTRUCTING;
-    mc_entity_status status = base_constructor(entity, world, error);
+    mc_entity_status admitted = mc_entity_constructor_begin(
+        entity, MC_ENTITY_CLASS_KIND_ITEM, world, "item constructor", "item world profile", error);
+    if (admitted != MC_ENTITY_OK)
+        return admitted;
+    mc_entity_status status = mc_entity_construct_base(entity, world, error);
     if (status == MC_ENTITY_OK)
         status = item_prefix(entity, error);
     if (status == MC_ENTITY_OK && full) {
@@ -417,7 +445,7 @@ static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, do
         if (stack != NULL) {
             const mc_item_stack_status item_status = mc_item_stack_retain(stack);
             if (item_status != MC_ITEM_STACK_OK) {
-                status = result(error, MC_ENTITY_ITEM_FAILED, "item constructor", 61);
+                status = mc_entity_error_set(error, MC_ENTITY_ITEM_FAILED, "item constructor", 61);
                 error->item = item_status;
             }
         }
@@ -444,13 +472,9 @@ static mc_entity_status construct(mc_entity *entity, mc_world_runtime *world, do
             }
         }
     }
-    if (status != MC_ENTITY_OK) {
-        entity->phase = MC_ENTITY_FAILED_CONSTRUCTION;
-        return status;
-    }
-    entity->item_bytecode = full ? 117 : 49;
-    entity->phase = MC_ENTITY_READY;
-    return result(error, MC_ENTITY_OK, NULL, 0);
+    if (status == MC_ENTITY_OK)
+        entity->item_bytecode = full ? 117 : 49;
+    return mc_entity_constructor_finish(entity, status, error);
 }
 
 mc_entity_status mc_item_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,
@@ -470,18 +494,14 @@ static mc_entity_status construct_falling(mc_entity *entity, mc_world_runtime *w
     mc_entity_error local_error;
     if (error == NULL)
         error = &local_error;
-    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND))
-        return result(error, MC_ENTITY_INVALID_ARGUMENT, "falling constructor", 0);
-    if (entity->phase != MC_ENTITY_RAW)
-        return result(error, MC_ENTITY_INVALID_PHASE, "falling constructor", 0);
-    if (world != NULL && mc_world_runtime_random_profile(world) != entity->classes->profile)
-        return result(error, MC_ENTITY_INVALID_ARGUMENT, "falling world profile", 0);
-    entity->phase = MC_ENTITY_CONSTRUCTING;
-    const mc_entity_status status = base_constructor(entity, world, error);
-    if (status != MC_ENTITY_OK) {
-        entity->phase = MC_ENTITY_FAILED_CONSTRUCTION;
-        return status;
-    }
+    mc_entity_status admitted =
+        mc_entity_constructor_begin(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND, world,
+                                    "falling constructor", "falling world profile", error);
+    if (admitted != MC_ENTITY_OK)
+        return admitted;
+    const mc_entity_status status = mc_entity_construct_base(entity, world, error);
+    if (status != MC_ENTITY_OK)
+        return mc_entity_constructor_finish(entity, status, error);
     entity->falling.b = 0;
     entity->falling_bytecode = 7;
     if (full) {
@@ -511,8 +531,7 @@ static mc_entity_status construct_falling(mc_entity *entity, mc_world_runtime *w
         entity->falling_bytecode = 77;
     }
     entity->falling_bytecode = full ? 80 : 10;
-    entity->phase = MC_ENTITY_READY;
-    return result(error, MC_ENTITY_OK, NULL, 0);
+    return mc_entity_constructor_finish(entity, MC_ENTITY_OK, error);
 }
 
 mc_entity_status mc_falling_entity_construct_world(mc_entity *raw, mc_world_runtime *world,
@@ -541,6 +560,11 @@ void mc_entity_release(mc_entity *entity) {
     if (--entity->holds != 0)
         return;
     mc_entity_classes *classes = entity->classes;
+    const size_t bytes = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)
+                             ? sizeof(mc_minecart_entity_object)
+                             : sizeof(*entity);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
+        mc_minecart_entity_dispose(entity);
     mc_nbt_tree_free(entity->storage_source);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);
@@ -558,7 +582,7 @@ void mc_entity_release(mc_entity *entity) {
     retire(classes, entity, entity->random, sizeof(*entity->random));
     retire(classes, entity, entity->bounds, sizeof(*entity->bounds));
     --classes->live_entities;
-    retire(classes, NULL, entity, sizeof(*entity));
+    retire(classes, NULL, entity, bytes);
 }
 
 mc_entity_status mc_entity_get_snapshot(const mc_entity *entity, mc_entity_snapshot *out) {

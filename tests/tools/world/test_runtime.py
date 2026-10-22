@@ -4,6 +4,7 @@
 import argparse
 import importlib.util
 import json
+import re
 from pathlib import Path
 import struct
 import sys
@@ -20,7 +21,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes",
              "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement",
-             "world-movement-dependencies")
+             "world-movement-dependencies", "world-minecart-detector")
 
 
 def provider_fixture(root):
@@ -83,6 +84,59 @@ def provider_fixture(root):
             "registry_input_bytes": len(observed_registry), "climate_input_bytes": len(observed_climate),
             "cache_baseline_equal": False, "height_query_trace_compared": False,
             "fresh_original_execution": False}
+
+
+def minecart_detector_fixture(root, timestamps):
+    """Validate this literal two-World/four-normal-Chunk stored fixture only."""
+    expected_slots = {(f"world{i}/region/r.0.0.mcr", slot)
+                      for i in range(2) for slot in (0, 1, 32, 33)}
+    CAPTURE.require(len(timestamps) == 8 and
+                    {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
+                    "all eight actual Minecart detector fixture records")
+    CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
+                    {name for name, _ in expected_slots}, "exact Minecart detector region files")
+    CAPTURE.require({path.name for path in root.iterdir()} == {"world0", "world1"} and
+                    all((root / f"world{i}").is_dir() and not (root / f"world{i}").is_symlink()
+                        for i in range(2)), "exact two genuine fixture World roots")
+    layouts = []
+    for i in range(2):
+        world = root / f"world{i}"
+        CAPTURE.require((world / "level.dat").is_file() and
+                        (world / "session.lock").read_bytes() == struct.pack(">q", 137),
+                        "Minecart detector metadata and actual session owner")
+        path = world / "region/r.0.0.mcr"
+        raw = path.read_bytes()
+        CAPTURE.require(len(raw) >= 8192 and len(raw) % 4096 == 0,
+                        "complete sector-aligned Minecart detector region")
+        offsets = struct.unpack_from(">1024I", raw, 0)
+        clocks = struct.unpack_from(">1024I", raw, 4096)
+        CAPTURE.require({slot for slot, value in enumerate(offsets) if value != 0} ==
+                        {0, 1, 32, 33} and
+                        all(value == (0xfedcba98 if slot in (0, 1, 32, 33) else 0)
+                            for slot, value in enumerate(clocks)),
+                        "exact four live input slots and all unused timestamp cells")
+        occupied = {0, 1}
+        records = []
+        for slot in (0, 1, 32, 33):
+            first, sectors = offsets[slot] >> 8, offsets[slot] & 255
+            CAPTURE.require(first >= 2 and sectors > 0 and
+                            (first + sectors) * 4096 <= len(raw),
+                            "actual region record sector bounds")
+            extent = set(range(first, first + sectors))
+            CAPTURE.require(not (occupied & extent), "distinct real stored record extents")
+            occupied.update(extent)
+            length, = struct.unpack_from(">I", raw, first * 4096)
+            CAPTURE.require(1 < length <= sectors * 4096 - 4 and
+                            raw[first * 4096 + 4] == 2,
+                            "ordinary complete zlib region record envelope")
+            records.append({"slot": slot, "chunk_x": slot & 31, "chunk_z": slot >> 5,
+                            "first_sector": first, "sectors": sectors,
+                            "record_length": length, "compression": 2,
+                            "timestamp": clocks[slot]})
+        layouts.append({"file": path.relative_to(root).as_posix(),
+                        "fingerprint": CAPTURE.file_fingerprint(path), "records": records})
+    return {"worlds": 2, "normal_input_records": 8, "layouts": layouts,
+            "scope": "actual stored input record layout; no decoded NBT or original equivalence claim"}
 
 
 def main():
@@ -428,6 +482,93 @@ def main():
                     "tests/world/runtime/test_provider_activation.c"),
                 "normal_fixture": ROOT / "tests/reference/generation/normal_fixtures.json",
                 "normal_fixture_helper": ROOT / "tests/tools/generation/test_normal_interop.py"})
+        if args.scenario == "world-minecart-detector":
+            for relative in (
+                "tests/world/runtime/rails/test_minecart_detector.c",
+                "include/mc/entity/minecart/minecart.h",
+                "include/mc/entity/minecart/classes.h",
+                "include/mc/entity/minecart/sites.h",
+                "src/entity/minecart/entity.c",
+                "src/entity/minecart/entity_internal.h",
+                "src/entity/minecart/classes.c",
+                "src/entity/minecart/classes_internal.h",
+                "src/entity/construction_internal.h",
+                "src/entity/classes/classes.c",
+                "src/entity/classes/classes_internal.h",
+                "src/entity/classes/memory.c",
+                "src/entity/classes/memory_internal.h",
+                "include/mc/entity/classes/classes.h",
+                "include/mc/entity/errors.h",
+                "src/entity/bounds/bounds.c",
+                "src/entity/bounds/bounds_internal.h",
+                "include/mc/entity/bounds/bounds.h",
+                "src/entity/movement/movement.c",
+                "include/mc/entity/movement/movement.h",
+                "src/entity/movement/effects.c",
+                "include/mc/entity/movement/effects.h",
+                "src/entity/nbt/nbt.c",
+                "src/entity/nbt/errors.c",
+                "include/mc/entity/nbt/nbt.h",
+                "include/mc/entity/nbt/errors.h",
+                "src/world/runtime/entity_publication.c",
+                "src/world/runtime/entity_publication_internal.h",
+                "include/mc/world/runtime/entities.h",
+                "include/mc/world/runtime/entity_errors.h",
+                "src/world/chunk/entities.c",
+                "src/world/chunk/object_state_internal.h",
+                "src/world/runtime/collision/class_entities.c",
+                "src/world/runtime/collision/class_entities_internal.h",
+                "include/mc/world/runtime/collision/class_entities.h",
+                "src/world/runtime/collision/entities.c",
+                "src/world/runtime/collision/entities_internal.h",
+                "include/mc/world/runtime/collision/entities.h",
+                "src/world/runtime/collision/boxes.c",
+                "src/world/runtime/collision/boxes_internal.h",
+                "include/mc/world/runtime/collision/boxes.h",
+                "src/world/runtime/collision/blocks.c",
+                "src/world/runtime/collision/blocks_internal.h",
+                "src/world/runtime/contact.c",
+                "include/mc/world/runtime/contact.h",
+                "include/mc/world/runtime/mutations.h",
+                "include/mc/world/runtime/rails/errors.h",
+                "src/world/runtime/mutation/mutation_internal.h",
+                "src/world/runtime/mutation/support.c",
+                "src/world/runtime/mutation/world.c",
+                "src/world/runtime/mutation/chunk.c",
+                "src/world/runtime/mutation/observers.c",
+                "src/world/runtime/mutation/hooks.c",
+                "src/world/runtime/mutation/ticks.c",
+                "src/world/runtime/mutation/rails/detector.c",
+                "src/world/runtime/mutation/rails/detector_internal.h",
+                "src/world/runtime/mutation/rails/dispatch.c",
+                "src/world/runtime/mutation/rails/wrapper_transport.c",
+                "src/world/runtime/mutation/rails/wrapper_transport_internal.h",
+                "src/world/runtime/mutation/rails/error_sites.c",
+                "src/world/runtime/mutation/rails/error_sites_internal.h",
+                "src/world/runtime/mutation/rails/lifecycle.c",
+                "src/world/runtime/mutation/rails/rail_lifecycle_internal.h",
+                "src/world/runtime/mutation/rails/connections.c",
+                "src/world/runtime/mutation/rails/rail_connections_internal.h",
+                "src/world/runtime/mutation/rails/power_search.c",
+                "src/world/runtime/mutation/rails/rail_power_search_internal.h",
+                "src/world/runtime/power/world.c",
+                "src/world/runtime/power/blocks.c",
+                "src/world/runtime/power/power_internal.h",
+                "include/mc/world/runtime/power/power.h",
+                "src/world/runtime/solid_support.c",
+                "src/world/runtime/block_queries_internal.h",
+                "src/world/runtime/presence.c",
+                "src/world/runtime/presence_internal.h",
+                "src/world/runtime/scheduling.c",
+                "include/mc/world/runtime/scheduling.h",
+                "src/world/schedule/entry.c",
+                "include/mc/world/schedule/entry.h",
+                "src/world/schedule/membership.c",
+                "include/mc/world/schedule/membership.h",
+                "src/world/schedule/ordered.c",
+                "include/mc/world/schedule/ordered.h",
+            ):
+                paths["minecart_" + relative.replace("/", "_").replace(".", "_")] = ROOT / relative
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
         for name, path in paths.items():
             if name != "executable":
@@ -443,7 +584,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies"):
+                             "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies", "world-minecart-detector"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -471,11 +612,19 @@ def main():
                                    "world-entity-movement", "world-movement-dependencies", "world-pressure-plate", "world-class-entities", "world-power", "world-rails"):
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
                                 "complete two-owner Piston bootstrap diagnostics")
+            elif args.scenario == "world-minecart-detector":
+                CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
+                                "complete two-owner Minecart detector bootstrap diagnostics")
             text = lines[-1]
-        closing = ("(144 literal cases, world-rails)\n" if args.scenario == "world-rails"
+        closing = ("(24 literal cases, world-minecart-detector)\n" if args.scenario == "world-minecart-detector"
+                   else "(144 literal cases, world-rails)\n" if args.scenario == "world-rails"
                    else "(" + args.scenario + ")\n")
         CAPTURE.require(text.startswith("PASS: ") and text.endswith(closing) and
                         text.count("\n") == 1, "complete native contract result")
+        if args.scenario == "world-minecart-detector":
+            CAPTURE.require(re.fullmatch(r"PASS: [1-9][0-9]* Minecart detector checks "
+                                        r"\(24 literal cases, world-minecart-detector\)\n", text) is not None,
+                            "complete literal Minecart detector result without an invented check total")
         if args.scenario == "world-provider-generation":
             report["provider_fixture"] = provider_fixture(root)
         for name, path in paths.items():
@@ -527,9 +676,11 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies", "world-minecart-detector")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
+        if args.scenario == "world-minecart-detector":
+            report["minecart_detector_fixture"] = minecart_detector_fixture(root, timestamps)
         if args.scenario in ("world-power", "world-rails"):
             expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(2)}
             CAPTURE.require(len(timestamps) == 2 and

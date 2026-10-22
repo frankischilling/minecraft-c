@@ -8,6 +8,11 @@ finite disk/source checks. Ticking and other concrete Entity descendants remain 
 The evidence below separates native ownership tests, actual original snapshots
 and recorded-input scalar formula replay.
 
+The [Minecart source map](minecart-construction.md) records its separate
+initializer, constructors and publication path, with passing native contracts
+on MSVC, GCC and Clang. Original Minecart runtime observations remain
+unverified; the Item results below retain their recorded inputs and source scope.
+
 ## Original methods and installed support
 
 The pinned client/server archives are those in the [binary audit](binaries.md).

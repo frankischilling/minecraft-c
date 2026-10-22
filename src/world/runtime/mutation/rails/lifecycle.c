@@ -10,6 +10,8 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 
+#include <string.h>
+
 typedef enum rail_lifecycle_method { RAIL_ADDED, RAIL_SHAPE, RAIL_NEIGHBOR } rail_lifecycle_method;
 
 typedef struct rail_lifecycle_frame {
@@ -20,18 +22,26 @@ typedef struct rail_lifecycle_frame {
     mc_rail_lifecycle_error *error;
 } rail_lifecycle_frame;
 
+/* Keep complete diagnostic reset in caller storage rather than returning an
+ * automatic lifecycle aggregate at each nested dispatcher/body boundary. */
+void mc_world_mutation_rail_error_init(mc_rail_lifecycle_error *out) {
+    static const mc_rail_lifecycle_error zero = {0};
+    memcpy(out, &zero, sizeof(*out));
+    out->mutation = mc_world_mutation_empty_error();
+    out->metadata = mc_world_collision_empty_error();
+    out->power = mc_world_power_empty_error();
+    out->support.registry = out->mutation.registry;
+    out->support_access = mc_world_nearby_empty_error();
+    out->connections.mutation = out->mutation;
+    out->search.mutation = out->mutation;
+    out->search.access = out->metadata;
+    out->search.power = out->power;
+}
+
 mc_rail_lifecycle_error mc_world_mutation_rail_empty_error(void) {
-    const mc_world_mutation_error mutation = mc_world_mutation_empty_error();
-    const mc_world_collision_error collision = mc_world_collision_empty_error();
-    const mc_world_power_error power = mc_world_power_empty_error();
-    return (mc_rail_lifecycle_error){
-        .mutation = mutation,
-        .metadata = collision,
-        .support = {.registry = mutation.registry},
-        .support_access = mc_world_nearby_empty_error(),
-        .power = power,
-        .connections = {.mutation = mutation},
-        .search = {.mutation = mutation, .access = collision, .power = power}};
+    mc_rail_lifecycle_error result;
+    mc_world_mutation_rail_error_init(&result);
+    return result;
 }
 
 static mc_rail_lifecycle_site *rail_site(const rail_lifecycle_frame *frame) {
@@ -465,9 +475,12 @@ static bool rail_admit(mc_world_runtime *world, const mc_block *block,
 
 static bool rail_result(bool completed, const mc_rail_lifecycle_error *frame,
                         mc_rail_lifecycle_error *error) {
-    *error = completed ? mc_world_mutation_rail_empty_error() : *frame;
-    if (!completed)
+    if (completed) {
+        mc_world_mutation_rail_error_init(error);
+    } else {
+        *error = *frame;
         mc_rail_lifecycle_error_publish(error);
+    }
     return completed;
 }
 
@@ -475,7 +488,8 @@ bool mc_world_mutation_rail_added(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_rail_lifecycle_error *error) {
     if (error == NULL)
         return false;
-    mc_rail_lifecycle_error local = mc_world_mutation_rail_empty_error();
+    mc_rail_lifecycle_error local;
+    mc_world_mutation_rail_error_init(&local);
     const rail_lifecycle_frame frame = {world, block, x, y, z, RAIL_ADDED, &local};
     const bool completed = rail_admit(world, block, &local) && rail_added(&frame);
     return rail_result(completed, &local, error);
@@ -486,7 +500,8 @@ bool mc_world_mutation_rail_shape(mc_world_runtime *world, const mc_block *block
                                   mc_rail_lifecycle_error *error) {
     if (error == NULL)
         return false;
-    mc_rail_lifecycle_error local = mc_world_mutation_rail_empty_error();
+    mc_rail_lifecycle_error local;
+    mc_world_mutation_rail_error_init(&local);
     const rail_lifecycle_frame frame = {world, block, x, y, z, RAIL_SHAPE, &local};
     const bool completed = rail_admit(world, block, &local) && rail_shape(&frame, force);
     return rail_result(completed, &local, error);
@@ -497,7 +512,8 @@ bool mc_world_mutation_rail_neighbor(mc_world_runtime *world, const mc_block *bl
                                      mc_rail_lifecycle_error *error) {
     if (error == NULL)
         return false;
-    mc_rail_lifecycle_error local = mc_world_mutation_rail_empty_error();
+    mc_rail_lifecycle_error local;
+    mc_world_mutation_rail_error_init(&local);
     const rail_lifecycle_frame frame = {world, block, x, y, z, RAIL_NEIGHBOR, &local};
     const bool completed = rail_admit(world, block, &local) && rail_neighbor(&frame, source_id);
     return rail_result(completed, &local, error);

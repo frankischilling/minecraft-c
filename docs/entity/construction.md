@@ -8,6 +8,12 @@ native contracts, original constructor snapshots and scalar formula replay.
 The separate [NBT and canonical Class contract](nbt.md) covers semantic Item
 records, the class-name save wrapper and the world-only NBT factory.
 
+The separate [Minecart module](minecart.md) adds its class initializer,
+World-only and positioned constructors, and real detector membership.
+Native Minecart construction/publication/detector contracts pass on all three
+compiler profiles. The Item observations and formula replay described here
+retain their separate inputs and do not cover Minecart or rail physics.
+
 ## Construction and ownership
 
 One `mc_entity_classes` owner represents one loaded game-class identity across

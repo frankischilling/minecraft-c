@@ -4,6 +4,7 @@
 #include "../registry/registry_internal.h"
 #include "mc/entity/classes/classes.h"
 
+struct mc_minecart_shape_array;
 struct mc_entity_bounds;
 struct mc_entity_bounds_object;
 
@@ -46,6 +47,10 @@ struct mc_entity_classes {
     mc_entity_class_phase registry_phase;
     mc_entity_registry_error registry_failure;
     mc_entity_registry_map *registry_maps[4];
+    mc_entity_class_phase minecart_phase;
+    uint16_t minecart_bytecode;
+    mc_entity_error minecart_failure;
+    struct mc_minecart_shape_array *minecart_j;
 };
 
 /* Read-only admission for classes_release: NULL is INVALID_ARGUMENT and zero

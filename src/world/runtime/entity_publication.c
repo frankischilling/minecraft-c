@@ -417,7 +417,8 @@ static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_en
         return entity_fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                            "World Entity application class");
     if (entity != NULL && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
-        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND))
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         return entity_fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World concrete Entity type");
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK)
@@ -470,7 +471,7 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
     frame->bytecode = 13;
     fields = mc_entity_runtime_fields(entity);
     const int32_t chunk_z = mc_math_floor_double(fields->z / 16.0); /* floor20 */
-    /* Both admitted concrete classes, hl/ez and ju/gl, are nonplayers. Their
+    /* The admitted hl/ez, ju/gl and yl/pr classes are nonplayers. Their
      * actual immutable class identities make the two distinct source
      * instanceof gs/em tests28/52 false. Player/sleep descendants remain
      * separate implementations. */

@@ -109,7 +109,8 @@ const char *mc_entity_status_string(mc_entity_status status);
  * owner; construction cannot change it. Each constructor requires its matching
  * concrete kind. Base equality continues to compare loaded base ownership/IDs.
  * Only the subtype record selected by class_literal represents source fields;
- * the other subtype record remains zero native storage.
+ * the other old subtype records remain zero native storage. Minecart constructors
+ * and their separate own-field snapshot are declared in minecart/minecart.h.
  * NULL world/stack are accepted. A nonnull world must borrow this same profile;
  * caller keeps it live until its reached counted binding at base bytecode205.
  * Stack storage is retained at item bytecode61 without a READY/field check.

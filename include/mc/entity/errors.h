@@ -2,6 +2,7 @@
 #define MC_ENTITY_ERRORS_H
 
 #include "mc/core/java/random_profile.h"
+#include "mc/entity/minecart/sites.h"
 #include "mc/item/stack/stack.h"
 #include "mc/world/storage/status.h"
 
@@ -29,6 +30,8 @@ typedef struct mc_entity_error {
     mc_java_random_profile_status profile;
     mc_item_stack_status item;
     mc_world_storage_status world;
+    mc_minecart_site minecart_world_constructor, minecart_constructor;
+    mc_minecart_site minecart_initializer, minecart_initializer_cause;
 } mc_entity_error;
 
 #endif

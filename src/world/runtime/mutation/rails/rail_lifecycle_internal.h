@@ -43,6 +43,10 @@ typedef struct mc_rail_lifecycle_error {
     uint32_t selected, origin;
 } mc_rail_lifecycle_error;
 
+/* Complete fresh defaults in writable, owner-disjoint caller storage. Uses an
+ * immutable typed template and the existing child factories; no allocation or
+ * mutable shared scratch. out is required and may contain prior diagnostics. */
+void mc_world_mutation_rail_error_init(mc_rail_lifecycle_error *out);
 mc_rail_lifecycle_error mc_world_mutation_rail_empty_error(void);
 
 /* Concrete inherited PC_JJ bodies, including PH_JN inheritance. Caller has

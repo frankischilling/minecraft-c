@@ -1,5 +1,7 @@
 #include "../bounds/bounds_internal.h"
+#include "../minecart/classes_internal.h"
 #include "classes_internal.h"
+#include "memory_internal.h"
 
 #include <stdlib.h>
 
@@ -45,6 +47,22 @@ static const mc_entity_class_kind literal_parents[MC_ENTITY_CLASS_KIND_COUNT] = 
     [MC_ENTITY_CLASS_KIND_BOAT] = MC_ENTITY_CLASS_KIND_ENTITY,
     [MC_ENTITY_CLASS_KIND_ENTITY] = MC_ENTITY_CLASS_KIND_COUNT,
     [MC_ENTITY_CLASS_KIND_PLAYER] = MC_ENTITY_CLASS_KIND_MOB};
+
+mc_entity_status mc_entity_base_class_initialize(mc_entity_classes *classes,
+                                                 mc_entity_error *error) {
+    if (classes->entity_phase == MC_ENTITY_CLASS_READY)
+        return MC_ENTITY_OK;
+    if (classes->entity_phase == MC_ENTITY_CLASS_FAILED)
+        return mc_entity_error_set(error, MC_ENTITY_CLASS_FAILED_STATUS,
+                                   "entity class initialization", 0);
+    if (classes->entity_phase != MC_ENTITY_CLASS_COLD)
+        return mc_entity_error_set(error, MC_ENTITY_STATE_ERROR, "entity class initialization", 0);
+    /* sn/lq.<clinit>: the sole effect is the shared plain int counter store. */
+    classes->entity_phase = MC_ENTITY_CLASS_INITIALIZING;
+    classes->next_id = 0;
+    classes->entity_phase = MC_ENTITY_CLASS_READY;
+    return MC_ENTITY_OK;
+}
 
 mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
                                           const mc_entity_limits *limits, mc_entity_classes **out) {
@@ -130,6 +148,7 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
         return MC_ENTITY_OK;
     if (classes->live_entities != 0 || classes->borrowers != 0 || classes->bounds_holds != 0)
         return MC_ENTITY_BUSY;
+    mc_minecart_class_dispose(classes);
     mc_entity_registry_dispose(classes);
     if (classes->types != NULL) {
         mc_entity_type_entry *entry = classes->types->head;

@@ -75,9 +75,13 @@ membership/ordered insertion retain their existing behavior. Neither contact
 nor this helper publishes the Entity passed to contact.
 
 The pooled box and result List remain held through the reached work and are
-released on every return. There is no implicit pool reset. A genuine positive
-Minecart constructor is not yet admitted, so source-complete positive detection
-and rescheduling branches are not presented as observed positive gameplay.
+released on every return. There is no implicit pool reset. The
+[Minecart constructors](../entity/minecart.md) now supply real positioned
+instances for normal publication and positive Class queries. The separate
+[Minecart validation](../reference/minecart-construction.md#native-validation)
+passes construction, publication and detector contracts on all three native
+hosts. These finite cases cover positive detection and scheduling; gameplay
+rail physics remains unfinished.
 
 ## Ownership, limits and diagnostics
 
@@ -121,7 +125,7 @@ Fresh success errors do not erase older World diagnostic history.
 
 ## Verification scope
 
-The real-World fixture passes 814 checks across 144 literal cases on each
+The earlier rail checkpoint passed 814 checks across 144 literal cases on each
 host, covering graph/search/lifecycle contracts with literal Chunk layouts,
 ordinary notification flow, namespace/order failures, source depth guards
 and native allocation cleanup. The separate pure transport fixture passes
@@ -137,7 +141,11 @@ binds the 977-file tested source, held public baseline and closed receipts.
 [Testing](../testing.md) describes the strict-profile and source evidence.
 These results remain finite native contracts over constructed inputs.
 
-Positive Minecart construction/contact, gameplay rail physics, ordinary
+The later [Minecart validation](../reference/minecart-construction.md#native-validation)
+passes 196 detector checks across 24 literal cases on each host within full
+177/179/179 MSVC/GCC/Clang D suites, with zero failures, errors or skips. It
+covers real published membership, positive contact, duplicate scheduling,
+deactivation and retained failure prefixes. Gameplay rail physics, ordinary
 positive rail-drop publication, scheduler draining, rendering and
 original-runtime rail equality remain unverified. The native runtime and
 public contract tests do not require a JVM or original game archives.

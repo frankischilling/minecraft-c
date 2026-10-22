@@ -270,9 +270,9 @@ static bool registry_result(mc_world_runtime *world, mc_world_collision_error *f
     return false;
 }
 
-/* All native instances currently constructible are these two concrete kinds.
- * They genuinely inherit both literal-null base bodies. Do not extend this
- * dispatch to other kinds merely because their constructors are absent. */
+/* Item and FallingSand genuinely inherit both literal-null base bodies.
+ * Minecart has different concrete virtuals and is not admitted here merely
+ * because its constructors are available. */
 static bool base_null_virtual(mc_entity *entity, mc_world_collision_error *frame) {
     if (entity == NULL) {
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision Entity receiver");

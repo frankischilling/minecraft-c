@@ -32,14 +32,23 @@ static bool at_least_one(uint32_t bits) {
            magnitude <= UINT32_C(0x7f800000);
 }
 
+/* Initialize caller storage without a full tick-error return temporary. The
+ * typed static template supplies C-defined zero/null values and the sentinel;
+ * each existing child factory still supplies its complete nested defaults. */
+static void initialize_error(mc_piston_tick_error *out) {
+    static const mc_piston_tick_error zero = {.entity_index = SIZE_MAX};
+    memcpy(out, &zero, sizeof(*out));
+    out->mutation = mc_world_mutation_empty_error();
+    out->tile = mc_live_tiles_empty_error();
+    out->registry = out->mutation.registry;
+    out->nearby = mc_world_nearby_empty_error();
+    out->collision = mc_world_collision_empty_error();
+    out->movement = mc_entity_move_empty_error();
+}
+
 mc_piston_tick_error mc_piston_tick_empty_error(void) {
-    mc_piston_tick_error result = {.entity_index = SIZE_MAX};
-    result.mutation = mc_world_mutation_empty_error();
-    result.tile = mc_live_tiles_empty_error();
-    result.registry = result.mutation.registry;
-    result.nearby = mc_world_nearby_empty_error();
-    result.collision = mc_world_collision_empty_error();
-    result.movement = mc_entity_move_empty_error();
+    mc_piston_tick_error result;
+    initialize_error(&result);
     return result;
 }
 
@@ -299,7 +308,8 @@ static bool tick_held(mc_tile *tile, mc_world_runtime_classes *code,
 
 mc_world_storage_status mc_tile_piston_tick(mc_tile *tile, const mc_entity_move_limits *move_limits,
                                             mc_piston_tick_error *error) {
-    mc_piston_tick_error frame = mc_piston_tick_empty_error();
+    mc_piston_tick_error frame;
+    initialize_error(&frame);
     bool retained = false;
     if (tile == NULL) {
         frame.tile.tile.status = MC_TILE_INVALID_ARGUMENT;
@@ -321,7 +331,7 @@ mc_world_storage_status mc_tile_piston_tick(mc_tile *tile, const mc_entity_move_
         } else {
             retained = true;
             if (tick_held(tile, mc_tile_piston_code_classes_held(tile), move_limits, &frame))
-                frame = mc_piston_tick_empty_error();
+                initialize_error(&frame);
         }
     }
     if (retained)
