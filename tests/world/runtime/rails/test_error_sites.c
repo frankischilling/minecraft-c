@@ -292,7 +292,8 @@ static bool empty_frame(void) {
     ++cases;
     const mc_world_mutation_error e = mc_world_mutation_empty_error();
     const site_value zero = {0};
-    CHECK(sizeof(slots) / sizeof(slots[0]) == 17);
+    _Static_assert(sizeof(slots) / sizeof(slots[0]) == 17, "all rail error sites");
+    ++checks;
     CHECK(e.rail_sites_selected == 0);
     for (size_t i = 0; i < sizeof(slots) / sizeof(slots[0]); ++i)
         CHECK(same_value(value(&e, i), zero));
