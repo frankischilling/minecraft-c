@@ -1417,7 +1417,21 @@ if(BUILD_TESTING)
     set_tests_properties(world.game_entities PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 120)
 
-    get_filename_component(MC_TEST_MINECART_STORAGE_PYTHON "${Python3_EXECUTABLE}" REALPATH)
+    execute_process(
+        COMMAND "${Python3_EXECUTABLE}" -c
+                "import pathlib, sys; print(pathlib.Path(sys.executable).resolve(strict=True))"
+        RESULT_VARIABLE MC_TEST_MINECART_STORAGE_PYTHON_RESULT
+        OUTPUT_VARIABLE MC_TEST_MINECART_STORAGE_PYTHON
+        ERROR_VARIABLE MC_TEST_MINECART_STORAGE_PYTHON_ERROR
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT MC_TEST_MINECART_STORAGE_PYTHON_RESULT STREQUAL "0"
+        OR MC_TEST_MINECART_STORAGE_PYTHON STREQUAL ""
+        OR MC_TEST_MINECART_STORAGE_PYTHON MATCHES "[\r\n]")
+        message(FATAL_ERROR
+            "Cannot resolve the Minecart storage test Python executable "
+            "(result: ${MC_TEST_MINECART_STORAGE_PYTHON_RESULT}): "
+            "${MC_TEST_MINECART_STORAGE_PYTHON_ERROR}")
+    endif()
     add_test(NAME entity.minecart_storage
         COMMAND "${MC_TEST_MINECART_STORAGE_PYTHON}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_minecart_storage.py"
