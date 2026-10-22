@@ -1,6 +1,6 @@
 # Test scope and reproduction
 
-Fresh full public suites pass all 173 MSVC and all 175 tests on each GCC/Clang build, with zero skips.
+Full native suites pass all 175 MSVC and all 177 tests on each GCC/Clang build, with zero skips.
 Java standard-library numerical comparisons are enabled;
 original-JAR comparison options remain off. Linux enables ASan, UBSan and leak
 checks. The same per-test deadlines and output policies remain in force.
@@ -11,7 +11,26 @@ matrices, ordered neighbors, conduction, complete wire output/connectivity,
 late namespace reads, guarded getters and nested failure frames. The separate
 horizontal-direction case passes 359 checks, including all seven allocation
 failure cuts and retained-array captures. Existing public solid support passes
-4,359 checks. No executed-original power comparison is claimed.
+4,359 checks. At the earlier `9f9d3a2` source checkpoint, a separate
+executed-original comparison matches all 5,365 literal inputs per side against
+the native MSVC observer: 75,110 whole snapshot-field comparisons, 5,365
+completion classifications and 5,164 normally returned booleans per side.
+The 201 target failures per side remain recorded with their booleans excluded;
+Throwable/native errors are not equated. The
+[finite evidence record](reference/power.md#validation-boundary) defines the
+seven fields, source binding, hashes and remaining exclusions.
+
+The [rail case](world/rails.md) passes 814 checks across 144 literal constructed
+cases per host. Two real GAME Worlds and two loaded Chunks exercise topology,
+search, reached lifecycle callers, namespace order and retained partial writes.
+Exact allocation checks account for actual persistent lighting records and
+pointer capacity while requiring temporary rail ownership to retire. The
+separate error-transport case passes 1,444 checks across 94 constructed cases,
+covering explicit selections, current/deepest causes, PC0, unentered calls,
+aliases and refused plans. The Snow regression passes 392 checks, including
+a real null-Random rail-drop failure after both preceding Snow removals.
+These are native contracts; positive Minecart construction, ordinary positive
+rail drops and executed-original rail equality remain unverified.
 
 The [Class-query case](world/class-entities.md) passes 373 checks per host using
 eight real Worlds and eight loaded Chunk records. It checks fresh result
@@ -25,7 +44,7 @@ per host. Both Registry sides use eight actual GAME Worlds and four loaded
 chunks each. The cases cover real Item/Falling membership and duplicates,
 activation/release guards, float/int wrapping, independent category comparisons,
 support loss, detailed acquisition failures and partial metadata/F/E effects.
-The movement regression now passes 560 checks. No original pressure/Class runtime
+The movement regression now passes 564 checks. No original pressure/Class runtime
 comparison or running tick-loop acceptance follows.
 
 The state-shape contract exercises all declared virtual bodies through actual
@@ -36,6 +55,9 @@ lazy invalid-Tile cleanup and hold/pool preservation.
 | Case | Checks per host |
 | --- | ---: |
 | `world.power` | 7,593 |
+| `world.rails` | 814 across 144 cases |
+| `world.rail_errors` | 1,444 across 94 cases |
+| `world.snow` | 392 |
 | `block.horizontal_directions` | 359 |
 | `world.solid_support` | 4,359 |
 | `world.class_entities` | 373 |
@@ -48,17 +70,23 @@ lazy invalid-Tile cleanup and hold/pool preservation.
 | `world.piston_geometry` | 386 |
 | `world.mutations` | 218 |
 | `world.collision_boxes` | 732 |
-| `entity.movement` | 560 |
+| `entity.movement` | 564 |
 | `world.movement_dependencies` | 202 |
 
 Reports retain complete configured/executed CTest names, zero-skip JUnit results,
 command arguments, actual child PIDs/exits, full stdout/stderr and before/after
 source maps. Controller mirrors and lifecycle interval checks also pass. The
-Windows run uses the working tree. Linux uses a fresh native-filesystem source
-copy with all 961 public file bytes equal to the working tree before and after
-execution. Validation prose was added afterward; implementation, test and driver
-bytes remain unchanged. All 499 C files and headers pass clang-format 18. These
-are public regression results, not complete original acceptance.
+Windows run uses a sealed source copy; GCC and Clang use the same bytes on
+the native Linux filesystem. All 977 tested files match their source map before
+and after execution. The prior 961 public files remain unchanged throughout
+validation; the 29-file code/test/driver overlay is then promoted byte-for-byte.
+The tested source-map SHA-256 is
+`1c6bf379c6f4d4cdaa742caf9ca12e7d4d494c1a7b478574e60b50318d7d55b4`.
+This is a canonical file-map digest, not a Git commit or tree ID. Windows and
+native Linux source bytes were also independently rehashed after closure.
+Validation prose is added afterward; implementation, test and driver bytes
+remain unchanged. All 515 C files and headers pass clang-format 18. These are
+public regression results, not complete original acceptance.
 
 Earlier Linux runs using `/mnt/c` sources each hit the existing 180-second
 deadlines in `tools.world_storage_reference`, `tools.chunk_storage_reference`,

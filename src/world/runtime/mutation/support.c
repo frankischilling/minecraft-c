@@ -2,6 +2,7 @@
 
 #include "../../../block/registry/runtime_internal.h"
 #include "../chunks_internal.h"
+#include "../power/power_internal.h"
 #include "mc/core/java/java.h"
 
 mc_world_mutation_error mc_world_mutation_empty_error(void) {
@@ -15,7 +16,10 @@ mc_world_mutation_error mc_world_mutation_empty_error(void) {
                                      .batch = {.index = SIZE_MAX},
                                      .registry = registry,
                                      .nearby = mc_world_nearby_empty_error(),
-                                     .schedule = {.registry = registry}};
+                                     .schedule = {.registry = registry},
+                                     .power = mc_world_power_empty_error(),
+                                     .rail_access = mc_world_collision_empty_error(),
+                                     .rail_support = {.registry = registry}};
 }
 
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,

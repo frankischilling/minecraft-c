@@ -3,6 +3,10 @@
 
 #include "mc/world/runtime/lighting.h"
 
+struct mc_world_light_region {
+    mc_world_light_region_fields fields;
+};
+
 /* Final native World destruction only, with all calls/views/leases retired.
  * Free the actual C records/items and reset C storage, without freeing the C
  * identity, changing class A or invoking source callbacks/propagation. */

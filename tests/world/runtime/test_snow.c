@@ -309,16 +309,54 @@ static bool snow_neighbors(fixture *f, size_t slot, const mc_block *snow) {
     CHECK(snow_neighbor_call(w, snow, 9, 40, 9, 0, &e) && snow_clear(&e) && at(w, 9, 40, 9, 0, 0) &&
           at(w, 9, 41, 9, 0, 0) && at(w, 9, 42, 9, 0, 0));
 
-    /* The upper snow is already cleared before its rail neighbor fails.
-     * Neither the upper write nor its caller's lower write is rolled back. */
-    CHECK(!snow_neighbor_call(w, snow, 22, 40, 9, 78, &e) &&
-          e.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && e.snow_neighbor_bytecode == 6 &&
-          e.snow_bytecode == 35 && e.hook_bytecode == 6 && e.cause_hook_class != NULL &&
+    /* Constructed null-Random failure after both snow writes. Their zero
+     * quantities skip Random, but the unsupported rail's actual quantity1
+     * reaches probability nextFloat32 before its notifying-air write171.
+     * Restore the real field before inspecting the failure or prior effects.
+     * This is not ordinary positive rail-drop/publication coverage. */
+    CHECK(at(w, 21, 40, 9, 0, 0) && at(w, 21, 41, 9, 66, 0));
+    w->fields.r = NULL;
+    const bool rail_drop = snow_neighbor_call(w, snow, 22, 40, 9, 78, &e);
+    w->fields.r = random;
+    CHECK(!rail_drop && e.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          e.snow_neighbor_bytecode == 6 && e.snow_bytecode == 35 && e.snow_support_bytecode == 0 &&
+          e.hook_bytecode == 6 && e.hook_class != NULL &&
+          strcmp(e.hook_class, slot % 2u == 0 ? "jr" : "gj") == 0 && e.hook_method != NULL &&
+          strcmp(e.hook_method, slot % 2u == 0 ? "b(Lfd;IIII)V" : "b(Ldj;IIII)V") == 0 &&
+          e.cause_hook_class != NULL &&
           strcmp(e.cause_hook_class, slot % 2u == 0 ? "pc" : "jj") == 0 &&
-          e.cause_hook_bytecode == 0 && e.neighbor_bytecode == 41 &&
+          e.cause_hook_method != NULL &&
+          strcmp(e.cause_hook_method, slot % 2u == 0 ? "b(Lfd;IIII)V" : "b(Ldj;IIII)V") == 0 &&
+          e.cause_hook_bytecode == 162 && e.neighbor_bytecode == 41 &&
           e.neighbor_call_bytecode == 8 && e.operation != NULL &&
-          strcmp(e.operation, "Block rail neighbor hook") == 0 && at(w, 22, 40, 9, 0, 0) &&
-          at(w, 22, 41, 9, 0, 0) && at(w, 21, 41, 9, 66, 0));
+          strcmp(e.operation, "Block drop Random receiver is null") == 0 &&
+          e.cause.status == e.status && e.cause.operation == e.operation &&
+          e.cause.system_error == 0 && same_cause(&w->last_error, &e.cause));
+    CHECK(e.drop_class != NULL && strcmp(e.drop_class, slot % 2u == 0 ? "uu" : "na") == 0 &&
+          e.drop_method != NULL &&
+          strcmp(e.drop_method, slot % 2u == 0 ? "a(Lfd;IIIIF)V" : "a(Ldj;IIIIF)V") == 0 &&
+          e.drop_bytecode == 32 && e.drop_call_bytecode == 13 && e.drop_spawn_bytecode == 0 &&
+          e.item == MC_ITEM_STACK_OK && e.entity.status == MC_ENTITY_OK &&
+          e.entity.operation == NULL && e.entity.bytecode == 0 &&
+          e.publication.status == MC_WORLD_STORAGE_OK && e.publication.operation == NULL &&
+          e.registry.status == MC_REGISTRY_OK && e.registry.initializer_pc == -1 &&
+          e.registry.block_id == -1);
+    CHECK(e.rail_sites_selected ==
+              (MC_WORLD_RAIL_SITE_NEIGHBOR | MC_WORLD_RAIL_SITE_LIFECYCLE_CAUSE) &&
+          e.rail_neighbor.entered && e.rail_neighbor.declaring_class != NULL &&
+          strcmp(e.rail_neighbor.declaring_class, slot % 2u == 0 ? "pc" : "jj") == 0 &&
+          e.rail_neighbor.method != NULL &&
+          strcmp(e.rail_neighbor.method, slot % 2u == 0 ? "b(Lfd;IIII)V" : "b(Ldj;IIII)V") == 0 &&
+          e.rail_neighbor.bytecode == 162 && e.rail_neighbor.x == 21 && e.rail_neighbor.y == 41 &&
+          e.rail_neighbor.z == 9 && e.rail_lifecycle_cause.entered &&
+          e.rail_lifecycle_cause.declaring_class == e.rail_neighbor.declaring_class &&
+          e.rail_lifecycle_cause.method == e.rail_neighbor.method &&
+          e.rail_lifecycle_cause.bytecode == 162 && e.rail_lifecycle_cause.x == 21 &&
+          e.rail_lifecycle_cause.y == 41 && e.rail_lifecycle_cause.z == 9 &&
+          e.rail_support.status == MC_WORLD_STORAGE_OK && e.rail_support.operation == NULL &&
+          e.rail_access.nearby.query.status == MC_WORLD_STORAGE_OK &&
+          e.rail_access.nearby.query.operation == NULL && at(w, 22, 40, 9, 0, 0) &&
+          at(w, 22, 41, 9, 0, 0) && at(w, 21, 40, 9, 0, 0) && at(w, 21, 41, 9, 66, 0));
 
     mc_world_reference_list *const observers = w->fields.u;
     w->fields.u = NULL;

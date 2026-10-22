@@ -1,3 +1,18 @@
+Current validation: all 175 MSVC and 177 GCC/Clang native tests pass with zero
+failures, errors or skips. Linux uses ASan/UBSan and leak checks. Formatting
+passes for 515 C/header files. The rail fixture passes 814 checks across 144
+literal cases; the separate error-transport fixture passes 1,444 checks across
+94 constructed records. Use the [build instructions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md)
+and [testing guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+for setup, source scope and the current validation record.
+
+The complete text below preserves historical build and test checkpoints. Old
+counts, source bindings and limitations belong to those revisions; they are
+not the current suite inventory. [World simulation](World-simulation) separates
+native contracts from the finite original observations.
+
+---
+
 # Build and tests
 
 Fresh full local suites pass all 173 MSVC and all 175 tests on each GCC/Clang build, with zero skips.

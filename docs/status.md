@@ -1,27 +1,42 @@
 # Development status
 
-[World power queries](world/power.md) now execute the four actual World bodies,
-solid-block conduction and every admitted concrete output/capability body.
-Wire output includes complete local connectivity and the independent lazy
-horizontal-direction initializer. Wire propagation, torch/switch/repeater
-lifecycle and rail integration remain unfinished; original power-runtime
-equality is unverified.
+[Rail topology and lifecycle](world/rails.md) implement the complete connection
+helper, ten shapes, inherited added/neighbor hooks, detector contact/tick/update
+and depth-guarded powered search. Real notifying writes retain their earlier
+effects on failure. Explicit current/deepest diagnostic sites preserve typed
+lower errors. Genuine positive Minecart construction and an executed-original
+rail comparison remain unverified.
 
-[Pressure plates](world/pressure-plates.md) now use real published-Entity
-queries, notifying metadata transitions, support/removal hooks and deferred
-schedule insertion. Contact and scheduled release share the same pooled-box
-helper. Stone/Player categories use fresh [Class-query Lists](world/class-entities.md)
-and passive ancestry from the Block's defining namespace. Detector rails,
-nonempty concrete observers, tick draining and original pressure-plate replay
-remain unfinished.
+[World power queries](world/power.md) execute the four World bodies,
+solid-block conduction and all admitted output/capability bodies, including
+complete wire connectivity and independent lazy horizontal directions. At
+source `9f9d3a2`, a separate original/MSVC comparison matches all 5,365 literal
+rows per side under the [seven-field projection](reference/power.md#validation-boundary),
+completion and normally returned boolean rules. The 201 target failures per
+side retain separate Java/native error evidence. This finite result does not
+cover rail runtime equality, propagation or whole-game behavior.
 
-Full local public suites pass 173 MSVC and 175 GCC/Clang cases each, with zero
-skips. Each compiler passes 373 Class-query, 13,819 Class identity/ancestry,
-561 pressure-plate and 560 movement checks, plus 7,593 power, 359 horizontal
-Direction and 4,359 public support checks. Linux uses ASan/UBSan/leak checks
-and an exact 961-file source copy; mirror/lifecycle checks and formatting for
-all 499 C files and headers pass. These are native source contracts, without
-an executed-original power, pressure or Class-query comparison.
+Full local native suites pass 175 MSVC and 177 GCC/Clang cases each, with zero
+skips. Rail contracts pass 814 checks across 144 literal cases per host;
+error transport passes 1,444 checks across 94 constructed cases. Snow and
+movement regressions pass 392 and 564 checks. Power, horizontal directions
+and public support retain 7,593, 359 and 4,359 checks. Linux uses ASan, UBSan
+and leak checks; controller mirrors, lifecycle intervals and formatting for
+all 515 C files and headers pass. [Testing](testing.md) records the exact
+977-file tested source map and its later byte-for-byte code promotion.
+
+[Pressure plates](world/pressure-plates.md) use real published-Entity queries,
+notifying transitions, support/removal hooks and deferred schedules. Contact
+and release share a pooled-box helper; Living/Player categories use fresh
+[Class-query Lists](world/class-entities.md). Current contracts pass 561
+pressure, 373 query and 13,819 Class identity/ancestry checks per host.
+Original pressure/Class-query comparisons, other Entity constructors,
+nonempty concrete observers and tick draining remain unfinished.
+
+Wire propagation, torch/switch/repeater lifecycle, gameplay rail physics,
+rendering/audio, and playable client/server integration remain unfinished.
+The [parity matrix](parity.md) separates finite verified scenarios from these
+remaining requirements. There is no complete playable C client or server.
 
 The following Piston checkpoint predates pressure-plate integration.
 

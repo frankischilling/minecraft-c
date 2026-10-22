@@ -11,10 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct mc_world_light_region {
-    mc_world_light_region_fields fields;
-};
-
 static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
     return (mc_world_storage_error){status, operation, 0};
 }

@@ -6,8 +6,9 @@ client and server authorities. The implementation separates
 [Block outputs](../../src/world/runtime/power/blocks.c) and the independent
 [horizontal-direction initializer](../../src/block/registry/horizontal_directions.c).
 The [ownership contract](../world/power.md) describes native admission and
-diagnostics. The mappings below are source evidence, not an executed-original
-power comparison.
+diagnostics. The mappings below describe the source bodies; the
+[validation record](#validation-boundary) also includes an executed finite
+comparison against both original sides.
 
 ## Four World methods
 
@@ -145,13 +146,77 @@ server87455-87459, torch68792-68796 /12290-12294 and repeater270808-270812 /
 
 ## Validation boundary
 
-The [native fixture](../../tests/world/runtime/power/test_power.c) passes 7,593
+At native checkpoint `9f9d3a22900ac25c8fc2813ce2f5881fcedb63a2`, the
+[native fixture](../../tests/world/runtime/power/test_power.c) passes 7,593
 checks per host; the separate horizontal-direction case passes 359, and existing
 public support passes 4,359. Complete suites pass 173 MSVC and 175 GCC/Clang
 tests each without skips. Linux uses ASan, UBSan and leak checks. All 499 C
 files and headers pass clang-format 18. [Testing](../testing.md) describes the
 held source maps, actual process receipts and regression scope.
 
-These results do not establish executed-original power equality, wire
-propagation or lifecycle, torch burnout or lifecycle, switch interactions,
-rail integration, scheduled draining or whole-game acceptance.
+### Executed finite comparison
+
+The 2026-10-22 power comparison used that same native checkpoint, with all
+961 public source files held unchanged. Original client and server calls and
+the native MSVC observer each completed the full literal corpus for their
+side. All four engine/side observations passed admission and independent raw
+record checks; input and artifact seals remained unchanged. The comparison
+completed with `finite_projection_equal` and no errors or mismatches.
+
+| Compared per side | Count |
+| --- | ---: |
+| Literal input rows | 5,365 |
+| Snapshot field comparisons | 75,110 |
+| Normal/failure completion comparisons | 5,365 |
+| Booleans compared after normal completion | 5,164 |
+| Booleans excluded after failed completion | 201 |
+
+Both snapshots of every row compare the seven declared fields
+`blocks_hex`, `metadata_hex`, `saved_metadata_hex`, `live_metadata_null`,
+`chunk_x`, `chunk_z` and `chunk_loaded`. Each complete array counts as one
+field, so 5,365 rows times seven fields times two snapshots gives 75,110
+comparisons per side. Each engine prepared, attempted and completed every
+row, applied and restored all 235 declared controls per side, and recorded
+zero infrastructure failures. The 201 target failures per side are observed
+outcomes. Only their failed-completion classification is compared; Java
+Throwables and native statuses/errors remain separate evidence.
+
+The retained evidence has these byte identities. Original archives and
+resources remain private under the [binary](binaries.md) and
+[resource](resources.md) setup rules.
+
+| Evidence | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Literal input manifest | 4,048,841 | `c5b353da633250a65605fed4ed068fbb9b94b38cc080977ea9c9fe9cd657cddd` |
+| Consumed binary input | 1,012,747 | `c80be6752e59811fa958e5bdcee6b55d518f3df3ba1252727b80e7d33114ce35` |
+| Finite comparison report | 32,509 | `472558c288322163509a87d6f265722efa456d95c0af4bb0777f4ead3e18240f` |
+| Closed completion receipt | 1,793 | `7fa52655dc61e284533de7c75e737ca4a9da2563893ad236cdcdd7b915e15aa7` |
+| Empty mismatch audit | 0 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| Own-history audit, 21,460 records | 11,290,865 | `209be45bfc91afed9c666515cef2666c72c792ef2aa65b0d487502f3b2dec690` |
+
+To reproduce this scope:
+
+1. Admit the exact input bytes before game bootstrap, hash the bytes consumed
+   by each parser, require exact EOF, and emit the full decoded table. Join
+   every row independently to the literal manifest rather than generating
+   expected power results.
+2. Construct each side's genuine persistent World and acquire its ordinary
+   origin Chunk. Use seed23 in stored WorldInfo and constructor arguments.
+   Before every row, reset the actual 32,768 block bytes and 16,384 metadata
+   bytes to zero, then apply the literal stores and real field controls.
+3. Invoke exactly the selected original method or production native
+   API. Capture passive snapshots before and after the action, including
+   failed calls, then perform only the declared guarded restorations. Retain
+   complete errors, genuine production output and actual cleanup obligations.
+4. Establish actual process/stream closure and source/tool/build/resource
+   joins before reading results. Strictly qualify complete protocol records,
+   independently reparse the sealed raw streams, and compare all admitted
+   rows using the seven fields and completion/boolean rules above.
+
+The own-history audit retains each engine's dirty/populated before/after
+history separately. The finite comparison excludes absolute dirty/populated
+history, setup equality, graph identities, Throwable/native-error/status
+identity and source-PC equality. It also excludes wire propagation or
+lifecycle, torch burnout or lifecycle, switch interactions, rail integration,
+scheduled draining and whole-game acceptance. The JARs and Java tooling are
+optional reference-test dependencies; the C runtime remains JVM-free.

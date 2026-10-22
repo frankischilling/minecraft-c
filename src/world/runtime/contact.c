@@ -4,6 +4,7 @@
 #include "../../entity/entity_internal.h"
 #include "collision/blocks_internal.h"
 #include "mutation/mutation_internal.h"
+#include "mutation/rails/detector_internal.h"
 #include "runtime_internal.h"
 
 #include <float.h>
@@ -122,10 +123,10 @@ static mc_world_storage_status soul_sand(const mc_block *block, mc_entity *entit
     return MC_WORLD_STORAGE_OK;
 }
 
-static mc_world_storage_status guarded_plate(mc_world_runtime *world, const mc_block *block,
-                                             int32_t x, int32_t y, int32_t z, bool detector,
-                                             mc_world_entity_contact_error *frame) {
-    stage(block, frame, detector ? "ph" : "bv", detector ? "jn" : "bc", 1);
+static mc_world_storage_status pressure_contact(mc_world_runtime *world, const mc_block *block,
+                                                int32_t x, int32_t y, int32_t z,
+                                                mc_world_entity_contact_error *frame) {
+    stage(block, frame, "bv", "bc", 1);
     if (world == NULL)
         return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Block contact World B receiver");
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME)
@@ -149,13 +150,9 @@ static mc_world_storage_status guarded_plate(mc_world_runtime *world, const mc_b
             frame->status = status;
             frame->operation = frame->query.operation;
             frame->cause = frame->query.cause;
-        } else if (detector ? ((uint32_t)metadata & 8u) == 0u : metadata != 1) {
-            frame->bytecode = detector ? 35u : 27u;
-            if (detector) {
-                status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                              "Detector contact positive helper f is not implemented");
-            } else if (!mc_world_mutation_pressure_update(world, block, x, y, z,
-                                                          &frame->mutation)) {
+        } else if (metadata != 1) {
+            frame->bytecode = 27;
+            if (!mc_world_mutation_pressure_update(world, block, x, y, z, &frame->mutation)) {
                 frame->mutation.pressure_contact_bytecode = 27;
                 frame->helper_bytecode = frame->mutation.pressure_bytecode;
                 status = frame->status = frame->mutation.status;
@@ -168,6 +165,46 @@ static mc_world_storage_status guarded_plate(mc_world_runtime *world, const mc_b
     }
     mc_world_runtime_call_leave(world);
     return status;
+}
+
+static mc_world_storage_status detector_contact(mc_world_runtime *world, const mc_block *block,
+                                                int32_t x, int32_t y, int32_t z, mc_entity *entity,
+                                                mc_world_entity_contact_error *frame) {
+    stage(block, frame, "ph", "jn", 1);
+    bool entered = false;
+    if (world != NULL) {
+        if (world->construction.mode != MC_WORLD_RUNTIME_GAME)
+            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Block contact GAME World");
+        mc_world_storage_error child = {0};
+        const mc_world_storage_status status = mc_world_runtime_call_enter(world, &child);
+        if (status != MC_WORLD_STORAGE_OK) {
+            frame->status = status;
+            frame->operation = child.operation;
+            frame->cause = child;
+            return status;
+        }
+        entered = true;
+    }
+    /* The concrete body owns its sole B/metadata guard and saved metadata.
+     * A null World reaches its actual B1 receiver read without a native entry.
+     * The ignored Entity argument is passed unchanged and is never inspected. */
+    mc_world_detector_error detail = mc_world_mutation_detector_empty_error();
+    const bool complete =
+        mc_world_mutation_detector_contact(world, block, x, y, z, entity, &detail);
+    if (entered)
+        mc_world_runtime_call_leave(world);
+    if (complete)
+        return MC_WORLD_STORAGE_OK;
+    frame->mutation = detail.mutation;
+    frame->metadata = detail.metadata;
+    frame->bytecode = detail.contact.bytecode;
+    frame->helper_bytecode = detail.update.bytecode;
+    frame->status = detail.mutation.status;
+    frame->operation = detail.mutation.operation;
+    frame->cause = detail.mutation.cause;
+    frame->query = detail.mutation.query;
+    frame->registry = detail.mutation.registry;
+    return frame->status;
 }
 
 mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
@@ -189,7 +226,7 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
                 status = portal(block, entity, &frame);
                 break;
             case MC_BLOCK_BV_BC:
-                status = guarded_plate(world, block, x, y, z, false, &frame);
+                status = pressure_contact(world, block, x, y, z, &frame);
                 break;
             case MC_BLOCK_OA_IU:
                 status = soul_sand(block, entity, &frame);
@@ -203,7 +240,7 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
                 break;
             }
             case MC_BLOCK_PH_JN:
-                status = guarded_plate(world, block, x, y, z, true, &frame);
+                status = detector_contact(world, block, x, y, z, entity, &frame);
                 break;
             case MC_BLOCK_RN_KU: {
                 stage(block, &frame, "rn", "ku", 3);

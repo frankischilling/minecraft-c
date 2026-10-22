@@ -1,3 +1,19 @@
+Current guide: [World simulation](World-simulation) links the implemented rail,
+power and population contracts. The latest native suites pass 175 MSVC and 177
+GCC/Clang tests without skips; rail tests cover 814 checks across 144 literal
+cases, with separate constructed error-transport tests. See the
+[current architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
+and [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+for scope and remaining work.
+
+The complete text below is a retained historical checkpoint record. Its counts
+and unfinished-work statements apply to their recorded revisions, including
+older statements about rail implementation and original power comparisons.
+Use the current guide above for later results; the old sections and anchors
+remain available.
+
+---
+
 # Systems and subsystems
 
 [World power queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/power.md)

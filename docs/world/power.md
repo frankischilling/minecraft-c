@@ -124,15 +124,26 @@ The separate horizontal-direction case passes 359 checks, including all seven
 allocation failure cuts. Existing [solid-support contracts](../../tests/world/runtime/test_solid_support.c)
 pass 4,359 checks for the preserved public interface.
 
-Fresh full suites pass 173 MSVC and 175 tests on each sanitized GCC/Clang build,
-with zero skips. Controller mirrors, lifecycle checks and formatting for all
-499 C files and headers also pass. Linux uses an exact 961-file native source
-copy. [Testing](../testing.md) records the configuration and retained evidence
-scope. These are constructed native contracts; original power-runtime equality
-remains unverified.
+At native checkpoint `9f9d3a22900ac25c8fc2813ce2f5881fcedb63a2`, full suites
+pass 173 MSVC and 175 tests on each sanitized GCC/Clang build, with zero skips.
+Controller mirrors, lifecycle checks and formatting for all 499 C files and
+headers also pass. Linux uses an exact 961-file native source copy.
+[Testing](../testing.md) records the configuration and retained evidence scope.
 
-Wire propagation, wire lifecycle and ticks, torch lifecycle and burnout,
-button and lever interactions, repeater timing, rail integration, scheduled
-draining and a complete game loop remain separate work. Output predicates and
-their local connectivity reads do not establish original-runtime equality or
-whole-game acceptance.
+A separate executed comparison at that checkpoint covers all 5,365 literal
+rows on each original side against the native MSVC observer. Each side has
+75,110 equal before/after snapshot-field comparisons, 5,365 equal completion
+classifications and 5,164 equal normally returned booleans. The 201 target
+failures per side remain recorded; their booleans are excluded and their
+Throwable/native errors are not equated. Every engine/side completed all rows
+and 235 real controls/restorations without infrastructure failures. The
+[evidence record](../reference/power.md#validation-boundary) gives the seven
+compared fields, exact hashes, preparation recipe and exclusions.
+
+This finite result excludes setup/graph identity, absolute dirty/populated
+history and source-PC equality. Wire propagation, wire lifecycle and ticks,
+torch lifecycle and burnout, button and lever interactions, repeater timing,
+scheduled draining and a complete game loop remain separate work. Rail
+implementation has its own [native contract](rails.md); an original-runtime
+rail comparison remains unverified. Original JARs and Java tooling are optional
+reference-test dependencies; the C runtime remains JVM-free.

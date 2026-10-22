@@ -1,3 +1,20 @@
+Current reference guide: the [power evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/power.md)
+records a finite original/native MSVC comparison at source `9f9d3a2`, with 5,365
+literal rows per client/server side. Its seven snapshot fields, completion and
+normal-return booleans have a defined comparison scope. The
+[rail source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/rails.md)
+has separately tested native contracts; original-runtime rail equality remains
+unverified. See [World simulation](World-simulation) and the
+[parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+for the current distinctions.
+
+The complete text below is preserved historical checkpoint material. Its test
+counts and older unverified/unfinished statements apply to their recorded
+revisions, not automatically to the current source. Existing sections, anchors
+and reference links remain intact.
+
+---
+
 # Storage and original references
 
 ## World power queries

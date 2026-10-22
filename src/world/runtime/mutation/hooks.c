@@ -311,7 +311,7 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
             return tile_hook(world, block, x, y, z, true, error);
         case MC_BLOCK_PC_JJ:
         case MC_BLOCK_PH_JN:
-            return unavailable(world, block, "pc", "jj", "Block rail addition hook", error);
+            return mc_world_mutation_rail_added_hook(world, block, x, y, z, error);
         case MC_BLOCK_XF_OV:
             return unavailable(world, block, "xf", "ov", "Block sponge addition hook", error);
         case MC_BLOCK_XQ_PA:
@@ -402,7 +402,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
             return mc_world_mutation_falling_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_PC_JJ:
         case MC_BLOCK_PH_JN:
-            return unavailable(world, block, "pc", "jj", "Block rail neighbor hook", error);
+            return mc_world_mutation_rail_neighbor_hook(world, block, x, y, z, source_id, error);
         case MC_BLOCK_XQ_PA:
             return unavailable(world, block, "xq", "pa", "Block dispenser neighbor hook", error);
         case MC_BLOCK_PT_JR:

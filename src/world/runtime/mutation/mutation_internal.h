@@ -163,4 +163,16 @@ bool mc_world_mutation_submit(mc_world_runtime *world, mc_light_kind kind,
                               unsigned int type_pc, unsigned int call_pc,
                               mc_world_mutation_error *error);
 
+/* Concrete inherited rail and detector tick dispatch. The enclosing caller
+ * keeps the actual World entry and receiver alive across all synchronous
+ * effects; these adapters add no getter, class use or persistent binding. */
+bool mc_world_mutation_rail_added_hook(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_rail_neighbor_hook(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                          int32_t y, int32_t z, int32_t source_id,
+                                          mc_world_mutation_error *error);
+bool mc_world_mutation_detector_tick_hook(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                          int32_t y, int32_t z, mc_java_random *random,
+                                          mc_world_mutation_error *error);
+
 #endif

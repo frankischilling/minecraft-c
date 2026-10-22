@@ -2,8 +2,11 @@
 #define MC_WORLD_RUNTIME_MUTATIONS_H
 
 #include "mc/entity/entity.h"
+#include "mc/world/runtime/collision/boxes.h"
 #include "mc/world/runtime/collision/entities.h"
 #include "mc/world/runtime/entities.h"
+#include "mc/world/runtime/power/power.h"
+#include "mc/world/runtime/rails/errors.h"
 
 #include "mc/world/runtime/lighting.h"
 #include "mc/world/runtime/queries.h"
@@ -64,6 +67,24 @@ typedef struct mc_world_mutation_error {
     mc_registry_error registry;
     mc_world_light_error light;
     mc_world_population_context population;
+    /* Explicit selected bits distinguish neutral from selected-but-unentered
+     * rail callees. All sites are a finite current/deepest projection, never a
+     * source stack, callback owner, recursion bound or gameplay work limit. */
+    uint32_t rail_sites_selected;
+    mc_world_detector_site rail_detector_contact, rail_detector_tick, rail_detector_update;
+    mc_world_detector_site rail_detector_cause;
+    mc_rail_lifecycle_site rail_added, rail_shape, rail_neighbor, rail_lifecycle_cause;
+    mc_rail_connection_site rail_connection, rail_connection_cause;
+    mc_rail_connection_site rail_predicate, rail_predicate_cause;
+    mc_rail_connection_site rail_accessor, rail_accessor_cause;
+    mc_rail_power_search_site rail_search, rail_verify, rail_search_cause;
+    /* Exact actually failed children are copied at reached callsites. No
+     * apparent PC/status/sentinel is used to discover which child was reached.
+     * Scheduler prefix above stays nonrecursive; a full schedule error owns
+     * a mutation tick child and cannot itself be embedded in this record. */
+    mc_world_power_error power;
+    mc_world_collision_error rail_access;
+    mc_world_solid_support_error rail_support;
 } mc_world_mutation_error;
 
 /* Actual GAME World setters. Bounds and acquisition precede the selected

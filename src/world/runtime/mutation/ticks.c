@@ -91,7 +91,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_XQ_PA:
             return tick_unavailable(world, block, "xq", "pa", error);
         case MC_BLOCK_PH_JN:
-            return tick_unavailable(world, block, "ph", "jn", error);
+            return mc_world_mutation_detector_tick_hook(world, block, x, y, z, random, error);
         case MC_BLOCK_RU_KZ:
         case MC_BLOCK_JB_FZ:
         case MC_BLOCK_WB_NW:

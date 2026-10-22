@@ -13,7 +13,18 @@ query bounds; the passed World owns the actual entity slices. Category a uses
 mutable R, while Living/Player use fresh [Class-query Lists](world/class-entities.md)
 and passive same-owner ancestry. Ordered mutation, support-neighbor reentry,
 observers, sound and scheduling keep their separate failure effects and
-diagnostics. Detector rails and the running game loop remain unfinished.
+diagnostics. The running game loop remains unfinished.
+
+[Rails](world/rails.md) keep their connection-helper List and coordinate owners
+separate from actual World state. Shape changes and reconnects use notifying
+metadata writes, with ordinary synchronous callbacks and retained partial
+effects. Inherited lifecycle and depth-guarded powered search read the live
+defining Registry independently of the supplied World. Detector contact/tick
+uses real pooled bounds and a fresh Class-query List; positive Minecart
+construction remains a separate dependency. Explicit current/deepest rail sites
+retain complete typed lower errors without inferring entry from class names or
+PC values. This source and native-contract coverage does not establish
+executed-original rail equality or a running game loop.
 
 The following movement/collision checkpoint predates Piston tick/finalization
 and pressure-plate integration.

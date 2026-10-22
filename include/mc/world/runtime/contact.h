@@ -38,8 +38,9 @@ mc_world_entity_contact_error mc_world_entity_contact_empty_error(void);
  * actual nullable-source damage and discards its ordinary bool. Pressure and
  * detector execute remote/metadata guards. Pressure plates query actual
  * published entities, including real Class-filtered Living/Player queries,
- * notify metadata/neighbors and schedule their release. The detector's
- * positive helper remains an explicit reached dependency.
+ * notify metadata/neighbors and schedule their release. Detector rails use
+ * the actual Minecart Class query, preserve saved metadata through transitions,
+ * notify the reached neighbors/range and schedule while the captured List is nonempty.
  *
  * Unused nullable World/Entity arguments remain unread by the selected source
  * body. Reached World operations require GAME/nonretired owners; reached Entity

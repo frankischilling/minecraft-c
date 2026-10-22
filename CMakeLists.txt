@@ -266,6 +266,13 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/snow.c
     src/world/runtime/mutation/pressure_plate.c
     src/world/runtime/mutation/pressure_lifecycle.c
+    src/world/runtime/mutation/rails/connections.c
+    src/world/runtime/mutation/rails/detector.c
+    src/world/runtime/mutation/rails/dispatch.c
+    src/world/runtime/mutation/rails/error_sites.c
+    src/world/runtime/mutation/rails/lifecycle.c
+    src/world/runtime/mutation/rails/power_search.c
+    src/world/runtime/mutation/rails/wrapper_transport.c
     src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
@@ -520,6 +527,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_power tests/world/runtime/power/test_power.c)
     target_link_libraries(mc_test_world_power PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
+    target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_rail_errors tests/world/runtime/rails/test_error_sites.c)
+    target_link_libraries(mc_test_world_rail_errors PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.rail_errors COMMAND mc_test_world_rail_errors)
+    set_tests_properties(world.rail_errors PROPERTIES LABELS "public;unit;mutation;errors")
 
     add_executable(mc_test_world_queries tests/world/runtime/test_queries.c)
     target_link_libraries(mc_test_world_queries PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1240,6 +1253,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-power-contracts")
     set_tests_properties(world.power PROPERTIES
         LABELS "public;integration;ownership;power" TIMEOUT 90)
+
+    add_test(NAME world.rails
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_rails>"
+        --scenario world-rails
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-rail-contracts")
+    set_tests_properties(world.rails PROPERTIES
+        LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
 
     add_test(NAME world.entity_publication
         COMMAND "${Python3_EXECUTABLE}"
