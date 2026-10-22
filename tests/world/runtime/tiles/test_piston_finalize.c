@@ -770,7 +770,11 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_PISTON_FINALIZE_MAIN
+#define MC_PISTON_FINALIZE_MAIN main
+#endif
+
+int MC_PISTON_FINALIZE_MAIN(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
     char root[8192];

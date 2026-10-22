@@ -3,10 +3,11 @@
 The [Tile interface](../../../include/mc/world/runtime/tiles/tiles.h) owns real
 Piston instances alongside Chest and Spawner. The [source map](../../reference/piston.md)
 records the paired original methods, floating-point observations and remaining
-dependencies. Explicit finalization, MovingPiston removal and its neighbor
-callback have native coverage on Windows and Linux. Qualified active original
-and native observations match in the documented finite source-mapped projection
-on all three compilers. Active piston ticking and Entity pushing remain unfinished.
+dependencies. Explicit finalization, MovingPiston removal, its neighbor callback
+and actual Tile ticking with supported Entity pushing have focused native coverage
+on Windows and Linux. Earlier finalization observations match their documented
+finite projection. The complete original tick input family is qualified; its C
+replay comparison remains pending.
 
 ## Construction and class lifetime
 
@@ -24,10 +25,16 @@ allocation; the first failure latches and is not retried. This native capacity
 policy does not reproduce a particular JDK's allocation size or OOM timing.
 
 Passive class snapshots expose phases, completed registration counts, List
-identity and requested bytes. They perform no active use. Multiple Worlds using
-the same runtime Class owner observe the same List. Class retirement waits for
-all Worlds, Tiles and borrowed literal owners; geometry never puts Entities in
-the static List.
+identity, current backing capacity, raw modification count and requested bytes.
+They perform no active use. Multiple Worlds using the same runtime Class owner
+observe the same List. Its unused allocated slots are NULL. A borrowed backing
+view expires on growth; historical Java array identities are not represented.
+
+A failed push can leave owning Entity occurrences in this List. Native terminal
+shutdown may call `mc_tile_piston_class_discard_entities` only after retiring all
+Tile owners, with exclusive classes and no later gameplay. This breaks native
+Entity/World/class ownership cycles. It is separate from the source clear and
+never runs automatically after a tick failure.
 
 ## State and storage
 
@@ -84,12 +91,49 @@ hook12 and the full typed Tile cause. The source neighbor ID is unused.
 The `world.piston_finalization` contract passes 460 checks per compiler,
 including installed owners, aliases, duplicates, ordinary false results,
 neighbor guards, different-cell invalid Chest cleanup and retained failure
-prefixes. The ordinary-false fixture now keeps its shared moving neighbor, so
-later notifying restoration executes that real getter. Seven focused local
-contracts pass on MSVC and sanitized GCC/Clang. Active replay matches the 57
-finite projections per side/compiler, including source-backed failure-prefix
-joins. Full native errors and Java Throwables remain separate. Tick, pushing
-and the separate state-shape update remain unfinished.
+prefixes. The ordinary-false fixture keeps its shared moving neighbor, so
+later notifying restoration executes that real getter. Earlier active replay
+matches the 57 finite projections per side/compiler, including source-backed
+failure-prefix joins. Full native errors and Java Throwables remain separate.
+The separate MovingPiston state-shape update remains unfinished.
+
+## Tick and Entity pushing
+
+`mc_tile_piston_tick` implements client `uk.n_()` and server `mu.g_()` with the
+private `a(FF)` push body. It copies raw current progress to previous before any
+floating-point admission or World call. Invalidity adds no early source guard.
+
+Progress at least one pushes with progress one and amount .25 first. It then
+removes the current Tile, invalidates the receiver, queries the current Block ID
+and compares it with the live moving Block's ID. Equality reaches the notifying
+carried-ID/metadata setter; its ordinary Boolean result is discarded. This path
+does not force either stored progress field to one.
+
+Other progress values execute separately rounded binary32 addition of .5 and
+store the result, including NaN. Only a result at least one is capped at one.
+Retracting returns there. Extending pushes at the new progress with the separate
+binary32 result `(current - previous) + .0625`.
+
+Push obtains actual carrier geometry before entering the reached World nearby
+query. A null box or empty nearby result returns without clearing the shared List.
+A nonempty result appends its actual ordered occurrences, including
+duplicates, to the class List. A fresh fail-fast iterator traverses that shared
+List. Each axis reads its current Direction array and facing, multiplies amount
+in binary32, widens to binary64 and passes the three offsets to actual Entity
+movement. Clear runs only after normal iteration. A later failure keeps earlier
+moves, appended occurrences, progress stores and World effects.
+
+The held Tile survives removal and synchronous descendants. Temporary Entity,
+nearby-view and pooled-bounds holds are released without resetting the pool or
+undoing gameplay effects. Errors retain separate tick/push PCs and complete
+reached Registry, Tile, geometry, nearby, movement and mutation records.
+
+The `world.piston_tick` contract passes 575 checks per compiler. It covers raw
+progress and null-World paths, code-owner geometry, all axes, duplicates, real
+Item/Falling movement, failed-prefix List history and completion effects. These
+are constructed native contracts. Full original tick replay, other Entity
+movement dispatches and the separate state-shape update remain unfinished;
+[current movement limits](../../entity/movement.md) still apply.
 
 ## Collision order
 
@@ -124,12 +168,18 @@ Direction frames separate through reached failures.
 
 ## Verification scope
 
-The neighbor increment passes seven fresh local contracts on MSVC and GCC/Clang
-with Linux ASan/UBSan/leak checks: 460 finalization, 296 Piston Tile, 144 geometry,
-218 mutation, 732 collision, 544 movement and 202 World dependency checks per
-host. These focused runs rebuild the selected native closures from current
-source. Full local suites remain unrun. See [PR #52](https://github.com/frankischilling/minecraft-c/pull/52)
-for current-head hosted status and results.
+Fresh focused builds pass nine selected contracts on MSVC and GCC/Clang with
+Linux ASan/UBSan/leak checks: 4,751 bounds, 575 tick, 460 finalization, 296 Piston
+Tile, 144 geometry, 218 mutation, 732 collision, 544 movement and 202 World
+dependency checks per host. Independent audits join the current source, tools,
+fresh products, complete streams and actual process closures. These builds
+registered 167/169/169 cases and executed only the selected nine; they do not
+establish a current full-suite or hosted result.
+
+The separately qualified original tick capture admits all 114 ordered cases and
+228 before/after snapshot phases per side. Native/original tick comparison is
+pending. Its full graphs and original action throws remain retained; observation
+qualification does not establish C equality.
 
 The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 GCC/Clang
 configured cases without skips, plus formatting for 479 C files and headers,

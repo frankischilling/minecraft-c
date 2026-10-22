@@ -23,6 +23,8 @@ and server descriptors below. Neither name establishes behavior or coverage.
 | NBT read | `uk.a(nu)` | `mu.a(iq)` | Base2; Int ID9/store12, data19/store22, facing29/store32; Float progress40/stores44,47; Boolean54/store57 |
 | NBT write | `uk.b(nu)` | `mu.b(iq)` | Base2; ID12, data22, facing32; previous progress42; extending52 |
 | Explicit finalization | `uk.l()V` | `mu.k()V` | `fcmpg` previous5; current/previous stores13/16; World removal35; own invalidation39; World ID58; live moving Block61/64; notifying setter94; discard97 |
+| Tile tick | `uk.n_()V` | `mu.g_()V` | Current to previous5; completion push21, removal40, invalidation44, ID63, live moving Block66/69, setter99; otherwise fadd111/store112, cap126, extending push153 |
+| Private Entity push | `uk.a(FF)V` | `mu.a(FF)V` | Progress subtraction9/16; moving Block18, shifted box46, nearby60, isEmpty67, addAll80, iterator89, hasNext98, next108, actual movement156, normal clear165 |
 | Moving removed hook | `ut.b(fd,III)` | `mz.b(dj,III)` | Actual Tile lookup5; Piston finalizer28; inherited container removal40 |
 | Moving neighbor hook | `ut.b(fd,IIII)` | `mz.b(dj,IIII)` | World B1; true guard4; actual acquiring Tile getter12; return18 |
 | Container removal fallback | `rw.b(fd,III)` | `lb.b(dj,III)` | Empty Block parent body6, then actual World Tile removal14 |
@@ -67,17 +69,43 @@ Each current coordinate is read before its Direction getstatic. Conversion to
 binary32 precedes multiplication; widening precedes subtraction. The helper
 does not allocate a coordinate copy or invoke a generic add-based translation.
 The separate MovingPiston state-shape update is a different body and remains
-unfinished, along with tick and Entity pushing. Explicit finalization and both
-MovingPiston removal and neighbor hooks have constructed native coverage in
-fresh local MSVC and sanitized GCC/Clang contracts. The neighbor hook's true B
+unfinished. Tile tick and its private Entity push are implemented with supported
+actual movement dispatches. Explicit finalization and both MovingPiston removal
+and neighbor hooks also have constructed native coverage in fresh local MSVC
+and sanitized GCC/Clang contracts. The neighbor hook's true B
 guard skips acquisition; its false branch retains the real getter's effects,
 including lazy invalid-Tile Map cleanup, before discarding the returned hold.
-Active finite state projections and source-backed completion/failure-prefix
+Earlier finalization finite state projections and source-backed completion/failure-prefix
 joins match on all three compilers. Full native errors remain distinct from
 Java Throwables. The retained interpolation and geometry observations below
 keep their separate helper scopes.
 
 ## Original observations
+
+### Active tick input family
+
+A new original client/server family admits all 114 ordered caller inputs per
+side, with 114 before and 114 after snapshots. Its recipe keeps a 34-case cold
+prefix, an explicit warm boundary and five genuine fresh seed23 Worlds. Each
+World receives 567 actual five-int quiet-air setters. Actors, duplicate
+publication, parked owners, reused Tiles and shared class-List history remain
+part of the same ordered recipe.
+
+Both sides finish observation normally, retaining 24 actual action throws each.
+Setup, snapshot, observer and close failures are zero. Independent offline
+qualification checks full lossless stdout/stderr, source/tool/JAR and compiled
+helper seals, command environments/working directories, actual recorded closure
+controls, all input/action records and the admitted passive graphs. No subject
+is restarted by qualification.
+
+This qualifies the supplied observations. Complete native tick replay and its
+finite comparison are pending. Constructor Random/Math entropy and clocks are
+natural inputs; seed23 does not fix all constructor or generation history.
+Snapshots are non-atomic, and unadmitted class statics remain outside the graph.
+Reference-field/array-component assignability and complete terminal inline
+payloads rely on the pinned helper and genuine JVM rather than an independent
+whole-heap validator. Native historical backing lifetimes and Java wrapper
+identities require their own declared comparison limits.
 
 ### Active finalization family
 

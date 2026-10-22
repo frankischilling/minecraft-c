@@ -1,5 +1,43 @@
 # Storage and original references
 
+## Piston tick and standalone bounds checkpoint
+
+The [Piston contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md#tick-and-entity-pushing)
+implements actual Tile tick/private push ordering, real supported Entity movement
+and shared owning-List history. The
+[bounds contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
+adds genuine standalone raw-coordinate allocation and native lifetime handling.
+
+Fresh focused MSVC and sanitized GCC/Clang builds pass nine cases each: bounds
+4,751, tick 575, finalization 460, Tile 296, geometry 144, mutation 218, collision
+732, movement 544 and World dependencies 202. Independent qualification checks
+all 940 public/798 native/254 dependency inputs, exact working-source differences,
+fresh compile/product/graph/command joins, full streams and recorded closures.
+The audited configurations register 167/169/169 cases; only nine run per host.
+No current full-suite, hosted or complete original/C tick result is inferred.
+
+The original tick family independently admits 114 ordered inputs and 228
+snapshots per side, including five genuine fresh seed23 Worlds and 567 actual
+workspace quiet-air setters per World. Each side retains 24 genuine action
+throws; setup/snapshot/observer/close failures are zero. Source/tool/JAR/compiled
+helper seals, full gzip hashes/CRC/EOF, input/control records and admitted passive
+graphs qualify. Complete native replay comparison remains pending. Natural
+constructor entropy, non-atomic snapshots, unadmitted statics and the helper/JVM
+trust limits described in the
+[source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md#active-tick-input-family)
+remain explicit.
+
+| Retained evidence | Bytes | SHA256 |
+| --- | ---: | --- |
+| Working-source capsule | 558606 | `dbecd83baffa22952e5a68b80b21969fc6b55e6592b11522a06d5834f212a2b6` |
+| Native focused audit | 97475 | `17a18dd765be099c2b66d4b0966c7ad554566fa542586e9fe2df86a7dd2ce866` |
+| Original tick qualification | 4076833 | `599ccf1d9e5fabd26313523c94fe40ffc6826b23297b81717527df656b472822` |
+
+These are retained working-source observations. Commit and hosted-check bindings
+remain separate; documentation changes do not extend their runtime scope.
+
+The following finalization/neighbor checkpoint predates tick and standalone-factory integration.
+
 ## Piston finalization and neighbor observations
 
 The [paired Piston source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
@@ -8,8 +46,8 @@ MovingPiston neighbor body. The neighbor's World B guard precedes its real
 acquiring Tile getter. Discarding the return preserves acquisition, the added
 hook, lazy invalid-Map cleanup and reached typed failures. Mappings
 provide navigation names; separate client/server JAR descriptors and observed
-behavior remain the authority. Tick, pushing, the separate state-shape update
-and wider gameplay remain unfinished.
+behavior remain the authority. That checkpoint predates the tick/push addition
+above; the separate state-shape update and wider gameplay remain unfinished.
 
 Seven fresh local contracts pass on MSVC and sanitized GCC/Clang, with 460
 finalization, 296 Piston Tile, 144 geometry, 218 mutation, 732 collision, 544
@@ -21,8 +59,7 @@ native inputs, plus 254 dependency files. Their bytes, build tools/products/
 graphs, complete streams, process receipts, unchanged probe, resources and all
 57 caller inputs are hashed and joined. Neither establishes a full local or
 hosted suite for the callback. The earlier green `85441fe` 168/170 hosted checkpoint
-remains historical to its own source. Full local suites remain unrun. See
-[PR #52](https://github.com/frankischilling/minecraft-c/pull/52) for current-head hosted status and results.
+remains historical to its own source. Current full local suites remain unrun.
 
 | Retained report | Bytes | SHA256 | Scope |
 | --- | ---: | --- | --- |

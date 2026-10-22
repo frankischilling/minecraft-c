@@ -20,6 +20,22 @@ typedef struct mc_entity_bounds_error {
     mc_entity_error pool;
 } mc_entity_bounds_error;
 
+/* Actual direct eq/cz.a(DDDDDD) factory, with one native hold on a fresh
+ * standalone box. Initialize only the bounds class, then store all six raw
+ * coordinates in order, without clamps, finite checks or arithmetic. No pool
+ * append/cursor change, Entity/Random initialization or World use occurs.
+ * Pool reset/reuse/client clear never changes this box's coordinates.
+ *
+ * Keep classes live/exclusive; outputs/errors must be disjoint from all owners
+ * and each other. Failure preserves out and reached class initialization. The
+ * class initializer latches its own failure; a later factory allocation or
+ * native return-hold failure does not poison the class. Requested bytes and
+ * holds use the same owner ledger as pooled boxes, without claiming Java OOM
+ * timing. Retain/release below also accept these actual standalone identities. */
+mc_entity_status mc_entity_bounds_create(mc_entity_classes *classes, double min_x, double min_y,
+                                         double min_z, double max_x, double max_y, double max_z,
+                                         mc_entity_bounds **out, mc_entity_bounds_error *error);
+
 /* Shared eq/cz pool in this loaded Entity classes owner. A successful get or
  * pooled transform returns one native hold. Reset only resets the source
  * cursor: later gets overwrite the SAME boxes, including held boxes. Client
@@ -28,14 +44,14 @@ typedef struct mc_entity_bounds_error {
  * resets automatically per Entity, World or movement.
  *
  * Keep classes live and access it exclusively. Free is BUSY while any bounds
- * hold remains. Retain/release accept only actual live pooled boxes of this
- * owner; Entity's permanent bounds and caller-owned values are not adopted.
+ * hold remains. Retain/release accept only actual live pooled or standalone
+ * boxes of this owner; Entity-owned bounds and caller-owned values are not adopted.
  * Holds protect storage, not coordinates or pool membership. Outputs must be
  * disjoint from owner/error storage. Failure preserves out, not reached pool
  * initialization, append, cursor or coordinate effects. Native allocation
  * limits count boxes, pointer capacity and overlapping replacement storage.
  * Acquisition is constant time except backing growth; external retain/release
- * validate identity by scanning this owner's live pooled/detached objects.
+ * validate identity by scanning this owner's live standalone/pooled/detached objects.
  * Client clear has no server counterpart; calling it for SERVER is invalid.
  * These calls initialize only the bounds class, never Entity or Random. */
 mc_entity_status mc_entity_bounds_pool_get(mc_entity_classes *classes, double min_x, double min_y,

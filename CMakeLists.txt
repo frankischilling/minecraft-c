@@ -220,6 +220,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/tiles/tiles.c
     src/world/runtime/tiles/piston_math.c
     src/world/runtime/tiles/piston.c
+    src/world/runtime/tiles/piston_tick.c
     src/world/runtime/loading/loading.c
     src/world/runtime/saving/saving.c
     src/world/runtime/runtime.c
@@ -525,6 +526,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_piston_finalize tests/world/runtime/tiles/test_piston_finalize.c)
     target_link_libraries(mc_test_piston_finalize PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_piston_tick tests/world/runtime/tiles/test_piston_tick.c)
+    target_link_libraries(mc_test_piston_tick PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_entity_movement tests/entity/movement/test_movement.c)
     target_link_libraries(mc_test_entity_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1252,6 +1256,15 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-finalization-contracts")
     set_tests_properties(world.piston_finalization PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 90)
+
+    add_test(NAME world.piston_tick
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_piston_tick>"
+        --scenario world-piston-tick
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-tick-contracts")
+    set_tests_properties(world.piston_tick PROPERTIES
+        LABELS "public;integration;ownership;collision" TIMEOUT 90)
 
     add_test(NAME entity.movement
         COMMAND "${Python3_EXECUTABLE}"

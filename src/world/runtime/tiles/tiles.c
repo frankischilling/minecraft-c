@@ -13,6 +13,7 @@
 #include "../runtime_internal.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
+#include "piston_list_internal.h"
 #include "piston_math_internal.h"
 #include "tiles_internal.h"
 
@@ -60,6 +61,11 @@ struct mc_tile_classes {
     unsigned int piston_phase, piston_initializer_pc;
     mc_tile_status piston_failure;
     mc_world_reference_list *piston_list;
+    mc_world_reference_list *piston_list_identity;
+    void **piston_items;
+    mc_entity **piston_entities;
+    size_t piston_count, piston_capacity;
+    uint32_t piston_mod_count;
     size_t piston_allocation_bytes, piston_max_allocation_bytes;
     bool piston_configured;
 };
@@ -69,6 +75,9 @@ static mc_registry_error live_empty_registry(void);
 static mc_live_tile_error live_empty_error(void);
 static mc_world_storage_status live_tile_error(mc_live_tile_error *, mc_tile_status, const char *);
 static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes **out);
+static mc_tile_status live_classes_owner_in(mc_world_runtime_classes *parent,
+                                            mc_tile_classes **out);
+static mc_tile_status live_classes_initialize(mc_tile_classes *classes, mc_tile_classes **out);
 static mc_tile_status live_piston_classes_get(mc_tile_classes *classes);
 static void tile_allocation_error(mc_world_runtime *world, mc_tile_kind kind, mc_tile_status status,
                                   mc_tile_error *error);
@@ -297,19 +306,10 @@ size_t mc_tile_name_native_bytes(const mc_tile_name *name) {
     return name == NULL ? 0 : name->allocation_bytes;
 }
 
-mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out) {
-    if (out == NULL) {
-        return MC_TILE_INVALID_ARGUMENT;
-    }
-    if (kind != MC_TILE_CHEST && kind != MC_TILE_SPAWNER && kind != MC_TILE_PISTON) {
-        return MC_TILE_INVALID_KIND;
-    }
-    mc_tile_classes *classes = NULL;
-    mc_tile_status active = live_classes_get(world, &classes);
-    if (active != MC_TILE_OK)
-        return active;
+static mc_tile_status tile_allocate_in_owner(mc_tile_classes *classes, mc_tile_kind kind,
+                                             mc_tile **out) {
     if (kind == MC_TILE_PISTON) {
-        active = live_piston_classes_get(classes);
+        const mc_tile_status active = live_piston_classes_get(classes);
         if (active != MC_TILE_OK)
             return active;
     }
@@ -326,6 +326,29 @@ mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_t
     tile->phase = MC_TILE_RAW;
     *out = tile;
     return MC_TILE_OK;
+}
+
+mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    if (kind != MC_TILE_CHEST && kind != MC_TILE_SPAWNER && kind != MC_TILE_PISTON)
+        return MC_TILE_INVALID_KIND;
+    mc_tile_classes *classes = NULL;
+    const mc_tile_status active = live_classes_get(world, &classes);
+    return active == MC_TILE_OK ? tile_allocate_in_owner(classes, kind, out) : active;
+}
+
+mc_tile_status mc_tile_allocate_in_classes(mc_world_runtime_classes *parent, mc_tile_kind kind,
+                                           mc_tile **out) {
+    if (out == NULL)
+        return MC_TILE_INVALID_ARGUMENT;
+    if (kind != MC_TILE_CHEST && kind != MC_TILE_SPAWNER && kind != MC_TILE_PISTON)
+        return MC_TILE_INVALID_KIND;
+    mc_tile_classes *classes = NULL;
+    mc_tile_status active = live_classes_owner_in(parent, &classes);
+    if (active == MC_TILE_OK)
+        active = live_classes_initialize(classes, &classes);
+    return active == MC_TILE_OK ? tile_allocate_in_owner(classes, kind, out) : active;
 }
 
 static mc_tile_status tile_construct(mc_tile *raw, const tile_import_context *context,
@@ -413,6 +436,17 @@ mc_tile_status mc_tile_retain(mc_tile *tile) {
 
 mc_registry_classes *mc_tile_piston_registry_held(const mc_tile *tile) {
     return tile == NULL || tile->classes == NULL ? NULL : tile->classes->registry;
+}
+
+mc_world_runtime_classes *mc_tile_piston_code_classes_held(const mc_tile *tile) {
+    if (tile == NULL || tile->holds == 0 || tile->phase != MC_TILE_READY ||
+        tile->kind != MC_TILE_PISTON || tile->classes == NULL)
+        return NULL;
+    const mc_tile_classes *classes = tile->classes;
+    if (classes->phase != MC_TILE_CLASS_READY || classes->piston_phase != MC_TILE_CLASS_READY ||
+        classes->parent == NULL || classes->parent->tiles != classes)
+        return NULL;
+    return classes->parent;
 }
 
 static void tile_slots_release(mc_item_stack **slots, size_t capacity) {
@@ -1648,12 +1682,10 @@ static mc_tile_status live_literal(mc_tile_classes *classes, const char *ascii, 
     return MC_TILE_OK;
 }
 
-static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classes **out) {
-    if (world == NULL || world->classes == NULL ||
-        world->construction.mode != MC_WORLD_RUNTIME_GAME ||
-        world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
+static mc_tile_status live_classes_owner_in(mc_world_runtime_classes *parent,
+                                            mc_tile_classes **out) {
+    if (parent == NULL)
         return MC_TILE_INVALID_ARGUMENT;
-    mc_world_runtime_classes *parent = world->classes;
     if (parent->tiles == NULL) {
         mc_tile_classes *classes = calloc(1, sizeof(*classes));
         if (classes == NULL)
@@ -1667,6 +1699,14 @@ static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classe
     mc_tile_classes *classes = parent->tiles;
     *out = classes;
     return MC_TILE_OK;
+}
+
+static mc_tile_status live_classes_owner(mc_world_runtime *world, mc_tile_classes **out) {
+    if (world == NULL || world->classes == NULL ||
+        world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
+        return MC_TILE_INVALID_ARGUMENT;
+    return live_classes_owner_in(world->classes, out);
 }
 
 mc_tile_status mc_tile_piston_class_configure(mc_world_runtime *world,
@@ -1706,6 +1746,7 @@ mc_tile_status mc_tile_piston_class_get_snapshot(const mc_world_runtime_classes 
         view.allocation_bytes = classes->piston_allocation_bytes;
         view.max_allocation_bytes = classes->piston_max_allocation_bytes;
         view.live_tiles = classes->live_tiles;
+        view.list_mod_count_bits = classes->piston_mod_count;
     }
     *out = view;
     return MC_TILE_OK;
@@ -1738,9 +1779,392 @@ static mc_tile_status live_piston_classes_get(mc_tile_classes *classes) {
     classes->piston_initializer_pc = 4; /* Empty native ArrayList constructor. */
     classes->piston_initializer_pc = 7;
     classes->piston_list = list; /* Actual shared static m, distinct from every World List. */
+    classes->piston_list_identity = list;
     classes->piston_initializer_pc = 10;
     classes->piston_phase = MC_TILE_CLASS_READY;
     return MC_TILE_OK;
+}
+
+static mc_world_storage_status piston_list_fail(mc_piston_list_error *error,
+                                                mc_world_storage_status status,
+                                                const char *operation, size_t index,
+                                                mc_entity_status entity_status) {
+    *error = (mc_piston_list_error){status, operation, entity_status, index};
+    return status;
+}
+
+static mc_world_storage_status piston_list_finish(const mc_piston_list_error *frame,
+                                                  mc_piston_list_error *error) {
+    if (error != NULL)
+        *error = *frame;
+    return frame->status;
+}
+
+static mc_world_storage_status piston_entity_status(mc_entity_status status) {
+    switch (status) {
+        case MC_ENTITY_LIMIT:
+            return MC_WORLD_STORAGE_LIMIT;
+        case MC_ENTITY_ALLOCATION_FAILED:
+            return MC_WORLD_STORAGE_ALLOCATION_FAILED;
+        case MC_ENTITY_BUSY:
+            return MC_WORLD_STORAGE_BUSY;
+        case MC_ENTITY_INVALID_ARGUMENT:
+            return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        default:
+            return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    }
+}
+
+/* The source descriptor never proves ownership of an arbitrary void* span.
+ * Its identity, backing and metadata must agree with the private allocations.
+ * Occurrences are intentionally not inspected by this constant-time check. */
+static bool piston_list_shape(const mc_tile_classes *classes, bool current_static) {
+    if (classes == NULL || classes->phase != MC_TILE_CLASS_READY ||
+        classes->piston_phase != MC_TILE_CLASS_READY || classes->parent == NULL ||
+        classes->parent->tiles != classes || classes->piston_list_identity == NULL ||
+        (current_static && classes->piston_list != classes->piston_list_identity))
+        return false;
+    const mc_world_reference_list *list = classes->piston_list_identity;
+    if (list->items != classes->piston_items || list->count != classes->piston_count ||
+        list->capacity != classes->piston_capacity || list->count > list->capacity ||
+        list->capacity > (size_t)INT32_MAX ||
+        ((list->capacity == 0) != (classes->piston_items == NULL)) ||
+        ((list->capacity == 0) != (classes->piston_entities == NULL)) ||
+        (classes->piston_items != NULL &&
+         (void *)classes->piston_items == (void *)classes->piston_entities))
+        return false;
+    size_t bytes;
+    if (!tile_size_multiply(list->capacity,
+                            sizeof(*classes->piston_items) + sizeof(*classes->piston_entities),
+                            &bytes) ||
+        !tile_size_add(&bytes, sizeof(*list)))
+        return false;
+    return bytes == classes->piston_allocation_bytes &&
+           bytes <= classes->piston_max_allocation_bytes;
+}
+
+static bool piston_list_occurrences(const mc_tile_classes *classes, size_t *bad_index) {
+    for (size_t i = 0; i < classes->piston_count; ++i)
+        if (classes->piston_entities[i] == NULL ||
+            classes->piston_items[i] != classes->piston_entities[i]) {
+            if (bad_index != NULL)
+                *bad_index = i;
+            return false;
+        }
+    return true;
+}
+
+static bool piston_list_retire_valid(const mc_tile_classes *classes) {
+    if (classes->piston_list_identity != NULL)
+        return piston_list_shape(classes, true) && piston_list_occurrences(classes, NULL);
+    return (classes->piston_phase == MC_TILE_CLASS_COLD ||
+            classes->piston_phase == MC_TILE_CLASS_FAILED) &&
+           classes->piston_list == NULL && classes->piston_items == NULL &&
+           classes->piston_entities == NULL && classes->piston_count == 0 &&
+           classes->piston_capacity == 0 && classes->piston_mod_count == 0 &&
+           classes->piston_allocation_bytes == 0;
+}
+
+static bool piston_list_owner(mc_tile *tile, mc_tile_classes **out, mc_piston_list_error *error) {
+    if (mc_tile_piston_code_classes_held(tile) == NULL) {
+        piston_list_fail(error,
+                         tile == NULL ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                      : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                         "Piston List held Tile code owner", SIZE_MAX, MC_ENTITY_OK);
+        return false;
+    }
+    if (!piston_list_shape(tile->classes, true)) {
+        piston_list_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                         "Piston static List owning descriptor", SIZE_MAX, MC_ENTITY_OK);
+        return false;
+    }
+    *out = tile->classes;
+    return true;
+}
+
+static bool piston_list_peak(const mc_tile_classes *classes, size_t extra) {
+    return classes->piston_allocation_bytes <= classes->piston_max_allocation_bytes &&
+           extra <= classes->piston_max_allocation_bytes - classes->piston_allocation_bytes;
+}
+
+/* Exact captured JDK17 default-empty/grow/ArraysSupport integer selection.
+ * Requested-byte admission below remains an independent native policy. */
+static size_t piston_list_grown_capacity(size_t old, size_t minimum) {
+    if (old == 0)
+        return minimum < 10u ? 10u : minimum;
+    const int32_t old_length = (int32_t)old;
+    const int32_t min_growth = (int32_t)(minimum - old);
+    const int32_t preferred = (int32_t)(old >> 1u);
+    const int32_t growth = min_growth > preferred ? min_growth : preferred;
+    const int32_t length = mc_java_i32_add(old_length, growth);
+    const int32_t soft_maximum = INT32_MAX - 8;
+    if (length > 0 && length <= soft_maximum)
+        return (size_t)length;
+    /* minimum was admitted <=INT32_MAX before entering growth. Thus the
+     * hugeLength minLength sum is positive and cannot take its OOME branch. */
+    return minimum <= (size_t)soft_maximum ? (size_t)soft_maximum : minimum;
+}
+
+mc_world_storage_status mc_tile_piston_entities_append(mc_tile *tile,
+                                                       const mc_world_entity_list_view *source,
+                                                       mc_piston_list_error *error) {
+    mc_piston_list_error frame = {.index = SIZE_MAX};
+    mc_tile_classes *classes = NULL;
+    if (!piston_list_owner(tile, &classes, &frame))
+        return piston_list_finish(&frame, error);
+    size_t count;
+    mc_world_storage_status status = mc_world_entity_list_view_count(source, &count);
+    if (status != MC_WORLD_STORAGE_OK) {
+        piston_list_fail(&frame, status, "Piston addAll source snapshot size", SIZE_MAX,
+                         MC_ENTITY_OK);
+        return piston_list_finish(&frame, error);
+    }
+    size_t snapshot_bytes;
+    if (!tile_size_multiply(count, sizeof(mc_entity *), &snapshot_bytes) ||
+        !piston_list_peak(classes, snapshot_bytes)) {
+        piston_list_fail(&frame, MC_WORLD_STORAGE_LIMIT, "Piston addAll source snapshot budget",
+                         SIZE_MAX, MC_ENTITY_OK);
+        return piston_list_finish(&frame, error);
+    }
+    mc_entity **snapshot = count == 0 ? NULL : malloc(snapshot_bytes);
+    if (count != 0 && snapshot == NULL) {
+        piston_list_fail(&frame, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                         "Piston addAll source snapshot allocation", SIZE_MAX, MC_ENTITY_OK);
+        return piston_list_finish(&frame, error);
+    }
+    classes->piston_allocation_bytes += snapshot_bytes;
+    size_t prepared = 0;
+    void **new_items = NULL;
+    mc_entity **new_entities = NULL;
+    size_t item_bytes = 0, entity_bytes = 0;
+    for (; prepared < count; ++prepared) {
+        mc_entity *entity = NULL;
+        status = mc_world_entity_list_view_get(source, prepared, &entity);
+        if (status != MC_WORLD_STORAGE_OK) {
+            piston_list_fail(&frame, status, "Piston addAll source snapshot occurrence", prepared,
+                             MC_ENTITY_OK);
+            goto finish;
+        }
+        const mc_entity_status held = mc_entity_retain(entity);
+        if (held != MC_ENTITY_OK) {
+            piston_list_fail(&frame, piston_entity_status(held),
+                             "Piston addAll source snapshot Entity hold", prepared, held);
+            goto finish;
+        }
+        snapshot[prepared] = entity;
+    }
+    /* Actual addAll.toArray1 completed before modCount14, including empty
+     * snapshots. Native snapshot/hold failures above leave modCount intact. */
+    classes->piston_mod_count += UINT32_C(1);
+    if (count == 0)
+        goto finish;
+    if (count > (size_t)INT32_MAX - classes->piston_count) {
+        piston_list_fail(&frame, MC_WORLD_STORAGE_LIMIT, "Piston addAll requested List size",
+                         SIZE_MAX, MC_ENTITY_OK);
+        goto finish;
+    }
+    const size_t total = classes->piston_count + count;
+    if (total > classes->piston_capacity) {
+        const size_t capacity = piston_list_grown_capacity(classes->piston_capacity, total);
+        size_t bytes;
+        if (!tile_size_multiply(capacity, sizeof(*new_items) + sizeof(*new_entities), &bytes) ||
+            !piston_list_peak(classes, bytes)) {
+            piston_list_fail(&frame, MC_WORLD_STORAGE_LIMIT, "Piston addAll growth peak budget",
+                             SIZE_MAX, MC_ENTITY_OK);
+            goto finish;
+        }
+        item_bytes = capacity * sizeof(*new_items);
+        entity_bytes = capacity * sizeof(*new_entities);
+        new_items = malloc(item_bytes);
+        if (new_items == NULL) {
+            piston_list_fail(&frame, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                             "Piston addAll backing allocation", SIZE_MAX, MC_ENTITY_OK);
+            goto finish;
+        }
+        classes->piston_allocation_bytes += item_bytes;
+        new_entities = malloc(entity_bytes);
+        if (new_entities == NULL) {
+            piston_list_fail(&frame, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                             "Piston addAll ownership ledger allocation", SIZE_MAX, MC_ENTITY_OK);
+            goto finish;
+        }
+        classes->piston_allocation_bytes += entity_bytes;
+        /* Java's newly allocated Object[] exposes NULL in every unused slot.
+         * Initialize pointer values before publishing this native backing. */
+        for (size_t i = 0; i < capacity; ++i) {
+            new_items[i] = NULL;
+            new_entities[i] = NULL;
+        }
+        if (classes->piston_count != 0) {
+            memcpy(new_items, classes->piston_items, classes->piston_count * sizeof(*new_items));
+            memcpy(new_entities, classes->piston_entities,
+                   classes->piston_count * sizeof(*new_entities));
+        }
+        const size_t old_bytes =
+            classes->piston_capacity * (sizeof(*new_items) + sizeof(*new_entities));
+        free(classes->piston_items);
+        free(classes->piston_entities);
+        classes->piston_items = new_items;
+        classes->piston_entities = new_entities;
+        classes->piston_capacity = capacity;
+        classes->piston_list_identity->items = new_items;
+        classes->piston_list_identity->capacity = capacity;
+        classes->piston_allocation_bytes -= old_bytes;
+        new_items = NULL;
+        new_entities = NULL;
+    }
+    for (size_t i = 0; i < count; ++i) {
+        const size_t index = classes->piston_count + i;
+        classes->piston_items[index] = snapshot[i];
+        classes->piston_entities[index] = snapshot[i];
+    }
+    classes->piston_count = total;
+    classes->piston_list_identity->count = total; /* Actual addAll size71. */
+    prepared = 0; /* All snapshot holds now belong to their m occurrences. */
+finish:
+    if (new_items != NULL) {
+        free(new_items);
+        classes->piston_allocation_bytes -= item_bytes;
+    }
+    if (new_entities != NULL) {
+        free(new_entities);
+        classes->piston_allocation_bytes -= entity_bytes;
+    }
+    for (size_t i = 0; i < prepared; ++i)
+        mc_entity_release(snapshot[i]);
+    free(snapshot);
+    classes->piston_allocation_bytes -= snapshot_bytes;
+    return piston_list_finish(&frame, error);
+}
+
+mc_world_storage_status mc_tile_piston_entities_iterator(mc_tile *tile,
+                                                         mc_piston_entity_iterator *out,
+                                                         mc_piston_list_error *error) {
+    mc_piston_list_error frame = {.index = SIZE_MAX};
+    mc_tile_classes *classes = NULL;
+    if (out == NULL)
+        piston_list_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston List iterator output",
+                         SIZE_MAX, MC_ENTITY_OK);
+    else if (piston_list_owner(tile, &classes, &frame))
+        *out = (mc_piston_entity_iterator){classes, classes->piston_list_identity, 0,
+                                           classes->piston_mod_count};
+    return piston_list_finish(&frame, error);
+}
+
+static bool piston_iterator_owner(const mc_piston_entity_iterator *iterator,
+                                  mc_piston_list_error *error) {
+    if (iterator == NULL || iterator->owner == NULL) {
+        piston_list_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston List iterator owner",
+                         SIZE_MAX, MC_ENTITY_OK);
+        return false;
+    }
+    /* Java Itr keeps its original List, ignoring a later static m replacement.
+     * It reloads that owned descriptor's current storage, never an old buffer. */
+    if (iterator->identity != iterator->owner->piston_list_identity ||
+        !piston_list_shape(iterator->owner, false) || iterator->cursor > (size_t)INT32_MAX) {
+        piston_list_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                         "Piston List captured iterator descriptor", iterator->cursor,
+                         MC_ENTITY_OK);
+        return false;
+    }
+    return true;
+}
+
+mc_world_storage_status mc_tile_piston_entities_has_next(const mc_piston_entity_iterator *iterator,
+                                                         bool *out, mc_piston_list_error *error) {
+    mc_piston_list_error frame = {.index = SIZE_MAX};
+    if (out == NULL)
+        piston_list_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston List hasNext output",
+                         SIZE_MAX, MC_ENTITY_OK);
+    else if (piston_iterator_owner(iterator, &frame))
+        *out = iterator->cursor != iterator->identity->count;
+    return piston_list_finish(&frame, error);
+}
+
+mc_world_storage_status mc_tile_piston_entities_next(mc_piston_entity_iterator *iterator,
+                                                     mc_entity **out, mc_piston_list_error *error) {
+    mc_piston_list_error frame = {.index = SIZE_MAX};
+    if (out == NULL) {
+        piston_list_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston List next output",
+                         SIZE_MAX, MC_ENTITY_OK);
+    } else if (piston_iterator_owner(iterator, &frame)) {
+        mc_tile_classes *classes = iterator->owner;
+        const size_t index = iterator->cursor;
+        if (classes->piston_mod_count != iterator->expected_mod_count)
+            piston_list_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "Piston List iterator concurrent modification", index, MC_ENTITY_OK);
+        else if (index >= iterator->identity->count)
+            piston_list_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "Piston List iterator no such element", index, MC_ENTITY_OK);
+        else {
+            /* Itr cursor54 precedes its actual element load64. An unsupported
+             * reached occurrence or native local hold preserves that prefix. */
+            iterator->cursor = index + 1u;
+            mc_entity *entity = classes->piston_entities[index];
+            if (entity == NULL || classes->piston_items[index] != entity)
+                piston_list_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "Piston List iterator selected occurrence", index, MC_ENTITY_OK);
+            else {
+                const mc_entity_status held = mc_entity_retain(entity);
+                if (held != MC_ENTITY_OK)
+                    piston_list_fail(&frame, piston_entity_status(held),
+                                     "Piston List iterator local Entity hold", index, held);
+                else
+                    *out = entity;
+            }
+        }
+    }
+    return piston_list_finish(&frame, error);
+}
+
+static void piston_list_clear_owned(mc_tile_classes *classes) {
+    classes->piston_mod_count += UINT32_C(1);
+    const size_t count = classes->piston_count;
+    classes->piston_list_identity->count = 0; /* Actual clear size23 before stores35. */
+    classes->piston_count = 0;
+    for (size_t i = 0; i < count; ++i) {
+        mc_entity *entity = classes->piston_entities[i];
+        classes->piston_items[i] = NULL;
+        classes->piston_entities[i] = NULL;
+        mc_entity_release(entity);
+    }
+}
+
+mc_world_storage_status mc_tile_piston_entities_clear(mc_tile *tile, mc_piston_list_error *error) {
+    mc_piston_list_error frame = {.index = SIZE_MAX};
+    mc_tile_classes *classes = NULL;
+    if (!piston_list_owner(tile, &classes, &frame))
+        return piston_list_finish(&frame, error);
+    size_t bad_index;
+    if (!piston_list_occurrences(classes, &bad_index)) {
+        piston_list_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                         "Piston clear List occurrence ownership", bad_index, MC_ENTITY_OK);
+        return piston_list_finish(&frame, error);
+    }
+    piston_list_clear_owned(classes);
+    return piston_list_finish(&frame, error);
+}
+
+mc_world_storage_status mc_tile_piston_class_discard_entities(mc_world_runtime_classes *parent,
+                                                              mc_world_storage_error *error) {
+    mc_world_storage_error frame = {0};
+    if (parent == NULL)
+        frame = (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Piston class teardown owner", 0};
+    else if (parent->tiles != NULL) {
+        mc_tile_classes *classes = parent->tiles;
+        if (classes->live_tiles != 0)
+            frame = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
+                                             "Piston class teardown has live Tiles", 0};
+        else if (classes->parent != parent || !piston_list_retire_valid(classes))
+            frame = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                             "Piston class teardown owning List invariant", 0};
+        else if (classes->piston_list_identity != NULL)
+            piston_list_clear_owned(classes);
+    }
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
 }
 
 static void tile_allocation_error(mc_world_runtime *world, mc_tile_kind kind, mc_tile_status status,
@@ -1763,6 +2187,10 @@ static mc_tile_status live_classes_get(mc_world_runtime *world, mc_tile_classes 
     mc_tile_status owned = live_classes_owner(world, &classes);
     if (owned != MC_TILE_OK)
         return owned;
+    return live_classes_initialize(classes, out);
+}
+
+static mc_tile_status live_classes_initialize(mc_tile_classes *classes, mc_tile_classes **out) {
     if (classes->phase == 2) {
         *out = classes;
         return MC_TILE_OK;
@@ -1870,16 +2298,20 @@ mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *p
             if (name->holds != 1)
                 cause = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
                                                  "Tile class literal has external holds", 0};
-        if (cause.status == MC_WORLD_STORAGE_OK &&
-            ((classes->piston_phase == MC_TILE_CLASS_READY && classes->piston_list == NULL) ||
-             (classes->piston_list != NULL &&
-              (classes->piston_phase != MC_TILE_CLASS_READY ||
-               classes->piston_allocation_bytes != sizeof(*classes->piston_list) ||
-               classes->piston_list->items != NULL || classes->piston_list->count != 0 ||
-               classes->piston_list->capacity != 0))))
+        if (cause.status == MC_WORLD_STORAGE_OK && !piston_list_retire_valid(classes))
             cause = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                              "Piston static List native invariant", 0};
         if (cause.status == MC_WORLD_STORAGE_OK) {
+            /* Quiescent native retirement admits the complete owning graph
+             * before releasing anything. A failed push may leave m nonempty;
+             * its genuine occurrences keep independent holds until here.
+             * Runtime Entity-class borrow release is separately admitted by
+             * the caller before this step, and remains held during releases. */
+            for (size_t i = 0; i < classes->piston_count; ++i)
+                mc_entity_release(classes->piston_entities[i]);
+            free(classes->piston_items);
+            free(classes->piston_entities);
+            free(classes->piston_list_identity);
             mc_tile_name *name = classes->literals;
             while (name != NULL) {
                 mc_tile_name *next = name->literal_next;
@@ -1888,7 +2320,6 @@ mc_world_storage_status mc_live_tiles_classes_retire(mc_world_runtime_classes *p
             }
             free(classes->by_name);
             free(classes->by_class);
-            free(classes->piston_list);
             free(classes);
             parent->tiles = NULL;
         }

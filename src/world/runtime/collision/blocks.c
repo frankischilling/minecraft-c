@@ -25,6 +25,24 @@
 _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && DBL_MANT_DIG == 53 && FLT_EVAL_METHOD == 0,
                "Block collision requires strict binary32/binary64 evaluation");
 
+typedef struct block_context {
+    mc_world_runtime_classes *code_classes;
+    mc_world_runtime *world;
+    bool legacy_world;
+} block_context;
+
+static mc_world_storage_status block_box_core(mc_world_runtime_classes *code_classes,
+                                              mc_world_runtime *world, bool legacy_world,
+                                              const mc_block *block, int32_t x, int32_t y,
+                                              int32_t z, mc_entity_bounds **out,
+                                              mc_world_collision_error *error);
+static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_classes,
+                                                mc_world_runtime *world, bool legacy_world,
+                                                const mc_block *moving, int32_t x, int32_t y,
+                                                int32_t z, int32_t carried_id, float progress,
+                                                int32_t facing, mc_entity_bounds **out,
+                                                mc_world_collision_error *error);
+
 static mc_world_storage_status fail(mc_world_collision_error *error, mc_world_storage_status status,
                                     const char *operation) {
     error->nearby.query.status = status;
@@ -41,15 +59,15 @@ static mc_world_storage_status cause(mc_world_collision_error *error,
     return child.status;
 }
 
-static void stage(mc_world_runtime *world, mc_world_collision_error *error, const char *client,
+static void stage(const block_context *context, mc_world_collision_error *error, const char *client,
                   const char *server, unsigned int pc) {
-    error->block_class = world->classes->side == MC_WORLD_INFO_CLIENT ? client : server;
+    error->block_class = context->code_classes->side == MC_WORLD_INFO_CLIENT ? client : server;
     error->block_bytecode = pc;
 }
 
-static bool floating(mc_world_runtime *world, mc_world_collision_error *error, const char *client,
-                     const char *server, unsigned int pc) {
-    stage(world, error, client, server, pc);
+static bool floating(const block_context *context, mc_world_collision_error *error,
+                     const char *client, const char *server, unsigned int pc) {
+    stage(context, error, client, server, pc);
     if ((_mm_getcsr() & 0xffc0u) == 0x1f80u)
         return true;
     fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Block collision FP admission");
@@ -205,12 +223,12 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
     return status;
 }
 
-static mc_world_storage_status pooled(mc_world_runtime *world, const char *client,
+static mc_world_storage_status pooled(const block_context *context, const char *client,
                                       const char *server, unsigned int pc, double x0, double y0,
                                       double z0, double x1, double y1, double z1,
                                       mc_entity_bounds **out, mc_world_collision_error *error) {
-    stage(world, error, client, server, pc);
-    mc_entity_classes *const classes = mc_world_runtime_entities(world);
+    stage(context, error, client, server, pc);
+    mc_entity_classes *const classes = context->code_classes->entities;
     if (classes == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "Block collision bounds class binding");
@@ -224,18 +242,18 @@ static mc_world_storage_status pooled(mc_world_runtime *world, const char *clien
     return MC_WORLD_STORAGE_OK;
 }
 
-static void shape(mc_world_runtime *world, mc_block *block, const char *client, const char *server,
-                  unsigned int pc, float x0, float y0, float z0, float x1, float y1, float z1,
-                  mc_world_collision_error *error) {
-    stage(world, error, client, server, pc);
+static void shape(const block_context *context, mc_block *block, const char *client,
+                  const char *server, unsigned int pc, float x0, float y0, float z0, float x1,
+                  float y1, float z1, mc_world_collision_error *error) {
+    stage(context, error, client, server, pc);
     /* This setter does not alter constructor progress or active-use state. */
     mc_registry_block_bounds(block, x0, y0, z0, x1, y1, z1);
 }
 
-static mc_world_storage_status base_box(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                        int32_t y, int32_t z, mc_entity_bounds **out,
+static mc_world_storage_status base_box(const block_context *context, const mc_block *block,
+                                        int32_t x, int32_t y, int32_t z, mc_entity_bounds **out,
                                         mc_world_collision_error *error) {
-    if (!floating(world, error, "uu", "na", 6))
+    if (!floating(context, error, "uu", "na", 6))
         return error->nearby.query.status;
     const double x0 = (double)x + block->fields.bs;
     const double y0 = (double)y + block->fields.bt;
@@ -243,64 +261,84 @@ static mc_world_storage_status base_box(mc_world_runtime *world, const mc_block 
     const double x1 = (double)x + block->fields.bv;
     const double y1 = (double)y + block->fields.bw;
     const double z1 = (double)z + block->fields.bx;
-    return pooled(world, "uu", "na", 44, x0, y0, z0, x1, y1, z1, out, error);
+    return pooled(context, "uu", "na", 44, x0, y0, z0, x1, y1, z1, out, error);
 }
 
-static bool metadata(mc_world_runtime *world, const char *client, const char *server,
+static bool metadata(const block_context *context, const char *client, const char *server,
                      unsigned int pc, int32_t x, int32_t y, int32_t z, int32_t *out,
                      mc_world_collision_error *error) {
-    stage(world, error, client, server, pc);
-    return mc_world_collision_block_value_held(world, x, y, z, true, out, error) ==
-           MC_WORLD_STORAGE_OK;
+    stage(context, error, client, server, pc);
+    if (context->legacy_world || context->world == NULL)
+        return mc_world_collision_block_value_held(context->world, x, y, z, true, out, error) ==
+               MC_WORLD_STORAGE_OK;
+
+    /* The explicit-code entry cannot enter a source-unused World up front.
+     * Hold this actual receiver only at its reached metadata invocation,
+     * including the read after acquiring/loading/populating its Chunk. */
+    mc_world_storage_error child = {0};
+    if (mc_world_runtime_call_enter(context->world, &child) != MC_WORLD_STORAGE_OK) {
+        error->nearby = mc_world_nearby_empty_error();
+        error->x = x;
+        error->y = y;
+        error->z = z;
+        (void)cause(error, child);
+        return false;
+    }
+    const mc_world_storage_status status =
+        mc_world_collision_block_value_held(context->world, x, y, z, true, out, error);
+    mc_world_runtime_call_leave(context->world);
+    return status == MC_WORLD_STORAGE_OK;
 }
 
-static bool door_shape(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                       mc_world_collision_error *error) {
+static bool door_shape(const block_context *context, mc_block *block, int32_t x, int32_t y,
+                       int32_t z, mc_world_collision_error *error) {
     int32_t value;
-    if (!metadata(world, "le", "hc", 7, x, y, z, &value, error))
+    if (!metadata(context, "le", "hc", 7, x, y, z, &value, error))
         return false;
     const int32_t direction = (value & 4) == 0 ? mc_java_i32_sub(value, 1) & 3 : value & 3;
     const float width = 0.1875f;
-    shape(world, block, "le", "hc", 10, 0.0f, 0.0f, 0.0f, 1.0f, 2.0f, 1.0f, error);
+    shape(context, block, "le", "hc", 10, 0.0f, 0.0f, 0.0f, 1.0f, 2.0f, 1.0f, error);
     switch (direction) {
         case 0:
-            shape(world, block, "le", "hc", 24, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, width, error);
+            shape(context, block, "le", "hc", 24, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, width, error);
             break;
         case 1:
-            shape(world, block, "le", "hc", 41, 1.0f - width, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, error);
+            shape(context, block, "le", "hc", 41, 1.0f - width, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                  error);
             break;
         case 2:
-            shape(world, block, "le", "hc", 58, 0.0f, 0.0f, 1.0f - width, 1.0f, 1.0f, 1.0f, error);
+            shape(context, block, "le", "hc", 58, 0.0f, 0.0f, 1.0f - width, 1.0f, 1.0f, 1.0f,
+                  error);
             break;
         case 3:
-            shape(world, block, "le", "hc", 73, 0.0f, 0.0f, 0.0f, width, 1.0f, 1.0f, error);
+            shape(context, block, "le", "hc", 73, 0.0f, 0.0f, 0.0f, width, 1.0f, 1.0f, error);
             break;
     }
     return true;
 }
 
-static bool trapdoor_shape(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
+static bool trapdoor_shape(const block_context *context, mc_block *block, int32_t x, int32_t y,
                            int32_t z, mc_world_collision_error *error) {
     int32_t value;
-    if (!metadata(world, "oq", "jd", 6, x, y, z, &value, error))
+    if (!metadata(context, "oq", "jd", 6, x, y, z, &value, error))
         return false;
     const float width = 0.1875f;
-    shape(world, block, "oq", "jd", 10, 0.0f, 0.0f, 0.0f, 1.0f, width, 1.0f, error);
+    shape(context, block, "oq", "jd", 10, 0.0f, 0.0f, 0.0f, 1.0f, width, 1.0f, error);
     if ((value & 4) != 0) {
         switch (value & 3) {
             case 0:
-                shape(world, block, "oq", "jd", 35, 0.0f, 0.0f, 1.0f - width, 1.0f, 1.0f, 1.0f,
+                shape(context, block, "oq", "jd", 35, 0.0f, 0.0f, 1.0f - width, 1.0f, 1.0f, 1.0f,
                       error);
                 break;
             case 1:
-                shape(world, block, "oq", "jd", 52, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, width, error);
+                shape(context, block, "oq", "jd", 52, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, width, error);
                 break;
             case 2:
-                shape(world, block, "oq", "jd", 71, 1.0f - width, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                shape(context, block, "oq", "jd", 71, 1.0f - width, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
                       error);
                 break;
             case 3:
-                shape(world, block, "oq", "jd", 88, 0.0f, 0.0f, 0.0f, width, 1.0f, 1.0f, error);
+                shape(context, block, "oq", "jd", 88, 0.0f, 0.0f, 0.0f, width, 1.0f, 1.0f, error);
                 break;
         }
     }
@@ -318,17 +356,18 @@ static mc_world_storage_status piston_tile_failure(mc_world_collision_error *err
                 child->operation == NULL ? "Moving-piston Tile getter" : child->operation);
 }
 
-static mc_world_storage_status moving_piston_box(mc_world_runtime *world, const mc_block *moving,
-                                                 int32_t x, int32_t y, int32_t z,
-                                                 mc_entity_bounds **out,
+static mc_world_storage_status moving_piston_box(const block_context *context,
+                                                 const mc_block *moving, int32_t x, int32_t y,
+                                                 int32_t z, mc_entity_bounds **out,
                                                  mc_world_collision_error *error) {
     /* e invokes its actual private typed lookup6; the reached Tile query is5
      * inside that helper, before its null/instanceof tests. */
     error->piston_bytecode = 6;
-    stage(world, error, "ut", "mz", 5);
+    stage(context, error, "ut", "mz", 5);
     mc_tile *tile = NULL;
     mc_live_tile_error child = mc_live_tiles_empty_error();
-    const mc_world_storage_status status = mc_live_tiles_get(world, x, y, z, &tile, &child);
+    const mc_world_storage_status status =
+        mc_live_tiles_get(context->world, x, y, z, &tile, &child);
     if (status != MC_WORLD_STORAGE_OK) {
         error->nearby.tile = child;
         error->nearby.query.registry = child.registry;
@@ -351,7 +390,7 @@ static mc_world_storage_status moving_piston_box(mc_world_runtime *world, const 
     }
     mc_tile_snapshot snapshot;
     const mc_tile_status inspected = mc_tile_get_snapshot(tile, &snapshot);
-    stage(world, error, "ut", "mz", 19);
+    stage(context, error, "ut", "mz", 19);
     if (inspected != MC_TILE_OK) {
         mc_tile_release(tile);
         error->nearby.tile.tile.status = inspected;
@@ -376,7 +415,7 @@ static mc_world_storage_status moving_piston_box(mc_world_runtime *world, const 
     int32_t carried_id = 0, facing = 0;
     mc_tile_error lower = mc_tile_empty_error();
     error->piston_bytecode = 21;
-    stage(world, error, "ut", "mz", 21);
+    stage(context, error, "ut", "mz", 21);
     mc_tile_status tile_status = mc_tile_piston_progress(tile, 0, &progress_bits, &lower);
     if (tile_status != MC_TILE_OK) {
         mc_tile_release(tile);
@@ -384,20 +423,20 @@ static mc_world_storage_status moving_piston_box(mc_world_runtime *world, const 
     }
     memcpy(&progress, &progress_bits, sizeof(progress));
     error->piston_bytecode = 28;
-    stage(world, error, "ut", "mz", 28);
+    stage(context, error, "ut", "mz", 28);
     tile_status = mc_tile_piston_extending(tile, &extending);
     if (tile_status == MC_TILE_OK && extending) {
-        stage(world, error, "ut", "mz", 37);
+        stage(context, error, "ut", "mz", 37);
         progress = mc_piston_float_subtract(1.0f, progress);
     }
     if (tile_status == MC_TILE_OK) {
         error->piston_bytecode = 48;
-        stage(world, error, "ut", "mz", 48);
+        stage(context, error, "ut", "mz", 48);
         tile_status = mc_tile_piston_block_id(tile, &carried_id);
     }
     if (tile_status == MC_TILE_OK) {
         error->piston_bytecode = 55;
-        stage(world, error, "ut", "mz", 55);
+        stage(context, error, "ut", "mz", 55);
         tile_status = mc_tile_piston_facing(tile, &facing);
     }
     mc_world_storage_status result;
@@ -405,15 +444,15 @@ static mc_world_storage_status moving_piston_box(mc_world_runtime *world, const 
         result = piston_tile_failure(error, tile_status, &lower);
     else {
         error->piston_bytecode = 58;
-        result = mc_world_collision_piston_shifted_box_held(world, moving, x, y, z, carried_id,
-                                                            progress, facing, out, error);
+        result = shifted_box_core(context->code_classes, context->world, context->legacy_world,
+                                  moving, x, y, z, carried_id, progress, facing, out, error);
     }
     mc_tile_release(tile);
     return result;
 }
 
-static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                   int32_t z, mc_entity_bounds **out,
+static mc_world_storage_status box(const block_context *context, mc_block *block, int32_t x,
+                                   int32_t y, int32_t z, mc_entity_bounds **out,
                                    mc_world_collision_error *error) {
     int32_t value;
     switch (block->kind) {
@@ -424,77 +463,77 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
         case MC_BLOCK_WB_NW:
         case MC_BLOCK_TL_MD:
         case MC_BLOCK_NI_IJ:
-            stage(world, error, "wb", "nw", 1);
+            stage(context, error, "wb", "nw", 1);
             break;
         case MC_BLOCK_OM_JC:
         case MC_BLOCK_NX_IS:
-            stage(world, error, "rp", "kv", 1);
+            stage(context, error, "rp", "kv", 1);
             break;
         case MC_BLOCK_PC_JJ:
         case MC_BLOCK_PH_JN:
-            stage(world, error, "pc", "jj", 1);
+            stage(context, error, "pc", "jj", 1);
             break;
         case MC_BLOCK_RN_KU:
-            stage(world, error, "rn", "ku", 1);
+            stage(context, error, "rn", "ku", 1);
             break;
         case MC_BLOCK_VM_NP:
         case MC_BLOCK_DB_BY:
-            stage(world, error, "vm", "np", 1);
+            stage(context, error, "vm", "np", 1);
             break;
         case MC_BLOCK_YQ_PT:
-            stage(world, error, "yq", "pt", 1);
+            stage(context, error, "yq", "pt", 1);
             break;
         case MC_BLOCK_SM_LO:
-            stage(world, error, "sm", "lo", 1);
+            stage(context, error, "sm", "lo", 1);
             break;
         case MC_BLOCK_UJ_MT:
-            stage(world, error, "uj", "mt", 1);
+            stage(context, error, "uj", "mt", 1);
             break;
         case MC_BLOCK_XR_PD:
-            stage(world, error, "xr", "pd", 1);
+            stage(context, error, "xr", "pd", 1);
             break;
         case MC_BLOCK_BV_BC:
-            stage(world, error, "bv", "bc", 1);
+            stage(context, error, "bv", "bc", 1);
             break;
         case MC_BLOCK_OI_IZ:
-            stage(world, error, "oi", "iz", 1);
+            stage(context, error, "oi", "iz", 1);
             break;
         case MC_BLOCK_RI_KO:
-            stage(world, error, "ri", "ko", 1);
+            stage(context, error, "ri", "ko", 1);
             break;
         case MC_BLOCK_AK_Z:
-            stage(world, error, "ak", "z", 1);
+            stage(context, error, "ak", "z", 1);
             break;
         case MC_BLOCK_DP_CG: {
-            if (!metadata(world, "dp", "cg", 5, x, y, z, &value, error))
+            if (!metadata(context, "dp", "cg", 5, x, y, z, &value, error))
                 return error->nearby.query.status;
             const float depth = 0.125f;
             if (value == 2) {
-                if (!floating(world, error, "dp", "cg", 26))
+                if (!floating(context, error, "dp", "cg", 26))
                     return error->nearby.query.status;
-                shape(world, block, "dp", "cg", 30, 0.0f, 0.0f, 1.0f - depth, 1.0f, 1.0f, 1.0f,
+                shape(context, block, "dp", "cg", 30, 0.0f, 0.0f, 1.0f - depth, 1.0f, 1.0f, 1.0f,
                       error);
             }
             if (value == 3)
-                shape(world, block, "dp", "cg", 47, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, depth, error);
+                shape(context, block, "dp", "cg", 47, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, depth, error);
             if (value == 4) {
-                if (!floating(world, error, "dp", "cg", 60))
+                if (!floating(context, error, "dp", "cg", 60))
                     return error->nearby.query.status;
-                shape(world, block, "dp", "cg", 66, 1.0f - depth, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                shape(context, block, "dp", "cg", 66, 1.0f - depth, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
                       error);
             }
             if (value == 5)
-                shape(world, block, "dp", "cg", 83, 0.0f, 0.0f, 0.0f, depth, 1.0f, 1.0f, error);
-            return base_box(world, block, x, y, z, out, error);
+                shape(context, block, "dp", "cg", 83, 0.0f, 0.0f, 0.0f, depth, 1.0f, 1.0f, error);
+            return base_box(context, block, x, y, z, out, error);
         }
         case MC_BLOCK_JR_GJ: {
-            if (!metadata(world, "jr", "gj", 5, x, y, z, &value, error))
+            if (!metadata(context, "jr", "gj", 5, x, y, z, &value, error))
                 return error->nearby.query.status;
             if ((value & 7) < 3) {
                 *out = NULL;
                 return MC_WORLD_STORAGE_OK;
             }
-            if (!floating(world, error, "jr", "gj", 25))
+            if (!floating(context, error, "jr", "gj", 25))
                 return error->nearby.query.status;
             const double x0 = (double)x + block->fields.bs;
             const double y0 = (double)y + block->fields.bt;
@@ -502,34 +541,34 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
             const double x1 = (double)x + block->fields.bv;
             const float y1 = (float)y + 0.5f;
             const double z1 = (double)z + block->fields.bx;
-            return pooled(world, "jr", "gj", 62, x0, y0, z0, x1, (double)y1, z1, out, error);
+            return pooled(context, "jr", "gj", 62, x0, y0, z0, x1, (double)y1, z1, out, error);
         }
         case MC_BLOCK_JW_GN: {
-            if (!floating(world, error, "jw", "gn", 12))
+            if (!floating(context, error, "jw", "gn", 12))
                 return error->nearby.query.status;
             const float y1 = (float)y + 1.5f;
-            return pooled(world, "jw", "gn", 22, (double)x, (double)y, (double)z,
+            return pooled(context, "jw", "gn", 22, (double)x, (double)y, (double)z,
                           (double)mc_java_i32_add(x, 1), (double)y1, (double)mc_java_i32_add(z, 1),
                           out, error);
         }
         case MC_BLOCK_LE_HC:
-            if (!door_shape(world, block, x, y, z, error))
+            if (!door_shape(context, block, x, y, z, error))
                 return error->nearby.query.status;
-            return base_box(world, block, x, y, z, out, error);
+            return base_box(context, block, x, y, z, out, error);
         case MC_BLOCK_OQ_JD:
-            if (!trapdoor_shape(world, block, x, y, z, error))
+            if (!trapdoor_shape(context, block, x, y, z, error))
                 return error->nearby.query.status;
-            return base_box(world, block, x, y, z, out, error);
+            return base_box(context, block, x, y, z, out, error);
         case MC_BLOCK_OA_IU: {
-            if (!floating(world, error, "oa", "iu", 18))
+            if (!floating(context, error, "oa", "iu", 18))
                 return error->nearby.query.status;
             const float y1 = (float)mc_java_i32_add(y, 1) - 0.125f;
-            return pooled(world, "oa", "iu", 28, (double)x, (double)y, (double)z,
+            return pooled(context, "oa", "iu", 28, (double)x, (double)y, (double)z,
                           (double)mc_java_i32_add(x, 1), (double)y1, (double)mc_java_i32_add(z, 1),
                           out, error);
         }
         case MC_BLOCK_OR_JE: {
-            if (!floating(world, error, "or", "je", 5))
+            if (!floating(context, error, "or", "je", 5))
                 return error->nearby.query.status;
             const float edge = 0.0625f;
             const float x0 = (float)x + edge;
@@ -537,13 +576,13 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
             const float x1 = (float)mc_java_i32_add(x, 1) - edge;
             const float y1 = (float)mc_java_i32_add(y, 1) - edge;
             const float z1 = (float)mc_java_i32_add(z, 1) - edge;
-            return pooled(world, "or", "je", 44, (double)x0, (double)y, (double)z0, (double)x1,
+            return pooled(context, "or", "je", 44, (double)x0, (double)y, (double)z0, (double)x1,
                           (double)y1, (double)z1, out, error);
         }
         case MC_BLOCK_UM_MW: {
-            if (!metadata(world, "um", "mw", 5, x, y, z, &value, error))
+            if (!metadata(context, "um", "mw", 5, x, y, z, &value, error))
                 return error->nearby.query.status;
-            if (!floating(world, error, "um", "mw", 20))
+            if (!floating(context, error, "um", "mw", 20))
                 return error->nearby.query.status;
             const float edge = 0.0625f;
             const float size = (float)mc_java_i32_add(1, mc_java_i32_mul(value, 2)) / 16.0f;
@@ -553,13 +592,13 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
             float y1 = (float)y + 0.5f;
             y1 = y1 - edge;
             const float z1 = (float)mc_java_i32_add(z, 1) - edge;
-            return pooled(world, "um", "mw", 71, (double)x0, (double)y, (double)z0, (double)x1,
+            return pooled(context, "um", "mw", 71, (double)x0, (double)y, (double)z0, (double)x1,
                           (double)y1, (double)z1, out, error);
         }
         case MC_BLOCK_UT_MZ:
-            return moving_piston_box(world, block, x, y, z, out, error);
+            return moving_piston_box(context, block, x, y, z, out, error);
         case MC_BLOCK_VL_NO:
-            return pooled(world, "vl", "no", 26, (double)x, (double)y, (double)z,
+            return pooled(context, "vl", "no", 26, (double)x, (double)y, (double)z,
                           (double)mc_java_i32_add(x, 1), (double)mc_java_i32_add(y, 1),
                           (double)mc_java_i32_add(z, 1), out, error);
         case MC_BLOCK_UU_NA:
@@ -600,7 +639,7 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
         case MC_BLOCK_LY_HR:
         case MC_BLOCK_WO_OI:
         case MC_BLOCK_KS_GV:
-            return base_box(world, block, x, y, z, out, error);
+            return base_box(context, block, x, y, z, out, error);
         case MC_BLOCK_KIND_COUNT:
         default:
             return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision Block concrete kind");
@@ -609,14 +648,17 @@ static mc_world_storage_status box(mc_world_runtime *world, mc_block *block, int
     return MC_WORLD_STORAGE_OK;
 }
 
-static bool block_admit(mc_world_runtime *world, const mc_block *block,
+static bool block_admit(block_context *context, const mc_block *block,
                         mc_world_collision_error *error) {
-    if (world == NULL) {
-        fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Collision Block World");
-        return false;
+    if (context->legacy_world) {
+        if (context->world == NULL) {
+            fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Collision Block World");
+            return false;
+        }
+        context->code_classes = context->world->classes;
     }
-    if (block == NULL || world->classes == NULL ||
-        block->classes != mc_world_runtime_registry(world) ||
+    if (block == NULL || context->code_classes == NULL ||
+        block->classes != context->code_classes->registry ||
         (unsigned int)block->kind >= (unsigned int)MC_BLOCK_KIND_COUNT) {
         fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision Block receiver/owner");
         return false;
@@ -624,11 +666,13 @@ static bool block_admit(mc_world_runtime *world, const mc_block *block,
     return true;
 }
 
-mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *world,
-                                                          const mc_block *block, int32_t x,
-                                                          int32_t y, int32_t z,
-                                                          mc_entity_bounds **out,
-                                                          mc_world_collision_error *error) {
+static mc_world_storage_status block_box_core(mc_world_runtime_classes *code_classes,
+                                              mc_world_runtime *world, bool legacy_world,
+                                              const mc_block *block, int32_t x, int32_t y,
+                                              int32_t z, mc_entity_bounds **out,
+                                              mc_world_collision_error *error) {
+    block_context frame_context = {code_classes, world, legacy_world};
+    block_context *const context = &frame_context;
     mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
     frame.nearby = mc_world_nearby_empty_error();
     frame.bounds = (mc_entity_bounds_error){0};
@@ -640,31 +684,57 @@ mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *worl
     mc_world_storage_status status;
     if (out == NULL)
         status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Collision Block box output");
-    else if (!block_admit(world, block, &frame))
+    else if (!block_admit(context, block, &frame))
         status = frame.nearby.query.status;
     else
-        status = box(world, (mc_block *)block, x, y, z, out, &frame);
+        status = box(context, (mc_block *)block, x, y, z, out, &frame);
     if (error != NULL)
         *error = frame;
     return status;
 }
 
-static bool piston_registry_result(mc_world_runtime *world, mc_world_collision_error *error,
+mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *world,
+                                                          const mc_block *block, int32_t x,
+                                                          int32_t y, int32_t z,
+                                                          mc_entity_bounds **out,
+                                                          mc_world_collision_error *error) {
+    return block_box_core(NULL, world, true, block, x, y, z, out, error);
+}
+
+mc_world_storage_status mc_world_collision_block_box_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_collision_error *error) {
+    return block_box_core(code_classes, world, false, block, x, y, z, out, error);
+}
+
+static bool piston_registry_result(const block_context *context, mc_world_collision_error *error,
                                    mc_registry_status status, const mc_registry_error *child) {
     if (status == MC_REGISTRY_OK)
         return true;
     error->nearby.query.registry = *child;
-    error->nearby.query.status = mc_world_runtime_registry_result(
-        world, status, child, "Moving-piston geometry Registry", &error->nearby.query.cause);
+    if (context->legacy_world)
+        error->nearby.query.status = mc_world_runtime_registry_result(
+            context->world, status, child, "Moving-piston geometry Registry",
+            &error->nearby.query.cause);
+    else {
+        /* Code active use has no World receiver. In particular, a NULL or
+         * source-unused World must not be inspected just to report failure. */
+        error->nearby.query.status = mc_world_runtime_registry_status(status);
+        error->nearby.query.cause = (mc_world_storage_error){error->nearby.query.status,
+                                                             "Moving-piston geometry Registry", 0};
+    }
     error->nearby.query.operation = error->nearby.query.cause.operation;
     return false;
 }
 
-mc_world_storage_status
-mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_block *moving,
-                                           int32_t x, int32_t y, int32_t z, int32_t carried_id,
-                                           float progress, int32_t facing, mc_entity_bounds **out,
-                                           mc_world_collision_error *error) {
+static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_classes,
+                                                mc_world_runtime *world, bool legacy_world,
+                                                const mc_block *moving, int32_t x, int32_t y,
+                                                int32_t z, int32_t carried_id, float progress,
+                                                int32_t facing, mc_entity_bounds **out,
+                                                mc_world_collision_error *error) {
+    block_context frame_context = {code_classes, world, legacy_world};
+    block_context *const context = &frame_context;
     mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
     frame.nearby = mc_world_nearby_empty_error();
@@ -678,38 +748,39 @@ mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_blo
     mc_entity_bounds *bounds = NULL;
     if (out == NULL)
         status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston shifted-box output");
-    else if (!block_admit(world, moving, &frame))
+    else if (!block_admit(context, moving, &frame))
         status = frame.nearby.query.status;
     else if (moving->kind != MC_BLOCK_UT_MZ)
         status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Piston shifted-box receiver");
     else if (carried_id == 0 || carried_id == moving->fields.bn)
         *out = NULL;
     else {
-        mc_registry_classes *const registry = mc_world_runtime_registry(world);
+        mc_registry_classes *const registry = context->code_classes->registry;
         mc_registry_block_m_view array;
         mc_registry_error child = frame.nearby.query.registry;
         frame.shifted_bytecode = 16;
-        stage(world, &frame, "ut", "mz", 16);
-        if (!piston_registry_result(world, &frame,
+        stage(context, &frame, "ut", "mz", 16);
+        if (!piston_registry_result(context, &frame,
                                     mc_registry_block_m_get(registry, &array, &child), &child))
             status = frame.nearby.query.status;
         else {
             const mc_block *carrier = NULL;
             frame.shifted_bytecode = 21;
-            stage(world, &frame, "ut", "mz", 21);
+            stage(context, &frame, "ut", "mz", 21);
             if (!piston_registry_result(
-                    world, &frame, mc_registry_block_m_at(&array, carried_id, &carrier, &child),
+                    context, &frame, mc_registry_block_m_at(&array, carried_id, &carrier, &child),
                     &child))
                 status = frame.nearby.query.status;
             else {
                 frame.shifted_bytecode = 27;
-                stage(world, &frame, "ut", "mz", 27);
+                stage(context, &frame, "ut", "mz", 27);
                 if (carrier == NULL)
                     status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                   "Piston carried Block receiver");
                 else
                     status =
-                        mc_world_collision_block_box_held(world, carrier, x, y, z, &bounds, &frame);
+                        block_box_core(context->code_classes, context->world, context->legacy_world,
+                                       carrier, x, y, z, &bounds, &frame);
             }
         }
         if (status == MC_WORLD_STORAGE_OK && bounds != NULL) {
@@ -724,9 +795,9 @@ mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_blo
                 const double coordinate = *coordinates[i];
                 mc_registry_direction_view direction;
                 frame.shifted_bytecode = get_pc[i];
-                stage(world, &frame, "ut", "mz", get_pc[i]);
+                stage(context, &frame, "ut", "mz", get_pc[i]);
                 if (!piston_registry_result(
-                        world, &frame,
+                        context, &frame,
                         mc_registry_direction_get(registry, fields[i], &direction, &child),
                         &child)) {
                     status = frame.nearby.query.status;
@@ -734,15 +805,15 @@ mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_blo
                 }
                 int32_t component;
                 frame.shifted_bytecode = get_pc[i] + 5u;
-                stage(world, &frame, "ut", "mz", get_pc[i] + 5u);
+                stage(context, &frame, "ut", "mz", get_pc[i] + 5u);
                 if (!piston_registry_result(
-                        world, &frame,
+                        context, &frame,
                         mc_registry_direction_at(&direction, facing, &component, &child), &child)) {
                     status = frame.nearby.query.status;
                     break;
                 }
                 frame.shifted_bytecode = get_pc[i] + 9u;
-                if (!floating(world, &frame, "ut", "mz", get_pc[i] + 9u)) {
+                if (!floating(context, &frame, "ut", "mz", get_pc[i] + 9u)) {
                     status = frame.nearby.query.status;
                     break;
                 }
@@ -753,29 +824,47 @@ mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_blo
         if (status == MC_WORLD_STORAGE_OK)
             *out = bounds;
         else if (bounds != NULL)
-            (void)mc_entity_bounds_release(mc_world_runtime_entities(world), bounds);
+            (void)mc_entity_bounds_release(context->code_classes->entities, bounds);
     }
     if (error != NULL)
         *error = frame;
     return status;
 }
 
-static mc_world_storage_status base_contribute(mc_world_runtime *world, mc_block *block, int32_t x,
-                                               int32_t y, int32_t z, const mc_entity_bounds *query,
+mc_world_storage_status
+mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_block *moving,
+                                           int32_t x, int32_t y, int32_t z, int32_t carried_id,
+                                           float progress, int32_t facing, mc_entity_bounds **out,
+                                           mc_world_collision_error *error) {
+    return shifted_box_core(NULL, world, true, moving, x, y, z, carried_id, progress, facing, out,
+                            error);
+}
+
+mc_world_storage_status mc_world_collision_piston_shifted_box_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *moving,
+    int32_t x, int32_t y, int32_t z, int32_t carried_id, float progress, int32_t facing,
+    mc_entity_bounds **out, mc_world_collision_error *error) {
+    return shifted_box_core(code_classes, world, false, moving, x, y, z, carried_id, progress,
+                            facing, out, error);
+}
+
+static mc_world_storage_status base_contribute(const block_context *context, mc_block *block,
+                                               int32_t x, int32_t y, int32_t z,
+                                               const mc_entity_bounds *query,
                                                mc_world_reference_list *destination,
                                                mc_world_collision_error *error) {
     mc_entity_bounds *bounds = NULL;
-    mc_world_storage_status status = box(world, block, x, y, z, &bounds, error);
+    mc_world_storage_status status = box(context, block, x, y, z, &bounds, error);
     if (status != MC_WORLD_STORAGE_OK || bounds == NULL)
         return status;
-    stage(world, error, "uu", "na", 20);
+    stage(context, error, "uu", "na", 20);
     if (query == NULL)
         status = fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Block collision query bounds");
     else if (mc_entity_bounds_intersects(query, bounds)) {
-        stage(world, error, "uu", "na", 30);
-        status = mc_world_collision_append_pool_held(world, destination, bounds, error);
+        stage(context, error, "uu", "na", 30);
+        status = mc_world_collision_append_pool_held(context->world, destination, bounds, error);
     }
-    (void)mc_entity_bounds_release(mc_world_runtime_entities(world), bounds);
+    (void)mc_entity_bounds_release(context->code_classes->entities, bounds);
     return status;
 }
 
@@ -810,21 +899,21 @@ static const contribution_part stair_parts[4][2] = {
     {{{0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f}, 197, 210},
      {{0.0f, 0.0f, 0.5f, 1.0f, 0.5f, 1.0f}, 221, 235}}};
 
-static mc_world_storage_status contribute(mc_world_runtime *world, mc_block *block, int32_t x,
+static mc_world_storage_status contribute(const block_context *context, mc_block *block, int32_t x,
                                           int32_t y, int32_t z, const mc_entity_bounds *query,
                                           mc_world_reference_list *destination,
                                           mc_world_collision_error *error) {
     if (block->kind == MC_BLOCK_JQ_GI) {
-        shape(world, block, "jq", "gi", 7, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, error);
-        return base_contribute(world, block, x, y, z, query, destination, error);
+        shape(context, block, "jq", "gi", 7, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, error);
+        return base_contribute(context, block, x, y, z, query, destination, error);
     }
     if (block->kind != MC_BLOCK_H_G && block->kind != MC_BLOCK_SS_LU)
-        return base_contribute(world, block, x, y, z, query, destination, error);
+        return base_contribute(context, block, x, y, z, query, destination, error);
     const bool head = block->kind == MC_BLOCK_H_G;
     const char *const client = head ? "h" : "ss";
     const char *const server = head ? "g" : "lu";
     int32_t value;
-    if (!metadata(world, client, server, 5, x, y, z, &value, error))
+    if (!metadata(context, client, server, 5, x, y, z, &value, error))
         return error->nearby.query.status;
     if (head)
         value &= 7;
@@ -832,16 +921,16 @@ static mc_world_storage_status contribute(mc_world_runtime *world, mc_block *blo
         const contribution_part *const parts = head ? head_parts[value] : stair_parts[value];
         for (size_t i = 0; i < 2; ++i) {
             const contribution_part *const part = &parts[i];
-            shape(world, block, client, server, part->setter, part->bounds[0], part->bounds[1],
+            shape(context, block, client, server, part->setter, part->bounds[0], part->bounds[1],
                   part->bounds[2], part->bounds[3], part->bounds[4], part->bounds[5], error);
-            stage(world, error, client, server, part->call);
+            stage(context, error, client, server, part->call);
             const mc_world_storage_status status =
-                base_contribute(world, block, x, y, z, query, destination, error);
+                base_contribute(context, block, x, y, z, query, destination, error);
             if (status != MC_WORLD_STORAGE_OK)
                 return status; /* The original final reset is not a finally. */
         }
     }
-    shape(world, block, client, server, head ? 386u : 245u, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    shape(context, block, client, server, head ? 386u : 245u, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
           error);
     return MC_WORLD_STORAGE_OK;
 }
@@ -851,6 +940,8 @@ mc_world_collision_block_contribute_held(mc_world_runtime *world, const mc_block
                                          int32_t y, int32_t z, const mc_entity_bounds *query,
                                          mc_world_reference_list *destination,
                                          mc_world_collision_error *error) {
+    block_context frame_context = {NULL, world, true};
+    block_context *const context = &frame_context;
     mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
     frame.nearby = mc_world_nearby_empty_error();
     frame.bounds = (mc_entity_bounds_error){0};
@@ -860,10 +951,10 @@ mc_world_collision_block_contribute_held(mc_world_runtime *world, const mc_block
     frame.y = y;
     frame.z = z;
     mc_world_storage_status status;
-    if (!block_admit(world, block, &frame))
+    if (!block_admit(context, block, &frame))
         status = frame.nearby.query.status;
     else
-        status = contribute(world, (mc_block *)block, x, y, z, query, destination, &frame);
+        status = contribute(context, (mc_block *)block, x, y, z, query, destination, &frame);
     if (error != NULL)
         *error = frame;
     return status;

@@ -1,13 +1,27 @@
 # Development status
 
-Explicit [Piston finalization](world/tiles/piston.md#explicit-finalization) and
-MovingPiston removal pass their constructed native contract in fresh hosted
-MSVC and sanitized GCC/Clang builds. All 168 Windows and 170 cases per Linux
-compiler pass without skips, alongside 479-file formatting, controller mirrors
-and lifecycle checks. Full local suites remain unrun because of available disk
-space. Active original finalization/removal comparison remains pending; prior
-interpolation and geometry results do not qualify those bodies. Piston tick,
-neighbor, pushing and state-shape work remain unfinished.
+[Piston Tile ticking and supported Entity pushing](world/tiles/piston.md#tick-and-entity-pushing)
+are implemented alongside explicit finalization, removal and the neighbor callback.
+The [standalone bounds factory](entity/bounds.md) supplies genuine independent
+bounds ownership without advancing the shared pool cursor.
+
+Nine focused cases pass on MSVC and sanitized GCC/Clang, including 575 tick and
+4,751 bounds checks per compiler. Independent audits join the exact working
+source, fresh compiled products, full streams and actual process closures. The
+local configurations registered 167/169/169 cases and executed only those nine;
+current full local suites and new hosted results are not established by them.
+
+The original client/server tick family independently qualifies all 114 ordered
+inputs and 228 snapshots per side, retaining its 24 actual action throws per
+side. The complete C replay comparison remains pending. Earlier finalization/
+removal replay matches its separate 57-input finite projection per side/compiler;
+that result does not qualify the tick composition or full constructor history.
+
+The separate MovingPiston state-shape update, other Entity descendants and
+broader gameplay, population, persistence, interoperability and presentation
+acceptance remain unfinished. The historical `85441fe` hosted checkpoint passed
+168 MSVC/170 GCC/Clang cases, 479-file formatting, controller mirrors and lifecycle
+checks. Those results predate the neighbor, tick and standalone-factory changes.
 
 The following movement checkpoint predates finalization integration.
 

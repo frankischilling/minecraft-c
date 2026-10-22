@@ -25,11 +25,15 @@ additional bodies: pool clear and mean-edge length.
 | Pooled copy | `d()` | `b()` | Pooled factory24, return27 |
 | Coordinate assignment | `b(box)` | `b(box)` | Stores5/13/21/29/37/45, void return48 |
 
-The [native bounds contract](../entity/bounds.md) implements the movement helpers
-and actual pool identities without substituting value-only temporary boxes.
-Permanent Entity construction keeps its distinct direct box. Native storage
-holds and allocation limits describe C ownership; original JVM allocation-failure
-and garbage-collection timing are not reproduced by those policies.
+The [native bounds contract](../entity/bounds.md) implements the standalone
+factory as `mc_entity_bounds_create`, the movement helpers and actual pool
+identities. The standalone factory initializes only the bounds class and stores
+all six raw coordinates in constructor order. It returns a fresh box with one
+native hold, without appending to the pool or advancing its cursor. Pool reset,
+reuse and client clear leave that box's coordinates unchanged; its final release
+through the same classes owner frees it. Permanent Entity construction keeps its
+distinct box. Native holds and allocation limits describe C ownership; they do
+not reproduce original JVM allocation-failure or garbage-collection timing.
 
 Client `Minecraft.run` calls cursor reset at PC65 once per outer frame before
 processing queued ticks and rendering. Server `MinecraftServer.h` calls it at
@@ -48,22 +52,24 @@ can work. Native `printf` does not implement Java StringBuilder/double formattin
 Source review and helper comparisons cannot establish full Entity movement,
 World collision collection, FallingSand physics or an application reset route.
 
-Initial exact raw-bit comparison found two-NaN addition payload differences:
-74 rows per side on MSVC and GCC, and 50 per side on Clang. The original reports
-remain failed and retained. A separate complete 64-pair observation of quiet and
-signaling NaNs, both signs and distinct payloads, confirms the original captured
-interpreter selects the quieted right operand. The native addition compatibility
-operation preserves that choice explicitly; ordinary subtraction and raw stores
-remain separate. These are observations of the pinned host interpreter, not a
-claim that Java specifies universal NaN payload selection.
+The historical helper comparison first found two-NaN addition payload differences:
+74 rows per side on MSVC and GCC, and 50 per side on Clang. Those failed reports
+remain retained. A separate complete 64-pair observation of quiet and signaling
+NaNs, both signs and distinct payloads, confirmed that the captured interpreter
+selects the quieted right operand. The native addition compatibility operation
+preserves that choice explicitly; ordinary subtraction and raw stores remain
+separate. These observations concern the pinned host interpreter; Java does not
+specify universal NaN payload selection.
 
 The public [reflection observer](../../tests/tools/entity/bounds/BoundsObservation.java)
 invokes the genuine verified JAR methods in an isolated loader. Its
 [comparison driver](../../tests/tools/entity/bounds/compare_bounds.py) retains
 commands, complete raw-bit rows, streams, actual process outcomes and before/
-after input hashes. The full corpus contains 17,388 client and 16,146 server
+after input hashes. The historical corpus contains 17,388 client and 16,146 server
 rows, including every ordered pair of eight quiet/signaling NaNs through all
 coordinate slots and helper operations. It never normalizes a mismatched value.
+The retained matches cover that helper corpus and its then-current native probe;
+they do not qualify the standalone factory addition against the original.
 
 After a normal test build, run from the repository root with Java and javac on
 PATH and the two verified local reference JARs present:

@@ -23,6 +23,21 @@ mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *worl
                                                           mc_entity_bounds **out,
                                                           mc_world_collision_error *error);
 
+/* Same complete virtual getter with its actual defining code owner separate
+ * from the captured, nullable World argument. Caller keeps code_classes and
+ * Block live/exclusive, and keeps a nonnull source World physically alive and
+ * exclusive. A reached metadata call enters/leaves that actual World lazily;
+ * the public Tile getter owns its entry. No outer World entry is required.
+ * The Block must belong to code_classes->registry. Side, Registry,
+ * FP admission and pooled bounds use this code owner; World-independent null
+ * and pooled shapes do not inspect world. Metadata/Tile-dependent getters use
+ * only the supplied World when reached. A nonnull result owns one bounds hold
+ * in code_classes->entities, which the caller releases through that same owner.
+ * No Entity binding is required until an actual pooled factory is reached. */
+mc_world_storage_status mc_world_collision_block_box_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_collision_error *error);
+
 /* Actual MovingPiston a(World,IIIIFI), distinct from its Tile lookup in e.
  * The carrier's virtual getter supplies the same held box mutated in source
  * order. A late failure keeps coordinate/pool prefixes and preserves out.
@@ -32,6 +47,19 @@ mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_blo
                                            int32_t x, int32_t y, int32_t z, int32_t carried_id,
                                            float progress, int32_t facing, mc_entity_bounds **out,
                                            mc_world_collision_error *error);
+
+/* Same shifted helper using explicit defining classes and the unchanged
+ * nullable source World argument. Ownership and reached getter rules match
+ * block_box_in_classes_held above. ID0/self return before Registry/Direction
+ * active use or World/pool operations; a genuine null getter skips Direction.
+ * Registry-only failure reports its complete frame without touching World
+ * diagnostics. Existing World-only wrappers retain their legacy admission and
+ * World-diagnostic behavior. All six independent Direction reads and their
+ * coordinate/pool prefix remain in original order. */
+mc_world_storage_status mc_world_collision_piston_shifted_box_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *moving,
+    int32_t x, int32_t y, int32_t z, int32_t carried_id, float progress, int32_t facing,
+    mc_entity_bounds **out, mc_world_collision_error *error);
 
 /* Actual virtual contribution a(World,III,AABB,ArrayList). destination is the
  * captured source argument: no K field reload occurs here. Successful appends

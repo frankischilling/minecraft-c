@@ -13,6 +13,7 @@ uint32_t mc_piston_interpolate_bits(uint32_t current_bits, uint32_t previous_bit
                                     uint32_t factor_bits);
 float mc_piston_float_subtract(float left, float right);
 float mc_piston_float_multiply(float left, float right);
+float mc_piston_float_add(float left, float right);
 double mc_piston_coordinate_subtract(double coordinate, float offset);
 
 #endif

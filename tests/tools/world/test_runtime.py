@@ -19,7 +19,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
              "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes",
-             "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-entity-movement",
+             "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement",
              "world-movement-dependencies")
 
 
@@ -280,7 +280,7 @@ def main():
                 "bounds": ROOT / "src/entity/bounds/bounds.c",
                 "bounds_internal": ROOT / "src/entity/bounds/bounds_internal.h",
             })
-        if args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization"):
+        if args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick"):
             paths.update({
                 "piston_test": ROOT / ("tests/world/runtime/collision/test_piston_geometry.c"
                     if args.scenario == "world-piston-geometry" else
@@ -299,15 +299,27 @@ def main():
                 "tiles_fixture": ROOT / "tests/world/runtime/tiles/test_tiles.c",
                 "entity_publication_fixture": ROOT / "tests/world/runtime/test_entity_publication.c",
             })
-        if args.scenario == "world-piston-finalization":
+        if args.scenario in ("world-piston-finalization", "world-piston-tick"):
             paths.update({
-                "piston_test": ROOT / "tests/world/runtime/tiles/test_piston_finalize.c",
+                "piston_test": ROOT / ("tests/world/runtime/tiles/test_piston_tick.c"
+                    if args.scenario == "world-piston-tick" else
+                    "tests/world/runtime/tiles/test_piston_finalize.c"),
                 "piston_finalization": ROOT / "src/world/runtime/tiles/piston.c",
                 "piston_finalization_header": ROOT / "include/mc/world/runtime/tiles/piston.h",
+                "piston_internal": ROOT / "src/world/runtime/tiles/piston_internal.h",
                 "mutation_header": ROOT / "include/mc/world/runtime/mutations.h",
                 "mutation_internal": ROOT / "src/world/runtime/mutation/mutation_internal.h",
                 "mutation_hooks": ROOT / "src/world/runtime/mutation/hooks.c",
                 "tile_errors": ROOT / "include/mc/world/runtime/tiles/errors.h",
+            })
+        if args.scenario == "world-piston-tick":
+            paths.update({
+                "piston_tick": ROOT / "src/world/runtime/tiles/piston_tick.c",
+                "piston_list_internal": ROOT / "src/world/runtime/tiles/piston_list_internal.h",
+                "piston_finalization_fixture": ROOT / "tests/world/runtime/tiles/test_piston_finalize.c",
+                "entity_movement": ROOT / "src/entity/movement/movement.c",
+                "entity_movement_header": ROOT / "include/mc/entity/movement/movement.h",
+                "entity_effects": ROOT / "src/entity/movement/effects.c",
             })
         if args.scenario in ("world-entity-movement", "world-movement-dependencies"):
             paths.update({
@@ -365,7 +377,7 @@ def main():
         text = stdout.decode("ascii").replace("\r\n", "\n")
         if args.scenario in ("world-registry", "world-biome-runtime", "world-lighting-runtime",
                              "world-light-queue-runtime", "world-chunk-objects", "world-provider-generation",
-                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-entity-movement", "world-movement-dependencies"):
+                             "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies"):
             lines = text.splitlines(keepends=True)
             CAPTURE.require(bool(lines), "native registry contract result is missing")
             console = ("16 achievements\n", "151 recipes\n")
@@ -389,7 +401,7 @@ def main():
             elif args.scenario == "world-provider-activation":
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"],
                                 "complete one-owner acquisition bootstrap diagnostics")
-            elif args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization",
+            elif args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick",
                                    "world-entity-movement", "world-movement-dependencies"):
                 CAPTURE.require(lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
                                 "complete two-owner Piston bootstrap diagnostics")
@@ -447,29 +459,30 @@ def main():
                         expected_timestamp = 1 if args.scenario in ("world-lighting-runtime", "world-chunk-objects") else 0xfedcba98
                         CAPTURE.require(timestamp == expected_timestamp, "explicit native region clock in live header cell")
                     timestamps.append({"file": path.relative_to(root).as_posix(), "slot": slot, "timestamp": timestamp})
-        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-entity-movement", "world-movement-dependencies")),
+        CAPTURE.require(bool(timestamps) == (args.scenario in ("ownership-and-runtime", "generation", "world-info-bindings", "world-lighting-runtime", "world-chunk-objects", "world-provider-activation", "world-mutations", "world-scheduling", "world-solid-support", "world-fluids", "world-entity-publication", "world-queries", "world-entity-batch", "world-nearby", "world-collision-boxes", "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement", "world-movement-dependencies")),
                         "expected committed region slots")
         report["region_timestamps_checked"] = timestamps
-        if args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization",
+        if args.scenario in ("world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick",
                              "world-entity-movement", "world-movement-dependencies"):
-            expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(2)}
-            CAPTURE.require(len(timestamps) == 2 and
+            chunk_owners = 4 if args.scenario == "world-piston-tick" else 2
+            expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(chunk_owners)}
+            CAPTURE.require(len(timestamps) == chunk_owners and
                             {(row["file"], row["slot"]) for row in timestamps} == expected_slots,
-                            "both exact two-World fixture Chunk records remain present")
+                            "all exact fixture Chunk records remain present")
             CAPTURE.require({path.relative_to(root).as_posix() for path in root.rglob("*.mcr")} ==
-                            {name for name, _ in expected_slots}, "exact two fixture region files")
-            owner_count = 4 if args.scenario in ("world-piston-tiles", "world-piston-finalization") else 2
+                            {name for name, _ in expected_slots}, "exact fixture region files")
+            owner_count = 4 if args.scenario in ("world-piston-tiles", "world-piston-finalization", "world-piston-tick") else 2
             CAPTURE.require({path.name for path in root.glob("world*") if path.is_dir()} ==
                             {f"world{i}" for i in range(owner_count)}, "exact Piston Store owners")
             for i in range(owner_count):
                 CAPTURE.require((root / f"world{i}/level.dat").is_file() and
                                 (root / f"world{i}/session.lock").read_bytes() == struct.pack(">q", 137),
                                 "Piston metadata and native session owner")
-            expected_baselines = ({f"seed-world{i}.region.bin" for i in range(2)}
-                                  if args.scenario in ("world-piston-tiles", "world-piston-finalization") else set())
+            expected_baselines = ({f"seed-world{i}.region.bin" for i in range(chunk_owners)}
+                                  if args.scenario in ("world-piston-tiles", "world-piston-finalization", "world-piston-tick") else set())
             CAPTURE.require({path.name for path in root.glob("seed-*.region.bin")} ==
                             expected_baselines, "exact retained Piston seed baseline inventory")
-            for i in range(2) if expected_baselines else ():
+            for i in range(chunk_owners) if expected_baselines else ():
                 baseline = (root / f"seed-world{i}.region.bin").read_bytes()
                 CAPTURE.require(len(baseline) >= 8192 and len(baseline) % 4096 == 0,
                                 "complete sector-aligned Piston seed region")
@@ -483,7 +496,7 @@ def main():
                     CAPTURE.require(baseline != saved, "actual Piston Store save replaces the seed record")
                 else:
                     CAPTURE.require(baseline == saved,
-                                    "finalization without save preserves the original stored record")
+                                    "Piston mutation without save preserves the original stored record")
         if args.scenario == "world-collision-boxes":
             expected_slots = {(f"world{i}/region/r.0.0.mcr", 0) for i in range(8)}
             CAPTURE.require(len(timestamps) == 8 and

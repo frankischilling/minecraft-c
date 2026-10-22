@@ -31,7 +31,9 @@ typedef enum mc_tile_class_phase {
 /* Passive class-owner view. No active use, initialization, allocation or holds.
  * List identity is borrowed until class retirement; it is not a mutable List
  * API. allocation_bytes counts only the Piston static List's requested native
- * bytes, independently of base Tile maps/literals and instance storage. */
+ * bytes, independently of base Tile maps/literals and instance storage.
+ * list_mod_count_bits is the raw wrapping Java int counter. Published backing
+ * slots from count to capacity are NULL; a backing view expires on growth. */
 typedef struct mc_tile_piston_class_snapshot {
     mc_tile_class_phase base_phase, piston_phase;
     unsigned int base_initializer_bytecode, piston_initializer_bytecode;
@@ -40,16 +42,32 @@ typedef struct mc_tile_piston_class_snapshot {
     const mc_world_reference_list *list_identity;
     size_t list_count, list_capacity, allocation_bytes, live_tiles;
     size_t max_allocation_bytes;
+    uint32_t list_mod_count_bits;
 } mc_tile_piston_class_snapshot;
 
 /* Configure one immutable native requested-byte ceiling before Piston active
  * use. This creates the native class owner without initializing base Tile or
- * Piston. Default is 1 MiB. The current native ArrayList requests one empty
- * descriptor (capacity0); this policy does not claim JDK allocation/OOM timing.
+ * Piston. Default is 1 MiB. The native ArrayList starts with one empty
+ * descriptor (capacity0); later backing, owning ledger and temporary snapshots
+ * share this peak requested-byte ceiling. This policy does not claim JDK
+ * allocation/OOM timing.
  * A failed active use latches its first cause and cannot be configured/retried. */
 mc_tile_status mc_tile_piston_class_configure(mc_world_runtime *world, size_t max_allocation_bytes);
 mc_tile_status mc_tile_piston_class_get_snapshot(const mc_world_runtime_classes *classes,
                                                  mc_tile_piston_class_snapshot *out);
+
+/* Explicit native shutdown only: after retiring/releasing ALL Tile owners,
+ * discard the shared Piston List's owning Entity occurrences. This breaks a
+ * failed push's m -> Entity -> World -> class native ownership cycle so the
+ * Worlds can subsequently be freed. Requires exclusive quiescent classes and
+ * no later gameplay/resumption; returns BUSY while any Tile owner remains.
+ * Full owned-List admission precedes any release. Capacity/backing remain for
+ * ordinary class destruction. Cold/absent Tile classes stay uninitialized;
+ * this is neither a Java gameplay clear nor an active-class retry. No World
+ * retirement or failed tick invokes it automatically. Failure preserves all
+ * owners and replaces error; a nonnull classes owner is required. */
+mc_world_storage_status mc_tile_piston_class_discard_entities(mc_world_runtime_classes *classes,
+                                                              mc_world_storage_error *error);
 
 typedef enum mc_tile_phase {
     MC_TILE_RAW = 0,
@@ -117,6 +135,14 @@ size_t mc_tile_name_native_bytes(const mc_tile_name *name);
  * All access is exclusive; no thread synchronization or arbitrary stale-pointer
  * detection is provided. */
 mc_tile_status mc_tile_allocate(mc_world_runtime *world, mc_tile_kind kind, mc_tile **out);
+/* Allocate in the actual defining class namespace before any World exists.
+ * Bind its application Registry before active use and keep classes live and
+ * exclusive. This uses the same lazy Tile/Piston initialization, failure latch
+ * and instance ownership as the World entry above. It does not initialize the
+ * World class, allocate/bind a World or warm Block/Direction/Entity classes.
+ * Class destruction is BUSY while the returned Tile remains live. */
+mc_tile_status mc_tile_allocate_in_classes(mc_world_runtime_classes *classes, mc_tile_kind kind,
+                                           mc_tile **out);
 mc_tile_status mc_tile_construct(mc_tile *raw);
 mc_tile_status mc_tile_construct_detailed(mc_tile *raw, mc_tile_error *error);
 /* Complete uk/mu(IIIZZ), only for a RAW Piston. Stores ID/data/facing/extending/

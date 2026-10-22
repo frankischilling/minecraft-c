@@ -2,6 +2,7 @@
 
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/entity/bounds/bounds_internal.h"
+#include "../../../src/entity/entity_internal.h"
 
 #include <emmintrin.h>
 #include <limits.h>
@@ -93,6 +94,250 @@ static bool profile_cold(const fixture *test, uint64_t uniquifier) {
            atomic_load_explicit(&test->profile->holder_phase, memory_order_acquire) ==
                MC_JAVA_RANDOM_HOLDER_COLD &&
            test->profile->math == NULL && test->profile->allocated_bytes == sizeof(*test->profile);
+}
+
+static bool bounds_match_raw(const mc_entity_bounds *value, const uint64_t expected[6]) {
+    return bits(value->min_x) == expected[0] && bits(value->min_y) == expected[1] &&
+           bits(value->min_z) == expected[2] && bits(value->max_x) == expected[3] &&
+           bits(value->max_y) == expected[4] && bits(value->max_z) == expected[5];
+}
+
+static int test_standalone(mc_entity_source source) {
+    int result = 1;
+    fixture test = {0}, other = {0};
+    mc_entity *entity = NULL;
+    mc_entity_error entity_error;
+    mc_entity_bounds sentinel = {0}, foreign = {0};
+    mc_entity_bounds *out = &sentinel, *created[3] = {0}, *pooled = NULL, *reused = NULL;
+    mc_entity_bounds_error error;
+    mc_entity_class_snapshot snapshot;
+    const uint64_t coordinates[][6] = {
+        {UINT64_C(0x8000000000000000), UINT64_C(0x0000000000000000), UINT64_C(0x7ff8000000000137),
+         UINT64_C(0xfff8000000000289), UINT64_C(0x7ff0000000000000), UINT64_C(0xfff0000000000000)},
+        {UINT64_C(0x4022000000000000), UINT64_C(0x4020000000000000), UINT64_C(0x401c000000000000),
+         UINT64_C(0xbff0000000000000), UINT64_C(0xc000000000000000), UINT64_C(0xc008000000000000)},
+        {UINT64_C(0x0000000000000001), UINT64_C(0x8000000000000001), UINT64_C(0x7ff0000000000317),
+         UINT64_C(0xfff0000000000529), UINT64_C(0x7fefffffffffffff), UINT64_C(0xffefffffffffffff)}};
+    CHECK(fixture_open(&test, source) == 0);
+    const uint64_t uniquifier =
+        atomic_load_explicit(&test.profile->uniquifier, memory_order_relaxed);
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_entity_bounds_create(NULL, 0, 0, 0, 0, 0, 0, &out, &error) ==
+          MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(out == &sentinel && error.bytecode == 0 && error.pool.status == MC_ENTITY_OK &&
+          error.factory.status == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_create(test.classes, 0, 0, 0, 0, 0, 0, NULL, NULL) ==
+          MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(test.classes->bounds_phase == MC_ENTITY_CLASS_COLD && test.classes->bounds_pool == NULL &&
+          test.classes->bounds_objects == NULL);
+    for (size_t index = 0; index < sizeof(coordinates) / sizeof(*coordinates); ++index) {
+        double values[6];
+        for (size_t coordinate = 0; coordinate < 6; ++coordinate)
+            memcpy(&values[coordinate], &coordinates[index][coordinate], sizeof(*values));
+        memset(&error, 0xa5, sizeof(error));
+        CHECK(mc_entity_bounds_create(test.classes, values[0], values[1], values[2], values[3],
+                                      values[4], values[5], &created[index],
+                                      &error) == MC_ENTITY_OK);
+        CHECK(bounds_match_raw(created[index], coordinates[index]) &&
+              error.status == MC_ENTITY_OK && error.operation == NULL && error.bytecode == 0 &&
+              error.factory.status == MC_ENTITY_OK && error.factory.operation == NULL &&
+              error.pool.status == MC_ENTITY_OK && error.pool.operation == NULL);
+        CHECK(mc_entity_bounds_native_holds(test.classes, created[index]) == 1);
+        if (index == 0) {
+            mc_entity_bounds_pool *pool = test.classes->bounds_pool;
+            CHECK(pool != NULL && pool->length == 0 && pool->capacity == 0 &&
+                  pool->elements == NULL && test.classes->bounds_cursor == 0 &&
+                  test.classes->allocated_bytes ==
+                      sizeof(*test.classes) + sizeof(*pool) + sizeof(mc_entity_bounds_object));
+            CHECK(mc_entity_bounds_pool_get(test.classes, 1, 2, 3, 4, 5, 6, &pooled, NULL) ==
+                  MC_ENTITY_OK);
+        }
+    }
+    mc_entity_bounds_pool *pool = test.classes->bounds_pool;
+    CHECK(created[0] != created[1] && created[0] != created[2] && created[1] != created[2] &&
+          pooled != created[0] && pooled != created[1] && pooled != created[2]);
+    CHECK(pool->length == 1 && pool->elements[0] == pooled && test.classes->bounds_cursor == 1 &&
+          test.classes->bounds_holds == 4);
+    CHECK(mc_entity_classes_get_snapshot(test.classes, &snapshot) == MC_ENTITY_OK);
+    CHECK(snapshot.bounds_class == MC_ENTITY_CLASS_READY &&
+          snapshot.entity_class == MC_ENTITY_CLASS_COLD &&
+          snapshot.watcher_class == MC_ENTITY_CLASS_COLD && snapshot.next_id == 0 &&
+          snapshot.live_entities == 0 && snapshot.watcher_types_identity == NULL &&
+          profile_cold(&test, uniquifier));
+    CHECK(mc_entity_classes_free(test.classes) == MC_ENTITY_BUSY);
+    CHECK(mc_entity_bounds_retain(test.classes, created[0]) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_pool_reset(test.classes, NULL) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_pool_get(test.classes, 9, 8, 7, 6, 5, 4, &reused, NULL) == MC_ENTITY_OK);
+    CHECK(reused == pooled && pool->length == 1 && test.classes->bounds_cursor == 1 &&
+          bounds_same(pooled, &(mc_entity_bounds){9, 8, 7, 6, 5, 4}));
+    CHECK(mc_entity_bounds_release(test.classes, reused) == MC_ENTITY_OK);
+    if (source == MC_ENTITY_CLIENT) {
+        CHECK(mc_entity_bounds_pool_clear_client(test.classes, NULL) == MC_ENTITY_OK);
+        CHECK(pool->length == 0 && test.classes->bounds_cursor == 0);
+    } else {
+        CHECK(mc_entity_bounds_pool_clear_client(test.classes, NULL) == MC_ENTITY_INVALID_ARGUMENT);
+        CHECK(pool->length == 1 && test.classes->bounds_cursor == 1);
+    }
+    for (size_t index = 0; index < sizeof(coordinates) / sizeof(*coordinates); ++index)
+        CHECK(bounds_match_raw(created[index], coordinates[index]));
+    CHECK(profile_cold(&test, uniquifier));
+    CHECK(mc_entity_classes_create(source, test.profile, NULL, &other.classes) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_retain(other.classes, created[0]) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(mc_entity_bounds_release(other.classes, created[0]) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(other.classes->bounds_phase == MC_ENTITY_CLASS_COLD);
+    CHECK(mc_entity_bounds_retain(test.classes, &foreign) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(mc_entity_bounds_release(test.classes, &foreign) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(mc_entity_bounds_create(other.classes, 0, 0, 0, 0, 0, 0, &out, NULL) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_retain(test.classes, out) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(mc_entity_bounds_release(test.classes, out) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(mc_entity_bounds_release(other.classes, out) == MC_ENTITY_OK);
+    /* An actual Entity's private permanent box still belongs to that Entity,
+     * even when its bounds class is this very same owner. */
+    CHECK(mc_falling_entity_allocate(test.classes, &entity, &entity_error) == MC_ENTITY_OK);
+    CHECK(mc_falling_entity_construct_world(entity, NULL, &entity_error) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_retain(test.classes, entity->bounds) == MC_ENTITY_INVALID_ARGUMENT);
+    CHECK(mc_entity_bounds_release(test.classes, entity->bounds) == MC_ENTITY_INVALID_ARGUMENT);
+    mc_entity_release(entity);
+    entity = NULL;
+    CHECK(mc_entity_bounds_release(test.classes, pooled) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_release(test.classes, created[1]) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_release(test.classes, created[2]) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_native_holds(test.classes, created[0]) == 2 &&
+          test.classes->bounds_holds == 2);
+    CHECK(mc_entity_bounds_release(test.classes, created[0]) == MC_ENTITY_OK);
+    CHECK(mc_entity_classes_free(test.classes) == MC_ENTITY_BUSY);
+    CHECK(bounds_match_raw(created[0], coordinates[0]));
+    const size_t before_final_release = test.classes->allocated_bytes;
+    CHECK(mc_entity_bounds_release(test.classes, created[0]) == MC_ENTITY_OK);
+    CHECK(test.classes->bounds_holds == 0 &&
+          test.classes->allocated_bytes == before_final_release - sizeof(mc_entity_bounds_object));
+    result = 0;
+cleanup:
+    mc_entity_release(entity);
+    result = fixture_close(&other, result);
+    return fixture_close(&test, result);
+}
+
+static int test_standalone_limits(mc_entity_source source) {
+    int result = 1;
+    fixture test = {0}, overflow = {0};
+    mc_entity_bounds sentinel = {0}, *out = &sentinel;
+    mc_entity_bounds_error error;
+    CHECK(fixture_open(&test, source) == 0);
+    const uint64_t uniquifier =
+        atomic_load_explicit(&test.profile->uniquifier, memory_order_relaxed);
+    /* Actual class allocation fits; only the later standalone new0 does not. */
+    const size_t allocation_limit = test.classes->limits.max_allocation_bytes;
+    test.classes->limits.max_allocation_bytes = sizeof(*test.classes) +
+                                                sizeof(mc_entity_bounds_pool) +
+                                                sizeof(mc_entity_bounds_object) - 1u;
+    const mc_entity_status allocation =
+        mc_entity_bounds_create(test.classes, 1, 2, 3, 4, 5, 6, &out, &error);
+    test.classes->limits.max_allocation_bytes = allocation_limit;
+    CHECK(allocation == MC_ENTITY_LIMIT && out == &sentinel && error.bytecode == 0 &&
+          error.pool.status == MC_ENTITY_LIMIT && error.pool.bytecode == 0 &&
+          strcmp(error.pool.operation, "bounds factory") == 0 &&
+          error.factory.status == MC_ENTITY_OK);
+    mc_entity_bounds_pool *pool = test.classes->bounds_pool;
+    CHECK(test.classes->bounds_phase == MC_ENTITY_CLASS_READY && pool != NULL &&
+          pool->length == 0 && pool->capacity == 0 && pool->elements == NULL &&
+          test.classes->bounds_objects == NULL && test.classes->bounds_holds == 0 &&
+          test.classes->bounds_cursor == 0 &&
+          test.classes->allocated_bytes == sizeof(*test.classes) + sizeof(*pool) &&
+          profile_cold(&test, uniquifier));
+    const size_t empty_bytes = test.classes->allocated_bytes;
+    test.classes->limits.max_allocation_bytes = empty_bytes + sizeof(mc_entity_bounds_object);
+    memset(&error, 0xa5, sizeof(error));
+    const mc_entity_status exact =
+        mc_entity_bounds_create(test.classes, 1, 2, 3, 4, 5, 6, &out, &error);
+    test.classes->limits.max_allocation_bytes = allocation_limit;
+    CHECK(exact == MC_ENTITY_OK && out != &sentinel && error.status == MC_ENTITY_OK &&
+          error.pool.status == MC_ENTITY_OK && error.pool.operation == NULL &&
+          error.factory.status == MC_ENTITY_OK &&
+          test.classes->allocated_bytes == empty_bytes + sizeof(mc_entity_bounds_object));
+    mc_entity_bounds *existing = out;
+    mc_entity_bounds_object *existing_owner = test.classes->bounds_objects;
+    const size_t existing_bytes = test.classes->allocated_bytes;
+    const size_t existing_holds = test.classes->bounds_holds;
+    test.classes->bounds_holds = SIZE_MAX;
+    out = &sentinel;
+    const mc_entity_status existing_overflow =
+        mc_entity_bounds_create(test.classes, 9, 8, 7, 6, 5, 4, &out, &error);
+    const bool existing_overflow_preserved = test.classes->bounds_holds == SIZE_MAX;
+    test.classes->bounds_holds = existing_holds;
+    CHECK(existing_overflow == MC_ENTITY_LIMIT && existing_overflow_preserved && out == &sentinel &&
+          error.bytecode == 17 && test.classes->bounds_objects == existing_owner &&
+          test.classes->allocated_bytes == existing_bytes && existing_owner->holds == 1 &&
+          bounds_same(existing, &(mc_entity_bounds){1, 2, 3, 4, 5, 6}));
+    CHECK(mc_entity_bounds_release(test.classes, existing) == MC_ENTITY_OK);
+    CHECK(test.classes->allocated_bytes == empty_bytes && test.classes->bounds_objects == NULL);
+    CHECK(fixture_open(&overflow, source) == 0);
+    const uint64_t overflow_uniquifier =
+        atomic_load_explicit(&overflow.profile->uniquifier, memory_order_relaxed);
+    out = &sentinel;
+    /* Restore the native invariant before any CHECK/cleanup branch. This
+     * reaches real class initialization and allocates the unpublished box. */
+    overflow.classes->bounds_holds = SIZE_MAX;
+    const mc_entity_status held =
+        mc_entity_bounds_create(overflow.classes, 6, 5, 4, 3, 2, 1, &out, &error);
+    const bool overflow_preserved = overflow.classes->bounds_holds == SIZE_MAX;
+    overflow.classes->bounds_holds = 0;
+    CHECK(held == MC_ENTITY_LIMIT && overflow_preserved && out == &sentinel &&
+          error.bytecode == 17 && strcmp(error.operation, "bounds factory return hold") == 0 &&
+          error.pool.status == MC_ENTITY_OK && error.factory.status == MC_ENTITY_OK);
+    CHECK(overflow.classes->bounds_phase == MC_ENTITY_CLASS_READY &&
+          overflow.classes->bounds_pool != NULL && overflow.classes->bounds_cursor == 0 &&
+          overflow.classes->bounds_pool->length == 0 &&
+          overflow.classes->bounds_pool->elements == NULL &&
+          overflow.classes->bounds_objects == NULL &&
+          overflow.classes->allocated_bytes ==
+              sizeof(*overflow.classes) + sizeof(mc_entity_bounds_pool) &&
+          overflow.classes->entity_phase == MC_ENTITY_CLASS_COLD &&
+          overflow.classes->watcher_phase == MC_ENTITY_CLASS_COLD &&
+          profile_cold(&overflow, overflow_uniquifier));
+    CHECK(mc_entity_bounds_create(overflow.classes, 6, 5, 4, 3, 2, 1, &out, NULL) == MC_ENTITY_OK);
+    CHECK(bounds_same(out, &(mc_entity_bounds){6, 5, 4, 3, 2, 1}));
+    CHECK(mc_entity_bounds_release(overflow.classes, out) == MC_ENTITY_OK);
+    result = 0;
+cleanup:
+    result = fixture_close(&overflow, result);
+    return fixture_close(&test, result);
+}
+
+static int test_standalone_class_failure(mc_entity_source source) {
+    int result = 1;
+    fixture test = {0};
+    mc_entity_bounds sentinel = {0}, *out = &sentinel;
+    mc_entity_bounds_error error;
+    CHECK(fixture_open(&test, source) == 0);
+    const uint64_t uniquifier =
+        atomic_load_explicit(&test.profile->uniquifier, memory_order_relaxed);
+    const size_t allocation_limit = test.classes->limits.max_allocation_bytes;
+    test.classes->limits.max_allocation_bytes =
+        sizeof(*test.classes) + sizeof(mc_entity_bounds_pool) - 1u;
+    const mc_entity_status initial =
+        mc_entity_bounds_create(test.classes, 1, 2, 3, 4, 5, 6, &out, &error);
+    test.classes->limits.max_allocation_bytes = allocation_limit;
+    CHECK(initial == MC_ENTITY_LIMIT && out == &sentinel && error.bytecode == 0 &&
+          error.pool.status == MC_ENTITY_LIMIT && error.pool.bytecode == 0 &&
+          strcmp(error.pool.operation, "bounds class initialization") == 0);
+    CHECK(test.classes->bounds_phase == MC_ENTITY_CLASS_FAILED &&
+          test.classes->bounds_pool == NULL && test.classes->bounds_objects == NULL &&
+          test.classes->bounds_cursor == 0 && test.classes->bounds_holds == 0 &&
+          test.classes->allocated_bytes == sizeof(*test.classes));
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_entity_bounds_create(test.classes, 1, 2, 3, 4, 5, 6, &out, &error) ==
+          MC_ENTITY_CLASS_FAILED_STATUS);
+    CHECK(out == &sentinel && error.pool.status == MC_ENTITY_CLASS_FAILED_STATUS &&
+          error.factory.status == MC_ENTITY_OK && test.classes->bounds_pool == NULL &&
+          test.classes->entity_phase == MC_ENTITY_CLASS_COLD &&
+          test.classes->watcher_phase == MC_ENTITY_CLASS_COLD && profile_cold(&test, uniquifier));
+    CHECK(mc_entity_bounds_pool_get(test.classes, 1, 2, 3, 4, 5, 6, &out, &error) ==
+          MC_ENTITY_CLASS_FAILED_STATUS);
+    CHECK(out == &sentinel && error.pool.status == MC_ENTITY_CLASS_FAILED_STATUS);
+    result = 0;
+cleanup:
+    return fixture_close(&test, result);
 }
 
 static int test_lifecycle(mc_entity_source source) {
@@ -653,8 +898,10 @@ int main(void) {
     }
     for (unsigned int index = 0; index < 2; ++index) {
         const mc_entity_source source = index == 0 ? MC_ENTITY_CLIENT : MC_ENTITY_SERVER;
-        if (test_lifecycle(source) || test_budgets(source) || test_class_failure(source) ||
-            test_invariant_prefixes(source) || test_transforms(source) || test_nan_payloads(source))
+        if (test_standalone(source) || test_standalone_limits(source) ||
+            test_standalone_class_failure(source) || test_lifecycle(source) ||
+            test_budgets(source) || test_class_failure(source) || test_invariant_prefixes(source) ||
+            test_transforms(source) || test_nan_payloads(source))
             return 1;
     }
     if (test_geometry())

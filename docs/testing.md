@@ -1,5 +1,38 @@
 # Test scope and reproduction
 
+The current Piston tick and standalone-bounds increment passes nine focused
+cases on native Windows MSVC and sanitized GCC/Clang:
+
+| Case | Checks per host |
+| --- | ---: |
+| `entity.bounds` | 4,751 |
+| `world.piston_tick` | 575 |
+| `world.piston_finalization` | 460 |
+| `world.piston_tiles` | 296 |
+| `world.piston_geometry` | 144 |
+| `world.mutations` | 218 |
+| `world.collision_boxes` | 732 |
+| `entity.movement` | 544 |
+| `world.movement_dependencies` | 202 |
+
+These tests cover constructed native contracts, including actual supported
+movement and shared List failure history. Independent audits join 798 native
+inputs, 254 dependency files, exact fresh compile closures/products and complete
+streams. All nine actual cases pass on each host; the audited configurations
+registered 167/169/169 cases. The remaining 158/160/160 cases were not executed
+in those focused runs. Linux uses strict floating point, ASan/UBSan and leak
+checks. Existing per-test time/output policies remain part of the unit transport;
+these results do not establish a current full-suite or hosted pass.
+
+The separately qualified original tick family admits all 114 ordered inputs and
+228 before/after snapshot phases per side. Its actual action throws and full
+raw streams remain retained. The [source map](reference/piston.md#active-tick-input-family)
+records that observation scope; complete native/original tick comparison remains
+pending. The new standalone factory has native ownership/raw-store coverage,
+with its original comparison still pending.
+
+The following movement checkpoint predates tick and standalone-factory integration.
+
 The [movement contracts](entity/movement.md) pass five focused cases on native
 Windows MSVC and sanitized GCC/Clang:
 

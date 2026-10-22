@@ -1,18 +1,28 @@
 # minecraft-c
 
-MovingPiston's neighbor callback now executes the actual acquiring Tile getter
-and its lazy invalid-Map cleanup after the World B guard. Explicit finalization,
-removal and neighbor behavior pass seven focused local contracts on MSVC and
-sanitized GCC/Clang. Independently qualified active replay matches all 57
-source-mapped finite projections per side/compiler, with complete arrays and
-source-backed failure-prefix joins. Whole-graph parity and constructor/generation
-history remain outside that result. Tick, Entity pushing, the separate
-state-shape update and wider gameplay remain unfinished.
+The [Piston module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md)
+implements Tile ticking with supported Item/Falling Entity pushing, explicit
+finalization, removal and the neighbor callback. The shared owning List retains
+duplicates and failed-prefix history. The
+[bounds module](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
+includes genuine standalone allocation alongside pooled geometry.
 
-The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 GCC/Clang
-hosted cases, plus formatting for 479 C files and headers. That full-suite result
-predates this callback. Full local suites remain unrun. See [PR #52](https://github.com/frankischilling/minecraft-c/pull/52)
-for current-head hosted status and results.
+Nine focused native cases pass on MSVC and sanitized GCC/Clang, including 575
+tick and 4,751 bounds checks per host. Independent audits join exact source,
+fresh products, full streams and recorded process closures. These focused runs
+execute nine of 167/169/169 configured cases; current full local or hosted-suite
+success is not claimed.
+
+The original tick family qualifies all 114 ordered inputs and 228 snapshots per
+side. Its complete C replay comparison remains pending. Earlier finalization
+replay matches its separate 57-input finite projection per side/compiler;
+whole-graph parity and constructor/generation history remain outside that result.
+The separate state-shape update and wider gameplay remain unfinished.
+
+The historical `85441fe` hosted checkpoint passed 168 MSVC/170 GCC/Clang cases
+and formatting for 479 C files and headers. It predates the neighbor, tick and
+standalone-factory changes. Detailed current scope is in the
+[testing documentation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
 
 The following movement checkpoint predates finalization integration.
 

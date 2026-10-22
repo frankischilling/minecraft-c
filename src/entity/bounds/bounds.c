@@ -108,6 +108,43 @@ static mc_entity_status hold(mc_entity_classes *classes, mc_entity_bounds_object
     return MC_ENTITY_OK;
 }
 
+mc_entity_status mc_entity_bounds_create(mc_entity_classes *classes, double min_x, double min_y,
+                                         double min_z, double max_x, double max_y, double max_z,
+                                         mc_entity_bounds **out, mc_entity_bounds_error *error) {
+    mc_entity_bounds_error local;
+    if (error == NULL)
+        error = &local;
+    *error = (mc_entity_bounds_error){0};
+    const char *operation = "bounds factory";
+    if (classes == NULL || out == NULL)
+        return result(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+    mc_entity_status status = mc_entity_bounds_initialize(classes, &error->pool);
+    if (status != MC_ENTITY_OK)
+        return result(error, status, operation, 0);
+    mc_entity_bounds_object *object =
+        allocate(classes, sizeof(*object), &error->pool, operation, 0);
+    if (object == NULL)
+        return result(error, error->pool.status, operation, 0);
+    *object = (mc_entity_bounds_object){0};
+    object->value.min_x = min_x;
+    object->value.min_y = min_y;
+    object->value.min_z = min_z;
+    object->value.max_x = max_x;
+    object->value.max_y = max_y;
+    object->value.max_z = max_z;
+    status = hold(classes, object);
+    if (status != MC_ENTITY_OK) {
+        /* Native return ownership, not a Java failure at areturn17. Retire
+         * only this unpublished box; prior class initialization remains. */
+        retire(classes, object, sizeof(*object));
+        return result(error, status, "bounds factory return hold", 17);
+    }
+    object->next = classes->bounds_objects;
+    classes->bounds_objects = object;
+    *out = &object->value;
+    return result(error, MC_ENTITY_OK, NULL, 0);
+}
+
 size_t mc_entity_bounds_native_holds(const mc_entity_classes *classes,
                                      const mc_entity_bounds *bounds) {
     if (classes == NULL || bounds == NULL)

@@ -1,18 +1,31 @@
 # Shared collision bounds
 
 [`mc/entity/bounds/bounds.h`](../../include/mc/entity/bounds/bounds.h) implements
-the shared client `eq` / server `cz` pool and their complete movement geometry
-helpers. The [source map](../reference/bounds.md) records the paired bodies and
-the remaining vector, ray and text operations. This module does not execute
-Entity movement or FallingSand physics.
+the client `eq` / server `cz` standalone factory, shared pool and complete
+movement geometry helpers. The [source map](../reference/bounds.md) records the
+paired bodies and the remaining vector, ray and text operations. This module
+does not execute Entity movement or FallingSand physics.
 
 ## Identity and lifetime
 
-The existing `mc_entity_classes` owner contains one bounds pool for its loaded
+The `mc_entity_classes` owner contains one bounds class and pool for its loaded
 game-class identity. It spans Worlds and Entity subtypes. Bounds active use
-initializes only that pool: it does not initialize Entity, consume an Entity ID,
-create a Random or use a World. Entity construction continues to allocate its
-own permanent box separately, with the same constructor effect and failure order.
+initializes only the bounds class, publishing its empty pool List and zero cursor.
+It does not initialize Entity, consume an Entity ID, create a Random or use a
+World. Entity construction allocates its own permanent box separately, with the
+same constructor effect and failure order.
+
+`mc_entity_bounds_create` returns a fresh standalone box with one native hold.
+It stores the supplied min X/Y/Z and max X/Y/Z coordinates in that order, without
+arithmetic, endpoint sorting or finite-value checks. Signed zeros and NaN bits
+remain unchanged. After any required class initialization, the factory neither
+appends to the pool nor advances its cursor. Pool reset, reuse and client clear
+leave the standalone box's identity and coordinates unchanged.
+
+Retain or release this box through its original classes owner. Its last native
+release frees it; classes destruction returns BUSY while any bounds hold remains.
+Keep the classes owner live and access it exclusively. Output and error storage
+must be disjoint from each other and from owner storage.
 
 A pooled factory call appends one zero box only when the cursor is at least
 the current List length. It then increments the Java int cursor before getting
@@ -75,20 +88,28 @@ exception flags are outside this numerical interface.
 
 ## Native limits and errors
 
-The classes ledger charges each actual native wrapper, backing pointer capacity
-and replacement allocation while the old backing array still exists. An append
-failure retires only its unpublished new child, leaving earlier source effects
-intact. Ordinary allocation failure does not poison the bounds class. A failure
-during its actual initializer latches the existing FAILED phase.
+The classes ledger charges each actual standalone or pooled wrapper, the pool
+descriptor, backing pointer capacity and replacement allocation while the old
+backing array still exists. An append failure retires only its unpublished new
+child, leaving earlier source effects intact. A failure during the bounds class
+initializer latches its FAILED phase.
 
-Errors retain the operation and reached source PC, the pooled-factory frame under
-a transform, and the actual initializer/direct-factory/append child when reached.
-Outputs remain unchanged on failure. Caller-owned numerical values and Entity's
-permanent box cannot be adopted by native pool retain/release.
+A standalone factory allocation or native return-hold failure preserves completed
+class initialization without poisoning the class. A failed return hold retires
+only the unpublished new wrapper. Factory failures leave the output pointer
+unchanged. Their errors retain the operation and reached source PC, including
+the actual initializer or allocation child when reached. The return-hold limit
+is a native ownership failure reported at return17, not a Java exception.
+
+Pooled operations also preserve completed append, cursor and coordinate effects
+on failure. Transform errors retain the reached pooled-factory frame and its
+actual initializer/direct-factory/append child. Retain/release accept only live
+standalone, pooled or detached boxes from the same owner; they reject foreign
+boxes, caller-owned values and Entity's permanent box.
 
 Pool acquisition is constant time except backing growth. Public native retain
-and release validate identity by scanning the owner's live pooled and detached
-objects; a large batch of external releases can therefore have quadratic cost.
+and release validate identity by scanning the owner's live standalone, pooled
+and detached objects; a large batch of external releases can have quadratic cost.
 This lifetime policy and native allocation budget are not claims of identical
 JDK garbage collection or allocation-failure behavior.
 
@@ -101,13 +122,22 @@ FallingSand landing/drop and full original-game replay remain unfinished.
 
 ## Verification
 
-`entity.bounds` passes 4,601 checks on MSVC and sanitized GCC/Clang, including
-identity/reuse/clear, actual growth-budget peaks, retained failure prefixes and
-an exact eight-by-eight quiet/signaling NaN matrix on both class owners.
-All 160/162/162 configured final-source cases pass without skips. Each exact
-final probe also matches all 17,388 client and 16,146 server original raw rows;
-the public reproduction command is in the [source map](../reference/bounds.md).
-Independent audits check every case, retained stream and compiled-product join.
-The complete selected native graph pins 749 inputs, 254 dependency files,
-220 products and 40 captures per host. These checks qualify the specified
-helpers and native ownership, not the unfinished game routes above.
+Focused MSVC and sanitized GCC/Clang `entity.bounds` runs pass 4,751 native checks.
+Standalone factory coverage includes both class owners, raw coordinate stores, fresh
+identity, pool independence, native ownership and retained failure prefixes.
+This focused result does not establish a new full-suite pass or an original-game
+comparison of the standalone factory.
+
+The historical bounds baseline passed 4,601 checks on MSVC and sanitized
+GCC/Clang, including identity/reuse/clear, actual growth-budget peaks, retained
+failure prefixes and an exact eight-by-eight quiet/signaling NaN matrix on both
+class owners. Its 160/162/162 configured cases passed without skips. The probes
+from that baseline matched all 17,388 client and 16,146 server original raw rows
+in the retained helper corpus. The public reproduction command remains in the
+[source map](../reference/bounds.md).
+
+Independent audits of that historical baseline checked every case, retained
+stream and compiled-product join. Its selected native graph pinned 749 inputs,
+254 dependency files, 220 products and 40 captures per host. Those results
+qualify that helper corpus and its native ownership behavior; they do not extend
+to the standalone factory addition or the unfinished game routes above.

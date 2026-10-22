@@ -1,4 +1,4 @@
-#include "mc/world/runtime/tiles/piston.h"
+#include "piston_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../collision/blocks_internal.h"
@@ -90,7 +90,8 @@ static void finalize_nested(mc_world_mutation_error *error, const mc_world_mutat
 /* The actual bounded fd/dj.a(III)I implementation already supplies detailed
  * provider, concrete Chunk and activation causes. Enter precisely this newly
  * evaluated World receiver and keep its lease until the held call returns. */
-static bool current_block(mc_tile *tile, int32_t *out, mc_world_mutation_error *error) {
+bool mc_tile_piston_current_block_held(mc_tile *tile, int32_t *out,
+                                       mc_world_mutation_error *error) {
     mc_world_runtime *const world = tile->world;
     const int32_t x = tile->x;
     const int32_t y = tile->y;
@@ -140,7 +141,7 @@ static bool finalize_held(mc_tile *tile, mc_world_mutation_error *error) {
 
     int32_t id = 0;
     error->piston_finalize_bytecode = 58;
-    if (!current_block(tile, &id, error))
+    if (!mc_tile_piston_current_block_held(tile, &id, error))
         return false;
 
     /* getstatic61 follows the completed acquiring ID query. This is the Tile's

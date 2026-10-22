@@ -51,7 +51,7 @@ float mc_piston_float_multiply(float left, float right) {
     return _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(left), _mm_set_ss(right)));
 }
 
-static float add(float left, float right) {
+float mc_piston_float_add(float left, float right) {
     const uint32_t l = bits(left), r = bits(right);
     if (is_nan32(l) && is_nan32(r))
         return value(r | UINT32_C(0x00400000));
@@ -66,7 +66,7 @@ uint32_t mc_piston_interpolate_bits(uint32_t current_bits, uint32_t previous_bit
     const float previous = value(previous_bits);
     const float delta = mc_piston_float_subtract(value(current_bits), value(previous_bits));
     const float scaled = mc_piston_float_multiply(delta, factor);
-    return bits(add(previous, scaled));
+    return bits(mc_piston_float_add(previous, scaled));
 }
 
 double mc_piston_coordinate_subtract(double coordinate, float offset) {
