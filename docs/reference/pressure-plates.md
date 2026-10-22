@@ -6,8 +6,8 @@ stone ID70 uses category b. Category c selects Players. The native modules are
 [private update/tick](../../src/world/runtime/mutation/pressure_plate.c),
 [lifecycle](../../src/world/runtime/mutation/pressure_lifecycle.c) and
 [contact dispatch](../../src/world/runtime/contact.c). Their
-[ownership contract](../world/pressure-plates.md) distinguishes implemented
-untyped traversal from the still missing Class-filtered queries.
+[ownership contract](../world/pressure-plates.md) covers both untyped traversal
+and the separate [Class-filtered query](../world/class-entities.md).
 
 | Body | Client | Server | Reached source sites |
 | --- | --- | --- | --- |
@@ -53,6 +53,18 @@ They identify complete paired bodies rather than decompiler line numbers.
 | Support, added and neighbor, 1,359 bytes each | 12918–12971 / `56a16b479ac1eb16a53cee181e8d98540633c4e6ed1dca580b9d2514ff28eb4b` | 5973–6026 / `27fca162fdb94d6d4a91a0648abd9f094a91eb9745dee785d9007ee69d5bd9f8` |
 | Removed, 999 bytes each | 13274–13308 / `3f1e24473f2383b961f913673bef11c1e4e10ee63b3ee695fce14d8efac12018` | 6329–6363 / `f2d8b6e7ea009347fc457f48ba180aa2297e4e7af67dd9812147d0915b5af651` |
 
+The World Class overload reads/floors bounds at12/28/45/62, constructs its fresh
+ArrayList at67/71, tests presence102, acquires113, invokes Chunk gather120 and
+returns137. The normal Chunk floors Y at12/29, reads slice78, size88, get100,
+cast105, getClass113, isAssignableFrom116, bounds124, intersection128 and add137;
+return155. Blank gather is literal return0.
+
+| Class-query span | Client lines / SHA-256 | Server lines / SHA-256 |
+| --- | --- | --- |
+| Full World overload, 2,514 bytes each | 91358–91426 / `8294dba0f9359bb69cba2ea17df759b7050208ca8b2284570b6d2997b2a55459` | 26189–26257 / `8eff082e6873ceaa23883d329f46dc1b5205cfea5d93e6fdeebc54683c97bcab` |
+| Full normal Chunk gather, 2,784 bytes each | 149404–149478 / `d67fd878316e8ca63c71f2d3613e5128b81c434d20d150b3c746a58229ea46ab` | 72203–72277 / `742094be1858daca1c003f5a0d5806053e80f4d50ab56beba8c1451418558720` |
+| Blank gather, 144 bytes each | 146970–146974 / `64787fe43ebff344d7fdf4d59a211a7b6a8f5e1ca66ac79f4b8fcd7139beb9d8` | 70349–70353 / `125f3a6abc62a0f974447a27f383fb30035a95e063040a61c92952e381b29bf6` |
+
 This is paired bytecode authority and a native implementation contract. It is
-not an executed-original pressure comparison. Broader Class-query traversal,
-detector rails, redstone, tick draining and gameplay acceptance remain separate.
+not an executed-original pressure or Class-query comparison. Detector rails,
+redstone, tick draining and gameplay acceptance remain separate.

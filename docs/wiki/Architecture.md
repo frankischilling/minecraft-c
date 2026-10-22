@@ -1,10 +1,11 @@
 # Systems and subsystems
 
-[Wooden pressure plates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
+[Pressure plates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
 query the real World entity slices and preserve pooled bounds, mutable List
 identity, metadata/neighbor/range/sound order and actual schedule insertion.
 Added, support-neighbor, removal and tick dispatch form the same synchronous
-lifecycle. Class-filtered categories, detector rails, nonempty concrete
+lifecycle. Living/Player categories use fresh Class-query Lists and passive
+same-owner ancestry, independently of shared R. Detector rails, nonempty concrete
 observers and a running tick loop remain unfinished. Original pressure-plate
 runtime equality remains unverified.
 

@@ -1,11 +1,12 @@
 # Runtime boundaries
 
-[Wooden pressure plates](world/pressure-plates.md) share one real update helper
+[Pressure plates](world/pressure-plates.md) share one real update helper
 between contact and scheduled ticks. The Block's defining classes own the pooled
-query bounds; the passed World owns the actual entity slices and mutable result
-List. Ordered mutation, support-neighbor reentry, observers, sound and scheduling
-keep their separate failure effects and diagnostics. Class-filtered categories,
-detector rails and the running game loop remain unfinished.
+query bounds; the passed World owns the actual entity slices. Category a uses
+mutable R, while Living/Player use fresh [Class-query Lists](world/class-entities.md)
+and passive same-owner ancestry. Ordered mutation, support-neighbor reentry,
+observers, sound and scheduling keep their separate failure effects and
+diagnostics. Detector rails and the running game loop remain unfinished.
 
 The following movement/collision checkpoint predates Piston tick/finalization
 and pressure-plate integration.

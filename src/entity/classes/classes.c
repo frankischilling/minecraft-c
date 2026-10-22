@@ -3,13 +3,48 @@
 
 #include <stdlib.h>
 
-/* Paired jc/ga Class literals. These static bytes are diagnostics, not the
- * later namespace's actual String/name-value representation or Class keys. */
+/* Paired jc/ga Class literals followed by query-only sn/lq and gs/em. These
+ * static bytes are diagnostics, not the namespace's String values or Class keys. */
 static const char *const literal_names[MC_ENTITY_CLASS_KIND_COUNT][2] = {
     {"sl", "lp"}, {"by", "be"}, {"hl", "ez"}, {"qv", "kf"}, {"ls", "hl"}, {"gz", "ep"},
     {"gb", "ec"}, {"fr", "dv"}, {"cn", "bn"}, {"nt", "ip"}, {"uz", "ne"}, {"uw", "nb"},
     {"bp", "aw"}, {"ya", "pi"}, {"wh", "oc"}, {"dl", "ce"}, {"bx", "bd"}, {"ww", "or"},
-    {"xt", "pf"}, {"gi", "eh"}, {"qw", "kg"}, {"ju", "gl"}, {"yl", "pr"}, {"fz", "eb"}};
+    {"xt", "pf"}, {"gi", "eh"}, {"qw", "kg"}, {"ju", "gl"}, {"yl", "pr"}, {"fz", "eb"},
+    {"sn", "lq"}, {"gs", "em"}};
+
+/* Nearest admitted superclass from the paired class declarations. Monster
+ * gz/ep reaches Living ls/hl through ii/fp; animals through bg/ao -> ii/fp;
+ * Squid xt/pf through ar/ae -> ii/fp; Ghast bp/aw through wq/ok. Player gs/em
+ * directly extends ls/hl. PigZombie ya/pi extends Zombie uz/ne -> gz/ep.
+ * Entity sn/lq has no parent in this admitted namespace. COUNT is a sentinel,
+ * never a Class literal. No interface or dynamically loaded Class is admitted. */
+static const mc_entity_class_kind literal_parents[MC_ENTITY_CLASS_KIND_COUNT] = {
+    [MC_ENTITY_CLASS_KIND_ARROW] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_SNOWBALL] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_ITEM] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_PAINTING] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_MOB] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_MONSTER] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_CREEPER] = MC_ENTITY_CLASS_KIND_MONSTER,
+    [MC_ENTITY_CLASS_KIND_SKELETON] = MC_ENTITY_CLASS_KIND_MONSTER,
+    [MC_ENTITY_CLASS_KIND_SPIDER] = MC_ENTITY_CLASS_KIND_MONSTER,
+    [MC_ENTITY_CLASS_KIND_GIANT] = MC_ENTITY_CLASS_KIND_MONSTER,
+    [MC_ENTITY_CLASS_KIND_ZOMBIE] = MC_ENTITY_CLASS_KIND_MONSTER,
+    [MC_ENTITY_CLASS_KIND_SLIME] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_GHAST] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_PIG_ZOMBIE] = MC_ENTITY_CLASS_KIND_ZOMBIE,
+    [MC_ENTITY_CLASS_KIND_PIG] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_SHEEP] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_COW] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_CHICKEN] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_SQUID] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_WOLF] = MC_ENTITY_CLASS_KIND_MOB,
+    [MC_ENTITY_CLASS_KIND_PRIMED_TNT] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_FALLING_SAND] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_MINECART] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_BOAT] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_ENTITY] = MC_ENTITY_CLASS_KIND_COUNT,
+    [MC_ENTITY_CLASS_KIND_PLAYER] = MC_ENTITY_CLASS_KIND_MOB};
 
 mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
                                           const mc_entity_limits *limits, mc_entity_classes **out) {
@@ -130,4 +165,39 @@ mc_entity_status mc_entity_class_literal_inspect(const mc_entity_class_literal *
                                           .client_name = literal->client_name,
                                           .server_name = literal->server_name};
     return MC_ENTITY_OK;
+}
+
+static bool literal_is_canonical(const mc_entity_class_literal *literal) {
+    return literal != NULL && literal->owner != NULL &&
+           (literal->source == MC_ENTITY_CLIENT || literal->source == MC_ENTITY_SERVER) &&
+           literal->source == literal->owner->source &&
+           (unsigned int)literal->kind < (unsigned int)MC_ENTITY_CLASS_KIND_COUNT &&
+           literal == &literal->owner->literals[(size_t)literal->kind];
+}
+
+mc_entity_status
+mc_entity_class_literal_is_assignable_from(const mc_entity_class_literal *target,
+                                           const mc_entity_class_literal *candidate, bool *out) {
+    if (out == NULL || !literal_is_canonical(target) || !literal_is_canonical(candidate))
+        return MC_ENTITY_INVALID_ARGUMENT;
+    if (target->owner != candidate->owner) {
+        *out = false;
+        return MC_ENTITY_OK;
+    }
+    const mc_entity_class_literal *current = candidate;
+    for (size_t depth = 0; depth < (size_t)MC_ENTITY_CLASS_KIND_COUNT; ++depth) {
+        if (!literal_is_canonical(current))
+            return MC_ENTITY_INVALID_ARGUMENT;
+        if (target == current) {
+            *out = true;
+            return MC_ENTITY_OK;
+        }
+        const mc_entity_class_kind parent = literal_parents[(size_t)current->kind];
+        if (parent == MC_ENTITY_CLASS_KIND_COUNT) {
+            *out = false;
+            return MC_ENTITY_OK;
+        }
+        current = &candidate->owner->literals[(size_t)parent];
+    }
+    return MC_ENTITY_INVALID_ARGUMENT;
 }

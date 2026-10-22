@@ -3,6 +3,7 @@
 
 #include "mc/entity/errors.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -32,7 +33,8 @@ typedef struct mc_entity_class_snapshot {
     size_t watcher_type_count, live_entities, allocation_bytes;
 } mc_entity_class_snapshot;
 
-/* Native literal selectors in jc/ga registration order, not runtime instance
+/* The first 24 native literal selectors retain jc/ga registration order;
+ * query-only Entity and Player follow Boat. These are not runtime instance
  * IDs, serialized numerical IDs, constructor availability or class phases. */
 typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_ARROW,
@@ -59,6 +61,8 @@ typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_FALLING_SAND,
     MC_ENTITY_CLASS_KIND_MINECART,
     MC_ENTITY_CLASS_KIND_BOAT,
+    MC_ENTITY_CLASS_KIND_ENTITY,
+    MC_ENTITY_CLASS_KIND_PLAYER,
     MC_ENTITY_CLASS_KIND_COUNT
 } mc_entity_class_kind;
 
@@ -80,7 +84,7 @@ typedef struct mc_entity_class_literal_view {
  * their reached point. External stack/world/profile owners, allocator overhead
  * and C stack are excluded. Failure preserves out. All access is exclusive;
  * the profile must outlive every dependent class/entity and concurrent user.
- * create alone performs no game-class initialization or entropy draw. The 24
+ * create alone performs no game-class initialization or entropy draw. The 26
  * passive canonical literal cells are charged in this actual native header. */
 mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
                                           const mc_entity_limits *limits, mc_entity_classes **out);
@@ -108,5 +112,17 @@ mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,
                                              const mc_entity_class_literal **out);
 mc_entity_status mc_entity_class_literal_inspect(const mc_entity_class_literal *literal,
                                                  mc_entity_class_literal_view *out);
+
+/* Passive Class.isAssignableFrom for the admitted Entity Class namespace.
+ * Both arguments must be canonical literals borrowed from live owners. The
+ * candidate matches itself and its admitted ancestors in that same owner;
+ * a valid literal from a different owner is an ordinary false result. Omitted
+ * intermediate superclasses are represented by the fixed admitted parent graph.
+ * This does not initialize classes, allocate, consume Random or inspect an
+ * Entity/World. NULL or noncanonical arguments are INVALID_ARGUMENT and
+ * preserve out. Hold both owners throughout the call; out must be disjoint. */
+mc_entity_status
+mc_entity_class_literal_is_assignable_from(const mc_entity_class_literal *target,
+                                           const mc_entity_class_literal *candidate, bool *out);
 
 #endif

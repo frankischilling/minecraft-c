@@ -11,6 +11,12 @@
 bool mc_world_nearby_owned_valid(const mc_world_runtime *world);
 void mc_world_nearby_owned_release(mc_world_runtime *world);
 
+/* Reached real provider getter shared by the two distinct Entity queries.
+ * Caller holds/enters World; preserve its outer query PC and complete fresh
+ * per-attempt acquisition descendants. No presence query or List use here. */
+bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int32_t z,
+                                        mc_chunk_state **out, mc_world_nearby_error *error);
+
 /* Actual virtual gather. Caller holds/enters this World and keeps state live
  * through this synchronous call. Blank dispatch precedes every normal-header
  * and nullable argument access. Normal headers are resolved by actual state

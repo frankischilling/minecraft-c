@@ -136,6 +136,6 @@ The source map records [reproduction and exact scope](../reference/entity-moveme
 Completed original normal movement and nonnull-World traversal remain unqualified.
 
 Other Entity kinds, walking-positive descendants, active Item/Falling ticks,
-landing/drop behavior, Class-filtered pressure/detector helpers, nonempty concrete
+landing/drop behavior, detector helpers, nonempty concrete
 sound observers, unowned passenger recursion and whole-game acceptance remain
 unfinished. Implementing movement does not complete those gameplay routes.

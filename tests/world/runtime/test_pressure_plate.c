@@ -355,16 +355,14 @@ static bool plate_frontiers(fixture *f, size_t side) {
           world->fields.R->count == 0);
     cursor = classes->bounds_cursor;
     CHECK(mc_world_runtime_entity_contact(world, stone, 10, 64, 8, NULL, &error) ==
-              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          error.bytecode == 27 && error.helper_bytecode == 141 &&
-          error.mutation.pressure_contact_bytecode == 27 &&
-          error.mutation.pressure_bytecode == 141 && classes->bounds_cursor == cursor + 1 &&
-          classes->bounds_holds == holds && world->local_leases == 0);
+              MC_WORLD_STORAGE_OK &&
+          classes->bounds_cursor == cursor + 1 && classes->bounds_holds == holds &&
+          world->local_leases == 0 && plate_at(world, 10, 0) && plate_counts(world, 0, 0));
     const mc_entity_bounds *box = classes->bounds_pool->elements[(size_t)cursor];
     CHECK(box->min_x == 10.125 && box->min_y == 64.0 && box->min_z == 8.125 &&
           box->max_x == 10.875 && box->max_y == 64.25 && box->max_z == 8.875);
 
-    /* Stone stops after the real pool prefix. y128 skips both metadata
+    /* Real empty Class queries preserve the pool prefix. y128 skips metadata
      * acquisitions for the first pair; extreme X/Z do so for the others.
      * No fabricated Class result or distant Chunk is made. Literal doubles
      * distinguish binary32 evaluation and the wrapped int x+1/z+1 prefix. */
@@ -388,10 +386,9 @@ static bool plate_frontiers(fixture *f, size_t side) {
         cursor = classes->bounds_cursor;
         CHECK(mc_world_runtime_entity_contact(world, stone, coordinates[i].x, coordinates[i].y,
                                               coordinates[i].z, NULL,
-                                              &error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-              error.bytecode == 27 && error.helper_bytecode == 141 &&
-              error.mutation.pressure_bytecode == 141 && classes->bounds_cursor == cursor + 1 &&
-              classes->bounds_holds == holds && classes->bounds_pool != NULL && cursor >= 0 &&
+                                              &error) == MC_WORLD_STORAGE_OK &&
+              classes->bounds_cursor == cursor + 1 && classes->bounds_holds == holds &&
+              classes->bounds_pool != NULL && cursor >= 0 &&
               (size_t)cursor < classes->bounds_pool->length);
         box = classes->bounds_pool->elements[(size_t)cursor];
         const mc_entity_bounds *expected = &coordinates[i].expected;
@@ -403,15 +400,49 @@ static bool plate_frontiers(fixture *f, size_t side) {
               mc_world_store_chunk_count(f->stores[slot]) == 4 && world->fields.R->count == 0 &&
               world->local_leases == 0 && world->active_calls == 0);
     }
+    /* Actual candidates reach passive Class filtering. They geometrically
+     * overlap the plate but are neither Living nor Player instances. */
+    mc_entity *item = NULL, *falling = NULL;
+    CHECK(plate_publish(f, slot, false, &item) && plate_publish(f, slot, true, &falling));
+    cursor = classes->bounds_cursor;
+    const size_t query_bytes = world->construction.direct_allocation_bytes;
+    CHECK(mc_world_runtime_entity_contact(world, stone, 8, 64, 8, NULL, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          classes->bounds_cursor == cursor + 1 && classes->bounds_holds == holds &&
+          plate_at(world, 8, 0) && world->construction.direct_allocation_bytes == query_bytes &&
+          world->fields.R->count == 0 && world->local_leases == 0 && item->holds == 3 &&
+          falling->holds == 3);
     const mc_pressure_category *const category = wood->subtype.bv.a;
     cursor = classes->bounds_cursor;
     wood->subtype.bv.a = registry->pressure_c;
     const mc_world_storage_status player =
         mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
     wood->subtype.bv.a = category;
-    CHECK(player == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 27 &&
-          error.helper_bytecode == 200 && error.mutation.pressure_bytecode == 200 &&
-          classes->bounds_cursor == cursor + 1 && classes->bounds_holds == holds);
+    CHECK(player == MC_WORLD_STORAGE_OK && classes->bounds_cursor == cursor + 1 &&
+          classes->bounds_holds == holds && plate_at(world, 8, 0) &&
+          world->construction.direct_allocation_bytes == query_bytes && world->local_leases == 0 &&
+          world->fields.R->count == 0 && item->holds == 3 && falling->holds == 3);
+    /* Literal resolution belongs to the Block's defining namespace and is
+     * reached before either Class branch allocates its pooled query box. */
+    cursor = classes->bounds_cursor;
+    mc_entity_classes *const defining_entities = registry->entities;
+    registry->entities = NULL;
+    const mc_world_storage_status missing_mob =
+        mc_world_runtime_entity_contact(world, stone, 10, 64, 8, NULL, &error);
+    registry->entities = defining_entities;
+    CHECK(missing_mob == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 27 &&
+          error.helper_bytecode == 98 && error.mutation.pressure_bytecode == 98 &&
+          classes->bounds_cursor == cursor && classes->bounds_holds == holds);
+    wood->subtype.bv.a = registry->pressure_c;
+    registry->entities = NULL;
+    const mc_world_storage_status missing_player =
+        mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
+    registry->entities = defining_entities;
+    wood->subtype.bv.a = category;
+    CHECK(missing_player == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 27 &&
+          error.helper_bytecode == 157 && error.mutation.pressure_bytecode == 157 &&
+          classes->bounds_cursor == cursor && classes->bounds_holds == holds &&
+          world->local_leases == 0);
     cursor = classes->bounds_cursor;
     wood->subtype.bv.a = NULL; /* Actual unmatched nullable source field. */
     const mc_world_storage_status unmatched =
@@ -420,16 +451,33 @@ static bool plate_frontiers(fixture *f, size_t side) {
     CHECK(unmatched == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.helper_bytecode == 207 &&
           error.mutation.pressure_bytecode == 207 && classes->bounds_cursor == cursor &&
           classes->bounds_holds == holds);
-    /* Canonical aliases prove the comparisons are separate IFs: perform the
-     * real wooden query, then allocate the second box and reach Class query141. */
+    /* Separate IFs replace a genuinely nonempty R selection with the later
+     * empty Class result. The old R contents remain independently owned. */
     mc_pressure_category *const pressure_b = registry->pressure_b;
     registry->pressure_b = registry->pressure_a;
     const mc_world_storage_status alias =
         mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
     registry->pressure_b = pressure_b;
-    CHECK(alias == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.helper_bytecode == 141 &&
-          classes->bounds_cursor == cursor + 2 && classes->bounds_holds == holds &&
-          world->fields.R->count == 0 && world->local_leases == 0);
+    CHECK(alias == MC_WORLD_STORAGE_OK && classes->bounds_cursor == cursor + 2 &&
+          classes->bounds_holds == holds && world->fields.R->count == 2 &&
+          world->fields.R->items[0] == item && world->fields.R->items[1] == falling &&
+          world->local_leases == 0 && plate_at(world, 8, 0) && plate_counts(world, 0, 0) &&
+          item->holds == 4 && falling->holds == 4);
+    cursor = classes->bounds_cursor;
+    mc_pressure_category *const pressure_c = registry->pressure_c;
+    registry->pressure_b = registry->pressure_a;
+    registry->pressure_c = registry->pressure_a;
+    const mc_world_storage_status all_aliases =
+        mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
+    registry->pressure_b = pressure_b;
+    registry->pressure_c = pressure_c;
+    CHECK(all_aliases == MC_WORLD_STORAGE_OK && classes->bounds_cursor == cursor + 3 &&
+          classes->bounds_holds == holds && world->local_leases == 0 &&
+          world->fields.R->count == 2 && world->fields.R->items[0] == item &&
+          world->fields.R->items[1] == falling && item->holds == 4 && falling->holds == 4 &&
+          plate_at(world, 8, 0) && plate_counts(world, 0, 0));
+    CHECK(mc_entity_set_position(item, 12.5, 64.0, 8.5) == MC_ENTITY_OK &&
+          mc_entity_set_position(falling, 12.5, 64.0, 8.5) == MC_ENTITY_OK);
     cursor = classes->bounds_cursor;
     const mc_registry_phase phase = registry->blocks_phase;
     CHECK(registry->pressure_state.phase == MC_REGISTRY_READY);
@@ -438,7 +486,8 @@ static bool plate_frontiers(fixture *f, size_t side) {
         mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
     registry->blocks_phase = phase;
     CHECK(no_block_preflight == MC_WORLD_STORAGE_OK && classes->bounds_cursor == cursor + 1 &&
-          registry->pressure_state.phase == MC_REGISTRY_READY && plate_at(world, 8, 0));
+          registry->pressure_state.phase == MC_REGISTRY_READY && plate_at(world, 8, 0) &&
+          world->fields.R->count == 0 && item->holds == 3 && falling->holds == 3);
     cursor = classes->bounds_cursor;
     mc_world_provider *const provider = world->fields.v;
     world->fields.v = NULL;
@@ -471,6 +520,14 @@ static bool plate_frontiers(fixture *f, size_t side) {
           error.helper_bytecode == 82 && error.mutation.pressure_bytecode == 82 &&
           error.mutation.nearby.query.bytecode == 4 && classes->bounds_cursor == cursor + 1 &&
           classes->bounds_holds == holds && world->local_leases == 0 && world->active_calls == 0);
+    cursor = classes->bounds_cursor;
+    world->fields.R = NULL;
+    const mc_world_storage_status independent_class =
+        mc_world_runtime_entity_contact(world, stone, 10, 64, 8, NULL, &error);
+    world->fields.R = actual_r;
+    CHECK(independent_class == MC_WORLD_STORAGE_OK && classes->bounds_cursor == cursor + 1 &&
+          classes->bounds_holds == holds && world->local_leases == 0 && world->active_calls == 0 &&
+          plate_at(world, 10, 0) && world->fields.R->count == 0);
     CHECK(mc_world_runtime_schedule_class_get(world->classes, &after) == MC_WORLD_STORAGE_OK &&
           after.initialized == before.initialized && after.next == before.next &&
           plate_counts(world, 0, 0));

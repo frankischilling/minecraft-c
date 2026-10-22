@@ -66,8 +66,52 @@ static const struct expected_class {
                 {MC_ENTITY_CLASS_KIND_MINECART, 40, "Minecart", "yl", "pr"},
                 {MC_ENTITY_CLASS_KIND_BOAT, 41, "Boat", "fz", "eb"}};
 
-_Static_assert(COUNT(expected) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
-               "one expected record per Entity Class");
+static const struct {
+    mc_entity_class_kind kind;
+    const char *client, *server;
+} query_only[] = {{MC_ENTITY_CLASS_KIND_ENTITY, "sn", "lq"},
+                  {MC_ENTITY_CLASS_KIND_PLAYER, "gs", "em"}};
+
+_Static_assert(COUNT(expected) == 24, "EntityList still registers exactly 24 Classes");
+_Static_assert(MC_ENTITY_CLASS_KIND_BOAT == 23 && MC_ENTITY_CLASS_KIND_ENTITY == 24 &&
+                   MC_ENTITY_CLASS_KIND_PLAYER == 25,
+               "query Classes follow the unchanged registration selectors");
+_Static_assert(COUNT(expected) + COUNT(query_only) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
+               "one diagnostic record per admitted Entity Class");
+
+/* Complete expected ancestor sets, independently stated rather than walking
+ * the implementation's parent table. Intermediate classes are not literals. */
+#define CLASS_BIT(kind) (UINT32_C(1) << MC_ENTITY_CLASS_KIND_##kind)
+static const uint32_t expected_ancestors[] = {
+    CLASS_BIT(ARROW) | CLASS_BIT(ENTITY),
+    CLASS_BIT(SNOWBALL) | CLASS_BIT(ENTITY),
+    CLASS_BIT(ITEM) | CLASS_BIT(ENTITY),
+    CLASS_BIT(PAINTING) | CLASS_BIT(ENTITY),
+    CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(MONSTER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(CREEPER) | CLASS_BIT(MONSTER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(SKELETON) | CLASS_BIT(MONSTER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(SPIDER) | CLASS_BIT(MONSTER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(GIANT) | CLASS_BIT(MONSTER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(ZOMBIE) | CLASS_BIT(MONSTER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(SLIME) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(GHAST) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(PIG_ZOMBIE) | CLASS_BIT(ZOMBIE) | CLASS_BIT(MONSTER) | CLASS_BIT(MOB) |
+        CLASS_BIT(ENTITY),
+    CLASS_BIT(PIG) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(SHEEP) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(COW) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(CHICKEN) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(SQUID) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(WOLF) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY),
+    CLASS_BIT(PRIMED_TNT) | CLASS_BIT(ENTITY),
+    CLASS_BIT(FALLING_SAND) | CLASS_BIT(ENTITY),
+    CLASS_BIT(MINECART) | CLASS_BIT(ENTITY),
+    CLASS_BIT(BOAT) | CLASS_BIT(ENTITY),
+    CLASS_BIT(ENTITY),
+    CLASS_BIT(PLAYER) | CLASS_BIT(MOB) | CLASS_BIT(ENTITY)};
+_Static_assert(COUNT(expected_ancestors) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
+               "complete Class-to-Class expectation matrix");
 static const mc_entity_class_kind biome_kinds[] = {
     MC_ENTITY_CLASS_KIND_SPIDER,    MC_ENTITY_CLASS_KIND_ZOMBIE,  MC_ENTITY_CLASS_KIND_SKELETON,
     MC_ENTITY_CLASS_KIND_CREEPER,   MC_ENTITY_CLASS_KIND_SLIME,   MC_ENTITY_CLASS_KIND_SHEEP,
@@ -172,19 +216,22 @@ static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_so
            mc_entity_classes_get_snapshot(b, &other_before) == MC_ENTITY_OK);
     const profile_state p = profile_get(a->profile);
     const mc_entity_class_phase registry_phase = a->registry_phase, other_phase = b->registry_phase;
-    for (size_t i = 0; i < COUNT(expected); ++i) {
+    for (size_t i = 0; i < (size_t)MC_ENTITY_CLASS_KIND_COUNT; ++i) {
         const mc_entity_class_literal *again = NULL, *other = NULL;
         mc_entity_class_literal_view view;
-        VERIFY(expected[i].kind == (mc_entity_class_kind)i);
-        VERIFY(mc_entity_class_literal_get(a, expected[i].kind, &seen[i]) == MC_ENTITY_OK);
-        VERIFY(mc_entity_class_literal_get(a, expected[i].kind, &again) == MC_ENTITY_OK &&
-               again == seen[i]);
-        VERIFY(mc_entity_class_literal_get(b, expected[i].kind, &other) == MC_ENTITY_OK &&
-               other != seen[i]);
+        const mc_entity_class_kind kind = (mc_entity_class_kind)i;
+        const bool registered = i < COUNT(expected);
+        const size_t extra = registered ? 0 : i - COUNT(expected);
+        VERIFY((registered ? expected[i].kind : query_only[extra].kind) == kind);
+        VERIFY(mc_entity_class_literal_get(a, kind, &seen[i]) == MC_ENTITY_OK);
+        VERIFY(mc_entity_class_literal_get(a, kind, &again) == MC_ENTITY_OK && again == seen[i]);
+        VERIFY(mc_entity_class_literal_get(b, kind, &other) == MC_ENTITY_OK && other != seen[i]);
         VERIFY(mc_entity_class_literal_inspect(seen[i], &view) == MC_ENTITY_OK && view.owner == a &&
-               view.source == source && view.kind == expected[i].kind);
-        VERIFY(strcmp(view.client_name, expected[i].client) == 0 &&
-               strcmp(view.server_name, expected[i].server) == 0);
+               view.source == source && view.kind == kind);
+        VERIFY(strcmp(view.client_name,
+                      registered ? expected[i].client : query_only[extra].client) == 0 &&
+               strcmp(view.server_name,
+                      registered ? expected[i].server : query_only[extra].server) == 0);
         for (size_t j = 0; j < i; ++j)
             VERIFY(seen[i] != seen[j]);
     }
@@ -214,6 +261,132 @@ static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_so
            other_before.allocation_bytes == other_after.allocation_bytes &&
            b->registry_phase == other_phase);
     return true;
+}
+
+static bool test_assignability(mc_entity_source source, mc_java_random_profile *profile) {
+    bool ok = false;
+    mc_entity_classes *owner = NULL, *foreign = NULL, *other_side = NULL;
+    const mc_entity_source opposite =
+        source == MC_ENTITY_CLIENT ? MC_ENTITY_SERVER : MC_ENTITY_CLIENT;
+    const profile_state before_profile = profile_get(profile);
+    CHECK(mc_entity_classes_create(source, profile, NULL, &owner) == MC_ENTITY_OK);
+    CHECK(mc_entity_classes_create(source, profile, NULL, &foreign) == MC_ENTITY_OK);
+    CHECK(mc_entity_classes_create(opposite, profile, NULL, &other_side) == MC_ENTITY_OK);
+    unsigned char before[sizeof(*owner)], foreign_before[sizeof(*foreign)],
+        side_before[sizeof(*other_side)];
+    memcpy(before, owner, sizeof(before));
+    memcpy(foreign_before, foreign, sizeof(foreign_before));
+    memcpy(side_before, other_side, sizeof(side_before));
+    const mc_entity_class_literal *cells[MC_ENTITY_CLASS_KIND_COUNT],
+        *foreign_cells[MC_ENTITY_CLASS_KIND_COUNT], *side_cells[MC_ENTITY_CLASS_KIND_COUNT];
+    for (size_t i = 0; i < (size_t)MC_ENTITY_CLASS_KIND_COUNT; ++i) {
+        const mc_entity_class_kind kind = (mc_entity_class_kind)i;
+        CHECK(mc_entity_class_literal_get(owner, kind, &cells[i]) == MC_ENTITY_OK);
+        CHECK(mc_entity_class_literal_get(foreign, kind, &foreign_cells[i]) == MC_ENTITY_OK);
+        CHECK(mc_entity_class_literal_get(other_side, kind, &side_cells[i]) == MC_ENTITY_OK);
+    }
+    for (size_t candidate = 0; candidate < COUNT(cells); ++candidate)
+        for (size_t target = 0; target < COUNT(cells); ++target) {
+            const bool wanted = (expected_ancestors[candidate] & (UINT32_C(1) << target)) != 0;
+            bool actual = !wanted;
+            CHECK(mc_entity_class_literal_is_assignable_from(cells[target], cells[candidate],
+                                                             &actual) == MC_ENTITY_OK &&
+                  actual == wanted);
+            actual = true;
+            CHECK(mc_entity_class_literal_is_assignable_from(
+                      foreign_cells[target], cells[candidate], &actual) == MC_ENTITY_OK &&
+                  !actual);
+            actual = true;
+            CHECK(mc_entity_class_literal_is_assignable_from(
+                      cells[target], foreign_cells[candidate], &actual) == MC_ENTITY_OK &&
+                  !actual);
+            actual = true;
+            CHECK(mc_entity_class_literal_is_assignable_from(side_cells[target], cells[candidate],
+                                                             &actual) == MC_ENTITY_OK &&
+                  !actual);
+        }
+    const mc_entity_class_literal *entity = cells[MC_ENTITY_CLASS_KIND_ENTITY],
+                                  *mob = cells[MC_ENTITY_CLASS_KIND_MOB],
+                                  *player = cells[MC_ENTITY_CLASS_KIND_PLAYER],
+                                  *zombie = cells[MC_ENTITY_CLASS_KIND_ZOMBIE],
+                                  *pig_zombie = cells[MC_ENTITY_CLASS_KIND_PIG_ZOMBIE];
+    bool actual = true;
+    CHECK(mc_entity_class_literal_is_assignable_from(NULL, entity, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          actual);
+    actual = false;
+    CHECK(mc_entity_class_literal_is_assignable_from(entity, NULL, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          !actual);
+    CHECK(mc_entity_class_literal_is_assignable_from(entity, entity, NULL) ==
+          MC_ENTITY_INVALID_ARGUMENT);
+    mc_entity_class_literal copied = *entity;
+    actual = true;
+    CHECK(mc_entity_class_literal_is_assignable_from(&copied, entity, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          actual);
+    actual = false;
+    CHECK(mc_entity_class_literal_is_assignable_from(entity, &copied, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          !actual);
+    copied.owner = NULL;
+    CHECK(mc_entity_class_literal_is_assignable_from(entity, &copied, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          !actual);
+    copied = *entity;
+    copied.kind = (mc_entity_class_kind)-1;
+    CHECK(mc_entity_class_literal_is_assignable_from(&copied, entity, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          !actual);
+    copied.kind = MC_ENTITY_CLASS_KIND_COUNT;
+    CHECK(mc_entity_class_literal_is_assignable_from(entity, &copied, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          !actual);
+    copied = *entity;
+    copied.source = opposite;
+    CHECK(mc_entity_class_literal_is_assignable_from(entity, &copied, &actual) ==
+              MC_ENTITY_INVALID_ARGUMENT &&
+          !actual);
+    CHECK(memcmp(before, owner, sizeof(before)) == 0 &&
+          memcmp(foreign_before, foreign, sizeof(foreign_before)) == 0 &&
+          memcmp(side_before, other_side, sizeof(side_before)) == 0);
+    /* Restored native phase controls prove that this passive operation adds
+     * no active-use/READY gate, including entered and failed class owners. */
+    for (unsigned int phase = MC_ENTITY_CLASS_COLD; phase <= MC_ENTITY_CLASS_FAILED; ++phase) {
+        owner->entity_phase = owner->bounds_phase = owner->watcher_phase = owner->registry_phase =
+            (mc_entity_class_phase)phase;
+        unsigned char phase_before[sizeof(*owner)];
+        memcpy(phase_before, owner, sizeof(phase_before));
+        CHECK(mc_entity_class_literal_is_assignable_from(mob, player, &actual) == MC_ENTITY_OK &&
+              actual);
+        CHECK(mc_entity_class_literal_is_assignable_from(zombie, pig_zombie, &actual) ==
+                  MC_ENTITY_OK &&
+              actual);
+        CHECK(mc_entity_class_literal_is_assignable_from(entity, pig_zombie, &actual) ==
+                  MC_ENTITY_OK &&
+              actual);
+        CHECK(mc_entity_class_literal_is_assignable_from(player, mob, &actual) == MC_ENTITY_OK &&
+              !actual);
+        CHECK(memcmp(phase_before, owner, sizeof(phase_before)) == 0);
+    }
+    owner->entity_phase = owner->bounds_phase = owner->watcher_phase = owner->registry_phase =
+        MC_ENTITY_CLASS_COLD;
+    CHECK(memcmp(before, owner, sizeof(before)) == 0 &&
+          memcmp(foreign_before, foreign, sizeof(foreign_before)) == 0 &&
+          memcmp(side_before, other_side, sizeof(side_before)) == 0 &&
+          profile_equal(before_profile, profile_get(profile)));
+    ok = true;
+cleanup:
+    if (owner != NULL)
+        owner->entity_phase = owner->bounds_phase = owner->watcher_phase = owner->registry_phase =
+            MC_ENTITY_CLASS_COLD;
+    if (!retire_entity_classes(&other_side))
+        ok = false;
+    if (!retire_entity_classes(&foreign))
+        ok = false;
+    if (!retire_entity_classes(&owner))
+        ok = false;
+    return ok;
 }
 
 static bool initialize_namespace(mc_entity_classes *owner) {
@@ -262,9 +435,23 @@ static bool check_namespace(mc_entity_classes *owner, mc_entity_classes *other) 
                    MC_ENTITY_REGISTRY_OK &&
                name.units == NULL && name.length == 0);
     }
+    for (size_t i = 0; i < COUNT(query_only); ++i) {
+        const mc_entity_class_literal *literal = NULL;
+        mc_nbt_string name = {0};
+        VERIFY(mc_entity_class_literal_get(owner, query_only[i].kind, &literal) == MC_ENTITY_OK);
+        VERIFY(mc_entity_registry_class_name(owner, literal, &name, NULL) ==
+                   MC_ENTITY_REGISTRY_OK &&
+               name.units == NULL && name.length == 0);
+    }
     uint16_t units[16];
     const mc_entity_class_literal *missing = NULL;
     VERIFY(mc_entity_registry_named_class(owner, name_input("Unknown", units), &missing, NULL) ==
+               MC_ENTITY_REGISTRY_OK &&
+           missing == NULL);
+    VERIFY(mc_entity_registry_named_class(owner, name_input("Entity", units), &missing, NULL) ==
+               MC_ENTITY_REGISTRY_OK &&
+           missing == NULL);
+    VERIFY(mc_entity_registry_named_class(owner, name_input("Player", units), &missing, NULL) ==
                MC_ENTITY_REGISTRY_OK &&
            missing == NULL);
     VERIFY(mc_entity_registry_numeric_class(owner, -1, &missing, NULL) == MC_ENTITY_REGISTRY_OK &&
@@ -815,6 +1002,7 @@ int main(void) {
     CHECK(mc_math_trig_init(&trig));
     for (unsigned int side = 0; side < 2; ++side) {
         const mc_entity_source source = side == 0 ? MC_ENTITY_CLIENT : MC_ENTITY_SERVER;
+        CHECK(test_assignability(source, profile));
         CHECK(test_passive(source, profile));
         CHECK(test_binding(source, true, materials, profile));
         CHECK(test_binding(source, false, materials, profile));

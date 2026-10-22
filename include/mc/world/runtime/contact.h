@@ -36,10 +36,10 @@ mc_world_entity_contact_error mc_world_entity_contact_empty_error(void);
  * passenger before actual Entity S/P; web only sets the next-move flag; soul
  * sand multiplies current X then Z velocity by exact double0.4; cactus invokes
  * actual nullable-source damage and discards its ordinary bool. Pressure and
- * detector execute remote/metadata guards. Wooden pressure plates query actual
- * published entities, notify metadata/neighbors and schedule their release.
- * Class-filtered pressure queries and the detector's positive helper remain
- * explicit reached dependencies. No fabricated Class query is used.
+ * detector execute remote/metadata guards. Pressure plates query actual
+ * published entities, including real Class-filtered Living/Player queries,
+ * notify metadata/neighbors and schedule their release. The detector's
+ * positive helper remains an explicit reached dependency.
  *
  * Unused nullable World/Entity arguments remain unread by the selected source
  * body. Reached World operations require GAME/nonretired owners; reached Entity

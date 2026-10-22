@@ -4,6 +4,7 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "../collision/blocks_internal.h"
 #include "mc/core/java/java.h"
+#include "mc/world/runtime/collision/class_entities.h"
 #include "mc/world/runtime/scheduling.h"
 
 #include <float.h>
@@ -227,6 +228,43 @@ static bool pressure_nearby(const pressure_frame *frame, const pressure_box *box
     return pressure_storage_fail(frame, 82, frame->error->nearby.query.cause);
 }
 
+static bool pressure_class_literal(const pressure_frame *frame, unsigned int pc,
+                                   mc_entity_class_kind kind, const mc_entity_class_literal **out) {
+    pressure_at(frame, pc);
+    mc_entity_classes *const classes = frame->block->classes->entities;
+    if (classes == NULL)
+        return pressure_fail(frame, pc, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "Pressure Class literal defining classes binding");
+    const mc_entity_status status = mc_entity_class_literal_get(classes, kind, out);
+    if (status == MC_ENTITY_OK)
+        return true;
+    frame->error->entity =
+        (mc_entity_error){.status = status, .operation = "Pressure Class literal"};
+    return pressure_fail(frame, pc, pressure_bounds_status(status), "Pressure Class literal");
+}
+
+static bool pressure_class_query(const pressure_frame *frame, unsigned int pc,
+                                 const mc_entity_class_literal *target, const pressure_box *box,
+                                 mc_world_class_entity_list **selected,
+                                 mc_world_entity_list_view *untyped) {
+    mc_world_class_entity_list *result = NULL;
+    pressure_at(frame, pc);
+    if (mc_world_runtime_class_entities(frame->world, target, box->bounds, &result,
+                                        &frame->error->nearby) != MC_WORLD_STORAGE_OK) {
+        frame->error->query = frame->error->nearby.query;
+        frame->error->registry = frame->error->nearby.query.registry;
+        frame->error->population = frame->error->nearby.query.population;
+        frame->error->entity = frame->error->nearby.entity;
+        return pressure_storage_fail(frame, pc, frame->error->nearby.query.cause);
+    }
+    /* local8 is overwritten only after the new query returns. Its old result
+     * stays held throughout that query, including overlapping native charges. */
+    mc_world_class_entity_list_release(*selected);
+    mc_world_entity_list_view_release(untyped);
+    *selected = result;
+    return true;
+}
+
 static bool pressure_change(const pressure_frame *frame, bool pressed, int32_t x, int32_t y,
                             int32_t z) {
     const unsigned int metadata_pc = pressed ? 234u : 320u;
@@ -321,6 +359,7 @@ bool mc_world_mutation_pressure_update(mc_world_runtime *world, const mc_block *
     const bool previously_on = metadata == 1;
     pressure_box boxes[3] = {{0}}; /* The three actual factory sites, not a work cap. */
     mc_world_entity_list_view list = {0};
+    mc_world_class_entity_list *class_list = NULL;
     bool equal;
     bool completed = false;
     if (!pressure_category_equal(&frame, 33, 0, &equal))
@@ -333,30 +372,32 @@ bool mc_world_mutation_pressure_update(mc_world_runtime *world, const mc_block *
     if (!pressure_category_equal(&frame, 91, 1, &equal))
         goto done;
     if (equal) {
-        if (!pressure_pooled(&frame, 101, 138, x, y, z, &boxes[1]))
+        const mc_entity_class_literal *target;
+        if (!pressure_class_literal(&frame, 98, MC_ENTITY_CLASS_KIND_MOB, &target) ||
+            !pressure_pooled(&frame, 101, 138, x, y, z, &boxes[1]) ||
+            !pressure_class_query(&frame, 141, target, &boxes[1], &class_list, &list))
             goto done;
-        pressure_fail(&frame, 141, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "Pressure Living Class query is not implemented");
-        goto done;
     }
     if (!pressure_category_equal(&frame, 150, 2, &equal))
         goto done;
     if (equal) {
-        if (!pressure_pooled(&frame, 160, 197, x, y, z, &boxes[2]))
+        const mc_entity_class_literal *target;
+        if (!pressure_class_literal(&frame, 157, MC_ENTITY_CLASS_KIND_PLAYER, &target) ||
+            !pressure_pooled(&frame, 160, 197, x, y, z, &boxes[2]) ||
+            !pressure_class_query(&frame, 200, target, &boxes[2], &class_list, &list))
             goto done;
-        pressure_fail(&frame, 200, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "Pressure Player Class query is not implemented");
-        goto done;
     }
 
     pressure_at(&frame, 207);
     size_t count;
-    if (list.owner == NULL) {
+    if (class_list == NULL && list.owner == NULL) {
         pressure_fail(&frame, 207, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "Pressure query List size receiver is null");
         goto done;
     }
-    const mc_world_storage_status status = mc_world_entity_list_view_count(&list, &count);
+    const mc_world_storage_status status =
+        class_list != NULL ? mc_world_class_entity_list_count(class_list, &count)
+                           : mc_world_entity_list_view_count(&list, &count);
     if (status != MC_WORLD_STORAGE_OK) {
         pressure_fail(&frame, 207, status, "Pressure query List size");
         goto done;
@@ -371,6 +412,7 @@ bool mc_world_mutation_pressure_update(mc_world_runtime *world, const mc_block *
     completed = pressure_done(error);
 
 done:
+    mc_world_class_entity_list_release(class_list);
     mc_world_entity_list_view_release(&list);
     for (size_t i = 0; i < sizeof(boxes) / sizeof(boxes[0]); ++i)
         if (boxes[i].bounds != NULL)

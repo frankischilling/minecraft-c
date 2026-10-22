@@ -1,16 +1,19 @@
 # Development status
 
-[Wooden pressure plates](world/pressure-plates.md) now use real published-Entity
+[Pressure plates](world/pressure-plates.md) now use real published-Entity
 queries, notifying metadata transitions, support/removal hooks and deferred
 schedule insertion. Contact and scheduled release share the same pooled-box
-helper. Class-filtered stone/Player queries, detector rails, nonempty concrete
-observers, tick draining and original pressure-plate replay remain unfinished.
+helper. Stone/Player categories use fresh [Class-query Lists](world/class-entities.md)
+and passive ancestry from the Block's defining namespace. Detector rails,
+nonempty concrete observers, tick draining and original pressure-plate replay
+remain unfinished.
 
-Full local public suites pass 170 MSVC and 172 GCC/Clang cases each, with zero
-skips. Each compiler passes 529 pressure-plate and 556 movement checks. Linux
-uses ASan/UBSan/leak checks and an exact 945-file source copy; mirror/lifecycle
-checks and formatting for all 486 C files and headers pass. These are native
-source contracts, without an executed-original pressure-plate comparison.
+Full local public suites pass 171 MSVC and 173 GCC/Clang cases each, with zero
+skips. Each compiler passes 373 Class-query, 13,819 Class identity/ancestry,
+561 pressure-plate and 560 movement checks. Linux uses ASan/UBSan/leak checks
+and an exact 950-file source copy; mirror/lifecycle checks and formatting for
+all 490 C files and headers pass. These are native source contracts, without
+an executed-original pressure or Class-query comparison.
 
 The following Piston checkpoint predates pressure-plate integration.
 

@@ -316,8 +316,8 @@ mc_world_storage_status mc_world_nearby_gather_held(mc_world_runtime *world, mc_
     return status;
 }
 
-static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state **out,
-                    mc_world_nearby_error *frame) {
+bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int32_t z,
+                                        mc_chunk_state **out, mc_world_nearby_error *frame) {
     frame->query.provider_bytecode = 6;
     if (world->fields.v == NULL) {
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby provider receiver");
@@ -403,7 +403,7 @@ static bool query(mc_world_runtime *world, mc_entity *excluded, const mc_entity_
                 continue;
             frame->query.bytecode = 113;
             mc_chunk_state *state = NULL;
-            if (!acquire(world, x, z, &state, frame))
+            if (!mc_world_entity_query_acquire_held(world, x, z, &state, frame))
                 return false;
             /* Actual load of current R119 occurs AFTER acquiring getter113.
              * The Chunk call captures this destination without another clear. */

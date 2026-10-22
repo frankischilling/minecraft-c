@@ -9,10 +9,13 @@ complete save interoperability remain unfinished.
 
 ## Class identity and lifetime
 
-`mc_entity_classes` owns 24 stable canonical Class cells. Retrieving a literal
+`mc_entity_classes` owns 26 stable canonical Class cells: the 24 registered
+classes plus query-only Entity and Player. Retrieving a literal
 is passive: it does not initialize Entity, consume an ID or draw Random.
 Distinct application owners have distinct cells even when their names and
 source sides agree. The diagnostic obfuscated names never determine identity.
+Passive [assignability](../world/class-entities.md) follows the audited
+superclass graph within the same owner without changing class state.
 
 The [EntityList namespace](../../include/mc/entity/registry/registry.h) initializes
 four distinct native Maps in source order: name to Class, Class to name, numeric

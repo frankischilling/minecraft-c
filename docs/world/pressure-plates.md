@@ -2,7 +2,7 @@
 
 The [pressure update](../../src/world/runtime/mutation/pressure_plate.c) and
 [lifecycle hooks](../../src/world/runtime/mutation/pressure_lifecycle.c) implement
-the paired wooden pressure-plate bodies on the actual GAME World. The
+the paired pressure-plate bodies on the actual GAME World. The
 [source map](../reference/pressure-plates.md) records both original owners and
 their distinct contact, tick, private update, neighbor and removal frames.
 
@@ -17,8 +17,11 @@ membership, duplicate occurrences and the shared mutable result List.
 
 Each reached category comparison reloads the receiver field and initializes
 the actual category class at its own static read. The comparisons are separate,
-so aliased category fields can reach multiple queries. Living and Player Class
-queries remain explicit failures at their reached invokes. An unmatched category
+so aliased category fields can reach multiple queries. Living and Player use
+the real [Class-filtered query](class-entities.md) with fresh result Lists. Each
+target literal resolves from the Block's defining classes before the bounds
+factory. A later query replaces the selected List only after it returns; the
+previous result remains held during that query. An unmatched category
 leaves the result List null and fails at its actual size call.
 
 Bounds use the Block's defining Entity classes and the real shared bounds pool.
@@ -57,22 +60,24 @@ Native owner, allocation and hold limits remain distinct from Java exceptions.
 
 ## Native verification
 
-The `world.pressure_plate` case passes 529 checks per host on MSVC and sanitized
+The `world.pressure_plate` case passes 561 checks per host on MSVC and sanitized
 GCC/Clang. It constructs both Registry sides, eight real GAME Worlds and four
 serialized loaded chunks per World. Actual Item/Falling publication and duplicate
 occurrences drive activation and release. It also checks empty membership,
 remote/off/on guards, source float/int wrapping, category aliases, distinct
-metadata/query errors, support-loss removal and real scheduler limits that retain
-metadata or F membership after a later failure. Native views, records, Worlds,
+metadata/query errors, actual Living/Player filtering, aliased result replacement,
+literal-resolution failures before the pool, support-loss removal and real
+scheduler limits that retain metadata or F membership after a later failure.
+Native views, records, Worlds,
 Chunks and Entity holds retire through their real owner APIs.
 
-All 170 MSVC and 172 cases per GCC/Clang public suite pass without skips; the
-movement regression passes 556 checks per host. The retained capture includes
+All 171 MSVC and 173 cases per GCC/Clang public suite pass without skips; the
+movement regression passes 560 checks per host. The retained capture includes
 inputs, complete streams and all thirty-two fixture region slots with their
 explicit timestamps. Those regions are fixture inputs, not saved final pressure
 state or original observations. See [testing](../testing.md) for the full
 configuration and source-copy scope.
 
-Stone and Player-category queries, detector-rail helpers, nonempty concrete
+Detector-rail helpers, other Entity constructors, nonempty concrete
 observer/sound dispatch, complete redstone propagation, tick draining and
 original-runtime pressure-plate equality remain unfinished.

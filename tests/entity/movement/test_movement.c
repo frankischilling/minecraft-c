@@ -395,10 +395,21 @@ static bool movement_contacts(fixture *f, size_t side, mc_entity *e, bool item) 
         CHECK(mc_entity_move(e, 0, 0, 0, NULL, &error) == MC_ENTITY_OK);
         CHECK(movement_cell(f, side, 8, 8, 8, ids[i], 0));
         e->base.bv = 19;
-        CHECK(mc_entity_move(e, 0, 0, 0, NULL, &error) == MC_ENTITY_WORLD_FAILED &&
-              error.bytecode == 1868 && error.contact.bytecode == (i == 0 ? 27u : 35u) &&
-              error.contact.block == f->registry[side]->blocks.m[ids[i]] && e->base.bv == 19 &&
-              movement_quiet(f, side, e, 0));
+        if (i == 0) {
+            /* The real Living-Class query has no published candidate. Contact
+             * does not insert the mover into any Chunk or manufacture a match. */
+            CHECK(mc_entity_move(e, 0, 0, 0, NULL, &error) == MC_ENTITY_OK && e->base.bv == 19 &&
+                  movement_quiet(f, side, e, 0));
+            int32_t pressure_metadata = -1;
+            CHECK(mc_world_runtime_metadata_get(f->worlds[side], 8, 8, 8, &pressure_metadata,
+                                                NULL) == MC_WORLD_STORAGE_OK &&
+                  pressure_metadata == 0 && f->worlds[side]->local_leases == 0);
+        } else {
+            CHECK(mc_entity_move(e, 0, 0, 0, NULL, &error) == MC_ENTITY_WORLD_FAILED &&
+                  error.bytecode == 1868 && error.contact.bytecode == 35 &&
+                  error.contact.block == f->registry[side]->blocks.m[ids[i]] && e->base.bv == 19 &&
+                  movement_quiet(f, side, e, 0));
+        }
     }
     /* Contact alone is not query membership. The real wooden helper sees no
      * published occurrence of this mover and leaves the plate off. */

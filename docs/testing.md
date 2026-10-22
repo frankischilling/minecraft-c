@@ -1,16 +1,23 @@
 # Test scope and reproduction
 
-Fresh full public suites pass all 170 MSVC and all 172 tests on each GCC/Clang build, with zero skips.
+Fresh full public suites pass all 171 MSVC and all 173 tests on each GCC/Clang build, with zero skips.
 Java standard-library numerical comparisons are enabled;
 original-JAR comparison options remain off. Linux enables ASan, UBSan and leak
 checks. The same per-test deadlines and output policies remain in force.
 
-The [pressure-plate case](world/pressure-plates.md) passes 529 constructed checks
+The [Class-query case](world/class-entities.md) passes 373 checks per host using
+eight real Worlds and eight loaded Chunk records. It checks fresh result
+identities, duplicate holds, R independence, class-before-bounds ordering,
+nullable failure sites, partial cleanup, overlapping growth budgets and native
+retain/lease overflow. The passive Class identity/ancestry case passes 13,819
+checks while preserving the 24 registrations.
+
+The [pressure-plate case](world/pressure-plates.md) passes 561 constructed checks
 per host. Both Registry sides use eight actual GAME Worlds and four loaded
 chunks each. The cases cover real Item/Falling membership and duplicates,
 activation/release guards, float/int wrapping, independent category comparisons,
 support loss, detailed acquisition failures and partial metadata/F/E effects.
-The movement regression now passes 556 checks. No original pressure-plate runtime
+The movement regression now passes 560 checks. No original pressure/Class runtime
 comparison or running tick-loop acceptance follows.
 
 The state-shape contract exercises all declared virtual bodies through actual
@@ -20,7 +27,9 @@ lazy invalid-Tile cleanup and hold/pool preservation.
 
 | Case | Checks per host |
 | --- | ---: |
-| `world.pressure_plate` | 529 |
+| `world.class_entities` | 373 |
+| `entity.classes` | 13,819 |
+| `world.pressure_plate` | 561 |
 | `entity.bounds` | 4,751 |
 | `world.piston_tick` | 575 |
 | `world.piston_finalization` | 460 |
@@ -28,16 +37,16 @@ lazy invalid-Tile cleanup and hold/pool preservation.
 | `world.piston_geometry` | 386 |
 | `world.mutations` | 218 |
 | `world.collision_boxes` | 732 |
-| `entity.movement` | 556 |
+| `entity.movement` | 560 |
 | `world.movement_dependencies` | 202 |
 
 Reports retain complete configured/executed CTest names, zero-skip JUnit results,
 command arguments, actual child PIDs/exits, full stdout/stderr and before/after
 source maps. Controller mirrors and lifecycle interval checks also pass. The
 Windows run uses the working tree. Linux uses a fresh native-filesystem source
-copy with all 945 public file bytes equal to the working tree before and after
+copy with all 950 public file bytes equal to the working tree before and after
 execution. Validation prose was added afterward; implementation, test and driver
-bytes remain unchanged. All 486 C files and headers pass clang-format 18. These
+bytes remain unchanged. All 490 C files and headers pass clang-format 18. These
 are public regression results, not complete original acceptance.
 
 Earlier Linux runs using `/mnt/c` sources each hit the existing 180-second
