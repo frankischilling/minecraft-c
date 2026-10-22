@@ -63,7 +63,7 @@ mc_world_storage_status mc_tile_piston_tick(mc_tile *tile, const mc_entity_move_
  * retains complete reached Tile/query/Registry/setter causes with separate
  * current/deepest Piston PCs. Success returns an empty error for this attempt.
  * Keep the coordinated classes and every supplying owner live/exclusive.
- * Tick/push is the separate operation above; singleton state-shape is unfinished. */
+ * Tick/push is the separate operation above; collision owns singleton state-shape. */
 mc_world_storage_status mc_tile_piston_finalize(mc_tile *tile, mc_world_mutation_error *error);
 
 #endif

@@ -4,6 +4,9 @@
 #undef MC_COLLISION_BOXES_MAIN
 
 #include "../../../../src/block/registry/runtime_internal.h"
+#include "../../../../src/world/runtime/tiles/tiles_internal.h"
+
+#include <emmintrin.h>
 
 static mc_world_storage_status piston_shift(mc_world_runtime *world, const mc_block *moving,
                                             int32_t id, float progress, int32_t facing,
@@ -204,6 +207,267 @@ cleanup:
     return ok;
 }
 
+static mc_entity_bounds piston_block_bounds(const mc_block *block) {
+    return (mc_entity_bounds){block->fields.bs, block->fields.bt, block->fields.bu,
+                              block->fields.bv, block->fields.bw, block->fields.bx};
+}
+
+static void piston_block_marker(mc_block *block) {
+    block->fields.bs = -11;
+    block->fields.bt = -12;
+    block->fields.bu = -13;
+    block->fields.bv = 21;
+    block->fields.bw = 22;
+    block->fields.bx = 23;
+}
+
+static mc_world_storage_status piston_state_shape(fixture *f, size_t side, const mc_block *block,
+                                                  mc_world_collision_error *error) {
+    *error = mc_world_collision_empty_error();
+    mc_world_runtime *world = f->worlds[side];
+    const mc_world_storage_status entered = mc_world_runtime_call_enter(world, NULL);
+    if (entered != MC_WORLD_STORAGE_OK)
+        return entered;
+    const mc_world_storage_status status =
+        mc_world_collision_block_state_shape_held(world, block, 3, 64, 5, error);
+    mc_world_runtime_call_leave(world);
+    return status;
+}
+
+static bool piston_state_carriers(fixture *f, size_t side) {
+    bool ok = false;
+    mc_registry_classes *registry = f->registry[side];
+    mc_world_collision_error error;
+
+    /* Concrete source setter tuples, including invalid-direction preservation,
+     * the inherited powered-rail dispatch, standing Sign's early return, and
+     * cake's deliberately inverted bounds at large metadata. */
+    static const struct {
+        int32_t id, metadata;
+        mc_entity_bounds expected;
+    } rows[] = {{1, 0, {-11, -12, -13, 21, 22, 23}},
+                {90, 0, {0.375, 0, 0, 0.625, 1, 1}},
+                {70, 1, {0.0625, 0, 0.0625, 0.9375, 0.03125, 0.9375}},
+                {72, 2, {0.0625, 0, 0.0625, 0.9375, 0.0625, 0.9375}},
+                {34, 5, {0.75, 0, 0, 1, 1, 1}},
+                {34, 6, {-11, -12, -13, 21, 22, 23}},
+                {29, 9, {0, 0, 0, 1, 0.75, 1}},
+                {33, 14, {-11, -12, -13, 21, 22, 23}},
+                {33, 2, {0, 0, 0, 1, 1, 1}},
+                {78, 2, {0, 0, 0, 1, 0.375, 1}},
+                {78, 15, {0, 0, 0, 1, 1, 1}},
+                {64, 0, {0, 0, 0, 0.1875, 1, 1}},
+                {71, 4, {0, 0, 0, 1, 1, 0.1875}},
+                {77, 9, {0, 0.375, 0.3125, 0.0625, 0.625, 0.6875}},
+                {77, 4, {0.3125, 0.375, 0.875, 0.6875, 0.625, 1}},
+                {96, 6, {0.8125, 0, 0, 1, 1, 1}},
+                {66, 2, {0, 0, 0, 1, 0.625, 1}},
+                {27, 9, {0, 0, 0, 1, 0.125, 1}},
+                {53, 0, {0, 0, 0, 1, 1, 1}},
+                {63, 2, {-11, -12, -13, 21, 22, 23}},
+                {68, 2, {0, 0.28125, 0.875, 1, 0.78125, 1}},
+                {92, 15, {1.9375, 0, 0.0625, 0.9375, 0.5, 0.9375}},
+                {26, 0, {0, 0, 0, 1, 0.5625, 1}},
+                {69, 6, {0.25, 0, 0.25, 0.75, (double)0.6f, 0.75}},
+                {69, 1, {0, (double)0.2f, 0.3125, 0.375, (double)0.8f, 0.6875}}};
+
+    for (size_t i = 0; i < COUNT(rows); ++i) {
+        bool changed;
+        CHECK(mc_world_runtime_metadata_set_quiet(f->worlds[side], 3, 64, 5, rows[i].metadata,
+                                                  &changed, NULL) == MC_WORLD_STORAGE_OK);
+        mc_block *block = registry->blocks.m[(size_t)rows[i].id];
+        CHECK(block != NULL);
+        const mc_block_fields saved = block->fields;
+        piston_block_marker(block);
+        const mc_world_storage_status status = piston_state_shape(f, side, block, &error);
+        const mc_entity_bounds actual = piston_block_bounds(block);
+        block->fields = saved;
+        CHECK(status == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &rows[i].expected));
+    }
+    /* Portal's matching X neighbor selects its X-spanning setter tuple. */
+    mc_block *portal = registry->blocks.m[90];
+    const mc_block_fields saved_portal = portal->fields;
+    f->states[side]->data->blocks[boxes_index(2, 64, 5)] = 90;
+    const mc_world_storage_status portal_status = piston_state_shape(f, side, portal, &error);
+    const mc_entity_bounds portal_actual = piston_block_bounds(portal);
+    portal->fields = saved_portal;
+    f->states[side]->data->blocks[boxes_index(2, 64, 5)] = 0;
+    const mc_entity_bounds portal_expected = {0, 0, 0.375, 1, 1, 0.625};
+    CHECK(portal_status == MC_WORLD_STORAGE_OK &&
+          boxes_coordinates(&portal_actual, &portal_expected));
+    CHECK(mc_world_collision_block_state_shape_in_classes_held(f->classes[side], NULL,
+                                                               registry->blocks.m[1], 3, 64, 5,
+                                                               &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_collision_block_state_shape_in_classes_held(f->classes[side], NULL,
+                                                               registry->blocks.m[36], 3, 64, 5,
+                                                               &error) != MC_WORLD_STORAGE_OK &&
+          error.piston_bytecode == 6 && error.block_bytecode == 5);
+    ok = true;
+cleanup:
+    return ok;
+}
+
+static bool piston_state_updates(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *world = f->worlds[side];
+    mc_registry_classes *registry = f->registry[side];
+    mc_block *moving = registry->blocks.m[36], *carrier = registry->blocks.m[1];
+    const mc_block_fields saved_moving = moving->fields, saved_carrier = carrier->fields;
+    mc_tile *tile = NULL, *chest = NULL;
+    mc_world_collision_error error;
+    mc_live_tile_error live = mc_live_tiles_empty_error();
+    const mc_entity_bounds marker = {-11, -12, -13, 21, 22, 23};
+    static const mc_entity_bounds expected[6] = {
+        {0.125, 0.5, 0.375, 0.625, 1, 0.875},     {0.125, 0, 0.375, 0.625, 0.5, 0.875},
+        {0.125, 0.25, 0.625, 0.625, 0.75, 1.125}, {0.125, 0.25, 0.125, 0.625, 0.75, 0.625},
+        {0.375, 0.25, 0.375, 0.875, 0.75, 0.875}, {-0.125, 0.25, 0.375, 0.375, 0.75, 0.875}};
+    CHECK(mc_tile_allocate(world, MC_TILE_PISTON, &tile) == MC_TILE_OK &&
+          mc_tile_piston_construct(tile, 1, -123, 5, false, true, NULL) == MC_TILE_OK);
+    /* Explicit native input controls set source fields without advancing a
+     * tick. This tests a real installed Piston and original getter ordering. */
+    tile->state.piston.progress_bits = UINT32_C(0x3f400000);
+    tile->state.piston.previous_progress_bits = UINT32_C(0x3e800000);
+    boxes_air(f, side);
+    f->states[side]->data->blocks[boxes_index(3, 64, 5)] = 36;
+    CHECK(mc_live_tiles_set(world, 3, 64, 5, tile, &live) == MC_WORLD_STORAGE_OK);
+    mc_registry_block_bounds(carrier, 0.125f, 0.25f, 0.375f, 0.625f, 0.75f, 0.875f);
+    const size_t tile_holds = tile->holds;
+    const int32_t cursor = f->entity_classes[side]->bounds_cursor;
+    const size_t bounds_holds = f->entity_classes[side]->bounds_holds;
+    for (int32_t facing = 0; facing < 6; ++facing) {
+        tile->state.piston.facing = facing;
+        CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+        const mc_entity_bounds actual = piston_block_bounds(moving);
+        CHECK(boxes_coordinates(&actual, &expected[(size_t)facing]) && tile->holds == tile_holds &&
+              f->entity_classes[side]->bounds_cursor == cursor &&
+              f->entity_classes[side]->bounds_holds == bounds_holds);
+    }
+    tile->state.piston.extending = true;
+    CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+    const mc_entity_bounds extended = piston_block_bounds(moving);
+    const mc_entity_bounds extended_expected = {-0.625, 0.25, 0.375, -0.125, 0.75, 0.875};
+    CHECK(boxes_coordinates(&extended, &extended_expected));
+    tile->state.piston.extending = false;
+
+    /* Null and actual same-object carriers preserve the complete singleton.
+     * A different object at the same numeric ID still executes the full body. */
+    piston_block_marker(moving);
+    tile->state.piston.block_id = 0;
+    CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+    mc_entity_bounds actual = piston_block_bounds(moving);
+    CHECK(boxes_coordinates(&actual, &marker));
+    registry->blocks.m[1] = moving;
+    tile->state.piston.block_id = 1;
+    const mc_world_storage_status self_status = piston_state_shape(f, side, moving, &error);
+    registry->blocks.m[1] = carrier;
+    actual = piston_block_bounds(moving);
+    CHECK(self_status == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &marker));
+    registry->blocks.m[36] = carrier;
+    tile->state.piston.block_id = 36;
+    const mc_world_storage_status same_id = piston_state_shape(f, side, moving, &error);
+    registry->blocks.m[36] = moving;
+    actual = piston_block_bounds(moving);
+    CHECK(same_id == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &expected[5]));
+    registry->blocks.m[0] = carrier;
+    tile->state.piston.block_id = 0;
+    const mc_world_storage_status nonnull_zero = piston_state_shape(f, side, moving, &error);
+    registry->blocks.m[0] = NULL;
+    actual = piston_block_bounds(moving);
+    CHECK(nonnull_zero == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &expected[5]));
+
+    tile->state.piston.block_id = -1;
+    piston_block_marker(moving);
+    CHECK(piston_state_shape(f, side, moving, &error) != MC_WORLD_STORAGE_OK &&
+          error.piston_bytecode == 24 &&
+          error.nearby.query.registry.status == MC_REGISTRY_INDEX_OUT_OF_RANGE);
+    actual = piston_block_bounds(moving);
+    CHECK(boxes_coordinates(&actual, &marker) && tile->holds == tile_holds);
+    mc_block **saved_array = registry->blocks.m;
+    registry->blocks.m = NULL;
+    const mc_world_storage_status null_array = piston_state_shape(f, side, moving, &error);
+    registry->blocks.m = saved_array;
+    CHECK(null_array != MC_WORLD_STORAGE_OK && error.piston_bytecode == 24 &&
+          error.nearby.query.registry.status == MC_REGISTRY_NULL_REFERENCE);
+
+    tile->state.piston.block_id = 1;
+    int32_t *saved_direction = registry->direction_c;
+    registry->direction_c = NULL;
+    const mc_world_storage_status partial = piston_state_shape(f, side, moving, &error);
+    registry->direction_c = saved_direction;
+    actual = piston_block_bounds(moving);
+    const mc_entity_bounds prefix = {-0.125, -12, -13, 21, 22, 23};
+    CHECK(partial != MC_WORLD_STORAGE_OK && error.piston_bytecode == 110 &&
+          error.nearby.query.registry.status == MC_REGISTRY_NULL_REFERENCE &&
+          boxes_coordinates(&actual, &prefix) && tile->holds == tile_holds);
+    piston_block_marker(moving);
+    saved_direction = registry->direction_d;
+    registry->direction_d = NULL;
+    const mc_world_storage_status later_partial = piston_state_shape(f, side, moving, &error);
+    registry->direction_d = saved_direction;
+    actual = piston_block_bounds(moving);
+    const mc_entity_bounds later_prefix = {-0.125, 0.25, -13, 21, 22, 23};
+    CHECK(later_partial != MC_WORLD_STORAGE_OK && error.piston_bytecode == 131 &&
+          error.nearby.query.registry.status == MC_REGISTRY_NULL_REFERENCE &&
+          boxes_coordinates(&actual, &later_prefix));
+
+    /* The carrier setter completes before interpolation rejects a native
+     * floating environment. Moving fields and pooled bounds stay untouched. */
+    tile->state.piston.block_id = 53;
+    mc_block *stairs = registry->blocks.m[53];
+    const mc_block_fields saved_stairs = stairs->fields;
+    piston_block_marker(stairs);
+    piston_block_marker(moving);
+    const unsigned int mxcsr = _mm_getcsr();
+    _mm_setcsr(mxcsr ^ 0x2000u);
+    const mc_world_storage_status fp = piston_state_shape(f, side, moving, &error);
+    _mm_setcsr(mxcsr);
+    const mc_entity_bounds stairs_actual = piston_block_bounds(stairs);
+    stairs->fields = saved_stairs;
+    const mc_entity_bounds cube = {0, 0, 0, 1, 1, 1};
+    actual = piston_block_bounds(moving);
+    CHECK(fp != MC_WORLD_STORAGE_OK && error.piston_bytecode == 52 &&
+          error.nearby.tile.tile.status == MC_TILE_UNSUPPORTED_FP &&
+          boxes_coordinates(&stairs_actual, &cube) && boxes_coordinates(&actual, &marker));
+
+    /* Every zero Direction component still multiplies NaN, and the original
+     * binary32 payload widens before each binary64 subtraction. */
+    tile->state.piston.block_id = 1;
+    tile->state.piston.progress_bits = UINT32_C(0x7fc12345);
+    tile->state.piston.previous_progress_bits = UINT32_C(0x7fc12345);
+    CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+    actual = piston_block_bounds(moving);
+    uint64_t nan_bits[6];
+    memcpy(nan_bits, &actual, sizeof(nan_bits));
+    for (size_t i = 0; i < COUNT(nan_bits); ++i)
+        CHECK(nan_bits[i] == UINT64_C(0x7ff82468a0000000));
+    CHECK(tile->holds == tile_holds && f->entity_classes[side]->bounds_cursor == cursor &&
+          f->entity_classes[side]->bounds_holds == bounds_holds);
+    CHECK(mc_live_tiles_remove(world, 3, 64, 5, &live) == MC_WORLD_STORAGE_OK);
+    piston_block_marker(moving);
+    CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+    actual = piston_block_bounds(moving);
+    CHECK(boxes_coordinates(&actual, &marker));
+    CHECK(mc_tile_allocate(world, MC_TILE_CHEST, &chest) == MC_TILE_OK &&
+          mc_tile_construct(chest) == MC_TILE_OK &&
+          mc_live_tiles_set(world, 3, 64, 5, chest, &live) == MC_WORLD_STORAGE_OK);
+    const size_t chest_holds = chest->holds;
+    CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+    actual = piston_block_bounds(moving);
+    CHECK(boxes_coordinates(&actual, &marker) && chest->holds == chest_holds);
+    CHECK(mc_tile_set_invalid(chest, true) == MC_TILE_OK &&
+          piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
+    actual = piston_block_bounds(moving);
+    CHECK(boxes_coordinates(&actual, &marker) && chest->invalid &&
+          chest->holds == chest_holds - 1u && mc_live_tiles_map_valid(f->chunks[side]));
+    ok = true;
+cleanup:
+    moving->fields = saved_moving;
+    carrier->fields = saved_carrier;
+    mc_tile_release(tile);
+    mc_tile_release(chest);
+    return ok;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -241,7 +505,8 @@ int main(int argc, char **argv) {
               r->opens == 3 && r->closes == 1 && !r->bad);
         CHECK(boxes_open_store(f, side, root) && boxes_create_world(f, side));
         CHECK(piston_short_circuits(f, side) && piston_same_box_and_prefix(f, side) &&
-              piston_real_tile(f, side));
+              piston_real_tile(f, side) && piston_state_carriers(f, side) &&
+              piston_state_updates(f, side));
     }
     result = 0;
 cleanup:

@@ -1,5 +1,16 @@
 # Systems and subsystems
 
+[MovingPiston singleton state shape](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md#singleton-state-shape)
+implements all 15 concrete overrides and the base empty body. It holds the actual
+Tile and captured carrier, performs real carrier shape dispatch, then reads
+progress/extending/facing and writes six singleton fields in source order.
+Independent Direction reads and late failures retain completed effects. This
+operation leaves pooled bounds untouched. Tick/push, explicit finalization,
+neighbor callbacks and standalone bounds have their separate implemented bodies.
+Original state-shape runtime equivalence remains unverified.
+
+The following finalization checkpoint predates tick and state-shape integration.
+
 Explicit Piston finalization preserves the raw progress guard, ordered progress
 stores, actual World Tile removal, receiver invalidation, current Block query
 and notifying carried-ID/metadata restoration. MovingPiston removal invokes the

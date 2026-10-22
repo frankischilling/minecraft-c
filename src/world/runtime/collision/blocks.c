@@ -42,6 +42,10 @@ static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_c
                                                 int32_t z, int32_t carried_id, float progress,
                                                 int32_t facing, mc_entity_bounds **out,
                                                 mc_world_collision_error *error);
+static mc_world_storage_status state_shape_core(mc_world_runtime_classes *code_classes,
+                                                mc_world_runtime *world, bool legacy_world,
+                                                const mc_block *block, int32_t x, int32_t y,
+                                                int32_t z, mc_world_collision_error *error);
 
 static mc_world_storage_status fail(mc_world_collision_error *error, mc_world_storage_status status,
                                     const char *operation) {
@@ -264,13 +268,13 @@ static mc_world_storage_status base_box(const block_context *context, const mc_b
     return pooled(context, "uu", "na", 44, x0, y0, z0, x1, y1, z1, out, error);
 }
 
-static bool metadata(const block_context *context, const char *client, const char *server,
-                     unsigned int pc, int32_t x, int32_t y, int32_t z, int32_t *out,
-                     mc_world_collision_error *error) {
+static bool block_value(const block_context *context, const char *client, const char *server,
+                        unsigned int pc, int32_t x, int32_t y, int32_t z, bool is_metadata,
+                        int32_t *out, mc_world_collision_error *error) {
     stage(context, error, client, server, pc);
     if (context->legacy_world || context->world == NULL)
-        return mc_world_collision_block_value_held(context->world, x, y, z, true, out, error) ==
-               MC_WORLD_STORAGE_OK;
+        return mc_world_collision_block_value_held(context->world, x, y, z, is_metadata, out,
+                                                   error) == MC_WORLD_STORAGE_OK;
 
     /* The explicit-code entry cannot enter a source-unused World up front.
      * Hold this actual receiver only at its reached metadata invocation,
@@ -285,9 +289,15 @@ static bool metadata(const block_context *context, const char *client, const cha
         return false;
     }
     const mc_world_storage_status status =
-        mc_world_collision_block_value_held(context->world, x, y, z, true, out, error);
+        mc_world_collision_block_value_held(context->world, x, y, z, is_metadata, out, error);
     mc_world_runtime_call_leave(context->world);
     return status == MC_WORLD_STORAGE_OK;
+}
+
+static bool metadata(const block_context *context, const char *client, const char *server,
+                     unsigned int pc, int32_t x, int32_t y, int32_t z, int32_t *out,
+                     mc_world_collision_error *error) {
+    return block_value(context, client, server, pc, x, y, z, true, out, error);
 }
 
 static bool door_shape(const block_context *context, mc_block *block, int32_t x, int32_t y,
@@ -356,13 +366,9 @@ static mc_world_storage_status piston_tile_failure(mc_world_collision_error *err
                 child->operation == NULL ? "Moving-piston Tile getter" : child->operation);
 }
 
-static mc_world_storage_status moving_piston_box(const block_context *context,
-                                                 const mc_block *moving, int32_t x, int32_t y,
-                                                 int32_t z, mc_entity_bounds **out,
-                                                 mc_world_collision_error *error) {
-    /* e invokes its actual private typed lookup6; the reached Tile query is5
-     * inside that helper, before its null/instanceof tests. */
-    error->piston_bytecode = 6;
+static mc_world_storage_status moving_piston_tile(const block_context *context, int32_t x,
+                                                  int32_t y, int32_t z, mc_tile **out,
+                                                  mc_world_collision_error *error) {
     stage(context, error, "ut", "mz", 5);
     mc_tile *tile = NULL;
     mc_live_tile_error child = mc_live_tiles_empty_error();
@@ -406,6 +412,25 @@ static mc_world_storage_status moving_piston_box(const block_context *context,
         mc_tile_release(tile);
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "Moving-piston Tile concrete identity");
+    }
+    *out = tile;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status moving_piston_box(const block_context *context,
+                                                 const mc_block *moving, int32_t x, int32_t y,
+                                                 int32_t z, mc_entity_bounds **out,
+                                                 mc_world_collision_error *error) {
+    /* e invokes its actual private typed lookup6; the reached Tile query is5
+     * inside that helper, before its null/instanceof tests. */
+    error->piston_bytecode = 6;
+    mc_tile *tile = NULL;
+    const mc_world_storage_status status = moving_piston_tile(context, x, y, z, &tile, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (tile == NULL) {
+        *out = NULL;
+        return MC_WORLD_STORAGE_OK;
     }
     /* Retain the actual lookup result through every reached source getter.
      * The snapshot above only identifies the concrete native kind. */
@@ -846,6 +871,397 @@ mc_world_storage_status mc_world_collision_piston_shifted_box_in_classes_held(
     mc_entity_bounds **out, mc_world_collision_error *error) {
     return shifted_box_core(code_classes, world, false, moving, x, y, z, carried_id, progress,
                             facing, out, error);
+}
+
+/* Actual ut.a(xp,III)/mz.a(pb,III). This is a singleton Block-field update,
+ * separate from e(World,III) and the pooled shifted-box helper. */
+static mc_world_storage_status moving_piston_state_shape(const block_context *context,
+                                                         mc_block *moving, int32_t x, int32_t y,
+                                                         int32_t z,
+                                                         mc_world_collision_error *error) {
+    error->piston_bytecode = 6;
+    mc_tile *tile = NULL;
+    mc_world_storage_status status = moving_piston_tile(context, x, y, z, &tile, error);
+    if (status != MC_WORLD_STORAGE_OK || tile == NULL)
+        return status;
+
+    mc_registry_classes *const registry = context->code_classes->registry;
+    mc_registry_block_m_view array;
+    mc_registry_error child = error->nearby.query.registry;
+    const mc_block *carrier = NULL;
+    int32_t carried_id;
+    mc_tile_error lower = mc_tile_empty_error();
+    error->piston_bytecode = 16;
+    stage(context, error, "ut", "mz", 16);
+    if (!piston_registry_result(context, error, mc_registry_block_m_get(registry, &array, &child),
+                                &child)) {
+        status = error->nearby.query.status;
+        goto done;
+    }
+    error->piston_bytecode = 21;
+    stage(context, error, "ut", "mz", 21);
+    mc_tile_status tile_status = mc_tile_piston_block_id(tile, &carried_id);
+    if (tile_status != MC_TILE_OK) {
+        status = piston_tile_failure(error, tile_status, &lower);
+        goto done;
+    }
+    error->piston_bytecode = 24;
+    stage(context, error, "ut", "mz", 24);
+    if (!piston_registry_result(
+            context, error, mc_registry_block_m_at(&array, carried_id, &carrier, &child), &child)) {
+        status = error->nearby.query.status;
+        goto done;
+    }
+    /* The bytecode compares object identity, not carried ID or bn. Even a
+     * nonnull m[0] is a reached carrier, and another Block with the same ID
+     * still receives its real virtual state-shape call. */
+    if (carrier == NULL || carrier == moving)
+        goto done;
+    error->piston_bytecode = 46;
+    stage(context, error, "ut", "mz", 46);
+    status = state_shape_core(context->code_classes, context->world, context->legacy_world, carrier,
+                              x, y, z, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        goto done;
+
+    /* Keep the captured carrier and Tile identities; read progress, extending
+     * and facing only after the carrier's complete virtual call. */
+    uint32_t progress_bits;
+    float progress;
+    bool extending;
+    int32_t facing;
+    error->piston_bytecode = 52;
+    stage(context, error, "ut", "mz", 52);
+    tile_status = mc_tile_piston_progress(tile, 0, &progress_bits, &lower);
+    if (tile_status != MC_TILE_OK) {
+        status = piston_tile_failure(error, tile_status, &lower);
+        goto done;
+    }
+    memcpy(&progress, &progress_bits, sizeof(progress));
+    error->piston_bytecode = 59;
+    stage(context, error, "ut", "mz", 59);
+    tile_status = mc_tile_piston_extending(tile, &extending);
+    if (tile_status != MC_TILE_OK) {
+        status = piston_tile_failure(error, tile_status, &lower);
+        goto done;
+    }
+    if (extending) {
+        error->piston_bytecode = 68;
+        stage(context, error, "ut", "mz", 68);
+        progress = mc_piston_float_subtract(1.0f, progress);
+    }
+    error->piston_bytecode = 73;
+    stage(context, error, "ut", "mz", 73);
+    tile_status = mc_tile_piston_facing(tile, &facing);
+    if (tile_status != MC_TILE_OK) {
+        status = piston_tile_failure(error, tile_status, &lower);
+        goto done;
+    }
+    const mc_registry_direction_field fields[6] = {
+        MC_REGISTRY_DIRECTION_B, MC_REGISTRY_DIRECTION_C, MC_REGISTRY_DIRECTION_D,
+        MC_REGISTRY_DIRECTION_B, MC_REGISTRY_DIRECTION_C, MC_REGISTRY_DIRECTION_D};
+    static const unsigned int get_pc[6] = {84, 105, 126, 147, 168, 189};
+    const double *const source[6] = {&carrier->fields.bs, &carrier->fields.bt, &carrier->fields.bu,
+                                     &carrier->fields.bv, &carrier->fields.bw, &carrier->fields.bx};
+    double *const destination[6] = {&moving->fields.bs, &moving->fields.bt, &moving->fields.bu,
+                                    &moving->fields.bv, &moving->fields.bw, &moving->fields.bx};
+    for (size_t i = 0; i < 6; ++i) {
+        /* Each source getfield precedes its independent Direction getstatic.
+         * A late failure leaves the earlier singleton stores in place. */
+        const double coordinate = *source[i];
+        mc_registry_direction_view direction;
+        error->piston_bytecode = get_pc[i];
+        stage(context, error, "ut", "mz", get_pc[i]);
+        if (!piston_registry_result(
+                context, error, mc_registry_direction_get(registry, fields[i], &direction, &child),
+                &child)) {
+            status = error->nearby.query.status;
+            break;
+        }
+        int32_t component;
+        error->piston_bytecode = get_pc[i] + 5u;
+        stage(context, error, "ut", "mz", get_pc[i] + 5u);
+        if (!piston_registry_result(
+                context, error, mc_registry_direction_at(&direction, facing, &component, &child),
+                &child)) {
+            status = error->nearby.query.status;
+            break;
+        }
+        error->piston_bytecode = get_pc[i] + 9u;
+        if (!floating(context, error, "ut", "mz", get_pc[i] + 9u)) {
+            status = error->nearby.query.status;
+            break;
+        }
+        const float offset = mc_piston_float_multiply((float)component, progress);
+        *destination[i] = mc_piston_coordinate_subtract(coordinate, offset);
+    }
+done:
+    mc_tile_release(tile);
+    return status;
+}
+
+/* All actual a(BlockAccess,III) declarations in the paired Block hierarchy.
+ * Classes absent from this override list inherit uu/na's empty return body. */
+static mc_world_storage_status state_shape(const block_context *context, mc_block *block, int32_t x,
+                                           int32_t y, int32_t z, mc_world_collision_error *error) {
+    int32_t value;
+    switch (block->kind) {
+        case MC_BLOCK_UT_MZ:
+            return moving_piston_state_shape(context, block, x, y, z, error);
+        case MC_BLOCK_AK_Z:
+            if (!block_value(context, "ak", "z", 7, mc_java_i32_sub(x, 1), y, z, false, &value,
+                             error))
+                return error->nearby.query.status;
+            if (value != block->fields.bn) {
+                if (!block_value(context, "ak", "z", 26, mc_java_i32_add(x, 1), y, z, false, &value,
+                                 error))
+                    return error->nearby.query.status;
+            }
+            if (value == block->fields.bn)
+                shape(context, block, "ak", "z", 69, 0.0f, 0.0f, 0.375f, 1.0f, 1.0f, 0.625f, error);
+            else
+                shape(context, block, "ak", "z", 106, 0.375f, 0.0f, 0.0f, 0.625f, 1.0f, 1.0f,
+                      error);
+            break;
+        case MC_BLOCK_BV_BC:
+            if (!metadata(context, "bv", "bc", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            shape(context, block, "bv", "bc", value == 1 ? 46u : 68u, 0.0625f, 0.0f, 0.0625f,
+                  0.9375f, value == 1 ? 0.03125f : 0.0625f, 0.9375f, error);
+            break;
+        case MC_BLOCK_H_G: {
+            if (!metadata(context, "h", "g", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            static const float bounds[6][6] = {{0, 0, 0, 1, 0.25f, 1}, {0, 0.75f, 0, 1, 1, 1},
+                                               {0, 0, 0, 1, 1, 0.25f}, {0, 0, 0.75f, 1, 1, 1},
+                                               {0, 0, 0, 0.25f, 1, 1}, {0.75f, 0, 0, 1, 1, 1}};
+            static const unsigned int pc[6] = {64, 78, 92, 106, 120, 134};
+            const int32_t direction = value & 7;
+            if (direction < 6) {
+                const float *b = bounds[(size_t)direction];
+                shape(context, block, "h", "g", pc[(size_t)direction], b[0], b[1], b[2], b[3], b[4],
+                      b[5], error);
+            }
+            break;
+        }
+        case MC_BLOCK_JQ_GI: {
+            if (!metadata(context, "jq", "gi", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            static const float bounds[6][6] = {{0, 0.25f, 0, 1, 1, 1}, {0, 0, 0, 1, 0.75f, 1},
+                                               {0, 0, 0.25f, 1, 1, 1}, {0, 0, 0, 1, 1, 0.75f},
+                                               {0.25f, 0, 0, 1, 1, 1}, {0, 0, 0, 0.75f, 1, 1}};
+            static const unsigned int pc[6] = {72, 86, 100, 114, 128, 142};
+            const int32_t direction = value & 7;
+            if ((value & 8) == 0)
+                shape(context, block, "jq", "gi", 155, 0, 0, 0, 1, 1, 1, error);
+            else if (direction < 6) {
+                const float *b = bounds[(size_t)direction];
+                shape(context, block, "jq", "gi", pc[(size_t)direction], b[0], b[1], b[2], b[3],
+                      b[4], b[5], error);
+            }
+            break;
+        }
+        case MC_BLOCK_JR_GJ: {
+            if (!metadata(context, "jr", "gj", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            if (!floating(context, error, "jr", "gj", 24))
+                return error->nearby.query.status;
+            const float height = (float)mc_java_i32_mul(2, mc_java_i32_add(1, value & 7)) / 16.0f;
+            shape(context, block, "jr", "gj", 35, 0, 0, 0, 1, height, 1, error);
+            break;
+        }
+        case MC_BLOCK_LE_HC:
+            if (!door_shape(context, block, x, y, z, error))
+                return error->nearby.query.status;
+            break;
+        case MC_BLOCK_OQ_JD:
+            if (!trapdoor_shape(context, block, x, y, z, error))
+                return error->nearby.query.status;
+            break;
+        case MC_BLOCK_OI_IZ: {
+            if (!metadata(context, "oi", "iz", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            const float depth = (value & 8) != 0 ? 0.0625f : 0.125f;
+            switch (value & 7) {
+                case 1:
+                    shape(context, block, "oi", "iz", 83, 0, 0.375f, 0.3125f, depth, 0.625f,
+                          0.6875f, error);
+                    break;
+                case 2:
+                    shape(context, block, "oi", "iz", 115, 1.0f - depth, 0.375f, 0.3125f, 1, 0.625f,
+                          0.6875f, error);
+                    break;
+                case 3:
+                    shape(context, block, "oi", "iz", 145, 0.3125f, 0.375f, 0, 0.6875f, 0.625f,
+                          depth, error);
+                    break;
+                case 4:
+                    shape(context, block, "oi", "iz", 177, 0.3125f, 0.375f, 1.0f - depth, 0.6875f,
+                          0.625f, 1, error);
+                    break;
+            }
+            break;
+        }
+        case MC_BLOCK_PC_JJ:
+        case MC_BLOCK_PH_JN:
+            if (!metadata(context, "pc", "jj", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            shape(context, block, "pc", "jj", value >= 2 && value <= 5 ? 32u : 46u, 0, 0, 0, 1,
+                  value >= 2 && value <= 5 ? 0.625f : 0.125f, 1, error);
+            break;
+        case MC_BLOCK_SS_LU:
+            shape(context, block, "ss", "lu", 7, 0, 0, 0, 1, 1, 1, error);
+            break;
+        case MC_BLOCK_UJ_MT:
+            stage(context, error, "uj", "mt", 1);
+            if (block->subtype.uj.b)
+                break;
+            if (!metadata(context, "uj", "mt", 13, x, y, z, &value, error))
+                return error->nearby.query.status;
+            shape(context, block, "uj", "mt", 45, 0, 0, 0, 1, 1, 1, error);
+            if (value == 2)
+                shape(context, block, "uj", "mt", 68, 0, 0.28125f, 0.875f, 1, 0.78125f, 1, error);
+            if (value == 3)
+                shape(context, block, "uj", "mt", 89, 0, 0.28125f, 0, 1, 0.78125f, 0.125f, error);
+            if (value == 4)
+                shape(context, block, "uj", "mt", 112, 0.875f, 0.28125f, 0, 1, 0.78125f, 1, error);
+            if (value == 5)
+                shape(context, block, "uj", "mt", 133, 0, 0.28125f, 0, 0.125f, 0.78125f, 1, error);
+            break;
+        case MC_BLOCK_UM_MW: {
+            if (!metadata(context, "um", "mw", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            if (!floating(context, error, "um", "mw", 25))
+                return error->nearby.query.status;
+            const float width = (float)mc_java_i32_add(1, mc_java_i32_mul(value, 2)) / 16.0f;
+            shape(context, block, "um", "mw", 48, width, 0, 0.0625f, 0.9375f, 0.5f, 0.9375f, error);
+            break;
+        }
+        case MC_BLOCK_VE_NJ:
+            shape(context, block, "ve", "nj", 8, 0, 0, 0, 1, 0.5625f, 1, error);
+            break;
+        case MC_BLOCK_XR_PD:
+            if (!metadata(context, "xr", "pd", 5, x, y, z, &value, error))
+                return error->nearby.query.status;
+            switch (value & 7) {
+                case 1:
+                    shape(context, block, "xr", "pd", 45, 0, 0.2f, 0.3125f, 0.375f, 0.8f, 0.6875f,
+                          error);
+                    break;
+                case 2:
+                    shape(context, block, "xr", "pd", 79, 0.625f, 0.2f, 0.3125f, 1, 0.8f, 0.6875f,
+                          error);
+                    break;
+                case 3:
+                    shape(context, block, "xr", "pd", 111, 0.3125f, 0.2f, 0, 0.6875f, 0.8f, 0.375f,
+                          error);
+                    break;
+                case 4:
+                    shape(context, block, "xr", "pd", 145, 0.3125f, 0.2f, 0.625f, 0.6875f, 0.8f, 1,
+                          error);
+                    break;
+                default:
+                    shape(context, block, "xr", "pd", 179, 0.25f, 0, 0.25f, 0.75f, 0.6f, 0.75f,
+                          error);
+                    break;
+            }
+            break;
+        case MC_BLOCK_UU_NA:
+        case MC_BLOCK_EO_CX:
+        case MC_BLOCK_WP_OJ:
+        case MC_BLOCK_OT_JF:
+        case MC_BLOCK_HE_EU:
+        case MC_BLOCK_OM_JC:
+        case MC_BLOCK_NX_IS:
+        case MC_BLOCK_GK_EI:
+        case MC_BLOCK_NE_IG:
+        case MC_BLOCK_MT_IC:
+        case MC_BLOCK_VG_NK:
+        case MC_BLOCK_BK_AR:
+        case MC_BLOCK_XF_OV:
+        case MC_BLOCK_FK_DO:
+        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_RD_KL:
+        case MC_BLOCK_PT_JR:
+        case MC_BLOCK_RN_KU:
+        case MC_BLOCK_RU_KZ:
+        case MC_BLOCK_JB_FZ:
+        case MC_BLOCK_EE_CQ:
+        case MC_BLOCK_WB_NW:
+        case MC_BLOCK_TL_MD:
+        case MC_BLOCK_L_J:
+        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_AH_T:
+        case MC_BLOCK_HB_ER:
+        case MC_BLOCK_FB_DH:
+        case MC_BLOCK_VM_NP:
+        case MC_BLOCK_YQ_PT:
+        case MC_BLOCK_DD_BZ:
+        case MC_BLOCK_E_E:
+        case MC_BLOCK_SM_LO:
+        case MC_BLOCK_FI_DN:
+        case MC_BLOCK_NI_IJ:
+        case MC_BLOCK_VL_NO:
+        case MC_BLOCK_TC_LZ:
+        case MC_BLOCK_DP_CG:
+        case MC_BLOCK_BS_AZ:
+        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_NK_IK:
+        case MC_BLOCK_AC_P:
+        case MC_BLOCK_OR_JE:
+        case MC_BLOCK_RZ_LF:
+        case MC_BLOCK_RI_KO:
+        case MC_BLOCK_FO_DT:
+        case MC_BLOCK_JW_GN:
+        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_YI_PO:
+        case MC_BLOCK_OA_IU:
+        case MC_BLOCK_LY_HR:
+        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_KS_GV:
+            stage(context, error, "uu", "na", 0);
+            break;
+        case MC_BLOCK_KIND_COUNT:
+        default:
+            return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "State-shape Block concrete kind");
+    }
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status state_shape_core(mc_world_runtime_classes *code_classes,
+                                                mc_world_runtime *world, bool legacy_world,
+                                                const mc_block *block, int32_t x, int32_t y,
+                                                int32_t z, mc_world_collision_error *error) {
+    block_context context = {code_classes, world, legacy_world};
+    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
+    frame.nearby = mc_world_nearby_empty_error();
+    frame.bounds = (mc_entity_bounds_error){0};
+    frame.block_class = NULL;
+    frame.block_bytecode = 0;
+    frame.x = x;
+    frame.y = y;
+    frame.z = z;
+    const mc_world_storage_status status =
+        block_admit(&context, block, &frame)
+            ? state_shape(&context, (mc_block *)block, x, y, z, &frame)
+            : frame.nearby.query.status;
+    if (error != NULL)
+        *error = frame;
+    return status;
+}
+
+mc_world_storage_status mc_world_collision_block_state_shape_held(mc_world_runtime *world,
+                                                                  const mc_block *block, int32_t x,
+                                                                  int32_t y, int32_t z,
+                                                                  mc_world_collision_error *error) {
+    return state_shape_core(NULL, world, true, block, x, y, z, error);
+}
+
+mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_world_collision_error *error) {
+    return state_shape_core(code_classes, world, false, block, x, y, z, error);
 }
 
 static mc_world_storage_status base_contribute(const block_context *context, mc_block *block,

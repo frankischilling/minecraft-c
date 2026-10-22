@@ -38,6 +38,27 @@ mc_world_storage_status mc_world_collision_block_box_in_classes_held(
     mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_collision_error *error);
 
+/* Actual virtual a(BlockAccess,III), including all paired Block overrides and
+ * uu/na's inherited empty body. This mutates the real singleton's bs..bx; it
+ * neither obtains nor resets pooled bounds. The World wrapper has the same
+ * entered GAME World ownership contract as block_box_held. Its explicit-code
+ * variant admits a nullable World until a source Tile/ID/metadata getter is
+ * reached, under the same lazy-entry and lifetime rules as block_box above.
+ * MovingPiston retains the actual typed lookup result and captured carrier,
+ * compares carrier object identity, calls its complete virtual state-shape,
+ * then reads progress/extending/facing. Six independent Direction reads write
+ * bs,bt,bu,bv,bw,bx in that order. Failure keeps all completed carrier/Moving
+ * mutations, acquisition effects and initializer publications. piston_bytecode
+ * identifies the enclosing MovingPiston state-shape call; block_class/bytecode
+ * identify the deepest reached operation. No Entity binding is required. */
+mc_world_storage_status mc_world_collision_block_state_shape_held(mc_world_runtime *world,
+                                                                  const mc_block *block, int32_t x,
+                                                                  int32_t y, int32_t z,
+                                                                  mc_world_collision_error *error);
+mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
+    mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_world_collision_error *error);
+
 /* Actual MovingPiston a(World,IIIIFI), distinct from its Tile lookup in e.
  * The carrier's virtual getter supplies the same held box mutated in source
  * order. A late failure keeps coordinate/pool prefixes and preserves out.

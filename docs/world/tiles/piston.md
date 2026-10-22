@@ -95,7 +95,7 @@ prefixes. The ordinary-false fixture keeps its shared moving neighbor, so
 later notifying restoration executes that real getter. Earlier active replay
 matches the 57 finite projections per side/compiler, including source-backed
 failure-prefix joins. Full native errors and Java Throwables remain separate.
-The separate MovingPiston state-shape update remains unfinished.
+The separate MovingPiston state-shape operation is described below.
 
 ## Tick and Entity pushing
 
@@ -131,9 +131,56 @@ reached Registry, Tile, geometry, nearby, movement and mutation records.
 The `world.piston_tick` contract passes 575 checks per compiler. It covers raw
 progress and null-World paths, code-owner geometry, all axes, duplicates, real
 Item/Falling movement, failed-prefix List history and completion effects. These
-are constructed native contracts. Full original tick replay, other Entity
-movement dispatches and the separate state-shape update remain unfinished;
+are constructed native contracts. Full original tick replay and other Entity
+movement dispatches remain unfinished;
 [current movement limits](../../entity/movement.md) still apply.
+
+## Singleton state shape
+
+The [Block state-shape entries](../../../src/world/runtime/collision/blocks_internal.h)
+implement actual virtual `a(BlockAccess,III)` calls with an actual World as the
+BlockAccess receiver. Dispatch covers all 16 paired declarations, including the
+base empty body and the inherited powered-rail override. The
+[source map](../../reference/piston.md#singleton-state-shape) lists the paired
+classes and instruction PCs. Door and trapdoor shapes reuse their actual value
+helpers; other carriers retain their original setters and early returns.
+
+MovingPiston obtains and retains the actual Piston Tile through the acquiring
+World/Chunk lookup. Absence or a real non-Piston type returns before this body
+writes its singleton bounds. The Block array is captured before the Tile's
+carried ID getter and signed index check. A null carrier or that same MovingPiston Block
+object returns. A different Block object with the same numerical ID receives
+its virtual state-shape call. A nonnull carrier at ID zero also receives that call.
+
+The complete carrier call precedes the held Tile's progress, extending and
+facing getters. Interpolation at factor positive zero still executes all three
+binary32 arithmetic operations. Extending replaces the result with binary32
+`1 - progress`. Carried metadata does not replace the actual World's metadata
+when a carrier's source shape getter reaches it.
+
+Six stores write `bs`, `bt`, `bu`, `bv`, `bw`, `bx`, or minX, minY, minZ, maxX,
+maxY, maxZ. Each store first reads the captured carrier's current field, then
+independently reads and indexes the current Direction array. Int-to-float
+conversion precedes float multiplication; float-to-double widening precedes
+double subtraction. Zero Direction components still take part in arithmetic.
+
+This operation mutates the actual Block singleton fields without obtaining or
+resetting pooled bounds. Failure preserves completed carrier mutations,
+Direction initialization, singleton stores and World effects. The captured Tile
+hold is released on every return; the native error keeps the current
+MovingPiston PC and deepest reached Block, Tile or Registry cause. Explicit
+code-owner calls admit a null World until a source Tile, Block ID or metadata
+invocation reaches that receiver. The singleton arithmetic does not use an Entity
+binding.
+
+The expanded `world.piston_geometry` contract includes source setter tuples,
+all six directions, extending progress, null and same-object carriers,
+numerical-ID aliases, signed-index and null-array failures, partial singleton
+stores, carrier mutation before progress failure, exact NaN widening, wrong Tile
+types, lazy invalid-Tile Map cleanup and native hold/pool preservation. All 386
+geometry checks pass per compiler within the complete public suites described
+in [testing](../../testing.md). Original-runtime state-shape equivalence remains
+unverified.
 
 ## Collision order
 
@@ -168,18 +215,28 @@ Direction frames separate through reached failures.
 
 ## Verification scope
 
-Fresh focused builds pass nine selected contracts on MSVC and GCC/Clang with
-Linux ASan/UBSan/leak checks: 4,751 bounds, 575 tick, 460 finalization, 296 Piston
-Tile, 144 geometry, 218 mutation, 732 collision, 544 movement and 202 World
-dependency checks per host. Independent audits join the current source, tools,
-fresh products, complete streams and actual process closures. These builds
+Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+The configured original-JAR options remain off. Existing
+per-test deadlines and output policies remain unchanged. The Linux runs use an
+exact 940-file source copy on Linux storage; the source and original working
+files match before and after execution. [Testing](../../testing.md) records the
+mounted-source timeout controls and limits.
+
+The focused checkpoint before the state-shape addition passed nine selected
+contracts on MSVC and GCC/Clang with Linux ASan/UBSan/leak checks: 4,751 bounds,
+575 tick, 460 finalization, 296 Piston Tile, 144 geometry, 218 mutation,
+732 collision, 544 movement and 202 World dependency checks per host.
+Independent audits join that checkpoint's source, tools, fresh products,
+complete streams and actual process closures. These builds
 registered 167/169/169 cases and executed only the selected nine; they do not
 establish a current full-suite or hosted result.
 
 The separately qualified original tick capture admits all 114 ordered cases and
 228 before/after snapshot phases per side. Native/original tick comparison is
-pending. Its full graphs and original action throws remain retained; observation
-qualification does not establish C equality.
+pending. Its full graphs and original action throws remain retained. Intact-field
+MSVC diagnostics match input/action classifications and selected progress bits,
+but malformed observer records and duplicate keys prevent full protocol
+qualification. Observation qualification does not establish C equality.
 
 The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 GCC/Clang
 configured cases without skips, plus formatting for 479 C files and headers,

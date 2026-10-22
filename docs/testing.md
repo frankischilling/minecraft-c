@@ -1,7 +1,14 @@
 # Test scope and reproduction
 
-The current Piston tick and standalone-bounds increment passes nine focused
-cases on native Windows MSVC and sanitized GCC/Clang:
+Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+Java standard-library numerical comparisons are enabled;
+original-JAR comparison options remain off. Linux enables ASan, UBSan and leak
+checks. The same per-test deadlines and output policies remain in force.
+
+The state-shape contract exercises all declared virtual bodies through actual
+World/Chunk/Registry owners. Its cases include setter tuples, all six directions,
+object identity versus numeric ID, late progress, partial stores, raw NaN bits,
+lazy invalid-Tile cleanup and hold/pool preservation.
 
 | Case | Checks per host |
 | --- | ---: |
@@ -9,27 +16,34 @@ cases on native Windows MSVC and sanitized GCC/Clang:
 | `world.piston_tick` | 575 |
 | `world.piston_finalization` | 460 |
 | `world.piston_tiles` | 296 |
-| `world.piston_geometry` | 144 |
+| `world.piston_geometry` | 386 |
 | `world.mutations` | 218 |
 | `world.collision_boxes` | 732 |
 | `entity.movement` | 544 |
 | `world.movement_dependencies` | 202 |
 
-These tests cover constructed native contracts, including actual supported
-movement and shared List failure history. Independent audits join 798 native
-inputs, 254 dependency files, exact fresh compile closures/products and complete
-streams. All nine actual cases pass on each host; the audited configurations
-registered 167/169/169 cases. The remaining 158/160/160 cases were not executed
-in those focused runs. Linux uses strict floating point, ASan/UBSan and leak
-checks. Existing per-test time/output policies remain part of the unit transport;
-these results do not establish a current full-suite or hosted pass.
+Reports retain complete configured/executed CTest names, zero-skip JUnit results,
+command arguments, actual child PIDs/exits, full stdout/stderr and before/after
+source maps. Controller mirrors and lifecycle interval checks also pass. The
+Windows run uses the working tree. Linux uses a fresh native-filesystem source
+copy with all 940 public file bytes equal to the working tree before and after
+execution. These are public regression results, not complete original acceptance.
 
-The separately qualified original tick family admits all 114 ordered inputs and
-228 before/after snapshot phases per side. Its actual action throws and full
-raw streams remain retained. The [source map](reference/piston.md#active-tick-input-family)
-records that observation scope; complete native/original tick comparison remains
-pending. The new standalone factory has native ownership/raw-store coverage,
-with its original comparison still pending.
+Earlier Linux runs using `/mnt/c` sources each hit the existing 180-second
+deadlines in `tools.world_storage_reference`, `tools.chunk_storage_reference`,
+`tools.level_reference` and `tools.callbacks_reference`. The exact copied-source storage guard completes
+all 76 cases in 15.9 seconds. Fresh Linux source/build trees pass without changing
+test limits. Failed mounted-source attempts and their complete streams remain
+retained; they are not relabeled as successful runs.
+
+The separate original tick family qualifies 114 inputs and 228 snapshots per
+side. Intact-record MSVC diagnostics match all inputs, binary action outcomes
+and 456 selected current/previous-progress bit comparisons per side. The full
+native observer protocol remains invalid because genuine production messages
+split records and payload keys collide with header keys. Raw streams remain
+unchanged. A checked record-buffer emitter is reviewed but unexecuted.
+[Original observations](reference/piston.md#active-tick-input-family) and these
+finite diagnostics do not establish whole-graph equality or state-shape parity.
 
 The following movement checkpoint predates tick and standalone-factory integration.
 

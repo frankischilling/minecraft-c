@@ -1,5 +1,27 @@
 # Storage and original references
 
+## Singleton state-shape checkpoint
+
+All 15 Block overrides and the base state-shape body are implemented. MovingPiston
+preserves captured owner identities, late getters and partial singleton stores.
+The expanded geometry contract passes 386 constructed native checks per compiler;
+original-runtime state-shape equivalence remains unverified.
+
+Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+The
+[testing notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+record exact-copy Linux validation and retained mounted-source timeouts.
+
+The separate MSVC tick execution preserves both complete lossless streams, but
+its full observer protocol is invalid. Production direct-handle output splits
+two records per side; 34,978 records per side repeat top-level keys. A diagnostic
+limited to intact records matches all 114 caller inputs, binary action outcomes
+and 456 raw progress-bit comparisons per side. It does not qualify the malformed
+protocol, native error sites or whole graphs. A reviewed emission fix remains
+unexecuted; all raw evidence and failed attempts remain intact.
+
+The following tick/bounds checkpoint predates state-shape integration.
+
 ## Piston tick and standalone bounds checkpoint
 
 The [Piston contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md#tick-and-entity-pushing)

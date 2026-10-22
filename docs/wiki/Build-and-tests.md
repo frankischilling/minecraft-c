@@ -1,42 +1,24 @@
 # Build and tests
 
-The current neighbor callback increment passes seven fresh local contracts on
-MSVC and GCC/Clang, with Linux ASan/UBSan/leak checks. Each selected production
-closure is rebuilt from current working source; the private observation probe
-is built separately with those same fresh libraries.
+Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+Controller mirrors and lifecycle checks also pass.
+Linux uses ASan/UBSan/leak checks and a byte-identical 940-file source copy on
+Linux storage. The mounted-source timeout attempts remain retained; no deadline
+was relaxed. The expanded Piston geometry contract passes 386 checks per compiler.
+Changed C files and headers pass clang-format 18 with the requested style.
 
-| Case | Checks per host | Scope |
-| --- | ---: | --- |
-| `world.piston_finalization` | 460 | Real finalizer/removal/neighbor calls, alias cleanup, guards and failure prefixes |
-| `world.piston_tiles` | 296 | Piston class, NBT and actual persistence joins |
-| `world.piston_geometry` | 144 | Installed moving geometry and mutable pool effects |
-| `world.mutations` | 218 | Existing mutation regressions |
-| `world.collision_boxes` | 732 | Existing collision and ownership regressions |
-| `entity.movement` | 544 | Existing Item/Falling movement regressions |
-| `world.movement_dependencies` | 202 | Existing real World movement queries |
+The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+records commands, ownership, source-copy checks and remaining original-acceptance
+limits. At the earlier exact `ee5a52b` checkpoint,
+[hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39700565668)
+passed 169 Windows and 171 tests per Linux compiler, plus 483-file formatting.
+That result predates singleton state-shape integration.
 
-The focused build receipt checks report/child closure, current binary pins and
-input-map equality. The separate full native qualification performs 4,809
-before/after file-pin joins over the recorded capsule's 936 public files,
-including 794 native inputs, plus 254 dependency files. Their bytes, tools,
-products, graphs, complete raw streams, probe, resources and the 57-input
-manifest are hashed and joined. It makes no full-suite claim.
-
-Independent finite comparison matches all 342 rows and 684 snapshots: 2,100
-complete cached-array images and 1,050 full delta lists. It finds no input,
-control, completion-prefix, finite-projection, delta, action RNG/scalar
-preservation or scope-gap mismatch. All six captures close naturally with full
-streams and cleanup. Original/native full errors remain distinct, and the
-[documented omissions](Storage-and-reference#piston-finalization-and-neighbor-observations)
-prevent a whole-graph or constructor-history claim. No original process is
-restarted for the native capture or offline comparison.
-
-The earlier committed `85441fe` checkpoint passed all 168 MSVC and 170 sanitized
-GCC/Clang configured cases in hosted CI, formatting for 479 C files and headers,
-controller mirrors and lifecycle checks. That historical full-suite result
-predates the neighbor callback. Full local suites remain unrun. See
-[PR #52](https://github.com/frankischilling/minecraft-c/pull/52) for current-head
-hosted status and results. Earlier retained-original helper replays keep their separate scope.
+The original tick family admits 114 inputs and 228 snapshots per side. The
+intact-field MSVC diagnostic matches inputs, action classifications and selected
+progress bits. Malformed records and duplicate JSON keys leave full native
+protocol qualification pending. Earlier finalization and movement replays retain
+their own source and comparison scope.
 
 The following movement checkpoint predates finalization integration.
 

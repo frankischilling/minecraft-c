@@ -14,6 +14,10 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
+Use the Linux filesystem for source and build trees when validating under WSL.
+Source-binding tests perform many small file operations; mounted Windows sources
+can exceed their existing deadlines. See [recorded test scope](testing.md).
+
 On Windows, install Visual Studio's C desktop tools, CMake, Ninja and Python.
 Run the same commands from an x64 developer shell. Alternatively, use a Visual
 Studio multi-configuration generator:

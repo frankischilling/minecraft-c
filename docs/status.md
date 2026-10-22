@@ -1,27 +1,29 @@
 # Development status
 
-[Piston Tile ticking and supported Entity pushing](world/tiles/piston.md#tick-and-entity-pushing)
-are implemented alongside explicit finalization, removal and the neighbor callback.
-The [standalone bounds factory](entity/bounds.md) supplies genuine independent
-bounds ownership without advancing the shared pool cursor.
+[MovingPiston state shape](world/tiles/piston.md#singleton-state-shape) now
+implements all 15 Block overrides and the inherited base body. It retains the
+actual Tile/carrier identities, late getters, six independent Direction reads
+and partial singleton stores without obtaining pooled bounds. The geometry
+contract passes 386 checks per compiler. Tick/push, explicit finalization,
+removal, neighbor behavior and standalone bounds remain implemented.
 
-Nine focused cases pass on MSVC and sanitized GCC/Clang, including 575 tick and
-4,751 bounds checks per compiler. Independent audits join the exact working
-source, fresh compiled products, full streams and actual process closures. The
-local configurations registered 167/169/169 cases and executed only those nine;
-current full local suites and new hosted results are not established by them.
+Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
+Controller mirrors, lifecycle checks and changed-file
+clang-format 18 checks also pass. Linux uses an exact 940-file source copy on
+Linux storage after mounted-source tool tests exceeded their existing deadlines.
+The failed runs remain retained. These public checks do not establish original
+state-shape equivalence or complete local-original qualification.
 
-The original client/server tick family independently qualifies all 114 ordered
-inputs and 228 snapshots per side, retaining its 24 actual action throws per
-side. The complete C replay comparison remains pending. Earlier finalization/
-removal replay matches its separate 57-input finite projection per side/compiler;
-that result does not qualify the tick composition or full constructor history.
+The separate original tick family qualifies 114 inputs and 228 snapshots per
+side. Intact-field MSVC diagnostics match all caller inputs, action classifications
+and 456 progress-bit comparisons per side. Malformed observer records and duplicate
+JSON keys leave the full native protocol unqualified. A reviewed emission fix
+still needs compilation and execution; the [source map](reference/piston.md)
+keeps that limit explicit.
 
-The separate MovingPiston state-shape update, other Entity descendants and
-broader gameplay, population, persistence, interoperability and presentation
-acceptance remain unfinished. The historical `85441fe` hosted checkpoint passed
-168 MSVC/170 GCC/Clang cases, 479-file formatting, controller mirrors and lifecycle
-checks. Those results predate the neighbor, tick and standalone-factory changes.
+Other Entity descendants, complete population and persistence, native client and
+server operation, original interoperability, presentation and gameplay acceptance
+remain unfinished. No playable C client or dedicated server exists yet.
 
 The following movement checkpoint predates finalization integration.
 
