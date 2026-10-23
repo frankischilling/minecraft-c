@@ -55,6 +55,16 @@ checks. All three hosts pass controller mirrors and 556 positive/2,011 negative
 lifecycle-interval controls. Clang-format18 checks all 549 C/header files.
 Earlier checkpoints below retain their original source and comparison scope.
 
+### Committed plant checkpoint
+
+At `2e9c6e0`, complete committed-source local suites and fresh original plant
+comparisons pass with the results above. The separate
+[hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39918948340)
+passes 182 MSVC, 184 GCC and 184 Clang tests, 550 total, without failures or
+skips. All four checkout trees match the committed tree. The
+[source-bound evidence](reference/plant-lifecycle.md#committed-checkpoint) records
+tool versions, retained input/stream checks and the local-original distinction.
+
 ## Earlier Minecart inventory, NBT and storage validation
 
 Full local suites pass all 180 MSVC, 182 GCC and 182 Clang tests, 544 total,

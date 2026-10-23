@@ -102,3 +102,20 @@ includes the optional original comparison as well as the public native tests.
 All three hosts pass mirrors and lifecycle intervals, and all 549 C/header files
 pass clang-format 18. These finite experiments do not verify original World/Chunk
 construction, general notification, natural population, persistence or whole-game parity.
+
+## Committed checkpoint
+
+Code commit `2e9c6e07743fbfdb97fbb1cf9e68387b3defe9a5` passes complete local
+183/185/185 MSVC/GCC/Clang suites and fresh original comparisons that record
+that commit. Independent retained checks rehash all 874 source inputs, every
+declared comparison input, all seven processes' stdout/stderr files, generated
+World-fixture source and original/native result files. Each local suite has
+zero failures, errors or skips.
+
+The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39918948340)
+passes all 550 tests: 182 on MSVC 19.44.35229.0, 184 on GCC 13.3.0 and 184 on
+Clang 18.1.3. Its four actual checkout trees match committed tree
+`8107ae275a96a419d32b5d18484895fc0fa33b70`. Formatting checks all 549 C/header
+files; all three platform jobs pass mirrors and the 556 positive/2,011 negative
+lifecycle controls. Hosted tests use the public original-derived fixtures;
+the three local supplied-archive plant comparisons are outside that inventory.

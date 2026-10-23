@@ -11,7 +11,8 @@ Reached concrete handlers without an implemented body fail explicitly after
 earlier effects. [Flowing and still fluids](fluids.md) now have concrete update,
 addition and neighbor bodies. [Wooden pressure plates](pressure-plates.md) have
 their actual added, support-neighbor, removal and shared contact/tick bodies.
-Population, complete fluid/falling closure,
+[Plant callbacks](plants.md) implement survival, drops, growth and farmland
+through the same World services. Population, complete fluid/falling closure,
 tile/entity effects and general observer dispatch remain unfinished.
 
 ## Source order
@@ -126,3 +127,9 @@ Compile the helper with JDK17 and run its CLI with a pinned local JAR, side
 `--add-opens java.base/java.util=ALL-UNNAMED` for read-only Random inspection.
 Stdout is the bounded binary transcript; original console and actual Throwable
 traces go to stderr. Exit 77 means setup was unavailable, never a passing result.
+
+World setters and plant notifying writes retain independent checked diagnostic
+workspaces across synchronous descendants. Native allocation failure preserves
+earlier effects, including drops completed before a plant's write. The
+[full-height regression](../reference/plant-lifecycle.md#native-contracts)
+exercises recursive removal on the default Windows stack.

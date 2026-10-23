@@ -14,10 +14,16 @@ Current local qualification passes 183 tests with MSVC 19.51, 185 with GCC 13.3
 and 185 with Clang 18.1.3, with zero failures, errors or skips. Linux runs include
 ASan, UBSan and leak checks. Formatting passes for all 549 C/header files.
 Mirrors and lifecycle intervals pass on all three hosts, including 556 positive
-and 2,011 negative interval checks per host. There is no hosted result for the
-current source yet.
+and 2,011 negative interval checks per host.
 
-Each full suite includes one fresh optional original plant comparison:
+At code commit `2e9c6e0`, the
+[hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39918948340)
+passes 182 MSVC, 184 GCC and 184 Clang tests, 550 total. All four actual checkout
+trees match the code commit; formatting, mirrors and lifecycle controls pass.
+Hosted tests use the public fixtures. Fresh supplied-archive plant comparisons
+retain their separate local scope.
+
+Each full local suite includes one fresh optional original plant comparison:
 59 client and 59 server cases, with zero mismatches. Its
 [declared projection and exclusions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md)
 bound this result; it does not establish original World/Chunk parity.
