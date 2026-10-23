@@ -322,13 +322,17 @@ static mc_world_storage_status map_read(mc_saved_data_value *value, const mc_nbt
     const uint8_t *pixels = mc_nbt_byte_array_data(source);
     const size_t length = mc_nbt_byte_array_length(source);
     const int32_t offset_x = (128 - width) / 2, offset_z = (128 - height) / 2;
+    /* The original AND guards never skip a pixel. Keep their comparisons separate
+       so strict compilers accept the same behavior without a tautology warning. */
     for (int32_t z = 0; z < height; ++z) {
         int32_t dz = z + offset_z;
-        if (dz < 0 && dz >= 128)
+        const bool z_below = dz < 0, z_above = dz >= 128;
+        if (z_below && z_above)
             continue;
         for (int32_t x = 0; x < width; ++x) {
             int32_t dx = x + offset_x;
-            if (dx < 0 && dx >= 128)
+            const bool x_below = dx < 0, x_above = dx >= 128;
+            if (x_below && x_above)
                 continue;
             int32_t from = x + z * width;
             if (source == NULL || from < 0 || (size_t)from >= length) {
