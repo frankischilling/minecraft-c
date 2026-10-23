@@ -2,9 +2,9 @@
 
 The [collection module](../../src/block/registry/wire_set.c) supplies the shared
 wire Block's position Set. Its keys retain signed coordinates, full equality,
-bucket traversal and independently held snapshots. Wire addition, removal and
-neighbor hooks still need propagation bodies. This collection result does not
-establish wire or redstone parity.
+bucket traversal and independently held snapshots. The
+[synchronous wire hooks](../world/wire.md) now have native implementation and
+contracts. This collection result does not establish wire or redstone parity.
 
 ## Original evidence
 
@@ -97,6 +97,18 @@ tree links and colors, bucket/table history and shallow aliases. An additional
 file-only Windows audit accepts all sixteen baselines and rejects 296 corrupted
 controls. This remains finite conditional collection evidence, with no actual
 wire/World callback, autonomous identity-source or failure/OOME qualification.
+
+## Committed collection checkpoint
+
+At `1f462fa`, [hosted verification](https://github.com/frankischilling/minecraft-c/actions/runs/40020805241)
+passes all four jobs and 607 public/JDK CTests: 201 MSVC, 203 GCC and 203 Clang.
+All 576 C/header files pass clang-format 18. The actual checkout is merge
+`146c455741c9850ff540fe92120a9d0f92ee6f8a`, with the same complete tree as that
+code checkpoint: `68b0a3e06dfe573fee4c6c3503251799799e2228`. Every registered test
+has an actual Passed result; no failed, skipped or unrun CTest is recorded.
+Controller mirrors and lifecycle interval controls also pass. Hosted checks
+use no supplied Minecraft archives. This checkpoint predates wire lifecycle
+integration; its native contracts have the separate scope linked above.
 
 ## Reproduction
 

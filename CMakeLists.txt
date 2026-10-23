@@ -271,6 +271,9 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/height.c
     src/world/runtime/mutation/observers.c
     src/world/runtime/mutation/hooks.c
+    src/world/runtime/mutation/wire/queries.c
+    src/world/runtime/mutation/wire/update.c
+    src/world/runtime/mutation/wire/lifecycle.c
     src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/falling.c
@@ -597,6 +600,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_power tests/world/runtime/power/test_power.c)
     target_link_libraries(mc_test_world_power PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_wire tests/world/runtime/wire/test_wire.c)
+    target_link_libraries(mc_test_world_wire PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
     target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_minecart_detector
@@ -1353,6 +1359,12 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-power-contracts")
     set_tests_properties(world.power PROPERTIES
         LABELS "public;integration;ownership;power" TIMEOUT 90)
+
+    add_test(NAME world.wire_lifecycle COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_wire.py"
+        --executable "$<TARGET_FILE:mc_test_world_wire>")
+    set_tests_properties(world.wire_lifecycle PROPERTIES
+        LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
 
     add_test(NAME world.rails
         COMMAND "${Python3_EXECUTABLE}"

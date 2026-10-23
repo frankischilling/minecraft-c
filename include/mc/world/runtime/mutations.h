@@ -14,6 +14,13 @@
 #include "mc/world/runtime/scheduling_context.h"
 #include "mc/world/runtime/tiles/errors.h"
 
+/* Current source sites for the synchronous wire closure. Repeated recursive
+ * methods retain the current caller here and the deepest hook below, rather
+ * than owning a recursive diagnostic stack. Zero means no reached site. */
+typedef struct mc_world_wire_sites {
+    unsigned int added, removed, neighbor, support, drain, update, notify, strength;
+} mc_world_wire_sites;
+
 typedef struct mc_world_mutation_error {
     mc_world_storage_status status;
     const char *operation;
@@ -88,6 +95,12 @@ typedef struct mc_world_mutation_error {
     mc_world_power_error power;
     mc_world_collision_error rail_access;
     mc_world_solid_support_error rail_support;
+    mc_world_wire_sites wire;
+    /* Only a failed held value read selects these coordinates. Its complete
+     * acquisition/query child already occupies nearby/query above. Avoid
+     * duplicating that large graph in every enclosing mutation diagnostic. */
+    bool wire_value_failed;
+    int32_t wire_x, wire_y, wire_z;
 } mc_world_mutation_error;
 
 /* Actual GAME World setters. Bounds and acquisition precede the selected

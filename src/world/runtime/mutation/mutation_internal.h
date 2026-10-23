@@ -42,6 +42,17 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error);
 
+/* Complete synchronous sm/lo lifecycle. The enclosing concrete dispatch owns
+ * this actual World entry and Registry Block. Shared receiver flags and Set
+ * stay live across recursive metadata writes and independent list snapshots. */
+bool mc_world_mutation_wire_added(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                  int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_wire_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                    int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_wire_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                     int32_t y, int32_t z, int32_t source_id,
+                                     mc_world_mutation_error *error);
+
 /* Concrete plant neighbors and ticks. The enclosing dispatch holds the actual
  * World and Block. Survival, drops and notifying writes keep their source order;
  * no replacement receiver lookup, rollback or future tick is inserted. */

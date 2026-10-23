@@ -1,12 +1,20 @@
 # World simulation
 
+The [synchronous wire hooks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/wire.md)
+now run real World mutations, recursive strength updates and shared notification
+snapshots. The 447-check native contract covers both sides, a 25-cell path,
+vertical connections, loops, drops and partial failures. Development suites pass
+200 MSVC and 202 sanitized Clang tests. Original World-level comparison,
+cross-chunk/dedicated scenarios and default identity generation remain required.
+
 The [wire position Set](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/wire-position-set.md)
 has full coordinate equality, ordered bucket/tree operations and reclaimable
 Registry storage. Shallow snapshots survive clear/refill and nested use. Local
 MSVC/GCC/Clang comparisons match sixteen original collection histories under
 measured identity inputs. The reference record retains development-source and
-test limits. Wire lifecycle propagation, default identity generation and actual
-World notification order remain unfinished.
+test limits. The committed collection checkpoint separately passes 607 hosted
+public/JDK tests and predates lifecycle integration. Default identity generation
+and original World notification-order acceptance remain unfinished.
 
 [Dedicated construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md)
 now has actual Server and World owners, separate subclass fields and a

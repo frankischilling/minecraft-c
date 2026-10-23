@@ -1,13 +1,22 @@
 # Development status
 
-The [wire position Set](reference/wire-position-set.md) now has reclaimable
+The [synchronous wire hooks](world/wire.md) now use actual World mutations,
+recursive strength updates and independently retained notification snapshots.
+The 447-check native contract covers both sides, a 25-cell path, rise/decay,
+vertical connections, loops, drops and partial failures. Development suites pass
+all 200 MSVC and 202 Clang tests, with Linux ASan/UBSan/leak checks. Formatting
+passes all 581 C/header files; mirrors and interval controls pass on both hosts.
+Original World-level wire comparison, cross-chunk/dedicated scenarios and the
+default identity source remain required.
+
+The [wire position Set](reference/wire-position-set.md) has reclaimable
 Registry storage, full coordinate equality, bucket/tree ordering and snapshots
 that survive clear/refill. Finite original comparisons pass conditionally on
 measured identity hashes on MSVC/GCC/Clang. Windows development tests pass;
 five Linux mounted-source timeouts pass separately from an identical native
 source copy. The reference record preserves the failed full-suite results and
-development-source attribution. Wire lifecycle propagation and the default
-identity source remain unfinished.
+development-source attribution. Its [committed collection checkpoint](reference/wire-position-set.md#committed-collection-checkpoint)
+separately passes all 607 hosted public/JDK tests and predates wire integration.
 
 The [dedicated checkpoint](reference/dedicated-world-construction.md#committed-checkpoint)
 at `9c87827` passes all 622 local tests: 206 MSVC, 208 GCC and 208 Clang, with

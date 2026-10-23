@@ -45,7 +45,8 @@ slab-name and repeater arrays, the empty leaf list, pressure-category identities
 and sign Class identity are retained. Wire construction creates its own typed
 empty Set/Map owners. Its [position collection](../reference/wire-position-set.md)
 now has reclaimable keys, ordered bucket/tree operations and retained snapshots.
-Wire lifecycle propagation remains unfinished.
+[Wire lifecycle propagation](../world/wire.md) now has native implementation and
+contracts; original World-level qualification remains unfinished.
 
 Dispenser, chest and the two furnaces each construct a distinct ordinary Random
 through the borrowed profile. Earlier global Block publication and tile flags

@@ -221,7 +221,7 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
         case MC_BLOCK_E_E:
             return tile_hook(world, block, x, y, z, false, error);
         case MC_BLOCK_SM_LO:
-            return unavailable(world, block, "sm", "lo", "Block wire removal hook", error);
+            return mc_world_mutation_wire_removed(world, block, x, y, z, error);
         case MC_BLOCK_TC_LZ:
             return unavailable(world, block, "tc", "lz", "Block furnace removal hook", error);
         case MC_BLOCK_XR_PD:
@@ -330,7 +330,7 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
         case MC_BLOCK_SS_LU:
             return unavailable(world, block, "ss", "lu", "Block addition hook", error);
         case MC_BLOCK_SM_LO:
-            return unavailable(world, block, "sm", "lo", "Block wire addition hook", error);
+            return mc_world_mutation_wire_added(world, block, x, y, z, error);
         case MC_BLOCK_TC_LZ:
             return unavailable(world, block, "tc", "lz", "Block furnace addition hook", error);
         case MC_BLOCK_BV_BC:
@@ -423,7 +423,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_YQ_PT:
             return unavailable(world, block, "yq", "pt", "Block fire neighbor hook", error);
         case MC_BLOCK_SM_LO:
-            return unavailable(world, block, "sm", "lo", "Block wire neighbor hook", error);
+            return mc_world_mutation_wire_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_VL_NO:
             return mc_plant_farmland_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_UJ_MT:
