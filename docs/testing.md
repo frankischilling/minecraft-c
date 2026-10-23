@@ -55,7 +55,7 @@ Both population drivers accept `--profile origin` or `--profile ring`; origin is
 the default. Use `--config Debug` and `-C Debug` for a multi-configuration build,
 and the corresponding executable path on Windows.
 
-### Committed qualification
+### Earlier origin/ring qualification
 
 Code checkpoint `4414dfd` passes complete local suites of 188 MSVC, 190 GCC and
 190 Clang tests, 568 total, with no failures, errors or skips. Every compiler
@@ -92,6 +92,18 @@ full World save, unload and restart as separate acceptance work.
 ```sh
 ctest --test-dir build --output-on-failure -R 'population_(save_readback|persistence)'
 ```
+
+Code checkpoint `eee7fb0` passes all 577 local test executions: 191 MSVC,
+193 GCC and 193 Clang, without failures, errors or skips. Every compiler includes
+all three fresh original population profiles, all three public replays and the
+prepared plant comparison. Linux enables ASan, UBSan and leak checks. The
+[committed checkpoint](reference/population-persistence.md#committed-checkpoint)
+records the complete 1,048-file source audit, eighteen fresh/public captures,
+eighteen resource-variant pairings and formatting/mirror/interval checks.
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39945110219)
+passes 565 public/JDK executions: 187 MSVC, 189 GCC and 189 Clang, plus formatting
+and every mirror/interval check. All four actual checkout trees match the code
+commit. Four archive-dependent tests per compiler retain their local scope.
 
 ## Plant lifecycle validation
 

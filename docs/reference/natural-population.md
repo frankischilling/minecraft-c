@@ -144,6 +144,11 @@ fails the process.
 
 ### Committed checkpoint
 
+The later [save/readback checkpoint](population-persistence.md#committed-checkpoint)
+at `eee7fb0` includes all three population profiles and all public replays in
+577 clean-source local test executions. The origin/ring checkpoint below retains
+its original source and capture scope.
+
 At code commit `4414dfd`, complete clean-source local suites pass 188 MSVC
 19.51.36260.0, 190 GCC 13.3.0 and 190 Clang 18.1.3 tests: 568 executions, with no
 failures, errors or skips. Linux enables ASan, UBSan and leak checks. Each suite

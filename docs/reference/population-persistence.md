@@ -80,6 +80,31 @@ Compound entry order and compressed payload bytes are not cross-language
 equality claims. Within each run, the second save and every load must preserve
 all raw files exactly, including headers, timestamps, payloads and padding.
 
+## Committed checkpoint
+
+At code commit `eee7fb0`, complete clean-source suites pass 191 MSVC
+19.51.36260.0, 193 GCC 13.3.0 and 193 Clang 18.1.3 tests: 577 executions with no
+failures, errors or skips. Linux enables ASan, UBSan and leak checks. Every
+compiler runs fresh origin, ring and save/readback comparisons on both original
+sides, all three public native replays and the prepared plant comparison. All
+550 C/header files pass clang-format 18. Controller mirrors and 556 positive /
+2,011 negative lifecycle-interval controls pass on all three hosts.
+
+The independent audit verifies all 1,048 exported files against committed Git
+blobs and exact source bytes in both source locations. It checks selected
+compiler binaries, build settings, every JUnit case and every declared input,
+retained file and process stream in all eighteen fresh/public population
+captures. Eighteen compiler/side/profile pairings match the complete retained
+native projection across exact and minimal resource bindings after separately
+checking each run's unchanged `World.r` and measured epoch/session/timestamp
+inputs. This is resource-variant evidence for these finite schedules.
+
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39945110219)
+passes 187 MSVC 19.44.35229.0, 189 GCC 13.3.0 and 189 Clang 18.1.3 tests:
+565 executions, with formatting and all mirror/interval checks. All four actual
+checkout trees match the committed code tree. Hosted tests include all three
+public replays; four archive-dependent tests per compiler remain local.
+
 ## Public replay and reproduction
 
 The public

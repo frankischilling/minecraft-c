@@ -10,20 +10,20 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Code checkpoint `4414dfd` passes 188 tests with MSVC 19.51, 190 with GCC 13.3
-and 190 with Clang 18.1.3, with zero failures, errors or skips. Every compiler
-includes both fresh original population profiles and both public native replays.
+Code checkpoint `eee7fb0` passes 191 tests with MSVC 19.51, 193 with GCC 13.3
+and 193 with Clang 18.1.3, with zero failures, errors or skips. Every compiler
+includes all three fresh original population profiles and all three public native replays.
 Linux enables ASan, UBSan and leak checks. All 550 C/header files pass
 clang-format 18. Mirrors and lifecycle intervals pass on all three hosts,
 including 556 positive and 2,011 negative interval controls.
 
-The independent [source and capture audit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md#committed-checkpoint)
-verifies 1,041 exported source files and all twelve fresh/public population
+The independent [source and capture audit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md#committed-checkpoint)
+verifies 1,048 exported source files and all eighteen fresh/public population
 captures, including both resource bindings for each compiler, side and profile.
-The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39935917481)
-passes all 559 public/JDK tests: 185 MSVC, 187 GCC and 187 Clang. Formatting and
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39945110219)
+passes all 565 public/JDK tests: 187 MSVC, 189 GCC and 189 Clang. Formatting and
 all mirror/interval checks pass; all four actual checkout trees match the code
-commit. Nine optional fresh supplied-archive comparisons retain their local scope.
+commit. Four archive-dependent tests per compiler retain their local scope.
 
 Optional `reference.natural_population` and `reference.natural_population_ring`
 compare fresh original/native origin and ring profiles on both sides. Ring
