@@ -263,6 +263,13 @@ static int test_loads(const char *root, const char *leaf, mc_world_regions *regi
     const uint8_t stale[] = {0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
     const uint8_t corrupt[] = {0x1f, 0x8b, 0};
     CHECK(open_store(root, leaf, regions, NULL, &store));
+    int64_t held_token = -7;
+    CHECK(mc_world_store_session_token_get(NULL, &held_token) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          held_token == -7);
+    CHECK(mc_world_store_session_token_get(store, NULL) == MC_WORLD_STORAGE_INVALID_ARGUMENT);
+    CHECK(mc_world_store_session_token_get(store, &held_token) == MC_WORLD_STORAGE_OK &&
+          held_token == INT64_C(0x0123456789abcdef));
     CHECK(mc_world_store_info(store) == NULL && mc_world_store_metadata_root(store) == NULL);
     CHECK(expect_failure(store, side, NULL, MC_WORLD_STORAGE_MISSING, NULL));
     CHECK(encode_fixture(VALID_INFO, 111, &valid) && encode_fixture(VALID_INFO, 222, &backup) &&
@@ -312,6 +319,10 @@ static int test_loads(const char *root, const char *leaf, mc_world_regions *regi
     CHECK(write_bytes(store, "level.dat", missing.data, missing.length));
     CHECK(write_bytes(store, "session.lock", stale, sizeof(stale)));
     CHECK(mc_world_store_check_session(store, &error) == MC_WORLD_STORAGE_SESSION_MISMATCH);
+    held_token = -7;
+    CHECK(mc_world_store_session_token_get(store, &held_token) == MC_WORLD_STORAGE_OK &&
+          held_token == INT64_C(0x0123456789abcdef) &&
+          file_is(store, "session.lock", stale, sizeof(stale)));
     CHECK(mc_world_store_load_world_info(store, side, &second, &error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_info_fields_get(second, &fields) == MC_WORLD_INFO_OK);
     CHECK(fields.value.seed == 0 && fields.value.spawn_x == 0 && fields.value.spawn_y == 0 &&

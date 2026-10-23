@@ -493,6 +493,14 @@ const char *mc_world_store_root(const mc_world_store *store) {
     return store == NULL ? NULL : store->root;
 }
 
+mc_world_storage_status mc_world_store_session_token_get(const mc_world_store *store,
+                                                         int64_t *out) {
+    if (store == NULL || out == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    *out = store->session_token;
+    return MC_WORLD_STORAGE_OK;
+}
+
 static mc_world_storage_status store_encode_nbt(const mc_nbt_tag *root, const mc_nbt_limits *limits,
                                                 mc_ws_file_bytes *out,
                                                 mc_world_storage_error *error,

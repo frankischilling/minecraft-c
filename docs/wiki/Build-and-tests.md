@@ -1,15 +1,24 @@
 # Build and tests
 
-Dedicated constructor and Entity-index tests run without original archives.
-The fluid contract also runs a synchronous enclosed-column case on both sides,
-checking all block/metadata results, exactly 34 schedule requests and unchanged
-Random state. See the
+Dedicated constructor, Entity-index and public fixture/replay tests run without
+original archives. `tools.population_dedicated` runs eighteen Python checks;
+`world.population_dedicated_replay` runs the production probe and eight
+actual-native corruption controls. The population reference option also enables
+`reference.population_dedicated` when both archives and JDK 17 are configured.
+That workflow captures and audits the original before comparing a new native
+run. The fluid contract also checks a synchronous enclosed column on both sides,
+including every block/metadata result, exactly 34 schedule requests and
+unchanged Random state. See the
 [test commands and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#dedicated-construction-and-synchronous-fluid-recursion).
 
-Current development suites pass 203 MSVC, 205 GCC and 205 Clang tests without
-failures, errors or skips. Linux sanitizer snapshots match all 925 non-Markdown
+Earlier development suites passed 203 MSVC, 205 GCC and 205 Clang tests without
+failures, errors or skips. Linux sanitizer snapshots matched all 925 non-Markdown
 files at `cbe9b69`; their dirty-source attribution remains separate from the
-preceding qualified checkpoint. All 569 C/header files pass clang-format 18.
+preceding qualified checkpoint. That snapshot also passed 569-file formatting.
+The public dedicated workflow has a passing fresh development comparison with
+actual Store-token checks on both sides. It retains dirty-source and null-commit
+attribution; current full-suite, clean-source and platform qualification remains
+pending. See the dedicated evidence for its finite scope.
 
 Build setup uses C17, CMake 3.24+ and Python 3.10+; ordinary public tests need
 no Java or original archives. Follow [building](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md) for

@@ -414,7 +414,7 @@ static bool dedicated_operation(natural_probe *probe, dedicated_run *run, size_t
 
 static bool dedicated_observe(natural_probe *probe, dedicated_run *run, bool initialized) {
     natural_json *json = &probe->json;
-    if (!emit(json, "{\"schema\":1,\"scope\":\"native-game-dedicated-natural-population-unload\","
+    if (!emit(json, "{\"schema\":2,\"scope\":\"native-game-dedicated-natural-population-unload\","
                     "\"profile\":\"dedicated-natural-unload\",\"side\":\"server\","
                     "\"seed_hex\":\"0000000000000017\",\"construction_epoch_ms\":") ||
         !epoch_projection(json, &run->construction) || !emit(json, ",\"preparation_epoch_ms\":") ||

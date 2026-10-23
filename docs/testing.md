@@ -15,12 +15,53 @@ fresh-profile admission and failure preservation without installing Random state
 ctest --test-dir build --output-on-failure -R '^(core[.]java_random_profile_inputs|server[.]construction|world[.](dedicated_entity_index|dedicated_construction|fluids|scheduling))$'
 ```
 
-Add `-C Debug` for a multi-configuration build. These tests use project-authored
-inputs and need no original archives. The separate
-[dedicated development comparison](reference/dedicated-world-construction.md)
-uses private capture tools and independently observed constructor clock inputs.
-Development comparisons pass on MSVC/GCC/Clang, but the prototype has no public
-replay or clean-source reference qualification yet.
+Add `-C Debug` for a multi-configuration build. These constructor tests use
+project-authored inputs and need no original archives.
+
+`tools.population_dedicated` runs eighteen fixture and original-semantic tests.
+`world.population_dedicated_replay` runs the production native probe against the
+lossless original-only fixture, then checks the complete comparison, actual
+final disk inventory and eight native corruption controls. Both run without
+Java or original archives. Replay supplies minimal resources and nine measured
+constructor inputs to the native process; expected game state never enters it.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^(tools[.]population_dedicated|world[.]population_dedicated_replay)$'
+python scripts/reference/world/population/dedicated/replay.py \
+  --executable build/mc_natural_population_probe \
+  --work-dir build/population-dedicated-replay
+```
+
+For a Visual Studio build, use
+`build/Debug/mc_natural_population_probe.exe` as `--executable`.
+
+`MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` also enables
+`reference.population_dedicated`. Configure both supplied archive paths and JDK
+17 tools using the existing reference settings. This workflow captures a fresh
+original run, independently audits its source and Random observations, derives
+the input tape, extracts exact original resource files and runs the native
+comparison. A blank tested-commit setting retains null attribution; a named
+commit must match the checked source context. Build and platform qualification
+remain separate from capture completion.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^reference[.]population_dedicated$'
+```
+
+The native child has a 120-second deadline, separate 4 MiB stream bounds and a
+watched 64 MiB JSON bound. Public replay has a 300-second CTest limit; the optional
+fresh reference test has a 600-second limit. Capture receipts record child
+completion, termination, reaping and retained files.
+
+The [dedicated evidence](reference/dedicated-world-construction.md) distinguishes
+the inherited schema-1 original fixture from fresh schema-2 observations and
+requires native schema 2 throughout. Actual held Store tokens match the session
+files at all eighteen boundaries on both sides. The eighteen Python tests and
+eight actual-native corruption controls pass. A fresh development comparison
+also passes in 82.515 seconds, with dirty source, a null tested commit and full
+qualification false. Current complete-suite and clean-source qualification
+remain pending; the earlier 613-execution development result keeps its separate
+historical scope.
 
 ## Fresh World population
 
@@ -1036,6 +1077,9 @@ above; that increment brought the declared public inventory to 86 cases.
 | `tools.population_named_data` | 24 Python tests with 132 rejection controls for complete original/native observations, fixture digests/source attribution, typed payloads and owner trajectories | Public validation controls; launches no game or native producer |
 | `world.population_named_data_replay` | Fresh native seed23 World with one default MapData, two full saves, separate manager load/cache hit; complete original-derived cache, Info, owner, numerical, NBT and file projection | Minimal project resources; one default value and seed, no Java/JAR execution, nonempty Players, map updates/trackers, source I/O failures or restart |
 | `reference.population_named_data` (local opt-in) | Fresh original/native default-map profile on both sides and all three local compilers; 24 boundaries, 72 copied Random records, 360 array descriptors, typed metadata/Chunk/MapData NBT and final disk rereads per side | Same held World and exact extracted resources; excludes broader manager/subtype behavior, nondefault maps, source failure policies, dedicated runtime and gameplay restart |
+| `tools.population_dedicated` | Eighteen tests cover lossless packaging, provenance, compression, complete graph, used Random, dedicated fields, roles, paths, queue order, NBT and constructor inputs | Original-only offline invariants; source/classfile qualification remains inherited |
+| `world.population_dedicated_replay` | Production dedicated probe, complete original correspondence, actual final file inventory and eight native corruption controls | One seed and seventeen-call schedule; minimal project-authored resources; no Java or archive execution |
+| `reference.population_dedicated` (local opt-in) | Fresh original/JDI capture, archive-dependent source audit, measured constructor inputs, exact extracted resources and native comparison | Passing dirty-source development run; complete clean-source build/platform qualification remains pending |
 | `world.saved_data_ids_replay` | 78 original-derived memory rows match on MSVC/GCC/Clang; fourteen altered-output guards and four real malformed-input child refusals pass per compiler | NULL-store history only; excludes String argument identity, original disk interoperability and complete manager behavior |
 | `world.runtime_info_bindings` | 173 native checks: actual Info/context cell identity, independent copied scalars, failing callback visibility, retained lifetimes, per-Info wrapped region growth, real no-list metadata files and bounded record packaging | Constructed native contracts; no original World constructor/list save, new original handler interoperability, forced allocator/OS failure or general mutable NBT |
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |

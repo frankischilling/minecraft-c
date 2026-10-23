@@ -1178,7 +1178,9 @@ static bool dedicated_native_private(natural_probe *probe, const mc_world_runtim
                                      const mc_world_runtime_dedicated_construction *derived,
                                      const mc_biome_registry_view *biomes) {
     mc_world_schedule_class_state schedule;
+    int64_t store_session_token;
     if (mc_world_runtime_schedule_class_get(probe->classes, &schedule) != MC_WORLD_STORAGE_OK ||
+        mc_world_store_session_token_get(world->w, &store_session_token) != MC_WORLD_STORAGE_OK ||
         probe->world->loader.store != world->w || probe->world->loader.dimension != 0 ||
         probe->provider.store != world->w || probe->provider.world != probe->world ||
         probe->provider.policy != MC_CHUNK_ACQUIRE_DEDICATED)
@@ -1221,7 +1223,8 @@ static bool dedicated_native_private(natural_probe *probe, const mc_world_runtim
         !emit(json, "},\"store_root\":{\"native_span\":") || !dedicated_ref(probe, root, D_UTF8) ||
         !emit(json, ",\"utf8_bytes\":") || !byte_array(json, (const uint8_t *)root, strlen(root)) ||
         !emit(json,
-              "},\"store_chunks\":%zu,\"store_pending_stages\":%zu,\"provider\":{"
+              "},\"store_session_token\":\"%016" PRIx64
+              "\",\"store_chunks\":%zu,\"store_pending_stages\":%zu,\"provider\":{"
               "\"max_chunks\":%zu,\"direct_allocation_bytes\":%zu,\"max_direct_allocation_bytes\":%"
               "zu},"
               "\"random_inline_state\":{\"storage\":\"inline_cells_in_actual_random_owner\","
@@ -1235,7 +1238,7 @@ static bool dedicated_native_private(natural_probe *probe, const mc_world_runtim
               "entities\":%zu,"
               "\"collision_boxes\":%zu,\"tile_membership\":%zu,\"tile_deferral\":%zu},\"world_last_"
               "error\":",
-              mc_world_store_chunk_count(probe->store),
+              (uint64_t)store_session_token, mc_world_store_chunk_count(probe->store),
               mc_world_store_game_stage_count(probe->store), probe->provider.max_chunks,
               probe->provider.direct_allocation_bytes, probe->provider.max_direct_allocation_bytes,
               offsetof(mc_java_random, state), sizeof(((mc_java_random *)0)->state),
@@ -1282,7 +1285,7 @@ static bool dedicated_boundary(natural_probe *probe) {
     const size_t start = json->length;
     const bool ok =
         emit(json,
-             "{\"schema\":1,\"scope\":\"native-dedicated-game-domain-state\",\"ordinal\":%zu,"
+             "{\"schema\":2,\"scope\":\"native-dedicated-game-domain-state\",\"ordinal\":%zu,"
              "\"base_world\":",
              probe->dedicated->boundary_ordinal) &&
         dedicated_base_world(probe, &world) && emit(json, ",\"dedicated\":") &&

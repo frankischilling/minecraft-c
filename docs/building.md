@@ -72,11 +72,12 @@ and record the source with `MC_REFERENCE_TESTED_COMMIT`. See the
 and [comparison scope](reference/plant-lifecycle.md). The comparison runs original
 Block bodies with prepared World services; it does not start an original World.
 
-`MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` adds `reference.natural_population`
-and `reference.natural_population_ring` with those same archive and JDK settings.
-Both construct genuine fresh original and native GAME Worlds for seed23. The
-origin profile populates one of four normal Chunks; the ten-call ring profile
-populates four of nine and includes negative coordinates. The
+`MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` adds `reference.natural_population`,
+`reference.natural_population_ring` and `reference.population_dedicated` with
+those same archive and JDK settings.
+The origin and ring tests construct genuine fresh original and native GAME
+Worlds for seed23. The origin profile populates one of four normal Chunks; the
+ten-call ring profile populates four of nine and includes negative coordinates. The
 [comparison record](reference/natural-population.md) defines the complete cache,
 numerical-array and Random projection and its remaining limits.
 
@@ -91,6 +92,13 @@ cache oracle and native numerical transports; ring also checks full original
 numerical golden records and array aliases. Both population drivers default to
 `--profile origin` and accept `--profile ring`. See the
 [test commands](testing.md#fresh-world-population) for both public replays.
+
+Public `tools.population_dedicated` and `world.population_dedicated_replay` also
+need no Java or archives. The dedicated replay runs the production probe with
+minimal resources and measured constructor inputs. Its separate optional
+reference test captures and audits the supplied original before comparing a
+fresh native run with exact original resources. See the
+[dedicated commands and scope](testing.md#dedicated-construction-and-synchronous-fluid-recursion).
 
 `MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local

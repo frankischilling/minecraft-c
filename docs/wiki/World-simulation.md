@@ -2,12 +2,15 @@
 
 [Dedicated construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md)
 now has actual Server and World owners, separate subclass fields and a
-duplicate-preserving Entity index. A finite MSVC/GCC/Clang development comparison
-matches 17 calls across 18 boundaries, including protected and distant drops,
-maintenance and reload. Its capture tools remain private prototypes without
-clean-source reference qualification. Public constructor and
-fluid-recursion contracts provide separate native coverage; server startup and
-general unload/restart remain unfinished.
+duplicate-preserving Entity index. Its public original-only fixture and
+production native replay preserve the measured constructor inputs and complete
+finite state. The fresh reference workflow captures and audits the supplied
+original before comparing a new native run. A development comparison passes
+seventeen calls across eighteen boundaries, including population, full saves,
+protected and distant drops, maintenance and reload, with actual Store-token
+checks on both sides. The fixture keeps its inherited dirty-source attribution;
+current clean-source and platform qualification remains pending. Server startup
+and general unload/restart remain unfinished.
 
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
 matches seed23 origin and ring profiles on client/base-server sides. The

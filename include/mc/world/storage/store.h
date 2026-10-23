@@ -95,6 +95,11 @@ const mc_level_info *mc_world_store_info(const mc_world_store *store);
 const mc_nbt_tag *mc_world_store_metadata_root(const mc_world_store *store);
 const char *mc_world_store_root(const mc_world_store *store);
 
+/* Read the held constructor token, without reading or checking session.lock.
+ * Keep the Store live and out disjoint from its storage. Invalid arguments
+ * return INVALID_ARGUMENT and preserve out; no file or metadata state changes. */
+mc_world_storage_status mc_world_store_session_token_get(const mc_world_store *store, int64_t *out);
+
 /* World-save metadata route: check the session, build gzip Data with version
  * 19132 and explicit LastPlayed clock, then checked new/current/old rotation.
  * A completed new file precedes deleting old; current moves to old if present;

@@ -1,25 +1,29 @@
 # Development status
 
-Dedicated World construction now has its own Server owner, subclass fields,
-Entity index and constructor-selected cache. A finite MSVC/GCC/Clang development
-comparison matches 17 original/native calls across 18 boundaries, including
-protected and distant drops, maintenance and actual reload. The
-[reference record](reference/dedicated-world-construction.md)
-defines the measured constructor inputs and complete comparison scope. These
-capture tools remain private prototypes without clean-source reference
-qualification. Public reference/replay integration remains unfinished.
+Dedicated construction now has public capture, audit, comparison and replay
+tools. The original-only fixture retains the complete finite observations and
+nine constructor inputs; public replay runs the production native probe with
+minimal resources. A fresh schema-2 development comparison matches seventeen
+calls across eighteen boundaries, including protected and distant drops,
+maintenance and reload. It checks the actual Store token on both sides. The
+[reference record](reference/dedicated-world-construction.md) defines the
+inherited fixture provenance, fresh audit and remaining qualification work.
 
 Synchronous fluid and scheduler diagnostics use checked heap workspaces. The
 dedicated capture exposed large diagnostic copies exhausting the Windows
 stack during valid fluid recursion. A public enclosed-column test checks both
 sides, complete block/metadata results, 34 schedule requests, unchanged Random
-state and balanced ownership. Development suites pass all 613 executions:
-203 MSVC, 205 GCC and 205 Clang, with no failures, errors or skips. Linux enables
-ASan, UBSan and leak checks. All compilers pass controller mirrors and
-556 positive/2,011 negative interval controls; all 569 C/header files pass
-clang-format 18. The exported Linux snapshots match all 925 non-Markdown files
-at `cbe9b69`; their original dirty-snapshot attribution stays intact. The
-checkpoint below identifies the preceding clean-source qualification.
+state and balanced ownership. Earlier development suites passed 613 executions:
+203 MSVC, 205 GCC and 205 Clang, with no failures, errors or skips. Linux enabled
+ASan, UBSan and leak checks. All compilers passed controller mirrors and
+556 positive/2,011 negative interval controls; all 569 C/header files passed
+clang-format 18. The exported Linux snapshots matched all 925 non-Markdown files
+at `cbe9b69`; their original dirty-snapshot attribution stays intact. Those
+counts precede the public dedicated workflow. Its eighteen Python checks and
+eight actual-native corruption controls pass; the fresh reference result keeps
+its dirty source and null tested commit. Current clean-source and platform
+qualification remains pending. The checkpoint below identifies the preceding
+qualified source.
 
 The production GAME World matches the original seed-23 origin and ring
 population profiles on client and base-server sides. The ten-call ring retains
