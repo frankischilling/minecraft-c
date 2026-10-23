@@ -50,13 +50,15 @@ Callback-driven cross-World reentry remains required. Both native cases check
 unchanged World Random where no drop occurs, source flags, empty notification
 storage after successful drains and balanced calls/leases/snapshots.
 
-The new case passes on MSVC and sanitized GCC/Clang. The preceding wire lifecycle
-commit `671ed38` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40024340016):
-202 MSVC, 204 GCC and 204 Clang public/JDK tests, with no failures or skips, plus
-581-file formatting, controller mirrors and lifecycle interval controls. Its
-synthetic merge checkout has the same complete tree as that commit. Earlier
-failed development attempts retain their own records. The new cross-chunk case
-has development-source attribution until its own committed checks finish.
+Both cases pass on MSVC and sanitized GCC/Clang. Code checkpoint `2150299`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40030317783):
+203 MSVC, 205 GCC and 205 Clang public/JDK tests, with an actual Passed line for
+every registered test and no failures or skips. Formatting checks all 583
+C/header files; controller mirrors and lifecycle interval controls pass. The
+synthetic checkout `e7d539dcebc4e4a7a0ce8cde37b25f27ce075ba8` has the same
+complete tree as that commit. Earlier failed development attempts retain their
+own records. The existing-World observations below retain separate development
+attribution and incomplete qualification.
 
 These are native contracts. Original executed World-level wire equality,
 intermediate notification traces, wider persistence and failure schedules remain
@@ -105,13 +107,32 @@ original capture. Expected nonzero process receipts remain recorded as such.
 Passive original traces record 2,087 selected calls per side across all 15
 operations and all eleven selected wire/World roles, with balanced returns and
 no observed exceptions. Each JDI method's Code bytes match its supplied archive.
-The debugger reads fields and arrays without target method calls, field writes,
-class redefinition or collection pinning. Target and observer exit naturally
-under bounded process ownership. Native call-order comparison, original local
-ArrayList snapshots, complete owner adaptation, constructor-clock pairing,
-default identity generation and wider persistence/failure profiles remain open.
-The observations retain development-source attribution and incomplete
-qualification status.
+Bytecode-proved local-slot reads retain 151 actual ArrayLists and 605 observations
+per side through copy, clear, iteration and return. Synthetic debugger-local
+slot descriptors read the actual values without claiming an original locals
+table. List, backing-array and key aliases remain stable through nested drains.
+The debugger makes no target method calls, field writes, class redefinitions or
+collection pins. Target and observer exit naturally under bounded ownership.
+
+A separate Linux Debug GDB capture matches all 2,087 ordered engine calls per
+side, including nesting, typed arguments, semantic returns, source flags and raw
+Set structure across 4,204 paired states. Global correspondence retains 76 node
+and 76 key identities and two table allocation epochs per side. Native addresses
+can be reused after retirement; actual node/key serials distinguish those
+lifetimes. Plain native nodes have an auxiliary backward bucket link absent
+from JDK plain nodes. That native invariant is checked against bucket order and
+then excluded from cross-runtime fields; tree backward links remain exact.
+Native Boolean/status returns are checked separately from source Boolean,
+integer or void results.
+
+The GDB capture uses a separate nonsanitized Debug build; earlier GCC/Clang
+sanitizer validation remains separate. Kernel PIDFD exit observations and child
+adoption account for both debugger and inferior, with no intervention on the
+successful captures. Earlier attempts failed in debugger function-address
+conversion and retain failed receipts. Native snapshot correspondence, complete
+owner adaptation, constructor-clock pairing, default identity generation and
+wider persistence/failure profiles remain open. These observations retain
+development-source attribution and incomplete qualification status.
 
 Build and invoke the native producer with a fresh output file:
 

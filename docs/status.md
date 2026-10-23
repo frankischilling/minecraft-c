@@ -6,11 +6,13 @@ The native contracts cover both sides, a 25-cell path, rise/decay, vertical
 connections, loops, drops and partial failures. A second 350-check case covers
 negative/cross-chunk paths across four Worlds, dedicated loading gates and a
 snapshot retained while another World uses the shared Registry. It passes on
-MSVC and sanitized GCC/Clang. The preceding lifecycle commit `671ed38` passes
-all 610 hosted public/JDK tests and formatting. A bounded existing-World probe
+MSVC and sanitized GCC/Clang. Code checkpoint `2150299` passes all 613 hosted
+public/JDK tests and 583-file formatting. A bounded existing-World probe
 matches 600 complete arrays per compiler against original observations while
-retaining absolute World/cave Random differences. Full World-level wire
-qualification, callback-driven cross-World reentry, wider persistence/failure
+retaining absolute World/cave Random differences. Linux Debug traces also match
+2,087 ordered engine calls per side, including arguments, returns, flags and
+Set structure. Full World-level wire and native snapshot qualification,
+callback-driven cross-World reentry, wider persistence/failure
 schedules and the default identity source remain required.
 
 The [wire position Set](reference/wire-position-set.md) has reclaimable
