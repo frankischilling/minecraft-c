@@ -70,6 +70,60 @@ Run the public native case without Java or original assets:
 ctest --test-dir build --output-on-failure -R '^world[.]wire_(lifecycle|multichunk)$'
 ```
 
+## Existing-World observation
+
+`mc_wire_world_probe` opens an existing copied save through the production client
+or base-server constructor. The bounded seed-23 profile requires spawn (0,64,0)
+and populated stored Chunks. Its [input plan](../../tests/reference/world/wire/line.plan)
+contains only constructor parameters, operations and coordinates. No expected
+array, strength, Random output or collection state is supplied. Construction
+replaces the copy's session lock; the plan requests no save or game tick.
+
+The producer emits an initial snapshot, before/result/after records for each
+operation and a terminal cleanup record. Observations include complete Chunk
+arrays and flags, native address aliases, cache membership/insertion order,
+lighting, scheduled entries, wire collection structure and Random states with
+eight continuations drawn from value copies. Native addresses require explicit
+structural adaptation to Java owners; they are not JVM object identities. The
+header records the authored minimal translation resources and finite omissions.
+Entity-bearing, tile-bearing, generated and unpopulated Chunks fail admission.
+
+Development observations executed the same 15 operations on both supplied
+originals and on MSVC, GCC and Clang. On each compiler, a declared boundary
+projection matches 600 complete arrays across 62 boundaries, Chunk flags, cache
+membership/insertion order, ordered lighting regions and drained wire Set
+size/capacity/threshold/modification counts. World and cave Random states differ
+at 124 owner boundaries per compiler; those absolute differences are retained.
+Each run's Random owners remain unchanged through this no-drop plan. These
+finite deterministic matches do not establish full World-state equivalence.
+Six Windows admission controls reject malformed/oversized plans, integer and
+command-count overflow, missing prepared metadata and an existing output file.
+Each preserves its input arena; existing output bytes remain unchanged. Two
+comparator controls reject disabled validation assertions and a wrong-side
+original capture. Expected nonzero process receipts remain recorded as such.
+
+Passive original traces record 2,087 selected calls per side across all 15
+operations and all eleven selected wire/World roles, with balanced returns and
+no observed exceptions. Each JDI method's Code bytes match its supplied archive.
+The debugger reads fields and arrays without target method calls, field writes,
+class redefinition or collection pinning. Target and observer exit naturally
+under bounded process ownership. Native call-order comparison, original local
+ArrayList snapshots, complete owner adaptation, constructor-clock pairing,
+default identity generation and wider persistence/failure profiles remain open.
+The observations retain development-source attribution and incomplete
+qualification status.
+
+Build and invoke the native producer with a fresh output file:
+
+```sh
+cmake --build build --target mc_wire_world_probe
+build/mc_wire_world_probe client PREPARED_ROOT_HEX tests/reference/world/wire/line.plan output.jsonl
+```
+
+`PREPARED_ROOT_HEX` encodes the UTF-8 path whose `world/level.dat` already exists.
+Use a separate copied root for each execution. `server` selects the base-server
+World. This observer does not launch a client or server application.
+
 ## Source map
 
 The supplied archive pins are recorded with the [position collection](../reference/wire-position-set.md).

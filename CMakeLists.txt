@@ -606,6 +606,10 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_wire_multichunk tests/world/runtime/wire/test_multichunk.c)
     target_link_libraries(mc_test_world_wire_multichunk PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_wire_world_probe tests/world/runtime/wire/world_probe.c)
+    target_link_libraries(mc_wire_world_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
     target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_minecart_detector
