@@ -132,6 +132,8 @@ target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 
 add_library(mc_registry STATIC
     src/block/registry/registry.c
+    src/block/registry/managed.c
+    src/block/registry/wire_set.c
     src/block/registry/runtime.c
     src/block/registry/directions.c
     src/block/registry/horizontal_directions.c
@@ -339,6 +341,19 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_block_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME block.registry_construction COMMAND mc_test_block_registry)
     set_tests_properties(block.registry_construction PROPERTIES LABELS "public;unit;ownership" TIMEOUT 90)
+
+    add_executable(mc_test_registry_managed tests/block/registry/test_managed.c)
+    target_link_libraries(mc_test_registry_managed PRIVATE mc_registry mc_build_options)
+    add_test(NAME block.registry_managed COMMAND mc_test_registry_managed)
+    set_tests_properties(block.registry_managed PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_wire_set tests/block/registry/test_wire_set.c)
+    target_link_libraries(mc_test_wire_set PRIVATE mc_registry mc_build_options)
+    add_test(NAME block.wire_position_set COMMAND mc_test_wire_set)
+    set_tests_properties(block.wire_position_set PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_wire_set_probe tests/block/registry/wire_set_probe.c)
+    target_link_libraries(mc_wire_set_probe PRIVATE mc_registry mc_build_options)
 
     add_executable(mc_test_biome_registry tests/world/biome/test_registry.c)
     target_link_libraries(mc_test_biome_registry PRIVATE mc_registry mc_c_atomics mc_build_options)

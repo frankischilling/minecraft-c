@@ -1,5 +1,14 @@
 # Development status
 
+The [wire position Set](reference/wire-position-set.md) now has reclaimable
+Registry storage, full coordinate equality, bucket/tree ordering and snapshots
+that survive clear/refill. Finite original comparisons pass conditionally on
+measured identity hashes on MSVC/GCC/Clang. Windows development tests pass;
+five Linux mounted-source timeouts pass separately from an identical native
+source copy. The reference record preserves the failed full-suite results and
+development-source attribution. Wire lifecycle propagation and the default
+identity source remain unfinished.
+
 The [dedicated checkpoint](reference/dedicated-world-construction.md#committed-checkpoint)
 at `9c87827` passes all 622 local tests: 206 MSVC, 208 GCC and 208 Clang, with
 zero failures, errors or skips. All 1,099 source files match their committed Git

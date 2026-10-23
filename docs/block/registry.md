@@ -43,8 +43,9 @@ and retained first failures. Automatic frames preserve suspended parent state.
 Actual direction,
 slab-name and repeater arrays, the empty leaf list, pressure-category identities
 and sign Class identity are retained. Wire construction creates its own typed
-empty Set/Map owners. Their later collection operations, tile construction and
-gameplay methods remain unfinished.
+empty Set/Map owners. Its [position collection](../reference/wire-position-set.md)
+now has reclaimable keys, ordered bucket/tree operations and retained snapshots.
+Wire lifecycle propagation remains unfinished.
 
 Dispenser, chest and the two furnaces each construct a distinct ordinary Random
 through the borrowed profile. Earlier global Block publication and tile flags
@@ -56,7 +57,9 @@ ordinary Random through that same profile at its actual initialization point.
 ## Failure and lifetime
 
 The native byte budget includes owner metadata, allocation records and all
-retained allocations. A failed constructor or later fluent call preserves its
+retained allocations, current managed storage and class-owned ItemStacks.
+Managed children release their budget for reuse; historical peak accounting
+includes overlapping replacements. A failed constructor or later fluent call preserves its
 earlier object, array, static and profile effects. Named publication occurs only
 after the corresponding chain succeeds. Repeated initialization reports
 `MC_REGISTRY_FAILED_INITIALIZATION` without restarting or rolling back effects.

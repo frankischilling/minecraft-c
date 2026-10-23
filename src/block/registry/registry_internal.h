@@ -8,6 +8,7 @@
 #include "../../statistics/registry/registry_internal.h"
 #include "../../world/biome/registry_internal.h"
 #include "mc/block/registry/registry.h"
+#include "wire_set_internal.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
 typedef enum mc_block_kind {
@@ -84,6 +85,7 @@ typedef enum mc_block_kind {
 } mc_block_kind;
 
 typedef struct mc_registry_allocation mc_registry_allocation;
+typedef union mc_registry_managed_allocation mc_registry_managed_allocation;
 typedef struct mc_registry_literal mc_registry_literal;
 
 struct mc_registry_string {
@@ -102,21 +104,6 @@ typedef struct mc_registry_list {
     size_t count;
     size_t capacity;
 } mc_registry_list;
-
-/* The wire constructor owns a Set of its actual later position keys, not an
- * Integer-ID set. Only empty construction is represented here; its gameplay
- * HashMap/node operations belong to the unfinished wire callback machinery. */
-typedef struct mc_registry_wire_map {
-    void *table;
-    size_t size;
-    int32_t threshold;
-    float load_factor;
-    int32_t mod_count;
-} mc_registry_wire_map;
-
-typedef struct mc_registry_wire_set {
-    mc_registry_wire_map *map;
-} mc_registry_wire_set;
 
 typedef struct mc_pressure_category {
     const mc_registry_string *name;
@@ -268,7 +255,11 @@ struct mc_registry_classes {
     mc_registry_options options;
     mc_registry_phase blocks_phase;
     int32_t block_initializer_pc;
+    /* Permanent arena/external-owner bytes retain reached constructor
+     * prefixes. Managed bytes are reclaimable; peak covers their joint total. */
     size_t allocation_bytes;
+    size_t managed_current_bytes;
+    size_t total_peak_bytes;
     size_t named_blocks;
     /* Native runtime lifetime count, separate from Java class fields. */
     size_t runtime_borrows;
@@ -277,6 +268,9 @@ struct mc_registry_classes {
     mc_registry_error block_failure;
     mc_registry_initializer *initializer;
     mc_registry_allocation *allocations;
+    mc_registry_managed_allocation *managed_allocations;
+    mc_registry_wire_set *wire_sets;
+    size_t wire_snapshot_count;
     struct mc_registry_stack_allocation *item_stacks;
     mc_registry_literal *literals;
     mc_block *current_block;
@@ -382,8 +376,6 @@ void mc_registry_block_unbreakable(mc_block *block);
 void mc_registry_block_no_stats(mc_block *block);
 mc_registry_status mc_registry_block_random(mc_registry_classes *classes, mc_block *block,
                                             mc_java_random **destination);
-mc_registry_status mc_registry_wire_set_create(mc_registry_classes *classes,
-                                               mc_registry_wire_set **out);
 mc_registry_status mc_registry_pressure_initialize(mc_registry_classes *classes);
 const mc_tile_class_identity *mc_registry_sign_class(mc_registry_classes *classes);
 mc_registry_status mc_registry_block_prefix(mc_registry_classes *classes);

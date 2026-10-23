@@ -507,9 +507,13 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
     CHECK(view->m[70]->subtype.bv.a == owner->pressure_b);
     CHECK(view->m[72]->subtype.bv.a == owner->pressure_a);
     const mc_registry_wire_set *wire = view->m[55]->subtype.sm.b;
-    CHECK(view->m[55]->subtype.sm.a && wire != NULL && wire->map != NULL);
-    CHECK(wire->map->table == NULL && wire->map->size == 0 && wire->map->threshold == 0);
-    CHECK(wire->map->load_factor == 0.75f && wire->map->mod_count == 0);
+    mc_registry_wire_set_view wire_view;
+    CHECK(view->m[55]->subtype.sm.a && wire != NULL);
+    CHECK(mc_registry_wire_set_inspect(wire, &wire_view) == MC_REGISTRY_OK);
+    CHECK(wire_view.map != NULL && wire_view.table == NULL && wire_view.size == 0 &&
+          wire_view.capacity == 0 && wire_view.threshold == 0);
+    CHECK(wire_view.load_factor == 0.75f && wire_view.mod_count == 0 &&
+          wire_view.constructed_keys == 0);
     for (size_t i = 0; i < COUNT(random_ids); ++i) {
         const mc_java_random *random = random_at(view, random_ids[i]);
         uint64_t cache;

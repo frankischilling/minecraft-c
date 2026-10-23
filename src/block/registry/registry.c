@@ -1,5 +1,6 @@
 #include "../../entity/classes/classes_internal.h"
 #include "../../item/registry/stacks_internal.h"
+#include "managed_internal.h"
 #include "registry_internal.h"
 
 #include <stdlib.h>
@@ -101,8 +102,8 @@ void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes) {
         (void)mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "empty native request", NULL);
         return NULL;
     }
-    const size_t remaining = classes->options.max_allocation_bytes - classes->allocation_bytes;
-    if (remaining < sizeof(mc_registry_allocation) ||
+    const size_t remaining = mc_registry_managed_remaining(classes);
+    if (!mc_registry_managed_fits(classes, 0) || remaining < sizeof(mc_registry_allocation) ||
         bytes > remaining - sizeof(mc_registry_allocation)) {
         (void)mc_registry_fail(classes, MC_REGISTRY_LIMIT, "registry allocation bound", NULL);
         return NULL;
@@ -113,8 +114,14 @@ void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes) {
                                NULL);
         return NULL;
     }
+    /* This unpublished record is reclaimable until its payload succeeds.
+     * Include its real acquisition in the peak even if calloc fails. There
+     * are no callbacks between this temporary charge and its retirement. */
+    classes->managed_current_bytes += sizeof(*record);
+    mc_registry_managed_peak_update(classes);
     void *data = calloc(1, bytes);
     if (data == NULL) {
+        classes->managed_current_bytes -= sizeof(*record);
         free(record);
         (void)mc_registry_fail(classes, MC_REGISTRY_ALLOCATION_FAILED, "registry allocation", NULL);
         return NULL;
@@ -123,7 +130,9 @@ void *mc_registry_allocate(mc_registry_classes *classes, size_t bytes) {
     record->bytes = bytes;
     record->next = classes->allocations;
     classes->allocations = record;
+    classes->managed_current_bytes -= sizeof(*record);
     classes->allocation_bytes += sizeof(*record) + bytes;
+    mc_registry_managed_peak_update(classes);
     return data;
 }
 
@@ -217,6 +226,7 @@ mc_registry_status mc_registry_classes_allocate(const mc_registry_options *optio
     classes->options = *options;
     classes->options.max_allocation_bytes = maximum;
     classes->allocation_bytes = sizeof(*classes);
+    classes->total_peak_bytes = sizeof(*classes);
     classes->blocks_phase = MC_REGISTRY_COLD;
     classes->block_initializer_pc = -1;
     classes->last_error = native_error(MC_REGISTRY_OK, NULL);
@@ -324,9 +334,12 @@ mc_registry_status mc_registry_classes_inspect_blocks(const mc_registry_classes 
                                                       mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry view arguments");
+    if (classes->managed_current_bytes > SIZE_MAX - classes->allocation_bytes)
+        return result(error, MC_REGISTRY_LIMIT, "registry view allocation total");
     *out = (mc_registry_block_view){.phase = classes->blocks_phase,
                                     .initializer_pc = classes->block_initializer_pc,
-                                    .allocation_bytes = classes->allocation_bytes,
+                                    .allocation_bytes =
+                                        classes->allocation_bytes + classes->managed_current_bytes,
                                     .named_blocks = classes->named_blocks,
                                     .d = classes->blocks.d,
                                     .e = classes->blocks.e,
@@ -412,6 +425,10 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes,
     if (classes->entities != NULL &&
         mc_entity_classes_runtime_release_admit(classes->entities) != MC_ENTITY_OK)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding release");
+    if (classes->wire_snapshot_count != 0)
+        return result(error, MC_REGISTRY_BUSY, "Registry wire snapshots remain");
+    mc_registry_wire_sets_retire(classes);
+    mc_registry_managed_retire(classes);
     mc_registry_stacks_retire(classes);
     mc_registry_allocation *record = classes->allocations;
     while (record != NULL) {
@@ -623,20 +640,6 @@ mc_registry_status mc_registry_block_random(mc_registry_classes *classes, mc_blo
     }
     block->constructor_pc = 16;
     *destination = random;
-    return MC_REGISTRY_OK;
-}
-
-mc_registry_status mc_registry_wire_set_create(mc_registry_classes *classes,
-                                               mc_registry_wire_set **out) {
-    mc_registry_wire_set *set = mc_registry_allocate(classes, sizeof(*set));
-    if (set == NULL)
-        return classes->last_error.status;
-    mc_registry_wire_map *map = mc_registry_allocate(classes, sizeof(*map));
-    if (map == NULL)
-        return classes->last_error.status;
-    map->load_factor = 0.75f;
-    set->map = map;
-    *out = set;
     return MC_REGISTRY_OK;
 }
 

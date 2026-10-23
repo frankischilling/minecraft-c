@@ -1,5 +1,13 @@
 # World simulation
 
+The [wire position Set](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/wire-position-set.md)
+has full coordinate equality, ordered bucket/tree operations and reclaimable
+Registry storage. Shallow snapshots survive clear/refill and nested use. Local
+MSVC/GCC/Clang comparisons match sixteen original collection histories under
+measured identity inputs. The reference record retains development-source and
+test limits. Wire lifecycle propagation, default identity generation and actual
+World notification order remain unfinished.
+
 [Dedicated construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md)
 now has actual Server and World owners, separate subclass fields and a
 duplicate-preserving Entity index. Its public original-only fixture and

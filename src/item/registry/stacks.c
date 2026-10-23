@@ -1,3 +1,4 @@
+#include "../../block/registry/managed_internal.h"
 #include "../../block/registry/registry_internal.h"
 #include "stacks_internal.h"
 
@@ -38,8 +39,7 @@ mc_registry_status mc_registry_stack_allocate(mc_registry_classes *classes, mc_i
     if (classes->entered == 0 || out == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Stack allocation requires admitted class access and output", NULL);
-    const size_t maximum = classes->options.max_allocation_bytes;
-    if (classes->allocation_bytes > maximum)
+    if (!mc_registry_managed_fits(classes, 0))
         return mc_registry_fail(classes, MC_REGISTRY_LIMIT, "Stack class allocation bound", NULL);
 
     /* This retained metadata and its native allocation record are charged by
@@ -49,7 +49,7 @@ mc_registry_status mc_registry_stack_allocate(mc_registry_classes *classes, mc_i
         return classes->last_error.status;
     *node = (struct mc_registry_stack_allocation){0};
     const size_t bytes = mc_item_stack_object_bytes();
-    if (classes->allocation_bytes > maximum || bytes > maximum - classes->allocation_bytes)
+    if (!mc_registry_managed_fits(classes, bytes))
         return mc_registry_fail(classes, MC_REGISTRY_LIMIT, "Stack object allocation bound", NULL);
 
     mc_item_stack *stack = NULL;
@@ -62,6 +62,7 @@ mc_registry_status mc_registry_stack_allocate(mc_registry_classes *classes, mc_i
      * the successfully acquired external owner, once, and its hold is linked
      * before publishing the borrowed result. Failed metadata remains retained. */
     classes->allocation_bytes += bytes;
+    mc_registry_managed_peak_update(classes);
     node->stack = stack;
     node->next = classes->item_stacks;
     classes->item_stacks = node;
