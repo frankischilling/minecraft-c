@@ -10,20 +10,22 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Current local qualification passes 183 tests with MSVC 19.51, 185 with GCC 13.3
-and 185 with Clang 18.1.3, with zero failures, errors or skips. Linux runs include
-ASan, UBSan and leak checks. Formatting passes for all 549 C/header files.
+Code checkpoint `6ad91ec` passes 186 tests with MSVC 19.51, 188 with GCC 13.3
+and 188 with Clang 18.1.3, with zero failures, errors or skips. Linux runs include
+ASan, UBSan and leak checks. Formatting passes for all 550 C/header files.
 Mirrors and lifecycle intervals pass on all three hosts, including 556 positive
 and 2,011 negative interval checks per host.
 
-At code commit `2e9c6e0`, the
-[hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39918948340)
-passes 182 MSVC, 184 GCC and 184 Clang tests, 550 total. All four actual checkout
+At code commit `6ad91ec`, the
+[hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39929133496)
+passes 184 MSVC, 186 GCC and 186 Clang tests, 556 total. All four actual checkout
 trees match the code commit; formatting, mirrors and lifecycle controls pass.
-Hosted tests use the public fixtures. Fresh supplied-archive plant comparisons
+Hosted tests use the public fixtures. Fresh supplied-archive population/plant comparisons
 retain their separate local scope.
 
-Each full local suite includes one fresh optional original plant comparison:
+Each full local suite includes fresh optional original population and plant
+comparisons. The [fresh World result](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
+matches the seed-23 origin neighborhood on both sides. The plant comparison has
 59 client and 59 server cases, with zero mismatches. Its
 [declared projection and exclusions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md)
 bound this result; it does not establish original World/Chunk parity.

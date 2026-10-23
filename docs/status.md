@@ -7,10 +7,13 @@ regions, provider numerical state and Random continuations. The
 origin per side and its remaining limits. Broader population acceptance remains
 open.
 
+At code checkpoint `6ad91ec`, local suites pass 186 MSVC, 188 GCC and 188 Clang
+tests without failures or skips, including fresh population and plant
+comparisons on each compiler. Linux uses ASan, UBSan and leak checks. All 550
+C/header files pass clang-format 18.
+
 Plant lifecycle callbacks, farmland behavior and World block-light queries are
-implemented. At plant checkpoint `2e9c6e0`, local suites pass 183 MSVC, 185 GCC and 185 Clang tests without
-failures or skips, including a fresh plant comparison on each compiler. Linux
-uses ASan, UBSan and leak checks. All 549 C/header files pass clang-format 18.
+implemented.
 The [plant](world/plants.md) and [World-query](world/queries.md) contracts describe
 the implemented behavior and its limits.
 

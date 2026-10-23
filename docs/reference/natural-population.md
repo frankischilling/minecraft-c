@@ -85,6 +85,35 @@ fails the process.
 
 ## Reproduction and limits
 
+### Committed checkpoint
+
+At code commit `6ad91ec`, complete clean-source local suites pass 186 MSVC
+19.51.36260.0, 188 GCC 13.3.0 and 188 Clang 18.1.3 tests: 562 executions, with no
+failures, errors or skips. Linux enables ASan, UBSan and leak checks. Each suite
+includes a fresh original comparison on both sides and the public native
+regression. Windows uses JDK 17.0.17; Linux uses JDK 17.0.20. All 550 C/header files
+pass clang-format 18, and all three hosts pass controller mirrors and 556
+positive/2,011 negative lifecycle-interval controls.
+
+The independent retained audit checks all 1,039 source-export files against
+committed Git blobs, allowing checkout line-ending conversion, and verifies
+the exact exported bytes in both source locations. It rehashes every declared
+comparison input, retained file and process stream in all six fresh/public
+captures. For each compiler and side, the minimal-resource native run also
+matches the exact-resource native run's entire retained projection after
+excluding each run's separately seeded, unchanged `World.r`. This establishes
+resource-variant insensitivity for this finite schedule, not general Registry
+or resource equality.
+
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39929133496)
+passes 184 MSVC 19.44.35229.0, 186 GCC 13.3.0 and 186 Clang 18.1.3 tests, 556 total,
+with formatting and all mirror/interval checks. All four actual checkout trees
+match the committed code tree. Hosted tests run the public regression; the six
+optional fresh population/plant comparisons retain their local archive-dependent
+scope.
+
+### Commands
+
 Configure with `MC_ENABLE_POPULATION_REFERENCE_TESTS=ON`, both
 `MC_REFERENCE_CLIENT_JAR` and `MC_REFERENCE_SERVER_JAR`, and explicit JDK17+
 `Java_JAVA_EXECUTABLE` / `Java_JAVAC_EXECUTABLE` paths. Set

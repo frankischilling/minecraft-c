@@ -2,6 +2,18 @@
 
 ## Fresh World population
 
+Code checkpoint `6ad91ec` passes complete local suites of 186 MSVC, 188 GCC and
+188 Clang tests, 562 total, with no failures, errors or skips. Both fresh
+population and plant comparisons run on every compiler. Linux enables ASan,
+UBSan and leak checks; all 550 C/header files pass clang-format 18. The
+[source-bound audit](reference/natural-population.md#committed-checkpoint)
+checks 1,039 source files and every declared capture input, output and stream.
+
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39929133496)
+passes all 556 public/JDK tests: 184 MSVC, 186 GCC and 186 Clang. Formatting and
+all mirror/interval checks pass; all four actual checkout trees match the code
+commit. The six optional supplied-archive population/plant comparisons are local.
+
 `reference.natural_population` compares genuine fresh original and native
 client/base-server Worlds for seed23. The four acquisitions match all retained
 Chunk bytes and headers, cache membership, 1,777 ordered final light regions,
@@ -76,8 +88,8 @@ fresh test directories and retains its report under the build's
 `reference-plant-lifecycle` directory. See the [plant contract](world/plants.md)
 for implemented callbacks and remaining gameplay work.
 
-Complete local suites pass 183 MSVC, 185 GCC and 185 Clang tests, 553 executions
-with zero failures, errors or skips. Each suite includes the optional original
+At the plant checkpoint, complete local suites pass 183 MSVC, 185 GCC and 185
+Clang tests, 553 executions with zero failures, errors or skips. Each suite includes the optional original
 plant comparison; normal hosted builds omit those three archive-dependent tests.
 Native plant contracts pass 17,595 checks per compiler, including two adjacent
 127-block columns removed recursively. Linux enables ASan, UBSan and leak
