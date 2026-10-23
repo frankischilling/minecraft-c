@@ -10,6 +10,12 @@ and cache golden records; public origin replay checks the older cache oracle.
 Both public native replays use separately declared minimal resources. The older
 MCC1 callback replay keeps its imported-effect scope.
 
+The [populated Chunk save/readback profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md)
+adds two genuine cache saves and four direct loads in the same World. Complete
+typed NBT joins the actual saved Chunk arrays; fresh readbacks use each
+implementation's real block map. The second save and every read preserve all
+raw disk bytes. Full World save, unloading and restart remain open.
+
 Storage layers have separate contracts and ownership:
 
 - [Raw NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/nbt.md) owns decoded trees and immutable source copies.

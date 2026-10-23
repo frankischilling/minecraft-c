@@ -73,6 +73,26 @@ passes all 559 public/JDK tests: 185 MSVC, 187 GCC and 187 Clang. Formatting and
 all mirror/interval checks pass; all four actual checkout trees match the code
 commit. The nine optional supplied-archive population/plant comparisons are local.
 
+## Populated Chunk save/readback
+
+`reference.population_save_readback` follows the unchanged origin schedule with
+time 1234, two forced cache saves and four direct region loads. It uses both
+supplied originals and exact extracted resources. The same population reference
+flag, JAR paths and Java paths enable this test.
+
+Public `world.population_save_readback_replay` needs no Java or archive. It runs
+the actual native producer with the declared minimal resources and lossless
+original-only fixtures. Both comparisons check all twenty cache/numerical
+boundaries, fifteen Info/disk inventories, complete saved typed NBT and fresh
+normalized readback arrays. Session and region clocks remain measured per-run
+inputs. `tools.population_persistence` rejects corrupted observations and fixture
+attribution. The [scope and commands](reference/population-persistence.md) retain
+full World save, unload and restart as separate acceptance work.
+
+```sh
+ctest --test-dir build --output-on-failure -R 'population_(save_readback|persistence)'
+```
+
 ## Plant lifecycle validation
 
 The finite original/native comparison matches all 59 prepared cases per side

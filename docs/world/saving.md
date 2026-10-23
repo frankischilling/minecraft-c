@@ -10,6 +10,11 @@ The runtime save and maintenance callbacks use this path. Legacy composition
 and passive opaque builders keep their separate behavior. Whole World metadata,
 named saved data and complete population/persistence remain unfinished.
 
+The [populated Chunk comparison](../reference/population-persistence.md) exercises
+this path after genuine origin population, then directly reloads the four saved
+records. It checks complete typed NBT and raw disk preservation in the same held
+World. Full World metadata save and restart retain their separate scope.
+
 ## Source order and effects
 
 The paired Region save invokes the World session method before calling the

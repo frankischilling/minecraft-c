@@ -12,6 +12,10 @@ The original constructor selects spawn `(0,64,0)` and retains origin Chunk
 C computes terrain, features, mutation and lighting through its installed
 services; it imports no observed feature results.
 
+The separate [save/readback profile](population-persistence.md) extends the
+unchanged origin prefix with actual populated-Chunk persistence. It keeps the
+same World alive for two cache saves and four direct region loads.
+
 ## Acquisition profiles
 
 The default `origin` profile calls `(1,0)`, `(0,1)`, `(1,1)` and `(1,1)`.
@@ -204,7 +208,7 @@ This comparison covers one seed and two fixed schedules, with at most four
 populated Chunks per side. It does not compare every feature's internal call
 trace, immutable noise-layer objects, Chunk backing-object aliases,
 cross-language Random-owner graphs, clock/profile equality, arbitrary recursion
-or failure paths. Persistence, unload/reload, other seeds and Biomes, extreme
+or failure paths. Full persistence, unload/reload, other seeds and Biomes, extreme
 coordinates, nonempty Entity/Tile collections or gameplay observers, and
 multiplayer remain separate acceptance work. The original
 [controller source map](normal-population.md) and

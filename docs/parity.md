@@ -107,6 +107,12 @@ The inventory expands the broad gameplay rows into concrete child behaviors.
 | Protocol, synchronization, administration and server operation | [Login bytecode](reference/binaries.md), [inventory](inventory.md) | None | Full four-way matrix below still needed | Under research |
 | Native client/server runtime and performance coverage | [Testing scope](testing.md) | Shared-core build only | MSVC Windows and GCC/Clang WSL locally; native Windows/Linux CI passed before and after integration | Partially implemented; no playable/native game validation or performance claim |
 
+The [populated Chunk save/readback record](reference/population-persistence.md)
+extends the seed23 origin comparison through two forced cache saves and four
+direct region loads. Its complete arrays, typed NBT, held Info and raw-file
+preservation checks retain that finite held-World scope. Full metadata save,
+unload and restart acceptance remain unfinished.
+
 ## Multiplayer interoperability
 
 All scenarios must pin both binaries, configuration, platform, copied world,

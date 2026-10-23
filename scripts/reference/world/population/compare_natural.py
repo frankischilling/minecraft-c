@@ -239,25 +239,11 @@ def normalize_identities(sequence):
     return result
 
 
-def compare_original(native, original, public, jar, *, profile):
-    require(type(profile) is str and profile in SCHEDULES, "known requested population profile")
-    equal(native.get("profile", "origin"), profile, "requested native population profile")
-    equal(original.get("profile", "origin"), profile, "requested original population profile")
-    _, _, finish, _, acquire, _ = PUBLIC.driver.helpers()
-    expected = validate_original_observation(original, native["side"], profile, jar)
-    cache_projection(native, expected)
-    # The older immutable corpus had JDI instrumentation. A fresh untraced
-    # control must reproduce its complete projected source state as well.
-    for field in ("initial",):
-        equal(expected[field], public[field], "fresh/public original " + field)
-    for index, (fresh, previous) in enumerate(zip(expected["operations"], public["operations"])):
-        equal({key: fresh[key] for key in ("index", "method", "coordinates", "result", "status", "snapshot")},
-              {key: previous[key] for key in ("index", "method", "coordinates", "result", "status", "snapshot")},
-              "fresh/public original operation " + str(index))
-    snapshots = [native["initial"], *[row["snapshot"] for row in native["operations"]]]
-    states = original["states"]
-    require(type(states) is list and len(states) == len(snapshots) == len(SCHEDULES[profile]) + 1,
-            "complete numerical observation boundaries")
+def compare_numerical_snapshots(snapshots, states):
+    """Compare one complete numerical trajectory, including cross-boundary aliases."""
+    require(type(snapshots) is list and type(states) is list and
+            1 <= len(snapshots) == len(states), "complete numerical trajectory")
+    _, _, _, _, acquire, _ = PUBLIC.driver.helpers()
     native_ids, original_ids = [], []
     native_world_random, original_world_random = None, None
     for index, (snapshot, state) in enumerate(zip(snapshots, states)):
@@ -300,6 +286,27 @@ def compare_original(native, original, public, jar, *, profile):
             equal(state["aux"][name], states[0]["aux"][name], "original World.r owner retained")
     equal(normalize_identities(native_ids), normalize_identities(original_ids),
           "actual array alias/replacement graph")
+
+
+def compare_original(native, original, public, jar, *, profile):
+    require(type(profile) is str and profile in SCHEDULES, "known requested population profile")
+    equal(native.get("profile", "origin"), profile, "requested native population profile")
+    equal(original.get("profile", "origin"), profile, "requested original population profile")
+    expected = validate_original_observation(original, native["side"], profile, jar)
+    cache_projection(native, expected)
+    # The older immutable corpus had JDI instrumentation. A fresh untraced
+    # control must reproduce its complete projected source state as well.
+    for field in ("initial",):
+        equal(expected[field], public[field], "fresh/public original " + field)
+    for index, (fresh, previous) in enumerate(zip(expected["operations"], public["operations"])):
+        equal({key: fresh[key] for key in ("index", "method", "coordinates", "result", "status", "snapshot")},
+              {key: previous[key] for key in ("index", "method", "coordinates", "result", "status", "snapshot")},
+              "fresh/public original operation " + str(index))
+    snapshots = [native["initial"], *[row["snapshot"] for row in native["operations"]]]
+    states = original["states"]
+    require(type(states) is list and len(states) == len(snapshots) == len(SCHEDULES[profile]) + 1,
+            "complete numerical observation boundaries")
+    compare_numerical_snapshots(snapshots, states)
 
 
 def extract_resources(jar, destination):

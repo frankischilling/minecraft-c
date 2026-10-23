@@ -40,6 +40,14 @@ and require no Java or archives. Select both fresh comparisons with
 [test commands](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#fresh-world-population)
 include the separate public replay commands.
 
+The same population reference flag also enables
+`reference.population_save_readback`. Public
+`world.population_save_readback_replay` needs no Java or archive, and
+`tools.population_persistence` checks corruption controls. The
+[save/readback record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md)
+defines its twenty complete boundaries, disk/NBT projection and remaining full
+World save, unload and restart requirements.
+
 The plant comparison has 59 client and 59 server cases, with zero mismatches. Its
 [declared projection and exclusions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md)
 bound this result; it does not establish original World/Chunk parity.

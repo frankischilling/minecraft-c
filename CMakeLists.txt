@@ -1496,6 +1496,20 @@ if(BUILD_TESTING)
     set_tests_properties(world.natural_population_ring_replay PROPERTIES
         LABELS "public;integration;population;replay" TIMEOUT 240)
 
+    add_test(NAME tools.population_persistence
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_population_persistence.py)
+    set_tests_properties(tools.population_persistence PROPERTIES
+        LABELS "public;tools;population;storage" TIMEOUT 180)
+
+    add_test(NAME world.population_save_readback_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/replay_population_persistence.py"
+        --executable "$<TARGET_FILE:mc_natural_population_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/population-save-readback-replay")
+    set_tests_properties(world.population_save_readback_replay PROPERTIES
+        LABELS "public;integration;population;storage;replay" TIMEOUT 300)
+
     if(MC_ENABLE_POPULATION_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
         foreach(MC_POPULATION_PROFILE IN ITEMS origin ring)
@@ -1520,6 +1534,19 @@ if(BUILD_TESTING)
             set_tests_properties("${MC_POPULATION_TEST}" PROPERTIES
                 LABELS "reference;original;population;integration" TIMEOUT 600)
         endforeach()
+
+        add_test(NAME reference.population_save_readback
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/population/compare_persistence.py"
+            --executable "$<TARGET_FILE:mc_natural_population_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-population-save-readback")
+        set_tests_properties(reference.population_save_readback PROPERTIES
+            LABELS "reference;original;population;storage;integration" TIMEOUT 600)
     endif()
 
     add_test(NAME world.queries

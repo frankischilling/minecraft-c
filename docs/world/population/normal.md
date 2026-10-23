@@ -20,6 +20,11 @@ Chunk arrays, provider numerical state, array aliases and copied Random
 continuations. Other seeds and arbitrary recursive resource behavior retain
 separate acceptance requirements.
 
+The [save/readback comparison](../../reference/population-persistence.md) follows
+the origin prefix through two actual forced cache saves and four direct loads.
+It checks the complete saved typed NBT, all five loaded arrays, cache and Info
+state, and raw disk preservation while the same World remains alive.
+
 ## Schedule and shared state
 
 The controller uses the provider's actual World, terrain-noise objects and

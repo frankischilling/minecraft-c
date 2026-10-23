@@ -8,8 +8,14 @@ retained arrays, cache/light ordering, provider numerical state, array aliases
 and Random continuations. Public ring replay has a full original numerical
 and cache golden oracle; origin public replay keeps its cache-only oracle.
 Both native replays use separately declared minimal resources. Other seeds,
-arbitrary recursive schedules and persistence retain separate acceptance
+arbitrary recursive schedules and full persistence retain separate acceptance
 requirements.
+
+The [populated Chunk save/readback comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md)
+extends the origin prefix with two forced cache saves and four direct region
+loads. It checks complete typed NBT, normalized arrays, held Info and cache state,
+and all disk bytes. It keeps the same World alive; full metadata save, unload
+and restart remain separate requirements.
 
 The native World modules use actual Registry owners, Chunk storage, acquiring
 readers and owning Lists. They preserve source order and completed effects when

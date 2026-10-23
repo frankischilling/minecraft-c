@@ -1,26 +1,44 @@
 /* Finite GAME World observation. All source state comes from fresh constructors
  * and the scheduled actual cache c calls; no captured result is imported. Native
  * terminal retirement runs only after the complete observation is encoded. */
+#if !defined(_WIN32) && !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "mc/resources/files/files.h"
 #include "mc/world/biome/registry.h"
 #include "mc/world/biome/sampling.h"
 #include "mc/world/dimension/biome_runtime.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/lighting.h"
+#include "mc/world/runtime/saving/saving.h"
 
 #include "../../../../src/block/registry/registry_internal.h"
 #include "../../../../src/platform/time/millis.h"
 #include "../../../../src/world/biome/biome_internal.h"
 #include "../../../../src/world/runtime/construction_internal.h"
+#include "../../../../src/world/runtime/loading/loading_internal.h"
 #include "../../../../src/world/runtime/provider_internal.h"
 #include "../../../../src/world/storage/files.h"
 #include "../../../../src/world/storage/objects_internal.h"
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
+
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#else
+#include <dirent.h>
+#include <sys/stat.h>
+#endif
 
 enum { NATURAL_CAPACITY = 32, NATURAL_IDENTITIES = NATURAL_CAPACITY + 1 };
 
@@ -32,12 +50,28 @@ typedef enum natural_array_domain {
 
 #define NATURAL_JSON_LIMIT (64u * 1024u * 1024u)
 #define NATURAL_ARRAY_IDENTITIES 128u
+#define NATURAL_DISK_ENTRIES 256u
+#define NATURAL_DISK_FILE_BYTES (4u * 1024u * 1024u)
+#define NATURAL_DISK_BYTES (8u * 1024u * 1024u)
 
 typedef struct natural_json {
     char *bytes;
     size_t length, capacity;
     bool failed;
 } natural_json;
+
+typedef struct natural_persistence {
+    const char *root;
+    char *store_root;
+    mc_world_info *info;
+    int64_t session_token, construction_low, construction_high;
+    bool construction_low_valid, construction_high_valid, map_ready;
+    size_t retained_disk_bytes;
+    /* The actual per-attempt records are large; keep them off recursive/native
+     * default-stack frames and never infer children from ambient last_error. */
+    mc_world_runtime_lifecycle_error save_error;
+    mc_world_game_load_error load_error;
+} natural_persistence;
 
 typedef struct natural_probe {
     bool client, constructor_called, enumeration_checked;
@@ -59,6 +93,7 @@ typedef struct natural_probe {
     const char *failed_stage, *failed_domain;
     unsigned int failed_status;
     mc_chunk_state *identities[NATURAL_IDENTITIES];
+    bool published[NATURAL_IDENTITIES];
     size_t identity_count;
     const void *arrays[NATURAL_ARRAY_IDENTITIES];
     natural_array_domain array_domains[NATURAL_ARRAY_IDENTITIES];
@@ -68,6 +103,7 @@ typedef struct natural_probe {
     mc_temperature_array *held_temperature[NATURAL_ARRAY_IDENTITIES];
     size_t held_temperature_count;
     uint8_t block_map[256];
+    natural_persistence *persistence;
     natural_json json;
 } natural_probe;
 
@@ -235,8 +271,12 @@ static bool diagnostic(natural_probe *probe) {
     if (!(last == NULL ? emit(json, "null") : storage(json, last)))
         return false;
     if (!emit(json, ",\"world_last_registry\":") ||
-        !registry_diagnostic(json, mc_world_runtime_last_registry_error(probe->world)) ||
-        !emit(json, ",\"construction\":"))
+        !registry_diagnostic(json, mc_world_runtime_last_registry_error(probe->world)))
+        return false;
+    if (probe->persistence != NULL && (!emit(json, ",\"last_observation_storage_call\":") ||
+                                       !storage(json, &probe->inspection_error)))
+        return false;
+    if (!emit(json, ",\"construction\":"))
         return false;
     if (probe->world == NULL)
         return emit(json, "null}");
@@ -277,12 +317,23 @@ static bool track_chunks(natural_probe *probe) {
         return problem(probe, "Cache projection metadata", "probe", 1);
     if (probe->identity_count == 0 && chunk_id(probe, probe->provider.fallback) != 0)
         return false;
-    for (size_t i = 0; i < cache->insertion_count; ++i)
-        if (chunk_id(probe, cache->insertions[i]) == SIZE_MAX)
+    memset(probe->published, 0, sizeof(probe->published));
+    const size_t fallback = chunk_id(probe, probe->provider.fallback);
+    if (fallback == SIZE_MAX)
+        return false;
+    probe->published[fallback] = true;
+    for (size_t i = 0; i < cache->insertion_count; ++i) {
+        const size_t id = chunk_id(probe, cache->insertions[i]);
+        if (id == SIZE_MAX)
             return false;
-    for (size_t i = 0; i < cache->count; ++i)
-        if (chunk_id(probe, cache->entries[i].chunk) == SIZE_MAX)
+        probe->published[id] = true;
+    }
+    for (size_t i = 0; i < cache->count; ++i) {
+        const size_t id = chunk_id(probe, cache->entries[i].chunk);
+        if (id == SIZE_MAX)
             return false;
+        probe->published[id] = true;
+    }
     const size_t count = mc_world_store_chunk_count(probe->store);
     if (count > NATURAL_CAPACITY)
         return problem(probe, "Store projection capacity", "probe", 1);
@@ -343,6 +394,19 @@ static bool chunk_data(natural_probe *probe, mc_chunk_state *state) {
            emit(json, ",\"heightmap\":") &&
            byte_array(json, data->heightmap, sizeof(data->heightmap)) &&
            emit(json, ",\"minimum_height\":%" PRId32 "}", data->minimum_height);
+}
+
+static bool chunk_projection(natural_probe *probe, mc_chunk_state *state, size_t id) {
+    natural_json *json = &probe->json;
+    return emit(json,
+                "{\"id\":%zu,\"coordinates\":[%" PRId32 ",%" PRId32
+                "],\"blank\":%s,\"flags\":{\"c\":%s,\"n\":%s,\"o\":%s,\"p\":%s,\"q\":%s},"
+                "\"time\":\"%016" PRIx64 "\",\"data\":",
+                id, state->x, state->z, boolean(state->blank), boolean(state->active),
+                boolean(state->terrain_populated), boolean(state->dirty),
+                boolean(state->never_save), boolean(state->has_entities),
+                (uint64_t)state->last_save_time) &&
+           (state->blank ? emit(json, "null") : chunk_data(probe, state)) && emit(json, "}");
 }
 
 static size_t array_id(natural_probe *probe, const void *array, natural_array_domain domain) {
@@ -559,17 +623,14 @@ static bool snapshot(natural_probe *probe) {
             return false;
     if (!emit(json, "],\"chunks\":["))
         return false;
+    size_t emitted = 0;
     for (size_t i = 0; i < probe->identity_count; ++i) {
-        mc_chunk_state *state = probe->identities[i];
-        if (!emit(json,
-                  "%s{\"id\":%zu,\"coordinates\":[%" PRId32 ",%" PRId32
-                  "],\"blank\":%s,\"flags\":{\"c\":%s,\"n\":%s,\"o\":%s,\"p\":%s,\"q\":%s},"
-                  "\"time\":\"%016" PRIx64 "\",\"data\":",
-                  i == 0 ? "" : ",", i, state->x, state->z, boolean(state->blank),
-                  boolean(state->active), boolean(state->terrain_populated), boolean(state->dirty),
-                  boolean(state->never_save), boolean(state->has_entities),
-                  (uint64_t)state->last_save_time) ||
-            !(state->blank ? emit(json, "null") : chunk_data(probe, state)) || !emit(json, "}"))
+        /* Raw loader results remain real Store owners without becoming cache
+         * members. Enumeration and terminal retirement still include them. */
+        if (probe->persistence != NULL && !probe->published[i])
+            continue;
+        if (!emit(json, "%s", emitted++ == 0 ? "" : ",") ||
+            !chunk_projection(probe, probe->identities[i], i))
             return false;
     }
     mc_world_light_list_view lights;
@@ -654,20 +715,42 @@ static bool initialize(natural_probe *probe, const char *resources, const char *
         return problem(probe, "World root already exists", "probe", 1);
     NATURAL_REQUIRE(probe, mc_world_regions_create(NULL, &probe->regions, &probe->storage_error),
                     MC_WORLD_STORAGE_OK, "storage", "Region owner");
-    for (size_t i = 0; i < sizeof(probe->block_map); ++i)
-        probe->block_map[i] = (uint8_t)i;
+    const char *store_root = root;
+    if (probe->persistence != NULL) {
+        mc_registry_block_view blocks;
+        NATURAL_REQUIRE(
+            probe,
+            mc_registry_classes_inspect_blocks(probe->registry, &blocks, &probe->registry_error),
+            MC_REGISTRY_OK, "registry", "Block-map registration view");
+        if (blocks.phase != MC_REGISTRY_READY || blocks.m == NULL)
+            return problem(probe, "Block-map registration is not READY", "probe", 1);
+        probe->block_map[0] = 0;
+        for (size_t i = 1; i < sizeof(probe->block_map); ++i)
+            probe->block_map[i] = blocks.m[i] == NULL ? 0 : (uint8_t)i;
+        probe->persistence->map_ready = true;
+        NATURAL_REQUIRE(
+            probe,
+            mc_ws_path_join(root, "world", &probe->persistence->store_root, &probe->storage_error),
+            MC_WORLD_STORAGE_OK, "storage", "Persistence Store root binding");
+        store_root = probe->persistence->store_root;
+    } else {
+        for (size_t i = 0; i < sizeof(probe->block_map); ++i)
+            probe->block_map[i] = (uint8_t)i;
+    }
     int64_t token;
     NATURAL_REQUIRE(probe, mc_platform_current_time_millis(&token), MC_PLATFORM_MILLIS_OK, "clock",
                     "Store session clock");
+    if (probe->persistence != NULL)
+        probe->persistence->session_token = token;
     mc_world_store_options store = {.session_token = token,
                                     .block_map = probe->block_map,
                                     .block_map_length = sizeof(probe->block_map),
                                     .limits = mc_world_store_default_limits()};
     store.limits.max_loaded_chunks = NATURAL_CAPACITY;
-    NATURAL_REQUIRE(
-        probe,
-        mc_world_store_open(root, probe->regions, &store, &probe->store, &probe->storage_error),
-        MC_WORLD_STORAGE_OK, "storage", "Fresh Store");
+    NATURAL_REQUIRE(probe,
+                    mc_world_store_open(store_root, probe->regions, &store, &probe->store,
+                                        &probe->storage_error),
+                    MC_WORLD_STORAGE_OK, "storage", "Fresh Store");
     static const char title[] = "cache-callback-reference";
     uint16_t units[sizeof(title) - 1u];
     for (size_t i = 0; i < sizeof(units) / sizeof(units[0]); ++i)
@@ -713,7 +796,7 @@ static bool observe(natural_probe *probe, bool initialized, bool ring) {
     static const int32_t coordinates[][2] = {{1, 0},  {0, 1},  {1, 1},  {1, 1},   {-1, 0},
                                              {-1, 1}, {0, -1}, {1, -1}, {-1, -1}, {-1, -1}};
     const size_t operation_count = ring ? sizeof(coordinates) / sizeof(coordinates[0]) : 4u;
-    if (initialized) {
+    if (initialized && (probe->persistence == NULL || probe->failed_stage == NULL)) {
         for (size_t i = 0; i < operation_count; ++i) {
             mc_chunk_state *result = NULL;
             const mc_chunk_acquire_status status = mc_world_runtime_acquire(
@@ -749,7 +832,810 @@ static bool observe(natural_probe *probe, bool initialized, bool ring) {
     return emit(json, "],\"failure\":") && diagnostic(probe) && emit(json, "}\n");
 }
 
+typedef struct natural_disk_stamp {
+    bool directory;
+    uint64_t bytes, modified, changed, identity_a, identity_b;
+    uint32_t attributes;
+} natural_disk_stamp;
+
+typedef struct natural_disk_entry {
+    char *path;
+    natural_disk_stamp stamp;
+} natural_disk_entry;
+
+typedef struct natural_disk_inventory {
+    natural_disk_entry entries[NATURAL_DISK_ENTRIES];
+    size_t count, files, directories, bytes;
+} natural_disk_inventory;
+
+static bool disk_system_error(natural_probe *probe, const char *operation, uint32_t code) {
+    probe->inspection_error = (mc_world_storage_error){MC_WORLD_STORAGE_IO_ERROR, operation, code};
+    return problem(probe, operation, "disk-system", code);
+}
+
+#ifdef _WIN32
+static wchar_t *disk_wide(natural_probe *probe, const char *path) {
+    const size_t bytes = strlen(path);
+    if (bytes > MC_WS_PATH_MAX_BYTES) {
+        problem(probe, "Disk UTF-8 path bound", "probe", 1);
+        return NULL;
+    }
+    const int count = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, NULL, 0);
+    if (count <= 0) {
+        disk_system_error(probe, "Disk strict UTF-8 conversion", (uint32_t)GetLastError());
+        return NULL;
+    }
+    if (count > 32768) {
+        problem(probe, "Disk UTF-16 path bound", "probe", 1);
+        return NULL;
+    }
+    wchar_t *wide = malloc((size_t)count * sizeof(*wide));
+    if (wide == NULL) {
+        problem(probe, "Disk wide path allocation", "probe", 1);
+        return NULL;
+    }
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, wide, count) != count) {
+        disk_system_error(probe, "Disk strict UTF-8 conversion", (uint32_t)GetLastError());
+        free(wide);
+        return NULL;
+    }
+    return wide;
+}
+#endif
+
+static bool disk_stat(natural_probe *probe, const char *path, natural_disk_stamp *out) {
+    natural_disk_stamp stamp = {0};
+#ifdef _WIN32
+    wchar_t *wide = disk_wide(probe, path);
+    if (wide == NULL)
+        return false;
+    WIN32_FILE_ATTRIBUTE_DATA data;
+    const BOOL found = GetFileAttributesExW(wide, GetFileExInfoStandard, &data);
+    const DWORD error = found ? ERROR_SUCCESS : GetLastError();
+    free(wide);
+    if (!found)
+        return disk_system_error(probe, "Disk GetFileAttributesExW", (uint32_t)error);
+    if ((data.dwFileAttributes & (FILE_ATTRIBUTE_REPARSE_POINT | FILE_ATTRIBUTE_DEVICE)) != 0)
+        return problem(probe, "Disk reparse/device entry rejected", "probe", 1);
+    stamp.directory = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+    stamp.bytes = ((uint64_t)data.nFileSizeHigh << 32u) | data.nFileSizeLow;
+    stamp.modified =
+        ((uint64_t)data.ftLastWriteTime.dwHighDateTime << 32u) | data.ftLastWriteTime.dwLowDateTime;
+    stamp.changed =
+        ((uint64_t)data.ftCreationTime.dwHighDateTime << 32u) | data.ftCreationTime.dwLowDateTime;
+    stamp.attributes = (uint32_t)data.dwFileAttributes;
+#else
+    struct stat data;
+    if (lstat(path, &data) != 0)
+        return disk_system_error(probe, "Disk lstat", (uint32_t)errno);
+    if (!S_ISDIR(data.st_mode) && !S_ISREG(data.st_mode))
+        return problem(probe, "Disk symlink/special entry rejected", "probe", 1);
+    if (data.st_size < 0)
+        return problem(probe, "Disk negative file size", "probe", 1);
+    stamp.directory = S_ISDIR(data.st_mode);
+    stamp.bytes = (uint64_t)data.st_size;
+    stamp.modified = (uint64_t)data.st_mtim.tv_sec;
+    stamp.changed = (uint64_t)data.st_ctim.tv_sec;
+    stamp.identity_a = (uint64_t)data.st_dev;
+    stamp.identity_b = (uint64_t)data.st_ino;
+    stamp.attributes = (uint32_t)data.st_mode;
+#endif
+    *out = stamp;
+    return true;
+}
+
+static bool disk_same(const natural_disk_stamp *a, const natural_disk_stamp *b) {
+    return a->directory == b->directory && a->bytes == b->bytes && a->modified == b->modified &&
+           a->changed == b->changed && a->identity_a == b->identity_a &&
+           a->identity_b == b->identity_b && a->attributes == b->attributes;
+}
+
+static bool disk_component(const char *name) {
+    if (name[0] == '\0' || strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+        return false;
+    /* Game-created names in this finite profile are ASCII. This explicit
+     * admission avoids locale conversion of arbitrary external directory data. */
+    for (const unsigned char *p = (const unsigned char *)name; *p != 0; ++p)
+        if (*p < 32u || *p > 126u || *p == '/' || *p == '\\' || *p == ':')
+            return false;
+    return true;
+}
+
+static bool disk_add(natural_probe *probe, natural_disk_inventory *inventory, const char *parent,
+                     const char *name) {
+    if (inventory->count == NATURAL_DISK_ENTRIES || !disk_component(name))
+        return problem(probe, "Disk entry/name bound", "probe", 1);
+    const size_t parent_length = strcmp(parent, ".") == 0 ? 0 : strlen(parent);
+    const size_t name_length = strlen(name);
+    if (parent_length + name_length + 1u > MC_WS_PATH_MAX_BYTES)
+        return problem(probe, "Disk relative path bound", "probe", 1);
+    char *relative = malloc(parent_length + name_length + (parent_length == 0 ? 1u : 2u));
+    if (relative == NULL)
+        return problem(probe, "Disk relative path allocation", "probe", 1);
+    if (parent_length == 0)
+        memcpy(relative, name, name_length + 1u);
+    else {
+        memcpy(relative, parent, parent_length);
+        relative[parent_length] = '/';
+        memcpy(relative + parent_length + 1u, name, name_length + 1u);
+    }
+    char *absolute = NULL;
+    natural_disk_stamp stamp = {0};
+    const bool ok = mc_ws_path_join(probe->persistence->root, relative, &absolute,
+                                    &probe->inspection_error) == MC_WORLD_STORAGE_OK &&
+                    disk_stat(probe, absolute, &stamp);
+    free(absolute);
+    if (!ok) {
+        free(relative);
+        return problem(probe, "Disk entry inspection", "storage",
+                       (unsigned int)probe->inspection_error.status);
+    }
+    if (!stamp.directory && (stamp.bytes > NATURAL_DISK_FILE_BYTES ||
+                             stamp.bytes > NATURAL_DISK_BYTES - inventory->bytes)) {
+        free(relative);
+        return problem(probe, "Disk file/boundary byte bound", "probe", 1);
+    }
+    inventory->entries[inventory->count++] = (natural_disk_entry){relative, stamp};
+    if (stamp.directory)
+        ++inventory->directories;
+    else {
+        ++inventory->files;
+        inventory->bytes += (size_t)stamp.bytes;
+    }
+    return true;
+}
+
+static bool disk_children(natural_probe *probe, natural_disk_inventory *inventory,
+                          const char *relative) {
+    char *absolute = NULL;
+    if (mc_ws_path_join(probe->persistence->root, relative, &absolute, &probe->inspection_error) !=
+        MC_WORLD_STORAGE_OK)
+        return problem(probe, "Disk directory path", "storage",
+                       (unsigned int)probe->inspection_error.status);
+    bool ok = true;
+#ifdef _WIN32
+    char *pattern = NULL;
+    if (mc_ws_path_join(absolute, "*", &pattern, &probe->inspection_error) != MC_WORLD_STORAGE_OK) {
+        free(absolute);
+        return problem(probe, "Disk search path", "storage",
+                       (unsigned int)probe->inspection_error.status);
+    }
+    wchar_t *wide = disk_wide(probe, pattern);
+    free(pattern);
+    free(absolute);
+    if (wide == NULL)
+        return false;
+    WIN32_FIND_DATAW found;
+    HANDLE search = FindFirstFileW(wide, &found);
+    const DWORD search_error = search == INVALID_HANDLE_VALUE ? GetLastError() : ERROR_SUCCESS;
+    free(wide);
+    if (search == INVALID_HANDLE_VALUE) {
+        return search_error == ERROR_FILE_NOT_FOUND ||
+               disk_system_error(probe, "Disk FindFirstFileW", (uint32_t)search_error);
+    }
+    for (;;) {
+        if (wcscmp(found.cFileName, L".") != 0 && wcscmp(found.cFileName, L"..") != 0) {
+            char name[MAX_PATH];
+            size_t n = 0;
+            while (found.cFileName[n] != 0 && n + 1u < sizeof(name) && found.cFileName[n] >= 32 &&
+                   found.cFileName[n] <= 126) {
+                name[n] = (char)found.cFileName[n];
+                ++n;
+            }
+            name[n] = '\0';
+            if (found.cFileName[n] != 0 || !disk_add(probe, inventory, relative, name)) {
+                ok = problem(probe, "Disk non-ASCII/invalid entry", "probe", 1);
+                break;
+            }
+        }
+        if (!FindNextFileW(search, &found)) {
+            const DWORD error = GetLastError();
+            if (error != ERROR_NO_MORE_FILES)
+                ok = disk_system_error(probe, "Disk FindNextFileW", (uint32_t)error);
+            break;
+        }
+    }
+    if (!FindClose(search))
+        ok = disk_system_error(probe, "Disk FindClose", (uint32_t)GetLastError());
+#else
+    DIR *directory = opendir(absolute);
+    const int open_error = directory == NULL ? errno : 0;
+    free(absolute);
+    if (directory == NULL)
+        return disk_system_error(probe, "Disk opendir", (uint32_t)open_error);
+    for (;;) {
+        errno = 0;
+        const struct dirent *entry = readdir(directory);
+        if (entry == NULL) {
+            if (errno != 0)
+                ok = disk_system_error(probe, "Disk readdir", (uint32_t)errno);
+            break;
+        }
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 &&
+            !disk_add(probe, inventory, relative, entry->d_name)) {
+            ok = false;
+            break;
+        }
+    }
+    if (closedir(directory) != 0)
+        ok = disk_system_error(probe, "Disk closedir", (uint32_t)errno);
+#endif
+    return ok;
+}
+
+static int disk_order(const void *left, const void *right) {
+    const natural_disk_entry *a = left, *b = right;
+    return strcmp(a->path, b->path);
+}
+
+static bool disk_inventory(natural_probe *probe) {
+    natural_disk_inventory *inventory = calloc(1, sizeof(*inventory));
+    if (inventory == NULL)
+        return problem(probe, "Disk inventory allocation", "probe", 1);
+    bool ok = disk_stat(probe, probe->persistence->root, &inventory->entries[0].stamp);
+    if (ok && !inventory->entries[0].stamp.directory)
+        ok = problem(probe, "Disk root is not a directory", "probe", 1);
+    if (ok) {
+        inventory->entries[0].path = malloc(2u);
+        if (inventory->entries[0].path == NULL)
+            ok = problem(probe, "Disk root entry allocation", "probe", 1);
+        else {
+            memcpy(inventory->entries[0].path, ".", 2u);
+            inventory->count = inventory->directories = 1u;
+        }
+    }
+    for (size_t i = 0; ok && i < inventory->count; ++i)
+        if (inventory->entries[i].stamp.directory)
+            ok = disk_children(probe, inventory, inventory->entries[i].path);
+    if (ok && inventory->bytes > NATURAL_DISK_BYTES - probe->persistence->retained_disk_bytes)
+        ok = problem(probe, "Retained disk observation byte bound", "probe", 1);
+    if (ok) {
+        qsort(inventory->entries, inventory->count, sizeof(inventory->entries[0]), disk_order);
+        ok = emit(&probe->json, "{\"complete\":true,\"entries\":[");
+    }
+    for (size_t i = 0; ok && i < inventory->count; ++i) {
+        natural_disk_entry *entry = &inventory->entries[i];
+        char *absolute = NULL;
+        natural_disk_stamp before, after;
+        mc_ws_file_bytes bytes = {0};
+        ok = mc_ws_path_join(probe->persistence->root, entry->path, &absolute,
+                             &probe->inspection_error) == MC_WORLD_STORAGE_OK &&
+             disk_stat(probe, absolute, &before) && disk_same(&entry->stamp, &before);
+        if (ok && !entry->stamp.directory)
+            ok = mc_ws_read_file(absolute, NATURAL_DISK_FILE_BYTES, &bytes,
+                                 &probe->inspection_error) == MC_WORLD_STORAGE_OK &&
+                 bytes.length == entry->stamp.bytes && disk_stat(probe, absolute, &after) &&
+                 disk_same(&before, &after);
+        if (!ok)
+            problem(probe, "Disk entry changed or read failed", "storage",
+                    (unsigned int)probe->inspection_error.status);
+        if (ok)
+            ok = emit(&probe->json, "%s{\"path\":", i == 0 ? "" : ",") &&
+                 string(&probe->json, entry->path) && emit(&probe->json, ",\"kind\":") &&
+                 string(&probe->json, entry->stamp.directory ? "directory" : "file");
+        if (ok && !entry->stamp.directory) {
+            probe->persistence->retained_disk_bytes += bytes.length;
+            ok = emit(&probe->json, ",\"bytes\":%zu,\"hex\":\"", bytes.length);
+            for (size_t j = 0; ok && j < bytes.length; ++j)
+                ok = emit(&probe->json, "%02x", (unsigned int)bytes.data[j]);
+            if (ok)
+                ok = emit(&probe->json, "\"");
+        }
+        if (ok)
+            ok = emit(&probe->json, "}");
+        mc_ws_free_file_bytes(&bytes);
+        free(absolute);
+    }
+    if (ok)
+        ok = emit(&probe->json, "],\"files\":%zu,\"directories\":%zu,\"bytes\":%zu}",
+                  inventory->files, inventory->directories, inventory->bytes);
+    for (size_t i = 0; i < inventory->count; ++i)
+        free(inventory->entries[i].path);
+    free(inventory);
+    return ok;
+}
+
+static bool info_projection(natural_probe *probe) {
+    mc_world_runtime_fields world;
+    mc_world_info_fields fields;
+    if (mc_world_runtime_fields_get(probe->world, &world) != MC_WORLD_STORAGE_OK ||
+        world.x != probe->persistence->info ||
+        mc_world_info_fields_get(probe->persistence->info, &fields) != MC_WORLD_INFO_OK)
+        return problem(probe, "Held Info observation binding", "probe", 1);
+    if (fields.player != NULL)
+        return problem(probe, "Info Player outside empty-player profile", "probe", 1);
+    const mc_world_info_scalars *v = &fields.value;
+    natural_json *json = &probe->json;
+    if (!emit(json,
+              "{\"owner\":0,\"seed\":\"%016" PRIx64 "\",\"spawn_x\":%" PRId32
+              ",\"spawn_y\":%" PRId32 ",\"spawn_z\":%" PRId32 ",\"time\":\"%016" PRIx64
+              "\",\"last_played\":\"%016" PRIx64 "\",\"size_on_disk\":\"%016" PRIx64
+              "\",\"player\":null,\"player_dimension\":%" PRId32 ",\"level_name_utf16\":",
+              (uint64_t)v->seed, v->spawn_x, v->spawn_y, v->spawn_z, (uint64_t)v->time,
+              (uint64_t)v->last_played, (uint64_t)v->size_on_disk, v->player_dimension))
+        return false;
+    if (fields.name == NULL) {
+        if (!emit(json, "null"))
+            return false;
+    } else {
+        const mc_nbt_string text = mc_world_info_name_text(fields.name);
+        if (text.length > NATURAL_JSON_LIMIT / 4u || (text.length != 0 && text.units == NULL) ||
+            !emit(json, "\""))
+            return problem(probe, "Info name observation bound", "probe", 1);
+        for (size_t i = 0; i < text.length; ++i)
+            if (!emit(json, "%04x", (unsigned int)text.units[i]))
+                return false;
+        if (!emit(json, "\""))
+            return false;
+    }
+    return emit(json,
+                ",\"version\":%" PRId32 ",\"raining\":%s,\"rain_time\":%" PRId32
+                ",\"thundering\":%s,\"thunder_time\":%" PRId32 "}",
+                v->version, boolean(v->raining), v->rain_time, boolean(v->thundering),
+                v->thunder_time);
+}
+
+static bool persistence_boundary(natural_probe *probe) {
+    return emit(&probe->json, "{\"snapshot\":") && snapshot(probe) &&
+           emit(&probe->json, ",\"info\":") && info_projection(probe) &&
+           emit(&probe->json, ",\"disk\":") && disk_inventory(probe) && emit(&probe->json, "}");
+}
+
+static bool boundary_value(natural_probe *probe, bool *observed) {
+    const size_t start = probe->json.length;
+    *observed = persistence_boundary(probe);
+    if (*observed)
+        return true;
+    problem(probe, "Persistence boundary observation", "probe", 1);
+    if (probe->json.failed)
+        return false;
+    /* Do not publish a truncated object as a complete inventory/boundary. The
+     * first actual operation/projection error remains in the final record. */
+    probe->json.length = start;
+    return emit(&probe->json, "null");
+}
+
+static bool nbt_diagnostic(natural_json *json, const mc_nbt_error *error) {
+    return emit(json, "{\"status\":%u,\"offset\":%zu}", (unsigned int)error->status, error->offset);
+}
+
+static bool stack_diagnostic(natural_json *json, const mc_item_stack_error *error) {
+    return emit(json, "{\"status\":%u,\"field\":", (unsigned int)error->status) &&
+           string(json, error->field) && emit(json, ",\"nbt\":") &&
+           nbt_diagnostic(json, &error->nbt) && emit(json, "}");
+}
+
+static bool site_diagnostic(natural_json *json, const mc_minecart_site *site) {
+    return emit(json,
+                "{\"selected\":%s,\"entered\":%s,\"declaring_class\":", boolean(site->selected),
+                boolean(site->entered)) &&
+           string(json, site->declaring_class) && emit(json, ",\"method\":") &&
+           string(json, site->method) &&
+           emit(json, ",\"bytecode\":%u}", (unsigned int)site->bytecode);
+}
+
+static bool entity_diagnostic(natural_json *json, const mc_entity_error *error) {
+    return emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
+           string(json, error->operation) &&
+           emit(json,
+                ",\"bytecode\":%u,\"profile\":%u,\"item\":%u,\"world\":%u,"
+                "\"minecart_world_constructor\":",
+                (unsigned int)error->bytecode, (unsigned int)error->profile,
+                (unsigned int)error->item, (unsigned int)error->world) &&
+           site_diagnostic(json, &error->minecart_world_constructor) &&
+           emit(json, ",\"minecart_constructor\":") &&
+           site_diagnostic(json, &error->minecart_constructor) &&
+           emit(json, ",\"minecart_initializer\":") &&
+           site_diagnostic(json, &error->minecart_initializer) &&
+           emit(json, ",\"minecart_initializer_cause\":") &&
+           site_diagnostic(json, &error->minecart_initializer_cause) && emit(json, "}");
+}
+
+static bool entity_nbt_diagnostic(natural_json *json, const mc_entity_nbt_error *error) {
+    const mc_entity_registry_error *r = &error->registry;
+    const mc_minecart_inventory_context *i = &error->inventory;
+    return emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
+           string(json, error->operation) && emit(json, ",\"field\":") &&
+           string(json, error->field) &&
+           emit(json,
+                ",\"index\":%zu,\"wrapper_bytecode\":%u,\"name_bytecode\":%u,"
+                "\"factory_bytecode\":%u,\"base_bytecode\":%u,\"item_bytecode\":%u,"
+                "\"falling_bytecode\":%u,\"stack_bytecode\":%u,\"initializer_bytecode\":%u,"
+                "\"registration_bytecode\":%u,\"construction\":",
+                error->index, error->wrapper_bytecode, error->name_bytecode,
+                error->factory_bytecode, error->base_bytecode, error->item_bytecode,
+                error->falling_bytecode, error->stack_bytecode, error->initializer_bytecode,
+                error->registration_bytecode) &&
+           entity_diagnostic(json, &error->construction) && emit(json, ",\"stack\":") &&
+           stack_diagnostic(json, &error->stack) && emit(json, ",\"nbt\":") &&
+           nbt_diagnostic(json, &error->nbt) &&
+           emit(json,
+                ",\"registry\":{\"status\":%u,\"cause\":%u,\"operation\":", (unsigned int)r->status,
+                (unsigned int)r->cause) &&
+           string(json, r->operation) &&
+           emit(json,
+                ",\"initializer_bytecode\":%u,\"registration_bytecode\":%u,"
+                "\"class_cause\":%u},\"minecart_read\":",
+                r->initializer_bytecode, r->registration_bytecode, (unsigned int)r->class_cause) &&
+           site_diagnostic(json, &error->minecart_read) && emit(json, ",\"minecart_write\":") &&
+           site_diagnostic(json, &error->minecart_write) &&
+           emit(json, ",\"inventory\":{\"status\":%u,\"operation\":", (unsigned int)i->status) &&
+           string(json, i->operation) &&
+           emit(json, ",\"slot_selected\":%s,\"slot\":%" PRId32 ",\"stack_cause\":%u,\"current\":",
+                boolean(i->slot_selected), i->slot, (unsigned int)i->stack_cause) &&
+           site_diagnostic(json, &i->current) && emit(json, ",\"stack_split\":") &&
+           site_diagnostic(json, &i->stack_split) && emit(json, ",\"stack_constructor\":") &&
+           site_diagnostic(json, &i->stack_constructor) && emit(json, ",\"stack_read\":") &&
+           site_diagnostic(json, &i->stack_read) && emit(json, "}}");
+}
+
+static bool world_entity_diagnostic(natural_json *json, const mc_world_entity_error *error) {
+    return emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
+           string(json, error->operation) &&
+           emit(json,
+                ",\"bytecode\":%u,\"presence_bytecode\":%u,\"provider_bytecode\":%u,"
+                "\"chunk_bytecode\":%u,\"observer_bytecode\":%u,\"acquisition\":%u,\"cause\":",
+                error->bytecode, error->presence_bytecode, error->provider_bytecode,
+                error->chunk_bytecode, error->observer_bytecode,
+                (unsigned int)error->acquisition) &&
+           storage(json, &error->cause) && emit(json, ",\"entity\":") &&
+           entity_diagnostic(json, &error->entity) && emit(json, "}");
+}
+
+static bool batch_diagnostic(natural_json *json, const mc_world_entity_batch_error *error) {
+    return emit(json, "{\"index\":%zu,\"publication\":", error->index) &&
+           world_entity_diagnostic(json, &error->publication) && emit(json, "}");
+}
+
+static bool load_entity_diagnostic(natural_json *json, const mc_world_entity_load_error *error) {
+    return emit(json, "{\"index\":%zu,\"factory\":", error->index) &&
+           entity_nbt_diagnostic(json, &error->factory) && emit(json, ",\"provenance\":") &&
+           entity_nbt_diagnostic(json, &error->provenance) &&
+           emit(json, ",\"insertion\":{\"status\":%u,\"operation\":",
+                (unsigned int)error->insertion.status) &&
+           string(json, error->insertion.operation) &&
+           emit(json, ",\"bytecode\":%u,\"cause\":", error->insertion.bytecode) &&
+           storage(json, &error->insertion.cause) && emit(json, ",\"entity\":") &&
+           entity_diagnostic(json, &error->insertion.entity) && emit(json, "},\"native\":") &&
+           storage(json, &error->native) && emit(json, "}");
+}
+
+static bool live_tile_diagnostic(natural_json *json, const mc_live_tile_error *error) {
+    const mc_tile_error *t = &error->tile;
+    const mc_live_tile_call_frame *p = &error->acquisition_parent;
+    return emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
+           string(json, error->operation) &&
+           emit(json,
+                ",\"bytecode\":%u,\"chunk_bytecode\":%u,\"observer_bytecode\":%u,"
+                "\"initializer_bytecode\":%u,\"cause\":",
+                error->bytecode, error->chunk_bytecode, error->observer_bytecode,
+                error->initializer_bytecode) &&
+           storage(json, &error->cause) && emit(json, ",\"registry\":") &&
+           registry_diagnostic(json, &error->registry) &&
+           emit(json, ",\"tile\":{\"status\":%u,\"field\":", (unsigned int)t->status) &&
+           string(json, t->field) && emit(json, ",\"item_index\":%zu,\"item\":", t->item_index) &&
+           stack_diagnostic(json, &t->item) && emit(json, ",\"nbt\":") &&
+           nbt_diagnostic(json, &t->nbt) &&
+           emit(json,
+                ",\"source_bytecode\":%u,\"base_read_bytecode\":%u,\"read_bytecode\":%u,"
+                "\"operation\":",
+                t->source_bytecode, t->base_read_bytecode, t->read_bytecode) &&
+           string(json, t->operation) &&
+           emit(json,
+                ",\"getter_bytecode\":%u,\"base_save_bytecode\":%u,\"save_bytecode\":%u,"
+                "\"item_save_bytecode\":%u,\"registry\":",
+                t->getter_bytecode, t->base_save_bytecode, t->save_bytecode,
+                t->item_save_bytecode) &&
+           registry_diagnostic(json, &t->registry) &&
+           emit(json,
+                ",\"constructor_bytecode\":%u,\"initializer_bytecode\":%u,"
+                "\"piston_initializer_bytecode\":%u},\"entity\":",
+                t->constructor_bytecode, t->initializer_bytecode, t->piston_initializer_bytecode) &&
+           entity_diagnostic(json, &error->entity) && emit(json, ",\"publication\":") &&
+           world_entity_diagnostic(json, &error->publication) && emit(json, ",\"batch\":") &&
+           batch_diagnostic(json, &error->batch) &&
+           emit(json,
+                ",\"caller_bytecode\":%u,\"hook_bytecode\":%u,\"remove_bytecode\":%u,"
+                "\"tile_bytecode\":%u,\"inventory_bytecode\":%u,\"acquisition_caller_bytecode\":%u,"
+                "\"activation_bytecode\":%u,\"activation_world_bytecode\":%u,\"load_bytecode\":%u,"
+                "\"load_builder_bytecode\":%u,\"load_entity\":",
+                error->caller_bytecode, error->hook_bytecode, error->remove_bytecode,
+                error->tile_bytecode, error->inventory_bytecode, error->acquisition_caller_bytecode,
+                error->activation_bytecode, error->activation_world_bytecode, error->load_bytecode,
+                error->load_builder_bytecode) &&
+           load_entity_diagnostic(json, &error->load_entity) &&
+           emit(json,
+                ",\"provider_bytecode\":%u,\"acquisition_parent\":{\"bytecode\":%u,"
+                "\"chunk_bytecode\":%u,\"observer_bytecode\":%u,\"initializer_bytecode\":%u,"
+                "\"caller_bytecode\":%u,\"hook_bytecode\":%u,\"remove_bytecode\":%u,"
+                "\"provider_bytecode\":%u,\"tile_bytecode\":%u,\"inventory_bytecode\":%u}}",
+                error->provider_bytecode, p->bytecode, p->chunk_bytecode, p->observer_bytecode,
+                p->initializer_bytecode, p->caller_bytecode, p->hook_bytecode, p->remove_bytecode,
+                p->provider_bytecode, p->tile_bytecode, p->inventory_bytecode);
+}
+
+static bool save_diagnostic(natural_json *json, const mc_world_runtime_lifecycle_error *error) {
+    const mc_world_game_save_error *s = &error->save;
+    return emit(json, "{\"status\":%u,\"cause\":", (unsigned int)error->status) &&
+           storage(json, &error->cause) &&
+           emit(json, ",\"save\":{\"status\":%u,\"cause\":", (unsigned int)s->status) &&
+           storage(json, &s->cause) &&
+           emit(json,
+                ",\"region_bytecode\":%u,\"serializer_bytecode\":%u,\"entity_slice\":%zu,"
+                "\"entity_index\":%zu,\"entity\":",
+                s->region_bytecode, s->serializer_bytecode, s->entity_slice, s->entity_index) &&
+           entity_nbt_diagnostic(json, &s->entity) && emit(json, ",\"entity_records\":") &&
+           nbt_diagnostic(json, &s->entity_records) && emit(json, ",\"tile\":") &&
+           live_tile_diagnostic(json, &s->tile) &&
+           emit(json, ",\"composition\":{\"status\":%u,\"field\":",
+                (unsigned int)s->composition.status) &&
+           string(json, s->composition.field) && emit(json, ",\"nbt\":") &&
+           nbt_diagnostic(json, &s->composition.nbt) && emit(json, "},\"encoding\":") &&
+           nbt_diagnostic(json, &s->encoding) && emit(json, "},\"tile\":") &&
+           live_tile_diagnostic(json, &error->tile) && emit(json, ",\"batch\":") &&
+           batch_diagnostic(json, &error->batch) &&
+           emit(json, ",\"activation_bytecode\":%u,\"activation_world_bytecode\":%u}",
+                error->activation_bytecode, error->activation_world_bytecode);
+}
+
+static bool load_diagnostic(natural_json *json, const mc_world_game_load_error *error) {
+    return emit(json, "{\"status\":%u,\"cause\":", (unsigned int)error->status) &&
+           storage(json, &error->cause) &&
+           emit(json,
+                ",\"region_bytecode\":%u,\"builder_bytecode\":%u,\"tile\":", error->region_bytecode,
+                error->builder_bytecode) &&
+           live_tile_diagnostic(json, &error->tile) && emit(json, ",\"entity\":") &&
+           load_entity_diagnostic(json, &error->entity) && emit(json, "}");
+}
+
+typedef struct natural_epoch {
+    int64_t low, high;
+    bool low_valid, high_valid;
+} natural_epoch;
+
+static bool epoch_sample(natural_probe *probe, int64_t *value, bool *valid) {
+    const mc_platform_millis_status status = mc_platform_current_time_millis(value);
+    *valid = status == MC_PLATFORM_MILLIS_OK;
+    return *valid || problem(probe, "Persistence platform clock", "clock", (unsigned int)status);
+}
+
+static bool epoch_projection(natural_json *json, const natural_epoch *epoch) {
+    return emit(json, "[") &&
+           (epoch->low_valid ? emit(json, "%" PRId64, epoch->low) : emit(json, "null")) &&
+           emit(json, ",") &&
+           (epoch->high_valid ? emit(json, "%" PRId64, epoch->high) : emit(json, "null")) &&
+           emit(json, "]");
+}
+
+static bool persistence_time(natural_probe *probe, bool *ready) {
+    natural_json *json = &probe->json;
+    bool before = false, after = false, attempted = false;
+    int64_t previous = 0;
+    bool previous_valid = false;
+    natural_epoch epoch = {0};
+    mc_world_info_status status = MC_WORLD_INFO_OK;
+    if (!emit(json, "{\"value\":1234,\"before\":") || !boundary_value(probe, &before))
+        return false;
+    if (before) {
+        status = mc_world_info_time_get(probe->persistence->info, &previous);
+        previous_valid = status == MC_WORLD_INFO_OK;
+        if (!previous_valid)
+            problem(probe, "Held Info time getter", "info", (unsigned int)status);
+        if (previous_valid && epoch_sample(probe, &epoch.low, &epoch.low_valid)) {
+            attempted = true;
+            status = mc_world_info_time_set(probe->persistence->info, 1234);
+            if (status != MC_WORLD_INFO_OK)
+                problem(probe, "Held Info time setter", "info", (unsigned int)status);
+            (void)epoch_sample(probe, &epoch.high, &epoch.high_valid);
+        }
+    }
+    if (!emit(json, ",\"previous\":") ||
+        !(previous_valid ? emit(json, "\"%016" PRIx64 "\"", (uint64_t)previous)
+                         : emit(json, "null")) ||
+        !emit(json, ",\"epoch_ms\":") || !epoch_projection(json, &epoch) ||
+        !emit(json, ",\"status\":") ||
+        !(attempted ? string(json, mc_world_info_status_string(status)) : emit(json, "null")) ||
+        !emit(json, ",\"native_status\":") ||
+        !(attempted ? emit(json, "%u", (unsigned int)status) : emit(json, "null")) ||
+        !emit(json, ",\"after\":") || !boundary_value(probe, &after) || !emit(json, "}"))
+        return false;
+    *ready = before && after && attempted && probe->failed_stage == NULL;
+    return true;
+}
+
+static bool persistence_save(natural_probe *probe, size_t index, bool *ready) {
+    natural_json *json = &probe->json;
+    bool before = false, after = false, attempted = false, completed = false;
+    natural_epoch epoch = {0};
+    mc_chunk_lifecycle_status status = MC_CHUNK_LIFECYCLE_OK;
+    if (!emit(json, "{\"index\":%zu,\"force\":true,\"progress\":null,\"before\":", index) ||
+        !boundary_value(probe, &before))
+        return false;
+    if (before && epoch_sample(probe, &epoch.low, &epoch.low_valid)) {
+        attempted = true;
+        status = mc_world_runtime_save_chunks_detailed(probe->world, true, &completed,
+                                                       &probe->persistence->save_error);
+        if (status != MC_CHUNK_LIFECYCLE_OK)
+            problem(probe, "Forced cache save", "lifecycle", (unsigned int)status);
+        (void)epoch_sample(probe, &epoch.high, &epoch.high_valid);
+    }
+    if (!emit(json, ",\"completed\":") ||
+        !(attempted && status == MC_CHUNK_LIFECYCLE_OK ? emit(json, "%s", boolean(completed))
+                                                       : emit(json, "null")) ||
+        !emit(json, ",\"epoch_ms\":") || !epoch_projection(json, &epoch) ||
+        !emit(json, ",\"status\":") ||
+        !(attempted ? string(json, mc_chunk_lifecycle_status_string(status))
+                    : emit(json, "null")) ||
+        !emit(json, ",\"native_status\":") ||
+        !(attempted ? emit(json, "%u", (unsigned int)status) : emit(json, "null")) ||
+        !emit(json, ",\"error\":") ||
+        !(attempted && status != MC_CHUNK_LIFECYCLE_OK
+              ? save_diagnostic(json, &probe->persistence->save_error)
+              : emit(json, "null")) ||
+        !emit(json, ",\"after\":") || !boundary_value(probe, &after) || !emit(json, "}"))
+        return false;
+    *ready = before && after && attempted && probe->failed_stage == NULL;
+    return true;
+}
+
+static bool direct_chunk_binding(natural_probe *probe, mc_chunk_state *state) {
+    mc_world_chunk *chunk = mc_world_store_chunk_object(probe->store, state);
+    if (chunk == NULL || mc_world_chunk_state(chunk) != state)
+        return problem(probe, "Direct loader concrete Chunk identity", "probe", 1);
+    mc_world_chunk_fields fields;
+    mc_world_storage_status status = mc_world_chunk_fields_get(chunk, &fields);
+    if (status != MC_WORLD_STORAGE_OK)
+        return problem(probe, "Direct loader concrete Chunk fields", "storage",
+                       (unsigned int)status);
+    if (fields.d != probe->world)
+        return problem(probe, "Direct loader actual Chunk World binding", "probe", 1);
+    size_t count = SIZE_MAX;
+    status = mc_world_chunk_tile_count(fields.l, &count);
+    if (status != MC_WORLD_STORAGE_OK)
+        return problem(probe, "Direct loader actual Tile map", "storage", (unsigned int)status);
+    if (count != 0)
+        return problem(probe, "Direct loader expected empty Tile map", "probe", 1);
+    const mc_world_chunk_entity_list *slices[8] = {0};
+    for (size_t i = 0; i < sizeof(slices) / sizeof(slices[0]); ++i) {
+        status = mc_world_chunk_slice_at(fields.m, i, &slices[i]);
+        if (status != MC_WORLD_STORAGE_OK)
+            return problem(probe, "Direct loader actual Entity slice", "storage",
+                           (unsigned int)status);
+        status = mc_world_chunk_entity_count(slices[i], &count);
+        if (status != MC_WORLD_STORAGE_OK)
+            return problem(probe, "Direct loader actual Entity count", "storage",
+                           (unsigned int)status);
+        if (count != 0)
+            return problem(probe, "Direct loader expected empty Entity slice", "probe", 1);
+        for (size_t j = 0; j < i; ++j)
+            if (slices[i] == slices[j])
+                return problem(probe, "Direct loader distinct Entity slice owners", "probe", 1);
+    }
+    const mc_world_chunk_entity_list *sentinel = slices[0];
+    if (mc_world_chunk_slice_at(fields.m, 8u, &sentinel) != MC_WORLD_STORAGE_INVALID_ARGUMENT ||
+        sentinel != slices[0])
+        return problem(probe, "Direct loader exactly eight Entity slices", "probe", 1);
+    return true;
+}
+
+static bool persistence_load(natural_probe *probe, size_t index, int32_t x, int32_t z,
+                             bool *ready) {
+    natural_json *json = &probe->json;
+    bool before = false, after = false, attempted = false;
+    natural_epoch epoch = {0};
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    mc_chunk_state *result = NULL;
+    size_t id = SIZE_MAX;
+    if (!emit(json, "{\"index\":%zu,\"coordinates\":[%" PRId32 ",%" PRId32 "],\"before\":", index,
+              x, z) ||
+        !boundary_value(probe, &before))
+        return false;
+    if (before && epoch_sample(probe, &epoch.low, &epoch.low_valid)) {
+        attempted = true;
+        const size_t previous_count = probe->identity_count;
+        status = mc_world_runtime_load_game(probe->world, x, z, &result,
+                                            &probe->persistence->load_error);
+        if (status != MC_WORLD_STORAGE_OK)
+            problem(probe, "Direct GAME loader", "storage", (unsigned int)status);
+        (void)epoch_sample(probe, &epoch.high, &epoch.high_valid);
+        if (status == MC_WORLD_STORAGE_OK && result == NULL)
+            problem(probe, "Direct loader successful result is NULL", "probe", 1);
+        if (result != NULL) {
+            id = chunk_id(probe, result);
+            if (id == SIZE_MAX || id != previous_count || probe->published[id] ||
+                !mc_world_store_owns_chunk(probe->store, result) || result->x != x ||
+                result->z != z)
+                problem(probe, "Direct loader fresh unpublished result contract", "probe", 1);
+            else
+                (void)direct_chunk_binding(probe, result);
+        }
+    }
+    if (!emit(json, ",\"epoch_ms\":") || !epoch_projection(json, &epoch) ||
+        !emit(json, ",\"status\":") ||
+        !(attempted ? string(json, mc_world_storage_status_string(status)) : emit(json, "null")) ||
+        !emit(json, ",\"native_status\":") ||
+        !(attempted ? emit(json, "%u", (unsigned int)status) : emit(json, "null")) ||
+        !emit(json, ",\"error\":") ||
+        !(attempted && status != MC_WORLD_STORAGE_OK
+              ? load_diagnostic(json, &probe->persistence->load_error)
+              : emit(json, "null")) ||
+        !emit(json, ",\"result\":") ||
+        !(id == SIZE_MAX ? emit(json, "null") : emit(json, "%zu", id)) ||
+        !emit(json, ",\"chunk\":") ||
+        !(id == SIZE_MAX ? emit(json, "null") : chunk_projection(probe, result, id)) ||
+        !emit(json, ",\"normalization_map\":") ||
+        !byte_array(json, probe->block_map, sizeof(probe->block_map)) ||
+        !emit(json, ",\"after\":") || !boundary_value(probe, &after) || !emit(json, "}"))
+        return false;
+    *ready = before && after && attempted && probe->failed_stage == NULL;
+    return true;
+}
+
+static bool observe_persistence(natural_probe *probe, bool initialized) {
+    natural_json *json = &probe->json;
+    natural_persistence *p = probe->persistence;
+    const natural_epoch construction = {p->construction_low, p->construction_high,
+                                        p->construction_low_valid, p->construction_high_valid};
+    if (!emit(json,
+              "{\"schema\":1,\"scope\":\"native-game-population-save-readback\","
+              "\"profile\":\"save-readback\",\"side\":\"%s\",\"seed_hex\":\"0000000000000017\","
+              "\"construction_epoch_ms\":",
+              probe->client ? "client" : "server") ||
+        !epoch_projection(json, &construction) || !emit(json, ",\"population\":") ||
+        !observe(probe, initialized, false) || !emit(json, ",\"persistence\":{\"session_token\":"))
+        return false;
+    if (!(probe->store == NULL ? emit(json, "null")
+                               : emit(json, "\"%016" PRIx64 "\"", (uint64_t)p->session_token)) ||
+        !emit(json, ",\"block_map\":") ||
+        !(p->map_ready ? byte_array(json, probe->block_map, sizeof(probe->block_map))
+                       : emit(json, "null")) ||
+        !emit(json, ",\"initial\":"))
+        return false;
+    bool ready = initialized && probe->failed_stage == NULL;
+    if (ready) {
+        mc_world_runtime_fields fields;
+        const mc_world_storage_status status = mc_world_runtime_fields_get(probe->world, &fields);
+        if (status != MC_WORLD_STORAGE_OK || fields.x == NULL)
+            ready =
+                problem(probe, "Persistence actual Info binding", "storage", (unsigned int)status);
+        else {
+            const mc_world_info_status held = mc_world_info_retain(fields.x);
+            if (held != MC_WORLD_INFO_OK)
+                ready = problem(probe, "Persistence actual Info hold", "info", (unsigned int)held);
+            else
+                p->info = fields.x;
+        }
+    }
+    if (ready) {
+        bool observed;
+        if (!boundary_value(probe, &observed))
+            return false;
+        ready = observed && probe->failed_stage == NULL;
+    } else if (!emit(json, "null")) {
+        return false;
+    }
+    if (!emit(json, ",\"time_api\":") ||
+        !(ready ? persistence_time(probe, &ready) : emit(json, "null")) ||
+        !emit(json, ",\"cache_saves\":["))
+        return false;
+    for (size_t i = 0; ready && i < 2u; ++i)
+        if (!emit(json, "%s", i == 0 ? "" : ",") || !persistence_save(probe, i, &ready))
+            return false;
+    if (!emit(json, "],\"direct_loads\":["))
+        return false;
+    static const int32_t coordinates[][2] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}};
+    for (size_t i = 0; ready && i < sizeof(coordinates) / sizeof(coordinates[0]); ++i)
+        if (!emit(json, "%s", i == 0 ? "" : ",") ||
+            !persistence_load(probe, i, coordinates[i][0], coordinates[i][1], &ready))
+            return false;
+    return emit(json, "],\"failure\":") && diagnostic(probe) && emit(json, "}}\n");
+}
+
 static bool cleanup(natural_probe *probe) {
+    if (probe->persistence != NULL) {
+        mc_world_info_release(probe->persistence->info);
+        probe->persistence->info = NULL;
+    }
     for (size_t i = 0; i < probe->held_climate_count; ++i)
         mc_biome_double_release(&probe->held_climate[i]);
     probe->held_climate_count = 0;
@@ -823,28 +1709,44 @@ int main(int argc, char **argv) {
         (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0))
         return 1;
     const bool ring = argc == 6 && strcmp(argv[5], "ring") == 0;
-    if (argc == 6 && !ring && strcmp(argv[5], "origin") != 0)
+    const bool save_readback = argc == 6 && strcmp(argv[5], "save-readback") == 0;
+    if (argc == 6 && !ring && !save_readback && strcmp(argv[5], "origin") != 0)
         return 1;
     char *resources = decode_path(argv[2]), *root = decode_path(argv[3]);
     natural_probe *probe = calloc(1, sizeof(*probe));
     mc_math_trig *trig = calloc(1, sizeof(*trig));
-    if (resources == NULL || root == NULL || probe == NULL || trig == NULL) {
+    natural_persistence *persistence = save_readback ? calloc(1, sizeof(*persistence)) : NULL;
+    if (resources == NULL || root == NULL || probe == NULL || trig == NULL ||
+        (save_readback && persistence == NULL)) {
         free(resources);
         free(root);
         free(probe);
         free(trig);
+        free(persistence);
         return 1;
     }
+    probe->persistence = persistence;
+    if (persistence != NULL)
+        persistence->root = root;
     probe->client = strcmp(argv[1], "client") == 0;
     probe->registry_error.initializer_pc = -1;
     probe->registry_error.block_id = -1;
     probe->registry_error.constructor_pc = -1;
     probe->registry_error.active_initializer_pc = -1;
     probe->registry_error.item_argument = -1;
-    const bool initialized = mc_math_trig_init(trig) && initialize(probe, resources, root, trig);
+    const bool math_ready = mc_math_trig_init(trig);
+    bool clock_ready = true;
+    if (persistence != NULL && math_ready)
+        clock_ready = epoch_sample(probe, &persistence->construction_low,
+                                   &persistence->construction_low_valid);
+    const bool initialized = math_ready && clock_ready && initialize(probe, resources, root, trig);
+    if (persistence != NULL && persistence->construction_low_valid)
+        (void)epoch_sample(probe, &persistence->construction_high,
+                           &persistence->construction_high_valid);
     if (!initialized && probe->failed_stage == NULL)
         problem(probe, "Math lookup initialization", "probe", 1);
-    const bool encoded = observe(probe, initialized, ring);
+    const bool encoded =
+        save_readback ? observe_persistence(probe, initialized) : observe(probe, initialized, ring);
     bool written = false;
     if (encoded && !probe->json.failed)
         written = mc_ws_write_file(argv[4], (const uint8_t *)probe->json.bytes, probe->json.length,
@@ -856,12 +1758,22 @@ int main(int argc, char **argv) {
                 probe->failed_domain == NULL ? "probe" : probe->failed_domain,
                 probe->failed_status);
     const bool released = cleanup(probe);
-    if (!released)
+    if (!released) {
         fputs("natural population cleanup refused; live dependencies retained\n", stderr);
+        if (save_readback)
+            fprintf(stderr, "cleanup storage status: %s (%s, system %" PRIu32 ")\n",
+                    mc_world_storage_status_string(probe->inspection_error.status),
+                    probe->inspection_error.operation == NULL ? "no operation"
+                                                              : probe->inspection_error.operation,
+                    probe->inspection_error.system_error);
+    }
     free(resources);
     free(root);
     free(probe->json.bytes);
     if (released) {
+        if (persistence != NULL)
+            free(persistence->store_root);
+        free(persistence);
         free(probe);
         free(trig);
     }

@@ -12,6 +12,13 @@ The public ring replay checks full original-derived numerical and cache golden
 records. The public origin replay keeps its cache-only oracle. Both run the real
 native probe with separately declared minimal resource files.
 
+The [populated Chunk persistence comparison](reference/population-persistence.md)
+adds two real forced cache saves and four direct region loads after the origin
+prefix. Both original/native sides pass the initial Windows comparison and
+public replay. It checks all saved typed NBT, five loaded arrays, held Info,
+cache/numerical state and raw disk preservation. Full World metadata saving,
+unload and restart remain open; committed three-compiler qualification is pending.
+
 At code checkpoint `4414dfd`, local suites pass 188 MSVC, 190 GCC and 190 Clang
 tests without failures or skips, including both fresh population profiles and
 plant comparisons on each compiler. Linux uses ASan, UBSan and leak checks. All 550
