@@ -18,14 +18,16 @@ prefix. Both original/native sides and public replay pass on MSVC, GCC and
 Clang. It checks all saved typed NBT, five loaded arrays, held Info,
 cache/numerical state and raw disk preservation. The separate
 [held World full-save profile](reference/population-full-save.md) now reaches
-actual metadata and empty named SavedData lists. Its MSVC development comparison
-and public replay pass; exact-source qualification is pending. Player and named
-subtype serialization, unload and restart remain open.
+actual metadata and empty named SavedData lists. Both original/native sides and
+public replay pass on MSVC, GCC and Clang. Player and named subtype
+serialization, source file-failure semantics, unload and restart remain open.
 
-At code checkpoint `eee7fb0`, local suites pass 191 MSVC, 193 GCC and 193 Clang
-tests without failures, errors or skips, including all three fresh population profiles and
-plant comparisons on each compiler. Linux uses ASan, UBSan and leak checks. All 550
-C/header files pass clang-format 18.
+At code checkpoint `cd41262`, local suites pass 194 MSVC, 196 GCC and 196 Clang
+tests: 586 executions without failures, errors or skips. Every compiler includes
+all four fresh population profiles and plant comparisons. Linux uses ASan,
+UBSan and leak checks. All 551 C/header files pass clang-format 18. The
+[source audit](reference/population-full-save.md#committed-checkpoint) verifies
+1,057 files, all 24 fresh/public captures and 24 resource-variant pairings.
 
 Plant lifecycle callbacks, farmland behavior and World block-light queries are
 implemented.

@@ -2,9 +2,9 @@
 
 The `full-world-save` profile constructs each implementation's own client or
 base-server World, runs the unchanged seed23 origin population schedule, sets
-World time to 1234 and calls its actual full save twice. It passes on the MSVC
-development build against both supplied original JARs and through public replay.
-Exact committed-source and other compiler qualification are pending.
+World time to 1234 and calls its actual full save twice. Both supplied original
+JARs and public replay match the exact committed source on MSVC, GCC and Clang.
+The [checkpoint](#committed-checkpoint) records that finite qualification.
 
 The actual Player ArrayList and SavedData named cache, ordered list and ID map
 are distinct, empty constructor-owned objects throughout this profile. The
@@ -76,3 +76,27 @@ restart, dedicated cache behavior or full population parity. The
 [full-save contract](../world/full-save.md) records those unfinished paths;
 the older [Chunk save/readback profile](population-persistence.md) retains its
 independent direct-load evidence.
+
+## Committed checkpoint
+
+Code commit `cd4126294a1afd155115b837fd2a8cf0ce187594` passes 194 tests with
+MSVC 19.51.36260.0, 196 with GCC 13.3.0 and 196 with Clang 18.1.3: 586 local
+executions with no failures, errors or skips. Every compiler runs all four
+fresh population profiles, all four public native replays and the plant
+comparison. Linux enables ASan, UBSan and leak checks. All 551 C/header files
+pass clang-format 18, and every host passes controller mirrors and 556 positive
+plus 2,011 negative lifecycle-interval controls.
+
+An independent audit verifies all 1,057 tracked files against committed Git
+blobs and the exact exported bytes. It checks compiler/build settings, every
+declared input, retained file and process stream in all 24 fresh/public
+population captures, and the actual final full-save directories. All 24
+compiler/side/profile pairings match across exact original and minimal resource
+bindings after separately validated per-run clock inputs. Each full-save side
+includes twelve numerical boundaries, 36 Random records and 180 array
+descriptors.
+
+The verified raw source archive contains 24,778,868 bytes with SHA256
+`c2b7a7e427a6d8e31c230943a0d93bac553cafbdf9fbf05b7ceb3327a4046204`.
+Hosted code verification is tracked in the [separate run](https://github.com/frankischilling/minecraft-c/actions/runs/39951520244).
+Five supplied-archive comparisons per compiler retain their local scope.

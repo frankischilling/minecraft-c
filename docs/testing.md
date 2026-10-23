@@ -87,7 +87,7 @@ boundaries, fifteen Info/disk inventories, complete saved typed NBT and fresh
 normalized readback arrays. Session and region clocks remain measured per-run
 inputs. `tools.population_persistence` rejects corrupted observations and fixture
 attribution. The [scope and commands](reference/population-persistence.md) retain
-full World save, unload and restart as separate acceptance work.
+the independent full World save profile, unload and restart as separate work.
 
 ```sh
 ctest --test-dir build --output-on-failure -R 'population_(save_readback|persistence)'
@@ -104,6 +104,33 @@ The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/run
 passes 565 public/JDK executions: 187 MSVC, 189 GCC and 189 Clang, plus formatting
 and every mirror/interval check. All four actual checkout trees match the code
 commit. Four archive-dependent tests per compiler retain their local scope.
+
+## Held World full saves
+
+`reference.population_full_save` uses the same optional population-reference
+flag and JAR/Java paths. After the genuine origin prefix it calls the actual
+full save twice. Public `world.population_full_save_replay` needs no Java or
+archive; `tools.population_world_save` has eleven corruption tests.
+
+The [full-save record](reference/population-full-save.md) defines all twelve
+numerical boundaries, actual empty Player/SavedData collection owners, complete
+typed metadata and Chunk NBT, and exact within-run metadata rotation. It
+preserves the distinction between original resource files and the public
+replay's minimal inputs. Nonempty Players, named subtypes, source I/O failures,
+unload and restart remain unfinished.
+
+```sh
+ctest --test-dir build --output-on-failure -R 'population_(full_save|world_save)'
+```
+
+Code checkpoint `cd41262` passes all 586 local executions: 194 MSVC, 196 GCC
+and 196 Clang, without failures, errors or skips. Linux sanitizers and leak
+checks are enabled. All four fresh population profiles, all four public replays,
+plant comparisons, formatting and mirror/interval controls pass. The
+[independent audit](reference/population-full-save.md#committed-checkpoint)
+verifies 1,057 source files, 24 fresh/public captures and 24 resource-variant
+pairings. Hosted verification is tracked in its [separate run](https://github.com/frankischilling/minecraft-c/actions/runs/39951520244).
+Five supplied-archive comparisons per compiler retain their local scope.
 
 ## Plant lifecycle validation
 

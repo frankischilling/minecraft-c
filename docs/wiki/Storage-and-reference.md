@@ -14,7 +14,11 @@ The [populated Chunk save/readback profile](https://github.com/frankischilling/m
 adds two genuine cache saves and four direct loads in the same World. Complete
 typed NBT joins the actual saved Chunk arrays; fresh readbacks use each
 implementation's real block map. The second save and every read preserve all
-raw disk bytes. Full World save, unloading and restart remain open.
+raw disk bytes. The separate [full-save profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
+matches actual held-World metadata and genuinely empty named SavedData lists,
+including complete typed metadata, live Info changes and exact metadata
+rotation. Nonempty Players, named subtypes, source I/O failures, unloading and
+restart remain open.
 
 Storage layers have separate contracts and ownership:
 

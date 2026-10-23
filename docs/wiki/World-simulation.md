@@ -14,8 +14,11 @@ requirements.
 The [populated Chunk save/readback comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md)
 extends the origin prefix with two forced cache saves and four direct region
 loads. It checks complete typed NBT, normalized arrays, held Info and cache state,
-and all disk bytes. It keeps the same World alive; full metadata save, unload
-and restart remain separate requirements.
+and all disk bytes. It keeps the same World alive. The separate
+[full-save profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
+also matches actual metadata and empty named SavedData saves on both sides and
+all three local compilers. Nonempty Players, named subtypes, source file-failure
+semantics, unload and restart remain separate requirements.
 
 The native World modules use actual Registry owners, Chunk storage, acquiring
 readers and owning Lists. They preserve source order and completed effects when

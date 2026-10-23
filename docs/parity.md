@@ -110,8 +110,12 @@ The inventory expands the broad gameplay rows into concrete child behaviors.
 The [populated Chunk save/readback record](reference/population-persistence.md)
 extends the seed23 origin comparison through two forced cache saves and four
 direct region loads. Its complete arrays, typed NBT, held Info and raw-file
-preservation checks retain that finite held-World scope. Full metadata save,
-unload and restart acceptance remain unfinished.
+preservation checks retain that finite held-World scope. The separate
+[full-save comparison](reference/population-full-save.md) matches actual World
+metadata and empty named SavedData saves on both sides and all three local
+compilers at `cd41262`. Its twelve numerical boundaries include typed metadata,
+actual collection owners and exact metadata rotation. Nonempty Players, named
+subtypes, source I/O failures, unload and restart remain unfinished.
 
 ## Multiplayer interoperability
 
