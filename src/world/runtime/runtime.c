@@ -1,6 +1,8 @@
 #include "../storage/generated_internal.h"
+#include "../storage/metadata_internal.h"
 #include "../storage/objects_internal.h"
 #include "activation_internal.h"
+#include "construction_internal.h"
 #include "generation/generation_internal.h"
 #include "loading/loading_internal.h"
 #include "mc/world/runtime/population/normal.h"
@@ -368,6 +370,54 @@ static mc_chunk_callback_result session(void *owner, const mc_world_save_context
 static mc_chunk_callback_result metadata(void *owner, const mc_world_save_context *context) {
     (void)context;
     mc_world_runtime *runtime = owner;
+    if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
+        /* McRegion's list-taking wrapper changes the actual Info before the
+         * serializer reads World.d. Keep that mutation on every later failure.
+         * The outer World metadata method has already checked the session. */
+        if (mc_world_info_version_set(runtime->fields.x, 19132) != MC_WORLD_INFO_OK) {
+            runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "McRegion live Info version setter");
+        } else {
+            const mc_world_reference_list *players = runtime->fields.d;
+            if (players == NULL || players->count > players->capacity ||
+                players->capacity > SIZE_MAX / sizeof(*players->items) ||
+                (players->capacity != 0 && players->items == NULL)) {
+                runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "WorldInfo Player List.size receiver");
+            } else if (players->count != 0) {
+                runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "WorldInfo live Player serialization");
+            } else {
+                mc_world_info_record *record = NULL;
+                mc_world_info_error detail;
+                mc_world_info_status serialized = mc_world_info_record_create_with_player(
+                    runtime->fields.x, NULL, &record, &detail);
+                if (serialized == MC_WORLD_INFO_OK) {
+                    mc_world_store_write_info_record(runtime->fields.w, runtime->fields.x, record,
+                                                     &runtime->last_error);
+                    mc_world_info_record_release(record);
+                } else {
+                    mc_world_storage_status status =
+                        serialized == MC_WORLD_INFO_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                        : serialized == MC_WORLD_INFO_ALLOCATION_FAILED
+                            ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                        : serialized == MC_WORLD_INFO_INVALID_ARGUMENT
+                            ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                        : serialized == MC_WORLD_INFO_CLOCK_FAILURE ? MC_WORLD_STORAGE_IO_ERROR
+                        : serialized == MC_WORLD_INFO_INVALID_PHASE
+                            ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                            : MC_WORLD_STORAGE_INVALID_DATA;
+                    runtime_error(&runtime->last_error, status,
+                                  detail.field == NULL ? mc_world_info_status_string(serialized)
+                                                       : detail.field);
+                }
+            }
+        }
+        if (runtime->last_error.status != MC_WORLD_STORAGE_OK)
+            lifecycle_cause(runtime, runtime->last_error);
+        return runtime->last_error.status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK
+                                                                 : MC_CHUNK_CALLBACK_FATAL;
+    }
     if (runtime->fields.x != NULL) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "live-player metadata serialization");
@@ -390,10 +440,11 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
 static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_context *context) {
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World named saved-data serialization");
-        lifecycle_cause(runtime, runtime->last_error);
-        return MC_CHUNK_CALLBACK_FATAL;
+        const mc_world_storage_status status =
+            mc_world_saved_data_save(runtime->fields.z, &runtime->last_error);
+        if (status != MC_WORLD_STORAGE_OK)
+            lifecycle_cause(runtime, runtime->last_error);
+        return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
     }
     return runtime->options.save_auxiliary(runtime->options.auxiliary, context);
 }

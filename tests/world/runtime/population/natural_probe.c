@@ -66,6 +66,8 @@ typedef struct natural_persistence {
     mc_world_info *info;
     int64_t session_token, construction_low, construction_high;
     bool construction_low_valid, construction_high_valid, map_ready;
+    bool full_world_save, collections_captured;
+    const void *collection_owners[8];
     size_t retained_disk_bytes;
     /* The actual per-attempt records are large; keep them off recursive/native
      * default-stack frames and never infer children from ambient last_error. */
@@ -1181,9 +1183,50 @@ static bool persistence_boundary(natural_probe *probe) {
            emit(&probe->json, ",\"disk\":") && disk_inventory(probe) && emit(&probe->json, "}");
 }
 
+static bool world_collections(natural_probe *probe) {
+    mc_world_runtime_fields fields;
+    mc_world_saved_data_view saved;
+    if (mc_world_runtime_fields_get(probe->world, &fields) != MC_WORLD_STORAGE_OK ||
+        fields.w != probe->store || fields.d == NULL || fields.z == NULL ||
+        fields.d->count > fields.d->capacity ||
+        fields.d->capacity > SIZE_MAX / sizeof(*fields.d->items) ||
+        (fields.d->capacity != 0 && fields.d->items == NULL) ||
+        mc_world_saved_data_inspect(fields.z, &saved) != MC_WORLD_STORAGE_OK)
+        return problem(probe, "Actual full-save collection graph", "probe", 1);
+    const void *owners[] = {probe->world,      fields.w,           fields.d,     fields.z,
+                            saved.named_cache, saved.ordered_list, saved.id_map, saved.storage};
+    for (size_t i = 0; i < sizeof(owners) / sizeof(owners[0]); ++i) {
+        if (owners[i] == NULL)
+            return problem(probe, "Nonnull full-save collection owner", "probe", 1);
+        for (size_t j = 0; j < i; ++j)
+            if (owners[i] == owners[j])
+                return problem(probe, "Distinct full-save collection owners", "probe", 1);
+        if (probe->persistence->collections_captured &&
+            owners[i] != probe->persistence->collection_owners[i])
+            return problem(probe, "Stable actual full-save collection owners", "probe", 1);
+        probe->persistence->collection_owners[i] = owners[i];
+    }
+    probe->persistence->collections_captured = true;
+    if (fields.d->count != 0 || saved.named_count != 0 || saved.ordered_count != 0 ||
+        saved.id_count != 0)
+        return problem(probe, "Full-save actual empty collection domain", "probe", 1);
+    return emit(&probe->json,
+                "{\"world\":0,\"players\":{\"owner\":2,\"size\":%zu,\"entries\":[]},"
+                "\"saved_data\":{\"owner\":3,\"storage\":1,\"native_storage_binding\":7,"
+                "\"named_cache\":{\"owner\":4,\"size\":%zu,\"entries\":[]},"
+                "\"ordered_list\":{\"owner\":5,\"size\":%zu,\"entries\":[]},"
+                "\"id_map\":{\"owner\":6,\"size\":%zu,\"entries\":[]}}}",
+                fields.d->count, saved.named_count, saved.ordered_count, saved.id_count);
+}
+
 static bool boundary_value(natural_probe *probe, bool *observed) {
     const size_t start = probe->json.length;
-    *observed = persistence_boundary(probe);
+    if (probe->persistence->full_world_save)
+        *observed = emit(&probe->json, "{\"state\":") && persistence_boundary(probe) &&
+                    emit(&probe->json, ",\"collections\":") && world_collections(probe) &&
+                    emit(&probe->json, "}");
+    else
+        *observed = persistence_boundary(probe);
     if (*observed)
         return true;
     problem(probe, "Persistence boundary observation", "probe", 1);
@@ -1453,15 +1496,20 @@ static bool persistence_save(natural_probe *probe, size_t index, bool *ready) {
         return false;
     if (before && epoch_sample(probe, &epoch.low, &epoch.low_valid)) {
         attempted = true;
-        status = mc_world_runtime_save_chunks_detailed(probe->world, true, &completed,
-                                                       &probe->persistence->save_error);
+        status = probe->persistence->full_world_save
+                     ? mc_world_runtime_save_detailed(probe->world, true,
+                                                      &probe->persistence->save_error)
+                     : mc_world_runtime_save_chunks_detailed(probe->world, true, &completed,
+                                                             &probe->persistence->save_error);
         if (status != MC_CHUNK_LIFECYCLE_OK)
-            problem(probe, "Forced cache save", "lifecycle", (unsigned int)status);
+            problem(probe, "Forced World or cache save", "lifecycle", (unsigned int)status);
         (void)epoch_sample(probe, &epoch.high, &epoch.high_valid);
     }
-    if (!emit(json, ",\"completed\":") ||
-        !(attempted && status == MC_CHUNK_LIFECYCLE_OK ? emit(json, "%s", boolean(completed))
-                                                       : emit(json, "null")) ||
+    if (!emit(json,
+              probe->persistence->full_world_save ? ",\"returned_void\":" : ",\"completed\":") ||
+        !(attempted && status == MC_CHUNK_LIFECYCLE_OK
+              ? emit(json, "%s", boolean(probe->persistence->full_world_save || completed))
+              : emit(json, "null")) ||
         !emit(json, ",\"epoch_ms\":") || !epoch_projection(json, &epoch) ||
         !emit(json, ",\"status\":") ||
         !(attempted ? string(json, mc_chunk_lifecycle_status_string(status))
@@ -1577,12 +1625,17 @@ static bool observe_persistence(natural_probe *probe, bool initialized) {
     const natural_epoch construction = {p->construction_low, p->construction_high,
                                         p->construction_low_valid, p->construction_high_valid};
     if (!emit(json,
-              "{\"schema\":1,\"scope\":\"native-game-population-save-readback\","
-              "\"profile\":\"save-readback\",\"side\":\"%s\",\"seed_hex\":\"0000000000000017\","
+              "{\"schema\":1,\"scope\":\"%s\","
+              "\"profile\":\"%s\",\"side\":\"%s\",\"seed_hex\":\"0000000000000017\","
               "\"construction_epoch_ms\":",
+              p->full_world_save ? "native-game-population-full-world-save"
+                                 : "native-game-population-save-readback",
+              p->full_world_save ? "full-world-save" : "save-readback",
               probe->client ? "client" : "server") ||
         !epoch_projection(json, &construction) || !emit(json, ",\"population\":") ||
-        !observe(probe, initialized, false) || !emit(json, ",\"persistence\":{\"session_token\":"))
+        !observe(probe, initialized, false) ||
+        !emit(json, p->full_world_save ? ",\"world_save\":{\"session_token\":"
+                                       : ",\"persistence\":{\"session_token\":"))
         return false;
     if (!(probe->store == NULL ? emit(json, "null")
                                : emit(json, "\"%016" PRIx64 "\"", (uint64_t)p->session_token)) ||
@@ -1616,11 +1669,13 @@ static bool observe_persistence(natural_probe *probe, bool initialized) {
     }
     if (!emit(json, ",\"time_api\":") ||
         !(ready ? persistence_time(probe, &ready) : emit(json, "null")) ||
-        !emit(json, ",\"cache_saves\":["))
+        !emit(json, p->full_world_save ? ",\"saves\":[" : ",\"cache_saves\":["))
         return false;
     for (size_t i = 0; ready && i < 2u; ++i)
         if (!emit(json, "%s", i == 0 ? "" : ",") || !persistence_save(probe, i, &ready))
             return false;
+    if (p->full_world_save)
+        return emit(json, "],\"failure\":") && diagnostic(probe) && emit(json, "}}\n");
     if (!emit(json, "],\"direct_loads\":["))
         return false;
     static const int32_t coordinates[][2] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}};
@@ -1710,14 +1765,16 @@ int main(int argc, char **argv) {
         return 1;
     const bool ring = argc == 6 && strcmp(argv[5], "ring") == 0;
     const bool save_readback = argc == 6 && strcmp(argv[5], "save-readback") == 0;
-    if (argc == 6 && !ring && !save_readback && strcmp(argv[5], "origin") != 0)
+    const bool full_world_save = argc == 6 && strcmp(argv[5], "full-world-save") == 0;
+    const bool persistent = save_readback || full_world_save;
+    if (argc == 6 && !ring && !persistent && strcmp(argv[5], "origin") != 0)
         return 1;
     char *resources = decode_path(argv[2]), *root = decode_path(argv[3]);
     natural_probe *probe = calloc(1, sizeof(*probe));
     mc_math_trig *trig = calloc(1, sizeof(*trig));
-    natural_persistence *persistence = save_readback ? calloc(1, sizeof(*persistence)) : NULL;
+    natural_persistence *persistence = persistent ? calloc(1, sizeof(*persistence)) : NULL;
     if (resources == NULL || root == NULL || probe == NULL || trig == NULL ||
-        (save_readback && persistence == NULL)) {
+        (persistent && persistence == NULL)) {
         free(resources);
         free(root);
         free(probe);
@@ -1726,8 +1783,10 @@ int main(int argc, char **argv) {
         return 1;
     }
     probe->persistence = persistence;
-    if (persistence != NULL)
+    if (persistence != NULL) {
         persistence->root = root;
+        persistence->full_world_save = full_world_save;
+    }
     probe->client = strcmp(argv[1], "client") == 0;
     probe->registry_error.initializer_pc = -1;
     probe->registry_error.block_id = -1;
@@ -1746,7 +1805,7 @@ int main(int argc, char **argv) {
     if (!initialized && probe->failed_stage == NULL)
         problem(probe, "Math lookup initialization", "probe", 1);
     const bool encoded =
-        save_readback ? observe_persistence(probe, initialized) : observe(probe, initialized, ring);
+        persistent ? observe_persistence(probe, initialized) : observe(probe, initialized, ring);
     bool written = false;
     if (encoded && !probe->json.failed)
         written = mc_ws_write_file(argv[4], (const uint8_t *)probe->json.bytes, probe->json.length,
@@ -1760,7 +1819,7 @@ int main(int argc, char **argv) {
     const bool released = cleanup(probe);
     if (!released) {
         fputs("natural population cleanup refused; live dependencies retained\n", stderr);
-        if (save_readback)
+        if (persistent)
             fprintf(stderr, "cleanup storage status: %s (%s, system %" PRIu32 ")\n",
                     mc_world_storage_status_string(probe->inspection_error.status),
                     probe->inspection_error.operation == NULL ? "no operation"

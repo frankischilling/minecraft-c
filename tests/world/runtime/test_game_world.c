@@ -1,9 +1,11 @@
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/world/runtime/construction_internal.h"
 #include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../support/java_random.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/environment.h"
+#include "mc/world/runtime/saving/saving.h"
 #include "mc/world/storage/chunk.h"
 
 #include <stdio.h>
@@ -598,6 +600,99 @@ cleanup:
     return result;
 }
 
+/* Native failure-order controls, separate from the fresh original comparison.
+ * Use a real constructed World's d owner, including an empty retained backing.
+ * No Player instance serializer is supplied by these admission controls. */
+static int test_full_save(mc_world_runtime *world, mc_world_store *store, mc_world_regions *regions,
+                          const char *root, const mc_world_store_options *options) {
+    int result = 1;
+    mc_world_storage_error error;
+    mc_world_runtime_lifecycle_error failure;
+    mc_world_store *conflict = NULL, *restored = NULL;
+    mc_world_info_fields before, after;
+    mc_world_info_name *name = NULL;
+    mc_world_reference_list *players = world->fields.d;
+    const mc_world_reference_list saved_list = *players;
+    mc_world_saved_data *saved_data = world->fields.z;
+    void *entries[2] = {NULL, NULL};
+    const bool saving_disabled = world->saving_disabled;
+    CHECK(mc_world_info_fields_get(world->fields.x, &before) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_name_retain(before.name) == MC_WORLD_INFO_OK);
+    name = before.name;
+    CHECK(before.player != NULL && players->count == 0 && saved_data != NULL);
+    const mc_world_info_name *player_name = mc_world_info_player_name(before.player);
+    const mc_nbt_tag *old_metadata = mc_world_store_metadata_root(store);
+
+    CHECK(mc_world_info_version_set(world->fields.x, 17) == MC_WORLD_INFO_OK);
+    /* Base cache save-enabled ignores the dedicated saving-disabled cell. */
+    world->saving_disabled = true;
+    CHECK(mc_world_runtime_save_detailed(world, true, &failure) == MC_CHUNK_LIFECYCLE_OK);
+    CHECK(mc_world_info_fields_get(world->fields.x, &after) == MC_WORLD_INFO_OK &&
+          after.value.version == 19132 && mc_world_store_metadata_root(store) != old_metadata);
+    old_metadata = mc_world_store_metadata_root(store);
+    world->saving_disabled = false;
+
+    CHECK(mc_world_info_version_set(world->fields.x, 17) == MC_WORLD_INFO_OK);
+    mc_world_store_options other = *options;
+    ++other.session_token;
+    CHECK(mc_world_store_open(root, regions, &other, &conflict, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_info_name_set(world->fields.x, NULL) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_runtime_save_detailed(world, true, &failure) ==
+              MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
+          failure.cause.status == MC_WORLD_STORAGE_SESSION_MISMATCH);
+    CHECK(mc_world_info_fields_get(world->fields.x, &after) == MC_WORLD_INFO_OK &&
+          after.value.version == 17 && mc_world_store_metadata_root(store) == old_metadata);
+    CHECK(mc_world_store_open(root, regions, options, &restored, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_runtime_save_detailed(world, true, &failure) ==
+              MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
+          failure.cause.status == MC_WORLD_STORAGE_INVALID_DATA &&
+          strcmp(failure.cause.operation, "LevelName") == 0);
+    CHECK(mc_world_info_fields_get(world->fields.x, &after) == MC_WORLD_INFO_OK &&
+          after.value.version == 19132 && after.player == before.player &&
+          mc_world_info_player_name(before.player) == player_name &&
+          mc_world_store_metadata_root(store) == old_metadata);
+    CHECK(mc_world_info_name_set(world->fields.x, name) == MC_WORLD_INFO_OK);
+
+    players->items = entries;
+    players->capacity = 2;
+    players->count = 1;
+    CHECK(mc_world_info_version_set(world->fields.x, 17) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_runtime_save_detailed(world, true, &failure) ==
+              MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
+          failure.cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+    CHECK(mc_world_info_fields_get(world->fields.x, &after) == MC_WORLD_INFO_OK &&
+          after.value.version == 19132 && mc_world_store_metadata_root(store) == old_metadata);
+
+    players->count = 0;
+    CHECK(mc_world_runtime_save_detailed(world, true, &failure) == MC_CHUNK_LIFECYCLE_OK);
+    CHECK(mc_world_info_fields_get(world->fields.x, &after) == MC_WORLD_INFO_OK &&
+          after.name == name && after.player == before.player && after.value.version == 19132 &&
+          after.value.last_played == before.value.last_played &&
+          after.value.player_dimension == before.value.player_dimension &&
+          mc_world_info_player_name(before.player) == player_name);
+    CHECK(mc_world_store_info(store)->player == NULL &&
+          mc_world_store_info(store)->version == 19132 &&
+          mc_world_store_info(store)->last_played == before.value.last_played &&
+          mc_world_store_info(store)->time == before.value.time);
+    old_metadata = mc_world_store_metadata_root(store);
+    world->fields.z = NULL;
+    CHECK(mc_world_runtime_save_detailed(world, true, &failure) ==
+              MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
+          failure.cause.status == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          mc_world_store_metadata_root(store) != old_metadata);
+    result = 0;
+cleanup:
+    world->saving_disabled = saving_disabled;
+    world->fields.z = saved_data;
+    *players = saved_list;
+    if (name != NULL)
+        (void)mc_world_info_name_set(world->fields.x, name);
+    mc_world_info_name_release(name);
+    mc_world_store_free(restored);
+    mc_world_store_free(conflict);
+    return result;
+}
+
 static int test_game(const char *root) {
     int result = 1;
     mc_world_regions *regions = NULL;
@@ -760,6 +855,7 @@ static int test_game(const char *root) {
     CHECK(mc_world_runtime_sky_subtraction(world[3], 1.0f, &sky, &error) == MC_WORLD_STORAGE_OK &&
           sky == 5);
     CHECK(world[3]->fields.f == 0);
+    CHECK(test_full_save(world[3], store, regions, root, &options) == 0);
     CHECK(mc_world_runtime_retire_world(world[3], &error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_free(world[3], &error) == MC_WORLD_STORAGE_OK);
     world[3] = NULL;

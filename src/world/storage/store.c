@@ -5,6 +5,7 @@
 #include "files.h"
 #include "generated_internal.h"
 #include "mc/core/java/java.h"
+#include "metadata_internal.h"
 #include "objects_internal.h"
 
 #include <stdlib.h>
@@ -630,12 +631,22 @@ mc_world_storage_status mc_world_store_save_world_info(mc_world_store *store, mc
                            info_error.field == NULL ? mc_world_info_status_string(serialized)
                                                     : info_error.field);
     }
+    status = mc_world_store_write_info_record(store, info, record, error);
+    mc_world_info_record_release(record);
+    return status;
+}
+
+mc_world_storage_status mc_world_store_write_info_record(mc_world_store *store, mc_world_info *info,
+                                                         const mc_world_info_record *record,
+                                                         mc_world_storage_error *error) {
+    if (store == NULL || mc_world_info_live_get(info) == NULL ||
+        mc_world_info_record_root(record) == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "metadata record transport");
     mc_nbt_document *document = NULL;
     mc_level_error detail;
     mc_level_status built = mc_level_build_record(mc_world_info_record_root(record),
                                                   mc_world_store_metadata_root(store),
                                                   &store->limits.nbt, &document, &detail);
-    mc_world_info_record_release(record);
     if (built != MC_LEVEL_OK)
         return store_level_error(error, built, &detail);
     /* Rebind only the persistence projection. Reading Dimension here would add
@@ -662,7 +673,8 @@ mc_world_storage_status mc_world_store_save_world_info(mc_world_store *store, mc
                              .thundering = fields.value.thundering,
                              .player = mc_nbt_compound_get(data, player_key, 6),
                              .player_dimension = fields.value.player_dimension};
-    status = store_write_metadata(store, mc_nbt_document_root(document), error);
+    mc_world_storage_status status =
+        store_write_metadata(store, mc_nbt_document_root(document), error);
     if (status != MC_WORLD_STORAGE_OK) {
         mc_nbt_document_free(document);
         return status;

@@ -203,6 +203,22 @@ mc_world_info_status mc_world_info_thundering_set(mc_world_info *info, bool valu
 mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
                                                  mc_world_info_record **out,
                                                  mc_world_info_error *error);
+/* The common writer with an explicitly selected, borrowed Player NBT owner.
+ * NULL omits Player without reading, retaining or renaming info's stored
+ * Player. A nonnull selection is retained by the record and its SAME root is
+ * renamed/inserted at the writer's final Player step, without reading Dimension.
+ * It may be info's current Player; info's reference and cached dimension never
+ * change. The caller keeps the selection live through this call.
+ *
+ * Selection belongs to the actual caller: this function neither inspects a
+ * live Player List nor serializes a Player object. READY admission, allocation,
+ * scalar order, actual LastPlayed clock, nullable-name failure order and record
+ * lifetime/output contracts match record_create. No version override occurs.
+ * Live Info scalars, including loaded last_played and version, stay unchanged. */
+mc_world_info_status mc_world_info_record_create_with_player(const mc_world_info *info,
+                                                             mc_world_info_player *player,
+                                                             mc_world_info_record **out,
+                                                             mc_world_info_error *error);
 const mc_nbt_tag *mc_world_info_record_root(const mc_world_info_record *record);
 /* Borrowed actual String identity supplying the record's LevelName span. */
 mc_world_info_name *mc_world_info_record_name(const mc_world_info_record *record);

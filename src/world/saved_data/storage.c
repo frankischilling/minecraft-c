@@ -22,11 +22,35 @@ typedef struct saved_id_entry {
 #pragma warning(pop)
 #endif
 
+typedef struct saved_named_entry saved_named_entry;
+typedef struct saved_named_value saved_named_value;
+
+typedef struct saved_named_cache {
+    saved_named_entry *first, *last;
+    size_t count;
+} saved_named_cache;
+
+typedef struct saved_ordered_list {
+    saved_named_value **items;
+    size_t count, capacity;
+} saved_ordered_list;
+
+typedef struct saved_id_map {
+    saved_id_entry *first, *last;
+    size_t count;
+} saved_id_map;
+
+typedef struct saved_storage {
+    char *path;
+} saved_storage;
+
 struct mc_world_saved_data {
     mc_world_saved_data_limits limits;
-    char *path;
-    saved_id_entry *first, *last;
-    size_t count, key_units, allocated;
+    saved_named_cache named_cache;
+    saved_ordered_list ordered_list;
+    saved_id_map id_map;
+    saved_storage storage;
+    size_t key_units, allocated;
     mc_world_storage_error last_caught;
 };
 
@@ -65,7 +89,7 @@ static bool saved_key_valid(const mc_nbt_string *key) {
 }
 
 static saved_id_entry *saved_find(mc_world_saved_data *owner, const mc_nbt_string *key) {
-    for (saved_id_entry *entry = owner->first; entry != NULL; entry = entry->next) {
+    for (saved_id_entry *entry = owner->id_map.first; entry != NULL; entry = entry->next) {
         if (entry->id.null_name != (key == NULL))
             continue;
         if (key == NULL || (entry->id.name.length == key->length &&
@@ -80,7 +104,7 @@ static mc_world_storage_status saved_insert(mc_world_saved_data *owner, const mc
                                             int16_t value, saved_id_entry **out,
                                             mc_world_storage_error *error) {
     size_t units = key == NULL ? 0 : key->length;
-    if (owner->count >= owner->limits.max_ids ||
+    if (owner->id_map.count >= owner->limits.max_ids ||
         units > owner->limits.max_key_units - owner->key_units ||
         units > (SIZE_MAX - sizeof(saved_id_entry)) / sizeof(uint16_t))
         return saved_error(error, MC_WORLD_STORAGE_LIMIT, "saved data ID capacity");
@@ -96,12 +120,12 @@ static mc_world_storage_status saved_insert(mc_world_saved_data *owner, const mc
             memcpy(entry->units, key->units, units * sizeof(*key->units));
         entry->id.name = (mc_nbt_string){entry->units, units};
     }
-    if (owner->last == NULL)
-        owner->first = entry;
+    if (owner->id_map.last == NULL)
+        owner->id_map.first = entry;
     else
-        owner->last->next = entry;
-    owner->last = entry;
-    ++owner->count;
+        owner->id_map.last->next = entry;
+    owner->id_map.last = entry;
+    ++owner->id_map.count;
     owner->key_units += units;
     owner->allocated += bytes;
     *out = entry;
@@ -110,11 +134,11 @@ static mc_world_storage_status saved_insert(mc_world_saved_data *owner, const mc
 
 static mc_world_storage_status saved_load(mc_world_saved_data *owner,
                                           mc_world_storage_error *error) {
-    if (owner->path == NULL)
+    if (owner->storage.path == NULL)
         return MC_WORLD_STORAGE_OK;
     mc_ws_file_bytes bytes = {0};
     mc_world_storage_status status =
-        mc_ws_read_file(owner->path, owner->limits.nbt.max_input_bytes, &bytes, error);
+        mc_ws_read_file(owner->storage.path, owner->limits.nbt.max_input_bytes, &bytes, error);
     if (status == MC_WORLD_STORAGE_MISSING)
         return MC_WORLD_STORAGE_OK;
     if (status != MC_WORLD_STORAGE_OK)
@@ -160,6 +184,11 @@ mc_world_storage_status mc_world_saved_data_create(const mc_world_store *store,
         return saved_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "saved data owner");
     owner->limits = chosen;
     owner->allocated = sizeof(*owner);
+    /* Distinct native collection headers live inside the charged owner. Their
+     * construction does not stand in for Java collection allocation timing. */
+    owner->named_cache = (saved_named_cache){0};
+    owner->ordered_list = (saved_ordered_list){0};
+    owner->id_map = (saved_id_map){0};
     mc_world_storage_error detail = {0};
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
     if (store != NULL) {
@@ -168,9 +197,9 @@ mc_world_storage_status mc_world_saved_data_create(const mc_world_store *store,
         if (bound > chosen.max_allocation_bytes - owner->allocated) {
             status = saved_error(&detail, MC_WORLD_STORAGE_LIMIT, "saved data path budget");
         } else {
-            status = mc_ws_path_join(root, "data/idcounts.dat", &owner->path, &detail);
+            status = mc_ws_path_join(root, "data/idcounts.dat", &owner->storage.path, &detail);
             if (status == MC_WORLD_STORAGE_OK)
-                owner->allocated += strlen(owner->path) + 1u;
+                owner->allocated += strlen(owner->storage.path) + 1u;
         }
     }
     if (status == MC_WORLD_STORAGE_OK)
@@ -206,25 +235,25 @@ static mc_world_storage_status saved_write_name(mc_ws_output *output, mc_nbt_str
 
 static mc_world_storage_status saved_write(mc_world_saved_data *owner,
                                            mc_world_storage_error *error) {
-    if (owner->path == NULL)
+    if (owner->storage.path == NULL)
         return MC_WORLD_STORAGE_OK;
     const mc_nbt_string empty = {0};
     if (saved_find(owner, NULL) != NULL && saved_find(owner, &empty) != NULL)
         return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "saved data duplicate-name collection order");
     const mc_nbt_limits *limits = &owner->limits.nbt;
-    if (owner->count >= limits->max_tags || owner->count > limits->max_elements ||
-        (owner->count != 0 && limits->max_depth < 2))
+    if (owner->id_map.count >= limits->max_tags || owner->id_map.count > limits->max_elements ||
+        (owner->id_map.count != 0 && limits->max_depth < 2))
         return saved_error(error, MC_WORLD_STORAGE_LIMIT, "saved data output tree bounds");
     mc_ws_output output;
     mc_world_storage_status status =
-        mc_ws_output_open(owner->path, limits->max_output_bytes, &output, error);
+        mc_ws_output_open(owner->storage.path, limits->max_output_bytes, &output, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     const uint8_t header[] = {MC_NBT_COMPOUND, 0, 0};
     status = mc_ws_output_write(&output, header, sizeof(header), error);
-    for (saved_id_entry *entry = owner->first; status == MC_WORLD_STORAGE_OK && entry != NULL;
-         entry = entry->next) {
+    for (saved_id_entry *entry = owner->id_map.first;
+         status == MC_WORLD_STORAGE_OK && entry != NULL; entry = entry->next) {
         const uint8_t type = MC_NBT_SHORT;
         status = mc_ws_output_write(&output, &type, 1, error);
         if (status == MC_WORLD_STORAGE_OK)
@@ -275,14 +304,41 @@ mc_world_storage_status mc_world_saved_data_next_id(mc_world_saved_data *owner,
     return saved_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
+mc_world_storage_status mc_world_saved_data_save(mc_world_saved_data *owner,
+                                                 mc_world_storage_error *error) {
+    if (owner == NULL)
+        return saved_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "saved data save receiver");
+    /* hc/es.a reads c.size at7 and returns52 before consulting any value,
+     * storage binding or ID entry. The owner contains that actual list. */
+    if (owner->ordered_list.count != 0)
+        return saved_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "saved data named subtype save");
+    return saved_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_saved_data_inspect(const mc_world_saved_data *owner,
+                                                    mc_world_saved_data_view *out) {
+    if (owner == NULL || out == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    *out =
+        (mc_world_saved_data_view){.storage = owner->storage.path == NULL ? NULL : &owner->storage,
+                                   .named_cache = &owner->named_cache,
+                                   .ordered_list = &owner->ordered_list,
+                                   .id_map = &owner->id_map,
+                                   .named_count = owner->named_cache.count,
+                                   .ordered_count = owner->ordered_list.count,
+                                   .id_count = owner->id_map.count};
+    return MC_WORLD_STORAGE_OK;
+}
+
 size_t mc_world_saved_data_count(const mc_world_saved_data *owner) {
-    return owner == NULL ? 0 : owner->count;
+    return owner == NULL ? 0 : owner->id_map.count;
 }
 
 const mc_world_saved_id *mc_world_saved_data_id_at(const mc_world_saved_data *owner, size_t index) {
     if (owner == NULL)
         return NULL;
-    const saved_id_entry *entry = owner->first;
+    const saved_id_entry *entry = owner->id_map.first;
     while (entry != NULL && index != 0) {
         entry = entry->next;
         --index;
@@ -297,11 +353,11 @@ const mc_world_storage_error *mc_world_saved_data_last_caught(const mc_world_sav
 void mc_world_saved_data_free(mc_world_saved_data *owner) {
     if (owner == NULL)
         return;
-    while (owner->first != NULL) {
-        saved_id_entry *entry = owner->first;
-        owner->first = entry->next;
+    while (owner->id_map.first != NULL) {
+        saved_id_entry *entry = owner->id_map.first;
+        owner->id_map.first = entry->next;
         free(entry);
     }
-    free(owner->path);
+    free(owner->storage.path);
     free(owner);
 }

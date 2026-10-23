@@ -612,6 +612,114 @@ cleanup:
     return result;
 }
 
+static int test_selected_player_records(mc_world_info_side side) {
+    int result = 1;
+    fixture input;
+    mc_world_info_data *data = NULL;
+    mc_world_info *info = NULL;
+    mc_world_info_name *before_name = NULL;
+    mc_world_info_player *selected = NULL;
+    mc_world_info_record *empty = NULL, *explicit = NULL, *no_list = NULL, *candidate = NULL;
+    mc_world_info_fields fields = {0}, expected = {0}, after = {0};
+    mc_world_info_error error = {0};
+    const mc_nbt_tag *stored_root = NULL, *selected_root = NULL, *root = NULL, *last = NULL;
+    int64_t lower = 0, upper = 0;
+    fixture_init(&input);
+    CHECK(mc_world_info_data_copy(&input.data, NULL, &data, &error) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_allocate(side, &info) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_construct_nbt(info, data, &error) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_fields_get(info, &fields) == MC_WORLD_INFO_OK && fields.player != NULL);
+    CHECK(mc_world_info_name_copy(
+              (mc_nbt_string){alternate_root, sizeof(alternate_root) / sizeof(alternate_root[0])},
+              SIZE_MAX, &before_name) == MC_WORLD_INFO_OK);
+    CHECK(mc_world_info_player_name_set(fields.player, before_name) == MC_WORLD_INFO_OK);
+    stored_root = mc_world_info_player_root(fields.player);
+    input.field[13].name =
+        (mc_nbt_string){alternate_root, sizeof(alternate_root) / sizeof(alternate_root[0])};
+    input.dimension.type = MC_NBT_BYTE;
+    input.dimension.value.byte_value = -9;
+    CHECK(mc_world_info_player_copy(&input.field[13], NULL, &selected, &error) == MC_WORLD_INFO_OK);
+    selected_root = mc_world_info_player_root(selected);
+    CHECK(selected_root != stored_root && mc_world_info_player_name(fields.player) == before_name);
+
+    CHECK(mc_platform_current_time_millis(&lower) == MC_PLATFORM_MILLIS_OK);
+    CHECK(mc_world_info_record_create_with_player(info, NULL, &empty, &error) == MC_WORLD_INFO_OK);
+    CHECK(mc_platform_current_time_millis(&upper) == MC_PLATFORM_MILLIS_OK);
+    root = mc_world_info_record_root(empty);
+    last = find(root, "LastPlayed");
+    CHECK(last != NULL && last->type == MC_NBT_LONG);
+    if (lower <= upper)
+        CHECK(lower <= last->value.long_value && last->value.long_value <= upper);
+    expected = fields;
+    expected.player = NULL;
+    CHECK(record_is(root, &expected, last->value.long_value, true) && find(root, "Player") == NULL);
+    CHECK(mc_world_info_player_root(fields.player) == stored_root &&
+          mc_world_info_player_name(fields.player) == before_name);
+    CHECK(mc_world_info_fields_get(info, &after) == MC_WORLD_INFO_OK &&
+          same_fields(&fields, &after));
+
+    CHECK(mc_world_info_name_set(info, NULL) == MC_WORLD_INFO_OK);
+    candidate = empty;
+    CHECK(mc_world_info_record_create_with_player(info, NULL, &candidate, &error) ==
+              MC_WORLD_INFO_INVALID_FIELD &&
+          candidate == empty && error.field != NULL && strcmp(error.field, "LevelName") == 0);
+    CHECK(mc_world_info_record_create_with_player(info, selected, &candidate, &error) ==
+              MC_WORLD_INFO_INVALID_FIELD &&
+          candidate == empty && error.field != NULL && strcmp(error.field, "LevelName") == 0);
+    CHECK(mc_world_info_player_name(fields.player) == before_name &&
+          text_equal(selected_root->name, mc_world_info_name_text(before_name)));
+    CHECK(mc_world_info_fields_get(info, &after) == MC_WORLD_INFO_OK && after.name == NULL &&
+          after.player == fields.player && scalars_equal(&fields.value, &after.value));
+    CHECK(mc_world_info_name_set(info, fields.name) == MC_WORLD_INFO_OK);
+
+    CHECK(mc_world_info_record_create_with_player(info, selected, &explicit, &error) ==
+          MC_WORLD_INFO_OK);
+    root = mc_world_info_record_root(explicit);
+    last = find(root, "LastPlayed");
+    CHECK(last != NULL && last->type == MC_NBT_LONG);
+    expected = fields;
+    expected.player = selected;
+    CHECK(record_is(root, &expected, last->value.long_value, true) &&
+          find(root, "Player") == selected_root && named_ascii(selected_root, "Player"));
+    CHECK(find(selected_root, "Dimension") != NULL &&
+          find(selected_root, "Dimension")->type == MC_NBT_BYTE &&
+          find(selected_root, "Dimension")->value.byte_value == -9);
+    CHECK(mc_world_info_fields_get(info, &after) == MC_WORLD_INFO_OK &&
+          same_fields(&fields, &after) && mc_world_info_player_name(fields.player) == before_name);
+
+    CHECK(mc_world_info_record_create(info, &no_list, &error) == MC_WORLD_INFO_OK);
+    root = mc_world_info_record_root(no_list);
+    last = find(root, "LastPlayed");
+    CHECK(last != NULL && last->type == MC_NBT_LONG &&
+          record_is(root, &fields, last->value.long_value, true) &&
+          find(root, "Player") == stored_root && named_ascii(stored_root, "Player"));
+    CHECK(mc_world_info_fields_get(info, &after) == MC_WORLD_INFO_OK &&
+          same_fields(&fields, &after) && after.value.last_played == -999 &&
+          after.value.version == -19132 && after.value.player_dimension == -7);
+    mc_world_info_release(info);
+    info = NULL;
+    mc_world_info_data_release(data);
+    data = NULL;
+    mc_world_info_player_release(selected);
+    selected = NULL;
+    CHECK(find(mc_world_info_record_root(empty), "Player") == NULL &&
+          find(mc_world_info_record_root(explicit), "Player") == selected_root &&
+          find(mc_world_info_record_root(no_list), "Player") == stored_root &&
+          named_ascii(selected_root, "Player") && named_ascii(stored_root, "Player"));
+    result = 0;
+cleanup:
+    if (candidate != empty)
+        mc_world_info_record_release(candidate);
+    mc_world_info_record_release(empty);
+    mc_world_info_record_release(explicit);
+    mc_world_info_record_release(no_list);
+    mc_world_info_player_release(selected);
+    mc_world_info_name_release(before_name);
+    mc_world_info_release(info);
+    mc_world_info_data_release(data);
+    return result;
+}
+
 static int test_missing_and_phases(mc_world_info_side side) {
     int result = 1;
     fixture input;
@@ -960,7 +1068,8 @@ int main(void) {
     for (unsigned int s = 0; s < 2; ++s) {
         const mc_world_info_side side = s == 0 ? MC_WORLD_INFO_CLIENT : MC_WORLD_INFO_SERVER;
         if (test_fresh(side) != 0 || test_copy_lifetimes(side) != 0 || test_records(side) != 0 ||
-            test_missing_and_phases(side) != 0 || test_data_reference_setters(side) != 0)
+            test_selected_player_records(side) != 0 || test_missing_and_phases(side) != 0 ||
+            test_data_reference_setters(side) != 0)
             return 1;
         for (size_t bad = 0; bad < 15; ++bad)
             if (test_wrong_type(side, bad) != 0)

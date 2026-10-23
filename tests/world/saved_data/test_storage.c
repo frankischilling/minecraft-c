@@ -90,6 +90,157 @@ static bool file_is(const char *path, const uint8_t *expected, size_t length) {
     return equal;
 }
 
+static bool graph_is(const mc_world_saved_data_view *view, bool stored, size_t ids) {
+    return (view->storage != NULL) == stored && view->named_cache != NULL &&
+           view->ordered_list != NULL && view->id_map != NULL &&
+           view->named_cache != view->ordered_list && view->named_cache != view->id_map &&
+           view->ordered_list != view->id_map &&
+           (!stored || (view->storage != view->named_cache && view->storage != view->ordered_list &&
+                        view->storage != view->id_map)) &&
+           view->named_count == 0 && view->ordered_count == 0 && view->id_count == ids;
+}
+
+static bool same_graph(const mc_world_saved_data_view *left,
+                       const mc_world_saved_data_view *right) {
+    return left->storage == right->storage && left->named_cache == right->named_cache &&
+           left->ordered_list == right->ordered_list && left->id_map == right->id_map;
+}
+
+static int test_named_memory(void) {
+    int result = 1;
+    mc_world_saved_data *owner = NULL, *peer = NULL, *limited = NULL, *candidate = NULL;
+    mc_world_saved_data_limits limits = mc_world_saved_data_default_limits();
+    mc_world_storage_error error = {0};
+    mc_world_saved_data_view initial, current, other;
+    const mc_nbt_string name_d = {key_d, 1};
+    int32_t value = 91;
+    CHECK(mc_world_saved_data_create(NULL, NULL, &owner, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_create(NULL, NULL, &peer, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_inspect(owner, &initial) == MC_WORLD_STORAGE_OK &&
+          graph_is(&initial, false, 0));
+    CHECK(mc_world_saved_data_inspect(peer, &other) == MC_WORLD_STORAGE_OK &&
+          graph_is(&other, false, 0));
+    CHECK(initial.named_cache != other.named_cache && initial.ordered_list != other.ordered_list &&
+          initial.id_map != other.id_map);
+    current = initial;
+    CHECK(mc_world_saved_data_inspect(NULL, &current) == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          same_graph(&current, &initial) && graph_is(&current, false, 0));
+    CHECK(mc_world_saved_data_inspect(owner, NULL) == MC_WORLD_STORAGE_INVALID_ARGUMENT);
+    CHECK(mc_world_saved_data_save(NULL, &error) == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          error.status == MC_WORLD_STORAGE_INVALID_ARGUMENT);
+    CHECK(mc_world_saved_data_save(owner, &error) == MC_WORLD_STORAGE_OK &&
+          error.status == MC_WORLD_STORAGE_OK && error.operation == NULL &&
+          error.system_error == 0);
+    CHECK(mc_world_saved_data_next_id(owner, &name_a, &value, &error) == MC_WORLD_STORAGE_OK &&
+          value == 0);
+    CHECK(mc_world_saved_data_next_id(owner, &name_d, &value, &error) == MC_WORLD_STORAGE_OK &&
+          value == 0);
+    CHECK(mc_world_saved_data_next_id(owner, &name_a, &value, &error) == MC_WORLD_STORAGE_OK &&
+          value == 1);
+    CHECK(mc_world_saved_data_inspect(owner, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &initial) && graph_is(&current, false, 2));
+    CHECK(mc_world_saved_data_save(owner, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_inspect(owner, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &initial) && graph_is(&current, false, 2));
+    CHECK(id_is(owner, false, key_a, 1, 1) && id_is(owner, false, key_d, 1, 0));
+    CHECK(mc_world_saved_data_inspect(peer, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &other) && graph_is(&current, false, 0));
+    /* Find the public constructor's exact small owner budget without exposing
+     * private layout. At that bound all collection headers exist, but an ID
+     * entry cannot fit. Every smaller budget preserves the actual peer slot. */
+    candidate = peer;
+    for (size_t bytes = 0; bytes <= 4096; ++bytes) {
+        limits.max_allocation_bytes = bytes;
+        const mc_world_storage_status status =
+            mc_world_saved_data_create(NULL, &limits, &candidate, &error);
+        if (status == MC_WORLD_STORAGE_OK) {
+            limited = candidate;
+            candidate = peer;
+            break;
+        }
+        CHECK(status == MC_WORLD_STORAGE_LIMIT && candidate == peer);
+    }
+    CHECK(limited != NULL);
+    CHECK(mc_world_saved_data_inspect(limited, &initial) == MC_WORLD_STORAGE_OK &&
+          graph_is(&initial, false, 0));
+    CHECK(mc_world_saved_data_save(limited, &error) == MC_WORLD_STORAGE_OK);
+    value = 91;
+    CHECK(mc_world_saved_data_next_id(limited, &name_a, &value, &error) == MC_WORLD_STORAGE_LIMIT &&
+          value == 91);
+    CHECK(mc_world_saved_data_inspect(limited, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &initial) && graph_is(&current, false, 0));
+    CHECK(mc_world_saved_data_save(limited, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_saved_data_last_caught(limited)->status == MC_WORLD_STORAGE_OK);
+    result = 0;
+cleanup:
+    if (candidate != peer)
+        mc_world_saved_data_free(candidate);
+    mc_world_saved_data_free(limited);
+    mc_world_saved_data_free(owner);
+    mc_world_saved_data_free(peer);
+    return result;
+}
+
+static int test_named_file(const char *root, mc_world_regions *regions) {
+    int result = 1;
+    mc_world_store *store = NULL;
+    mc_world_saved_data *owner = NULL, *peer = NULL;
+    char *path = NULL, *lock = NULL;
+    mc_ws_file_bytes before = {0};
+    mc_world_storage_error error = {0};
+    mc_world_saved_data_view initial, current, other;
+    const uint8_t stale[] = {7, 6, 5, 4, 3, 2, 1, 0};
+    int32_t value = 91;
+    bool exists = true;
+    CHECK(open_store(root, "named-empty-save", regions, &store) == MC_WORLD_STORAGE_OK);
+    CHECK(id_path(store, &path) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_ws_path_join(mc_world_store_root(store), "session.lock", &lock, &error) ==
+          MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_create(store, NULL, &owner, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_create(store, NULL, &peer, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_inspect(owner, &initial) == MC_WORLD_STORAGE_OK &&
+          graph_is(&initial, true, 0));
+    CHECK(mc_world_saved_data_inspect(peer, &other) == MC_WORLD_STORAGE_OK &&
+          graph_is(&other, true, 0));
+    CHECK(initial.storage != other.storage && initial.named_cache != other.named_cache &&
+          initial.ordered_list != other.ordered_list && initial.id_map != other.id_map);
+    CHECK(mc_world_saved_data_save(owner, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_ws_path_exists(path, &exists, &error) == MC_WORLD_STORAGE_OK && !exists);
+    CHECK(mc_world_saved_data_next_id(owner, &name_a, &value, &error) == MC_WORLD_STORAGE_OK &&
+          value == 0);
+    CHECK(mc_world_saved_data_next_id(owner, &name_a, &value, &error) == MC_WORLD_STORAGE_OK &&
+          value == 1);
+    CHECK(mc_ws_read_file(path, 1024 * 1024, &before, &error) == MC_WORLD_STORAGE_OK &&
+          before.length != 0);
+    CHECK(mc_world_saved_data_inspect(owner, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &initial) && graph_is(&current, true, 1));
+    CHECK(mc_ws_write_file(lock, stale, sizeof(stale), false, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_store_check_session(store, &error) == MC_WORLD_STORAGE_SESSION_MISMATCH);
+    CHECK(mc_world_saved_data_save(owner, &error) == MC_WORLD_STORAGE_OK &&
+          error.status == MC_WORLD_STORAGE_OK && error.operation == NULL &&
+          error.system_error == 0);
+    CHECK(file_is(path, before.data, before.length) && file_is(lock, stale, sizeof(stale)));
+    CHECK(id_is(owner, false, key_a, 1, 1) && mc_world_saved_data_count(owner) == 1);
+    CHECK(mc_world_store_info(store) == NULL && mc_world_store_metadata_root(store) == NULL);
+    mc_world_store_free(store);
+    store = NULL;
+    CHECK(mc_world_saved_data_save(owner, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_saved_data_inspect(owner, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &initial) && graph_is(&current, true, 1));
+    CHECK(mc_world_saved_data_inspect(peer, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &other) && graph_is(&current, true, 0));
+    CHECK(file_is(path, before.data, before.length) && file_is(lock, stale, sizeof(stale)));
+    result = 0;
+cleanup:
+    mc_ws_free_file_bytes(&before);
+    mc_world_saved_data_free(owner);
+    mc_world_saved_data_free(peer);
+    free(path);
+    free(lock);
+    mc_world_store_free(store);
+    return result;
+}
+
 static int test_memory(void) {
     int result = 1;
     mc_world_saved_data *owner = NULL, *limited = NULL, *candidate = NULL;
@@ -489,6 +640,8 @@ static int test_long_name(const char *root, mc_world_regions *regions) {
     char *path = NULL;
     uint16_t *units = NULL;
     mc_world_storage_error error = {0};
+    mc_world_storage_error caught = {0};
+    mc_world_saved_data_view initial, current;
     int32_t value = 71;
     const uint8_t prefix[] = {10, 0, 0, 2};
     CHECK(open_store(root, "overlong-name", regions, &store) == MC_WORLD_STORAGE_OK);
@@ -505,6 +658,18 @@ static int test_long_name(const char *root, mc_world_regions *regions) {
     CHECK(mc_world_saved_data_last_caught(owner)->status == MC_WORLD_STORAGE_INVALID_DATA);
     CHECK(strcmp(mc_world_saved_data_last_caught(owner)->operation, "saved data name writeUTF") ==
           0);
+    CHECK(id_is(owner, false, units, 65536, 0) && file_is(path, prefix, sizeof(prefix)));
+    caught = *mc_world_saved_data_last_caught(owner);
+    CHECK(mc_world_saved_data_inspect(owner, &initial) == MC_WORLD_STORAGE_OK &&
+          graph_is(&initial, true, 1));
+    CHECK(mc_world_saved_data_save(owner, &error) == MC_WORLD_STORAGE_OK &&
+          error.status == MC_WORLD_STORAGE_OK && error.operation == NULL &&
+          error.system_error == 0);
+    CHECK(mc_world_saved_data_inspect(owner, &current) == MC_WORLD_STORAGE_OK &&
+          same_graph(&current, &initial) && graph_is(&current, true, 1));
+    CHECK(mc_world_saved_data_last_caught(owner)->status == caught.status &&
+          mc_world_saved_data_last_caught(owner)->operation == caught.operation &&
+          mc_world_saved_data_last_caught(owner)->system_error == caught.system_error);
     CHECK(id_is(owner, false, units, 65536, 0) && file_is(path, prefix, sizeof(prefix)));
     CHECK(mc_world_saved_data_next_id(owner, &key, &value, NULL) == MC_WORLD_STORAGE_OK &&
           value == 1);
@@ -599,11 +764,13 @@ int main(int argc, char **argv) {
     if (argc != 3 || strcmp(argv[1], "saved-data-ids") != 0 ||
         !decode_path(argv[2], root, sizeof(root)))
         return 1;
-    if (test_memory() != 0 || mc_world_regions_create(NULL, &regions, NULL) != MC_WORLD_STORAGE_OK)
+    if (test_named_memory() != 0 || test_memory() != 0 ||
+        mc_world_regions_create(NULL, &regions, NULL) != MC_WORLD_STORAGE_OK)
         goto cleanup;
-    if (test_roundtrip(root, regions) != 0 || test_nullable_file(root, regions) != 0 ||
-        test_caught(root, regions) != 0 || test_write_limits(root, regions) != 0 ||
-        test_long_name(root, regions) != 0 || test_output_api(root) != 0)
+    if (test_named_file(root, regions) != 0 || test_roundtrip(root, regions) != 0 ||
+        test_nullable_file(root, regions) != 0 || test_caught(root, regions) != 0 ||
+        test_write_limits(root, regions) != 0 || test_long_name(root, regions) != 0 ||
+        test_output_api(root) != 0)
         goto cleanup;
     printf("PASS: %u constructed saved-data ID checks (saved-data-ids)\n", checks);
     result = 0;

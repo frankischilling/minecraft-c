@@ -16,8 +16,11 @@ The [populated Chunk persistence comparison](reference/population-persistence.md
 adds two real forced cache saves and four direct region loads after the origin
 prefix. Both original/native sides and public replay pass on MSVC, GCC and
 Clang. It checks all saved typed NBT, five loaded arrays, held Info,
-cache/numerical state and raw disk preservation. Full World metadata saving,
-unload and restart remain open.
+cache/numerical state and raw disk preservation. The separate
+[held World full-save profile](reference/population-full-save.md) now reaches
+actual metadata and empty named SavedData lists. Its MSVC development comparison
+and public replay pass; exact-source qualification is pending. Player and named
+subtype serialization, unload and restart remain open.
 
 At code checkpoint `eee7fb0`, local suites pass 191 MSVC, 193 GCC and 193 Clang
 tests without failures, errors or skips, including all three fresh population profiles and

@@ -40,6 +40,14 @@ mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *worl
 mc_chunk_lifecycle_status
 mc_world_runtime_save_chunks_detailed(mc_world_runtime *world, bool force, bool *completed,
                                       mc_world_runtime_lifecycle_error *error);
+/* GAME full saves check the session, mutate the actual Info version to19132,
+ * serialize its genuinely empty live Player List, save the actual SavedData
+ * named List, then save cached Chunks. Nonempty Player/named Lists remain
+ * unsupported. Empty Player Lists omit retained Info.Player without mutating
+ * it. Metadata uses its real clock and precedes Chunk SizeOnDisk growth.
+ * Native checked transport/unknown-field policies remain in effect; original
+ * caught file failures are not qualified. Info-bound COMPOSITION has no live
+ * Player List and retains its explicit unsupported metadata result. */
 mc_chunk_lifecycle_status mc_world_runtime_save_detailed(mc_world_runtime *world, bool force,
                                                          mc_world_runtime_lifecycle_error *error);
 mc_chunk_lifecycle_status

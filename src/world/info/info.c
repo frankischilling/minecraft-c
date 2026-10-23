@@ -724,9 +724,10 @@ static mc_nbt_tag *info_record_add(mc_world_info_record *record, const char *key
     return tag;
 }
 
-mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
-                                                 mc_world_info_record **out,
-                                                 mc_world_info_error *error) {
+static mc_world_info_status info_record_create(const mc_world_info *info,
+                                               mc_world_info_player *player, bool stored_player,
+                                               mc_world_info_record **out,
+                                               mc_world_info_error *error) {
     if (out == NULL)
         return info_status(error, MC_WORLD_INFO_INVALID_ARGUMENT, NULL);
     mc_world_info_status status = info_ready(info);
@@ -737,14 +738,17 @@ mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
         return info_status(error, MC_WORLD_INFO_ALLOCATION_FAILED, NULL);
     record->root.type = MC_NBT_COMPOUND;
     record->root.value.compound.items = record->items;
-    /* Capture h before entering the original private writer. */
-    if (info->fields.player != NULL) {
-        status = mc_world_info_player_retain(info->fields.player);
+    if (stored_player) {
+        /* Capture h before entering the original private writer. */
+        player = info->fields.player;
+    }
+    if (player != NULL) {
+        status = mc_world_info_player_retain(player);
         if (status != MC_WORLD_INFO_OK) {
             mc_world_info_record_release(record);
             return info_status(error, status, "Player");
         }
-        record->player = info->fields.player;
+        record->player = player;
     }
     info_record_add(record, "RandomSeed", MC_NBT_LONG)->value.long_value = info->fields.value.seed;
     info_record_add(record, "SpawnX", MC_NBT_INT)->value.int_value = info->fields.value.spawn_x;
@@ -787,6 +791,19 @@ mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
     }
     *out = record;
     return info_status(error, MC_WORLD_INFO_OK, NULL);
+}
+
+mc_world_info_status mc_world_info_record_create(const mc_world_info *info,
+                                                 mc_world_info_record **out,
+                                                 mc_world_info_error *error) {
+    return info_record_create(info, NULL, true, out, error);
+}
+
+mc_world_info_status mc_world_info_record_create_with_player(const mc_world_info *info,
+                                                             mc_world_info_player *player,
+                                                             mc_world_info_record **out,
+                                                             mc_world_info_error *error) {
+    return info_record_create(info, player, false, out, error);
 }
 
 const mc_nbt_tag *mc_world_info_record_root(const mc_world_info_record *record) {

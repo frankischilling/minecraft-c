@@ -1510,6 +1510,20 @@ if(BUILD_TESTING)
     set_tests_properties(world.population_save_readback_replay PROPERTIES
         LABELS "public;integration;population;storage;replay" TIMEOUT 300)
 
+    add_test(NAME tools.population_world_save
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_population_world_save.py)
+    set_tests_properties(tools.population_world_save PROPERTIES
+        LABELS "public;tools;population;storage" TIMEOUT 180)
+
+    add_test(NAME world.population_full_save_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/replay_population_world_save.py"
+        --executable "$<TARGET_FILE:mc_natural_population_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/population-full-save-replay")
+    set_tests_properties(world.population_full_save_replay PROPERTIES
+        LABELS "public;integration;population;storage;replay" TIMEOUT 300)
+
     if(MC_ENABLE_POPULATION_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
         foreach(MC_POPULATION_PROFILE IN ITEMS origin ring)
@@ -1546,6 +1560,19 @@ if(BUILD_TESTING)
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-population-save-readback")
         set_tests_properties(reference.population_save_readback PROPERTIES
+            LABELS "reference;original;population;storage;integration" TIMEOUT 600)
+
+        add_test(NAME reference.population_full_save
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/population/compare_world_save.py"
+            --executable "$<TARGET_FILE:mc_natural_population_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-population-full-save")
+        set_tests_properties(reference.population_full_save PROPERTIES
             LABELS "reference;original;population;storage;integration" TIMEOUT 600)
     endif()
 

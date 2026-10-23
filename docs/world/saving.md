@@ -7,8 +7,10 @@ stands in for live state. ItemEntity records use the actual semantic Boolean
 serializer and the current Entity/Stack provenance owners.
 
 The runtime save and maintenance callbacks use this path. Legacy composition
-and passive opaque builders keep their separate behavior. Whole World metadata,
-named saved data and complete population/persistence remain unfinished.
+and passive opaque builders keep their separate behavior. The [full save
+route](full-save.md) also handles metadata and the actual empty named SavedData
+list. Player and named subtype serialization, restart and complete
+population/persistence remain unfinished.
 
 The [populated Chunk comparison](../reference/population-persistence.md) exercises
 this path after genuine origin population, then directly reloads the four saved
