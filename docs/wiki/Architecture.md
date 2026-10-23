@@ -18,6 +18,9 @@ Current runtime navigation:
   ownership, mutation and persistence contracts.
 - [World storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) and
   [saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md) describe stable Chunk ownership and writes.
+- [SavedData](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md) owns ID counters, named MapData and ordered aliases through side-bound managers.
+  [Shared NBT byte arrays](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/nbt.md#decode-and-ownership) retain decoded payloads separately from immutable provenance.
+  The [named comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md) records the finite held-World scope.
 
 The [World simulation page](https://github.com/frankischilling/minecraft-c/wiki/World-simulation) provides related navigation.
 Finite original plant comparisons have the exact scope recorded in the

@@ -14,11 +14,16 @@ requirements.
 The [populated Chunk save/readback comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-persistence.md)
 extends the origin prefix with two forced cache saves and four direct region
 loads. It checks complete typed NBT, normalized arrays, held Info and cache state,
-and all disk bytes. It keeps the same World alive. The separate
+and all disk bytes in the same World. The
 [full-save profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
-also matches actual metadata and empty named SavedData saves on both sides and
-all three local compilers. Nonempty Players, named subtypes, source file-failure
-semantics, unload and restart remain separate requirements.
+adds metadata and empty named collections. The separate
+[named MapData profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md)
+puts one default dirty value through two full saves and a fresh manager load.
+Both original/native sides and public replay match on all three local compilers.
+Its twenty-four complete boundaries retain the same World and actual manager,
+value, String and colors owners. Nonempty Players, map terrain updates,
+trackers/packets, broader subtypes, source file-failure semantics, unrestricted
+ordering, dedicated runtime, unload and restart remain separate requirements.
 
 The native World modules use actual Registry owners, Chunk storage, acquiring
 readers and owning Lists. They preserve source order and completed effects when
@@ -42,6 +47,7 @@ records the comparison scope and native full-height removal regression.
 | Pistons | [Tile, finalization, collision and pushing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md), [source map and finite comparisons](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md) |
 | Entity movement | [Item and FallingSand movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md), [source map and observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) |
 | Population and saves | [Normal controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md), [live save path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md), [native storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) |
+| SavedData | [Manager/MapData ownership and type binding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md), [held-World named comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md) |
 
 The [Minecart constructor comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#constructor-observations-and-qualification)
 and [inventory/semantic NBT comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#finite-inventory-and-semantic-nbt-comparison)

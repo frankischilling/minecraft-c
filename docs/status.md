@@ -14,20 +14,28 @@ native probe with separately declared minimal resource files.
 
 The [populated Chunk persistence comparison](reference/population-persistence.md)
 adds two real forced cache saves and four direct region loads after the origin
-prefix. Both original/native sides and public replay pass on MSVC, GCC and
-Clang. It checks all saved typed NBT, five loaded arrays, held Info,
-cache/numerical state and raw disk preservation. The separate
-[held World full-save profile](reference/population-full-save.md) now reaches
-actual metadata and empty named SavedData lists. Both original/native sides and
-public replay pass on MSVC, GCC and Clang. Player and named subtype
-serialization, source file-failure semantics, unload and restart remain open.
+prefix. It checks saved typed NBT, five loaded arrays, held Info,
+cache/numerical state and raw disk preservation. The
+[held World full-save profile](reference/population-full-save.md) adds metadata
+and empty named SavedData lists. The separate
+[named MapData profile](reference/population-named-data.md) publishes one dirty
+default value under a different lookup key, performs two full saves and loads
+its file through a fresh manager. Both original/native sides and all five
+public replays pass on MSVC, GCC and Clang. Map terrain updates, trackers and
+packets, broader manager/subtype behavior, nonempty Players, source file-failure
+semantics, ordering, dedicated runtime, unload and restart remain open.
 
-At code checkpoint `cd41262`, local suites pass 194 MSVC, 196 GCC and 196 Clang
-tests: 586 executions without failures, errors or skips. Every compiler includes
-all four fresh population profiles and plant comparisons. Linux uses ASan,
-UBSan and leak checks. All 551 C/header files pass clang-format 18. The
-[source audit](reference/population-full-save.md#committed-checkpoint) verifies
-1,057 files, all 24 fresh/public captures and 24 resource-variant pairings.
+At code checkpoint `5b57bc1`, local suites pass 199 MSVC, 201 GCC and 201 Clang
+tests: 601 executions without failures, errors or skips. Every compiler includes
+five fresh population profiles, their public replays and the plant comparison.
+Linux uses ASan, UBSan and leak checks. All 559 C/header files pass
+clang-format 18; every compiler passes mirrors and 556 positive/2,011 negative
+lifecycle-interval controls. The [source and capture audit](reference/population-named-data.md#committed-checkpoint)
+verifies 1,073 clean-source files, 30 fresh/public captures and 30 resource-variant
+pairings. [Hosted verification](https://github.com/frankischilling/minecraft-c/actions/runs/39964552445)
+passes all 583 public/JDK executions and formatting/mirror/interval checks;
+all four actual checkout trees match the code checkpoint. The eighteen
+supplied-archive comparisons retain their local scope.
 
 Plant lifecycle callbacks, farmland behavior and World block-light queries are
 implemented.

@@ -88,13 +88,42 @@ tested commit must match clean source. Selected executable/source fingerprints
 do not themselves attest a build or its transitive libraries; that linkage
 belongs to the separate compiler qualification audit.
 
+## Committed checkpoint
+
+Exact code commit `5b57bc16a57a8b4fa644fae775579cc43618fd6b`, tree
+`a6ba767920bc010d2047dfeceedaaa0862e0a2d9`, passes all 601 local test executions:
+199 with MSVC 19.51.36260.0, 201 with GCC 13.3.0 and 201 with Clang 18.1.3.
+There are no failures, errors or skips. Linux enables ASan, UBSan and leak
+checks. Every compiler runs five fresh population profiles, their five public
+native replays and the plant comparison. The six supplied-archive comparisons
+per compiler retain their local scope.
+
+All 559 C/header files pass clang-format 18. Each compiler passes controller
+mirrors and 556 positive/2,011 negative lifecycle-interval controls. Native
+contracts pass 800 MapData value checks and 33,144 named-manager checks per
+compiler. Twenty-four Python tests exercise 132 rejection controls for the
+public named-data fixture and comparison.
+
+The independent audit verifies all 1,073 clean-source files, compiler test
+results, 30 fresh/public population captures and 30 resource-variant pairings.
+It checks complete source inputs and streams, numerical/owner projections,
+resource preservation and final saved directories. Each run's clock inputs are
+validated before comparing the native projections across supplied-original and
+minimal resource files. The original fixture's dirty checkout and null
+tested-commit attribution remain unchanged by this qualification.
+
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39964552445)
+passes all four jobs and 583 public/JDK test executions: 193 MSVC, 195 GCC and
+195 Clang. Formatting covers all 559 C/header files, and every mirror/interval
+check passes. All four actual checkout trees match that code tree.
+The eighteen local supplied-archive comparisons are excluded from that hosted
+count.
+
 ## Current limits
 
-Development comparisons pass on MSVC against both original runtimes and the
-public oracle. Clean-source GCC/Clang/MSVC qualification is in progress.
-Constructed tests additionally cover shared-array lifetimes, arbitrary colors
-lengths, signed scale, exact tag types, resize row spills and partial failures,
-key aliases, first-identity removal, partial load caching and dirty clearing.
+Constructed tests cover shared-array lifetimes, arbitrary colors lengths,
+signed scale, exact tag types, resize row spills and partial failures, key
+aliases, first-identity removal, partial load caching and dirty clearing.
 Those constructed cases are not fresh-original qualification of nondefault
 maps or failure behavior.
 

@@ -10,18 +10,21 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Code checkpoint `cd41262` passes 194 tests with MSVC 19.51, 196 with GCC 13.3
-and 196 with Clang 18.1.3: 586 executions with zero failures, errors or skips.
-Every compiler includes all four fresh population profiles and public native
-replays. Linux enables ASan, UBSan and leak checks. All 551 C/header files pass
-clang-format 18. Mirrors and lifecycle intervals pass on all three hosts,
-including 556 positive and 2,011 negative interval controls.
+Code checkpoint `5b57bc1` passes 199 tests with MSVC 19.51.36260.0, 201 with
+GCC 13.3.0 and 201 with Clang 18.1.3: 601 executions with zero failures, errors
+or skips. Every compiler includes five fresh population profiles, their public
+native replays and the plant comparison. Linux enables ASan, UBSan and leak
+checks. All 559 C/header files pass clang-format 18. Mirrors and lifecycle
+intervals pass on all three hosts, including 556 positive and 2,011 negative
+interval controls.
 
-The independent [source and capture audit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md#committed-checkpoint)
-verifies 1,057 exported source files and all 24 fresh/public population captures,
-including both resource bindings for each compiler, side and profile. Hosted
-verification is tracked in its [separate run](https://github.com/frankischilling/minecraft-c/actions/runs/39951520244).
-Five supplied-archive comparisons per compiler retain their local scope.
+The independent [source and capture audit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md#committed-checkpoint)
+verifies 1,073 clean-source files, all 30 fresh/public population captures and
+30 resource-variant pairings. The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39964552445)
+passes all four jobs and 583 public/JDK tests: 193 MSVC, 195 GCC and 195 Clang.
+Formatting and every mirror/interval check pass; all four actual checkout trees
+match the code checkpoint. Six supplied-archive comparisons per compiler retain
+their local scope.
 
 Optional `reference.natural_population` and `reference.natural_population_ring`
 compare fresh original/native origin and ring profiles on both sides. Ring
@@ -47,10 +50,20 @@ defines its twenty complete boundaries, disk/NBT projection and remaining full
 World save, unload and restart requirements.
 
 `reference.population_full_save` and public `world.population_full_save_replay`
-exercise two actual full saves after origin population. Eleven corruption
-tests protect its lossless original oracle. The [full-save record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
-covers the actual empty collection owners, typed metadata and exact rotation;
-nonempty Players, named subtypes, source I/O failures and restart remain open.
+exercise two actual full saves after origin population with empty Player and
+named collections. Eleven corruption tests protect that profile's lossless
+original oracle. The [full-save record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
+covers those collection owners, typed metadata and exact rotation.
+
+The same population reference flag also enables `reference.population_named_data`.
+Public `world.population_named_data_replay` needs no Java or archives;
+`tools.population_named_data` runs 24 Python tests with 132 rejection controls.
+The [named MapData profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md)
+adds one default dirty value, two full saves and a separate manager readback.
+Each side checks 24 numerical boundaries, 72 copied Random records and
+360 array descriptors, complete named graphs and all saved typed NBT/files.
+Nonempty Players, map updates/trackers/packets, other subtypes, source I/O
+failures, unrestricted ordering, dedicated runtime and restart remain open.
 
 The plant comparison has 59 client and 59 server cases, with zero mismatches. Its
 [declared projection and exclusions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md)

@@ -1,8 +1,10 @@
 # SavedData ID reference and verification
 
-This checkpoint implements the ID-counter owner needed by original World
-construction. It does not implement the complete World constructor or named
-SavedData cache/subtype operations. See the [ownership contract](../world/saved-data.md).
+This checkpoint records the ID-counter owner used by original World
+construction. Its ID-only evidence excludes complete World construction and
+named cache/subtype behavior. The current [ownership contract](../world/saved-data.md)
+also describes the named MapData manager; its [separate comparison](population-named-data.md)
+covers one default value in a held World.
 
 ## Paired original authority
 

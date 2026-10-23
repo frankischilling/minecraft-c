@@ -58,8 +58,13 @@ store serialization/accounting now use that owner. A separate
 [SavedData ID owner](reference/saved-data-ids.md) loads raw Short counters and
 preserves copied UTF-16 keys, wrapping and reached file-failure effects.
 Its native contracts and limited original-derived memory replay pass on all
-three compilers. Actual HashMap disk ordering and named SavedData remain
-unfinished. The [native base-World constructor](world/construction.md) now
+three compilers. Actual HashMap disk ordering remains unfinished. The
+[named SavedData manager](world/saved-data.md#named-values-and-mapdata) implements
+side-bound MapData values, retained String keys, ordered aliases and shared
+colors owners. Its [finite comparison](reference/population-named-data.md)
+covers one default value through full saves and a separate manager load.
+Trackers, terrain updates, map packets, other subtypes and source file-failure
+behavior remain unfinished or unqualified. The [native base-World constructor](world/construction.md) now
 retains all 43 fields, ordered Random/clock effects, actual Info bindings,
 Dimension/biome owners and a concrete normal provider. Direct, copied and
 already-loaded normal paths can reach native constructor completion. Fresh

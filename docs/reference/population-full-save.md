@@ -70,12 +70,14 @@ complete output streams, file inventories and the tested commit only when it
 matches clean source. Each capture uses a new owned directory and preserves
 the supplied JARs.
 
-This is finite successful held-World evidence. It does not establish nonempty
-Player or named SavedData behavior, source I/O-failure semantics, unload,
-restart, dedicated cache behavior or full population parity. The
-[full-save contract](../world/full-save.md) records those unfinished paths;
-the older [Chunk save/readback profile](population-persistence.md) retains its
-independent direct-load evidence.
+This finite successful profile observes empty Player and named SavedData
+collections. Its evidence excludes nonempty serialization, source I/O-failure
+semantics, unload, restart, dedicated cache behavior and full population parity.
+The separate [named MapData profile](population-named-data.md) follows one
+default value through two full saves and a separate manager load in a held
+World. The [full-save contract](../world/full-save.md) records the supported
+routes and remaining work; the [Chunk save/readback profile](population-persistence.md)
+retains its independent direct-load evidence.
 
 ## Committed checkpoint
 

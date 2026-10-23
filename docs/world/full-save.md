@@ -1,10 +1,11 @@
 # Full saves of a held GAME World
 
-`mc_world_runtime_save_detailed` now reaches metadata and SavedData before
-saving the actual cache insertion list. The admitted GAME route requires a
-valid, genuinely empty live Player list and a genuinely empty named SavedData
-list. The named cache, ordered list and ID map have separate retained owners.
-An ID map may contain counters while the named list remains empty.
+`mc_world_runtime_save_detailed` reaches metadata and SavedData before saving
+the actual cache insertion list. The admitted GAME route requires a valid,
+genuinely empty live Player list. Its actual side-bound SavedData manager can
+hold named MapData values. The named cache, ordered list and ID map have
+separate retained owners; ID counters do not determine whether the named list
+is empty.
 
 The World checks its session first. McRegion then sets the held Info's version
 to 19132 before the serializer reads the actual Player list. That mutation
@@ -26,13 +27,22 @@ A second save can write the updated size while the already-clean Chunks
 remain unchanged. The original full-save method discards the cache save's
 Boolean; the native detailed API reports the lifecycle status.
 
-SavedData save examines its actual ordered named list. An empty list returns
-before consulting storage or ID entries. It does not rewrite idcounts.dat,
-reset the retained caught diagnostic, sample a clock or draw Random values.
-Named subtype construction, lookup, insertion, dirty handling and nonempty
-serialization remain unfinished and cannot report success through this path.
-The manager owns its native storage binding independently of the Store's
-lifetime.
+SavedData save visits its actual ordered named list. An empty list returns
+before consulting storage or ID entries. A dirty MapData value writes gzip
+under its immutable name, independently of the cache key. A normal or caught
+writer result clears that same value's dirty flag; a later alias sees the
+cleared flag. An escaping native resource failure preserves dirty and any
+completed file prefix. Save does not rewrite idcounts.dat, sample a clock or
+draw Random values. Successful and empty saves retain the prior caught
+diagnostic; a new caught writer failure replaces it.
+
+The [SavedData contract](saved-data.md) describes nullable String keys,
+client/server base-type binding, put/get ordering and shared colors owners.
+Each manager owns a copied native storage binding that survives the supplying
+Store's retirement. The [named MapData profile](../reference/population-named-data.md)
+compares one default value through two full saves and a separate manager load
+in the same held World. Map trackers, item updates and broader manager
+qualification remain unfinished.
 
 The source selections are paired client/base-server methods:
 
@@ -43,14 +53,16 @@ The source selections are paired client/base-server methods:
 | McRegion list save | `mx.a(Lei;Ljava/util/List;)V` | `ie.a(Lct;Ljava/util/List;)V` | Actual version setter4, superclass10 |
 | Info list serializer | `ei.a(Ljava/util/List;)Lnu;` | `ct.a(Ljava/util/List;)Liq;` | Actual size14, optional first Player24/write49, common writer56 |
 | Info common writer | `ei.a(Lnu;Lnu;)V` | `ct.a(Liq;Liq;)V` | Clock63, LastPlayed66, name76, version86, optional Player137 |
-| SavedData save | `hc.a()V` | `es.a()V` | Actual ordered list size7, empty return52 |
+| SavedData save | `hc.a()V` | `es.a()V` | Actual ordered list size7, value20, dirty30, writer38, clear dirty43, return52 |
 
-Native checked encoding, file rotation and unknown root/Data retention remain
-explicit storage policies. Original handler file exceptions are printed and
-swallowed, and its delete/rename return values are ignored. Those failure
+Native checked encoding, metadata file rotation and unknown root/Data retention
+remain explicit storage policies. Fresh named MapData output writes its own
+fields and drops unknown tags. Original handler file exceptions are printed
+and swallowed, and its delete/rename return values are ignored. Those failure
 paths have not reached full-game parity. The user-approved authentication
-exception does not extend to them. Restart, unload, Player serialization and
-named SavedData subtype persistence remain acceptance work.
+exception does not extend to them. Restart, unload, nonempty Player
+serialization, map tracker/update bodies and broader named subtype persistence
+remain acceptance work.
 
 Native regression controls cover session-before-version order, retained version
 after serializer failure, empty retained Player-list backing, stored Player

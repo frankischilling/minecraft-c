@@ -172,10 +172,15 @@ serialization. It borrows no store or World runtime. Runtime contexts can retain
 an Info and borrow its actual scalar cells; persistence accepts the typed
 no-list record without making the store the live metadata authority.
 `mc_persistence` composes storage with the C world model and explicit native
-filesystem ownership. `mc_world_saved_data` builds on persistence with independent
-[ID-counter ownership](world/saved-data.md). It copies its fixed file path and
-UTF-16 keys, without borrowing the store or WorldInfo. Complete World startup
-and named SavedData subtypes remain separate work.
+filesystem ownership. `mc_world_saved_data` adds [ID counters and named values](world/saved-data.md),
+with distinct cache, ordered-list and ID-map owners. It copies the handler path
+and ID-key spans; named keys retain immutable UTF-16 String owners. GAME
+managers bind the client or server base type and construct the corresponding
+MapData class. Values and save records retain shared mutable colors handles,
+including actual decoded payloads, without borrowing the supplying Store or
+WorldInfo. The [named MapData comparison](reference/population-named-data.md)
+covers one default value in a held World. Complete World startup, trackers,
+map updates and broader named subtype behavior remain unfinished.
 `mc_simulation` builds on persistence and items with the
 world runtime and [Entity construction](entity/construction.md). Keeping these
 mutually dependent owners together avoids a storage-to-Entity dependency.

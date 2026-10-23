@@ -116,8 +116,11 @@ The [full-save record](reference/population-full-save.md) defines all twelve
 numerical boundaries, actual empty Player/SavedData collection owners, complete
 typed metadata and Chunk NBT, and exact within-run metadata rotation. It
 preserves the distinction between original resource files and the public
-replay's minimal inputs. Nonempty Players, named subtypes, source I/O failures,
-unload and restart remain unfinished.
+replay's minimal inputs. Nonempty serialization lies outside this empty-list
+profile. The separate [named MapData profile](reference/population-named-data.md)
+compares one default value through full saves and a separate manager load.
+Nonempty Players, trackers, broader named subtypes, source I/O failures, unload
+and restart remain acceptance work.
 
 ```sh
 ctest --test-dir build --output-on-failure -R 'population_(full_save|world_save)'
@@ -131,6 +134,39 @@ plant comparisons, formatting and mirror/interval controls pass. The
 verifies 1,057 source files, 24 fresh/public captures and 24 resource-variant
 pairings. Hosted verification is tracked in its [separate run](https://github.com/frankischilling/minecraft-c/actions/runs/39951520244).
 Five supplied-archive comparisons per compiler retain their local scope.
+
+## Held World named MapData
+
+`reference.population_named_data` uses the same optional population-reference
+flag, supplied JARs and Java paths. After the unchanged seed23 origin prefix,
+the World puts one dirty default MapData under a key different from its name,
+saves twice, and a separate manager loads the named file and performs a cache
+hit. The original World manager stays attached. This finite profile retains
+nineteen post-origin observations and twenty-four cache/numerical boundaries
+per side, including 72 copied Random records and 360 array descriptors.
+
+Public `world.population_named_data_replay` runs the actual native producer
+with declared minimal resources and lossless original-only fixtures. It needs
+no Java or archives. `tools.population_named_data` runs 24 Python tests with
+132 rejection controls. Separate `world.saved_data_map_value` and
+`world.saved_data_named` tests exercise the constructed ownership, type,
+aliasing, mutation-prefix and resource-limit contracts. Nondefault maps and
+failure cases in those tests retain native scope.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^(tools[.]population_named_data|world[.]population_named_data_replay|world[.]saved_data_(map_value|named))$'
+ctest --test-dir build --output-on-failure -R '^reference[.]population_named_data$'
+```
+
+The [committed checkpoint](reference/population-named-data.md#committed-checkpoint)
+passes all 601 local executions on MSVC/GCC/Clang, with Linux sanitizers and
+leak checks, 559-file formatting and all mirror/interval controls. The
+independent audit verifies 1,073 source files, 30 fresh/public captures and
+30 resource-variant pairings. Hosted public/JDK checks pass 583 executions;
+the eighteen supplied-archive comparisons retain their local scope.
+Map updates, trackers and packets, nonempty Players, other subtypes, original
+filename/stream/error behavior, unrestricted ordering, dedicated runtime,
+unload and restart remain unfinished or unqualified.
 
 ## Plant lifecycle validation
 
@@ -972,7 +1008,12 @@ above; that increment brought the declared public inventory to 86 cases.
 
 | Check | Coverage | Limits |
 | --- | --- | --- |
-| `world.saved_data_ids` | 196,823 native checks per compiler: complete signed-Short cycle, copied nullable UTF-16 keys, stable counters, raw load/write, independent owners, stale sessions, caught errors, reached partial files and resource bounds | Constructed contracts; original HashMap disk order, named SavedData, forced allocator/stdio failures and actual World startup remain unfinished |
+| `world.saved_data_ids` | 196,823 native checks per compiler: complete signed-Short cycle, copied nullable UTF-16 keys, stable counters, raw load/write, independent owners, stale sessions, caught errors, reached partial files and resource bounds | Constructed contracts; original HashMap disk order, forced allocator/stdio failures and actual World startup remain unfinished. Named values have separate tests below |
+| `world.saved_data_map_value` | 800 constructed checks per compiler: actual side class, name/dirty/scalar cells, shared colors and record lifetime, exact tag types, signed scale, resize spills, partial failures and bounds | Native contracts; nondefault maps and failure cases have no fresh-original qualification |
+| `world.saved_data_named` | 33,144 constructed checks per compiler: side-bound put/get, nullable String keys, aliases and first-identity removal, ordered dirty saves, caught partial loads and stable retained owners | Native manager contracts; source filename/stream/error prefixes, printed diagnostics, unrestricted ordering and Java allocation timing remain unqualified |
+| `tools.population_named_data` | 24 Python tests with 132 rejection controls for complete original/native observations, fixture digests/source attribution, typed payloads and owner trajectories | Public validation controls; launches no game or native producer |
+| `world.population_named_data_replay` | Fresh native seed23 World with one default MapData, two full saves, separate manager load/cache hit; complete original-derived cache, Info, owner, numerical, NBT and file projection | Minimal project resources; one default value and seed, no Java/JAR execution, nonempty Players, map updates/trackers, source I/O failures or restart |
+| `reference.population_named_data` (local opt-in) | Fresh original/native default-map profile on both sides and all three local compilers; 24 boundaries, 72 copied Random records, 360 array descriptors, typed metadata/Chunk/MapData NBT and final disk rereads per side | Same held World and exact extracted resources; excludes broader manager/subtype behavior, nondefault maps, source failure policies, dedicated runtime and gameplay restart |
 | `world.saved_data_ids_replay` | 78 original-derived memory rows match on MSVC/GCC/Clang; fourteen altered-output guards and four real malformed-input child refusals pass per compiler | NULL-store history only; excludes String argument identity, original disk interoperability and complete manager behavior |
 | `world.runtime_info_bindings` | 173 native checks: actual Info/context cell identity, independent copied scalars, failing callback visibility, retained lifetimes, per-Info wrapped region growth, real no-list metadata files and bounded record packaging | Constructed native contracts; no original World constructor/list save, new original handler interoperability, forced allocator/OS failure or general mutable NBT |
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |

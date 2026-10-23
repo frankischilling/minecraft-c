@@ -133,12 +133,14 @@ bounds; the header describes direct owner/staging accounting. Native failures
 retain completed prefixes rather than rolling back Java-visible mutations.
 
 Constructed tests cover ownership, aliases, arbitrary colors lengths, signed
-scale, malformed types, resize failures and allocation bounds. Local original
-and native experiments execute the same two successful full saves and a
-separate manager load after the seed23 origin prefix. The
-[named-data comparison](../reference/population-named-data.md) records their
-complete projections and public oracle. Clean-source qualification is still in
-progress. This is not World restart.
+scale, malformed types, resize failures and allocation bounds. The
+[named-data comparison](../reference/population-named-data.md#committed-checkpoint)
+records clean-source original/native and public-replay qualification on MSVC,
+GCC and Clang, plus separate hosted public/JDK checks. Its finite profile
+executes two successful full saves and a separate manager load after the
+seed23 origin prefix while retaining the same World. Gameplay restart and
+original qualification of nondefault maps or failure behavior remain separate
+work.
 Map item updates, player trackers, map packets and nonempty Player serialization
 remain unfinished. Filename conversion, original stream/error byte prefixes,
 printed caught diagnostics, Java allocation timing and unrestricted collection

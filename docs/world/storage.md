@@ -7,9 +7,15 @@ and exact-source acceptance passes for the finite foundation scenarios at
 `9ad690d83592f127b9bb39d7233e8eef06fd0029`. See the
 [checkpoint evidence](../reference/storage.md#exact-source-storage-checkpoint).
 
-The separate [SavedData ID owner](saved-data.md) copies the store's
-`data/idcounts.dat` path. Its raw direct-overwrite route has its own caught-error
-and partial-file contract, without a session check or metadata rotation.
+The separate [SavedData manager](saved-data.md) owns ID counters, named MapData
+values and ordered save occurrences. It copies the store's `data/idcounts.dat`
+path and uses the same data directory for named files. ID writes directly
+overwrite raw NBT; dirty named values directly overwrite gzip under their own
+name. Both routes have separate caught-error and partial-file contracts,
+without a session check or metadata rotation. The
+[named comparison](../reference/population-named-data.md) retains the finite
+default-map scope; original filename and stream-failure behavior, trackers and
+gameplay restart remain unqualified or unfinished.
 
 [Minecart inventory and storage](../entity/minecart-inventory.md) now has a
 separate native contract for semantic NBT, per-occurrence provenance and genuine

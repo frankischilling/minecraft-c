@@ -14,17 +14,26 @@ The [populated Chunk save/readback profile](https://github.com/frankischilling/m
 adds two genuine cache saves and four direct loads in the same World. Complete
 typed NBT joins the actual saved Chunk arrays; fresh readbacks use each
 implementation's real block map. The second save and every read preserve all
-raw disk bytes. The separate [full-save profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
-matches actual held-World metadata and genuinely empty named SavedData lists,
-including complete typed metadata, live Info changes and exact metadata
-rotation. Nonempty Players, named subtypes, source I/O failures, unloading and
-restart remain open.
+raw disk bytes. The [full-save profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-full-save.md)
+adds held-World metadata, empty named collections and exact metadata rotation.
+The separate [named MapData profile](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md)
+compares a dirty default value through two full saves and a separate manager
+load on both sides and all three local compilers. It retains the same World
+and checks the fresh loaded value, shared name owner, colors, complete typed
+NBT and every captured file. Nonempty Players, terrain updates, trackers and
+packets, broader subtypes, source I/O failures, unrestricted ordering,
+dedicated runtime, unloading and restart remain open.
 
 Storage layers have separate contracts and ownership:
 
-- [Raw NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/nbt.md) owns decoded trees and immutable source copies.
+- [Raw NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/nbt.md) owns decoded documents, shared mutable byte-array handles and separate immutable source copies.
+  Shared decoded arrays retain their document after its caller hold is released;
+  mutation requires exclusive access.
 - [Compression](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/compression.md) consumes borrowed byte spans and
   returns owned buffers; limits and compressed-stream boundaries are explicit.
+- [SavedData](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md) owns ID counters, the named cache and ordered values.
+  GAME managers bind the client/server base type; MapData values and save records
+  retain shared colors owners. Copied native path bindings have their own lifetime.
 - [Read-only region records](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/region.md) validate borrowed spans.
   World writes use the separate [storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) and
   [saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md) contracts.
