@@ -423,6 +423,12 @@ static bool cold_paths(fixture *f, size_t side) {
     CHECK(mc_world_runtime_plant_light(w, INT32_MAX, -1, INT32_MIN, &value, &e) ==
               MC_WORLD_STORAGE_OK &&
           value == 0 && cleared(&e));
+    CHECK(mc_world_runtime_block_light(w, 32000000, INT32_MIN, 8, &value, &e) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 15 && cleared(&e));
+    CHECK(mc_world_runtime_block_light(w, 8, INT32_MAX, -32000001, &value, &e) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 15 && cleared(&e));
     value = 777;
     CHECK(mc_world_runtime_saved_light(w, NULL, 32000000, INT32_MAX, 0, &value, &e) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
@@ -773,6 +779,9 @@ static bool prefixes_and_admission(fixture *f, size_t side) {
     CHECK(mc_world_runtime_plant_light(NULL, 0, -1, 0, &value, &e) ==
               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
           value == 777 && e.bytecode == 0);
+    CHECK(mc_world_runtime_block_light(NULL, 0, -1, 0, &value, &e) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          value == 777 && e.bytecode == 0);
     CHECK(mc_world_runtime_sky_visible(NULL, 0, 0, 0, &visible, &e) ==
               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
           visible && e.bytecode == 0);
@@ -783,6 +792,9 @@ static bool prefixes_and_admission(fixture *f, size_t side) {
               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
           e.bytecode == 0);
     CHECK(mc_world_runtime_plant_light(ready, 0, 0, 0, NULL, &e) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          e.bytecode == 0);
+    CHECK(mc_world_runtime_block_light(ready, 0, 0, 0, NULL, &e) ==
               MC_WORLD_STORAGE_INVALID_ARGUMENT &&
           e.bytecode == 0);
     CHECK(mc_world_runtime_sky_visible(ready, 0, 0, 0, NULL, &e) ==
@@ -815,6 +827,8 @@ static bool prefixes_and_admission(fixture *f, size_t side) {
         CHECK(mc_world_runtime_saved_light(w, f->types[side][0], 32000000, INT32_MIN, 0, &value,
                                            &e) == MC_WORLD_STORAGE_OK &&
               value == 15 && cleared(&e) && same_cause(&before, mc_world_runtime_last_error(w)));
+        CHECK(mc_world_runtime_block_light(w, 8, INT32_MIN, 8, &value, &e) == MC_WORLD_STORAGE_OK &&
+              value == 0 && cleared(&e) && same_cause(&before, mc_world_runtime_last_error(w)));
         value = 777;
         CHECK(mc_world_runtime_top_solid_liquid(w, 8, 8, &value, &e) ==
                   MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
@@ -846,6 +860,9 @@ static bool retired_contract(mc_world_runtime *w) {
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           value == 777 && e.bytecode == 0);
     CHECK(mc_world_runtime_plant_light(w, 0, -1, 0, &value, &e) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          value == 777 && e.bytecode == 0);
+    CHECK(mc_world_runtime_block_light(w, 0, -1, 0, &value, &e) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           value == 777 && e.bytecode == 0);
     CHECK(mc_world_runtime_sky_visible(w, 0, 0, 0, &visible, &e) ==
@@ -1638,6 +1655,205 @@ cleanup:
     return ok;
 }
 
+static size_t block_light_index(int32_t x, int32_t y, int32_t z) {
+    return ((size_t)(uint32_t)x << 11u) | ((size_t)(uint32_t)z << 7u) | (size_t)(uint32_t)y;
+}
+
+static void block_light_nibble(mc_world_chunk_nibble *owner, size_t cell, uint8_t value) {
+    const unsigned int shift = (unsigned int)(cell & 1u) * 4u;
+    const uint32_t mask = 15u << shift;
+    owner->a[cell / 2u] =
+        (uint8_t)(((uint32_t)owner->a[cell / 2u] & ~mask) | ((uint32_t)value << shift));
+}
+
+static bool block_light_contracts(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *w = f->worlds[side];
+    mc_registry_classes *r = f->registry[side];
+    mc_world_chunk *c = mc_world_store_chunk_object(f->stores[side], f->normal[side][0]);
+    mc_world_chunk *other = mc_world_store_chunk_object(f->stores[side], f->normal[side][1]);
+    CHECK(c != NULL && other != NULL && c->f != NULL && c->g != NULL && other->g != NULL);
+    const char *const names[] = {"al", "aB", "aI", "au", "u"};
+    const mc_block *blocks[COUNT(names)];
+    size_t named[COUNT(names)];
+    for (size_t i = 0; i < COUNT(names); ++i) {
+        CHECK(mc_registry_block_static_get(r, names[i], &blocks[i], NULL) == MC_REGISTRY_OK &&
+              blocks[i] != NULL && blocks[i]->fields.bn > 0 && blocks[i]->fields.bn <= UINT8_MAX);
+        for (named[i] = 0; named[i] < COUNT(r->blocks.named); ++named[i]) {
+            if (strcmp(mc_registry_block_static_name(named[i]), names[i]) == 0)
+                break;
+        }
+        CHECK(named[i] < COUNT(r->blocks.named) && r->blocks.named[named[i]] == blocks[i]);
+    }
+    const size_t cell = block_index(64), packed = cell / 2u;
+    const uint8_t old_id = c->data->blocks[cell];
+    const uint8_t old_sky = c->f->a[packed], old_block = c->g->a[packed];
+    const int32_t old_subtraction = w->fields.f;
+
+    const struct {
+        uint8_t sky, block;
+        int32_t subtraction, light, plant;
+    } scalar[] = {{12, 2, 5, 7, 12},         {3, 11, 5, 11, 11},      {0, 0, -5, 5, 0},
+                  {15, 1, INT32_MIN, 1, 15}, {0, 0, INT32_MIN, 0, 0}, {15, 4, 15, 4, 15}};
+
+    for (size_t i = 0; i < COUNT(scalar); ++i) {
+        int32_t value = 777, plant = 777;
+        mc_world_query_error e, pe;
+        c->data->blocks[cell] = (uint8_t)blocks[4]->fields.bn;
+        block_light_nibble(c->f, cell, scalar[i].sky);
+        block_light_nibble(c->g, cell, scalar[i].block);
+        w->fields.f = scalar[i].subtraction;
+        const mc_world_storage_status status =
+            mc_world_runtime_block_light(w, 8, 64, 8, &value, &e);
+        const mc_world_storage_status ps = mc_world_runtime_plant_light(w, 8, 64, 8, &plant, &pe);
+        c->data->blocks[cell] = old_id;
+        c->f->a[packed] = old_sky;
+        c->g->a[packed] = old_block;
+        w->fields.f = old_subtraction;
+        CHECK(status == MC_WORLD_STORAGE_OK && ps == MC_WORLD_STORAGE_OK && cleared(&e) &&
+              cleared(&pe) && value == scalar[i].light && plant == scalar[i].plant &&
+              w->active_calls == 0 && w->local_leases == 0);
+    }
+    const size_t high = block_index(127) / 2u;
+    const uint8_t high_sky = c->f->a[high], high_block = c->g->a[high];
+    c->f->a[high] = UINT8_C(0xb0);
+    c->g->a[high] = UINT8_C(0xd0);
+    w->fields.f = 3;
+    int32_t top = 777;
+    mc_world_query_error top_error;
+    const mc_world_storage_status top_status =
+        mc_world_runtime_block_light(w, 8, INT32_MAX, 8, &top, &top_error);
+    c->f->a[high] = high_sky;
+    c->g->a[high] = high_block;
+    w->fields.f = old_subtraction;
+    CHECK(top_status == MC_WORLD_STORAGE_OK && top == 13 && cleared(&top_error));
+    /* Each of the four live statics must select all five samples. Rotate the
+     * unique maximum across every direction, with center light deliberately
+     * larger than any neighbor so a target-cell shortcut cannot pass. */
+    const size_t cells[] = {block_light_index(8, 65, 8), block_light_index(9, 64, 8),
+                            block_light_index(7, 64, 8), block_light_index(8, 64, 9),
+                            block_light_index(8, 64, 7)};
+    uint8_t sky[COUNT(cells)], block[COUNT(cells)];
+    for (size_t i = 0; i < COUNT(cells); ++i) {
+        sky[i] = c->f->a[cells[i] / 2u];
+        block[i] = c->g->a[cells[i] / 2u];
+    }
+    for (size_t kind = 0; kind < 4; ++kind) {
+        for (size_t winner = 0; winner < COUNT(cells); ++winner) {
+            int32_t value = 777;
+            mc_world_query_error e;
+            c->data->blocks[cell] = (uint8_t)blocks[kind]->fields.bn;
+            block_light_nibble(c->f, cell, 15);
+            block_light_nibble(c->g, cell, 15);
+            for (size_t i = 0; i < COUNT(cells); ++i) {
+                block_light_nibble(c->f, cells[i], i == winner ? 15u : 4u);
+                block_light_nibble(c->g, cells[i], 1);
+            }
+            w->fields.f = 2;
+            const mc_world_storage_status status =
+                mc_world_runtime_block_light(w, 8, 64, 8, &value, &e);
+            c->data->blocks[cell] = old_id;
+            c->f->a[packed] = old_sky;
+            c->g->a[packed] = old_block;
+            for (size_t i = 0; i < COUNT(cells); ++i) {
+                c->f->a[cells[i] / 2u] = sky[i];
+                c->g->a[cells[i] / 2u] = block[i];
+            }
+            w->fields.f = old_subtraction;
+            CHECK(status == MC_WORLD_STORAGE_OK && value == 13 && cleared(&e) &&
+                  w->active_calls == 0 && w->local_leases == 0);
+        }
+    }
+    /* An earlier match must skip later static dereferences. Conversely, even
+     * negative y reaches every nonmatching static before its ordinary zero. */
+    mc_block *saved_static = r->blocks.named[named[1]];
+    r->blocks.named[named[1]] = NULL;
+    c->data->blocks[cell] = (uint8_t)blocks[0]->fields.bn;
+    int32_t value = 777;
+    mc_world_query_error e;
+    mc_world_storage_status status = mc_world_runtime_block_light(w, 8, 64, 8, &value, &e);
+    r->blocks.named[named[1]] = saved_static;
+    c->data->blocks[cell] = old_id;
+    CHECK(status == MC_WORLD_STORAGE_OK && cleared(&e));
+    const unsigned int field_pc[] = {46, 57, 68, 79};
+    for (size_t i = 0; i < COUNT(field_pc); ++i) {
+        mc_world_provider *provider = w->fields.v;
+        saved_static = r->blocks.named[named[i]];
+        r->blocks.named[named[i]] = NULL;
+        w->fields.v = NULL;
+        value = 777;
+        status = mc_world_runtime_block_light(w, 8, INT32_MIN, 8, &value, &e);
+        r->blocks.named[named[i]] = saved_static;
+        w->fields.v = provider;
+        CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 &&
+              failure_is(w, &e, field_pc[i], 0, MC_REGISTRY_NULL_REFERENCE) &&
+              w->active_calls == 0 && w->local_leases == 0);
+    }
+    /* All later samples remain required when the first already returns 15.
+     * The second sample crosses into the other genuinely loaded Chunk, whose
+     * BlockLight receiver fails after the completed first sample. */
+    const size_t edge_cell = block_light_index(15, 64, 8);
+    const uint8_t edge_id = c->data->blocks[edge_cell];
+    const uint8_t edge_sky = c->f->a[edge_cell / 2u];
+    const uint8_t edge_block = c->g->a[edge_cell / 2u];
+    mc_world_chunk_nibble *saved_g = other->g;
+    c->data->blocks[edge_cell] = (uint8_t)blocks[0]->fields.bn;
+    block_light_nibble(c->f, edge_cell + 1u, 15);
+    block_light_nibble(c->g, edge_cell + 1u, 0);
+    other->g = NULL;
+    w->fields.f = 0;
+    value = 777;
+    status = mc_world_runtime_block_light(w, 15, 64, 8, &value, &e);
+    c->data->blocks[edge_cell] = edge_id;
+    c->f->a[edge_cell / 2u] = edge_sky;
+    c->g->a[edge_cell / 2u] = edge_block;
+    other->g = saved_g;
+    w->fields.f = old_subtraction;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 &&
+          failure_is(w, &e, 239, 35, MC_REGISTRY_OK) &&
+          mc_world_runtime_chunk_light_seen(f->classes[side]) && w->active_calls == 0 &&
+          w->local_leases == 0 &&
+          mc_world_store_entity_containers_validate(f->stores[side], w, NULL) ==
+              MC_WORLD_STORAGE_OK);
+    mc_world_provider *provider = w->fields.v;
+    w->fields.v = NULL;
+    value = 777;
+    status = mc_world_runtime_block_light(w, 8, 128, 8, &value, &e);
+    w->fields.v = provider;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == 777 && e.bytecode == 215 &&
+          e.provider_bytecode == 6 && e.chunk_bytecode == 0);
+
+    const struct {
+        int32_t x, y, z, expected;
+        bool inside;
+    } borders[] = {{-32000001, INT32_MIN, 8, 15, false}, {32000000, INT32_MIN, 8, 15, false},
+                   {8, INT32_MIN, -32000001, 15, false}, {8, INT32_MIN, 32000001, 15, false},
+                   {-32000000, 64, 8, 777, true},        {31999999, 64, 8, 777, true},
+                   {8, 64, -32000000, 777, true},        {8, 64, 32000000, 777, true},
+                   {8, INT32_MIN, 8, 0, false}};
+
+    for (size_t i = 0; i < COUNT(borders); ++i) {
+        w->fields.v = NULL;
+        value = 777;
+        status =
+            mc_world_runtime_block_light(w, borders[i].x, borders[i].y, borders[i].z, &value, &e);
+        w->fields.v = provider;
+        CHECK(value == borders[i].expected && w->active_calls == 0 && w->local_leases == 0);
+        if (borders[i].inside)
+            CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && e.bytecode == 36);
+        else
+            CHECK(status == MC_WORLD_STORAGE_OK && cleared(&e));
+    }
+    w->fields.f = INT32_MIN;
+    status = mc_world_runtime_block_light(w, 40, INT32_MAX, 8, &value, &e);
+    w->fields.f = old_subtraction;
+    CHECK(status == MC_WORLD_STORAGE_OK && value == 0 && cleared(&e) &&
+          mc_chunk_pending_contains(f->providers[side].pending, mc_chunk_cache_key(0, 0)));
+    ok = true;
+cleanup:
+    return ok;
+}
+
 #include "population/lake_spring_contracts.h"
 #include "population/ore_clay_contracts.h"
 #include "population/plants_contracts.h"
@@ -1695,6 +1911,8 @@ int main(int argc, char **argv) {
         CHECK(plant_predicate_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)
         CHECK(nullable_block_provider(f, side));
+    for (size_t side = 0; side < 2; ++side)
+        CHECK(block_light_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)
         CHECK(population_ore_clay_contracts(f, side));
     for (size_t side = 0; side < 2; ++side)

@@ -5,6 +5,11 @@
 #include "mc/world/chunk/object.h"
 #include "mc/world/runtime/mutations.h"
 
+/* Fresh diagnostic defaults only; these operations do not read game owners.
+ * Registry-only callers avoid constructing the full mutation error. The
+ * in-place initializer accepts NULL and uses the same child defaults. */
+mc_registry_error mc_world_mutation_empty_registry(void);
+void mc_world_mutation_error_init(mc_world_mutation_error *error);
 mc_world_mutation_error mc_world_mutation_empty_error(void);
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,
                             mc_world_storage_status status, const char *operation);
@@ -34,6 +39,16 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
                                       int32_t y, int32_t z, int32_t source_id,
                                       mc_world_mutation_error *error);
 bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                  int32_t y, int32_t z, mc_java_random *random,
+                                  mc_world_mutation_error *error);
+
+/* Concrete plant neighbors and ticks. The enclosing dispatch holds the actual
+ * World and Block. Survival, drops and notifying writes keep their source order;
+ * no replacement receiver lookup, rollback or future tick is inserted. */
+bool mc_world_mutation_plant_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, int32_t source_id,
+                                      mc_world_mutation_error *error);
+bool mc_world_mutation_plant_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error);
 

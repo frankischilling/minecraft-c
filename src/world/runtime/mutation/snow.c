@@ -69,7 +69,7 @@ static bool snow_registry_fail(const snow_frame *frame, unsigned int pc,
 }
 
 static bool snow_null(const snow_frame *frame, unsigned int pc, const char *operation) {
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     registry.status = MC_REGISTRY_NULL_REFERENCE;
     registry.message = operation;
     return snow_registry_fail(frame, pc, &registry, operation);
@@ -110,7 +110,7 @@ bool mc_world_mutation_snow_can_place(mc_world_runtime *world, const mc_block *b
     /* Do not substitute the cached Block.o array or World solid support. This
      * is a late capture of m after the acquiring getter and a virtual call. */
     mc_registry_block_m_view array;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     snow_at(&frame, 17);
     if (mc_registry_block_m_get(block->classes, &array, &registry) != MC_REGISTRY_OK)
         return snow_registry_fail(&frame, 17, &registry, "Snow support Block.m active use");

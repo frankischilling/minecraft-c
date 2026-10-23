@@ -1,6 +1,61 @@
 # Test scope and reproduction
 
-## Current Minecart inventory, NBT and storage validation
+## Plant lifecycle validation
+
+The finite original/native comparison matches all 59 prepared cases per side
+with zero mismatches. It compares every block/metadata cell in X/Z0..31 and
+Y0..127, four continuation fields for each supplied and World Random stream,
+and ordered Item stack, pickup-delay and position fields. The original fixture
+executes unchanged Block callbacks and selected tree bodies with prepared World
+services. These results do not establish original World/Chunk, observer,
+neighbor or light-propagation parity. The [evidence record](reference/plant-lifecycle.md)
+defines the projection and its limits.
+
+`world.plant_lifecycle` exercises native GAME Worlds and their actual Chunk,
+Registry, mutation and publication services. The separate
+`world.plant_lifecycle_replay` compares those native projections with public
+fixtures derived from original captures. Replay covers all 59 cases and twelve
+semantic corruption guards plus 154 malformed-input guards per side, including
+altered maps, drops, every Random-tail field, request order and strict field types. Both tests run without Java or original archives:
+
+```sh
+cmake --build build
+ctest --test-dir build --output-on-failure -R '^world\.plant_lifecycle(_replay)?$'
+```
+
+Use `--config Debug` for a multi-configuration build and add `-C Debug` to CTest.
+To recapture and compare both supplied originals, configure a separate build
+with a full JDK17+ and the verified archives:
+
+```sh
+cmake -S . -B build-plant-reference \
+  -DMC_ENABLE_PLANT_REFERENCE_TESTS=ON \
+  -DMC_REFERENCE_CLIENT_JAR=/path/to/b1.7.3.jar \
+  -DMC_REFERENCE_SERVER_JAR=/path/to/b1.7.3_server.jar \
+  -DJava_JAVA_EXECUTABLE=/path/to/jdk/bin/java \
+  -DJava_JAVAC_EXECUTABLE=/path/to/jdk/bin/javac \
+  -DMC_REFERENCE_TESTED_COMMIT=SOURCE_COMMIT
+cmake --build build-plant-reference
+ctest --test-dir build-plant-reference --output-on-failure -R '^reference\.plant_lifecycle$'
+```
+
+Replace the paths and `SOURCE_COMMIT` with the actual tools, supplied archives
+and tested source. On Windows, use the corresponding executable paths and
+multi-configuration options from [building](building.md). The comparison creates
+fresh test directories and retains its report under the build's
+`reference-plant-lifecycle` directory. See the [plant contract](world/plants.md)
+for implemented callbacks and remaining gameplay work.
+
+Complete local suites pass 183 MSVC, 185 GCC and 185 Clang tests, 553 executions
+with zero failures, errors or skips. Each suite includes the optional original
+plant comparison; normal hosted builds omit those three archive-dependent tests.
+Native plant contracts pass 17,595 checks per compiler, including two adjacent
+127-block columns removed recursively. Linux enables ASan, UBSan and leak
+checks. All three hosts pass controller mirrors and 556 positive/2,011 negative
+lifecycle-interval controls. Clang-format18 checks all 549 C/header files.
+Earlier checkpoints below retain their original source and comparison scope.
+
+## Earlier Minecart inventory, NBT and storage validation
 
 Full local suites pass all 180 MSVC, 182 GCC and 182 Clang tests, 544 total,
 with zero failures, errors or skips. The C17 profiles use MSVC 19.51.36260.0,
@@ -349,7 +404,7 @@ Fresh qualification checks all 742 selected source inputs, 254 dependency pins,
 actual Snow process/stream/executable joins. Linux capture collection and a
 separate fresh inventory/hash audit run on the native filesystem. Failed earlier
 compile/test attempts and their evidence remain retained. All 438 C source/
-header files pass clang-format18. These are native constructed scenarios;
+header files pass clang-format 18. These are native constructed scenarios;
 saved Snow regions are fixture inputs, and no fresh original snow execution,
 original/native replay or arbitrary recursive resource qualification follows.
 
@@ -408,7 +463,7 @@ The [live save integration](world/saving.md) passes all 144 configured MSVC and
 146 GCC/Clang cases with zero skips and local JDK comparisons enabled. Linux
 uses ASan/UBSan and leak checks with fresh byte-verified source/dependency copies.
 Each host retains 678 unchanged selected inputs, 254 zlib pins, 163 products and
-32 captures. Formatting passes all 388 C files/headers with clang-format18.
+32 captures. Formatting passes all 388 C files/headers with clang-format 18.
 The new `world.saving` case passes 1,003 checks per host, including actual saved
 arrays/records, provenance, session and late errors, retry freshness and explicit
 native coordinator reload on the same World. It does not establish natural
@@ -627,7 +682,7 @@ catalogs and both numeric Stack projections match on MSVC/GCC/Clang using
 imported and synthetic resources. Thirty-six historical observer replays remain
 byte-equal. All 555 code/tool/fixture inputs agree before/after, across retained
 host source copies and with that checkpoint's source; 32 build products per host are
-retained. clang-format18 checks 280 C/header files. This selected run qualifies
+retained. clang-format 18 checks 280 C/header files. This selected run qualifies
 the recorded initialization scenarios; full World startup, gameplay,
 population and persistence acceptance remain unfinished.
 

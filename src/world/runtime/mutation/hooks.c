@@ -1,4 +1,5 @@
 #include "mutation_internal.h"
+#include "plants/plants_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../presence_internal.h"
@@ -109,7 +110,7 @@ static bool mark_leaves(mc_world_runtime *world, const mc_block *block, int32_t 
                 /* The getstatic follows the acquiring getter, on every cell.
                  * Keep the actual nullable live object through getfield102. */
                 const mc_block *leaves;
-                mc_registry_error registry = mc_world_mutation_empty_error().registry;
+                mc_registry_error registry = mc_world_mutation_empty_registry();
                 error->hook_bytecode = 99;
                 if (mc_registry_block_static_get(block->classes, "L", &leaves, &registry) !=
                     MC_REGISTRY_OK)
@@ -393,7 +394,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_WB_NW:
         case MC_BLOCK_TL_MD:
         case MC_BLOCK_NI_IJ:
-            return unavailable(world, block, "wb", "nw", "Block plant neighbor hook", error);
+            return mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_OM_JC:
         case MC_BLOCK_NX_IS:
             return mc_world_mutation_fluid_neighbor(world, block, x, y, z, source_id, error);
@@ -424,7 +425,7 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_SM_LO:
             return unavailable(world, block, "sm", "lo", "Block wire neighbor hook", error);
         case MC_BLOCK_VL_NO:
-            return unavailable(world, block, "vl", "no", "Block neighbor hook", error);
+            return mc_plant_farmland_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_UJ_MT:
             return unavailable(world, block, "uj", "mt", "Block sign neighbor hook", error);
         case MC_BLOCK_LE_HC:
@@ -442,9 +443,8 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_JR_GJ:
             return mc_world_mutation_snow_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_OR_JE:
-            return unavailable(world, block, "or", "je", "Block cactus neighbor hook", error);
         case MC_BLOCK_RI_KO:
-            return unavailable(world, block, "ri", "ko", "Block reed neighbor hook", error);
+            return mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error);
         case MC_BLOCK_AK_Z:
             return unavailable(world, block, "ak", "z", "Block neighbor hook", error);
         case MC_BLOCK_UM_MW:

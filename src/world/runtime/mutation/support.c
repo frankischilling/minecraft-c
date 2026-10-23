@@ -5,21 +5,39 @@
 #include "../power/power_internal.h"
 #include "mc/core/java/java.h"
 
+mc_registry_error mc_world_mutation_empty_registry(void) {
+    return (mc_registry_error){.initializer_pc = -1,
+                               .block_id = -1,
+                               .constructor_pc = -1,
+                               .active_initializer_pc = -1,
+                               .item_argument = -1};
+}
+
+void mc_world_mutation_error_init(mc_world_mutation_error *error) {
+    static const mc_world_mutation_error zero = {0};
+    if (error == NULL)
+        return;
+    const mc_registry_error registry = mc_world_mutation_empty_registry();
+    *error = zero;
+    error->tile = mc_live_tiles_empty_error();
+    error->load_entity = mc_world_entity_load_empty_error();
+    error->batch.index = SIZE_MAX;
+    error->registry = registry;
+    error->nearby = mc_world_nearby_empty_error();
+    error->schedule.registry = registry;
+    error->plant.registry = registry;
+    error->plant.query.registry = registry;
+    error->plant.material.registry = registry;
+    error->plant.support.registry = registry;
+    error->power = mc_world_power_empty_error();
+    error->rail_access = mc_world_collision_empty_error();
+    error->rail_support.registry = registry;
+}
+
 mc_world_mutation_error mc_world_mutation_empty_error(void) {
-    const mc_registry_error registry = {.initializer_pc = -1,
-                                        .block_id = -1,
-                                        .constructor_pc = -1,
-                                        .active_initializer_pc = -1,
-                                        .item_argument = -1};
-    return (mc_world_mutation_error){.tile = mc_live_tiles_empty_error(),
-                                     .load_entity = mc_world_entity_load_empty_error(),
-                                     .batch = {.index = SIZE_MAX},
-                                     .registry = registry,
-                                     .nearby = mc_world_nearby_empty_error(),
-                                     .schedule = {.registry = registry},
-                                     .power = mc_world_power_empty_error(),
-                                     .rail_access = mc_world_collision_empty_error(),
-                                     .rail_support = {.registry = registry}};
+    mc_world_mutation_error error;
+    mc_world_mutation_error_init(&error);
+    return error;
 }
 
 bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *error,
@@ -85,7 +103,7 @@ bool mc_world_mutation_q(mc_world_runtime *world, int32_t id, unsigned int *byte
                          unsigned int capture_pc, unsigned int element_pc, int32_t *out,
                          mc_world_mutation_error *error) {
     mc_registry_block_q_view array;
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     *bytecode = capture_pc;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     if (classes == NULL) {
@@ -132,7 +150,7 @@ bool mc_world_mutation_submit(mc_world_runtime *world, mc_light_kind kind,
 
 bool mc_world_mutation_column(mc_world_chunk *chunk, int32_t x, int32_t z,
                               mc_world_mutation_error *error) {
-    mc_world_chunk_error frame = {.registry = mc_world_mutation_empty_error().registry};
+    mc_world_chunk_error frame = {.registry = mc_world_mutation_empty_registry()};
     if (mc_world_runtime_chunk_column(chunk, x, z, &frame)) {
         error->column_bytecode = 0;
         error->interval_bytecode = 0;

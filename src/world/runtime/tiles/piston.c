@@ -152,7 +152,7 @@ static bool finalize_held(mc_tile *tile, mc_world_mutation_error *error) {
         return mc_world_mutation_fail(NULL, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Piston finalizer Registry binding");
     const mc_block *moving = NULL;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     if (mc_registry_block_static_get(classes, "ad", &moving, &registry) != MC_REGISTRY_OK)
         return registry_failure(tile, error, &registry, "Piston finalizer live ad active use");
     error->piston_finalize_bytecode = 64;

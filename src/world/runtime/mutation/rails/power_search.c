@@ -132,7 +132,7 @@ static bool search_registry(const rail_search_frame *frame, unsigned int pc,
 
 static bool search_live_u(const rail_search_frame *frame, int32_t *out) {
     const mc_block *selected = NULL;
-    mc_registry_error child = mc_world_mutation_empty_error().registry;
+    mc_registry_error child = mc_world_mutation_empty_registry();
     search_at(frame, 12);
     if (mc_registry_block_static_get(frame->block->classes, "U", &selected, &child) !=
         MC_REGISTRY_OK)

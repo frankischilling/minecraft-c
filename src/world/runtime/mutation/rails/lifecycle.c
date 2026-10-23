@@ -295,7 +295,7 @@ static bool rail_remove(const rail_lifecycle_frame *frame) {
 }
 
 static bool rail_live_powered_id(const rail_lifecycle_frame *frame, int32_t *out) {
-    mc_registry_error child = mc_world_mutation_empty_error().registry;
+    mc_registry_error child = mc_world_mutation_empty_registry();
     const mc_block *selected = NULL;
     rail_at(frame, 182);
     if (mc_registry_block_static_get(frame->block->classes, "U", &selected, &child) !=
@@ -364,7 +364,7 @@ static bool rail_powered_neighbor(const rail_lifecycle_frame *frame, int32_t raw
 
 static bool rail_source_capability(const rail_lifecycle_frame *frame, int32_t source_id,
                                    bool *out) {
-    mc_registry_error child = mc_world_mutation_empty_error().registry;
+    mc_registry_error child = mc_world_mutation_empty_registry();
     mc_registry_block_m_view array = {0};
     rail_at(frame, 392);
     if (mc_registry_block_m_get(frame->block->classes, &array, &child) != MC_REGISTRY_OK)

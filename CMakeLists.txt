@@ -26,6 +26,7 @@ option(MC_ENABLE_REGION_REFERENCE_TESTS "Compare region inspection with untouche
 option(MC_ENABLE_CACHE_REFERENCE_TESTS "Compare synchronous acquisition with retained original providers" OFF)
 option(MC_ENABLE_STORAGE_REFERENCE_TESTS "Compare world persistence with original storage methods" OFF)
 option(MC_ENABLE_LIFECYCLE_REFERENCE_TESTS "Compare copied-world save/unload lifecycle with original controls" OFF)
+option(MC_ENABLE_PLANT_REFERENCE_TESTS "Compare plant lifecycle projections with supplied originals" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -267,6 +268,12 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/falling.c
     src/world/runtime/mutation/snow.c
+    src/world/runtime/mutation/plants/survival.c
+    src/world/runtime/mutation/plants/upright.c
+    src/world/runtime/mutation/plants/mushroom.c
+    src/world/runtime/mutation/plants/crop.c
+    src/world/runtime/mutation/plants/sapling.c
+    src/world/runtime/mutation/plants/farmland.c
     src/world/runtime/mutation/pressure_plate.c
     src/world/runtime/mutation/pressure_lifecycle.c
     src/world/runtime/mutation/rails/connections.c
@@ -627,6 +634,12 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_snow tests/world/runtime/test_snow.c)
     target_link_libraries(mc_test_world_snow PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_plant_lifecycle tests/world/runtime/plants/test_lifecycle.c)
+    target_link_libraries(mc_test_plant_lifecycle PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_plant_lifecycle_probe tests/world/runtime/plants/reference_probe.c)
+    target_link_libraries(mc_plant_lifecycle_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1489,6 +1502,38 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-snow-contracts")
     set_tests_properties(world.snow PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.plant_lifecycle
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_plant_lifecycle.py"
+        --executable "$<TARGET_FILE:mc_test_plant_lifecycle>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-plant-contracts")
+    set_tests_properties(world.plant_lifecycle PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.plant_lifecycle_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_SOURCE_DIR}/tests/tools/world/replay_plant_lifecycle.py"
+        --executable "$<TARGET_FILE:mc_plant_lifecycle_probe>"
+        --work-dir "${CMAKE_BINARY_DIR}/plant-lifecycle-replay")
+    set_tests_properties(world.plant_lifecycle_replay PROPERTIES
+        LABELS "public;integration;mutation;replay" TIMEOUT 240)
+
+    if(MC_ENABLE_PLANT_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.plant_lifecycle
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_SOURCE_DIR}/scripts/reference/world/plants/compare_lifecycle.py"
+            --executable "$<TARGET_FILE:mc_plant_lifecycle_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_BINARY_DIR}/reference-plant-lifecycle")
+        set_tests_properties(reference.plant_lifecycle PROPERTIES
+            LABELS "reference;original;mutation" TIMEOUT 300)
+    endif()
 
     add_test(NAME world.normal_provider_construction
         COMMAND mc_test_normal_provider_construction)

@@ -1,4 +1,5 @@
 #include "mutation_internal.h"
+#include "plants/plants_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "mc/core/java/java.h"
@@ -79,7 +80,7 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_WP_OJ:
             return tick_unavailable(world, block, "wp", "oj", error);
         case MC_BLOCK_HE_EU:
-            return tick_unavailable(world, block, "he", "eu", error);
+            return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_OM_JC:
         case MC_BLOCK_NX_IS:
             return mc_world_mutation_fluid_tick(world, block, x, y, z, random, error);
@@ -95,9 +96,8 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_RU_KZ:
         case MC_BLOCK_JB_FZ:
         case MC_BLOCK_WB_NW:
-            return tick_unavailable(world, block, "wb", "nw", error);
         case MC_BLOCK_TL_MD:
-            return tick_unavailable(world, block, "tl", "md", error);
+            return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_VM_NP:
             return tick_unavailable(world, block, "vm", "np", error);
         case MC_BLOCK_YQ_PT:
@@ -105,9 +105,9 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_SS_LU:
             return tick_unavailable(world, block, "ss", "lu", error);
         case MC_BLOCK_NI_IJ:
-            return tick_unavailable(world, block, "ni", "ij", error);
+            return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_VL_NO:
-            return tick_unavailable(world, block, "vl", "no", error);
+            return mc_plant_farmland_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_BV_BC:
             return mc_world_mutation_pressure_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_BS_AZ:
@@ -123,9 +123,8 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_AC_P:
             return tick_unavailable(world, block, "ac", "p", error);
         case MC_BLOCK_OR_JE:
-            return tick_unavailable(world, block, "or", "je", error);
         case MC_BLOCK_RI_KO:
-            return tick_unavailable(world, block, "ri", "ko", error);
+            return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_WO_OI:
             return tick_unavailable(world, block, "wo", "oi", error);
         case MC_BLOCK_KS_GV:

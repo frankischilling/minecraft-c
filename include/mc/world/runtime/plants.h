@@ -21,6 +21,16 @@ typedef struct mc_world_plant_error {
     mc_world_solid_support_error support;
 } mc_world_plant_error;
 
+/* A tree failure reached by sapling growth. Its lower mutation is retained in
+ * the enclosing mutation error; this nonrecursive site keeps the tree's own
+ * current method, entry and constructor-profile cause separate. */
+typedef struct mc_world_plant_tree_error {
+    bool reached, native_boundary;
+    const char *feature_class, *method;
+    unsigned int bytecode, entry_bytecode;
+    mc_java_random_profile_status profile_status;
+} mc_world_plant_tree_error;
+
 /* Concrete client g/server f(World,III)Z and a(World,III)Z virtual bodies for
  * flowers wb/nw, saplings he/eu, crops ni/ij, tall grass ru/kz, dead bush
  * jb/fz, mushrooms tl/md, reeds ri/ko, cactus or/je and pumpkin fc/di. Resolve actual receiver

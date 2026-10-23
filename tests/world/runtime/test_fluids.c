@@ -398,12 +398,12 @@ cleanup:
     return ok;
 }
 
-static bool create_world(fixture *f, size_t slot) {
+static bool create_world_with_scheduled_capacity(fixture *f, size_t slot, size_t capacity) {
     bool ok = false;
     mc_world_runtime_construction state;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 4;
-    limits.max_scheduled_entries = slot < 2 ? 128u : 0u;
+    limits.max_scheduled_entries = capacity;
     CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
@@ -424,7 +424,13 @@ cleanup:
     return ok;
 }
 
-static bool seed_record(fixture *f, size_t slot, int32_t cx, int32_t cz) {
+static bool create_world(fixture *f, size_t slot) {
+    return create_world_with_scheduled_capacity(f, slot, slot < 2 ? 128u : 0u);
+}
+
+static bool seed_record_from(fixture *f, size_t slot, int32_t cx, int32_t cz,
+                             input_cell (*blocks)(int32_t, int32_t, int32_t),
+                             input_cell (*lights)(int32_t, int32_t, int32_t)) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
     uint8_t *encoded = NULL;
@@ -455,10 +461,19 @@ static bool seed_record(fixture *f, size_t slot, int32_t cx, int32_t cz) {
     for (int32_t x = 0; x < 16; ++x)
         for (int32_t z = 0; z < 16; ++z)
             for (int32_t y = 0; y < 128; ++y) {
-                const input_cell v = prepared(cx * 16 + x, y, cz * 16 + z);
+                const int32_t wx = cx * 16 + x, wz = cz * 16 + z;
+                const input_cell v = blocks(wx, y, wz);
                 r->arrays[0][cell(x, y, z)] = v.id;
                 if (!mc_chunk_nibbles_set(r->arrays[1], MC_CHUNK_NIBBLE_BYTES, x, y, z, v.metadata))
                     prepared_ok = false;
+                if (lights != NULL) {
+                    const input_cell light = lights(wx, y, wz);
+                    if (!mc_chunk_nibbles_set(r->arrays[2], MC_CHUNK_NIBBLE_BYTES, x, y, z,
+                                              light.id) ||
+                        !mc_chunk_nibbles_set(r->arrays[3], MC_CHUNK_NIBBLE_BYTES, x, y, z,
+                                              light.metadata))
+                        prepared_ok = false;
+                }
             }
     CHECK(prepared_ok);
     for (size_t i = 0; i < COUNT(lengths); ++i) {
@@ -487,11 +502,12 @@ cleanup:
     return ok;
 }
 
-static bool load_square(fixture *f, size_t slot) {
+static bool seed_record(fixture *f, size_t slot, int32_t cx, int32_t cz) {
+    return seed_record_from(f, slot, cx, cz, prepared, NULL);
+}
+
+static bool load_seeded_square(fixture *f, size_t slot) {
     bool ok = false;
-    for (int32_t x = 0; x < 2; ++x)
-        for (int32_t z = 0; z < 2; ++z)
-            CHECK(seed_record(f, slot, x, z));
     for (int32_t x = 0; x < 2; ++x)
         for (int32_t z = 0; z < 2; ++z) {
             mc_chunk_state *state = NULL;
@@ -507,6 +523,14 @@ static bool load_square(fixture *f, size_t slot) {
     ok = true;
 cleanup:
     return ok;
+}
+
+static bool load_square(fixture *f, size_t slot) {
+    for (int32_t x = 0; x < 2; ++x)
+        for (int32_t z = 0; z < 2; ++z)
+            if (!seed_record(f, slot, x, z))
+                return false;
+    return load_seeded_square(f, slot);
 }
 
 typedef struct schedule_state {

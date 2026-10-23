@@ -49,6 +49,23 @@ mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, in
                                                      int32_t z, int32_t *out,
                                                      mc_world_query_error *error);
 
+/* Actual fd.n/dj.l(III)I and their a(IIIZ)I body. Apply the asymmetric X/Z
+ * border first, returning 15 outside even for negative y. Inside, read the
+ * target block before testing the live al/aB/aI/au statics in source order.
+ * A match samples above,+X,-X,+Z,-Z independently with neighbor sampling off
+ * and returns their maximum. Each sample repeats the border and Y gates.
+ * Otherwise negative y returns zero; y>=128 clamps to 127 before acquisition.
+ * Normal Chunk reads SkyLight, writes its shared a=true when raw sky is
+ * positive, subtracts the World.f captured after acquisition with int wrapping,
+ * then reads BlockLight and returns the larger value. Blank returns zero.
+ * Native failure preserves out and all completed earlier sample effects.
+ * bytecode identifies the reached a(IIIZ)I operation; a failed sample retains
+ * its own reached site and nested provider/Chunk cause. No light propagation,
+ * saved-light presence gate or plant-light substitute is performed. */
+mc_world_storage_status mc_world_runtime_block_light(mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, int32_t *out,
+                                                     mc_world_query_error *error);
+
 /* Actual fd.l/dj.j(III)Z. Acquire even for negative/large y or X/Z outside
  * the bounded block getter's domain. Normal Chunk compares y against its
  * current unsigned height byte at (localZ<<4)|localX; Blank returns false. */
@@ -61,7 +78,7 @@ mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, in
  * returns false. No class initialization, query or renderer reset occurs. */
 bool mc_world_runtime_chunk_light_seen(const mc_world_runtime_classes *classes);
 
-/* All four operations hold the live GAME World throughout the call, admitting
+/* All query operations hold the live GAME World throughout the call, admitting
  * RAW/constructing/failed prefixes but rejecting retirement and COMPOSITION.
  * Keep owners and arguments/output/error storage live, exclusive and disjoint.
  * Native failure preserves out and all reached source effects. Error records

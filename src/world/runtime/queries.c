@@ -343,6 +343,137 @@ done:
     return finish(world, &chunk, &frame, error);
 }
 
+static bool block_light_static(mc_world_runtime *world, const char *name, unsigned int capture_pc,
+                               unsigned int field_pc, int32_t *out, mc_world_query_error *error) {
+    error->bytecode = capture_pc;
+    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    mc_registry_error cause = empty_error().registry;
+    if (classes == NULL) {
+        cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+        cause.message = "World block-light Registry binding";
+        return registry_fail(world, error, &cause, cause.message);
+    }
+    const mc_block *selected;
+    if (mc_registry_block_static_get(classes, name, &selected, &cause) != MC_REGISTRY_OK)
+        return registry_fail(world, error, &cause, "World block-light Block static active use");
+    error->bytecode = field_pc;
+    const mc_block_fields *fields = mc_block_fields_get(selected);
+    if (fields == NULL)
+        return registry_null(world, error, "World block-light static Block receiver");
+    *out = fields->bn;
+    return true;
+}
+
+/* fd/dj.a(IIIZ)I. Only the true branch invokes this same method with false,
+ * so each of its five source calls has independent acquisition and cleanup.
+ * The enclosing public call holds the World through all synchronous reentry. */
+static bool block_light_value(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                              bool neighbors, int32_t *out, query_chunk *chunk,
+                              mc_world_query_error *error) {
+    if (x < -32000000 || x >= 32000000 || z < -32000000 || z > 32000000) {
+        *out = 15;
+        return true;
+    }
+    if (neighbors) {
+        error->bytecode = 36;
+        int32_t id;
+        mc_world_storage_error cause = {0};
+        if (mc_world_runtime_block_get(world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK)
+            return storage_fail(error, &cause);
+        static const char *const names[4] = {"al", "aB", "aI", "au"};
+        static const unsigned int capture_pc[4] = {43, 54, 65, 76};
+        static const unsigned int field_pc[4] = {46, 57, 68, 79};
+        bool samples_neighbors = false;
+        for (size_t index = 0; index < 4; ++index) {
+            int32_t candidate;
+            if (!block_light_static(world, names[index], capture_pc[index], field_pc[index],
+                                    &candidate, error))
+                return false;
+            if (id == candidate) {
+                samples_neighbors = true;
+                break;
+            }
+        }
+        if (samples_neighbors) {
+            int32_t samples[5];
+            static const unsigned int call_pc[5] = {92, 104, 116, 128, 140};
+            for (size_t index = 0; index < 5; ++index) {
+                int32_t sample_x = x, sample_y = y, sample_z = z;
+                if (index == 0)
+                    sample_y = mc_java_i32_add(y, 1);
+                else if (index == 1)
+                    sample_x = mc_java_i32_add(x, 1);
+                else if (index == 2)
+                    sample_x = mc_java_i32_sub(x, 1);
+                else if (index == 3)
+                    sample_z = mc_java_i32_add(z, 1);
+                else
+                    sample_z = mc_java_i32_sub(z, 1);
+                error->bytecode = call_pc[index];
+                error->chunk_bytecode = 0;
+                if (!block_light_value(world, sample_x, sample_y, sample_z, false, &samples[index],
+                                       chunk, error))
+                    return false;
+                if (chunk->leased)
+                    (void)mc_world_store_release_chunk(chunk->store, chunk->state, NULL);
+                *chunk = (query_chunk){0};
+            }
+            int32_t value = samples[0];
+            for (size_t index = 1; index < 5; ++index) {
+                if (samples[index] > value)
+                    value = samples[index];
+            }
+            *out = value;
+            return true;
+        }
+    }
+    if (y < 0) {
+        *out = 0;
+        return true;
+    }
+    if (y >= 128)
+        y = 127;
+    error->bytecode = 215;
+    if (!acquire(world, x, z, chunk, error))
+        return false;
+    const int32_t local_x = (int32_t)((uint32_t)x & 15u);
+    const int32_t local_z = (int32_t)((uint32_t)z & 15u);
+    const int32_t subtraction = world->fields.f;
+    error->bytecode = 239;
+    if (chunk->state->blank) {
+        *out = 0;
+        return true;
+    }
+    error->chunk_bytecode = 7;
+    int32_t sky, block;
+    if (!nibble(chunk->object->f, local_x, y, local_z, &sky, error))
+        return false;
+    if (sky > 0)
+        world->classes->chunk_a = true;
+    sky = mc_java_i32_sub(sky, subtraction);
+    error->chunk_bytecode = 35;
+    if (!nibble(chunk->object->g, local_x, y, local_z, &block, error))
+        return false;
+    *out = sky > block ? sky : block;
+    return true;
+}
+
+mc_world_storage_status mc_world_runtime_block_light(mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, int32_t *out,
+                                                     mc_world_query_error *error) {
+    mc_world_query_error frame = empty_error();
+    if (!admit(world, out != NULL, &frame)) {
+        if (error != NULL)
+            *error = frame;
+        return frame.status;
+    }
+    query_chunk chunk = {0};
+    int32_t value;
+    if (block_light_value(world, x, y, z, true, &value, &chunk, &frame))
+        *out = value;
+    return finish(world, &chunk, &frame, error);
+}
+
 mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, bool *out,
                                                      mc_world_query_error *error) {

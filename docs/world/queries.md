@@ -11,6 +11,7 @@ replace them.
 | `mc_world_runtime_top_solid_liquid` | No World border gate; acquire once before masking X/Z | Scan Y127 through Y1; return the first solid or liquid material's Y+1, otherwise -1 | Scan air through the same reached Material operations; return -1 |
 | `mc_world_runtime_saved_light` | Clamp Y to 0..127; outside the asymmetric World border read supplied Light.c; inside, check presence before acquiring | Compare actual shared Sky then Block identities and read the selected Nibble | Zero, without Light active use |
 | `mc_world_runtime_plant_light` | Negative Y returns zero before acquisition; high Y clamps to 127; no X/Z border gate | Read sky, set shared Chunk.a when positive, then read block light and return their maximum | Zero |
+| `mc_world_runtime_block_light` | Outside the asymmetric X/Z border return15 before Y logic; capture live neighbor-sampling statics, then clamp Y and acquire | Sample five neighbors for slab/farmland/stair IDs; otherwise subtract late World.f from sky with Java wrapping, then compare BlockLight | Zero |
 | `mc_world_runtime_sky_visible` | Acquire without Y or World-border rejection | Compare unchanged Y against the actual unsigned height-map byte | False |
 
 World.c invokes the provider's `b` getter. A cached hit preserves pending work;
@@ -38,6 +39,14 @@ the later block-light read fails. World/Chunk construction and retirement do not
 reset it. `mc_world_runtime_chunk_light_seen` reads this same cell passively.
 Renderer reset behavior is separate and remains unfinished.
 
+The growth-light entry `fd.n`/`dj.l` calls `a(IIIZ)I` with neighbor sampling
+enabled. It reads the target ID before the live `al`, `aB`, `aI` and `au` statics,
+stopping at the first match. A match samples all five positions in order:
+above, +X, -X, +Z, -Z. Those calls disable neighbor sampling. No maximum permits
+an early return. The ordinary path captures World.f after acquisition, sets
+Chunk.a from the original positive sky value, subtracts f, then reads BlockLight.
+These semantics differ from plant survival's unadjusted maximum.
+
 Each call holds its World. The captured normal Chunk receives an exact Store
 lease across Registry initialization and synchronous reentry. These holds do
 not suppress nested acquisition or replace source locals with later cache
@@ -47,8 +56,9 @@ storage cause and complete Registry cause. Native admission leaves prior World
 diagnostics intact. RAW, constructing and failed GAME prefixes remain usable at
 their actually reached fields; retired Worlds reject.
 
-The [paired source map](../reference/world-queries.md) records the authority and
-method locations. Native query, material-array, [plant predicate](plants.md),
+The [earlier paired source map](../reference/world-queries.md) records the
+baseline query authority and method locations. At that checkpoint, native query,
+material-array, [plant predicate](plants.md),
 [plant features](population/plants.md), trees and geology contracts pass 6,110 checks per host.
 All 142 configured public cases pass on Windows MSVC and all 144 on each
 sanitized Linux GCC/Clang build. Each host retains the same 661 selected inputs,
@@ -67,5 +77,6 @@ They cover cold direct Chunk APIs and genuine normal World queries, with prepare
 instance inputs recorded explicitly. Original World Blank was not induced.
 These observations have no native replay or full save comparison.
 
-These queries do not establish complete plant callbacks, feature population,
-light propagation or save interoperability.
+Growth-light tests and the prepared original plant comparisons have their
+separate [lifecycle evidence](../reference/plant-lifecycle.md). These query results
+do not establish complete feature population, light propagation or save interoperability.

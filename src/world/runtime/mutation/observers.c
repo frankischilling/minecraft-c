@@ -104,7 +104,7 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
      * enclosing entered World keeps its bound Registry owner alive. */
     error->neighbor_bytecode = 15;
     mc_registry_block_m_view array;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     mc_registry_classes *classes = mc_world_runtime_registry(world);
     if (classes == NULL) {
         registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;

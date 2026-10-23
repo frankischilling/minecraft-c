@@ -62,6 +62,16 @@ JAR/JDK/commit settings. See its [interface](world/biome.md) and
 [reference evidence](reference/biome.md). These numerical fixtures do not start
 an original world or establish terrain generation.
 
+Plant lifecycle contracts and replay of recorded original results are part of
+the normal test build and need no Java or original archives. Set
+`MC_ENABLE_PLANT_REFERENCE_TESTS=ON` to add `reference.plant_lifecycle` with both
+verified `MC_REFERENCE_CLIENT_JAR` and `MC_REFERENCE_SERVER_JAR` paths. Select
+`Java_JAVA_EXECUTABLE` and `Java_JAVAC_EXECUTABLE` from the same JDK17+ installation,
+and record the source with `MC_REFERENCE_TESTED_COMMIT`. See the
+[test commands](testing.md#plant-lifecycle-validation), [runtime contract](world/plants.md)
+and [comparison scope](reference/plant-lifecycle.md). The comparison runs original
+Block bodies with prepared World services; it does not start an original World.
+
 `MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local
 fixture constructs genuine original world contexts in newly owned ignored

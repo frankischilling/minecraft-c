@@ -43,7 +43,7 @@ static void initialize_error(mc_piston_tick_error *out) {
     out->registry = out->mutation.registry;
     out->nearby = mc_world_nearby_empty_error();
     out->collision = mc_world_collision_empty_error();
-    out->movement = mc_entity_move_empty_error();
+    mc_entity_move_error_init(&out->movement);
 }
 
 mc_piston_tick_error mc_piston_tick_empty_error(void) {

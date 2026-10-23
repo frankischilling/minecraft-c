@@ -61,7 +61,7 @@ static bool drop_registry_fail(const drop_frame *frame, unsigned int pc,
 }
 
 static bool drop_null(const drop_frame *frame, unsigned int pc, const char *operation) {
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return drop_registry_fail(frame, pc, &cause);
@@ -105,7 +105,7 @@ static bool drop_remote(const drop_frame *frame, unsigned int pc, bool *out) {
 static bool drop_block_id(const drop_frame *frame, const char *name, unsigned int capture_pc,
                           unsigned int field_pc, int32_t *out) {
     const mc_block *value;
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     drop_at(frame, capture_pc);
     if (mc_registry_block_static_get(frame->block->classes, name, &value, &cause) != MC_REGISTRY_OK)
         return drop_registry_fail(frame, capture_pc, &cause);
@@ -120,7 +120,7 @@ static bool drop_block_id(const drop_frame *frame, const char *name, unsigned in
  * skip the real active use. No final numeric Item table is used. */
 static bool drop_item_static(const drop_frame *frame, const char *name, unsigned int pc,
                              const mc_item **out) {
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     drop_at(frame, pc);
     if (mc_registry_classes_initialize_items(frame->block->classes, &cause) != MC_REGISTRY_OK)
         return drop_registry_fail(frame, pc, &cause);
@@ -264,7 +264,7 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
             }
             mc_material *captured = block->fields.bA;
             mc_material *material;
-            cause = mc_world_mutation_empty_error().registry;
+            cause = mc_world_mutation_empty_registry();
             drop_at(&frame, 13);
             if (mc_registry_material_get(block->classes, MC_MATERIAL_f, &material, &cause) !=
                 MC_REGISTRY_OK)
@@ -356,7 +356,7 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
             frame = drop_frame_make(world, block, block->kind == MC_BLOCK_VL_NO ? "vl" : "wp",
                                     block->kind == MC_BLOCK_VL_NO ? "no" : "oj",
                                     "a(ILjava/util/Random;)I", error);
-            cause = mc_world_mutation_empty_error().registry;
+            cause = mc_world_mutation_empty_registry();
             drop_at(&frame, 0);
             if (mc_registry_block_static_get(block->classes, "w", &delegate, &cause) !=
                 MC_REGISTRY_OK)
@@ -721,7 +721,7 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
             /* Actual Stack(Item) constructor dereferences Item.bf at2,
              * before invoking its numeric constructor7. The enclosing crop
              * frame stays at its real invokespecial142, not crop PC2. */
-            mc_registry_error cause = mc_world_mutation_empty_error().registry;
+            mc_registry_error cause = mc_world_mutation_empty_registry();
             cause.status = MC_REGISTRY_NULL_REFERENCE;
             cause.message = "Block crop Stack Item receiver is null";
             cause.constructor_class =

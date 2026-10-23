@@ -171,7 +171,7 @@ static bool rail_registry_fail(const rail_frame *frame, mc_registry_status statu
 }
 
 static bool rail_null(const rail_frame *frame, const char *operation) {
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return rail_registry_fail(frame, cause.status, &cause, operation);
@@ -294,7 +294,7 @@ void mc_rail_connections_destroy(mc_rail_connections *self) {
 }
 
 static bool rail_active_use(const rail_frame *frame, const char *operation) {
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     if (frame->classes->entered == UINT_MAX) {
         cause.status = MC_REGISTRY_LIMIT;
         cause.message = "Rail declaring-class entry count";
@@ -333,7 +333,7 @@ static bool rail_id_body(const rail_frame *frame, bool id_only, int32_t id, bool
     static const unsigned int id_field[3] = {4, 14, 24};
     for (size_t i = 0; i < 3; ++i) {
         rail_predicate_at(frame, id_only, true, id_only ? id_static[i] : presence_static[i]);
-        mc_registry_error registry = mc_world_mutation_empty_error().registry;
+        mc_registry_error registry = mc_world_mutation_empty_registry();
         const mc_block *selected;
         const mc_registry_status status =
             mc_registry_block_static_get(frame->classes, names[i], &selected, &registry);
@@ -438,7 +438,7 @@ static bool rail_constructor(mc_rail_connections *self, const mc_block *outer,
         !rail_read(&frame, 59, x, y, z, true, &metadata))
         return false;
     mc_registry_block_m_view array = {0};
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     rail_at(&frame, 64);
     mc_registry_status status = mc_registry_block_m_get(self->classes, &array, &registry);
     if (status != MC_REGISTRY_OK)

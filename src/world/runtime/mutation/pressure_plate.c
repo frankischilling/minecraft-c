@@ -131,7 +131,7 @@ static bool pressure_category_equal(const pressure_frame *frame, unsigned int pc
     const mc_pressure_category *const actual = frame->block->subtype.bv.a;
     pressure_at(frame, pc);
     if (classes->entered != 0) {
-        mc_registry_error cause = mc_world_mutation_empty_error().registry;
+        mc_registry_error cause = mc_world_mutation_empty_registry();
         cause.status = MC_REGISTRY_BUSY;
         cause.message = "Pressure category Registry entered";
         return pressure_registry_fail(frame, pc, cause.status, &cause, cause.message);
@@ -299,7 +299,7 @@ static bool pressure_change(const pressure_frame *frame, bool pressed, int32_t x
     const double sound_z = (double)z + 0.5;
     const unsigned int literal_pc = pressed ? 295u : 381u;
     const unsigned int sound_pc = pressed ? 301u : 387u;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     const mc_registry_string *name;
     pressure_at(frame, literal_pc);
     const mc_registry_status status =

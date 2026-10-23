@@ -61,7 +61,7 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
     (void)mc_world_chunk_fields_get(chunk, &fields);
     mc_world_runtime *world = fields.d;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     mc_registry_block_m_view array;
     error->chunk_bytecode = capture_pc;
     if (classes == NULL) {

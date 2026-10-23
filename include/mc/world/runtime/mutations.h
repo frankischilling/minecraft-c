@@ -9,6 +9,7 @@
 #include "mc/world/runtime/rails/errors.h"
 
 #include "mc/world/runtime/lighting.h"
+#include "mc/world/runtime/plants.h"
 #include "mc/world/runtime/queries.h"
 #include "mc/world/runtime/scheduling_context.h"
 #include "mc/world/runtime/tiles/errors.h"
@@ -59,6 +60,8 @@ typedef struct mc_world_mutation_error {
     unsigned int cause_piston_finalize_bytecode, cause_piston_removed_bytecode;
     mc_world_material_error material;
     mc_world_query_error query;
+    mc_world_plant_error plant;
+    mc_world_plant_tree_error plant_tree;
     mc_world_schedule_prefix schedule;
     mc_scheduled_tick_status record;
     mc_scheduled_membership_status membership;

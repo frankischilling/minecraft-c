@@ -119,7 +119,7 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
         return fluid_nested(frame, pc, &lower);
     }
     mc_registry_classes *classes = mc_world_runtime_registry(frame->world);
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     lower.bytecode = id == 0 ? 14u : 18u;
     if (classes == NULL) {
         registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
@@ -166,7 +166,7 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
 static bool fluid_static_id(const fluid_frame *frame, const char *name, unsigned int load_pc,
                             unsigned int field_pc, int32_t *out) {
     const mc_block *selected;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     fluid_at(frame, load_pc);
     if (mc_registry_block_static_get(frame->block->classes, name, &selected, &registry) !=
         MC_REGISTRY_OK)
@@ -180,7 +180,7 @@ static bool fluid_static_id(const fluid_frame *frame, const char *name, unsigned
 static bool fluid_array_block(const fluid_frame *frame, unsigned int load_pc, unsigned int index_pc,
                               int32_t id, const mc_block **out) {
     mc_registry_block_m_view array;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     fluid_at(frame, load_pc);
     if (mc_registry_block_m_get(frame->block->classes, &array, &registry) != MC_REGISTRY_OK)
         return fluid_registry_fail(frame, load_pc, &registry, "Fluid live Block.m");
@@ -724,7 +724,7 @@ static bool fluid_flowing_tick(mc_world_runtime *world, mc_block *block, int32_t
 
 static bool fluid_literal(const fluid_frame *frame, unsigned int pc, const char *text,
                           const mc_registry_string **out) {
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     fluid_at(frame, pc);
     if (mc_registry_runtime_literal_ascii(frame->block->classes, text, out, &registry) !=
         MC_REGISTRY_OK)

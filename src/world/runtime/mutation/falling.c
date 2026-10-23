@@ -130,7 +130,7 @@ static bool falling_registry_fail(const falling_frame *frame, unsigned int pc,
 }
 
 static bool falling_null(const falling_frame *frame, unsigned int pc, const char *operation) {
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     cause.status = MC_REGISTRY_NULL_REFERENCE;
     cause.message = operation;
     return falling_registry_fail(frame, pc, cause.status, &cause, operation);
@@ -141,7 +141,7 @@ static bool falling_null(const falling_frame *frame, unsigned int pc, const char
  * flag read, Block-only initialization, owner copy or synthetic class state. */
 static bool falling_predicate_active_use(const falling_frame *frame) {
     mc_registry_classes *classes = frame->classes;
-    mc_registry_error cause = mc_world_mutation_empty_error().registry;
+    mc_registry_error cause = mc_world_mutation_empty_registry();
     if (classes->entered != 0 || classes->blocks_phase == MC_REGISTRY_INITIALIZING) {
         cause.status = MC_REGISTRY_BUSY;
         cause.message = "Falling predicate Registry entered";
@@ -177,7 +177,7 @@ bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_cla
         return falling_return(&frame);
     }
 
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     const mc_block *fire;
     falling_at(&frame, 18);
     mc_registry_status status = mc_registry_block_static_get(classes, "as", &fire, &registry);
@@ -347,7 +347,7 @@ static bool falling_private(const falling_frame *frame, int32_t x, int32_t y, in
         return falling_return(frame);
 
     bool immediate;
-    mc_registry_error registry = mc_world_mutation_empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     falling_at(frame, 34);
     const mc_registry_status status =
         mc_registry_falling_flag_get(frame->classes, &immediate, &registry);
