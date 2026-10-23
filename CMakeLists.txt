@@ -27,6 +27,7 @@ option(MC_ENABLE_CACHE_REFERENCE_TESTS "Compare synchronous acquisition with ret
 option(MC_ENABLE_STORAGE_REFERENCE_TESTS "Compare world persistence with original storage methods" OFF)
 option(MC_ENABLE_LIFECYCLE_REFERENCE_TESTS "Compare copied-world save/unload lifecycle with original controls" OFF)
 option(MC_ENABLE_PLANT_REFERENCE_TESTS "Compare plant lifecycle projections with supplied originals" OFF)
+option(MC_ENABLE_POPULATION_REFERENCE_TESTS "Compare natural GAME population with supplied originals" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
@@ -658,6 +659,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_normal_population tests/world/runtime/population/test_normal.c)
     target_link_libraries(mc_test_normal_population PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_natural_population_probe tests/world/runtime/population/natural_probe.c)
+    target_link_libraries(mc_natural_population_probe PRIVATE mc_simulation mc_resources mc_c_atomics mc_build_options)
 
     add_executable(mc_test_registry_falling tests/block/registry/test_falling.c)
     target_link_libraries(mc_test_registry_falling PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -1468,6 +1472,36 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-normal-population-contracts")
     set_tests_properties(world.normal_population PROPERTIES
         LABELS "public;integration;ownership;population;storage" TIMEOUT 120)
+
+    add_test(NAME tools.natural_population
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_natural_population.py)
+    set_tests_properties(tools.natural_population PROPERTIES
+        LABELS "public;tools;population" TIMEOUT 90)
+
+    add_test(NAME world.natural_population_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/replay_natural_population.py"
+        --executable "$<TARGET_FILE:mc_natural_population_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/natural-population-replay")
+    set_tests_properties(world.natural_population_replay PROPERTIES
+        LABELS "public;integration;population;replay" TIMEOUT 180)
+
+    if(MC_ENABLE_POPULATION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.natural_population
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/population/compare_natural.py"
+            --executable "$<TARGET_FILE:mc_natural_population_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-natural-population")
+        set_tests_properties(reference.natural_population PROPERTIES
+            LABELS "reference;original;population;integration" TIMEOUT 600)
+    endif()
 
     add_test(NAME world.queries
         COMMAND "${Python3_EXECUTABLE}"

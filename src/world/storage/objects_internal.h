@@ -104,6 +104,13 @@ mc_world_storage_status mc_world_store_game_stage_fail(mc_world_store *store,
                                                        mc_world_storage_status original_status,
                                                        mc_world_storage_error *error);
 
+/* Borrow an owned Chunk in canonical ownership order, including unpublished
+ * GAME stages. This passive inspection does not enable source access or acquire
+ * a lease. The output is required and remains unchanged on failure. */
+mc_world_storage_status mc_world_store_chunk_at(const mc_world_store *store, size_t ordinal,
+                                                mc_chunk_state **out,
+                                                mc_world_storage_error *error);
+
 /* Pending/failed stages only, in canonical ownership order; no coordinate/key
  * lookup or source eligibility is introduced. count(NULL)==0. at requires both
  * outputs, preserves both on failure and borrows the handle/view until the

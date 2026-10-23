@@ -1,5 +1,11 @@
 # Storage and original references
 
+The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
+uses genuine original constructors and the production GAME implementation for
+one seed-23 origin per side. Complete retained arrays, cache/light ordering and
+provider numerical state match; the older callback replay keeps its separate
+imported-effect scope.
+
 Storage layers have separate contracts and ownership:
 
 - [Raw NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/storage/nbt.md) owns decoded trees and immutable source copies.

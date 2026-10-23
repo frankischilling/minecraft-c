@@ -1,5 +1,11 @@
 # World simulation
 
+The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
+matches the seed-23 origin neighborhood on client/base-server sides. It checks
+complete retained Chunk arrays, ordered light regions, provider numerical state
+and Random continuations. Other seeds, recursive schedules and persistence
+retain separate acceptance requirements.
+
 The native World modules use actual Registry owners, Chunk storage, acquiring
 readers and owning Lists. They preserve source order and completed effects when
 a later operation fails. Their contracts describe which bodies are implemented,

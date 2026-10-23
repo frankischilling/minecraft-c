@@ -33,7 +33,7 @@ comparisons. They do not complete their parent checklists:
 
 | Parent checklist | Implemented boundary | Remaining behavior |
 | --- | --- | --- |
-| Terrain, biomes and population | [Unpublished normal generation](reference/generation.md), including climate, base terrain, surface, caves and finishing | Terrain-feature population bodies, other dimensions and general load-order effects |
+| Terrain, biomes and population | [Unpublished normal generation](reference/generation.md), including climate, base terrain, surface, caves and finishing; [fresh seed-23 origin population](reference/natural-population.md), including complete retained Chunk and numerical state | Other population schedules/seeds, all feature gates and recursive effects, other dimensions and general load-order effects |
 | Chunks and lighting | [Cached heights and finishing](reference/finishing.md); [retained-provider acquisition](reference/cache.md), with successful-load/natural-population [callback evidence](reference/cache-callbacks.md) passing exact-source MSVC/GCC/Clang acceptance; [owned disk decoding](world/storage.md) with separate exact-source MSVC/GCC/Clang acceptance | General tick-driven scheduling, propagation, simulation updates and entity/tile activation; synchronous [save/unload and retirement](world/lifecycle.md) has separate qualification |
 | Saves and recovery | [Raw NBT](reference/nbt.md), [compression](reference/compression.md), [read-only inspection](reference/region.md), newer [metadata](storage/level.md), [region writing](storage/region-writer.md) and [native ownership](world/storage.md) | General tick-driven save scheduling, entity/player and subtype bodies, full running-game restart compatibility and recovery beyond checked host errors |
 

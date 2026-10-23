@@ -1,5 +1,35 @@
 # Test scope and reproduction
 
+## Fresh World population
+
+`reference.natural_population` compares genuine fresh original and native
+client/base-server Worlds for seed23. The four acquisitions match all retained
+Chunk bytes and headers, cache membership, 1,777 ordered final light regions,
+provider/manager numerical buffers, numerical array aliases and complete
+provider/cave Random state with copied continuations. Each run separately proves
+its clock-seeded `World.r` unchanged. The
+[evidence and commands](reference/natural-population.md) define the finite
+schedule, resource binding, capture bounds and remaining acceptance work.
+
+Enable `MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` with the supplied archive and
+JDK paths, then run:
+
+```sh
+ctest --test-dir build --output-on-failure -R '^reference\.natural_population$'
+```
+
+Public `tools.natural_population` needs no archives and checks complete-state
+rejection, numerical aliases, strict Random
+records and bounded failure diagnostics against the older original-derived
+cache fixture.
+
+Public `world.natural_population_replay` runs the real native probe without Java
+or JARs. Its complete cache state matches the older original-derived fixture;
+provider records receive native transport and repeated-hit checks. It uses four
+project-authored translation strings and two empty resource files, so its
+resource binding differs from the fresh original comparison. This test does
+not supply an original numerical oracle.
+
 ## Plant lifecycle validation
 
 The finite original/native comparison matches all 59 prepared cases per side

@@ -72,6 +72,12 @@ and record the source with `MC_REFERENCE_TESTED_COMMIT`. See the
 and [comparison scope](reference/plant-lifecycle.md). The comparison runs original
 Block bodies with prepared World services; it does not start an original World.
 
+`MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` adds `reference.natural_population`
+with those same archive and JDK settings. It constructs genuine fresh original
+and native GAME Worlds for the seed-23 origin neighborhood. The
+[comparison record](reference/natural-population.md) lists full arrays, Random
+state, resource handling and the remaining acceptance limits.
+
 `MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local
 fixture constructs genuine original world contexts in newly owned ignored

@@ -12,8 +12,11 @@ original controller and its reached operations. Implementing this controller
 does not close every feature descendant. [Snow support and melting](../snow.md)
 now execute their complete concrete methods. Later [FallingSand Entity ticks](../falling.md),
 nonempty observers and other unsupported operations remain explicit failures.
-Natural terrain, complete original/native continuation and arbitrary recursive
-resource behavior remain unqualified.
+The [fresh World comparison](../../reference/natural-population.md) now covers
+the seed-23 origin neighborhood, full retained Chunk arrays, ordered light
+regions, provider numerical state and copied Random continuations on both
+sides. Other natural terrain and arbitrary recursive resource behavior retain
+separate acceptance requirements.
 
 ## Schedule and shared state
 
@@ -88,6 +91,11 @@ reconstructed. The diagnostic representation imposes no gameplay recursion cap;
 arbitrary recursive C-stack/resource closure remains unqualified.
 
 ## Verification scope
+
+`reference.natural_population` constructs fresh client/base-server Worlds with
+the actual supplied resources and calls the real acquisition route. Its
+[finite evidence record](../../reference/natural-population.md) distinguishes
+that complete boundary comparison from the prepared native contracts below.
 
 All 156 configured MSVC cases and 158 on each sanitized GCC/Clang build pass,
 with zero skips and local JDK comparisons. The controller case passes 2,219

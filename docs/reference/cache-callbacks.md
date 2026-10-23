@@ -83,6 +83,11 @@ original comparisons. Provider numerical buffers are outside this adapter's C
 projection; raw Random owners and seeds remain separately observed in the
 original.
 
+The separate [fresh World comparison](natural-population.md) now computes this
+seed-23 population through the production GAME implementation and compares its
+complete declared numerical and cache projection. This MCC1 adapter retains its
+original imported-callback scope.
+
 Original observations retain complete map/list/pending/queue contents, all five
 normal arrays, flags, time and stable context identities. The debugger links
 normal arrays, wrappers, world, tile map and eight entity slices to helper

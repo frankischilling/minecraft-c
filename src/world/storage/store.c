@@ -997,6 +997,25 @@ size_t mc_world_store_chunk_count(const mc_world_store *store) {
     return store == NULL ? 0 : store->chunk_count;
 }
 
+mc_world_storage_status mc_world_store_chunk_at(const mc_world_store *store, size_t ordinal,
+                                                mc_chunk_state **out,
+                                                mc_world_storage_error *error) {
+    if (store == NULL || out == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk ordinal arguments");
+    for (const store_chunk *entry = store->chunks; entry != NULL; entry = entry->next) {
+        if (ordinal != 0) {
+            --ordinal;
+            continue;
+        }
+        mc_chunk_state *state = store_chunk_state(entry);
+        if (state == NULL)
+            return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "chunk ownership");
+        *out = state;
+        return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+    }
+    return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "chunk ordinal");
+}
+
 bool mc_world_store_owns_chunk(const mc_world_store *store, const mc_chunk_state *chunk) {
     return store_find_chunk(store, chunk) != NULL;
 }

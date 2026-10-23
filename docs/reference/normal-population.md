@@ -62,7 +62,9 @@ initialization sets false once. Controller true1 and false2903 have no finally
 or saved prior value. Existing feature methods retain their own World flags,
 static initialization, constructors, predicates and failure boundaries.
 
-The native source port preserves this complete controller order. Whole-call
-untouched-original observations, supplied/global/private Random continuations,
-all recursive descendant effects, extreme coordinates and complete persistence
-remain separate qualification work.
+The native source port preserves this complete controller order. The
+[fresh World comparison](natural-population.md) checks the seed-23 origin
+population against both originals, including complete retained Chunk arrays,
+ordered light regions, numerical buffers and provider/cave Random state and
+copied continuations. Other schedules, all recursive descendant effects,
+extreme coordinates and complete persistence remain separate qualification work.
