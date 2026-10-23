@@ -2,12 +2,14 @@
 
 The [synchronous wire hooks](world/wire.md) now use actual World mutations,
 recursive strength updates and independently retained notification snapshots.
-The 447-check native contract covers both sides, a 25-cell path, rise/decay,
-vertical connections, loops, drops and partial failures. Development suites pass
-all 200 MSVC and 202 Clang tests, with Linux ASan/UBSan/leak checks. Formatting
-passes all 581 C/header files; mirrors and interval controls pass on both hosts.
-Original World-level wire comparison, cross-chunk/dedicated scenarios and the
-default identity source remain required.
+The native contracts cover both sides, a 25-cell path, rise/decay, vertical
+connections, loops, drops and partial failures. A second 350-check case covers
+negative/cross-chunk paths across four Worlds, dedicated loading gates and a
+snapshot retained while another World uses the shared Registry. It passes on
+MSVC and sanitized GCC/Clang. The preceding lifecycle commit `671ed38` passes
+all 610 hosted public/JDK tests and formatting. Original World-level wire
+comparison, callback-driven cross-World reentry, wider persistence/failure
+schedules and the default identity source remain required.
 
 The [wire position Set](reference/wire-position-set.md) has reclaimable
 Registry storage, full coordinate equality, bucket/tree ordering and snapshots

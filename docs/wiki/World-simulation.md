@@ -2,10 +2,14 @@
 
 The [synchronous wire hooks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/wire.md)
 now run real World mutations, recursive strength updates and shared notification
-snapshots. The 447-check native contract covers both sides, a 25-cell path,
-vertical connections, loops, drops and partial failures. Development suites pass
-200 MSVC and 202 sanitized Clang tests. Original World-level comparison,
-cross-chunk/dedicated scenarios and default identity generation remain required.
+snapshots. Native contracts cover both sides, a 25-cell path, vertical connections,
+loops, drops and partial failures. A second 350-check case covers negative and
+cross-chunk paths across four Worlds, dedicated loading gates and a snapshot
+retained while another World uses the shared Registry. It passes on MSVC and
+sanitized GCC/Clang. The preceding lifecycle commit passes all 610 hosted
+public/JDK tests. Original World-level comparison, callback-driven cross-World
+reentry, wider persistence/failure schedules and default identity generation
+remain required.
 
 The [wire position Set](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/wire-position-set.md)
 has full coordinate equality, ordered bucket/tree operations and reclaimable

@@ -603,6 +603,9 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_wire tests/world/runtime/wire/test_wire.c)
     target_link_libraries(mc_test_world_wire PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_wire_multichunk tests/world/runtime/wire/test_multichunk.c)
+    target_link_libraries(mc_test_world_wire_multichunk PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
     target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_minecart_detector
@@ -1365,6 +1368,13 @@ if(BUILD_TESTING)
         --executable "$<TARGET_FILE:mc_test_world_wire>")
     set_tests_properties(world.wire_lifecycle PROPERTIES
         LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
+
+    add_test(NAME world.wire_multichunk COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_wire.py"
+        --executable "$<TARGET_FILE:mc_test_world_wire_multichunk>"
+        --scenario world-wire-multichunk)
+    set_tests_properties(world.wire_multichunk PROPERTIES
+        LABELS "public;integration;ownership;mutation;power;dedicated" TIMEOUT 90)
 
     add_test(NAME world.rails
         COMMAND "${Python3_EXECUTABLE}"

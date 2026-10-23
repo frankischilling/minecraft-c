@@ -34,28 +34,40 @@ check remote guards and exact partial effects at failed power, observer and
 collection-budget operations. Controls restore nullable inputs before checking
 results; they provide no successful replacement World or observer callbacks.
 
-Development suites pass all 200 MSVC and 202 Clang CTests, including the
-447 native wire checks, with no failures or skips. Linux enables ASan, UBSan
-and leak checks. All 581 C/header files pass clang-format 18; controller mirrors
-and lifecycle interval controls pass on both hosts. Earlier failed attempts
-retain their own records; fresh full suites pass after the diagnostic-storage
-and fresh-configuration test-registration fixes. These development runs do not
-qualify a clean commit or an executed-original World comparison.
+`world.wire_multichunk` adds 350 checks in 25 cases across four real Worlds:
+client, base server, dedicated and a second base server. Three loaded Chunks per
+World cover negative coordinates and crossings at x=0 and x=16. The three server
+Worlds share their defining Registry. Cases cover the dedicated loading gate,
+cache hits/misses, suppression flags, rise/decay, removal/reinsertion and unchanged
+payloads after repeated metadata writes. Dedicated loading is an explicit test
+input; server startup remains unfinished.
 
-The current cases fit one Chunk per World on both sides. They check unchanged
-World Random where no drop occurs, expected IDs/metadata, source flags, empty
-notification storage after successful drains and balanced calls/leases/snapshots.
+A retained snapshot survives a second World's refill and drain of the shared
+Set. The test also checks the intermediate update boundary: the first wire has
+strength 15 and seven positions remain pending; draining their actual World
+notifications completes propagation. This is sequential shared-owner coverage.
+Callback-driven cross-World reentry remains required. Both native cases check
+unchanged World Random where no drop occurs, source flags, empty notification
+storage after successful drains and balanced calls/leases/snapshots.
+
+The new case passes on MSVC and sanitized GCC/Clang. The preceding wire lifecycle
+commit `671ed38` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40024340016):
+202 MSVC, 204 GCC and 204 Clang public/JDK tests, with no failures or skips, plus
+581-file formatting, controller mirrors and lifecycle interval controls. Its
+synthetic merge checkout has the same complete tree as that commit. Earlier
+failed development attempts retain their own records. The new cross-chunk case
+has development-source attribution until its own committed checks finish.
+
 These are native contracts. Original executed World-level wire equality,
-intermediate notification traces, negative/cross-chunk acquisition, dedicated
-World construction, shared-Registry multi-World reentry, wider persistence and
-failure schedules remain required. The collection's default identity-source
-boundary also remains open. Client display particles and other redstone Blocks
-retain their own unfinished behavior.
+intermediate notification traces, wider persistence and failure schedules remain
+required. The collection's default identity-source boundary also remains open.
+Client display particles and other redstone Blocks retain their own unfinished
+behavior.
 
 Run the public native case without Java or original assets:
 
 ```sh
-ctest --test-dir build --output-on-failure -R '^world[.]wire_lifecycle$'
+ctest --test-dir build --output-on-failure -R '^world[.]wire_(lifecycle|multichunk)$'
 ```
 
 ## Source map

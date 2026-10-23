@@ -8,10 +8,12 @@ import tempfile
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", required=True, type=Path)
+    parser.add_argument("--scenario", default="world-wire",
+                        choices=("world-wire", "world-wire-multichunk"))
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
     with tempfile.TemporaryDirectory(prefix="minecraft-c-wire-") as directory:
-        result = subprocess.run([str(executable), "world-wire", directory.encode("utf-8").hex()],
+        result = subprocess.run([str(executable), args.scenario, directory.encode("utf-8").hex()],
                                 stdin=subprocess.DEVNULL, timeout=80)
     return result.returncode
 
