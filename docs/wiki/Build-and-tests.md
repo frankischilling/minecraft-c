@@ -6,6 +6,11 @@ checking all block/metadata results, exactly 34 schedule requests and unchanged
 Random state. See the
 [test commands and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#dedicated-construction-and-synchronous-fluid-recursion).
 
+Current development suites pass 203 MSVC, 205 GCC and 205 Clang tests without
+failures, errors or skips. Linux sanitizer snapshots match all 925 non-Markdown
+files at `cbe9b69`; their dirty-source attribution remains separate from the
+preceding qualified checkpoint. All 569 C/header files pass clang-format 18.
+
 Build setup uses C17, CMake 3.24+ and Python 3.10+; ordinary public tests need
 no Java or original archives. Follow [building](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md) for
 Linux and Windows tools, dependency setup and separate build directories.

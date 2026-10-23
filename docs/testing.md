@@ -8,16 +8,19 @@ Entity publication, duplicate-key behavior and ownership. `world.fluids` include
 a stored enclosed water column whose seven downward cells execute synchronous
 tick reentry on both sides. It checks every resulting ID and metadata value,
 34 schedule requests, unchanged Random state and balanced World calls.
+`core.java_random_profile_inputs` checks input progression, completeness,
+fresh-profile admission and failure preservation without installing Random state.
 
 ```sh
-ctest --test-dir build --output-on-failure -R '^(server[.]construction|world[.](dedicated_entity_index|dedicated_construction|fluids|scheduling))$'
+ctest --test-dir build --output-on-failure -R '^(core[.]java_random_profile_inputs|server[.]construction|world[.](dedicated_entity_index|dedicated_construction|fluids|scheduling))$'
 ```
 
 Add `-C Debug` for a multi-configuration build. These tests use project-authored
 inputs and need no original archives. The separate
 [dedicated development comparison](reference/dedicated-world-construction.md)
 uses private capture tools and independently observed constructor clock inputs.
-It has no public replay or exact committed-source qualification yet.
+Development comparisons pass on MSVC/GCC/Clang, but the prototype has no public
+replay or clean-source reference qualification yet.
 
 ## Fresh World population
 

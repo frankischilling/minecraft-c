@@ -2,10 +2,10 @@
 
 [Dedicated construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md)
 now has actual Server and World owners, separate subclass fields and a
-duplicate-preserving Entity index. A finite Windows/MSVC development comparison
+duplicate-preserving Entity index. A finite MSVC/GCC/Clang development comparison
 matches 17 calls across 18 boundaries, including protected and distant drops,
 maintenance and reload. Its capture tools remain private prototypes without
-exact committed-source or platform qualification. Public constructor and
+clean-source reference qualification. Public constructor and
 fluid-recursion contracts provide separate native coverage; server startup and
 general unload/restart remain unfinished.
 

@@ -34,7 +34,7 @@ construction from full startup. Focused constructed tests exercise the actual
 owners and failure prefixes. They do not by themselves establish original-game
 construction, unload/reload or complete server parity.
 
-A finite Windows/MSVC development comparison passes for 17 calls and 18 observed
+A finite MSVC/GCC/Clang development comparison passes for 17 calls and 18 observed
 boundaries. It prepares metadata through actual Info/save/readback APIs, opens a
 new handler, constructs a nonnull Server and dedicated `dp` World, then follows
 protected and far drops, maintenance and reload. The comparator checks 54 Random
@@ -54,7 +54,13 @@ checked correspondences. Empty Entity, Tile, named-data and index collections
 leave their nonempty behavior outside this profile. Native Random draw callsites
 and per-boundary private Store-token fields are not independently observed.
 
+The Windows suite passes 203 tests and each Linux sanitizer suite passes 205,
+with no failures, errors or skips. Both exported Linux snapshots match all 925
+non-Markdown files at `cbe9b69`; their capture records keep the original dirty
+source attribution. Native paths are checked as absolute Windows or POSIX paths
+independently of the verifier host.
+
 The capture and comparison tools remain private `.local` prototypes. This result
-has no exact committed-code or platform qualification and supplies no public
-replay. Complete dedicated startup, general unload/restart behavior and broader
-game parity remain unfinished.
+has no clean-source reference qualification or public replay. Complete dedicated
+startup, general unload/restart behavior and broader game parity remain
+unfinished.
