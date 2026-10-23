@@ -12,6 +12,7 @@ typedef struct mc_world_entity_error {
     const char *operation;
     unsigned int bytecode, presence_bytecode, provider_bytecode;
     unsigned int chunk_bytecode, observer_bytecode;
+    unsigned int dedicated_bytecode, index_bytecode;
     mc_chunk_acquire_status acquisition;
     mc_world_storage_error cause;
     mc_entity_error entity;

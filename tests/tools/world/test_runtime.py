@@ -21,7 +21,7 @@ SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "pr
              "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication",
              "world-queries", "world-entity-batch", "world-nearby", "world-class-entities", "world-collision-boxes",
              "world-piston-geometry", "world-piston-tiles", "world-piston-finalization", "world-piston-tick", "world-entity-movement",
-             "world-movement-dependencies", "world-minecart-detector")
+             "world-movement-dependencies", "world-minecart-detector", "world-dedicated-construction")
 
 
 def provider_fixture(root):
@@ -208,6 +208,20 @@ def main():
                          compression_header=ROOT / "include/mc/storage/compression/compression.h")
         if args.scenario == "game-world":
             paths["game_test"] = ROOT / "tests/world/runtime/test_game_world.c"
+        if args.scenario == "world-dedicated-construction":
+            for relative in (
+                "tests/world/runtime/dedicated/test_construction.c",
+                "include/mc/server/runtime/construction.h",
+                "src/server/runtime/construction.c",
+                "src/world/runtime/dedicated/entity_index.h",
+                "src/world/runtime/dedicated/entity_index.c",
+                "src/world/runtime/entity_publication.c",
+                "src/world/runtime/entity_publication_internal.h",
+                "include/mc/world/runtime/entities.h",
+                "include/mc/world/runtime/entity_errors.h",
+                "src/world/runtime/provider_state_internal.h",
+            ):
+                paths["dedicated_" + relative.replace("/", "_").replace(".", "_")] = ROOT / relative
         if args.scenario == "world-registry":
             paths.update({
                 "registry_test": ROOT / "tests/world/runtime/test_world_registry.c",

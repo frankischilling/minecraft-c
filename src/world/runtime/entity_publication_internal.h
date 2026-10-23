@@ -22,8 +22,10 @@ void mc_world_runtime_entity_list_release(mc_world_runtime *world);
  * the existing finite empty-source no-op. NULL destinations/inputs fail at5.
  * Deferred=true appends D only and returns11; processing/removal is separate.
  * No source membership/q/phase mutation, Chunk operation or callback is added.
- * The observer's actual empty-list return is supported; nonempty dispatch is
- * an explicit reached frontier retaining the complete append prefix.
+ * The base observer's empty-list return is supported; nonempty base dispatch
+ * remains an explicit reached frontier retaining the complete append prefix.
+ * A dedicated override enters its actual G.put only AFTER base success and
+ * the current Entity-ID read. Deferred append never invokes that override.
  * Input/error must be disjoint from owners/ledgers/each other. */
 mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *world,
                                                            const mc_world_chunk_entity_list *source,

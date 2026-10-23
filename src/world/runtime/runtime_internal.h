@@ -66,6 +66,8 @@ struct mc_world_runtime {
     mc_tile_list_ledger tile_membership[2];
     bool tile_containers_retired;
     mc_world_runtime_fields fields;
+    mc_world_runtime_dedicated_fields dedicated;
+    mc_world_runtime_dedicated_construction dedicated_construction;
     mc_world_runtime_construction construction;
     mc_world_runtime_construction_limits construction_limits;
     mc_world_runtime_classes *classes;

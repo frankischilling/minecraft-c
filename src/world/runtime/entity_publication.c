@@ -4,6 +4,7 @@
 #include "../chunk/object_internal.h"
 #include "../storage/objects_internal.h"
 #include "construction_internal.h"
+#include "dedicated/entity_index.h"
 #include "entity_publication_internal.h"
 #include "mc/core/math/math.h"
 #include "provider_internal.h"
@@ -216,8 +217,8 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity,
     return true;
 }
 
-static bool observe_entity_at(mc_world_runtime *world, mc_world_entity_error *frame,
-                              unsigned int caller_bytecode) {
+static bool observe_base_entity_at(mc_world_runtime *world, mc_world_entity_error *frame,
+                                   unsigned int caller_bytecode) {
     frame->bytecode = caller_bytecode;
     frame->observer_bytecode = 7;
     const mc_world_reference_list *list = world->fields.u; /* getfield4 */
@@ -235,8 +236,27 @@ static bool observe_entity_at(mc_world_runtime *world, mc_world_entity_error *fr
     return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity observer dispatch");
 }
 
-static bool observe_entity(mc_world_runtime *world, mc_world_entity_error *frame) {
-    return observe_entity_at(world, frame, 103);
+static bool observe_entity_at(mc_world_runtime *world, mc_entity *entity,
+                              mc_world_entity_error *frame, unsigned int caller_bytecode) {
+    if (!observe_base_entity_at(world, frame, caller_bytecode))
+        return false;
+    if (world->construction.entry != MC_WORLD_RUNTIME_SERVER_DEDICATED)
+        return true;
+    mc_world_entity_index *index = world->dedicated.G; /* getfield6 */
+    frame->dedicated_bytecode = 10;
+    mc_entity_base_fields *fields = mc_entity_runtime_fields(entity);
+    if (fields == NULL)
+        return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Dedicated World added Entity ID receiver");
+    const int32_t id = fields->id;
+    frame->dedicated_bytecode = 14;
+    mc_world_entity_index_error cause;
+    if (mc_world_entity_index_put(index, id, entity, &cause) != MC_WORLD_STORAGE_OK) {
+        frame->entity.status = cause.entity_status;
+        frame->index_bytecode = cause.bytecode;
+        return entity_cause(frame, cause.cause);
+    }
+    return true;
 }
 
 static bool append_entity_batch(mc_world_runtime *world, const mc_world_chunk_entity_list *source,
@@ -391,10 +411,9 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
                 complete = false;
                 break;
             }
-            /* Source cast31 accepts actual typed Entity/NULL. No ID/World/phase
-             * filter is invented; base observer's empty path never reads it. */
-            (void)entity;
-            if (!observe_entity_at(world, &frame.publication, 34)) {
+            /* Source cast31 accepts actual typed Entity/NULL; the dedicated
+             * override reads its ID only after the base observer completes. */
+            if (!observe_entity_at(world, entity, &frame.publication, 34)) {
                 complete = false;
                 break;
             }
@@ -405,6 +424,42 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
     if (error != NULL)
         *error = frame;
     return frame.publication.status;
+}
+
+mc_world_storage_status mc_world_runtime_entity_by_id(mc_world_runtime *world, int32_t id,
+                                                      mc_entity **out,
+                                                      mc_world_entity_error *error) {
+    mc_world_entity_error frame = {0};
+    if (world == NULL || out == NULL)
+        entity_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Dedicated Entity lookup arguments");
+    else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+             world->construction.entry != MC_WORLD_RUNTIME_SERVER_DEDICATED)
+        entity_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Dedicated Entity lookup owner");
+    else {
+        mc_world_storage_error cause;
+        if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK)
+            entity_cause(&frame, cause);
+        else {
+            bool present;
+            mc_entity *value;
+            mc_world_entity_index_error index_error;
+            frame.dedicated_bytecode = 5;
+            if (mc_world_entity_index_get(world->dedicated.G, id, &present, &value, &index_error) !=
+                MC_WORLD_STORAGE_OK) {
+                frame.index_bytecode = index_error.bytecode;
+                entity_cause(&frame, index_error.cause);
+            } else {
+                *out = value;
+                frame = (mc_world_entity_error){0};
+            }
+            mc_world_runtime_call_leave(world);
+        }
+    }
+    if (error != NULL)
+        *error = frame;
+    if (world != NULL)
+        world->last_error = frame.cause;
+    return frame.status;
 }
 
 static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_entity_error *frame) {
@@ -509,7 +564,7 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity acquired Chunk receiver");
     if (!add_to_chunk(world, state, entity, frame) || !append_entity(world, entity, frame) ||
-        !observe_entity(world, frame))
+        !observe_entity_at(world, entity, frame, 103))
         return false;
     *value = true;
     return true;

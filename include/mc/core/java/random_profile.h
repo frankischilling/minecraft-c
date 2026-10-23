@@ -35,10 +35,11 @@ mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocatio
 size_t mc_java_random_profile_allocation_bytes(const mc_java_random_profile *profile);
 void mc_java_random_profile_free(mc_java_random_profile *profile);
 
-/* Construct a fresh ordinary Random in caller-owned storage. Successful strong
- * CAS consumes the next full-width shared uniquifier BEFORE one actual native
- * nanotime sample. The sample and committed value are XORed, then fresh seed
- * initializes the LCG and +0/false Gaussian cache. No caller stream is drawn.
+/* Construct a fresh ordinary Random in caller-owned storage. The normal public
+ * route consumes the next full-width shared uniquifier by successful strong
+ * CAS BEFORE one actual native nanotime sample. The sample and committed value
+ * are XORed, then fresh seed initializes the LCG and +0/false Gaussian cache.
+ * No caller stream is drawn.
  * Concurrent calls may use one live profile and disjoint fresh output owners;
  * no whole-constructor lock orders their clock samples. On failure out remains
  * unchanged, while any committed uniquifier/clock prefix remains consumed.
@@ -62,6 +63,9 @@ mc_java_random_profile_status mc_java_math_random(mc_java_random_profile *profil
  * disjoint from profile storage and concurrently used outputs/ordinary owners.
  * The profile must outlive all operations and users. Creation/destruction and
  * allocation queries require external lifecycle synchronization. These calls
- * are not asynchronous-signal-safe and expose no clock/seed injection hook. */
+ * are not asynchronous-signal-safe. This public interface exposes no clock/seed
+ * injection hook. A separate private observation-harness binding can supply
+ * declared constructor-clock inputs under exclusive access; it does not change
+ * ordinary unbound operation or claim JVM/OS clock equivalence. */
 
 #endif

@@ -6,6 +6,9 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
+  owns default fields and native lifetime; dedicated World construction selects
+  the actual cache and retains separate subclass and Entity-index owners.
 - [World construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/construction.md),
   [queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md) and
   [mutations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/mutations.md) define actual World and Chunk services.

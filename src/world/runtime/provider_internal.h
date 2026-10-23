@@ -29,6 +29,8 @@ typedef struct mc_world_provider_generation_fields {
  * storage projection, not Java row-object allocation/aliasing equivalence. */
 typedef struct mc_world_provider_fields {
     mc_world_runtime *world;
+    mc_chunk_acquire_policy policy;
+    bool *force_load;
     mc_world_store *store;
     mc_world_dimension_biome *biome;
     mc_biome_manager *manager;

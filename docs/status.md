@@ -1,5 +1,24 @@
 # Development status
 
+Dedicated World construction now has its own Server owner, subclass fields,
+Entity index and constructor-selected cache. A finite Windows/MSVC development
+comparison matches 17 original/native calls across 18 boundaries, including
+protected and distant drops, maintenance and actual reload. The
+[reference record](reference/dedicated-world-construction.md)
+defines the measured constructor inputs and complete comparison scope. These
+private prototype results have no exact committed-source or cross-platform
+qualification yet. Public reference/replay integration remains unfinished.
+
+Synchronous fluid and scheduler diagnostics use checked heap workspaces. The
+dedicated capture exposed large diagnostic copies exhausting the Windows
+stack during valid fluid recursion. A public enclosed-column test checks both
+sides, complete block/metadata results, 34 schedule requests, unchanged Random
+state and balanced ownership. Full validation of the current source is pending;
+the Windows development suite passes all 203 tests, controller mirrors and
+556 positive/2,011 negative interval controls. All 569 C/header files pass
+clang-format 18. Linux sanitizer runs remain in progress. The checkpoint below
+identifies the preceding qualified source.
+
 The production GAME World matches the original seed-23 origin and ring
 population profiles on client and base-server sides. The ten-call ring retains
 nine normal Chunks, populates four and ends with 6,968 ordered light regions.

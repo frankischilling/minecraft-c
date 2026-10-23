@@ -1,5 +1,14 @@
 # World simulation
 
+[Dedicated construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md)
+now has actual Server and World owners, separate subclass fields and a
+duplicate-preserving Entity index. A finite Windows/MSVC development comparison
+matches 17 calls across 18 boundaries, including protected and distant drops,
+maintenance and reload. Its capture tools remain private prototypes without
+exact committed-source or platform qualification. Public constructor and
+fluid-recursion contracts provide separate native coverage; server startup and
+general unload/restart remain unfinished.
+
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
 matches seed23 origin and ring profiles on client/base-server sides. The
 ten-call ring includes negative coordinates, nine normal Chunks, four populated

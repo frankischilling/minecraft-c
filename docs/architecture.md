@@ -1,5 +1,12 @@
 # Runtime boundaries
 
+[Dedicated World construction](world/construction.md#dedicated-construction)
+selects its cache during the base virtual provider call and retains separate
+subclass fields. Its Entity index preserves duplicate-key insertion and typed
+holds. The [Server constructor](server/construction.md) owns default fields,
+lists and an inert lifetime thread. Full server startup and ticking remain
+unfinished.
+
 [Power queries](world/power.md) own the ordered World/support/conductor/output
 chain. Concrete Block dispatch and full wire connectivity keep the receiver's
 defining Registry separate from the supplied World. The independent horizontal

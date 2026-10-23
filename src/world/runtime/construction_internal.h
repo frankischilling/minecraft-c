@@ -3,6 +3,11 @@
 
 #include "mc/world/runtime/lighting.h"
 
+struct mc_world_active_chunks {
+    void *entries;
+    size_t count, capacity;
+};
+
 struct mc_world_reference_list {
     void **items;
     size_t count, capacity;

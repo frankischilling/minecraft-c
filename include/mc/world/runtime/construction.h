@@ -4,6 +4,7 @@
 #include "mc/block/registry/registry.h"
 #include "mc/core/java/random_profile.h"
 #include "mc/core/math/math.h"
+#include "mc/server/runtime/construction.h"
 #include "mc/world/info/info.h"
 #include "mc/world/saved_data/storage.h"
 #include "mc/world/schedule/membership.h"
@@ -15,6 +16,7 @@ typedef struct mc_world_dimension mc_world_dimension;
 typedef struct mc_world_provider mc_world_provider;
 typedef struct mc_world_reference_list mc_world_reference_list;
 typedef struct mc_world_active_chunks mc_world_active_chunks;
+typedef struct mc_world_entity_index mc_world_entity_index;
 
 typedef enum mc_world_runtime_mode {
     MC_WORLD_RUNTIME_COMPOSITION = 0,
@@ -33,8 +35,24 @@ typedef enum mc_world_runtime_entry {
     MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE = 0,
     MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA,
     MC_WORLD_RUNTIME_CLIENT_COPY,
-    MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE
+    MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
+    MC_WORLD_RUNTIME_SERVER_DEDICATED
 } mc_world_runtime_entry;
+
+/* These five dp fields are distinct from the base class's same-label fields.
+ * C and base v publish the SAME concrete dedicated cache. E is the actual
+ * saving-disable cell; base E remains the scheduled TreeSet. Native ownership
+ * retains F and every typed G occurrence independently. */
+typedef struct mc_world_runtime_dedicated_fields {
+    mc_world_provider *C;
+    bool D, E;
+    mc_server_runtime *F;
+    mc_world_entity_index *G;
+} mc_world_runtime_dedicated_fields;
+
+typedef struct mc_world_runtime_dedicated_construction {
+    unsigned int last_store_pc, failed_call_pc;
+} mc_world_runtime_dedicated_construction;
 
 /* All 43 declaring-class World fields, preserving case and reference identity.
  * These are read-only snapshots of the actual owner, not a second live World.
@@ -87,13 +105,18 @@ typedef struct mc_world_runtime_construction {
 /* Separate native budgets; see docs/world/construction.md for exclusions.
  * Defaults: 16MiB direct World storage, 65536 scheduled entries, 512 provider
  * cache/list/pending slots and 8MiB direct provider storage, plus SavedData's
- * own limits. Zero bounds are valid. Entry bounds must fit a signed Java int.
+ * own limits. The dedicated Entity index separately defaults to 65536 nodes,
+ * 8MiB retained and 16MiB peak requests. Zero bounds are valid. Entry bounds
+ * must fit a signed Java int.
  * Java per-object allocation failure timing is not reproduced. */
 typedef struct mc_world_runtime_construction_limits {
     size_t max_direct_allocation_bytes;
     size_t max_scheduled_entries;
     size_t max_provider_chunks;
     size_t max_provider_allocation_bytes;
+    size_t max_dedicated_entities;
+    size_t max_dedicated_allocation_bytes;
+    size_t max_dedicated_peak_bytes;
     mc_world_saved_data_limits saved_data;
 } mc_world_runtime_construction_limits;
 
@@ -110,6 +133,8 @@ typedef struct mc_world_runtime_world_arguments {
     int64_t seed;
     mc_world_dimension *dimension;
     mc_world_runtime *parent;
+    mc_server_runtime *server;
+    int32_t dimension_id;
 } mc_world_runtime_world_arguments;
 
 mc_world_runtime_construction_limits mc_world_runtime_default_construction_limits(void);
@@ -163,10 +188,16 @@ mc_world_runtime_allocate_world(mc_world_runtime_entry entry, mc_world_runtime_c
  * for the call. NULL argument references reach their original dereference
  * points after completed prefix effects; a NULL arguments descriptor is a
  * native admission error. Failed construction cannot be retried. This entry
- * currently completes normal direct/copy/already-loaded base construction.
+ * completes normal direct/copy/already-loaded base and dedicated construction.
+ * The dedicated entry evaluates dimension_id through the actual factory before
+ * the base instance prefix; its dimension argument is not used. It constructs
+ * the dedicated cache during the base virtual call, then G and F in source
+ * order after the base returns. A nullable server is stored without an invented
+ * dereference. Server startup is a separate operation.
  * Missing concrete descendants stop explicitly and never publish READY for a
- * completed prefix. Full subclass/bootstrap, generation/population and fresh
- * spawn construction remain unfinished. See docs/world/construction.md. */
+ * completed prefix. Unsupported Dimension providers, network-client bootstrap,
+ * server startup and general failure parity remain unfinished. See
+ * docs/world/construction.md. */
 mc_world_storage_status
 mc_world_runtime_construct_world(mc_world_runtime *runtime,
                                  const mc_world_runtime_world_arguments *arguments,
@@ -180,7 +211,10 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
  * No implicit save, file rollback, profile reset or game constructor retry.
  * Repeated retirement succeeds. Existing Info/field inspection stays valid;
  * typed lighting records in C and scheduled records in E/F remain owned until
- * final native free, including F-only partial insertion state. They need no
+ * final native free, including F-only partial insertion state. The dedicated
+ * Entity index is released and G becomes NULL during terminal retirement;
+ * no source clear/removal hook is run. The server hold remains until free.
+ * The retained scheduled/light records need no
  * propagation, queue repair or implicit gameplay clear to retire the World.
  * ordinary gameplay/new persistent bindings are unavailable after retirement. */
 mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
@@ -194,5 +228,13 @@ mc_world_storage_status mc_world_runtime_construction_get(const mc_world_runtime
                                                           mc_world_runtime_construction *out);
 mc_world_storage_status mc_world_runtime_fields_get(const mc_world_runtime *runtime,
                                                     mc_world_runtime_fields *out);
+
+/* Passive dedicated-owner inspection, including RAW and failed prefixes.
+ * Rejects base/composition Worlds without changing outputs. This does not
+ * initialize the Entity index or manufacture a server/cache identity. */
+mc_world_storage_status
+mc_world_runtime_dedicated_get(const mc_world_runtime *runtime,
+                               mc_world_runtime_dedicated_fields *fields,
+                               mc_world_runtime_dedicated_construction *construction);
 
 #endif

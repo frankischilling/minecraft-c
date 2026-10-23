@@ -39,6 +39,15 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
 mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, mc_entity *entity,
                                                        bool *out, mc_world_entity_error *error);
 
+/* Actual dedicated dp.a(int): first matching node in its real G index, or
+ * NULL when absent/present-null. The output borrows that occurrence's hold;
+ * retain it before a later index mutation if it must live independently.
+ * Reject base Worlds, preserve out on failure, and consume no Entity ID,
+ * Random, callbacks or Chunk operation. */
+mc_world_storage_status mc_world_runtime_entity_by_id(mc_world_runtime *world, int32_t id,
+                                                      mc_entity **out,
+                                                      mc_world_entity_error *error);
+
 /* Direct normal Chunk.a(Entity)V through its exact store-owned header. Hold and
  * lease that identity through the call. q is set before NULL/mismatch failures;
  * ordered Entity membership stores precede the selected List append. A reached
@@ -50,7 +59,9 @@ mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk,
 /* Explicit terminal native teardown, separate from game removal/save/unload.
  * First retire borrowed views/calls/leases. Admission validates the complete
  * typed World.b/D/c/G/R ledgers and every bound Chunk slice/embedded Tile Map
- * before releasing any hold. This includes each nearby-result occurrence.
+ * before releasing any hold. This includes each nearby-result occurrence and
+ * every actual dedicated Entity-index occurrence. The latter owner is released
+ * and subclass G becomes NULL without a source clear/removal callback.
  * Success terminates source operations and releases each actual occurrence;
  * it leaves gameplay q/membership/World bindings untouched. Retired containers
  * cannot serialize even when empty. Retire native cache/pending descriptors,

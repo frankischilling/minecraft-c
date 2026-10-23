@@ -1,5 +1,24 @@
 # Test scope and reproduction
 
+## Dedicated construction and synchronous fluid recursion
+
+Public `server.construction`, `world.dedicated_entity_index` and
+`world.dedicated_construction` cover native constructor prefixes, field shadows,
+Entity publication, duplicate-key behavior and ownership. `world.fluids` includes
+a stored enclosed water column whose seven downward cells execute synchronous
+tick reentry on both sides. It checks every resulting ID and metadata value,
+34 schedule requests, unchanged Random state and balanced World calls.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^(server[.]construction|world[.](dedicated_entity_index|dedicated_construction|fluids|scheduling))$'
+```
+
+Add `-C Debug` for a multi-configuration build. These tests use project-authored
+inputs and need no original archives. The separate
+[dedicated development comparison](reference/dedicated-world-construction.md)
+uses private capture tools and independently observed constructor clock inputs.
+It has no public replay or exact committed-source qualification yet.
+
 ## Fresh World population
 
 `reference.natural_population` and `reference.natural_population_ring` compare

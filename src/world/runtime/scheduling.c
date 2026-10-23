@@ -9,17 +9,35 @@
 #include "runtime_internal.h"
 
 #include <stddef.h>
+#include <stdlib.h>
 
-static mc_world_schedule_error empty_error(void) {
-    const mc_world_mutation_error tick = mc_world_mutation_empty_error();
-    return (mc_world_schedule_error){.registry = tick.registry, .tick = tick};
+static void error_init(mc_world_schedule_error *error) {
+    static const mc_world_schedule_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_mutation_error_init(&error->tick);
+    error->registry = mc_world_mutation_empty_registry();
 }
 
 static mc_world_storage_status result(mc_world_schedule_error *out,
-                                      const mc_world_schedule_error *frame) {
+                                      mc_world_schedule_error *frame) {
+    const mc_world_storage_status status = frame->status;
     if (out != NULL)
         *out = *frame;
-    return frame->status;
+    free(frame);
+    return status;
+}
+
+static mc_world_storage_status admission(mc_world_schedule_error *error,
+                                         mc_world_storage_status status, const char *operation) {
+    error_init(error);
+    if (error != NULL) {
+        error->status = status;
+        error->operation = operation;
+        error->cause = (mc_world_storage_error){status, operation, 0};
+    }
+    return status;
 }
 
 static bool storage_fail(mc_world_runtime *world, mc_world_schedule_error *frame,
@@ -122,7 +140,7 @@ static bool immediate(mc_world_runtime *world, mc_scheduled_tick *record,
         return true;
 
     mc_registry_classes *classes = mc_world_runtime_registry(world);
-    mc_registry_error registry = empty_error().registry;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
     mc_registry_block_m_view array;
     frame->bytecode = 116;
     if (classes == NULL) {
@@ -232,31 +250,30 @@ mc_world_storage_status mc_world_runtime_schedule_class_get(const mc_world_runti
 mc_world_storage_status mc_world_runtime_schedule(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, int32_t block, int32_t delay,
                                                   mc_world_schedule_error *error) {
-    mc_world_schedule_error frame = empty_error();
     /* Native admission does not alter existing World diagnostics or execute
      * scheduled-record class initialization, allocation or counter effects. */
-    if (world == NULL) {
-        frame.status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
-        frame.operation = "World scheduled tick arguments";
-        frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
-        return result(error, &frame);
-    }
+    if (world == NULL)
+        return admission(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                         "World scheduled tick arguments");
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
-        world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
-        frame.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        frame.operation = "World scheduled tick phase";
-        frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
-        return result(error, &frame);
-    }
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
+        return admission(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World scheduled tick phase");
+    /* Immediate ticks can synchronously schedule more fluid work. Retain each
+     * complete diagnostic off the native stack until its descendants return. */
+    mc_world_schedule_error *frame = malloc(sizeof(*frame));
+    if (frame == NULL)
+        return admission(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                         "World scheduled tick diagnostic allocation");
+    error_init(frame);
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK) {
-        frame.status = cause.status;
-        frame.operation = cause.operation;
-        frame.cause = cause;
-        return result(error, &frame);
+        frame->status = cause.status;
+        frame->operation = cause.operation;
+        frame->cause = cause;
+        return result(error, frame);
     }
-    if (schedule_held(world, x, y, z, block, delay, &frame))
-        frame = empty_error();
+    if (schedule_held(world, x, y, z, block, delay, frame))
+        error_init(frame);
     mc_world_runtime_call_leave(world);
-    return result(error, &frame);
+    return result(error, frame);
 }

@@ -6,6 +6,7 @@
 #include "collision/boxes_internal.h"
 #include "collision/entities_internal.h"
 #include "construction_internal.h"
+#include "dedicated/entity_index.h"
 #include "entity_publication_internal.h"
 #include "lighting_internal.h"
 #include "mc/block/registry/runtime.h"
@@ -19,11 +20,6 @@
 
 #include <limits.h>
 #include <stdlib.h>
-
-struct mc_world_active_chunks {
-    void *entries;
-    size_t count, capacity;
-};
 
 const mc_math_trig *mc_world_runtime_class_trig(const mc_world_runtime *runtime) {
     return runtime->classes->trig;
@@ -42,6 +38,9 @@ mc_world_runtime_construction_limits mc_world_runtime_default_construction_limit
         .max_scheduled_entries = 65536u,
         .max_provider_chunks = 512u,
         .max_provider_allocation_bytes = 8u * 1024u * 1024u,
+        .max_dedicated_entities = 65536u,
+        .max_dedicated_allocation_bytes = 8u * 1024u * 1024u,
+        .max_dedicated_peak_bytes = 16u * 1024u * 1024u,
         .saved_data = mc_world_saved_data_default_limits()};
 }
 
@@ -183,12 +182,13 @@ mc_world_runtime_allocate_world(mc_world_runtime_entry entry, mc_world_runtime_c
                                 const mc_world_runtime_construction_limits *limits,
                                 mc_world_runtime **out, mc_world_storage_error *error) {
     if (out == NULL || classes == NULL || entry < MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE ||
-        entry > MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE)
+        entry > MC_WORLD_RUNTIME_SERVER_DEDICATED)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World allocation arguments");
     mc_world_runtime_construction_limits selected =
         limits == NULL ? mc_world_runtime_default_construction_limits() : *limits;
     if (selected.max_scheduled_entries > INT32_MAX || selected.max_provider_chunks > INT32_MAX ||
-        (entry == MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE) !=
+        selected.max_dedicated_entities > INT32_MAX ||
+        (entry >= MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE) !=
             (classes->side == MC_WORLD_INFO_SERVER))
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World construction limits");
     if (sizeof(mc_world_runtime) > selected.max_direct_allocation_bytes)
@@ -232,6 +232,22 @@ mc_world_storage_status mc_world_runtime_fields_get(const mc_world_runtime *runt
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
         return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     *out = runtime->fields;
+    return MC_WORLD_STORAGE_OK;
+}
+
+mc_world_storage_status
+mc_world_runtime_dedicated_get(const mc_world_runtime *runtime,
+                               mc_world_runtime_dedicated_fields *fields,
+                               mc_world_runtime_dedicated_construction *construction) {
+    if (runtime == NULL || (fields == NULL && construction == NULL))
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        runtime->construction.entry != MC_WORLD_RUNTIME_SERVER_DEDICATED)
+        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    if (fields != NULL)
+        *fields = runtime->dedicated;
+    if (construction != NULL)
+        *construction = runtime->dedicated_construction;
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -419,13 +435,16 @@ static bool world_info_result(mc_world_runtime *runtime, mc_world_info_status st
 
 static void world_bind_info_cells(mc_world_runtime *runtime) {
     const mc_world_info_live *cells = mc_world_info_live_get(runtime->fields.x);
-    runtime->live = (mc_world_runtime_state){.time = cells->time,
-                                             .spawn_x = cells->spawn_x,
-                                             .spawn_y = cells->spawn_y,
-                                             .spawn_z = cells->spawn_z,
-                                             .world_force_load = &runtime->fields.y,
-                                             .provider_force_load = &runtime->provider_force_load,
-                                             .saving_disabled = &runtime->saving_disabled};
+    runtime->live = (mc_world_runtime_state){
+        .time = cells->time,
+        .spawn_x = cells->spawn_x,
+        .spawn_y = cells->spawn_y,
+        .spawn_z = cells->spawn_z,
+        .world_force_load = &runtime->fields.y,
+        .provider_force_load = &runtime->provider_force_load,
+        .saving_disabled = runtime->construction.entry == MC_WORLD_RUNTIME_SERVER_DEDICATED
+                               ? &runtime->dedicated.E
+                               : &runtime->saving_disabled};
 }
 
 static bool world_new_info(mc_world_runtime *runtime,
@@ -591,6 +610,10 @@ static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc) {
     runtime->last_random_status = cause;
     if (status != MC_WORLD_STORAGE_OK)
         return false;
+    if (runtime->construction.entry == MC_WORLD_RUNTIME_SERVER_DEDICATED) {
+        runtime->dedicated.C = provider; /* dp.b() store31 precedes dj.v406. */
+        runtime->dedicated_construction.last_store_pc = 31;
+    }
     runtime->fields.v = provider;
     runtime->construction.last_store_pc = call_pc + 3u;
     runtime->construction.failed_call_pc = 0;
@@ -601,7 +624,8 @@ static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc) {
     runtime->options.cache = fields.cache;
     runtime->options.pending = fields.pending;
     runtime->options.dimension = 0;
-    runtime->options.policy = MC_CHUNK_ACQUIRE_BASE;
+    runtime->options.policy = fields.policy;
+    runtime->live.provider_force_load = fields.force_load;
     runtime->options.generator = fields.generator;
     runtime->options.provider = provider;
     status = mc_world_runtime_bind_contexts(runtime, &runtime->last_error);
@@ -663,6 +687,40 @@ static bool world_initial_spawn(mc_world_runtime *runtime) {
     return true;
 }
 
+static bool dedicated_tail(mc_world_runtime *runtime,
+                           const mc_world_runtime_world_arguments *arguments) {
+    mc_world_runtime_dedicated_fields *f = &runtime->dedicated;
+    mc_world_runtime_dedicated_construction *state = &runtime->dedicated_construction;
+    f->D = false;
+    state->last_store_pc = 15;
+    state->failed_call_pc = 23;
+    const mc_world_entity_index_limits limits = {
+        runtime->construction_limits.max_dedicated_entities,
+        runtime->construction_limits.max_dedicated_allocation_bytes,
+        runtime->construction_limits.max_dedicated_peak_bytes};
+    mc_world_entity_index_error cause;
+    if (mc_world_entity_index_create(&limits, &f->G, &cause) != MC_WORLD_STORAGE_OK) {
+        runtime->last_error = cause.cause;
+        return false;
+    }
+    state->last_store_pc = 26;
+    state->failed_call_pc = 31;
+    if (arguments->server != NULL) {
+        const mc_server_status held = mc_server_runtime_retain(arguments->server);
+        if (held != MC_SERVER_OK) {
+            result(&runtime->last_error,
+                   held == MC_SERVER_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                                           : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "Dedicated World server ownership");
+            return false;
+        }
+    }
+    f->F = arguments->server;
+    state->last_store_pc = 31;
+    state->failed_call_pc = 0;
+    return true;
+}
+
 mc_world_storage_status
 mc_world_runtime_construct_world(mc_world_runtime *runtime,
                                  const mc_world_runtime_world_arguments *arguments,
@@ -677,10 +735,24 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
     ++runtime->active_calls;
     runtime->construction.phase = MC_WORLD_RUNTIME_CONSTRUCTING;
     bool completed = false;
-    bool prefix = world_prefix(runtime);
+    const bool dedicated = runtime->construction.entry == MC_WORLD_RUNTIME_SERVER_DEDICATED;
+    mc_world_runtime_world_arguments selected = *arguments;
+    mc_world_dimension *factory_dimension = NULL;
+    bool prefix = true;
+    if (dedicated) {
+        runtime->dedicated_construction.failed_call_pc = 7;
+        prefix = world_dimension_result(
+            runtime,
+            mc_world_dimension_create(arguments->dimension_id, NULL, &factory_dimension, NULL), 7);
+        selected.dimension = factory_dimension;
+        if (prefix)
+            runtime->dedicated_construction.failed_call_pc = 10;
+    }
+    if (prefix)
+        prefix = world_prefix(runtime);
     if (prefix) {
         bool new_world = false;
-        if (world_metadata_tail(runtime, arguments, &new_world)) {
+        if (world_metadata_tail(runtime, &selected, &new_world)) {
             unsigned int bind_pc =
                 runtime->construction.entry == MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA ? 300u
                 : runtime->construction.entry == MC_WORLD_RUNTIME_CLIENT_COPY          ? 315u
@@ -725,6 +797,9 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
             }
         }
     }
+    if (completed && dedicated)
+        completed = dedicated_tail(runtime, arguments);
+    mc_world_dimension_release(factory_dimension);
     runtime->construction.phase =
         completed ? MC_WORLD_RUNTIME_READY : MC_WORLD_RUNTIME_FAILED_CONSTRUCTION;
     --runtime->active_calls;
@@ -754,6 +829,14 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                       "World collision ownership metadata");
     if (runtime->collision_boxes.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World collision occurrences remain");
+    if (runtime->dedicated.F != NULL) {
+        if (mc_server_runtime_release(runtime->dedicated.F) != MC_SERVER_OK)
+            return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "Dedicated World server release");
+        runtime->dedicated.F = NULL;
+    }
+    mc_world_entity_index_free(runtime->dedicated.G);
+    runtime->dedicated.G = NULL;
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_runtime_entity_list_release(runtime);
     mc_live_tiles_lists_release(runtime);
@@ -806,7 +889,8 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World collision ownership metadata");
     if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED &&
-        !runtime->construction.contexts_bound && !runtime->construction.cache_registered)
+        !runtime->construction.contexts_bound && !runtime->construction.cache_registered &&
+        mc_world_dimension_world(runtime->fields.t) != runtime)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_reference_list *lists[] = {f->C,
@@ -850,6 +934,8 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     }
     if (mc_world_dimension_world(f->t) == runtime)
         mc_world_dimension_unbind(f->t);
+    mc_world_entity_index_free(runtime->dedicated.G);
+    runtime->dedicated.G = NULL;
     runtime->construction.phase = MC_WORLD_RUNTIME_RETIRED;
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -914,5 +1000,7 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     mc_live_tiles_lists_release(world);
     mc_world_nearby_owned_release(world);
     mc_world_collision_owned_release(world);
+    mc_world_entity_index_free(world->dedicated.G);
+    world->dedicated.G = NULL;
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }

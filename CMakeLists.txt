@@ -220,6 +220,7 @@ target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
 target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
 
 add_library(mc_simulation STATIC
+    src/server/runtime/construction.c
     src/entity/movement/movement.c
     src/entity/movement/effects.c
     src/entity/nbt/factory.c
@@ -235,6 +236,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/activation.c
     src/world/runtime/registry.c
     src/world/runtime/construction.c
+    src/world/runtime/dedicated/entity_index.c
     src/world/runtime/environment.c
     src/world/runtime/movement.c
     src/world/runtime/contact.c
@@ -302,10 +304,23 @@ add_library(mc_simulation STATIC
     src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
-    PRIVATE mc_platform_time mc_platform_text mc_build_options)
+    PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_server_construction tests/server/runtime/test_construction.c)
+    target_link_libraries(mc_test_server_construction PRIVATE mc_simulation mc_build_options)
+    add_test(NAME server.construction COMMAND mc_test_server_construction)
+    set_tests_properties(server.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_dedicated_entity_index tests/world/runtime/dedicated/test_entity_index.c)
+    target_link_libraries(mc_test_dedicated_entity_index PRIVATE mc_simulation mc_build_options)
+    add_test(NAME world.dedicated_entity_index COMMAND mc_test_dedicated_entity_index)
+    set_tests_properties(world.dedicated_entity_index PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_dedicated_construction tests/world/runtime/dedicated/test_construction.c)
+    target_link_libraries(mc_test_dedicated_construction PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
     add_executable(mc_test_world_info tests/world/info/test_info.c)
     target_include_directories(mc_test_world_info PRIVATE src/platform/time)
     target_link_libraries(mc_test_world_info PRIVATE mc_world_info mc_platform_time mc_build_options)
@@ -377,6 +392,10 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_java_random_profile tests/core/java/test_random_profile.c)
     target_link_libraries(mc_test_java_random_profile PRIVATE mc_core mc_c_atomics Threads::Threads mc_build_options)
+    add_executable(mc_test_java_random_profile_inputs tests/core/java/test_random_profile_inputs.c)
+    target_link_libraries(mc_test_java_random_profile_inputs PRIVATE mc_core mc_c_atomics mc_build_options)
+    add_test(NAME core.java_random_profile_inputs COMMAND mc_test_java_random_profile_inputs)
+    set_tests_properties(core.java_random_profile_inputs PROPERTIES LABELS "public;unit" TIMEOUT 60)
     add_test(NAME core.java_random_profile COMMAND mc_test_java_random_profile)
     set_tests_properties(core.java_random_profile PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
@@ -1188,6 +1207,15 @@ if(BUILD_TESTING)
         --scenario game-world
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/game-world-contracts")
     set_tests_properties(world.game_construction PROPERTIES
+        LABELS "public;integration;ownership" TIMEOUT 90)
+
+    add_test(NAME world.dedicated_construction
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_dedicated_construction>"
+        --scenario world-dedicated-construction
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/dedicated-construction-contracts")
+    set_tests_properties(world.dedicated_construction PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 90)
 
     add_test(NAME world.registry_bindings

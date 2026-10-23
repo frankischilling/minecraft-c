@@ -4,8 +4,8 @@ The [public profile API](../../include/mc/core/java/random_profile.h) owns the
 shared constructor state and lazy `Math.random` owner for one fresh application
 and library-class lifetime. It belongs above worlds, registries and individual
 Random owners. The native service and its focused tests are implemented;
-population, registry, entity and application callers still need to be connected
-to that same live owner.
+World, population, registry and Entity callers share that live owner. Complete
+client/server application startup remains unfinished.
 
 ## Ownership and operation order
 
@@ -70,6 +70,32 @@ Production calls inspect controls without changing them. Asynchronous signals,
 cancellation and arbitrary subclass or native reentry are outside this API.
 CMake requires C17 thread support and enables MSVC's
 `/experimental:c11atomics` for the implementation.
+
+## Measured constructor inputs
+
+The private observation harness can bind one immutable sequence to a fresh,
+untouched profile. Each row supplies the full committed uniquifier and a signed
+`nanoTime` return. Binding checks the entire multiplication progression before
+publishing the borrowed sequence. It cannot bind after a constructor attempt,
+after Math initialization, or for a second time. The ceiling is 65,536 rows;
+a bound empty sequence stays distinct from ordinary real-clock operation.
+
+A reached constructor still performs its actual uniquifier CAS first. It then
+consumes the next declared sample at the normal clock-sampling boundary and
+enters the same production XOR/constructor tail. It assigns neither a desired
+Random state nor a supplied shared counter. Input exhaustion or an order
+mismatch preserves the consumed CAS prefix and caller output, latches a native
+harness failure and forbids silent resampling. A terminal completeness check
+also rejects unused rows. Math uses the same sequence through its real lazy
+owner construction.
+
+The binding requires exclusive access and keeps its borrowed input alive until
+profile retirement. It does not change the public concurrent real-clock path.
+The focused input tests cover boundary values, fresh-owner admission, whole-tape
+validation, exhaustion, unused rows, failure prefixes, output preservation and
+Math allocation/holder behavior. Supplied inputs alone establish no observation
+provenance, JVM clock equivalence or game parity; the separate original capture
+must establish where measured rows came from.
 
 ## Concrete clock paths
 

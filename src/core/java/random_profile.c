@@ -95,9 +95,15 @@ mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocatio
     }
     atomic_init(&profile->uniquifier, INITIAL_UNIQUIFIER);
     atomic_init(&profile->holder_phase, MC_JAVA_RANDOM_HOLDER_COLD);
+    atomic_init(&profile->constructor_admitted, false);
     profile->math = NULL;
     profile->allocated_bytes = sizeof(*profile);
     profile->max_allocation_bytes = max_allocation_bytes;
+    profile->constructor_inputs_bound = false;
+    profile->constructor_inputs = NULL;
+    profile->constructor_input_count = 0;
+    profile->constructor_input_consumed = 0;
+    profile->constructor_input_failure = MC_JAVA_RANDOM_INPUT_NONE;
     *out = profile;
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
@@ -113,6 +119,78 @@ void mc_java_random_profile_free(mc_java_random_profile *profile) {
     }
 }
 
+mc_java_random_profile_status mc_java_random_profile_bind_constructor_inputs(
+    mc_java_random_profile *profile, const mc_java_random_constructor_input *inputs, size_t count) {
+    if (profile == NULL || (count != 0 && inputs == NULL))
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    if (count > MC_JAVA_RANDOM_PROFILE_MAX_CONSTRUCTOR_INPUTS)
+        return MC_JAVA_RANDOM_PROFILE_LIMIT;
+    if (profile->constructor_inputs_bound ||
+        atomic_load_explicit(&profile->constructor_admitted, memory_order_relaxed) ||
+        atomic_load_explicit(&profile->uniquifier, memory_order_seq_cst) != INITIAL_UNIQUIFIER ||
+        atomic_load_explicit(&profile->holder_phase, memory_order_acquire) !=
+            MC_JAVA_RANDOM_HOLDER_COLD ||
+        profile->math != NULL || profile->allocated_bytes != sizeof(*profile))
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    uint64_t expected = INITIAL_UNIQUIFIER;
+    for (size_t index = 0; index < count; ++index) {
+        expected *= UNIQUIFIER_MULTIPLIER;
+        if (inputs[index].committed_uniquifier != expected)
+            return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    }
+    profile->constructor_inputs = inputs;
+    profile->constructor_input_count = count;
+    profile->constructor_input_consumed = 0;
+    profile->constructor_input_failure = MC_JAVA_RANDOM_INPUT_NONE;
+    profile->constructor_inputs_bound = true;
+    return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
+mc_java_random_profile_status
+mc_java_random_profile_constructor_inputs_get(const mc_java_random_profile *profile,
+                                              mc_java_random_constructor_inputs_view *out) {
+    if (profile == NULL || out == NULL)
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    *out = (mc_java_random_constructor_inputs_view){
+        profile->constructor_inputs_bound, profile->constructor_input_count,
+        profile->constructor_input_consumed, profile->constructor_input_failure};
+    return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
+mc_java_random_profile_status
+mc_java_random_profile_constructor_inputs_complete(mc_java_random_profile *profile) {
+    if (profile == NULL || !profile->constructor_inputs_bound)
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    if (profile->constructor_input_failure != MC_JAVA_RANDOM_INPUT_NONE)
+        return MC_JAVA_RANDOM_PROFILE_RANGE;
+    if (profile->constructor_input_consumed != profile->constructor_input_count) {
+        profile->constructor_input_failure = MC_JAVA_RANDOM_INPUT_EXTRA_INPUTS;
+        return MC_JAVA_RANDOM_PROFILE_RANGE;
+    }
+    return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
+static mc_java_random_profile_status constructor_sample(mc_java_random_profile *profile,
+                                                        uint64_t committed, int64_t *out) {
+    if (!profile->constructor_inputs_bound)
+        return nanotime_status(mc_platform_nanotime_sample(&profile->clock, out));
+    if (profile->constructor_input_failure != MC_JAVA_RANDOM_INPUT_NONE)
+        return MC_JAVA_RANDOM_PROFILE_RANGE;
+    if (profile->constructor_input_consumed == profile->constructor_input_count) {
+        profile->constructor_input_failure = MC_JAVA_RANDOM_INPUT_EXHAUSTED;
+        return MC_JAVA_RANDOM_PROFILE_RANGE;
+    }
+    const mc_java_random_constructor_input *input =
+        &profile->constructor_inputs[profile->constructor_input_consumed];
+    if (input->committed_uniquifier != committed) {
+        profile->constructor_input_failure = MC_JAVA_RANDOM_INPUT_ORDER_MISMATCH;
+        return MC_JAVA_RANDOM_PROFILE_RANGE;
+    }
+    *out = input->nanotime;
+    ++profile->constructor_input_consumed;
+    return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
 mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_profile *profile,
                                                                mc_java_random *out) {
     if (profile == NULL || out == NULL) {
@@ -124,9 +202,10 @@ mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_pr
         return check_status;
     }
     const uint64_t committed = advance_uniquifier(profile);
+    atomic_store_explicit(&profile->constructor_admitted, true, memory_order_relaxed);
     int64_t sample;
     const mc_java_random_profile_status sample_status =
-        nanotime_status(mc_platform_nanotime_sample(&profile->clock, &sample));
+        constructor_sample(profile, committed, &sample);
     if (sample_status != MC_JAVA_RANDOM_PROFILE_OK) {
         return sample_status;
     }

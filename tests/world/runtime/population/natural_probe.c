@@ -86,6 +86,8 @@ typedef struct natural_named {
     size_t reference_count;
 } natural_named;
 
+typedef struct dedicated_observation dedicated_observation;
+
 typedef struct natural_probe {
     bool client, constructor_called, enumeration_checked;
     mc_resource_files *resources;
@@ -118,6 +120,7 @@ typedef struct natural_probe {
     uint8_t block_map[256];
     natural_persistence *persistence;
     natural_named *named;
+    dedicated_observation *dedicated;
     natural_json json;
 } natural_probe;
 
@@ -1787,7 +1790,12 @@ static bool cleanup(natural_probe *probe) {
     return true;
 }
 
+#include "dedicated_probe.h"
+
 int main(int argc, char **argv) {
+    if (argc == 7 && strcmp(argv[1], "server") == 0 &&
+        strcmp(argv[5], "dedicated-natural-unload") == 0)
+        return dedicated_main(argv);
     if ((argc != 5 && argc != 6) ||
         (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0))
         return 1;

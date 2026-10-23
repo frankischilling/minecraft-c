@@ -1,5 +1,11 @@
 # Build and tests
 
+Dedicated constructor and Entity-index tests run without original archives.
+The fluid contract also runs a synchronous enclosed-column case on both sides,
+checking all block/metadata results, exactly 34 schedule requests and unchanged
+Random state. See the
+[test commands and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#dedicated-construction-and-synchronous-fluid-recursion).
+
 Build setup uses C17, CMake 3.24+ and Python 3.10+; ordinary public tests need
 no Java or original archives. Follow [building](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md) for
 Linux and Windows tools, dependency setup and separate build directories.

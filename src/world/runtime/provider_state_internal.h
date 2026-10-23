@@ -6,6 +6,8 @@
 /* The one actual provider owner, shared only by its concrete method bodies. */
 struct mc_world_provider {
     mc_world_runtime *world;
+    mc_chunk_acquire_policy policy;
+    bool force_load;
     mc_world_store *store;
     mc_world_dimension_biome *biome;
     /* Native supplier hold for the current actual v's Registry arena. */

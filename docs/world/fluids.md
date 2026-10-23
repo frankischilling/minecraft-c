@@ -72,6 +72,13 @@ bytes, flags, scratch, scheduling and random effects. Flat diagnostics keep the
 current concrete caller and deepest reached hook origin; they do not impose a
 gameplay recursion limit or claim a complete recursive stack trace.
 
+Fluid children and the scheduler use checked heap workspaces for their complete
+diagnostics. Large diagnostic values in synchronous fluid ancestors caused a
+Windows stack overflow during dedicated population. Each call now retains its
+diagnostic until its children return, copies any failure, then frees the
+workspace. The fix neither enlarges the host stack nor limits gameplay
+recursion.
+
 ## Reference mapping and validation limits
 
 Authority is the unchanged [client and server binaries](../reference/binaries.md).
@@ -96,6 +103,16 @@ Separate [original support and presentation observations](../reference/world-sol
 completed 56 subject calls per side, including nine genuine prepared World cases.
 Their exported Contexts contain array fingerprints. They have no native replay
 or complete fluid/population qualification claim.
+
+The public fluid regression includes an enclosed column with seven empty cells
+below a water source, crossing four Chunk footprints at its walls. Client and
+base-server GAME Worlds each execute exactly 34 synchronous schedule requests,
+fill the column with the expected still-water metadata and leave both deferred
+sets unchanged. The Windows/MSVC development run passes these checks, including
+unchanged World Random/Math state and balanced calls and leases. A separate
+[dedicated population comparison](../reference/dedicated-world-construction.md)
+passes its finite 17-call development profile; committed-code, platform and
+public replay qualification remain open.
 
 At the preceding fluid checkpoint, all 65 selected cases pass on MSVC and Linux GCC/Clang, with Linux address,
 undefined-behavior and leak checks. Each host retains the same 634 selected

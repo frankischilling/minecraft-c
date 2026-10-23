@@ -143,6 +143,10 @@ mc_world_storage_status mc_world_provider_create(mc_world_runtime *runtime,
     if (provider == NULL)
         return result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "provider owner allocation");
     *provider = (mc_world_provider){.world = dimension_fields.a,
+                                    .policy = runtime->construction.entry ==
+                                                      MC_WORLD_RUNTIME_SERVER_DEDICATED
+                                                  ? MC_CHUNK_ACQUIRE_DEDICATED
+                                                  : MC_CHUNK_ACQUIRE_BASE,
                                     .store = runtime->fields.w,
                                     .max_chunks = max_chunks,
                                     .direct_bytes = sizeof(*provider),
@@ -263,6 +267,8 @@ mc_world_storage_status mc_world_provider_bind_fields(mc_world_provider *provide
     if (provider == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "provider field arguments");
     *out = (mc_world_provider_fields){.world = provider->world,
+                                      .policy = provider->policy,
+                                      .force_load = &provider->force_load,
                                       .store = provider->store,
                                       .biome = provider->biome,
                                       .manager = provider->manager,

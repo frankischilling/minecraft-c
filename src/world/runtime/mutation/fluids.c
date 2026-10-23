@@ -8,6 +8,8 @@
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/scheduling.h"
 
+#include <stdlib.h>
+
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "Fluid floating operations require x86-64/SSE2"
 #endif
@@ -64,16 +66,40 @@ static bool fluid_storage_fail(const fluid_frame *frame, unsigned int pc,
  * lower may alias frame->error, so capture every field before restoration. */
 static bool fluid_nested(const fluid_frame *frame, unsigned int pc,
                          const mc_world_mutation_error *lower) {
-    const mc_world_mutation_error captured = *lower;
-    *frame->error = captured;
-    if (captured.cause_hook_class == NULL) {
-        frame->error->cause_hook_class = captured.hook_class;
-        frame->error->cause_hook_method = captured.hook_method;
-        frame->error->cause_hook_bytecode = captured.hook_bytecode;
+    if (frame->error != lower)
+        *frame->error = *lower;
+    if (frame->error->cause_hook_class == NULL) {
+        frame->error->cause_hook_class = frame->error->hook_class;
+        frame->error->cause_hook_method = frame->error->hook_method;
+        frame->error->cause_hook_bytecode = frame->error->hook_bytecode;
     }
+    const mc_world_storage_error cause = frame->error->cause;
     fluid_at(frame, pc);
-    frame->world->last_error = captured.cause;
+    frame->world->last_error = cause;
     return false;
+}
+
+/* Keep child diagnostics independent without retaining their large values in
+ * every synchronous fluid ancestor. Allocation precedes the selected child;
+ * a failure preserves the caller's reached site and earlier game effects. */
+static mc_world_mutation_error *fluid_workspace(const fluid_frame *frame, unsigned int pc) {
+    mc_world_mutation_error *lower = malloc(sizeof(*lower));
+    if (lower == NULL) {
+        fluid_at(frame, pc);
+        (void)mc_world_mutation_fail(frame->world, frame->error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                     "Fluid child diagnostic allocation");
+    } else {
+        mc_world_mutation_error_init(lower);
+    }
+    return lower;
+}
+
+static bool fluid_child_result(const fluid_frame *frame, unsigned int pc,
+                               mc_world_mutation_error *lower, bool complete) {
+    if (!complete)
+        (void)fluid_nested(frame, pc, lower);
+    free(lower);
+    return complete;
 }
 
 static bool fluid_registry_fail(const fluid_frame *frame, unsigned int pc,
@@ -108,24 +134,26 @@ static bool fluid_metadata(const fluid_frame *frame, unsigned int pc, int32_t x,
  * otherwise live m18/index23/selected bA24. Never read a stale World cause. */
 static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                            int32_t z, mc_material **out) {
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
     mc_world_storage_error cause = {0};
     int32_t id;
-    lower.bytecode = 4;
+    lower->bytecode = 4;
     if (mc_world_runtime_block_get(frame->world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK) {
-        lower.status = cause.status;
-        lower.operation = cause.operation;
-        lower.cause = cause;
-        return fluid_nested(frame, pc, &lower);
+        lower->status = cause.status;
+        lower->operation = cause.operation;
+        lower->cause = cause;
+        return fluid_child_result(frame, pc, lower, false);
     }
     mc_registry_classes *classes = mc_world_runtime_registry(frame->world);
     mc_registry_error registry = mc_world_mutation_empty_registry();
-    lower.bytecode = id == 0 ? 14u : 18u;
+    lower->bytecode = id == 0 ? 14u : 18u;
     if (classes == NULL) {
         registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         registry.message = "World fluid material Registry binding";
-        (void)mc_world_mutation_registry_fail(frame->world, &lower, &registry, registry.message);
-        return fluid_nested(frame, pc, &lower);
+        (void)mc_world_mutation_registry_fail(frame->world, lower, &registry, registry.message);
+        return fluid_child_result(frame, pc, lower, false);
     }
     mc_material *material = NULL;
     mc_registry_status status;
@@ -136,30 +164,31 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
         status = mc_registry_block_m_get(classes, &array, &registry);
         if (status == MC_REGISTRY_OK) {
             const mc_block *selected;
-            lower.bytecode = 23;
+            lower->bytecode = 23;
             status = mc_registry_block_m_at(&array, id, &selected, &registry);
             if (status == MC_REGISTRY_OK) {
-                lower.bytecode = 24;
+                lower->bytecode = 24;
                 if (selected == NULL) {
                     registry.status = MC_REGISTRY_NULL_REFERENCE;
                     registry.message = "World material Block receiver";
-                    (void)mc_world_mutation_registry_fail(frame->world, &lower, &registry,
+                    (void)mc_world_mutation_registry_fail(frame->world, lower, &registry,
                                                           "World material registry");
-                    return fluid_nested(frame, pc, &lower);
+                    return fluid_child_result(frame, pc, lower, false);
                 }
                 material = selected->fields.bA;
             }
         }
     }
     if (status != MC_REGISTRY_OK) {
-        (void)mc_world_mutation_registry_fail(frame->world, &lower, &registry,
+        (void)mc_world_mutation_registry_fail(frame->world, lower, &registry,
                                               "World fluid material Registry");
-        return fluid_nested(frame, pc, &lower);
+        return fluid_child_result(frame, pc, lower, false);
     }
     /* Match the existing actual World material operation's success diagnostic. */
     (void)mc_world_runtime_registry_result(frame->world, status, &registry,
                                            "World material registry", &cause);
     *out = material; /* Nullable bA is a normal field result. */
+    free(lower);
     return true;
 }
 
@@ -193,70 +222,102 @@ static bool fluid_array_block(const fluid_frame *frame, unsigned int load_pc, un
 static bool fluid_write_id(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                            int32_t z, int32_t id) {
     bool ignored;
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
     fluid_at(frame, pc);
-    if (mc_world_runtime_block_set(frame->world, x, y, z, id, &ignored, &lower) !=
-        MC_WORLD_STORAGE_OK)
-        return fluid_nested(frame, pc, &lower);
-    return true;
+    const bool complete = mc_world_runtime_block_set(frame->world, x, y, z, id, &ignored, lower) ==
+                          MC_WORLD_STORAGE_OK;
+    return fluid_child_result(frame, pc, lower, complete);
 }
 
 static bool fluid_write(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
                         int32_t id, int32_t metadata, bool quiet) {
     bool ignored;
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
     fluid_at(frame, pc);
     const mc_world_storage_status status =
         quiet ? mc_world_runtime_block_metadata_set_quiet(frame->world, x, y, z, id, metadata,
-                                                          &ignored, &lower)
+                                                          &ignored, lower)
               : mc_world_runtime_block_metadata_set(frame->world, x, y, z, id, metadata, &ignored,
-                                                    &lower);
-    if (status != MC_WORLD_STORAGE_OK)
-        return fluid_nested(frame, pc, &lower);
-    return true;
+                                                    lower);
+    return fluid_child_result(frame, pc, lower, status == MC_WORLD_STORAGE_OK);
 }
 
 static bool fluid_write_metadata(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                                  int32_t z, int32_t metadata) {
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
     fluid_at(frame, pc);
-    if (mc_world_runtime_metadata_set(frame->world, x, y, z, metadata, &lower) !=
-        MC_WORLD_STORAGE_OK)
-        return fluid_nested(frame, pc, &lower);
-    return true;
+    const bool complete = mc_world_runtime_metadata_set(frame->world, x, y, z, metadata, lower) ==
+                          MC_WORLD_STORAGE_OK;
+    return fluid_child_result(frame, pc, lower, complete);
 }
 
 static bool fluid_observe(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                           int32_t z, bool range) {
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
     fluid_at(frame, pc);
     const bool complete =
-        range ? mc_world_mutation_observe_range(frame->world, x, y, z, x, y, z, &lower)
-              : mc_world_mutation_observe_cell(frame->world, x, y, z, &lower);
-    return complete ? true : fluid_nested(frame, pc, &lower);
+        range ? mc_world_mutation_observe_range(frame->world, x, y, z, x, y, z, lower)
+              : mc_world_mutation_observe_cell(frame->world, x, y, z, lower);
+    return fluid_child_result(frame, pc, lower, complete);
+}
+
+static bool fluid_drop(const fluid_frame *frame, unsigned int pc, const mc_block *block, int32_t x,
+                       int32_t y, int32_t z, int32_t metadata) {
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
+    fluid_at(frame, pc);
+    const bool complete = mc_world_mutation_drop(frame->world, block, x, y, z, metadata, lower);
+    return fluid_child_result(frame, pc, lower, complete);
+}
+
+static bool fluid_neighbors(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
+                            int32_t z, int32_t id) {
+    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    if (lower == NULL)
+        return false;
+    fluid_at(frame, pc);
+    const bool complete = mc_world_mutation_neighbors(frame->world, x, y, z, id, lower);
+    return fluid_child_result(frame, pc, lower, complete);
 }
 
 static bool fluid_schedule(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                            int32_t z, int32_t id, int32_t delay) {
-    mc_world_schedule_error scheduled;
+    mc_world_schedule_error *scheduled = malloc(sizeof(*scheduled));
     fluid_at(frame, pc);
-    if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, &scheduled) ==
-        MC_WORLD_STORAGE_OK)
+    if (scheduled == NULL)
+        return mc_world_mutation_fail(frame->world, frame->error,
+                                      MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                      "Fluid schedule diagnostic allocation");
+    if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, scheduled) ==
+        MC_WORLD_STORAGE_OK) {
+        free(scheduled);
         return true;
-    mc_world_mutation_error lower = scheduled.tick;
-    lower.status = scheduled.status;
-    lower.operation = scheduled.operation;
-    lower.cause = scheduled.cause;
-    lower.registry = scheduled.registry;
-    lower.schedule_bytecode = scheduled.bytecode;
-    lower.record = scheduled.record;
-    lower.membership = scheduled.membership;
-    lower.ordered = scheduled.ordered;
-    if (scheduled.presence_bytecode != 0)
-        lower.presence_bytecode = scheduled.presence_bytecode;
-    if (scheduled.provider_bytecode != 0)
-        lower.provider_bytecode = scheduled.provider_bytecode;
-    return fluid_nested(frame, pc, &lower);
+    }
+    mc_world_mutation_error *lower = &scheduled->tick;
+    lower->status = scheduled->status;
+    lower->operation = scheduled->operation;
+    lower->cause = scheduled->cause;
+    lower->registry = scheduled->registry;
+    lower->schedule_bytecode = scheduled->bytecode;
+    lower->record = scheduled->record;
+    lower->membership = scheduled->membership;
+    lower->ordered = scheduled->ordered;
+    if (scheduled->presence_bytecode != 0)
+        lower->presence_bytecode = scheduled->presence_bytecode;
+    if (scheduled->provider_bytecode != 0)
+        lower->provider_bytecode = scheduled->provider_bytecode;
+    (void)fluid_nested(frame, pc, lower);
+    free(scheduled);
+    return false;
 }
 
 static bool fluid_bounded(const fluid_frame *frame, unsigned int pc, mc_java_random *random,
@@ -565,10 +626,8 @@ static bool fluid_spill(mc_world_runtime *world, mc_block *block, int32_t x, int
             int32_t old_metadata;
             if (!fluid_metadata(&frame, 65, x, y, z, &old_metadata))
                 return false;
-            mc_world_mutation_error lower = mc_world_mutation_empty_error();
-            fluid_at(&frame, 68);
-            if (!mc_world_mutation_drop(world, selected, x, y, z, old_metadata, &lower))
-                return fluid_nested(&frame, 68, &lower);
+            if (!fluid_drop(&frame, 68, selected, x, y, z, old_metadata))
+                return false;
         }
     }
     const int32_t id = block->fields.bn;
@@ -661,10 +720,8 @@ static bool fluid_flowing_tick(mc_world_runtime *world, mc_block *block, int32_t
                 if (!fluid_schedule(&frame, 354, x, y, z, id, delay))
                     return false;
                 const int32_t notify_id = block->fields.bn;
-                mc_world_mutation_error lower = mc_world_mutation_empty_error();
-                fluid_at(&frame, 366);
-                if (!mc_world_mutation_neighbors(world, x, y, z, notify_id, &lower))
-                    return fluid_nested(&frame, 366, &lower);
+                if (!fluid_neighbors(&frame, 366, x, y, z, notify_id))
+                    return false;
             }
         } else if (settle) {
             if (!fluid_flow_to_still(world, block, x, y, z, error))
@@ -777,11 +834,14 @@ static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int3
     const float difference = first - second;
     const float scaled = difference * 0.8f;
     const float pitch = 2.6f + scaled;
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error *lower = fluid_workspace(&frame, 45);
+    if (lower == NULL)
+        return false;
     fluid_at(&frame, 45);
-    if (!mc_world_mutation_sound(world, (double)sx, (double)sy, (double)sz, sound, 0.5f, pitch,
-                                 &lower))
-        return fluid_nested(&frame, 45, &lower);
+    const bool sounded = mc_world_mutation_sound(world, (double)sx, (double)sy, (double)sz, sound,
+                                                 0.5f, pitch, lower);
+    if (!fluid_child_result(&frame, 45, lower, sounded))
+        return false;
     for (int32_t i = 0; i < 8; ++i) {
         const mc_registry_string *particle;
         if (!fluid_literal(&frame, 59, "largesmoke", &particle))
@@ -795,10 +855,14 @@ static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int3
         if (!fluid_math(&frame, 76, &draw_z))
             return false;
         const double pz = (double)z + draw_z;
-        lower = mc_world_mutation_empty_error();
+        lower = fluid_workspace(&frame, 83);
+        if (lower == NULL)
+            return false;
         fluid_at(&frame, 83);
-        if (!mc_world_mutation_particle(world, particle, px, py, pz, 0.0, 0.0, 0.0, &lower))
-            return fluid_nested(&frame, 83, &lower);
+        const bool emitted =
+            mc_world_mutation_particle(world, particle, px, py, pz, 0.0, 0.0, 0.0, lower);
+        if (!fluid_child_result(&frame, 83, lower, emitted))
+            return false;
     }
     return fluid_return(&frame);
 }

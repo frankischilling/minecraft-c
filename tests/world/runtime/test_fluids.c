@@ -284,6 +284,8 @@ static const patch patches[] = {
     {9, 56, 22, MIX_DEEP},       {9, 72, 22, DROP_FRONTIER},  {22, 24, 22, QUOTA},
     {22, 88, 22, FIRE_FRONTIER}, {1, 104, 8, CACHE_FRONTIER}, {22, 104, 22, NULL_RANDOM}};
 
+enum { CHANNEL_X = 16, CHANNEL_Z = 16, CHANNEL_FLOOR = 110, CHANNEL_SOURCE = 118 };
+
 static const patch *location(enum pattern kind) {
     for (size_t i = 0; i < COUNT(patches); ++i)
         if (patches[i].kind == kind)
@@ -367,6 +369,16 @@ static input_cell prepared(int32_t x, int32_t y, int32_t z) {
                 v = (input_cell){8, 0};
                 break;
         }
+    }
+    /* This enclosed column crosses four real Chunk footprints at its walls.
+     * Its source must descend through seven empty cells by synchronous tick
+     * reentry. The input is stored before any World acquires these records. */
+    if (x >= CHANNEL_X - 1 && x <= CHANNEL_X + 1 && z >= CHANNEL_Z - 1 && z <= CHANNEL_Z + 1 &&
+        y >= CHANNEL_FLOOR && y <= CHANNEL_SOURCE + 1) {
+        if (x != CHANNEL_X || z != CHANNEL_Z || y == CHANNEL_FLOOR || y == CHANNEL_SOURCE + 1)
+            v = (input_cell){1, 0};
+        else
+            v = (input_cell){(uint8_t)(y == CHANNEL_SOURCE ? 8 : 0), 0};
     }
     return v;
 }
@@ -598,6 +610,61 @@ static mc_java_random math_snapshot(const fixture *f) {
 static bool math_is(const fixture *f, const mc_java_random *expected) {
     const mc_java_random actual = math_snapshot(f);
     return mc_test_java_random_equal(&actual, expected);
+}
+
+static bool synchronous_channel(fixture *f, size_t slot) {
+    bool ok = false;
+    mc_world_runtime *w = f->worlds[slot];
+    schedule_state before;
+    mc_world_schedule_error error;
+    const mc_java_random world_random = *w->fields.r;
+    const mc_java_random math = math_snapshot(f);
+    const uint64_t uniquifier = atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed);
+    CHECK(!w->fields.a && !w->fields.o && scheduled(w, &before));
+    for (int32_t y = CHANNEL_FLOOR; y <= CHANNEL_SOURCE + 1; ++y) {
+        CHECK(at(w, CHANNEL_X - 1, y, CHANNEL_Z, 1, 0) &&
+              at(w, CHANNEL_X + 1, y, CHANNEL_Z, 1, 0) &&
+              at(w, CHANNEL_X, y, CHANNEL_Z - 1, 1, 0) && at(w, CHANNEL_X, y, CHANNEL_Z + 1, 1, 0));
+        CHECK(at(w, CHANNEL_X, y, CHANNEL_Z,
+                 y == CHANNEL_FLOOR || y == CHANNEL_SOURCE + 1 ? 1
+                 : y == CHANNEL_SOURCE                         ? 8
+                                                               : 0,
+                 0));
+    }
+    w->fields.a = true;
+    const mc_world_storage_status status =
+        mc_world_runtime_schedule(w, CHANNEL_X, CHANNEL_SOURCE, CHANNEL_Z, 8, INT32_MIN, &error);
+    w->fields.a = false;
+    /* One outer request and seven new-flow additions. Each addition notifies
+     * its still upper neighbor; six also notify their still lower neighbor.
+     * Each conversion schedules twice, on addition and explicitly. All 34
+     * requests execute synchronously; neither deferred set receives a record. */
+    CHECK(status == MC_WORLD_STORAGE_OK);
+    CHECK(delta(w, &before, 34, 0));
+    CHECK(!w->fields.o);
+    CHECK(error.status == MC_WORLD_STORAGE_OK && error.cause.status == MC_WORLD_STORAGE_OK &&
+          error.operation == NULL && error.bytecode == 0 &&
+          error.registry.status == MC_REGISTRY_OK);
+    CHECK(error.tick.status == MC_WORLD_STORAGE_OK &&
+          error.tick.cause.status == MC_WORLD_STORAGE_OK && error.tick.hook_class == NULL &&
+          error.tick.hook_method == NULL && error.tick.hook_bytecode == 0 &&
+          error.tick.cause_hook_class == NULL && error.tick.cause_hook_method == NULL &&
+          error.tick.cause_hook_bytecode == 0);
+    for (int32_t y = CHANNEL_FLOOR; y <= CHANNEL_SOURCE + 1; ++y) {
+        CHECK(at(w, CHANNEL_X - 1, y, CHANNEL_Z, 1, 0) &&
+              at(w, CHANNEL_X + 1, y, CHANNEL_Z, 1, 0) &&
+              at(w, CHANNEL_X, y, CHANNEL_Z - 1, 1, 0) && at(w, CHANNEL_X, y, CHANNEL_Z + 1, 1, 0));
+        CHECK(at(w, CHANNEL_X, y, CHANNEL_Z, y == CHANNEL_FLOOR || y == CHANNEL_SOURCE + 1 ? 1 : 9,
+                 y > CHANNEL_FLOOR && y < CHANNEL_SOURCE ? 8 : 0));
+    }
+    CHECK(mc_test_java_random_equal(w->fields.r, &world_random) && math_is(f, &math) &&
+          atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed) == uniquifier &&
+          f->providers[slot].cache->count == 4 && f->providers[slot].cache->insertion_count == 4 &&
+          mc_world_store_chunk_count(f->stores[slot]) == 4 && f->chunks[slot][1][1]->dirty &&
+          w->active_calls == 0 && w->local_leases == 0);
+    ok = true;
+cleanup:
+    return ok;
 }
 
 static bool source_and_below(fixture *f, size_t slot) {
@@ -1198,6 +1265,7 @@ int main(int argc, char **argv) {
               MC_JAVA_RANDOM_HOLDER_READY &&
           f->profile->math != NULL);
     for (size_t side = 0; side < 2; ++side) {
+        CHECK(synchronous_channel(f, side));
         CHECK(source_and_below(f, side));
         CHECK(routes_and_regeneration(f, side));
         CHECK(still_conversions(f, side));
