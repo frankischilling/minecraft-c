@@ -22,6 +22,9 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[4]
 MAX_BYTES = 64 * 1024 * 1024
 SEED = "0000000000000017"
+ORIGIN_SCHEDULE = ((1, 0), (0, 1), (1, 1), (1, 1))
+RING_SCHEDULE = (*ORIGIN_SCHEDULE, (-1, 0), (-1, 1), (0, -1), (1, -1), (-1, -1), (-1, -1))
+SCHEDULES = {"origin": ORIGIN_SCHEDULE, "ring": RING_SCHEDULE}
 RESOURCES = ("lang/en_US.lang", "lang/stats_US.lang", "achievement/map.txt")
 SOURCES = ("tests/reference/chunk/ChunkObservation.java",
            "tests/reference/cache/CacheCallbacksObservation.java",
@@ -86,12 +89,15 @@ def equal(actual, expected, label):
 
 
 def cache_projection(native, expected):
+    profile = native.get("profile", "origin") if type(native) is dict else None
     require(type(native) is dict and native.get("schema") == 1 and
-            type(native["schema"]) is int and native.get("scope") == "native-game-normal-population" and
+            type(native["schema"]) is int and type(profile) is str and profile in SCHEDULES and
+            native.get("scope") == "native-game-normal-population" + ("-ring" if profile == "ring" else "") and
             native.get("side") in HASHES and native.get("seed_hex") == SEED,
             "native GAME profile")
-    require(type(native.get("operations")) is list and len(native["operations"]) == 4,
-            "complete four-operation native schedule")
+    require(type(native.get("operations")) is list and
+            len(native["operations"]) == len(expected["operations"]) == len(SCHEDULES[profile]),
+            "complete native acquisition schedule")
     require(native.get("failure") is None, "native producer reported a failure")
     equal({name: native["initial"][name] for name in ("context", "world")},
           expected["initial"], "constructor state")
@@ -101,6 +107,76 @@ def cache_projection(native, expected):
               "operation " + str(index) + " result")
         equal({name: row["snapshot"][name] for name in ("context", "world")},
               reference["snapshot"], "operation " + str(index) + " complete state")
+
+
+def packed_key(x, z):
+    """Actual yy/qa key: independent sign bits and fifteen-bit coordinate halves."""
+    raw = (0x80000000 if x < 0 else 0) | ((x & 32767) << 16) | (32768 if z < 0 else 0) | (z & 32767)
+    return raw if raw < 1 << 31 else raw - (1 << 32)
+
+
+def validate_original_observation(value, side, profile, jar):
+    require(type(profile) is str and profile in SCHEDULES, "known original population profile")
+    required = {"schema", "scope", "side", "seed_hex", "jar_sha256", "callbacks", "states"}
+    if profile == "ring":
+        required.add("profile")
+    require(type(value) is dict and set(value) == required and
+            type(value["schema"]) is int and value["schema"] == 1 and
+            value["scope"] == "original-game-normal-population" + ("-ring" if profile == "ring" else "") and
+            value.get("profile", "origin") == profile and value["side"] == side and
+            value["seed_hex"] == SEED and value["jar_sha256"] == HASHES[side],
+            "fresh original profile")
+    _, _, finish, _, acquire, _ = PUBLIC.driver.helpers()
+    callbacks = value["callbacks"]
+    if profile == "origin":
+        expected, _ = PUBLIC.driver.validate_observation(callbacks, side, "population", jar, acquire, finish)
+        return expected
+    require(type(callbacks) is dict and type(callbacks.get("operations")) is list and
+            len(callbacks["operations"]) == len(RING_SCHEDULE), "complete original ring schedule")
+    # Preserve the original validator unchanged: its exact header, constructor
+    # and four-call acceptance apply to the genuine prefix of this larger run.
+    prefix = dict(callbacks, operations=callbacks["operations"][:len(ORIGIN_SCHEDULE)])
+    PUBLIC.driver.validate_observation(prefix, side, "population", jar, acquire, finish)
+    ids = acquire.identities(callbacks)
+    previous_raw = callbacks["initial"]
+    previous = PUBLIC.driver.snapshot_projection(previous_raw, ids, acquire, finish)
+    expected = {"schema": 1, "scope": "natural-population-ring", "seed_hex": SEED,
+                "initial": previous, "operations": []}
+    for index, (row, coordinates) in enumerate(zip(callbacks["operations"], RING_SCHEDULE)):
+        require(type(row) is dict and set(row) == {"index", "method", "coordinates", "result", "before", "after"},
+                "complete original ring operation")
+        equal({name: row[name] for name in ("index", "method", "coordinates")},
+              {"index": index, "method": "c", "coordinates": list(coordinates)}, "original ring schedule")
+        for snapshot in (row["before"], row["after"]):
+            PUBLIC.driver.retained_snapshot_owners(snapshot, callbacks["initial"], acquire)
+            PUBLIC.driver.retained_snapshot_owners(snapshot, previous_raw, acquire)
+        before = PUBLIC.driver.snapshot_projection(row["before"], ids, acquire, finish)
+        equal(before, previous, "continuous original ring state")
+        inventory = acquire.chunk_map(row["after"])
+        for entry in row["after"]["world"]["insertion_list"]["entries"]:
+            identity = entry["value"]
+            require(identity in inventory, "actual chronologically inserted original Chunk")
+            if identity not in ids:
+                ids[identity] = len(ids)
+        require(set(ids) == set(inventory), "all original ring identities observed in insertion order")
+        result = acquire.ref(row["result"])
+        require(result in ids, "returned original ring identity retained")
+        after = PUBLIC.driver.snapshot_projection(row["after"], ids, acquire, finish)
+        equal(after["context"], expected["initial"]["context"], "original ring context retained")
+        mappings = dict(after["world"]["map"])
+        for key, number in after["world"]["map"]:
+            chunk = after["world"]["chunks"][number]
+            require(not chunk["blank"] and key == packed_key(*chunk["coordinates"]),
+                    "source-packed original ring cache key")
+        require(mappings.get(packed_key(*coordinates)) == ids[result] and
+                after["world"]["chunks"][ids[result]]["coordinates"] == list(coordinates),
+                "actual ring result published at requested key")
+        if packed_key(*coordinates) in dict(before["world"]["map"]):
+            equal(after, before, "repeated original ring cache hit")
+        expected["operations"].append({"index": index, "method": "c", "coordinates": list(coordinates),
+                                       "result": ids[result], "status": "ok", "snapshot": after})
+        previous, previous_raw = after, row["after"]
+    return expected
 
 
 def array_value(value, *, biome=False):
@@ -163,16 +239,12 @@ def normalize_identities(sequence):
     return result
 
 
-def compare_original(native, original, public, jar):
-    require(type(original) is dict and set(original) == {
-        "schema", "scope", "side", "seed_hex", "jar_sha256", "callbacks", "states"} and
-        type(original["schema"]) is int and original["schema"] == 1 and
-        original["scope"] == "original-game-normal-population" and
-        original["side"] == native["side"] and original["seed_hex"] == SEED and
-        original["jar_sha256"] == HASHES[native["side"]], "fresh original profile")
+def compare_original(native, original, public, jar, *, profile):
+    require(type(profile) is str and profile in SCHEDULES, "known requested population profile")
+    equal(native.get("profile", "origin"), profile, "requested native population profile")
+    equal(original.get("profile", "origin"), profile, "requested original population profile")
     _, _, finish, _, acquire, _ = PUBLIC.driver.helpers()
-    expected, _ = PUBLIC.driver.validate_observation(
-        original["callbacks"], native["side"], "population", jar, acquire, finish)
+    expected = validate_original_observation(original, native["side"], profile, jar)
     cache_projection(native, expected)
     # The older immutable corpus had JDI instrumentation. A fresh untraced
     # control must reproduce its complete projected source state as well.
@@ -184,7 +256,7 @@ def compare_original(native, original, public, jar):
               "fresh/public original operation " + str(index))
     snapshots = [native["initial"], *[row["snapshot"] for row in native["operations"]]]
     states = original["states"]
-    require(type(states) is list and len(states) == len(snapshots) == 5,
+    require(type(states) is list and len(states) == len(snapshots) == len(SCHEDULES[profile]) + 1,
             "complete numerical observation boundaries")
     native_ids, original_ids = [], []
     native_world_random, original_world_random = None, None
@@ -349,9 +421,10 @@ def main():
     for name in ("executable", "client", "server", "java", "javac", "work-dir"):
         parser.add_argument("--" + name, required=True, type=Path)
     parser.add_argument("--tested-commit", default="")
+    parser.add_argument("--profile", choices=tuple(SCHEDULES), default="origin")
     args = parser.parse_args()
     work = None
-    report = {"schema": 1, "scope": "seed-23 fresh GAME World normal population",
+    report = {"schema": 1, "scope": "seed-23 fresh GAME World normal population", "profile": args.profile,
               "passed": False, "tested_commit": args.tested_commit or None,
               "whole_population_equivalence": False, "processes": [], "sides": {}}
     try:
@@ -390,12 +463,12 @@ def main():
             run([str(tools["java"]), "-Xint", "-Xmx512m", "--add-opens",
                  "java.base/java.util=ALL-UNNAMED", "-cp", str(classes),
                  "NaturalPopulationObservation", str(jar), side, SEED,
-                 str(directory / "original-world"), str(original_path)],
+                 str(directory / "original-world"), str(original_path), args.profile],
                 work, side + "-original", report["processes"])
             original = read_json(original_path)
             output = directory / "native.json"
             run([str(tools["executable"]), side, str(resources).encode("utf-8").hex(),
-                 str(directory / "native-world").encode("utf-8").hex(), str(output)],
+                 str(directory / "native-world").encode("utf-8").hex(), str(output), args.profile],
                 work, side + "-native", report["processes"])
             native = read_json(output)
             equal((work / (side + "-native.stderr")).read_bytes(), b"", "native stderr")
@@ -403,11 +476,12 @@ def main():
                   (work / (side + "-original.stderr")).read_bytes().replace(b"\r\n", b"\n"),
                   "complete original/native bootstrap console")
             equal(native.get("side"), side, "native side")
-            cache_projection(native, expected[side])
+            if args.profile == "origin":
+                cache_projection(native, expected[side])
+            compare_original(native, original, expected[side], jar, profile=args.profile)
             row["public_original_cache_match"] = True
-            compare_original(native, original, expected[side], jar)
             row["passed"] = True
-            print("PASS: " + side + " seed-23 natural GAME population")
+            print("PASS: " + side + " seed-23 natural GAME population (" + args.profile + ")")
         for name, path in paths.items():
             equal({"path": str(path), **CAPTURE.file_fingerprint(path)}, report["inputs"][name],
                   "comparison input preserved: " + name)

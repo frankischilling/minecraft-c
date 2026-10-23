@@ -37,6 +37,10 @@ public final class NaturalPopulationObservation {
     private static final String SEED = "0000000000000017";
     private static final String[] SCRATCH = {"q", "d", "e", "f", "g", "h", "r", "s", "t", "w"};
     private static final int[][] SCHEDULE = {{1, 0}, {0, 1}, {1, 1}, {1, 1}};
+    private static final int[][] RING_SCHEDULE = {
+        {1, 0}, {0, 1}, {1, 1}, {1, 1}, {-1, 0}, {-1, 1},
+        {0, -1}, {1, -1}, {-1, -1}, {-1, -1}
+    };
     private static boolean measuring;
 
     private static void require(boolean value, String message) {
@@ -159,11 +163,15 @@ public final class NaturalPopulationObservation {
         final IdentityHashMap<Object, String> biomeNames = new IdentityHashMap<>();
         final Map<String, Object> biomeStatics = new LinkedHashMap<>();
         final RandomFields randomFields;
+        final boolean ring;
+        final int[][] schedule;
 
         Observation(Object helper, Class<?> helperType, ClassLoader loader, URL jar,
-                    boolean client, RandomFields randomFields) throws Exception {
+                    boolean client, RandomFields randomFields, String profile) throws Exception {
             this.helper = helper; this.helperType = helperType; this.loader = loader;
             this.jar = jar; this.randomFields = randomFields;
+            this.ring = profile.equals("ring");
+            this.schedule = ring ? RING_SCHEDULE : SCHEDULE;
             require(helper.getClass() == helperType && helperType.getModifiers() == 26,
                     "unchanged private static final callback Observer");
             worldType = (Class<?>) field(helperType, "worldType", Class.class, 16).get(helper);
@@ -329,8 +337,8 @@ public final class NaturalPopulationObservation {
             List<Object> states = new ArrayList<>();
             states.add(state());
             List<Object> operations = new ArrayList<>();
-            for (int index = 0; index < SCHEDULE.length; ++index) {
-                int x = SCHEDULE[index][0], z = SCHEDULE[index][1];
+            for (int index = 0; index < schedule.length; ++index) {
+                int x = schedule[index][0], z = schedule[index][1];
                 Object before = oldSnapshot(x, z);
                 Object result = invoke(acquire, cache, x, z);
                 Object resultReference = ref(result);
@@ -350,8 +358,11 @@ public final class NaturalPopulationObservation {
                     "setup_metadata", setup, "time_api", null, "initial", initial,
                     "operations", operations, "saved", null, "external_effects",
                     "Original loader, generation and terrain-feature internals remain opaque; only cache coordinator transitions are compared.");
-            return object("schema", 1, "scope", "original-game-normal-population", "side", side,
+            Map<String, Object> record = object("schema", 1, "scope", ring
+                    ? "original-game-normal-population-ring" : "original-game-normal-population", "side", side,
                     "seed_hex", SEED, "jar_sha256", expected, "callbacks", callbacks, "states", states);
+            if (ring) record.put("profile", "ring");
+            return record;
         }
     }
 
@@ -360,7 +371,10 @@ public final class NaturalPopulationObservation {
         System.setOut(System.err);
         int status = 1;
         try {
-            require(args.length == 5, "jar side seedhex fresh_world_root output_json");
+            require(args.length == 5 || args.length == 6,
+                    "jar side seedhex fresh_world_root output_json [origin|ring]");
+            String profile = args.length == 6 ? args[5] : "origin";
+            require(profile.equals("origin") || profile.equals("ring"), "origin or ring profile");
             require(Runtime.version().feature() >= 17, "Java17 or newer");
             boolean client = args[1].equals("client");
             require(client || args[1].equals("server"), "client or server");
@@ -401,7 +415,8 @@ public final class NaturalPopulationObservation {
                 try {
                     field(CacheCallbacksObservation.class, "measuring", boolean.class, 10).setBoolean(null, true);
                     field(ChunkObservation.class, "measuring", boolean.class, 10).setBoolean(null, true);
-                    Observation observation = new Observation(helper, helperType, loader, jar, client, randomFields);
+                    Observation observation = new Observation(helper, helperType, loader, jar, client,
+                            randomFields, profile);
                     record = observation.observe(args[1], expected);
                 } catch (Throwable failure) {
                     primary = failure;

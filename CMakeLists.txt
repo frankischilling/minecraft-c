@@ -1487,20 +1487,39 @@ if(BUILD_TESTING)
     set_tests_properties(world.natural_population_replay PROPERTIES
         LABELS "public;integration;population;replay" TIMEOUT 180)
 
+    add_test(NAME world.natural_population_ring_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/replay_natural_population.py"
+        --executable "$<TARGET_FILE:mc_natural_population_probe>"
+        --profile ring
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/natural-population-ring-replay")
+    set_tests_properties(world.natural_population_ring_replay PROPERTIES
+        LABELS "public;integration;population;replay" TIMEOUT 240)
+
     if(MC_ENABLE_POPULATION_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
-        add_test(NAME reference.natural_population
-            COMMAND "${Python3_EXECUTABLE}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/population/compare_natural.py"
-            --executable "$<TARGET_FILE:mc_natural_population_probe>"
-            --client "${MC_REFERENCE_CLIENT_JAR}"
-            --server "${MC_REFERENCE_SERVER_JAR}"
-            --java "${Java_JAVA_EXECUTABLE}"
-            --javac "${Java_JAVAC_EXECUTABLE}"
-            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
-            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-natural-population")
-        set_tests_properties(reference.natural_population PROPERTIES
-            LABELS "reference;original;population;integration" TIMEOUT 600)
+        foreach(MC_POPULATION_PROFILE IN ITEMS origin ring)
+            if(MC_POPULATION_PROFILE STREQUAL "origin")
+                set(MC_POPULATION_TEST reference.natural_population)
+                set(MC_POPULATION_CAPTURE reference-natural-population)
+            else()
+                set(MC_POPULATION_TEST reference.natural_population_ring)
+                set(MC_POPULATION_CAPTURE reference-natural-population-ring)
+            endif()
+            add_test(NAME "${MC_POPULATION_TEST}"
+                COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/population/compare_natural.py"
+                --executable "$<TARGET_FILE:mc_natural_population_probe>"
+                --client "${MC_REFERENCE_CLIENT_JAR}"
+                --server "${MC_REFERENCE_SERVER_JAR}"
+                --java "${Java_JAVA_EXECUTABLE}"
+                --javac "${Java_JAVAC_EXECUTABLE}"
+                --profile "${MC_POPULATION_PROFILE}"
+                --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/${MC_POPULATION_CAPTURE}")
+            set_tests_properties("${MC_POPULATION_TEST}" PROPERTIES
+                LABELS "reference;original;population;integration" TIMEOUT 600)
+        endforeach()
     endif()
 
     add_test(NAME world.queries

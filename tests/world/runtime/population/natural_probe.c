@@ -1,5 +1,5 @@
 /* Finite GAME World observation. All source state comes from fresh constructors
- * and the four actual cache c calls; no captured result is imported. Native
+ * and the scheduled actual cache c calls; no captured result is imported. Native
  * terminal retirement runs only after the complete observation is encoded. */
 #include "mc/resources/files/files.h"
 #include "mc/world/biome/registry.h"
@@ -699,18 +699,22 @@ static bool initialize(natural_probe *probe, const char *resources, const char *
     return true;
 }
 
-static bool observe(natural_probe *probe, bool initialized) {
+static bool observe(natural_probe *probe, bool initialized, bool ring) {
     natural_json *json = &probe->json;
     if (!emit(json,
-              "{\"schema\":1,\"scope\":\"native-game-normal-population\",\"side\":\"%s\","
-              "\"seed_hex\":\"0000000000000017\",\"initial\":",
-              probe->client ? "client" : "server"))
+              "{\"schema\":1,\"scope\":\"%s\",\"side\":\"%s\","
+              "\"seed_hex\":\"0000000000000017\",%s\"initial\":",
+              ring ? "native-game-normal-population-ring" : "native-game-normal-population",
+              probe->client ? "client" : "server", ring ? "\"profile\":\"ring\"," : ""))
         return false;
     if (!(initialized ? snapshot(probe) : emit(json, "null")) || !emit(json, ",\"operations\":["))
         return false;
-    static const int32_t coordinates[][2] = {{1, 0}, {0, 1}, {1, 1}, {1, 1}};
+    /* The origin profile is the unchanged first four calls. */
+    static const int32_t coordinates[][2] = {{1, 0},  {0, 1},  {1, 1},  {1, 1},   {-1, 0},
+                                             {-1, 1}, {0, -1}, {1, -1}, {-1, -1}, {-1, -1}};
+    const size_t operation_count = ring ? sizeof(coordinates) / sizeof(coordinates[0]) : 4u;
     if (initialized) {
-        for (size_t i = 0; i < sizeof(coordinates) / sizeof(coordinates[0]); ++i) {
+        for (size_t i = 0; i < operation_count; ++i) {
             mc_chunk_state *result = NULL;
             const mc_chunk_acquire_status status = mc_world_runtime_acquire(
                 probe->world, coordinates[i][0], coordinates[i][1], &result);
@@ -815,7 +819,11 @@ static bool cleanup(natural_probe *probe) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 5 || (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0))
+    if ((argc != 5 && argc != 6) ||
+        (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0))
+        return 1;
+    const bool ring = argc == 6 && strcmp(argv[5], "ring") == 0;
+    if (argc == 6 && !ring && strcmp(argv[5], "origin") != 0)
         return 1;
     char *resources = decode_path(argv[2]), *root = decode_path(argv[3]);
     natural_probe *probe = calloc(1, sizeof(*probe));
@@ -836,7 +844,7 @@ int main(int argc, char **argv) {
     const bool initialized = mc_math_trig_init(trig) && initialize(probe, resources, root, trig);
     if (!initialized && probe->failed_stage == NULL)
         problem(probe, "Math lookup initialization", "probe", 1);
-    const bool encoded = observe(probe, initialized);
+    const bool encoded = observe(probe, initialized, ring);
     bool written = false;
     if (encoded && !probe->json.failed)
         written = mc_ws_write_file(argv[4], (const uint8_t *)probe->json.bytes, probe->json.length,

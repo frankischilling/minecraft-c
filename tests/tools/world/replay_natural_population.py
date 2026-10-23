@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Run fresh native seed23 population against the public cache-only oracle.
+"""Run fresh native seed23 population against public original observations.
 
 No JAR, Java process, saved Chunk input, or imported population result is used.
 The file-backed resources are project-authored minimal test inputs, rather than
-the exact original resource profile. Numerical provider records receive native
-transport and repeatability checks; they have no original numerical oracle here.
+the exact original resource profile. The default origin profile checks the cache
+oracle and native numerical transports. The ring profile also checks complete
+original numerical records, array aliases and Random state from its fixture.
 """
 
 from __future__ import annotations
@@ -18,6 +19,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[3]
 COMPARISON = ROOT / "scripts/reference/world/population/compare_natural.py"
+RING_FIXTURE_MODULE = ROOT / "scripts/reference/world/population/fixtures.py"
+RING_FIXTURE = ROOT / "tests/reference/world/population/ring_fixtures.json"
 SPEC = importlib.util.spec_from_file_location("native_population_replay_comparison", COMPARISON)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError("missing natural population comparison support")
@@ -52,9 +55,12 @@ def copied_longs(seed):
     return result
 
 
-def validate_native(native, side, expected):
-    keys(native, ("schema", "scope", "side", "seed_hex", "initial", "operations", "failure"),
+def validate_native(native, side, expected, profile="origin"):
+    COMPARE.require(type(profile) is str and profile in COMPARE.SCHEDULES, "known replay profile")
+    fields = ("schema", "scope", "side", "seed_hex", "initial", "operations", "failure")
+    keys(native, fields + (("profile",) if profile == "ring" else ()),
          "native observation")
+    COMPARE.equal(native.get("profile", "origin"), profile, "native acquisition profile")
     COMPARE.equal(native["side"], side, "native side")
     COMPARE.cache_projection(native, expected)
     snapshots = [native["initial"]]
@@ -113,13 +119,16 @@ def validate_native(native, side, expected):
     return counts
 
 
-def input_paths(executable):
+def input_paths(executable, profile="origin"):
     paths = {"executable": executable, "python": Path(sys.executable).resolve(),
              "driver": Path(__file__).resolve(), "comparison": COMPARISON,
              "public_fixture": PUBLIC.FIXTURE, "public_validator": Path(PUBLIC.__file__).resolve(),
              "capture_support": Path(CAPTURE.__file__).resolve(), "cmake": ROOT / "CMakeLists.txt",
              "probe": ROOT / "tests/world/runtime/population/natural_probe.c",
              "resource_example": ROOT / "tests/world/runtime/population/test_normal.c"}
+    if profile == "ring":
+        paths.update(ring_fixture_module=RING_FIXTURE_MODULE, ring_fixture=RING_FIXTURE)
+        paths.update({source: ROOT / source for source in COMPARE.SOURCES})
     for base, suffixes in (("src", (".c", ".h")), ("include", (".h",)),
                            ("scripts/reference", (".py",))):
         for path in sorted((ROOT / base).rglob("*")):
@@ -161,6 +170,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", required=True, type=Path)
     parser.add_argument("--work-dir", required=True, type=Path)
+    parser.add_argument("--profile", choices=("origin", "ring"), default="origin")
     args = parser.parse_args()
     work = None
     report = {"schema": 1, "scope": "seed23 fresh native GAME population; public cache oracle only",
@@ -170,18 +180,27 @@ def main():
               "resource_binding": "project-authored minimal translation files; not exact original resources",
               "source_attribution_limit": "Selected tool/source fingerprints; no build-to-source or transitive system-library attestation.",
               "processes": [], "sides": {}}
+    if args.profile == "ring":
+        report.update(profile="ring", original_numerical_comparison=True,
+                      scope="seed23 fresh native GAME ring population; original cache and numerical oracle with minimal resources")
     try:
         executable = args.executable.resolve()
         COMPARE.require(executable.is_file() and not executable.is_symlink(), "actual native population probe")
         work = CAPTURE.capture_root(args.work_dir, [Path(sys.executable).resolve()])
-        paths = input_paths(executable)
+        paths = input_paths(executable, args.profile)
         report["inputs"] = {name: {"path": str(path), **CAPTURE.file_fingerprint(path)}
                             for name, path in paths.items()}
         report["python_version"] = sys.version
         _, decoded = PUBLIC.load_fixture()
-        expected = {row["record"]["side"]: row["expected"] for row in decoded
-                    if row["record"]["scenario"] == "population"}
-        COMPARE.equal(sorted(expected), ["client", "server"], "both public population cases")
+        origin_expected = {row["record"]["side"]: row["expected"] for row in decoded
+                           if row["record"]["scenario"] == "population"}
+        COMPARE.equal(sorted(origin_expected), ["client", "server"], "both public population cases")
+        ring_cases = None
+        if args.profile == "ring":
+            fixtures = COMPARE.load_module("native_population_ring_fixtures",
+                                           RING_FIXTURE_MODULE.relative_to(ROOT).as_posix())
+            ring_cases = fixtures.load_package(RING_FIXTURE, COMPARE)
+            keys(ring_cases, ("client", "server"), "both original ring cases")
         for side in ("client", "server"):
             directory = work / side
             directory.mkdir()
@@ -191,15 +210,23 @@ def main():
             report["sides"][side] = row
             COMPARE.require(not world.exists() and not world.is_symlink() and not output.exists(),
                             "fresh GAME World and observation output")
-            COMPARE.run([str(executable), side, str(resources).encode("utf-8").hex(),
-                         str(world).encode("utf-8").hex(), str(output)],
-                        work, side + "-native", report["processes"])
+            command = [str(executable), side, str(resources).encode("utf-8").hex(),
+                       str(world).encode("utf-8").hex(), str(output)]
+            if args.profile == "ring":
+                command.append("ring")
+            COMPARE.run(command, work, side + "-native", report["processes"])
             COMPARE.equal((work / (side + "-native.stderr")).read_bytes(), b"", "native stderr")
             COMPARE.equal((work / (side + "-native.stdout")).read_bytes().replace(b"\r\n", b"\n"),
                           b"16 achievements\n151 recipes\n", "complete native bootstrap console")
             native = COMPARE.read_json(output)
             row["native_output"] = CAPTURE.file_fingerprint(output)
-            row["numerical_transport"] = validate_native(native, side, expected[side])
+            expected = ring_cases[side]["expected"] if ring_cases is not None else origin_expected[side]
+            row["numerical_transport"] = validate_native(native, side, expected, args.profile)
+            if ring_cases is not None:
+                case = ring_cases[side]
+                COMPARE.compare_original(native, case["original"], origin_expected[side], case["jar"],
+                                         profile=args.profile)
+                row["original_numerical_match"] = True
             row["public_cache_match"] = True
             row["repeated_provider_and_shared_state_retained"] = True
             for name, raw in RESOURCES.items():
@@ -207,7 +234,10 @@ def main():
                 COMPARE.equal(CAPTURE.file_fingerprint(resources / name), row["resources"][name],
                               "resource fingerprint preserved: " + name)
             row["passed"] = True
-            print("PASS: " + side + " seed23 native population; public cache oracle, minimal resources")
+            if args.profile == "ring":
+                print("PASS: " + side + " seed23 native ring population; original cache and numerical oracle, minimal resources")
+            else:
+                print("PASS: " + side + " seed23 native population; public cache oracle, minimal resources")
         for name, path in paths.items():
             COMPARE.equal({"path": str(path), **CAPTURE.file_fingerprint(path)}, report["inputs"][name],
                           "replay input preserved: " + name)

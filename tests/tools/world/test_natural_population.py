@@ -4,6 +4,7 @@ import copy
 import contextlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -35,6 +36,28 @@ class CompleteProjection(unittest.TestCase):
 
     def test_complete_original_profile(self):
         DRIVER.cache_projection(self.native(), self.expected)
+
+    def test_negative_chunk_key_sign_halves_are_independent(self):
+        for coordinates, key in (((0, -1), 65535), ((-1, 0), -65536),
+                                  ((-1, -1), -1), ((1, -1), 131071), ((0, 0), 0)):
+            with self.subTest(coordinates=coordinates):
+                self.assertEqual(DRIVER.packed_key(*coordinates), key)
+
+    def test_unknown_or_mismatched_profile_is_rejected(self):
+        for profile in ("unknown", "ring", [], True):
+            value = self.native()
+            value["profile"] = profile
+            with self.subTest(profile=profile), self.assertRaises(ValueError):
+                DRIVER.cache_projection(value, self.expected)
+
+    def test_matching_producers_cannot_override_the_requested_profile(self):
+        for native, original, requested, producer in (
+                ({}, {}, "ring", "native"),
+                ({"profile": "ring"}, {}, "ring", "original"),
+                ({"profile": "ring"}, {"profile": "ring"}, "origin", "native")):
+            with self.subTest(requested=requested, producer=producer), \
+                    self.assertRaisesRegex(ValueError, "requested " + producer + " population profile"):
+                DRIVER.compare_original(native, original, self.expected, Path("unused.jar"), profile=requested)
 
     def test_complete_state_changes_are_rejected(self):
         def mutate_array(value, field):
@@ -121,6 +144,60 @@ class CompleteProjection(unittest.TestCase):
                 self.assertEqual(DRIVER.main(), 1)
             self.assertIn("uninjected original Java environment", errors.getvalue())
             self.assertFalse(work.exists())
+
+
+class RingFixtureContracts(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.path = ROOT / "tests/reference/world/population/ring_fixtures.json"
+        cls.fixtures = DRIVER.load_module("natural_ring_fixture_controls", "scripts/reference/world/population/fixtures.py")
+        cls.package = DRIVER.read_json(cls.path)
+
+    def load_changed(self, value):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "fixture.json"
+            path.write_bytes(self.fixtures.serialize_package(value))
+            return self.fixtures.load_package(path, DRIVER)
+
+    def test_complete_original_ring_inventory(self):
+        cases = self.fixtures.load_package(self.path, DRIVER)
+        self.assertEqual(set(cases), {"client", "server"})
+        for side, case in cases.items():
+            with self.subTest(side=side):
+                self.assertEqual(len(case["original"]["states"]), 11)
+                operations = case["expected"]["operations"]
+                self.assertEqual([len(row["snapshot"]["world"]["chunks"]) - 1 for row in operations],
+                                 [2, 3, 4, 4, 5, 6, 7, 8, 9, 9])
+                self.assertEqual([len(row["snapshot"]["world"]["queue"]) for row in operations],
+                                 [3, 9, 1777, 1777, 1778, 2950, 2952, 5824, 6968, 6968])
+                final = operations[-1]["snapshot"]["world"]
+                populated = sorted(chunk["coordinates"] for chunk in final["chunks"] if chunk["flags"]["n"])
+                self.assertEqual(populated, [[-1, -1], [-1, 0], [0, -1], [0, 0]])
+
+    def test_metadata_digest_and_dirty_attribution_corruption_is_rejected(self):
+        mutations = {
+            "profile": lambda v: v.update(profile="origin"),
+            "archive": lambda v: v["sides"]["client"].update(jar_sha256="0" * 64),
+            "packed_digest": lambda v: v["sides"]["client"]["original"].update(sha256="0" * 64),
+            "dirty_commit": lambda v: v["provenance"]["capture"].update(tested_commit="0" * 40),
+            "nested_dirty_commit": lambda v: v["provenance"]["capture"].update(
+                attribution={"tested_commit": "0" * 40}),
+            "nested_dirty_override": lambda v: v["provenance"]["capture"].update(
+                attribution=[{"source_dirty": False, "committed_source": "0" * 40}]),
+        }
+        for name, mutate in mutations.items():
+            value = copy.deepcopy(self.package)
+            mutate(value)
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                self.load_changed(value)
+
+    def test_expected_negative_key_must_derive_from_the_original(self):
+        value = copy.deepcopy(self.package)
+        stored = DRIVER.PUBLIC.strict_json(DRIVER.PUBLIC.unpack(value["sides"]["client"]["expected"]))
+        stored["operations"][8]["snapshot"]["world"]["map"][0][0] ^= 32768
+        value["sides"]["client"]["expected"] = DRIVER.PUBLIC.packed(json.dumps(stored).encode("ascii"))
+        with self.assertRaisesRegex(ValueError, "stored projection"):
+            self.load_changed(value)
 
 
 if __name__ == "__main__":
