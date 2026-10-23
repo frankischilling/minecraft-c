@@ -11,6 +11,7 @@
 #include "mc/world/dimension/biome_runtime.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/lighting.h"
+#include "mc/world/runtime/saved_data.h"
 #include "mc/world/runtime/saving/saving.h"
 
 #include "../../../../src/block/registry/registry_internal.h"
@@ -75,6 +76,16 @@ typedef struct natural_persistence {
     mc_world_game_load_error load_error;
 } natural_persistence;
 
+typedef struct natural_named {
+    mc_world_info_name *name, *lookup;
+    mc_saved_data_value *values[2];
+    size_t value_count;
+    mc_world_saved_data *reader;
+    const void *references[128];
+    const char *reference_classes[128];
+    size_t reference_count;
+} natural_named;
+
 typedef struct natural_probe {
     bool client, constructor_called, enumeration_checked;
     mc_resource_files *resources;
@@ -106,8 +117,11 @@ typedef struct natural_probe {
     size_t held_temperature_count;
     uint8_t block_map[256];
     natural_persistence *persistence;
+    natural_named *named;
     natural_json json;
 } natural_probe;
+
+static bool named_boundary(natural_probe *probe);
 
 static const char *boolean(bool value) {
     return value ? "true" : "false";
@@ -1221,7 +1235,9 @@ static bool world_collections(natural_probe *probe) {
 
 static bool boundary_value(natural_probe *probe, bool *observed) {
     const size_t start = probe->json.length;
-    if (probe->persistence->full_world_save)
+    if (probe->named != NULL)
+        *observed = named_boundary(probe);
+    else if (probe->persistence->full_world_save)
         *observed = emit(&probe->json, "{\"state\":") && persistence_boundary(probe) &&
                     emit(&probe->json, ",\"collections\":") && world_collections(probe) &&
                     emit(&probe->json, "}");
@@ -1619,6 +1635,8 @@ static bool persistence_load(natural_probe *probe, size_t index, int32_t x, int3
     return true;
 }
 
+#include "named_data_probe.h"
+
 static bool observe_persistence(natural_probe *probe, bool initialized) {
     natural_json *json = &probe->json;
     natural_persistence *p = probe->persistence;
@@ -1687,6 +1705,16 @@ static bool observe_persistence(natural_probe *probe, bool initialized) {
 }
 
 static bool cleanup(natural_probe *probe) {
+    if (probe->named != NULL) {
+        mc_world_saved_data_free(probe->named->reader);
+        probe->named->reader = NULL;
+        for (size_t i = 0; i < probe->named->value_count; ++i)
+            mc_saved_data_value_release(probe->named->values[i]);
+        probe->named->value_count = 0;
+        mc_world_info_name_release(probe->named->name);
+        mc_world_info_name_release(probe->named->lookup);
+        probe->named->name = probe->named->lookup = NULL;
+    }
     if (probe->persistence != NULL) {
         mc_world_info_release(probe->persistence->info);
         probe->persistence->info = NULL;
@@ -1766,26 +1794,30 @@ int main(int argc, char **argv) {
     const bool ring = argc == 6 && strcmp(argv[5], "ring") == 0;
     const bool save_readback = argc == 6 && strcmp(argv[5], "save-readback") == 0;
     const bool full_world_save = argc == 6 && strcmp(argv[5], "full-world-save") == 0;
-    const bool persistent = save_readback || full_world_save;
+    const bool named_data = argc == 6 && strcmp(argv[5], "named-map-data") == 0;
+    const bool persistent = save_readback || full_world_save || named_data;
     if (argc == 6 && !ring && !persistent && strcmp(argv[5], "origin") != 0)
         return 1;
     char *resources = decode_path(argv[2]), *root = decode_path(argv[3]);
     natural_probe *probe = calloc(1, sizeof(*probe));
     mc_math_trig *trig = calloc(1, sizeof(*trig));
     natural_persistence *persistence = persistent ? calloc(1, sizeof(*persistence)) : NULL;
+    natural_named *named = named_data ? calloc(1, sizeof(*named)) : NULL;
     if (resources == NULL || root == NULL || probe == NULL || trig == NULL ||
-        (persistent && persistence == NULL)) {
+        (persistent && persistence == NULL) || (named_data && named == NULL)) {
         free(resources);
         free(root);
         free(probe);
         free(trig);
         free(persistence);
+        free(named);
         return 1;
     }
     probe->persistence = persistence;
+    probe->named = named;
     if (persistence != NULL) {
         persistence->root = root;
-        persistence->full_world_save = full_world_save;
+        persistence->full_world_save = full_world_save || named_data;
     }
     probe->client = strcmp(argv[1], "client") == 0;
     probe->registry_error.initializer_pc = -1;
@@ -1804,8 +1836,9 @@ int main(int argc, char **argv) {
                            &persistence->construction_high_valid);
     if (!initialized && probe->failed_stage == NULL)
         problem(probe, "Math lookup initialization", "probe", 1);
-    const bool encoded =
-        persistent ? observe_persistence(probe, initialized) : observe(probe, initialized, ring);
+    const bool encoded = named_data   ? observe_named(probe, initialized)
+                         : persistent ? observe_persistence(probe, initialized)
+                                      : observe(probe, initialized, ring);
     bool written = false;
     if (encoded && !probe->json.failed)
         written = mc_ws_write_file(argv[4], (const uint8_t *)probe->json.bytes, probe->json.length,
@@ -1833,6 +1866,7 @@ int main(int argc, char **argv) {
         if (persistence != NULL)
             free(persistence->store_root);
         free(persistence);
+        free(named);
         free(probe);
         free(trig);
     }

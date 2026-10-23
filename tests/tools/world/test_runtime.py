@@ -15,7 +15,7 @@ SPEC = importlib.util.spec_from_file_location("int_set_capture", ROOT / "scripts
 CAPTURE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CAPTURE)
 SCENARIOS = ("ownership-and-runtime", "generation", "generation-copy-limit", "profile-and-entity-bindings",
-             "world-info-bindings", "saved-data-ids", "typed-world-info", "game-world", "world-registry",
+             "world-info-bindings", "saved-data-ids", "saved-data-named", "typed-world-info", "game-world", "world-registry",
              "world-biome-runtime", "temperature-runtime", "world-lighting-runtime", "world-light-queue-runtime",
              "world-chunk-objects", "world-provider-generation", "world-provider-activation", "world-mutations",
              "world-pressure-plate", "world-scheduling", "world-solid-support", "world-power", "world-rails", "world-fluids", "world-entity-publication",
@@ -198,6 +198,14 @@ def main():
                  "environment_header": ROOT / "include/mc/world/runtime/environment.h",
                  "blocks": ROOT / "src/world/runtime/blocks.c",
                  "blocks_header": ROOT / "include/mc/world/runtime/blocks.h"}
+        if args.scenario == "saved-data-named":
+            paths.update(named_test=ROOT / "tests/world/saved_data/test_named.c",
+                         value=ROOT / "src/world/saved_data/value.c",
+                         value_header=ROOT / "include/mc/world/saved_data/value.h",
+                         nbt=ROOT / "src/storage/nbt/nbt.c",
+                         nbt_array_header=ROOT / "include/mc/storage/nbt/array.h",
+                         compression=ROOT / "src/storage/compression/compression.c",
+                         compression_header=ROOT / "include/mc/storage/compression/compression.h")
         if args.scenario == "game-world":
             paths["game_test"] = ROOT / "tests/world/runtime/test_game_world.c"
         if args.scenario == "world-registry":

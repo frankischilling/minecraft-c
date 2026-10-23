@@ -1,5 +1,7 @@
 #include "mc/storage/nbt/nbt.h"
 
+#include "mc/storage/nbt/array.h"
+
 #include "mc/core/java/java.h"
 #include "mc/core/text/mutf8.h"
 
@@ -33,6 +35,16 @@ typedef struct nbt_arena {
 struct mc_nbt_document {
     nbt_arena arena;
     mc_nbt_tag *root;
+    size_t holds;
+    mc_nbt_byte_array *arrays;
+};
+
+struct mc_nbt_byte_array {
+    size_t holds, length, allocation_bytes;
+    uint8_t *data;
+    mc_nbt_document *document;
+    const mc_nbt_tag *tag;
+    mc_nbt_byte_array *next;
 };
 
 typedef struct nbt_reader {
@@ -148,7 +160,7 @@ static void *nbt_arena_allocate(nbt_arena *arena, size_t count, size_t size,
 }
 
 void mc_nbt_document_free(mc_nbt_document *document) {
-    if (document != NULL) {
+    if (document != NULL && --document->holds == 0) {
         nbt_arena_free(&document->arena);
         free(document);
     }
@@ -156,6 +168,128 @@ void mc_nbt_document_free(mc_nbt_document *document) {
 
 const mc_nbt_tag *mc_nbt_document_root(const mc_nbt_document *document) {
     return document == NULL ? NULL : document->root;
+}
+
+mc_nbt_status mc_nbt_byte_array_create(size_t length, const uint8_t *source,
+                                       size_t max_allocation_bytes, mc_nbt_byte_array **out) {
+    if (out == NULL)
+        return MC_NBT_INVALID_ARGUMENT;
+    if (length > INT32_MAX)
+        return MC_NBT_INVALID_LENGTH;
+    if (length > SIZE_MAX - sizeof(mc_nbt_byte_array))
+        return MC_NBT_LIMIT;
+    const size_t bytes = sizeof(mc_nbt_byte_array) + length;
+    if (bytes > max_allocation_bytes)
+        return MC_NBT_LIMIT;
+    mc_nbt_byte_array *array = malloc(bytes);
+    if (array == NULL)
+        return MC_NBT_ALLOCATION_FAILED;
+    *array = (mc_nbt_byte_array){
+        .holds = 1, .length = length, .allocation_bytes = bytes, .data = (uint8_t *)(array + 1)};
+    if (length != 0) {
+        if (source == NULL)
+            memset(array->data, 0, length);
+        else
+            memcpy(array->data, source, length);
+    }
+    *out = array;
+    return MC_NBT_OK;
+}
+
+mc_nbt_status mc_nbt_byte_array_retain(mc_nbt_byte_array *array) {
+    if (array == NULL)
+        return MC_NBT_INVALID_ARGUMENT;
+    if (array->holds == SIZE_MAX)
+        return MC_NBT_LIMIT;
+    ++array->holds;
+    return MC_NBT_OK;
+}
+
+void mc_nbt_byte_array_release(mc_nbt_byte_array *array) {
+    if (array == NULL || --array->holds != 0)
+        return;
+    mc_nbt_document *document = array->document;
+    if (document != NULL) {
+        mc_nbt_byte_array **link = &document->arrays;
+        while (*link != array)
+            link = &(*link)->next;
+        *link = array->next;
+        document->arena.bytes -= array->allocation_bytes;
+    }
+    free(array);
+    mc_nbt_document_free(document);
+}
+
+uint8_t *mc_nbt_byte_array_data(const mc_nbt_byte_array *array) {
+    return array == NULL ? NULL : array->data;
+}
+
+size_t mc_nbt_byte_array_length(const mc_nbt_byte_array *array) {
+    return array == NULL ? 0 : array->length;
+}
+
+size_t mc_nbt_byte_array_allocation_bytes(const mc_nbt_byte_array *array) {
+    return array == NULL ? 0 : array->allocation_bytes;
+}
+
+/* Only immutable parser-owned structure is traversed. The foreign candidate is
+ * never dereferenced, including when it points inside an arena allocation. */
+static const mc_nbt_tag *nbt_document_find_tag(const mc_nbt_tag *actual,
+                                               const mc_nbt_tag *candidate) {
+    if (actual == candidate)
+        return actual;
+    const mc_nbt_tag *const *items;
+    size_t length;
+    if (actual->type == MC_NBT_COMPOUND) {
+        items = actual->value.compound.items;
+        length = actual->value.compound.length;
+    } else if (actual->type == MC_NBT_LIST) {
+        items = actual->value.list.items;
+        length = actual->value.list.length;
+    } else {
+        return NULL;
+    }
+    for (size_t i = 0; i < length; ++i) {
+        const mc_nbt_tag *found = nbt_document_find_tag(items[i], candidate);
+        if (found != NULL)
+            return found;
+    }
+    return NULL;
+}
+
+mc_nbt_status mc_nbt_document_byte_array(mc_nbt_document *document, const mc_nbt_tag *tag,
+                                         mc_nbt_byte_array **out) {
+    if (document == NULL || tag == NULL || out == NULL)
+        return MC_NBT_INVALID_ARGUMENT;
+    const mc_nbt_tag *actual = nbt_document_find_tag(document->root, tag);
+    if (actual == NULL || actual->type != MC_NBT_BYTE_ARRAY)
+        return MC_NBT_INVALID_ARGUMENT;
+    for (mc_nbt_byte_array *array = document->arrays; array != NULL; array = array->next) {
+        if (array->tag == actual) {
+            const mc_nbt_status status = mc_nbt_byte_array_retain(array);
+            if (status == MC_NBT_OK)
+                *out = array;
+            return status;
+        }
+    }
+    if (document->holds == SIZE_MAX ||
+        sizeof(mc_nbt_byte_array) > document->arena.limit - document->arena.bytes)
+        return MC_NBT_LIMIT;
+    mc_nbt_byte_array *array = malloc(sizeof(*array));
+    if (array == NULL)
+        return MC_NBT_ALLOCATION_FAILED;
+    *array = (mc_nbt_byte_array){.holds = 1,
+                                 .length = actual->value.byte_array.length,
+                                 .allocation_bytes = sizeof(*array),
+                                 .data = (uint8_t *)actual->value.byte_array.data,
+                                 .document = document,
+                                 .tag = actual,
+                                 .next = document->arrays};
+    ++document->holds;
+    document->arena.bytes += sizeof(*array);
+    document->arrays = array;
+    *out = array;
+    return MC_NBT_OK;
 }
 
 static bool nbt_string_equal(mc_nbt_string a, mc_nbt_string b) {
@@ -553,6 +687,7 @@ static mc_nbt_status nbt_read_document(const uint8_t *input, size_t length,
     }
     document->arena.bytes = sizeof(*document);
     document->arena.limit = limits.max_allocation_bytes;
+    document->holds = 1;
     nbt_reader reader = {input, length, 0, 0, limits, document, {MC_NBT_OK, 0}};
     uint8_t type;
     if (nbt_read_u8(&reader, &type)) {

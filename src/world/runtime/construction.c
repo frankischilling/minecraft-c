@@ -450,8 +450,9 @@ static bool world_new_info(mc_world_runtime *runtime,
 static bool world_saved_data(mc_world_runtime *runtime, unsigned int call_pc,
                              unsigned int store_pc) {
     mc_world_saved_data *saved = NULL;
-    mc_world_storage_status status = mc_world_saved_data_create(
-        runtime->fields.w, &runtime->construction_limits.saved_data, &saved, &runtime->last_error);
+    mc_world_storage_status status = mc_world_saved_data_create_for_side(
+        runtime->fields.w, runtime->classes->side, &runtime->construction_limits.saved_data, &saved,
+        &runtime->last_error);
     if (status != MC_WORLD_STORAGE_OK) {
         runtime->construction.failed_call_pc = call_pc;
         return false;

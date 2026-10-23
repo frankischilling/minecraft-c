@@ -213,7 +213,9 @@ add_library(mc_persistence STATIC
     src/world/storage/chunk.c)
 target_link_libraries(mc_persistence PUBLIC mc_world mc_storage mc_world_info PRIVATE mc_build_options)
 
-add_library(mc_world_saved_data STATIC src/world/saved_data/storage.c)
+add_library(mc_world_saved_data STATIC
+    src/world/saved_data/storage.c
+    src/world/saved_data/value.c)
 target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
 target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
 
@@ -287,6 +289,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
     src/world/runtime/provider.c
+    src/world/runtime/saved_data.c
     src/world/runtime/generation/generation.c
     src/world/runtime/generation/surface.c
     src/world/runtime/generation/caves.c
@@ -690,6 +693,13 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_saved_data tests/world/saved_data/test_storage.c)
     target_include_directories(mc_test_world_saved_data PRIVATE src/world/storage)
     target_link_libraries(mc_test_world_saved_data PRIVATE mc_world_saved_data mc_build_options)
+
+    add_executable(mc_test_saved_data_value tests/world/saved_data/test_value.c)
+    target_link_libraries(mc_test_saved_data_value PRIVATE mc_world_saved_data mc_build_options)
+
+    add_executable(mc_test_saved_data_named tests/world/saved_data/test_named.c)
+    target_include_directories(mc_test_saved_data_named PRIVATE src/world/storage)
+    target_link_libraries(mc_test_saved_data_named PRIVATE mc_world_saved_data mc_build_options)
 
     add_executable(mc_saved_data_id_observation_probe tests/world/saved_data/observation_probe.c)
     target_link_libraries(mc_saved_data_id_observation_probe PRIVATE mc_world_saved_data mc_build_options)
@@ -1524,6 +1534,20 @@ if(BUILD_TESTING)
     set_tests_properties(world.population_full_save_replay PROPERTIES
         LABELS "public;integration;population;storage;replay" TIMEOUT 300)
 
+    add_test(NAME tools.population_named_data
+        COMMAND "${Python3_EXECUTABLE}" -m unittest discover
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world" -p test_population_named_data.py)
+    set_tests_properties(tools.population_named_data PROPERTIES
+        LABELS "public;tools;population;storage" TIMEOUT 240)
+
+    add_test(NAME world.population_named_data_replay
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/replay_population_named_data.py"
+        --executable "$<TARGET_FILE:mc_natural_population_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/population-named-data-replay")
+    set_tests_properties(world.population_named_data_replay PROPERTIES
+        LABELS "public;integration;population;storage;replay" TIMEOUT 300)
+
     if(MC_ENABLE_POPULATION_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
         foreach(MC_POPULATION_PROFILE IN ITEMS origin ring)
@@ -1573,6 +1597,19 @@ if(BUILD_TESTING)
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-population-full-save")
         set_tests_properties(reference.population_full_save PROPERTIES
+            LABELS "reference;original;population;storage;integration" TIMEOUT 600)
+
+        add_test(NAME reference.population_named_data
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/world/population/compare_named_data.py"
+            --executable "$<TARGET_FILE:mc_natural_population_probe>"
+            --client "${MC_REFERENCE_CLIENT_JAR}"
+            --server "${MC_REFERENCE_SERVER_JAR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-population-named-data")
+        set_tests_properties(reference.population_named_data PROPERTIES
             LABELS "reference;original;population;storage;integration" TIMEOUT 600)
     endif()
 
@@ -1656,6 +1693,19 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_BINARY_DIR}/dimension-reference")
     set_tests_properties(world.dimension_reference PROPERTIES
         LABELS "public;reference;math" TIMEOUT 120)
+
+    add_test(NAME world.saved_data_map_value COMMAND mc_test_saved_data_value)
+    set_tests_properties(world.saved_data_map_value PROPERTIES
+        LABELS "public;unit;storage" TIMEOUT 90)
+
+    add_test(NAME world.saved_data_named
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_saved_data_named>"
+        --scenario saved-data-named
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/saved-data-named-contracts")
+    set_tests_properties(world.saved_data_named PROPERTIES
+        LABELS "public;integration;storage" TIMEOUT 90)
 
     add_test(NAME world.saved_data_ids
         COMMAND "${Python3_EXECUTABLE}"

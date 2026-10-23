@@ -99,7 +99,9 @@ const char *mc_nbt_status_string(mc_nbt_status status);
  * Allocation/tag budgets include discarded duplicate-name values and arena
  * metadata. Compound End sentinels are not value tags. The retained compound
  * has the last value of each duplicate name.
- * Documents own all decoded memory; keep borrowed views immutable until free.
+ * Documents own decoded memory and return one caller hold. Keep borrowed views
+ * immutable unless an explicit shared-byte-array mutation from array.h is in
+ * progress under its exclusive-access contract. No other tag mutation occurs.
  * Result/count/error storage must be mutually disjoint and must not overlap
  * input bytes or limits. */
 mc_nbt_status mc_nbt_read(const uint8_t *input, size_t length, const mc_nbt_limits *limits,
@@ -107,6 +109,10 @@ mc_nbt_status mc_nbt_read(const uint8_t *input, size_t length, const mc_nbt_limi
 mc_nbt_status mc_nbt_read_compound(const uint8_t *input, size_t length, const mc_nbt_limits *limits,
                                    mc_nbt_document **out, size_t *consumed, mc_nbt_error *error);
 const mc_nbt_tag *mc_nbt_document_root(const mc_nbt_document *document);
+/* Release the caller's document hold. Shared byte-array handles from array.h
+ * keep their actual decoded document and payload alive until final release.
+ * Existing single-owner use still retires the complete document here. NULL is
+ * harmless; no public document hold is acquired by obtaining a borrowed root. */
 void mc_nbt_document_free(mc_nbt_document *document);
 
 /* UTF-16 name lookup; NULL name is valid only for length zero. */
