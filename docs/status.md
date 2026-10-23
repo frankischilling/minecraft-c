@@ -1,15 +1,20 @@
 # Development status
 
-The production GAME World matches the original seed-23 origin population on
-client and base-server sides: complete retained Chunk arrays, ordered light
-regions, provider numerical state and Random continuations. The
-[fresh World evidence](reference/natural-population.md) records one populated
-origin per side and its remaining limits. Broader population acceptance remains
-open.
+The production GAME World matches the original seed-23 origin and ring
+population profiles on client and base-server sides. The ten-call ring retains
+nine normal Chunks, populates four and ends with 6,968 ordered light regions.
+The comparisons include complete retained arrays, cache state, provider
+numerical state, array aliases and Random continuations. The
+[fresh World evidence](reference/natural-population.md) defines the finite
+schedules and their limits. Broader population acceptance remains open.
 
-At code checkpoint `6ad91ec`, local suites pass 186 MSVC, 188 GCC and 188 Clang
-tests without failures or skips, including fresh population and plant
-comparisons on each compiler. Linux uses ASan, UBSan and leak checks. All 550
+The public ring replay checks full original-derived numerical and cache golden
+records. The public origin replay keeps its cache-only oracle. Both run the real
+native probe with separately declared minimal resource files.
+
+At code checkpoint `4414dfd`, local suites pass 188 MSVC, 190 GCC and 190 Clang
+tests without failures or skips, including both fresh population profiles and
+plant comparisons on each compiler. Linux uses ASan, UBSan and leak checks. All 550
 C/header files pass clang-format 18.
 
 Plant lifecycle callbacks, farmland behavior and World block-light queries are

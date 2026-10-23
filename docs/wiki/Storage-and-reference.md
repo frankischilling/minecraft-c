@@ -2,9 +2,13 @@
 
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
 uses genuine original constructors and the production GAME implementation for
-one seed-23 origin per side. Complete retained arrays, cache/light ordering and
-provider numerical state match; the older callback replay keeps its separate
-imported-effect scope.
+seed23 origin and ring profiles on both sides. Ring retains nine normal Chunks,
+populates four and ends with 6,968 ordered light regions. Both profiles compare
+complete retained arrays, cache/light ordering, numerical arrays and aliases,
+and Random continuations. Public ring replay checks full original numerical
+and cache golden records; public origin replay checks the older cache oracle.
+Both public native replays use separately declared minimal resources. The older
+MCC1 callback replay keeps its imported-effect scope.
 
 Storage layers have separate contracts and ownership:
 

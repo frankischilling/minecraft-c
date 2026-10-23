@@ -73,10 +73,24 @@ and [comparison scope](reference/plant-lifecycle.md). The comparison runs origin
 Block bodies with prepared World services; it does not start an original World.
 
 `MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` adds `reference.natural_population`
-with those same archive and JDK settings. It constructs genuine fresh original
-and native GAME Worlds for the seed-23 origin neighborhood. The
-[comparison record](reference/natural-population.md) lists full arrays, Random
-state, resource handling and the remaining acceptance limits.
+and `reference.natural_population_ring` with those same archive and JDK settings.
+Both construct genuine fresh original and native GAME Worlds for seed23. The
+origin profile populates one of four normal Chunks; the ten-call ring profile
+populates four of nine and includes negative coordinates. The
+[comparison record](reference/natural-population.md) defines the complete cache,
+numerical-array and Random projection and its remaining limits.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^reference\.natural_population(_ring)?$'
+```
+
+Public `world.natural_population_replay` and
+`world.natural_population_ring_replay` run the real native probe without Java or
+archives, using project-authored minimal resource files. Origin checks the older
+cache oracle and native numerical transports; ring also checks full original
+numerical golden records and array aliases. Both population drivers default to
+`--profile origin` and accept `--profile ring`. See the
+[test commands](testing.md#fresh-world-population) for both public replays.
 
 `MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local

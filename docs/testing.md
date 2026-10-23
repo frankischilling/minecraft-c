@@ -2,45 +2,76 @@
 
 ## Fresh World population
 
-Code checkpoint `6ad91ec` passes complete local suites of 186 MSVC, 188 GCC and
-188 Clang tests, 562 total, with no failures, errors or skips. Both fresh
-population and plant comparisons run on every compiler. Linux enables ASan,
-UBSan and leak checks; all 550 C/header files pass clang-format 18. The
-[source-bound audit](reference/natural-population.md#committed-checkpoint)
-checks 1,039 source files and every declared capture input, output and stream.
+`reference.natural_population` and `reference.natural_population_ring` compare
+fresh original and production GAME client/base-server Worlds for seed23. The
+origin profile makes four acquisitions, retains four normal Chunks and populates
+one, with 1,777 final ordered light regions. The ten-call ring profile reaches
+negative coordinates, retains nine normal Chunks and populates four, with 6,968
+final ordered light regions.
 
-The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39929133496)
-passes all 556 public/JDK tests: 184 MSVC, 186 GCC and 186 Clang. Formatting and
-all mirror/interval checks pass; all four actual checkout trees match the code
-commit. The six optional supplied-archive population/plant comparisons are local.
-
-`reference.natural_population` compares genuine fresh original and native
-client/base-server Worlds for seed23. The four acquisitions match all retained
-Chunk bytes and headers, cache membership, 1,777 ordered final light regions,
-provider/manager numerical buffers, numerical array aliases and complete
-provider/cave Random state with copied continuations. Each run separately proves
-its clock-seeded `World.r` unchanged. The
-[evidence and commands](reference/natural-population.md) define the finite
-schedule, resource binding, capture bounds and remaining acceptance work.
+Both profiles compare complete retained Chunk arrays and headers, cache state,
+ordered light regions, provider/manager numerical buffers, array aliases and
+provider/cave Random state with copied continuations. Each run separately checks
+its clock-seeded `World.r` remains unchanged. The
+[evidence and commands](reference/natural-population.md) define the schedules,
+resource binding, capture bounds and remaining acceptance work. Other seeds,
+all feature selectors and arbitrary recursive schedules remain outside this
+finite result.
 
 Enable `MC_ENABLE_POPULATION_REFERENCE_TESTS=ON` with the supplied archive and
-JDK paths, then run:
+JDK paths, then run both fresh comparisons:
 
 ```sh
-ctest --test-dir build --output-on-failure -R '^reference\.natural_population$'
+ctest --test-dir build --output-on-failure -R '^reference\.natural_population(_ring)?$'
 ```
 
-Public `tools.natural_population` needs no archives and checks complete-state
-rejection, numerical aliases, strict Random
-records and bounded failure diagnostics against the older original-derived
-cache fixture.
+Public tests need no Java or archives:
 
-Public `world.natural_population_replay` runs the real native probe without Java
-or JARs. Its complete cache state matches the older original-derived fixture;
-provider records receive native transport and repeated-hit checks. It uses four
-project-authored translation strings and two empty resource files, so its
-resource binding differs from the fresh original comparison. This test does
-not supply an original numerical oracle.
+- `tools.natural_population` checks complete-state rejection, strict Random
+  records, aliases and the derivation and integrity of the public ring fixture.
+- `world.natural_population_replay` compares the real native origin profile
+  with the older original-derived cache fixture. Numerical records receive
+  transport and repeated-hit checks; this replay has no original numerical
+  oracle.
+- `world.natural_population_ring_replay` compares the real native ring profile
+  with the public original-derived cache and numerical golden records. Its
+  eleven boundaries include complete provider/manager arrays, aliases, Random
+  state and copied continuations, plus shared state. The final cache hit must
+  preserve the complete provider/shared projection, including array identities.
+
+Both native replays use four project-authored translation strings and two empty
+resource files. This minimal binding differs from the exact original resources
+used by the fresh comparisons. The older [MCC1 callback replay](reference/cache-callbacks.md)
+retains its separate imported-effect scope.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^world\.natural_population(_ring)?_replay$'
+python tests/tools/world/replay_natural_population.py \
+  --executable build/mc_natural_population_probe --profile ring \
+  --work-dir build/natural-population-ring-replay
+```
+
+Both population drivers accept `--profile origin` or `--profile ring`; origin is
+the default. Use `--config Debug` and `-C Debug` for a multi-configuration build,
+and the corresponding executable path on Windows.
+
+### Committed qualification
+
+Code checkpoint `4414dfd` passes complete local suites of 188 MSVC, 190 GCC and
+190 Clang tests, 568 total, with no failures, errors or skips. Every compiler
+runs both fresh original population profiles, both public native replays and
+the prepared plant comparisons. Linux enables ASan, UBSan and leak checks.
+All 550 C/header files pass clang-format 18; all three hosts pass controller
+mirrors and 556 positive/2,011 negative lifecycle-interval controls.
+
+The independent [source and capture audit](reference/natural-population.md#committed-checkpoint)
+verifies all 1,041 exported source files and all twelve fresh/public population
+captures. Both resource bindings produce the same complete retained native
+projection for every compiler, side and profile, excluding independently seeded,
+unchanged `World.r` inputs. The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39935917481)
+passes all 559 public/JDK tests: 185 MSVC, 187 GCC and 187 Clang. Formatting and
+all mirror/interval checks pass; all four actual checkout trees match the code
+commit. The nine optional supplied-archive population/plant comparisons are local.
 
 ## Plant lifecycle validation
 

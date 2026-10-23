@@ -10,23 +10,37 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Code checkpoint `6ad91ec` passes 186 tests with MSVC 19.51, 188 with GCC 13.3
-and 188 with Clang 18.1.3, with zero failures, errors or skips. Linux runs include
-ASan, UBSan and leak checks. Formatting passes for all 550 C/header files.
-Mirrors and lifecycle intervals pass on all three hosts, including 556 positive
-and 2,011 negative interval checks per host.
+Code checkpoint `4414dfd` passes 188 tests with MSVC 19.51, 190 with GCC 13.3
+and 190 with Clang 18.1.3, with zero failures, errors or skips. Every compiler
+includes both fresh original population profiles and both public native replays.
+Linux enables ASan, UBSan and leak checks. All 550 C/header files pass
+clang-format 18. Mirrors and lifecycle intervals pass on all three hosts,
+including 556 positive and 2,011 negative interval controls.
 
-At code commit `6ad91ec`, the
-[hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39929133496)
-passes 184 MSVC, 186 GCC and 186 Clang tests, 556 total. All four actual checkout
-trees match the code commit; formatting, mirrors and lifecycle controls pass.
-Hosted tests use the public fixtures. Fresh supplied-archive population/plant comparisons
-retain their separate local scope.
+The independent [source and capture audit](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md#committed-checkpoint)
+verifies 1,041 exported source files and all twelve fresh/public population
+captures, including both resource bindings for each compiler, side and profile.
+The [hosted code run](https://github.com/frankischilling/minecraft-c/actions/runs/39935917481)
+passes all 559 public/JDK tests: 185 MSVC, 187 GCC and 187 Clang. Formatting and
+all mirror/interval checks pass; all four actual checkout trees match the code
+commit. Nine optional fresh supplied-archive comparisons retain their local scope.
 
-Each full local suite includes fresh optional original population and plant
-comparisons. The [fresh World result](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
-matches the seed-23 origin neighborhood on both sides. The plant comparison has
-59 client and 59 server cases, with zero mismatches. Its
+Optional `reference.natural_population` and `reference.natural_population_ring`
+compare fresh original/native origin and ring profiles on both sides. Ring
+retains nine normal Chunks, populates four and ends with 6,968 ordered light
+regions. The [fresh World record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
+defines the full cache, numerical-array, alias and Random projection.
+
+Public `world.natural_population_replay` checks the older cache oracle;
+`world.natural_population_ring_replay` also checks full original numerical
+golden records. Both run the real native probe with declared minimal resources
+and require no Java or archives. Select both fresh comparisons with
+`-R '^reference\.natural_population(_ring)?$'` after enabling
+`MC_ENABLE_POPULATION_REFERENCE_TESTS=ON`; the
+[test commands](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#fresh-world-population)
+include the separate public replay commands.
+
+The plant comparison has 59 client and 59 server cases, with zero mismatches. Its
 [declared projection and exclusions](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md)
 bound this result; it does not establish original World/Chunk parity.
 

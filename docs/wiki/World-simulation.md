@@ -1,10 +1,15 @@
 # World simulation
 
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
-matches the seed-23 origin neighborhood on client/base-server sides. It checks
-complete retained Chunk arrays, ordered light regions, provider numerical state
-and Random continuations. Other seeds, recursive schedules and persistence
-retain separate acceptance requirements.
+matches seed23 origin and ring profiles on client/base-server sides. The
+ten-call ring includes negative coordinates, nine normal Chunks, four populated
+Chunks and 6,968 final ordered light regions. Both profiles check complete
+retained arrays, cache/light ordering, provider numerical state, array aliases
+and Random continuations. Public ring replay has a full original numerical
+and cache golden oracle; origin public replay keeps its cache-only oracle.
+Both native replays use separately declared minimal resources. Other seeds,
+arbitrary recursive schedules and persistence retain separate acceptance
+requirements.
 
 The native World modules use actual Registry owners, Chunk storage, acquiring
 readers and owning Lists. They preserve source order and completed effects when

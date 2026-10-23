@@ -83,10 +83,15 @@ original comparisons. Provider numerical buffers are outside this adapter's C
 projection; raw Random owners and seeds remain separately observed in the
 original.
 
-The separate [fresh World comparison](natural-population.md) now computes this
-seed-23 population through the production GAME implementation and compares its
-complete declared numerical and cache projection. This MCC1 adapter retains its
-original imported-callback scope.
+The separate [fresh World comparison](natural-population.md) computes seed23
+origin and ring profiles through the production GAME implementation. The
+four-call origin profile retains this neighborhood; the ten-call ring includes
+negative coordinates, nine normal Chunks, four populated Chunks and 6,968 final
+ordered light regions. Both compare their complete declared numerical and cache
+projections. Public ring replay also has a full original-derived numerical
+oracle, while public origin replay checks the older cache oracle. Those native
+replays use separately declared minimal resources. This MCC1 adapter retains
+its original imported-callback scope and historical corpus.
 
 Original observations retain complete map/list/pending/queue contents, all five
 normal arrays, flags, time and stable context identities. The debugger links
