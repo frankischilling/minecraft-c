@@ -5,12 +5,17 @@ now has actual Server and World owners, separate subclass fields and a
 duplicate-preserving Entity index. Its public original-only fixture and
 production native replay preserve the measured constructor inputs and complete
 finite state. The fresh reference workflow captures and audits the supplied
-original before comparing a new native run. A development comparison passes
-seventeen calls across eighteen boundaries, including population, full saves,
-protected and distant drops, maintenance and reload, with actual Store-token
-checks on both sides. The fixture keeps its inherited dirty-source attribution;
-current clean-source and platform qualification remains pending. Server startup
-and general unload/restart remain unfinished.
+original before comparing a new native run. The
+[clean checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md#committed-checkpoint)
+at `9c87827` passes 622 local tests on MSVC/GCC/Clang and 601 hosted public/JDK
+tests. Fresh schema-2 audits and comparisons pass for seed23, seventeen calls,
+eighteen boundaries and fifteen interned original states, including population,
+full saves, protected and distant drops, maintenance and reload. All eighteen
+actual Store-token boundaries match on each side. The fixture retains its
+inherited dirty source and null tested commit. The finite profile has empty
+Entity, Tile, named-data and index collections. Server startup, networking,
+general scheduling, nonempty behavior and unrestricted unload/restart remain
+unfinished.
 
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
 matches seed23 origin and ring profiles on client/base-server sides. The

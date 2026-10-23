@@ -57,11 +57,25 @@ The [dedicated evidence](reference/dedicated-world-construction.md) distinguishe
 the inherited schema-1 original fixture from fresh schema-2 observations and
 requires native schema 2 throughout. Actual held Store tokens match the session
 files at all eighteen boundaries on both sides. The eighteen Python tests and
-eight actual-native corruption controls pass. A fresh development comparison
-also passes in 82.515 seconds, with dirty source, a null tested commit and full
-qualification false. Current complete-suite and clean-source qualification
-remain pending; the earlier 613-execution development result keeps its separate
-historical scope.
+eight actual-native corruption controls pass.
+
+The [committed checkpoint](reference/dedicated-world-construction.md#committed-checkpoint)
+at `9c87827` passes all 622 local executions: 206 MSVC, 208 GCC and 208 Clang,
+with zero failures, errors or skips. All 1,099 source files match their literal
+Git blobs; source, selected tools and products remain unchanged across testing.
+Each compiler passes a fresh schema-2 original audit and native comparison,
+including 18 original and 18 native actual Store-token boundaries. Linux enables
+ASan, UBSan and leak checks. Independent retained audits repeat those checks.
+
+The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40000554912)
+passes 601 public/JDK executions: 199 Windows, 201 GCC and 201 Clang. Its actual
+merge checkout has the same entire tree as the code checkpoint. Formatting
+checks all 569 C/header files; mirrors and 556 positive/2,011 negative interval
+controls pass on every local and hosted build. The seven supplied-archive tests
+per compiler remain local. Earlier development results, including 613 executions
+and the 82.515-second fresh comparison, retain their dirty source and null tested
+commits. The reference record corrects their historical byte-equality claim and
+preserves the finite profile limits.
 
 ## Fresh World population
 
@@ -1079,7 +1093,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `reference.population_named_data` (local opt-in) | Fresh original/native default-map profile on both sides and all three local compilers; 24 boundaries, 72 copied Random records, 360 array descriptors, typed metadata/Chunk/MapData NBT and final disk rereads per side | Same held World and exact extracted resources; excludes broader manager/subtype behavior, nondefault maps, source failure policies, dedicated runtime and gameplay restart |
 | `tools.population_dedicated` | Eighteen tests cover lossless packaging, provenance, compression, complete graph, used Random, dedicated fields, roles, paths, queue order, NBT and constructor inputs | Original-only offline invariants; source/classfile qualification remains inherited |
 | `world.population_dedicated_replay` | Production dedicated probe, complete original correspondence, actual final file inventory and eight native corruption controls | One seed and seventeen-call schedule; minimal project-authored resources; no Java or archive execution |
-| `reference.population_dedicated` (local opt-in) | Fresh original/JDI capture, archive-dependent source audit, measured constructor inputs, exact extracted resources and native comparison | Passing dirty-source development run; complete clean-source build/platform qualification remains pending |
+| `reference.population_dedicated` (local opt-in) | Fresh original/JDI capture, archive-dependent source audit, measured constructor inputs, exact extracted resources and native comparison | Passes in the [clean MSVC/GCC/Clang checkpoint](reference/dedicated-world-construction.md#committed-checkpoint); one seed, 17 calls and 18 boundaries, with empty Entity/Tile/named-data/index collections |
 | `world.saved_data_ids_replay` | 78 original-derived memory rows match on MSVC/GCC/Clang; fourteen altered-output guards and four real malformed-input child refusals pass per compiler | NULL-store history only; excludes String argument identity, original disk interoperability and complete manager behavior |
 | `world.runtime_info_bindings` | 173 native checks: actual Info/context cell identity, independent copied scalars, failing callback visibility, retained lifetimes, per-Info wrapped region growth, real no-list metadata files and bounded record packaging | Constructed native contracts; no original World constructor/list save, new original handler interoperability, forced allocator/OS failure or general mutable NBT |
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |

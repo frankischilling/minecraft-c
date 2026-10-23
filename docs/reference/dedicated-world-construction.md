@@ -58,10 +58,14 @@ its session file and the run's measured clock intervals. All eighteen original
 and eighteen native Store-token boundaries are checked.
 
 Before public integration, development suites passed 203 Windows tests and 205
-on each Linux sanitizer build, with no failures, errors or skips. Both exported
-Linux snapshots matched all 925 non-Markdown files at `cbe9b69`; their capture
-records retain their original dirty-source attribution. Native paths are checked
-as absolute Windows or POSIX paths independently of the verifier host.
+on each Linux sanitizer build, with no failures, errors or skips. A literal
+audit corrects the earlier claim of byte equality for all 925 non-Markdown files
+at `cbe9b69`: 923 match exactly, while
+`src/world/runtime/mutation/plants/survival.c` and
+`src/world/runtime/mutation/world.c` differ only in CRLF versus LF line endings.
+Those captures retain their dirty source and null tested commits;
+the historical reports are unchanged. Native paths are checked as absolute
+Windows or POSIX paths independently of the verifier host.
 
 ## Public replay and fresh reference
 
@@ -97,13 +101,50 @@ resources and compares a new native run. Schema-1 original fixtures require an
 explicit legacy adapter; native schema 1 is rejected. See the
 [test commands](../testing.md#dedicated-construction-and-synchronous-fluid-recursion).
 
-One fresh schema-2 development run passes in 82.515 seconds. Its seventeen calls
-and eighteen boundaries include 88,315 identity comparisons, 54 Random records,
-2,470 arrays, 31,388 lighting records, 8,543 scheduled records, 50,850 source
-object observations, 288,860 source field observations and 1,955 spawn records.
-The source was dirty at `c376eba`, its tested commit is null and full
-qualification remains false. Clean-source build binding, platform qualification
-and hosted verification remain separate checks.
+An earlier fresh schema-2 development run passed in 82.515 seconds with dirty
+source at `c376eba`, a null tested commit and full qualification false. The clean
+checkpoint below supplements that result and the inherited fixture without
+changing their attribution.
+
+## Committed checkpoint
+
+Code commit `9c878274c2a0821c36b067bc8797707eb79b8988`, tree
+`3e6b9a8aabce6b55e923d886dfd51083d6628362`, passes all 622 local test executions.
+All 1,099 source files were verified against their literal committed Git blobs.
+
+| Local compiler | Passed CTests | Full validation runner |
+| --- | --- | --- |
+| Windows MSVC 19.51.36260.0 | 206 | 353.340 seconds |
+| GCC 13.3.0 | 208 | 452.905 seconds |
+| Clang 18.1.3 | 208 | 429.856 seconds |
+
+There are no failures, errors, skips, missing or unexpected tests. Every suite
+includes the public replay and fresh supplied-archive dedicated comparison,
+alongside the enabled public/JDK, plant and population tests. Linux enables
+ASan, UBSan and leak checks. Source, selected tools and build products remain
+unchanged across testing. Independent retained audits repeat the original
+source/Random audit, native comparison and final disk checks on all three
+compilers. Windows configure and build exit naturally as direct commands; the
+runner explicitly terminates their pinned `vctip.exe` compiler sidecars and
+records that those process trees do not exit naturally. All children are reaped.
+
+Each clean dedicated comparison follows seed 23 on the server side through 17
+calls, 18 boundaries and 15 interned original states. It checks 88,315 identity
+comparisons, 54 Random records, 2,470 arrays, 31,388 lighting records, 8,543
+scheduled records, 50,850 source object observations, 288,860 source field
+observations and 1,955 spawn records. Fresh schema-2 original audits pass, as do
+all 18 original and 18 native actual Store-token joins per compiler. Capture and
+comparison reports keep their explicit `qualification_complete:false` limits;
+these results establish the recorded finite checkpoint.
+
+The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40000554912)
+passes all four jobs and 601 public/JDK tests: 199 Windows, 201 GCC and 201 Clang,
+with zero failures or skips. All four jobs actually check out merge commit
+`412f2afd8e3804cf820b6d96bc08a1461c7e360a`; its entire Git tree equals the code
+checkpoint above. Hosted tests exclude the seven supplied-archive comparisons
+per compiler. All 569 C/header files pass clang-format 18. Controller mirrors
+and 556 positive/2,011 negative lifecycle-interval controls pass on every local
+and hosted build.
 
 Complete server startup, networking, general scheduling, nonempty Entity, Tile,
 named-data and index behavior, unrestricted unload/restart and broader game

@@ -11,14 +11,26 @@ including every block/metadata result, exactly 34 schedule requests and
 unchanged Random state. See the
 [test commands and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#dedicated-construction-and-synchronous-fluid-recursion).
 
-Earlier development suites passed 203 MSVC, 205 GCC and 205 Clang tests without
-failures, errors or skips. Linux sanitizer snapshots matched all 925 non-Markdown
-files at `cbe9b69`; their dirty-source attribution remains separate from the
-preceding qualified checkpoint. That snapshot also passed 569-file formatting.
-The public dedicated workflow has a passing fresh development comparison with
-actual Store-token checks on both sides. It retains dirty-source and null-commit
-attribution; current full-suite, clean-source and platform qualification remains
-pending. See the dedicated evidence for its finite scope.
+The [dedicated checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md#committed-checkpoint)
+at `9c87827` passes all 622 local executions: 206 MSVC, 208 GCC and 208 Clang,
+with zero failures, errors or skips. All 1,099 source files match their literal
+committed Git blobs. Source, selected tools and products remain unchanged across
+testing. Linux enables ASan, UBSan and leak checks. Every compiler passes fresh
+schema-2 original audits, complete native comparisons and 18 original/18 native
+actual Store-token joins. Independent retained audits repeat those checks.
+
+The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40000554912)
+passes all four jobs and 601 public/JDK tests: 199 Windows, 201 GCC and 201 Clang.
+All actual checkouts use a merge commit whose entire tree equals the code
+checkpoint. All 569 C/header files pass clang-format 18. Mirrors and 556
+positive/2,011 negative lifecycle-interval controls pass on every local and
+hosted build. Seven supplied-archive tests per compiler retain their local scope.
+
+The earlier 203/205/205 development suites and the original-only fixture retain
+their dirty source and null tested commits. The reference record corrects the
+historical source-byte claim. Empty Entity/Tile/named-data/index collections and
+the finite seed23 schedule leave broader gameplay, server startup and general
+restart outside this checkpoint.
 
 Build setup uses C17, CMake 3.24+ and Python 3.10+; ordinary public tests need
 no Java or original archives. Follow [building](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/building.md) for
@@ -30,7 +42,7 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Code checkpoint `5b57bc1` passes 199 tests with MSVC 19.51.36260.0, 201 with
+The preceding code checkpoint `5b57bc1` passes 199 tests with MSVC 19.51.36260.0, 201 with
 GCC 13.3.0 and 201 with Clang 18.1.3: 601 executions with zero failures, errors
 or skips. Every compiler includes five fresh population profiles, their public
 native replays and the plant comparison. Linux enables ASan, UBSan and leak

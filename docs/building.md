@@ -99,6 +99,9 @@ minimal resources and measured constructor inputs. Its separate optional
 reference test captures and audits the supplied original before comparing a
 fresh native run with exact original resources. See the
 [dedicated commands and scope](testing.md#dedicated-construction-and-synchronous-fluid-recursion).
+The [clean dedicated checkpoint](reference/dedicated-world-construction.md#committed-checkpoint)
+passes 622 local tests on MSVC/GCC/Clang and 601 hosted public/JDK tests; the
+seven supplied-archive comparisons per compiler retain their local scope.
 
 `MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local
