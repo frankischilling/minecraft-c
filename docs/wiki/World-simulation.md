@@ -14,7 +14,16 @@ pass 180 MSVC and 182 GCC/Clang tests, 544 total, with zero failures, errors or
 skips. Inventory passes 598 checks/40 cases, NBT 558/40 and storage 335/14;
 314 independent disk checks cover six regions and eight metadata files.
 The current constructor/detector regressions pass 7,270/164 and 208/24.
-Original/native inventory, NBT and storage equality remains pending.
+The [hosted checkpoint at `dd560492`](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#corrected-hosted-checkpoint)
+also passes all 544 CTest executions and 540-file formatting, with mirrors
+and lifecycle intervals passing on all three hosts.
+
+A separate [original/MSVC finite comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#finite-inventory-and-semantic-nbt-comparison)
+matches both complete declared inventory/semantic NBT projections with zero
+mismatches: 24 traces, 155 actions and 334 snapshots per view, using positioned
+Minecarts with a null World. GCC/Clang comparisons remain pending. Optional
+storage preservation and GAME disk validation retain their native-test scope;
+World gameplay, movement and physics equality remain unfinished.
 
 ## Rails
 

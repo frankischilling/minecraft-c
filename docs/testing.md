@@ -21,14 +21,18 @@ The storage driver separately passes 314 disk checks over six region files and
 eight metadata files. The [inventory contract](entity/minecart-inventory.md) and
 [native validation record](reference/minecart-inventory-nbt.md#native-validation)
 separate semantic NBT, native preservation, genuine GAME reload and the staged
-native failure control. Original/native inventory, NBT and storage equality
-remains pending. The historical finite constructor comparison at `39edf12`
-retains its original inputs and projection.
+native failure control. A separate [original/MSVC finite comparison](reference/minecart-inventory-nbt.md#finite-inventory-and-semantic-nbt-comparison)
+matches the complete declared inventory/semantic NBT projections on both sides
+with zero mismatches: 24 traces, 155 actions, 334 snapshots and 23 planned source
+faults per view. All 22 finite rules pass after four-view admission. This is
+positioned null-World coverage; GCC/Clang comparison, optional native storage
+policy and GAME disk equality remain outside this result. The historical
+constructor comparison at `39edf12` retains its original inputs and projection.
 
 ### Earlier CMake D probe
 
 The full suites retain thirteen tree inventories and use a 1,009-file source copy
-based on public `3fb0881`. The final source changes only the storage test's
+based on public `3fb0881`. CMake D changed only the storage test's
 Python REALPATH registration. A separate GCC one-test probe selects the real
 interpreter through `/usr/bin/python3`; all 354 compile commands and 182 test
 registrations match after source/build-root substitution. That probe is
@@ -60,7 +64,7 @@ does not cover the hosted file-alias case. The CMake-only fix is committed at
 
 ### Corrected hosted checkpoint
 
-The [exact-head hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39859975602)
+The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39859975602)
 at `dd560492` passes all 544 CTest executions: 180 MSVC 19.44.35229.0,
 182 GCC 13.3.0 and 182 Clang 18.1.3, with zero failures, errors or skips.
 Storage passes on every host. Formatting checks all 540 C/header files;

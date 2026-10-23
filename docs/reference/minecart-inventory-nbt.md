@@ -260,5 +260,109 @@ Its separate 2,191-byte closed audit has SHA256
 
 This is hosted native-contract validation. The B suites, earlier D probe,
 CMake E probes and finite constructor comparison retain their own bindings
-and scopes. Original Minecart inventory/NBT/storage equality remains
-unestablished.
+and scopes. This hosted run supplies no original-runtime comparison; the
+separate finite result below has its own observations and qualification.
+
+## Finite inventory and semantic NBT comparison
+
+The original client and server match Windows MSVC 19.51 under the complete
+declared inventory/semantic NBT projection, with zero mismatches on either
+side. The originals ran on Java 17 with `-Xint`. Client compares with client
+and server with server; their distinct field domains remain intact.
+
+The native code is bound to
+`dd560492c41695ccd933f58cd6e10ead3f004511`, using the 1,011-file source binding
+of 252,641 bytes, SHA256
+`7aca96e22a4c00f22551ee7ee00658b882122d6f6706552f3fbb69fd4957dd73`.
+The later documentation checkpoint does not change those compiler inputs.
+This result is separate from the three-host native suites and hosted runs.
+Original/native inventory and semantic NBT comparison on GCC and Clang
+remains pending.
+
+### Inputs and comparison
+
+Each of the four views contains the complete selected-side corpus:
+
+| Observation | Per view |
+| --- | ---: |
+| Traces | 24 |
+| Actions, including two explicit controls | 155 |
+| Normal actions | 132 |
+| Classified source faults | 23 |
+| Before/after and other required snapshots | 334 |
+| Production NBT encodes | 23 |
+| Class checkpoints | 2 |
+
+The inputs construct positioned Minecarts with a null World. They exercise all
+seven inventory operations, aliases and signed counts/splits, actual h36/h27
+bounds, semantic NBT reads, fresh saves, Boolean save behavior and reached
+source-failure prefixes. Each side retains all 48 literal input-trace echoes
+before its selected 24 traces execute. Named factory behavior and RAW/failed
+Cart ownership cuts retain their separate native-test scope.
+
+The projection retains all 84 field-catalog entries, including the eight
+genuine server absences, exact raw scalar bits and UTF16 units, current
+inventory extent and slot relationships, Stack fields, watcher state, bounds,
+Gaussian state, the class array graph and all 60 observed class integers.
+It compares identity relationships within declared lifetimes rather than
+addresses or observer labels. Every corresponding-side projection value
+participates in the typed comparison; arrays keep their order. No tolerance,
+integer table or Entity-counter rebasing supplies expected results.
+
+Semantic NBT comparison retains complete unique Compound key/value domains,
+List order, scalar bits and names. Compound iteration order is retained in raw
+observations but excluded from equality. In-memory anonymous null/empty names
+and empty-List type metadata have explicit representation exclusions. Every
+actual production wire is independently decoded through EOF; wire names,
+types, scalar bits, List lengths/order and every List header, including empty
+Lists, compare exactly. Whole encoded-byte equality is not claimed because
+Compound iteration orders differ.
+
+All 23 planned source faults per view pass their completion rules and retain
+their complete raw diagnostics and partial state. Java Throwable objects and
+native status/PC/error objects are not compared as equivalent representations.
+Default Random seed/state and seed-container identities are excluded; Gaussian
+state remains compared. Native holds, phases, allocation limits and failure
+timing, Java GC timing, implementation-only object graphs, retired h identities
+and cross-action h freshness are outside this projection.
+
+### Admission and retained evidence
+
+Four complete selected-side qualifications are admitted before comparison.
+The final four-view admission passes all 22 finite rules and independently
+joins source, interpreter, actual execution histories,
+closed writers, complete streams, compiled artifacts and capture provenance.
+Its pure in-memory comparator retains its limited authority; separate
+four-view admission establishes the final finite result.
+
+The qualifier F source tree is SHA256
+`c1392d5f52eeb31aeaeba4d7c0b0a03ed29a376131304cca68a8430afcbdb479`;
+the comparison C source tree is
+`32b1055a5b5675d8f46ffe56f9efe97ad9a0c0d436a1f297e19b3600a1d448c2`.
+Their tree digests use sorted compact ASCII JSON file-pin maps followed by LF.
+Earlier refused or deferred qualifications remain separate. Validator-only
+corrections did not change production C/H or the retained captured observations.
+
+The comparison exits naturally with code 0 after all four output writers close
+and emits a checked final marker. A separate actual execution receipt retains
+the initial call and all 39 polls of the same process handle. The independent
+audit parses the entire report, verifies every consumed resource and
+compares the complete emitted projections again, including their joins to the
+actual admitted projection files. It passes all 21,111 consumed files and
+49 resource trees, with 21,266 current source/control/output pins stable.
+Both client and server have zero mismatch events.
+
+| Retained artifact | Bytes | SHA256 |
+| --- | ---: | --- |
+| Comparison report | 6,885,735,133 | `9d532f620d434ce0c406d9268e21551f3ed78074f1ca5f049131f4a051b03343` |
+| Complete four-view projections | 82,729,877 | `a9f47c9d2f2f8d20242fb8993c19cc8d53052f1617be90d0e96c40f238c8f5e5` |
+| Actual comparison execution | 26,278 | `ce7880774e04f454df880f2fc818f2ccb6201ccea33865b3eff2785cb05cf6f6` |
+| Independent current-resource audit | 4,728,512 | `86e35dd8fcc220521e110d111448b95eae6c8602039669d3c0b1e6e9af452430` |
+| Final finite admission | 6,890 | `35d6f21d1fb5a436ee9f817393113394386f10a8a93464b8958fd09ba9e9b281` |
+
+This finite result excludes optional native provenance/metadata overlays,
+storage-policy equality, GAME disk persistence, nonnull World/publication,
+detectors, Player interaction, scheduled work, movement/physics and active
+ticks. It does not establish arbitrary NBT behavior, full heap isomorphism or
+whole-game parity. The native storage tests above retain their independent
+constructed and disk-validation scope.

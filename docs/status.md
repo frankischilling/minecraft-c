@@ -1,5 +1,23 @@
 # Development status
 
+[Minecart inventory, NBT and native storage](entity/minecart-inventory.md)
+implement seven Player-independent inventory operations, semantic NBT hooks,
+named factory construction and optional per-occurrence preservation. The
+[hosted checkpoint at `dd560492`](reference/minecart-inventory-nbt.md#corrected-hosted-checkpoint)
+passes all 544 CTest executions: 180 MSVC, 182 GCC and 182 Clang, with zero
+failures, errors or skips. Formatting covers 540 C/header files; all three
+hosts pass controller mirrors and lifecycle intervals.
+
+A separate [finite original/MSVC comparison](reference/minecart-inventory-nbt.md#finite-inventory-and-semantic-nbt-comparison)
+matches the complete declared inventory/semantic NBT projections for both
+sides, with zero mismatches. Each view contains 24 traces, 155 actions and
+334 snapshots. This uses positioned Minecarts with a null World; GCC/Clang
+comparisons remain pending. Optional storage preservation is native policy.
+Concrete Minecart movement, collision, active ticks, Player interactions and
+rail physics remain unfinished.
+
+## Earlier Minecart construction checkpoint
+
 [Minecart construction](entity/minecart.md) implements both constructors, the
 real class array graph and normal World/Chunk publication. Actual Class-query
 membership supplies the detector's positive path. [Hosted validation at
@@ -18,9 +36,9 @@ at `39edf12` matches all ten literal null-World inputs per client/server side
 between the original programs and Windows MSVC, with zero mismatches across
 the full typed declared projections. Both capture sets passed all 22 protocol
 and ownership rules. This finite result covers no publication, detector,
-movement, NBT or rail call. Inventory operations and rail physics remain
-unfinished. The earlier rail/power results below retain their recorded source
-scope.
+movement, NBT or rail call. The later inventory, NBT and native storage work
+has the separate scope above. The earlier rail/power results below retain
+their recorded source scope.
 
 [Rail topology and lifecycle](world/rails.md) implement the complete connection
 helper, ten shapes, inherited added/neighbor hooks, detector contact/tick/update

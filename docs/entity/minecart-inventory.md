@@ -123,7 +123,8 @@ indexes 57 complete method pairs. Under the
 [retained archive identities](../reference/minecart-construction.md#primary-methods),
 client inventory bodies occupy physical LF 288998-289100 and server 141902-142004;
 own read is 288579-288655/141489-141565, and write 288503-288578/141413-141488.
-These are bytecode source witnesses, not executed inventory comparisons.
+These bytecode source witnesses are separate from the executed finite
+comparison below.
 
 The [inventory](../../tests/entity/minecart/test_inventory.c),
 [NBT](../../tests/entity/minecart/test_nbt.c) and
@@ -136,7 +137,18 @@ passed inventory 598/40, NBT 558/40 and storage 335/14 (checks/source cases),
 plus 314 independent disk checks. The [native validation record](../reference/minecart-inventory-nbt.md#native-validation)
 binds those results to the local source. A separate one-test GCC probe covers
 the CMake D storage interpreter selection; it is not a full D or hosted run.
+The [later hosted checkpoint](../reference/minecart-inventory-nbt.md#corrected-hosted-checkpoint)
+at `dd560492` also passes all 544 CTest executions and 540-file formatting.
+
+The separate [original/MSVC comparison](../reference/minecart-inventory-nbt.md#finite-inventory-and-semantic-nbt-comparison)
+matches both complete corresponding-side inventory/semantic NBT projections
+with zero mismatches: 24 traces, 155 actions and 334 snapshots per view.
+It covers positioned null-World carts and its declared value/identity domain.
+Compound iteration order and whole encoded-byte equality are excluded;
+decoded production wire types, values and List headers compare exactly.
+RAW/failed Cart cuts and named factory behavior retain their native-test scope.
 
 Player usability, interactions, Minecart ticks, movement, collision and physics
-remain outside this contract. No original inventory/NBT/storage comparison or
-whole-game equality is claimed.
+remain outside this contract. Optional storage preservation and disk tests
+retain their separate native scope; original storage-policy, GCC/Clang
+inventory comparison and whole-game equality remain unestablished.
