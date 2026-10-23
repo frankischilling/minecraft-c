@@ -45,10 +45,18 @@ struct mc_registry_wire_set {
     uint64_t constructed_keys, constructed_nodes;
 };
 
+/* Older MSVC diagnoses this standard C17 flexible array as extension C4200. */
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 typedef struct wire_array {
     size_t size;
     wire_key *keys[];
 } wire_array;
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 struct mc_registry_wire_snapshot {
     mc_registry_classes *classes;
