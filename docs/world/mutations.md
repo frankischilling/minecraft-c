@@ -85,8 +85,14 @@ published-cache mutation parity, arbitrary callbacks or complete persistence.
 
 ## Native validation
 
-All 52 selected cases pass on Windows MSVC and WSL GCC/Clang, including 218 new
-mutation checks. Linux enables ASan/UBSan and leak detection. All 618 selected
+World setters and plant notifying writes retain independent checked diagnostic
+workspaces across synchronous descendants. Native allocation failure preserves
+earlier effects, including drops completed before a plant's write. The
+[full-height regression](../reference/plant-lifecycle.md#native-contracts)
+exercises recursive removal on the default Windows stack.
+
+At the earlier mutation checkpoint, all 52 selected cases passed on Windows
+MSVC and WSL GCC/Clang, including 218 new mutation checks. Linux enables ASan/UBSan and leak detection. All 618 selected
 code/tool/fixture inputs match before/after and retained host copies; each host
 retains 44 build products. Formatting passes 335 C/header files.
 
@@ -127,9 +133,3 @@ Compile the helper with JDK17 and run its CLI with a pinned local JAR, side
 `--add-opens java.base/java.util=ALL-UNNAMED` for read-only Random inspection.
 Stdout is the bounded binary transcript; original console and actual Throwable
 traces go to stderr. Exit 77 means setup was unavailable, never a passing result.
-
-World setters and plant notifying writes retain independent checked diagnostic
-workspaces across synchronous descendants. Native allocation failure preserves
-earlier effects, including drops completed before a plant's write. The
-[full-height regression](../reference/plant-lifecycle.md#native-contracts)
-exercises recursive removal on the default Windows stack.
