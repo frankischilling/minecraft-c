@@ -8,9 +8,9 @@ apply audio, input or rendering changes.
 
 The client-only [label interface](../../src/client/settings/labels.h) composes
 option and KeyBinding labels through the shared Assets and Translation owners.
-Its native contracts pass on Windows with MSVC. It has no executed-original
-label comparison or options-screen integration yet; Linux validation of this
-increment remains pending.
+Its native contracts pass on Windows with MSVC and on sanitized Linux GCC and
+Clang in the hosted checkpoint below. It has no executed-original label
+comparison or options-screen integration yet.
 
 ## Values and source failures
 
@@ -73,6 +73,13 @@ at zero and LMETA/RMETA at 219/220. These facts do not implement a keyboard
 device, SDL event mapping, platform key discovery, physical input or exceptional
 partial Java initialization.
 
+Changing a code is a separate
+[GameSettings action](game-settings.md#binding-code-action): it updates the
+current array's binding and calls real save. Label queries do not perform that
+action, and the raw binding field mutator still does not save. The new action's
+Windows contracts pass separately; these query results do not qualify a
+Controls screen.
+
 ## Bounds and unfinished work
 
 Assets retains at most 256 cached labels, 65,536 units per key and its existing
@@ -84,7 +91,7 @@ The authored tests cover all descriptors and key slots, label branches,
 arithmetic edges, current-array aliases, null/index order, real resource
 failures, UTF-16 fallback lifetime and cold singleton/wrapper states.
 
-Native Windows x64 Debug builds with MSVC pass these six CTest cases:
+The earlier local Windows x64 Debug builds with MSVC pass these six CTest cases:
 
 | Case | Observed checks |
 | --- | ---: |
@@ -104,8 +111,16 @@ corrected client controller completes all seven stages and its three cases.
 Both builds retain their qualified compiler-helper cleanup; test processes
 close naturally. All 641 C/header files pass clang-format 18.1.3.
 
-These results establish native Windows contracts. They do not establish
-original label equality, Linux execution or interactive input. The Translation
+The later [hosted run for `2e02a61`](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146)
+passes all 223 MSVC, 226 GCC and 226 Clang cases, including these six native
+test families. All 675 cases have complete Start/Passed records without
+failures or skips. Linux runs with ASan/UBSan; all 641 C/header files pass
+formatting. The audit rejoins all 1,206 literal publication bodies and 1,030
+non-Markdown tested inputs. The earlier local controller failure and unrun
+after-test inventory remain historical facts; the hosted run is separate.
+
+These results establish native contracts on all three compilers. They do not
+establish original label equality or interactive input. The Translation
 constructor's caught-I/O diagnostic, effectful option setters, application
 startup/settings use, child menus and full original correspondence remain
 unfinished.

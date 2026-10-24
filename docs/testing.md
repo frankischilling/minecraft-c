@@ -2,7 +2,18 @@
 
 ## Native client frontend
 
-Code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
+The preceding code checkpoint `2e02a61b0f574f9ea4253a5b8f66a5a234b2d2e8`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146):
+223 MSVC, 226 GCC and 226 Clang cases, 675 complete Start/Passed pairs, with
+zero failures, skips or missing runs. Formatting covers 641 C/header files;
+controller mirrors and lifecycle interval checks pass. The audit rejoins all
+1,206 literal Git source bodies and the 1,030 non-Markdown tested inputs. Its
+actual signed synthetic checkout `56bd71f401efb432481b45fe7429d8704666591c`
+is tied to that head by the complete tree and parent records. This run includes
+the native query/label tests on sanitized Linux GCC and Clang. It precedes the
+binding-code action; its fresh Windows results are recorded below.
+
+Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
 221 MSVC, 224 GCC and 224 Clang tests. All 669 cases have complete Start/Passed
 records, with zero failures, skips or missing runs. Formatting covers all 635
@@ -101,7 +112,8 @@ The [native GameSettings owner](client/game-settings.md) adds headless defaults,
 load/save and a public-state observer. Its two new tests are
 `client.game_settings` and `tools.client_game_settings_probe`. They keep their
 authored files, complete output and receipts below the build directory.
-Both pass on MSVC and sanitized GCC/Clang: six actual CTest cases, with 481
+At the earlier persistence-only checkpoint, both pass on MSVC and sanitized
+GCC/Clang: six actual CTest cases, with 481
 native interface checks, six independent file checks and 26 observer transport
 controls per compiler. All 635 C/header files pass clang-format 18. The
 1,199-file tested cohort contains 1,024 non-Markdown files. A later independent
@@ -128,8 +140,8 @@ correspondence, options screens and application integration remain unfinished.
 
 ## GameOption queries and labels
 
-The [GameOption and label increment](client/game-options.md) passes six actual
-Windows MSVC x64 Debug CTest cases in separate headless/client builds:
+The earlier local [GameOption and label increment](client/game-options.md)
+passes six actual Windows MSVC x64 Debug CTest cases in separate headless/client builds:
 883 metadata/query checks, 1,241 label checks, 463 Assets checks, 4,404
 Translation checks, 481 persistence checks plus six independent file checks,
 and 26 probe controls. No test failed or skipped. The headless validation
@@ -140,8 +152,36 @@ all controls, source/tool/SDK inputs and products. It does not repeat a test or
 invent the unrun after-test inventory. The corrected client controller completes
 all seven stages. Compile trees retain the declared qualified helper cleanup;
 all test trees close naturally. Formatting passes for all 641 C/header files
-with version 18.1.3. Linux execution and original-label comparison remain
-pending for this increment.
+with version 18.1.3. The later 675-case hosted run above also passes these native
+contracts on Linux GCC and Clang with sanitizers. Original-label comparison,
+interactive input and application adoption remain pending.
+
+## Binding-code action
+
+The new [binding-code action](client/game-settings.md#binding-code-action)
+extends `client.game_settings` without changing its existing file driver or
+the six independent file checks. Fresh Windows MSVC x64 Debug headless and
+client builds pass all six selected CTests: 548 native settings checks plus six
+independent file checks, 26 probe controls, 883 option checks, 1,241 label checks,
+463 Assets checks and 4,404 Translation checks. Each profile completes all seven
+stages, including byte-identical before/after test inventories, and all ten
+independent final audits. Both use the same 1,206 public files and 1,376 physical
+source inputs. All 641 C/header files pass clang-format 18.1.3.
+
+Configure and build retain the admitted pinned compiler-helper cleanup
+allowance; all test trees exit naturally. Complete streams, JUnit, file receipts
+and products are rehashed after execution. These results qualify the specified
+native Windows contracts; Linux action execution remains pending. The earlier
+481-check and hosted `2e02a61` results retain their historical scopes.
+
+The added authored cases target current-array aliases, signed int32 codes,
+same-code calls that still rewrite the real file, and the noarg null-File save.
+They also check a retained file prefix when a later null binding is caught by
+save, directory/missing-parent failures, source null/index precedence before
+save, unchanged file sentinels and diagnostic reentry/retirement refusal.
+The production action uses the same admitted save body, preserving code and
+file effects on later failure. No original binding-action comparison or
+Controls UI execution has been added.
 
 ## Canonical Minecraft names
 

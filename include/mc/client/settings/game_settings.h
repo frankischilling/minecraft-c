@@ -23,7 +23,8 @@ typedef enum mc_game_settings_status {
     MC_GAME_SETTINGS_UNSUPPORTED_CHARSET,
     MC_GAME_SETTINGS_BUSY,
     MC_GAME_SETTINGS_NATIVE_IO_ERROR,
-    MC_GAME_SETTINGS_DIAGNOSTIC_FAILED
+    MC_GAME_SETTINGS_DIAGNOSTIC_FAILED,
+    MC_GAME_SETTINGS_SOURCE_EXCEPTION
 } mc_game_settings_status;
 
 typedef struct mc_game_settings_error {
@@ -130,6 +131,24 @@ typedef struct mc_game_settings_report {
     int native_cleanup_system_error;
 } mc_game_settings_report;
 
+/* Uncaught failures of kv.a(II)V, distinct from exceptions caught by save.
+ * This action-specific domain does not change the persistence report schema. */
+typedef enum mc_game_settings_binding_action_exception {
+    MC_GAME_SETTINGS_BINDING_ACTION_NONE,
+    MC_GAME_SETTINGS_BINDING_ACTION_NULL_ARRAY,
+    MC_GAME_SETTINGS_BINDING_ACTION_INDEX,
+    MC_GAME_SETTINGS_BINDING_ACTION_NULL_BINDING
+} mc_game_settings_binding_action_exception;
+
+typedef struct mc_game_settings_binding_action_report {
+    /* Reached/failing source instruction: aaload5, putfield7, save11 or
+     * normal return14. Native admission failure leaves this report unchanged. */
+    int32_t source_pc;
+    mc_game_settings_binding_action_exception uncaught_exception;
+    bool binding_assigned, save_reached;
+    mc_game_settings_report save;
+} mc_game_settings_binding_action_report;
+
 /* Defaults reproduce kv() without I/O. A NULL profile selects native charset
  * discovery and the host line separator; discovery is deferred until I/O.
  * The file constructor reproduces new File(directory,"options.txt") then
@@ -191,6 +210,25 @@ mc_game_settings_status mc_game_settings_save(mc_game_settings *settings,
                                               const mc_game_settings_diagnostics *diagnostics,
                                               mc_game_settings_report *report,
                                               mc_game_settings_error *error);
+/* Execute the actual kv.a(II)V binding-code action on current w[index], then
+ * always invoke the production save body, including an unchanged code or a
+ * null options File. The signed index is not clamped. Null-array precedes
+ * index failure; a null selected binding fails before assignment/save.
+ * Uncaught source null/index failures return SOURCE_EXCEPTION and the action
+ * report. The existing raw binding_set above remains a no-save field edit.
+ * Save's caught exceptions still return native OK with its nested report;
+ * native save/diagnostic/cleanup failures propagate. Reached code assignment
+ * and file effects survive every later failure, with no rollback or extra
+ * finally save/flush/close. All aliases of the selected binding see the code.
+ * Admission/BUSY leaves report untouched; reached work publishes it even on
+ * failure. Diagnostic callbacks can inspect the assigned code but reentry or
+ * retirement remains BUSY throughout the action and nested save. No audio,
+ * renderer, key-name lookup or Controls selection policy is added. */
+mc_game_settings_status
+mc_game_settings_set_binding_code(mc_game_settings *settings, int32_t index, int32_t code,
+                                  const mc_game_settings_diagnostics *diagnostics,
+                                  mc_game_settings_binding_action_report *report,
+                                  mc_game_settings_error *error);
 /* I/O calls retire their native streams before returning, separately from
  * source close. This releases only memory; no implicit save/flush/source close.
  * NULL *settings is harmless; BUSY preserves the owner. */

@@ -1,6 +1,16 @@
 # Development status
 
-Code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
+The preceding code checkpoint `2e02a61b0f574f9ea4253a5b8f66a5a234b2d2e8`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146):
+223 MSVC, 226 GCC and 226 Clang tests. All 675 cases have complete Start/Passed
+records with zero failures, skips or missing runs; 641 C/header files pass
+formatting. Controller mirrors and lifecycle interval checks pass. The audit
+rejoins all 1,206 literal source bodies and 1,030 non-Markdown tested inputs.
+These results include the native GameOption/label contracts on both Linux
+compilers. They precede the new binding-code action, whose native validation
+passes on Windows as described below. Linux action validation remains pending.
+
+Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
 221 MSVC, 224 GCC and 224 Clang tests. All 669 cases have complete Start/Passed
 records, with zero failures, skips or missing runs. Formatting covers all 635
@@ -79,8 +89,9 @@ The [GameSettings reference](reference/game-settings.md) records all 40 declared
 fields and three original persistence profiles. The
 [native persistence owner](client/game-settings.md) now implements defaults,
 retained KeyBindings, options loading and ordered saving through real files.
-All six new CTest cases pass across MSVC and sanitized GCC/Clang. Each compiler
-passes 481 native checks, six independent file checks and 26 observer controls;
+All six persistence CTest cases passed across MSVC and sanitized GCC/Clang in
+their earlier 1,199-file cohort. Each compiler passed 481 native checks,
+six independent file checks and 26 observer controls;
 all 635 C/header files pass formatting. Independent file audits retain the
 complete tested outputs and product bytes. Separate Windows-1252 and explicit
 Windows UTF-8 comparisons each match all 11,389 projected persistence fields in
@@ -96,8 +107,21 @@ table. Direct Translation initialization is separate from wrapper use. Native
 Windows builds pass 883 GameOption, 1,241 label and 463 Assets checks, with
 persistence and Translation regressions. A file-only audit qualifies the
 headless tests after their controller's summary-parser failure; its failed
-report remains unchanged. Linux validation, original label correspondence,
+report remains unchanged. The later 675-case hosted run also passes the native
+contracts on sanitized Linux GCC and Clang. Original label correspondence,
 options screens and application adoption remain separate.
+
+The [binding-code action](client/game-settings.md#binding-code-action) now
+selects the current array entry, commits its code and calls the real save body.
+Source null/index errors precede save; caught save errors and native failures
+retain earlier mutation and file effects. The raw field mutator remains
+unchanged and does not save. Fresh Windows MSVC builds pass all six selected
+CTest cases: 548 native settings checks, six independent file checks, 26 probe
+controls, 883 option checks, 1,241 label checks, 463 Assets checks and 4,404
+Translation checks. Both profiles finish their before/after inventories and
+input/product audits. Configure/build retain the pinned compiler-helper
+cleanup allowance; every test tree closes naturally. No original-action or
+Controls UI correspondence is claimed, and Linux action execution is pending.
 
 The [WorldAccess interface](world/world-access.md) now dispatches typed
 cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its

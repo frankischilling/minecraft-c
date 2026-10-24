@@ -920,14 +920,14 @@ static mc_game_settings_status writer_native(mc_java_writer_status status,
     return result(error, mapped, cause.system_error, cause.operation);
 }
 
-mc_game_settings_status mc_game_settings_save(mc_game_settings *settings,
-                                              const mc_game_settings_diagnostics *diagnostics,
-                                              mc_game_settings_report *out,
-                                              mc_game_settings_error *error) {
-    mc_game_settings_status status = admit(settings, error);
-    if (status != MC_GAME_SETTINGS_OK)
-        return status;
-    settings->active = true;
+/* Only an already admitted public save/action calls this body. Its owner stays
+ * active through writer retirement, diagnostic callbacks and report delivery;
+ * the outer entry alone clears active. No nested public admission is invented. */
+static mc_game_settings_status save_admitted(mc_game_settings *settings,
+                                             const mc_game_settings_diagnostics *diagnostics,
+                                             mc_game_settings_report *out,
+                                             mc_game_settings_error *error) {
+    mc_game_settings_status status = MC_GAME_SETTINGS_OK;
     mc_game_settings_report report = {0};
     mc_java_writer *writer = NULL;
     uint16_t *scratch = NULL;
@@ -1069,11 +1069,72 @@ cleanup:
         }
     }
     free(scratch);
-    settings->active = false;
     if (out != NULL)
         *out = report;
     if (status == MC_GAME_SETTINGS_OK)
         result(error, status, 0, NULL);
+    return status;
+}
+
+mc_game_settings_status mc_game_settings_save(mc_game_settings *settings,
+                                              const mc_game_settings_diagnostics *diagnostics,
+                                              mc_game_settings_report *out,
+                                              mc_game_settings_error *error) {
+    mc_game_settings_status status = admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    settings->active = true;
+    status = save_admitted(settings, diagnostics, out, error);
+    settings->active = false;
+    return status;
+}
+
+mc_game_settings_status
+mc_game_settings_set_binding_code(mc_game_settings *settings, int32_t index, int32_t code,
+                                  const mc_game_settings_diagnostics *diagnostics,
+                                  mc_game_settings_binding_action_report *out,
+                                  mc_game_settings_error *error) {
+    mc_game_settings_status status = admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    settings->active = true;
+    mc_game_settings_binding_action_report report = {.source_pc = 5};
+    if (settings->state.bindings_null) {
+        report.uncaught_exception = MC_GAME_SETTINGS_BINDING_ACTION_NULL_ARRAY;
+        status = result(error, MC_GAME_SETTINGS_SOURCE_EXCEPTION, 0,
+                        "GameSettings binding action null array");
+        goto done;
+    }
+    if (index < 0 || (size_t)index >= settings->state.binding_count) {
+        report.uncaught_exception = MC_GAME_SETTINGS_BINDING_ACTION_INDEX;
+        status = result(error, MC_GAME_SETTINGS_SOURCE_EXCEPTION, 0,
+                        "GameSettings binding action index");
+        goto done;
+    }
+    mc_key_binding *binding = settings->state.bindings[(size_t)index];
+    report.source_pc = 7;
+    if (binding == NULL) {
+        report.uncaught_exception = MC_GAME_SETTINGS_BINDING_ACTION_NULL_BINDING;
+        status = result(error, MC_GAME_SETTINGS_SOURCE_EXCEPTION, 0,
+                        "GameSettings binding action null binding");
+        goto done;
+    }
+    if (!owns_binding(settings, binding)) {
+        status = result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0,
+                        "GameSettings binding action ownership");
+        goto done;
+    }
+    binding->code = code;
+    report.binding_assigned = true;
+    report.source_pc = 11;
+    report.save_reached = true;
+    status = save_admitted(settings, diagnostics, &report.save, error);
+    if (status == MC_GAME_SETTINGS_OK)
+        report.source_pc = 14;
+done:
+    settings->active = false;
+    if (out != NULL)
+        *out = report;
     return status;
 }
 

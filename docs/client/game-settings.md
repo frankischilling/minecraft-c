@@ -1,11 +1,12 @@
 # GameSettings persistence
 
 The native GameSettings module implements constructor defaults, owned settings
-state and `options.txt` load/save. Its native contracts pass on MSVC, GCC and
-Clang. Separate Windows-1252 and explicit Windows UTF-8 comparisons each
+state and `options.txt` load/save. Earlier persistence contracts passed on
+MSVC, GCC and Clang. Separate Windows-1252 and explicit Windows UTF-8 comparisons each
 match all 11,389 projected persistence fields across 16 original/native cases.
 The client application does not yet use this module for its options menus or
-startup settings.
+startup settings. The binding-code action described below is implemented;
+its native Windows contracts pass and have no original-action comparison yet.
 
 The interface is [game_settings.h](../../include/mc/client/settings/game_settings.h).
 The [original source contract](../reference/game-settings.md) records the
@@ -143,6 +144,44 @@ Pass the measured charset/separator explicitly for reference work. `DEFAULT`
 uses native discovery at Reader/Writer admission and does not model Java's
 globally cached defaultCharset or arbitrary file.encoding changes.
 
+## Binding-code action
+
+`mc_game_settings_set_binding_code` implements the source `kv.a(II)V` action.
+It selects the binding from the current array at the supplied signed index,
+stores any int32 code, then invokes the real production save body. It does not
+select from the named constructor fields or resolve duplicate key codes.
+Every reference to the selected binding sees the change. Assigning its existing
+code still saves.
+
+The source method has no catch table. A null array fails at `aaload` PC5 before
+the index check; a negative or excessive index fails at the same instruction.
+A null selected binding fails at `putfield` PC7. Those paths change no binding
+and never reach save. A valid store precedes the save call at PC11, followed by
+normal return PC14 if save returns. The noarg owner's null File still reaches
+the real save and its existing failure handler.
+
+The action returns `MC_GAME_SETTINGS_SOURCE_EXCEPTION` for those uncaught
+null/index failures. Its report records the reached PC, action exception,
+whether assignment and save were reached, and the actual nested save report.
+Save's caught failures still return native `OK`; a native allocation, budget,
+diagnostic or cleanup failure propagates separately. Neither case rolls back
+the assigned code or earlier file effects. The report does not fabricate a
+Java Throwable or turn a normal return into proof of complete I/O.
+
+The action and save share one admitted save body. The owner remains active
+through assignment, diagnostics and writer retirement, so nested mutation,
+load/save, another action or owner retirement returns `BUSY`. Diagnostics may
+read the code already assigned. Native receiver/BUSY admission leaves the
+action report unchanged; reached work reports its prefix even on failure.
+
+The existing `mc_game_settings_binding_set` remains a raw name/code field edit
+with no save. The new action adds no audio, renderer, key-name or Controls UI
+callback. Application adoption, pending-key selection policy and an original
+action comparison remain separate work. Fresh Windows MSVC x64 Debug tests
+pass 548 native settings assertions and six independent file checks, including
+the real-file, alias, same-code-save, partial-write and reentry cases. Linux
+execution of this action remains pending.
+
 ## Bounds and native validation
 
 | Native resource | Limit |
@@ -166,19 +205,28 @@ The authored `client.game_settings` test covers defaults and binding aliases,
 ordered load/save, malformed/Unicode text, retained partial effects, diagnostics
 and reentry, real Unicode filenames, directory/missing-parent failures, actual
 truncation and an emitted prefix without source finally, and native limits.
-Its Python driver independently checks six file outcomes. Each actual MSVC,
-GCC and Clang build passes 481 native checks and those six file checks through
+Its Python driver independently checks six file outcomes. The earlier
+persistence-only MSVC, GCC and Clang builds each pass 481 native checks and
+those six file checks through
 `client.game_settings`. The input-driven probe also passes all 26 transport
 controls through `tools.client_game_settings_probe` on each compiler. All six
 CTest cases pass without failures or skips. Linux enables ASan, UBSan and leak
-checks. All 635 C files and headers pass clang-format 18.
+checks. That checkpoint passes 635-file clang-format 18 checks. These counts
+precede the new binding-action tests.
 
-The tested source snapshot contains 1,199 files, including 1,024 non-Markdown
+That tested source snapshot contains 1,199 files, including 1,024 non-Markdown
 files. A separate file-only audit rehashes 1,706 consumed artifacts and joins
 the actual raw output, JUnit, individual receipts, complete file/directory
 trees and all four build products per compiler. Eight Linux products are
 retained by a later file-only copy with their original before/after hashes.
 That copy executes no tests or product binaries.
+
+The later [hosted run for `2e02a61`](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146)
+passes 223 MSVC, 226 GCC and 226 Clang cases, 675 in total, with zero failures
+or skips. Formatting covers 641 C/header files. Its audit rejoins all 1,206
+literal source bodies and the 1,030 non-Markdown tested inputs. This run
+includes the native query/label contracts on both Linux compilers; it precedes
+the new binding action and supplies no original-label comparison.
 
 Windows configure and build use recorded cleanup of the pinned compiler
 helper; those two process trees are qualified rather than natural. The test
@@ -219,8 +267,9 @@ source Thread/Throwable behavior, late-write and mid-read failures, effectful
 setters and application integration remain outside these finite results.
 
 The separate [query and label module](game-options.md) uses the real current
-binding array and Translation owner. Its native Windows contracts pass; original
-label correspondence and Linux validation remain pending.
+binding array and Translation owner. Its native contracts pass on MSVC and
+sanitized Linux GCC/Clang in the preceding hosted checkpoint. Original-label
+correspondence remains pending.
 Direct field-assignment functions do not implement the effectful GameSettings
 option setters. SoundManager changes, RenderEngine texture refresh,
 RenderGlobal rebuild and physical input mapping remain unfinished. Applying

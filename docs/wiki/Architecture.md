@@ -16,11 +16,19 @@ Current runtime navigation:
   [GameSettings](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-settings.md)
   owns retained options, KeyBindings and binding arrays and uses the shared
   Reader/Writer for real-file persistence. The application has not yet adopted
-  it or the effectful option setters.
+  it or the effectful option setters. Its new binding-code action selects the
+  current array entry, stores the code and invokes the same real save body.
+  Source null/index failures and native errors remain distinct; later save
+  failures retain the code and file prefix. The raw binding field edit still
+  does not save. Native Windows action contracts pass; Linux action execution
+  and an original-action comparison remain pending. No Controls screen has
+  adopted it.
   [GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
   keep metadata and value queries headless while client label composition uses
   the real shared Translation and Assets owners. Direct singleton admission
-  remains separate from wrapper initialization.
+  remains separate from wrapper initialization. Hosted checkpoint `2e02a61`
+  passes their native contracts on MSVC and sanitized Linux GCC/Clang;
+  original-label correspondence remains pending.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

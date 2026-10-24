@@ -611,12 +611,274 @@ cleanup:
     return okay;
 }
 
+typedef struct binding_action_log {
+    mc_game_settings *settings;
+    mc_key_binding *target;
+    int32_t expected_code;
+    size_t calls;
+    bool inspected, action_busy, raw_busy, save_busy, load_busy, retire_busy;
+    bool event_valid, fail;
+} binding_action_log;
+
+static mc_game_settings_status binding_action_diagnostic(void *context,
+                                                         const mc_game_settings_diagnostic *event,
+                                                         mc_game_settings_error *error) {
+    binding_action_log *log = context;
+    ++log->calls;
+    log->event_valid = event->kind == MC_GAME_SETTINGS_SAVE_FAILED &&
+                       strcmp(event->message, "Failed to save options") == 0 && event->line.is_null;
+    mc_game_settings_state state = {0};
+    mc_game_settings_text name = {0};
+    int32_t code = 0;
+    log->inspected = mc_game_settings_read_state(log->settings, &state) &&
+                     mc_key_binding_read(log->target, &name, &code) && code == log->expected_code;
+    mc_game_settings_binding_action_report nested = {.source_pc = 123,
+                                                     .uncaught_exception =
+                                                         MC_GAME_SETTINGS_BINDING_ACTION_INDEX,
+                                                     .binding_assigned = true,
+                                                     .save_reached = true,
+                                                     .save = {.lines_read = 99}};
+    log->action_busy = mc_game_settings_set_binding_code(log->settings, 0, 0, NULL, &nested,
+                                                         NULL) == MC_GAME_SETTINGS_BUSY &&
+                       nested.source_pc == 123 &&
+                       nested.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_INDEX &&
+                       nested.binding_assigned && nested.save_reached &&
+                       nested.save.lines_read == 99;
+    log->raw_busy = mc_game_settings_binding_set(log->settings, log->target, name, 0, NULL) ==
+                    MC_GAME_SETTINGS_BUSY;
+    log->save_busy =
+        mc_game_settings_save(log->settings, NULL, NULL, NULL) == MC_GAME_SETTINGS_BUSY;
+    log->load_busy =
+        mc_game_settings_load(log->settings, NULL, NULL, NULL) == MC_GAME_SETTINGS_BUSY;
+    mc_game_settings *alias = log->settings;
+    log->retire_busy =
+        mc_game_settings_retire(&alias, NULL) == MC_GAME_SETTINGS_BUSY && alias == log->settings;
+    if (log->fail) {
+        if (error != NULL)
+            *error = (mc_game_settings_error){MC_GAME_SETTINGS_DIAGNOSTIC_FAILED, 73,
+                                              "authored binding action diagnostic refusal"};
+        return MC_GAME_SETTINGS_DIAGNOSTIC_FAILED;
+    }
+    return MC_GAME_SETTINGS_OK;
+}
+
+static bool binding_actions_noarg(void) {
+    bool okay = false;
+    mc_game_settings *settings = NULL;
+    _Static_assert(MC_GAME_SETTINGS_DIAGNOSTIC_FAILED == 7 &&
+                       MC_GAME_SETTINGS_SOURCE_EXCEPTION == 8,
+                   "GameSettings status ABI is append-only");
+    CHECK(mc_game_settings_create_defaults(&utf8_lf, &settings, NULL) == MC_GAME_SETTINGS_OK);
+    mc_game_settings_state state = {0};
+    CHECK(mc_game_settings_read_state(settings, &state));
+    binding_action_log log = {
+        .settings = settings, .target = state.named[0], .expected_code = INT32_MIN};
+    const mc_game_settings_diagnostics diagnostics = {&log, binding_action_diagnostic};
+    mc_game_settings_binding_action_report report;
+    mc_game_settings_error error;
+    CHECK(mc_game_settings_set_binding_code(settings, 0, INT32_MIN, &diagnostics, &report,
+                                            &error) == MC_GAME_SETTINGS_OK);
+    CHECK(report.source_pc == 14 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NONE &&
+          report.binding_assigned && report.save_reached && report.save.outer_exception_caught &&
+          report.save.outer_exception == MC_GAME_SETTINGS_SOURCE_NULL_FILE &&
+          !report.save.source_opened && report.save.println_attempts == 0 &&
+          !report.save.source_close_reached && !report.save.native_additional_close &&
+          error.status == MC_GAME_SETTINGS_OK && error.operation == NULL);
+    CHECK(code_is(state.named[0], INT32_MIN) && code_is(state.bindings[0], INT32_MIN));
+    CHECK(log.calls == 1 && log.event_valid && log.inspected && log.action_busy && log.raw_busy &&
+          log.save_busy && log.load_busy && log.retire_busy);
+    log.expected_code = 42;
+    log.fail = true;
+    CHECK(mc_game_settings_set_binding_code(settings, 0, 42, &diagnostics, &report, &error) ==
+          MC_GAME_SETTINGS_DIAGNOSTIC_FAILED);
+    CHECK(report.source_pc == 11 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NONE &&
+          report.binding_assigned && report.save_reached && report.save.outer_exception_caught &&
+          report.save.outer_exception == MC_GAME_SETTINGS_SOURCE_NULL_FILE &&
+          code_is(state.named[0], 42) && error.system_error == 73 &&
+          strcmp(error.operation, "authored binding action diagnostic refusal") == 0);
+    CHECK(log.calls == 2 && log.inspected && log.action_busy && log.raw_busy && log.save_busy &&
+          log.load_busy && log.retire_busy);
+    CHECK(mc_game_settings_set_binding_code(settings, 0, 42, NULL, NULL, NULL) ==
+              MC_GAME_SETTINGS_OK &&
+          code_is(state.named[0], 42));
+    mc_game_settings_text name = {0};
+    int32_t code = 0;
+    CHECK(mc_key_binding_read(state.named[0], &name, &code));
+    CHECK(mc_game_settings_binding_set(settings, state.named[0], name, 43, NULL) ==
+              MC_GAME_SETTINGS_OK &&
+          code_is(state.named[0], 43));
+    report = (mc_game_settings_binding_action_report){.source_pc = 123, .save_reached = true};
+    CHECK(mc_game_settings_set_binding_code(NULL, 0, 1, NULL, &report, &error) ==
+              MC_GAME_SETTINGS_INVALID_ARGUMENT &&
+          report.source_pc == 123 && report.save_reached);
+    okay = true;
+cleanup:
+    if (mc_game_settings_retire(&settings, NULL) != MC_GAME_SETTINGS_OK)
+        okay = false;
+    return okay;
+}
+
+static bool binding_actions_files(void) {
+    bool okay = false;
+    mc_game_settings *settings = NULL, *fresh = NULL, *directory = NULL, *missing = NULL;
+    uint16_t *large = NULL;
+    uint8_t bytes[32768], saved[4096];
+    size_t count = 0, saved_count = 0;
+    mc_game_settings_report load = {0};
+    CHECK(text_input("aliases", "authored-unknown-input\n"));
+    CHECK(create("aliases", &utf8_lf, &settings, &load) == MC_GAME_SETTINGS_OK);
+    mc_game_settings_state state = {0};
+    CHECK(mc_game_settings_read_state(settings, &state));
+    mc_key_binding *forward = state.named[0];
+    mc_key_binding *duplicates[] = {forward, forward};
+    CHECK(mc_game_settings_set_binding_array(settings, duplicates, 2, false, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    mc_game_settings_binding_action_report report;
+    CHECK(mc_game_settings_set_binding_code(settings, 1, INT32_MAX, NULL, &report, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    CHECK(report.source_pc == 14 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NONE &&
+          report.binding_assigned && report.save_reached && report.save.println_attempts == 17 &&
+          report.save.source_opened && report.save.source_close_reached &&
+          !report.save.outer_exception_caught && !report.save.native_additional_close);
+    CHECK(code_is(forward, INT32_MAX) && code_is(state.named[1], 30) &&
+          code_is(state.bindings[0], INT32_MAX));
+    CHECK(mc_game_settings_read_state(settings, &state) && state.bindings[0] == forward &&
+          state.bindings[1] == forward && state.named[0] == forward);
+    static const char suffix[] = "key_key.forward:2147483647\nkey_key.forward:2147483647\n";
+    CHECK(output("aliases", saved, sizeof(saved), &saved_count) &&
+          saved_count >= sizeof(suffix) - 1u &&
+          memcmp(saved + saved_count - (sizeof(suffix) - 1u), suffix, sizeof(suffix) - 1u) == 0);
+    CHECK(text_input("aliases", "different-authored-disk-input\n"));
+    CHECK(mc_game_settings_set_binding_code(settings, 0, INT32_MAX, NULL, &report, NULL) ==
+              MC_GAME_SETTINGS_OK &&
+          report.save_reached && report.save.source_close_reached);
+    CHECK(output("aliases", bytes, sizeof(bytes), &count) && count == saved_count &&
+          memcmp(bytes, saved, count) == 0); /* Unchanged code still really saves. */
+    CHECK(create("aliases", &utf8_lf, &fresh, &load) == MC_GAME_SETTINGS_OK);
+    mc_game_settings_state reloaded = {0};
+    CHECK(mc_game_settings_read_state(fresh, &reloaded) && code_is(reloaded.named[0], INT32_MAX) &&
+          code_is(reloaded.named[1], 30));
+    CHECK(mc_game_settings_retire(&fresh, NULL) == MC_GAME_SETTINGS_OK);
+    mc_game_settings_text name = {0};
+    int32_t code = 0;
+    CHECK(mc_key_binding_read(forward, &name, &code));
+    CHECK(mc_game_settings_binding_set(settings, forward, (mc_game_settings_text){NULL, 0, true},
+                                       code, NULL) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_game_settings_set_binding_code(settings, 1, INT32_MIN, NULL, &report, NULL) ==
+              MC_GAME_SETTINGS_OK &&
+          report.save.source_close_reached);
+    static const char null_suffix[] = "key_null:-2147483648\nkey_null:-2147483648\n";
+    CHECK(output("aliases", bytes, sizeof(bytes), &count) && count >= sizeof(null_suffix) - 1u &&
+          memcmp(bytes + count - (sizeof(null_suffix) - 1u), null_suffix,
+                 sizeof(null_suffix) - 1u) == 0);
+    CHECK(mc_game_settings_binding_set(settings, forward, name, INT32_MIN, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    large = malloc(9000u * sizeof(*large));
+    CHECK(large != NULL);
+    for (size_t i = 0; i < 9000u; ++i)
+        large[i] = 'P';
+    mc_game_settings_values values = state.values;
+    values.texture_pack = (mc_game_settings_text){large, 9000, false};
+    CHECK(mc_game_settings_set_values(settings, &values, NULL) == MC_GAME_SETTINGS_OK);
+    mc_key_binding *partial[] = {forward, forward, NULL};
+    CHECK(mc_game_settings_set_binding_array(settings, partial, 3, false, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    CHECK(mc_game_settings_set_binding_code(settings, 1, -123, NULL, &report, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    CHECK(report.source_pc == 14 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NONE &&
+          report.binding_assigned && report.save_reached && report.save.outer_exception_caught &&
+          report.save.outer_exception == MC_GAME_SETTINGS_SOURCE_NULL_BINDING &&
+          report.save.println_attempts == 17 && !report.save.source_close_reached &&
+          report.save.native_additional_close && !report.save.native_cleanup_failed &&
+          code_is(forward, -123));
+    CHECK(output("aliases", bytes, sizeof(bytes), &count) && count == 8192u &&
+          memcmp(bytes, "music:1.0\nsound:1.0\n", sizeof("music:1.0\nsound:1.0\n") - 1u) == 0 &&
+          bytes[count - 1u] == 'P');
+    CHECK(create("owned-directory", &utf8_lf, &directory, &load) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_game_settings_set_binding_code(directory, 0, 99, NULL, &report, NULL) ==
+              MC_GAME_SETTINGS_OK &&
+          report.binding_assigned && report.save_reached && report.source_pc == 14 &&
+          report.save.outer_exception_caught &&
+          report.save.outer_exception == MC_GAME_SETTINGS_SOURCE_FILE_IO &&
+          !report.save.source_opened);
+    CHECK(mc_game_settings_read_state(directory, &reloaded) && code_is(reloaded.named[0], 99));
+    CHECK(create("absent-parent/child", &utf8_lf, &missing, &load) == MC_GAME_SETTINGS_OK);
+    CHECK(mc_game_settings_set_binding_code(missing, 0, -1, NULL, &report, NULL) ==
+              MC_GAME_SETTINGS_OK &&
+          report.binding_assigned && report.save_reached && report.source_pc == 14 &&
+          report.save.outer_exception_caught &&
+          report.save.outer_exception == MC_GAME_SETTINGS_SOURCE_FILE_IO &&
+          !report.save.source_opened);
+    CHECK(mc_game_settings_read_state(missing, &reloaded) && code_is(reloaded.named[0], -1));
+    /* Failures before save must leave the existing file and code untouched. */
+    static const char sentinel[] = "sentinel-no-save\n";
+    CHECK(text_input("aliases", sentinel));
+    binding_action_log log = {.settings = settings, .target = forward, .expected_code = -123};
+    const mc_game_settings_diagnostics diagnostics = {&log, binding_action_diagnostic};
+    mc_game_settings_error error;
+    CHECK(mc_game_settings_set_binding_code(settings, 2, 7, &diagnostics, &report, &error) ==
+          MC_GAME_SETTINGS_SOURCE_EXCEPTION);
+    CHECK(report.source_pc == 7 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NULL_BINDING &&
+          !report.binding_assigned && !report.save_reached && report.save.println_attempts == 0 &&
+          error.status == MC_GAME_SETTINGS_SOURCE_EXCEPTION);
+    CHECK(mc_game_settings_set_binding_array(settings, NULL, 0, true, NULL) == MC_GAME_SETTINGS_OK);
+    const int32_t invalid[] = {INT32_MIN, 0, INT32_MAX};
+    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+        CHECK(mc_game_settings_set_binding_code(settings, invalid[i], 7, &diagnostics, &report,
+                                                NULL) == MC_GAME_SETTINGS_SOURCE_EXCEPTION);
+        CHECK(report.source_pc == 5 &&
+              report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NULL_ARRAY &&
+              !report.binding_assigned && !report.save_reached);
+    }
+    CHECK(mc_game_settings_set_binding_array(settings, NULL, 0, false, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    for (size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
+        CHECK(mc_game_settings_set_binding_code(settings, invalid[i], 7, &diagnostics, &report,
+                                                NULL) == MC_GAME_SETTINGS_SOURCE_EXCEPTION);
+        CHECK(report.source_pc == 5 &&
+              report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_INDEX &&
+              !report.binding_assigned && !report.save_reached);
+    }
+    mc_key_binding *null_first[] = {NULL, forward};
+    CHECK(mc_game_settings_set_binding_array(settings, null_first, 2, false, NULL) ==
+          MC_GAME_SETTINGS_OK);
+    CHECK(mc_game_settings_set_binding_code(settings, -1, 7, &diagnostics, &report, NULL) ==
+              MC_GAME_SETTINGS_SOURCE_EXCEPTION &&
+          report.source_pc == 5 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_INDEX);
+    CHECK(mc_game_settings_set_binding_code(settings, 0, 7, &diagnostics, &report, NULL) ==
+              MC_GAME_SETTINGS_SOURCE_EXCEPTION &&
+          report.source_pc == 7 &&
+          report.uncaught_exception == MC_GAME_SETTINGS_BINDING_ACTION_NULL_BINDING);
+    CHECK(log.calls == 0 && code_is(forward, -123));
+    CHECK(output("aliases", bytes, sizeof(bytes), &count) && count == sizeof(sentinel) - 1u &&
+          memcmp(bytes, sentinel, count) == 0);
+    okay = true;
+cleanup:
+    free(large);
+    if (mc_game_settings_retire(&settings, NULL) != MC_GAME_SETTINGS_OK)
+        okay = false;
+    if (mc_game_settings_retire(&fresh, NULL) != MC_GAME_SETTINGS_OK)
+        okay = false;
+    if (mc_game_settings_retire(&directory, NULL) != MC_GAME_SETTINGS_OK)
+        okay = false;
+    if (mc_game_settings_retire(&missing, NULL) != MC_GAME_SETTINGS_OK)
+        okay = false;
+    return okay;
+}
+
 static int test_body(int argc, char **argv) {
     if (argc != 2)
         return EXIT_FAILURE;
     root = argv[1];
     if (!defaults() || !ordinary() || !lexical_and_partial() || !aliases() ||
-        !encoding_and_failures() || !limits_and_raw_strings())
+        !encoding_and_failures() || !limits_and_raw_strings() || !binding_actions_noarg() ||
+        !binding_actions_files())
         return EXIT_FAILURE;
     if (printf("PASS: %u GameSettings persistence interface checks\n", checks) < 0 ||
         fflush(stdout) != 0)

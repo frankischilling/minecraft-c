@@ -2,7 +2,7 @@
 
 Minecraft Beta 1.7.3 stores client options in GameSettings (`kv`) and individual key bindings in `qb`. The verified class has 40 declared fields: 36 instance fields and four static label arrays. Constructor defaults, file parsing and saving are separate operations from the effectful option setters.
 
-The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Effectful setters and the complete client remain unfinished.
+The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Binding-code assignment with real save has passing native Windows contracts. The other effectful setters and the complete client remain unfinished.
 
 ## Fields and defaults
 
@@ -77,6 +77,7 @@ Selected bytecode anchors identify the reached operations:
 | `kv.a()V` load | 504 | File existence 4; FileReader 23; readLine 34; split 45; EOF close 484 |
 | `kv.a(String)F` float wrapper | 27 | Exact `true` returns 1 at 9; exact `false` returns 0 at 20; Float.parseFloat at 23 |
 | `kv.b()V` save | 495 | FileWriter 12; PrintWriter 15; setting/binding output through 465; close 475 |
+| `kv.a(II)V` binding-code action | 15 | Current array 1; selection 5; code store 7; virtual save 11; return 14 |
 | `qb.<init>(String,int)V` | 15 | Name store 6; code store 11 |
 
 Load uses `FileReader` and `BufferedReader`, with the selected runtime's default charset. Lines end at CR, LF or CRLF; an unterminated final line is still a line. There is no GameSettings-specific charset declaration or BOM removal. Malformed-byte replacement belongs to the library decoder, not to a strict UTF-8 parser invented for this file.
@@ -177,7 +178,40 @@ substituted for unobserved source internals. Late-write or mid-read failures,
 effectful setters, options screens and application integration remain
 unfinished. These finite results establish no whole-client equivalence.
 
-## Setters and unfinished effects
+## Binding-code assignment and save
+
+The complete `kv.a(II)V` instruction array is
+`2ab400981b321cb500a02ab600c1b1`, SHA-256
+`0dd24153b0c790d6f503a87d163c651bb2916621fca2069d200d8692219a82c0`.
+It has no catch table. It reads current `w`, selects the supplied signed index
+at `aaload` PC5, stores the raw int code into that binding at PC7, invokes
+the receiver's real save at PC11, then returns at PC14.
+
+A null array fails at PC5 before index validity matters. A negative or
+out-of-range index fails at the same instruction; a valid null entry fails
+at PC7. None reaches the store or save. Every int32 code is otherwise stored,
+including an unchanged code. Named fields do not select the binding, but any
+named/current-array aliases observe its changed code. There is no duplicate-code
+resolution, name update, audio or renderer callback in this method.
+
+Save's existing handler can catch a later file or binding exception and return,
+allowing the setter to return at PC14. The prior code and file prefix remain.
+An Error or a failure in the save handler can escape; there is no setter catch
+or rollback. Null binding names still append `null` during save and differ from
+null binding objects.
+
+The native [binding action](../client/game-settings.md#binding-code-action)
+shares the existing admitted save body and reports source failures separately
+from native admission, resource and diagnostic errors. Its action report keeps
+the reached PC, assignment/save flags and real nested save report. Windows
+MSVC passes the specified native action contracts; Linux action validation
+remains pending. The original profiles above did not invoke this setter,
+so their persistence matches provide no original-action or Controls UI
+comparison. The raw native binding field edit remains a separate no-save API.
+
+<a id="setters-and-unfinished-effects"></a>
+
+## Other setters and unfinished effects
 
 Load/save never read the stored Minecraft owner and do not call option setters. They can be measured with null `x` without claiming the following effects are implemented:
 
@@ -190,8 +224,8 @@ Load/save never read the stored Minecraft owner and do not call option setters. 
 | Performance mode | Java `(old + delta + 3) % 3`, including possible negative remainder, then save. |
 | Advanced OpenGL, graphics or ambient occlusion | Toggle the field, call the real RenderGlobal (`n`) rebuild, then save only if the callback returns. |
 | Anaglyph | Toggle the field, call the real RenderEngine (`ji`) texture refresh, then save only if it returns. |
-| Key binding by index | Write the current array element's code, then save; no duplicate-code resolution. |
+| Key binding by index | Write the current array element's code, then save; no duplicate-code resolution. Native implementation and finite Windows validation are described above. |
 
 There is no rollback or catch around those setter callbacks. An absent receiver or real callback failure can leave the preceding mutation while preventing the later save. A null/nonfloat option is ignored by the float setter; the discrete setter still saves for nonmatching options. The original label paths use translation tables, direct array indexing, Java float-to-int conversions and LWJGL key-name lookup. Invalid loaded indices can fail during labeling even though load accepted them.
 
-Real audio setup, renderer/texture rebuilds, platform key translation and physical key-name lookup remain unfinished dependencies of the client settings path. No-op effect receivers would not implement those bodies. The finite persistence comparisons above do not establish menu setter behavior or whole-client correspondence.
+Real audio setup, renderer/texture rebuilds, platform key translation and physical input remain unfinished dependencies of the client settings path. The normal legacy key-name table and native label queries have their [separate contract](../client/game-options.md), including hosted MSVC/GCC/Clang coverage; original-label correspondence remains pending. No-op effect receivers would not implement the missing bodies. The finite persistence comparisons above do not establish menu setter behavior or whole-client correspondence.
