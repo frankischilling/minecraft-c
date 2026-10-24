@@ -4,8 +4,8 @@
 
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/block/registry/runtime_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/mutation/mutation_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/storage/objects_internal.h"
 
 #include <limits.h>
@@ -69,8 +69,8 @@ typedef struct fixture {
     mc_registry_classes *registry[2];
     mc_world_runtime_classes *classes[2];
     mc_world_runtime *worlds[2];
-    mc_world_dimension *dimensions[2];
-    mc_world_provider_fields provider[2];
+    mc_world_provider *dimensions[2];
+    mc_chunk_provider_fields provider[2];
     bool bound[2];
     chunk_slot chunks[24];
     mc_chunk_state *cached;
@@ -192,7 +192,7 @@ static bool create_world(fixture *f, size_t index) {
     /* A coherent real one-entry provider also exercises capacity failure on an
      * absent key after the first genuine generation, without changing metadata. */
     limits.max_provider_chunks = 1;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[index], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[index], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA,
                                           f->classes[index], &limits, &f->worlds[index],
                                           NULL) == MC_WORLD_STORAGE_OK);
@@ -204,7 +204,7 @@ static bool create_world(fixture *f, size_t index) {
           state.contexts_bound && state.cache_registered);
     CHECK(mc_world_runtime_fields_get(f->worlds[index], &fields) == MC_WORLD_STORAGE_OK &&
           fields.v != NULL && fields.w == f->stores[index] && fields.t == f->dimensions[index]);
-    CHECK(mc_world_provider_bind_fields(fields.v, &f->provider[index], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(fields.v, &f->provider[index], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[index] = true;
     CHECK(f->provider[index].world == f->worlds[index] &&
@@ -559,7 +559,7 @@ cleanup:
 static bool public_cached(fixture *f) {
     bool ok = false, out = true;
     mc_world_mutation_error error;
-    mc_world_provider_fields *p = &f->provider[0];
+    mc_chunk_provider_fields *p = &f->provider[0];
     const size_t before = mc_world_store_chunk_count(f->stores[0]);
     const int32_t bad[][3] = {{-32000001, 1, 0}, {32000000, 1, 0}, {0, 1, -32000001},
                               {0, 1, 32000001},  {0, -1, 0},       {0, 128, 0}};
@@ -731,7 +731,7 @@ static bool cleanup_fixture(fixture *f) {
         f->worlds[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->classes); ++i)
         if (mc_world_runtime_classes_free(f->classes[i], NULL) != MC_WORLD_STORAGE_OK)
             return false;

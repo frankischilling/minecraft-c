@@ -401,7 +401,7 @@ static int entry_failures(mc_registry_side side, mc_materials *materials,
         CHECK(mc_registry_classes_inspect_items(f.owner, &item, NULL) == MC_REGISTRY_OK &&
               item.phase == MC_REGISTRY_FAILED);
     }
-    const mc_registry_class_state *state = route == 0   ? &f.owner->item_states[MC_ITEM_GM_EJ]
+    const mc_registry_class_state *state = route == 0   ? &f.owner->item_states[MC_ITEM_BASE]
                                            : route == 1 ? &f.owner->crafting_state
                                                         : &f.owner->smelting_state;
     const mc_registry_error cached = state->failure;

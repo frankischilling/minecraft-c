@@ -7,13 +7,13 @@ resources, drawing randomness or changing materials. Every World of that class
 uses the same owner. Another matching World class can share it.
 
 The class keeps this borrow until all its Worlds have been freed. RAW, failed
-and retired Worlds still count; external Dimension, Entity or Tile bindings can
+and retired Worlds still count; external Dimension, Entity or TileEntity bindings can
 prolong their lifetime. Registry destruction returns BUSY while a borrow or an
 initialization call remains. Materials, profile and resources retain their
 separate dependency lifetimes. Binding cannot replace an owner or attach one
 after the World class has admitted its first allocation.
 
-Class-bound [Dimension Biome managers](biome-registry.md#world-and-dimension-managers)
+Class-bound [Dimension Biome managers](biome-registry.md#worldprovider-and-worldchunkmanager)
 retain additional independent Registry borrows. A separately held manager can
 outlive its World and World class, so freeing those owners does not by itself
 make Registry destruction possible. Manager retirement only releases its own
@@ -28,12 +28,12 @@ values. Static reads can return a nullable cell. Array reads access the actual
 `m` or `o` storage, checking its reference before the signed index. `o` is the
 captured boolean array, distinct from a virtual material or Block predicate.
 
-The internal captured `p` view retains the actual Tile-bearing flag array.
+The internal captured `p` view retains the actual TileEntity-bearing flag array.
 Its get performs ordinary Block active use and publishes no view if that use
 fails. A later element read uses the captured reference, including a captured
 NULL, without reloading the field or initializing the class again. NULL precedes
 signed bounds; false is a successful element value. This implements the array
-access at `lm.d(III)Low;` / `hi.d(III)Ljh;` PCs42/47. The later Tile lookup,
+access at `lm.d(III)Low;` / `hi.d(III)Ljh;` PCs42/47. The later TileEntity lookup,
 factory and Map/List ownership joins remain unfinished.
 
 World material lookup acquires the block first. Air returns the same shared
@@ -94,7 +94,7 @@ Ordinary missing-chunk GAME generation still fails at its explicit registry
 and lighting join. The [shared Biome module](biome-registry.md) now supplies
 actual class owners and a direct sampler that can initialize Block during the
 first Biome lookup, after the first climate-cell stores. World/Dimension now
-binds actual retained normal/fixed managers. The live generator join remains
+binds actual retained noise-backed/fixed WorldChunkManagers. The live generator join remains
 unfinished. [World height and lighting submission](runtime-lighting.md) use the
 actual provider and C/A storage; live Chunk finishing, propagation, activation,
 population, full block setters and gameplay persistence remain unfinished.

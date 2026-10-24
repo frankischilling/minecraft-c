@@ -192,12 +192,12 @@ static bool flower_element(feature_frame *frame, const mc_registry_block_m_view 
      * are all actual retained wb/nw descendants, not ID-based classification. */
     if (block != NULL) {
         switch (block->kind) {
-            case MC_BLOCK_WB_NW:
-            case MC_BLOCK_HE_EU:
-            case MC_BLOCK_NI_IJ:
-            case MC_BLOCK_RU_KZ:
-            case MC_BLOCK_JB_FZ:
-            case MC_BLOCK_TL_MD:
+            case MC_BLOCK_FLOWER:
+            case MC_BLOCK_SAPLING:
+            case MC_BLOCK_CROPS:
+            case MC_BLOCK_TALL_GRASS:
+            case MC_BLOCK_DEAD_BUSH:
+            case MC_BLOCK_MUSHROOM:
                 break;
             default:
                 /* Existing status vocabulary has no Java ClassCastException.

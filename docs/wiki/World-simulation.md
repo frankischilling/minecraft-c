@@ -1,19 +1,26 @@
 # World simulation
 
-The [World access observer interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/observers.md)
+The [WorldAccess interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/world-access.md)
 dispatches six typed callback slots with live-list iteration and retained receiver
 ownership. Native controls pass 295 checks on MSVC and sanitized GCC/Clang,
-including wire reentry across Worlds sharing the defining Registry. The wire
+including redstone reentry across Worlds sharing the defining Registry. The redstone
 probe's declared constructor-input route passes 52 native controls per compiler.
-Original nonempty observer traces, concrete presentation/tracking receivers and
-original wire constructor-input admission remain unfinished.
+Original nonempty WorldAccess traces, concrete presentation/tracking receivers and
+original redstone constructor-input admission remain unfinished.
 
-The complete local public/JDK suites pass all 619 tests across MSVC and sanitized
-GCC/Clang, with 587-file formatting and controller checks passing. This validates
-the native contracts and existing finite replays; original nonempty observer
-equivalence remains unverified.
+At `ef1434015420678559cfa3d3b2f21018c5b733ce`, the local public/JDK suites passed
+all 619 tests across MSVC and sanitized GCC/Clang, with 587-file formatting and
+controller checks passing. Its [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40052114598)
+passed all four jobs with the same test and formatting counts. This precedes the canonical naming migration and
+covers that checkpoint's native contracts and finite replays.
 
-The [synchronous wire hooks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/wire.md)
+The [canonical naming build](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecraft-names.md)
+also passes all 619 local tests and 587-file formatting, including the schema-2
+redstone producer's native controls. Controller mirrors and interval checks pass
+on both platforms. Historical fixtures retain their original source pins and
+recorder identity; these checks add no original nonempty WorldAccess observation.
+
+The [synchronous redstone hooks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone.md)
 now run real World mutations, recursive strength updates and shared notification
 snapshots. Native contracts cover both sides, a 25-cell path, vertical connections,
 loops, drops and partial failures. A second 350-check case covers negative and
@@ -33,7 +40,7 @@ qualification, original callback-driven reentry comparison,
 wider persistence/failure schedules and default identity generation
 remain required.
 
-The [wire position Set](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/wire-position-set.md)
+The [redstone position Set](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/redstone-position-set.md)
 has full coordinate equality, ordered bucket/tree operations and reclaimable
 Registry storage. Shallow snapshots survive clear/refill and nested use. Local
 MSVC/GCC/Clang comparisons match sixteen original collection histories under
@@ -55,7 +62,7 @@ eighteen boundaries and fifteen interned original states, including population,
 full saves, protected and distant drops, maintenance and reload. All eighteen
 actual Store-token boundaries match on each side. The fixture retains its
 inherited dirty source and null tested commit. The finite profile has empty
-Entity, Tile, named-data and index collections. Server startup, networking,
+Entity, TileEntity, named-data and index collections. Server startup, networking,
 general scheduling, nonempty behavior and unrestricted unload/restart remain
 unfinished.
 
@@ -103,9 +110,9 @@ records the comparison scope and native full-height removal regression.
 | Plants and light queries | [Plant behavior](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md), [World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md) |
 | Minecarts | [Construction and detection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart.md), [inventory, NBT and storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) |
 | Rails and power | [Rail topology and lifecycle](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/rails.md), [power queries and outputs](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/power.md), [pressure plates](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md) |
-| Pistons | [Tile, finalization, collision and pushing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md), [source map and finite comparisons](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md) |
+| Pistons | [TileEntity, finalization, collision and pushing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tile-entities/piston.md), [source map and finite comparisons](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md) |
 | Entity movement | [Item and FallingSand movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md), [source map and observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) |
-| Population and saves | [Normal controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md), [live save path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md), [native storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) |
+| Population and saves | [Overworld controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/overworld.md), [live save path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md), [native storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) |
 | SavedData | [Manager/MapData ownership and type binding](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md), [held-World named comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/population-named-data.md) |
 
 The [Minecart constructor comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#constructor-observations-and-qualification)

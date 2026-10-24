@@ -13,14 +13,14 @@ option(MC_ENABLE_COMPRESSION_REFERENCE_TESTS "Compare compression with original 
 option(MC_ENABLE_NOISE_REFERENCE_TESTS "Compare terrain noise with original samplers" OFF)
 option(MC_ENABLE_SIMPLEX_REFERENCE_TESTS "Compare 2D simplex noise with original samplers" OFF)
 option(MC_ENABLE_BIOME_REFERENCE_TESTS "Compare climate and biomes with original methods" OFF)
-option(MC_ENABLE_DENSITY_REFERENCE_TESTS "Compare normal density and base terrain with originals" OFF)
-option(MC_ENABLE_SURFACE_REFERENCE_TESTS "Compare normal surface replacement with originals" OFF)
-option(MC_ENABLE_CAVES_REFERENCE_TESTS "Compare normal cave scheduling and carving with originals" OFF)
+option(MC_ENABLE_DENSITY_REFERENCE_TESTS "Compare Overworld density and base terrain with originals" OFF)
+option(MC_ENABLE_SURFACE_REFERENCE_TESTS "Compare Overworld surface replacement with originals" OFF)
+option(MC_ENABLE_CAVES_REFERENCE_TESTS "Compare Overworld cave scheduling and carving with originals" OFF)
 option(MC_ENABLE_NIBBLES_REFERENCE_TESTS "Compare packed nibble access with original classes" OFF)
 option(MC_ENABLE_CHUNK_REFERENCE_TESTS "Compare local chunk initialization with original methods" OFF)
 option(MC_ENABLE_LIGHT_REFERENCE_TESTS "Compare light regions and ordered queues with originals" OFF)
-option(MC_ENABLE_FINISH_REFERENCE_TESTS "Compare full normal chunk finishing with original traces" OFF)
-option(MC_ENABLE_GENERATION_REFERENCE_TESTS "Compare complete normal generation with original traces" OFF)
+option(MC_ENABLE_FINISH_REFERENCE_TESTS "Compare full Overworld chunk finishing with original traces" OFF)
+option(MC_ENABLE_GENERATION_REFERENCE_TESTS "Compare complete Overworld generation with original traces" OFF)
 option(MC_ENABLE_REGION_CAPTURE_TESTS "Compare region reader with recorded observations" OFF)
 option(MC_ENABLE_REGION_REFERENCE_TESTS "Compare region inspection with untouched original readers" OFF)
 option(MC_ENABLE_CACHE_REFERENCE_TESTS "Compare synchronous acquisition with retained original providers" OFF)
@@ -133,7 +133,7 @@ target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 add_library(mc_registry STATIC
     src/block/registry/registry.c
     src/block/registry/managed.c
-    src/block/registry/wire_set.c
+    src/block/registry/redstone_set.c
     src/block/registry/runtime.c
     src/block/registry/directions.c
     src/block/registry/horizontal_directions.c
@@ -185,11 +185,11 @@ endif()
 
 add_library(mc_world STATIC
     src/world/runtime/loading/errors.c
-    src/world/runtime/tiles/errors.c
+    src/world/runtime/tile_entities/errors.c
     src/world/schedule/entry.c
     src/world/schedule/membership.c
     src/world/schedule/ordered.c
-    src/world/generation/normal.c
+    src/world/generation/overworld.c
     src/world/cache/cache.c
     src/world/cache/acquire.c
     src/world/cache/lifecycle.c
@@ -228,10 +228,10 @@ add_library(mc_simulation STATIC
     src/entity/nbt/factory.c
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
-    src/world/runtime/tiles/tiles.c
-    src/world/runtime/tiles/piston_math.c
-    src/world/runtime/tiles/piston.c
-    src/world/runtime/tiles/piston_tick.c
+    src/world/runtime/tile_entities/tile_entities.c
+    src/world/runtime/tile_entities/piston_math.c
+    src/world/runtime/tile_entities/piston.c
+    src/world/runtime/tile_entities/piston_tick.c
     src/world/runtime/loading/loading.c
     src/world/runtime/saving/saving.c
     src/world/runtime/runtime.c
@@ -251,7 +251,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/population/ore_clay.c
     src/world/runtime/population/lake_spring.c
     src/world/runtime/population/dungeon.c
-    src/world/runtime/population/normal.c
+    src/world/runtime/population/overworld.c
     src/world/runtime/lighting.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
@@ -259,7 +259,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/power/world.c
     src/world/runtime/power/blocks.c
     src/world/runtime/presentation.c
-    src/world/runtime/observers.c
+    src/world/runtime/world_access.c
     src/world/runtime/entity_publication.c
     src/world/runtime/collision/entities.c
     src/world/runtime/collision/class_entities.c
@@ -270,11 +270,11 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/support.c
     src/world/runtime/mutation/chunk.c
     src/world/runtime/mutation/height.c
-    src/world/runtime/mutation/observers.c
+    src/world/runtime/mutation/notifications.c
     src/world/runtime/mutation/hooks.c
-    src/world/runtime/mutation/wire/queries.c
-    src/world/runtime/mutation/wire/update.c
-    src/world/runtime/mutation/wire/lifecycle.c
+    src/world/runtime/mutation/redstone/queries.c
+    src/world/runtime/mutation/redstone/update.c
+    src/world/runtime/mutation/redstone/lifecycle.c
     src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/falling.c
@@ -296,12 +296,12 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/rails/wrapper_transport.c
     src/world/runtime/mutation/drops.c
     src/world/runtime/mutation/world.c
-    src/world/runtime/provider.c
+    src/world/runtime/chunk_provider.c
     src/world/runtime/saved_data.c
     src/world/runtime/generation/generation.c
     src/world/runtime/generation/surface.c
     src/world/runtime/generation/caves.c
-    src/world/dimension/dimension.c
+    src/world/dimension/world_provider.c
     src/world/dimension/temperature.c
     src/entity/entity.c
     src/entity/minecart/entity.c
@@ -351,13 +351,13 @@ if(BUILD_TESTING)
     add_test(NAME block.registry_managed COMMAND mc_test_registry_managed)
     set_tests_properties(block.registry_managed PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
-    add_executable(mc_test_wire_set tests/block/registry/test_wire_set.c)
-    target_link_libraries(mc_test_wire_set PRIVATE mc_registry mc_build_options)
-    add_test(NAME block.wire_position_set COMMAND mc_test_wire_set)
-    set_tests_properties(block.wire_position_set PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+    add_executable(mc_test_redstone_set tests/block/registry/test_redstone_set.c)
+    target_link_libraries(mc_test_redstone_set PRIVATE mc_registry mc_build_options)
+    add_test(NAME block.redstone_position_set COMMAND mc_test_redstone_set)
+    set_tests_properties(block.redstone_position_set PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
-    add_executable(mc_wire_set_probe tests/block/registry/wire_set_probe.c)
-    target_link_libraries(mc_wire_set_probe PRIVATE mc_registry mc_build_options)
+    add_executable(mc_redstone_set_probe tests/block/registry/redstone_set_probe.c)
+    target_link_libraries(mc_redstone_set_probe PRIVATE mc_registry mc_build_options)
 
     add_executable(mc_test_biome_registry tests/world/biome/test_registry.c)
     target_link_libraries(mc_test_biome_registry PRIVATE mc_registry mc_c_atomics mc_build_options)
@@ -581,11 +581,11 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_chunk_objects tests/world/runtime/test_chunk_objects.c)
     target_link_libraries(mc_test_world_chunk_objects PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_world_provider_generation tests/world/runtime/test_provider_generation.c)
-    target_link_libraries(mc_test_world_provider_generation PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_chunk_provider_generation tests/world/runtime/test_chunk_provider_generation.c)
+    target_link_libraries(mc_test_world_chunk_provider_generation PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_world_provider_activation tests/world/runtime/test_provider_activation.c)
-    target_link_libraries(mc_test_world_provider_activation PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_chunk_provider_activation tests/world/runtime/test_chunk_provider_activation.c)
+    target_link_libraries(mc_test_world_chunk_provider_activation PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_mutations tests/world/runtime/test_mutations.c)
     target_link_libraries(mc_test_world_mutations PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -602,16 +602,16 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_power tests/world/runtime/power/test_power.c)
     target_link_libraries(mc_test_world_power PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_world_wire tests/world/runtime/wire/test_wire.c)
-    target_link_libraries(mc_test_world_wire PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_redstone tests/world/runtime/redstone/test_redstone.c)
+    target_link_libraries(mc_test_world_redstone PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_world_wire_multichunk tests/world/runtime/wire/test_multichunk.c)
-    target_link_libraries(mc_test_world_wire_multichunk PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_redstone_multichunk tests/world/runtime/redstone/test_multichunk.c)
+    target_link_libraries(mc_test_world_redstone_multichunk PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_wire_world_probe tests/world/runtime/wire/world_probe.c)
-    target_link_libraries(mc_wire_world_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
-    add_executable(mc_test_world_observers tests/world/runtime/observers/test_observers.c)
-    target_link_libraries(mc_test_world_observers PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_redstone_world_probe tests/world/runtime/redstone/world_probe.c)
+    target_link_libraries(mc_redstone_world_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_access tests/world/runtime/world_access/test_world_access.c)
+    target_link_libraries(mc_test_world_access PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
     target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -640,13 +640,13 @@ if(BUILD_TESTING)
     add_executable(mc_test_piston_geometry tests/world/runtime/collision/test_piston_geometry.c)
     target_link_libraries(mc_test_piston_geometry PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_piston_tiles tests/world/runtime/tiles/test_piston.c)
-    target_link_libraries(mc_test_piston_tiles PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_piston_tile_entities tests/world/runtime/tile_entities/test_piston.c)
+    target_link_libraries(mc_test_piston_tile_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_piston_finalize tests/world/runtime/tiles/test_piston_finalize.c)
+    add_executable(mc_test_piston_finalize tests/world/runtime/tile_entities/test_piston_finalize.c)
     target_link_libraries(mc_test_piston_finalize PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_piston_tick tests/world/runtime/tiles/test_piston_tick.c)
+    add_executable(mc_test_piston_tick tests/world/runtime/tile_entities/test_piston_tick.c)
     target_link_libraries(mc_test_piston_tick PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_entity_movement tests/entity/movement/test_movement.c)
@@ -658,7 +658,7 @@ if(BUILD_TESTING)
     add_executable(mc_entity_movement_probe tests/entity/movement/movement_probe.c)
     target_link_libraries(mc_entity_movement_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_piston_float_probe tests/world/runtime/tiles/piston_float_probe.c)
+    add_executable(mc_piston_float_probe tests/world/runtime/tile_entities/piston_float_probe.c)
     target_link_libraries(mc_piston_float_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_directions tests/block/registry/test_directions.c)
@@ -698,8 +698,8 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_world_tiles tests/world/runtime/tiles/test_tiles.c)
-    target_link_libraries(mc_test_world_tiles PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_tile_entities tests/world/runtime/tile_entities/test_tile_entities.c)
+    target_link_libraries(mc_test_world_tile_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_saving tests/world/runtime/saving/test_saving.c)
     target_link_libraries(mc_test_world_saving PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -710,8 +710,8 @@ if(BUILD_TESTING)
     add_executable(mc_test_dungeon tests/world/runtime/population/test_dungeon.c)
     target_link_libraries(mc_test_dungeon PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
-    add_executable(mc_test_normal_population tests/world/runtime/population/test_normal.c)
-    target_link_libraries(mc_test_normal_population PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_overworld_population tests/world/runtime/population/test_overworld.c)
+    target_link_libraries(mc_test_overworld_population PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_natural_population_probe tests/world/runtime/population/natural_probe.c)
     target_link_libraries(mc_natural_population_probe PRIVATE mc_simulation mc_resources mc_c_atomics mc_build_options)
@@ -733,8 +733,8 @@ if(BUILD_TESTING)
     set_tests_properties(block.registry_runtime_literals PROPERTIES
         LABELS "public;unit;ownership" TIMEOUT 60)
 
-    add_executable(mc_test_normal_provider_construction tests/world/generation/test_provider_construction.c)
-    target_link_libraries(mc_test_normal_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
+    add_executable(mc_test_overworld_provider_construction tests/world/generation/test_overworld_provider_construction.c)
+    target_link_libraries(mc_test_overworld_provider_construction PRIVATE mc_world mc_c_atomics mc_build_options)
 
     add_executable(mc_dimension_observation_probe tests/world/dimension/dimension_observation_probe.c)
     target_include_directories(mc_dimension_observation_probe PRIVATE src/world/dimension)
@@ -805,13 +805,13 @@ if(BUILD_TESTING)
     add_executable(mc_region_probe tests/storage/region/region_probe.c)
     target_link_libraries(mc_region_probe PRIVATE mc_storage mc_build_options)
 
-    add_executable(mc_test_normal_generator tests/world/generation/test_normal.c)
-    target_link_libraries(mc_test_normal_generator PRIVATE mc_world mc_build_options)
-    add_test(NAME world.normal_generator COMMAND mc_test_normal_generator)
-    set_tests_properties(world.normal_generator PROPERTIES LABELS "public;unit" TIMEOUT 60)
+    add_executable(mc_test_overworld_generator tests/world/generation/test_overworld.c)
+    target_link_libraries(mc_test_overworld_generator PRIVATE mc_world mc_build_options)
+    add_test(NAME world.overworld_generator COMMAND mc_test_overworld_generator)
+    set_tests_properties(world.overworld_generator PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
-    add_executable(mc_normal_generation_probe tests/world/generation/normal_probe.c)
-    target_link_libraries(mc_normal_generation_probe PRIVATE mc_world mc_build_options)
+    add_executable(mc_overworld_generation_probe tests/world/generation/overworld_probe.c)
+    target_link_libraries(mc_overworld_generation_probe PRIVATE mc_world mc_build_options)
 
     add_executable(mc_test_chunk_finish tests/world/chunk/test_finish.c)
     target_link_libraries(mc_test_chunk_finish PRIVATE mc_world mc_build_options)
@@ -1307,22 +1307,22 @@ if(BUILD_TESTING)
     set_tests_properties(world.chunk_objects PROPERTIES
         LABELS "public;integration;ownership;lighting;storage" TIMEOUT 90)
 
-    add_test(NAME world.provider_generation
+    add_test(NAME world.chunk_provider_generation
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
-        --executable "$<TARGET_FILE:mc_test_world_provider_generation>"
-        --scenario world-provider-generation
-        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-provider-generation-contracts")
-    set_tests_properties(world.provider_generation PROPERTIES
+        --executable "$<TARGET_FILE:mc_test_world_chunk_provider_generation>"
+        --scenario world-chunk-provider-generation
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-chunk-provider-generation-contracts")
+    set_tests_properties(world.chunk_provider_generation PROPERTIES
         LABELS "public;integration;ownership;generation" TIMEOUT 90)
 
-    add_test(NAME world.provider_activation
+    add_test(NAME world.chunk_provider_activation
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
-        --executable "$<TARGET_FILE:mc_test_world_provider_activation>"
-        --scenario world-provider-activation
-        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-provider-activation-contracts")
-    set_tests_properties(world.provider_activation PROPERTIES
+        --executable "$<TARGET_FILE:mc_test_world_chunk_provider_activation>"
+        --scenario world-chunk-provider-activation
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-chunk-provider-activation-contracts")
+    set_tests_properties(world.chunk_provider_activation PROPERTIES
         LABELS "public;integration;ownership;generation;storage" TIMEOUT 90)
 
     add_test(NAME world.mutations
@@ -1370,29 +1370,29 @@ if(BUILD_TESTING)
     set_tests_properties(world.power PROPERTIES
         LABELS "public;integration;ownership;power" TIMEOUT 90)
 
-    add_test(NAME world.wire_lifecycle COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_wire.py"
-        --executable "$<TARGET_FILE:mc_test_world_wire>")
-    set_tests_properties(world.wire_lifecycle PROPERTIES
+    add_test(NAME world.redstone_lifecycle COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_redstone.py"
+        --executable "$<TARGET_FILE:mc_test_world_redstone>")
+    set_tests_properties(world.redstone_lifecycle PROPERTIES
         LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
 
-    add_test(NAME world.wire_multichunk COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_wire.py"
-        --executable "$<TARGET_FILE:mc_test_world_wire_multichunk>"
-        --scenario world-wire-multichunk)
-    set_tests_properties(world.wire_multichunk PROPERTIES
+    add_test(NAME world.redstone_multichunk COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_redstone.py"
+        --executable "$<TARGET_FILE:mc_test_world_redstone_multichunk>"
+        --scenario world-redstone-multichunk)
+    set_tests_properties(world.redstone_multichunk PROPERTIES
         LABELS "public;integration;ownership;mutation;power;dedicated" TIMEOUT 90)
 
-    add_test(NAME world.observers COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_observers.py"
-        --executable "$<TARGET_FILE:mc_test_world_observers>")
-    set_tests_properties(world.observers PROPERTIES
+    add_test(NAME world.world_access COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_world_access.py"
+        --executable "$<TARGET_FILE:mc_test_world_access>")
+    set_tests_properties(world.world_access PROPERTIES
         LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
 
-    add_test(NAME world.wire_probe_inputs COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_wire_probe_inputs.py"
-        --executable "$<TARGET_FILE:mc_wire_world_probe>")
-    set_tests_properties(world.wire_probe_inputs PROPERTIES
+    add_test(NAME world.redstone_probe_inputs COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_redstone_probe_inputs.py"
+        --executable "$<TARGET_FILE:mc_redstone_world_probe>")
+    set_tests_properties(world.redstone_probe_inputs PROPERTIES
         LABELS "public;integration;ownership;mutation;random" TIMEOUT 240)
 
     add_test(NAME world.rails
@@ -1458,13 +1458,13 @@ if(BUILD_TESTING)
     set_tests_properties(world.piston_geometry PROPERTIES
         LABELS "public;integration;ownership;collision" TIMEOUT 90)
 
-    add_test(NAME world.piston_tiles
+    add_test(NAME world.piston_tile_entities
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
-        --executable "$<TARGET_FILE:mc_test_piston_tiles>"
-        --scenario world-piston-tiles
-        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-tiles-contracts")
-    set_tests_properties(world.piston_tiles PROPERTIES
+        --executable "$<TARGET_FILE:mc_test_piston_tile_entities>"
+        --scenario world-piston-tile-entities
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-piston-tile-entities-contracts")
+    set_tests_properties(world.piston_tile_entities PROPERTIES
         LABELS "public;integration;ownership;storage" TIMEOUT 90)
 
     add_test(NAME world.piston_finalization
@@ -1503,13 +1503,13 @@ if(BUILD_TESTING)
     set_tests_properties(world.movement_dependencies PROPERTIES
         LABELS "public;integration;ownership;environment" TIMEOUT 90)
 
-    add_test(NAME world.tiles
+    add_test(NAME world.tile_entities
         COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_tiles.py"
-        --executable "$<TARGET_FILE:mc_test_world_tiles>"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_tile_entities.py"
+        --executable "$<TARGET_FILE:mc_test_world_tile_entities>"
         --mode all
-        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-tiles-contracts")
-    set_tests_properties(world.tiles PROPERTIES
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-tile-entities-contracts")
+    set_tests_properties(world.tile_entities PROPERTIES
         LABELS "public;integration;ownership;mutation;storage" TIMEOUT 90)
 
     add_test(NAME world.saving
@@ -1559,12 +1559,12 @@ if(BUILD_TESTING)
     set_tests_properties(world.dungeon PROPERTIES
         LABELS "public;integration;ownership;mutation;storage" TIMEOUT 160)
 
-    add_test(NAME world.normal_population
+    add_test(NAME world.overworld_population
         COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_normal_population.py"
-        --executable "$<TARGET_FILE:mc_test_normal_population>"
-        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-normal-population-contracts")
-    set_tests_properties(world.normal_population PROPERTIES
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_overworld_population.py"
+        --executable "$<TARGET_FILE:mc_test_overworld_population>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-overworld-population-contracts")
+    set_tests_properties(world.overworld_population PROPERTIES
         LABELS "public;integration;ownership;population;storage" TIMEOUT 120)
 
     add_test(NAME tools.natural_population
@@ -1790,9 +1790,9 @@ if(BUILD_TESTING)
             LABELS "reference;original;mutation" TIMEOUT 300)
     endif()
 
-    add_test(NAME world.normal_provider_construction
-        COMMAND mc_test_normal_provider_construction)
-    set_tests_properties(world.normal_provider_construction PROPERTIES
+    add_test(NAME world.overworld_provider_construction
+        COMMAND mc_test_overworld_provider_construction)
+    set_tests_properties(world.overworld_provider_construction PROPERTIES
         LABELS "public;unit;generation" TIMEOUT 90)
 
     add_test(NAME world.dimension_reference
@@ -2162,34 +2162,34 @@ if(BUILD_TESTING)
             LABELS "reference;captured;region" TIMEOUT 120 SKIP_RETURN_CODE 77)
     endif()
 
-    add_test(NAME tools.normal_reference
+    add_test(NAME tools.overworld_reference
         COMMAND "${Python3_EXECUTABLE}" -m unittest discover
-        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation" -p test_normal_reference.py)
-    set_tests_properties(tools.normal_reference PROPERTIES
+        -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation" -p test_overworld_reference.py)
+    set_tests_properties(tools.overworld_reference PROPERTIES
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         LABELS "public;tools" TIMEOUT 30)
 
-    add_test(NAME tools.normal_interop
+    add_test(NAME tools.overworld_interop
         COMMAND "${Python3_EXECUTABLE}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation/test_normal_interop.py"
-        --executable "$<TARGET_FILE:mc_normal_generation_probe>")
-    set_tests_properties(tools.normal_interop PROPERTIES LABELS "public;tools" TIMEOUT 90)
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/generation/test_overworld_interop.py"
+        --executable "$<TARGET_FILE:mc_overworld_generation_probe>")
+    set_tests_properties(tools.overworld_interop PROPERTIES LABELS "public;tools" TIMEOUT 90)
 
     if(MC_ENABLE_GENERATION_REFERENCE_TESTS)
         find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
         get_filename_component(MC_GENERATION_JAVA_BIN "${Java_JAVA_EXECUTABLE}" DIRECTORY)
-        add_test(NAME reference.normal_generation
+        add_test(NAME reference.overworld_generation
             COMMAND "${Python3_EXECUTABLE}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/generation/compare_normal.py"
-            --executable "$<TARGET_FILE:mc_normal_generation_probe>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/generation/compare_overworld.py"
+            --executable "$<TARGET_FILE:mc_overworld_generation_probe>"
             --client "${MC_REFERENCE_CLIENT_JAR}"
             --server "${MC_REFERENCE_SERVER_JAR}"
             --java "${Java_JAVA_EXECUTABLE}"
             --javac "${Java_JAVAC_EXECUTABLE}"
             --javap "${MC_GENERATION_JAVA_BIN}/javap${CMAKE_EXECUTABLE_SUFFIX}"
-            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-normal-generation"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-overworld-generation"
             --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
-        set_tests_properties(reference.normal_generation PROPERTIES
+        set_tests_properties(reference.overworld_generation PROPERTIES
             LABELS "reference;original;generation" TIMEOUT 1900 SKIP_RETURN_CODE 77)
     endif()
 

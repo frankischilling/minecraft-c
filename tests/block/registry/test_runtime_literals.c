@@ -486,7 +486,9 @@ static mc_registry_status p_missing_resource(void *context, const char *name,
         OBSERVE(fixture, block != NULL);
         if (block == NULL)
             return MC_REGISTRY_NULL_REFERENCE;
-        const mc_block_kind kind = i == 0 ? MC_BLOCK_XQ_PA : i == 1 ? MC_BLOCK_E_E : MC_BLOCK_TC_LZ;
+        const mc_block_kind kind = i == 0   ? MC_BLOCK_DISPENSER
+                                   : i == 1 ? MC_BLOCK_CHEST
+                                            : MC_BLOCK_FURNACE;
         OBSERVE(fixture, block->kind == kind);
         if (block->kind != kind)
             return MC_REGISTRY_NULL_REFERENCE;
@@ -580,7 +582,7 @@ static int test_p_entered_failure(mc_registry_options options) {
           owner->initializer == NULL && owner->translation_state.phase == MC_REGISTRY_FAILED &&
           owner->translation_wrapper_state.phase == MC_REGISTRY_FAILED);
     CHECK(same_error(owner->block_failure, first_failure) &&
-          same_error(owner->block_states[MC_BLOCK_UU_NA].failure, first_failure) &&
+          same_error(owner->block_states[MC_BLOCK_BASE].failure, first_failure) &&
           same_error(owner->translation_state.failure, first_failure) &&
           same_error(owner->translation_wrapper_state.failure, first_failure));
     CHECK(fixture.captured.classes == owner && fixture.captured.identity == owner->blocks.p &&
@@ -614,7 +616,7 @@ static int test_p_entered_failure(mc_registry_options options) {
         CHECK(value && fresh_error(error, MC_REGISTRY_INDEX_OUT_OF_RANGE) &&
               same_error(owner->last_error, error));
         CHECK(same_error(owner->block_failure, first_failure) &&
-              same_error(owner->block_states[MC_BLOCK_UU_NA].failure, first_failure) &&
+              same_error(owner->block_states[MC_BLOCK_BASE].failure, first_failure) &&
               same_error(owner->translation_state.failure, first_failure) &&
               same_error(owner->translation_wrapper_state.failure, first_failure));
         error = poison_error();

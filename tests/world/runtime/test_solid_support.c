@@ -7,7 +7,7 @@
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/platform/time/millis.h"
-#include "../../../src/world/runtime/provider_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/files.h"
 #include "../../support/java_random.h"
@@ -71,8 +71,8 @@ typedef struct fixture {
     mc_registry_classes *registry[4];
     mc_world_runtime_classes *classes[5];
     mc_world_runtime *worlds[7];
-    mc_world_dimension *dimensions[6];
-    mc_world_provider_fields providers[6];
+    mc_world_provider *dimensions[6];
+    mc_chunk_provider_fields providers[6];
     bool bound[6];
     child children[32];
     mc_chunk_state *center[2];
@@ -261,7 +261,7 @@ static bool create_world(fixture *f, size_t slot) {
     mc_world_runtime_construction state;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 4;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(server ? MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE
                                                  : MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE,
                                           f->classes[class_index], &limits, &f->worlds[slot],
@@ -272,7 +272,7 @@ static bool create_world(fixture *f, size_t slot) {
           MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_construction_get(f->worlds[slot], &state) == MC_WORLD_STORAGE_OK &&
           state.phase == MC_WORLD_RUNTIME_READY && state.contexts_bound && state.cache_registered);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(f->providers[slot].cache->count == 0 && f->providers[slot].cache->insertion_count == 0 &&
@@ -492,10 +492,10 @@ static bool selected_predicates(fixture *f, size_t side) {
     const uint64_t u = atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed);
     mc_world_solid_support_error error;
     mc_block *const stone = r->blocks.m[1];
-    mc_block *const slab = find_kind(r, MC_BLOCK_YS_PW);
-    mc_block *const flower = find_kind(r, MC_BLOCK_WB_NW);
-    mc_block *const glass = find_kind(r, MC_BLOCK_FK_DO);
-    mc_block *const leaves = find_kind(r, MC_BLOCK_BK_AR);
+    mc_block *const slab = find_kind(r, MC_BLOCK_SLAB);
+    mc_block *const flower = find_kind(r, MC_BLOCK_FLOWER);
+    mc_block *const glass = find_kind(r, MC_BLOCK_GLASS);
+    mc_block *const leaves = find_kind(r, MC_BLOCK_LEAVES);
     CHECK(stone != NULL && slab != NULL && flower != NULL && glass != NULL && leaves != NULL);
     bool value = true;
     mc_block *const saved_element = r->blocks.m[1];
@@ -745,7 +745,7 @@ static bool cleanup_fixture(fixture *f) {
              mc_world_runtime_free(f->worlds[i], NULL) != MC_WORLD_STORAGE_OK))
             return false;
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->classes); ++i)
         if (mc_world_runtime_classes_free(f->classes[i], NULL) != MC_WORLD_STORAGE_OK)
             return false;

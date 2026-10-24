@@ -14,8 +14,8 @@ typedef struct dungeon_frame {
     bool entered;
     size_t stack_bytes, stack_limit;
     mc_item_stack *stack;
-    mc_tile *tile;
-    mc_tile_name *name;
+    mc_tile_entity *tile_entity;
+    mc_tile_entity_name *name;
     mc_population_dungeon_error error;
 } dungeon_frame;
 
@@ -35,7 +35,7 @@ static mc_population_dungeon_error empty_error(void) {
                                          .registry = registry,
                                          .material = {.registry = registry},
                                          .mutation = mc_world_mutation_empty_error(),
-                                         .tile = mc_live_tiles_empty_error()};
+                                         .tile_entity = mc_live_tile_entities_empty_error()};
 }
 
 void mc_population_dungeon_limits_default(mc_population_dungeon_limits *out) {
@@ -77,18 +77,19 @@ static bool item_fail(dungeon_frame *frame, mc_item_stack_status status, const c
                 operation);
 }
 
-static bool tile_fail(dungeon_frame *frame, mc_tile_status status, const char *operation) {
-    if (frame->error.tile.status != MC_WORLD_STORAGE_OK)
-        return storage_fail(frame, &frame->error.tile.cause);
-    frame->error.tile.tile.status = status;
+static bool tile_entity_fail(dungeon_frame *frame, mc_tile_entity_status status,
+                             const char *operation) {
+    if (frame->error.tile_entity.status != MC_WORLD_STORAGE_OK)
+        return storage_fail(frame, &frame->error.tile_entity.cause);
+    frame->error.tile_entity.tile_entity.status = status;
     const mc_world_storage_status mapped =
-        status == MC_TILE_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-        : status == MC_TILE_LIMIT           ? MC_WORLD_STORAGE_LIMIT
-                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-    frame->error.tile.status = mapped;
-    frame->error.tile.operation = operation;
-    frame->error.tile.cause = (mc_world_storage_error){mapped, operation, 0};
-    return storage_fail(frame, &frame->error.tile.cause);
+        status == MC_TILE_ENTITY_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_TILE_ENTITY_LIMIT           ? MC_WORLD_STORAGE_LIMIT
+                                                   : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    frame->error.tile_entity.status = mapped;
+    frame->error.tile_entity.operation = operation;
+    frame->error.tile_entity.cause = (mc_world_storage_error){mapped, operation, 0};
+    return storage_fail(frame, &frame->error.tile_entity.cause);
 }
 
 static bool begin(dungeon_frame *frame, mc_world_runtime *world, mc_java_random *random,
@@ -117,8 +118,8 @@ static bool begin(dungeon_frame *frame, mc_world_runtime *world, mc_java_random 
 static mc_world_storage_status finish(dungeon_frame *frame, bool completed,
                                       mc_population_dungeon_error *error) {
     mc_item_stack_release(frame->stack);
-    mc_tile_release(frame->tile);
-    mc_tile_name_release(frame->name);
+    mc_tile_entity_release(frame->tile_entity);
+    mc_tile_entity_name_release(frame->name);
     if (completed)
         frame->error = empty_error();
     else if (frame->entered)
@@ -508,20 +509,22 @@ static void loot_completed(dungeon_frame *frame) {
     frame->error.stack_constructor_descriptor = NULL;
 }
 
-static bool tile_get(dungeon_frame *frame, unsigned int pc, unsigned int cast_pc, mc_tile_kind kind,
-                     int32_t x, int32_t y, int32_t z) {
+static bool tile_entity_get(dungeon_frame *frame, unsigned int pc, unsigned int cast_pc,
+                            mc_tile_entity_kind kind, int32_t x, int32_t y, int32_t z) {
     stage(frame, pc);
-    if (mc_live_tiles_get(frame->world, x, y, z, &frame->tile, &frame->error.tile) !=
-        MC_WORLD_STORAGE_OK)
-        return storage_fail(frame, &frame->error.tile.cause);
+    if (mc_live_tile_entities_get(frame->world, x, y, z, &frame->tile_entity,
+                                  &frame->error.tile_entity) != MC_WORLD_STORAGE_OK)
+        return storage_fail(frame, &frame->error.tile_entity.cause);
     stage(frame, cast_pc);
-    if (frame->tile != NULL) {
-        mc_tile_snapshot snapshot;
-        const mc_tile_status status = mc_tile_get_snapshot(frame->tile, &snapshot);
-        if (status != MC_TILE_OK)
-            return tile_fail(frame, status, "Dungeon Tile cast snapshot");
+    if (frame->tile_entity != NULL) {
+        mc_tile_entity_snapshot snapshot;
+        const mc_tile_entity_status status =
+            mc_tile_entity_get_snapshot(frame->tile_entity, &snapshot);
+        if (status != MC_TILE_ENTITY_OK)
+            return tile_entity_fail(frame, status, "Dungeon TileEntity cast snapshot");
         if (snapshot.kind != kind)
-            return tile_fail(frame, MC_TILE_INVALID_KIND, "Dungeon concrete Tile cast");
+            return tile_entity_fail(frame, MC_TILE_ENTITY_INVALID_KIND,
+                                    "Dungeon concrete TileEntity cast");
     }
     return true;
 }
@@ -537,16 +540,17 @@ static bool fill_chest(dungeon_frame *frame) {
             continue;
         stage(frame, 743);
         int32_t size;
-        mc_tile_status status = mc_tile_chest_size(frame->tile, &size);
-        if (status != MC_TILE_OK)
-            return tile_fail(frame, status, "Dungeon Chest size receiver");
+        mc_tile_entity_status status = mc_tile_entity_chest_size(frame->tile_entity, &size);
+        if (status != MC_TILE_ENTITY_OK)
+            return tile_entity_fail(frame, status, "Dungeon Chest size receiver");
         int32_t slot;
         if (!draw(frame, 746, size, &slot))
             return false;
         stage(frame, 751);
-        status = mc_tile_chest_set_detailed(frame->tile, slot, frame->stack, &frame->error.tile);
-        if (status != MC_TILE_OK)
-            return tile_fail(frame, status, "Dungeon Chest slot assignment");
+        status = mc_tile_entity_chest_set_detailed(frame->tile_entity, slot, frame->stack,
+                                                   &frame->error.tile_entity);
+        if (status != MC_TILE_ENTITY_OK)
+            return tile_entity_fail(frame, status, "Dungeon Chest slot assignment");
         mc_item_stack_release(frame->stack);
         frame->stack = NULL;
     }
@@ -592,10 +596,11 @@ static bool chests(dungeon_frame *frame, int32_t x, int32_t y, int32_t z, int32_
                 continue;
             int32_t id;
             if (!static_id(frame, "av", 691, 694, &id) || !write_block(frame, 697, xx, y, zz, id) ||
-                !tile_get(frame, 708, 711, MC_TILE_CHEST, xx, y, zz) || !fill_chest(frame))
+                !tile_entity_get(frame, 708, 711, MC_TILE_ENTITY_CHEST, xx, y, zz) ||
+                !fill_chest(frame))
                 return false;
-            mc_tile_release(frame->tile);
-            frame->tile = NULL;
+            mc_tile_entity_release(frame->tile_entity);
+            frame->tile_entity = NULL;
             break;
         }
     }
@@ -631,9 +636,9 @@ static bool mob(dungeon_frame *frame) {
             name = "";
             break;
     }
-    if (mc_live_tiles_literal(frame->world, name, &frame->name, &frame->error.tile) !=
-        MC_WORLD_STORAGE_OK)
-        return storage_fail(frame, &frame->error.tile.cause);
+    if (mc_live_tile_entities_literal(frame->world, name, &frame->name,
+                                      &frame->error.tile_entity) != MC_WORLD_STORAGE_OK)
+        return storage_fail(frame, &frame->error.tile_entity.cause);
     return true;
 }
 
@@ -660,16 +665,17 @@ mc_world_storage_status mc_population_dungeon_place(mc_world_runtime *world, mc_
         return finish(&frame, false, error);
     int32_t id;
     if (!static_id(&frame, "at", 781, 784, &id) || !write_block(&frame, 787, x, y, z, id) ||
-        !tile_get(&frame, 797, 800, MC_TILE_SPAWNER, x, y, z))
+        !tile_entity_get(&frame, 797, 800, MC_TILE_ENTITY_SPAWNER, x, y, z))
         return finish(&frame, false, error);
     stage(&frame, 809);
     if (!mob(&frame))
         return finish(&frame, false, error);
     frame.error.mob_bytecode = 0;
     stage(&frame, 812);
-    const mc_tile_status status = mc_tile_spawner_set_name(frame.tile, frame.name);
-    if (status != MC_TILE_OK) {
-        (void)tile_fail(&frame, status, "Dungeon Spawner name receiver");
+    const mc_tile_entity_status status =
+        mc_tile_entity_spawner_set_name(frame.tile_entity, frame.name);
+    if (status != MC_TILE_ENTITY_OK) {
+        (void)tile_entity_fail(&frame, status, "Dungeon Spawner name receiver");
         return finish(&frame, false, error);
     }
     *out = true;
@@ -689,7 +695,7 @@ mc_world_storage_status mc_population_dungeon_loot(mc_world_runtime *world, mc_j
 }
 
 mc_world_storage_status mc_population_dungeon_mob(mc_world_runtime *world, mc_java_random *random,
-                                                  mc_tile_name **out,
+                                                  mc_tile_entity_name **out,
                                                   mc_population_dungeon_error *error) {
     dungeon_frame frame;
     if (!begin(&frame, world, random, NULL, out, "b(Random)String") || !mob(&frame))

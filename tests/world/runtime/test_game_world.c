@@ -1,6 +1,6 @@
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../support/java_random.h"
 #include "mc/world/runtime/blocks.h"
@@ -95,27 +95,27 @@ cleanup:
 }
 
 static int check_provider(mc_world_runtime *world, mc_world_store *store,
-                          mc_world_provider_fields *out) {
+                          mc_chunk_provider_fields *out) {
     int result = 1;
     mc_world_runtime_fields f;
-    mc_world_dimension_fields dimension;
-    mc_world_dimension_biome_fields biome;
-    mc_world_provider_fields p;
+    mc_world_provider_fields dimension;
+    mc_world_chunk_manager_fields biome;
+    mc_chunk_provider_fields p;
     mc_world_storage_error error;
     const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(world);
     CHECK(mc_world_runtime_fields_get(world, &f) == MC_WORLD_STORAGE_OK && f.v != NULL);
-    CHECK(mc_world_provider_bind_fields(f.v, &p, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_chunk_provider_bind_fields(f.v, &p, &error) == MC_WORLD_STORAGE_OK);
     CHECK(p.world == world && p.store == store && p.max_chunks == 4 &&
           p.direct_allocation_bytes <= p.max_direct_allocation_bytes);
-    CHECK(mc_world_dimension_fields_get(f.t, &dimension) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_fields_get(f.t, &dimension) == MC_WORLD_PROVIDER_OK &&
           dimension.a == world);
     CHECK(p.biome == dimension.b &&
-          mc_world_dimension_biome_fields_get(p.biome, &biome) == MC_WORLD_DIMENSION_OK);
-    CHECK(!biome.fixed && biome.normal == p.manager && p.manager->initialized == 1 &&
+          mc_world_chunk_manager_fields_get(p.biome, &biome) == MC_WORLD_PROVIDER_OK);
+    CHECK(!biome.fixed && biome.noise_backed == p.manager && p.manager->initialized == 1 &&
           biome.holds >= 2);
     CHECK(p.generator != NULL && p.generator->initialized &&
-          p.generator->phase == MC_NORMAL_GENERATOR_PHASE_READY &&
-          p.generator->origin == MC_NORMAL_GENERATOR_PROVIDER && p.generator->cave_range == 8);
+          p.generator->phase == MC_OVERWORLD_GENERATOR_PHASE_READY &&
+          p.generator->origin == MC_OVERWORLD_GENERATOR_PROVIDER && p.generator->cave_range == 8);
     CHECK(p.generator->world_seed == 23 && p.generator->biome_manager == p.manager &&
           p.generator->trig == &trig);
     CHECK(p.generator->cave_random.state <= UINT64_C(0xffffffffffff) &&
@@ -140,8 +140,8 @@ static int check_provider(mc_world_runtime *world, mc_world_store *store,
           memcmp(p.fallback->data->block_light, zero_blocks, MC_CHUNK_NIBBLE_BYTES) == 0 &&
           memcmp(p.fallback->data->heightmap, zero_blocks, MC_CHUNK_HEIGHTMAP_BYTES) == 0 &&
           p.fallback->data->minimum_height == 0);
-    for (size_t x = 0; x < MC_WORLD_PROVIDER_GRID_WIDTH; ++x)
-        for (size_t z = 0; z < MC_WORLD_PROVIDER_GRID_WIDTH; ++z)
+    for (size_t x = 0; x < MC_CHUNK_PROVIDER_GRID_WIDTH; ++x)
+        for (size_t z = 0; z < MC_CHUNK_PROVIDER_GRID_WIDTH; ++z)
             CHECK(p.constructor_grid[x][z] == 0);
     *out = p;
     result = 0;
@@ -221,7 +221,7 @@ cleanup:
 }
 
 static int test_metadata(mc_world_runtime *world, mc_world_store *store, mc_world_regions *regions,
-                         const mc_world_provider_fields *provider, mc_chunk_state *chunks[4]) {
+                         const mc_chunk_provider_fields *provider, mc_chunk_state *chunks[4]) {
     int result = 1;
     int32_t value = -999;
     int32_t ordered_size = -1, membership_size = -1;
@@ -368,7 +368,7 @@ cleanup:
     return result;
 }
 
-static int test_blank_metadata(mc_world_runtime *world, const mc_world_provider_fields *provider) {
+static int test_blank_metadata(mc_world_runtime *world, const mc_chunk_provider_fields *provider) {
     int result = 1;
     bool published = false, changed = false;
     int32_t value = -999;
@@ -411,14 +411,14 @@ static int test_blocks(mc_world_runtime *world, mc_world_store *store, mc_world_
     int result = 1;
     bool provider_bound = false;
     mc_world_storage_error error;
-    mc_world_provider_fields provider;
+    mc_chunk_provider_fields provider;
     mc_chunk_data data;
     mc_chunk_state source = {.data = &data, .terrain_populated = true};
     const int32_t x[] = {-1, 0, -2000000, 1999999};
     const int32_t z[] = {-2, 2000000, 0, 0};
     int32_t value = -999;
     mc_java_random cave;
-    CHECK(mc_world_provider_bind_fields(world->fields.v, &provider, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_chunk_provider_bind_fields(world->fields.v, &provider, &error) == MC_WORLD_STORAGE_OK);
     provider_bound = true;
     cave = provider.generator->cave_random;
     for (size_t i = 0; i < 4; ++i) {
@@ -565,12 +565,12 @@ static int test_scheduled_retirement(mc_world_runtime *world) {
     bool in_e = false, in_f = false, removed = false;
     mc_world_storage_error error;
     int32_t count = 0;
-    mc_world_runtime *const binding = mc_world_dimension_world(world->fields.t);
+    mc_world_runtime *const binding = mc_world_provider_world(world->fields.t);
     CHECK(mc_scheduled_tick_create(&sequence, -1, 64, 7, 17, &tick) == MC_SCHEDULED_TICK_OK);
     CHECK(mc_scheduled_ordered_add(world->fields.E, tick, &in_e) == MC_SCHEDULED_ORDERED_OK &&
           in_e);
     CHECK(mc_world_runtime_retire_world(world, &error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_dimension_world(world->fields.t) == (binding == world ? NULL : binding) &&
+    CHECK(mc_world_provider_world(world->fields.t) == (binding == world ? NULL : binding) &&
           !world->construction.contexts_bound &&
           world->construction.phase == MC_WORLD_RUNTIME_RETIRED);
     CHECK(mc_scheduled_ordered_size(world->fields.E, &count) == MC_SCHEDULED_ORDERED_OK &&
@@ -581,7 +581,7 @@ static int test_scheduled_retirement(mc_world_runtime *world) {
     CHECK(mc_scheduled_membership_add(world->fields.F, tick, &in_f) == MC_SCHEDULED_MEMBERSHIP_OK &&
           in_f);
     CHECK(mc_world_runtime_retire_world(world, &error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_dimension_world(world->fields.t) == (binding == world ? NULL : binding) &&
+    CHECK(mc_world_provider_world(world->fields.t) == (binding == world ? NULL : binding) &&
           !world->construction.contexts_bound &&
           world->construction.phase == MC_WORLD_RUNTIME_RETIRED);
     CHECK(mc_scheduled_membership_size(world->fields.F, &count) == MC_SCHEDULED_MEMBERSHIP_OK &&
@@ -700,19 +700,19 @@ static int test_game(const char *root) {
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;
     mc_world_runtime *world[7] = {NULL};
-    mc_world_dimension *dimension[7] = {NULL};
+    mc_world_provider *dimension[7] = {NULL};
     mc_chunk_state *chunks[4] = {NULL};
     mc_world_info_name *name = NULL;
     mc_world_info_player *player = NULL;
     mc_world_info *metadata = NULL, *held_info = NULL;
-    mc_world_dimension_biome *held_biome = NULL;
-    mc_world_provider_fields direct, copied, loaded, missing;
+    mc_world_chunk_manager *held_biome = NULL;
+    mc_chunk_provider_fields direct, copied, loaded, missing;
     mc_world_runtime_fields a, b, f;
     mc_world_runtime_construction state;
     mc_world_runtime_class_state class_state;
     mc_world_info_fields info_a, info_b;
-    mc_world_dimension_fields df;
-    mc_world_dimension_biome_fields bf;
+    mc_world_provider_fields df;
+    mc_world_chunk_manager_fields bf;
     mc_world_storage_error error;
     mc_world_runtime_world_arguments arguments = {0};
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
@@ -779,7 +779,7 @@ static int test_game(const char *root) {
     CHECK(mc_world_runtime_free(world[0], &error) == MC_WORLD_STORAGE_OK);
     world[0] = NULL;
 
-    CHECK(mc_world_dimension_create(0, NULL, &dimension[1], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &dimension[1], NULL) == MC_WORLD_PROVIDER_OK);
     arguments.dimension = dimension[1];
     before = uniquifier(profile);
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA, classes, &limits,
@@ -797,7 +797,7 @@ static int test_game(const char *root) {
     CHECK(mc_world_info_time_set(a.x, 37) == MC_WORLD_INFO_OK);
     CHECK(mc_world_info_fields_get(a.x, &info_a) == MC_WORLD_INFO_OK && info_a.name == name &&
           info_a.player == player);
-    CHECK(mc_world_dimension_biome_retain(direct.biome) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_retain(direct.biome) == MC_WORLD_PROVIDER_OK);
     held_biome = direct.biome;
     /* Recover the opaque provider-owner charge from its exact published total
      * and documented concrete subordinate allocations, not a replica layout. */
@@ -810,7 +810,7 @@ static int test_game(const char *root) {
     CHECK(test_blocks(world[1], store, regions, chunks) == 0);
     CHECK(uniquifier(profile) == before && cold(profile));
 
-    CHECK(mc_world_dimension_create(0, NULL, &dimension[2], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &dimension[2], NULL) == MC_WORLD_PROVIDER_OK);
     arguments.parent = world[1];
     arguments.dimension = dimension[2];
     before = uniquifier(profile);
@@ -899,7 +899,7 @@ static int test_game(const char *root) {
     for (size_t i = 4; i < 6; ++i) {
         mc_world_runtime_construction_limits limited = limits;
         limited.max_provider_allocation_bytes = i == 4 ? 0 : owner_bytes;
-        CHECK(mc_world_dimension_create(0, NULL, &dimension[i], NULL) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_create(0, NULL, &dimension[i], NULL) == MC_WORLD_PROVIDER_OK);
         arguments = (mc_world_runtime_world_arguments){
             .store = store, .name = name, .seed = 23, .dimension = dimension[i]};
         before = uniquifier(profile);
@@ -914,9 +914,9 @@ static int test_game(const char *root) {
               world[i]->fallback.data == NULL && !world[i]->fallback.blank &&
               !world[i]->fallback.never_save);
         CHECK(uniquifier(profile) == advanced(before, i == 4 ? 2u : 3u) && cold(profile));
-        CHECK(mc_world_dimension_fields_get(dimension[i], &df) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_fields_get(dimension[i], &df) == MC_WORLD_PROVIDER_OK &&
               df.a == world[i] && df.b != NULL);
-        CHECK(mc_world_dimension_biome_fields_get(df.b, &bf) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_fields_get(df.b, &bf) == MC_WORLD_PROVIDER_OK &&
               bf.holds == 1);
         before = uniquifier(profile);
         CHECK(mc_world_runtime_construct_world(world[i], &arguments, &error) ==
@@ -929,34 +929,34 @@ static int test_game(const char *root) {
 
     /* Rebind the real Dimension without invalidating the provider's supplying
      * biome. Extra Dimension bindings must not disappear at World retirement. */
-    CHECK(mc_world_dimension_bind(dimension[1], world[2], NULL) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_fields_get(dimension[1], &df) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_bind(dimension[1], world[2], NULL) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_fields_get(dimension[1], &df) == MC_WORLD_PROVIDER_OK &&
           df.a == world[2] && df.b != held_biome);
-    CHECK(mc_world_dimension_biome_fields_get(held_biome, &bf) == MC_WORLD_DIMENSION_OK &&
-          bf.normal == direct.manager && bf.normal->initialized == 1 && bf.holds == 2);
+    CHECK(mc_world_chunk_manager_fields_get(held_biome, &bf) == MC_WORLD_PROVIDER_OK &&
+          bf.noise_backed == direct.manager && bf.noise_backed->initialized == 1 && bf.holds == 2);
     CHECK(mc_world_runtime_binding_retain(world[1]));
     ++bindings;
     /* Retirement is final for gameplay. Exercise retained queue owners only
      * after the last use of this World as a constructor/query receiver. */
     CHECK(test_scheduled_retirement(world[1]) == 0);
     CHECK(mc_world_runtime_retire_world(world[1], &error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_dimension_world(dimension[1]) == world[2] &&
+    CHECK(mc_world_provider_world(dimension[1]) == world[2] &&
           mc_world_runtime_free(world[1], &error) == MC_WORLD_STORAGE_BUSY);
     mc_world_runtime_binding_release(world[1]);
     --bindings;
     CHECK(mc_world_runtime_free(world[1], &error) == MC_WORLD_STORAGE_OK);
     world[1] = NULL;
-    CHECK(mc_world_dimension_biome_fields_get(held_biome, &bf) == MC_WORLD_DIMENSION_OK &&
-          bf.normal == direct.manager && bf.normal->initialized == 1 && bf.holds == 1);
+    CHECK(mc_world_chunk_manager_fields_get(held_biome, &bf) == MC_WORLD_PROVIDER_OK &&
+          bf.noise_backed == direct.manager && bf.noise_backed->initialized == 1 && bf.holds == 1);
     CHECK(mc_world_info_fields_get(b.x, &info_b) == MC_WORLD_INFO_OK && info_b.name == name &&
           info_b.player == player && info_b.value.time == 91);
     CHECK(mc_world_info_retain(b.x) == MC_WORLD_INFO_OK);
     held_info = b.x;
     CHECK(mc_world_runtime_retire_world(world[2], &error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_dimension_world(dimension[2]) == NULL &&
-          mc_world_dimension_world(dimension[1]) == world[2]);
+    CHECK(mc_world_provider_world(dimension[2]) == NULL &&
+          mc_world_provider_world(dimension[1]) == world[2]);
     CHECK(mc_world_runtime_free(world[2], &error) == MC_WORLD_STORAGE_BUSY);
-    mc_world_dimension_unbind(dimension[1]);
+    mc_world_provider_unbind(dimension[1]);
     CHECK(mc_world_runtime_free(world[2], &error) == MC_WORLD_STORAGE_OK);
     world[2] = NULL;
     CHECK(mc_world_info_fields_get(held_info, &info_b) == MC_WORLD_INFO_OK && info_b.name == name &&
@@ -967,8 +967,8 @@ static int test_game(const char *root) {
     result = 0;
 cleanup:
     if (world[1] != NULL && world[1]->fields.v != NULL) {
-        mc_world_provider_fields fixture;
-        if (mc_world_provider_bind_fields(world[1]->fields.v, &fixture, NULL) ==
+        mc_chunk_provider_fields fixture;
+        if (mc_chunk_provider_bind_fields(world[1]->fields.v, &fixture, NULL) ==
             MC_WORLD_STORAGE_OK) {
             fixture.cache->count = 0;
             fixture.cache->insertion_count = 0;
@@ -979,7 +979,7 @@ cleanup:
         --bindings;
     }
     for (size_t i = 0; i < 7; ++i)
-        mc_world_dimension_unbind(dimension[i]);
+        mc_world_provider_unbind(dimension[i]);
     for (size_t i = 0; i < 7; ++i)
         drop_world(&world[i]);
     for (size_t i = 0; i < 4; ++i) {
@@ -990,9 +990,9 @@ cleanup:
     }
     mc_world_info_release(held_info);
     mc_world_info_release(metadata);
-    mc_world_dimension_biome_release(held_biome);
+    mc_world_chunk_manager_release(held_biome);
     for (size_t i = 0; i < 7; ++i)
-        mc_world_dimension_release(dimension[i]);
+        mc_world_provider_release(dimension[i]);
     mc_world_info_player_release(player);
     mc_world_info_name_release(name);
     (void)mc_world_runtime_classes_free(classes, NULL);

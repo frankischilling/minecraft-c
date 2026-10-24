@@ -2,8 +2,8 @@
 #include "plants/plants_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
+#include "../chunk_provider_internal.h"
 #include "../presence_internal.h"
-#include "../provider_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
@@ -45,19 +45,19 @@ static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *error
     return false;
 }
 
-static bool tile_hook(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                      int32_t z, bool added, mc_world_mutation_error *error) {
-    mc_live_tile_error detail = mc_live_tiles_empty_error();
+static bool tile_entity_hook(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                             int32_t z, bool added, mc_world_mutation_error *error) {
+    mc_live_tile_entity_error detail = mc_live_tile_entities_empty_error();
     const mc_world_storage_status status =
-        added ? mc_live_tiles_block_added(world, block, x, y, z, &detail)
-              : mc_live_tiles_block_removed(world, block, x, y, z, &detail);
+        added ? mc_live_tile_entities_block_added(world, block, x, y, z, &detail)
+              : mc_live_tile_entities_block_removed(world, block, x, y, z, &detail);
     if (status == MC_WORLD_STORAGE_OK)
         return hook_return(error);
     /* Keep the reached concrete hook frame beside its whole typed child. */
-    hook_stage(block, block->kind == MC_BLOCK_E_E && !added ? "e" : "rw",
-               block->kind == MC_BLOCK_E_E && !added ? "e" : "lb",
+    hook_stage(block, block->kind == MC_BLOCK_CHEST && !added ? "e" : "rw",
+               block->kind == MC_BLOCK_CHEST && !added ? "e" : "lb",
                detail.hook_bytecode != 0 ? detail.hook_bytecode : detail.bytecode, error);
-    error->tile = detail;
+    error->tile_entity = detail;
     error->registry = detail.registry;
     error->entity = detail.entity;
     error->publication = detail.publication;
@@ -147,92 +147,92 @@ bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *bl
     if (!receiver(world, block, error))
         return false;
     switch (block->kind) {
-        case MC_BLOCK_UU_NA:
-        case MC_BLOCK_EO_CX:
-        case MC_BLOCK_WP_OJ:
-        case MC_BLOCK_OT_JF:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
-        case MC_BLOCK_GK_EI:
-        case MC_BLOCK_NE_IG:
-        case MC_BLOCK_MT_IC:
-        case MC_BLOCK_FK_DO:
-        case MC_BLOCK_RD_KL:
-        case MC_BLOCK_VE_NJ:
-        case MC_BLOCK_PC_JJ:
-        case MC_BLOCK_PH_JN:
-        case MC_BLOCK_JQ_GI:
-        case MC_BLOCK_RN_KU:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_EE_CQ:
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_TL_MD:
-        case MC_BLOCK_L_J:
-        case MC_BLOCK_YS_PW:
-        case MC_BLOCK_AH_T:
-        case MC_BLOCK_HB_ER:
-        case MC_BLOCK_FB_DH:
-        case MC_BLOCK_VM_NP:
-        case MC_BLOCK_YQ_PT:
-        case MC_BLOCK_FI_DN:
-        case MC_BLOCK_NI_IJ:
-        case MC_BLOCK_VL_NO:
-        case MC_BLOCK_LE_HC:
-        case MC_BLOCK_DP_CG:
-        case MC_BLOCK_BS_AZ:
-        case MC_BLOCK_JR_GJ:
-        case MC_BLOCK_NK_IK:
-        case MC_BLOCK_AC_P:
-        case MC_BLOCK_OR_JE:
-        case MC_BLOCK_RZ_LF:
-        case MC_BLOCK_RI_KO:
-        case MC_BLOCK_JW_GN:
-        case MC_BLOCK_FC_DI:
-        case MC_BLOCK_YI_PO:
-        case MC_BLOCK_OA_IU:
-        case MC_BLOCK_LY_HR:
-        case MC_BLOCK_AK_Z:
-        case MC_BLOCK_UM_MW:
-        case MC_BLOCK_WO_OI:
-        case MC_BLOCK_KS_GV:
-        case MC_BLOCK_OQ_JD:
+        case MC_BLOCK_BASE:
+        case MC_BLOCK_STONE:
+        case MC_BLOCK_GRASS:
+        case MC_BLOCK_DIRT:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
+        case MC_BLOCK_SAND:
+        case MC_BLOCK_GRAVEL:
+        case MC_BLOCK_ORE:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_SANDSTONE:
+        case MC_BLOCK_BED:
+        case MC_BLOCK_RAIL:
+        case MC_BLOCK_DETECTOR_RAIL:
+        case MC_BLOCK_PISTON_BASE:
+        case MC_BLOCK_COBWEB:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_WOOL:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_MINERAL_STORAGE:
+        case MC_BLOCK_SLAB:
+        case MC_BLOCK_TNT:
+        case MC_BLOCK_BOOKSHELF:
+        case MC_BLOCK_OBSIDIAN:
+        case MC_BLOCK_TORCH:
+        case MC_BLOCK_FIRE:
+        case MC_BLOCK_CRAFTING_TABLE:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_FARMLAND:
+        case MC_BLOCK_DOOR:
+        case MC_BLOCK_LADDER:
+        case MC_BLOCK_REDSTONE_ORE:
+        case MC_BLOCK_SNOW_LAYER:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_SNOW_BLOCK:
+        case MC_BLOCK_CACTUS:
+        case MC_BLOCK_CLAY:
+        case MC_BLOCK_SUGAR_CANE:
+        case MC_BLOCK_FENCE:
+        case MC_BLOCK_PUMPKIN:
+        case MC_BLOCK_NETHERRACK:
+        case MC_BLOCK_SOUL_SAND:
+        case MC_BLOCK_GLOWSTONE:
+        case MC_BLOCK_PORTAL:
+        case MC_BLOCK_CAKE:
+        case MC_BLOCK_REPEATER:
+        case MC_BLOCK_LOCKED_CHEST:
+        case MC_BLOCK_TRAPDOOR:
             return hook_return(error); /* uu/na.b: return0. */
-        case MC_BLOCK_VG_NK:
+        case MC_BLOCK_LOG:
             return mark_leaves(world, block, x, y, z, true, error);
-        case MC_BLOCK_BK_AR:
+        case MC_BLOCK_LEAVES:
             return mark_leaves(world, block, x, y, z, false, error);
-        case MC_BLOCK_PT_JR:
-        case MC_BLOCK_UJ_MT:
-            return unavailable(world, block, "rw", "lb", "Block tile removal hook", error);
-        case MC_BLOCK_DD_BZ:
-            return tile_hook(world, block, x, y, z, false, error);
-        case MC_BLOCK_XF_OV:
+        case MC_BLOCK_NOTE_BLOCK:
+        case MC_BLOCK_SIGN:
+            return unavailable(world, block, "rw", "lb", "Block TileEntity removal hook", error);
+        case MC_BLOCK_MOB_SPAWNER:
+            return tile_entity_hook(world, block, x, y, z, false, error);
+        case MC_BLOCK_SPONGE:
             return unavailable(world, block, "xf", "ov", "Block sponge removal hook", error);
-        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_DISPENSER:
             return unavailable(world, block, "xq", "pa", "Block dispenser removal hook", error);
-        case MC_BLOCK_H_G:
+        case MC_BLOCK_PISTON_HEAD:
             return unavailable(world, block, "h", "g", "Block removal hook", error);
-        case MC_BLOCK_UT_MZ:
+        case MC_BLOCK_MOVING_PISTON:
             return mc_world_mutation_piston_removed(world, block, x, y, z, error);
-        case MC_BLOCK_SS_LU:
+        case MC_BLOCK_STAIRS:
             return unavailable(world, block, "ss", "lu", "Block removal hook", error);
-        case MC_BLOCK_E_E:
-            return tile_hook(world, block, x, y, z, false, error);
-        case MC_BLOCK_SM_LO:
-            return mc_world_mutation_wire_removed(world, block, x, y, z, error);
-        case MC_BLOCK_TC_LZ:
+        case MC_BLOCK_CHEST:
+            return tile_entity_hook(world, block, x, y, z, false, error);
+        case MC_BLOCK_REDSTONE:
+            return mc_world_mutation_redstone_removed(world, block, x, y, z, error);
+        case MC_BLOCK_FURNACE:
             return unavailable(world, block, "tc", "lz", "Block furnace removal hook", error);
-        case MC_BLOCK_XR_PD:
+        case MC_BLOCK_LEVER:
             return unavailable(world, block, "xr", "pd", "Block removal hook", error);
-        case MC_BLOCK_BV_BC:
+        case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_removed(world, block, x, y, z, error);
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             return unavailable(world, block, "db", "by", "Block removal hook", error);
-        case MC_BLOCK_OI_IZ:
+        case MC_BLOCK_BUTTON:
             return unavailable(world, block, "oi", "iz", "Block removal hook", error);
-        case MC_BLOCK_FO_DT:
+        case MC_BLOCK_JUKEBOX:
             return unavailable(world, block, "fo", "dt", "Block removal hook", error);
         default:
             return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -248,96 +248,96 @@ bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *bloc
     if (!receiver(world, block, error))
         return false;
     switch (block->kind) {
-        case MC_BLOCK_UU_NA:
-        case MC_BLOCK_EO_CX:
-        case MC_BLOCK_WP_OJ:
-        case MC_BLOCK_OT_JF:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_MT_IC:
-        case MC_BLOCK_VG_NK:
-        case MC_BLOCK_BK_AR:
-        case MC_BLOCK_FK_DO:
-        case MC_BLOCK_RD_KL:
-        case MC_BLOCK_VE_NJ:
-        case MC_BLOCK_RN_KU:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_H_G:
-        case MC_BLOCK_EE_CQ:
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_TL_MD:
-        case MC_BLOCK_L_J:
-        case MC_BLOCK_HB_ER:
-        case MC_BLOCK_FB_DH:
-        case MC_BLOCK_FI_DN:
-        case MC_BLOCK_NI_IJ:
-        case MC_BLOCK_VL_NO:
-        case MC_BLOCK_LE_HC:
-        case MC_BLOCK_DP_CG:
-        case MC_BLOCK_XR_PD:
-        case MC_BLOCK_BS_AZ:
-        case MC_BLOCK_OI_IZ:
-        case MC_BLOCK_JR_GJ:
-        case MC_BLOCK_NK_IK:
-        case MC_BLOCK_AC_P:
-        case MC_BLOCK_OR_JE:
-        case MC_BLOCK_RZ_LF:
-        case MC_BLOCK_RI_KO:
-        case MC_BLOCK_JW_GN:
-        case MC_BLOCK_YI_PO:
-        case MC_BLOCK_OA_IU:
-        case MC_BLOCK_LY_HR:
-        case MC_BLOCK_AK_Z:
-        case MC_BLOCK_UM_MW:
-        case MC_BLOCK_KS_GV:
-        case MC_BLOCK_OQ_JD:
+        case MC_BLOCK_BASE:
+        case MC_BLOCK_STONE:
+        case MC_BLOCK_GRASS:
+        case MC_BLOCK_DIRT:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_ORE:
+        case MC_BLOCK_LOG:
+        case MC_BLOCK_LEAVES:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_SANDSTONE:
+        case MC_BLOCK_BED:
+        case MC_BLOCK_COBWEB:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_PISTON_HEAD:
+        case MC_BLOCK_WOOL:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_MINERAL_STORAGE:
+        case MC_BLOCK_BOOKSHELF:
+        case MC_BLOCK_OBSIDIAN:
+        case MC_BLOCK_CRAFTING_TABLE:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_FARMLAND:
+        case MC_BLOCK_DOOR:
+        case MC_BLOCK_LADDER:
+        case MC_BLOCK_LEVER:
+        case MC_BLOCK_REDSTONE_ORE:
+        case MC_BLOCK_BUTTON:
+        case MC_BLOCK_SNOW_LAYER:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_SNOW_BLOCK:
+        case MC_BLOCK_CACTUS:
+        case MC_BLOCK_CLAY:
+        case MC_BLOCK_SUGAR_CANE:
+        case MC_BLOCK_FENCE:
+        case MC_BLOCK_NETHERRACK:
+        case MC_BLOCK_SOUL_SAND:
+        case MC_BLOCK_GLOWSTONE:
+        case MC_BLOCK_PORTAL:
+        case MC_BLOCK_CAKE:
+        case MC_BLOCK_LOCKED_CHEST:
+        case MC_BLOCK_TRAPDOOR:
             return hook_return(error); /* uu/na.c: return0. */
-        case MC_BLOCK_UT_MZ:
+        case MC_BLOCK_MOVING_PISTON:
             return hook_return(error); /* ut/mz.c is itself return0. */
-        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_PUMPKIN:
             /* fc/di.c invokes the proved base body6, then returns9. */
             hook_stage(block, "fc", "di", 6, error);
             return hook_return(error);
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
             return mc_world_mutation_fluid_added(world, block, x, y, z, error);
-        case MC_BLOCK_GK_EI:
-        case MC_BLOCK_NE_IG:
+        case MC_BLOCK_SAND:
+        case MC_BLOCK_GRAVEL:
             return mc_world_mutation_falling_added(world, block, x, y, z, error);
-        case MC_BLOCK_PT_JR:
-        case MC_BLOCK_DD_BZ:
-        case MC_BLOCK_E_E:
-        case MC_BLOCK_UJ_MT:
-        case MC_BLOCK_FO_DT:
-            return tile_hook(world, block, x, y, z, true, error);
-        case MC_BLOCK_PC_JJ:
-        case MC_BLOCK_PH_JN:
+        case MC_BLOCK_NOTE_BLOCK:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_CHEST:
+        case MC_BLOCK_SIGN:
+        case MC_BLOCK_JUKEBOX:
+            return tile_entity_hook(world, block, x, y, z, true, error);
+        case MC_BLOCK_RAIL:
+        case MC_BLOCK_DETECTOR_RAIL:
             return mc_world_mutation_rail_added_hook(world, block, x, y, z, error);
-        case MC_BLOCK_XF_OV:
+        case MC_BLOCK_SPONGE:
             return unavailable(world, block, "xf", "ov", "Block sponge addition hook", error);
-        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_DISPENSER:
             return unavailable(world, block, "xq", "pa", "Block dispenser addition hook", error);
-        case MC_BLOCK_JQ_GI:
+        case MC_BLOCK_PISTON_BASE:
             return unavailable(world, block, "jq", "gi", "Block addition hook", error);
-        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_SLAB:
             return unavailable(world, block, "ys", "pw", "Block slab addition hook", error);
-        case MC_BLOCK_AH_T:
+        case MC_BLOCK_TNT:
             return unavailable(world, block, "ah", "t", "Block addition hook", error);
-        case MC_BLOCK_VM_NP:
+        case MC_BLOCK_TORCH:
             return unavailable(world, block, "vm", "np", "Block addition hook", error);
-        case MC_BLOCK_YQ_PT:
+        case MC_BLOCK_FIRE:
             return unavailable(world, block, "yq", "pt", "Block fire addition hook", error);
-        case MC_BLOCK_SS_LU:
+        case MC_BLOCK_STAIRS:
             return unavailable(world, block, "ss", "lu", "Block addition hook", error);
-        case MC_BLOCK_SM_LO:
-            return mc_world_mutation_wire_added(world, block, x, y, z, error);
-        case MC_BLOCK_TC_LZ:
+        case MC_BLOCK_REDSTONE:
+            return mc_world_mutation_redstone_added(world, block, x, y, z, error);
+        case MC_BLOCK_FURNACE:
             return unavailable(world, block, "tc", "lz", "Block furnace addition hook", error);
-        case MC_BLOCK_BV_BC:
+        case MC_BLOCK_PRESSURE_PLATE:
             return hook_return(error); /* bv/bc.c is itself return0. */
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             return unavailable(world, block, "db", "by", "Block addition hook", error);
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             return unavailable(world, block, "wo", "oi", "Block addition hook", error);
         default:
             return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -355,103 +355,103 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
     if (!receiver(world, block, error))
         return false;
     switch (block->kind) {
-        case MC_BLOCK_UU_NA:
-        case MC_BLOCK_EO_CX:
-        case MC_BLOCK_WP_OJ:
-        case MC_BLOCK_OT_JF:
-        case MC_BLOCK_MT_IC:
-        case MC_BLOCK_VG_NK:
-        case MC_BLOCK_BK_AR:
-        case MC_BLOCK_XF_OV:
-        case MC_BLOCK_FK_DO:
-        case MC_BLOCK_RD_KL:
-        case MC_BLOCK_RN_KU:
-        case MC_BLOCK_EE_CQ:
-        case MC_BLOCK_L_J:
-        case MC_BLOCK_YS_PW:
-        case MC_BLOCK_HB_ER:
-        case MC_BLOCK_FB_DH:
-        case MC_BLOCK_DD_BZ:
-        case MC_BLOCK_SS_LU:
-        case MC_BLOCK_E_E:
-        case MC_BLOCK_FI_DN:
-        case MC_BLOCK_TC_LZ:
-        case MC_BLOCK_BS_AZ:
-        case MC_BLOCK_NK_IK:
-        case MC_BLOCK_AC_P:
-        case MC_BLOCK_RZ_LF:
-        case MC_BLOCK_FO_DT:
-        case MC_BLOCK_JW_GN:
-        case MC_BLOCK_FC_DI:
-        case MC_BLOCK_YI_PO:
-        case MC_BLOCK_OA_IU:
-        case MC_BLOCK_LY_HR:
-        case MC_BLOCK_KS_GV:
+        case MC_BLOCK_BASE:
+        case MC_BLOCK_STONE:
+        case MC_BLOCK_GRASS:
+        case MC_BLOCK_DIRT:
+        case MC_BLOCK_ORE:
+        case MC_BLOCK_LOG:
+        case MC_BLOCK_LEAVES:
+        case MC_BLOCK_SPONGE:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_SANDSTONE:
+        case MC_BLOCK_COBWEB:
+        case MC_BLOCK_WOOL:
+        case MC_BLOCK_MINERAL_STORAGE:
+        case MC_BLOCK_SLAB:
+        case MC_BLOCK_BOOKSHELF:
+        case MC_BLOCK_OBSIDIAN:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_STAIRS:
+        case MC_BLOCK_CHEST:
+        case MC_BLOCK_CRAFTING_TABLE:
+        case MC_BLOCK_FURNACE:
+        case MC_BLOCK_REDSTONE_ORE:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_SNOW_BLOCK:
+        case MC_BLOCK_CLAY:
+        case MC_BLOCK_JUKEBOX:
+        case MC_BLOCK_FENCE:
+        case MC_BLOCK_PUMPKIN:
+        case MC_BLOCK_NETHERRACK:
+        case MC_BLOCK_SOUL_SAND:
+        case MC_BLOCK_GLOWSTONE:
+        case MC_BLOCK_LOCKED_CHEST:
             return hook_return(error); /* uu/na.b(World,IIII): return0. */
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_TL_MD:
-        case MC_BLOCK_NI_IJ:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_CROPS:
             return mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
             return mc_world_mutation_fluid_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_GK_EI:
-        case MC_BLOCK_NE_IG:
+        case MC_BLOCK_SAND:
+        case MC_BLOCK_GRAVEL:
             return mc_world_mutation_falling_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_PC_JJ:
-        case MC_BLOCK_PH_JN:
+        case MC_BLOCK_RAIL:
+        case MC_BLOCK_DETECTOR_RAIL:
             return mc_world_mutation_rail_neighbor_hook(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_DISPENSER:
             return unavailable(world, block, "xq", "pa", "Block dispenser neighbor hook", error);
-        case MC_BLOCK_PT_JR:
+        case MC_BLOCK_NOTE_BLOCK:
             return unavailable(world, block, "pt", "jr", "Block neighbor hook", error);
-        case MC_BLOCK_VE_NJ:
+        case MC_BLOCK_BED:
             return unavailable(world, block, "ve", "nj", "Block neighbor hook", error);
-        case MC_BLOCK_JQ_GI:
+        case MC_BLOCK_PISTON_BASE:
             return unavailable(world, block, "jq", "gi", "Block neighbor hook", error);
-        case MC_BLOCK_H_G:
+        case MC_BLOCK_PISTON_HEAD:
             return unavailable(world, block, "h", "g", "Block neighbor hook", error);
-        case MC_BLOCK_UT_MZ:
+        case MC_BLOCK_MOVING_PISTON:
             return mc_world_mutation_piston_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_AH_T:
+        case MC_BLOCK_TNT:
             return unavailable(world, block, "ah", "t", "Block neighbor hook", error);
-        case MC_BLOCK_VM_NP:
+        case MC_BLOCK_TORCH:
             return unavailable(world, block, "vm", "np", "Block neighbor hook", error);
-        case MC_BLOCK_YQ_PT:
+        case MC_BLOCK_FIRE:
             return unavailable(world, block, "yq", "pt", "Block fire neighbor hook", error);
-        case MC_BLOCK_SM_LO:
-            return mc_world_mutation_wire_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_VL_NO:
+        case MC_BLOCK_REDSTONE:
+            return mc_world_mutation_redstone_neighbor(world, block, x, y, z, source_id, error);
+        case MC_BLOCK_FARMLAND:
             return mc_plant_farmland_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_UJ_MT:
+        case MC_BLOCK_SIGN:
             return unavailable(world, block, "uj", "mt", "Block sign neighbor hook", error);
-        case MC_BLOCK_LE_HC:
+        case MC_BLOCK_DOOR:
             return unavailable(world, block, "le", "hc", "Block neighbor hook", error);
-        case MC_BLOCK_DP_CG:
+        case MC_BLOCK_LADDER:
             return unavailable(world, block, "dp", "cg", "Block neighbor hook", error);
-        case MC_BLOCK_XR_PD:
+        case MC_BLOCK_LEVER:
             return unavailable(world, block, "xr", "pd", "Block neighbor hook", error);
-        case MC_BLOCK_BV_BC:
+        case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             return unavailable(world, block, "db", "by", "Block neighbor hook", error);
-        case MC_BLOCK_OI_IZ:
+        case MC_BLOCK_BUTTON:
             return unavailable(world, block, "oi", "iz", "Block neighbor hook", error);
-        case MC_BLOCK_JR_GJ:
+        case MC_BLOCK_SNOW_LAYER:
             return mc_world_mutation_snow_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_OR_JE:
-        case MC_BLOCK_RI_KO:
+        case MC_BLOCK_CACTUS:
+        case MC_BLOCK_SUGAR_CANE:
             return mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error);
-        case MC_BLOCK_AK_Z:
+        case MC_BLOCK_PORTAL:
             return unavailable(world, block, "ak", "z", "Block neighbor hook", error);
-        case MC_BLOCK_UM_MW:
+        case MC_BLOCK_CAKE:
             return unavailable(world, block, "um", "mw", "Block neighbor hook", error);
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             return unavailable(world, block, "wo", "oi", "Block neighbor hook", error);
-        case MC_BLOCK_OQ_JD:
+        case MC_BLOCK_TRAPDOOR:
             return unavailable(world, block, "oq", "jd", "Block neighbor hook", error);
         default:
             return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

@@ -125,7 +125,7 @@ def input_paths(executable, profile="origin"):
              "public_fixture": PUBLIC.FIXTURE, "public_validator": Path(PUBLIC.__file__).resolve(),
              "capture_support": Path(CAPTURE.__file__).resolve(), "cmake": ROOT / "CMakeLists.txt",
              "probe": ROOT / "tests/world/runtime/population/natural_probe.c",
-             "resource_example": ROOT / "tests/world/runtime/population/test_normal.c"}
+             "resource_example": ROOT / "tests/world/runtime/population/test_overworld.c"}
     if profile == "ring":
         paths.update(ring_fixture_module=RING_FIXTURE_MODULE, ring_fixture=RING_FIXTURE)
         paths.update({source: ROOT / source for source in COMPARE.SOURCES})

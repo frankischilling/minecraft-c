@@ -7,6 +7,13 @@
 
 enum { PROBE_BYTES = 2 * 1024 * 1024 };
 
+static const char *transport_status(mc_stored_chunk_status status) {
+    /* This reader's existing transport retains its recorded status spelling;
+     * the current diagnostic API uses the canonical TileEntity name. */
+    return status == MC_STORED_CHUNK_UNSUPPORTED_EDIT ? "unsupported entity or tile edit"
+                                                      : mc_stored_chunk_status_string(status);
+}
+
 static int digit(int value) {
     if (value >= '0' && value <= '9')
         return value - '0';
@@ -61,9 +68,9 @@ static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name) {
 static bool opaque_records(const mc_stored_chunk *owner) {
     const mc_nbt_tag *level = field(mc_stored_chunk_root(owner), "Level");
     const mc_nbt_tag *entities = field(level, "Entities");
-    const mc_nbt_tag *tiles = field(level, "TileEntities");
+    const mc_nbt_tag *tile_entities = field(level, "TileEntities");
     return (entities != NULL && entities->value.list.length != 0) ||
-           (tiles != NULL && tiles->value.list.length != 0);
+           (tile_entities != NULL && tile_entities->value.list.length != 0);
 }
 
 static void state(const mc_chunk_state *value) {
@@ -134,7 +141,7 @@ int main(int argc, char **argv) {
         mc_stored_chunk_decode(input, length, &limits, &owner, &consumed, &error);
     free(input);
     if (status != MC_STORED_CHUNK_OK) {
-        printf("{\"status\":\"%s\",\"field\":", mc_stored_chunk_status_string(status));
+        printf("{\"status\":\"%s\",\"field\":", transport_status(status));
         if (error.field == NULL)
             fputs("null", stdout);
         else
@@ -151,7 +158,7 @@ int main(int argc, char **argv) {
         status = mc_stored_chunk_normalize(owner, map, sizeof(map));
         if (status != MC_STORED_CHUNK_OK) {
             mc_stored_chunk_free(owner);
-            printf("{\"status\":\"%s\"}\n", mc_stored_chunk_status_string(status));
+            printf("{\"status\":\"%s\"}\n", transport_status(status));
             return ferror(stdout) ? 2 : 0;
         }
     }
@@ -165,7 +172,7 @@ int main(int argc, char **argv) {
         status = mc_stored_chunk_create(mc_stored_chunk_state(owner), &limits, &fresh, &error);
         if (status != MC_STORED_CHUNK_OK) {
             mc_stored_chunk_free(owner);
-            printf("{\"status\":\"%s\"}\n", mc_stored_chunk_status_string(status));
+            printf("{\"status\":\"%s\"}\n", transport_status(status));
             return ferror(stdout) ? 2 : 0;
         }
     }
@@ -238,8 +245,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    printf("{\"status\":\"%s\",\"consumed\":%zu,\"chunk\":", mc_stored_chunk_status_string(status),
-           consumed);
+    printf("{\"status\":\"%s\",\"consumed\":%zu,\"chunk\":", transport_status(status), consumed);
     state(view);
     fputs(",\"nbt_hex\":", stdout);
     if (encoded == NULL)

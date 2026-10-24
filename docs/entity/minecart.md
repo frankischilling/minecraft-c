@@ -124,7 +124,7 @@ collection.
 Publication requires the World's exact bound EntityClasses owner. Matching
 names, side or Random profile do not make a foreign loaded Class identical.
 The wrapper retains the existing nonplayer presence, acquisition, Chunk append,
-World.b append and observer order. It does not rewrite the construction World,
+World.b append and WorldAccess order. It does not rewrite the construction World,
 repair bounds or add a constructor-World equality/READY gate. Each duplicate
 Chunk or World occurrence owns a separate Entity hold.
 

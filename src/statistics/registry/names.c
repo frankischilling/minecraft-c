@@ -74,13 +74,13 @@ mc_registry_status mc_registry_statistic_block_name(mc_registry_classes *classes
 
 static bool block_item_name(mc_item_kind kind) {
     switch (kind) {
-        case MC_ITEM_CK_BK:
-        case MC_ITEM_BI_AP:
-        case MC_ITEM_GO_EK:
-        case MC_ITEM_EN_CW:
-        case MC_ITEM_MR_IA:
-        case MC_ITEM_UY_ND:
-        case MC_ITEM_QR_KC:
+        case MC_ITEM_BLOCK:
+        case MC_ITEM_WOOL_BLOCK:
+        case MC_ITEM_LOG_BLOCK:
+        case MC_ITEM_SLAB_BLOCK:
+        case MC_ITEM_SAPLING_BLOCK:
+        case MC_ITEM_LEAVES_BLOCK:
+        case MC_ITEM_PISTON_BLOCK:
             return true;
         default:
             return false;

@@ -18,7 +18,7 @@ Model constructor/setup and Context readers through reflection. It does not call
 that observer's measurement or main routine. Original game classes load from the
 untouched selected archive in a fresh classloader. Actual base World, storage,
 supplied Dimension, provider and reflected method/field descriptors are recorded;
-their concrete types are not replaced by an inferred normal-dimension label.
+their concrete types are not replaced by an inferred Overworld label.
 
 One real acquiring World call returned a normal Chunk `(0,0)` on each side. The
 helper verified its owner, complete block-array extent, actual provider presence
@@ -32,7 +32,7 @@ The inputs were air, stone, double and single slabs, glass, leaves, flowing wate
 flowing lava and ID255. Separate direct Block support/opacity and Material c/h
 calls used seven actual named Block instances. Those direct predicates have
 narrower scope than the World calls. Five border queries and four sound/particle
-calls with named and NULL Strings completed on each genuine empty observer list.
+calls with named and NULL Strings completed on each genuine empty WorldAccess list.
 No predicate result was calculated from the rewritten implementation.
 
 ## Retained state and limits

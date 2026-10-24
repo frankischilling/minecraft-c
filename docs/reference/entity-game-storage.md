@@ -14,8 +14,8 @@ they do not inherit older leaf-test results.
 
 | Operation | Client | Dedicated server | Reached positions |
 |---|---|---|---|
-| Shared load | `to.a(fd,nu)lm` | `mg.a(dj,iq)hi` | Entities getter231, length248, get258, cast261, factory269, q277, direct insert289, Tile getter301 |
-| Shared save | `to.a(lm,fd,nu)V` | `mg.a(hi,dj,iq)V` | q=false105, current array length125, selected iterator136, next155/cast160, q=true167, Boolean save183, append192, Entities208, Tile values224, Tile save271 |
+| Shared load | `to.a(fd,nu)lm` | `mg.a(dj,iq)hi` | Entities getter231, length248, get258, cast261, factory269, q277, direct insert289, TileEntity getter301 |
+| Shared save | `to.a(lm,fd,nu)V` | `mg.a(hi,dj,iq)V` | q=false105, current array length125, selected iterator136, next155/cast160, q=true167, Boolean save183, append192, Entities208, TileEntity values224, TileEntity save271 |
 | Region wrappers | `ld.a(fd,II)lm`, `ld.a(fd,lm)V` | `hb.a(dj,II)hi`, `hb.a(dj,hi)V` | Load builder143, coordinate check152/diagnostic158, normal finish272; save serializer51/transport57 |
 | Direct Chunk adoption | `lm.a(sn)V` | `hi.a(lq)V` | q2, x6/z18, wrong-location diagnostic45, slice clamp81, membership stores115/123/129/137, append148 |
 | Boolean Entity save | `sn.c(nu)Z` | `lq.c(iq)Z` | Class-name1 before dead6, false16/17, id22, base writer27 |
@@ -29,7 +29,7 @@ Each normal factory result sets q, including NULL. A nonnull Item goes directly
 into the held Chunk, without World insertion/provider acquisition. Native
 provenance and a Store occurrence journal follow that source prefix. Failure
 retains q, constructor ID/Random effects and any already adopted Chunk holds;
-normalization, cache publication and later Tile work do not run.
+normalization, cache publication and later TileEntity work do not run.
 
 Save order comes from the current slice array and List occurrences. It does not
 come from input-record order, Entity IDs, World lists or pointer deduplication.
@@ -62,7 +62,7 @@ All 151 configured MSVC cases and 153 cases on each Linux GCC/Clang build pass,
 with zero skips and local JDK comparisons enabled. Linux uses ASan/UBSan and
 leak checks on fresh byte-verified source/dependency copies. `world.game_entities`
 passes 468 checks per host; `storage.nbt_overlay` passes 255. The older saving,
-Tile, publication and provider-activation regressions also pass. Each host keeps
+TileEntity, publication and provider-activation regressions also pass. Each host keeps
 710 unchanged selected inputs, 254 zlib pins, 185 products and 35 captures.
 
 [`GameEntityStorageObservation.java`](../../tests/reference/entity/GameEntityStorageObservation.java)

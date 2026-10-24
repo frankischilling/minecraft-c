@@ -5,7 +5,7 @@
 #include "mc/world/storage/chunk.h"
 
 #include "../../../src/core/java/random_profile_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../support/java_random.h"
 
 #include <stdio.h>
@@ -54,9 +54,9 @@ typedef struct fixture {
     mc_registry_classes *registries[4];
     mc_world_runtime_classes *classes[3];
     mc_world_runtime *worlds[3];
-    mc_world_dimension *dimensions[8];
+    mc_world_provider *dimensions[8];
     resources sources[4];
-    mc_world_provider_fields providers[3];
+    mc_chunk_provider_fields providers[3];
     bool restored[3];
     mc_chunk_state *chunk;
 } fixture;
@@ -278,7 +278,7 @@ static int test_bindings(fixture *f) {
     CHECK(mc_world_runtime_classes_bind_registry(f->classes[2], f->registries[0], NULL) ==
           MC_REGISTRY_BUSY);
 
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[0], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[0], NULL) == MC_WORLD_PROVIDER_OK);
     limits.max_provider_allocation_bytes = 0;
     const mc_world_runtime_world_arguments arguments = {
         .store = f->store, .name = f->name, .seed = 23, .dimension = f->dimensions[0]};
@@ -294,7 +294,7 @@ static int test_bindings(fixture *f) {
     CHECK(mc_world_runtime_retire_world(f->worlds[2], NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_registry(f->worlds[2]) == f->registries[0]);
     CHECK(world_drop(&f->worlds[2]));
-    mc_world_dimension_release(f->dimensions[0]);
+    mc_world_provider_release(f->dimensions[0]);
     f->dimensions[0] = NULL;
     CHECK(class_drop(&f->classes[0]) &&
           mc_registry_classes_free(f->registries[0], NULL) == MC_REGISTRY_BUSY);
@@ -323,7 +323,7 @@ static int create_query_worlds(fixture *f) {
         if (i != 1)
             CHECK(mc_world_runtime_classes_bind_registry(f->classes[i], f->registries[i], NULL) ==
                   MC_REGISTRY_OK);
-        CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[i], NULL) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_create(0, NULL, &f->dimensions[i], NULL) == MC_WORLD_PROVIDER_OK);
         const mc_world_runtime_world_arguments arguments = {
             .store = f->store, .name = f->name, .seed = 23, .dimension = f->dimensions[i]};
         uint64_t before = uniquifier(f->profile);
@@ -338,7 +338,7 @@ static int create_query_worlds(fixture *f) {
               state.phase == MC_WORLD_RUNTIME_READY);
         CHECK(mc_world_runtime_fields_get(f->worlds[i], &fields) == MC_WORLD_STORAGE_OK &&
               fields.v != NULL);
-        CHECK(mc_world_provider_bind_fields(fields.v, &f->providers[i], &error) ==
+        CHECK(mc_chunk_provider_bind_fields(fields.v, &f->providers[i], &error) ==
               MC_WORLD_STORAGE_OK);
         CHECK(uniquifier(f->profile) == advanced(before, 3));
     }
@@ -365,10 +365,10 @@ static int create_query_worlds(fixture *f) {
     }
     const int32_t dimension_ids[] = {1, -1, 1, -1};
     for (size_t i = 0; i < COUNT(dimension_ids); ++i) {
-        CHECK(mc_world_dimension_create(dimension_ids[i], NULL, &f->dimensions[i + 3], NULL) ==
-              MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_bind(f->dimensions[i + 3], f->worlds[i < 2 ? 0 : 1], NULL) ==
-              MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_create(dimension_ids[i], NULL, &f->dimensions[i + 3], NULL) ==
+              MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_provider_bind(f->dimensions[i + 3], f->worlds[i < 2 ? 0 : 1], NULL) ==
+              MC_WORLD_PROVIDER_OK);
     }
     result = 0;
 cleanup:
@@ -379,7 +379,7 @@ static int test_queries(fixture *f) {
     int result = 1;
     mc_material *air = mc_materials_get(f->materials, MC_MATERIAL_a), *material = air;
     mc_world_storage_error error;
-    mc_world_dimension_error dimension_error;
+    mc_world_provider_error dimension_error;
     bool allowed = true;
     CHECK(create_query_worlds(f) == 0);
     uint64_t u = uniquifier(f->profile);
@@ -392,12 +392,12 @@ static int test_queries(fixture *f) {
           material == air);
     CHECK(mc_world_regions_get_usage(f->regions).count == usage.count &&
           mc_world_regions_get_usage(f->regions).bytes == usage.bytes);
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[3], 0, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[3], 0, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_OK &&
           !allowed);
     allowed = true;
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[5], 0, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[5], 0, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_OK &&
           !allowed);
     CHECK(registry_cold(f->registries[0]) && resources_unread(&f->sources[0]) &&
           uniquifier(f->profile) == u);
@@ -415,8 +415,8 @@ static int test_queries(fixture *f) {
               0 &&
           mc_world_store_chunk_count(f->store) == 1 && f->providers[1].cache->count == 1);
     allowed = true;
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[1], 128, 128, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_WORLD_FAILED &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[1], 128, 128, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_WORLD_FAILED &&
           allowed && dimension_error.bytecode == 6 &&
           dimension_error.world.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           dimension_error.registry.status == MC_REGISTRY_OK);
@@ -426,16 +426,16 @@ static int test_queries(fixture *f) {
           mc_world_runtime_last_registry_error(f->worlds[1])->status ==
               MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
     allowed = true;
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[1], 1, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_REGISTRY_FAILED &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[1], 1, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_REGISTRY_FAILED &&
           allowed && dimension_error.bytecode == 11 &&
           dimension_error.registry.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[6], 0, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_REGISTRY_FAILED &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[6], 0, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_REGISTRY_FAILED &&
           allowed && dimension_error.bytecode == 11 &&
           dimension_error.registry.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[5], 2, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_REGISTRY_FAILED &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[5], 2, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_REGISTRY_FAILED &&
           allowed && dimension_error.bytecode == 16 &&
           dimension_error.registry.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY);
     CHECK(registry_cold(f->registries[0]) && resources_unread(&f->sources[0]) &&
@@ -469,12 +469,12 @@ static int test_queries(fixture *f) {
     static const bool sky_expected[] = {false, true, true, true, false};
     for (size_t x = 0; x < COUNT(base_expected); ++x) {
         allowed = !base_expected[x];
-        CHECK(mc_world_dimension_can_spawn(f->dimensions[0], (int32_t)x, 0, &allowed,
-                                           &dimension_error) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_can_spawn(f->dimensions[0], (int32_t)x, 0, &allowed,
+                                          &dimension_error) == MC_WORLD_PROVIDER_OK &&
               allowed == base_expected[x]);
         allowed = !sky_expected[x];
-        CHECK(mc_world_dimension_can_spawn(f->dimensions[3], (int32_t)x, 0, &allowed,
-                                           &dimension_error) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_can_spawn(f->dimensions[3], (int32_t)x, 0, &allowed,
+                                          &dimension_error) == MC_WORLD_PROVIDER_OK &&
               allowed == sky_expected[x]);
         bool opaque = false;
         const int32_t id = x == 0 ? 0 : x == 1 ? 12 : x == 2 ? 1 : x == 3 ? 7 : 8;
@@ -482,13 +482,13 @@ static int test_queries(fixture *f) {
             CHECK(mc_registry_block_opaque_get(f->registries[0], id, &opaque, NULL) ==
                   MC_REGISTRY_OK);
         allowed = true;
-        CHECK(mc_world_dimension_can_spawn(f->dimensions[4], (int32_t)x, 0, &allowed,
-                                           &dimension_error) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_can_spawn(f->dimensions[4], (int32_t)x, 0, &allowed,
+                                          &dimension_error) == MC_WORLD_PROVIDER_OK &&
               allowed == opaque);
     }
     allowed = true;
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[3], 5, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_REGISTRY_FAILED &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[3], 5, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_REGISTRY_FAILED &&
           allowed && dimension_error.bytecode == 21 &&
           dimension_error.registry.status == MC_REGISTRY_NULL_REFERENCE);
     CHECK(mc_test_java_random_equal(&before, world_fields.r) && f->sources[0].protected_calls == 3);
@@ -498,8 +498,8 @@ static int test_queries(fixture *f) {
     f->sources[2].observed_world = f->worlds[2];
     u = uniquifier(f->profile);
     allowed = true;
-    CHECK(mc_world_dimension_can_spawn(f->dimensions[2], 1, 0, &allowed, &dimension_error) ==
-              MC_WORLD_DIMENSION_REGISTRY_FAILED &&
+    CHECK(mc_world_provider_can_spawn(f->dimensions[2], 1, 0, &allowed, &dimension_error) ==
+              MC_WORLD_PROVIDER_REGISTRY_FAILED &&
           allowed && dimension_error.bytecode == 11 &&
           dimension_error.registry.status == MC_REGISTRY_NULL_REFERENCE);
     const mc_registry_error first = dimension_error.registry;
@@ -544,7 +544,7 @@ static bool cleanup_fixture(fixture *f) {
         f->restored[i] = false;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_unbind(f->dimensions[i]);
+        mc_world_provider_unbind(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
         if (!world_drop(&f->worlds[i]))
             return false;
@@ -555,7 +555,7 @@ static bool cleanup_fixture(fixture *f) {
         f->chunk = NULL;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i) {
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
         f->dimensions[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->classes); ++i)

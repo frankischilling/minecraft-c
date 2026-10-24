@@ -60,7 +60,7 @@ static void clear_leaf(mc_world_power_error *error) {
     error->capability = empty.capability;
     error->strong = empty.strong;
     error->weak = empty.weak;
-    error->wire_connectivity = empty.wire_connectivity;
+    error->redstone_connectivity = empty.redstone_connectivity;
     error->access = empty.access;
     error->registry = empty.registry;
 }

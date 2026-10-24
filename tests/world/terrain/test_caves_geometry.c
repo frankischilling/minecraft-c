@@ -14,7 +14,7 @@
 enum { BLOCKS = 32768, LENGTH = 32771, GUARDS = 16 };
 
 _Static_assert(MC_TERRAIN_CAVE_BLOCKS == 32768u, "original cave block prefix");
-_Static_assert(MC_TERRAIN_NORMAL_CAVE_RANGE == 8u, "original normal cave range");
+_Static_assert(MC_TERRAIN_OVERWORLD_CAVE_RANGE == 8u, "original normal cave range");
 _Static_assert(ARRAY_LENGTH(observed_geometry_cases) == 44, "paired protected fixture count");
 
 typedef struct geometry_buffer {

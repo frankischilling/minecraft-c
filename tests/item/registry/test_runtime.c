@@ -236,8 +236,7 @@ static int cold_failure(mc_registry_options options, bool static_route) {
     CHECK(allocate_fixture(&f, options) == MC_REGISTRY_OK);
     CHECK(f.owner->options.side == options.side &&
           f.owner->options.random_profile == options.random_profile &&
-          f.owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_COLD &&
-          f.owner->items.c == NULL);
+          f.owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_COLD && f.owner->items.c == NULL);
     /* A missing selector still reaches actual Item initialization first. */
     CHECK((static_route
                ? mc_registry_item_static_get(f.owner, "missing", &item, &error)
@@ -247,11 +246,11 @@ static int cold_failure(mc_registry_options options, bool static_route) {
     CHECK(error.status == MC_REGISTRY_NULL_REFERENCE && error.initializer_pc >= 0 &&
           error.constructor_class != NULL && error.constructor_pc >= 0 &&
           error.active_initializer_class != NULL && error.active_initializer_pc >= 0);
-    CHECK(f.owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_FAILED &&
+    CHECK(f.owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_FAILED &&
           f.owner->blocks_phase == MC_REGISTRY_FAILED && f.owner->entered == 0 &&
           f.owner->initializer == NULL);
     const mc_registry_error first = error;
-    CHECK(same_error(first, f.owner->item_states[MC_ITEM_GM_EJ].failure) &&
+    CHECK(same_error(first, f.owner->item_states[MC_ITEM_BASE].failure) &&
           same_error(first, f.owner->last_error));
     CHECK(uniquifier(options.random_profile) == advanced(before_random, 5) &&
           options.random_profile->math == NULL);
@@ -284,7 +283,7 @@ static int cold_failure(mc_registry_options options, bool static_route) {
     CHECK(mc_registry_item_static_get(f.owner, "d", &item, &error) ==
           MC_REGISTRY_FAILED_INITIALIZATION);
     CHECK(item == &item_anchor && same_error(error, retry));
-    CHECK(same_error(f.owner->item_states[MC_ITEM_GM_EJ].failure, first) && f.opens == 1 &&
+    CHECK(same_error(f.owner->item_states[MC_ITEM_BASE].failure, first) && f.opens == 1 &&
           f.owner->allocation_bytes == bytes && f.owner->allocations == allocations &&
           uniquifier(options.random_profile) == after_random);
     result = 0;
@@ -321,11 +320,11 @@ static int metadata_budget_and_arguments(mc_registry_options options) {
           fresh(error, MC_REGISTRY_INVALID_ARGUMENT));
     CHECK(mc_registry_item_c_at(f.owner, NULL, 0, NULL, &error) == MC_REGISTRY_INVALID_ARGUMENT &&
           fresh(error, MC_REGISTRY_INVALID_ARGUMENT));
-    CHECK(f.owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_COLD &&
+    CHECK(f.owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_COLD &&
           f.owner->blocks_phase == MC_REGISTRY_COLD);
     CHECK(mc_registry_item_c_at(f.owner, NULL, -1, &item, &error) == MC_REGISTRY_NULL_REFERENCE &&
           item == &item_anchor && fresh(error, MC_REGISTRY_NULL_REFERENCE));
-    CHECK(f.owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_COLD &&
+    CHECK(f.owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_COLD &&
           uniquifier(options.random_profile) == before_random);
     error = poison_error();
     CHECK(mc_registry_item_c_get(f.owner, &array, &error) == MC_REGISTRY_LIMIT);
@@ -335,10 +334,10 @@ static int metadata_budget_and_arguments(mc_registry_options options) {
           error.active_initializer_pc == 0 &&
           same_text(error.active_initializer_class,
                     options.side == MC_REGISTRY_CLIENT ? "gm" : "ej"));
-    CHECK(f.owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_FAILED &&
-          f.owner->item_states[MC_ITEM_GM_EJ].pc == 0 && f.owner->blocks_phase == MC_REGISTRY_COLD);
+    CHECK(f.owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_FAILED &&
+          f.owner->item_states[MC_ITEM_BASE].pc == 0 && f.owner->blocks_phase == MC_REGISTRY_COLD);
     const mc_registry_error first = error;
-    CHECK(same_error(first, f.owner->item_states[MC_ITEM_GM_EJ].failure));
+    CHECK(same_error(first, f.owner->item_states[MC_ITEM_BASE].failure));
     CHECK(mc_registry_item_c_at(f.owner, NULL, INT32_MAX, &item, &error) ==
               MC_REGISTRY_NULL_REFERENCE &&
           fresh(error, MC_REGISTRY_NULL_REFERENCE));
@@ -369,7 +368,7 @@ static int ready_capture(mc_registry_options options) {
     CHECK(mc_registry_classes_initialize_blocks(f.owner, &error) == MC_REGISTRY_OK);
     CHECK(!f.bad && f.opens == 3 && f.closes == 1 && f.busy_checks == 9 &&
           f.owner->blocks_phase == MC_REGISTRY_READY &&
-          f.owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_READY);
+          f.owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_READY);
     CHECK(uniquifier(options.random_profile) == advanced(before_random, 5));
     CHECK(mc_registry_classes_retain(f.owner, options.side, options.random_profile, &error) ==
           MC_REGISTRY_OK);

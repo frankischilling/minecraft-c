@@ -15,7 +15,7 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[3]
-HELPER = ROOT / "tests/tools/world/test_tiles.py"
+HELPER = ROOT / "tests/tools/world/test_tile_entities.py"
 SPEC = importlib.util.spec_from_file_location("falling_capture_support", HELPER)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError("falling capture support is missing")

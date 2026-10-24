@@ -274,8 +274,8 @@ static bool registration(void *owner, const mc_chunk_acquire_context *context,
                    context == &acquisition, false, 0, 0);
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk) {
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     return registration(owner, context, chunk, "register_tiles", -1);
 }
 
@@ -302,8 +302,9 @@ static mc_chunk_callback_result lifecycle_callback(void *owner,
                : MC_CHUNK_CALLBACK_FATAL;
 }
 
-static mc_chunk_callback_result
-invalidate_tiles(void *owner, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk) {
+static mc_chunk_callback_result invalidate_tile_entities(void *owner,
+                                                         const mc_chunk_lifecycle_context *context,
+                                                         mc_chunk_state *chunk) {
     return lifecycle_callback(owner, context, chunk, "invalidate_tiles", -1, false);
 }
 
@@ -451,7 +452,7 @@ static bool open_context(char **fields, size_t count) {
                                              .world = &world_owner,
                                              .loader = &loader_owner,
                                              .load = load,
-                                             .register_tiles = register_tiles,
+                                             .register_tile_entities = register_tile_entities,
                                              .register_entities = register_entities,
                                              .references = &references};
     lifecycle = (mc_chunk_lifecycle_context){.cache = &cache,
@@ -466,7 +467,7 @@ static bool open_context(char **fields, size_t count) {
                                              .save_extra = save_extra,
                                              .flush = flush,
                                              .loader_maintenance = loader_maintenance,
-                                             .invalidate_tiles = invalidate_tiles,
+                                             .invalidate_tile_entities = invalidate_tile_entities,
                                              .defer_entities = defer_entities,
                                              .provider_maintenance = provider_maintenance,
                                              .references = &references};

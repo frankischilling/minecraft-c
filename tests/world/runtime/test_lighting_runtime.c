@@ -1,7 +1,7 @@
 #include "mc/world/runtime/lighting.h"
 
 #include "../../../src/core/java/random_profile_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../support/java_random.h"
 
 #include <stdio.h>
@@ -29,9 +29,9 @@ typedef struct fixture {
     mc_java_random_profile *profile;
     mc_world_runtime_classes *classes;
     mc_world_runtime *raw, *world, *composition;
-    mc_world_dimension *dimension;
+    mc_world_provider *dimension;
     mc_world_info_name *name;
-    mc_world_provider_fields provider;
+    mc_chunk_provider_fields provider;
     bool provider_live, world_binding;
     mc_chunk_state *chunks[7];
     mc_chunk_data scratch;
@@ -205,7 +205,7 @@ static bool create_world(fixture *f) {
     mc_world_runtime_construction construction;
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = MAX_ENTRIES;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimension, NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimension, NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA, f->classes,
                                           &limits, &f->world, NULL) == MC_WORLD_STORAGE_OK);
     const mc_world_runtime_world_arguments arguments = {
@@ -215,7 +215,7 @@ static bool create_world(fixture *f) {
           construction.phase == MC_WORLD_RUNTIME_READY && construction.contexts_bound);
     CHECK(mc_world_runtime_fields_get(f->world, &fields) == MC_WORLD_STORAGE_OK &&
           fields.v != NULL);
-    CHECK(mc_world_provider_bind_fields(fields.v, &f->provider, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_chunk_provider_bind_fields(fields.v, &f->provider, NULL) == MC_WORLD_STORAGE_OK);
     f->provider_live = true;
     CHECK(f->provider.world == f->world && f->provider.store == f->store &&
           f->provider.cache->count == 0 && f->provider.cache->insertion_count == 0 &&
@@ -431,7 +431,7 @@ static bool test_retirement(fixture *f) {
     CHECK(mc_world_runtime_binding_retain(f->world));
     f->world_binding = true;
     CHECK(clear_restored(f));
-    mc_world_dimension_unbind(f->dimension);
+    mc_world_provider_unbind(f->dimension);
     CHECK(mc_world_runtime_free(f->world, NULL) == MC_WORLD_STORAGE_BUSY);
     int32_t out = -731;
     mc_world_light_error error;
@@ -468,7 +468,7 @@ static bool close_fixture(fixture *f) {
     f->composition = NULL;
     if (!clear_restored(f))
         return false;
-    mc_world_dimension_unbind(f->dimension);
+    mc_world_provider_unbind(f->dimension);
     if (f->world_binding) {
         mc_world_runtime_binding_release(f->world);
         f->world_binding = false;
@@ -489,7 +489,7 @@ static bool close_fixture(fixture *f) {
             return false;
         f->chunks[i] = NULL;
     }
-    mc_world_dimension_release(f->dimension);
+    mc_world_provider_release(f->dimension);
     if (mc_world_runtime_classes_free(f->classes, NULL) != MC_WORLD_STORAGE_OK)
         return false;
     mc_java_int_set_free(f->composition_history);

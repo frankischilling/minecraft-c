@@ -26,7 +26,7 @@ Class names belong to their respective archives.
 | Remaining finishing effects | Same method | Same method | Offsets 182 through 221, world-height checks, queued sky intervals and dirty state |
 | Initialized opacity table | `uu.q:[I` | `na.q:[I` | Actual registry initialization, retained before and after measurement |
 
-The normal generators invoke these finishing methods after the cave stage.
+The Overworld generators invoke these finishing methods after the cave stage.
 Fresh normal arrays hold 32768 blocks, three packed arrays of 16384 bytes
 each, and 256 height bytes. The world/data distinction matters: the newly
 generated chunk is not yet inserted into the normal cache during finishing.
@@ -43,7 +43,7 @@ by this local stage.
 
 The same verified archives also define the concrete owner now represented by
 the [generated Chunk interface](../world/chunk-objects.md). The base constructor
-`lm.<init>(Lfd;II)V` / `hi.<init>(Ldj;II)V` publishes its fresh tile Map at12,
+`lm.<init>(Lfd;II)V` / `hi.<init>(Ldj;II)V` publishes its fresh TileEntity Map at12,
 List[8] at21, flags n/o/q and time r at26/31/36/41, actual World d at46, final
 coordinates j/k at51/56, and zero height byte[256] at65. Eight distinct empty
 ArrayLists are constructed91 and stored94 in order. The byte-array overload
@@ -158,16 +158,16 @@ The same pinned client/server binaries establish these paired methods:
 | --- | --- | --- | --- |
 | Preactivation | `lm.d()V` | `hi.c()V` | Return0 |
 | Activation | `lm.e()V` | `hi.d()V` | active2; d6; l10/values13; World Collection18; each current m slice41/World List42; return51 |
-| World tile registration | `fd.a(Collection)V` | `dj.a(Collection)V` | L1; true selects G8/addAll12, false selects c22/addAll26; return32 |
+| World TileEntity registration | `fd.a(Collection)V` | `dj.a(Collection)V` | L1; true selects G8/addAll12, false selects c22/addAll26; return32 |
 | World Entity registration | `fd.a(List)V` | `dj.a(List)V` | b1/addAll5; incoming size15; per-Entity hook34 only for nonempty input |
-| Detach | `lm.f()V` | `hi.e()V` | inactive2; l6/values9; iterator14/hasNext21; Tile invalidation40 only for nonempty input; each current slice66/World List67; return76 |
+| Detach | `lm.f()V` | `hi.e()V` | inactive2; l6/values9; iterator14/hasNext21; TileEntity invalidation40 only for nonempty input; each current slice66/World List67; return76 |
 | World Entity deferral | `fd.b(List)V` | `dj.b(List)V` | D1/addAll5; return11 |
 
 The base cache invokes generation before map95/list107 publication,
 preactivation120, activation125 and population gates128 onward. Registration
 does not precede active or cache publication. Detach does not remove objects
 from World b, clear Chunk collections or save/unpublish the Chunk itself.
-Client Tile invalidation is `ow.i()V`; the paired server target is `jh.h()V`.
+Client TileEntity invalidation is `ow.i()V`; the paired server target is `jh.h()V`.
 Their primitive h=true store is unreached for the known-empty domain.
 
 The region decoder invokes `to.a(World,Level)` / `mg.a(World,Level)`, which
@@ -254,13 +254,13 @@ independent-result allocation boundaries.
 | --- | --- | --- |
 | Region save | `ld.a(World,Chunk)V` / `hb.a(World,Chunk)V` | session1; output stream16; root/Level24/33; shared serializer51; NBT57; close61; Info65; actual growth89, signed widening92 and wrapped add93/set94 |
 | Shared Chunk serializer | `to.a(Chunk,World,Compound)V` / `mg.a(Chunk,World,Compound)V` | second session1; time28; arrays41/54/67/80/90; population100; q=false105; actual m length125/slice iterator136; q=true167 before Entity183; Entities208; actual l.values224; Tile271; TileEntities289 |
-| Base Tile | `ow.b(Compound)V` / `jh.b(Compound)V` | class-name lookup7; id54; current coordinates64/74/84 |
+| Base TileEntity | `ow.b(Compound)V` / `jh.b(Compound)V` | class-name lookup7; id54; current coordinates64/74/84 |
 | Chest | `js.b(Compound)V` / `gk.b(Compound)V` | base2; physical slots20; Slot48; actual Stack59; Items79 |
 | Spawner | `cy.b(Compound)V` / `bx.b(Compound)V` | base2; EntityId12 before Delay23 |
 | Stack | `iz.a(Compound)Compound` / `fy.a(Compound)Compound` | narrowed id8, Count19 and Damage30 |
 
 The [native GAME coordinator](../world/saving.md) implements the supported
-ItemEntity and Chest/Spawner traversals. It retains whole Entity/Tile and lower
+ItemEntity and Chest/Spawner traversals. It retains whole Entity/TileEntity and lower
 codec diagnostics and preserves reached q changes on failure. Every Entity
 occurrence invokes its actual Boolean serializer after q becomes true; false
 continues. The lower Store composes both current lists over the

@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-_Static_assert(MC_TERRAIN_NORMAL_LAYERS == 82, "normal constructor layer count");
+_Static_assert(MC_TERRAIN_OVERWORLD_LAYERS == 82, "normal constructor layer count");
 
 static unsigned int checks;
 
@@ -20,18 +20,18 @@ static unsigned int checks;
     } while (0)
 
 typedef struct terrain_storage {
-    double volumes[3][MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u];
-    double columns[2][MC_TERRAIN_NORMAL_COLUMN_VALUES + 3u];
-    double density[MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u];
-    uint8_t blocks[MC_TERRAIN_NORMAL_BLOCKS + 3u];
+    double volumes[3][MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u];
+    double columns[2][MC_TERRAIN_OVERWORLD_COLUMN_VALUES + 3u];
+    double density[MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u];
+    uint8_t blocks[MC_TERRAIN_OVERWORLD_BLOCKS + 3u];
 } terrain_storage;
 
 static terrain_storage storage;
 static terrain_storage saved_storage;
-static mc_terrain_normal_state state;
-static mc_terrain_normal_state saved_state;
-static double temperature[MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u];
-static double rainfall[MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u];
+static mc_terrain_overworld_state state;
+static mc_terrain_overworld_state saved_state;
+static double temperature[MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u];
+static double rainfall[MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u];
 
 static uint64_t bits_of(double value) {
     uint64_t bits;
@@ -46,13 +46,13 @@ static double from_bits(uint64_t bits) {
     return value;
 }
 
-static mc_terrain_normal_workspace workspace_for(terrain_storage *target) {
-    return (mc_terrain_normal_workspace){
-        {target->volumes[0], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u},
-        {target->volumes[1], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u},
-        {target->volumes[2], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u},
-        {target->columns[0], MC_TERRAIN_NORMAL_COLUMN_VALUES + 3u},
-        {target->columns[1], MC_TERRAIN_NORMAL_COLUMN_VALUES + 3u}};
+static mc_terrain_overworld_workspace workspace_for(terrain_storage *target) {
+    return (mc_terrain_overworld_workspace){
+        {target->volumes[0], MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u},
+        {target->volumes[1], MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u},
+        {target->volumes[2], MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u},
+        {target->columns[0], MC_TERRAIN_OVERWORLD_COLUMN_VALUES + 3u},
+        {target->columns[1], MC_TERRAIN_OVERWORLD_COLUMN_VALUES + 3u}};
 }
 
 static void prefill(double *values, size_t count) {
@@ -62,12 +62,12 @@ static void prefill(double *values, size_t count) {
 
 static void prepare_storage(void) {
     for (size_t i = 0; i < 3; ++i)
-        prefill(storage.volumes[i], MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u);
+        prefill(storage.volumes[i], MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u);
     for (size_t i = 0; i < 2; ++i)
-        prefill(storage.columns[i], MC_TERRAIN_NORMAL_COLUMN_VALUES + 3u);
-    prefill(storage.density, MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u);
+        prefill(storage.columns[i], MC_TERRAIN_OVERWORLD_COLUMN_VALUES + 3u);
+    prefill(storage.density, MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u);
     memset(storage.blocks, 0xa5, sizeof(storage.blocks));
-    for (size_t i = 0; i < MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u; ++i) {
+    for (size_t i = 0; i < MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u; ++i) {
         temperature[i] = 0.75;
         rainfall[i] = 0.5;
     }
@@ -3868,9 +3868,9 @@ static const original_terrain_fixture observed_terrain[] = {
 static int test_constructor_order(void) {
     static const int64_t seeds[] = {0, 1, -1, INT64_MIN, INT64_MAX};
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
-    CHECK(!mc_terrain_normal_init(NULL, 0));
+    CHECK(!mc_terrain_overworld_init(NULL, 0));
     for (size_t i = 0; i < sizeof(seeds) / sizeof(seeds[0]); ++i) {
-        CHECK(mc_terrain_normal_init(&state, seeds[i]));
+        CHECK(mc_terrain_overworld_init(&state, seeds[i]));
         mc_noise_perlin *channels[] = {state.low_layers,
                                        state.high_layers,
                                        state.mix_layers,
@@ -3894,7 +3894,7 @@ static int test_constructor_order(void) {
 }
 
 static int test_original_constructor(void) {
-    CHECK(mc_terrain_normal_init(&state, 0));
+    CHECK(mc_terrain_overworld_init(&state, 0));
     const mc_noise_perlin *channels[] = {state.low_layers,
                                          state.high_layers,
                                          state.mix_layers,
@@ -3916,7 +3916,7 @@ static int test_original_constructor(void) {
                 CHECK(actual->permutation[i] == expected->permutation_prefix[i]);
         }
     }
-    CHECK(index == MC_TERRAIN_NORMAL_LAYERS);
+    CHECK(index == MC_TERRAIN_OVERWORLD_LAYERS);
     mc_java_random continuation = state.random_after_init;
     for (size_t i = 0; i < 4; ++i)
         CHECK((uint64_t)mc_java_random_next_i64(&continuation) == observed_continuation[i]);
@@ -3927,7 +3927,7 @@ static int test_original_density_and_base(void) {
     for (size_t fixture = 0; fixture < sizeof(observed_terrain) / sizeof(observed_terrain[0]);
          ++fixture) {
         const original_terrain_fixture *expected = &observed_terrain[fixture];
-        CHECK(mc_terrain_normal_init(&state, expected->seed));
+        CHECK(mc_terrain_overworld_init(&state, expected->seed));
         prepare_storage();
         for (size_t i = 0; i < 256; ++i) {
             temperature[i] = from_bits(expected->climate[0][i]);
@@ -3935,14 +3935,16 @@ static int test_original_density_and_base(void) {
         }
         memcpy(&saved_storage, &storage, sizeof(storage));
         memcpy(&saved_state, &state, sizeof(state));
-        mc_terrain_normal_workspace workspace = workspace_for(&storage);
-        mc_terrain_normal_workspace saved_workspace = workspace;
-        mc_terrain_normal_climate climate = {temperature, MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u,
-                                             rainfall, MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u};
-        mc_terrain_double_span density = {storage.density, MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u};
-        CHECK(mc_terrain_normal_generate(&state, &workspace, expected->chunk_x, expected->chunk_z,
-                                         &climate, density, storage.blocks,
-                                         sizeof(storage.blocks)));
+        mc_terrain_overworld_workspace workspace = workspace_for(&storage);
+        mc_terrain_overworld_workspace saved_workspace = workspace;
+        mc_terrain_overworld_climate climate = {temperature,
+                                                MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u, rainfall,
+                                                MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u};
+        mc_terrain_double_span density = {storage.density,
+                                          MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u};
+        CHECK(mc_terrain_overworld_generate(&state, &workspace, expected->chunk_x,
+                                            expected->chunk_z, &climate, density, storage.blocks,
+                                            sizeof(storage.blocks)));
         for (size_t i = 0; i < 425; ++i) {
             CHECK(bits_of(storage.density[i]) == expected->density[i]);
             for (size_t channel = 0; channel < 3; ++channel)
@@ -3963,11 +3965,11 @@ static int test_original_density_and_base(void) {
             uint8_t block = (uint8_t)expected->base_runs[run];
             size_t length = ((size_t)(uint8_t)expected->base_runs[run + 1u] << 8u) |
                             (uint8_t)expected->base_runs[run + 2u];
-            CHECK(length != 0 && length <= MC_TERRAIN_NORMAL_BLOCKS - position);
+            CHECK(length != 0 && length <= MC_TERRAIN_OVERWORLD_BLOCKS - position);
             for (size_t i = 0; i < length; ++i)
                 CHECK(storage.blocks[position++] == block);
         }
-        CHECK(position == MC_TERRAIN_NORMAL_BLOCKS);
+        CHECK(position == MC_TERRAIN_OVERWORLD_BLOCKS);
         for (size_t i = 0; i < 3; ++i) {
             CHECK(bits_of(storage.density[425u + i]) == bits_of(saved_storage.density[425u + i]));
             CHECK(storage.blocks[32768u + i] == 0xa5);
@@ -3995,22 +3997,22 @@ static int test_controlled_base_decisions(void) {
     static const uint64_t temperatures[] = {
         UINT64_C(0x3fdfffffffffffff), UINT64_C(0x3fe0000000000000), UINT64_C(0x3fe0000000000001)};
     for (size_t d = 0; d < sizeof(densities) / sizeof(densities[0]); ++d) {
-        for (size_t i = 0; i < MC_TERRAIN_NORMAL_DENSITY_VALUES; ++i)
+        for (size_t i = 0; i < MC_TERRAIN_OVERWORLD_DENSITY_VALUES; ++i)
             storage.density[i] = from_bits(densities[d]);
         for (size_t t = 0; t < sizeof(temperatures) / sizeof(temperatures[0]); ++t) {
-            for (size_t i = 0; i < MC_TERRAIN_NORMAL_CLIMATE_VALUES; ++i)
+            for (size_t i = 0; i < MC_TERRAIN_OVERWORLD_CLIMATE_VALUES; ++i)
                 temperature[i] = from_bits(temperatures[t]);
             memset(storage.blocks, 0xa5, sizeof(storage.blocks));
-            CHECK(mc_terrain_normal_base(storage.density, MC_TERRAIN_NORMAL_DENSITY_VALUES,
-                                         temperature, MC_TERRAIN_NORMAL_CLIMATE_VALUES,
-                                         storage.blocks, sizeof(storage.blocks)));
+            CHECK(mc_terrain_overworld_base(storage.density, MC_TERRAIN_OVERWORLD_DENSITY_VALUES,
+                                            temperature, MC_TERRAIN_OVERWORLD_CLIMATE_VALUES,
+                                            storage.blocks, sizeof(storage.blocks)));
             for (size_t column = 0; column < 256; ++column) {
                 for (size_t y = 0; y < 128; ++y) {
                     uint8_t expected = d == 3 ? 1 : y < 64 ? y == 63 && t == 0 ? 79 : 9 : 0;
                     CHECK(storage.blocks[column * 128u + y] == expected);
                 }
             }
-            for (size_t i = MC_TERRAIN_NORMAL_BLOCKS; i < sizeof(storage.blocks); ++i)
+            for (size_t i = MC_TERRAIN_OVERWORLD_BLOCKS; i < sizeof(storage.blocks); ++i)
                 CHECK(storage.blocks[i] == 0xa5);
         }
     }
@@ -4030,9 +4032,9 @@ static int test_repeated_addition_control(void) {
     }
     for (size_t i = 0; i < 256; ++i)
         temperature[i] = 0.5;
-    CHECK(mc_terrain_normal_base(storage.density, MC_TERRAIN_NORMAL_DENSITY_VALUES, temperature,
-                                 MC_TERRAIN_NORMAL_CLIMATE_VALUES, storage.blocks,
-                                 sizeof(storage.blocks)));
+    CHECK(mc_terrain_overworld_base(storage.density, MC_TERRAIN_OVERWORLD_DENSITY_VALUES,
+                                    temperature, MC_TERRAIN_OVERWORLD_CLIMATE_VALUES,
+                                    storage.blocks, sizeof(storage.blocks)));
     for (size_t x = 0; x < 16; ++x) {
         for (size_t z = 0; z < 16; ++z) {
             for (size_t y = 0; y < 128; ++y) {
@@ -4050,27 +4052,27 @@ static int expect_preserved(void) {
     return 0;
 }
 
-static int expect_density_failure(const mc_terrain_normal_state *input_state,
-                                  const mc_terrain_normal_workspace *workspace,
-                                  const mc_terrain_normal_climate *climate,
+static int expect_density_failure(const mc_terrain_overworld_state *input_state,
+                                  const mc_terrain_overworld_workspace *workspace,
+                                  const mc_terrain_overworld_climate *climate,
                                   mc_terrain_double_span density) {
-    CHECK(!mc_terrain_normal_density(input_state, workspace, 0, 0, climate, density));
+    CHECK(!mc_terrain_overworld_density(input_state, workspace, 0, 0, climate, density));
     CHECK(expect_preserved() == 0);
-    CHECK(!mc_terrain_normal_generate(input_state, workspace, 0, 0, climate, density,
-                                      storage.blocks, sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_generate(input_state, workspace, 0, 0, climate, density,
+                                         storage.blocks, sizeof(storage.blocks)));
     CHECK(expect_preserved() == 0);
     return 0;
 }
 
 static int test_capacity_validation(void) {
-    CHECK(mc_terrain_normal_init(&state, 0));
+    CHECK(mc_terrain_overworld_init(&state, 0));
     prepare_storage();
     memcpy(&saved_storage, &storage, sizeof(storage));
     memcpy(&saved_state, &state, sizeof(state));
-    mc_terrain_normal_workspace workspace = workspace_for(&storage);
-    mc_terrain_normal_climate climate = {temperature, MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u,
-                                         rainfall, MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u};
-    mc_terrain_double_span density = {storage.density, MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u};
+    mc_terrain_overworld_workspace workspace = workspace_for(&storage);
+    mc_terrain_overworld_climate climate = {temperature, MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u,
+                                            rainfall, MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u};
+    mc_terrain_double_span density = {storage.density, MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u};
     CHECK(expect_density_failure(NULL, &workspace, &climate, density) == 0);
     CHECK(expect_density_failure(&state, NULL, &climate, density) == 0);
     CHECK(expect_density_failure(&state, &workspace, NULL, density) == 0);
@@ -4089,14 +4091,14 @@ static int test_capacity_validation(void) {
     }
     static const size_t bad_lengths[] = {255, SIZE_MAX / sizeof(double) + 1u};
     for (size_t i = 0; i < sizeof(bad_lengths) / sizeof(bad_lengths[0]); ++i) {
-        mc_terrain_normal_climate bad = climate;
+        mc_terrain_overworld_climate bad = climate;
         bad.temperature_length = bad_lengths[i];
         CHECK(expect_density_failure(&state, &workspace, &bad, density) == 0);
         bad = climate;
         bad.rainfall_length = bad_lengths[i];
         CHECK(expect_density_failure(&state, &workspace, &bad, density) == 0);
     }
-    mc_terrain_normal_climate bad = climate;
+    mc_terrain_overworld_climate bad = climate;
     bad.temperature = NULL;
     CHECK(expect_density_failure(&state, &workspace, &bad, density) == 0);
     bad = climate;
@@ -4109,47 +4111,48 @@ static int test_capacity_validation(void) {
     CHECK(expect_density_failure(&state, &workspace, &climate, bad_density) == 0);
     bad_density.length = SIZE_MAX / sizeof(double) + 1u;
     CHECK(expect_density_failure(&state, &workspace, &climate, bad_density) == 0);
-    CHECK(!mc_terrain_normal_generate(&state, &workspace, 0, 0, &climate, density, NULL,
-                                      sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_generate(&state, &workspace, 0, 0, &climate, density, NULL,
+                                         sizeof(storage.blocks)));
     CHECK(expect_preserved() == 0);
-    CHECK(!mc_terrain_normal_generate(&state, &workspace, 0, 0, &climate, density, storage.blocks,
-                                      MC_TERRAIN_NORMAL_BLOCKS - 1u));
+    CHECK(!mc_terrain_overworld_generate(&state, &workspace, 0, 0, &climate, density,
+                                         storage.blocks, MC_TERRAIN_OVERWORLD_BLOCKS - 1u));
     CHECK(expect_preserved() == 0);
-    CHECK(!mc_terrain_normal_base(NULL, density.length, temperature, climate.temperature_length,
-                                  storage.blocks, sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, 424, temperature, climate.temperature_length,
-                                  storage.blocks, sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, SIZE_MAX / sizeof(double) + 1u, temperature,
-                                  climate.temperature_length, storage.blocks,
-                                  sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, density.length, NULL, climate.temperature_length,
-                                  storage.blocks, sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, density.length, temperature, 255, storage.blocks,
-                                  sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, density.length, temperature,
-                                  SIZE_MAX / sizeof(double) + 1u, storage.blocks,
-                                  sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, density.length, temperature,
-                                  climate.temperature_length, NULL, sizeof(storage.blocks)));
-    CHECK(!mc_terrain_normal_base(storage.density, density.length, temperature,
-                                  climate.temperature_length, storage.blocks,
-                                  MC_TERRAIN_NORMAL_BLOCKS - 1u));
+    CHECK(!mc_terrain_overworld_base(NULL, density.length, temperature, climate.temperature_length,
+                                     storage.blocks, sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, 424, temperature, climate.temperature_length,
+                                     storage.blocks, sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, SIZE_MAX / sizeof(double) + 1u, temperature,
+                                     climate.temperature_length, storage.blocks,
+                                     sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, density.length, NULL,
+                                     climate.temperature_length, storage.blocks,
+                                     sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, density.length, temperature, 255,
+                                     storage.blocks, sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, density.length, temperature,
+                                     SIZE_MAX / sizeof(double) + 1u, storage.blocks,
+                                     sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, density.length, temperature,
+                                     climate.temperature_length, NULL, sizeof(storage.blocks)));
+    CHECK(!mc_terrain_overworld_base(storage.density, density.length, temperature,
+                                     climate.temperature_length, storage.blocks,
+                                     MC_TERRAIN_OVERWORLD_BLOCKS - 1u));
     CHECK(expect_preserved() == 0);
     return 0;
 }
 
 static int test_reuse_and_suffixes(void) {
-    CHECK(mc_terrain_normal_init(&state, INT64_MAX));
+    CHECK(mc_terrain_overworld_init(&state, INT64_MAX));
     prepare_storage();
     memcpy(&saved_storage, &storage, sizeof(storage));
     memcpy(&saved_state, &state, sizeof(state));
-    mc_terrain_normal_workspace workspace = workspace_for(&storage);
-    mc_terrain_normal_workspace saved_workspace = workspace;
-    mc_terrain_normal_climate climate = {temperature, MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u,
-                                         rainfall, MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u};
-    mc_terrain_double_span density = {storage.density, MC_TERRAIN_NORMAL_DENSITY_VALUES + 3u};
-    CHECK(mc_terrain_normal_generate(&state, &workspace, INT32_MAX, INT32_MIN, &climate, density,
-                                     storage.blocks, sizeof(storage.blocks)));
+    mc_terrain_overworld_workspace workspace = workspace_for(&storage);
+    mc_terrain_overworld_workspace saved_workspace = workspace;
+    mc_terrain_overworld_climate climate = {temperature, MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u,
+                                            rainfall, MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u};
+    mc_terrain_double_span density = {storage.density, MC_TERRAIN_OVERWORLD_DENSITY_VALUES + 3u};
+    CHECK(mc_terrain_overworld_generate(&state, &workspace, INT32_MAX, INT32_MIN, &climate, density,
+                                        storage.blocks, sizeof(storage.blocks)));
     CHECK(memcmp(&workspace, &saved_workspace, sizeof(workspace)) == 0);
     CHECK(memcmp(&state, &saved_state, sizeof(state)) == 0);
     for (size_t i = 0; i < 3; ++i) {
@@ -4161,26 +4164,27 @@ static int test_reuse_and_suffixes(void) {
             CHECK(bits_of(storage.columns[channel][25u + i]) == 0);
     }
     memcpy(&saved_storage, &storage, sizeof(storage));
-    CHECK(mc_terrain_normal_density(&state, &workspace, INT32_MAX, INT32_MIN, &climate, density));
+    CHECK(
+        mc_terrain_overworld_density(&state, &workspace, INT32_MAX, INT32_MIN, &climate, density));
     CHECK(memcmp(storage.density, saved_storage.density, sizeof(storage.density)) == 0);
-    CHECK(mc_terrain_normal_base(storage.density, density.length, temperature,
-                                 climate.temperature_length, storage.blocks,
-                                 sizeof(storage.blocks)));
+    CHECK(mc_terrain_overworld_base(storage.density, density.length, temperature,
+                                    climate.temperature_length, storage.blocks,
+                                    sizeof(storage.blocks)));
     CHECK(memcmp(&storage, &saved_storage, sizeof(storage)) == 0);
-    CHECK(mc_terrain_normal_generate(&state, &workspace, 17, -31, &climate, density, storage.blocks,
-                                     sizeof(storage.blocks)));
+    CHECK(mc_terrain_overworld_generate(&state, &workspace, 17, -31, &climate, density,
+                                        storage.blocks, sizeof(storage.blocks)));
     CHECK(memcmp(storage.density, saved_storage.density, 425u * sizeof(double)) != 0);
-    CHECK(mc_terrain_normal_generate(&state, &workspace, INT32_MAX, INT32_MIN, &climate, density,
-                                     storage.blocks, sizeof(storage.blocks)));
+    CHECK(mc_terrain_overworld_generate(&state, &workspace, INT32_MAX, INT32_MIN, &climate, density,
+                                        storage.blocks, sizeof(storage.blocks)));
     CHECK(memcmp(&storage, &saved_storage, sizeof(storage)) == 0);
     CHECK(memcmp(&state, &saved_state, sizeof(state)) == 0);
-    for (size_t i = 0; i < MC_TERRAIN_NORMAL_CLIMATE_VALUES + 3u; ++i) {
+    for (size_t i = 0; i < MC_TERRAIN_OVERWORLD_CLIMATE_VALUES + 3u; ++i) {
         CHECK(temperature[i] == 0.75);
         CHECK(rainfall[i] == 0.5);
     }
     /* Read-only climate arrays may share storage. */
     climate.rainfall = temperature;
-    CHECK(mc_terrain_normal_density(&state, &workspace, 0, 0, &climate, density));
+    CHECK(mc_terrain_overworld_density(&state, &workspace, 0, 0, &climate, density));
     CHECK(memcmp(&state, &saved_state, sizeof(state)) == 0);
     return 0;
 }

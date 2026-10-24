@@ -2,7 +2,7 @@
 
 #include "../../terrain/surface_internal.h"
 
-static bool reference_failure(mc_world_provider *provider, mc_world_generation_error *error,
+static bool reference_failure(mc_chunk_provider *provider, mc_world_generation_error *error,
                               mc_registry_status status, unsigned int pc, const char *operation) {
     error->surface_bytecode = pc;
     error->registry = (mc_registry_error){.status = status,
@@ -15,17 +15,18 @@ static bool reference_failure(mc_world_provider *provider, mc_world_generation_e
     return mc_world_generation_registry_fail(provider, error, status, operation);
 }
 
-bool mc_world_generation_surface(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
+bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
                                  const mc_biome_reference_array *biomes,
                                  mc_world_generation_error *error) {
-    mc_normal_generator *generator = &provider->generator;
+    mc_overworld_generator *generator = &provider->generator;
     mc_java_random *random = &generator->generator_random;
 
     /* Each request completes before its actual r42/s80/t129 publication.
      * Fixed native backing is not an entry-wide future-source preflight. */
-    const mc_terrain_double_span sand_output = {generator->sand, MC_TERRAIN_NORMAL_SURFACE_VALUES};
-    if (!mc_terrain_normal_surface_channel(&generator->terrain, MC_TERRAIN_SURFACE_SAND, x, z,
-                                           sand_output)) {
+    const mc_terrain_double_span sand_output = {generator->sand,
+                                                MC_TERRAIN_OVERWORLD_SURFACE_VALUES};
+    if (!mc_terrain_overworld_surface_channel(&generator->terrain, MC_TERRAIN_SURFACE_SAND, x, z,
+                                              sand_output)) {
         error->surface_bytecode = 0;
         return mc_world_generation_fail(provider, error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                         "surface sand native backing");
@@ -33,9 +34,9 @@ bool mc_world_generation_surface(mc_world_provider *provider, int32_t x, int32_t
     provider->generation.r = sand_output;
 
     const mc_terrain_double_span gravel_output = {generator->gravel,
-                                                  MC_TERRAIN_NORMAL_SURFACE_VALUES};
-    if (!mc_terrain_normal_surface_channel(&generator->terrain, MC_TERRAIN_SURFACE_GRAVEL, x, z,
-                                           gravel_output)) {
+                                                  MC_TERRAIN_OVERWORLD_SURFACE_VALUES};
+    if (!mc_terrain_overworld_surface_channel(&generator->terrain, MC_TERRAIN_SURFACE_GRAVEL, x, z,
+                                              gravel_output)) {
         error->surface_bytecode = 0;
         return mc_world_generation_fail(provider, error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                         "surface gravel native backing");
@@ -43,9 +44,9 @@ bool mc_world_generation_surface(mc_world_provider *provider, int32_t x, int32_t
     provider->generation.s = gravel_output;
 
     const mc_terrain_double_span thickness_output = {generator->thickness,
-                                                     MC_TERRAIN_NORMAL_SURFACE_VALUES};
-    if (!mc_terrain_normal_surface_channel(&generator->terrain, MC_TERRAIN_SURFACE_THICKNESS, x, z,
-                                           thickness_output)) {
+                                                     MC_TERRAIN_OVERWORLD_SURFACE_VALUES};
+    if (!mc_terrain_overworld_surface_channel(&generator->terrain, MC_TERRAIN_SURFACE_THICKNESS, x,
+                                              z, thickness_output)) {
         error->surface_bytecode = 0;
         return mc_world_generation_fail(provider, error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                         "surface thickness native backing");

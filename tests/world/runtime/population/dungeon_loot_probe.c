@@ -29,7 +29,7 @@ static bool probe_seed(const char *text, int64_t *out) {
 static bool probe_call(fixture *f, size_t side, bool loot, mc_java_random *random) {
     bool ok = false;
     mc_item_stack *stack = NULL;
-    mc_tile_name *name = NULL;
+    mc_tile_entity_name *name = NULL;
     mc_population_dungeon_error error;
     const mc_world_storage_status status =
         loot ? mc_population_dungeon_loot(f->worlds[side], random, NULL, &stack, &error)
@@ -54,8 +54,8 @@ static bool probe_call(fixture *f, size_t side, bool loot, mc_java_random *rando
                    fields.id, fields.count, fields.damage, fields.animation) < 0)
             goto cleanup;
     } else {
-        mc_tile_name_view view;
-        if (mc_tile_name_get_view(name, &view) != MC_TILE_OK || view.is_null ||
+        mc_tile_entity_name_view view;
+        if (mc_tile_entity_name_get_view(name, &view) != MC_TILE_ENTITY_OK || view.is_null ||
             fputs("{\"kind\":\"actual_String\",\"utf16\":\"", stdout) < 0)
             goto cleanup;
         for (size_t i = 0; i < view.text.length; ++i)
@@ -89,7 +89,7 @@ static bool probe_call(fixture *f, size_t side, bool loot, mc_java_random *rando
     ok = fputs("}\n", stdout) >= 0;
 cleanup:
     mc_item_stack_release(stack);
-    mc_tile_name_release(name);
+    mc_tile_entity_name_release(name);
     return ok;
 }
 

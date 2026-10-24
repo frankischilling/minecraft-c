@@ -8,7 +8,7 @@ lists and an inert lifetime thread. Full server startup and ticking remain
 unfinished.
 
 [Power queries](world/power.md) own the ordered World/support/conductor/output
-chain. Concrete Block dispatch and full wire connectivity keep the receiver's
+chain. Concrete Block dispatch and full redstone connectivity keep the receiver's
 defining Registry separate from the supplied World. The independent horizontal
 class owns its lazy tables and failure prefixes. Detailed held support shares
 the public predicate body while retaining complete acquisition errors. Queries
@@ -19,7 +19,7 @@ between contact and scheduled ticks. The Block's defining classes own the pooled
 query bounds; the passed World owns the actual entity slices. Category a uses
 mutable R, while Living/Player use fresh [Class-query Lists](world/class-entities.md)
 and passive same-owner ancestry. Ordered mutation, support-neighbor reentry,
-observers, sound and scheduling keep their separate failure effects and
+WorldAccess callbacks, sound and scheduling keep their separate failure effects and
 diagnostics. The running game loop remains unfinished.
 
 [Rails](world/rails.md) keep their connection-helper List and coordinate owners
@@ -50,7 +50,7 @@ identities across repeated queries. Each source call reloads its actual World
 receiver, while reached code statics require the exact canonical Entity class
 owner. Typed effects, Block inheritance dispatch and actual World queries keep
 independent error frames. Other constructors, active ticks, positive pressure/
-detector helpers, nonempty sound observers and unowned passenger recursion remain
+detector helpers, concrete sound WorldAccess receivers and unowned passenger recursion remain
 unfinished. Movement does not implement Piston pushing or the game loop.
 
 The [collision module](world/collision/boxes.md) owns the actual constructor
@@ -66,9 +66,9 @@ getter. It then gathers actual nearby results and performs two separate
 indexed Entity reads. Item/FallingSand inherit real null virtuals; other
 Entity constructors remain dependencies.
 
-[Positive Piston geometry](world/tiles/piston.md) keeps the actual Tile held
+[Positive Piston geometry](world/tile-entities/piston.md) keeps the actual TileEntity held
 through interpolation and field reads. The shifted helper captures the Block
-array and invokes the actual carrier getter before Direction active use. Six
+array and invokes the actual carried Block getter before Direction active use. Six
 ordered stores mutate that same pooled box; later failures preserve earlier
 coordinate and pool effects. Piston's shared List and Direction's four arrays
 initialize independently under their actual class owners. Piston ticking,
@@ -100,10 +100,10 @@ The [shared Biome registry](world/biome-registry.md) stores actual objects,
 spawn lists, record/Class references and its mutable table on the existing
 class owner. Its direct sampler retains reference arrays and invokes the real
 lookup after each climate-cell store. Class-bound Dimension setup retains actual
-normal/fixed managers with independent Registry borrows and reference caches.
+noise-backed/fixed managers with independent Registry borrows and reference caches.
 The [temperature-array module](world/temperature.md) keeps output allocations
 independent of manager replacement and preserves raw writes before a later
-auxiliary-buffer failure. The [full normal controller](world/population/normal.md)
+auxiliary-buffer failure. The [full Overworld controller](world/population/overworld.md)
 uses those concrete methods and owns the actual provider w independently of the
 current manager. The installed GAME cache adapter uses the same provider Random,
 late Registry/Biome statics and notifying snow writes. The shared falling flag
@@ -168,7 +168,7 @@ notifying World writes, held Chest/Spawner identities and new gameplay Stacks.
 Its local Stack request budget is separate from retained World ownership.
 The [prepared whole-placement comparison](reference/dungeon-placement.md)
 matches 48 original calls on all three native hosts, including actual immutable
-Map keys inspected independently of Tile coordinates. Natural population and
+Map keys inspected independently of TileEntity coordinates. Natural population and
 complete closure remain pending.
 Ordinary Statistics and Block initialization can return; other entry orders
 preserve their actual null-singleton failures. Full World startup and gameplay
@@ -193,7 +193,7 @@ world runtime and [Entity construction](entity/construction.md). Keeping these
 mutually dependent owners together avoids a storage-to-Entity dependency.
 The [native base-World constructor](world/construction.md) keeps the same
 43-field runtime through RAW allocation, ordered construction, failure and
-retirement. Typed Dimension/biome owners and the concrete normal provider
+retirement. Typed WorldProvider/WorldChunkManager owners and the concrete Overworld ChunkProvider
 retain actual shared identities; block reads use the installed cache
 coordinator. Direct, copied and already-loaded normal construction can finish.
 Fresh spawn, full bootstrap/subclass startup and complete population remain
@@ -226,17 +226,17 @@ survive time changes and membership removal. Current comparison searches and
 structural-first lookup remain distinct after time mutation. World scheduling,
 admission and tick callbacks remain separate implementation work.
 
-The [normal terrain module](world/terrain.md) composes all original seeded
+The [Overworld terrain module](world/terrain.md) composes all original seeded
 Perlin groups into density, then interpolates base blocks. Immutable constructor
 state is separate from borrowed workspace/output spans and processed climate.
 Its fixed normal shape retains original flat layouts and buffer suffix behavior.
 
-The [normal surface pass](world/surface.md) reuses immutable terrain layers,
+The [Overworld surface pass](world/surface.md) reuses immutable terrain layers,
 accepts current top/filler byte pairs and advances a separate caller-owned
 Random. Field sampling and material application remain usable independently;
 composed calls validate all borrowed storage before any mutation.
 
-The [normal cave pass](world/caves.md) uses a separate caller-owned Random,
+The [Overworld cave pass](world/caves.md) uses a separate caller-owned Random,
 immutable math table and existing block prefix. It owns the fixed neighbor
 schedule, ordered local path Randoms, geometry and selective material changes.
 Checked preflight precedes mutation; successful calls allocate nothing.
@@ -261,13 +261,13 @@ already cached. Fresh generated chunks finish before explicit publication.
 Publication covers map replacement and insertion-list append only; loading,
 unloading, lifecycle callbacks, population and light propagation remain separate.
 
-The [normal generation module](world/generation.md) composes fresh chunk data,
+The [Overworld generation module](world/generation.md) composes fresh chunk data,
 direct climate/biome sampling, base terrain, surface, caves and full finishing.
-`mc_normal_generator_init` binds the world seed, the world's initialized biome
-manager and immutable trig data. Each `mc_normal_generator_generate` call receives
+`mc_overworld_generator_init` binds the world seed, the world's initialized biome
+manager and immutable trig data. Each `mc_overworld_generator_generate` call receives
 that same world's lighting context. The generator retains all 82 terrain layers,
 fixed scratch and separate generator/cave Randoms. Its separately owned biome
-output uses the manager's allocation owner; `mc_normal_generator_free` releases
+output uses the manager's allocation owner; `mc_overworld_generator_free` releases
 only that output. Direct sampling updates `a/b/c`
 while preserving `d`. Each call receives all 13 current biome material pairs
 and current opacity explicitly. Fresh caller-owned results remain unpublished;
@@ -275,7 +275,7 @@ both coordinates must lie in `INT32_MIN + 8` through `INT32_MAX - 9`, the finite
 ordinary cave-scheduler domain. Checked resource/allocation failures preserve
 state; defensive downstream invariant failures report an unusable result.
 
-Normal composition is verified at
+Overworld composition is verified at
 `a08c12056a06261ed01d9f66999459f7ce9543b4`: all 41 selected local tests pass
 without skips on MSVC/GCC/Clang, including four-seed original comparisons and
 complete untouched controls. [Generation evidence](reference/generation.md)
@@ -300,7 +300,7 @@ native region transport and the world-store composition. Its
 [image writer](storage/region-writer.md) accepts explicit compressed bytes and
 timestamps; the [metadata codec](storage/level.md) owns schema interpretation
 separately from gzip, fallback and file rotation. Storage loads preserve opaque
-state; the acquisition adapter refuses unsupported entity/tile activation.
+state; the acquisition adapter refuses unsupported entity/TileEntity activation.
 At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71 selected tests pass without
 skips on native MSVC/GCC/Clang, with Linux sanitizers and independent provenance
 and copied-world semantic audits. The
@@ -320,9 +320,9 @@ retention, storage and lifecycle callbacks to one stable world clock and fresh
 metadata views. Generation reserves an owner slot before running and returns a
 stable retained copy; later payload-allocation failure preserves generation's
 completed effects. Loaded chunks preserve their source NBT. Runtime destruction
-refuses live calls, leases, persistent Entity/Tile bindings or nonempty
+refuses live calls, leases, persistent Entity/TileEntity bindings or nonempty
 cache/list/pending state and does not
-save or free store chunks. Empty entity/tile records are native; other bodies
+save or free store chunks. Empty entity/TileEntity records are native; other bodies
 remain explicit external seams. Its [qualification ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
 is separate from the accepted storage checkpoint.
 
@@ -475,14 +475,14 @@ tests/world/terrain/test_caves.c
 tests/world/terrain/caves_probe.c
 tests/reference/caves/CavesObservation.java
 scripts/reference/caves/compare_caves.py
-include/mc/world/generation/normal.h
-src/world/generation/normal.c
-tests/world/generation/test_normal.c
-tests/world/generation/normal_probe.c
-tests/reference/generation/NormalGenerationObservation.java
-tests/reference/generation/NormalGenerationController.java
-scripts/reference/generation/compare_normal.py
-scripts/reference/generation/export_normal.py
+include/mc/world/generation/overworld.h
+src/world/generation/overworld.c
+tests/world/generation/test_overworld.c
+tests/world/generation/overworld_probe.c
+tests/reference/generation/OverworldGenerationObservation.java
+tests/reference/generation/OverworldGenerationController.java
+scripts/reference/generation/compare_overworld.py
+scripts/reference/generation/export_overworld.py
 include/mc/world/chunk/data.h
 include/mc/world/chunk/nibbles.h
 src/world/chunk/data.c

@@ -149,7 +149,7 @@ bool mc_chunk_acquire_validate(const mc_chunk_acquire_context *context) {
         context->cache->insertion_capacity > SIZE_MAX / sizeof(*context->cache->insertions) ||
         !mc_chunk_cache_validate(context->cache) || !mc_chunk_pending_validate(context->pending) ||
         !chunk_valid(context->fallback) || context->world_time == NULL ||
-        context->register_tiles == NULL || context->register_entities == NULL ||
+        context->register_tile_entities == NULL || context->register_entities == NULL ||
         (context->generate == NULL) != (context->populate == NULL)) {
         return false;
     }
@@ -197,10 +197,10 @@ static mc_chunk_acquire_status activate(const mc_chunk_acquire_context *context,
     if (chunk->blank)
         return MC_CHUNK_ACQUIRE_OK;
     /* Original pre-activation is a no-op. Activation itself sets active first,
-     * then registers tiles and all eight slices, including empty collections. */
+     * then registers TileEntities and all eight slices, including empty collections. */
     chunk->active = true;
     mc_chunk_acquire_status status =
-        callback_result(context, context->register_tiles(context->world, context, chunk));
+        callback_result(context, context->register_tile_entities(context->world, context, chunk));
     if (status != MC_CHUNK_ACQUIRE_OK)
         return status;
     for (size_t slice = 0; slice < 8u; ++slice) {

@@ -17,7 +17,7 @@ import time
 import zlib
 
 ROOT = Path(__file__).resolve().parents[3]
-FIXTURE_DRIVER = ROOT / "tests/tools/world/test_tiles.py"
+FIXTURE_DRIVER = ROOT / "tests/tools/world/test_tile_entities.py"
 SPEC = importlib.util.spec_from_file_location("saving_fixture_capture", FIXTURE_DRIVER)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError("real Tile capture support is missing")
@@ -153,7 +153,7 @@ def main():
         paths = TILES.input_paths(args.executable)
         paths.update({"driver": Path(__file__).resolve(), "fixture_capture": FIXTURE_DRIVER,
                       "test": ROOT / "tests/world/runtime/saving/test_saving.c",
-                      "tile_fixture": ROOT / "tests/world/runtime/tiles/test_tiles.c"})
+                      "tile_fixture": ROOT / "tests/world/runtime/tile_entities/test_tile_entities.c"})
         CAPTURE.require(all(path.is_file() and not path.is_symlink() for path in paths.values()),
                         "ordinary actual selected inputs")
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}
@@ -173,7 +173,7 @@ def main():
         lines = stdout.decode("ascii").replace("\r\n", "\n").splitlines(keepends=True)
         CAPTURE.require(len(lines) == 5 and lines[:-1] == ["16 achievements\n", "151 recipes\n"] * 2,
                         "complete exact two-owner Registry bootstrap output")
-        result = re.fullmatch(r"PASS: ([1-9][0-9]*) live Tile save integration checks \(world-saving\)\n", lines[-1])
+        result = re.fullmatch(r"PASS: ([1-9][0-9]*) live TileEntity save integration checks \(world-saving\)\n", lines[-1])
         CAPTURE.require(result is not None, "one complete genuine native save result")
         report["checks"] = int(result.group(1))
         report["bootstrap_console"] = lines[:-1]

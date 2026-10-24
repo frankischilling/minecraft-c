@@ -30,7 +30,7 @@ later eligible assignments winning. Flagged rails skip curves and preserve
 the bit8 value read at their later metadata access. The rebuilt List survives
 an equal nonforced result. Forced reshape still notifies, and reconnect always
 notifies even on equality. These calls use the real notifying metadata setter;
-observer and neighbor callbacks run synchronously before the helper continues.
+WorldAccess and neighbor callbacks run synchronously before the helper continues.
 
 The [added hook](../../src/world/runtime/mutation/rails/lifecycle.c) checks
 the remote flag, builds a helper, asks World power and forces reshape. Neighbor
@@ -68,7 +68,7 @@ comes from that traversal rather than a supplied empty-list substitute.
 The captured result and saved bit8 choose the transition, even if synchronous
 metadata callbacks change the live cell. Rising writes saved metadata OR8;
 falling writes saved metadata AND7. Current and below notifications follow,
-then a single-cell observer range. A nonempty captured List schedules the
+then a single-cell WorldAccess range. A nonempty captured List schedules the
 late live receiver ID with delay20 through the existing real scheduler,
 including an already-on update. Immediate/deferred scheduling and partial
 membership/ordered insertion retain their existing behavior. Neither contact

@@ -3,9 +3,9 @@
 
 #include "mc/world/runtime/mutations.h"
 
-/* Actual fd/dj sound and particle entries. Each reads the current observer
+/* Actual fd/dj sound and particle entries. Each reads the current WorldAccess
  * list and dispatches in its source order. A genuinely empty list returns
- * normally; registered typed observers receive each reached synchronous call.
+ * normally; registered typed WorldAccess receivers receive each reached synchronous call.
  * Iteration rereads the live list by index after each callback. Untyped nonnull
  * entries fail at cast; null receivers and missing callbacks fail at invocation.
  * These operations perform no Registry/String use, Random draw, coordinate

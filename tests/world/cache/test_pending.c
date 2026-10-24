@@ -416,8 +416,8 @@ static int test_invalid_pairing(void) {
     return 0;
 }
 
-static bool register_tiles(void *world, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk) {
+static bool register_tile_entities(void *world, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     (void)context;
     (void)chunk;
     ++*(unsigned *)world;
@@ -466,7 +466,7 @@ static int test_acquire_mutations(void) {
                                         .spawn_z = &spawn_z,
                                         .policy = MC_CHUNK_ACQUIRE_DEDICATED,
                                         .world = &registrations,
-                                        .register_tiles = register_tiles,
+                                        .register_tile_entities = register_tile_entities,
                                         .register_entities = register_entities};
     CHECK(mc_chunk_acquire_validate(&context));
     pending_snapshot snapshot;

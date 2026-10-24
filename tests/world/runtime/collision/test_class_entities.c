@@ -24,7 +24,7 @@ static bool class_world(fixture *f, size_t slot) {
             f->baseline_world_bytes[slot % 2u] +
             (slot < 6 ? class_header_bytes[slot % 2u] + 8u * (sizeof(void *) + sizeof(mc_entity *))
                       : 0u);
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[slot % 2u], &limits, &f->worlds[slot],
@@ -39,7 +39,7 @@ static bool class_world(fixture *f, size_t slot) {
         f->baseline_world_bytes[slot] = state.direct_allocation_bytes;
     if (slot >= 4)
         CHECK(state.direct_allocation_bytes == f->baseline_world_bytes[slot % 2u]);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(seed_record(f, slot));
@@ -191,8 +191,8 @@ static bool class_order_and_filter(fixture *f, size_t side) {
                                       &item_class) == MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_FALLING_SAND,
                                       &falling_class) == MC_ENTITY_OK &&
-          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_MOB, &mob) ==
-              MC_ENTITY_OK &&
+          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
+                                      &mob) == MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_PLAYER,
                                       &player) == MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_MINECART,
@@ -287,8 +287,8 @@ static bool class_null_order_and_prefix(fixture *f, size_t side) {
     const mc_entity_class_literal *item = NULL, *mob = NULL;
     CHECK(mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ITEM, &item) ==
               MC_ENTITY_OK &&
-          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_MOB, &mob) ==
-              MC_ENTITY_OK);
+          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
+                                      &mob) == MC_ENTITY_OK);
     CHECK(make_entity(f, side, NULL, 8.0, 8.0, 8.0, &a) &&
           make_entity(f, side, NULL, 8.0, 16.0, 8.0, &b) &&
           mc_world_runtime_chunk_add_entity(f->chunks[slot], a, NULL) == MC_WORLD_STORAGE_OK &&
@@ -371,7 +371,7 @@ static bool class_null_order_and_prefix(fixture *f, size_t side) {
     f->chunks[slot]->m = actual_m;
     CHECK(null_m == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.query.chunk_bytecode == 48 &&
           class_values(destination, one, 1));
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     w->fields.v = NULL;
     const mc_world_storage_status null_provider =
         mc_world_runtime_class_entities(w, item, &class_box, &unchanged, &error);
@@ -408,8 +408,8 @@ static bool class_native_budget(fixture *f, size_t side) {
     CHECK(make_entity(f, side, NULL, 8.0, 8.0, 8.0, &a) &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ITEM, &item) ==
               MC_ENTITY_OK &&
-          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_MOB, &mob) ==
-              MC_ENTITY_OK);
+          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
+                                      &mob) == MC_ENTITY_OK);
     for (size_t i = 0; i < 5; ++i)
         CHECK(mc_world_runtime_chunk_add_entity(f->chunks[slot], a, NULL) == MC_WORLD_STORAGE_OK);
     const size_t bytes = w->construction.direct_allocation_bytes;
@@ -454,8 +454,8 @@ static bool class_native_overflow(fixture *f, size_t side) {
     mc_world_nearby_error error;
     CHECK(mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ITEM, &item) ==
               MC_ENTITY_OK &&
-          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_MOB, &mob) ==
-              MC_ENTITY_OK);
+          mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
+                                      &mob) == MC_ENTITY_OK);
     const size_t bytes = w->construction.direct_allocation_bytes;
     const size_t a_holds = a->holds, b_holds = b->holds, leases = w->local_leases;
     /* Explicit native invariant controls, restored before assertions. Finite

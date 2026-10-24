@@ -1,8 +1,8 @@
 # World height, light and sky queries
 
 The concrete GAME queries in [`queries.h`](../../include/mc/world/runtime/queries.h)
-use the installed World provider and its actual Chunk identities. These methods
-support normal population and plant survival. They have different bounds,
+use the installed ChunkProvider and its actual Chunk identities. These methods
+support Overworld population and plant survival. They have different bounds,
 acquisition and class-initialization behavior; one bounded block lookup cannot
 replace them.
 

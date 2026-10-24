@@ -100,7 +100,7 @@ not claim an arbitrary descendant-process deadline or a hard disk-write cap.
 
 Existing terrain tests compare initialized Random semantic fields instead of
 struct padding. Rejected-call byte canaries still compare raw storage, including
-deliberately poisoned prior cave output. The staged normal generator copies its
+deliberately poisoned prior cave output. The staged Overworld generator copies its
 complete initialized Random before reseeding; the cave projection keeps its
 fresh output-initialization contract. Legacy observations that expose only LCG
 continuations retain that scope.

@@ -155,7 +155,7 @@ static void detector_nearby(mc_world_mutation_error *projection,
     projection->registry = child->query.registry;
     projection->population = child->query.population;
     projection->entity = child->entity;
-    projection->tile = child->tile;
+    projection->tile_entity = child->tile_entity;
     projection->batch = child->batch;
     projection->load_entity = child->load_entity;
     projection->activation_bytecode = child->activation_bytecode;

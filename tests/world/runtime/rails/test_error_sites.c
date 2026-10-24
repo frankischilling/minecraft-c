@@ -166,13 +166,13 @@ static mc_world_mutation_error lower_fixture(void) {
     e.entity.operation = "fixture.entity";
     e.entity.bytecode = 36;
     e.publication.status = MC_WORLD_STORAGE_BUSY;
-    e.publication.observer_bytecode = 37;
+    e.publication.world_access_bytecode = 37;
     e.batch.index = 5;
     e.batch.publication.provider_bytecode = 38;
-    e.tile.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-    e.tile.tile.status = MC_TILE_LIMIT;
-    e.tile.tile.piston_initializer_bytecode = 39;
-    e.tile.acquisition_parent.inventory_bytecode = 40;
+    e.tile_entity.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    e.tile_entity.tile_entity.status = MC_TILE_ENTITY_LIMIT;
+    e.tile_entity.tile_entity.piston_initializer_bytecode = 39;
+    e.tile_entity.acquisition_parent.inventory_bytecode = 40;
     e.load_entity.index = 6;
     e.load_entity.native.system_error = 45;
     e.bounds.status = MC_ENTITY_UNSUPPORTED_FP;
@@ -214,7 +214,8 @@ static mc_world_mutation_error lower_fixture(void) {
     e.power.strong_neighbors = (mc_world_power_site){true, 73, 3, 2, 1, -1};
     e.power.strong_at = (mc_world_power_site){false, 0, 1, 2, 3, 4};
     e.power.weak = (mc_world_block_power_site){true, "fixture.Block", "weak()", 74};
-    e.power.wire_connectivity = (mc_world_block_power_site){true, "fixture.Wire", "connect()", 75};
+    e.power.redstone_connectivity =
+        (mc_world_block_power_site){true, "fixture.Redstone", "connect()", 75};
     e.power.support.bytecode = 76;
     e.power.support.registry.block_id = 77;
     e.power.access.query.provider_bytecode = 78;
@@ -273,7 +274,7 @@ static bool retained(const mc_world_mutation_error *out, const mc_world_mutation
     CHECK(memcmp(&out->entity, &lower->entity, sizeof(out->entity)) == 0);
     CHECK(memcmp(&out->publication, &lower->publication, sizeof(out->publication)) == 0);
     CHECK(memcmp(&out->batch, &lower->batch, sizeof(out->batch)) == 0);
-    CHECK(memcmp(&out->tile, &lower->tile, sizeof(out->tile)) == 0);
+    CHECK(memcmp(&out->tile_entity, &lower->tile_entity, sizeof(out->tile_entity)) == 0);
     CHECK(memcmp(&out->load_entity, &lower->load_entity, sizeof(out->load_entity)) == 0);
     CHECK(memcmp(&out->bounds, &lower->bounds, sizeof(out->bounds)) == 0);
     CHECK(memcmp(&out->material, &lower->material, sizeof(out->material)) == 0);

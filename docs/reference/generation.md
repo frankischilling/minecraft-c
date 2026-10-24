@@ -1,6 +1,6 @@
-# Direct normal generator composition evidence
+# Direct Overworld generator composition evidence
 
-The newer [concrete GAME operation](../world/provider-generation.md) reuses
+The newer [concrete GAME operation](../world/chunk-provider-generation.md) reuses
 this numerical arithmetic while retaining live owner and failure semantics.
 Its one-case data replay has a separate input and coverage boundary; the
 historical full numerical comparison below remains unchanged.
@@ -28,13 +28,13 @@ and method correspondence. This does not establish whole-class equivalence.
 
 | Entry offset | Original operation | C composition boundary |
 | --- | --- | --- |
-| 17 | Reseed retained generator Random `j` from signed chunk coordinates widened separately to long. | `mc_terrain_normal_chunk_seed` and the separate generator Random. |
-| 22 / 36 | Allocate a fresh zero block array, then construct the real normal chunk retaining it. | Borrowed output blocks and fresh `mc_normal_chunk` constructor data. |
+| 17 | Reseed retained generator Random `j` from signed chunk coordinates widened separately to long. | `mc_terrain_overworld_chunk_seed` and the separate generator Random. |
+| 22 / 36 | Allocate a fresh zero block array, then construct the real normal chunk retaining it. | Borrowed output blocks and fresh `mc_overworld_chunk` constructor data. |
 | 65 / 68 | Direct `xv.a([Lkd;IIII)[Lkd;` / `ph.a([Lgs;IIII)[Lgs;` call at wrapped block origins, then store generator `v`. | `mc_biome_sample_square` into the generator's separate biome output. |
 | 81 | Retain the manager's processed temperature array `a`. | Borrow processed manager `a/b` as the base/density climate input. |
-| 93 | Generate normal density and base blocks. | `mc_terrain_normal_generate`. |
-| 104 | Replace the surface using current biome material fields. | `mc_terrain_normal_surface`. |
-| 119 | Invoke the retained cave helper through its public scheduler entry. | `mc_terrain_normal_caves`, with a separate cave Random. |
+| 93 | Generate Overworld density and base blocks. | `mc_terrain_overworld_generate`. |
+| 104 | Replace the surface using current biome material fields. | `mc_terrain_overworld_surface`. |
+| 119 | Invoke the retained cave helper through its public scheduler entry. | `mc_terrain_overworld_caves`, with a separate cave Random. |
 | 124 | Invoke actual full normal finishing `lm.c()V` / `hi.b()V`. | `mc_chunk_finish_normal`, with the existing world/cache/queue context. |
 | 129 | Return the same freshly constructed chunk. | Return the complete unpublished result. |
 
@@ -241,7 +241,7 @@ contain 72 complete generations, 73728 ordered height-query pairs, 1224 stage
 events, 144 suspended marker inventories and eight complete byte-equal
 untouched controls.
 
-The paths are under `<build>/reference-normal-generation/`:
+The current paths are under `<build>/reference-overworld-generation/`:
 
 | Build | Capture directory | Manifest SHA-256 |
 | --- | --- | --- |

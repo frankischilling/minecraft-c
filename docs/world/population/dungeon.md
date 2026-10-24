@@ -11,19 +11,19 @@ The [prepared whole-placement procedure](../../reference/dungeon-placement.md)
 records a separate complete-call observation and exact comparison boundary.
 
 Placement uses the actual GAME World, bound Registry, acquiring Chunk paths,
-supplied Random, notifying mutation methods and concrete Tile owners. It does
+supplied Random, notifying mutation methods and concrete TileEntity owners. It does
 not construct a second terrain backend or suppress unavailable descendants.
 Validation rejection publishes false. Completed placement publishes true,
 including ordinary false setter results. Native failure leaves the result
 untouched and retains all completed World, class, Random and container effects.
 
 The feature holds its World through synchronous calls. Chest lookup publishes
-a hold on the actual nullable Tile; the feature keeps that identity throughout
+a hold on the actual nullable TileEntity; the feature keeps that identity throughout
 all eight loot calls. Each new Stack starts RAW before its source arguments are
 evaluated. Successful slot assignment retains that same Stack, releases the old
 slot hold and performs actual dirty behavior. A late failure retains slot and
 dirty prefixes; only feature-local holds are released. No copied loot owner or
-new provenance is introduced. The Spawner path similarly retains its Tile and
+new provenance is introduced. The Spawner path similarly retains its TileEntity and
 the actual shared Registry-backed name handle until assignment returns.
 
 The optional per-call native budget counts successful fresh loot Stack
@@ -31,13 +31,13 @@ allocation requests, even when those objects are later released or replaced.
 Admission occurs before each source NEW and before its Item/count arguments.
 Default limits admit all sixteen possible allocations. Zero still permits
 validation rejection and nonallocating NULL-loot branches. This is a separate
-feature-local request bound: existing World/Chunk/Tile/Stack/name graphs,
+feature-local request bound: existing World/Chunk/TileEntity/Stack/name graphs,
 Registry initialization, synchronous descendants and allocator overhead are
 excluded. It is not a combined retained-World bound or Java heap equivalence.
 
 Errors preserve separate placement, loot, mob, air-wrapper and Item constructor
 positions, the active Chest group/trial/fill, and complete typed causes from the
-material, mutation, Tile, Registry and Stack interfaces. Local NULL Random or
+material, mutation, TileEntity, Registry and Stack interfaces. Local NULL Random or
 Material failures do not fabricate an unreached Registry constructor error.
 Ordinary success clears the attempt's error; partial source effects remain.
 
@@ -72,14 +72,13 @@ captures all 24 prepared room cases per original side. Each side has eight
 true placements and sixteen validation rejections. All 144 matching native
 comparisons pass across MSVC and sanitized GCC/Clang, including complete arrays,
 independently captured actual Map keys, all physical Chest slots, ordered Map/
-World Tile/light queues, Spawner values and five consuming Random draws.
-The passive `mc_live_tiles_map_entry_at` inspector exposes actual immutable
-local-coordinate keys separately from mutable Tile positions without retaining
+World TileEntity/light queues, Spawner values and five consuming Random draws.
+The passive `mc_live_tile_entities_map_entry_at` inspector exposes actual immutable
+local-coordinate keys separately from mutable TileEntity positions without retaining
 or changing the borrowed Map value.
 
-The [normal-population controller](normal.md) now invokes the actual Dungeon
-body in its complete schedule. Nonempty concrete
-observers, several old-block/neighbor hooks and other explicitly unsupported
+The [Overworld population controller](overworld.md) now invokes the actual Dungeon
+body in its complete schedule. Concrete WorldAccess receivers, several old-block/neighbor hooks and other explicitly unsupported
 descendants still prevent arbitrary-World closure. Prepared solid-room native
 tests and direct untouched-original helper experiments retain that scope.
 They do not establish natural cache-triggered population, dedicated

@@ -31,7 +31,7 @@ when World.B is false. Both single-cell and volume native scenarios retain that
 ordinary path; a separate labeled World.B=true control remains. Original/native
 output comparison, complete numeric edge coverage,
 callback closure, full controller qualification and populated persistence remain
-unfinished. The [installed controller](normal.md) continues through gravel and
+unfinished. The [installed controller](overworld.md) continues through gravel and
 the concrete [snow-neighbor method](../snow.md). Its prepared generated-terrain
 regression now requires successful whole-controller completion and flag reset.
 

@@ -3,8 +3,8 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "../../../entity/bounds/bounds_internal.h"
 #include "../../../entity/entity_internal.h"
+#include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
-#include "../provider_internal.h"
 #include "blocks_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
@@ -68,10 +68,11 @@ static bool owned_shape(const mc_world_runtime *world) {
         return false;
     const mc_world_reference_list *others[] = {
         world->entity_membership.list, world->entity_deferral.list, world->nearby_entities.list,
-        world->tile_membership[0].identity, world->tile_membership[1].identity};
+        world->tile_entity_membership[0].identity, world->tile_entity_membership[1].identity};
     const void *backings[] = {world->entity_membership.entries, world->entity_deferral.entries,
-                              world->nearby_entities.entries, world->tile_membership[0].holds,
-                              world->tile_membership[1].holds};
+                              world->nearby_entities.entries,
+                              world->tile_entity_membership[0].holds,
+                              world->tile_entity_membership[1].holds};
     for (size_t i = 0; i < sizeof(others) / sizeof(others[0]); ++i) {
         if (list == others[i])
             return false;
@@ -322,9 +323,9 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
             frame->nearby.query.provider_bytecode = 6;
             bool present;
             mc_world_storage_error child = {0};
-            if (mc_world_runtime_provider_contains(world, mc_java_i32_shr(x, 4),
-                                                   mc_java_i32_shr(z, 4), &present,
-                                                   &child) != MC_WORLD_STORAGE_OK) {
+            if (mc_world_runtime_chunk_provider_contains(world, mc_java_i32_shr(x, 4),
+                                                         mc_java_i32_shr(z, 4), &present,
+                                                         &child) != MC_WORLD_STORAGE_OK) {
                 frame->nearby.query.status = child.status;
                 frame->nearby.query.operation = child.operation;
                 frame->nearby.query.cause = child;

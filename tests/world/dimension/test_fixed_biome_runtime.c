@@ -1,5 +1,5 @@
 #include "mc/resources/translation/translation.h"
-#include "mc/world/dimension/biome_runtime.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -35,8 +35,8 @@ typedef struct resource_source {
     mc_registry_resources resources;
     byte_stream streams[3];
     mc_registry_classes *registry;
-    mc_world_dimension *observed_dimension;
-    mc_world_dimension_biome *preceding_biome;
+    mc_world_provider *observed_dimension;
+    mc_world_chunk_manager *preceding_biome;
     size_t callbacks;
     bool missing, invalid;
 } resource_source;
@@ -48,8 +48,8 @@ typedef struct fixture {
     mc_java_random_profile *profile;
     mc_registry_classes *registries[3];
     resource_source sources[3];
-    mc_world_dimension *dimensions[6];
-    mc_world_dimension_biome *aliases[2];
+    mc_world_provider *dimensions[6];
+    mc_world_chunk_manager *aliases[2];
 } fixture;
 
 static bool no_biomes(const mc_biome_registry_view *v) {
@@ -111,15 +111,14 @@ static mc_registry_status open_resource(void *context, const char *name,
 
     /* wd/nz and ay/aj load actual l/m at setup5, before the fixed constructor
      * and Dimension.b publication. NULL World is not a prerequisite failure. */
-    mc_world_dimension_fields fields;
-    mc_world_dimension_state state;
+    mc_world_provider_fields fields;
+    mc_world_provider_state state;
     mc_biome_registry_view biomes;
     if (source->observed_dimension == NULL ||
-        mc_world_dimension_fields_get(source->observed_dimension, &fields) !=
-            MC_WORLD_DIMENSION_OK ||
+        mc_world_provider_fields_get(source->observed_dimension, &fields) != MC_WORLD_PROVIDER_OK ||
         fields.a != NULL || fields.b != source->preceding_biome ||
-        mc_world_dimension_state_get(source->observed_dimension, &state) != MC_WORLD_DIMENSION_OK ||
-        state.phase != MC_WORLD_DIMENSION_READY || state.setup_pc != 5 ||
+        mc_world_provider_state_get(source->observed_dimension, &state) != MC_WORLD_PROVIDER_OK ||
+        state.phase != MC_WORLD_PROVIDER_READY || state.setup_pc != 5 ||
         mc_biome_registry_inspect(source->registry, &biomes, NULL) != MC_REGISTRY_OK ||
         biomes.phase != MC_REGISTRY_INITIALIZING || biomes.initializer_pc != 4 ||
         !no_biomes(&biomes) || mc_registry_classes_free(source->registry, NULL) != MC_REGISTRY_BUSY)
@@ -200,13 +199,13 @@ static bool doubles_are(const mc_biome_double_buffer *buffer, size_t first, size
     return true;
 }
 
-static bool manager_fields(mc_world_dimension_biome *manager, mc_registry_classes *registry,
+static bool manager_fields(mc_world_chunk_manager *manager, mc_registry_classes *registry,
                            const mc_biome *actual, double temperature,
-                           mc_world_dimension_biome_fields *fields) {
-    mc_world_biome_game_fields game;
-    return mc_world_dimension_biome_fields_get(manager, fields) == MC_WORLD_DIMENSION_OK &&
-           mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
-           fields->fixed && fields->normal == NULL && fields->fixed_f == temperature &&
+                           mc_world_chunk_manager_fields *fields) {
+    mc_world_chunk_manager_game_fields game;
+    return mc_world_chunk_manager_fields_get(manager, fields) == MC_WORLD_PROVIDER_OK &&
+           mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
+           fields->fixed && fields->noise_backed == NULL && fields->fixed_f == temperature &&
            fields->fixed_g == 0.0 && game.registry == registry && game.fixed_e == actual &&
            fields->a != NULL && fields->b != NULL && fields->c != NULL && fields->c->data == NULL &&
            fields->c->length == 0 && fields->d != NULL && fields->d->data == NULL &&
@@ -231,41 +230,41 @@ cleanup:
  * chunk. Its direct rectangle is e-fill76, b-fill93, a-fill110, return114. */
 static bool test_arrays(fixture *f) {
     bool ok = false;
-    mc_world_dimension_biome_fields numeric[2];
-    mc_world_biome_game_fields game[2];
+    mc_world_chunk_manager_fields numeric[2];
+    mc_world_chunk_manager_game_fields game[2];
     mc_biome_reference_array *empty[2] = {NULL, NULL}, *large[2] = {NULL, NULL};
     mc_biome_reference_array *out = NULL, *cached = NULL;
-    mc_world_biome_error error;
+    mc_world_chunk_manager_error error;
     const double temperature[] = {1.0, 0.5};
     for (size_t k = 0; k < 2; ++k) {
-        CHECK(mc_world_dimension_biome_game_fields_get(f->aliases[k], &game[k]) ==
-              MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_game_fields_get(f->aliases[k], &game[k]) ==
+              MC_WORLD_PROVIDER_OK);
         CHECK(game[k].registry == f->registries[0] && game[k].fixed_e != NULL && game[k].d == NULL);
         CHECK(manager_fields(f->aliases[k], f->registries[0], game[k].fixed_e, temperature[k],
                              &numeric[k]));
         CHECK(numeric[k].a->data == NULL && numeric[k].b->data == NULL);
         const mc_biome *point = NULL;
-        CHECK(mc_world_dimension_biome_point(f->aliases[k], INT32_MIN, INT32_MAX, &point, &error) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_point(f->aliases[k], INT32_MIN, INT32_MAX, &point, &error) ==
+                  MC_WORLD_PROVIDER_OK &&
               point == game[k].fixed_e);
-        CHECK(mc_world_dimension_biome_chunk(f->aliases[k], INT32_MAX, INT32_MIN, &point, &error) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_chunk(f->aliases[k], INT32_MAX, INT32_MIN, &point, &error) ==
+                  MC_WORLD_PROVIDER_OK &&
               point == game[k].fixed_e);
-        CHECK(mc_world_dimension_biome_fields_get(f->aliases[k], &numeric[k]) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_fields_get(f->aliases[k], &numeric[k]) ==
+                  MC_WORLD_PROVIDER_OK &&
               numeric[k].a->data == NULL && numeric[k].b->data == NULL);
-        CHECK(mc_world_dimension_biome_sample(f->aliases[k], INT32_MIN, INT32_MAX, 0, 7, NULL,
-                                              &empty[k], &error) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_sample(f->aliases[k], INT32_MIN, INT32_MAX, 0, 7, NULL,
+                                            &empty[k], &error) == MC_WORLD_PROVIDER_OK);
         CHECK(empty[k] != NULL && mc_biome_reference_array_length(empty[k]) == 0 &&
               mc_biome_reference_array_data(empty[k]) != NULL && error.bytecode == 114 &&
               error.sampling.sampler_pc == 114 && error.sampling.cells_completed == 0 &&
               error.sampling.next_index == 0);
-        CHECK(mc_world_dimension_biome_fields_get(f->aliases[k], &numeric[k]) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_fields_get(f->aliases[k], &numeric[k]) ==
+                  MC_WORLD_PROVIDER_OK &&
               numeric[k].a->data != NULL && numeric[k].a->length == 0 &&
               numeric[k].b->data != NULL && numeric[k].b->length == 0);
-        CHECK(mc_world_dimension_biome_sample(f->aliases[k], -77, 91, 3, 2, empty[k], &large[k],
-                                              &error) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_sample(f->aliases[k], -77, 91, 3, 2, empty[k], &large[k],
+                                            &error) == MC_WORLD_PROVIDER_OK);
         CHECK(large[k] != empty[k] && mc_biome_reference_array_length(large[k]) == 6 &&
               references_are(large[k], 0, 6, game[k].fixed_e) &&
               error.sampling.cells_completed == 6 && error.sampling.next_index == 0);
@@ -285,8 +284,8 @@ static bool test_arrays(fixture *f) {
     }
     double *saved_a = numeric[1].a->data, *saved_b = numeric[1].b->data;
     out = empty[1];
-    CHECK(mc_world_dimension_biome_sample(f->aliases[1], 9, -11, 1, 2, large[0], &out, &error) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_sample(f->aliases[1], 9, -11, 1, 2, large[0], &out, &error) ==
+              MC_WORLD_PROVIDER_OK &&
           out == large[0] && references_are(out, 0, 2, game[1].fixed_e) &&
           references_are(out, 2, 6, game[0].fixed_e));
     CHECK(numeric[1].a->data == saved_a && numeric[1].b->data == saved_b &&
@@ -294,30 +293,27 @@ static bool test_arrays(fixture *f) {
     for (size_t i = 2; i < 6; ++i)
         CHECK(numeric[1].a->data[i] == 10.0 + (double)i &&
               numeric[1].b->data[i] == 20.0 + (double)i);
-    CHECK(mc_world_dimension_biome_game_fields_get(f->aliases[1], &game[1]) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(f->aliases[1], &game[1]) == MC_WORLD_PROVIDER_OK &&
           game[1].d == NULL);
 
-    CHECK(mc_world_dimension_biome_cached(f->aliases[1], 0, 0, 2, 2, &cached, &error) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_cached(f->aliases[1], 0, 0, 2, 2, &cached, &error) ==
+          MC_WORLD_PROVIDER_OK);
     CHECK(cached != NULL && mc_biome_reference_array_length(cached) == 4 &&
           references_are(cached, 0, 4, game[1].fixed_e));
-    CHECK(mc_world_dimension_biome_game_fields_get(f->aliases[1], &game[1]) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(f->aliases[1], &game[1]) == MC_WORLD_PROVIDER_OK &&
           game[1].d == cached);
     out = empty[0];
-    CHECK(mc_world_dimension_biome_sample(f->aliases[0], 0, 0, 1, 1, cached, &out, &error) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_sample(f->aliases[0], 0, 0, 1, 1, cached, &out, &error) ==
+              MC_WORLD_PROVIDER_OK &&
           out == cached && references_are(cached, 0, 1, game[0].fixed_e) &&
           references_are(cached, 1, 4, game[1].fixed_e));
-    CHECK(mc_world_dimension_biome_game_fields_get(f->aliases[0], &game[0]) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(f->aliases[0], &game[0]) == MC_WORLD_PROVIDER_OK &&
           game[0].d == NULL);
-    CHECK(mc_world_dimension_biome_cached(f->aliases[1], 99, -99, 1, 1, &out, &error) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_cached(f->aliases[1], 99, -99, 1, 1, &out, &error) ==
+              MC_WORLD_PROVIDER_OK &&
           out == cached && references_are(cached, 0, 4, game[1].fixed_e));
-    CHECK(mc_world_dimension_biome_cached(f->aliases[1], 0, 0, 0, 9, &out, &error) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_cached(f->aliases[1], 0, 0, 0, 9, &out, &error) ==
+              MC_WORLD_PROVIDER_OK &&
           out == cached && mc_biome_reference_array_length(out) == 4);
     CHECK(resources_complete(&f->sources[0]));
     ok = true;
@@ -331,31 +327,31 @@ static bool test_budget(fixture *f, mc_registry_side side, size_t kind, bool sho
                         size_t charge_one, size_t charge_four) {
     bool ok = false;
     const size_t slot = 2 + kind * 2 + (short_b ? 1 : 0);
-    mc_world_dimension_limits limits = mc_world_dimension_default_limits();
+    mc_world_provider_limits limits = mc_world_provider_default_limits();
     limits.max_biome_buffer_bytes = short_b ? 2 * charge_one + charge_four : charge_four;
-    const mc_world_dimension_registry_binding binding = {f->registries[0], side, f->profile};
-    mc_world_dimension_fields dimension;
-    mc_world_dimension_biome_fields numeric;
-    mc_world_biome_game_fields game;
-    mc_world_biome_error error;
+    const mc_world_provider_registry_binding binding = {f->registries[0], side, f->profile};
+    mc_world_provider_fields dimension;
+    mc_world_chunk_manager_fields numeric;
+    mc_world_chunk_manager_game_fields game;
+    mc_world_chunk_manager_error error;
     mc_biome_reference_array *prior = NULL, *out = NULL;
     const int32_t id = kind == 0 ? -1 : 1;
-    CHECK(mc_world_dimension_create(id, &limits, &f->dimensions[slot], NULL) ==
-          MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_bind_game(f->dimensions[slot], NULL, &binding, NULL) ==
-          MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_fields_get(f->dimensions[slot], &dimension) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_biome_game_fields_get(dimension.b, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_create(id, &limits, &f->dimensions[slot], NULL) ==
+          MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_bind_game(f->dimensions[slot], NULL, &binding, NULL) ==
+          MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_fields_get(f->dimensions[slot], &dimension) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_chunk_manager_game_fields_get(dimension.b, &game) == MC_WORLD_PROVIDER_OK &&
           game.fixed_e != NULL && game.d == NULL);
     if (short_b) {
-        CHECK(mc_world_dimension_biome_cached(dimension.b, 0, 0, 1, 1, &prior, &error) ==
-              MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_cached(dimension.b, 0, 0, 1, 1, &prior, &error) ==
+              MC_WORLD_PROVIDER_OK);
         CHECK(prior != NULL && references_are(prior, 0, 1, game.fixed_e));
     } else {
-        CHECK(mc_world_dimension_biome_sample(f->aliases[kind], 0, 0, 0, 0, NULL, &prior, &error) ==
-              MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_sample(f->aliases[kind], 0, 0, 0, 0, NULL, &prior, &error) ==
+              MC_WORLD_PROVIDER_OK);
     }
-    CHECK(mc_world_dimension_biome_fields_get(dimension.b, &numeric) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(dimension.b, &numeric) == MC_WORLD_PROVIDER_OK &&
           numeric.a != NULL && numeric.b != NULL);
     double *old_b = numeric.b->data;
     if (short_b) {
@@ -363,10 +359,10 @@ static bool test_budget(fixture *f, mc_registry_side side, size_t kind, bool sho
         numeric.b->data[0] = 23.0;
     }
     out = prior;
-    const mc_world_dimension_status allocation_status =
-        short_b ? mc_world_dimension_biome_cached(dimension.b, 3, 4, 2, 2, &out, &error)
-                : mc_world_dimension_biome_sample(dimension.b, 3, 4, 2, 2, prior, &out, &error);
-    CHECK(allocation_status == MC_WORLD_DIMENSION_BIOME_FAILED);
+    const mc_world_provider_status allocation_status =
+        short_b ? mc_world_chunk_manager_cached(dimension.b, 3, 4, 2, 2, &out, &error)
+                : mc_world_chunk_manager_sample(dimension.b, 3, 4, 2, 2, prior, &out, &error);
+    CHECK(allocation_status == MC_WORLD_CHUNK_MANAGER_FAILED);
     CHECK(out == prior && error.bytecode == (short_b ? 11u : 60u) &&
           error.sampling.sampler_pc == 60 && error.sampling.climate_status == MC_BIOME_LIMIT &&
           error.sampling.registry.status == MC_REGISTRY_LIMIT &&
@@ -375,19 +371,19 @@ static bool test_budget(fixture *f, mc_registry_side side, size_t kind, bool sho
     CHECK(first_local != NULL && first_local != prior &&
           mc_biome_reference_array_length(first_local) == 4 &&
           references_are(first_local, 0, 4, NULL));
-    CHECK(mc_world_dimension_biome_fields_get(dimension.b, &numeric) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(dimension.b, &numeric) == MC_WORLD_PROVIDER_OK &&
           numeric.a->data != NULL && numeric.a->length == 4 && doubles_are(numeric.a, 0, 4, 0.0) &&
           numeric.b->data == old_b && numeric.b->length == (short_b ? 1u : 0u));
     CHECK(!short_b || numeric.b->data[0] == 23.0);
-    CHECK(mc_world_dimension_biome_game_fields_get(dimension.b, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(dimension.b, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == (short_b ? prior : NULL));
     double *published_a = numeric.a->data;
 
     /* a is already long enough, so b is not repaired. All four actual refs
      * are stored at76 before the null/short b fill fails at93. a is still
      * zero because its fill110 has not executed. Cached d is not published. */
-    CHECK(mc_world_dimension_biome_cached(dimension.b, -3, -4, 2, 2, &out, &error) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_cached(dimension.b, -3, -4, 2, 2, &out, &error) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(out == prior && error.bytecode == 11 && error.sampling.sampler_pc == 93 &&
           error.sampling.climate_status == MC_BIOME_OK &&
           error.sampling.registry.status ==
@@ -395,42 +391,42 @@ static bool test_budget(fixture *f, mc_registry_side side, size_t kind, bool sho
           error.sampling.cells_completed == 4 && error.sampling.next_index == 0 &&
           error.sampling.array != first_local && error.sampling.array != prior &&
           references_are(error.sampling.array, 0, 4, game.fixed_e));
-    CHECK(mc_world_dimension_biome_fields_get(dimension.b, &numeric) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(dimension.b, &numeric) == MC_WORLD_PROVIDER_OK &&
           numeric.a->data == published_a && doubles_are(numeric.a, 0, 4, 0.0) &&
           numeric.b->data == old_b && numeric.b->length == (short_b ? 1u : 0u));
     CHECK(!short_b || numeric.b->data[0] == 23.0);
-    CHECK(mc_world_dimension_biome_game_fields_get(dimension.b, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(dimension.b, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == (short_b ? prior : NULL) && references_are(first_local, 0, 4, NULL));
 
     out = prior;
-    CHECK(mc_world_dimension_biome_sample(dimension.b, 0, 0, 2, 2, prior, &out, &error) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_sample(dimension.b, 0, 0, 2, 2, prior, &out, &error) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(out == prior && error.bytecode == 93 && error.sampling.sampler_pc == 93 &&
           error.sampling.cells_completed == 4 && error.sampling.next_index == 0 &&
           references_are(error.sampling.array, 0, 4, game.fixed_e));
     ok = true;
 cleanup:
-    mc_world_dimension_release(f->dimensions[slot]);
+    mc_world_provider_release(f->dimensions[slot]);
     f->dimensions[slot] = NULL;
     return ok;
 }
 
 static bool test_failed_rebind(fixture *f, mc_registry_side side) {
     bool ok = false;
-    const mc_world_dimension_registry_binding binding = {f->registries[2], side, f->profile};
-    mc_world_dimension_error error;
+    const mc_world_provider_registry_binding binding = {f->registries[2], side, f->profile};
+    mc_world_provider_error error;
     mc_registry_error first = {0};
     for (size_t k = 0; k < 2; ++k) {
-        mc_world_dimension_fields before, after;
-        mc_world_dimension_state state;
+        mc_world_provider_fields before, after;
+        mc_world_provider_state state;
         mc_biome_registry_view view;
         float light[16];
-        CHECK(mc_world_dimension_fields_get(f->dimensions[k], &before) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_fields_get(f->dimensions[k], &before) == MC_WORLD_PROVIDER_OK);
         memcpy(light, before.f, sizeof(light));
         f->sources[2].observed_dimension = f->dimensions[k];
         f->sources[2].preceding_biome = before.b;
-        CHECK(mc_world_dimension_bind_game(f->dimensions[k], NULL, &binding, &error) ==
-              MC_WORLD_DIMENSION_REGISTRY_FAILED);
+        CHECK(mc_world_provider_bind_game(f->dimensions[k], NULL, &binding, &error) ==
+              MC_WORLD_PROVIDER_REGISTRY_FAILED);
         CHECK(error.bytecode == 5 &&
               error.registry.status ==
                   (k == 0 ? MC_REGISTRY_NULL_REFERENCE : MC_REGISTRY_FAILED_INITIALIZATION));
@@ -442,23 +438,23 @@ static bool test_failed_rebind(fixture *f, mc_registry_side side) {
             first = error.registry;
         else
             CHECK(same_cause(&first, &error.registry));
-        CHECK(mc_world_dimension_fields_get(f->dimensions[k], &after) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_fields_get(f->dimensions[k], &after) == MC_WORLD_PROVIDER_OK &&
               after.a == NULL && after.b == before.b && after.c == before.c &&
               after.d == before.d && after.e == before.e && after.g == before.g &&
               after.f == before.f && after.h == before.h &&
               memcmp(light, after.f, sizeof(light)) == 0);
-        CHECK(mc_world_dimension_state_get(f->dimensions[k], &state) == MC_WORLD_DIMENSION_OK &&
-              state.phase == MC_WORLD_DIMENSION_READY && state.setup_pc == 5);
+        CHECK(mc_world_provider_state_get(f->dimensions[k], &state) == MC_WORLD_PROVIDER_OK &&
+              state.phase == MC_WORLD_PROVIDER_READY && state.setup_pc == 5);
         CHECK(mc_biome_registry_inspect(f->registries[2], &view, NULL) == MC_REGISTRY_OK &&
               view.phase == MC_REGISTRY_FAILED && no_biomes(&view));
         CHECK(f->sources[2].callbacks == 1 && f->sources[2].streams[0].opens == 1 &&
               f->sources[2].streams[0].reads == 0 && f->sources[2].streams[1].opens == 0 &&
               f->sources[2].streams[2].opens == 0 && !f->sources[2].invalid);
-        mc_world_biome_game_fields game;
+        mc_world_chunk_manager_game_fields game;
         const mc_biome *out = NULL;
-        CHECK(mc_world_dimension_biome_game_fields_get(after.b, &game) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_game_fields_get(after.b, &game) == MC_WORLD_PROVIDER_OK &&
               game.registry == f->registries[0]);
-        CHECK(mc_world_dimension_biome_point(after.b, 0, 0, &out, NULL) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_point(after.b, 0, 0, &out, NULL) == MC_WORLD_PROVIDER_OK &&
               out == game.fixed_e);
     }
     /* Unpublished failed replacements must release their registry borrows. */
@@ -473,11 +469,11 @@ static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
     for (size_t i = 0; i < COUNT(f->aliases); ++i) {
-        mc_world_dimension_biome_release(f->aliases[i]);
+        mc_world_chunk_manager_release(f->aliases[i]);
         f->aliases[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i) {
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
         f->dimensions[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->registries); ++i) {
@@ -496,7 +492,7 @@ static bool cleanup_fixture(fixture *f) {
 static bool test_side(mc_registry_side side, size_t charge_one, size_t charge_four) {
     bool ok = false;
     fixture *f = calloc(1, sizeof(*f));
-    mc_world_dimension_error error;
+    mc_world_provider_error error;
     mc_biome_registry_view view;
     CHECK(f != NULL);
     CHECK(mc_materials_create(&f->materials));
@@ -508,26 +504,26 @@ static bool test_side(mc_registry_side side, size_t charge_one, size_t charge_fo
               view.phase == MC_REGISTRY_COLD && no_biomes(&view) &&
               resources_unread(&f->sources[r]));
     const int32_t ids[] = {-1, 1};
-    const mc_world_dimension_registry_binding binding = {f->registries[0], side, f->profile};
+    const mc_world_provider_registry_binding binding = {f->registries[0], side, f->profile};
     for (size_t k = 0; k < COUNT(ids); ++k) {
-        mc_world_dimension_fields fields;
-        mc_world_dimension_state state;
-        CHECK(mc_world_dimension_create(ids[k], NULL, &f->dimensions[k], NULL) ==
-              MC_WORLD_DIMENSION_OK);
+        mc_world_provider_fields fields;
+        mc_world_provider_state state;
+        CHECK(mc_world_provider_create(ids[k], NULL, &f->dimensions[k], NULL) ==
+              MC_WORLD_PROVIDER_OK);
         f->sources[0].observed_dimension = f->dimensions[k];
-        CHECK(mc_world_dimension_bind_game(f->dimensions[k], NULL, &binding, &error) ==
-              MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_fields_get(f->dimensions[k], &fields) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_bind_game(f->dimensions[k], NULL, &binding, &error) ==
+              MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_provider_fields_get(f->dimensions[k], &fields) == MC_WORLD_PROVIDER_OK &&
               fields.a == NULL && fields.b != NULL && fields.g == ids[k] && fields.c == (k == 0) &&
               fields.d == (k == 0) && fields.e == (k == 0));
-        CHECK(mc_world_dimension_state_get(f->dimensions[k], &state) == MC_WORLD_DIMENSION_OK &&
-              state.phase == MC_WORLD_DIMENSION_READY);
-        CHECK(mc_world_dimension_biome_retain(fields.b) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_state_get(f->dimensions[k], &state) == MC_WORLD_PROVIDER_OK &&
+              state.phase == MC_WORLD_PROVIDER_READY);
+        CHECK(mc_world_chunk_manager_retain(fields.b) == MC_WORLD_PROVIDER_OK);
         f->aliases[k] = fields.b;
         CHECK(mc_biome_registry_inspect(f->registries[0], &view, NULL) == MC_REGISTRY_OK &&
               view.phase == MC_REGISTRY_READY && view.l != NULL && view.m != NULL);
-        mc_world_biome_game_fields game;
-        CHECK(mc_world_dimension_biome_game_fields_get(fields.b, &game) == MC_WORLD_DIMENSION_OK &&
+        mc_world_chunk_manager_game_fields game;
+        CHECK(mc_world_chunk_manager_game_fields_get(fields.b, &game) == MC_WORLD_PROVIDER_OK &&
               game.fixed_e == (k == 0 ? view.l : view.m) && game.registry == f->registries[0]);
         CHECK(resources_complete(&f->sources[0]));
     }
@@ -540,28 +536,27 @@ static bool test_side(mc_registry_side side, size_t charge_one, size_t charge_fo
 
     /* Each old manager owns its own registry borrow. Successful replacement
      * and dimension destruction do not invalidate separately retained aliases. */
-    const mc_world_dimension_registry_binding replacement = {f->registries[1], side, f->profile};
+    const mc_world_provider_registry_binding replacement = {f->registries[1], side, f->profile};
     CHECK(mc_registry_classes_free(f->registries[0], NULL) == MC_REGISTRY_BUSY);
     for (size_t n = 0; n < 2; ++n) {
         const size_t k = 1 - n; /* Cold m5 as well as the earlier cold l5. */
-        mc_world_dimension_fields fields;
-        mc_world_biome_game_fields old_game, new_game;
+        mc_world_provider_fields fields;
+        mc_world_chunk_manager_game_fields old_game, new_game;
         f->sources[1].observed_dimension = f->dimensions[k];
         f->sources[1].preceding_biome = f->aliases[k];
-        CHECK(mc_world_dimension_bind_game(f->dimensions[k], NULL, &replacement, &error) ==
-              MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_fields_get(f->dimensions[k], &fields) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_bind_game(f->dimensions[k], NULL, &replacement, &error) ==
+              MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_provider_fields_get(f->dimensions[k], &fields) == MC_WORLD_PROVIDER_OK &&
               fields.b != f->aliases[k]);
-        CHECK(mc_world_dimension_biome_game_fields_get(f->aliases[k], &old_game) ==
-                  MC_WORLD_DIMENSION_OK &&
-              mc_world_dimension_biome_game_fields_get(fields.b, &new_game) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_game_fields_get(f->aliases[k], &old_game) ==
+                  MC_WORLD_PROVIDER_OK &&
+              mc_world_chunk_manager_game_fields_get(fields.b, &new_game) == MC_WORLD_PROVIDER_OK &&
               old_game.registry == f->registries[0] && new_game.registry == f->registries[1] &&
               old_game.fixed_e != new_game.fixed_e && old_game.fixed_e != NULL &&
               new_game.fixed_e != NULL);
         CHECK(mc_registry_classes_free(f->registries[0], NULL) == MC_REGISTRY_BUSY &&
               mc_registry_classes_free(f->registries[1], NULL) == MC_REGISTRY_BUSY);
-        mc_world_dimension_release(f->dimensions[k]);
+        mc_world_provider_release(f->dimensions[k]);
         f->dimensions[k] = NULL;
     }
     CHECK(resources_complete(&f->sources[1]));
@@ -569,14 +564,13 @@ static bool test_side(mc_registry_side side, size_t charge_one, size_t charge_fo
     f->registries[1] = NULL;
     for (size_t k = 0; k < 2; ++k) {
         const mc_biome *out = NULL;
-        mc_world_biome_game_fields game;
-        CHECK(mc_world_dimension_biome_game_fields_get(f->aliases[k], &game) ==
-              MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_biome_chunk(f->aliases[k], INT32_MIN, INT32_MAX, &out, NULL) ==
-                  MC_WORLD_DIMENSION_OK &&
+        mc_world_chunk_manager_game_fields game;
+        CHECK(mc_world_chunk_manager_game_fields_get(f->aliases[k], &game) == MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_chunk_manager_chunk(f->aliases[k], INT32_MIN, INT32_MAX, &out, NULL) ==
+                  MC_WORLD_PROVIDER_OK &&
               out == game.fixed_e && mc_biome_fields_get(out) != NULL);
         CHECK(mc_registry_classes_free(f->registries[0], NULL) == MC_REGISTRY_BUSY);
-        mc_world_dimension_biome_release(f->aliases[k]);
+        mc_world_chunk_manager_release(f->aliases[k]);
         f->aliases[k] = NULL;
         if (k == 0)
             CHECK(mc_registry_classes_free(f->registries[0], NULL) == MC_REGISTRY_BUSY);

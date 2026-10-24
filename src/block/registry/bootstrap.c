@@ -108,7 +108,7 @@ static mc_registry_status block_post_item(mc_registry_classes *classes, mc_block
                                 NULL);
     /* All other registered kinds select the actual uu.k/na.h ()V return0.
      * Only fire overrides that selected method in this closed class set. */
-    if (block->kind != MC_BLOCK_YQ_PT)
+    if (block->kind != MC_BLOCK_FIRE)
         return MC_REGISTRY_OK;
     TRY(fire_entry(classes, block, "y", 5, 20));
     TRY(fire_entry(classes, block, "ba", 5, 20));
@@ -123,13 +123,13 @@ static mc_registry_status block_post_item(mc_registry_classes *classes, mc_block
 }
 
 mc_registry_status mc_registry_finish_blocks(mc_registry_classes *classes) {
-    TRY(explicit_item(classes, 3398, "ac", MC_ITEM_BI_AP, "cloth"));
-    TRY(explicit_item(classes, 3430, "K", MC_ITEM_GO_EK, "log"));
-    TRY(explicit_item(classes, 3462, "al", MC_ITEM_EN_CW, "stoneSlab"));
-    TRY(explicit_item(classes, 3494, "z", MC_ITEM_MR_IA, "sapling"));
-    TRY(explicit_item(classes, 3526, "L", MC_ITEM_UY_ND, "leaves"));
-    TRY(explicit_item(classes, 3558, "aa", MC_ITEM_QR_KC, NULL));
-    TRY(explicit_item(classes, 3585, "W", MC_ITEM_QR_KC, NULL));
+    TRY(explicit_item(classes, 3398, "ac", MC_ITEM_WOOL_BLOCK, "cloth"));
+    TRY(explicit_item(classes, 3430, "K", MC_ITEM_LOG_BLOCK, "log"));
+    TRY(explicit_item(classes, 3462, "al", MC_ITEM_SLAB_BLOCK, "stoneSlab"));
+    TRY(explicit_item(classes, 3494, "z", MC_ITEM_SAPLING_BLOCK, "sapling"));
+    TRY(explicit_item(classes, 3526, "L", MC_ITEM_LEAVES_BLOCK, "leaves"));
+    TRY(explicit_item(classes, 3558, "aa", MC_ITEM_PISTON_BLOCK, NULL));
+    TRY(explicit_item(classes, 3585, "W", MC_ITEM_PISTON_BLOCK, NULL));
     for (int32_t index = 0; index < (int32_t)MC_REGISTRY_BLOCK_SLOTS; ++index) {
         AT(3621);
         TRY(mc_registry_blocks_active_use(classes));
@@ -151,7 +151,7 @@ mc_registry_status mc_registry_finish_blocks(mc_registry_classes *classes) {
         mc_registry_item_array *destination = classes->items.c;
         AT(3641);
         mc_item *item = NULL;
-        TRY(mc_registry_item_allocate(classes, MC_ITEM_CK_BK, &item));
+        TRY(mc_registry_item_allocate(classes, MC_ITEM_BLOCK, &item));
         const mc_item_arguments arguments = {.id = mc_java_i32_sub(index, 256)};
         AT(3650);
         TRY(mc_registry_item_construct(classes, item, &arguments));

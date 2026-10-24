@@ -42,32 +42,32 @@ of the wrong type fails and may select the backup. Native allocation/limit
 failures remain fatal. Loaded Info owns its data independently of the store's
 retained document.
 
-Dimension binding publishes the same World before constructing the current
-biome manager and filling the Dimension's actual light array. Normal biome
-noise reads the live World seed before each of its three channels. Rebinding
+WorldProvider binding publishes the same World before constructing the current
+biome manager and filling the WorldProvider's actual light array. Noise-backed biome
+sampling reads the live World seed before each of its three channels. Rebinding
 publishes a new manager; an independently held preceding manager stays alive.
 With a class Registry binding, construction uses the actual
-[normal/fixed Biome managers](biome-registry.md#world-and-dimension-managers).
+[noise-backed/fixed WorldChunkManagers](biome-registry.md#worldprovider-and-worldchunkmanager).
 Each owns a Registry borrow independent of the World class. Fixed setup loads
 actual Hell/Sky references before replacing the manager, and any failure keeps
 the full Registry cause at the enclosing World bind call300,315 or398.
 
-The concrete native normal provider owns its generator, pending history,
+The concrete native Overworld ChunkProvider owns its generator, pending history,
 cache/list storage and blank payload. Its actual cave Random is default
 constructed before explicit terrain/noise initialization and survives that
 initialization. Cave reseeding preserves stored Gaussian bits while clearing
 their validity. The public numerical generator remains entropy-free and keeps
 its distinct fresh-seed behavior. Provider-held biome ownership survives a
-later Dimension rebind. Cache and reference hooks use the runtime's same
+later WorldProvider rebind. Cache and reference hooks use the runtime's same
 embedded blank identity.
 
-Direct/copy and already-loaded normal base-World paths can reach native READY
+Direct/copy and already-loaded Overworld base-World paths can reach native READY
 after provider construction, initial light and weather. Missing metadata
 enters the real acquiring spawn predicate and its source-ordered rejection
 loop. Missing chunks enter [concrete generation and known-empty activation](chunk-activation.md),
 retaining reached fields, y, provider and generation effects on failure.
 Registry resources are required; reached population gates enter the
-[actual normal controller](population/normal.md). Unsupported descendants retain
+[actual Overworld controller](population/overworld.md). Unsupported descendants retain
 their explicit failure prefixes. Nether/Sky full providers, dedicated/network-client
 startup and complete gameplay startup qualification remain
 unfinished. Native READY is constructor completion for the represented normal
@@ -89,7 +89,7 @@ startup. A dedicated World can retain a real default-constructed Server without
 opening a listener, loading properties or starting a tick loop. The cache policy
 is selected by this constructor and stays dedicated for its lifetime.
 
-The Entity-added hook first runs the base observer, reads the Entity's current
+The Entity-added hook first runs the base WorldAccess loop, reads the Entity's current
 ID, then enters G. Batch publication adds the complete source batch to base b
 before invoking per-Entity hooks. The index preserves the original duplicate-key
 behavior: it updates every matching node and still prepends another node.
@@ -99,8 +99,8 @@ Later source removal/tick processing remains unfinished. See the
 
 ## Light, weather and block reads
 
-The World angle delegate captures its actual Dimension, reads current Info
-time, then dispatches the Dimension angle. Normal celestial smoothing uses
+The World angle delegate captures its actual WorldProvider, reads current Info
+time, then dispatches the WorldProvider angle. Overworld celestial smoothing uses
 binary64 `cos`; subsequent World light calculation uses the distinct Minecraft
 float lookup. Rain and thunder retain their separate float operations, fresh
 rain read inside thunder and both double attenuation stages with intervening
@@ -114,7 +114,7 @@ acquisition. The positive x boundary is exclusive; positive z is inclusive.
 Top-block lookup starts at y63, scans upward while the block above is nonair,
 then reads the resulting y. It uses no cached height or downward search.
 Unsupported generation/population descendants fail explicitly after any reached
-load/acquisition effects. Known-empty entity/tile records retain the existing
+load/acquisition effects. Known-empty entity/TileEntity records retain the existing
 storage activation boundary.
 
 The separate [block access contract](blocks.md) covers the implemented quiet
@@ -128,8 +128,8 @@ Default World direct storage is bounded to 16 MiB and 65,536 scheduled entries.
 Provider storage has a separate 8 MiB direct bound and 512 cache/list/pending
 slots. Its Integer HashSet history retains the existing separate 8 MiB retained
 and 16 MiB peak bounds, with its entry limit clipped to the provider bound.
-Dimension direct storage defaults to 4 MiB, with separately bounded normal
-biome buffers. Info, SavedData and store payloads retain their own limits.
+WorldProvider direct storage defaults to 4 MiB, with separately bounded
+noise-backed WorldChunkManager buffers. Info, SavedData and store payloads retain their own limits.
 The dedicated Entity index independently defaults to 65,536 nodes, 8 MiB retained
 storage and a 16 MiB peak request bound. These native allocation policies do not
 reproduce Java object/array OOM timing.
@@ -145,8 +145,8 @@ collections/cache/list/pending state. Typed [lighting C records](runtime-lightin
 and [scheduled E/F records](scheduling.md) remain owned and inspectable until final
 native free, including an F-only partial insertion prefix. Retirement does not
 propagate, repair queues or implicitly clear these records. It unregisters actual contexts and clears
-only this Dimension's binding to this World, without invoking biome setup.
-It never clears the aggregate persistent-binding count. External Entity/Tile
+only this WorldProvider's binding to this World, without invoking biome setup.
+It never clears the aggregate persistent-binding count. External Entity/TileEntity
 bindings keep free BUSY until their owners release them. No implicit save,
 file rollback, profile reset or retry occurs. Terminal retirement releases the
 dedicated Entity-index holds and sets G to NULL without running a source

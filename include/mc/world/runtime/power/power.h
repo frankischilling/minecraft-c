@@ -22,7 +22,7 @@ typedef struct mc_world_power_error {
     mc_world_storage_error cause;
     const char *world_class;
     mc_world_power_site weak_neighbors, weak_at, strong_neighbors, strong_at;
-    mc_world_block_power_site capability, strong, weak, wire_connectivity;
+    mc_world_block_power_site capability, strong, weak, redstone_connectivity;
     mc_world_solid_support_error support;
     mc_world_nearby_error access;
     mc_registry_error registry;

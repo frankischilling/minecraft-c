@@ -2,7 +2,7 @@
 
 bool mc_plant_upright_tick(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                            int32_t z, mc_world_mutation_error *error) {
-    const bool cactus = block->kind == MC_BLOCK_OR_JE;
+    const bool cactus = block->kind == MC_BLOCK_CACTUS;
     const mc_plant_frame frame =
         mc_plant_frame_make(world, block, error, cactus ? "or" : "ri", cactus ? "je" : "ko",
                             "a(Lfd;IIILjava/util/Random;)V", "a(Ldj;IIILjava/util/Random;)V");

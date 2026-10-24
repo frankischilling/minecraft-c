@@ -1,7 +1,7 @@
 /* Native storage contracts. The included GAME fixture supplies real Worlds,
  * stores, resource streams and cleanup; its old main is never invoked here. */
 #define main mc_minecart_storage_old_tile_main
-#include "../../world/runtime/tiles/test_tiles.c"
+#include "../../world/runtime/tile_entities/test_tile_entities.c"
 #undef main
 
 #include "../../../src/entity/minecart/entity_internal.h"
@@ -11,7 +11,7 @@
 #include "mc/entity/nbt/storage.h"
 #include "mc/world/runtime/saving/saving.h"
 
-/* The unchanged Tile fixture has a single main-renaming layer. Reusing the
+/* The unchanged TileEntity fixture has a single main-renaming layer. Reusing the
  * Entity test itself would nest conflicting main macros. These transport and
  * setup helpers follow that Entity fixture's actual public operations. */
 typedef struct ge_disk {

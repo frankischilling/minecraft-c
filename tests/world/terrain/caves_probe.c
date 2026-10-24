@@ -24,7 +24,7 @@ typedef struct probe_pass {
 } probe_pass;
 
 static mc_math_trig table, original_table;
-static mc_terrain_normal_state state, original_state;
+static mc_terrain_overworld_state state, original_state;
 static mc_java_random constructor_random, generator_random, cave_random, saved_generator_random;
 static mc_biome_memory memory;
 static mc_biome_manager manager, saved_manager;
@@ -240,7 +240,7 @@ static int initialize_case(probe_request request) {
     mc_biome_manager_free(&manager);
     if (mc_biome_memory_init(&memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) != MC_BIOME_OK ||
         mc_biome_manager_init(&manager, request.seed, &memory) != MC_BIOME_OK ||
-        !mc_terrain_normal_init(&state, request.seed))
+        !mc_terrain_overworld_init(&state, request.seed))
         return 0;
     memcpy(&original_state, &state, sizeof(state));
     constructor_random = state.random_after_init;
@@ -251,7 +251,7 @@ static int initialize_case(probe_request request) {
 }
 
 static int prepare_prefix(probe_request request) {
-    mc_java_random_reseed(&generator_random, mc_terrain_normal_chunk_seed(request.x, request.z));
+    mc_java_random_reseed(&generator_random, mc_terrain_overworld_chunk_seed(request.x, request.z));
     mc_java_random seeded = generator_random;
     if (mc_biome_sample_square(&manager, mc_java_i32_mul(request.x, 16),
                                mc_java_i32_mul(request.z, 16), 16, &biomes) != MC_BIOME_OK ||
@@ -269,21 +269,22 @@ static int prepare_prefix(probe_request request) {
     }
     for (size_t i = 0; i < PROBE_BLOCKS; ++i)
         blocks[i] = (uint8_t)(i % 251);
-    mc_terrain_normal_workspace work = {{volumes[0], 425},
-                                        {volumes[1], 425},
-                                        {volumes[2], 425},
-                                        {columns[0], 25},
-                                        {columns[1], 25}};
-    mc_terrain_normal_climate climate = {manager.a.data, manager.a.length, manager.b.data,
-                                         manager.b.length};
-    if (!mc_terrain_normal_generate(&state, &work, request.x, request.z, &climate,
-                                    (mc_terrain_double_span){density, 425}, blocks, PROBE_BLOCKS) ||
+    mc_terrain_overworld_workspace work = {{volumes[0], 425},
+                                           {volumes[1], 425},
+                                           {volumes[2], 425},
+                                           {columns[0], 25},
+                                           {columns[1], 25}};
+    mc_terrain_overworld_climate climate = {manager.a.data, manager.a.length, manager.b.data,
+                                            manager.b.length};
+    if (!mc_terrain_overworld_generate(&state, &work, request.x, request.z, &climate,
+                                       (mc_terrain_double_span){density, 425}, blocks,
+                                       PROBE_BLOCKS) ||
         !mc_test_java_random_equal(&seeded, &generator_random))
         return 0;
-    mc_terrain_normal_surface_workspace surface = {
+    mc_terrain_overworld_surface_workspace surface = {
         {fields[0], 256}, {fields[1], 256}, {fields[2], 256}};
-    if (!mc_terrain_normal_surface(&state, &surface, request.x, request.z, materials, 256,
-                                   &generator_random, blocks, PROBE_BLOCKS))
+    if (!mc_terrain_overworld_surface(&state, &surface, request.x, request.z, materials, 256,
+                                      &generator_random, blocks, PROBE_BLOCKS))
         return 0;
     memcpy(prefix, blocks, sizeof(blocks));
     memcpy(saved_density, density, sizeof(density));
@@ -323,8 +324,8 @@ static int unchanged_prefix_state(void) {
 static int measure_pass(probe_request request, size_t number) {
     probe_pass *pass = &passes[number];
     memcpy(pass->input, blocks, sizeof(blocks));
-    if (!mc_terrain_normal_caves(&table, request.seed, request.x, request.z, &cave_random, blocks,
-                                 PROBE_BLOCKS) ||
+    if (!mc_terrain_overworld_caves(&table, request.seed, request.x, request.z, &cave_random,
+                                    blocks, PROBE_BLOCKS) ||
         !unchanged_prefix_state() || memcmp(blocks + 32768, pass->input + 32768, 3) != 0)
         return 0;
     memcpy(pass->output, blocks, sizeof(blocks));
@@ -349,7 +350,7 @@ static int observe(probe_request request, size_t number) {
     printf("OK\t{\"case\":%zu,\"seed\":%" PRId64 ",\"chunk\":[%" PRId32 ",%" PRId32
            "],\"chunk_seed\":\"%016" PRIx64 "\",\"constructor\":",
            number, request.seed, request.x, request.z,
-           (uint64_t)mc_terrain_normal_chunk_seed(request.x, request.z));
+           (uint64_t)mc_terrain_overworld_chunk_seed(request.x, request.z));
     print_snapshot(1, NULL, NULL);
     fputs(",\"prefix\":", stdout);
     print_snapshot(0, NULL, prefix);

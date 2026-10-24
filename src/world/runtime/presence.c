@@ -1,7 +1,7 @@
 #include "presence_internal.h"
 
+#include "chunk_provider_internal.h"
 #include "mc/core/java/java.h"
-#include "provider_internal.h"
 
 static mc_world_storage_status completed(bool value, bool *out, mc_world_presence_error *error) {
     *out = value;
@@ -28,7 +28,7 @@ mc_world_storage_status mc_world_runtime_region_present_held(mc_world_runtime *w
         for (int32_t chunk_z = first_z; chunk_z <= last_z; chunk_z = mc_java_i32_add(chunk_z, 1)) {
             bool present;
             *error = (mc_world_presence_error){.bytecode = 69, .provider_bytecode = 6};
-            mc_world_storage_status status = mc_world_runtime_provider_contains(
+            mc_world_storage_status status = mc_world_runtime_chunk_provider_contains(
                 world, chunk_x, chunk_z, &present, &error->cause);
             if (status != MC_WORLD_STORAGE_OK)
                 return status;

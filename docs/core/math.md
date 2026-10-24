@@ -1,6 +1,6 @@
 # Float lookup and double floor
 
-`mc_core` provides the three numerical helpers used by normal cave geometry in
+`mc_core` provides the three numerical helpers used by Overworld cave geometry in
 `src/core/math/math.c`, with the public interface in
 `include/mc/core/math/math.h`. The [reference notes](../reference/math.md)
 identify the original methods and exact observations.
@@ -44,7 +44,7 @@ The supported numerical environment uses binary32/binary64 evaluation,
 round-to-nearest and strict floating-point rules with contraction disabled.
 The implementation checks expression evaluation width at compile time. Tests
 preserve raw input encodings and compare returned bit patterns. Passing these
-helpers establishes a cave prerequisite; normal cave scheduling and geometry
+helpers establishes a cave prerequisite; Overworld cave scheduling and geometry
 remain documented separately in the [cave runtime](../world/caves.md).
 
 `mc/core/math/strict.h` additionally supplies positive-finite binary64 log and

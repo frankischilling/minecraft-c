@@ -82,13 +82,15 @@ static mc_registry_status rp_construct(mc_registry_classes *classes, mc_block *b
     return MC_REGISTRY_OK;
 }
 
-static mc_registry_status tile_flag(mc_registry_classes *classes, mc_block *block, int32_t id,
-                                    int32_t pc) {
+static mc_registry_status tile_entity_flag(mc_registry_classes *classes, mc_block *block,
+                                           int32_t id, int32_t pc) {
     STAGE("rw", "lb", pc);
     if (classes->blocks.p == NULL)
-        return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "tile block array", block);
+        return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "TileEntity block array",
+                                block);
     if (id < 0 || id >= (int32_t)MC_REGISTRY_BLOCK_SLOTS)
-        return mc_registry_fail(classes, MC_REGISTRY_INDEX_OUT_OF_RANGE, "tile block index", block);
+        return mc_registry_fail(classes, MC_REGISTRY_INDEX_OUT_OF_RANGE, "TileEntity block index",
+                                block);
     classes->blocks.p[(size_t)id] = true;
     return MC_REGISTRY_OK;
 }
@@ -98,7 +100,7 @@ static mc_registry_status rw_construct(mc_registry_classes *classes, mc_block *b
     STAGE("rw", "lb", 0);
     STAGE("rw", "lb", 3);
     TRY(mc_registry_block_base(classes, block, id, selected));
-    TRY(tile_flag(classes, block, id, 11));
+    TRY(tile_entity_flag(classes, block, id, 11));
     STAGE("rw", "lb", 12);
     return MC_REGISTRY_OK;
 }
@@ -108,7 +110,7 @@ static mc_registry_status rw_texture_construct(mc_registry_classes *classes, mc_
     STAGE("rw", "lb", 0);
     STAGE("rw", "lb", 4);
     TRY(mc_registry_block_base_texture(classes, block, id, texture, selected));
-    TRY(tile_flag(classes, block, id, 12));
+    TRY(tile_entity_flag(classes, block, id, 12));
     STAGE("rw", "lb", 13);
     return MC_REGISTRY_OK;
 }
@@ -181,11 +183,11 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
                                            const mc_block_arguments *a) {
     mc_material *selected;
     switch (block->kind) {
-        case MC_BLOCK_UU_NA:
+        case MC_BLOCK_BASE:
             return mc_registry_block_base_texture(classes, block, a->id, a->texture, a->material);
-        case MC_BLOCK_EO_CX:
+        case MC_BLOCK_STONE:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_e, "eo", "cx");
-        case MC_BLOCK_WP_OJ:
+        case MC_BLOCK_GRASS:
             STAGE("wp", "oj", 0);
             selected = material(classes, MC_MATERIAL_b);
             STAGE("wp", "oj", 5);
@@ -196,9 +198,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("wp", "oj", 19);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_OT_JF:
+        case MC_BLOCK_DIRT:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_c, "ot", "jf");
-        case MC_BLOCK_HE_EU: {
+        case MC_BLOCK_SAPLING: {
             STAGE("he", "eu", 0);
             STAGE("he", "eu", 3);
             TRY(wb_construct(classes, block, a->id, a->texture));
@@ -213,7 +215,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("he", "eu", 33);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_OM_JC: {
+        case MC_BLOCK_FLOWING_FLUID: {
             STAGE("om", "jc", 0);
             STAGE("om", "jc", 3);
             TRY(rp_construct(classes, block, a->id, a->material));
@@ -236,7 +238,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("om", "jc", 25);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_NX_IS:
+        case MC_BLOCK_STILL_FLUID:
             STAGE("nx", "is", 0);
             STAGE("nx", "is", 3);
             TRY(rp_construct(classes, block, a->id, a->material));
@@ -250,19 +252,19 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             }
             STAGE("nx", "is", 25);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_GK_EI:
+        case MC_BLOCK_SAND:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_n, "gk", "ei");
-        case MC_BLOCK_NE_IG:
+        case MC_BLOCK_GRAVEL:
             STAGE("ne", "ig", 0);
             STAGE("ne", "ig", 3);
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_n, "gk", "ei"));
             STAGE("ne", "ig", 6);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_MT_IC:
+        case MC_BLOCK_ORE:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_e, "mt", "ic");
-        case MC_BLOCK_VG_NK:
+        case MC_BLOCK_LOG:
             return fixed_texture(classes, block, a->id, MC_MATERIAL_d, 20, "vg", "nk");
-        case MC_BLOCK_BK_AR:
+        case MC_BLOCK_LEAVES:
             STAGE("bk", "ar", 0);
             selected = material(classes, MC_MATERIAL_i);
             STAGE("bk", "ar", 7);
@@ -273,15 +275,15 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("bk", "ar", 21);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_XF_OV:
+        case MC_BLOCK_SPONGE:
             return fixed_texture(classes, block, a->id, MC_MATERIAL_k, 48, "xf", "ov");
-        case MC_BLOCK_FK_DO:
+        case MC_BLOCK_GLASS:
             STAGE("fk", "do", 0);
             STAGE("fk", "do", 6);
             TRY(jp_construct(classes, block, a->id, a->texture, a->material, a->flag));
             STAGE("fk", "do", 9);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_DISPENSER:
             STAGE("xq", "pa", 0);
             selected = material(classes, MC_MATERIAL_e);
             STAGE("xq", "pa", 5);
@@ -293,21 +295,21 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             block->fields.bm = 45;
             STAGE("xq", "pa", 25);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_RD_KL:
+        case MC_BLOCK_SANDSTONE:
             STAGE("rd", "kl", 0);
             selected = material(classes, MC_MATERIAL_e);
             STAGE("rd", "kl", 8);
             TRY(mc_registry_block_base_texture(classes, block, a->id, 192, selected));
             STAGE("rd", "kl", 11);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_PT_JR:
+        case MC_BLOCK_NOTE_BLOCK:
             STAGE("pt", "jr", 0);
             selected = material(classes, MC_MATERIAL_d);
             STAGE("pt", "jr", 7);
             TRY(rw_texture_construct(classes, block, a->id, 74, selected));
             STAGE("pt", "jr", 10);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_VE_NJ:
+        case MC_BLOCK_BED:
             STAGE("ve", "nj", 0);
             selected = material(classes, MC_MATERIAL_l);
             STAGE("ve", "nj", 8);
@@ -316,9 +318,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             ve_bounds(block);
             STAGE("ve", "nj", 15);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_PC_JJ:
+        case MC_BLOCK_RAIL:
             return pc_construct(classes, block, a->id, a->texture, a->flag);
-        case MC_BLOCK_PH_JN:
+        case MC_BLOCK_DETECTOR_RAIL:
             STAGE("ph", "jn", 0);
             STAGE("ph", "jn", 4);
             TRY(pc_construct(classes, block, a->id, a->texture, true));
@@ -326,7 +328,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("ph", "jn", 13);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_JQ_GI: {
+        case MC_BLOCK_PISTON_BASE: {
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_B, "jq", "gi"));
             STAGE("jq", "gi", 11);
             block->subtype.jq.a = a->flag;
@@ -339,12 +341,12 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("jq", "gi", 29);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_RN_KU:
+        case MC_BLOCK_COBWEB:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_A, "rn", "ku");
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ: {
-            const char *client = block->kind == MC_BLOCK_RU_KZ ? "ru" : "jb";
-            const char *server = block->kind == MC_BLOCK_RU_KZ ? "kz" : "fz";
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH: {
+            const char *client = block->kind == MC_BLOCK_TALL_GRASS ? "ru" : "jb";
+            const char *server = block->kind == MC_BLOCK_TALL_GRASS ? "kz" : "fz";
             STAGE(client, server, 0);
             STAGE(client, server, 3);
             TRY(wb_construct(classes, block, a->id, a->texture));
@@ -358,7 +360,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE(client, server, 32);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_H_G: {
+        case MC_BLOCK_PISTON_HEAD: {
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_B, "h", "g"));
             STAGE("h", "g", 11);
             block->subtype.h.a = -1;
@@ -371,7 +373,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("h", "g", 29);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_EE_CQ:
+        case MC_BLOCK_WOOL:
             STAGE("ee", "cq", 0);
             STAGE("ee", "cq", 1);
             block->requested_id = 35;
@@ -380,7 +382,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_base_texture(classes, block, 35, 64, selected));
             STAGE("ee", "cq", 11);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_UT_MZ:
+        case MC_BLOCK_MOVING_PISTON:
             STAGE("ut", "mz", 0);
             selected = material(classes, MC_MATERIAL_B);
             STAGE("ut", "mz", 5);
@@ -389,9 +391,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             mc_registry_block_hardness(block, -1.0f);
             STAGE("ut", "mz", 15);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_WB_NW:
+        case MC_BLOCK_FLOWER:
             return wb_construct(classes, block, a->id, a->texture);
-        case MC_BLOCK_TL_MD: {
+        case MC_BLOCK_MUSHROOM: {
             STAGE("tl", "md", 0);
             STAGE("tl", "md", 3);
             TRY(wb_construct(classes, block, a->id, a->texture));
@@ -408,7 +410,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("tl", "md", 39);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_L_J:
+        case MC_BLOCK_MINERAL_STORAGE:
             STAGE("l", "j", 0);
             selected = material(classes, MC_MATERIAL_f);
             STAGE("l", "j", 5);
@@ -417,7 +419,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             block->fields.bm = a->texture;
             STAGE("l", "j", 13);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_SLAB:
             STAGE("ys", "pw", 0);
             selected = material(classes, MC_MATERIAL_e);
             STAGE("ys", "pw", 7);
@@ -432,19 +434,19 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_opacity(classes, block, 255));
             STAGE("ys", "pw", 38);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_AH_T:
+        case MC_BLOCK_TNT:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_q, "ah", "t");
-        case MC_BLOCK_HB_ER:
+        case MC_BLOCK_BOOKSHELF:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_d, "hb", "er");
-        case MC_BLOCK_FB_DH:
+        case MC_BLOCK_OBSIDIAN:
             STAGE("fb", "dh", 0);
             STAGE("fb", "dh", 3);
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_e, "eo", "cx"));
             STAGE("fb", "dh", 6);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_VM_NP:
+        case MC_BLOCK_TORCH:
             return vm_construct(classes, block, a->id, a->texture);
-        case MC_BLOCK_YQ_PT: {
+        case MC_BLOCK_FIRE: {
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_m, "yq", "pt"));
             STAGE("yq", "pt", 13);
             int32_t *encouragement = mc_registry_allocate(classes, 256u * sizeof(*encouragement));
@@ -465,14 +467,14 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("yq", "pt", 33);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_DD_BZ:
+        case MC_BLOCK_MOB_SPAWNER:
             STAGE("dd", "bz", 0);
             selected = material(classes, MC_MATERIAL_e);
             STAGE("dd", "bz", 6);
             TRY(rw_texture_construct(classes, block, a->id, a->texture, selected));
             STAGE("dd", "bz", 9);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_SS_LU: {
+        case MC_BLOCK_STAIRS: {
             STAGE("ss", "lu", 0);
             STAGE("ss", "lu", 3);
             mc_block *source = a->source_block;
@@ -504,7 +506,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("ss", "lu", 56);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_E_E:
+        case MC_BLOCK_CHEST:
             STAGE("e", "e", 0);
             selected = material(classes, MC_MATERIAL_d);
             STAGE("e", "e", 5);
@@ -516,13 +518,13 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             block->fields.bm = 26;
             STAGE("e", "e", 25);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_SM_LO: {
+        case MC_BLOCK_REDSTONE: {
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_o, "sm", "lo"));
             STAGE("sm", "lo", 11);
             block->subtype.sm.a = true;
             STAGE("sm", "lo", 19);
-            mc_registry_wire_set *set = NULL;
-            TRY(mc_registry_wire_set_create(classes, &set));
+            mc_registry_redstone_set *set = NULL;
+            TRY(mc_registry_redstone_set_create(classes, &set));
             STAGE("sm", "lo", 22);
             block->subtype.sm.b = set;
             STAGE("sm", "lo", 33);
@@ -530,9 +532,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("sm", "lo", 36);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_FI_DN:
+        case MC_BLOCK_CRAFTING_TABLE:
             return fixed_texture(classes, block, a->id, MC_MATERIAL_d, 59, "fi", "dn");
-        case MC_BLOCK_NI_IJ: {
+        case MC_BLOCK_CROPS: {
             STAGE("ni", "ij", 0);
             STAGE("ni", "ij", 3);
             TRY(wb_construct(classes, block, a->id, a->texture));
@@ -550,7 +552,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("ni", "ij", 43);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_VL_NO:
+        case MC_BLOCK_FARMLAND:
             TRY(fixed_texture(classes, block, a->id, MC_MATERIAL_c, 87, "vl", "no"));
             STAGE("vl", "no", 16);
             TRY(mc_registry_block_tick(classes, block, true));
@@ -560,7 +562,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_opacity(classes, block, 255));
             STAGE("vl", "no", 39);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_TC_LZ:
+        case MC_BLOCK_FURNACE:
             STAGE("tc", "lz", 0);
             selected = material(classes, MC_MATERIAL_e);
             STAGE("tc", "lz", 5);
@@ -574,7 +576,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             block->fields.bm = 45;
             STAGE("tc", "lz", 30);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_UJ_MT: {
+        case MC_BLOCK_SIGN: {
             STAGE("uj", "mt", 0);
             selected = material(classes, MC_MATERIAL_d);
             STAGE("uj", "mt", 5);
@@ -584,7 +586,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("uj", "mt", 15);
             block->fields.bm = 4;
             STAGE("uj", "mt", 20);
-            block->subtype.uj.a = a->tile_class;
+            block->subtype.uj.a = a->tile_entity_class;
             float radius = 0.25f;
             float height = 1.0f;
             float x0 = 0.5f - radius;
@@ -596,9 +598,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("uj", "mt", 57);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_LE_HC:
-        case MC_BLOCK_OQ_JD: {
-            bool door = block->kind == MC_BLOCK_LE_HC;
+        case MC_BLOCK_DOOR:
+        case MC_BLOCK_TRAPDOOR: {
+            bool door = block->kind == MC_BLOCK_DOOR;
             const char *client = door ? "le" : "oq";
             const char *server = door ? "hc" : "jd";
             STAGE(client, server, 0);
@@ -625,11 +627,11 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE(client, server, 58);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_DP_CG:
+        case MC_BLOCK_LADDER:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_o, "dp", "cg");
-        case MC_BLOCK_XR_PD:
+        case MC_BLOCK_LEVER:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_o, "xr", "pd");
-        case MC_BLOCK_BV_BC: {
+        case MC_BLOCK_PRESSURE_PLATE: {
             STAGE("bv", "bc", 0);
             STAGE("bv", "bc", 5);
             TRY(mc_registry_block_base_texture(classes, block, a->id, a->texture, a->material));
@@ -645,7 +647,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("bv", "bc", 42);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_BS_AZ:
+        case MC_BLOCK_REDSTONE_ORE:
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_e, "bs", "az"));
             if (a->flag) {
                 STAGE("bs", "az", 15);
@@ -655,7 +657,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             block->subtype.bs.a = a->flag;
             STAGE("bs", "az", 24);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             STAGE("db", "by", 0);
             STAGE("db", "by", 3);
             TRY(vm_construct(classes, block, a->id, a->texture));
@@ -667,13 +669,13 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("db", "by", 22);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_OI_IZ:
+        case MC_BLOCK_BUTTON:
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_o, "oi", "iz"));
             STAGE("oi", "iz", 11);
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("oi", "iz", 15);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_JR_GJ:
+        case MC_BLOCK_SNOW_LAYER:
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_t, "jr", "gj"));
             STAGE("jr", "gj", 17);
             mc_registry_block_bounds(block, 0.0f, 0.0f, 0.0f, 1.0f, 0.125f, 1.0f);
@@ -681,7 +683,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("jr", "gj", 26);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_NK_IK:
+        case MC_BLOCK_ICE:
             STAGE("nk", "ik", 0);
             selected = material(classes, MC_MATERIAL_s);
             STAGE("nk", "ik", 7);
@@ -692,21 +694,21 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("nk", "ik", 22);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_AC_P:
+        case MC_BLOCK_SNOW_BLOCK:
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_u, "ac", "p"));
             STAGE("ac", "p", 11);
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("ac", "p", 15);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_OR_JE:
+        case MC_BLOCK_CACTUS:
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_v, "or", "je"));
             STAGE("or", "je", 11);
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("or", "je", 15);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_RZ_LF:
+        case MC_BLOCK_CLAY:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_w, "rz", "lf");
-        case MC_BLOCK_RI_KO: {
+        case MC_BLOCK_SUGAR_CANE: {
             STAGE("ri", "ko", 0);
             selected = material(classes, MC_MATERIAL_j);
             STAGE("ri", "ko", 5);
@@ -725,16 +727,16 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             STAGE("ri", "ko", 44);
             return MC_REGISTRY_OK;
         }
-        case MC_BLOCK_FO_DT:
+        case MC_BLOCK_JUKEBOX:
             STAGE("fo", "dt", 0);
             selected = material(classes, MC_MATERIAL_d);
             STAGE("fo", "dt", 6);
             TRY(rw_texture_construct(classes, block, a->id, a->texture, selected));
             STAGE("fo", "dt", 9);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_JW_GN:
+        case MC_BLOCK_FENCE:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_d, "jw", "gn");
-        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_PUMPKIN:
             STAGE("fc", "di", 0);
             selected = material(classes, MC_MATERIAL_x);
             STAGE("fc", "di", 5);
@@ -747,30 +749,30 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             block->subtype.fc.a = a->flag;
             STAGE("fc", "di", 24);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_YI_PO:
+        case MC_BLOCK_NETHERRACK:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_e, "yi", "po");
-        case MC_BLOCK_OA_IU:
+        case MC_BLOCK_SOUL_SAND:
             return direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_n, "oa", "iu");
-        case MC_BLOCK_LY_HR:
+        case MC_BLOCK_GLOWSTONE:
             STAGE("ly", "hr", 0);
             STAGE("ly", "hr", 4);
             TRY(mc_registry_block_base_texture(classes, block, a->id, a->texture, a->material));
             STAGE("ly", "hr", 7);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_AK_Z:
+        case MC_BLOCK_PORTAL:
             STAGE("ak", "z", 0);
             selected = material(classes, MC_MATERIAL_y);
             STAGE("ak", "z", 7);
             TRY(jp_construct(classes, block, a->id, a->texture, selected, false));
             STAGE("ak", "z", 10);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_UM_MW:
+        case MC_BLOCK_CAKE:
             TRY(direct_texture(classes, block, a->id, a->texture, MC_MATERIAL_z, "um", "mw"));
             STAGE("um", "mw", 11);
             TRY(mc_registry_block_tick(classes, block, true));
             STAGE("um", "mw", 15);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             STAGE("wo", "oi", 0);
             selected = material(classes, MC_MATERIAL_o);
             STAGE("wo", "oi", 7);
@@ -781,7 +783,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_bloc
             mc_registry_block_bounds(block, 0.0f, 0.0f, 0.0f, 1.0f, 0.125f, 1.0f);
             STAGE("wo", "oi", 26);
             return MC_REGISTRY_OK;
-        case MC_BLOCK_KS_GV:
+        case MC_BLOCK_LOCKED_CHEST:
             return fixed_texture(classes, block, a->id, MC_MATERIAL_d, 26, "ks", "gv");
         case MC_BLOCK_KIND_COUNT:
             break;

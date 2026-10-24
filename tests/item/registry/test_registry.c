@@ -168,8 +168,10 @@ static bool ordinary_randoms(const mc_registry_classes *owner, const mc_java_ran
     if (owner->blocks.m == NULL || owner->blocks.m[23] == NULL || owner->blocks.m[54] == NULL ||
         owner->blocks.m[61] == NULL || owner->blocks.m[62] == NULL)
         return false;
-    if (owner->blocks.m[23]->kind != MC_BLOCK_XQ_PA || owner->blocks.m[54]->kind != MC_BLOCK_E_E ||
-        owner->blocks.m[61]->kind != MC_BLOCK_TC_LZ || owner->blocks.m[62]->kind != MC_BLOCK_TC_LZ)
+    if (owner->blocks.m[23]->kind != MC_BLOCK_DISPENSER ||
+        owner->blocks.m[54]->kind != MC_BLOCK_CHEST ||
+        owner->blocks.m[61]->kind != MC_BLOCK_FURNACE ||
+        owner->blocks.m[62]->kind != MC_BLOCK_FURNACE)
         return false;
     out[0] = owner->items.b;
     out[1] = owner->blocks.m[23]->subtype.xq.a;
@@ -295,7 +297,7 @@ static int check_armor_dye(const mc_registry_classes *owner) {
     for (size_t group = 0; group < COUNT(armor_fields); ++group)
         for (size_t slot = 0; slot < 4; ++slot) {
             const mc_item *item = item_at(owner, armor_fields[group][slot]);
-            CHECK(item != NULL && item->kind == MC_ITEM_WA_NX);
+            CHECK(item != NULL && item->kind == MC_ITEM_ARMOR);
             CHECK(item->subtype.wa.a == armor_material[group] &&
                   item->subtype.wa.bk == (int32_t)slot);
             CHECK(item->subtype.wa.bm == (int32_t)group && item->subtype.wa.bl == protection[slot]);
@@ -309,8 +311,7 @@ static int check_armor_dye(const mc_registry_classes *owner) {
     }
     CHECK(owner->items.km_bk[6] == owner->items.km_bk[7]);
     CHECK(owner->items.km_a[6] != owner->items.km_a[7]);
-    CHECK(owner->item_states[MC_ITEM_WA_NX].pc == 50 &&
-          owner->item_states[MC_ITEM_KM_GU].pc == 195);
+    CHECK(owner->item_states[MC_ITEM_ARMOR].pc == 50 && owner->item_states[MC_ITEM_DYE].pc == 195);
     result = 0;
 cleanup:
     return result;
@@ -393,7 +394,7 @@ static int check_base_and_subtypes(const mc_registry_classes *owner, mc_material
     CHECK(item_at(owner, "aH")->subtype.lv.a == 83 && item_at(owner, "aX")->subtype.lv.a == 92 &&
           item_at(owner, "aZ")->subtype.lv.a == 93);
     const mc_item *first = item_at(owner, "bd"), *second = item_at(owner, "be");
-    CHECK(first != second && first->kind == MC_ITEM_TR_MJ && second->kind == MC_ITEM_TR_MJ);
+    CHECK(first != second && first->kind == MC_ITEM_RECORD && second->kind == MC_ITEM_RECORD);
     CHECK(text_is(first->subtype.tr.a, "13") && text_is(second->subtype.tr.a, "cat"));
     CHECK(first->subtype.tr.a != second->subtype.tr.a);
     CHECK(first->fields.bl != second->fields.bl && text_is(first->fields.bl, "item.record") &&
@@ -489,8 +490,8 @@ static int check_retry(mc_registry_classes *owner) {
     mc_registry_allocation *allocations = owner->allocations;
     uint64_t u = uniquifier(owner->options.random_profile);
     int32_t block_pc = owner->block_initializer_pc;
-    int32_t item_pc = owner->item_states[MC_ITEM_GM_EJ].pc;
-    mc_registry_error item_failure = owner->item_states[MC_ITEM_GM_EJ].failure;
+    int32_t item_pc = owner->item_states[MC_ITEM_BASE].pc;
+    mc_registry_error item_failure = owner->item_states[MC_ITEM_BASE].failure;
     mc_registry_error block_failure = owner->block_failure;
     CHECK(mc_registry_classes_initialize_items(owner, &error) == MC_REGISTRY_FAILED_INITIALIZATION);
     CHECK(error.status == MC_REGISTRY_FAILED_INITIALIZATION);
@@ -515,7 +516,7 @@ static int check_retry(mc_registry_classes *owner) {
     CHECK(same_view(&before, &after));
     CHECK(owner->allocation_bytes == bytes && owner->allocations == allocations);
     CHECK(owner->block_initializer_pc == block_pc &&
-          owner->item_states[MC_ITEM_GM_EJ].pc == item_pc);
+          owner->item_states[MC_ITEM_BASE].pc == item_pc);
     CHECK(owner->entered == 0 && owner->initializer == NULL && owner->current_item == NULL &&
           owner->current_block == NULL);
     for (size_t i = 0; i < COUNT(entries); ++i)
@@ -548,7 +549,7 @@ static int check_fire(const mc_registry_classes *owner, bool hook_reached) {
 
     CHECK(owner->blocks.m != NULL && owner->blocks.m[51] != NULL);
     const mc_block *fire = owner->blocks.m[51];
-    CHECK(fire->kind == MC_BLOCK_YQ_PT);
+    CHECK(fire->kind == MC_BLOCK_FIRE);
     CHECK(fire->subtype.yq.a != NULL && fire->subtype.yq.b != NULL &&
           fire->subtype.yq.a != fire->subtype.yq.b);
     for (size_t id = 0; id < 256; ++id) {
@@ -633,13 +634,13 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
         mc_item_kind kind;
         const char *name;
         int32_t icon;
-    } specials[] = {{35, MC_ITEM_BI_AP, "item.cloth", 64},
-                    {17, MC_ITEM_GO_EK, "item.log", 20},
-                    {44, MC_ITEM_EN_CW, "item.stoneSlab", 5},
-                    {6, MC_ITEM_MR_IA, "item.sapling", 15},
-                    {18, MC_ITEM_UY_ND, "item.leaves", 52},
-                    {33, MC_ITEM_QR_KC, NULL, 107},
-                    {29, MC_ITEM_QR_KC, NULL, 106}};
+    } specials[] = {{35, MC_ITEM_WOOL_BLOCK, "item.cloth", 64},
+                    {17, MC_ITEM_LOG_BLOCK, "item.log", 20},
+                    {44, MC_ITEM_SLAB_BLOCK, "item.stoneSlab", 5},
+                    {6, MC_ITEM_SAPLING_BLOCK, "item.sapling", 15},
+                    {18, MC_ITEM_LEAVES_BLOCK, "item.leaves", 52},
+                    {33, MC_ITEM_PISTON_BLOCK, NULL, 107},
+                    {29, MC_ITEM_PISTON_BLOCK, NULL, 106}};
 
     /* Side2 dispatch literals, including fluid increments, delegated stairs,
      * workbench, pumpkin, cake and repeater metadata-zero branches. */
@@ -667,8 +668,8 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
     CHECK(view.c != NULL && view.b != NULL && mc_registry_item_array_length(view.c) == 32000);
     CHECK(blocks.m != NULL && blocks.r != NULL);
     CHECK(blocks.r[0]);
-    CHECK(owner->item_states[MC_ITEM_WC_NY].phase == MC_REGISTRY_FAILED &&
-          owner->item_states[MC_ITEM_WC_NY].pc == 7);
+    CHECK(owner->item_states[MC_ITEM_SHOVEL].phase == MC_REGISTRY_FAILED &&
+          owner->item_states[MC_ITEM_SHOVEL].pc == 7);
     CHECK(owner->items.wc_bk == NULL && owner->items.au_bk == NULL && owner->items.ta_bk == NULL);
     CHECK(owner->item_tool_state.phase == MC_REGISTRY_COLD && owner->item_tool_state.pc == -1);
     CHECK(owner->items.tool_a == NULL && owner->items.tool_b == NULL &&
@@ -706,12 +707,12 @@ static int test_item_first(mc_registry_side side, mc_java_random_profile *profil
                 CHECK(element->fields.bl == NULL);
         }
         if (!special)
-            CHECK(element->kind == MC_ITEM_CK_BK && !element->fields.bj &&
+            CHECK(element->kind == MC_ITEM_BLOCK && !element->fields.bj &&
                   element->fields.bl == NULL);
     }
     for (size_t i = 0; i < COUNT(ordinary_textures); ++i) {
         const mc_item *item = view.c->elements[ordinary_textures[i].id];
-        CHECK(item != NULL && item->kind == MC_ITEM_CK_BK);
+        CHECK(item != NULL && item->kind == MC_ITEM_BLOCK);
         CHECK(item->fields.bh == ordinary_textures[i].icon);
     }
     /* Fire's real conditional post-Item hook runs during the default loop. */
@@ -739,8 +740,8 @@ static int test_metadata_budget(mc_registry_side side, mc_java_random_profile *p
     CHECK(owner->allocation_bytes == sizeof(mc_registry_classes));
     CHECK(mc_registry_classes_initialize_items(owner, &error) == MC_REGISTRY_LIMIT);
     CHECK(error.status == MC_REGISTRY_LIMIT && error.active_initializer_pc == 0);
-    CHECK(owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_FAILED &&
-          owner->item_states[MC_ITEM_GM_EJ].pc == 0);
+    CHECK(owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_FAILED &&
+          owner->item_states[MC_ITEM_BASE].pc == 0);
     CHECK(owner->blocks_phase == MC_REGISTRY_COLD && owner->items.b == NULL &&
           owner->items.c == NULL);
     CHECK(owner->allocation_bytes == sizeof(mc_registry_classes));
@@ -758,8 +759,8 @@ static int published_random_count(const mc_registry_classes *owner, size_t *out)
     int result = 1;
     size_t count = owner->items.b != NULL ? 1u : 0u;
     static const size_t ids[] = {23, 54, 61, 62};
-    static const mc_block_kind kinds[] = {MC_BLOCK_XQ_PA, MC_BLOCK_E_E, MC_BLOCK_TC_LZ,
-                                          MC_BLOCK_TC_LZ};
+    static const mc_block_kind kinds[] = {MC_BLOCK_DISPENSER, MC_BLOCK_CHEST, MC_BLOCK_FURNACE,
+                                          MC_BLOCK_FURNACE};
     if (owner->blocks.m != NULL)
         for (size_t i = 0; i < COUNT(ids); ++i) {
             const mc_block *block = owner->blocks.m[ids[i]];
@@ -844,11 +845,11 @@ static int test_array_publication_budget(mc_registry_side side, mc_java_random_p
     CHECK(mc_registry_classes_allocate(&options, &owner, &error) == MC_REGISTRY_OK);
     CHECK(mc_registry_classes_initialize_items(owner, &error) == MC_REGISTRY_LIMIT);
     CHECK(error.active_initializer_pc == 13 && error.profile_status == MC_JAVA_RANDOM_PROFILE_OK);
-    CHECK(owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_FAILED &&
-          owner->item_states[MC_ITEM_GM_EJ].pc == 13);
+    CHECK(owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_FAILED &&
+          owner->item_states[MC_ITEM_BASE].pc == 13);
     CHECK(owner->items.b != NULL && owner->items.c == NULL && owner->items.named_items == 0);
     CHECK(owner->blocks_phase == MC_REGISTRY_COLD && owner->blocks.m == NULL);
-    CHECK(owner->item_states[MC_ITEM_WC_NY].phase == MC_REGISTRY_COLD);
+    CHECK(owner->item_states[MC_ITEM_SHOVEL].phase == MC_REGISTRY_COLD);
     CHECK(profile_is(profile, advanced(before, 1)) == 0);
     if (retire(owner, &error) != 0)
         goto cleanup;
@@ -861,10 +862,10 @@ static int test_array_publication_budget(mc_registry_side side, mc_java_random_p
     CHECK(error.active_initializer_pc == 2 && error.active_initializer_class != NULL &&
           strcmp(error.active_initializer_class, side == MC_REGISTRY_CLIENT ? "wc" : "ny") == 0);
     CHECK(owner->allocation_bytes == low);
-    CHECK(owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_FAILED &&
-          owner->item_states[MC_ITEM_GM_EJ].pc == 19);
-    CHECK(owner->item_states[MC_ITEM_WC_NY].phase == MC_REGISTRY_FAILED &&
-          owner->item_states[MC_ITEM_WC_NY].pc == 2);
+    CHECK(owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_FAILED &&
+          owner->item_states[MC_ITEM_BASE].pc == 19);
+    CHECK(owner->item_states[MC_ITEM_SHOVEL].phase == MC_REGISTRY_FAILED &&
+          owner->item_states[MC_ITEM_SHOVEL].pc == 2);
     CHECK(owner->items.b != NULL && owner->items.c != NULL && owner->items.wc_bk == NULL);
     CHECK(owner->items.named_items == 0 && owner->items.c->length == 32000);
     CHECK(owner->blocks_phase == MC_REGISTRY_COLD && owner->block_initializer_pc == -1 &&

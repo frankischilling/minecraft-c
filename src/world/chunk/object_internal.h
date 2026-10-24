@@ -78,7 +78,7 @@ mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_lis
  * marker before releasing even an empty container, release one hold per duplicate
  * occurrence, free capacities, update ledger/reset descriptor storage. It leaves
  * stable List handles, q, Entity bF/bG/bH/bI and every other source field alone;
- * no source observer, removal or World/container callback runs. The registered
+ * no source WorldAccess, removal or World/container callback runs. The registered
  * native finalizer releases each real hold. Serialization refuses the marker
  * even after count0;
  * native cleanup NEVER enables ordinary maintenance/save of erased game state.

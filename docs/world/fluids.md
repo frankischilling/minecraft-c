@@ -5,7 +5,7 @@ addition, neighbor and tick dispatch in
 [fluids.c](../../src/world/runtime/mutation/fluids.c). This is partial synchronous
 gameplay support. Selected Block quantity/item/damage bodies, drop construction
 and [actual Entity publication](entities.md) execute. Moving-piston TileEntity
-lookup, fire/portal effects and nonempty observers remain dependencies where reached. Population and
+lookup, fire/portal effects and nonempty WorldAccess receivers remain dependencies where reached. Population and
 complete original/native fluid parity are not established by these bodies alone.
 
 ## Source behavior
@@ -50,9 +50,9 @@ false, then calls material `h` and the selected Block predicate. It does not use
 opacity or a final block-ID property table. Slabs read their live subtype flag.
 
 [Sound and particle calls](../../include/mc/world/runtime/presentation.h) walk the
-actual World observer list. An empty list completes without dereferencing the
+actual WorldAccess list. An empty list completes without dereferencing the
 nullable borrowed String, touching Registry state or consuming Random. Nonempty
-untyped observer dispatch remains an explicit dependency. These calls do not
+untyped WorldAccess dispatch remains an explicit dependency. These calls do not
 implement rendering or audio engines.
 
 Runtime literals use the existing Registry String pool and allocation ledger.
@@ -97,7 +97,7 @@ uses loaded populated records, checks genuine Registry initialization reentry,
 live predicates and failure order, and performs actual maintenance with disk
 reload. Its four region records include two whole-file unchanged limit fixtures.
 Those are constructed native contracts. They do not establish original World
-equivalence, all fluid branches, nonempty observers or full population acceptance.
+equivalence, all fluid branches, nonempty WorldAccess receivers or full population acceptance.
 
 Separate [original support and presentation observations](../reference/world-solid-support.md)
 completed 56 subject calls per side, including nine genuine prepared World cases.

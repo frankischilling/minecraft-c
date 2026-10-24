@@ -91,7 +91,7 @@ static void search_nearby(mc_world_mutation_error *error, const mc_world_nearby_
     error->registry = child->query.registry;
     error->population = child->query.population;
     error->entity = child->entity;
-    error->tile = child->tile;
+    error->tile_entity = child->tile_entity;
     error->batch = child->batch;
     error->load_entity = child->load_entity;
     error->activation_bytecode = child->activation_bytecode;

@@ -176,6 +176,9 @@ FIELDS = {owner: {name: (desc, int(mods)) for name, desc, mods in (token.split("
     for owner, raw in DECLARATIONS.items()}
 COLLECTIONS = {"java.util.ArrayList", "java.util.HashSet", "java.util.TreeSet",
     "java.util.Collections$SynchronizedRandomAccessList"}
+# Versioned transport labels are intentionally independent of current C names:
+# mc_world_provider is ChunkProvider, mc_normal_generator is the Overworld
+# generator, and mc_world_dimension is WorldProvider. Preserve captured labels.
 KINDS = {"mc_world_runtime", "mc_server_runtime", "mc_world_provider", "mc_normal_generator",
     "mc_chunk_cache", "mc_chunk_pending", "mc_world_reference_list", "mc_world_active_chunks",
     "mc_scheduled_ordered", "mc_scheduled_membership", "mc_scheduled_tick", "mc_world_dimension",
@@ -599,7 +602,7 @@ class Comparison:
             equal(list(struct.unpack(">32i", g.array(left, "I"))), [integer(x) for x in right["values"]], "complete actual grid values")
         self.ledger.exclude("native", native["owner"]["ref"], "noise_aggregate", "C matrix/row subobjects; no Java row allocation claim")
 
-    def normal(self, g, source, native, world, manager):
+    def overworld(self, g, source, native, world, manager):
         keys(native, ("owner", "world", "world_binding_location", "biome_manager", "biome_owner_correspondence",
             "world_seed", "generator_random", "cave", "noise", "scratch", "v", "w", "grid"), "native normal provider")
         self.ledger.bind(source, native["owner"], "mc_normal_generator", "normal numerical owner")
@@ -853,7 +856,7 @@ class Comparison:
         equal(history["order"], "actual_JDK_profile_selection", "actual history profile")
         equal([integer(x) for x in history["keys"]], expected, "actual pending iterator/selection order")
         self.ledger.exclude("native", history["native_owner"]["ref"], "native_private", "actual separate selection-history owner")
-        self.normal(g, generator, native["normal"], c["world"], native["manager"])
+        self.overworld(g, generator, native["normal"], c["world"], native["manager"])
         return source, fallback, loader, source_values
 
     def world_server(self, g, n, ordinal):

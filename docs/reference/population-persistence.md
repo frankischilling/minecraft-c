@@ -56,7 +56,7 @@ version 0 and creates no `level.dat`.
 Each record contains one root Compound and a `Level` Compound with all eleven
 expected tags. The comparison checks exact tag types, coordinates, last-update
 time, population flag and every byte of Blocks, Data, SkyLight, BlockLight and
-HeightMap against the actual saved Chunk. Both empty Entity/Tile lists have
+HeightMap against the actual saved Chunk. Both empty Entity/TileEntity lists have
 on-disk element type 1. Original List writing chooses 1 for an empty list; the
 native NBT codec already implements that rule.
 
@@ -140,7 +140,7 @@ require exclusive access to their fresh owned directory. These observation
 bounds do not impose operating-system filesystem quotas.
 
 This is one seed, four cached normal Chunks, two cache passes and four matching
-direct records. Nonempty Entity/Tile data, malformed/relocated records, failure
+direct records. Nonempty Entity/TileEntity data, malformed/relocated records, failure
 paths, eviction, dedicated-server behavior, saved metadata construction and
 gameplay restart retain their separate acceptance requirements. Terminal
 retirement closes observation resources; it is not a source unload operation.

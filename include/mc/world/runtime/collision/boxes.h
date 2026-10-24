@@ -19,7 +19,7 @@ typedef struct mc_world_collision_error {
     const char *block_class;
     unsigned int world_bytecode, block_bytecode;
     /* Moving-piston collision/state-shape and the shifted-box helper retain
-     * independent enclosing frames on carrier, Tile or Direction failure. */
+     * independent enclosing frames on carried Block, TileEntity or Direction failure. */
     unsigned int piston_bytecode, shifted_bytecode;
     int32_t x, y, z;
 } mc_world_collision_error;

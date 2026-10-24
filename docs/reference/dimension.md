@@ -1,4 +1,4 @@
-# Dimension constructor, table and angle observations
+# WorldProvider constructor, table and angle observations
 
 Both unchanged original archives were observed on Windows Temurin
 17.0.17+10 with `-Xint`. The isolated recorder calls the actual factory,
@@ -13,15 +13,23 @@ The [public provenance](../../tests/reference/world/dimension/dimension_provenan
 pins twelve recorder/JDK/archive inputs, all three compiled helper classes,
 the raw transcripts and the complete exported fixtures.
 
+The [historical recorder](../../tests/reference/world/dimension/recorder.py)
+retains its exact captured bytes and source hash. It is evidence, never imported
+or executed by replay. The [current checker](../../tests/tools/world/test_dimension_reference.py)
+uses the renamed WorldProvider paths and records its own source pin separately.
+Historical projection admission joins the known capture to its actual recorder;
+current captures and exports retain their current recorder identity. Replay also
+checks each retained input copy against its measured source fingerprint.
+
 Each original transcript has 48,875 literal-LF rows: eight factory calls,
 four nonnull results, eleven state snapshots, three table calls, 48,739
-angle calls and 24 identity relations. Normal angles cover all signed day
+angle calls and 24 identity relations. Overworld angles cover all signed day
 remainders -23999 through 23999 at partial1, plus 35 selected signed times
 times twenty finite partials. The selected cases include signed-long extremes,
 negative times, wrap boundaries, signed zero, subnormals and large finite ticks.
 Nether/Sky each contribute twenty representative pairs.
 
-The original null-World normal bind records its actual exception, diagnostic
+The original null-World Overworld bind records its actual exception, diagnostic
 and reached state. That outcome and its after-state remain original-only.
 Both fixed-biome binds are explicitly unexecuted because their registry closure
 is outside this experiment. No World construction, biome setup, runtime
@@ -48,7 +56,7 @@ It checks both side bindings, 28 altered verifier inputs/results, and four
 actual exit1 native protocol refusals. All compared rows and guards pass on
 native Windows MSVC and Linux GCC/Clang within each complete 97-case public
 run. Linux uses ASan/UBSan and leak checks. This remains a finite standalone
-Dimension comparison, without original World/biome startup qualification.
+WorldProvider comparison, without original World/biome startup qualification.
 
 ## Reproduction
 
@@ -79,7 +87,7 @@ verification requires that explicit hash. The current CMake value is
 
 The paired source anchors are client `xa`/server `os` for base construction,
 binding, table and celestial bodies; client `rh,wd,ay` / server `kp,nz,aj`
-for the selected concrete classes. Normal angle uses signed long remainder,
+for the selected concrete classes. Overworld angle uses signed long remainder,
 one conditional adjustment on either side of the day boundary, binary64
 cosine, and explicitly ordered float narrowing. The existing float lookup
 cosine implements the later World light calculation, not this smoothing call.

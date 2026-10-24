@@ -41,7 +41,7 @@ static const uint16_t item_name[] = {'I', 't', 'e', 'm'};
 static const uint16_t id_name[] = {'i', 'd'};
 static const uint16_t count_name[] = {'C', 'o', 'u', 'n', 't'};
 static const uint16_t damage_name[] = {'D', 'a', 'm', 'a', 'g', 'e'};
-static const uint16_t tile_name[] = {'T', 'i', 'l', 'e'};
+static const uint16_t carried_block_id_name[] = {'T', 'i', 'l', 'e'};
 
 static bool fail(mc_entity_nbt_error *frame, mc_entity_nbt_status status, const char *operation) {
     frame->status = status;
@@ -200,7 +200,7 @@ static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound,
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         const mc_nbt_tag *tag;
         frame->falling_bytecode = 4;
-        if (!get(compound, tile_name, 4, "Tile", MC_NBT_BYTE, &tag, frame))
+        if (!get(compound, carried_block_id_name, 4, "Tile", MC_NBT_BYTE, &tag, frame))
             return false;
         /* Actual Byte getter, unsigned mask10, then own field store11. Age is
          * not read here; the actual current b remains unchanged. */
@@ -458,7 +458,7 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
         frame.falling_bytecode = 8;
         frame.field = "Tile";
         fields[7] = (mc_nbt_tag){.type = MC_NBT_BYTE,
-                                 .name = name(tile_name, 4),
+                                 .name = name(carried_block_id_name, 4),
                                  .value.byte_value = mc_java_i8_narrow(entity->falling.a)};
         frame.falling_bytecode = 11;
         root.value.compound.length = 8;

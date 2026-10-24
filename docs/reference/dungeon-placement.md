@@ -8,7 +8,7 @@ Chest location, loot stack or Spawner name.
 
 This experiment is separate from the [private-helper comparisons](population-dungeon.md).
 It covers a direct placement call on a declared room. Natural terrain, the
-population schedule, dedicated startup, ticks, arbitrary observers and
+population schedule, dedicated startup, ticks, arbitrary WorldAccess receivers and
 save/unload/reload remain outside this experiment.
 
 ## Inputs and acquisition
@@ -28,7 +28,7 @@ Setup active uses and unrelated metadata differ between these fixtures; these
 calls do not establish cold-context or complete-World equality.
 
 Input chunk `(0,0)` is full actual named stone, with zero metadata/light arrays,
-unsigned height bytes of 128, empty Entity/Tile lists and the populated flag set.
+unsigned height bytes of 128, empty Entity/TileEntity lists and the populated flag set.
 The original NBT writer and region stream install those declared input bytes.
 Actual World/provider/cache acquisition decodes, normalizes and activates the
 Chunk. The C fixture uses its real encoded region/acquisition route. Neither
@@ -76,8 +76,8 @@ metadata, sky-light, block-light and height bytes, minimum height, live flags
 and last-save time. Each side retains its own same Chunk, World, nibble wrappers
 and array owners across placement. Identity tokens are local to each process.
 
-Compare actual Chunk Tile Map iteration order separately from ordered World
-Tile lists. Join keys, positions and actual same-owner list references. Every
+Compare actual Chunk TileEntity Map iteration order separately from ordered World
+TileEntity lists. Join keys, positions and actual same-owner list references. Every
 fresh Chest has 36 physical slots despite logical size 27: compare all 36, nulls,
 four Stack fields and the observed Stack alias graph. Compare Spawner nullable
 exact UTF16 name, delay and both rotation bit patterns. Original String value
@@ -87,7 +87,7 @@ Compare the full ordered pending light queue, kind/default and six bounds per
 entry without sorting or draining. Compare enqueue/drain depth, the normal
 Chunk static flag, empty scheduling and all eight empty Entity slices. Original
 scheduling class state/counters and arbitrary World reference graphs remain
-outside this shared observation. The original fallback header graph and Tile
+outside this shared observation. The original fallback header graph and TileEntity
 namespace HashMap iteration also have no corresponding captured native object
 layout; they remain explicit exclusions, not fabricated equivalent owners.
 

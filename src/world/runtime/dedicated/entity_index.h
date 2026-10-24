@@ -102,7 +102,7 @@ mc_world_storage_status mc_world_entity_index_inspect(const mc_world_entity_inde
                                                       mc_world_entity_index_error *error);
 
 /* Internal retirement releases all holds/backings without invoking source
- * clear, observers, Entity death or World removal. NULL is harmless. */
+ * clear, WorldAccess receivers, Entity death or World removal. NULL is harmless. */
 void mc_world_entity_index_free(mc_world_entity_index *index);
 
 /* All calls require exclusive access. Arguments/results/errors must be live,

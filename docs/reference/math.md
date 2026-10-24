@@ -1,6 +1,6 @@
 # Float trig table and double-floor helper
 
-The normal cave pass depends on Minecraft's float sine/cosine table and its
+The Overworld cave pass depends on Minecraft's float sine/cosine table and its
 double-to-int floor helper. Both supplied Beta 1.7.3 binaries produced the same
 65,536 table entries and the same 366 sampled method results on native Temurin
 17.0.17+10. The table comparison covers every entry; the calls cover 132 float
@@ -282,7 +282,7 @@ requests. The
 [testing guide](../testing.md) owns invocation and acceptance details.
 
 This evidence supports the observed table, lookup and floor behavior only.
-The normal cave pass still needs its own Random-order, geometry, block and
+The Overworld cave pass still needs its own Random-order, geometry, block and
 state comparisons after the [base](density.md) and [surface](surface.md)
 stages. Full chunk finishing, lighting, population and other dimensions remain
 outside this prerequisite.

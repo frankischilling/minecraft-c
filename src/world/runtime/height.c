@@ -1,7 +1,7 @@
 #include "mc/world/runtime/lighting.h"
 
+#include "chunk_provider_internal.h"
 #include "mc/core/java/java.h"
-#include "provider_internal.h"
 #include "runtime_internal.h"
 
 static mc_world_storage_status result(mc_world_light_error *error,
@@ -54,7 +54,7 @@ mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32
     /* The source presence receiver is loaded separately from the later getter.
      * This is the current actual provider, not a detached World cache view. */
     bool present = false;
-    status = mc_world_runtime_provider_contains(runtime, chunk_x, chunk_z, &present, &cause);
+    status = mc_world_runtime_chunk_provider_contains(runtime, chunk_x, chunk_z, &present, &cause);
     if (status != MC_WORLD_STORAGE_OK)
         goto failed;
     if (!present)

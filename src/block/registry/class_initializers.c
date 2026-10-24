@@ -113,38 +113,38 @@ static mc_registry_status intermediate(mc_registry_classes *classes, mc_registry
 
 static mc_registry_status parent_class(mc_registry_classes *classes, mc_block_kind kind) {
     switch (kind) {
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_TL_MD:
-        case MC_BLOCK_NI_IJ:
-            return mc_registry_block_class_initialize(classes, MC_BLOCK_WB_NW);
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_CROPS:
+            return mc_registry_block_class_initialize(classes, MC_BLOCK_FLOWER);
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
             return intermediate(classes, &classes->rp_state, "rp", "kv");
-        case MC_BLOCK_NE_IG:
-            return mc_registry_block_class_initialize(classes, MC_BLOCK_GK_EI);
-        case MC_BLOCK_BK_AR:
+        case MC_BLOCK_GRAVEL:
+            return mc_registry_block_class_initialize(classes, MC_BLOCK_SAND);
+        case MC_BLOCK_LEAVES:
             return intermediate(classes, &classes->nr_state, "nr", "in");
-        case MC_BLOCK_FK_DO:
-        case MC_BLOCK_NK_IK:
-        case MC_BLOCK_AK_Z:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_PORTAL:
             return intermediate(classes, &classes->jp_state, "jp", "gh");
-        case MC_BLOCK_XQ_PA:
-        case MC_BLOCK_PT_JR:
-        case MC_BLOCK_UT_MZ:
-        case MC_BLOCK_DD_BZ:
-        case MC_BLOCK_E_E:
-        case MC_BLOCK_TC_LZ:
-        case MC_BLOCK_UJ_MT:
-        case MC_BLOCK_FO_DT:
+        case MC_BLOCK_DISPENSER:
+        case MC_BLOCK_NOTE_BLOCK:
+        case MC_BLOCK_MOVING_PISTON:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_CHEST:
+        case MC_BLOCK_FURNACE:
+        case MC_BLOCK_SIGN:
+        case MC_BLOCK_JUKEBOX:
             return intermediate(classes, &classes->rw_state, "rw", "lb");
-        case MC_BLOCK_PH_JN:
-            return mc_registry_block_class_initialize(classes, MC_BLOCK_PC_JJ);
-        case MC_BLOCK_FB_DH:
-            return mc_registry_block_class_initialize(classes, MC_BLOCK_EO_CX);
-        case MC_BLOCK_DB_BY:
-            return mc_registry_block_class_initialize(classes, MC_BLOCK_VM_NP);
+        case MC_BLOCK_DETECTOR_RAIL:
+            return mc_registry_block_class_initialize(classes, MC_BLOCK_RAIL);
+        case MC_BLOCK_OBSIDIAN:
+            return mc_registry_block_class_initialize(classes, MC_BLOCK_STONE);
+        case MC_BLOCK_REDSTONE_TORCH:
+            return mc_registry_block_class_initialize(classes, MC_BLOCK_TORCH);
         default:
             return base_class(classes);
     }
@@ -265,7 +265,7 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
         return MC_REGISTRY_INVALID_ARGUMENT;
     if ((unsigned int)kind >= (unsigned int)MC_BLOCK_KIND_COUNT)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Block class kind", NULL);
-    if (kind == MC_BLOCK_UU_NA)
+    if (kind == MC_BLOCK_BASE)
         return base_class(classes);
     mc_registry_class_state *state = &classes->block_states[kind];
     bool done = false;
@@ -279,23 +279,23 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
     status = parent_class(classes, kind);
     if (status == MC_REGISTRY_OK) {
         switch (kind) {
-            case MC_BLOCK_GK_EI:
+            case MC_BLOCK_SAND:
                 mc_registry_initializer_stage(classes, 1);
                 classes->gk_a = false;
                 mc_registry_initializer_stage(classes, 4);
                 break;
-            case MC_BLOCK_VE_NJ:
+            case MC_BLOCK_BED:
                 status = directions(classes);
                 break;
-            case MC_BLOCK_YS_PW:
+            case MC_BLOCK_SLAB:
                 status = slab_names(classes);
                 break;
-            case MC_BLOCK_TC_LZ:
+            case MC_BLOCK_FURNACE:
                 mc_registry_initializer_stage(classes, 1);
                 classes->tc_c = false;
                 mc_registry_initializer_stage(classes, 4);
                 break;
-            case MC_BLOCK_DB_BY: {
+            case MC_BLOCK_REDSTONE_TORCH: {
                 mc_registry_initializer_stage(classes, 0);
                 mc_registry_list *list = mc_registry_allocate(classes, sizeof(*list));
                 if (list == NULL)
@@ -310,7 +310,7 @@ mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *class
                 }
                 break;
             }
-            case MC_BLOCK_WO_OI:
+            case MC_BLOCK_REPEATER:
                 status = repeater_arrays(classes);
                 break;
             default:

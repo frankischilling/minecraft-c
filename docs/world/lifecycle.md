@@ -17,7 +17,7 @@ interval regression have separate Windows/Linux passes.
 
 ## Saving and unloading
 
-GAME main-save callbacks now use the [live Entity/Tile coordinator](saving.md).
+GAME main-save callbacks now use the [live Entity/TileEntity coordinator](saving.md).
 Detailed runtime save/save-client/save-chunks/maintenance entries return fresh
 per-attempt diagnostics with complete save children. Synchronous nested calls
 suspend and restore their predecessor's acquisition/lifecycle frames. The
@@ -39,7 +39,7 @@ A completed forced traversal flushes once. Callbacks may append, remove, replace
 or recursively process live objects; there is no shadow graph or rollback.
 
 Maintenance uses a 100-iteration loop, selecting at most 100 pending keys.
-It retains each selected key and mapped identity through active=false, tile
+It retains each selected key and mapped identity through active=false, TileEntity
 invalidation, eight deferred entity
 slices, main save and extra save. It removes that key from pending and the
 current map, then only the first matching retained identity from the list.
@@ -48,7 +48,7 @@ other-key references survive. Unload does not test eligibility or clear dirty.
 Missing selected map entries return a bounded state error.
 
 `mc_chunk_lifecycle_detach` also exposes the direct chunk entry, including
-unpublished identities. It retains one local lease, clears active before tile
+unpublished identities. It retains one local lease, clears active before TileEntity
 invalidation and visits every entity slice. Blank chunks have a virtual no-op
 body. It applies no saving gate and does not save or change cache membership.
 Earlier effects survive callback failures; all successful local retains unwind.
@@ -119,7 +119,7 @@ unrelated operations; success preserves prior storage diagnostics. A bound
 profile must outlive the runtime and its users. Runtime creation performs no
 late substitute for the original World constructor's Random/clock sequence.
 
-Persistent binding retains/releases protect actual Entity/Tile world fields
+Persistent binding retains/releases protect actual Entity/TileEntity world fields
 independently of entered calls, chunk leases and collection membership.
 [ItemEntity construction](../entity/construction.md) retains at its reached
 world-field store; even later constructor failure keeps that binding until
@@ -127,7 +127,7 @@ the Entity's final release. Removing a collection entry alone releases no
 world-field binding. Retain overflow and release underflow are reported without
 wrapping the count. These lifetime operations invoke no callbacks.
 
-The native loader activates only empty entity/tile runtime records. Explicit
+The native loader activates only empty entity/TileEntity runtime records. Explicit
 registration/detachment callbacks are empty while every required coordinator
 boundary still runs. Generic callbacks can represent separately observed external
 feature effects; they do not implement those feature bodies. Runtime writes

@@ -32,7 +32,7 @@ before widening, followed by the actual pooled factory. Category a invokes
 | Empty, previously on | Notifying metadata320; current neighbors332; below346; range358; positional sound387 |
 | Found | Live receiver ID field401; virtual delay405; World schedule408 |
 
-The nonloading scheduler presence gate, synchronous neighbor reentry, observer
+The nonloading scheduler presence gate, synchronous neighbor reentry, WorldAccess
 and sound descendants remain actual lower operations. No callback suppression,
 invented empty Class result or replacement deferred schedule is equivalent.
 

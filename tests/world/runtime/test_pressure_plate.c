@@ -188,7 +188,7 @@ static bool plate_world(fixture *f, size_t slot) {
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 4;
     limits.max_scheduled_entries = slot >= 6 ? 1 : 8;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[slot % 2u], &limits, &f->worlds[slot],
@@ -201,7 +201,7 @@ static bool plate_world(fixture *f, size_t slot) {
     CHECK(mc_world_runtime_construction_get(f->worlds[slot], &state) == MC_WORLD_STORAGE_OK &&
           state.mode == MC_WORLD_RUNTIME_GAME && state.phase == MC_WORLD_RUNTIME_READY &&
           state.contexts_bound && state.cache_registered);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     for (int32_t x = 0; x < 2; ++x)
@@ -318,7 +318,7 @@ static bool plate_lifecycle(fixture *f, size_t side) {
           after.next == sequence + 1);
     CHECK(plate_tick(world, wood, &tick) && plate_clear(&tick) &&
           classes->bounds_cursor == cursor + 3); /* Off tick guard. */
-    mc_world_provider *const provider = world->fields.v;
+    mc_chunk_provider *const provider = world->fields.v;
     world->fields.B = true;
     world->fields.v = NULL;
     const mc_world_storage_status remote_contact =
@@ -489,7 +489,7 @@ static bool plate_frontiers(fixture *f, size_t side) {
           registry->pressure_state.phase == MC_REGISTRY_READY && plate_at(world, 8, 0) &&
           world->fields.R->count == 0 && item->holds == 3 && falling->holds == 3);
     cursor = classes->bounds_cursor;
-    mc_world_provider *const provider = world->fields.v;
+    mc_chunk_provider *const provider = world->fields.v;
     world->fields.v = NULL;
     const mc_world_storage_status outer_metadata =
         mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
@@ -586,23 +586,23 @@ static bool plate_observer_and_time(fixture *f, size_t side) {
           mc_registry_block_t_at(&flags, 72, &observes, NULL) == MC_REGISTRY_OK);
     mc_world_schedule_class_state before, after;
     CHECK(mc_world_runtime_schedule_class_get(world->classes, &before) == MC_WORLD_STORAGE_OK);
-    mc_world_reference_list *const observers = world->fields.u;
+    mc_world_reference_list *const world_accesses = world->fields.u;
     world->fields.u = NULL;
     const mc_world_storage_status rising =
         mc_world_runtime_entity_contact(world, wood, 8, 64, 8, NULL, &error);
-    world->fields.u = observers;
+    world->fields.u = world_accesses;
     CHECK(rising == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 27 &&
           error.helper_bytecode == (observes ? 234u : 272u) &&
           error.mutation.pressure_contact_bytecode == 27 &&
           error.mutation.pressure_bytecode == (observes ? 234u : 272u) &&
-          error.mutation.observer_bytecode == 9 && plate_at(world, 8, 1) &&
+          error.mutation.world_access_bytecode == 9 && plate_at(world, 8, 1) &&
           plate_counts(world, 0, 0) && world->local_leases == 0 && world->active_calls == 0);
     CHECK(mc_entity_set_position(actor, 12.5, 64.0, 8.5) == MC_ENTITY_OK);
     world->fields.u = NULL;
     const bool falling = plate_tick(world, wood, &tick);
-    world->fields.u = observers;
+    world->fields.u = world_accesses;
     CHECK(!falling && tick.pressure_tick_bytecode == 26 &&
-          tick.pressure_bytecode == (observes ? 320u : 358u) && tick.observer_bytecode == 9 &&
+          tick.pressure_bytecode == (observes ? 320u : 358u) && tick.world_access_bytecode == 9 &&
           plate_at(world, 8, 0) && plate_counts(world, 0, 0));
     CHECK(mc_world_runtime_schedule_class_get(world->classes, &after) == MC_WORLD_STORAGE_OK &&
           after.initialized == before.initialized && after.next == before.next);

@@ -149,7 +149,7 @@ static bool probe_parse(char *line, probe_case *out) {
 static bool probe_world(fixture *f, size_t side, const char *root) {
     bool ok = false;
     CHECK(open_store(f, side, root));
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(side == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                     : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[side], NULL, &f->worlds[side],
@@ -158,7 +158,7 @@ static bool probe_world(fixture *f, size_t side, const char *root) {
         .store = f->stores[side], .name = f->name, .seed = -99, .dimension = f->dimensions[side]};
     CHECK(mc_world_runtime_construct_world(f->worlds[side], &arguments, NULL) ==
           MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[side] = true;
     CHECK(f->worlds[side]->fallback.blank && f->providers[side].cache->count == 0 &&

@@ -626,7 +626,7 @@ static bool rails_search_order(fixture *f, size_t side) {
           error.mutation.registry.status == MC_REGISTRY_NULL_REFERENCE &&
           error.access.nearby.query.bytecode == 0);
     ++rail_cases;
-    mc_world_provider *const actual_v = w->fields.v;
+    mc_chunk_provider *const actual_v = w->fields.v;
     out = true;
     *actual_u = NULL;
     w->fields.v = NULL;

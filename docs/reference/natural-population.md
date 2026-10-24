@@ -214,7 +214,7 @@ populated Chunks per side. It does not compare every feature's internal call
 trace, immutable noise-layer objects, Chunk backing-object aliases,
 cross-language Random-owner graphs, clock/profile equality, arbitrary recursion
 or failure paths. Full persistence, unload/reload, other seeds and Biomes, extreme
-coordinates, nonempty Entity/Tile collections or gameplay observers, and
+coordinates, nonempty Entity/TileEntity collections or WorldAccess receivers, and
 multiplayer remain separate acceptance work. The original
-[controller source map](normal-population.md) and
-[native contract](../world/population/normal.md) describe the wider implementation.
+[controller source map](overworld-population.md) and
+[native contract](../world/population/overworld.md) describe the wider implementation.

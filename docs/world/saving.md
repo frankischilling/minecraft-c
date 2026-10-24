@@ -22,9 +22,9 @@ World. Full World metadata save and restart retain their separate scope.
 The paired Region save invokes the World session method before calling the
 shared Chunk serializer. That serializer invokes the session method again,
 reads the current World time and Chunk fields, then resets q at105. It walks
-the actual Entity slice array and lists before reaching Tile Map values224.
+the actual Entity slice array and lists before reaching TileEntity Map values224.
 The native coordinator performs both session checks, reads the reached nibble
-descriptors and follows that q/Entity/Tile order.
+descriptors and follows that q/Entity/TileEntity order.
 
 Empty live Entity slices produce an explicit empty Entities list. Every actual
 occurrence sets q=true at167 before its virtual Boolean serializer183. Class
@@ -41,11 +41,11 @@ to the later native tree/codec validation instead of being replaced with the
 canonical owned arrays. Nonnull spans must remain readable for their fixed
 native extents throughout the exclusive call.
 
-The Tile builder serializes actual Map occurrences and physical Chest slots,
+The TileEntity builder serializes actual Map occurrences and physical Chest slots,
 including shared values and slot35 in a freshly constructed 36-slot Chest.
 Loaded Chests retain their source 27-slot read behavior. Spawner name precedes
 Delay; a null name fails at its concrete save12. Earlier q changes survive a
-later Tile, budget, codec or transport error. See [live Tile owners](tiles.md).
+later TileEntity, budget, codec or transport error. See [live TileEntity owners](tile-entities.md).
 
 Successful transport publishes actual region growth and adds its Java signed
 int value to the selected World Info's SizeOnDisk with wrapped long addition.
@@ -64,14 +64,14 @@ its World continues.
 
 The lower layer composes explicit live Entities and TileEntities over the
 same stored baseline, preserving supported unknown root/Level children. It
-never calls simulation code. The actual Tile builder preserves the documented
-Tile/Stack provenance and consumed-record merge; an owned count-zero Map must
+never calls simulation code. The actual TileEntity builder preserves the documented
+TileEntity/Stack provenance and consumed-record merge; an owned count-zero Map must
 still use that builder. Deleted recognized records cannot be resurrected by
 copying the old list. Generic opaque editing restrictions remain intact.
 
 Each detailed lifecycle call installs a fresh stack diagnostic frame. Nested
 acquisition and lifecycle calls suspend and restore their predecessor's frame.
-A save error carries the complete Entity or Tile/Stack/NBT child, separate Region/shared
+A save error carries the complete Entity or TileEntity/Stack/NBT child, separate Region/shared
 serializer positions, and complete lower composition/encoding diagnostics.
 Entity slice/occurrence indices, native Entity-list assembly and lower codec
 causes remain distinct. Native owner/buffer limits do not invent a codec failure. Success clears the
@@ -81,9 +81,9 @@ whole returned result; no error is reconstructed from ambient last_error.
 
 The Entity collector charges its live record trees/nodes and final List scratch
 while copying the independent Entity list. Each storage serializer also charges
-its current Entity/Stack/provenance graph during that call. The Tile builder
-deducts the already live Entity tree before accounting for its Chunk/Tile/Stack
-graph, planning scratch and independent Tile tree. The Store codec scope then
+its current Entity/Stack/provenance graph during that call. The TileEntity builder
+deducts the already live Entity tree before accounting for its Chunk/TileEntity/Stack
+graph, planning scratch and independent TileEntity tree. The Store codec scope then
 charges both retained list trees, the independent complete output tree and all
 overlapping pointer/codec/raw buffers. Retained baseline documents, journals,
 World/class owners and region/compression
@@ -96,12 +96,12 @@ caught-Exception/printStackTrace behavior. The runtime retains its existing real
 wall-clock sampling position; the direct API accepts an explicit transport
 timestamp. These limits are distinct from source field/List order and successful
 supported-domain values. Original/native whole-save replay, arbitrary array
-lengths, other Entity/Tile descendants and complete
+lengths, other Entity/TileEntity descendants and complete
 populated save/unload/reload qualification remain open.
 
 `world.saving` uses four real client/base-server Worlds to cover fresh 36-slot and imported
 27-slot Chests, aliases, Stack narrowing, Spawner fields, complete saved arrays,
-unknown root/Level/Tile/Stack fields, session failure, nullable source receivers,
+unknown root/Level/TileEntity/Stack fields, session failure, nullable source receivers,
 late composition depth failure, error freshness and count-zero Map/journal saves.
 An independent bounded Python decoder checks all four final region records.
 `world.game_entities` adds both-side constructed load/save/reload, slice ordering,
@@ -121,11 +121,11 @@ coordinator descriptors with the actual World callbacks, collections and
 references; they do not mutate the World's policy or establish a natural
 dedicated-World startup route. They perform real save, detach, unpublication,
 inactive Store retirement and reload without terminalizing the continuing World.
-The save fixture uses identity block normalization. The separate Tile import
+The save fixture uses identity block normalization. The separate TileEntity import
 fixture's deliberate Chest/Spawner-to-air map remains an import-order control.
 
-The default NBT depth limit is 64. A retained 61-node unknown child fits Tile
-import and its independent Tile result, then fails when nested under the outer
+The default NBT depth limit is 64. A retained 61-node unknown child fits TileEntity
+import and its independent TileEntity result, then fails when nested under the outer
 Level. This exercises a genuine input-based composition error after q resets;
 it is not an allocator failure injection or original Java OOM comparison.
 

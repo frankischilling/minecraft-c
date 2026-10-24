@@ -27,7 +27,7 @@ static mc_registry_status access(mc_registry_classes *classes, bool store, bool 
     ++classes->entered;
     /* Initialize the DECLARING gk/ei class, including its actual superclass.
      * Do not merely initialize Block or reset a flag before the real clinit. */
-    const mc_registry_status status = mc_registry_block_class_initialize(classes, MC_BLOCK_GK_EI);
+    const mc_registry_status status = mc_registry_block_class_initialize(classes, MC_BLOCK_SAND);
     if (status == MC_REGISTRY_OK) {
         if (store)
             classes->gk_a = value;

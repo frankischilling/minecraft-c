@@ -28,7 +28,7 @@ dirty and returns ordinary true. The actual blank chunk returns metadata
 zero and accepts writes with ordinary true while retaining its payload and
 dirty flag.
 
-This quiet metadata operation performs no block handler, observer or neighbor
+This quiet metadata operation performs no block handler, WorldAccess or neighbor
 notification, height/light update, or lighting submission. [Block-ID setters
 and notifying metadata](mutations.md) have separate synchronous behavior and
 unfinished concrete descendants. Existing top-block lookup starts at y63 and
@@ -70,7 +70,7 @@ is not a reached native test scenario or Java exception-parity claim.
 
 Six selected cases pass on Windows MSVC and Linux GCC/Clang, with Linux
 ASan/UBSan and leak checks: `world.construction`, `world.game_construction`,
-`world.normal_provider_construction`, `world.chunk_acquire`,
+`world.overworld_provider_construction`, `world.chunk_acquire`,
 `world.chunk_nibbles` and `world.stored_chunk`. The GAME case now reports
 4,397 checks, up from 4,318.
 

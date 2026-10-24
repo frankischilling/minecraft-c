@@ -12,7 +12,7 @@
 
 enum { BLOCKS = 32768, GOLDEN_LENGTH = 32771, GUARD_BYTES = 16, CAPACITY = 32799 };
 
-_Static_assert(MC_TERRAIN_NORMAL_CAVE_RANGE == 8u, "normal cave range");
+_Static_assert(MC_TERRAIN_OVERWORLD_CAVE_RANGE == 8u, "normal cave range");
 _Static_assert(MC_TERRAIN_CAVE_BLOCKS == 32768u, "normal cave prefix shape");
 _Static_assert(ARRAY_LENGTH(observed_caves_cases) == 10, "paired public fixture count");
 
@@ -139,8 +139,9 @@ static int test_original_public_cases(void) {
                 memcpy(working, original, sizeof(working));
             }
             memcpy(pass_input, working, sizeof(pass_input));
-            CHECK(mc_terrain_normal_caves(&table, fixture->seed, fixture->chunk_x, fixture->chunk_z,
-                                          &cave_random, working, sizeof(working)));
+            CHECK(mc_terrain_overworld_caves(&table, fixture->seed, fixture->chunk_x,
+                                             fixture->chunk_z, &cave_random, working,
+                                             sizeof(working)));
             CHECK(check_golden(fixture, pass, working, &cave_random) == 0);
             CHECK(changed_bytes(pass_input, working) == fixture->changed[pass]);
             CHECK(memcmp(working + BLOCKS, pass_input + BLOCKS, GOLDEN_LENGTH - BLOCKS) == 0);
@@ -167,8 +168,8 @@ static int test_original_public_cases(void) {
         /* This fresh-output projection also discards an initialized cache. */
         cave_random.next_next_gaussian = -0x1.23456789abcdep+1;
         cave_random.have_next_next_gaussian = true;
-        CHECK(mc_terrain_normal_caves(&table, fixture->seed, fixture->chunk_x, fixture->chunk_z,
-                                      &cave_random, working, sizeof(working)));
+        CHECK(mc_terrain_overworld_caves(&table, fixture->seed, fixture->chunk_x, fixture->chunk_z,
+                                         &cave_random, working, sizeof(working)));
         CHECK(check_golden(fixture, 0, working, &cave_random) == 0);
     }
     return 0;
@@ -185,21 +186,21 @@ static int test_independent_owners(void) {
     CHECK(decode(b->arrays[0], other) == 0);
     memset(&random_a, 0x3c, sizeof(random_a));
     memset(&random_b, 0x81, sizeof(random_b));
-    CHECK(mc_terrain_normal_caves(&table, a->seed, a->chunk_x, a->chunk_z, &random_a, working,
-                                  sizeof(working)));
+    CHECK(mc_terrain_overworld_caves(&table, a->seed, a->chunk_x, a->chunk_z, &random_a, working,
+                                     sizeof(working)));
     CHECK(check_golden(a, 0, working, &random_a) == 0);
     before_a = random_a;
     memcpy(other_before, working, sizeof(other_before));
-    CHECK(mc_terrain_normal_caves(&table, b->seed, b->chunk_x, b->chunk_z, &random_b, other,
-                                  sizeof(other)));
+    CHECK(mc_terrain_overworld_caves(&table, b->seed, b->chunk_x, b->chunk_z, &random_b, other,
+                                     sizeof(other)));
     CHECK(check_golden(b, 0, other, &random_b) == 0);
     CHECK(memcmp(working, other_before, sizeof(working)) == 0);
     CHECK(mc_test_java_random_equal(&random_a, &before_a));
     before_b = random_b;
     memcpy(other_before, other, sizeof(other_before));
     CHECK(decode(a->arrays[0], working) == 0);
-    CHECK(mc_terrain_normal_caves(&table, a->seed, a->chunk_x, a->chunk_z, &random_a, working,
-                                  sizeof(working)));
+    CHECK(mc_terrain_overworld_caves(&table, a->seed, a->chunk_x, a->chunk_z, &random_a, working,
+                                     sizeof(working)));
     CHECK(check_golden(a, 0, working, &random_a) == 0);
     CHECK(memcmp(other, other_before, sizeof(other)) == 0);
     CHECK(mc_test_java_random_equal(&random_b, &before_b));
@@ -234,7 +235,7 @@ static int property_call(int32_t x, int32_t z, size_t capacity, int eligible) {
     fill_guarded(eligible);
     guarded_before = guarded;
     memset(&random, 0xb6, sizeof(random));
-    CHECK(mc_terrain_normal_caves(&table, INT64_C(-1), x, z, &random, guarded.blocks, capacity));
+    CHECK(mc_terrain_overworld_caves(&table, INT64_C(-1), x, z, &random, guarded.blocks, capacity));
     CHECK(check_empty_gaussian_cache(&random) == 0);
     CHECK(check_guards_and_suffix() == 0);
     if (!eligible) {
@@ -243,7 +244,7 @@ static int property_call(int32_t x, int32_t z, size_t capacity, int eligible) {
     property_output = guarded;
     first_random = random;
     guarded = guarded_before;
-    CHECK(mc_terrain_normal_caves(&table, INT64_C(-1), x, z, &random, guarded.blocks, capacity));
+    CHECK(mc_terrain_overworld_caves(&table, INT64_C(-1), x, z, &random, guarded.blocks, capacity));
     CHECK(memcmp(&guarded, &property_output, sizeof(guarded)) == 0);
     CHECK(mc_test_java_random_equal(&random, &first_random));
     CHECK(check_guards_and_suffix() == 0);
@@ -281,7 +282,7 @@ static int test_constructed_boundaries_and_bytes(void) {
     }
     guarded_before = guarded;
     mc_java_random random;
-    CHECK(mc_terrain_normal_caves(&table, INT64_C(0), 0, 0, &random, guarded.blocks, CAPACITY));
+    CHECK(mc_terrain_overworld_caves(&table, INT64_C(0), 0, 0, &random, guarded.blocks, CAPACITY));
     CHECK(check_empty_gaussian_cache(&random) == 0);
     CHECK(check_ineligible(guarded_before.blocks, guarded.blocks) == 0);
     CHECK(check_guards_and_suffix() == 0);
@@ -294,7 +295,7 @@ static int rejected(const mc_math_trig *input_table, int32_t x, int32_t z, mc_ja
     unsigned char before[sizeof(rejected_random)];
     memcpy(before, &rejected_random, sizeof(before));
     guarded_before = guarded;
-    CHECK(!mc_terrain_normal_caves(input_table, INT64_C(0), x, z, random, blocks, length));
+    CHECK(!mc_terrain_overworld_caves(input_table, INT64_C(0), x, z, random, blocks, length));
     CHECK(memcmp(&guarded, &guarded_before, sizeof(guarded)) == 0);
     CHECK(memcmp(&rejected_random, before, sizeof(before)) == 0);
     CHECK(memcmp(&table, &table_before, sizeof(table)) == 0);

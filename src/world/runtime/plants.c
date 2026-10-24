@@ -152,7 +152,7 @@ static bool base_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, 
 static bool substrate(plant_frame *frame, int32_t id, bool *out) {
     int32_t candidate;
     switch (frame->receiver->kind) {
-        case MC_BLOCK_TL_MD: {
+        case MC_BLOCK_MUSHROOM: {
             stage(frame, "tl", "md", "d", "c", 0);
             mc_registry_block_o_view array;
             mc_registry_error cause = empty_registry();
@@ -163,21 +163,21 @@ static bool substrate(plant_frame *frame, int32_t id, bool *out) {
                 return registry_fail(frame, &cause, "Mushroom substrate Block.o element");
             return true;
         }
-        case MC_BLOCK_JB_FZ:
+        case MC_BLOCK_DEAD_BUSH:
             stage(frame, "jb", "fz", "d", "c", 0);
             if (!static_id(frame, "F", 1, 4, &candidate))
                 return false;
             *out = id == candidate;
             return true;
-        case MC_BLOCK_NI_IJ:
+        case MC_BLOCK_CROPS:
             stage(frame, "ni", "ij", "d", "c", 0);
             if (!static_id(frame, "aB", 1, 4, &candidate))
                 return false;
             *out = id == candidate;
             return true;
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_RU_KZ:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_TALL_GRASS:
             stage(frame, "wb", "nw", "d", "c", 0);
             if (!static_id(frame, "v", 1, 4, &candidate))
                 return false;
@@ -417,15 +417,15 @@ static bool pumpkin_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t 
 
 static bool supported(const mc_block *receiver) {
     switch (receiver->kind) {
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_NI_IJ:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_TL_MD:
-        case MC_BLOCK_RI_KO:
-        case MC_BLOCK_OR_JE:
-        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_SUGAR_CANE:
+        case MC_BLOCK_CACTUS:
+        case MC_BLOCK_PUMPKIN:
             return true;
         default:
             return false;
@@ -434,23 +434,23 @@ static bool supported(const mc_block *receiver) {
 
 static bool survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     switch (frame->receiver->kind) {
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_NI_IJ:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
             return flower_survives(frame, x, y, z, out);
-        case MC_BLOCK_TL_MD:
+        case MC_BLOCK_MUSHROOM:
             return mushroom_survives(frame, x, y, z, out);
-        case MC_BLOCK_RI_KO:
+        case MC_BLOCK_SUGAR_CANE:
             if (!reed_can_place(frame, x, y, z, out)) {
                 caller(frame, "ri", "ko", "g", "f", 6);
                 return false;
             }
             return true;
-        case MC_BLOCK_OR_JE:
+        case MC_BLOCK_CACTUS:
             return cactus_survives(frame, x, y, z, out);
-        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_PUMPKIN:
             /* Actual inherited uu.g/na.f body, not a default for other kinds. */
             stage(frame, "uu", "na", "g", "f", 0);
             *out = true;
@@ -463,18 +463,18 @@ static bool survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *
 
 static bool can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     switch (frame->receiver->kind) {
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_NI_IJ:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_TL_MD:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_MUSHROOM:
             return flower_can_place(frame, x, y, z, out);
-        case MC_BLOCK_RI_KO:
+        case MC_BLOCK_SUGAR_CANE:
             return reed_can_place(frame, x, y, z, out);
-        case MC_BLOCK_OR_JE:
+        case MC_BLOCK_CACTUS:
             return cactus_can_place(frame, x, y, z, out);
-        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_PUMPKIN:
             return pumpkin_can_place(frame, x, y, z, out);
         default:
             return fail(frame->error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

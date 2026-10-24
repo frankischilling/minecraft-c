@@ -2,8 +2,8 @@
 #include "mc/world/runtime/lighting.h"
 
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -54,8 +54,8 @@ typedef struct fixture {
     mc_world_runtime_classes *classes[2];
     const mc_world_light_type *types[2][2];
     mc_world_runtime *worlds[9];
-    mc_world_dimension *dimensions[9];
-    mc_world_provider_fields providers[9];
+    mc_world_provider *dimensions[9];
+    mc_chunk_provider_fields providers[9];
     bool has_provider[9];
     mc_chunk_state *chunks[4];
 } fixture;
@@ -159,8 +159,8 @@ static bool create_world(fixture *f, size_t slot, int32_t dimension_id, size_t d
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_direct_allocation_bytes = direct_limit;
     limits.max_provider_chunks = 8;
-    CHECK(mc_world_dimension_create(dimension_id, NULL, &f->dimensions[slot], NULL) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(dimension_id, NULL, &f->dimensions[slot], NULL) ==
+          MC_WORLD_PROVIDER_OK);
     const mc_world_runtime_world_arguments arguments = {
         .store = f->store, .name = f->name, .seed = 23, .dimension = f->dimensions[slot]};
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA, f->classes[0],
@@ -175,7 +175,7 @@ static bool create_world(fixture *f, size_t slot, int32_t dimension_id, size_t d
           fields.C != NULL && fields.t == f->dimensions[slot]);
     if (expected == MC_WORLD_STORAGE_OK) {
         CHECK(fields.v != NULL && state.contexts_bound && state.cache_registered);
-        CHECK(mc_world_provider_bind_fields(fields.v, &f->providers[slot], &error) ==
+        CHECK(mc_chunk_provider_bind_fields(fields.v, &f->providers[slot], &error) ==
               MC_WORLD_STORAGE_OK);
         f->has_provider[slot] = true;
         CHECK(f->providers[slot].world == f->worlds[slot] && f->providers[slot].store == f->store &&
@@ -599,7 +599,7 @@ cleanup:
 static bool test_no_sky_and_raw(fixture *f) {
     bool ok = false;
     mc_world_runtime_fields fields;
-    mc_world_dimension_fields dimension;
+    mc_world_provider_fields dimension;
     mc_world_light_list_view view;
     mc_world_light_error error;
     mc_light_submit_result result = MC_LIGHT_SUBMIT_FULL;
@@ -609,7 +609,7 @@ static bool test_no_sky_and_raw(fixture *f) {
     CHECK(create_world(f, 5, -1, WORLD_LIMIT, MC_WORLD_STORAGE_UNSUPPORTED_STATE));
     CHECK(mc_world_runtime_fields_get(f->worlds[5], &fields) == MC_WORLD_STORAGE_OK &&
           fields.v == NULL &&
-          mc_world_dimension_fields_get(fields.t, &dimension) == MC_WORLD_DIMENSION_OK &&
+          mc_world_provider_fields_get(fields.t, &dimension) == MC_WORLD_PROVIDER_OK &&
           dimension.e && dimension.a == f->worlds[5]);
     CHECK(f->opens == 3 && !f->resource_error && f->streams[2].closes == 1);
     CHECK(mc_world_runtime_light_list_get(f->worlds[5], &view, NULL) == MC_WORLD_STORAGE_OK &&
@@ -749,7 +749,7 @@ static bool cleanup_fixture(fixture *f) {
         if (!retire_one(f, i))
             return false;
     for (size_t i = 0; i < COUNT(f->dimensions); ++i) {
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
         f->dimensions[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->chunks); ++i) {

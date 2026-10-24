@@ -1,15 +1,15 @@
-# Dimension temperature arrays
+# WorldChunkManager temperature arrays
 
-`mc_simulation` implements the concrete normal and fixed temperature methods in
+`mc_simulation` implements the concrete noise-backed and fixed temperature methods in
 `src/world/dimension/temperature.c`, with the interface in
 `include/mc/world/dimension/temperature.h`. The receiver is an actual retained
-Dimension biome manager. Its embedded noise, fixed value and auxiliary buffer
-remain the same owners used by the other Dimension methods. The module creates
+WorldChunkManager. Its embedded noise, fixed value and auxiliary buffer
+remain the same owners used by the other WorldChunkManager methods. The module creates
 no World, Registry, Random, biome classifier or alternate terrain backend.
 
-The [climate reference](../reference/biome.md) records the paired normal bodies.
+The [climate reference](../reference/biome.md) records the paired noise-backed bodies.
 The fixed overrides are client `hd.a([DIIII)[D` and server `et.a([DIIII)[D`.
-The [normal population controller](population/normal.md) uses this staged
+The [Overworld population controller](population/overworld.md) uses this staged
 operation for its actual `w` publication and snow loop. Full natural population
 and all reached descendants remain unfinished.
 
@@ -23,16 +23,16 @@ slot and every completed effect on existing arrays.
 
 | Body | Reached operations |
 | --- | --- |
-| Normal `xv/ph.a([DIIII)[D` | Allocate output if needed at19; fill raw temperature44; fill auxiliary74; publish manager `c`77; process and store temperature192; return209 |
+| Noise-backed `xv/ph.a([DIIII)[D` | Allocate output if needed at19; fill raw temperature44; fill auxiliary74; publish manager `c`77; process and store temperature192; return209 |
 | Fixed `hd/et.a([DIIII)[D` | Allocate output if needed at19; read actual fixed `f`30; fill requested prefix33; return37 |
 
-Normal raw noise clears the whole retained output span, including a larger
+Noise-backed raw noise clears the whole retained output span, including a larger
 suffix. Only afterward does the method inspect and grow the current manager's
 auxiliary `c`. If that later request fails, a reused output keeps its completed
 raw writes. Normalization has not run. A newly allocated output remains private
 and is released on failure. A replacement auxiliary buffer is filled before it
 moves into `c`; its preceding allocation stays charged through publication.
-Normal sampling leaves manager `a`, `b` and `d` unchanged.
+Noise-backed sampling leaves manager `a`, `b` and `d` unchanged.
 
 Fixed sampling copies the actual stored value into the requested prefix and
 preserves a larger suffix. It neither samples noise nor changes `a/b/c/d`.
@@ -40,7 +40,7 @@ It performs no floating-environment check because this body only copies values.
 
 The lower numerical `mc_biome_temperatures` retains its separate atomic
 preflight contract: it prepares both replacements before writing anything and
-requires output storage from the current manager's allocator. Normal population
+requires output storage from the current manager's allocator. Overworld population
 needs the staged method because its array can outlive a manager replacement.
 
 ## Array and allocator lifetime
@@ -82,7 +82,7 @@ charged while both are live. The current manager's `c` uses that manager's
 existing separate budget. Stack, allocator overhead, borrowed owners and
 unrelated World storage are excluded. Zero limits are valid native policy.
 
-Errors retain the selected normal/fixed body, reached bytecode, lower raw
+Errors retain the selected noise-backed/fixed body, reached bytecode, lower raw
 allocation point when attempted, native cause and completed progress. They do
 not manufacture a Registry cause or Java exception. Hold/budget/FP refusals are
 native controls; they do not claim Java OOME timing, GC lifetime, unrestricted

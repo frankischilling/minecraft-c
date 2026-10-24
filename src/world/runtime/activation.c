@@ -3,7 +3,7 @@
 
 #include "construction_internal.h"
 #include "entity_publication_internal.h"
-#include "mc/world/runtime/tiles/tiles.h"
+#include "mc/world/runtime/tile_entities/tile_entities.h"
 #include "runtime_internal.h"
 
 static mc_world_storage_status result(mc_world_activation_error *error, mc_world_runtime *world,
@@ -17,7 +17,7 @@ static mc_world_storage_status result(mc_world_activation_error *error, mc_world
                                              .bytecode = bytecode,
                                              .world_bytecode = world_bytecode,
                                              .cause = cause,
-                                             .tile = mc_live_tiles_empty_error(),
+                                             .tile_entity = mc_live_tile_entities_empty_error(),
                                              .batch = mc_world_entity_batch_empty_error()};
     return cause.status;
 }
@@ -64,8 +64,9 @@ static mc_world_storage_status enter_world(mc_world_runtime *world, unsigned int
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status mc_world_runtime_register_chunk_tiles(mc_world_chunk *chunk,
-                                                              mc_world_activation_error *error) {
+mc_world_storage_status
+mc_world_runtime_register_chunk_tile_entities(mc_world_chunk *chunk,
+                                              mc_world_activation_error *error) {
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
@@ -73,18 +74,18 @@ mc_world_storage_status mc_world_runtime_register_chunk_tiles(mc_world_chunk *ch
     /* values13 precedes invocation18. Its borrowed finite view is the actual
      * Map, not an allocated or shared stand-in collection. */
     if (fields.l == NULL)
-        return failed(error, NULL, 13, 0, "Chunk tile Map values receiver is null");
+        return failed(error, NULL, 13, 0, "Chunk TileEntity Map values receiver is null");
     mc_world_runtime *world = fields.d;
     status = enter_world(world, 18, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
 
-    mc_live_tile_error detail = mc_live_tiles_empty_error();
-    status = mc_live_tiles_chunk_register(chunk, &detail);
+    mc_live_tile_entity_error detail = mc_live_tile_entities_empty_error();
+    status = mc_live_tile_entities_chunk_register(chunk, &detail);
     if (status != MC_WORLD_STORAGE_OK) {
         result(error, world, detail.bytecode, detail.chunk_bytecode, detail.cause);
         if (error != NULL)
-            error->tile = detail;
+            error->tile_entity = detail;
     }
     mc_world_runtime_call_leave(world);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
@@ -119,21 +120,22 @@ mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk 
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
 }
 
-mc_world_storage_status mc_world_runtime_invalidate_chunk_tiles(mc_world_chunk *chunk,
-                                                                mc_world_activation_error *error) {
+mc_world_storage_status
+mc_world_runtime_invalidate_chunk_tile_entities(mc_world_chunk *chunk,
+                                                mc_world_activation_error *error) {
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     if (fields.l == NULL)
-        return failed(error, NULL, 9, 0, "Chunk detach tile Map values receiver is null");
-    /* Tile invalidation reads no World receiver, including a nonempty Map. */
-    mc_live_tile_error detail = mc_live_tiles_empty_error();
-    status = mc_live_tiles_chunk_invalidate(chunk, &detail);
+        return failed(error, NULL, 9, 0, "Chunk detach TileEntity Map values receiver is null");
+    /* TileEntity invalidation reads no World receiver, including a nonempty Map. */
+    mc_live_tile_entity_error detail = mc_live_tile_entities_empty_error();
+    status = mc_live_tile_entities_chunk_invalidate(chunk, &detail);
     if (status != MC_WORLD_STORAGE_OK) {
         result(error, NULL, detail.bytecode, detail.chunk_bytecode, detail.cause);
         if (error != NULL)
-            error->tile = detail;
+            error->tile_entity = detail;
         return status;
     }
     return completed(error);
@@ -154,7 +156,7 @@ mc_world_storage_status mc_world_runtime_defer_chunk_entities(mc_world_chunk *ch
     status = enter_world(world, 67, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
-    /* The deferral callee reads D1, not activation's b or tile G/c. */
+    /* The deferral callee reads D1, not activation's b or TileEntity G/c. */
     mc_world_entity_batch_error detail = mc_world_entity_batch_empty_error();
     status = mc_world_runtime_entity_batch_held(world, source, true, &detail);
     if (status != MC_WORLD_STORAGE_OK) {

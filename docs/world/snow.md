@@ -27,7 +27,7 @@ notifying setter. Snow's actual quantity override returns zero. This route
 creates no snowball, Stack or Item Entity and consumes no Random draws. The
 player-harvest overload has a different spawn sequence.
 
-The clear discards either ordinary setter boolean. Observers and all reached
+The clear discards either ordinary setter boolean. WorldAccess callbacks and all reached
 neighbors still execute in source order. Recursive snow removal can continue
 up a stack; a later unsupported neighbor or native resource failure retains
 earlier block, metadata, height, queue and dirty effects. There is no rollback,

@@ -84,7 +84,7 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
  * fields accepted by the semantic writer remain accepted here. A true result
  * overlays the generated fields over the Entity source, and the generated
  * current Item over only the CURRENT Stack source. FallingSand overlays the
- * generated base+Tile record directly onto its own Entity source, without a
+ * generated base+"Tile" carried-block-ID record directly onto its own Entity source, without a
  * Stack overlay; unknown fields remain native preservation, even an unknown
  * field whose name happens to be Item. Replacing an ItemEntity Stack without
  * provenance therefore cannot resurrect the Entity's old Item unknown fields.

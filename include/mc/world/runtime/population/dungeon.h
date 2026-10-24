@@ -4,14 +4,14 @@
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/mutations.h"
-#include "mc/world/runtime/tiles/tiles.h"
+#include "mc/world/runtime/tile_entities/tile_entities.h"
 
 /* A separate native per-call request budget for fresh loot Stack objects.
  * Count every successful Stack allocation, including later released/replaced
  * objects. Check before each source NEW, before its argument evaluation.
  * NULL limits admits all sixteen possible source allocations. Explicit zero
  * still admits validation rejection and nonallocating NULL-loot branches.
- * Existing World/Chunk/Tile/Stack/name owners, Registry initialization, nested
+ * Existing World/Chunk/TileEntity/Stack/name owners, Registry initialization, nested
  * hooks, allocator overhead and the C call stack are outside this budget.
  * It is not a combined retained-World bound or Java heap/OOME equivalence. */
 typedef struct mc_population_dungeon_limits {
@@ -32,7 +32,7 @@ typedef struct mc_population_dungeon_error {
     mc_registry_error registry;
     mc_world_material_error material;
     mc_world_mutation_error mutation;
-    mc_live_tile_error tile;
+    mc_live_tile_entity_error tile_entity;
     mc_item_stack_error item;
 } mc_population_dungeon_error;
 
@@ -55,7 +55,7 @@ typedef struct mc_population_dungeon_error {
  * ignored. Two groups each try three Chest sites; accepted sites call loot
  * eight times, retain the same nullable Chest, and replace real random slots.
  * Final Spawner selection resolves the real shared literal before its setter.
- * All reached hooks/observers/lighting/Tile/dirty effects remain real; missing
+ * All reached hooks/WorldAccess receivers/lighting/TileEntity/dirty effects remain real; missing
  * concrete descendants fail explicitly and remain unfinished game behavior.
  *
  * Native failure preserves ordinary outputs and all completed source effects;
@@ -70,15 +70,15 @@ mc_world_storage_status mc_population_dungeon_place(mc_world_runtime *world, mc_
 /* Direct calls to the same real private-helper implementations used above,
  * for feature composition and explicitly labeled helper observations. Loot
  * publishes one independent nullable Stack hold with no provenance. Mob
- * publishes a held shared Registry-backed Tile name, not copied equal text.
- * Release with mc_item_stack_release / mc_tile_name_release respectively.
+ * publishes a held shared Registry-backed TileEntity name, not copied equal text.
+ * Release with mc_item_stack_release / mc_tile_entity_name_release respectively.
  * They do not place blocks, query Chest slots, spawn mobs or drain ticks. */
 mc_world_storage_status mc_population_dungeon_loot(mc_world_runtime *world, mc_java_random *random,
                                                    const mc_population_dungeon_limits *limits,
                                                    mc_item_stack **out,
                                                    mc_population_dungeon_error *error);
 mc_world_storage_status mc_population_dungeon_mob(mc_world_runtime *world, mc_java_random *random,
-                                                  mc_tile_name **out,
+                                                  mc_tile_entity_name **out,
                                                   mc_population_dungeon_error *error);
 
 #endif

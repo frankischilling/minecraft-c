@@ -1,6 +1,7 @@
 #include "mc/world/runtime/movement.h"
 
 #include "../../entity/entity_internal.h"
+#include "chunk_provider_internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
 #include "mc/block/registry/runtime.h"
@@ -8,9 +9,8 @@
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/environment.h"
 #include "mutation/mutation_internal.h"
-#include "observers_internal.h"
-#include "provider_internal.h"
 #include "runtime_internal.h"
+#include "world_access_internal.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -75,10 +75,10 @@ static bool registry_null(mc_world_runtime *world, mc_world_movement_error *fram
     return registry_failure(world, frame, cause, operation);
 }
 
-static mc_world_storage_status dimension_status(mc_world_dimension_status status) {
-    return status == MC_WORLD_DIMENSION_LIMIT               ? MC_WORLD_STORAGE_LIMIT
-           : status == MC_WORLD_DIMENSION_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+static mc_world_storage_status dimension_status(mc_world_provider_status status) {
+    return status == MC_WORLD_PROVIDER_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+           : status == MC_WORLD_PROVIDER_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                                           : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
 }
 
 static mc_world_storage_status entity_status(mc_entity_status status) {
@@ -147,7 +147,7 @@ static bool area_loaded_held(mc_world_runtime *world, int32_t min_x, int32_t min
             frame->provider_bytecode = 6;
             bool present;
             mc_world_storage_error cause = {0};
-            if (mc_world_runtime_provider_contains(world, x, z, &present, &cause) !=
+            if (mc_world_runtime_chunk_provider_contains(world, x, z, &present, &cause) !=
                 MC_WORLD_STORAGE_OK)
                 return storage_failure(frame, cause);
             frame->area_bytecode = frame->presence_bytecode = frame->provider_bytecode = 0;
@@ -190,14 +190,14 @@ static bool rain_biome(mc_world_runtime *world, int32_t x, int32_t z, bool *valu
                        mc_world_movement_error *frame) {
     frame->bytecode = 34;
     frame->dimension_bytecode = 4;
-    mc_world_dimension_fields dimension;
-    frame->dimension = mc_world_dimension_fields_get(world->fields.t, &dimension);
-    if (frame->dimension != MC_WORLD_DIMENSION_OK)
+    mc_world_provider_fields dimension;
+    frame->dimension = mc_world_provider_fields_get(world->fields.t, &dimension);
+    if (frame->dimension != MC_WORLD_PROVIDER_OK)
         return fail(frame, dimension_status(frame->dimension), "World rain Dimension receiver");
-    mc_world_dimension_biome *const manager = dimension.b;
+    mc_world_chunk_manager *const manager = dimension.b;
     if (manager != NULL) {
-        frame->dimension = mc_world_dimension_biome_retain(manager);
-        if (frame->dimension != MC_WORLD_DIMENSION_OK)
+        frame->dimension = mc_world_chunk_manager_retain(manager);
+        if (frame->dimension != MC_WORLD_PROVIDER_OK)
             return fail(frame, dimension_status(frame->dimension), "World rain manager hold");
     }
     frame->dimension_bytecode = 0;
@@ -208,8 +208,8 @@ static bool rain_biome(mc_world_runtime *world, int32_t x, int32_t z, bool *valu
         goto leave;
     }
     const mc_biome *biome = NULL;
-    frame->dimension = mc_world_dimension_biome_point(manager, x, z, &biome, &frame->biome);
-    if (frame->dimension != MC_WORLD_DIMENSION_OK) {
+    frame->dimension = mc_world_chunk_manager_point(manager, x, z, &biome, &frame->biome);
+    if (frame->dimension != MC_WORLD_PROVIDER_OK) {
         frame->biome_bytecode = frame->biome.bytecode;
         frame->registry = frame->biome.sampling.registry;
         if (frame->registry.status != MC_REGISTRY_OK)
@@ -238,7 +238,7 @@ static bool rain_biome(mc_world_runtime *world, int32_t x, int32_t z, bool *valu
     *value = !fields->v && fields->w;
     completed = true;
 leave:
-    mc_world_dimension_biome_release(manager);
+    mc_world_chunk_manager_release(manager);
     return completed;
 }
 
@@ -384,10 +384,10 @@ mc_world_storage_status mc_world_runtime_burning(mc_world_runtime *world,
     return finish(world, &frame, error);
 }
 
-static bool observer_cause(mc_world_runtime *world, mc_world_movement_error *frame, unsigned int pc,
-                           mc_world_storage_error cause) {
-    frame->bytecode = frame->observer_bytecode = pc;
-    frame->presentation.observer_bytecode = pc;
+static bool world_access_cause(mc_world_runtime *world, mc_world_movement_error *frame,
+                               unsigned int pc, mc_world_storage_error cause) {
+    frame->bytecode = frame->world_access_bytecode = pc;
+    frame->presentation.world_access_bytecode = pc;
     frame->presentation.status = cause.status;
     frame->presentation.operation = cause.operation;
     frame->presentation.cause = cause;
@@ -399,23 +399,23 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
                               const mc_registry_string *name, float volume, float pitch,
                               mc_world_movement_error *frame) {
     for (size_t index = 0;; ++index) {
-        mc_world_observer *observer = NULL;
+        mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
-                                    &frame->observer_bytecode, &cause))
-            return observer_cause(world, frame, frame->observer_bytecode, cause);
+        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
+                                  &frame->world_access_bytecode, &cause))
+            return world_access_cause(world, frame, frame->world_access_bytecode, cause);
         if (!present)
             return true; /* return64, before any Entity/FP access */
         frame->bytecode = 33;
         if (entity == NULL) {
-            mc_world_observer_release_held(observer);
+            mc_world_access_release_held(world_access);
             return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                         "World Entity sound Entity receiver");
         }
         const mc_entity_status held = mc_entity_retain(entity);
         if (held != MC_ENTITY_OK) {
-            mc_world_observer_release_held(observer);
+            mc_world_access_release_held(world_access);
             frame->entity =
                 (mc_entity_error){.status = held, .operation = "World Entity sound Entity hold"};
             return fail(frame, entity_status(held), frame->entity.operation);
@@ -429,7 +429,7 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
         frame->bytecode = 44;
         if (!fp_ready(frame, "World Entity sound FP admission")) {
             mc_entity_release(entity);
-            mc_world_observer_release_held(observer);
+            mc_world_access_release_held(world_access);
             return false;
         }
         volatile double widened_offset = (double)offset;
@@ -439,18 +439,18 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
         volatile double z = fields->z;
         /* Even a NULL receiver or missing slot is tested only after the
          * Entity x/y/offset/z reads and actual y-offset argument arithmetic. */
-        frame->bytecode = frame->observer_bytecode = 53;
+        frame->bytecode = frame->world_access_bytecode = 53;
         mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (observer == NULL || observer->callbacks.sound == NULL)
-            cause.operation = "World Entity sound observer invocation";
+        if (world_access == NULL || world_access->callbacks.sound == NULL)
+            cause.operation = "World Entity sound WorldAccess invocation";
         else
-            status = observer->callbacks.sound(observer->context, world, name, x, sound_y, z,
-                                               volume, pitch, &cause);
+            status = world_access->callbacks.sound(world_access->context, world, name, x, sound_y,
+                                                   z, volume, pitch, &cause);
         mc_entity_release(entity);
-        mc_world_observer_release_held(observer);
+        mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
-            return observer_cause(world, frame, 53,
-                                  mc_world_observer_callback_error(status, cause));
+            return world_access_cause(world, frame, 53,
+                                      mc_world_access_callback_error(status, cause));
         /* iinc58 follows the callback; the next receiver gets fresh live
          * Entity fields, including edits made by this callback. */
     }

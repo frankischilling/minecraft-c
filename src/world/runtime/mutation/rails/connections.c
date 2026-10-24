@@ -302,7 +302,7 @@ static bool rail_active_use(const rail_frame *frame, const char *operation) {
     }
     ++frame->classes->entered;
     const mc_registry_status status =
-        mc_registry_block_class_initialize(frame->classes, MC_BLOCK_PC_JJ);
+        mc_registry_block_class_initialize(frame->classes, MC_BLOCK_RAIL);
     --frame->classes->entered;
     if (status == MC_REGISTRY_OK)
         return true;
@@ -451,7 +451,7 @@ static bool rail_constructor(mc_rail_connections *self, const mc_block *outer,
     rail_at(&frame, 70);
     if (selected != NULL &&
         (selected->classes != self->classes ||
-         (selected->kind != MC_BLOCK_PC_JJ && selected->kind != MC_BLOCK_PH_JN)))
+         (selected->kind != MC_BLOCK_RAIL && selected->kind != MC_BLOCK_DETECTOR_RAIL)))
         return rail_fail(&frame, 70, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                          "Rail constructor checkcast pc/jj");
     rail_at(&frame, 73);

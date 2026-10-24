@@ -40,7 +40,7 @@ limit. No queue, sequence, source counter or owner ledger is reset.
 Whole water-lake continuation and the concrete spring paths have independent
 source-derived expectations. The lake voxel mask and high lava-rim draw count
 are not independently reconstructed. Mask-allocation failure, arbitrary
-observers and unsupported descendant ticks remain unqualified. These finite
+WorldAccess receivers and unsupported descendant ticks remain unqualified. These finite
 native contracts do not establish original/native equivalence, natural
 population reachability, complete scheduling or save interoperability.
 

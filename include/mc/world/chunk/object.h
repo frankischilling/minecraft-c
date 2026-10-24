@@ -7,7 +7,7 @@
 typedef struct mc_world_runtime mc_world_runtime;
 typedef struct mc_world_chunk mc_world_chunk;
 typedef struct mc_world_chunk_nibble mc_world_chunk_nibble;
-typedef struct mc_world_chunk_tile_map mc_world_chunk_tile_map;
+typedef struct mc_world_chunk_tile_entity_map mc_world_chunk_tile_entity_map;
 typedef struct mc_world_chunk_list_array mc_world_chunk_list_array;
 typedef struct mc_world_chunk_entity_list mc_world_chunk_entity_list;
 typedef struct mc_entity mc_entity;
@@ -24,7 +24,7 @@ typedef struct mc_world_chunk_fields {
     const mc_world_chunk_nibble *e, *f, *g;
     uint8_t *h;
     int32_t i, j, k;
-    const mc_world_chunk_tile_map *l;
+    const mc_world_chunk_tile_entity_map *l;
     const mc_world_chunk_list_array *m;
     bool n, o, p, q;
     int64_t r;
@@ -51,7 +51,8 @@ mc_world_storage_status mc_world_chunk_nibble_fields_get(const mc_world_chunk_ni
 mc_world_storage_status mc_world_chunk_slice_at(const mc_world_chunk_list_array *array,
                                                 size_t index,
                                                 const mc_world_chunk_entity_list **out);
-mc_world_storage_status mc_world_chunk_tile_count(const mc_world_chunk_tile_map *map, size_t *out);
+mc_world_storage_status mc_world_chunk_tile_entity_count(const mc_world_chunk_tile_entity_map *map,
+                                                         size_t *out);
 mc_world_storage_status mc_world_chunk_entity_count(const mc_world_chunk_entity_list *list,
                                                     size_t *out);
 /* Borrow one actual occurrence in the stable slice List; duplicates remain

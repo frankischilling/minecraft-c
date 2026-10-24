@@ -273,7 +273,7 @@ static bool snow_supports(fixture *f, size_t slot, const mc_block *snow) {
           e.registry.status == MC_REGISTRY_NULL_REFERENCE && e.material.bytecode == 0 &&
           e.material.status == MC_WORLD_STORAGE_OK);
 
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     w->fields.v = NULL;
     const bool no_provider = snow_support_call(w, snow, 5, 11, 4, &out, &e);
     w->fields.v = provider;
@@ -358,18 +358,18 @@ static bool snow_neighbors(fixture *f, size_t slot, const mc_block *snow) {
           e.rail_access.nearby.query.operation == NULL && at(w, 22, 40, 9, 0, 0) &&
           at(w, 22, 41, 9, 0, 0) && at(w, 21, 40, 9, 0, 0) && at(w, 21, 41, 9, 66, 0));
 
-    mc_world_reference_list *const observers = w->fields.u;
+    mc_world_reference_list *const world_accesses = w->fields.u;
     w->fields.u = NULL;
     const bool observed = snow_neighbor_call(w, snow, 9, 56, 9, 0, &e);
-    w->fields.u = observers;
+    w->fields.u = world_accesses;
     CHECK(!observed && e.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          e.snow_neighbor_bytecode == 6 && e.snow_bytecode == 35 && e.observer_bytecode == 9 &&
+          e.snow_neighbor_bytecode == 6 && e.snow_bytecode == 35 && e.world_access_bytecode == 9 &&
           at(w, 9, 56, 9, 0, 0));
 
     /* At y0, support queries y-1 and returns air before provider use. The next
      * source operation is metadata23, so this genuine null provider fails
      * before the final drop26. No Chunk-state bytes are damaged to force it. */
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     w->fields.v = NULL;
     const bool metadata = snow_neighbor_call(w, snow, 9, 0, 22, 0, &e);
     w->fields.v = provider;
@@ -428,12 +428,12 @@ static bool snow_ticks(fixture *f, size_t slot, const mc_block *snow) {
     w->fields.B = remote;
     CHECK(remote_removed && snow_clear(&e) && at(w, 22, 104, 9, 0, 0));
 
-    mc_world_reference_list *const observers = w->fields.u;
+    mc_world_reference_list *const world_accesses = w->fields.u;
     w->fields.u = NULL;
     const bool notified = snow_tick_call(w, snow, 9, 88, 9, &supplied, &e);
-    w->fields.u = observers;
+    w->fields.u = world_accesses;
     CHECK(!notified && e.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          e.snow_tick_bytecode == 39 && e.observer_bytecode == 9 && at(w, 9, 88, 9, 0, 0));
+          e.snow_tick_bytecode == 39 && e.world_access_bytecode == 9 && at(w, 9, 88, 9, 0, 0));
 
     /* Fail at the actual saved BlockLight Nibble. Preserve the entire child
      * query frame, not only its top-level status or a fabricated light value. */
@@ -450,7 +450,7 @@ static bool snow_ticks(fixture *f, size_t slot, const mc_block *snow) {
           same_cause(&e.cause, &e.query.cause) && e.operation == e.query.operation &&
           at(w, 22, 88, 9, 78, 0));
 
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     w->fields.v = NULL;
     const bool presence = snow_tick_call(w, snow, 22, 88, 9, &supplied, &e);
     w->fields.v = provider;
@@ -502,18 +502,18 @@ static bool snow_world(fixture *f, size_t slot) {
     const mc_java_random world_random = *w->fields.r, math = math_snapshot(f);
     const uint64_t uniquifier = atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed);
     const size_t profile_bytes = f->profile->allocated_bytes;
-    const mc_registry_phase items = r->item_states[MC_ITEM_GM_EJ].phase;
+    const mc_registry_phase items = r->item_states[MC_ITEM_BASE].phase;
     mc_entity_class_snapshot before = {0}, after = {0};
     schedule_state scheduled_before = {0};
     CHECK(!w->fields.B && !w->fields.o &&
           mc_registry_block_get(r, 78, &snow, NULL) == MC_REGISTRY_OK && snow != NULL &&
-          snow->kind == MC_BLOCK_JR_GJ && scheduled(w, &scheduled_before) &&
+          snow->kind == MC_BLOCK_SNOW_LAYER && scheduled(w, &scheduled_before) &&
           mc_entity_classes_get_snapshot(f->entities[slot % 2u], &before) == MC_ENTITY_OK);
     CHECK(snow_supports(f, slot, snow));
     CHECK(snow_neighbors(f, slot, snow));
     CHECK(snow_ticks(f, slot, snow));
     CHECK(mc_entity_classes_get_snapshot(f->entities[slot % 2u], &after) == MC_ENTITY_OK &&
-          snow_entities_equal(&before, &after) && r->item_states[MC_ITEM_GM_EJ].phase == items &&
+          snow_entities_equal(&before, &after) && r->item_states[MC_ITEM_BASE].phase == items &&
           mc_test_java_random_equal(w->fields.r, &world_random) && math_is(f, &math) &&
           atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed) == uniquifier &&
           f->profile->allocated_bytes == profile_bytes && delta(w, &scheduled_before, 0, 0) &&

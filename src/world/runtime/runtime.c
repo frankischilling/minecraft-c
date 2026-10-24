@@ -2,12 +2,12 @@
 #include "../storage/metadata_internal.h"
 #include "../storage/objects_internal.h"
 #include "activation_internal.h"
+#include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "generation/generation_internal.h"
 #include "loading/loading_internal.h"
-#include "mc/world/runtime/population/normal.h"
+#include "mc/world/runtime/population/overworld.h"
 #include "millis.h"
-#include "provider_internal.h"
 #include "runtime_internal.h"
 #include "saving/saving_internal.h"
 
@@ -24,8 +24,8 @@ static mc_world_storage_status runtime_error(mc_world_storage_error *error,
 static mc_world_runtime_acquisition_error acquisition_empty_error(void) {
     return (mc_world_runtime_acquisition_error){.status = MC_CHUNK_ACQUIRE_OK,
                                                 .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                                .registry = mc_tile_empty_error().registry,
-                                                .tile = mc_live_tiles_empty_error(),
+                                                .registry = mc_tile_entity_empty_error().registry,
+                                                .tile_entity = mc_live_tile_entities_empty_error(),
                                                 .load_entity = mc_world_entity_load_empty_error(),
                                                 .batch = mc_world_entity_batch_empty_error()};
 }
@@ -34,7 +34,7 @@ static mc_world_runtime_lifecycle_error lifecycle_empty_error(void) {
     return (mc_world_runtime_lifecycle_error){.status = MC_CHUNK_LIFECYCLE_OK,
                                               .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
                                               .save = mc_world_game_save_empty_error(),
-                                              .tile = mc_live_tiles_empty_error(),
+                                              .tile_entity = mc_live_tile_entities_empty_error(),
                                               .batch = mc_world_entity_batch_empty_error()};
 }
 
@@ -56,9 +56,9 @@ static void acquisition_activation(mc_world_runtime *runtime,
                                    const mc_world_activation_error *error) {
     if (runtime->acquisition_error != NULL) {
         acquisition_cause(runtime, error->cause);
-        runtime->acquisition_error->tile = error->tile;
+        runtime->acquisition_error->tile_entity = error->tile_entity;
         runtime->acquisition_error->batch = error->batch;
-        runtime->acquisition_error->registry = error->tile.registry;
+        runtime->acquisition_error->registry = error->tile_entity.registry;
         runtime->acquisition_error->activation_bytecode = error->bytecode;
         runtime->acquisition_error->activation_world_bytecode = error->world_bytecode;
     }
@@ -68,7 +68,7 @@ static void lifecycle_activation(mc_world_runtime *runtime,
                                  const mc_world_activation_error *error) {
     if (runtime->lifecycle_error != NULL) {
         lifecycle_cause(runtime, error->cause);
-        runtime->lifecycle_error->tile = error->tile;
+        runtime->lifecycle_error->tile_entity = error->tile_entity;
         runtime->lifecycle_error->batch = error->batch;
         runtime->lifecycle_error->activation_bytecode = error->bytecode;
         runtime->lifecycle_error->activation_world_bytecode = error->world_bytecode;
@@ -126,9 +126,9 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
         if (status != MC_WORLD_STORAGE_OK && status != MC_WORLD_STORAGE_MISSING) {
             acquisition_cause(runtime, runtime->last_error);
             if (runtime->acquisition_error != NULL) {
-                runtime->acquisition_error->tile = error.tile;
+                runtime->acquisition_error->tile_entity = error.tile_entity;
                 runtime->acquisition_error->load_entity = error.entity;
-                runtime->acquisition_error->registry = error.tile.registry;
+                runtime->acquisition_error->registry = error.tile_entity.registry;
                 runtime->acquisition_error->load_bytecode = error.region_bytecode;
                 runtime->acquisition_error->load_builder_bytecode = error.builder_bytecode;
             }
@@ -155,7 +155,7 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
         mc_world_generation_error error;
         mc_world_storage_status status =
-            mc_world_provider_generate_game(runtime->fields.v, x, z, out, &error);
+            mc_chunk_provider_generate_game(runtime->fields.v, x, z, out, &error);
         if (status != MC_WORLD_STORAGE_OK) {
             runtime->last_error = error.cause;
             acquisition_cause(runtime, error.cause);
@@ -172,28 +172,30 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
         acquisition_cause(runtime, runtime->last_error);
         return false;
     }
-    mc_normal_chunk *staging = calloc(1, sizeof(*staging));
+    mc_overworld_chunk *staging = calloc(1, sizeof(*staging));
     uint8_t *blocks = malloc(MC_CHUNK_BLOCKS);
     bool success = false;
     if (staging == NULL || blocks == NULL) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                       "generation staging");
     } else {
-        mc_normal_generator_status status = mc_normal_generator_generate(
+        mc_overworld_generator_status status = mc_overworld_generator_generate(
             runtime->options.generator, x, z, runtime->options.generation, staging, blocks,
             MC_CHUNK_BLOCKS);
-        if (status == MC_NORMAL_GENERATOR_OK) {
+        if (status == MC_OVERWORLD_GENERATOR_OK) {
             success =
                 mc_world_store_retain_reserved(runtime->options.store, reservation, &staging->chunk,
                                                out, &runtime->last_error) == MC_WORLD_STORAGE_OK;
         } else {
-            mc_world_storage_status mapped =
-                status == MC_NORMAL_GENERATOR_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                : status == MC_NORMAL_GENERATOR_LIMIT           ? MC_WORLD_STORAGE_LIMIT
-                : status == MC_NORMAL_GENERATOR_INVALID_ARGUMENT
-                    ? MC_WORLD_STORAGE_INVALID_ARGUMENT
-                    : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-            runtime_error(&runtime->last_error, mapped, mc_normal_generator_status_string(status));
+            mc_world_storage_status mapped = status == MC_OVERWORLD_GENERATOR_ALLOCATION_FAILED
+                                                 ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                             : status == MC_OVERWORLD_GENERATOR_LIMIT
+                                                 ? MC_WORLD_STORAGE_LIMIT
+                                             : status == MC_OVERWORLD_GENERATOR_INVALID_ARGUMENT
+                                                 ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                                 : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            runtime_error(&runtime->last_error, mapped,
+                          mc_overworld_generator_status_string(status));
         }
     }
     if (!success) {
@@ -205,14 +207,14 @@ static bool generate(void *owner, const mc_chunk_acquire_context *context, int32
     return success;
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk) {
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     (void)context;
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
         return true;
     mc_world_activation_error error;
-    mc_world_storage_status status = mc_world_runtime_register_chunk_tiles(
+    mc_world_storage_status status = mc_world_runtime_register_chunk_tile_entities(
         mc_world_store_chunk_object(runtime->options.store, chunk), &error);
     if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
@@ -240,16 +242,16 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *conte
 static bool populate(void *owner, const mc_chunk_acquire_context *context, int32_t x, int32_t z) {
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        mc_world_normal_population_error error;
+        mc_world_overworld_population_error error;
         const mc_world_storage_status status =
-            mc_world_provider_populate_game(runtime->fields.v, x, z, &error);
+            mc_chunk_provider_populate_game(runtime->fields.v, x, z, &error);
         if (status != MC_WORLD_STORAGE_OK) {
             runtime->last_error = error.cause;
             acquisition_cause(runtime, error.cause);
             if (runtime->acquisition_error != NULL) {
                 runtime->acquisition_error->registry = error.registry;
                 runtime->acquisition_error->population =
-                    mc_world_normal_population_context_get(&error);
+                    mc_world_overworld_population_context_get(&error);
             }
         }
         return status == MC_WORLD_STORAGE_OK;
@@ -311,14 +313,15 @@ static mc_chunk_callback_result loader_noop(void *owner,
     return MC_CHUNK_CALLBACK_OK;
 }
 
-static mc_chunk_callback_result
-invalidate_tiles(void *owner, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk) {
+static mc_chunk_callback_result invalidate_tile_entities(void *owner,
+                                                         const mc_chunk_lifecycle_context *context,
+                                                         mc_chunk_state *chunk) {
     (void)context;
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME)
         return MC_CHUNK_CALLBACK_OK;
     mc_world_activation_error error;
-    mc_world_storage_status status = mc_world_runtime_invalidate_chunk_tiles(
+    mc_world_storage_status status = mc_world_runtime_invalidate_chunk_tile_entities(
         mc_world_store_chunk_object(runtime->options.store, chunk), &error);
     if (status != MC_WORLD_STORAGE_OK) {
         runtime->last_error = error.cause;
@@ -349,7 +352,7 @@ provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, boo
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
         const mc_world_storage_status status =
-            mc_world_provider_maintenance(runtime->fields.v, result, &runtime->last_error);
+            mc_chunk_provider_maintenance(runtime->fields.v, result, &runtime->last_error);
         if (status != MC_WORLD_STORAGE_OK)
             lifecycle_cause(runtime, runtime->last_error);
         return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
@@ -503,7 +506,7 @@ mc_world_storage_status mc_world_runtime_bind_contexts(mc_world_runtime *runtime
                                    .provider = runtime,
                                    .load = load,
                                    .generate = game || options->generator != NULL ? generate : NULL,
-                                   .register_tiles = register_tiles,
+                                   .register_tile_entities = register_tile_entities,
                                    .register_entities = register_entities,
                                    .populate = game || options->generator != NULL ? populate : NULL,
                                    .references = &runtime->references};
@@ -520,7 +523,7 @@ mc_world_storage_status mc_world_runtime_bind_contexts(mc_world_runtime *runtime
                                      .save_extra = save_extra,
                                      .flush = loader_noop,
                                      .loader_maintenance = loader_noop,
-                                     .invalidate_tiles = invalidate_tiles,
+                                     .invalidate_tile_entities = invalidate_tile_entities,
                                      .defer_entities = defer_entities,
                                      .provider_maintenance = provider_maintenance,
                                      .references = &runtime->references};
@@ -901,7 +904,7 @@ static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bo
         frame = lifecycle_empty_error();
     else if (frame.cause.status == MC_WORLD_STORAGE_OK) {
         /* Underlying native validation and external callback results need no
-         * ambient diagnostic lookup or fabricated Tile child. */
+         * ambient diagnostic lookup or fabricated TileEntity child. */
         const mc_world_storage_status status =
             frame.status == MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT ? MC_WORLD_STORAGE_INVALID_ARGUMENT
             : frame.status == MC_CHUNK_LIFECYCLE_LIMIT          ? MC_WORLD_STORAGE_LIMIT

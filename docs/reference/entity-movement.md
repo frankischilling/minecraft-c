@@ -35,7 +35,7 @@ Item `hl/ez` and FallingSand `ju/gl` inherit this movement owner; their own
 | Area loaded | fd/dj.a(IIIIII)Z | Y gates before chunk shifts; private presence69/provider6 |
 | Rain at position | fd.t(III)Z / dj.s(III)Z | Raining1; sky13; top24; manager34; point39; Biome c46/d56 |
 | Burning volume | fd.c(eq)Z / dj.d(cz)Z | Ordered six floors; area69; ID113; Fire/Lava statics120/131/142 and bn123/134/145 |
-| Entity sound | fd/dj.a(Entity,String,FF)V | Observer size9/get23/cast28; Entity33/37/41; f2d44/dsub45; z47; observer53; empty return64 |
+| Entity sound | fd/dj.a(Entity,String,FF)V | WorldAccess size9/get23/cast28; Entity33/37/41; f2d44/dsub45; z47; WorldAccess53; empty return64 |
 
 Complete contact inventories find six nonbase owners on each side: portal
 `ak/z`, pressure `bv/bc`, soul sand `oa/iu`, cactus `or/je`, detector `ph/jn`

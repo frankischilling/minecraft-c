@@ -44,7 +44,7 @@ begin at zero; a later successful acquisition stamps live world time. Frozen
 registry normalization is a separate block-only operation, with no height,
 light or dirty mutation.
 
-In the passive storage path, Entity/tile compounds and unknown root/Level children remain opaque. Building
+In the passive storage path, Entity/TileEntity compounds and unknown root/Level children remain opaque. Building
 an independent result writes explicit LastUpdate and known current state.
 Nonempty opaque lists permit only unchanged arrays,
 coordinates and population state. Other edits fail. Normalization of unknown
@@ -125,7 +125,7 @@ registry map. The generic acquisition adapter permits generation only for missin
 records, refuses unreadable data and refuses opaque activation. GAME uses a
 separate staged protocol described below. The coordinator owns cache publication,
 activation and loaded time stamping; unknown-NBT serialization remains separate
-from [live Tile ownership](tiles.md).
+from [live TileEntity ownership](tile-entities.md).
 Explicit chunk writes update live SizeOnDisk after commit; save eligibility,
 dirty reset, last-save stamps and save/unload scheduling remain caller-owned.
 The typed runtime variant instead adds growth only to its supplied READY Info,
@@ -147,7 +147,7 @@ process-wide allocation budget.
 ## Staged GAME loading
 
 The internal GAME decoder preserves fixed-shape transport admission while
-deferring Entity/Tile list semantics. Its actual Chunk starts with q=false.
+deferring Entity/TileEntity list semantics. Its actual Chunk starts with q=false.
 The Store attaches the same decoded owner and concrete header to its canonical
 ownership chain before exposing a stage and one coordinator lease. Native
 state/data/array identities remain stable through imports and normalization.
@@ -158,7 +158,7 @@ an unknown-name NULL. Nonnull results enter the same held Chunk directly at289,
 then receive independent Entity/Stack provenance. A native ordered journal
 records only those completed results. Unsupported constructors and later read,
 insertion or provenance failures preserve the reached prefix. Only normal
-completion of every Entity allows Chest/Spawner Tile factories and local import. Only after
+completion of every Entity allows Chest/Spawner TileEntity factories and local import. Only after
 both loops return does the Store normalize those same block bytes and publish
 ordinary load success. A wrong-location result stops at the unfinished Region
 diagnostic after first imports, preserving them before normalization or a second
@@ -194,7 +194,7 @@ the session file.
 
 Decoder/document and header limits remain separate native budgets. A staged
 load is not a whole-process heap limit, original malformed-array repair profile
-or complete live Entity/Tile save implementation. The separate
+or complete live Entity/TileEntity save implementation. The separate
 [live GAME coordinator](saving.md) now composes supported Chest/Spawner records
 and explicit empty live Entities over this same stored owner. Generic opaque
 editing APIs retain their separate restrictions.

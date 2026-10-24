@@ -8,79 +8,79 @@
 #include "../../statistics/registry/registry_internal.h"
 #include "../../world/biome/registry_internal.h"
 #include "mc/block/registry/registry.h"
-#include "wire_set_internal.h"
+#include "redstone_set_internal.h"
 #define MC_REGISTRY_BLOCK_SLOTS 256u
 
 typedef enum mc_block_kind {
-    MC_BLOCK_UU_NA,
-    MC_BLOCK_EO_CX,
-    MC_BLOCK_WP_OJ,
-    MC_BLOCK_OT_JF,
-    MC_BLOCK_HE_EU,
-    MC_BLOCK_OM_JC,
-    MC_BLOCK_NX_IS,
-    MC_BLOCK_GK_EI,
-    MC_BLOCK_NE_IG,
-    MC_BLOCK_MT_IC,
-    MC_BLOCK_VG_NK,
-    MC_BLOCK_BK_AR,
-    MC_BLOCK_XF_OV,
-    MC_BLOCK_FK_DO,
-    MC_BLOCK_XQ_PA,
-    MC_BLOCK_RD_KL,
-    MC_BLOCK_PT_JR,
-    MC_BLOCK_VE_NJ,
-    MC_BLOCK_PC_JJ,
-    MC_BLOCK_PH_JN,
-    MC_BLOCK_JQ_GI,
-    MC_BLOCK_RN_KU,
-    MC_BLOCK_RU_KZ,
-    MC_BLOCK_JB_FZ,
-    MC_BLOCK_H_G,
-    MC_BLOCK_EE_CQ,
-    MC_BLOCK_UT_MZ,
-    MC_BLOCK_WB_NW,
-    MC_BLOCK_TL_MD,
-    MC_BLOCK_L_J,
-    MC_BLOCK_YS_PW,
-    MC_BLOCK_AH_T,
-    MC_BLOCK_HB_ER,
-    MC_BLOCK_FB_DH,
-    MC_BLOCK_VM_NP,
-    MC_BLOCK_YQ_PT,
-    MC_BLOCK_DD_BZ,
-    MC_BLOCK_SS_LU,
-    MC_BLOCK_E_E,
-    MC_BLOCK_SM_LO,
-    MC_BLOCK_FI_DN,
-    MC_BLOCK_NI_IJ,
-    MC_BLOCK_VL_NO,
-    MC_BLOCK_TC_LZ,
-    MC_BLOCK_UJ_MT,
-    MC_BLOCK_LE_HC,
-    MC_BLOCK_DP_CG,
-    MC_BLOCK_XR_PD,
-    MC_BLOCK_BV_BC,
-    MC_BLOCK_BS_AZ,
-    MC_BLOCK_DB_BY,
-    MC_BLOCK_OI_IZ,
-    MC_BLOCK_JR_GJ,
-    MC_BLOCK_NK_IK,
-    MC_BLOCK_AC_P,
-    MC_BLOCK_OR_JE,
-    MC_BLOCK_RZ_LF,
-    MC_BLOCK_RI_KO,
-    MC_BLOCK_FO_DT,
-    MC_BLOCK_JW_GN,
-    MC_BLOCK_FC_DI,
-    MC_BLOCK_YI_PO,
-    MC_BLOCK_OA_IU,
-    MC_BLOCK_LY_HR,
-    MC_BLOCK_AK_Z,
-    MC_BLOCK_UM_MW,
-    MC_BLOCK_WO_OI,
-    MC_BLOCK_KS_GV,
-    MC_BLOCK_OQ_JD,
+    MC_BLOCK_BASE,
+    MC_BLOCK_STONE,
+    MC_BLOCK_GRASS,
+    MC_BLOCK_DIRT,
+    MC_BLOCK_SAPLING,
+    MC_BLOCK_FLOWING_FLUID,
+    MC_BLOCK_STILL_FLUID,
+    MC_BLOCK_SAND,
+    MC_BLOCK_GRAVEL,
+    MC_BLOCK_ORE,
+    MC_BLOCK_LOG,
+    MC_BLOCK_LEAVES,
+    MC_BLOCK_SPONGE,
+    MC_BLOCK_GLASS,
+    MC_BLOCK_DISPENSER,
+    MC_BLOCK_SANDSTONE,
+    MC_BLOCK_NOTE_BLOCK,
+    MC_BLOCK_BED,
+    MC_BLOCK_RAIL,
+    MC_BLOCK_DETECTOR_RAIL,
+    MC_BLOCK_PISTON_BASE,
+    MC_BLOCK_COBWEB,
+    MC_BLOCK_TALL_GRASS,
+    MC_BLOCK_DEAD_BUSH,
+    MC_BLOCK_PISTON_HEAD,
+    MC_BLOCK_WOOL,
+    MC_BLOCK_MOVING_PISTON,
+    MC_BLOCK_FLOWER,
+    MC_BLOCK_MUSHROOM,
+    MC_BLOCK_MINERAL_STORAGE,
+    MC_BLOCK_SLAB,
+    MC_BLOCK_TNT,
+    MC_BLOCK_BOOKSHELF,
+    MC_BLOCK_OBSIDIAN,
+    MC_BLOCK_TORCH,
+    MC_BLOCK_FIRE,
+    MC_BLOCK_MOB_SPAWNER,
+    MC_BLOCK_STAIRS,
+    MC_BLOCK_CHEST,
+    MC_BLOCK_REDSTONE,
+    MC_BLOCK_CRAFTING_TABLE,
+    MC_BLOCK_CROPS,
+    MC_BLOCK_FARMLAND,
+    MC_BLOCK_FURNACE,
+    MC_BLOCK_SIGN,
+    MC_BLOCK_DOOR,
+    MC_BLOCK_LADDER,
+    MC_BLOCK_LEVER,
+    MC_BLOCK_PRESSURE_PLATE,
+    MC_BLOCK_REDSTONE_ORE,
+    MC_BLOCK_REDSTONE_TORCH,
+    MC_BLOCK_BUTTON,
+    MC_BLOCK_SNOW_LAYER,
+    MC_BLOCK_ICE,
+    MC_BLOCK_SNOW_BLOCK,
+    MC_BLOCK_CACTUS,
+    MC_BLOCK_CLAY,
+    MC_BLOCK_SUGAR_CANE,
+    MC_BLOCK_JUKEBOX,
+    MC_BLOCK_FENCE,
+    MC_BLOCK_PUMPKIN,
+    MC_BLOCK_NETHERRACK,
+    MC_BLOCK_SOUL_SAND,
+    MC_BLOCK_GLOWSTONE,
+    MC_BLOCK_PORTAL,
+    MC_BLOCK_CAKE,
+    MC_BLOCK_REPEATER,
+    MC_BLOCK_LOCKED_CHEST,
+    MC_BLOCK_TRAPDOOR,
     MC_BLOCK_KIND_COUNT
 } mc_block_kind;
 
@@ -110,10 +110,10 @@ typedef struct mc_pressure_category {
     int32_t ordinal;
 } mc_pressure_category;
 
-typedef struct mc_tile_class_identity {
+typedef struct mc_tile_entity_class_identity {
     const char *client_name;
     const char *server_name;
-} mc_tile_class_identity;
+} mc_tile_entity_class_identity;
 
 typedef enum mc_block_constructor_phase {
     MC_BLOCK_RAW,
@@ -180,7 +180,7 @@ struct mc_block {
 
         struct {
             bool a;
-            mc_registry_wire_set *b;
+            mc_registry_redstone_set *b;
         } sm;
 
         struct {
@@ -189,7 +189,7 @@ struct mc_block {
         } tc;
 
         struct {
-            const mc_tile_class_identity *a;
+            const mc_tile_entity_class_identity *a;
             bool b;
         } uj;
 
@@ -221,7 +221,7 @@ typedef struct mc_block_arguments {
     mc_material *material;
     bool flag;
     mc_block *source_block;
-    const mc_tile_class_identity *tile_class;
+    const mc_tile_entity_class_identity *tile_entity_class;
     const mc_pressure_category *pressure;
 } mc_block_arguments;
 
@@ -269,8 +269,8 @@ struct mc_registry_classes {
     mc_registry_initializer *initializer;
     mc_registry_allocation *allocations;
     mc_registry_managed_allocation *managed_allocations;
-    mc_registry_wire_set *wire_sets;
-    size_t wire_snapshot_count;
+    mc_registry_redstone_set *redstone_sets;
+    size_t redstone_snapshot_count;
     struct mc_registry_stack_allocation *item_stacks;
     mc_registry_literal *literals;
     mc_block *current_block;
@@ -293,8 +293,8 @@ struct mc_registry_classes {
     int32_t *wo_b;
     mc_pressure_category *pressure_a, *pressure_b, *pressure_c;
     mc_pressure_category **pressure_values;
-    /* Resolving a Class literal does not construct/initialize its tile. */
-    mc_tile_class_identity sign_class;
+    /* Resolving a Class literal does not construct/initialize its TileEntity. */
+    mc_tile_entity_class_identity sign_class;
     mc_registry_item_storage items;
     mc_registry_class_state item_states[MC_ITEM_KIND_COUNT];
     mc_registry_class_state item_dq_state, item_cp_state, item_tool_state;
@@ -377,7 +377,7 @@ void mc_registry_block_no_stats(mc_block *block);
 mc_registry_status mc_registry_block_random(mc_registry_classes *classes, mc_block *block,
                                             mc_java_random **destination);
 mc_registry_status mc_registry_pressure_initialize(mc_registry_classes *classes);
-const mc_tile_class_identity *mc_registry_sign_class(mc_registry_classes *classes);
+const mc_tile_entity_class_identity *mc_registry_sign_class(mc_registry_classes *classes);
 mc_registry_status mc_registry_block_prefix(mc_registry_classes *classes);
 mc_registry_status mc_registry_block_class_initialize(mc_registry_classes *classes,
                                                       mc_block_kind kind);

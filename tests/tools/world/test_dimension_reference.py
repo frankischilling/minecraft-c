@@ -27,6 +27,11 @@ OBSERVER = ROOT / "tests/reference/world/DimensionObservation.java"
 OBSERVER_SHA256 = "ce24595652f28a0fe244dae41186b2b8cebe33b5fdbd2b543a25f869eac30959"
 PROCESS = ROOT / "scripts/reference/java/capture_nanotime_conversion.py"
 PROCESS_SHA256 = "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+HISTORICAL_RECORDER = ROOT / "tests/reference/world/dimension/recorder.py"
+HISTORICAL_RECORDER_PIN = {
+    "bytes": 52843, "sha256": "2b10393e1e006a1b7ce4f8df732bc72bed1410753a38176d8eaab9dd6313a69a"}
+HISTORICAL_CAPTURE_PIN = {
+    "bytes": 13776, "sha256": "419adbbdb4acb4577b8b2527271f0bb19b6ff8011bd1e42119ee1aa5db67e27c"}
 JARS = {
     "client": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
     "server": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
@@ -73,6 +78,56 @@ def fingerprint(path):
             digest.update(block)
             size += len(block)
     return {"bytes": size, "sha256": digest.hexdigest()}
+
+
+def recorder_binding(recorded, public_capture=None):
+    """Bind captured source bytes separately from the current replay checker.
+
+    The historical recorder is immutable evidence, never imported or executed.
+    The known public capture must retain that recorder; a current capture must
+    carry the actual current recorder pin and a different capture identity.
+    """
+    require(type(recorded) is dict and set(recorded) == {"bytes", "sha256"} and
+            type(recorded["bytes"]) is int and 0 < recorded["bytes"] <= 128 * 1024 and
+            type(recorded["sha256"]) is str and re.fullmatch(r"[0-9a-f]{64}", recorded["sha256"]),
+            "complete recorded recorder fingerprint")
+    require(HISTORICAL_RECORDER.is_file() and not HISTORICAL_RECORDER.is_symlink() and
+            HISTORICAL_RECORDER.stat().st_size == HISTORICAL_RECORDER_PIN["bytes"] and
+            fingerprint(HISTORICAL_RECORDER) == HISTORICAL_RECORDER_PIN,
+            "immutable historical recorder bytes")
+    checker = Path(__file__).resolve()
+    checker_pin = fingerprint(checker)
+    if recorded == HISTORICAL_RECORDER_PIN:
+        actual, family = HISTORICAL_RECORDER, "historical-recorder"
+        if public_capture is not None:
+            require(public_capture == HISTORICAL_CAPTURE_PIN, "historical public capture/recorder family")
+    else:
+        require(recorded == checker_pin, "current recorded recorder bytes")
+        actual, family = checker, "current-recorder"
+        if public_capture is not None:
+            require(type(public_capture) is dict and set(public_capture) == {"bytes", "sha256"} and
+                    type(public_capture["bytes"]) is int and 0 < public_capture["bytes"] <= 512 * 1024 and
+                    type(public_capture["sha256"]) is str and
+                    re.fullmatch(r"[0-9a-f]{64}", public_capture["sha256"]) and
+                    public_capture != HISTORICAL_CAPTURE_PIN, "current public capture/recorder family")
+    return {"family": family,
+            "actual_recorder": {"path": actual.relative_to(ROOT).as_posix(), **recorded},
+            "current_checker": {"path": checker.relative_to(ROOT).as_posix(), **checker_pin}}
+
+
+def captured_recorder_binding(directory):
+    path = directory / "capture.json"
+    require(path.stat().st_size <= 512 * 1024, "bounded original metadata")
+    report = json.loads(path.read_text(encoding="ascii"))
+    return recorder_binding(report["inputs_before"]["recorder"])
+
+
+def public_provenance(directory, provenance_sha256):
+    path = directory / "dimension_provenance.json"
+    require(path.stat().st_size <= 128 * 1024, "bounded public provenance")
+    require(type(provenance_sha256) is str and re.fullmatch(r"[0-9a-f]{64}", provenance_sha256) and
+            fingerprint(path)["sha256"] == provenance_sha256, "pinned public Dimension provenance")
+    return json.loads(path.read_text(encoding="ascii"))
 
 
 def encoded(rows):
@@ -624,7 +679,9 @@ def validate_capture(directory):
     for name, digest in {**process.PROFILE, **JARS, "helper": OBSERVER_SHA256,
                          "process_helper": PROCESS_SHA256}.items():
         require(before[name]["sha256"] == digest, "original source/profile/archive pin: " + name)
-    for name, path in (("recorder", Path(__file__).resolve()), ("helper", OBSERVER),
+    binding = recorder_binding(before["recorder"])
+    actual_recorder = ROOT / binding["actual_recorder"]["path"]
+    for name, path in (("recorder", actual_recorder), ("helper", OBSERVER),
                        ("process_helper", PROCESS)):
         require(before[name] == fingerprint(path) == fingerprint(directory / (name + path.suffix)),
                 "original retained source binding: " + name)
@@ -674,10 +731,11 @@ def export(options):
     """Publish exact observed projections and hash provenance, without a child."""
     source = options.capture_dir.resolve(strict=True)
     paths = [path for path in sorted(source.rglob("*")) if path.is_file()]
-    paths.extend((Path(__file__).resolve(), OBSERVER, PROCESS))
+    paths.extend((Path(__file__).resolve(), HISTORICAL_RECORDER, OBSERVER, PROCESS))
     require(len(paths) <= 30, "bounded original export inputs")
     before = {str(path): fingerprint(path) for path in paths}
     report, observations = validate_capture(source)
+    binding = recorder_binding(report["inputs_before"]["recorder"], fingerprint(source / "capture.json"))
     directory = options.output_dir.resolve()
     directory.mkdir(parents=False, exist_ok=False)
     shared = all(observations["client"][key] == observations["server"][key]
@@ -705,6 +763,7 @@ def export(options):
                                                              observations[side]["projection"])["compared_counts"]}
                          for side in KINDS},
         "private_retention": "Complete original stdout/stderr, receipts, null-bind diagnostics and after-state remain in the retained original capture; this public projection does not replay them",
+        "export_binding": binding,
     }
     require({str(path): fingerprint(path) for path in paths} == before, "original export inputs changed")
     write_json(directory / "dimension_provenance.json", provenance)
@@ -713,11 +772,7 @@ def export(options):
 
 
 def validate_fixtures(directory, provenance_sha256):
-    path = directory / "dimension_provenance.json"
-    require(path.stat().st_size <= 128 * 1024, "bounded public provenance")
-    require(re.fullmatch(r"[0-9a-f]{64}", provenance_sha256) and
-            fingerprint(path)["sha256"] == provenance_sha256, "pinned public Dimension provenance")
-    provenance = json.loads(path.read_text(encoding="ascii"))
+    provenance = public_provenance(directory, provenance_sha256)
     require(provenance["schema"] == "DIMENSION_ORIGINAL_PROJECTION_V1" and provenance["scope"] == SCOPE,
             "public original projection schema/scope")
     inputs = provenance["origin"]["inputs"]
@@ -726,7 +781,9 @@ def validate_fixtures(directory, provenance_sha256):
     for name, digest in {**process.PROFILE, **JARS, "helper": OBSERVER_SHA256,
                          "process_helper": PROCESS_SHA256}.items():
         require(inputs[name]["sha256"] == digest, "public original profile/source/archive binding: " + name)
-    require(inputs["recorder"] == fingerprint(Path(__file__).resolve()), "frozen capture/export/verifier source binding")
+    binding = recorder_binding(inputs["recorder"], provenance["origin"]["capture"])
+    if binding["family"] == "current-recorder" or "export_binding" in provenance:
+        require(provenance.get("export_binding") == binding, "explicit exported recorder/checker binding")
     require(set(provenance["origin"]["classes"]) == CLASSES, "public compiled observer inventory")
     require(set(provenance["origin"]["raw_transcripts"]) == set(KINDS) and
             set(provenance["sides"]) == set(KINDS), "both original-side bindings")
@@ -859,9 +916,9 @@ def replay(options):
     directory.mkdir(parents=True, exist_ok=False)
     inputs = {"probe": probe, "checker": Path(__file__).resolve(), "observer": OBSERVER,
               "process_helper": PROCESS, "capture": source / "capture.json",
-              "dimension": ROOT / "src/world/dimension/dimension.c",
-              "dimension_header": ROOT / "include/mc/world/dimension/dimension.h",
-              "dimension_internal": ROOT / "src/world/dimension/dimension_internal.h",
+              "dimension": ROOT / "src/world/dimension/world_provider.c",
+              "dimension_header": ROOT / "include/mc/world/dimension/world_provider.h",
+              "dimension_internal": ROOT / "src/world/dimension/world_provider_internal.h",
               "probe_source": ROOT / "tests/world/dimension/dimension_observation_probe.c",
               "biome": ROOT / "src/world/biome/biome.c",
               "biome_header": ROOT / "include/mc/world/biome/biome.h",
@@ -877,13 +934,20 @@ def replay(options):
               "capture": str(source)}
     before = None
     try:
+        binding = captured_recorder_binding(source)
+        inputs["actual_recorder"] = ROOT / binding["actual_recorder"]["path"]
         require(len(inputs) <= 40 and all(path.is_file() for path in inputs.values()), "bounded complete replay inputs")
         before = {name: fingerprint(path) for name, path in inputs.items()}
         report["inputs_before"] = before
         for name, path in inputs.items():
             if name != "probe" and not name.startswith("original/"):
-                write_bytes(directory / (name + path.suffix), path.read_bytes())
+                destination = directory / (name + path.suffix)
+                write_bytes(destination, path.read_bytes())
+                require(fingerprint(destination) == before[name], "retained replay input copy: " + name)
         original_report, observations = validate_capture(source)
+        require(recorder_binding(original_report["inputs_before"]["recorder"]) == binding,
+                "retained recorder selection changed")
+        report["recorder_binding"] = binding
         report["original_capture"] = {"inputs": original_report["inputs_before"],
                                       "classes": original_report["classes_before"]}
         result = execute_replay(probe, observations, directory, receipts,
@@ -912,9 +976,9 @@ def verify(options):
     directory.mkdir(parents=True, exist_ok=False)
     inputs = {"probe": probe, "checker": Path(__file__).resolve(), "observer": OBSERVER,
               "process_helper": PROCESS, "provenance": source / "dimension_provenance.json",
-              "dimension": ROOT / "src/world/dimension/dimension.c",
-              "dimension_header": ROOT / "include/mc/world/dimension/dimension.h",
-              "dimension_internal": ROOT / "src/world/dimension/dimension_internal.h",
+              "dimension": ROOT / "src/world/dimension/world_provider.c",
+              "dimension_header": ROOT / "include/mc/world/dimension/world_provider.h",
+              "dimension_internal": ROOT / "src/world/dimension/world_provider_internal.h",
               "probe_source": ROOT / "tests/world/dimension/dimension_observation_probe.c",
               "biome": ROOT / "src/world/biome/biome.c",
               "biome_header": ROOT / "include/mc/world/biome/biome.h",
@@ -927,13 +991,21 @@ def verify(options):
               "children": receipts, "provenance_sha256": options.provenance_sha256,
               "environment": {name: os.environ.get(name) for name in ("ASAN_OPTIONS", "UBSAN_OPTIONS")}}
     try:
+        preliminary = public_provenance(source, options.provenance_sha256)
+        binding = recorder_binding(preliminary["origin"]["inputs"]["recorder"], preliminary["origin"]["capture"])
+        inputs["actual_recorder"] = ROOT / binding["actual_recorder"]["path"]
         require(len(inputs) <= 18 and all(path.is_file() for path in inputs.values()), "bounded complete public replay inputs")
         before = {name: fingerprint(path) for name, path in inputs.items()}
         report["inputs_before"] = before
         for name, path in inputs.items():
             if name != "probe":
-                write_bytes(directory / (name.replace("/", "-") + path.suffix), path.read_bytes())
+                destination = directory / (name.replace("/", "-") + path.suffix)
+                write_bytes(destination, path.read_bytes())
+                require(fingerprint(destination) == before[name], "retained public replay input copy: " + name)
         provenance, observations = validate_fixtures(source, options.provenance_sha256)
+        require(recorder_binding(provenance["origin"]["inputs"]["recorder"], provenance["origin"]["capture"]) == binding,
+                "public recorder selection changed")
+        report["recorder_binding"] = binding
         report["original_provenance"] = provenance
         report.update(status="passed", **execute_replay(probe, observations, directory, receipts))
     except BaseException as error:

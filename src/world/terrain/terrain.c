@@ -1,6 +1,6 @@
 #include "terrain_internal.h"
 
-bool mc_terrain_normal_init(mc_terrain_normal_state *state, int64_t seed) {
+bool mc_terrain_overworld_init(mc_terrain_overworld_state *state, int64_t seed) {
     if (state == NULL) {
         return false;
     }
@@ -23,39 +23,40 @@ static bool terrain_span_valid(const double *data, size_t length, size_t minimum
     return data != NULL && length >= minimum && length <= SIZE_MAX / sizeof(*data);
 }
 
-static bool terrain_density_valid(const mc_terrain_normal_state *state,
-                                  const mc_terrain_normal_workspace *workspace,
-                                  const mc_terrain_normal_climate *climate,
+static bool terrain_density_valid(const mc_terrain_overworld_state *state,
+                                  const mc_terrain_overworld_workspace *workspace,
+                                  const mc_terrain_overworld_climate *climate,
                                   mc_terrain_double_span density) {
     return state != NULL && workspace != NULL && climate != NULL &&
            terrain_span_valid(climate->temperature, climate->temperature_length,
-                              MC_TERRAIN_NORMAL_CLIMATE_VALUES) &&
+                              MC_TERRAIN_OVERWORLD_CLIMATE_VALUES) &&
            terrain_span_valid(climate->rainfall, climate->rainfall_length,
-                              MC_TERRAIN_NORMAL_CLIMATE_VALUES) &&
+                              MC_TERRAIN_OVERWORLD_CLIMATE_VALUES) &&
            terrain_span_valid(workspace->mix.data, workspace->mix.length,
-                              MC_TERRAIN_NORMAL_DENSITY_VALUES) &&
+                              MC_TERRAIN_OVERWORLD_DENSITY_VALUES) &&
            terrain_span_valid(workspace->low.data, workspace->low.length,
-                              MC_TERRAIN_NORMAL_DENSITY_VALUES) &&
+                              MC_TERRAIN_OVERWORLD_DENSITY_VALUES) &&
            terrain_span_valid(workspace->high.data, workspace->high.length,
-                              MC_TERRAIN_NORMAL_DENSITY_VALUES) &&
+                              MC_TERRAIN_OVERWORLD_DENSITY_VALUES) &&
            terrain_span_valid(workspace->column_scale.data, workspace->column_scale.length,
-                              MC_TERRAIN_NORMAL_COLUMN_VALUES) &&
+                              MC_TERRAIN_OVERWORLD_COLUMN_VALUES) &&
            terrain_span_valid(workspace->column_bias.data, workspace->column_bias.length,
-                              MC_TERRAIN_NORMAL_COLUMN_VALUES) &&
-           terrain_span_valid(density.data, density.length, MC_TERRAIN_NORMAL_DENSITY_VALUES);
+                              MC_TERRAIN_OVERWORLD_COLUMN_VALUES) &&
+           terrain_span_valid(density.data, density.length, MC_TERRAIN_OVERWORLD_DENSITY_VALUES);
 }
 
 static bool terrain_base_valid(const double *density, size_t density_length,
                                const double *temperature, size_t temperature_length,
                                const uint8_t *blocks, size_t blocks_length) {
-    return terrain_span_valid(density, density_length, MC_TERRAIN_NORMAL_DENSITY_VALUES) &&
-           terrain_span_valid(temperature, temperature_length, MC_TERRAIN_NORMAL_CLIMATE_VALUES) &&
-           blocks != NULL && blocks_length >= MC_TERRAIN_NORMAL_BLOCKS;
+    return terrain_span_valid(density, density_length, MC_TERRAIN_OVERWORLD_DENSITY_VALUES) &&
+           terrain_span_valid(temperature, temperature_length,
+                              MC_TERRAIN_OVERWORLD_CLIMATE_VALUES) &&
+           blocks != NULL && blocks_length >= MC_TERRAIN_OVERWORLD_BLOCKS;
 }
 
-bool mc_terrain_normal_density_channel(const mc_terrain_normal_state *state,
-                                       mc_terrain_density_channel requested, int32_t chunk_x,
-                                       int32_t chunk_z, mc_terrain_double_span out) {
+bool mc_terrain_overworld_density_channel(const mc_terrain_overworld_state *state,
+                                          mc_terrain_density_channel requested, int32_t chunk_x,
+                                          int32_t chunk_z, mc_terrain_double_span out) {
     if (state == NULL) {
         return false;
     }
@@ -64,23 +65,23 @@ bool mc_terrain_normal_density_channel(const mc_terrain_normal_state *state,
     switch (requested) {
         case MC_TERRAIN_DENSITY_SCALE:
             channel = (mc_noise_octaves){state->column_scale_layers, 10};
-            minimum = MC_TERRAIN_NORMAL_COLUMN_VALUES;
+            minimum = MC_TERRAIN_OVERWORLD_COLUMN_VALUES;
             break;
         case MC_TERRAIN_DENSITY_BIAS:
             channel = (mc_noise_octaves){state->column_bias_layers, 16};
-            minimum = MC_TERRAIN_NORMAL_COLUMN_VALUES;
+            minimum = MC_TERRAIN_OVERWORLD_COLUMN_VALUES;
             break;
         case MC_TERRAIN_DENSITY_MIX:
             channel = (mc_noise_octaves){state->mix_layers, 8};
-            minimum = MC_TERRAIN_NORMAL_DENSITY_VALUES;
+            minimum = MC_TERRAIN_OVERWORLD_DENSITY_VALUES;
             break;
         case MC_TERRAIN_DENSITY_LOW:
             channel = (mc_noise_octaves){state->low_layers, 16};
-            minimum = MC_TERRAIN_NORMAL_DENSITY_VALUES;
+            minimum = MC_TERRAIN_OVERWORLD_DENSITY_VALUES;
             break;
         case MC_TERRAIN_DENSITY_HIGH:
             channel = (mc_noise_octaves){state->high_layers, 16};
-            minimum = MC_TERRAIN_NORMAL_DENSITY_VALUES;
+            minimum = MC_TERRAIN_OVERWORLD_DENSITY_VALUES;
             break;
         default:
             return false;
@@ -119,25 +120,26 @@ bool mc_terrain_normal_density_channel(const mc_terrain_normal_state *state,
     return mc_noise_octaves_fill(&channel, &grid, out.data, out.length);
 }
 
-static void terrain_channels(const mc_terrain_normal_state *state,
-                             const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
+static void terrain_channels(const mc_terrain_overworld_state *state,
+                             const mc_terrain_overworld_workspace *workspace, int32_t chunk_x,
                              int32_t chunk_z) {
     /* All counts and spans were validated before mutation. The short original
      * overload supplies Y=10, height=1, Y scale=1; its last double is unused. */
-    (void)mc_terrain_normal_density_channel(state, MC_TERRAIN_DENSITY_SCALE, chunk_x, chunk_z,
-                                            workspace->column_scale);
-    (void)mc_terrain_normal_density_channel(state, MC_TERRAIN_DENSITY_BIAS, chunk_x, chunk_z,
-                                            workspace->column_bias);
-    (void)mc_terrain_normal_density_channel(state, MC_TERRAIN_DENSITY_MIX, chunk_x, chunk_z,
-                                            workspace->mix);
-    (void)mc_terrain_normal_density_channel(state, MC_TERRAIN_DENSITY_LOW, chunk_x, chunk_z,
-                                            workspace->low);
-    (void)mc_terrain_normal_density_channel(state, MC_TERRAIN_DENSITY_HIGH, chunk_x, chunk_z,
-                                            workspace->high);
+    (void)mc_terrain_overworld_density_channel(state, MC_TERRAIN_DENSITY_SCALE, chunk_x, chunk_z,
+                                               workspace->column_scale);
+    (void)mc_terrain_overworld_density_channel(state, MC_TERRAIN_DENSITY_BIAS, chunk_x, chunk_z,
+                                               workspace->column_bias);
+    (void)mc_terrain_overworld_density_channel(state, MC_TERRAIN_DENSITY_MIX, chunk_x, chunk_z,
+                                               workspace->mix);
+    (void)mc_terrain_overworld_density_channel(state, MC_TERRAIN_DENSITY_LOW, chunk_x, chunk_z,
+                                               workspace->low);
+    (void)mc_terrain_overworld_density_channel(state, MC_TERRAIN_DENSITY_HIGH, chunk_x, chunk_z,
+                                               workspace->high);
 }
 
-void mc_terrain_normal_density_column(const mc_terrain_normal_workspace *workspace, size_t column,
-                                      double temperature, double rainfall, double *density) {
+void mc_terrain_overworld_density_column(const mc_terrain_overworld_workspace *workspace,
+                                         size_t column, double temperature, double rainfall,
+                                         double *density) {
     size_t index = column * 17;
     double wetness = rainfall * temperature;
     wetness = 1.0 - wetness;
@@ -204,8 +206,8 @@ void mc_terrain_normal_density_column(const mc_terrain_normal_workspace *workspa
     }
 }
 
-static void terrain_compose(const mc_terrain_normal_workspace *workspace,
-                            const mc_terrain_normal_climate *climate, double *density) {
+static void terrain_compose(const mc_terrain_overworld_workspace *workspace,
+                            const mc_terrain_overworld_climate *climate, double *density) {
     size_t column = 0;
     for (size_t x = 0; x < 5; ++x) {
         size_t climate_x = x * 3 + 1;
@@ -214,24 +216,24 @@ static void terrain_compose(const mc_terrain_normal_workspace *workspace,
             size_t climate_index = climate_x * 16 + climate_z;
             double temperature = climate->temperature[climate_index];
             double rainfall = climate->rainfall[climate_index];
-            mc_terrain_normal_density_column(workspace, column, temperature, rainfall, density);
+            mc_terrain_overworld_density_column(workspace, column, temperature, rainfall, density);
             ++column;
         }
     }
 }
 
-static void terrain_density_fill(const mc_terrain_normal_state *state,
-                                 const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
-                                 int32_t chunk_z, const mc_terrain_normal_climate *climate,
+static void terrain_density_fill(const mc_terrain_overworld_state *state,
+                                 const mc_terrain_overworld_workspace *workspace, int32_t chunk_x,
+                                 int32_t chunk_z, const mc_terrain_overworld_climate *climate,
                                  double *density) {
     terrain_channels(state, workspace, chunk_x, chunk_z);
     terrain_compose(workspace, climate, density);
 }
 
-bool mc_terrain_normal_density(const mc_terrain_normal_state *state,
-                               const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
-                               int32_t chunk_z, const mc_terrain_normal_climate *climate,
-                               mc_terrain_double_span density) {
+bool mc_terrain_overworld_density(const mc_terrain_overworld_state *state,
+                                  const mc_terrain_overworld_workspace *workspace, int32_t chunk_x,
+                                  int32_t chunk_z, const mc_terrain_overworld_climate *climate,
+                                  mc_terrain_double_span density) {
     if (!terrain_density_valid(state, workspace, climate, density)) {
         return false;
     }
@@ -266,13 +268,13 @@ static void terrain_base_cursor_cell(mc_terrain_base_cursor *cursor) {
     terrain_base_cursor_slice(cursor);
 }
 
-void mc_terrain_normal_base_cursor_init(mc_terrain_base_cursor *cursor, const double *density) {
+void mc_terrain_overworld_base_cursor_init(mc_terrain_base_cursor *cursor, const double *density) {
     *cursor = (mc_terrain_base_cursor){.density = density};
     terrain_base_cursor_cell(cursor);
 }
 
-bool mc_terrain_normal_base_cursor_get(const mc_terrain_base_cursor *cursor,
-                                       mc_terrain_base_voxel *out) {
+bool mc_terrain_overworld_base_cursor_get(const mc_terrain_base_cursor *cursor,
+                                          mc_terrain_base_voxel *out) {
     if (cursor->done) {
         return false;
     }
@@ -288,7 +290,7 @@ bool mc_terrain_normal_base_cursor_get(const mc_terrain_base_cursor *cursor,
     return true;
 }
 
-void mc_terrain_normal_base_cursor_advance(mc_terrain_base_cursor *cursor) {
+void mc_terrain_overworld_base_cursor_advance(mc_terrain_base_cursor *cursor) {
     if (cursor->done) {
         return;
     }
@@ -332,9 +334,9 @@ void mc_terrain_normal_base_cursor_advance(mc_terrain_base_cursor *cursor) {
 
 static void terrain_base_fill(const double *density, const double *temperature, uint8_t *blocks) {
     mc_terrain_base_cursor cursor;
-    mc_terrain_normal_base_cursor_init(&cursor, density);
+    mc_terrain_overworld_base_cursor_init(&cursor, density);
     mc_terrain_base_voxel voxel;
-    while (mc_terrain_normal_base_cursor_get(&cursor, &voxel)) {
+    while (mc_terrain_overworld_base_cursor_get(&cursor, &voxel)) {
         double heat = temperature[voxel.temperature_index];
         uint8_t block = 0;
         if (voxel.y < 64) {
@@ -344,12 +346,13 @@ static void terrain_base_fill(const double *density, const double *temperature, 
             block = 1;
         }
         blocks[voxel.index] = block;
-        mc_terrain_normal_base_cursor_advance(&cursor);
+        mc_terrain_overworld_base_cursor_advance(&cursor);
     }
 }
 
-bool mc_terrain_normal_base(const double *density, size_t density_length, const double *temperature,
-                            size_t temperature_length, uint8_t *blocks, size_t blocks_length) {
+bool mc_terrain_overworld_base(const double *density, size_t density_length,
+                               const double *temperature, size_t temperature_length,
+                               uint8_t *blocks, size_t blocks_length) {
     if (!terrain_base_valid(density, density_length, temperature, temperature_length, blocks,
                             blocks_length)) {
         return false;
@@ -358,11 +361,11 @@ bool mc_terrain_normal_base(const double *density, size_t density_length, const 
     return true;
 }
 
-bool mc_terrain_normal_generate(const mc_terrain_normal_state *state,
-                                const mc_terrain_normal_workspace *workspace, int32_t chunk_x,
-                                int32_t chunk_z, const mc_terrain_normal_climate *climate,
-                                mc_terrain_double_span density, uint8_t *blocks,
-                                size_t blocks_length) {
+bool mc_terrain_overworld_generate(const mc_terrain_overworld_state *state,
+                                   const mc_terrain_overworld_workspace *workspace, int32_t chunk_x,
+                                   int32_t chunk_z, const mc_terrain_overworld_climate *climate,
+                                   mc_terrain_double_span density, uint8_t *blocks,
+                                   size_t blocks_length) {
     if (!terrain_density_valid(state, workspace, climate, density) ||
         !terrain_base_valid(density.data, density.length, climate->temperature,
                             climate->temperature_length, blocks, blocks_length)) {

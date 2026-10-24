@@ -11,9 +11,9 @@
 #include "../../../../src/block/registry/registry_internal.h"
 #include "../../../../src/entity/entity_internal.h"
 #include "../../../../src/world/chunk/object_state_internal.h"
+#include "../../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../../src/world/runtime/construction_internal.h"
 #include "../../../../src/world/runtime/mutation/mutation_internal.h"
-#include "../../../../src/world/runtime/provider_internal.h"
 #include "../../../../src/world/runtime/runtime_internal.h"
 #include "../../../../src/world/storage/objects_internal.h"
 
@@ -71,10 +71,10 @@ typedef struct fixture {
     mc_registry_classes *registry[2];
     mc_entity_classes *entities[2];
     mc_world_runtime_classes *classes[2];
-    mc_world_dimension *dimensions[2];
+    mc_world_provider *dimensions[2];
     mc_world_store *stores[2];
     mc_world_runtime *worlds[2];
-    mc_world_provider_fields providers[2];
+    mc_chunk_provider_fields providers[2];
     mc_chunk_state *states[2][4];
     mc_world_chunk *chunks[2][4];
     mc_entity *carts[2];
@@ -247,7 +247,7 @@ static bool open_world(fixture *f, size_t side, const char *root) {
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 4;
     limits.max_scheduled_entries = 8;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(side == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                     : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[side], &limits, &f->worlds[side],
@@ -259,7 +259,7 @@ static bool open_world(fixture *f, size_t side, const char *root) {
     mc_world_runtime_construction state = {0};
     CHECK(mc_world_runtime_construction_get(f->worlds[side], &state) == MC_WORLD_STORAGE_OK &&
           state.phase == MC_WORLD_RUNTIME_READY && state.contexts_bound && state.cache_registered);
-    CHECK(mc_world_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[side] = true;
     for (size_t i = 0; i < COUNT(chunk_coordinates); ++i) {
@@ -725,7 +725,7 @@ static bool cleanup_fixture(fixture *f) {
         if (f->worlds[side] != NULL &&
             mc_world_runtime_free(f->worlds[side], NULL) != MC_WORLD_STORAGE_OK)
             return false;
-        mc_world_dimension_release(f->dimensions[side]);
+        mc_world_provider_release(f->dimensions[side]);
         if (mc_world_runtime_classes_free(f->classes[side], NULL) != MC_WORLD_STORAGE_OK ||
             mc_registry_classes_free(f->registry[side], NULL) != MC_REGISTRY_OK ||
             mc_entity_classes_free(f->entities[side]) != MC_ENTITY_OK)

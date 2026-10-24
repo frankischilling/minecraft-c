@@ -136,7 +136,7 @@ static bool shape_pool(const mc_entity_classes *classes) {
 static bool shape_world(fixture *f, size_t side, const char *root) {
     bool ok = false;
     CHECK(open_store(f, side, root));
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 1;
     limits.max_scheduled_entries = 0;
@@ -148,7 +148,7 @@ static bool shape_world(fixture *f, size_t side, const char *root) {
         .store = f->stores[side], .name = f->name, .seed = -99, .dimension = f->dimensions[side]};
     CHECK(mc_world_runtime_construct_world(f->worlds[side], &arguments, NULL) ==
           MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[side] = true;
     CHECK(f->worlds[side]->fallback.blank && f->providers[side].cache->count == 0 &&

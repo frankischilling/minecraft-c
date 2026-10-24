@@ -55,7 +55,7 @@ Unknown replacement List descriptors are not adopted as owning storage.
 
 Terminal native container retirement validates the complete typed ownership
 graph before releasing any occurrence. It then retires nearby results alongside
-World and Chunk Entity/Tile containers. It does not execute gameplay clear,
+World and Chunk Entity/TileEntity containers. It does not execute gameplay clear,
 removal, dirty stores, membership changes, callbacks or saves. Final World free
 uses the captured original descriptor even if source `R` was replaced.
 
@@ -76,7 +76,7 @@ List, including when ordinary clear releases an Entity's last result hold.
 
 Diagnostics retain the reached World and Chunk PCs, selected slice/index, native
 Entity hold cause, and the exact acquiring attempt's loading, activation,
-population, Registry and Tile descendants. Failure preserves the caller's result
+population, Registry and TileEntity descendants. Failure preserves the caller's result
 and all completed source effects. Native budgets and ownership admission do not
 claim identical Java ArrayList allocation-failure or garbage-collection timing.
 
@@ -97,6 +97,6 @@ Fresh original/native gather comparisons pass 353 exact successful rows and
 three precisely checked nullable-failure prefixes per side and compiler. Eight
 generic malformed Java collection cases are retained outside native replay.
 The [source map](../../reference/nearby-entities.md) records reproduction and
-the different original/native research setup. Original World provider traversal,
+the different original/native research setup. Original ChunkProvider traversal,
 genuine descendant reentry replacing R during acquisition, and whole-game
 movement/collision remain unqualified.

@@ -32,7 +32,7 @@ shortcut nor an implicit pool reset gives the same behavior. Native holds retain
 the actual pooled box and query List through their reached use.
 
 A rising transition writes notifying metadata one, notifies the current cell
-and the cell below, marks the cell's observer range and requests positional
+and the cell below, marks the cell's WorldAccess range and requests positional
 `random.click` at volume `0.3f`, pitch `0.6f`. A falling transition writes zero
 and follows the same order with pitch `0.5f`. A nonempty query then schedules
 the live receiver ID with its virtual delay of twenty ticks. Failures retain
@@ -78,6 +78,5 @@ explicit timestamps. Those regions are fixture inputs, not saved final pressure
 state or original observations. See [testing](../testing.md) for the full
 configuration and source-copy scope.
 
-Detector-rail helpers, other Entity constructors, nonempty concrete
-observer/sound dispatch, complete redstone propagation, tick draining and
+Detector-rail helpers, other Entity constructors, concrete presentation WorldAccess receivers, complete redstone propagation, tick draining and
 original-runtime pressure-plate equality remain unfinished.

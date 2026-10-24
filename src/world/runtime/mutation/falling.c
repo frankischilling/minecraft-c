@@ -148,7 +148,7 @@ static bool falling_predicate_active_use(const falling_frame *frame) {
         return falling_registry_fail(frame, 0, cause.status, &cause, cause.message);
     }
     ++classes->entered;
-    const mc_registry_status status = mc_registry_block_class_initialize(classes, MC_BLOCK_GK_EI);
+    const mc_registry_status status = mc_registry_block_class_initialize(classes, MC_BLOCK_SAND);
     --classes->entered;
     if (status == MC_REGISTRY_OK)
         return true;
@@ -382,8 +382,8 @@ static bool falling_private(const falling_frame *frame, int32_t x, int32_t y, in
 static bool falling_delay(const falling_frame *frame, int32_t *out) {
     falling_at(frame, 10);
     switch (frame->block->kind) {
-        case MC_BLOCK_GK_EI:
-        case MC_BLOCK_NE_IG:
+        case MC_BLOCK_SAND:
+        case MC_BLOCK_GRAVEL:
             *out = 3; /* Actual e/client or c/server: iconst_3, ireturn1. */
             return true;
         default:

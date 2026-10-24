@@ -3,8 +3,8 @@
 #include "../../../entity/entity_internal.h"
 #include "../../chunk/object_state_internal.h"
 #include "../../storage/objects_internal.h"
+#include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
-#include "../provider_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 
@@ -23,10 +23,10 @@
 
 mc_world_nearby_error mc_world_nearby_empty_error(void) {
     mc_world_nearby_error result = {.slice = SIZE_MAX, .index = SIZE_MAX};
-    result.tile = mc_live_tiles_empty_error();
+    result.tile_entity = mc_live_tile_entities_empty_error();
     result.batch = mc_world_entity_batch_empty_error();
     result.load_entity = mc_world_entity_load_empty_error();
-    result.query.registry = result.tile.registry;
+    result.query.registry = result.tile_entity.registry;
     return result;
 }
 
@@ -326,9 +326,9 @@ bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int3
     /* Detailed acquisition belongs to the installed concrete coordinator.
      * A different live provider may answer presence, but must not accidentally
      * dispatch this getter through the old provider's cached contexts. */
-    mc_world_provider_fields provider;
+    mc_chunk_provider_fields provider;
     mc_world_storage_error native = {0};
-    if (mc_world_provider_bind_fields(world->fields.v, &provider, &native) != MC_WORLD_STORAGE_OK) {
+    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &native) != MC_WORLD_STORAGE_OK) {
         cause(frame, native);
         return false;
     }
@@ -342,7 +342,7 @@ bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int3
     if (frame->query.acquisition != MC_CHUNK_ACQUIRE_OK) {
         frame->query.registry = child.registry;
         frame->query.population = child.population;
-        frame->tile = child.tile;
+        frame->tile_entity = child.tile_entity;
         frame->batch = child.batch;
         frame->load_entity = child.load_entity;
         frame->activation_bytecode = child.activation_bytecode;
@@ -393,7 +393,7 @@ static bool query(mc_world_runtime *world, mc_entity *excluded, const mc_entity_
             frame->query.provider_bytecode = 6;
             bool present;
             mc_world_storage_error child = {0};
-            if (mc_world_runtime_provider_contains(world, x, z, &present, &child) !=
+            if (mc_world_runtime_chunk_provider_contains(world, x, z, &present, &child) !=
                 MC_WORLD_STORAGE_OK) {
                 cause(frame, child);
                 return false;

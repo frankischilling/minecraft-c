@@ -29,7 +29,7 @@
 typedef struct callback_event {
     mc_chunk_state *chunk;
     size_t slice;
-    bool tiles;
+    bool tile_entities;
 } callback_event;
 
 typedef struct slot {
@@ -212,8 +212,8 @@ static mc_chunk_state *find_handle(const char *text) {
     return handles[id - 1u].chunk;
 }
 
-static bool register_tiles(void *world, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk) {
+static bool register_tile_entities(void *world, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     slot *owner = world;
     if (context != &owner->context || !chunk->active || owner->callback_count >= 9)
         return false;
@@ -243,7 +243,7 @@ static bool reset_cache(slot *owner) {
                                                 .world = owner,
                                                 .loader = &owner->loader,
                                                 .load = mc_world_store_load_callback,
-                                                .register_tiles = register_tiles,
+                                                .register_tile_entities = register_tile_entities,
                                                 .register_entities = register_entities};
     return mc_chunk_cache_init(&owner->cache, owner->entries, CACHE_LIMIT, owner->insertions,
                                LIST_LIMIT) &&
@@ -272,9 +272,10 @@ static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name) {
 
 static bool opaque(const mc_stored_chunk *owner) {
     const mc_nbt_tag *level = field(mc_stored_chunk_root(owner), "Level");
-    const mc_nbt_tag *entities = field(level, "Entities"), *tiles = field(level, "TileEntities");
+    const mc_nbt_tag *entities = field(level, "Entities"),
+                     *tile_entities = field(level, "TileEntities");
     return (entities != NULL && entities->value.list.length != 0) ||
-           (tiles != NULL && tiles->value.list.length != 0);
+           (tile_entities != NULL && tile_entities->value.list.length != 0);
 }
 
 static void print_info(const mc_level_info *info) {
@@ -407,9 +408,9 @@ static bool response(mc_world_regions *regions, mc_world_storage_status status,
         for (size_t i = 0; i < owner->callback_count; ++i) {
             callback_event *event = &owner->callbacks[i];
             format("%s{\"kind\":\"%s\",\"handle\":%zu,\"active\":%s,\"slice\":", i == 0 ? "" : ",",
-                   event->tiles ? "tiles" : "entities", identity(event->chunk),
+                   event->tile_entities ? "tiles" : "entities", identity(event->chunk),
                    event->chunk->active ? "true" : "false");
-            if (event->tiles)
+            if (event->tile_entities)
                 emit("null}");
             else
                 format("%zu}", event->slice);

@@ -1,21 +1,31 @@
 # Development status
 
-The [World access observer interface](world/observers.md) now dispatches typed
-cell, range, sound, particle, Entity-added and Tile-dirty callbacks. Its native
-controls pass 295 checks on MSVC and sanitized GCC/Clang, including live-list
-edits, retained receivers, failure prefixes and wire reentry across Worlds
-sharing a Registry. The existing-World wire probe also accepts declared
-constructor inputs; 52 controls per compiler check consumption, failure ordering
-and file preservation. Original nonempty observer traces, concrete presentation
-and tracking receivers, and original wire constructor-input admission remain
+The [WorldAccess interface](world/world-access.md) now dispatches typed
+cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its
+native controls pass 295 checks on MSVC and sanitized GCC/Clang, including live-list
+edits, retained receivers, failure prefixes and redstone reentry across Worlds
+sharing a Registry. The existing-World redstone probe also accepts declared
+constructor inputs. Its 52 controls per compiler check consumption, failure
+ordering and file preservation. Original nonempty WorldAccess traces, concrete presentation
+and tracking receivers, and original redstone constructor-input admission remain
 unfinished.
 
-The current local public/JDK suites pass all 619 tests across MSVC and sanitized
-GCC/Clang. All 587 C/header files pass formatting; controller mirrors and
-lifecycle interval controls also pass. These results cover native contracts and
-the existing finite replays; they do not establish new original observer parity.
+At `ef1434015420678559cfa3d3b2f21018c5b733ce`, the local public/JDK suites passed
+all 619 tests across MSVC and sanitized GCC/Clang. All 587 C/header files passed
+formatting; controller mirrors and lifecycle interval controls also passed.
+The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40052114598)
+passed all four jobs with the same 619-test and 587-file result. These results
+precede the [canonical naming migration](reference/minecraft-names.md).
 
-The [synchronous wire hooks](world/wire.md) now use actual World mutations,
+The renamed code also passes all 619 local tests and 587-file formatting,
+including the schema-2 redstone producer's native controls. Controller mirrors
+and lifecycle interval checks pass on Windows and Linux. Recorded fixtures keep
+their source pins, with explicit historical/current module families and a
+separate immutable WorldProvider recorder. These checks cover the represented
+native contracts and finite replays; original nonempty WorldAccess and redstone
+constructor-input correspondence remain unfinished.
+
+The [synchronous redstone hooks](world/redstone.md) now use actual World mutations,
 recursive strength updates and independently retained notification snapshots.
 The native contracts cover both sides, a 25-cell path, rise/decay, vertical
 connections, loops, drops and partial failures. A second 350-check case covers
@@ -29,19 +39,19 @@ retaining absolute World/cave Random differences. Linux Debug traces also match
 Set structure, plus 605 local observations of 151 retained snapshots. The
 comparison declares its storage and final-counter adaptations; twelve file-only
 Windows corruption controls reject the intended errors. A separate GCC Debug
-step comparison matches upward/downward wire paths and all retained arrays,
+step comparison matches upward/downward redstone paths and all retained arrays,
 while keeping absolute World/cave Random differences. Full World-level
-wire qualification, original callback-driven reentry comparison, wider persistence/failure
+redstone qualification, original callback-driven reentry comparison, wider persistence/failure
 schedules and the default identity source remain required.
 
-The [wire position Set](reference/wire-position-set.md) has reclaimable
+The [redstone position Set](reference/redstone-position-set.md) has reclaimable
 Registry storage, full coordinate equality, bucket/tree ordering and snapshots
 that survive clear/refill. Finite original comparisons pass conditionally on
 measured identity hashes on MSVC/GCC/Clang. Windows development tests pass;
 five Linux mounted-source timeouts pass separately from an identical native
 source copy. The reference record preserves the failed full-suite results and
-development-source attribution. Its [committed collection checkpoint](reference/wire-position-set.md#committed-collection-checkpoint)
-separately passes all 607 hosted public/JDK tests and predates wire integration.
+development-source attribution. Its [committed collection checkpoint](reference/redstone-position-set.md#committed-collection-checkpoint)
+separately passes all 607 hosted public/JDK tests and predates redstone integration.
 
 The [dedicated checkpoint](reference/dedicated-world-construction.md#committed-checkpoint)
 at `9c87827` passes all 622 local tests: 206 MSVC, 208 GCC and 208 Clang, with
@@ -130,10 +140,10 @@ Other implemented modules have separate contracts and verification scopes:
   [inventory, semantic NBT and storage](entity/minecart-inventory.md).
 - [Rails](world/rails.md), [World power queries](world/power.md),
   [pressure plates](world/pressure-plates.md) and
-  [Piston Tiles and geometry](world/tiles/piston.md).
+  [Piston TileEntities and geometry](world/tile-entities/piston.md).
 - [Item and FallingSand movement](entity/movement.md), including collision and
   reached World effects.
-- [Normal population](world/population/normal.md), its feature bodies and the
+- [Overworld population](world/population/overworld.md), its feature bodies and the
   [live save path](world/saving.md).
 
 The [finite Minecart constructor comparison](reference/minecart-construction.md#constructor-observations-and-qualification)

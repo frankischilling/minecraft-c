@@ -1,7 +1,7 @@
 /* Reuse genuine GAME constructors, resources, transport and joint teardown.
- * The old Tile scenario is compiled under another name, never executed here. */
+ * The old TileEntity scenario is compiled under another name, never executed here. */
 #define main mc_game_entities_tile_fixture_main
-#include "../tiles/test_tiles.c"
+#include "../tile_entities/test_tile_entities.c"
 #undef main
 
 #include "mc/entity/nbt/storage.h"
@@ -289,14 +289,17 @@ static bool ge_output(fixture *f, size_t slot, const int64_t *markers, size_t co
     ge_disk disk = {0};
     CHECK(ge_read(f, slot, &disk));
     const mc_nbt_tag *root = mc_nbt_document_root(disk.document), *level = field(root, "Level"),
-                     *list = field(level, "Entities"), *tiles = field(level, "TileEntities");
+                     *list = field(level, "Entities"),
+                     *tile_entities = field(level, "TileEntities");
     CHECK(field(root, "RootEntityExtra") != NULL &&
           field(root, "RootEntityExtra")->value.long_value == 901 &&
           field(level, "LevelEntityExtra") != NULL &&
           field(level, "LevelEntityExtra")->value.long_value == 902 && list != NULL &&
           list->type == MC_NBT_LIST && list->value.list.element_type == MC_NBT_COMPOUND &&
-          list->value.list.length == count && tiles != NULL && tiles->type == MC_NBT_LIST &&
-          tiles->value.list.element_type == MC_NBT_BYTE && tiles->value.list.length == 0);
+          list->value.list.length == count && tile_entities != NULL &&
+          tile_entities->type == MC_NBT_LIST &&
+          tile_entities->value.list.element_type == MC_NBT_BYTE &&
+          tile_entities->value.list.length == 0);
     for (size_t i = 0; i < count; ++i) {
         const mc_nbt_tag *record = list->value.list.items[i], *id = field(record, "id"),
                          *extra = field(record, markers[i] < 100 ? "UnknownExtra" : "EntityExtra");

@@ -8,7 +8,7 @@
  * Timestamp is an explicit native region-transport input. The concrete runtime
  * lifecycle uses its real platform clock; this entry does not sample a clock.
  * Hold the World, selected Info and exact Chunk through both session checks,
- * source field/List traversal, live Entity/Tile builds and region commit. Earlier q
+ * source field/List traversal, live Entity/TileEntity builds and region commit. Earlier q
  * changes survive failure; growth is published only after successful commit.
  * Every Item occurrence calls its actual Boolean serializer in slice/List
  * order, including duplicates and false/dead results. Other Entity types are

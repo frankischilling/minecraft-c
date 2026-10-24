@@ -55,7 +55,7 @@ const char *mc_stored_chunk_status_string(mc_stored_chunk_status status) {
         case MC_STORED_CHUNK_INVALID_SHAPE:
             return "unsupported chunk array shape";
         case MC_STORED_CHUNK_UNSUPPORTED_EDIT:
-            return "unsupported entity or tile edit";
+            return "unsupported entity or TileEntity edit";
         case MC_STORED_CHUNK_LIMIT:
             return "resource limit";
         case MC_STORED_CHUNK_ALLOCATION_FAILED:
@@ -139,7 +139,7 @@ static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk, bool 
         return stored_status(error, MC_STORED_CHUNK_MISSING_LEVEL, "Level");
     if (stored_get(level, "Blocks") == NULL)
         return stored_status(error, MC_STORED_CHUNK_MISSING_BLOCKS, "Blocks");
-    const mc_nbt_tag *x, *z, *populated, *entities = NULL, *tiles = NULL;
+    const mc_nbt_tag *x, *z, *populated, *entities = NULL, *tile_entities = NULL;
     if (!stored_typed(level, "xPos", MC_NBT_INT, &x, error) ||
         !stored_typed(level, "zPos", MC_NBT_INT, &z, error) ||
         !stored_array(level, "Blocks", chunk->blocks, sizeof(chunk->blocks), error) ||
@@ -154,10 +154,10 @@ static mc_stored_chunk_status stored_decode_fields(mc_stored_chunk *chunk, bool 
         return error == NULL ? MC_STORED_CHUNK_INVALID_FIELD : error->status;
     }
     if (!game && (!stored_list(level, "Entities", &entities, error) ||
-                  !stored_list(level, "TileEntities", &tiles, error))) {
+                  !stored_list(level, "TileEntities", &tile_entities, error))) {
         return error == NULL ? MC_STORED_CHUNK_INVALID_FIELD : error->status;
     }
-    (void)tiles;
+    (void)tile_entities;
     chunk->state.x = x == NULL ? 0 : x->value.int_value;
     chunk->state.z = z == NULL ? 0 : z->value.int_value;
     chunk->state.terrain_populated = populated != NULL && populated->value.byte_value != 0;
@@ -278,12 +278,12 @@ static bool stored_same_array(const mc_nbt_tag *level, const char *name, const u
 
 static bool stored_supported(const mc_stored_chunk *chunk, const mc_nbt_tag *level) {
     const mc_nbt_tag *entities = stored_get(level, "Entities");
-    const mc_nbt_tag *tiles = stored_get(level, "TileEntities");
+    const mc_nbt_tag *tile_entities = stored_get(level, "TileEntities");
     bool has_entities = entities != NULL && entities->value.list.length != 0;
-    bool has_tiles = tiles != NULL && tiles->value.list.length != 0;
+    bool has_tile_entities = tile_entities != NULL && tile_entities->value.list.length != 0;
     if (chunk->state.has_entities != has_entities)
         return false;
-    if (!has_entities && !has_tiles)
+    if (!has_entities && !has_tile_entities)
         return true;
     const mc_nbt_tag *x = stored_get(level, "xPos"), *z = stored_get(level, "zPos");
     const mc_nbt_tag *populated = stored_get(level, "TerrainPopulated");
@@ -460,7 +460,7 @@ mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, 
 
 mc_stored_chunk_status mc_stored_chunk_build_game_records(
     const mc_stored_chunk *stored, const mc_chunk_state *state, const mc_world_chunk *chunk,
-    int64_t world_time, const mc_nbt_tag *entity_records, const mc_nbt_tag *tile_records,
+    int64_t world_time, const mc_nbt_tag *entity_records, const mc_nbt_tag *tile_entity_records,
     const mc_nbt_tag *baseline_entities, const bool *consumed, size_t consumed_count,
     const mc_nbt_limits *requested, mc_nbt_tree **out, mc_stored_chunk_error *error) {
     mc_nbt_limits limits;
@@ -474,8 +474,8 @@ mc_stored_chunk_status mc_stored_chunk_build_game_records(
         entity_records->value.list.element_type != MC_NBT_COMPOUND ||
         (entity_records->value.list.length != 0 && entity_records->value.list.items == NULL))
         return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "Entities");
-    if (tile_records == NULL || tile_records->type != MC_NBT_LIST ||
-        tile_records->value.list.element_type != MC_NBT_COMPOUND)
+    if (tile_entity_records == NULL || tile_entity_records->type != MC_NBT_LIST ||
+        tile_entity_records->value.list.element_type != MC_NBT_COMPOUND)
         return stored_status(error, MC_STORED_CHUNK_INVALID_FIELD, "TileEntities");
 
     const mc_nbt_tag *baseline = stored == NULL ? NULL : mc_stored_chunk_root(stored);
@@ -496,7 +496,7 @@ mc_stored_chunk_status mc_stored_chunk_build_game_records(
     }
     if (old_count > limits.max_elements ||
         entity_records->value.list.length > limits.max_elements ||
-        tile_records->value.list.length > limits.max_elements)
+        tile_entity_records->value.list.length > limits.max_elements)
         return stored_status(error, MC_STORED_CHUNK_LIMIT, NULL);
     size_t unknown_count = 0;
     for (size_t index = 0; index < old_count; ++index) {
@@ -569,7 +569,7 @@ mc_stored_chunk_status mc_stored_chunk_build_game_records(
         entity_items[emitted++] = entity_records->value.list.items[next_entity++];
     fields[9].value.list.items = entity_count == 0 ? NULL : entity_items;
     fields[9].value.list.length = entity_count;
-    fields[10].value.list = tile_records->value.list;
+    fields[10].value.list = tile_entity_records->value.list;
     uint16_t level_name[16];
     mc_nbt_tag replacement = {0}, root = {0};
     replacement.type = MC_NBT_COMPOUND;

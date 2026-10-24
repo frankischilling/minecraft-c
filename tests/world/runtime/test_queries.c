@@ -7,8 +7,8 @@
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/block/registry/runtime_internal.h"
 #include "../../../src/world/chunk/object_state_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/files.h"
 #include "../../../src/world/storage/objects_internal.h"
@@ -52,7 +52,7 @@ typedef struct resource {
     mc_registry_classes *registry;
     mc_world_runtime_classes *classes;
     mc_world_runtime *world;
-    mc_world_provider_fields *provider;
+    mc_chunk_provider_fields *provider;
     mc_chunk_state *captured, *replacement;
     size_t opens, closes, guarded;
     bool bad, replaced;
@@ -73,8 +73,8 @@ typedef struct fixture {
     mc_registry_classes *registry[2];
     mc_world_runtime_classes *classes[2];
     mc_world_runtime *worlds[8];
-    mc_world_dimension *dimensions[4];
-    mc_world_provider_fields providers[4];
+    mc_world_provider *dimensions[4];
+    mc_chunk_provider_fields providers[4];
     bool bound[4];
     mc_chunk_state *normal[4][2];
     child children[16];
@@ -351,7 +351,7 @@ static bool create_world(fixture *f, size_t slot) {
     /* Two additional real publications support the spring radius controls.
      * Later capacity trials still fill this owner and assert its exact limit. */
     limits.max_provider_chunks = 10;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[slot % 2u], &limits, &f->worlds[slot],
@@ -361,7 +361,7 @@ static bool create_world(fixture *f, size_t slot) {
     CHECK(mc_world_runtime_construct_world(f->worlds[slot], &args, NULL) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_construction_get(f->worlds[slot], &state) == MC_WORLD_STORAGE_OK &&
           state.phase == MC_WORLD_RUNTIME_READY && state.contexts_bound && state.cache_registered);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(f->providers[slot].cache->count == 0 && f->providers[slot].cache->insertion_count == 0 &&
@@ -908,7 +908,7 @@ static bool cleanup_fixture(fixture *f, bool verify_retired) {
         f->worlds[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->classes); ++i)
         if (mc_world_runtime_classes_free(f->classes[i], NULL) != MC_WORLD_STORAGE_OK)
             return false;
@@ -1633,7 +1633,7 @@ cleanup:
 static bool nullable_block_provider(fixture *f, size_t side) {
     bool ok = false, changed = true;
     mc_world_runtime *w = f->worlds[side];
-    mc_world_provider *provider = w->fields.v;
+    mc_chunk_provider *provider = w->fields.v;
     int32_t block = -123, metadata = -456, outside = -789;
     mc_world_storage_error block_error, metadata_error, write_error, outside_error;
     w->fields.v = NULL;
@@ -1777,7 +1777,7 @@ static bool block_light_contracts(fixture *f, size_t side) {
     CHECK(status == MC_WORLD_STORAGE_OK && cleared(&e));
     const unsigned int field_pc[] = {46, 57, 68, 79};
     for (size_t i = 0; i < COUNT(field_pc); ++i) {
-        mc_world_provider *provider = w->fields.v;
+        mc_chunk_provider *provider = w->fields.v;
         saved_static = r->blocks.named[named[i]];
         r->blocks.named[named[i]] = NULL;
         w->fields.v = NULL;
@@ -1815,7 +1815,7 @@ static bool block_light_contracts(fixture *f, size_t side) {
           w->local_leases == 0 &&
           mc_world_store_entity_containers_validate(f->stores[side], w, NULL) ==
               MC_WORLD_STORAGE_OK);
-    mc_world_provider *provider = w->fields.v;
+    mc_chunk_provider *provider = w->fields.v;
     w->fields.v = NULL;
     value = 777;
     status = mc_world_runtime_block_light(w, 8, 128, 8, &value, &e);

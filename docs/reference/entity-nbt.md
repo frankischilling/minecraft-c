@@ -47,7 +47,7 @@ Map allocations and cached first failure without initializing target Entities.
 Class tests join all 13 Biome logical handles to the existing canonical cells,
 exercise both WorldClasses binding orders and verify failed-join hold rollback.
 Batch tests distinguish whole-addAll from interleaved single insertion through
-a genuine late observer failure that retains all three appended occurrences.
+a genuine late WorldAccess failure that retains all three appended occurrences.
 
 The source methods do not preserve unknown Entity/Stack tags in a fresh record.
 The native semantic writer follows that known-field schema. Separate retained

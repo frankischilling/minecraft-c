@@ -3,18 +3,18 @@
 
 #include "mc/world/runtime/loading/entity_errors.h"
 #include "mc/world/runtime/runtime.h"
-#include "mc/world/runtime/tiles/errors.h"
+#include "mc/world/runtime/tile_entities/errors.h"
 
 typedef struct mc_world_game_load_error {
     mc_world_storage_status status;
     mc_world_storage_error cause;
     unsigned int region_bytecode, builder_bytecode;
-    mc_live_tile_error tile;
+    mc_live_tile_entity_error tile_entity;
     mc_world_entity_load_error entity;
 } mc_world_game_load_error;
 
 /* Concrete GAME coordinator above persistence: the same Store-owned decoded
- * state/header remains leased through Entity then Tile import. Normalization
+ * state/header remains leased through Entity then TileEntity import. Normalization
  * and ordinary loader output occur only after both loops finish. Failed stages
  * remain owned and inspectable, with their completed source prefixes intact.
  * Item records use the actual bound factory and direct Chunk insertion. Caller holds

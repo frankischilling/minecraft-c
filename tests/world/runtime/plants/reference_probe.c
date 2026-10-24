@@ -437,7 +437,7 @@ static bool reference_destroy(fixture *f) {
             return false;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->classes); ++i) {
         if (f->classes[i] != NULL &&
             mc_world_runtime_classes_free(f->classes[i], NULL) != MC_WORLD_STORAGE_OK)
@@ -501,7 +501,7 @@ static bool reference_observe(reference_json *json, const reference_request *req
     mc_java_random_seed(&supplied, request->seed);
     const mc_block *block;
     if (mc_registry_block_get(f->registry[side], request->id, &block, NULL) != MC_REGISTRY_OK ||
-        block == NULL || (request->action == REFERENCE_GROW && block->kind != MC_BLOCK_HE_EU) ||
+        block == NULL || (request->action == REFERENCE_GROW && block->kind != MC_BLOCK_SAPLING) ||
         mc_world_runtime_call_enter(world, NULL) != MC_WORLD_STORAGE_OK)
         goto done;
     entered = true;

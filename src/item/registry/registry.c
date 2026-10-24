@@ -22,7 +22,7 @@ mc_registry_status mc_registry_classes_initialize_items(mc_registry_classes *cla
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "registry owner");
     if (classes->entered != 0)
         return diagnostic(error, MC_REGISTRY_BUSY, "registry initialization entered");
-    const mc_registry_class_state *state = &classes->item_states[MC_ITEM_GM_EJ];
+    const mc_registry_class_state *state = &classes->item_states[MC_ITEM_BASE];
     if (state->phase == MC_REGISTRY_READY)
         return diagnostic(error, MC_REGISTRY_OK, NULL);
     if (state->phase == MC_REGISTRY_INITIALIZING)
@@ -49,7 +49,7 @@ mc_registry_status mc_registry_items_active_use(mc_registry_classes *classes) {
     if (classes->entered == 0)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT,
                                 "Item active use requires an admitted initialization flow", NULL);
-    mc_registry_class_state *state = &classes->item_states[MC_ITEM_GM_EJ];
+    mc_registry_class_state *state = &classes->item_states[MC_ITEM_BASE];
     if (state->phase == MC_REGISTRY_READY || state->phase == MC_REGISTRY_INITIALIZING)
         return MC_REGISTRY_OK;
     if (state->phase == MC_REGISTRY_FAILED) {
@@ -105,7 +105,7 @@ mc_registry_status mc_registry_classes_inspect_items(const mc_registry_classes *
                                                      mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Item view arguments");
-    const mc_registry_class_state *state = &classes->item_states[MC_ITEM_GM_EJ];
+    const mc_registry_class_state *state = &classes->item_states[MC_ITEM_BASE];
     *out = (mc_registry_item_view){.phase = state->phase,
                                    .initializer_pc = state->pc,
                                    .named_items = classes->items.named_items,

@@ -16,13 +16,13 @@ void mc_world_runtime_entity_list_release(mc_world_runtime *world);
  * construction World/class, coordinate/provider or relocation gate is added.
  * Source input is typed Entity/NULL; arbitrary untyped values are unsupported.
  * Destination getfield1/addAll5 precedes input size15/get26/known cast31 and
- * observer34. Append the WHOLE batch before observers; retain each nonnull
+ * world_access34. Append the WHOLE batch before WorldAccess receivers; retain each nonnull
  * occurrence separately. Native allocation/hold preadmission is transactional,
  * not Java ArrayList/OOM timing. Unknown replacement destinations admit only
  * the existing finite empty-source no-op. NULL destinations/inputs fail at5.
  * Deferred=true appends D only and returns11; processing/removal is separate.
  * No source membership/q/phase mutation, Chunk operation or callback is added.
- * Typed base observers run in live-index order after the complete append.
+ * Typed base WorldAccess receivers run in live-index order after the complete append.
  * A reached cast/invocation/callback failure retains that publication prefix.
  * A dedicated override enters its actual G.put only AFTER base success and
  * the current Entity-ID read. Deferred append never invokes that override.

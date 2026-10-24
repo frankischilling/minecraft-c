@@ -308,7 +308,7 @@ mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes) {
         return MC_REGISTRY_FAILED_INITIALIZATION;
     }
     classes->blocks_phase = MC_REGISTRY_INITIALIZING;
-    classes->block_states[MC_BLOCK_UU_NA].phase = MC_REGISTRY_INITIALIZING;
+    classes->block_states[MC_BLOCK_BASE].phase = MC_REGISTRY_INITIALIZING;
     mc_registry_initializer frame;
     mc_registry_initializer_enter(classes, &frame, "uu", "na", &classes->block_initializer_pc);
     mc_registry_status status = mc_registry_block_prefix(classes);
@@ -319,11 +319,11 @@ mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes) {
         status = mc_registry_finish_blocks(classes);
     }
     classes->blocks_phase = status == MC_REGISTRY_OK ? MC_REGISTRY_READY : MC_REGISTRY_FAILED;
-    classes->block_states[MC_BLOCK_UU_NA].phase = classes->blocks_phase;
-    classes->block_states[MC_BLOCK_UU_NA].pc = classes->block_initializer_pc;
+    classes->block_states[MC_BLOCK_BASE].phase = classes->blocks_phase;
+    classes->block_states[MC_BLOCK_BASE].pc = classes->block_initializer_pc;
     if (status != MC_REGISTRY_OK) {
         classes->block_failure = classes->last_error;
-        classes->block_states[MC_BLOCK_UU_NA].failure = classes->last_error;
+        classes->block_states[MC_BLOCK_BASE].failure = classes->last_error;
     }
     mc_registry_initializer_leave(classes, &frame);
     return status;
@@ -425,9 +425,9 @@ mc_registry_status mc_registry_classes_free(mc_registry_classes *classes,
     if (classes->entities != NULL &&
         mc_entity_classes_runtime_release_admit(classes->entities) != MC_ENTITY_OK)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Registry Entity binding release");
-    if (classes->wire_snapshot_count != 0)
-        return result(error, MC_REGISTRY_BUSY, "Registry wire snapshots remain");
-    mc_registry_wire_sets_retire(classes);
+    if (classes->redstone_snapshot_count != 0)
+        return result(error, MC_REGISTRY_BUSY, "Registry redstone snapshots remain");
+    mc_registry_redstone_sets_retire(classes);
     mc_registry_managed_retire(classes);
     mc_registry_stacks_retire(classes);
     mc_registry_allocation *record = classes->allocations;
@@ -525,11 +525,12 @@ mc_registry_status mc_registry_block_base(mc_registry_classes *classes, mc_block
     if (unsupported == NULL)
         return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Block material array", block);
     unsupported[id] = !material_value;
-    bool *tiles = classes->blocks.p;
+    bool *tile_entities = classes->blocks.p;
     mc_registry_block_stage(block, "uu", "na", 165);
-    if (tiles == NULL)
-        return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Block tile array", block);
-    tiles[id] = false;
+    if (tile_entities == NULL)
+        return mc_registry_fail(classes, MC_REGISTRY_NULL_REFERENCE, "Block TileEntity array",
+                                block);
+    tile_entities[id] = false;
     return MC_REGISTRY_OK;
 }
 
@@ -643,7 +644,7 @@ mc_registry_status mc_registry_block_random(mc_registry_classes *classes, mc_blo
     return MC_REGISTRY_OK;
 }
 
-const mc_tile_class_identity *mc_registry_sign_class(mc_registry_classes *classes) {
+const mc_tile_entity_class_identity *mc_registry_sign_class(mc_registry_classes *classes) {
     classes->sign_class.client_name = "yk";
     classes->sign_class.server_name = "pq";
     return &classes->sign_class;

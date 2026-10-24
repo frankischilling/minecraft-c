@@ -151,8 +151,8 @@ static mc_chunk_callback_result loader_maintenance(void *owner,
     return f.maintenance_result;
 }
 
-static mc_chunk_callback_result tiles(void *owner, const mc_chunk_lifecycle_context *context,
-                                      mc_chunk_state *chunk) {
+static mc_chunk_callback_result
+tile_entities(void *owner, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk) {
     (void)owner;
     (void)context;
     record('t', chunk, 0);
@@ -242,7 +242,7 @@ static int setup(size_t count) {
                                              .save_extra = extra_save,
                                              .flush = flush,
                                              .loader_maintenance = loader_maintenance,
-                                             .invalidate_tiles = tiles,
+                                             .invalidate_tile_entities = tile_entities,
                                              .defer_entities = entities,
                                              .provider_maintenance = provider_maintenance,
                                              .references = &f.references};
@@ -494,10 +494,10 @@ static int direct_detachment(void) {
     CHECK(setup(1) == 0);
     CHECK(mc_chunk_lifecycle_detach(NULL, &f.chunks[0]) == MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT);
     CHECK(mc_chunk_lifecycle_detach(&f.context, NULL) == MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT);
-    f.context.invalidate_tiles = NULL;
+    f.context.invalidate_tile_entities = NULL;
     CHECK(mc_chunk_lifecycle_detach(&f.context, &f.chunks[0]) ==
           MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT);
-    f.context.invalidate_tiles = tiles;
+    f.context.invalidate_tile_entities = tile_entities;
     f.context.defer_entities = NULL;
     CHECK(mc_chunk_lifecycle_detach(&f.context, &f.chunks[0]) ==
           MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT);

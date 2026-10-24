@@ -3,10 +3,10 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../chunk/object_state_internal.h"
 #include "../storage/objects_internal.h"
+#include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
-#include "provider_internal.h"
 #include "runtime_internal.h"
 
 typedef struct query_chunk {
@@ -90,9 +90,9 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
     error->provider_bytecode = 6;
     if (world->fields.v == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
-    mc_world_provider_fields provider;
+    mc_chunk_provider_fields provider;
     mc_world_storage_error binding = {0};
-    if (mc_world_provider_bind_fields(world->fields.v, &provider, &binding) != MC_WORLD_STORAGE_OK)
+    if (mc_chunk_provider_bind_fields(world->fields.v, &provider, &binding) != MC_WORLD_STORAGE_OK)
         return storage_fail(error, &binding);
     if (provider.world != world || provider.cache != world->acquisition.cache ||
         provider.pending != world->acquisition.pending || provider.store != world->options.store)
@@ -260,8 +260,9 @@ mc_world_storage_status mc_world_runtime_saved_light(mc_world_runtime *world,
     frame.bytecode = 74;
     frame.provider_bytecode = 6;
     bool present;
-    if (mc_world_runtime_provider_contains(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4),
-                                           &present, &frame.cause) != MC_WORLD_STORAGE_OK) {
+    if (mc_world_runtime_chunk_provider_contains(world, mc_java_i32_shr(x, 4),
+                                                 mc_java_i32_shr(z, 4), &present,
+                                                 &frame.cause) != MC_WORLD_STORAGE_OK) {
         (void)storage_fail(&frame, &frame.cause);
         goto done;
     }

@@ -441,7 +441,7 @@ static bool ff_read_values(const mc_entity_snapshot *v, int32_t carried, int32_t
            v->base.aX;
 }
 
-static bool ff_known(const mc_nbt_tag *root, bool named, int8_t tile) {
+static bool ff_known(const mc_nbt_tag *root, bool named, int8_t carried_block_id) {
     static const char *const names[] = {"Pos",  "Motion", "Rotation", "FallDistance",
                                         "Fire", "Air",    "OnGround", "Tile"};
     if (root == NULL || root->type != MC_NBT_COMPOUND ||
@@ -459,9 +459,10 @@ static bool ff_known(const mc_nbt_tag *root, bool named, int8_t tile) {
         if (!ff_text(root->value.compound.items[i + offset]->name, names[i]))
             return false;
     const mc_nbt_tag *value = ff_field(root, "Tile");
-    return value != NULL && value->type == MC_NBT_BYTE && value->value.byte_value == tile &&
-           ff_field(root, "Health") == NULL && ff_field(root, "Age") == NULL &&
-           ff_field(root, "Item") == NULL && ff_field(root, "Extra") == NULL;
+    return value != NULL && value->type == MC_NBT_BYTE &&
+           value->value.byte_value == carried_block_id && ff_field(root, "Health") == NULL &&
+           ff_field(root, "Age") == NULL && ff_field(root, "Item") == NULL &&
+           ff_field(root, "Extra") == NULL;
 }
 
 static bool ff_saved_constructor(const mc_nbt_tag *root) {

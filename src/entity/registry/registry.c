@@ -33,7 +33,7 @@ static const uint16_t name_units[24][12] = {{'A', 'r', 'r', 'o', 'w'},
 static const mc_entity_registry_record records[] = {
     RECORD(ARROW, 10, 0, 5, 46, 46),         RECORD(SNOWBALL, 11, 1, 8, 55, 55),
     RECORD(ITEM, 1, 2, 4, 63, 63),           RECORD(PAINTING, 9, 3, 8, 72, 72),
-    RECORD(MOB, 48, 4, 3, 81, 81),           RECORD(MONSTER, 49, 5, 7, 90, 90),
+    RECORD(LIVING_ENTITY, 48, 4, 3, 81, 81), RECORD(MONSTER, 49, 5, 7, 90, 90),
     RECORD(CREEPER, 50, 6, 7, 99, 99),       RECORD(SKELETON, 51, 7, 8, 108, 108),
     RECORD(SPIDER, 52, 8, 6, 117, 117),      RECORD(GIANT, 53, 9, 5, 127, 126),
     RECORD(ZOMBIE, 54, 10, 6, 136, 135),     RECORD(SLIME, 55, 11, 5, 145, 144),

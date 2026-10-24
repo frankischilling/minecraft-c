@@ -1,5 +1,13 @@
 # Build and tests
 
+The [canonical naming build](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecraft-names.md)
+passes all 619 public/JDK tests: 205 MSVC, 207 GCC and 207 Clang. Linux enables
+ASan/UBSan. Formatting covers 587 C/header files; controller mirrors and lifecycle
+interval controls pass on both platforms. Eight separate file-only controls
+check historical/current module families and immutable recorder provenance.
+The complete retained source has 1,130 files, with all current non-Markdown inputs
+unchanged after testing. Earlier checkpoints below retain their original counts.
+
 Dedicated constructor, Entity-index and public fixture/replay tests run without
 original archives. `tools.population_dedicated` runs eighteen Python checks;
 `world.population_dedicated_replay` runs the production probe and eight
@@ -28,7 +36,7 @@ hosted build. Seven supplied-archive tests per compiler retain their local scope
 
 The earlier 203/205/205 development suites and the original-only fixture retain
 their dirty source and null tested commits. The reference record corrects the
-historical source-byte claim. Empty Entity/Tile/named-data/index collections and
+historical source-byte claim. Empty Entity/TileEntity/named-data/index collections and
 the finite seed23 schedule leave broader gameplay, server startup and general
 restart outside this checkpoint.
 

@@ -42,30 +42,30 @@ capability predicate remains a distinct operation.
 | Base uu/na and remaining inherited kinds | False without World use | False without World use | False |
 | Pressure bv/bc | Metadata greater than zero | Metadata nonzero and side1 | True |
 | Detector ph/jn | Metadata bit8 | Metadata bit8 and side1 | True |
-| Button oi/iz, native OI_IZ | Metadata bit8 | Powered orientation selects one side | True |
-| Lever xr/pd, native XR_PD | Metadata bit8 | Powered orientation selects one side, including orientation6 | True |
-| Redstone torch db/by, native DB_BY | Live receiver flag, then raw metadata attachment exclusions | Side0 delegates to the same receiver's weak output; other sides return false first | True |
+| Button oi/iz, native BUTTON | Metadata bit8 | Powered orientation selects one side | True |
+| Lever xr/pd, native LEVER | Metadata bit8 | Powered orientation selects one side, including orientation6 | True |
+| Redstone torch db/by, native REDSTONE_TORCH | Live receiver flag, then raw metadata attachment exclusions | Side0 delegates to the same receiver's weak output; other sides return false first | True |
 | Repeater wo/oi | Live receiver flag, then masked orientation selects one horizontal side | Delegates to weak output | False |
-| Wire sm/lo | Live receiver flag, metadata and complete local connectivity geometry | Live receiver flag, then delegates to weak output | Live receiver flag |
+| Redstone sm/lo | Live receiver flag, metadata and complete local connectivity geometry | Live receiver flag, then delegates to weak output | Live receiver flag |
 
 Metadata reads remain where each body places them. Pressure, detector, button
 and lever read metadata before their later side tests. An inactive torch,
-repeater or wire can return before using its nullable World argument. Torch
+repeater or redstone can return before using its nullable World argument. Torch
 strong output also returns before World use when side is not zero. Instance
 invocation adds no constructor, READY or class-initialization gate.
 
-Wire first checks its live flag and metadata. Zero metadata returns false;
+Redstone first checks its live flag and metadata. Zero metadata returns false;
 nonzero metadata returns true immediately for side1. Other sides evaluate
 X-minus, X-plus, Z-minus and Z-plus connectivity, eligible connections one
 block below, then the repeated support and one-above connections when the
-block above the wire does not support. Already-connected directions do not
+block above the redstone does not support. Already-connected directions do not
 suppress later source support checks. The final horizontal result depends on
-the four actual connection booleans; an isolated powered wire outputs to each
+the four actual connection booleans; an isolated powered redstone segment outputs to each
 horizontal side, while a connected line requires the selected direction and
 absence of perpendicular connections.
 
-The connectivity helper reads the actual neighboring ID before live wire and
-repeater statics. It distinguishes wire identity, air, the selected Block's
+The connectivity helper reads the actual neighboring ID before live redstone and
+repeater statics. It distinguishes redstone identity, air, the selected Block's
 capability and the two repeater identities. A repeater connection reads its
 metadata and the real jj/ge horizontal-direction class. That class has its own
 initializer, arrays and failure state, implemented in
@@ -91,14 +91,14 @@ consume entropy and change their real owners.
 
 Failure preserves the ordinary output and all earlier effects. The error
 retains four separate World sites, concrete capability/strong/weak sites and
-the wire-connectivity site. Each site records whether its body was entered;
+the redstone-connectivity site. Each site records whether its body was entered;
 this distinguishes a valid PC0 from a null invocation whose body never began.
 World sites retain their own coordinates and directional argument. Concrete
 Block names identify the actual declaring owner, including inherited base
 bodies, rather than a friendly block label.
 
 Fresh children retain the entire nearby-reader error: provider and Chunk PCs,
-acquisition, Registry, population, Tile, batch, Entity load and activation
+acquisition, Registry, population, TileEntity, batch, Entity load and activation
 details. Detailed support retains its own frame plus that same full reader
 child. Caller sites survive nested failures, while a later sibling clears the
 callee subtree so it cannot inherit an earlier successful branch. These fixed
@@ -119,7 +119,7 @@ artificial counter-overflow admission to the public form.
 The [power contracts](../../tests/world/runtime/power/test_power.c) pass 7,593
 checks per host using two real GAME Worlds and two loaded records. They cover
 all 69 admitted kinds, metadata and side matrices, ordered short circuits,
-conduction, wire geometry, defining namespaces and detailed failure prefixes.
+conduction, redstone geometry, defining namespaces and detailed failure prefixes.
 The separate horizontal-direction case passes 359 checks, including all seven
 allocation failure cuts. Existing [solid-support contracts](../../tests/world/runtime/test_solid_support.c)
 pass 4,359 checks for the preserved public interface.
@@ -141,7 +141,7 @@ and 235 real controls/restorations without infrastructure failures. The
 compared fields, exact hashes, preparation recipe and exclusions.
 
 This finite result excludes setup/graph identity, absolute dirty/populated
-history and source-PC equality. Wire propagation, wire lifecycle and ticks,
+history and source-PC equality. Redstone propagation, redstone lifecycle and ticks,
 torch lifecycle and burnout, button and lever interactions, repeater timing,
 scheduled draining and a complete game loop remain separate work. Rail
 implementation has its own [native contract](rails.md); an original-runtime

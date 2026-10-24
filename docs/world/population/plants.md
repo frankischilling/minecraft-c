@@ -53,5 +53,5 @@ These are source-derived native contracts. They do not establish original/native
 plant equivalence. Reentrant changes to feature fields/statics and the complete
 native admission matrix need further controls.
 The [paired source map](../../reference/population-plants.md) is separate from
-the pending complete normal controller, other features, callbacks and save
+the pending complete Overworld controller, other features, callbacks and save
 qualification.

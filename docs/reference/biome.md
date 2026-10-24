@@ -30,7 +30,7 @@ Constructors `xv.<init>(Lfd;)V` / `ph.<init>(Ldj;)V` create three independent
 Random instances from wrapping signed-long world-seed products. Fields `e`, `f`,
 `g` use multipliers 9871, 39811, 543321 and octave counts 4, 4, 2. Seed getters
 are called separately at 14/41/68, multiplication occurs at 20/47/74, and octave
-constructors at 25/52/79. The manager retains no world field. Normal seed getters
+constructors at 25/52/79. The manager retains no world field. Noise-backed seed getters
 `fd.s()J` / `dj.l()J` read world-info field `x` at 1 and call `ei.b()J` /
 `ct.b()J` at 4; those methods return their stored `a:J` at 1/4.
 
@@ -78,8 +78,8 @@ The concrete [Dimension temperature implementation](../world/temperature.md)
 preserves these separate publication points. Output allocation19 is local until
 the method returns209; raw temperature44 precedes auxiliary74 and `c`77. A later
 auxiliary allocation failure therefore leaves earlier raw writes on a reused
-input. The normal population caller stores the returned array in provider `w`
-only at2684 in the [installed controller](../world/population/normal.md).
+input. The Overworld population caller stores the returned array in provider `w`
+only at2684 in the [installed controller](../world/population/overworld.md).
 Whole-controller reentry and natural population qualification remain unfinished.
 
 The complete fixed overrides `hd.a([DIIII)[D` / `et.a([DIIII)[D` allocate output19
@@ -207,7 +207,7 @@ Observed initialization banners were 16 achievements and 151 recipes on each
 side, captured separately from numerical records. This static trace and isolated
 run do not establish every transitive initializer or world startup.
 
-Normal chunk methods `yf.b(II)Llm;` / `pk.b(II)Lhi;` request a square 16x16
+Overworld ChunkProvider methods `yf.b(II)Llm;` / `pk.b(II)Lhi;` request a square 16x16
 biome grid at 65, then read manager temperature `a` at 78 before block and
 surface calls at 93/104. Population methods `yf.a(Lcl;II)V` /
 `pk.a(Lbl;II)V` request a point biome at chunk origin+(16,16), call 33, and

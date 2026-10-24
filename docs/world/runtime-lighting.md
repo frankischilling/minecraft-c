@@ -34,7 +34,7 @@ generic Java Enum methods. Type views borrow the live class context.
 
 `mc_world_runtime_light_submit` accepts a same-class handle or a real nullable
 type reference. It preserves all six signed bounds, including reversed and
-wrapped cases. It reads current Dimension.e first. A no-sky Sky request returns
+wrapped cases. It reads current WorldProvider.e first. A no-sky Sky request returns
 before incrementing A. Other requests increment that same shared counter with
 Java wrapping; only equality with 50 skips. Every guarded exit subtracts one
 from the current A, including failure paths.

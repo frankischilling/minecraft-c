@@ -106,7 +106,7 @@ static bool nearby_create_world(fixture *f, size_t slot) {
     if (slot == 4 || slot == 5)
         limits.max_direct_allocation_bytes =
             f->baseline_world_bytes[slot % 2u] + 4u * (sizeof(void *) + sizeof(mc_entity *));
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[slot % 2u], &limits, &f->worlds[slot],
@@ -121,7 +121,7 @@ static bool nearby_create_world(fixture *f, size_t slot) {
         f->baseline_world_bytes[slot] = state.direct_allocation_bytes;
     if (slot == 4 || slot == 5)
         CHECK(state.direct_allocation_bytes == f->baseline_world_bytes[slot % 2u]);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(nearby_seed_record(f, slot, 0, 0));
@@ -415,7 +415,7 @@ static bool nearby_numeric_and_aliases(fixture *f, size_t side) {
     /* An inverted outer interval skips the provider, even with an otherwise
      * nonterminating INT_MAX inner endpoint. Never enter an unbounded loop. */
     q = (mc_entity_bounds){34.0, 0.0, 0.0, 0.0, 16.0, infinity};
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     w->fields.v = NULL;
     const bool inverted = nearby_query_is(w, NULL, &q, NULL, 0);
     w->fields.v = provider;

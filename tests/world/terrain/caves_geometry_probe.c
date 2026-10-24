@@ -307,7 +307,7 @@ static int observe(const geometry_request *request, size_t index) {
     printf(",\"changed_prefix_bytes\":%zu,\"table_unchanged\":%s,\"suffix_unchanged\":true,"
            "\"retained_random\":true,\"range\":%u}\n",
            changes, memcmp(&table, &original_table, sizeof(table)) == 0 ? "true" : "false",
-           (unsigned int)MC_TERRAIN_NORMAL_CAVE_RANGE);
+           (unsigned int)MC_TERRAIN_OVERWORLD_CAVE_RANGE);
     fprintf(stderr,
             "CONTROL_C_GEOMETRY table_exact range_exact random_identity suffix_exact "
             "shared_rng_continuation_match\nGEOMETRY_DONE case=%zu\n",
@@ -316,7 +316,7 @@ static int observe(const geometry_request *request, size_t index) {
 }
 
 int main(void) {
-    if (!read_requests() || !mc_math_trig_init(&table) || MC_TERRAIN_NORMAL_CAVE_RANGE != 8u) {
+    if (!read_requests() || !mc_math_trig_init(&table) || MC_TERRAIN_OVERWORLD_CAVE_RANGE != 8u) {
         fputs("invalid bounded protected cave request\n", stderr);
         return 1;
     }

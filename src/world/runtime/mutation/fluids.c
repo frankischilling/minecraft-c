@@ -4,7 +4,7 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/scheduling.h"
 
@@ -646,9 +646,9 @@ static bool fluid_flowing_tick(mc_world_runtime *world, mc_block *block, int32_t
         return fluid_nested(&frame, 6, error);
     int32_t increment = 1;
     if (block->fields.bA == fluid_material_static(&frame, MC_MATERIAL_h)) {
-        mc_world_dimension_fields dimension;
+        mc_world_provider_fields dimension;
         fluid_at(&frame, 28);
-        if (mc_world_dimension_fields_get(world->fields.t, &dimension) != MC_WORLD_DIMENSION_OK)
+        if (mc_world_provider_fields_get(world->fields.t, &dimension) != MC_WORLD_PROVIDER_OK)
             return fluid_fail(&frame, 28, "Fluid Dimension.d receiver");
         if (!dimension.d)
             increment = 2;
@@ -1052,7 +1052,8 @@ static bool fluid_still_tick(mc_world_runtime *world, mc_block *block, int32_t x
 
 static bool fluid_receiver(mc_world_runtime *world, const mc_block *block,
                            mc_world_mutation_error *error) {
-    if (block != NULL && (block->kind == MC_BLOCK_OM_JC || block->kind == MC_BLOCK_NX_IS))
+    if (block != NULL &&
+        (block->kind == MC_BLOCK_FLOWING_FLUID || block->kind == MC_BLOCK_STILL_FLUID))
         return true;
     error->hook_class = NULL;
     error->hook_method = NULL;
@@ -1067,7 +1068,7 @@ bool mc_world_mutation_fluid_tick(mc_world_runtime *world, const mc_block *block
                                   mc_world_mutation_error *error) {
     if (!fluid_receiver(world, block, error))
         return false;
-    return block->kind == MC_BLOCK_OM_JC
+    return block->kind == MC_BLOCK_FLOWING_FLUID
                ? fluid_flowing_tick(world, (mc_block *)block, x, y, z, random, error)
                : fluid_still_tick(world, (mc_block *)block, x, y, z, random, error);
 }
@@ -1076,7 +1077,7 @@ bool mc_world_mutation_fluid_added(mc_world_runtime *world, const mc_block *bloc
                                    int32_t y, int32_t z, mc_world_mutation_error *error) {
     if (!fluid_receiver(world, block, error))
         return false;
-    return block->kind == MC_BLOCK_OM_JC
+    return block->kind == MC_BLOCK_FLOWING_FLUID
                ? fluid_flowing_added(world, (mc_block *)block, x, y, z, error)
                : fluid_common_added(world, (mc_block *)block, x, y, z, error);
 }
@@ -1087,7 +1088,7 @@ bool mc_world_mutation_fluid_neighbor(mc_world_runtime *world, const mc_block *b
     (void)source_id; /* Actual common liquid body does not use its fourth int. */
     if (!fluid_receiver(world, block, error))
         return false;
-    return block->kind == MC_BLOCK_NX_IS
+    return block->kind == MC_BLOCK_STILL_FLUID
                ? fluid_still_neighbor(world, (mc_block *)block, x, y, z, error)
                : fluid_common_neighbor(world, (mc_block *)block, x, y, z, error);
 }

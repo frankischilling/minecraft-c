@@ -10,9 +10,9 @@ typedef enum mc_terrain_surface_channel {
 } mc_terrain_surface_channel;
 
 /* One fixed noise request only; no future span/material/Registry admission. */
-bool mc_terrain_normal_surface_channel(const mc_terrain_normal_state *state,
-                                       mc_terrain_surface_channel channel, int32_t x, int32_t z,
-                                       mc_terrain_double_span out);
+bool mc_terrain_overworld_surface_channel(const mc_terrain_overworld_state *state,
+                                          mc_terrain_surface_channel channel, int32_t x, int32_t z,
+                                          mc_terrain_double_span out);
 
 static inline bool mc_terrain_surface_patch(double noise, double uniform, double threshold) {
     return noise + uniform * 0.2 > threshold;

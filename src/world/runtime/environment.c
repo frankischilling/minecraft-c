@@ -1,7 +1,7 @@
 #include "mc/world/runtime/environment.h"
 
 #include "mc/core/java/java.h"
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 #include "runtime_internal.h"
 
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
@@ -75,16 +75,16 @@ mc_world_storage_status mc_world_runtime_celestial_angle(const mc_world_runtime 
     mc_world_storage_status status = admit(runtime, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
-    mc_world_dimension *dimension = runtime->fields.t;
+    mc_world_provider *dimension = runtime->fields.t;
     const mc_world_info_live *info = mc_world_info_live_get(runtime->fields.x);
     if (info == NULL)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World angle Info time");
     int64_t time = *info->time;
-    mc_world_dimension_status angle =
-        mc_world_dimension_celestial_angle(dimension, time, partial_tick, out, NULL);
-    if (angle != MC_WORLD_DIMENSION_OK)
+    mc_world_provider_status angle =
+        mc_world_provider_celestial_angle(dimension, time, partial_tick, out, NULL);
+    if (angle != MC_WORLD_PROVIDER_OK)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      mc_world_dimension_status_string(angle));
+                      mc_world_provider_status_string(angle));
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 

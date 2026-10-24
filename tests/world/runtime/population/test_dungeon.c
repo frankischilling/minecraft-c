@@ -1,7 +1,7 @@
-/* The genuine Tile fixture supplies construction, byte transport and checked
+/* The genuine TileEntity fixture supplies construction, byte transport and checked
  * joint teardown. Its original main is compiled but never executed here. */
 #define main mc_dungeon_tile_fixture_main
-#include "../tiles/test_tiles.c"
+#include "../tile_entities/test_tile_entities.c"
 #undef main
 
 #include "mc/item/registry/runtime.h"
@@ -351,7 +351,7 @@ static bool dg_room(fixture *f, size_t slot, const dg_plan *p, size_t openings, 
           mc_world_runtime_get(f->worlds[slot], 0, 0, &f->states[slot]) == MC_CHUNK_ACQUIRE_OK);
     f->chunks[slot] = mc_world_store_chunk_object(f->stores[slot], f->states[slot]);
     CHECK(f->chunks[slot] != NULL && f->states[slot]->active && f->chunks[slot]->l->count == 0 &&
-          mc_live_tiles_map_valid(f->chunks[slot]));
+          mc_live_tile_entities_map_valid(f->chunks[slot]));
     ok = true;
 cleanup:
     free(encoded);
@@ -378,24 +378,25 @@ static bool dg_unchanged(const mc_chunk_state *s, const dg_image *before) {
 
 static bool dg_inventory(fixture *f, size_t slot, const dg_plan *p, bool reloaded) {
     bool ok = false;
-    mc_tile *tile = NULL;
+    mc_tile_entity *tile_entity = NULL;
     mc_item_stack *stack = NULL;
-    mc_tile_name *name = NULL;
+    mc_tile_entity_name *name = NULL;
     static const char *const mobs[] = {"Skeleton", "Zombie", "Zombie", "Spider"};
     for (size_t group = 0; group < 2; ++group) {
         const int32_t x = group == 0 ? DG_X + p->rx : DG_X;
         const int32_t z = group == 0 ? DG_Z : DG_Z + p->rz;
-        CHECK(mc_live_tiles_get(f->worlds[slot], x, DG_Y, z, &tile, NULL) == MC_WORLD_STORAGE_OK &&
-              tile != NULL);
-        mc_tile_snapshot snapshot;
-        CHECK(mc_tile_get_snapshot(tile, &snapshot) == MC_TILE_OK &&
-              snapshot.kind == MC_TILE_CHEST && snapshot.world == f->worlds[slot] &&
+        CHECK(mc_live_tile_entities_get(f->worlds[slot], x, DG_Y, z, &tile_entity, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              tile_entity != NULL);
+        mc_tile_entity_snapshot snapshot;
+        CHECK(mc_tile_entity_get_snapshot(tile_entity, &snapshot) == MC_TILE_ENTITY_OK &&
+              snapshot.kind == MC_TILE_ENTITY_CHEST && snapshot.world == f->worlds[slot] &&
               snapshot.x == x && snapshot.y == DG_Y && snapshot.z == z && !snapshot.invalid &&
               snapshot.chest_capacity == (reloaded ? 27u : 36u));
         int32_t size = 0;
-        CHECK(mc_tile_chest_size(tile, &size) == MC_TILE_OK && size == 27);
+        CHECK(mc_tile_entity_chest_size(tile_entity, &size) == MC_TILE_ENTITY_OK && size == 27);
         for (int32_t index = 0; index < 27; ++index) {
-            CHECK(mc_tile_chest_get(tile, index, &stack) == MC_TILE_OK);
+            CHECK(mc_tile_entity_chest_get(tile_entity, index, &stack) == MC_TILE_ENTITY_OK);
             const dg_pick *expected = &p->slots[group][(size_t)index];
             if (!expected->present)
                 CHECK(stack == NULL);
@@ -410,33 +411,35 @@ static bool dg_inventory(fixture *f, size_t slot, const dg_plan *p, bool reloade
             mc_item_stack_release(stack);
             stack = NULL;
         }
-        mc_tile_release(tile);
-        tile = NULL;
+        mc_tile_entity_release(tile_entity);
+        tile_entity = NULL;
     }
-    CHECK(mc_live_tiles_get(f->worlds[slot], DG_X, DG_Y, DG_Z, &tile, NULL) ==
+    CHECK(mc_live_tile_entities_get(f->worlds[slot], DG_X, DG_Y, DG_Z, &tile_entity, NULL) ==
               MC_WORLD_STORAGE_OK &&
-          tile != NULL && mc_tile_spawner_get_name(tile, &name) == MC_TILE_OK &&
+          tile_entity != NULL &&
+          mc_tile_entity_spawner_get_name(tile_entity, &name) == MC_TILE_ENTITY_OK &&
           name_is(name, mobs[(size_t)p->mob]));
-    mc_tile_snapshot snapshot;
-    CHECK(mc_tile_get_snapshot(tile, &snapshot) == MC_TILE_OK && snapshot.kind == MC_TILE_SPAWNER &&
-          snapshot.spawner_delay == 20 && snapshot.world == f->worlds[slot] && !snapshot.invalid &&
-          f->chunks[slot]->l->count == 3 && mc_live_tiles_map_valid(f->chunks[slot]) &&
-          mc_live_tiles_lists_valid(f->worlds[slot]));
+    mc_tile_entity_snapshot snapshot;
+    CHECK(mc_tile_entity_get_snapshot(tile_entity, &snapshot) == MC_TILE_ENTITY_OK &&
+          snapshot.kind == MC_TILE_ENTITY_SPAWNER && snapshot.spawner_delay == 20 &&
+          snapshot.world == f->worlds[slot] && !snapshot.invalid &&
+          f->chunks[slot]->l->count == 3 && mc_live_tile_entities_map_valid(f->chunks[slot]) &&
+          mc_live_tile_entities_lists_valid(f->worlds[slot]));
     ok = true;
 cleanup:
-    mc_tile_name_release(name);
+    mc_tile_entity_name_release(name);
     mc_item_stack_release(stack);
-    mc_tile_release(tile);
+    mc_tile_entity_release(tile_entity);
     return ok;
 }
 
 static bool dg_roundtrip(fixture *f, size_t slot, const dg_plan *p) {
     bool ok = false;
     mc_world_runtime *world = f->worlds[slot];
-    mc_tile *old = NULL, *fresh = NULL;
+    mc_tile_entity *old = NULL, *fresh = NULL;
     uint32_t growth = UINT32_MAX;
     mc_world_game_save_error saved;
-    CHECK(mc_live_tiles_get(world, DG_X, DG_Y, DG_Z, &old, NULL) == MC_WORLD_STORAGE_OK &&
+    CHECK(mc_live_tile_entities_get(world, DG_X, DG_Y, DG_Z, &old, NULL) == MC_WORLD_STORAGE_OK &&
           old != NULL &&
           mc_world_runtime_write_game_chunk(world, f->states[slot], fixture_timestamp, &growth,
                                             &saved) == MC_WORLD_STORAGE_OK &&
@@ -455,14 +458,15 @@ static bool dg_roundtrip(fixture *f, size_t slot, const dg_plan *p) {
     CHECK(mc_world_runtime_get(world, 0, 0, &f->states[slot]) == MC_CHUNK_ACQUIRE_OK);
     f->chunks[slot] = mc_world_store_chunk_object(f->stores[slot], f->states[slot]);
     CHECK(f->chunks[slot] != NULL && dg_inventory(f, slot, p, true) &&
-          mc_live_tiles_get(world, DG_X, DG_Y, DG_Z, &fresh, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_live_tile_entities_get(world, DG_X, DG_Y, DG_Z, &fresh, NULL) == MC_WORLD_STORAGE_OK &&
           fresh != NULL && fresh != old);
-    mc_tile_snapshot old_snapshot;
-    CHECK(mc_tile_get_snapshot(old, &old_snapshot) == MC_TILE_OK && old_snapshot.invalid);
+    mc_tile_entity_snapshot old_snapshot;
+    CHECK(mc_tile_entity_get_snapshot(old, &old_snapshot) == MC_TILE_ENTITY_OK &&
+          old_snapshot.invalid);
     ok = true;
 cleanup:
-    mc_tile_release(old);
-    mc_tile_release(fresh);
+    mc_tile_entity_release(old);
+    mc_tile_entity_release(fresh);
     return ok;
 }
 
@@ -507,7 +511,7 @@ cleanup:
 static bool dg_helpers(fixture *f, size_t side) {
     bool ok = false;
     mc_item_stack *stack = NULL;
-    mc_tile_name *name = NULL;
+    mc_tile_entity_name *name = NULL;
     mc_population_dungeon_error error;
     for (int32_t selector = 0; selector < 11; ++selector) {
         const bool variable =
@@ -562,20 +566,20 @@ static bool dg_helpers(fixture *f, size_t side) {
         CHECK(mc_population_dungeon_mob(f->worlds[side], &r, &name, &error) ==
                   MC_WORLD_STORAGE_OK &&
               name != NULL && name_is(name, mobs[(size_t)choice]) && dg_rng_equal(&r, &expected));
-        mc_tile_name *literal = NULL;
+        mc_tile_entity_name *literal = NULL;
         const mc_world_storage_status status =
-            mc_live_tiles_literal(f->worlds[side], mobs[(size_t)choice], &literal, NULL);
-        const bool same = literal == name &&
-                          mc_live_tiles_name_identity(literal) == mc_live_tiles_name_identity(name);
-        mc_tile_name_release(literal);
+            mc_live_tile_entities_literal(f->worlds[side], mobs[(size_t)choice], &literal, NULL);
+        const bool same = literal == name && mc_live_tile_entities_name_identity(literal) ==
+                                                 mc_live_tile_entities_name_identity(name);
+        mc_tile_entity_name_release(literal);
         CHECK(status == MC_WORLD_STORAGE_OK && same);
-        mc_tile_name_release(name);
+        mc_tile_entity_name_release(name);
         name = NULL;
     }
     ok = true;
 cleanup:
     mc_item_stack_release(stack);
-    mc_tile_name_release(name);
+    mc_tile_entity_name_release(name);
     return ok;
 }
 
@@ -665,7 +669,7 @@ static bool dg_failure_case(fixture *f, size_t side, const dg_plan *p, enum dg_f
     bool ok = false, out = true;
     dg_image *before = malloc(sizeof(*before));
     mc_java_random r, expected;
-    mc_tile *held_chest = NULL;
+    mc_tile_entity *held_chest = NULL;
     mc_item_stack *held_stack = NULL;
     mc_population_dungeon_error error;
     CHECK(before != NULL && dg_room(f, side, p, 1, 0));
@@ -737,7 +741,7 @@ static bool dg_failure_case(fixture *f, size_t side, const dg_plan *p, enum dg_f
             CHECK(error.bytecode == 800 && f->chunks[side]->l->count == 1);
         else if (which == DG_OBSERVER)
             CHECK(error.mutation.status != MC_WORLD_STORAGE_OK &&
-                  error.mutation.observer_bytecode != 0 &&
+                  error.mutation.world_access_bytecode != 0 &&
                   error.registry.status == MC_REGISTRY_OK &&
                   !dg_unchanged(f->states[side], before));
         else if (which == DG_CUMULATIVE) {
@@ -754,12 +758,13 @@ static bool dg_failure_case(fixture *f, size_t side, const dg_plan *p, enum dg_f
                     installed[prior->group][(size_t)prior->slot] = prior->pick;
             }
             for (size_t group = 0; group <= e->group; ++group) {
-                CHECK(mc_live_tiles_get(f->worlds[side], group == 0 ? DG_X + p->rx : DG_X, DG_Y,
-                                        group == 0 ? DG_Z : DG_Z + p->rz, &held_chest,
-                                        NULL) == MC_WORLD_STORAGE_OK &&
+                CHECK(mc_live_tile_entities_get(f->worlds[side], group == 0 ? DG_X + p->rx : DG_X,
+                                                DG_Y, group == 0 ? DG_Z : DG_Z + p->rz, &held_chest,
+                                                NULL) == MC_WORLD_STORAGE_OK &&
                       held_chest != NULL);
                 for (int32_t index = 0; index < 27; ++index) {
-                    CHECK(mc_tile_chest_get(held_chest, index, &held_stack) == MC_TILE_OK);
+                    CHECK(mc_tile_entity_chest_get(held_chest, index, &held_stack) ==
+                          MC_TILE_ENTITY_OK);
                     const dg_pick *prior = &installed[group][(size_t)index];
                     if (!prior->present)
                         CHECK(held_stack == NULL);
@@ -773,16 +778,17 @@ static bool dg_failure_case(fixture *f, size_t side, const dg_plan *p, enum dg_f
                     mc_item_stack_release(held_stack);
                     held_stack = NULL;
                 }
-                mc_tile_release(held_chest);
+                mc_tile_entity_release(held_chest);
                 held_chest = NULL;
             }
         }
     }
-    CHECK(mc_live_tiles_map_valid(f->chunks[side]) && mc_live_tiles_lists_valid(f->worlds[side]));
+    CHECK(mc_live_tile_entities_map_valid(f->chunks[side]) &&
+          mc_live_tile_entities_lists_valid(f->worlds[side]));
     ok = true;
 cleanup:
     mc_item_stack_release(held_stack);
-    mc_tile_release(held_chest);
+    mc_tile_entity_release(held_chest);
     free(before);
     return ok;
 }
@@ -791,10 +797,10 @@ cleanup:
  * callback is installed just to change u after construction. */
 static bool dg_dirty_prefix(fixture *f, size_t side) {
     bool ok = false;
-    mc_tile *chest = NULL;
+    mc_tile_entity *chest = NULL;
     mc_item_stack *stack = NULL, *held = NULL;
     mc_population_dungeon_error helper;
-    mc_live_tile_error dirty;
+    mc_live_tile_entity_error dirty;
     mc_world_mutation_error mutation;
     bool changed = false;
     int64_t seed;
@@ -803,7 +809,7 @@ static bool dg_dirty_prefix(fixture *f, size_t side) {
           mc_world_runtime_block_set(f->worlds[side], DG_X, DG_Y, DG_Z, f->chest_id[side], &changed,
                                      &mutation) == MC_WORLD_STORAGE_OK &&
           changed &&
-          mc_live_tiles_get(f->worlds[side], DG_X, DG_Y, DG_Z, &chest, NULL) ==
+          mc_live_tile_entities_get(f->worlds[side], DG_X, DG_Y, DG_Z, &chest, NULL) ==
               MC_WORLD_STORAGE_OK &&
           chest != NULL);
     mc_java_random r;
@@ -813,16 +819,17 @@ static bool dg_dirty_prefix(fixture *f, size_t side) {
           stack != NULL);
     mc_world_reference_list *const saved = f->worlds[side]->fields.u;
     f->worlds[side]->fields.u = NULL;
-    const mc_tile_status status = mc_tile_chest_set_detailed(chest, 3, stack, &dirty);
+    const mc_tile_entity_status status = mc_tile_entity_chest_set_detailed(chest, 3, stack, &dirty);
     f->worlds[side]->fields.u = saved;
-    CHECK(status == MC_TILE_WORLD_FAILED && dirty.inventory_bytecode == 31 &&
-          dirty.status != MC_WORLD_STORAGE_OK && mc_tile_chest_get(chest, 3, &held) == MC_TILE_OK &&
-          held == stack && dg_rng_equal(&r, &p.after));
+    CHECK(status == MC_TILE_ENTITY_WORLD_FAILED && dirty.inventory_bytecode == 31 &&
+          dirty.status != MC_WORLD_STORAGE_OK &&
+          mc_tile_entity_chest_get(chest, 3, &held) == MC_TILE_ENTITY_OK && held == stack &&
+          dg_rng_equal(&r, &p.after));
     ok = true;
 cleanup:
     mc_item_stack_release(held);
     mc_item_stack_release(stack);
-    mc_tile_release(chest);
+    mc_tile_entity_release(chest);
     return ok;
 }
 

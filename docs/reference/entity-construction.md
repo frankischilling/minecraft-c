@@ -2,7 +2,7 @@
 
 The native [Entity contract](../entity/construction.md) implements the paired
 base and ItemEntity constructors, owned children and native failure prefixes.
-World publication, Tile drops and [Item NBT](../entity/nbt.md) have separate
+World publication, TileEntity drops and [Item NBT](../entity/nbt.md) have separate
 contracts. [Ordinary Item persistence](entity-game-storage.md) now has its own
 finite disk/source checks. Ticking and other concrete Entity descendants remain unfinished.
 The evidence below separates native ownership tests, actual original snapshots

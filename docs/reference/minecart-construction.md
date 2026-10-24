@@ -107,7 +107,7 @@ keeps a World lease. A foreign loaded Class is a nonmatch despite equal names.
 The detector helper captures its defining Minecart Class23 before pooled
 bounds64/query67 and reads the actual captured List size74. Transitions use the
 saved metadata at105/166, followed by current/below notifications117/131 or
-178/192 and observer range143/204. A nonempty result reaches the live receiver
+178/192 and WorldAccess range143/204. A nonempty result reaches the live receiver
 ID218, delay222 and real schedule225. Contact and tick use their own saved-bit
 guards; neither publishes the ignored contact Entity.
 

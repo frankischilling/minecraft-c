@@ -89,7 +89,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     }
 
     /* 1: u. */
-    NEW(192, MC_BLOCK_EO_CX);
+    NEW(192, MC_BLOCK_STONE);
     ARG(196, id, 1);
     ARG(197, texture, 1);
     CTOR(198);
@@ -100,7 +100,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(222, 0);
 
     /* 2: v; original checkcast wp/oj at249 changes no identity. */
-    NEW(225, MC_BLOCK_WP_OJ);
+    NEW(225, MC_BLOCK_GRASS);
     ARG(229, id, 2);
     CTOR(230);
     H(235, 0.6f);
@@ -110,7 +110,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(252, 1);
 
     /* 3: w. */
-    NEW(255, MC_BLOCK_OT_JF);
+    NEW(255, MC_BLOCK_DIRT);
     ARG(259, id, 3);
     ARG(260, texture, 2);
     CTOR(261);
@@ -120,7 +120,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(280, 2);
 
     /* 4: x. */
-    NEW(283, MC_BLOCK_UU_NA);
+    NEW(283, MC_BLOCK_BASE);
     ARG(287, id, 4);
     ARG(288, texture, 16);
     ARG(290, material, mc_materials_get(classes->options.materials, MC_MATERIAL_e));
@@ -132,7 +132,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(316, 3);
 
     /* 5: y. */
-    NEW(319, MC_BLOCK_UU_NA);
+    NEW(319, MC_BLOCK_BASE);
     ARG(323, id, 5);
     ARG(324, texture, 4);
     ARG(325, material, mc_materials_get(classes->options.materials, MC_MATERIAL_d));
@@ -145,7 +145,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(354, 4);
 
     /* 6: z. */
-    NEW(357, MC_BLOCK_HE_EU);
+    NEW(357, MC_BLOCK_SAPLING);
     ARG(361, id, 6);
     ARG(363, texture, 15);
     CTOR(365);
@@ -156,7 +156,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(386, 5);
 
     /* 7: A. */
-    NEW(389, MC_BLOCK_UU_NA);
+    NEW(389, MC_BLOCK_BASE);
     ARG(393, id, 7);
     ARG(395, texture, 17);
     ARG(397, material, mc_materials_get(classes->options.materials, MC_MATERIAL_e));
@@ -170,7 +170,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(425, 6);
 
     /* 8: B. */
-    NEW(428, MC_BLOCK_OM_JC);
+    NEW(428, MC_BLOCK_FLOWING_FLUID);
     ARG(432, id, 8);
     ARG(434, material, mc_materials_get(classes->options.materials, MC_MATERIAL_g));
     CTOR(437);
@@ -182,7 +182,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(460, 7);
 
     /* 9: C. */
-    NEW(463, MC_BLOCK_NX_IS);
+    NEW(463, MC_BLOCK_STILL_FLUID);
     ARG(467, id, 9);
     ARG(469, material, mc_materials_get(classes->options.materials, MC_MATERIAL_g));
     CTOR(472);
@@ -194,7 +194,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(495, 8);
 
     /* 10: D. */
-    NEW(498, MC_BLOCK_OM_JC);
+    NEW(498, MC_BLOCK_FLOWING_FLUID);
     ARG(502, id, 10);
     ARG(504, material, mc_materials_get(classes->options.materials, MC_MATERIAL_h));
     CTOR(507);
@@ -207,7 +207,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(535, 9);
 
     /* 11: E. */
-    NEW(538, MC_BLOCK_NX_IS);
+    NEW(538, MC_BLOCK_STILL_FLUID);
     ARG(542, id, 11);
     ARG(544, material, mc_materials_get(classes->options.materials, MC_MATERIAL_h));
     CTOR(547);
@@ -220,7 +220,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(576, 10);
 
     /* 12: F. Its concrete constructor reads ln.n/hj.n. */
-    NEW(579, MC_BLOCK_GK_EI);
+    NEW(579, MC_BLOCK_SAND);
     ARG(583, id, 12);
     ARG(585, texture, 18);
     CTOR(587);
@@ -230,7 +230,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(606, 11);
 
     /* 13: G. */
-    NEW(609, MC_BLOCK_NE_IG);
+    NEW(609, MC_BLOCK_GRAVEL);
     ARG(613, id, 13);
     ARG(615, texture, 19);
     CTOR(617);
@@ -240,7 +240,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(636, 12);
 
     /* 14: H. */
-    NEW(639, MC_BLOCK_MT_IC);
+    NEW(639, MC_BLOCK_ORE);
     ARG(643, id, 14);
     ARG(645, texture, 32);
     CTOR(647);
@@ -251,7 +251,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(671, 13);
 
     /* 15: I. */
-    NEW(674, MC_BLOCK_MT_IC);
+    NEW(674, MC_BLOCK_ORE);
     ARG(678, id, 15);
     ARG(680, texture, 33);
     CTOR(682);
@@ -262,7 +262,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(706, 14);
 
     /* 16: J. */
-    NEW(709, MC_BLOCK_MT_IC);
+    NEW(709, MC_BLOCK_ORE);
     ARG(713, id, 16);
     ARG(715, texture, 34);
     CTOR(717);
@@ -273,7 +273,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(741, 15);
 
     /* 17: K. */
-    NEW(744, MC_BLOCK_VG_NK);
+    NEW(744, MC_BLOCK_LOG);
     ARG(748, id, 17);
     CTOR(750);
     H(754, 2.0f);
@@ -283,7 +283,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(771, 16);
 
     /* 18: L; checkcast bk/ar at811. */
-    NEW(774, MC_BLOCK_BK_AR);
+    NEW(774, MC_BLOCK_LEAVES);
     ARG(778, id, 18);
     ARG(780, texture, 52);
     CTOR(782);
@@ -297,7 +297,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(814, 17);
 
     /* 19: M. */
-    NEW(817, MC_BLOCK_XF_OV);
+    NEW(817, MC_BLOCK_SPONGE);
     ARG(821, id, 19);
     CTOR(823);
     H(828, 0.6f);
@@ -306,7 +306,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(842, 18);
 
     /* 20: N. */
-    NEW(845, MC_BLOCK_FK_DO);
+    NEW(845, MC_BLOCK_GLASS);
     ARG(849, id, 20);
     ARG(851, texture, 49);
     ARG(853, material, mc_materials_get(classes->options.materials, MC_MATERIAL_p));
@@ -318,7 +318,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(876, 19);
 
     /* 21: O. */
-    NEW(879, MC_BLOCK_MT_IC);
+    NEW(879, MC_BLOCK_ORE);
     ARG(883, id, 21);
     ARG(885, texture, 160);
     CTOR(888);
@@ -329,7 +329,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(912, 20);
 
     /* 22: P. */
-    NEW(915, MC_BLOCK_UU_NA);
+    NEW(915, MC_BLOCK_BASE);
     ARG(919, id, 22);
     ARG(921, texture, 144);
     ARG(924, material, mc_materials_get(classes->options.materials, MC_MATERIAL_e));
@@ -341,7 +341,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(951, 21);
 
     /* 23: Q. */
-    NEW(954, MC_BLOCK_XQ_PA);
+    NEW(954, MC_BLOCK_DISPENSER);
     ARG(958, id, 23);
     CTOR(960);
     H(965, 3.5f);
@@ -351,7 +351,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(982, 22);
 
     /* 24: R. */
-    NEW(985, MC_BLOCK_RD_KL);
+    NEW(985, MC_BLOCK_SANDSTONE);
     ARG(989, id, 24);
     CTOR(991);
     SOUND(994, h, 997);
@@ -360,7 +360,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1010, 23);
 
     /* 25: S. */
-    NEW(1013, MC_BLOCK_PT_JR);
+    NEW(1013, MC_BLOCK_NOTE_BLOCK);
     ARG(1017, id, 25);
     CTOR(1019);
     H(1024, 0.8f);
@@ -369,7 +369,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1035, 24);
 
     /* 26: T. */
-    NEW(1038, MC_BLOCK_VE_NJ);
+    NEW(1038, MC_BLOCK_BED);
     ARG(1042, id, 26);
     CTOR(1044);
     H(1049, 0.2f);
@@ -379,7 +379,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1063, 25);
 
     /* 27: U. */
-    NEW(1066, MC_BLOCK_PC_JJ);
+    NEW(1066, MC_BLOCK_RAIL);
     ARG(1070, id, 27);
     ARG(1072, texture, 179);
     ARG(1075, flag, true);
@@ -391,7 +391,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1098, 26);
 
     /* 28: V. */
-    NEW(1101, MC_BLOCK_PH_JN);
+    NEW(1101, MC_BLOCK_DETECTOR_RAIL);
     ARG(1105, id, 28);
     ARG(1107, texture, 195);
     CTOR(1110);
@@ -402,7 +402,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1132, 27);
 
     /* 29: W. */
-    NEW(1135, MC_BLOCK_JQ_GI);
+    NEW(1135, MC_BLOCK_PISTON_BASE);
     ARG(1139, id, 29);
     ARG(1141, texture, 106);
     ARG(1143, flag, true);
@@ -412,7 +412,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1155, 28);
 
     /* 30: X. */
-    NEW(1158, MC_BLOCK_RN_KU);
+    NEW(1158, MC_BLOCK_COBWEB);
     ARG(1162, id, 30);
     ARG(1164, texture, 11);
     CTOR(1166);
@@ -422,7 +422,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1183, 29);
 
     /* 31: Y; checkcast ru/kz at1212. */
-    NEW(1186, MC_BLOCK_RU_KZ);
+    NEW(1186, MC_BLOCK_TALL_GRASS);
     ARG(1190, id, 31);
     ARG(1192, texture, 39);
     CTOR(1194);
@@ -433,7 +433,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1215, 30);
 
     /* 32: Z; checkcast jb/fz at1244. */
-    NEW(1218, MC_BLOCK_JB_FZ);
+    NEW(1218, MC_BLOCK_DEAD_BUSH);
     ARG(1222, id, 32);
     ARG(1224, texture, 55);
     CTOR(1226);
@@ -444,7 +444,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1247, 31);
 
     /* 33: aa. */
-    NEW(1250, MC_BLOCK_JQ_GI);
+    NEW(1250, MC_BLOCK_PISTON_BASE);
     ARG(1254, id, 33);
     ARG(1256, texture, 107);
     ARG(1258, flag, false);
@@ -454,7 +454,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1270, 32);
 
     /* 34: ab; checkcast h/g at1287. */
-    NEW(1273, MC_BLOCK_H_G);
+    NEW(1273, MC_BLOCK_PISTON_HEAD);
     ARG(1277, id, 34);
     ARG(1279, texture, 107);
     CTOR(1281);
@@ -463,7 +463,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1290, 33);
 
     /* 35: ac; original constructor has no parameters. */
-    NEW(1293, MC_BLOCK_EE_CQ);
+    NEW(1293, MC_BLOCK_WOOL);
     CTOR(1297);
     H(1302, 0.8f);
     SOUND(1305, k, 1308);
@@ -472,13 +472,13 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1319, 34);
 
     /* 36: ad. */
-    NEW(1322, MC_BLOCK_UT_MZ);
+    NEW(1322, MC_BLOCK_MOVING_PISTON);
     ARG(1326, id, 36);
     CTOR(1328);
     PUBLISH(1331, 35);
 
     /* 37: ae; checkcast wb/nw at1360. */
-    NEW(1334, MC_BLOCK_WB_NW);
+    NEW(1334, MC_BLOCK_FLOWER);
     ARG(1338, id, 37);
     ARG(1340, texture, 13);
     CTOR(1342);
@@ -489,7 +489,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1363, 36);
 
     /* 38: af; checkcast wb/nw at1392. */
-    NEW(1366, MC_BLOCK_WB_NW);
+    NEW(1366, MC_BLOCK_FLOWER);
     ARG(1370, id, 38);
     ARG(1372, texture, 12);
     CTOR(1374);
@@ -500,7 +500,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1395, 37);
 
     /* 39: ag; checkcast to ancestor wb/nw at1429. */
-    NEW(1398, MC_BLOCK_TL_MD);
+    NEW(1398, MC_BLOCK_MUSHROOM);
     ARG(1402, id, 39);
     ARG(1404, texture, 29);
     CTOR(1406);
@@ -512,7 +512,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1432, 38);
 
     /* 40: ah; checkcast to ancestor wb/nw at1461. */
-    NEW(1435, MC_BLOCK_TL_MD);
+    NEW(1435, MC_BLOCK_MUSHROOM);
     ARG(1439, id, 40);
     ARG(1441, texture, 28);
     CTOR(1443);
@@ -523,7 +523,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1464, 39);
 
     /* 41: ai. */
-    NEW(1467, MC_BLOCK_L_J);
+    NEW(1467, MC_BLOCK_MINERAL_STORAGE);
     ARG(1471, id, 41);
     ARG(1473, texture, 23);
     CTOR(1475);
@@ -534,7 +534,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1499, 40);
 
     /* 42: aj. */
-    NEW(1502, MC_BLOCK_L_J);
+    NEW(1502, MC_BLOCK_MINERAL_STORAGE);
     ARG(1506, id, 42);
     ARG(1508, texture, 22);
     CTOR(1510);
@@ -545,7 +545,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1534, 41);
 
     /* 43: ak. */
-    NEW(1537, MC_BLOCK_YS_PW);
+    NEW(1537, MC_BLOCK_SLAB);
     ARG(1541, id, 43);
     ARG(1543, flag, true);
     CTOR(1544);
@@ -556,7 +556,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1567, 42);
 
     /* 44: al. */
-    NEW(1570, MC_BLOCK_YS_PW);
+    NEW(1570, MC_BLOCK_SLAB);
     ARG(1574, id, 44);
     ARG(1576, flag, false);
     CTOR(1577);
@@ -567,7 +567,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1600, 43);
 
     /* 45: am. */
-    NEW(1603, MC_BLOCK_UU_NA);
+    NEW(1603, MC_BLOCK_BASE);
     ARG(1607, id, 45);
     ARG(1609, texture, 7);
     ARG(1611, material, mc_materials_get(classes->options.materials, MC_MATERIAL_e));
@@ -579,7 +579,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1637, 44);
 
     /* 46: an. */
-    NEW(1640, MC_BLOCK_AH_T);
+    NEW(1640, MC_BLOCK_TNT);
     ARG(1644, id, 46);
     ARG(1646, texture, 8);
     CTOR(1648);
@@ -589,7 +589,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1666, 45);
 
     /* 47: ao. */
-    NEW(1669, MC_BLOCK_HB_ER);
+    NEW(1669, MC_BLOCK_BOOKSHELF);
     ARG(1673, id, 47);
     ARG(1675, texture, 35);
     CTOR(1677);
@@ -599,7 +599,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1696, 46);
 
     /* 48: ap. */
-    NEW(1699, MC_BLOCK_UU_NA);
+    NEW(1699, MC_BLOCK_BASE);
     ARG(1703, id, 48);
     ARG(1705, texture, 36);
     ARG(1707, material, mc_materials_get(classes->options.materials, MC_MATERIAL_e));
@@ -611,7 +611,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1733, 47);
 
     /* 49: aq. */
-    NEW(1736, MC_BLOCK_FB_DH);
+    NEW(1736, MC_BLOCK_OBSIDIAN);
     ARG(1740, id, 49);
     ARG(1742, texture, 37);
     CTOR(1744);
@@ -622,7 +622,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1768, 48);
 
     /* 50: ar. */
-    NEW(1771, MC_BLOCK_VM_NP);
+    NEW(1771, MC_BLOCK_TORCH);
     ARG(1775, id, 50);
     ARG(1777, texture, 80);
     CTOR(1779);
@@ -634,7 +634,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1805, 49);
 
     /* 51: as; checkcast yq/pt at1844. */
-    NEW(1808, MC_BLOCK_YQ_PT);
+    NEW(1808, MC_BLOCK_FIRE);
     ARG(1812, id, 51);
     ARG(1814, texture, 31);
     CTOR(1816);
@@ -648,7 +648,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1847, 50);
 
     /* 52: at. */
-    NEW(1850, MC_BLOCK_DD_BZ);
+    NEW(1850, MC_BLOCK_MOB_SPAWNER);
     ARG(1854, id, 52);
     ARG(1856, texture, 65);
     CTOR(1858);
@@ -659,7 +659,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1880, 51);
 
     /* 53: au; retain the actual source reference, not its ID. */
-    NEW(1883, MC_BLOCK_SS_LU);
+    NEW(1883, MC_BLOCK_STAIRS);
     ARG(1887, id, 53);
     ARG(1889, source_block, classes->blocks.named[4]);
     CTOR(1892);
@@ -668,7 +668,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1903, 52);
 
     /* 54: av. */
-    NEW(1906, MC_BLOCK_E_E);
+    NEW(1906, MC_BLOCK_CHEST);
     ARG(1910, id, 54);
     CTOR(1912);
     H(1917, 2.5f);
@@ -678,7 +678,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1934, 53);
 
     /* 55: aw. */
-    NEW(1937, MC_BLOCK_SM_LO);
+    NEW(1937, MC_BLOCK_REDSTONE);
     ARG(1941, id, 55);
     ARG(1943, texture, 164);
     CTOR(1946);
@@ -690,7 +690,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(1970, 54);
 
     /* 56: ax. */
-    NEW(1973, MC_BLOCK_MT_IC);
+    NEW(1973, MC_BLOCK_ORE);
     ARG(1977, id, 56);
     ARG(1979, texture, 50);
     CTOR(1981);
@@ -701,7 +701,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2005, 55);
 
     /* 57: ay. */
-    NEW(2008, MC_BLOCK_L_J);
+    NEW(2008, MC_BLOCK_MINERAL_STORAGE);
     ARG(2012, id, 57);
     ARG(2014, texture, 24);
     CTOR(2016);
@@ -712,7 +712,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2040, 56);
 
     /* 58: az. */
-    NEW(2043, MC_BLOCK_FI_DN);
+    NEW(2043, MC_BLOCK_CRAFTING_TABLE);
     ARG(2047, id, 58);
     CTOR(2049);
     H(2054, 2.5f);
@@ -721,7 +721,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2068, 57);
 
     /* 59: aA. */
-    NEW(2071, MC_BLOCK_NI_IJ);
+    NEW(2071, MC_BLOCK_CROPS);
     ARG(2075, id, 59);
     ARG(2077, texture, 88);
     CTOR(2079);
@@ -733,7 +733,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2103, 58);
 
     /* 60: aB. */
-    NEW(2106, MC_BLOCK_VL_NO);
+    NEW(2106, MC_BLOCK_FARMLAND);
     ARG(2110, id, 60);
     CTOR(2112);
     H(2117, 0.6f);
@@ -742,7 +742,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2131, 59);
 
     /* 61: aC. */
-    NEW(2134, MC_BLOCK_TC_LZ);
+    NEW(2134, MC_BLOCK_FURNACE);
     ARG(2138, id, 61);
     ARG(2140, flag, false);
     CTOR(2141);
@@ -753,7 +753,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2163, 60);
 
     /* 62: aD. */
-    NEW(2166, MC_BLOCK_TC_LZ);
+    NEW(2166, MC_BLOCK_FURNACE);
     ARG(2170, id, 62);
     ARG(2172, flag, true);
     CTOR(2173);
@@ -764,10 +764,10 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     META(2197);
     PUBLISH(2200, 61);
 
-    /* 63: aE; ldc is the yk/pq Class identity, without tile initialization. */
-    NEW(2203, MC_BLOCK_UJ_MT);
+    /* 63: aE; ldc is the yk/pq Class identity, without TileEntity initialization. */
+    NEW(2203, MC_BLOCK_SIGN);
     ARG(2207, id, 63);
-    ARG(2209, tile_class, mc_registry_sign_class(classes));
+    ARG(2209, tile_entity_class, mc_registry_sign_class(classes));
     ARG(2211, flag, true);
     CTOR(2212);
     H(2216, 1.0f);
@@ -778,7 +778,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2236, 62);
 
     /* 64: aF. */
-    NEW(2239, MC_BLOCK_LE_HC);
+    NEW(2239, MC_BLOCK_DOOR);
     ARG(2243, id, 64);
     ARG(2245, material, mc_materials_get(classes->options.materials, MC_MATERIAL_d));
     CTOR(2248);
@@ -790,7 +790,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2273, 63);
 
     /* 65: aG. */
-    NEW(2276, MC_BLOCK_DP_CG);
+    NEW(2276, MC_BLOCK_LADDER);
     ARG(2280, id, 65);
     ARG(2282, texture, 83);
     CTOR(2284);
@@ -801,7 +801,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2306, 64);
 
     /* 66: aH. */
-    NEW(2309, MC_BLOCK_PC_JJ);
+    NEW(2309, MC_BLOCK_RAIL);
     ARG(2313, id, 66);
     ARG(2315, texture, 128);
     ARG(2318, flag, false);
@@ -813,7 +813,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2341, 65);
 
     /* 67: aI. */
-    NEW(2344, MC_BLOCK_SS_LU);
+    NEW(2344, MC_BLOCK_STAIRS);
     ARG(2348, id, 67);
     ARG(2350, source_block, classes->blocks.named[3]);
     CTOR(2353);
@@ -822,9 +822,9 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2364, 66);
 
     /* 68: aJ; the same yk/pq Class literal as registration63. */
-    NEW(2367, MC_BLOCK_UJ_MT);
+    NEW(2367, MC_BLOCK_SIGN);
     ARG(2371, id, 68);
-    ARG(2373, tile_class, mc_registry_sign_class(classes));
+    ARG(2373, tile_entity_class, mc_registry_sign_class(classes));
     ARG(2375, flag, false);
     CTOR(2376);
     H(2380, 1.0f);
@@ -835,7 +835,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2400, 67);
 
     /* 69: aK. */
-    NEW(2403, MC_BLOCK_XR_PD);
+    NEW(2403, MC_BLOCK_LEVER);
     ARG(2407, id, 69);
     ARG(2409, texture, 96);
     CTOR(2411);
@@ -846,7 +846,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2433, 68);
 
     /* 70: aL; original texture read precedes pressure-class active use. */
-    NEW(2436, MC_BLOCK_BV_BC);
+    NEW(2436, MC_BLOCK_PRESSURE_PLATE);
     ARG(2440, id, 70);
     AT(2442);
     source = classes->blocks.named[0];
@@ -867,7 +867,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2476, 69);
 
     /* 71: aM. */
-    NEW(2479, MC_BLOCK_LE_HC);
+    NEW(2479, MC_BLOCK_DOOR);
     ARG(2483, id, 71);
     ARG(2485, material, mc_materials_get(classes->options.materials, MC_MATERIAL_f));
     CTOR(2488);
@@ -879,7 +879,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2513, 70);
 
     /* 72: aN. */
-    NEW(2516, MC_BLOCK_BV_BC);
+    NEW(2516, MC_BLOCK_PRESSURE_PLATE);
     ARG(2520, id, 72);
     AT(2522);
     source = classes->blocks.named[4];
@@ -900,7 +900,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2556, 71);
 
     /* 73: aO. */
-    NEW(2559, MC_BLOCK_BS_AZ);
+    NEW(2559, MC_BLOCK_REDSTONE_ORE);
     ARG(2563, id, 73);
     ARG(2565, texture, 51);
     ARG(2567, flag, false);
@@ -913,7 +913,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2595, 72);
 
     /* 74: aP; emission precedes hardness in the source. */
-    NEW(2598, MC_BLOCK_BS_AZ);
+    NEW(2598, MC_BLOCK_REDSTONE_ORE);
     ARG(2602, id, 74);
     ARG(2604, texture, 51);
     ARG(2606, flag, true);
@@ -927,7 +927,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2639, 73);
 
     /* 75: aQ. */
-    NEW(2642, MC_BLOCK_DB_BY);
+    NEW(2642, MC_BLOCK_REDSTONE_TORCH);
     ARG(2646, id, 75);
     ARG(2648, texture, 115);
     ARG(2650, flag, false);
@@ -939,7 +939,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2672, 74);
 
     /* 76: aR. */
-    NEW(2675, MC_BLOCK_DB_BY);
+    NEW(2675, MC_BLOCK_REDSTONE_TORCH);
     ARG(2679, id, 76);
     ARG(2681, texture, 99);
     ARG(2683, flag, true);
@@ -952,7 +952,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2710, 75);
 
     /* 77: aS. */
-    NEW(2713, MC_BLOCK_OI_IZ);
+    NEW(2713, MC_BLOCK_BUTTON);
     ARG(2717, id, 77);
     AT(2719);
     source = classes->blocks.named[0];
@@ -970,7 +970,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2747, 76);
 
     /* 78: aT. */
-    NEW(2750, MC_BLOCK_JR_GJ);
+    NEW(2750, MC_BLOCK_SNOW_LAYER);
     ARG(2754, id, 78);
     ARG(2756, texture, 66);
     CTOR(2758);
@@ -980,7 +980,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2777, 77);
 
     /* 79: aU. */
-    NEW(2780, MC_BLOCK_NK_IK);
+    NEW(2780, MC_BLOCK_ICE);
     ARG(2784, id, 79);
     ARG(2786, texture, 67);
     CTOR(2788);
@@ -991,7 +991,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2811, 78);
 
     /* 80: aV. */
-    NEW(2814, MC_BLOCK_AC_P);
+    NEW(2814, MC_BLOCK_SNOW_BLOCK);
     ARG(2818, id, 80);
     ARG(2820, texture, 66);
     CTOR(2822);
@@ -1001,7 +1001,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2841, 79);
 
     /* 81: aW. */
-    NEW(2844, MC_BLOCK_OR_JE);
+    NEW(2844, MC_BLOCK_CACTUS);
     ARG(2848, id, 81);
     ARG(2850, texture, 70);
     CTOR(2852);
@@ -1011,7 +1011,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2871, 80);
 
     /* 82: aX. */
-    NEW(2874, MC_BLOCK_RZ_LF);
+    NEW(2874, MC_BLOCK_CLAY);
     ARG(2878, id, 82);
     ARG(2880, texture, 72);
     CTOR(2882);
@@ -1021,7 +1021,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2901, 81);
 
     /* 83: aY. */
-    NEW(2904, MC_BLOCK_RI_KO);
+    NEW(2904, MC_BLOCK_SUGAR_CANE);
     ARG(2908, id, 83);
     ARG(2910, texture, 73);
     CTOR(2912);
@@ -1032,7 +1032,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2933, 82);
 
     /* 84: aZ. */
-    NEW(2936, MC_BLOCK_FO_DT);
+    NEW(2936, MC_BLOCK_JUKEBOX);
     ARG(2940, id, 84);
     ARG(2942, texture, 74);
     CTOR(2944);
@@ -1044,7 +1044,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(2970, 83);
 
     /* 85: ba. */
-    NEW(2973, MC_BLOCK_JW_GN);
+    NEW(2973, MC_BLOCK_FENCE);
     ARG(2977, id, 85);
     ARG(2979, texture, 4);
     CTOR(2980);
@@ -1056,7 +1056,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3006, 84);
 
     /* 86: bb. */
-    NEW(3009, MC_BLOCK_FC_DI);
+    NEW(3009, MC_BLOCK_PUMPKIN);
     ARG(3013, id, 86);
     ARG(3015, texture, 102);
     ARG(3017, flag, false);
@@ -1068,7 +1068,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3039, 85);
 
     /* 87: bc. */
-    NEW(3042, MC_BLOCK_YI_PO);
+    NEW(3042, MC_BLOCK_NETHERRACK);
     ARG(3046, id, 87);
     ARG(3048, texture, 103);
     CTOR(3050);
@@ -1078,7 +1078,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3069, 86);
 
     /* 88: bd. */
-    NEW(3072, MC_BLOCK_OA_IU);
+    NEW(3072, MC_BLOCK_SOUL_SAND);
     ARG(3076, id, 88);
     ARG(3078, texture, 104);
     CTOR(3080);
@@ -1088,7 +1088,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3099, 87);
 
     /* 89: be. */
-    NEW(3102, MC_BLOCK_LY_HR);
+    NEW(3102, MC_BLOCK_GLOWSTONE);
     ARG(3106, id, 89);
     ARG(3108, texture, 105);
     ARG(3110, material, mc_materials_get(classes->options.materials, MC_MATERIAL_e));
@@ -1100,7 +1100,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3136, 88);
 
     /* 90: bf; checkcast ak/z at3171. */
-    NEW(3139, MC_BLOCK_AK_Z);
+    NEW(3139, MC_BLOCK_PORTAL);
     ARG(3143, id, 90);
     ARG(3145, texture, 14);
     CTOR(3147);
@@ -1112,7 +1112,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3174, 89);
 
     /* 91: bg. */
-    NEW(3177, MC_BLOCK_FC_DI);
+    NEW(3177, MC_BLOCK_PUMPKIN);
     ARG(3181, id, 91);
     ARG(3183, texture, 102);
     ARG(3185, flag, true);
@@ -1125,7 +1125,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3211, 90);
 
     /* 92: bh. */
-    NEW(3214, MC_BLOCK_UM_MW);
+    NEW(3214, MC_BLOCK_CAKE);
     ARG(3218, id, 92);
     ARG(3220, texture, 121);
     CTOR(3222);
@@ -1137,7 +1137,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3247, 91);
 
     /* 93: bi. */
-    NEW(3250, MC_BLOCK_WO_OI);
+    NEW(3250, MC_BLOCK_REPEATER);
     ARG(3254, id, 93);
     ARG(3256, flag, false);
     CTOR(3257);
@@ -1149,7 +1149,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3281, 92);
 
     /* 94: bj. */
-    NEW(3284, MC_BLOCK_WO_OI);
+    NEW(3284, MC_BLOCK_REPEATER);
     ARG(3288, id, 94);
     ARG(3290, flag, true);
     CTOR(3291);
@@ -1162,7 +1162,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3320, 93);
 
     /* 95: bk. */
-    NEW(3323, MC_BLOCK_KS_GV);
+    NEW(3323, MC_BLOCK_LOCKED_CHEST);
     ARG(3327, id, 95);
     CTOR(3329);
     H(3333, 0.0f);
@@ -1174,7 +1174,7 @@ mc_registry_status mc_registry_register_blocks(mc_registry_classes *classes) {
     PUBLISH(3358, 94);
 
     /* 96: bl. */
-    NEW(3361, MC_BLOCK_OQ_JD);
+    NEW(3361, MC_BLOCK_TRAPDOOR);
     ARG(3365, id, 96);
     ARG(3367, material, mc_materials_get(classes->options.materials, MC_MATERIAL_d));
     CTOR(3370);

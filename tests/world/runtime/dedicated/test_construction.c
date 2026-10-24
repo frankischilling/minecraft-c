@@ -1,10 +1,10 @@
 #include "../../../../src/core/java/random_profile_internal.h"
 #include "../../../../src/entity/entity_internal.h"
 #include "../../../../src/world/chunk/object_state_internal.h"
+#include "../../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../../src/world/runtime/construction_internal.h"
 #include "../../../../src/world/runtime/dedicated/entity_index.h"
 #include "../../../../src/world/runtime/entity_publication_internal.h"
-#include "../../../../src/world/runtime/provider_internal.h"
 #include "mc/world/runtime/entities.h"
 
 #include <stdio.h>
@@ -30,12 +30,12 @@ static int one_case(mc_world_runtime_classes *classes, mc_entity_classes *entiti
                     unsigned int scenario) {
     int result = 1;
     mc_world_runtime *world = NULL;
-    mc_world_dimension *ignored_dimension = NULL;
+    mc_world_provider *ignored_dimension = NULL;
     mc_entity *a = NULL, *b = NULL, *looked_up = NULL;
     mc_world_runtime_construction base;
     mc_world_runtime_dedicated_fields f;
     mc_world_runtime_dedicated_construction state;
-    mc_world_provider_fields provider;
+    mc_chunk_provider_fields provider;
     mc_world_entity_index_view index;
     mc_world_entity_batch_error detail;
     mc_server_construction server_state;
@@ -47,7 +47,7 @@ static int one_case(mc_world_runtime_classes *classes, mc_entity_classes *entiti
         limits.max_dedicated_entities = 1;
     if (scenario == 7)
         limits.max_direct_allocation_bytes = sizeof(*world);
-    CHECK(mc_world_dimension_create(1, NULL, &ignored_dimension, NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(1, NULL, &ignored_dimension, NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_SERVER_DEDICATED, classes, &limits,
                                           &world, NULL) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_dedicated_get(world, &f, &state) == MC_WORLD_STORAGE_OK && f.C == NULL &&
@@ -76,19 +76,19 @@ static int one_case(mc_world_runtime_classes *classes, mc_entity_classes *entiti
         result = 0;
         goto cleanup;
     }
-    mc_world_dimension_state dimension;
+    mc_world_provider_state dimension;
     CHECK(world->fields.t != ignored_dimension &&
-          mc_world_dimension_state_get(world->fields.t, &dimension) == MC_WORLD_DIMENSION_OK);
+          mc_world_provider_state_get(world->fields.t, &dimension) == MC_WORLD_PROVIDER_OK);
     if (scenario == 4) {
         CHECK(constructed == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
               base.phase == MC_WORLD_RUNTIME_FAILED_CONSTRUCTION && base.failed_call_pc == 403 &&
-              dimension.kind == MC_WORLD_DIMENSION_SKY && state.failed_call_pc == 10 &&
+              dimension.kind == MC_WORLD_PROVIDER_SKY && state.failed_call_pc == 10 &&
               f.C == NULL && f.G == NULL && f.F == NULL && server_state.references == 1);
         result = 0;
         goto cleanup;
     }
-    CHECK(dimension.kind == MC_WORLD_DIMENSION_OVERWORLD && f.C != NULL && f.C == world->fields.v);
-    CHECK(mc_world_provider_bind_fields(f.C, &provider, NULL) == MC_WORLD_STORAGE_OK &&
+    CHECK(dimension.kind == MC_WORLD_PROVIDER_OVERWORLD && f.C != NULL && f.C == world->fields.v);
+    CHECK(mc_chunk_provider_bind_fields(f.C, &provider, NULL) == MC_WORLD_STORAGE_OK &&
           provider.world == world && provider.policy == MC_CHUNK_ACQUIRE_DEDICATED &&
           provider.force_load == world->live.provider_force_load && !*provider.force_load &&
           world->options.policy == MC_CHUNK_ACQUIRE_DEDICATED &&
@@ -135,14 +135,14 @@ static int one_case(mc_world_runtime_classes *classes, mc_entity_classes *entiti
     const mc_world_chunk_entity_list source = {entries, scenario == 3 ? 3u : 2u,
                                                sizeof(entries) / sizeof(entries[0])};
     CHECK(mc_world_runtime_call_enter(world, NULL) == MC_WORLD_STORAGE_OK);
-    void *observer_entries[] = {NULL};
-    mc_world_reference_list observer = {observer_entries, 1, 1};
-    mc_world_reference_list *original_observers = world->fields.u;
+    void *world_access_entries[] = {NULL};
+    mc_world_reference_list world_access = {world_access_entries, 1, 1};
+    mc_world_reference_list *original_world_accesses = world->fields.u;
     if (scenario == 8)
-        world->fields.u = &observer;
+        world->fields.u = &world_access;
     const mc_world_storage_status published =
         mc_world_runtime_entity_batch_held(world, &source, false, &detail);
-    world->fields.u = original_observers;
+    world->fields.u = original_world_accesses;
     mc_world_runtime_call_leave(world);
     CHECK(world->fields.b->count == source.count && world->fields.b->items[0] == a &&
           world->fields.b->items[1] == entries[1]);
@@ -150,7 +150,7 @@ static int one_case(mc_world_runtime_classes *classes, mc_entity_classes *entiti
     CHECK(mc_world_runtime_entity_by_id(world, 23, &looked_up, NULL) == MC_WORLD_STORAGE_OK);
     if (scenario == 8) {
         CHECK(published == MC_WORLD_STORAGE_UNSUPPORTED_STATE && detail.index == 0 &&
-              detail.publication.bytecode == 34 && detail.publication.observer_bytecode == 29 &&
+              detail.publication.bytecode == 34 && detail.publication.world_access_bytecode == 29 &&
               detail.publication.dedicated_bytecode == 0 && index.b == 0 && index.e == 0 &&
               looked_up == NULL && a->holds == 2 && b->holds == 2);
     } else if (scenario == 2) {
@@ -194,7 +194,7 @@ cleanup:
             result = 1;
         }
     }
-    mc_world_dimension_release(ignored_dimension);
+    mc_world_provider_release(ignored_dimension);
     return result;
 }
 

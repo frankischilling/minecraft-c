@@ -49,12 +49,12 @@ static mc_biome_status fail(mc_temperature_error *frame, mc_biome_status status,
 }
 
 static mc_biome_status dimension_failure(mc_temperature_error *frame,
-                                         mc_world_dimension_status status, const char *operation) {
+                                         mc_world_provider_status status, const char *operation) {
     frame->manager_status = status;
     return fail(frame,
-                status == MC_WORLD_DIMENSION_LIMIT               ? MC_BIOME_LIMIT
-                : status == MC_WORLD_DIMENSION_ALLOCATION_FAILED ? MC_BIOME_ALLOCATION_FAILED
-                                                                 : MC_BIOME_INVALID_ARGUMENT,
+                status == MC_WORLD_PROVIDER_LIMIT               ? MC_BIOME_LIMIT
+                : status == MC_WORLD_PROVIDER_ALLOCATION_FAILED ? MC_BIOME_ALLOCATION_FAILED
+                                                                : MC_BIOME_INVALID_ARGUMENT,
                 operation);
 }
 
@@ -263,7 +263,7 @@ leave:
     return status;
 }
 
-mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
+mc_biome_status mc_temperature_sample(mc_world_chunk_manager *receiver,
                                       mc_temperature_owner *allocation_owner,
                                       mc_temperature_array *input, int32_t x, int32_t z,
                                       size_t width, size_t height, mc_temperature_array **out,
@@ -283,8 +283,8 @@ mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
         (void)fail(&frame, MC_BIOME_LIMIT, "temperature native rectangular extent");
         goto leave;
     }
-    mc_world_dimension_status manager_status = mc_world_dimension_biome_retain(receiver);
-    if (manager_status != MC_WORLD_DIMENSION_OK) {
+    mc_world_provider_status manager_status = mc_world_chunk_manager_retain(receiver);
+    if (manager_status != MC_WORLD_PROVIDER_OK) {
         (void)dimension_failure(&frame, manager_status, "temperature receiver native hold");
         goto leave;
     }
@@ -297,9 +297,9 @@ mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
         }
         input_hold = input;
     }
-    mc_world_dimension_biome_fields fields;
-    manager_status = mc_world_dimension_biome_fields_get(receiver, &fields);
-    if (manager_status != MC_WORLD_DIMENSION_OK) {
+    mc_world_chunk_manager_fields fields;
+    manager_status = mc_world_chunk_manager_fields_get(receiver, &fields);
+    if (manager_status != MC_WORLD_PROVIDER_OK) {
         (void)dimension_failure(&frame, manager_status, "temperature receiver native fields");
         goto leave;
     }
@@ -318,8 +318,8 @@ mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
         /* Fresh actual f read at30, AFTER output allocation19. Never substitute
          * the earlier passive dispatch snapshot or normal temperature noise. */
         frame.bytecode = 30u;
-        manager_status = mc_world_dimension_biome_fields_get(receiver, &fields);
-        if (manager_status != MC_WORLD_DIMENSION_OK) {
+        manager_status = mc_world_chunk_manager_fields_get(receiver, &fields);
+        if (manager_status != MC_WORLD_PROVIDER_OK) {
             (void)dimension_failure(&frame, manager_status, "fixed temperature f receiver");
             goto leave;
         }
@@ -330,18 +330,18 @@ mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
             memcpy(&target->buffer.data[i], &value, sizeof(value));
         frame.cells_completed = count;
     } else {
-        mc_biome_manager *manager = fields.normal;
+        mc_biome_manager *manager = fields.noise_backed;
         frame.bytecode = 44u;
         /* The opaque Dimension owner supplies actual constructed embedded
          * noise. Do NOT use sampling_valid(), which preflights future c/a/b/d. */
         if (manager == NULL || manager->initialized != 1) {
             (void)fail(&frame, MC_BIOME_INVALID_ARGUMENT,
-                       "normal temperature initialized native noise owner");
+                       "noise-backed temperature initialized native noise owner");
             goto leave;
         }
         if (!strict_fp()) {
             (void)fail(&frame, MC_BIOME_INVALID_ARGUMENT,
-                       "normal temperature strict floating environment");
+                       "noise-backed temperature strict floating environment");
             goto leave;
         }
         if (!raw_fill(manager->temperature_layers, 4u, x, z, width, height, (double)0.025f, 0.25,
@@ -391,6 +391,6 @@ leave:
     mc_temperature_array_release(fresh);
     mc_temperature_array_release(input_hold);
     if (manager_held)
-        mc_world_dimension_biome_release(receiver);
+        mc_world_chunk_manager_release(receiver);
     return finish(error, &frame);
 }

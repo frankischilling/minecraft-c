@@ -730,7 +730,7 @@ static const en_mapping en_mappings[] = {
     {MC_ENTITY_CLASS_KIND_SNOWBALL, "Snowball", "by", "be", 11},
     {MC_ENTITY_CLASS_KIND_ITEM, "Item", "hl", "ez", 1},
     {MC_ENTITY_CLASS_KIND_PAINTING, "Painting", "qv", "kf", 9},
-    {MC_ENTITY_CLASS_KIND_MOB, "Mob", "ls", "hl", 48},
+    {MC_ENTITY_CLASS_KIND_LIVING_ENTITY, "Mob", "ls", "hl", 48},
     {MC_ENTITY_CLASS_KIND_MONSTER, "Monster", "gz", "ep", 49},
     {MC_ENTITY_CLASS_KIND_CREEPER, "Creeper", "gb", "ec", 50},
     {MC_ENTITY_CLASS_KIND_SKELETON, "Skeleton", "fr", "dv", 51},

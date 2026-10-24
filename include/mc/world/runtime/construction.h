@@ -12,8 +12,8 @@
 
 typedef struct mc_world_runtime mc_world_runtime;
 typedef struct mc_world_runtime_classes mc_world_runtime_classes;
-typedef struct mc_world_dimension mc_world_dimension;
 typedef struct mc_world_provider mc_world_provider;
+typedef struct mc_chunk_provider mc_chunk_provider;
 typedef struct mc_world_reference_list mc_world_reference_list;
 typedef struct mc_world_active_chunks mc_world_active_chunks;
 typedef struct mc_world_entity_index mc_world_entity_index;
@@ -44,7 +44,7 @@ typedef enum mc_world_runtime_entry {
  * saving-disable cell; base E remains the scheduled TreeSet. Native ownership
  * retains F and every typed G occurrence independently. */
 typedef struct mc_world_runtime_dedicated_fields {
-    mc_world_provider *C;
+    mc_chunk_provider *C;
     bool D, E;
     mc_server_runtime *F;
     mc_world_entity_index *G;
@@ -74,9 +74,9 @@ typedef struct mc_world_runtime_fields {
     int32_t p, q;
     mc_java_random *r;
     bool s;
-    mc_world_dimension *t;
+    mc_world_provider *t;
     mc_world_reference_list *u;
-    mc_world_provider *v;
+    mc_chunk_provider *v;
     mc_world_store *w;
     mc_world_info *x;
     bool y, J;
@@ -131,7 +131,7 @@ typedef struct mc_world_runtime_world_arguments {
     mc_world_store *store;
     mc_world_info_name *name;
     int64_t seed;
-    mc_world_dimension *dimension;
+    mc_world_provider *dimension;
     mc_world_runtime *parent;
     mc_server_runtime *server;
     int32_t dimension_id;
@@ -206,7 +206,7 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
 /* Explicit native retirement, separate from original gameplay construction.
  * Require no entered call/local lease and empty owned registrations. Detach
  * actual contexts and this dimension's binding to this exact World without
- * running game biome setup. External Entity/Tile/feature bindings still keep the same
+ * running game biome setup. External Entity/TileEntity/feature bindings still keep the same
  * retired owner alive and free BUSY until released; no aggregate count is reset.
  * No implicit save, file rollback, profile reset or game constructor retry.
  * Repeated retirement succeeds. Existing Info/field inspection stays valid;

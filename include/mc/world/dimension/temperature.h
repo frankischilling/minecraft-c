@@ -1,8 +1,8 @@
-#ifndef MC_WORLD_DIMENSION_TEMPERATURE_H
-#define MC_WORLD_DIMENSION_TEMPERATURE_H
+#ifndef MC_WORLD_PROVIDER_TEMPERATURE_H
+#define MC_WORLD_PROVIDER_TEMPERATURE_H
 
 #include "mc/world/biome/biome.h"
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -51,7 +51,7 @@ typedef struct mc_temperature_error {
      * native guards leave this zero; no source VM frame is manufactured. */
     unsigned int raw_bytecode;
     bool native_boundary;
-    mc_world_dimension_status manager_status;
+    mc_world_provider_status manager_status;
     bool reused_input, temperature_filled, auxiliary_published;
     size_t cells_completed;
 } mc_temperature_error;
@@ -117,7 +117,7 @@ mc_biome_status mc_temperature_array_get(const mc_temperature_array *array,
  * No same-buffer concurrent calls, descriptor surgery or reentry into this
  * pure native call is permitted. Synchronous World reentry happens outside
  * it, for example the later snow height query, and must observe real w state. */
-mc_biome_status mc_temperature_sample(mc_world_dimension_biome *receiver,
+mc_biome_status mc_temperature_sample(mc_world_chunk_manager *receiver,
                                       mc_temperature_owner *allocation_owner,
                                       mc_temperature_array *input, int32_t x, int32_t z,
                                       size_t width, size_t height, mc_temperature_array **out,

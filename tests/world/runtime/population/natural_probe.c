@@ -8,7 +8,7 @@
 #include "mc/resources/files/files.h"
 #include "mc/world/biome/registry.h"
 #include "mc/world/biome/sampling.h"
-#include "mc/world/dimension/biome_runtime.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/lighting.h"
 #include "mc/world/runtime/saved_data.h"
@@ -17,9 +17,9 @@
 #include "../../../../src/block/registry/registry_internal.h"
 #include "../../../../src/platform/time/millis.h"
 #include "../../../../src/world/biome/biome_internal.h"
+#include "../../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../../src/world/runtime/construction_internal.h"
 #include "../../../../src/world/runtime/loading/loading_internal.h"
-#include "../../../../src/world/runtime/provider_internal.h"
 #include "../../../../src/world/storage/files.h"
 #include "../../../../src/world/storage/objects_internal.h"
 
@@ -99,9 +99,9 @@ typedef struct natural_probe {
     mc_world_regions *regions;
     mc_world_store *store;
     mc_world_info_name *name;
-    mc_world_dimension *dimension;
+    mc_world_provider *dimension;
     mc_world_runtime *world;
-    mc_world_provider_fields provider;
+    mc_chunk_provider_fields provider;
     mc_world_storage_error storage_error, inspection_error;
     mc_registry_error registry_error;
     mc_world_storage_status constructor_status;
@@ -540,17 +540,16 @@ static bool hold_temperature(natural_probe *probe, mc_temperature_array *array) 
 
 static bool provider_snapshot(natural_probe *probe, const mc_java_random *world_random) {
     natural_json *json = &probe->json;
-    const mc_world_provider_fields *provider = &probe->provider;
-    const mc_world_provider_generation_fields *generation = provider->generation;
+    const mc_chunk_provider_fields *provider = &probe->provider;
+    const mc_chunk_provider_generation_fields *generation = provider->generation;
     if (provider->generator == NULL || generation == NULL || provider->biome == NULL)
         return problem(probe, "Provider projection binding", "probe", 1);
     mc_biome_registry_view statics;
-    mc_world_biome_game_fields actual;
-    mc_world_dimension_biome_fields climate;
+    mc_world_chunk_manager_game_fields actual;
+    mc_world_chunk_manager_fields climate;
     if (mc_biome_registry_inspect(probe->registry, &statics, NULL) != MC_REGISTRY_OK ||
-        mc_world_dimension_biome_game_fields_get(provider->biome, &actual) !=
-            MC_WORLD_DIMENSION_OK ||
-        mc_world_dimension_biome_fields_get(provider->biome, &climate) != MC_WORLD_DIMENSION_OK)
+        mc_world_chunk_manager_game_fields_get(provider->biome, &actual) != MC_WORLD_PROVIDER_OK ||
+        mc_world_chunk_manager_fields_get(provider->biome, &climate) != MC_WORLD_PROVIDER_OK)
         return problem(probe, "Provider Biome projection", "probe", 1);
     if (!emit(json, "{\"generator_random\":") ||
         !random_state(json, &provider->generator->generator_random) ||
@@ -594,13 +593,13 @@ static bool provider_snapshot(natural_probe *probe, const mc_java_random *world_
 static bool snapshot(natural_probe *probe) {
     mc_world_runtime_fields fields;
     mc_world_runtime_class_state class_state;
-    mc_world_dimension_fields dimension;
+    mc_world_provider_fields dimension;
     mc_level_info info;
     if (mc_world_runtime_fields_get(probe->world, &fields) != MC_WORLD_STORAGE_OK ||
-        mc_world_provider_bind_fields(fields.v, &probe->provider, &probe->inspection_error) !=
+        mc_chunk_provider_bind_fields(fields.v, &probe->provider, &probe->inspection_error) !=
             MC_WORLD_STORAGE_OK ||
         mc_world_runtime_classes_get(probe->classes, &class_state) != MC_WORLD_STORAGE_OK ||
-        mc_world_dimension_fields_get(fields.t, &dimension) != MC_WORLD_DIMENSION_OK ||
+        mc_world_provider_fields_get(fields.t, &dimension) != MC_WORLD_PROVIDER_OK ||
         mc_world_runtime_read_info(probe->world, &info, &probe->inspection_error) !=
             MC_WORLD_STORAGE_OK ||
         !track_chunks(probe))
@@ -780,8 +779,8 @@ static bool initialize(natural_probe *probe, const char *resources, const char *
                                 &probe->name),
         MC_WORLD_INFO_OK, "info", "World name");
     if (!probe->client)
-        NATURAL_REQUIRE(probe, mc_world_dimension_create(0, NULL, &probe->dimension, NULL),
-                        MC_WORLD_DIMENSION_OK, "dimension", "Server normal Dimension");
+        NATURAL_REQUIRE(probe, mc_world_provider_create(0, NULL, &probe->dimension, NULL),
+                        MC_WORLD_PROVIDER_OK, "dimension", "Server normal Dimension");
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = NATURAL_CAPACITY;
     NATURAL_REQUIRE(probe,
@@ -834,7 +833,7 @@ static bool observe(natural_probe *probe, bool initialized, bool ring) {
                 /* Assign new normal IDs by actual insertion order first. */
                 mc_world_runtime_fields fields;
                 if (mc_world_runtime_fields_get(probe->world, &fields) != MC_WORLD_STORAGE_OK ||
-                    mc_world_provider_bind_fields(fields.v, &probe->provider,
+                    mc_chunk_provider_bind_fields(fields.v, &probe->provider,
                                                   &probe->inspection_error) !=
                         MC_WORLD_STORAGE_OK ||
                     !track_chunks(probe) || !emit(json, "%zu", chunk_id(probe, result)))
@@ -1338,7 +1337,7 @@ static bool world_entity_diagnostic(natural_json *json, const mc_world_entity_er
                 ",\"bytecode\":%u,\"presence_bytecode\":%u,\"provider_bytecode\":%u,"
                 "\"chunk_bytecode\":%u,\"observer_bytecode\":%u,\"acquisition\":%u,\"cause\":",
                 error->bytecode, error->presence_bytecode, error->provider_bytecode,
-                error->chunk_bytecode, error->observer_bytecode,
+                error->chunk_bytecode, error->world_access_bytecode,
                 (unsigned int)error->acquisition) &&
            storage(json, &error->cause) && emit(json, ",\"entity\":") &&
            entity_diagnostic(json, &error->entity) && emit(json, "}");
@@ -1362,15 +1361,16 @@ static bool load_entity_diagnostic(natural_json *json, const mc_world_entity_loa
            storage(json, &error->native) && emit(json, "}");
 }
 
-static bool live_tile_diagnostic(natural_json *json, const mc_live_tile_error *error) {
-    const mc_tile_error *t = &error->tile;
-    const mc_live_tile_call_frame *p = &error->acquisition_parent;
+static bool live_tile_entity_diagnostic(natural_json *json,
+                                        const mc_live_tile_entity_error *error) {
+    const mc_tile_entity_error *t = &error->tile_entity;
+    const mc_live_tile_entity_call_frame *p = &error->acquisition_parent;
     return emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
            string(json, error->operation) &&
            emit(json,
                 ",\"bytecode\":%u,\"chunk_bytecode\":%u,\"observer_bytecode\":%u,"
                 "\"initializer_bytecode\":%u,\"cause\":",
-                error->bytecode, error->chunk_bytecode, error->observer_bytecode,
+                error->bytecode, error->chunk_bytecode, error->world_access_bytecode,
                 error->initializer_bytecode) &&
            storage(json, &error->cause) && emit(json, ",\"registry\":") &&
            registry_diagnostic(json, &error->registry) &&
@@ -1402,8 +1402,9 @@ static bool live_tile_diagnostic(natural_json *json, const mc_live_tile_error *e
                 "\"activation_bytecode\":%u,\"activation_world_bytecode\":%u,\"load_bytecode\":%u,"
                 "\"load_builder_bytecode\":%u,\"load_entity\":",
                 error->caller_bytecode, error->hook_bytecode, error->remove_bytecode,
-                error->tile_bytecode, error->inventory_bytecode, error->acquisition_caller_bytecode,
-                error->activation_bytecode, error->activation_world_bytecode, error->load_bytecode,
+                error->tile_entity_bytecode, error->inventory_bytecode,
+                error->acquisition_caller_bytecode, error->activation_bytecode,
+                error->activation_world_bytecode, error->load_bytecode,
                 error->load_builder_bytecode) &&
            load_entity_diagnostic(json, &error->load_entity) &&
            emit(json,
@@ -1411,9 +1412,9 @@ static bool live_tile_diagnostic(natural_json *json, const mc_live_tile_error *e
                 "\"chunk_bytecode\":%u,\"observer_bytecode\":%u,\"initializer_bytecode\":%u,"
                 "\"caller_bytecode\":%u,\"hook_bytecode\":%u,\"remove_bytecode\":%u,"
                 "\"provider_bytecode\":%u,\"tile_bytecode\":%u,\"inventory_bytecode\":%u}}",
-                error->provider_bytecode, p->bytecode, p->chunk_bytecode, p->observer_bytecode,
+                error->provider_bytecode, p->bytecode, p->chunk_bytecode, p->world_access_bytecode,
                 p->initializer_bytecode, p->caller_bytecode, p->hook_bytecode, p->remove_bytecode,
-                p->provider_bytecode, p->tile_bytecode, p->inventory_bytecode);
+                p->provider_bytecode, p->tile_entity_bytecode, p->inventory_bytecode);
 }
 
 static bool save_diagnostic(natural_json *json, const mc_world_runtime_lifecycle_error *error) {
@@ -1428,13 +1429,13 @@ static bool save_diagnostic(natural_json *json, const mc_world_runtime_lifecycle
                 s->region_bytecode, s->serializer_bytecode, s->entity_slice, s->entity_index) &&
            entity_nbt_diagnostic(json, &s->entity) && emit(json, ",\"entity_records\":") &&
            nbt_diagnostic(json, &s->entity_records) && emit(json, ",\"tile\":") &&
-           live_tile_diagnostic(json, &s->tile) &&
+           live_tile_entity_diagnostic(json, &s->tile_entity) &&
            emit(json, ",\"composition\":{\"status\":%u,\"field\":",
                 (unsigned int)s->composition.status) &&
            string(json, s->composition.field) && emit(json, ",\"nbt\":") &&
            nbt_diagnostic(json, &s->composition.nbt) && emit(json, "},\"encoding\":") &&
            nbt_diagnostic(json, &s->encoding) && emit(json, "},\"tile\":") &&
-           live_tile_diagnostic(json, &error->tile) && emit(json, ",\"batch\":") &&
+           live_tile_entity_diagnostic(json, &error->tile_entity) && emit(json, ",\"batch\":") &&
            batch_diagnostic(json, &error->batch) &&
            emit(json, ",\"activation_bytecode\":%u,\"activation_world_bytecode\":%u}",
                 error->activation_bytecode, error->activation_world_bytecode);
@@ -1446,7 +1447,7 @@ static bool load_diagnostic(natural_json *json, const mc_world_game_load_error *
            emit(json,
                 ",\"region_bytecode\":%u,\"builder_bytecode\":%u,\"tile\":", error->region_bytecode,
                 error->builder_bytecode) &&
-           live_tile_diagnostic(json, &error->tile) && emit(json, ",\"entity\":") &&
+           live_tile_entity_diagnostic(json, &error->tile_entity) && emit(json, ",\"entity\":") &&
            load_entity_diagnostic(json, &error->entity) && emit(json, "}");
 }
 
@@ -1557,11 +1558,12 @@ static bool direct_chunk_binding(natural_probe *probe, mc_chunk_state *state) {
     if (fields.d != probe->world)
         return problem(probe, "Direct loader actual Chunk World binding", "probe", 1);
     size_t count = SIZE_MAX;
-    status = mc_world_chunk_tile_count(fields.l, &count);
+    status = mc_world_chunk_tile_entity_count(fields.l, &count);
     if (status != MC_WORLD_STORAGE_OK)
-        return problem(probe, "Direct loader actual Tile map", "storage", (unsigned int)status);
+        return problem(probe, "Direct loader actual TileEntity map", "storage",
+                       (unsigned int)status);
     if (count != 0)
-        return problem(probe, "Direct loader expected empty Tile map", "probe", 1);
+        return problem(probe, "Direct loader expected empty TileEntity map", "probe", 1);
     const mc_world_chunk_entity_list *slices[8] = {0};
     for (size_t i = 0; i < sizeof(slices) / sizeof(slices[0]); ++i) {
         status = mc_world_chunk_slice_at(fields.m, i, &slices[i]);
@@ -1738,7 +1740,7 @@ static bool cleanup(natural_probe *probe) {
         if (mc_world_runtime_fields_get(probe->world, &fields) != MC_WORLD_STORAGE_OK)
             return false;
         if (fields.v != NULL) {
-            if (mc_world_provider_bind_fields(fields.v, &probe->provider,
+            if (mc_chunk_provider_bind_fields(fields.v, &probe->provider,
                                               &probe->inspection_error) != MC_WORLD_STORAGE_OK ||
                 mc_chunk_pending_clear(probe->provider.pending) != MC_CHUNK_ACQUIRE_OK ||
                 !mc_chunk_cache_init(probe->provider.cache, probe->provider.cache->entries,
@@ -1762,7 +1764,7 @@ static bool cleanup(natural_probe *probe) {
     if (mc_world_runtime_free(probe->world, &probe->inspection_error) != MC_WORLD_STORAGE_OK)
         return false;
     probe->world = NULL;
-    mc_world_dimension_release(probe->dimension);
+    mc_world_provider_release(probe->dimension);
     probe->dimension = NULL;
     if (mc_world_runtime_classes_free(probe->classes, &probe->inspection_error) !=
         MC_WORLD_STORAGE_OK)

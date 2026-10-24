@@ -3,10 +3,10 @@
 
 #include "acquisition_internal.h"
 #include "mc/world/runtime/construction.h"
-#include "mc/world/runtime/observers.h"
 #include "mc/world/runtime/runtime.h"
 #include "mc/world/runtime/saving/errors.h"
-#include "mc/world/runtime/tiles/tiles.h"
+#include "mc/world/runtime/tile_entities/tile_entities.h"
+#include "mc/world/runtime/world_access.h"
 
 typedef struct mc_world_entity_list_ledger {
     mc_world_reference_list *list;
@@ -20,12 +20,12 @@ typedef struct mc_world_collision_reference {
     struct mc_entity *entity;
 } mc_world_collision_reference;
 
-typedef struct mc_world_observer_list_ledger {
+typedef struct mc_world_access_list_ledger {
     mc_world_reference_list *list;
     void **items;
-    mc_world_observer **entries;
+    mc_world_access **entries;
     size_t count, capacity;
-} mc_world_observer_list_ledger;
+} mc_world_access_list_ledger;
 
 typedef struct mc_world_collision_list_ledger {
     mc_world_reference_list *list;
@@ -71,11 +71,11 @@ struct mc_world_runtime {
      * either one pooled bounds hold or one permanent bounds' Entity hold. */
     mc_world_collision_list_ledger collision_boxes;
     /* Constructor-created u192 and its separately owned typed occurrences.
-     * Current source u is replaceable; unknown void* values own no observer. */
-    mc_world_observer_list_ledger observers;
+     * Current source u is replaceable; unknown void* values own no WorldAccess. */
+    mc_world_access_list_ledger world_accesses;
     bool entity_containers_retired;
-    mc_tile_list_ledger tile_membership[2];
-    bool tile_containers_retired;
+    mc_tile_entity_list_ledger tile_entity_membership[2];
+    bool tile_entity_containers_retired;
     mc_world_runtime_fields fields;
     mc_world_runtime_dedicated_fields dedicated;
     mc_world_runtime_dedicated_construction dedicated_construction;

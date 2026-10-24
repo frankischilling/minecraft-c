@@ -112,17 +112,16 @@ existing numerical memory owner; reference arrays use the Registry arena.
 The numerical square API still preflights replacements and preserves prior
 state on failure. It does not acquire this sampler's partial-publication policy.
 
-## World and Dimension managers
+## WorldProvider and WorldChunkManager
 
-The [class-bound manager interface](../../include/mc/world/dimension/biome_runtime.h)
-binds a Dimension to the application's actual Registry, side and Random profile.
+The [class-bound manager interface](../../include/mc/world/dimension/world_chunk_manager.h)
+binds a WorldProvider to the application's actual Registry, side and Random profile.
 A nonnull World must use that same Registry. The World constructor selects this
 binding when its class has a Registry; the explicit numerical binding remains
 available separately. Admission checks the native binding without class use.
 
-Setup publishes the World in Dimension `a2` and allocates a replacement manager
-at1. Normal setup
-reads the supplied World's seed three times, constructs the actual noise
+Setup publishes the World in WorldProvider `a2` and allocates a replacement manager
+at1. Noise-backed setup reads the supplied World's seed three times, constructs the actual noise
 channels and publishes `b12`, without initializing Biome. Nether and Sky first
 actively load actual Biome `l/m5`, before the fixed constructor and `b13/15`
 publication. A failure retains the preceding manager, published World and reached
@@ -130,10 +129,10 @@ Registry effects. World construction preserves the full Registry cause at its
 enclosing bind call300,315 or398.
 
 Each manager owns an independent counted Registry borrow through final release.
-An alias can survive Dimension replacement and World/class teardown. A manager
+An alias can survive WorldProvider replacement and World/class teardown. A manager
 does not retain a World field after construction. Sampling holds its captured
 manager through synchronous resource callbacks. A numerical rebind can replace
-the Dimension's current manager while a pending call finishes on its held
+the WorldProvider's current manager while a pending call finishes on its held
 receiver; its returned cache belongs to that receiver. Ordinary class-bound
 reentry is BUSY while the Registry is entered.
 
@@ -141,7 +140,7 @@ The actual reference cache `d` is separate from the numerical enum buffer.
 Direct sampling leaves it untouched. Cached sampling captures prior `d3`, calls
 direct11, and publishes `d14` only after success. Failure can retain writes in a
 reused array, while an unpublished replacement remains a diagnostic local.
-Normal point sampling calls cached1x1, then reads element0. Normal chunk sampling
+Noise-backed point sampling calls cached1x1, then reads element0. Noise-backed chunk sampling
 uses Java's wrapping four-bit coordinate shifts before that point call.
 
 Fixed managers retain actual nullable `e`, temperature `f` and rainfall `g`.

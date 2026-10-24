@@ -33,7 +33,7 @@ mc_registry_status mc_registry_biome_array_fill(mc_registry_classes *classes,
  * domain. The owner/fields/arrays and dependencies must remain live/exclusive.
  * This ordinary call owns its whole registry entry, without Biome active use.
  * Diagnostic cells_completed is zero before output fill and length after it;
- * next_index is always zero because fixed has no normal307 loop. */
+ * next_index is always zero because fixed has no noise_backed307 loop. */
 mc_registry_status mc_registry_biome_fixed_sample(mc_registry_classes *classes,
                                                   mc_biome_fixed_storage *storage, int32_t x,
                                                   int32_t z, size_t width, size_t height,

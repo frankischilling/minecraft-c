@@ -9,8 +9,8 @@ the supplied archive without bytecode changes.
 
 | Operation | Client | Base server | Relevant order |
 | --- | --- | --- | --- |
-| World insertion | `fd.b(Lsn;)Z` | `dj.b(Llq;)Z` | Live coordinates 1/13; presence 45; acquisition 83; Chunk add 87; World.b add 95; observer 103 |
-| Base observer hook | `fd.c(Lsn;)V` | `dj.c(Llq;)V` | u 4/size 7; reload 16/get 20/cast 25/invoke 29; return 40 |
+| World insertion | `fd.b(Lsn;)Z` | `dj.b(Llq;)Z` | Live coordinates 1/13; presence 45; acquisition 83; Chunk add 87; World.b add 95; WorldAccess 103 |
+| Base WorldAccess hook | `fd.c(Lsn;)V` | `dj.c(Llq;)V` | u 4/size 7; reload 16/get 20/cast 25/invoke 29; return 40 |
 | Normal Chunk add | `lm.a(Lsn;)V` | `hi.a(Llq;)V` | q 2; X/Z 6/18; Y 74; membership 115/123/129/137; list append 148 |
 | Blank Chunk add | `li.a(Lsn;)V` | `hg.a(Llq;)V` | Literal return 0, including NULL |
 | Full ItemEntity constructor | `hl(fd,DDD,iz)` | `ez(dj,DDD,fy)` | Genuine base/position/Stack and Random/Math operations |
@@ -67,6 +67,6 @@ protocol object followed by LF. Keep worlds, captures, archives and compiled
 helpers outside public artifacts.
 
 This is original-only evidence. It does not replay the state through C or prove
-native control equivalence, original removal/unload, nonempty observers,
+native control equivalence, original removal/unload, nonempty WorldAccess receivers,
 dedicated tracking, player behavior, Entity persistence, fluid completion or
 population acceptance. See the separate [native ownership contract](../world/entities.md).

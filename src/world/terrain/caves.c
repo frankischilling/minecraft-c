@@ -322,9 +322,9 @@ static void cave_neighbor(mc_terrain_cave_context *context, int32_t source_x, in
     }
 }
 
-static bool cave_normal(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
-                        int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                        size_t blocks_length, bool fresh) {
+static bool cave_overworld(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
+                           int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
+                           size_t blocks_length, bool fresh) {
     if (table == NULL || cave_random == NULL || blocks == NULL ||
         blocks_length < MC_TERRAIN_CAVE_BLOCKS || chunk_x < INT32_MIN + 8 ||
         chunk_x > INT32_MAX - 9 || chunk_z < INT32_MIN + 8 || chunk_z > INT32_MAX - 9) {
@@ -351,16 +351,17 @@ static bool cave_normal(const mc_math_trig *table, int64_t world_seed, int32_t c
     return true;
 }
 
-bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
-                             int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                             size_t blocks_length) {
-    return cave_normal(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
-                       true);
+bool mc_terrain_overworld_caves(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
+                                int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
+                                size_t blocks_length) {
+    return cave_overworld(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
+                          true);
 }
 
-bool mc_terrain_normal_caves_reseed(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
-                                    int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                                    size_t blocks_length) {
-    return cave_normal(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
-                       false);
+bool mc_terrain_overworld_caves_reseed(const mc_math_trig *table, int64_t world_seed,
+                                       int32_t chunk_x, int32_t chunk_z,
+                                       mc_java_random *cave_random, uint8_t *blocks,
+                                       size_t blocks_length) {
+    return cave_overworld(table, world_seed, chunk_x, chunk_z, cave_random, blocks, blocks_length,
+                          false);
 }

@@ -14,7 +14,7 @@ mc_world_game_save_error mc_world_game_save_empty_error(void) {
                                       .entity_slice = SIZE_MAX,
                                       .entity_index = SIZE_MAX,
                                       .entity = mc_entity_nbt_empty_error(),
-                                      .tile = mc_live_tiles_empty_error()};
+                                      .tile_entity = mc_live_tile_entities_empty_error()};
 }
 
 static mc_world_storage_status fail(mc_world_game_save_error *frame, mc_world_storage_status status,
@@ -222,7 +222,7 @@ mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *worl
     mc_world_game_save_error frame = mc_world_game_save_empty_error();
     mc_world_store_game_save *save = NULL;
     mc_world_store_game_save_view view = {0};
-    mc_nbt_tree *entity_records = NULL, *tile_records = NULL;
+    mc_nbt_tree *entity_records = NULL, *tile_entity_records = NULL;
     mc_world_info *account = NULL;
     bool entered = false, info_held = false;
     if (world == NULL || state == NULL || growth == NULL) {
@@ -269,7 +269,7 @@ mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *worl
     if (frame.status == MC_WORLD_STORAGE_OK) {
         frame.serializer_bytecode = 224;
         if (view.chunk->l == NULL)
-            fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME save Tile Map values");
+            fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "GAME save TileEntity Map values");
         else {
             mc_nbt_limits residual = view.limits;
             const size_t held_bytes = mc_nbt_tree_allocation_bytes(entity_records);
@@ -278,12 +278,12 @@ mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *worl
                 goto done;
             }
             residual.max_allocation_bytes -= held_bytes;
-            frame.status =
-                mc_live_tiles_build_records(view.chunk, &residual, &tile_records, &frame.tile);
+            frame.status = mc_live_tile_entities_build_records(
+                view.chunk, &residual, &tile_entity_records, &frame.tile_entity);
             if (frame.status != MC_WORLD_STORAGE_OK) {
-                frame.cause = frame.tile.cause;
-                if (frame.tile.bytecode != 0)
-                    frame.serializer_bytecode = frame.tile.bytecode;
+                frame.cause = frame.tile_entity.cause;
+                if (frame.tile_entity.bytecode != 0)
+                    frame.serializer_bytecode = frame.tile_entity.bytecode;
             }
         }
     }
@@ -291,11 +291,11 @@ mc_world_storage_status mc_world_runtime_write_game_chunk(mc_world_runtime *worl
         frame.region_bytecode = 57;
         frame.serializer_bytecode = 0;
         frame.status = mc_world_store_game_save_write(
-            world->fields.w, save, time, timestamp, entity_records, tile_records, growth,
+            world->fields.w, save, time, timestamp, entity_records, tile_entity_records, growth,
             &frame.cause, &frame.composition, &frame.encoding);
     }
 done:
-    mc_nbt_tree_free(tile_records);
+    mc_nbt_tree_free(tile_entity_records);
     mc_nbt_tree_free(entity_records);
     if (save != NULL)
         (void)mc_world_store_game_save_end(world->fields.w, save, NULL);

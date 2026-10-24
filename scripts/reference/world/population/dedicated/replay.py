@@ -51,7 +51,7 @@ def input_paths(executable):
     for name in ("tests/world/runtime/population/natural_probe.c",
                  "tests/world/runtime/population/dedicated_probe.h",
                  "tests/world/runtime/population/dedicated_state_probe.h",
-                 "src/world/runtime/construction.c", "src/world/runtime/provider.c",
+                 "src/world/runtime/construction.c", "src/world/runtime/chunk_provider.c",
                  "src/core/java/random_profile.c"):
         paths[name] = ROOT / name
     manifest = ROOT / ".source-manifest.json"

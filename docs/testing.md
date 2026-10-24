@@ -1,33 +1,55 @@
 # Test scope and reproduction
 
-## World observers and wire constructor inputs
+## Canonical Minecraft names
 
-`world.observers` runs 295 native checks through actual GAME World methods and
+The renamed source passes all 619 public/JDK tests: 205 MSVC, 207 GCC and
+207 Clang, with no failures or skips. Linux enables ASan/UBSan. All 587 C/header
+files pass clang-format 18; controller mirrors and 556 positive/2,011 negative
+lifecycle interval controls pass on both platforms. The retained 1,130-file
+source copy matches all current non-Markdown inputs.
+
+Eight additional file-only controls check complete historical/current module
+families and WorldProvider recorder provenance. Fixed JSON/TSV fixtures keep
+their exact bytes. The initial naming runs rejected historical paths and the
+old recorder binding; explicit compatibility checks resolved those failures
+before the full passing reruns. The [naming reference](reference/minecraft-names.md)
+records the current roles, source aliases and preserved transport labels.
+
+## WorldAccess and redstone constructor inputs
+
+At checkpoint `ef1434015420678559cfa3d3b2f21018c5b733ce`, the predecessor of the
+current `world.world_access` case passed 295 native checks through actual GAME World methods and
 typed callback receivers. It covers all six implemented slots, raw numerical
 arguments, live append/removal/replacement, duplicate and NULL registrations,
 missing callbacks, partial failures, Entity sound coordinate changes, bounded
-allocation and terminal holds. Callback-driven wire updates reenter another
-World sharing the same Registry. These controls pass on MSVC and sanitized
-GCC/Clang; original nonempty observer correspondence remains unverified.
+allocation and terminal holds. Callback-driven redstone updates reenter another
+World sharing the same Registry. Those controls passed on MSVC and sanitized
+GCC/Clang; original nonempty WorldAccess correspondence remains unverified.
 
-`world.wire_probe_inputs` runs 52 native subprocess controls on authored copied
-Worlds. It verifies the old unpaired CLI and declared constructor tapes, including
+The current `world.redstone_probe_inputs` entry names 52 native subprocess controls
+on authored copied Worlds, verified at that checkpoint under their former name.
+They check the unpaired CLI and declared constructor tapes, including
 signed int64 boundary samples, actual discovered consumption, exhausted/unused
 inputs, early witness rejection, canonical-format/size limits and existing-output
 protection. Full operation prefixes and file preservation are checked separately
-from consumption. It does not claim original tape provenance or clock parity.
+from consumption. They do not establish original tape provenance or clock parity.
 
 ```sh
-ctest --test-dir build --output-on-failure -R '^world[.](observers|wire_probe_inputs|wire_lifecycle|wire_multichunk)$'
+ctest --test-dir build --output-on-failure -R '^world[.](world_access|redstone_probe_inputs|redstone_lifecycle|redstone_multichunk)$'
 ```
 
 Add `-C Debug` for a Visual Studio build. These tests need no original archives.
 
-The complete local public/JDK suites pass 205 MSVC, 207 GCC and 207 Clang tests,
-619 in total, with no failures or skips. Linux builds enable ASan and UBSan.
-All 587 C/header files pass clang-format 18; controller mirrors and all 556
-positive/2,011 negative interval controls pass on Windows and Linux. The retained
-project source copy matches the current working tree for every non-Markdown file.
+At `ef1434015420678559cfa3d3b2f21018c5b733ce`, the complete local public/JDK suites
+passed 205 MSVC, 207 GCC and 207 Clang tests, 619 in total, with no failures or
+skips. Linux builds enabled ASan and UBSan. All 587 C/header files passed
+clang-format 18; controller mirrors and all 556 positive/2,011 negative interval
+controls passed on Windows and Linux. The retained project copy matched that
+checkpoint's sources. Its [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40052114598)
+also passed all four jobs, all 619 tests and 587-file formatting. These results
+precede the canonical naming migration and do not qualify the renamed sources
+or schema-2 redstone producer. The [naming reference](reference/minecraft-names.md)
+records the unchanged compatibility labels and migration boundary.
 
 ## Dedicated construction and synchronous fluid recursion
 
@@ -281,7 +303,7 @@ with zero mismatches. It compares every block/metadata cell in X/Z0..31 and
 Y0..127, four continuation fields for each supplied and World Random stream,
 and ordered Item stack, pickup-delay and position fields. The original fixture
 executes unchanged Block callbacks and selected tree bodies with prepared World
-services. These results do not establish original World/Chunk, observer,
+services. These results do not establish original World/Chunk, WorldAccess,
 neighbor or light-propagation parity. The [evidence record](reference/plant-lifecycle.md)
 defines the projection and its limits.
 
@@ -423,7 +445,7 @@ checks. The same per-test deadlines and output policies remain in force.
 
 The [power case](world/power.md) passes 7,593 checks per host using two real GAME
 Worlds and two loaded Chunk records. It covers all 69 kinds, metadata/side
-matrices, ordered neighbors, conduction, complete wire output/connectivity,
+matrices, ordered neighbors, conduction, complete redstone output/connectivity,
 late namespace reads, guarded getters and nested failure frames. The separate
 horizontal-direction case passes 359 checks, including all seven allocation
 failure cuts and retained-array captures. Existing public solid support passes
@@ -467,7 +489,7 @@ comparison or running tick-loop acceptance follows.
 The state-shape contract exercises all declared virtual bodies through actual
 World/Chunk/Registry owners. Its cases include setter tuples, all six directions,
 object identity versus numeric ID, late progress, partial stores, raw NaN bits,
-lazy invalid-Tile cleanup and hold/pool preservation.
+lazy invalid-TileEntity cleanup and hold/pool preservation.
 
 | Case | Checks per host |
 | --- | ---: |
@@ -483,7 +505,7 @@ lazy invalid-Tile cleanup and hold/pool preservation.
 | `entity.bounds` | 4,751 |
 | `world.piston_tick` | 575 |
 | `world.piston_finalization` | 460 |
-| `world.piston_tiles` | 296 |
+| `world.piston_tile_entities` | 296 |
 | `world.piston_geometry` | 386 |
 | `world.mutations` | 218 |
 | `world.collision_boxes` | 732 |
@@ -518,7 +540,7 @@ protocol qualification against the same original family. All 114 literal inputs
 and normal-return versus failure classifications match per side on each compiler.
 The eleven-field projection matches 5,016 primitive values per compiler across
 228 snapshots per side. It includes the Piston's seven own fields and inherited
-Tile x/y/z/invalid, with exact current/previous progress bits.
+TileEntity x/y/z/invalid, with exact current/previous progress bits.
 
 The earlier malformed MSVC streams, failed protocol audit and intact-record
 diagnostic remain retained unchanged. The
@@ -566,14 +588,14 @@ acceptance.
 
 The following Piston checkpoint predates Entity movement integration.
 
-The [Piston contracts](world/tiles/piston.md) pass on native Windows MSVC and
+The [Piston contracts](world/tile-entities/piston.md) pass on native Windows MSVC and
 sanitized GCC/Clang. All 165/167/167 configured cases pass in focused and
 complementary partitions, without skips and with numerical Java checks.
-The new cases pass 295 Direction, 296 Tile and 144 geometry checks per host.
+The new cases pass 295 Direction, 296 TileEntity and 144 geometry checks per host.
 They exercise real class owners, ordered NBT, GAME save/readback, all six faces,
-installed extending/retracting Tiles, late failures and live pooled aliases.
+installed extending/retracting TileEntities, late failures and live pooled aliases.
 
-The [interpolation replay](../tests/tools/world/tiles/compare_piston_interpolation.py)
+The [interpolation replay](../tests/tools/world/tile_entities/compare_piston_interpolation.py)
 compares 18,292 exact raw records per side/compiler. The separate
 [geometry replay](../tests/tools/world/collision/compare_piston_geometry.py)
 compares 10,986 exact successful payloads and 15 native failure prefixes per
@@ -717,7 +739,7 @@ movement/tick or full natural population qualification follows from these tests.
 
 The following controller checkpoint predates falling integration.
 
-The [normal controller checks](world/population/normal.md) pass all 156 configured
+The [Overworld controller checks](world/population/overworld.md) pass all 156 configured
 MSVC cases and 158 on each sanitized GCC/Clang build, with zero skips and local
 JDK comparisons enabled. The new prepared cache scenarios pass 2,219 checks per
 host, plus 408 shared falling-flag checks. Both real class sides execute the full
@@ -753,16 +775,16 @@ arrays/records, provenance, session and late errors, retry freshness and explici
 native coordinator reload on the same World. It does not establish natural
 dedicated startup, Entity persistence or original/native whole-save replay.
 
-The preceding [live Tile contracts](world/tiles.md) add real Chest/Spawner owners, actual
+The preceding [live TileEntity contracts](world/tile-entities.md) add real Chest/Spawner owners, actual
 NBT imports before normalization, Map/List holds, item drops, detailed acquisition
 failures and joint native retirement. All 143 configured cases pass on Windows
 MSVC and all 145 on each Ubuntu GCC/Clang build, with zero skips and local JDK
 comparisons enabled. Linux uses ASan/UBSan and leak checks. Each host passes
-468 Tile checks and 98,868 provider-activation checks, retaining 672 unchanged
+468 TileEntity checks and 98,868 provider-activation checks, retaining 672 unchanged
 selected source inputs, 254 external zlib pins, 161 products and 31 captures.
 Linux source/dependency copies match before and after execution. Clang-format
 18 checks all 383 C sources and headers. These native contracts do not complete
-live Entity/Tile saving or original/native feature replay.
+live Entity/TileEntity saving or original/native feature replay.
 
 The preceding captured Registry-array and integrated tree/geology checkpoint passes all 142 configured public cases
 on native Windows MSVC and all 144 on each sanitized GCC/Clang build, with zero
@@ -777,7 +799,7 @@ including captured `Block.p` reference/element controls. Real resource callbacks
 exercise cold active use, nested BUSY admission, captured-array reads while
 initialization is entered, and retained first-cause retries after failure.
 The Registry-only target performs 4,543 runtime literal/array checks. These
-checks do not complete live Tile ownership, factories, Map/List joins or saving.
+checks do not complete live TileEntity ownership, factories, Map/List joins or saving.
 
 At the preceding tree/geology checkpoint,
 the [tree](world/population/trees.md), [ore/clay](world/population/ore-clay.md)
@@ -920,8 +942,8 @@ with synthetic and imported resources. These native client-World contracts
 provide no new executed-original World comparison, forced queue stdout-failure
 observation, full GAME generation, propagation or population acceptance.
 
-The [World/Dimension manager contracts](world/biome-registry.md#world-and-dimension-managers)
-pass 304 normal/World and 386 fixed-manager checks within all 28 selected cases
+The [WorldChunkManager contracts](world/biome-registry.md#worldprovider-and-worldchunkmanager)
+pass 304 noise-backed WorldChunkManager and 386 fixed-manager checks within all 28 selected cases
 on MSVC, GCC and Clang. Linux uses ASan/UBSan and leak detection. Tests cover
 actual World construction, manager lifetime after World teardown, synchronous
 numerical replacement during class initialization, cached publication and
@@ -1028,7 +1050,7 @@ Full bootstrap and broader original equivalence remain unfinished.
 
 The [quiet metadata addition](world/blocks.md) passes six selected cases on
 MSVC, GCC and Clang, with Linux ASan/UBSan and leak
-checks. These cover World construction/GAME, normal provider construction,
+checks. These cover World construction/GAME, Overworld ChunkProvider construction,
 chunk acquisition, packed nibbles and stored chunks. The GAME case now has
 4,397 native checks, including actual stored and blank identities, bounds,
 packed-key aliases, equal writes, retained acquisition failures and an
@@ -1122,7 +1144,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `reference.population_named_data` (local opt-in) | Fresh original/native default-map profile on both sides and all three local compilers; 24 boundaries, 72 copied Random records, 360 array descriptors, typed metadata/Chunk/MapData NBT and final disk rereads per side | Same held World and exact extracted resources; excludes broader manager/subtype behavior, nondefault maps, source failure policies, dedicated runtime and gameplay restart |
 | `tools.population_dedicated` | Eighteen tests cover lossless packaging, provenance, compression, complete graph, used Random, dedicated fields, roles, paths, queue order, NBT and constructor inputs | Original-only offline invariants; source/classfile qualification remains inherited |
 | `world.population_dedicated_replay` | Production dedicated probe, complete original correspondence, actual final file inventory and eight native corruption controls | One seed and seventeen-call schedule; minimal project-authored resources; no Java or archive execution |
-| `reference.population_dedicated` (local opt-in) | Fresh original/JDI capture, archive-dependent source audit, measured constructor inputs, exact extracted resources and native comparison | Passes in the [clean MSVC/GCC/Clang checkpoint](reference/dedicated-world-construction.md#committed-checkpoint); one seed, 17 calls and 18 boundaries, with empty Entity/Tile/named-data/index collections |
+| `reference.population_dedicated` (local opt-in) | Fresh original/JDI capture, archive-dependent source audit, measured constructor inputs, exact extracted resources and native comparison | Passes in the [clean MSVC/GCC/Clang checkpoint](reference/dedicated-world-construction.md#committed-checkpoint); one seed, 17 calls and 18 boundaries, with empty Entity/TileEntity/named-data/index collections |
 | `world.saved_data_ids_replay` | 78 original-derived memory rows match on MSVC/GCC/Clang; fourteen altered-output guards and four real malformed-input child refusals pass per compiler | NULL-store history only; excludes String argument identity, original disk interoperability and complete manager behavior |
 | `world.runtime_info_bindings` | 173 native checks: actual Info/context cell identity, independent copied scalars, failing callback visibility, retained lifetimes, per-Info wrapped region growth, real no-list metadata files and bounded record packaging | Constructed native contracts; no original World constructor/list save, new original handler interoperability, forced allocator/OS failure or general mutable NBT |
 | `world.info` | 8,465 checks on MSVC/GCC/Clang: all fifteen fields, source-ordered failure prefixes, copied independent scalars, shared/nullable references, stale cached dimension, lifetime/budget rules, real-clock serializer and shared Player rename | Native/source contracts; no forced allocator/hold/OS failure, general mutable NBT, live-player-list serialization or World/store binding |
@@ -1136,7 +1158,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `item.stack` | 93 native construction/read-prefix, identity, provenance, overlay, budget and independent-document checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | No original or gameplay/container comparison |
 | `entity.construction` | 1,276 native checks per compiler for both sources/overloads, all field defaults, owned children, real profile continuation, stack holds, ID wrap, strict FP and fifteen allocation boundaries per source | Native constructor/lifetime contracts; cold first-draw count, JVM resource equivalence and world insertion remain unqualified |
 | `entity.item_formula_observation` | Ten cases replay 34 inferred original inputs against 50 directly observed phase/yaw/motion fields through the actual production scalar seam, plus three CLI refusals | Scalar formula replay only; no injected constructor entropy or whole-field parity; [provenance](reference/entity-construction.md) |
-| `world.runtime_profile-and-entity-bindings` | 104 checks per compiler using real stores/profiles/runtimes; nullable binding, typed diagnostics, RAW profile mismatch and READY/failed persistent world holds | Existing loaded-world foundation; no original World constructor order, collection insertion, registry or Tile behavior |
+| `world.runtime_profile-and-entity-bindings` | 104 checks per compiler using real stores/profiles/runtimes; nullable binding, typed diagnostics, RAW profile mismatch and READY/failed persistent world holds | Existing loaded-world foundation; no original World constructor order, collection insertion, registry or TileEntity behavior |
 | `world.scheduled_membership` | 329 native full-key collision, duplicate identity, held-alias, time-wrap, growth-budget and output-preservation checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | Membership layer only; no world scheduler, original comparison or forced allocator failure |
 | `world.scheduling` | 424 checks using actual client Worlds, shared sequence owners, full keys, immediate ticks, RAW Info, separate F/E failure effects and twelve actual maintenance saves; MSVC/GCC/Clang with Linux sanitizers | Client native contracts; separate original observations have no native replay; tick draining, nonempty tick descendants and scheduled persistence remain unfinished |
 | `world.scheduled_ordered` | 940 native identity, successor-hold, deletion-history, mutable-key, limit and output-preservation checks on GCC/Clang/MSVC | Finite collection contracts; no world drain/reentry or forced allocator/hold failure |
@@ -1150,7 +1172,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `platform.nanotime_conversion` | 17,769 checks over 4,866 actual Java scalar vectors pass on all three compilers | Java operator formula and explicit native range policy; no clock sampled by the Java helper |
 | `core.java_random_profile` | 191 native ownership, budget, failure-latch, constructor-commit, cold-holder contention, atomic Math and FP checks pass on all three compilers | Native contracts; no original-game startup or cross-language concurrent scheduling proof |
 | `core.java_random_constructor_observation` | 18 checks pass on MSVC/GCC/Clang for recorded constructor inputs through the production tail and plain Random continuations | No production clock sample, shared-uniquifier advance or atomic Math-holder replay |
-| `world.normal_generator` | 99082 public checks for composed generation, fresh lifecycle flags, borrowed ownership, unpublished identities, mutable materials, repeated results, populated-cache resets, coordinate/resource preflight and allocation-failure preservation | Finite ordinary normal generator; no cache acquisition, population or propagation |
+| `world.overworld_generator` | 99082 public checks for composed generation, fresh lifecycle flags, borrowed ownership, unpublished identities, mutable materials, repeated results, populated-cache resets, coordinate/resource preflight and allocation-failure preservation | Finite ordinary Overworld generator; no cache acquisition, population or propagation |
 | `world.chunk_acquire` | 3945 constructed checks recorded in development for load/generate/fallback, gates, pending membership, publication, activation, population gates, recursion, local leases and partial failures | Lifecycle additions pass the complete exact-source suites; injected effects remain separate from genuine gameplay reachability |
 | `core.java_int_set` / `world.chunk_pending` | 6913747 / 35495 constructed checks for bounded history, tree bins, removal and mediated pending mutations | Modern-JDK history domain; no historical Java6 claim |
 | `core.java_int_set_replay` / `world.chunk_pending_replay` | Seven captured JDK histories, 574 operations, 588 complete responses and seven rejection controls per replay | Actual public Integer/HashSet APIs; game unload selection has separate original evidence |
@@ -1168,9 +1190,9 @@ above; that increment brought the declared public inventory to 86 cases.
 | `reference.chunk_callbacks` (local opt-in) | Genuine successful loads and natural population in persistent base worlds; 394 lifecycle events, 24 inventories, preserved saved baselines and four complete untouched controls | At 28a55b5, all three local toolchains and independent acceptance audit pass; no C decoder or terrain-feature body implementation |
 | `storage.region`, `tools.region_inspect`, `tools.region_capture`, `tools.region_live`, `tools.region_probe` | Read-only storage/CLI, historical replay guards, 17 live-protocol guards and real Unicode stdin paths | Local record inspection; no world schema, global addressing or writes |
 | `reference.region` (local opt-in) | All 49 queries per side with fresh copies, exact controls, complete metadata and bounded diagnostic differences; exact 092301ae MSVC/GCC/Clang checks and independent audit pass | Eight compatible cases and 41 explicit malformed/diagnostic departures; no original error-parity claim |
-| `tools.normal_reference` | Production helper schema, source/provenance, prerequisite and preservation guards | Synthetic checks; no original methods run |
-| `tools.normal_interop` | Lossless retained original baselines and complete sequential C generation replay | Fixed four-seed corpus; eight continuous nine-call inputs pass |
-| `reference.normal_generation` (local opt-in) | All four seeds and nine calls per side match in three pairings on MSVC/GCC/Clang at a08c120; complete local/world state, 73728 ordered query pairs, 1224 stage events, 144 inventories and eight untouched controls per build | Fresh finite headless base-world contexts; unpublished normal entry within the finite cave-scheduler domain; no dedicated-server cache lifecycle or population |
+| `tools.overworld_reference` | Production helper schema, source/provenance, prerequisite and preservation guards | Synthetic checks; no original methods run |
+| `tools.overworld_interop` | Lossless retained original baselines and complete sequential C generation replay | Fixed four-seed corpus; eight continuous nine-call inputs pass |
+| `reference.overworld_generation` (local opt-in) | All four seeds and nine calls per side match in three pairings on MSVC/GCC/Clang at a08c120; complete local/world state, 73728 ordered query pairs, 1224 stage events, 144 inventories and eight untouched controls per build | Fresh finite headless base-world contexts; unpublished normal entry within the finite cave-scheduler domain; no dedicated-server cache lifecycle or population |
 | `world.chunk_finish` | 3259 constructed checks for packed cache aliases, publication visibility, unsigned heights, original admission, query order, dirty effects and rejected-call preservation | Valid nonnull cache state; no loader, generator or population lifecycle |
 | `tools.finish_reference` | Corpus, packed-key, wrapped-query, boundary and fixture omission guards | Synthetic helper checks; no original methods run |
 | `tools.finish_interop` | Twelve captured original inputs, 24576 exact query records and 48 complete data/queue stages | Six fixed fresh-world cases with two passes; no propagation or complete cache lifecycle |
@@ -1185,7 +1207,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `storage.compression` | 2351 checks for gzip/zlib round trips, headers/trailers, ownership, byte/allocation/member limits and mutations, including failed large-output growth | Memory containers only; no region/world files |
 | `storage.level` | 1055 checks for exact metadata types/defaults, UTF-16 ownership, explicit clocks, opaque fields and bounded failure preservation | Metadata codec; filesystem behavior is separate |
 | `storage.region_writer` | 431 runtime checks and two compile-time assertions for owned image allocation/reuse, exact-boundary sector counts, retained bytes, growth and failure atomicity | Memory images only; no native file replacement or clock source |
-| `world.stored_chunk` | 67681 checks for stable state/array ownership, fixed schema shape, transient defaults, normalization and opaque edit guards | No entity/tile factories, registration or subtype simulation |
+| `world.stored_chunk` | 67681 checks for stable state/array ownership, fixed schema shape, transient defaults, normalization and opaque edit guards | No entity/TileEntity factories, registration or subtype simulation |
 | `world.noise` | 4850 checks: seeded permutation/state, independently traced original scalar/bulk/octave observations, zero sizes/layers and unchanged invalid-call outputs | Perlin/octave primitives only; no complete terrain or simplex biome noise |
 | `world.simplex` | 5005 checks: observed constants/state/grids, mixed constructor ordering, original numerical boundaries, independent/default octave factors and unchanged rejected-call state/output | 2D simplex primitives only; no biome climate/classification or complete terrain |
 | `world.biome` | 33155 checks: all 4096 observed table cells, 212 float and 79 double cases, climate vectors, buffer growth/suffixes, staged allocation rollback and unchanged rejected-call state | Climate/classification module; no world startup, terrain or complete biome behavior |
@@ -1193,13 +1215,13 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.biome_reference_sampling` | Cold, warm, partial channel/class failure, array reuse and whole-call lifetime contracts | Direct square sampler with native bounds; no World generation or surface join |
 | `world.biome_runtime` | 304 checks: constructed Worlds, same-registry binding, actual cache and pointer results, callback replacement, retained failures, all three client constructor cause frames and manager lifetime | Native integration and existing climate fixtures; no new original World observation or generation |
 | `world.fixed_biome_runtime` | 386 checks: both sides and fixed kinds, cold l/m setup, rectangle/empty/suffix effects, natural allocation/fill failures, aliases and registry retirement | Native/source contracts; no fabricated recursive null-e state or Java OOM/GC timing |
-| `world.temperature_runtime` | 371 checks: retained original temperature/auxiliary bits, actual normal/fixed owners, null/empty/reuse/growth, suffixes, manager/root retirement, real late c/output quota effects and FP ordering | Concrete method and native ownership controls; no fresh original OOME, provider w/controller, snow or natural population qualification |
-| `world.normal_population` | 2,219 prepared native checks: real complete cache-triggered schedule on both class sides, full all-air Chunk images and eight saved slots, w/ledger identity, cold resource failure, cache hits, leases and aliases after provider retirement | Native controller/ownership scenarios; full original RNG continuation, all selectors/reentry, falling/snow descendants and natural terrain remain unqualified |
+| `world.temperature_runtime` | 371 checks: retained original temperature/auxiliary bits, actual noise-backed/fixed owners, null/empty/reuse/growth, suffixes, manager/root retirement, real late c/output quota effects and FP ordering | Concrete method and native ownership controls; no fresh original OOME, provider w/controller, snow or natural population qualification |
+| `world.overworld_population` | 2,219 prepared native checks: real complete cache-triggered schedule on both class sides, full all-air Chunk images and eight saved slots, w/ledger identity, cold resource failure, cache hits, leases and aliases after provider retirement | Native controller/ownership scenarios; full original RNG continuation, all selectors/reentry, falling/snow descendants and natural terrain remain unqualified |
 | `block.registry_falling` | 408 checks over actual declaring-class initialization, shared flag access, complete first/cached causes and genuine entered-resource BUSY calls on both sides | Shared flag contract; later FallingSand Entity ticks and physics remain unfinished |
 | `world.biome_registry_observation` | Complete original graph/query streams, explicit byte/table controls and corruption guards | Finite Biome bootstrap and methods; no Java Throwable identity or full World startup |
 | `world.terrain` | 535745 checks: three full original-captured density/base fixtures, constructor state, retained suffixes, interpolation ordering and unchanged rejected-call output | Density and base blocks only; complete terrain requires later passes |
-| `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Normal surface pass only; constructed controls are separate from original fields |
-| `world.caves` | 2021832 checks: ten complete paired-original fixtures and 30 captured passes, reseeding, fresh cache initialization, owner isolation, suffix/table preservation and C argument/coordinate controls | Normal cave pass; protected geometry controls have separate evidence |
+| `world.surface` | 1114102 checks: seven complete paired-original fixtures, direct/reseed contexts, independent Random schedules, sea/material/bedrock/sandstone controls and failure preservation | Overworld surface pass only; constructed controls are separate from original fields |
+| `world.caves` | 2021832 checks: ten complete paired-original fixtures and 30 captured passes, reseeding, fresh cache initialization, owner isolation, suffix/table preservation and C argument/coordinate controls | Overworld cave pass; protected geometry controls have separate evidence |
 | `world.caves_geometry` | 2917405 checks: 44 paired-original protected cases with full buffers and Random continuations, raw bits, draw-count inference, suffixes, canaries and independent owners | Private valid room/path domain only; no public scheduler coverage |
 | `world.chunk_data` | 101534 checks for fresh/repeated initialization, unchanged rejected outputs, capacity suffixes, packed-coordinate bounds and extreme-opacity preservation | C ownership/argument contracts; original local-state comparisons are separate |
 | `world.chunk_nibbles` | 414 checks against 16 observed setters, complete retained packed bytes and two capacity variants | Packed-array access and preservation; no chunk lifecycle |
@@ -1230,7 +1252,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `reference.noise` (local opt-in) | Per side 783 requests, 140218 exact double values, 399872 permutation entries and 3132 following Random longs; three separate pair comparisons | Scoped procedural noise; no chunks, population or lighting |
 | `reference.simplex` (local opt-in) | Per side 812 requests, 204923 exact double values, 348160 permutation entries and 3248 following Random longs; actual short/extended overload and factor/suffix controls | Scoped 2D numerical methods; consumer-like inputs do not establish biome results |
 | `reference.biome` (local opt-in) | Actual catalogue/table, direct float and quantized double selectors, processed temperature and biome grids with stateful buffer sequences | Explicit-seed numerical fixture; no executed world constructors or terrain |
-| `reference.density` (local opt-in) | 150 exact snapshots per side, 82 original density/scratch recomputation checks; all constructor, climate, density and base state across three pairings | Normal dimension only; no surface, caves, population or complete chunk parity |
+| `reference.density` (local opt-in) | 150 exact snapshots per side, 82 original density/scratch recomputation checks; all constructor, climate, density and base state across three pairings | Overworld only; no surface, caves, population or complete chunk parity |
 | `reference.surface` (local opt-in) | 290 exact snapshots per side, 105 original state/material/density/suffix controls and 20 apply-field controls | Measured base/surface contexts; no complete chunk/cave/finishing compatibility claim |
 | `reference.caves` (local opt-in) | Ten complete cases, 30 calls and 50 snapshots per participant; all state, blocks and Random observations in three pairings | Three pairings pass on MSVC/GCC/Clang at the recorded source; no complete chunk claim |
 | `reference.caves_geometry` (local opt-in) | 44 separately labeled room/path controls, full input/output buffers, Random continuations, table and suffix controls; shared-draw consumption inferred by unique continuation matching | Three pairings pass on MSVC/GCC/Clang at the recorded source; valid private geometry domain only |
@@ -1238,7 +1260,7 @@ above; that increment brought the declared public inventory to 86 cases.
 | `reference.chunk_data` (local opt-in) | Five fresh/repeated input pairs, complete local arrays/heights, opacity and retained-object controls | Genuine original cache/queue diagnostics are retained separately; no C world lifecycle or propagation claim |
 | `reference.level` (local opt-in) | Actual original info codecs and metadata handlers, exact types, fallback, clocks, rotation and session observations | Pure codec comparison passes at 9ad690d; native world-owner acceptance is separately recorded in storage evidence |
 | `reference.region_write` (local opt-in) | Actual original region image writes, full images, allocation/growth and independently bounded timestamp fields | Global filename/cache observations do not prove original global read/write local-slot mapping |
-| `reference.chunk_storage` (local opt-in) | Actual original raw chunk codecs, region loaders and serializers in genuine worlds, with complete arrays and typed opaque data | C activation of nonempty entity/tile data remains refused |
+| `reference.chunk_storage` (local opt-in) | Actual original raw chunk codecs, region loaders and serializers in genuine worlds, with complete arrays and typed opaque data | C activation of nonempty entity/TileEntity data remains refused |
 | `reference.world_storage` (local opt-in) | Original-created copied worlds through C and C-created containers through both originals, fresh C reloads, both storage dimensions and nonempty Boat/Sign passthrough | Accepted finite copied-world comparison at 9ad690d; no gameplay dimension transition, C entity activation or full save scheduling |
 | Format check | `.clang-format` applied to current project C source and headers | Style only |
 | Original JAR inspector (local) | SHA-1/SHA-256, bounded archive/class-header/CRC metadata | Not cryptographic signature trust or JVM verification |
@@ -1317,16 +1339,16 @@ from protocol output. Client-only raw temperature is compared separately from
 the shared client/server cases. See [biome evidence](reference/biome.md) and
 [ownership and limits](world/biome.md).
 
-Normal density/base comparisons use `MC_ENABLE_DENSITY_REFERENCE_TESTS` with
+Overworld density/base comparisons use `MC_ENABLE_DENSITY_REFERENCE_TESTS` with
 those same supplied-JAR/JDK/commit settings. The helper constructs real untouched
-original world contexts in fresh ignored directories, then fresh normal generators.
+original world contexts in fresh ignored directories, then fresh Overworld generators.
 It refreshes each original manager's 16?16 processed climate before sampling.
 Full constructor state, retained spans, exact double bits and base bytes must
 agree between C/client, C/server and client/server. The internal original base
 pass density is checked against the separately observed density. See
 [density evidence](reference/density.md) and the [terrain interface](world/terrain.md).
 
-Normal surface comparisons use `MC_ENABLE_SURFACE_REFERENCE_TESTS` with the
+Overworld surface comparisons use `MC_ENABLE_SURFACE_REFERENCE_TESTS` with the
 same private inputs and source settings. They distinguish actual constructor
 continuation from mutable live Random, compare prepared chunk-reseed contexts,
 and check current material attributes, complete fields/blocks and suffixes.
@@ -1334,7 +1356,7 @@ Genuine server constructor setup can itself generate chunks; measured calls
 use a fresh generator afterward. See [surface evidence](reference/surface.md)
 and [ownership/operations](world/surface.md).
 
-Normal cave comparisons use `MC_ENABLE_CAVES_REFERENCE_TESTS` with both supplied
+Overworld cave comparisons use `MC_ENABLE_CAVES_REFERENCE_TESTS` with both supplied
 JARs, a JDK containing `java`, `javac` and `javap`, and the exact-source commit
 field. The natural helper prepares genuine climate/base/surface inputs and
 invokes the actual public scheduler three times per case. The C probe emits
@@ -1389,9 +1411,9 @@ run must match a separate untouched control byte-for-byte across complete
 snapshots. See [finishing evidence](reference/finishing.md) for the corpus,
 loopback debugger, captured state and remaining cache/propagation work.
 
-Complete unpublished normal generation uses `MC_ENABLE_GENERATION_REFERENCE_TESTS`
+Complete unpublished Overworld generation uses `MC_ENABLE_GENERATION_REFERENCE_TESTS`
 and the same JDK17+/`jdk.jdi`, supplied-JAR and exact-source settings. Its C target
-is `mc_normal_generation_probe`; the opt-in test is `reference.normal_generation`.
+is `mc_overworld_generation_probe`; the opt-in test is `reference.overworld_generation`.
 The verified corpus retains one fresh generator through nine ordered calls for
 each seed 23, 24, 26 and 51, including repeated, negative, packed-key-alias,
 world-border and accepted cave-domain endpoint coordinates. It compares complete
@@ -1405,7 +1427,7 @@ The current results do not cover a running dedicated server's cache lifecycle.
 
 At source `a08c12056a06261ed01d9f66999459f7ce9543b4`, the suite contains 35
 public tests, or 36 with the numerical Java oracle. The selected original
-finishing, light queue, chunk, nibble and normal generation comparisons bring
+finishing, light queue, chunk, nibble and Overworld generation comparisons bring
 that configuration to 41 tests. These are exact-checkpoint counts; later
 cache/region additions on the active branch need their own validation.
 
@@ -1516,7 +1538,7 @@ manifest hashes and observation bounds. The separate
 [callback expansion](reference/cache-callbacks.md) adds three public tests and
 one original comparison, yielding the separately accepted 56-test checkpoint above.
 
-Normal composition source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
+Overworld composition source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes
 all 41 configured tests without skips on native MSVC19.51 and WSL
 GCC13.3/Clang18.1, with ASan/UBSan on both Linux builds. The generator unit
 passes 99073 checks; all nine public schema/continuation/stage/preservation
@@ -1571,9 +1593,9 @@ Clang-format18 checks 61 C/header files. Public CI runs 28 tests per compiler,
 without private JARs or world captures. Integration results belong in
 [status](status.md).
 
-Previous normal cave increment:
+Previous Overworld cave increment:
 
-Normal cave source `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33
+Overworld cave source `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33
 configured tests on native MSVC and WSL GCC/Clang without skips: 22 public
 tests, the standard Java numerical comparison and ten original comparisons.
 All 30 original manifests identify that source and pass with empty errors.
@@ -1613,7 +1635,7 @@ without private files; exact-head and integration results belong in
 
 Previous surface increment:
 
-Normal surface source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24
+Overworld surface source `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24
 configured CTests on native Windows/MSVC and WSL GCC/Clang without skips:
 sixteen public tests, the numerical Java oracle and seven original comparisons.
 All 21 original manifests identify this source and pass with empty errors;
@@ -1632,7 +1654,7 @@ results and integration state are recorded in [status](status.md).
 
 Previous density/base increment:
 
-Normal density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passed
+Overworld density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passed
 all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
 fourteen public checks, the numerical Java oracle and six original comparisons.
 All eighteen original manifests identify that source, pass status and empty
@@ -1715,7 +1737,7 @@ make a separate copy for each later scenario, and restore from the untouched
 baseline. Finite copied-world storage round trips now pass at the
 [storage checkpoint](reference/storage.md#exact-source-storage-checkpoint).
 Complete running-game restart behavior, dimension transitions, inventory/entity/
-tile simulation and recovery beyond checked host errors remain unimplemented.
+TileEntity simulation and recovery beyond checked host errors remain unimplemented.
 
 No matched graphics/audio comparison, interactive rewrite play, extended session,
 four-way multiplayer matrix, state-drift or performance measurement has occurred.

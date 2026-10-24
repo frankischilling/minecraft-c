@@ -3,7 +3,7 @@
 
 #include "mc/entity/entity.h"
 #include "mc/world/runtime/queries.h"
-#include "mc/world/runtime/tiles/errors.h"
+#include "mc/world/runtime/tile_entities/errors.h"
 
 /* A native lease on one actual List identity, not a snapshot of its contents.
  * Query again to mutate that same source List; previously returned views see
@@ -20,7 +20,7 @@ typedef struct mc_world_nearby_error {
     mc_entity_error entity;
     /* Exact per-attempt acquisition descendants, without an ambient error
      * lookup. The lower records are included only when genuinely reached. */
-    mc_live_tile_error tile;
+    mc_live_tile_entity_error tile_entity;
     mc_world_entity_batch_error batch;
     mc_world_entity_load_error load_entity;
     unsigned int activation_bytecode, activation_world_bytecode;

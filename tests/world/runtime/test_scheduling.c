@@ -4,8 +4,8 @@
 
 #include "../../../src/block/registry/runtime_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/objects_internal.h"
 #include "../../support/java_random.h"
@@ -68,8 +68,8 @@ typedef struct fixture {
     mc_registry_classes *registry[2];
     mc_world_runtime_classes *classes[3];
     mc_world_runtime *worlds[7];
-    mc_world_dimension *dimensions[7];
-    mc_world_provider_fields provider[7];
+    mc_world_provider *dimensions[7];
+    mc_chunk_provider_fields provider[7];
     bool bound[7];
     child children[32];
     mc_chunk_state *center[3];
@@ -210,7 +210,7 @@ static bool create_world(fixture *f, size_t slot, size_t class_index, size_t ent
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 8;
     limits.max_scheduled_entries = entries;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA,
                                           f->classes[class_index], &limits, &f->worlds[slot],
                                           NULL) == MC_WORLD_STORAGE_OK);
@@ -219,7 +219,7 @@ static bool create_world(fixture *f, size_t slot, size_t class_index, size_t ent
     CHECK(mc_world_runtime_construct_world(f->worlds[slot], &args, NULL) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_construction_get(f->worlds[slot], &state) == MC_WORLD_STORAGE_OK &&
           state.phase == MC_WORLD_RUNTIME_READY && state.contexts_bound && state.cache_registered);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->provider[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->provider[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(counts(f->worlds[slot], 0, 0) && f->provider[slot].cache->count == 0);
@@ -840,7 +840,7 @@ static bool cleanup_fixture(fixture *f) {
     mc_scheduled_tick_release(f->survivor);
     mc_scheduled_tick_release(f->extra);
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->classes); ++i)
         if (mc_world_runtime_classes_free(f->classes[i], NULL) != MC_WORLD_STORAGE_OK)
             return false;

@@ -42,14 +42,14 @@ Superclass and subtype initialization have separate phases, source positions
 and retained first failures. Automatic frames preserve suspended parent state.
 Actual direction,
 slab-name and repeater arrays, the empty leaf list, pressure-category identities
-and sign Class identity are retained. Wire construction creates its own typed
-empty Set/Map owners. Its [position collection](../reference/wire-position-set.md)
+and sign Class identity are retained. Redstone construction creates its own typed
+empty Set/Map owners. Its [position collection](../reference/redstone-position-set.md)
 now has reclaimable keys, ordered bucket/tree operations and retained snapshots.
-[Wire lifecycle propagation](../world/wire.md) now has native implementation and
+[Redstone lifecycle propagation](../world/redstone.md) now has native implementation and
 contracts; original World-level qualification remains unfinished.
 
 Dispenser, chest and the two furnaces each construct a distinct ordinary Random
-through the borrowed profile. Earlier global Block publication and tile flags
+through the borrowed profile. Earlier global Block publication and TileEntity flags
 precede each private Random allocation. Seeds use the real profile clock path;
 the owner supplies no fixed seed or entropy callback. These four constructions
 do not initialize the separate Math Random holder. Item constructs its fifth
@@ -93,5 +93,5 @@ block-statistic and achievement construction now continues through real
 [recipe/smelting initialization](../item/recipes.md) and the D array. Ordinary
 Block entry returns at3677; Item and direct-manager entries preserve their
 actual failure boundaries. Full World startup and integration, synchronous block hooks,
-terrain-feature population, entity/tile behavior and gameplay persistence remain
+terrain-feature population, entity/TileEntity behavior and gameplay persistence remain
 required. See the [parity matrix](../parity.md) and [test scope](../testing.md).

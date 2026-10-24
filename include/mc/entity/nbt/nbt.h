@@ -31,13 +31,12 @@
  * provenance copy is implicit; that one Stack is a separate ordinary native
  * owner, excluded from the Entity class/direct-allocation ledger.
  * Input may borrow the old Stack's immutable source through its last read.
- * FallingSand instead reads only Tile Byte at own4, masks with255 and stores
- * carried a at11. Missing Tile supplies0; a wrong tag preserves the complete
- * earlier base prefix. Its age b, Item fields and Stack remain untouched.
- * Minecart reads Type first. Type2 reads PushX/PushZ/Fuel in order; Type1
- * captures Items before replacing its actual h with a new27 array. A later
- * malformed record retains Type, that new array and every earlier slot store.
- * Detached old h and each occurrence hold remain live until all input reads
+ * FallingSand instead reads only the carried block ID's "Tile" Byte at own4,
+ * masks with255 and stores carried a at11. Missing "Tile" supplies0; a wrong tag preserves the
+ * complete earlier base prefix. Its age b, Item fields and Stack remain untouched. Minecart reads
+ * Type first. Type2 reads PushX/PushZ/Fuel in order; Type1 captures Items before replacing its
+ * actual h with a new27 array. A later malformed record retains Type, that new array and every
+ * earlier slot store. Detached old h and each occurrence hold remain live until all input reads
  * finish, including failure, so input may borrow any old Stack source. Other
  * Type values leave h/push/fuel untouched. No provenance is attached.
  * Caller retains exclusive live owners for the call. error may be NULL. */
@@ -47,7 +46,7 @@ mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *com
 /* Independent-result form of actual sn/lq.d(NBT) plus the concrete b(NBT).
  * Supported classes emit Pos, Motion, Rotation, FallDistance, Fire, Air
  * and OnGround. Item adds Health, Age and Item (ten fields); FallingSand adds
- * only carried a narrowed int->byte as Tile (eight fields), without age/Stack.
+ * only carried a narrowed int->byte as "Tile" (eight fields), without age/Stack.
  * Minecart emits Type and, for Type1, Items from the actual h length; Type2
  * emits PushX/PushZ/Fuel instead. Its supported totals are8/9/11 fields.
  * Minecart Stack records use actual fields in every live phase, with no

@@ -44,13 +44,13 @@ kinds fail explicitly rather than acquiring an invented base result.
 | Owner and native kind | Weak body | Strong body | Capability |
 | --- | --- | --- | --- |
 | uu/na base inheritance | False0/1 | False0/1 | False0/1 |
-| bv/bc, BV_BC pressure | Metadata5; greater-than-zero result18 | Metadata5; zero false12; otherwise side1 result24 | True0/1 |
-| ph/jn, PH_JN detector | Metadata5; bit8 result21 | Metadata5; absent bit8 false15; otherwise side1 result27 | True0/1 |
-| oi/iz, OI_IZ button | Metadata5; bit8 result21 | Metadata5; absent bit8 false19; orientation-side result98 | True0/1 |
-| xr/pd, XR_PD lever | Metadata5; bit8 result21 | Metadata5; absent bit8 false19; orientation-side result113 | True0/1 |
-| db/by, DB_BY redstone torch | Receiver flag1; false8; metadata14; raw attachment exclusions through result92 | Nonzero side returns false18; side0 delegates to weak13/return16 | True0/1 |
-| wo/oi, WO_OI repeater | Receiver flag1; false8; metadata14; orientation result79 | Delegates to weak8/return11 | False0/1 |
-| sm/lo, SM_LO wire | Receiver flag1; false8; metadata14; zero false23; side1 true31; complete geometry follows | Receiver flag1; false8; otherwise delegates to weak17 | Receiver flag1/result4 |
+| bv/bc, PRESSURE_PLATE pressure | Metadata5; greater-than-zero result18 | Metadata5; zero false12; otherwise side1 result24 | True0/1 |
+| ph/jn, DETECTOR_RAIL detector | Metadata5; bit8 result21 | Metadata5; absent bit8 false15; otherwise side1 result27 | True0/1 |
+| oi/iz, BUTTON button | Metadata5; bit8 result21 | Metadata5; absent bit8 false19; orientation-side result98 | True0/1 |
+| xr/pd, LEVER lever | Metadata5; bit8 result21 | Metadata5; absent bit8 false19; orientation-side result113 | True0/1 |
+| db/by, REDSTONE_TORCH redstone torch | Receiver flag1; false8; metadata14; raw attachment exclusions through result92 | Nonzero side returns false18; side0 delegates to weak13/return16 | True0/1 |
+| wo/oi, REPEATER repeater | Receiver flag1; false8; metadata14; orientation result79 | Delegates to weak8/return11 | False0/1 |
+| sm/lo, REDSTONE redstone | Receiver flag1; false8; metadata14; zero false23; side1 true31; complete geometry follows | Receiver flag1; false8; otherwise delegates to weak17 | Receiver flag1/result4 |
 
 The registration identifies lever ID69 as xr/pd, torch IDs75/76 as db/by and
 button ID77 as oi/iz. Torch construction supplies the actual inactive/active
@@ -66,25 +66,25 @@ An active repeater masks metadata with3 and accepts (0,3), (1,4), (2,2), (3,5).
 These predicates keep the actual early flag and later getter ordering; a
 known-false side does not generally permit skipping metadata.
 
-## Complete wire output and connectivity
+## Complete redstone output and connectivity
 
-Wire's horizontal weak-output body first queries same-level connectivity for
+Redstone's horizontal weak-output body first queries same-level connectivity for
 X-, X+, Z-, Z+ at40/92/144/196. A failed connection asks support53/105/157/209;
 when that adjacent cell is not supporting, a one-below connection is queried
-at71/123/175/227. The cell above the wire is tested at247. If it does not
+at71/123/175/227. The cell above the redstone is tested at247. If it does not
 support, the four neighboring support tests262/296/330/364 and eligible
 one-above connections280/314/348/382 follow in order. Earlier true connection
 locals do not skip these later support calls.
 
-After those calls, an isolated powered wire outputs on sides2..5. A connected
-wire outputs on side2 for its Z- connection or side3 for Z+, provided neither
+After those calls, an isolated powered redstone segment outputs on sides2..5. A connected
+redstone outputs on side2 for its Z- connection or side3 for Z+, provided neither
 X connection exists; sides4/5 similarly select X-/X+ while excluding both Z
 connections. Side1 was handled before geometry. This is a local output
 predicate, without propagation or metadata updates.
 
 The static helper is `sm.e(Lxp;IIII)Z` / `lo.c(Lpb;IIII)Z`. Its direction
 argument is1/3/2/0 for the four same-level calls and -1 for elevated calls.
-It acquires ID4, then reads live Block.aw13 and its bn16. That wire identity
+It acquires ID4, then reads live Block.aw13 and its bn16. That redstone identity
 can match even a zero ID. Otherwise air returns false30. Nonair captures m31,
 indexes36 and invokes the selected capability37. If capability is false,
 live Block.bi47/bn50 and, when needed, bj58/bn61 select the repeater cases.
@@ -104,7 +104,7 @@ and the class's first initialization failure.
 
 The fixed error sites retain World weak-neighbors/weak-cell/strong-neighbors/
 strong-cell callers, concrete strong/weak delegation, capability and static
-wire connectivity. Full nearby-reader children preserve actual acquisition
+redstone connectivity. Full nearby-reader children preserve actual acquisition
 failures. The detailed held support path carries that child while the public
 support API keeps its earlier storage-only projection and nested public getter
 entry. This changes native bookkeeping for held use without changing source
@@ -134,8 +134,8 @@ the server dump is 4,826,184 bytes, SHA-256
 | Torch weak output | 68452-68508 / 1401 / `a341bb76a5f14610b4472be7fb5212169a64d191348e9d7aee615dc86842eff5` | 11950-12006 / 1401 / `586ec51a03eafae9ec8bf22b09b76e1e59d7a16de94a395b4c4eb1be742b7c0a` |
 | Torch strong output | 68769-68784 / 399 / `24691d636f83c1d9f556bd3df0efe7239b9e2203a5db69d91f6e465735b72bf7` | 12267-12282 / 399 / `3143d527733bdd3e86ebeb81b3240b80fa1032e499afad7c347db0f09de378bd` |
 | Repeater outputs | 270482-270543 / 1533 / `0921f725be3fc11f3fca7deb2a4b00e5e4e982e56cac9a3153d512a8effa9ed4` | 128411-128472 / 1533 / `35a13cdbb3521c82722c79b9d50057bf28c3ccc3f4276a05999efb8ac2d06162` |
-| Wire outputs/capability | 234896-235223 / 8503 / `7d74484b6316b5accba679bdd6514b994e1a6ca8d019c4bab3aaa0423f2ba53d` | 99894-100221 / 8503 / `2dec415f3204b3b04e9f4b8c9af039733b79edffb73e1bcd39d392f5731427e6` |
-| Wire static connectivity | 235324-235377 / 1697 / `966a0c5cbec5008e80de9a5f8d1b0ebe3093d41c7d17b17b5b6ba353f7f64783` | 100222-100275 / 1697 / `d7768c4db2dcd1176087aebe2c867809d4d411ee326b24e94b67bc3ab7dddbf1` |
+| Redstone outputs/capability | 234896-235223 / 8503 / `7d74484b6316b5accba679bdd6514b994e1a6ca8d019c4bab3aaa0423f2ba53d` | 99894-100221 / 8503 / `2dec415f3204b3b04e9f4b8c9af039733b79edffb73e1bcd39d392f5731427e6` |
+| Redstone static connectivity | 235324-235377 / 1697 / `966a0c5cbec5008e80de9a5f8d1b0ebe3093d41c7d17b17b5b6ba353f7f64783` | 100222-100275 / 1697 / `d7768c4db2dcd1176087aebe2c867809d4d411ee326b24e94b67bc3ab7dddbf1` |
 | Complete jj/ge class | 132117-132295 / 3592 / `9916a52fd755f184d228997b44bfff5ba392a49a1552c483a60d390011d964af` | 59187-59365 / 3592 / `070a8cf9001e15602491d03fc44c47afb4f09f3998e1e2a7140b7bcf32cbf22f` |
 | Lever registration | 258352-258364 / 726 / `3399e781e4567a4d784e5d4eef3a6b4d12f91e7d220ee60b91832df95c85847e` | 118137-118149 / 726 / `4aea23643d45416d911e34ab810adac43193cd2df5333154a79d68adc8a9df31` |
 | Torch/button registrations | 258445-258488 / 2364 / `1d82a7464b6d10bea771726006ff677e45a8c247d5fb374e6df31a7a89a1e0cb` | 118230-118273 / 2364 / `e99a758d486eba89e32d744f999103956d6b7cd8e35023b7a0589fa4fe8fca78` |
@@ -216,7 +216,7 @@ To reproduce this scope:
 The own-history audit retains each engine's dirty/populated before/after
 history separately. The finite comparison excludes absolute dirty/populated
 history, setup equality, graph identities, Throwable/native-error/status
-identity and source-PC equality. It also excludes wire propagation or
+identity and source-PC equality. It also excludes redstone propagation or
 lifecycle, torch burnout or lifecycle, switch interactions, rail integration,
 scheduled draining and whole-game acceptance. The JARs and Java tooling are
 optional reference-test dependencies; the C runtime remains JVM-free.

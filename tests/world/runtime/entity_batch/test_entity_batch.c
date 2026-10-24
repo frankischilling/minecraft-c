@@ -42,7 +42,7 @@ static bool batch_entity_unchanged(mc_entity *entity, const batch_mark *mark) {
 
 static bool batch_clear(const mc_world_entity_batch_error *error) {
     return error->index == SIZE_MAX && error->publication.status == MC_WORLD_STORAGE_OK &&
-           error->publication.bytecode == 0 && error->publication.observer_bytecode == 0 &&
+           error->publication.bytecode == 0 && error->publication.world_access_bytecode == 0 &&
            error->publication.cause.status == MC_WORLD_STORAGE_OK &&
            error->publication.entity.status == MC_ENTITY_OK;
 }
@@ -58,7 +58,7 @@ static bool batch_values(const mc_world_reference_list *list, size_t prefix, mc_
 }
 
 /* Fixture-held typed values/source storage remain live throughout. This is the
- * real native World call guard, with no observer/provider/allocator callback. */
+ * real native World call guard, with no WorldAccess/provider/allocator callback. */
 static mc_world_storage_status batch_call(mc_world_runtime *world,
                                           const mc_world_chunk_entity_list *source, bool deferred,
                                           mc_world_entity_batch_error *error) {
@@ -99,16 +99,16 @@ static bool batch_actual_order(fixture *f, size_t side, mc_entity **primary) {
     CHECK(failed == MC_WORLD_STORAGE_UNSUPPORTED_STATE && detail.bytecode == 42 &&
           detail.world_bytecode == 34 && detail.batch.index == 0 &&
           detail.batch.publication.bytecode == 34 &&
-          detail.batch.publication.observer_bytecode == 7 &&
+          detail.batch.publication.world_access_bytecode == 7 &&
           detail.batch.publication.entity.status == MC_ENTITY_OK &&
           batch_values(w->fields.b, 0, once, COUNT(once)) && a->holds == 5 && b->holds == 3);
-    /* A per-Entity insertion/observer loop would have appended only a here.
+    /* A per-Entity insertion/WorldAccess loop would have appended only a here.
      * The second actual call appends another WHOLE batch; no rollback/retry. */
     CHECK(mc_world_runtime_register_chunk_entities(f->chunks[side], 1, &detail) ==
               MC_WORLD_STORAGE_OK &&
           batch_clear(&detail.batch) && batch_values(w->fields.b, 0, twice, COUNT(twice)) &&
           a->holds == 7 && b->holds == 4);
-    w->fields.u = NULL; /* Deferral must not invoke the observer at all. */
+    w->fields.u = NULL; /* Deferral must not invoke the WorldAccess at all. */
     const mc_world_storage_status deferred =
         mc_world_runtime_defer_chunk_entities(f->chunks[side], 1, &detail);
     w->fields.u = actual_u;
@@ -189,24 +189,24 @@ static bool batch_nullable_control(fixture *f, size_t side) {
     CHECK(batch_call(w, &borrowed, true, &error) == MC_WORLD_STORAGE_OK && batch_clear(&error) &&
           batch_values(w->fields.D, 0, values, COUNT(values)) && entity->holds == 5 &&
           mc_world_runtime_entity_list_valid(w));
-    void *observer_items[] = {NULL};
-    mc_world_reference_list observer = {observer_items, COUNT(observer_items),
-                                        COUNT(observer_items)};
+    void *world_access_items[] = {NULL};
+    mc_world_reference_list world_access = {world_access_items, COUNT(world_access_items),
+                                            COUNT(world_access_items)};
     mc_world_reference_list *const actual_u = w->fields.u;
-    w->fields.u = &observer;
+    w->fields.u = &world_access;
     const mc_world_storage_status failed = batch_call(w, &borrowed, false, &error);
     w->fields.u = actual_u;
     CHECK(failed == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.index == 0 &&
-          error.publication.bytecode == 34 && error.publication.observer_bytecode == 29 &&
+          error.publication.bytecode == 34 && error.publication.world_access_bytecode == 29 &&
           batch_values(w->fields.b, 3, values, COUNT(values)) && entity->holds == 7 &&
           batch_entity_unchanged(entity, &before));
     int nonobserver = 1;
-    observer_items[0] = &nonobserver;
-    w->fields.u = &observer;
+    world_access_items[0] = &nonobserver;
+    w->fields.u = &world_access;
     const mc_world_storage_status cast = batch_call(w, &borrowed, false, &error);
     w->fields.u = actual_u;
     CHECK(cast == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.index == 0 &&
-          error.publication.bytecode == 34 && error.publication.observer_bytecode == 25 &&
+          error.publication.bytecode == 34 && error.publication.world_access_bytecode == 25 &&
           batch_values(w->fields.b, 6, values, COUNT(values)) && entity->holds == 9 &&
           batch_entity_unchanged(entity, &before) && mc_world_runtime_entity_list_valid(w));
     ok = true;

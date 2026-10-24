@@ -2,7 +2,7 @@
 
 This archive preserves the complete former wiki page. Its checkpoints and
 unfinished-work statements are historical; use the [current page](https://github.com/frankischilling/minecraft-c/wiki/Storage-and-reference) and
-[development status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md) for current scope.
+[development status](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/status.md) for current scope.
 Page-relative wiki links have been made absolute; the remaining text is
 unchanged, including older source links and recorded results.
 
@@ -11,7 +11,7 @@ Original UTF-8 page SHA-256: `1f571c7d652093bee3b0674e0cd474013695a84c08c8f64f53
 ---
 
 Current Minecart inventory, semantic NBT and native storage have separate
-native contracts: [inventory contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) and [native validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-inventory-nbt.md#native-validation).
+native contracts: [inventory contract](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/entity/minecart-inventory.md) and [native validation](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/minecart-inventory-nbt.md#native-validation).
 Full local suites pass 180 MSVC and 182 GCC/Clang tests, 544 total, without
 failures, errors or skips. These results are separate from the earlier
 `39edf12` hosted checkpoint and finite constructor comparison. Original/native
@@ -19,19 +19,19 @@ inventory, NBT and storage equality remains pending.
 
 ## Previous reference checkpoint
 
-Current reference guide: the [power evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/power.md)
+Current reference guide: the [power evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/power.md)
 records a finite original/native MSVC comparison at source `9f9d3a2`, with 5,365
 literal rows per client/server side. Its seven snapshot fields, completion and
 normal-return booleans have a defined comparison scope. The
-[rail source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/rails.md)
+[rail source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/rails.md)
 has separately tested native contracts; original-runtime rail equality remains
-unverified. The [Minecart source and validation map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecart-construction.md#committed-and-hosted-checkpoint)
+unverified. The [Minecart source and validation map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/minecart-construction.md#committed-and-hosted-checkpoint)
 records the passing `39edf12` hosted checkpoint and native construction/detector
 scope. A separate original/Windows MSVC comparison at that source matches all
 ten null-World constructor inputs per client/server side, with zero mismatches
 across the complete declared projections after full qualification. See
 [World simulation](https://github.com/frankischilling/minecraft-c/wiki/World-simulation) and the
-[parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+[parity matrix](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/parity.md)
 for the current distinctions.
 
 The complete text below is preserved historical checkpoint material. Its test
@@ -45,7 +45,7 @@ and reference links remain intact.
 
 ## World power queries
 
-The [power source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/power.md)
+The [power source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/power.md)
 records the four World methods, all concrete outputs, full wire connectivity
 and the independent horizontal-direction initializer. Each host passes 7,593
 power and 359 horizontal-direction checks. The real two-World fixture retains
@@ -55,7 +55,7 @@ original power-runtime equality and redstone/rail lifecycle remain unfinished.
 
 ## Class queries and pressure plates
 
-The [pressure implementation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/pressure-plates.md)
+The [pressure implementation](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/pressure-plates.md)
 uses actual published entities, pooled bounds, ordered notifying transitions,
 support/removal hooks and shared contact/tick scheduling. Living/Player categories
 use actual Class traversal and fresh results independent of R. Each host passes
@@ -76,7 +76,7 @@ original-runtime state-shape equivalence remains unverified.
 
 Fresh builds pass all 169 MSVC and all 171 tests on each GCC/Clang build, with zero skips.
 The
-[testing notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+[testing notes](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/testing.md)
 record exact-copy Linux validation and retained mounted-source timeouts.
 
 At source `eab4533`, MSVC, GCC and Clang tick replays pass complete protocol
@@ -102,10 +102,10 @@ The following tick/bounds checkpoint predates state-shape integration.
 
 ## Piston tick and standalone bounds checkpoint
 
-The [Piston contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles/piston.md#tick-and-entity-pushing)
+The [Piston contract](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/tiles/piston.md#tick-and-entity-pushing)
 implements actual Tile tick/private push ordering, real supported Entity movement
 and shared owning-List history. The
-[bounds contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/bounds.md)
+[bounds contract](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/entity/bounds.md)
 adds genuine standalone raw-coordinate allocation and native lifetime handling.
 
 Fresh focused MSVC and sanitized GCC/Clang builds pass nine cases each: bounds
@@ -124,7 +124,7 @@ helper seals, full gzip hashes/CRC/EOF, input/control records and admitted passi
 graphs qualify. Complete native replay comparison remains pending. Natural
 constructor entropy, non-atomic snapshots, unadmitted statics and the helper/JVM
 trust limits described in the
-[source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md#active-tick-input-family)
+[source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/piston.md#active-tick-input-family)
 remain explicit.
 
 | Retained evidence | Bytes | SHA256 |
@@ -140,7 +140,7 @@ The following finalization/neighbor checkpoint predates tick and standalone-fact
 
 ## Piston finalization and neighbor observations
 
-The [paired Piston source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
+The [paired Piston source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/piston.md)
 includes explicit finalization, MovingPiston/container removal and the actual
 MovingPiston neighbor body. The neighbor's World B guard precedes its real
 acquiring Tile getter. Discarding the return preserves acquisition, the added
@@ -226,7 +226,7 @@ Earlier interpolation and geometry replays retain only their stated helper
 scopes. Tick, pushing, the separate state-shape update and wider gameplay remain
 unfinished; finite projection agreement closes no broader acceptance gate.
 
-The [movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md) records complete paired Item/Falling base bodies
+The [movement source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/entity-movement.md) records complete paired Item/Falling base bodies
 and separately qualified original observations. All 59,654 client records and
 exactly 24,109 intact server records qualify; the server subset has interior gaps
 and corruption. Disk exhaustion left the original final/server receipts empty,
@@ -244,7 +244,7 @@ movement and gameplay acceptance remain open.
 
 The following Piston checkpoint predates Entity movement integration.
 
-The [Piston source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/piston.md)
+The [Piston source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/piston.md)
 records paired Tile, collision and independent Direction bodies. Retained
 original captures contain 19,140 float/constructor/NBT records and 11,026 direct
 geometry records per side. Native replay selects explicit helper projections;
@@ -254,7 +254,7 @@ qualification remain documented alongside the completed subject streams.
 
 The following collision checkpoint predates Piston integration.
 
-The [collision source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/collision-boxes.md)
+The [collision source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/collision-boxes.md)
 records complete World/Entity virtual ordering and the selected 61 paired Block
 bodies. Original capture runs the full actual registry and 2,200 scenarios per
 side. Native replay qualifies 623 source-unused-World getter records, keeping
@@ -263,7 +263,7 @@ still need original comparisons.
 
 The following nearby checkpoint predates collision integration.
 
-The [nearby source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/nearby-entities.md)
+The [nearby source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/nearby-entities.md)
 records complete paired World query, normal/Blank gather, floor, presence,
 acquiring getter and strict intersection bodies. Public reflection tools use
 untouched original JAR classes, with real null-World constructors and explicit
@@ -274,14 +274,14 @@ remain distinct retained evidence; malformed collection states stay explicit.
 
 The following bounds checkpoint predates nearby integration.
 
-The [normal population source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/normal-population.md)
+The [normal population source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/normal-population.md)
 records the complete paired controller, shared-Random mixing, late Biome/static
 reads, tree constructor/height order and current-w snow operations. Native
 all-air cache scenarios inspect all eight final saved Chunk slots. These
 prepared contracts provide no original whole-controller continuation or natural
 terrain qualification.
 
-The [prepared Dungeon placement reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dungeon-placement.md)
+The [prepared Dungeon placement reference](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/dungeon-placement.md)
 retains 48 genuine complete original calls on independently copied saved Worlds.
 All 144 native comparisons pass across MSVC and sanitized GCC/Clang. Actual
 cache acquisition precedes each notifying placement; exact selected Chunk bytes,
@@ -290,7 +290,7 @@ match. These direct prepared calls do not establish natural population or
 original save/unload/reload. The separate native persistence tests keep their
 own finite coverage.
 
-The [ordinary GAME Item persistence reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-game-storage.md)
+The [ordinary GAME Item persistence reference](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/entity-game-storage.md)
 records complete paired load/save bytecode order, actual factory/Chunk/Boolean
 joins, current Entity/Stack provenance and retained failure prefixes. Its
 constructed native disk tests pass on MSVC and sanitized GCC/Clang. Separate
@@ -300,7 +300,7 @@ and provenance metadata follow an explicit preservation policy, while original
 fresh writers discard them. Other constructors, natural dedicated startup,
 broader original/native routes and full population remain unfinished.
 
-The [Item Entity NBT observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-nbt.md)
+The [Item Entity NBT observations](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/entity-nbt.md)
 retain twenty prepared calls per side into the untouched archives. Actual
 MSVC/GCC/Clang probes match 2,422 comparison rows per side, including exact
 selected field bits, partial reads, owner relationships and semantic saved
@@ -309,20 +309,20 @@ private archives, logs, commands and environment values remain excluded. This
 does not establish serialized byte order, private Random state or ordinary
 GAME Entity disk round trips.
 
-The [live Tile and staged GAME path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/tiles.md)
+The [live Tile and staged GAME path](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/tiles.md)
 imports supported Tile records into the same Store-owned Chunk before block
 normalization. Failed imports retain their source prefix under that owner and
 disable further direct source use. Pending and failed imports require joint
 container retirement before individual disposal. Successfully committed chunks
 retain ordinary save, unload and retirement behavior. The
-[live GAME save coordinator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md)
+[live GAME save coordinator](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/saving.md)
 writes current supported Tiles and explicit empty Entities over that same
 owner, preserving reached q effects and complete typed failures. Constructed
 native coordinator tests save, unload, retire and reload on a continuing World.
 Natural dedicated startup, GAME Entity load/save integration, whole World
 metadata and original/native Tile replay remain unfinished.
 
-The [original World query observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/world-queries.md)
+The [original World query observations](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/world-queries.md)
 retain 44 calls, 112 snapshots and 170 raw Context records per side. Complete
 array images, typed fields and namespace bridges preserve actual World/Chunk
 identities. A cold unpublished Chunk prelude and two same-class Worlds expose
@@ -335,33 +335,33 @@ A separate offline audit checks the retained typed fields, complete images,
 identity bridges, ordered preparations and raw Contexts. Both positive side
 checks and twenty semantic corruption refusals pass with unchanged inputs.
 
-The [original Entity publication observations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-publication.md)
+The [original Entity publication observations](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/entity-publication.md)
 retain 21 actual calls per side, full Chunk array bytes, ordered duplicate lists,
-typed payloads and actual cross-World aliases. The separate [native owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entities.md)
+typed payloads and actual cross-World aliases. The separate [native owner](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/entities.md)
 retains each occurrence and refuses nonempty saves. Terminal disposal prevents
 later serialization even after lists are cleared. Original/native replay,
 Entity save interoperability, player/dedicated descendants and complete
 population acceptance remain unfinished.
 
-The [concrete World lighting source](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md#concrete-world-source)
+The [concrete World lighting source](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/lighting.md#concrete-world-source)
 records paired height, enqueue, Light and region-constructor order. Native
 client-World tests use actual store-owned restored chunks, real allocation
 limits and explicitly controlled shared depth. They supply no new original
 World observation. Complete live generation, propagation and population remain
-unfinished; see the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/runtime-lighting.md).
+unfinished; see the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/runtime-lighting.md).
 
-The [Biome capture](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/biome-registry.md)
+The [Biome capture](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/biome-registry.md)
 records natural ordinary initialization on both originals in three JVM modes,
 all Biome/list/record/Class aliases, six snapshots and 3,824 raw-bit queries per
 side. Complete public protocols exclude original assets. Native comparison
 distinguishes its producer policy and projects exception kinds, without
 claiming Java Throwable identity or full World startup.
 
-The [Dimension capture](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/dimension.md)
+The [Dimension capture](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/dimension.md)
 records actual original constructors, retained arrays, standalone light tables
 and 48,739 celestial calls per side. Its public projection compares exact bits
 and identities without requiring Java or original archives. The separate
-[native World contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/construction.md)
+[native World contract](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/construction.md)
 documents normal constructor completion and the remaining spawn, registry,
 population, subclass and persistence dependencies.
 
@@ -377,14 +377,14 @@ compounds, byte arrays and lossless UTF-16 string units. Decoded documents own
 retained data, including application fields the caller does not interpret.
 Duplicate compound names retain the last value; resource limits bound memory,
 bytes, tags, elements and nesting. See the
-[NBT interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/nbt.md).
+[NBT interface](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/storage/nbt.md).
 
 Compression accepts an explicit gzip/zlib format and borrowed input bytes,
 returning an owned output buffer. It validates complete stream checksums and
 trailers. Gzip concatenates adjacent recognized members, while zlib stops after
 one stream. Nonmagic compressed tails remain unconsumed. Limits bound input,
 output, live allocation and member count. See the
-[compression interface](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/compression.md).
+[compression interface](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/storage/compression.md).
 
 The original gzip NBT wrapper can finish its root before reading a missing or
 corrupt trailer. The C module rejects malformed containers through full member
@@ -399,33 +399,33 @@ reports. The C runtime has no JVM dependency. Missing prerequisites remain
 unavailable results. Rewritten components agreeing with each other alone do not
 establish original compatibility.
 
-[Float lookup/floor evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/math.md)
+[Float lookup/floor evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/math.md)
 records the complete initialized table and raw-bit scalar calls. These pure
 numerical observations need no world or cave setup. They establish the tested
 math prerequisite separately from cave geometry and complete chunks.
 
 Reproduction and exact bytecode anchors live in
-[NBT evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/nbt.md)
-and [compression evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/compression.md).
-The [testing guide](https://github.com/frankischilling/minecraft-c/blob/main/docs/testing.md)
-and [development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
+[NBT evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/nbt.md)
+and [compression evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/compression.md).
+The [testing guide](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/testing.md)
+and [development status](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/status.md)
 record current validation scope and outstanding work.
 
-[Normal density evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/density.md)
+[Normal density evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/density.md)
 also documents genuine original world construction for numerical observations.
 Each run owns fresh ignored directories; normal server construction can create
 a session lock and directories. Tests never open an existing personal world.
 These density/base comparisons do not establish copied-world save compatibility
 or complete generation.
 
-[Surface evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/surface.md)
+[Surface evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/surface.md)
 separates immutable constructor state from live Random and current material
 attributes. Genuine server constructor spawn may generate complete chunks
 before a fresh measured generator is created; the later observed pass calls
 base/surface directly. These observations do not establish complete chunks,
 caves, finishing, population, lighting or save compatibility.
 
-[Normal cave evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/caves.md)
+[Normal cave evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/caves.md)
 separates ten genuine natural contexts from 44 protected room/path controls.
 The natural pass starts after actual base/surface generation and retains all
 generator, climate, material and Random state. Focused controls construct no
@@ -434,7 +434,7 @@ grass repair and ineligible bytes. Branching is inferred by unique Random
 continuation matching, with the inference recorded explicitly. Cave comparisons
 do not establish chunk finishing, population, lighting or save compatibility.
 
-[Chunk evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/chunk.md)
+[Chunk evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/chunk.md)
 covers fresh voxel arrays, packed nibble access, column heights and direct sky.
 Original full finishing calls run in separately owned genuine worlds. Complete
 local arrays compare independently between C/client, C/server and client/server;
@@ -450,7 +450,7 @@ evidence page records exact source, manifest fingerprints, reproduction inputs
 and observation limits. Queue and cache diagnostics remain evidence for the
 next finishing stage.
 
-[Light-region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lighting.md)
+[Light-region evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/lighting.md)
 adds actual untouched merge and world-queue calls. It retains each real setup
 baseline and compares complete ordered queues with C after observed admission.
 Forty-eight cases contain 72 merge requests; each side also runs 43 world
@@ -458,7 +458,7 @@ requests and a separate actual million-entry overflow experiment. The C module
 implements storage after admission. Full finishing has separate evidence below;
 propagation remains open.
 
-[Full finishing evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/finishing.md)
+[Full finishing evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/finishing.md)
 adds actual JDI entry/exit traces of all 1024 height queries per pass, dirty state
 and complete ordered queues. Each fixed case runs twice in the same genuine
 world and matches a separate untouched control across complete snapshots.
@@ -471,7 +471,7 @@ persistence operations; full persistence acceptance and light propagation remain
 
 ## Normal generation checkpoint
 
-[Direct normal generation evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/generation.md)
+[Direct normal generation evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/generation.md)
 records original stage handoffs and genuine setup qualification for seeds 23,
 24, 26 and 51. The C composition is implemented through full finishing with
 fresh unpublished chunks, a borrowed world biome manager, separate biome
@@ -508,7 +508,7 @@ pass 36 public/numerical tests per compiler and formatting for 79 C/header files
 
 ## Cache and region checks
 
-[Cache acquisition evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache.md)
+[Cache acquisition evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/cache.md)
 records actual persistent client and dedicated-owner constructors with retained
 providers. Three original-only contexts retain 20 operations, five generations,
 5120 ordered queries, 252 lifecycle events, 40 inventories and three complete
@@ -517,7 +517,7 @@ all 52 selected tests pass without skips on MSVC and WSL GCC/Clang with Linux
 sanitizers and independent audit. Hosted checks pass 45 tests per compiler and
 formatting for 88 C/header files.
 
-[Callback boundary evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/cache-callbacks.md)
+[Callback boundary evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/cache-callbacks.md)
 adds four original contexts for successful loading and naturally triggered
 population: 12 calls, 394 lifecycle events, 24 inventories and four complete
 byte-equal controls. Public replay imports observed cache/world effects while C
@@ -527,7 +527,7 @@ skips on MSVC/GCC/Clang, with Linux sanitizers and independent audit. Hosted
 checks pass 48 tests per compiler and formatting for 89 C/header files.
 No running-server or terrain-feature parity follows.
 
-[Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/region.md)
+[Read-only region evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/region.md)
 at exact 092301ae passes all 49 queries per original side, with byte-equal
 controls and independent source/artifact audit, on MSVC/GCC/Clang. Eight cases
 are compatible and 41 retain explicit diagnostic departures. Hosted checks pass
@@ -537,14 +537,14 @@ work has separate evidence below.
 
 ## Storage foundation checkpoint
 
-The [storage evidence overview](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md)
+The [storage evidence overview](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/storage.md)
 records the implemented foundation and its acceptance limits. The
-[metadata codec](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/level.md)
+[metadata codec](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/storage/level.md)
 interprets exact known types/defaults and builds independent NBT with an explicit
 save clock. The
-[region image writer](https://github.com/frankischilling/minecraft-c/blob/main/docs/storage/region-writer.md)
+[region image writer](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/storage/region-writer.md)
 owns allocation, retained bytes and growth in memory. The
-[world storage owner](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
+[world storage owner](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/storage.md)
 adds stable chunk lifetimes, native files and cache ownership, metadata fallback,
 session checks and rotation, dimension paths, accounting and the real
 acquisition load adapter.
@@ -577,7 +577,7 @@ new profiles. Copied-world tests cover original-created and C-created
 containers in both directions, explicit roots 0/-1, signed storage boundaries
 and opaque Boat/Sign transport. All 74 world-harness guards pass.
 
-The [exact storage checkpoint](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md#exact-source-storage-checkpoint)
+The [exact storage checkpoint](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/storage.md#exact-source-storage-checkpoint)
 records twelve new capture hashes, audit hashes, full-state/control/clock
 checks, unchanged original-only fixtures and excluded earlier attempts.
 These are finite seed23/API contexts. Entity/player and every subtype body,
@@ -587,7 +587,7 @@ checkpoint counts above describe only their recorded sources.
 
 ## Lifecycle qualification
 
-The [lifecycle evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md)
+The [lifecycle evidence](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/lifecycle.md)
 adds finite seed23 client, base-server and dedicated-owner constructor/API
 schedules for incremental/forced and metadata-first saving, actual far-drop,
 100/101 unloads, detach, reload and session failure. Dedicated construction does
@@ -600,7 +600,7 @@ At source `46546d8322de52beb6c3a51f30e827c0260d2b30`, complete Windows v10,
 GCC v9 and Clang v9 suites each passed 92 tests without failures or skips.
 Independent source/semantic audits, storage rechecks and complete capture
 preservation also pass, with Linux ASan/UBSan and stable measured inputs. The
-[canonical ledger](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#exact-source-lifecycle-checkpoint)
+[canonical ledger](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/lifecycle.md#exact-source-lifecycle-checkpoint)
 retains exact result/manifest hashes, the three audit-v3 report sets and
 excluded incomplete attempts. Each platform preserves all 22 original-profile
 roots; no successful Windows v9 row is reused.
@@ -613,7 +613,7 @@ measurement when its queue contained 42964 entries against the 16384 bound.
 The fresh Windows v10 suite uses unchanged source and bounds; every test, capture
 and audit passes independently. Its rows are never supplemented from Windows
 v9. See the
-[excluded Windows v9 history](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#excluded-windows-v9-attempt).
+[excluded Windows v9 history](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/lifecycle.md#excluded-windows-v9-attempt).
 
 The preceding v7 source `e5dc551a901a84fcec1568fac9e0d62fc5a6ee14` remains
 excluded: Windows passed 92 tests, GCC passed 91 and failed 1, and Clang passed 90,
@@ -627,7 +627,7 @@ zero skips. Linux dedicated101 Java execution completed, then helper epoch
 validation failed before C comparison. Retained full semantic and native
 `--development` comparisons pass as diagnostics only; the failed manifests
 remain unchanged. Exact times and scope are in the
-[v8 history](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/lifecycle.md#excluded-v8-attempt).
+[v8 history](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/lifecycle.md#excluded-v8-attempt).
 
 The new controller retains bounded mirrors from each first serialized ID. The
 old-controller Linux marker control proved128 live objects received new IDs after

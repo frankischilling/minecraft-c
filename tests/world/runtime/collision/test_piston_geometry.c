@@ -4,7 +4,7 @@
 #undef MC_COLLISION_BOXES_MAIN
 
 #include "../../../../src/block/registry/runtime_internal.h"
-#include "../../../../src/world/runtime/tiles/tiles_internal.h"
+#include "../../../../src/world/runtime/tile_entities/tile_entities_internal.h"
 
 #include <emmintrin.h>
 
@@ -144,9 +144,9 @@ static bool piston_real_tile(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *const world = f->worlds[side];
     mc_registry_classes *const registry = f->registry[side];
-    mc_tile *tile = NULL;
-    mc_tile_error tile_error = mc_tile_empty_error();
-    mc_live_tile_error live_error = mc_live_tiles_empty_error();
+    mc_tile_entity *tile_entity = NULL;
+    mc_tile_entity_error tile_entity_error = mc_tile_entity_empty_error();
+    mc_live_tile_entity_error live_error = mc_live_tile_entities_empty_error();
     mc_world_collision_error error = mc_world_collision_empty_error();
     mc_entity_bounds *actual = NULL;
     uint16_t names[5][16];
@@ -167,16 +167,19 @@ static bool piston_real_tile(fixture *f, size_t side) {
     fields[4].value.byte_value = 1;
     const mc_nbt_tag input = {.type = MC_NBT_COMPOUND,
                               .value.compound = {children, COUNT(children)}};
-    CHECK(mc_tile_allocate(world, MC_TILE_PISTON, &tile) == MC_TILE_OK &&
-          mc_tile_piston_construct(tile, 1, -123, 5, true, true, &tile_error) == MC_TILE_OK &&
-          mc_tile_read_nbt(tile, &input, &tile_error) == MC_TILE_OK);
+    CHECK(
+        mc_tile_entity_allocate(world, MC_TILE_ENTITY_PISTON, &tile_entity) == MC_TILE_ENTITY_OK &&
+        mc_tile_entity_piston_construct(tile_entity, 1, -123, 5, true, true, &tile_entity_error) ==
+            MC_TILE_ENTITY_OK &&
+        mc_tile_entity_read_nbt(tile_entity, &input, &tile_entity_error) == MC_TILE_ENTITY_OK);
     boxes_air(f, side);
     f->states[side]->data->blocks[boxes_index(3, 64, 5)] = 36;
-    CHECK(mc_live_tiles_set(world, 3, 64, 5, tile, &live_error) == MC_WORLD_STORAGE_OK);
-    mc_tile_snapshot state;
-    CHECK(mc_tile_get_snapshot(tile, &state) == MC_TILE_OK && state.world == world &&
-          state.x == 3 && state.y == 64 && state.z == 5 && state.piston_render_head &&
-          state.piston_previous_progress_bits == UINT32_C(0x3e800000));
+    CHECK(mc_live_tile_entities_set(world, 3, 64, 5, tile_entity, &live_error) ==
+          MC_WORLD_STORAGE_OK);
+    mc_tile_entity_snapshot state;
+    CHECK(mc_tile_entity_get_snapshot(tile_entity, &state) == MC_TILE_ENTITY_OK &&
+          state.world == world && state.x == 3 && state.y == 64 && state.z == 5 &&
+          state.piston_render_head && state.piston_previous_progress_bits == UINT32_C(0x3e800000));
     CHECK(mc_entity_bounds_pool_reset(f->entity_classes[side], NULL) == MC_ENTITY_OK &&
           mc_world_runtime_call_enter(world, NULL) == MC_WORLD_STORAGE_OK);
     const mc_world_storage_status status =
@@ -190,20 +193,20 @@ static bool piston_real_tile(fixture *f, size_t side) {
      * retains its actual shifted pooled box in K. No Entity callback exists. */
     const mc_entity_bounds query = {2.6, 64.1, 5.1, 3.4, 64.9, 5.9};
     CHECK(boxes_query_is(world, NULL, &query, &expected, 1));
-    CHECK(mc_tile_get_snapshot(tile, &state) == MC_TILE_OK && state.world == world &&
-          state.piston_progress_bits == UINT32_C(0x3e800000) &&
+    CHECK(mc_tile_entity_get_snapshot(tile_entity, &state) == MC_TILE_ENTITY_OK &&
+          state.world == world && state.piston_progress_bits == UINT32_C(0x3e800000) &&
           state.piston_previous_progress_bits == UINT32_C(0x3e800000));
     fields[4].value.byte_value = 0;
-    CHECK(mc_tile_read_nbt(tile, &input, &tile_error) == MC_TILE_OK &&
-          mc_tile_set_coordinates(tile, 3, 64, 5) == MC_TILE_OK);
+    CHECK(mc_tile_entity_read_nbt(tile_entity, &input, &tile_entity_error) == MC_TILE_ENTITY_OK &&
+          mc_tile_entity_set_coordinates(tile_entity, 3, 64, 5) == MC_TILE_ENTITY_OK);
     const mc_entity_bounds retracting = {2.75, 64, 5, 3.75, 65, 6};
     CHECK(boxes_query_is(world, NULL, &query, &retracting, 1));
-    CHECK(mc_live_tiles_remove(world, 3, 64, 5, &live_error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_live_tile_entities_remove(world, 3, 64, 5, &live_error) == MC_WORLD_STORAGE_OK);
     ok = true;
 cleanup:
     if (actual != NULL)
         (void)mc_entity_bounds_release(f->entity_classes[side], actual);
-    mc_tile_release(tile);
+    mc_tile_entity_release(tile_entity);
     return ok;
 }
 
@@ -311,77 +314,80 @@ static bool piston_state_updates(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *world = f->worlds[side];
     mc_registry_classes *registry = f->registry[side];
-    mc_block *moving = registry->blocks.m[36], *carrier = registry->blocks.m[1];
-    const mc_block_fields saved_moving = moving->fields, saved_carrier = carrier->fields;
-    mc_tile *tile = NULL, *chest = NULL;
+    mc_block *moving = registry->blocks.m[36], *carried_block = registry->blocks.m[1];
+    const mc_block_fields saved_moving = moving->fields, saved_carrier = carried_block->fields;
+    mc_tile_entity *tile_entity = NULL, *chest = NULL;
     mc_world_collision_error error;
-    mc_live_tile_error live = mc_live_tiles_empty_error();
+    mc_live_tile_entity_error live = mc_live_tile_entities_empty_error();
     const mc_entity_bounds marker = {-11, -12, -13, 21, 22, 23};
     static const mc_entity_bounds expected[6] = {
         {0.125, 0.5, 0.375, 0.625, 1, 0.875},     {0.125, 0, 0.375, 0.625, 0.5, 0.875},
         {0.125, 0.25, 0.625, 0.625, 0.75, 1.125}, {0.125, 0.25, 0.125, 0.625, 0.75, 0.625},
         {0.375, 0.25, 0.375, 0.875, 0.75, 0.875}, {-0.125, 0.25, 0.375, 0.375, 0.75, 0.875}};
-    CHECK(mc_tile_allocate(world, MC_TILE_PISTON, &tile) == MC_TILE_OK &&
-          mc_tile_piston_construct(tile, 1, -123, 5, false, true, NULL) == MC_TILE_OK);
+    CHECK(mc_tile_entity_allocate(world, MC_TILE_ENTITY_PISTON, &tile_entity) ==
+              MC_TILE_ENTITY_OK &&
+          mc_tile_entity_piston_construct(tile_entity, 1, -123, 5, false, true, NULL) ==
+              MC_TILE_ENTITY_OK);
     /* Explicit native input controls set source fields without advancing a
      * tick. This tests a real installed Piston and original getter ordering. */
-    tile->state.piston.progress_bits = UINT32_C(0x3f400000);
-    tile->state.piston.previous_progress_bits = UINT32_C(0x3e800000);
+    tile_entity->state.piston.progress_bits = UINT32_C(0x3f400000);
+    tile_entity->state.piston.previous_progress_bits = UINT32_C(0x3e800000);
     boxes_air(f, side);
     f->states[side]->data->blocks[boxes_index(3, 64, 5)] = 36;
-    CHECK(mc_live_tiles_set(world, 3, 64, 5, tile, &live) == MC_WORLD_STORAGE_OK);
-    mc_registry_block_bounds(carrier, 0.125f, 0.25f, 0.375f, 0.625f, 0.75f, 0.875f);
-    const size_t tile_holds = tile->holds;
+    CHECK(mc_live_tile_entities_set(world, 3, 64, 5, tile_entity, &live) == MC_WORLD_STORAGE_OK);
+    mc_registry_block_bounds(carried_block, 0.125f, 0.25f, 0.375f, 0.625f, 0.75f, 0.875f);
+    const size_t tile_entity_holds = tile_entity->holds;
     const int32_t cursor = f->entity_classes[side]->bounds_cursor;
     const size_t bounds_holds = f->entity_classes[side]->bounds_holds;
     for (int32_t facing = 0; facing < 6; ++facing) {
-        tile->state.piston.facing = facing;
+        tile_entity->state.piston.facing = facing;
         CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
         const mc_entity_bounds actual = piston_block_bounds(moving);
-        CHECK(boxes_coordinates(&actual, &expected[(size_t)facing]) && tile->holds == tile_holds &&
+        CHECK(boxes_coordinates(&actual, &expected[(size_t)facing]) &&
+              tile_entity->holds == tile_entity_holds &&
               f->entity_classes[side]->bounds_cursor == cursor &&
               f->entity_classes[side]->bounds_holds == bounds_holds);
     }
-    tile->state.piston.extending = true;
+    tile_entity->state.piston.extending = true;
     CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
     const mc_entity_bounds extended = piston_block_bounds(moving);
     const mc_entity_bounds extended_expected = {-0.625, 0.25, 0.375, -0.125, 0.75, 0.875};
     CHECK(boxes_coordinates(&extended, &extended_expected));
-    tile->state.piston.extending = false;
+    tile_entity->state.piston.extending = false;
 
     /* Null and actual same-object carriers preserve the complete singleton.
      * A different object at the same numeric ID still executes the full body. */
     piston_block_marker(moving);
-    tile->state.piston.block_id = 0;
+    tile_entity->state.piston.block_id = 0;
     CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
     mc_entity_bounds actual = piston_block_bounds(moving);
     CHECK(boxes_coordinates(&actual, &marker));
     registry->blocks.m[1] = moving;
-    tile->state.piston.block_id = 1;
+    tile_entity->state.piston.block_id = 1;
     const mc_world_storage_status self_status = piston_state_shape(f, side, moving, &error);
-    registry->blocks.m[1] = carrier;
+    registry->blocks.m[1] = carried_block;
     actual = piston_block_bounds(moving);
     CHECK(self_status == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &marker));
-    registry->blocks.m[36] = carrier;
-    tile->state.piston.block_id = 36;
+    registry->blocks.m[36] = carried_block;
+    tile_entity->state.piston.block_id = 36;
     const mc_world_storage_status same_id = piston_state_shape(f, side, moving, &error);
     registry->blocks.m[36] = moving;
     actual = piston_block_bounds(moving);
     CHECK(same_id == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &expected[5]));
-    registry->blocks.m[0] = carrier;
-    tile->state.piston.block_id = 0;
+    registry->blocks.m[0] = carried_block;
+    tile_entity->state.piston.block_id = 0;
     const mc_world_storage_status nonnull_zero = piston_state_shape(f, side, moving, &error);
     registry->blocks.m[0] = NULL;
     actual = piston_block_bounds(moving);
     CHECK(nonnull_zero == MC_WORLD_STORAGE_OK && boxes_coordinates(&actual, &expected[5]));
 
-    tile->state.piston.block_id = -1;
+    tile_entity->state.piston.block_id = -1;
     piston_block_marker(moving);
     CHECK(piston_state_shape(f, side, moving, &error) != MC_WORLD_STORAGE_OK &&
           error.piston_bytecode == 24 &&
           error.nearby.query.registry.status == MC_REGISTRY_INDEX_OUT_OF_RANGE);
     actual = piston_block_bounds(moving);
-    CHECK(boxes_coordinates(&actual, &marker) && tile->holds == tile_holds);
+    CHECK(boxes_coordinates(&actual, &marker) && tile_entity->holds == tile_entity_holds);
     mc_block **saved_array = registry->blocks.m;
     registry->blocks.m = NULL;
     const mc_world_storage_status null_array = piston_state_shape(f, side, moving, &error);
@@ -389,7 +395,7 @@ static bool piston_state_updates(fixture *f, size_t side) {
     CHECK(null_array != MC_WORLD_STORAGE_OK && error.piston_bytecode == 24 &&
           error.nearby.query.registry.status == MC_REGISTRY_NULL_REFERENCE);
 
-    tile->state.piston.block_id = 1;
+    tile_entity->state.piston.block_id = 1;
     int32_t *saved_direction = registry->direction_c;
     registry->direction_c = NULL;
     const mc_world_storage_status partial = piston_state_shape(f, side, moving, &error);
@@ -398,7 +404,7 @@ static bool piston_state_updates(fixture *f, size_t side) {
     const mc_entity_bounds prefix = {-0.125, -12, -13, 21, 22, 23};
     CHECK(partial != MC_WORLD_STORAGE_OK && error.piston_bytecode == 110 &&
           error.nearby.query.registry.status == MC_REGISTRY_NULL_REFERENCE &&
-          boxes_coordinates(&actual, &prefix) && tile->holds == tile_holds);
+          boxes_coordinates(&actual, &prefix) && tile_entity->holds == tile_entity_holds);
     piston_block_marker(moving);
     saved_direction = registry->direction_d;
     registry->direction_d = NULL;
@@ -410,9 +416,9 @@ static bool piston_state_updates(fixture *f, size_t side) {
           error.nearby.query.registry.status == MC_REGISTRY_NULL_REFERENCE &&
           boxes_coordinates(&actual, &later_prefix));
 
-    /* The carrier setter completes before interpolation rejects a native
+    /* The carried Block setter completes before interpolation rejects a native
      * floating environment. Moving fields and pooled bounds stay untouched. */
-    tile->state.piston.block_id = 53;
+    tile_entity->state.piston.block_id = 53;
     mc_block *stairs = registry->blocks.m[53];
     const mc_block_fields saved_stairs = stairs->fields;
     piston_block_marker(stairs);
@@ -426,45 +432,46 @@ static bool piston_state_updates(fixture *f, size_t side) {
     const mc_entity_bounds cube = {0, 0, 0, 1, 1, 1};
     actual = piston_block_bounds(moving);
     CHECK(fp != MC_WORLD_STORAGE_OK && error.piston_bytecode == 52 &&
-          error.nearby.tile.tile.status == MC_TILE_UNSUPPORTED_FP &&
+          error.nearby.tile_entity.tile_entity.status == MC_TILE_ENTITY_UNSUPPORTED_FP &&
           boxes_coordinates(&stairs_actual, &cube) && boxes_coordinates(&actual, &marker));
 
     /* Every zero Direction component still multiplies NaN, and the original
      * binary32 payload widens before each binary64 subtraction. */
-    tile->state.piston.block_id = 1;
-    tile->state.piston.progress_bits = UINT32_C(0x7fc12345);
-    tile->state.piston.previous_progress_bits = UINT32_C(0x7fc12345);
+    tile_entity->state.piston.block_id = 1;
+    tile_entity->state.piston.progress_bits = UINT32_C(0x7fc12345);
+    tile_entity->state.piston.previous_progress_bits = UINT32_C(0x7fc12345);
     CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
     actual = piston_block_bounds(moving);
     uint64_t nan_bits[6];
     memcpy(nan_bits, &actual, sizeof(nan_bits));
     for (size_t i = 0; i < COUNT(nan_bits); ++i)
         CHECK(nan_bits[i] == UINT64_C(0x7ff82468a0000000));
-    CHECK(tile->holds == tile_holds && f->entity_classes[side]->bounds_cursor == cursor &&
+    CHECK(tile_entity->holds == tile_entity_holds &&
+          f->entity_classes[side]->bounds_cursor == cursor &&
           f->entity_classes[side]->bounds_holds == bounds_holds);
-    CHECK(mc_live_tiles_remove(world, 3, 64, 5, &live) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_live_tile_entities_remove(world, 3, 64, 5, &live) == MC_WORLD_STORAGE_OK);
     piston_block_marker(moving);
     CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
     actual = piston_block_bounds(moving);
     CHECK(boxes_coordinates(&actual, &marker));
-    CHECK(mc_tile_allocate(world, MC_TILE_CHEST, &chest) == MC_TILE_OK &&
-          mc_tile_construct(chest) == MC_TILE_OK &&
-          mc_live_tiles_set(world, 3, 64, 5, chest, &live) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_tile_entity_allocate(world, MC_TILE_ENTITY_CHEST, &chest) == MC_TILE_ENTITY_OK &&
+          mc_tile_entity_construct(chest) == MC_TILE_ENTITY_OK &&
+          mc_live_tile_entities_set(world, 3, 64, 5, chest, &live) == MC_WORLD_STORAGE_OK);
     const size_t chest_holds = chest->holds;
     CHECK(piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
     actual = piston_block_bounds(moving);
     CHECK(boxes_coordinates(&actual, &marker) && chest->holds == chest_holds);
-    CHECK(mc_tile_set_invalid(chest, true) == MC_TILE_OK &&
+    CHECK(mc_tile_entity_set_invalid(chest, true) == MC_TILE_ENTITY_OK &&
           piston_state_shape(f, side, moving, &error) == MC_WORLD_STORAGE_OK);
     actual = piston_block_bounds(moving);
     CHECK(boxes_coordinates(&actual, &marker) && chest->invalid &&
-          chest->holds == chest_holds - 1u && mc_live_tiles_map_valid(f->chunks[side]));
+          chest->holds == chest_holds - 1u && mc_live_tile_entities_map_valid(f->chunks[side]));
     ok = true;
 cleanup:
     moving->fields = saved_moving;
-    carrier->fields = saved_carrier;
-    mc_tile_release(tile);
-    mc_tile_release(chest);
+    carried_block->fields = saved_carrier;
+    mc_tile_entity_release(tile_entity);
+    mc_tile_entity_release(chest);
     return ok;
 }
 

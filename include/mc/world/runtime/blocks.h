@@ -32,7 +32,7 @@ mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime,
  * After successful acquisition, a normal chunk is marked dirty before its
  * metadata owner is accessed; only the selected nibble receives metadata's low
  * four bits. Acquisition can reject a malformed native chunk before this
- * point; a later owner failure retains the dirty assignment. No block hook, observer,
+ * point; a later owner failure retains the dirty assignment. No block hook, WorldAccess,
  * neighbor, height/light change or lighting submission occurs in this quiet
  * path. The blank payload and its dirty flag remain unchanged. Native failure
  * preserves out and retains completed acquisition/dirty effects. The same

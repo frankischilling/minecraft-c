@@ -5,7 +5,7 @@
 #undef MC_COLLISION_BOXES_MAIN
 
 #include "../../../src/core/java/random_profile_internal.h"
-#include "mc/world/dimension/biome_runtime.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/movement.h"
 
 #include <emmintrin.h>
@@ -68,7 +68,7 @@ static bool world_move_area(fixture *f, size_t side) {
 
     /* Actual nullable provider and bad FP controls. Early Y and reversed X/Z
      * loops must finish without either provider use or FP admission. */
-    mc_world_provider *saved_v = world->fields.v;
+    mc_chunk_provider *saved_v = world->fields.v;
     const unsigned int saved_csr = _mm_getcsr();
     world->fields.v = NULL;
     _mm_setcsr(saved_csr | 0x8000u);
@@ -101,7 +101,7 @@ static bool world_move_rain_threshold(fixture *f, size_t side) {
     bool ok = false, value = true;
     mc_world_runtime *world = f->worlds[side];
     mc_world_movement_error error;
-    mc_world_provider *saved_v = world->fields.v;
+    mc_chunk_provider *saved_v = world->fields.v;
     world->fields.v = NULL;
     bool dry = true, below = true, nan = true;
     const mc_world_storage_status a = world_move_rain(f, side, 8, 64, 8, 1.0f, 0.0f, &dry, &error);
@@ -135,14 +135,14 @@ cleanup:
 static bool world_move_rain_sources(fixture *f, size_t side) {
     bool ok = false, value = false;
     mc_world_runtime *world = f->worlds[side];
-    mc_world_dimension *fixed = NULL;
+    mc_world_provider *fixed = NULL;
     mc_world_movement_error error;
     boxes_air(f, side);
     CHECK(world_move_rain(f, side, 8, 64, 8, 0.0f, 1.0f, &value, &error) == MC_WORLD_STORAGE_OK);
-    mc_world_dimension_fields normal = {0};
-    mc_world_biome_game_fields sampled = {0};
-    CHECK(mc_world_dimension_fields_get(f->dimensions[side], &normal) == MC_WORLD_DIMENSION_OK &&
-          mc_world_dimension_biome_game_fields_get(normal.b, &sampled) == MC_WORLD_DIMENSION_OK &&
+    mc_world_provider_fields normal = {0};
+    mc_world_chunk_manager_game_fields sampled = {0};
+    CHECK(mc_world_provider_fields_get(f->dimensions[side], &normal) == MC_WORLD_PROVIDER_OK &&
+          mc_world_chunk_manager_game_fields_get(normal.b, &sampled) == MC_WORLD_PROVIDER_OK &&
           sampled.d != NULL && mc_biome_reference_array_length(sampled.d) >= 1);
     const mc_biome *biome = mc_biome_reference_array_data(sampled.d)[0];
     const mc_biome_fields *actual = mc_biome_fields_get(biome);
@@ -177,7 +177,7 @@ static bool world_move_rain_sources(fixture *f, size_t side) {
     const size_t column = (8u << 4u) | 8u;
     uint8_t *height = f->chunks[side]->h;
     const uint8_t saved_height = height[column];
-    mc_world_dimension *saved_t = world->fields.t;
+    mc_world_provider *saved_t = world->fields.t;
     height[column] = 65;
     world->fields.t = NULL;
     value = true;
@@ -209,15 +209,15 @@ static bool world_move_rain_sources(fixture *f, size_t side) {
     CHECK(dimension_null == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value && error.bytecode == 34 &&
           error.dimension_bytecode == 4 && world_move_idle(f, side));
 
-    const mc_world_dimension_registry_binding binding = {
+    const mc_world_provider_registry_binding binding = {
         f->registry[side], side == 0 ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER, f->profile};
-    CHECK(mc_world_dimension_create(1, NULL, &fixed, NULL) == MC_WORLD_DIMENSION_OK &&
-          mc_world_dimension_bind_game(fixed, world, &binding, NULL) == MC_WORLD_DIMENSION_OK);
-    mc_world_dimension_fields fixed_fields = {0};
-    mc_world_biome_game_fields fixed_before = {0}, fixed_after = {0};
-    CHECK(mc_world_dimension_fields_get(fixed, &fixed_fields) == MC_WORLD_DIMENSION_OK &&
-          mc_world_dimension_biome_game_fields_get(fixed_fields.b, &fixed_before) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_create(1, NULL, &fixed, NULL) == MC_WORLD_PROVIDER_OK &&
+          mc_world_provider_bind_game(fixed, world, &binding, NULL) == MC_WORLD_PROVIDER_OK);
+    mc_world_provider_fields fixed_fields = {0};
+    mc_world_chunk_manager_game_fields fixed_before = {0}, fixed_after = {0};
+    CHECK(mc_world_provider_fields_get(fixed, &fixed_fields) == MC_WORLD_PROVIDER_OK &&
+          mc_world_chunk_manager_game_fields_get(fixed_fields.b, &fixed_before) ==
+              MC_WORLD_PROVIDER_OK &&
           fixed_before.fixed_e != NULL);
     const mc_biome_fields *fixed_flags = mc_biome_fields_get(fixed_before.fixed_e);
     CHECK(fixed_flags != NULL);
@@ -226,8 +226,8 @@ static bool world_move_rain_sources(fixture *f, size_t side) {
         world_move_rain(f, side, 8, 64, 8, 0.0f, 1.0f, &value, &error);
     world->fields.t = saved_t;
     CHECK(fixed_rain == MC_WORLD_STORAGE_OK && value == (!fixed_flags->v && fixed_flags->w) &&
-          mc_world_dimension_biome_game_fields_get(fixed_fields.b, &fixed_after) ==
-              MC_WORLD_DIMENSION_OK &&
+          mc_world_chunk_manager_game_fields_get(fixed_fields.b, &fixed_after) ==
+              MC_WORLD_PROVIDER_OK &&
           fixed_after.d == fixed_before.d && fixed_after.fixed_e == fixed_before.fixed_e &&
           world_move_idle(f, side));
     /* A positive flag control on this genuine fixed Biome distinguishes the
@@ -246,7 +246,7 @@ static bool world_move_rain_sources(fixture *f, size_t side) {
     CHECK(fixed_positive == MC_WORLD_STORAGE_OK && value && world_move_idle(f, side));
     ok = true;
 cleanup:
-    mc_world_dimension_release(fixed);
+    mc_world_provider_release(fixed);
     return ok;
 }
 
@@ -314,7 +314,7 @@ static bool world_move_burning(fixture *f, size_t side) {
           error.block.nearby.query.chunk_bytecode == 15 &&
           error.registry.status == MC_REGISTRY_OK && world_move_idle(f, side));
 
-    mc_world_provider *saved_v = world->fields.v;
+    mc_chunk_provider *saved_v = world->fields.v;
     world->fields.v = f->worlds[1u - side]->fields.v;
     value = true;
     const mc_world_storage_status foreign = mc_world_runtime_burning(world, &box, &value, &error);
@@ -376,12 +376,12 @@ static bool world_move_sound(fixture *f, size_t side) {
     const mc_world_storage_status invocation =
         mc_world_runtime_entity_sound(world, entity, NULL, 0.7f, 1.0f, &error);
     const unsigned int invocation_pc = error.bytecode;
-    const unsigned int presentation_pc = error.presentation.observer_bytecode;
+    const unsigned int presentation_pc = error.presentation.world_access_bytecode;
     _mm_setcsr(saved_csr | 0x8000u);
     const mc_world_storage_status fp =
         mc_world_runtime_entity_sound(world, entity, NULL, 0.7f, 1.0f, &error);
     const unsigned int fp_pc = error.bytecode;
-    items[0] = entity; /* Actual non-observer owner; never dereferenced as pm/jp. */
+    items[0] = entity; /* Actual non-WorldAccess owner; never dereferenced as pm/jp. */
     const mc_world_storage_status cast =
         mc_world_runtime_entity_sound(world, NULL, NULL, 0.7f, 1.0f, &error);
     _mm_setcsr(saved_csr);
@@ -393,7 +393,7 @@ static bool world_move_sound(fixture *f, size_t side) {
           presentation_pc == 53 && entity->holds == saved_holds);
     CHECK(fp == MC_WORLD_STORAGE_UNSUPPORTED_STATE && fp_pc == 44);
     CHECK(cast == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 28 &&
-          error.observer_bytecode == 28 && error.presentation.observer_bytecode == 28);
+          error.world_access_bytecode == 28 && error.presentation.world_access_bytecode == 28);
     CHECK(mc_test_java_random_equal(&world_random, world->fields.r) &&
           mc_test_java_random_equal(&entity_random, entity->random) &&
           atomic_load_explicit(&f->profile->uniquifier, memory_order_relaxed) == uniquifier &&

@@ -142,11 +142,11 @@ mc_world_storage_status mc_world_store_save_world_info(mc_world_store *store, mc
  * applies the frozen postload block map, and leaves all transient load fields
  * at their decoded defaults. Coordinates remain those stored in Level even
  * when they differ from the requested slot. No activation/registration or
- * cache time stamp occurs. Opaque entity/tile data is retained for safe storage
+ * cache time stamp occurs. Opaque entity/TileEntity data is retained for safe storage
  * round trips. Missing slot returns MISSING. Outputs are unchanged on failure.
  *
  * retain_chunk copies a newly generated normal chunk into store ownership;
- * it cannot introduce entity/tile records. write_chunk accepts only a state
+ * it cannot introduce entity/TileEntity records. write_chunk accepts only a state
  * retained by this store, checks the session, writes schema at explicit world
  * time and region timestamp, then adds growth to live SizeOnDisk with Java long
  * wrapping. Successful metadata must already exist for accounting. The caller
@@ -205,7 +205,7 @@ mc_world_storage_status mc_world_store_unregister_cache(mc_world_store *store,
  * Leases, active=true, or any map/list/fallback occurrence return BUSY. Repeated
  * list entries, overwritten packed aliases and references from several caches
  * all count. An uncommitted GAME stage that began imports additionally requires
- * terminal joint Entity/Tile container retirement, including when active is false.
+ * terminal joint Entity/TileEntity container retirement, including when active is false.
  * Success unlinks/frees this owner and recovers one admission slot.
  * No save, file/session/metadata change or shared-region clear occurs.
  *
@@ -247,7 +247,7 @@ size_t mc_world_store_reservation_count(const mc_world_store *store);
  * retained Entities/TileEntities before changing has_entities. A known-empty
  * runtime resets has_entities=false before serialization/transport; this reset
  * remains visible on a later failure. Growth/output remain unchanged on failure,
- * and dirty/last_save_time remain caller-owned. No entity/tile implementation is
+ * and dirty/last_save_time remain caller-owned. No entity/TileEntity implementation is
  * supplied. Generic write_chunk retains its unchanged opaque transport policy. */
 mc_world_storage_status mc_world_store_write_runtime_chunk(mc_world_store *store,
                                                            mc_chunk_state *chunk,
@@ -267,7 +267,7 @@ mc_world_storage_status mc_world_store_write_runtime_chunk_for_info(
 /* Real acquisition loader adapter. Keep this caller-owned binding stable during
  * a call. Missing records alone permit generation; unreadable/unsupported data
  * is fatal to prevent replacement by generated chunks. Activation also refuses
- * nonempty opaque entity/tile lists because their world objects are not yet
+ * nonempty opaque entity/TileEntity lists because their world objects are not yet
  * implemented. The generic storage load above still permits safe preservation.
  * last_error retains diagnostics. The coordinator alone stamps loaded time and
  * publishes/activates the identity after a successful callback. */
@@ -290,7 +290,7 @@ void mc_world_store_free(mc_world_store *store);
 /* Checked native close. Validate the WHOLE actual ownership graph before any
  * release: registrations must be valid and unregistered, reservations gone,
  * identity/coordinator leases zero, runtime headers coherent and their joint
- * Entity/Tile containers terminally retired. Generic unbound stored owners keep
+ * Entity/TileEntity containers terminally retired. Generic unbound stored owners keep
  * their existing borrowed-view obligations. On failure *owner and every owner
  * remain unchanged; success frees the store and sets *owner=NULL. NULL owner
  * argument is invalid; a NULL *owner succeeds. No save, source callback, lock

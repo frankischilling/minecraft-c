@@ -41,22 +41,22 @@ static mc_registry_status ancestor(mc_registry_classes *classes, mc_registry_cla
 
 static mc_registry_status parent_class(mc_registry_classes *classes, mc_item_kind kind) {
     switch (kind) {
-        case MC_ITEM_WC_NY:
-        case MC_ITEM_AU_AH:
-        case MC_ITEM_TA_LY:
+        case MC_ITEM_SHOVEL:
+        case MC_ITEM_PICKAXE:
+        case MC_ITEM_AXE:
             return ancestor(classes, &classes->item_dq_state, "dq", "cj");
-        case MC_ITEM_BZ_BF:
-        case MC_ITEM_QK_JY:
-            return mc_registry_item_class_initialize(classes, MC_ITEM_YW_PX);
-        case MC_ITEM_WR_OL:
+        case MC_ITEM_SOUP:
+        case MC_ITEM_COOKIE:
+            return mc_registry_item_class_initialize(classes, MC_ITEM_FOOD);
+        case MC_ITEM_MAP:
             return ancestor(classes, &classes->item_cp_state, "cp", "bo");
-        case MC_ITEM_BI_AP:
-        case MC_ITEM_GO_EK:
-        case MC_ITEM_EN_CW:
-        case MC_ITEM_MR_IA:
-        case MC_ITEM_UY_ND:
-        case MC_ITEM_QR_KC:
-            return mc_registry_item_class_initialize(classes, MC_ITEM_CK_BK);
+        case MC_ITEM_WOOL_BLOCK:
+        case MC_ITEM_LOG_BLOCK:
+        case MC_ITEM_SLAB_BLOCK:
+        case MC_ITEM_SAPLING_BLOCK:
+        case MC_ITEM_LEAVES_BLOCK:
+        case MC_ITEM_PISTON_BLOCK:
+            return mc_registry_item_class_initialize(classes, MC_ITEM_BLOCK);
         default:
             return mc_registry_items_active_use(classes);
     }
@@ -64,8 +64,8 @@ static mc_registry_status parent_class(mc_registry_classes *classes, mc_item_kin
 
 static mc_registry_status tool_blocks(mc_registry_classes *classes, mc_item_kind kind) {
     mc_registry_block_array *array = NULL;
-    size_t length = kind == MC_ITEM_WC_NY ? 8u : kind == MC_ITEM_AU_AH ? 17u : 4u;
-    mc_registry_initializer_stage(classes, kind == MC_ITEM_TA_LY ? 1 : 2);
+    size_t length = kind == MC_ITEM_SHOVEL ? 8u : kind == MC_ITEM_PICKAXE ? 17u : 4u;
+    mc_registry_initializer_stage(classes, kind == MC_ITEM_AXE ? 1 : 2);
     mc_registry_status status = mc_registry_block_array_create(classes, length, &array);
     if (status != MC_REGISTRY_OK)
         return status;
@@ -83,7 +83,7 @@ static mc_registry_status tool_blocks(mc_registry_classes *classes, mc_item_kind
         mc_registry_initializer_stage(classes, store_pc);                                          \
         array->elements[index] = value;                                                            \
     } while (0)
-    if (kind == MC_ITEM_WC_NY) {
+    if (kind == MC_ITEM_SHOVEL) {
         BLOCK_ELEMENT(0, "v", 7, 10);
         BLOCK_ELEMENT(1, "w", 13, 16);
         BLOCK_ELEMENT(2, "F", 19, 22);
@@ -95,7 +95,7 @@ static mc_registry_status tool_blocks(mc_registry_classes *classes, mc_item_kind
         mc_registry_initializer_stage(classes, 55);
         classes->items.wc_bk = array;
         mc_registry_initializer_stage(classes, 58);
-    } else if (kind == MC_ITEM_AU_AH) {
+    } else if (kind == MC_ITEM_PICKAXE) {
         BLOCK_ELEMENT(0, "x", 7, 10);
         BLOCK_ELEMENT(1, "ak", 13, 16);
         BLOCK_ELEMENT(2, "al", 19, 22);
@@ -243,7 +243,7 @@ mc_registry_status mc_registry_item_class_initialize(mc_registry_classes *classe
         return MC_REGISTRY_INVALID_ARGUMENT;
     if ((unsigned int)kind >= (unsigned int)MC_ITEM_KIND_COUNT)
         return mc_registry_fail(classes, MC_REGISTRY_INVALID_ARGUMENT, "Item class kind", NULL);
-    if (kind == MC_ITEM_GM_EJ)
+    if (kind == MC_ITEM_BASE)
         return mc_registry_items_active_use(classes);
     mc_registry_class_state *state = &classes->item_states[kind];
     bool done = false;
@@ -259,15 +259,15 @@ mc_registry_status mc_registry_item_class_initialize(mc_registry_classes *classe
     status = parent_class(classes, kind);
     if (status == MC_REGISTRY_OK) {
         switch (kind) {
-            case MC_ITEM_WC_NY:
-            case MC_ITEM_AU_AH:
-            case MC_ITEM_TA_LY:
+            case MC_ITEM_SHOVEL:
+            case MC_ITEM_PICKAXE:
+            case MC_ITEM_AXE:
                 status = tool_blocks(classes, kind);
                 break;
-            case MC_ITEM_WA_NX:
+            case MC_ITEM_ARMOR:
                 status = armor_arrays(classes);
                 break;
-            case MC_ITEM_KM_GU:
+            case MC_ITEM_DYE:
                 status = dye_arrays(classes);
                 break;
             default:

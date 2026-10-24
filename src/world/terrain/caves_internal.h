@@ -86,9 +86,10 @@ typedef struct mc_terrain_cave_context {
  * validity. The public arbitrary-prior-state numerical entry instead fresh-
  * seeds its output projection. Other bounds/failure/disjointness rules match
  * caves.h; there is no profile access or default construction in either pass. */
-bool mc_terrain_normal_caves_reseed(const mc_math_trig *table, int64_t world_seed, int32_t chunk_x,
-                                    int32_t chunk_z, mc_java_random *cave_random, uint8_t *blocks,
-                                    size_t blocks_length);
+bool mc_terrain_overworld_caves_reseed(const mc_math_trig *table, int64_t world_seed,
+                                       int32_t chunk_x, int32_t chunk_z,
+                                       mc_java_random *cave_random, uint8_t *blocks,
+                                       size_t blocks_length);
 
 /* Actual room wrapper: consumes shared width draw then calls the path helper
  * with yaw/pitch zero, start/end -1 and vertical ratio 0.5. */

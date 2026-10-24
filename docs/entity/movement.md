@@ -71,11 +71,12 @@ or Chunk occurrences or create drops.
 
 The [World dependency interface](../../include/mc/world/runtime/movement.h)
 uses actual nonloading provider presence, interpolated rain strength, acquiring
-sky/top queries, current Dimension point-Biome ownership and current Fire/Lava
+sky/top queries, current WorldProvider point-Biome ownership and current Fire/Lava
 statics. Even an all-air burning scan reaches its ordered class/static reads.
-The distinct Entity-sound overload returns from a real empty observer List
-before reading the Entity or doing its argument arithmetic. Reached nonempty
-concrete observers remain unfinished. Acquiring shared queries reject an
+The distinct Entity-sound overload returns from a real empty WorldAccess List
+before reading the Entity or doing its argument arithmetic. Typed nonempty
+WorldAccess dispatch is implemented; concrete audio receivers remain unfinished.
+Acquiring shared queries reject an
 unsupported current provider binding instead of running an older context.
 
 [Block contact dispatch](../../include/mc/world/runtime/contact.h) follows actual
@@ -136,6 +137,6 @@ The source map records [reproduction and exact scope](../reference/entity-moveme
 Completed original normal movement and nonnull-World traversal remain unqualified.
 
 Other Entity kinds, walking-positive descendants, active Item/Falling ticks,
-landing/drop behavior, detector helpers, nonempty concrete
-sound observers, unowned passenger recursion and whole-game acceptance remain
+landing/drop behavior, detector helpers, concrete audio WorldAccess receivers,
+unowned passenger recursion and whole-game acceptance remain
 unfinished. Implementing movement does not complete those gameplay routes.

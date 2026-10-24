@@ -14,7 +14,7 @@
 #define PROBE_BLOCK_VALUES 32832u
 
 static char request[260];
-static mc_terrain_normal_state state;
+static mc_terrain_overworld_state state;
 static mc_biome_memory memory;
 static mc_biome_manager manager;
 static mc_biome_buffer climate_biomes;
@@ -176,7 +176,7 @@ static int handle_request(char *line) {
             return 0;
         mc_biome_buffer_free(&climate_biomes);
         mc_biome_manager_free(&manager);
-        if (!mc_terrain_normal_init(&state, seed) ||
+        if (!mc_terrain_overworld_init(&state, seed) ||
             mc_biome_manager_init(&manager, seed, &memory) != MC_BIOME_OK)
             return 0;
         memset(spans, 0, sizeof(spans));
@@ -238,16 +238,17 @@ static int handle_request(char *line) {
                 return 0;
             climate_present = 1;
         }
-        mc_terrain_normal_workspace workspace = {spans[0], spans[1], spans[2], spans[3], spans[4]};
-        mc_terrain_normal_climate climate = {manager.a.data, manager.a.length, manager.b.data,
-                                             manager.b.length};
-        int success = base ? mc_terrain_normal_base(spans[5].data, spans[5].length, manager.a.data,
-                                                    manager.a.length, blocks, blocks_length)
-                      : density
-                          ? mc_terrain_normal_density(&state, &workspace, (int32_t)x, (int32_t)z,
-                                                      &climate, spans[5])
-                          : mc_terrain_normal_generate(&state, &workspace, (int32_t)x, (int32_t)z,
-                                                       &climate, spans[5], blocks, blocks_length);
+        mc_terrain_overworld_workspace workspace = {spans[0], spans[1], spans[2], spans[3],
+                                                    spans[4]};
+        mc_terrain_overworld_climate climate = {manager.a.data, manager.a.length, manager.b.data,
+                                                manager.b.length};
+        int success =
+            base      ? mc_terrain_overworld_base(spans[5].data, spans[5].length, manager.a.data,
+                                                  manager.a.length, blocks, blocks_length)
+            : density ? mc_terrain_overworld_density(&state, &workspace, (int32_t)x, (int32_t)z,
+                                                     &climate, spans[5])
+                      : mc_terrain_overworld_generate(&state, &workspace, (int32_t)x, (int32_t)z,
+                                                      &climate, spans[5], blocks, blocks_length);
         if (!success)
             return 0;
         density_present = 1;

@@ -2,7 +2,7 @@
 #define MC_WORLD_RUNTIME_MOVEMENT_H
 
 #include "mc/entity/entity.h"
-#include "mc/world/dimension/biome_runtime.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/collision/boxes.h"
 #include "mc/world/runtime/presentation.h"
 #include "mc/world/runtime/queries.h"
@@ -15,15 +15,15 @@ typedef struct mc_world_movement_error {
      * or native admission. No frame is reconstructed from World last_error. */
     unsigned int bytecode, area_bytecode, presence_bytecode, provider_bytecode;
     unsigned int raining_bytecode, rain_strength_bytecode;
-    unsigned int dimension_bytecode, biome_bytecode, observer_bytecode;
+    unsigned int dimension_bytecode, biome_bytecode, world_access_bytecode;
     mc_world_storage_error cause;
     mc_world_query_error query;
     /* Fresh actual bounded block getter/acquisition diagnostics, including
-     * full load/activation/Tile/Entity children, distinct from rain queries. */
+     * full load/activation/TileEntity/Entity children, distinct from rain queries. */
     mc_world_collision_error block;
     mc_registry_error registry;
-    mc_world_dimension_status dimension;
-    mc_world_biome_error biome;
+    mc_world_provider_status dimension;
+    mc_world_chunk_manager_error biome;
     mc_world_mutation_error presentation;
     mc_entity_error entity;
 } mc_world_movement_error;
@@ -57,10 +57,10 @@ mc_world_storage_status mc_world_runtime_burning(mc_world_runtime *world,
                                                  const mc_entity_bounds *bounds, bool *out,
                                                  mc_world_movement_error *error);
 
-/* Distinct fd/dj.a(Entity,String,FF)V overload. An actual empty observer List
+/* Distinct fd/dj.a(Entity,String,FF)V overload. An actual empty WorldAccess List
  * returns before dereferencing entity or doing FP arithmetic. A reached null
- * observer accepts its cast, then reads current Entity x,y,offset,z around
- * y-offset before failing at invocation53. Each typed observer receives fresh
+ * WorldAccess accepts its cast, then reads current Entity x,y,offset,z around
+ * y-offset before failing at invocation53. Each typed WorldAccess receives fresh
  * Entity fields after the preceding callback; a missing sound slot fails at53
  * after the same argument evaluation. entity and name may be NULL;
  * no Registry/String read, Random draw or coordinate-sound substitution occurs.

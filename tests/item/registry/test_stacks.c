@@ -124,7 +124,7 @@ static int numeric_and_copy(mc_registry_side side, mc_materials *materials,
     mc_item_stack_phase phase;
     CHECK(isolated(side, materials, profile, 0, &owner) == MC_REGISTRY_OK);
     CHECK(owner->blocks_phase == MC_REGISTRY_COLD &&
-          owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_COLD);
+          owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_COLD);
     for (size_t i = 0; i < COUNT(inputs); ++i) {
         mc_item_stack *stack = NULL;
         CHECK(mc_registry_stack_allocate(owner, &stack) == MC_REGISTRY_OK && keep(&held, stack));
@@ -223,7 +223,7 @@ static int numeric_and_copy(mc_registry_side side, mc_materials *materials,
     CHECK(mc_registry_stack_count(owner) == count && owner->allocation_bytes == allocated);
     CHECK(fields_are(foreign, 0, 0, 0) && mc_registry_stack_count(owner) == held.count);
     CHECK(owner->blocks_phase == MC_REGISTRY_COLD &&
-          owner->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_COLD);
+          owner->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_COLD);
     CHECK(capture(&held));
     CHECK(retire(&owner));
     CHECK(preserved(&held));
@@ -258,7 +258,7 @@ static int actual_object_values(mc_registry_side side, mc_materials *materials,
     const mc_block_fields *block_fields = mc_block_fields_get(block);
     CHECK(item_fields != NULL && block_fields != NULL);
     mc_registry_phase block_phase = owner->blocks_phase;
-    mc_registry_phase item_phase = owner->item_states[MC_ITEM_GM_EJ].phase;
+    mc_registry_phase item_phase = owner->item_states[MC_ITEM_BASE].phase;
     owner->entered = 1; /* Isolated adapter method, not another Java active use. */
     for (size_t i = 0; i < 4; ++i) {
         mc_item_stack *raw = NULL;
@@ -307,7 +307,7 @@ static int actual_object_values(mc_registry_side side, mc_materials *materials,
               owner->last_error.constructor_pc == 2);
     }
     CHECK(owner->blocks_phase == block_phase &&
-          owner->item_states[MC_ITEM_GM_EJ].phase == item_phase);
+          owner->item_states[MC_ITEM_BASE].phase == item_phase);
     CHECK(capture(&held));
     CHECK(retire(&owner));
     CHECK(preserved(&held));

@@ -53,7 +53,7 @@ static bool boxes_create_world(fixture *f, size_t slot) {
     if (slot == 4 || slot == 5)
         limits.max_direct_allocation_bytes =
             f->baseline_world_bytes[slot % 2u] + boxes_first_capacity_bytes[slot % 2u];
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[slot % 2u], &limits, &f->worlds[slot],
@@ -68,7 +68,7 @@ static bool boxes_create_world(fixture *f, size_t slot) {
         f->baseline_world_bytes[slot] = state.direct_allocation_bytes;
     if (slot == 4 || slot == 5)
         CHECK(state.direct_allocation_bytes == f->baseline_world_bytes[slot % 2u]);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(seed_record(f, slot));
@@ -317,7 +317,7 @@ static bool boxes_registered_shapes(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *const w = f->worlds[side];
     mc_entity_classes *const classes = f->entity_classes[side];
-    /* ID36 reaches the real completed absent-Tile route; the other entries
+    /* ID36 reaches the real completed absent-TileEntity route; the other entries
      * reach their actual literal-null getter declarations. */
     const uint8_t null_shapes[] = {6,  8,  9,  10, 11, 27, 28, 30, 31, 32, 36, 37, 38, 39, 40,
                                    50, 51, 55, 59, 63, 66, 68, 69, 70, 72, 75, 76, 77, 83, 90};

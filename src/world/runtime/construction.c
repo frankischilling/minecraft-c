@@ -3,6 +3,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../storage/objects_internal.h"
+#include "chunk_provider_internal.h"
 #include "collision/boxes_internal.h"
 #include "collision/entities_internal.h"
 #include "construction_internal.h"
@@ -11,13 +12,12 @@
 #include "lighting_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
-#include "mc/world/dimension/biome_runtime.h"
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_chunk_manager.h"
+#include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
 #include "millis.h"
-#include "observers_internal.h"
-#include "provider_internal.h"
+#include "world_access_internal.h"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -90,11 +90,12 @@ mc_world_storage_status mc_world_runtime_classes_free(mc_world_runtime_classes *
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World Entity class binding release");
     }
-    const mc_world_storage_status tiles = mc_live_tiles_classes_retire(classes, error);
-    if (tiles != MC_WORLD_STORAGE_OK)
-        return tiles;
+    const mc_world_storage_status tile_entities =
+        mc_live_tile_entities_classes_retire(classes, error);
+    if (tile_entities != MC_WORLD_STORAGE_OK)
+        return tile_entities;
     /* All dependent releases are admitted above under unchanged exclusive
-     * owners. Tile retirement cannot alter either application binding. */
+     * owners. TileEntity retirement cannot alter either application binding. */
     if (classes->entities != NULL) {
         (void)mc_entity_classes_release(classes->entities);
         classes->entities = NULL;
@@ -286,11 +287,11 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
     else if (field == &runtime->fields.K)
         runtime->collision_boxes.list = list;
     else if (field == &runtime->fields.u)
-        runtime->observers.list = list;
+        runtime->world_accesses.list = list;
     else if (field == &runtime->fields.c)
-        mc_live_tiles_capture_list(runtime, false, list);
+        mc_live_tile_entities_capture_list(runtime, false, list);
     else if (field == &runtime->fields.G)
-        mc_live_tiles_capture_list(runtime, true, list);
+        mc_live_tile_entities_capture_list(runtime, true, list);
     runtime->construction.last_store_pc = store_pc;
     return true;
 }
@@ -484,24 +485,24 @@ static bool world_saved_data(mc_world_runtime *runtime, unsigned int call_pc,
     return true;
 }
 
-static bool world_dimension_result(mc_world_runtime *runtime, mc_world_dimension_status status,
+static bool world_dimension_result(mc_world_runtime *runtime, mc_world_provider_status status,
                                    unsigned int call_pc) {
-    if (status == MC_WORLD_DIMENSION_OK)
+    if (status == MC_WORLD_PROVIDER_OK)
         return true;
     runtime->construction.failed_call_pc = call_pc;
     mc_world_storage_status mapped =
-        status == MC_WORLD_DIMENSION_ALLOCATION_FAILED  ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-        : status == MC_WORLD_DIMENSION_LIMIT            ? MC_WORLD_STORAGE_LIMIT
-        : status == MC_WORLD_DIMENSION_INVALID_ARGUMENT ? MC_WORLD_STORAGE_INVALID_ARGUMENT
-                                                        : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-    result(&runtime->last_error, mapped, mc_world_dimension_status_string(status));
+        status == MC_WORLD_PROVIDER_ALLOCATION_FAILED  ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_WORLD_PROVIDER_LIMIT            ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_WORLD_PROVIDER_INVALID_ARGUMENT ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                                       : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    result(&runtime->last_error, mapped, mc_world_provider_status_string(status));
     return false;
 }
 
-static bool world_set_dimension(mc_world_runtime *runtime, mc_world_dimension *dimension,
+static bool world_set_dimension(mc_world_runtime *runtime, mc_world_provider *dimension,
                                 unsigned int store_pc) {
     if (dimension != NULL &&
-        !world_dimension_result(runtime, mc_world_dimension_retain(dimension), store_pc))
+        !world_dimension_result(runtime, mc_world_provider_retain(dimension), store_pc))
         return false;
     runtime->fields.t = dimension;
     runtime->construction.last_store_pc = store_pc;
@@ -566,9 +567,9 @@ static bool world_metadata_tail(mc_world_runtime *runtime,
             if (fields.value.player_dimension == -1)
                 selected = -1;
         }
-        mc_world_dimension *dimension = NULL;
-        mc_world_dimension_status created =
-            mc_world_dimension_create(selected, NULL, &dimension, NULL);
+        mc_world_provider *dimension = NULL;
+        mc_world_provider_status created =
+            mc_world_provider_create(selected, NULL, &dimension, NULL);
         if (!world_dimension_result(runtime, created, selected == -1 ? 339u : 350u))
             return false;
         f->t = dimension;
@@ -586,7 +587,7 @@ static bool world_metadata_tail(mc_world_runtime *runtime,
     return true;
 }
 
-static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc) {
+static bool world_chunk_provider(mc_world_runtime *runtime, unsigned int call_pc) {
     runtime->construction.failed_call_pc = call_pc;
     if (runtime->fields.w == NULL) {
         result(&runtime->last_error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World loader storage");
@@ -595,17 +596,17 @@ static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc) {
     /* The concrete normal store loader is a stable borrowed store/dimension
      * binding. Its region files are opened by the actual first chunk request.
      * Other selected provider/loader kinds remain explicit missing descendants. */
-    mc_world_dimension_state dimension;
-    if (mc_world_dimension_state_get(runtime->fields.t, &dimension) != MC_WORLD_DIMENSION_OK) {
+    mc_world_provider_state dimension;
+    if (mc_world_provider_state_get(runtime->fields.t, &dimension) != MC_WORLD_PROVIDER_OK) {
         result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World loader Dimension");
         return false;
     }
     runtime->loader =
         (mc_world_store_loader){.store = runtime->fields.w,
-                                .dimension = dimension.kind == MC_WORLD_DIMENSION_NETHER ? -1 : 0};
-    mc_world_provider *provider = NULL;
+                                .dimension = dimension.kind == MC_WORLD_PROVIDER_NETHER ? -1 : 0};
+    mc_chunk_provider *provider = NULL;
     mc_java_random_profile_status cause = runtime->last_random_status;
-    mc_world_storage_status status = mc_world_provider_create(
+    mc_world_storage_status status = mc_chunk_provider_create(
         runtime, runtime->fields.t, runtime->classes->trig, runtime->classes->profile,
         runtime->construction_limits.max_provider_chunks,
         runtime->construction_limits.max_provider_allocation_bytes, &provider, &cause,
@@ -620,8 +621,8 @@ static bool world_provider(mc_world_runtime *runtime, unsigned int call_pc) {
     runtime->fields.v = provider;
     runtime->construction.last_store_pc = call_pc + 3u;
     runtime->construction.failed_call_pc = 0;
-    mc_world_provider_fields fields;
-    status = mc_world_provider_bind_fields(provider, &fields, &runtime->last_error);
+    mc_chunk_provider_fields fields;
+    status = mc_chunk_provider_bind_fields(provider, &fields, &runtime->last_error);
     if (status != MC_WORLD_STORAGE_OK)
         return false;
     runtime->options.cache = fields.cache;
@@ -653,15 +654,15 @@ static bool world_initial_spawn(mc_world_runtime *runtime) {
     int32_t x = 0, z = 0;
     for (;;) {
         bool accepted;
-        mc_world_dimension_error cause;
-        mc_world_dimension_status status =
-            mc_world_dimension_can_spawn(runtime->fields.t, x, z, &accepted, &cause);
-        if (status != MC_WORLD_DIMENSION_OK) {
-            if (status == MC_WORLD_DIMENSION_REGISTRY_FAILED)
+        mc_world_provider_error cause;
+        mc_world_provider_status status =
+            mc_world_provider_can_spawn(runtime->fields.t, x, z, &accepted, &cause);
+        if (status != MC_WORLD_PROVIDER_OK) {
+            if (status == MC_WORLD_PROVIDER_REGISTRY_FAILED)
                 (void)mc_world_runtime_registry_result(runtime, cause.registry.status,
                                                        &cause.registry, "World spawn registry",
                                                        &runtime->last_error);
-            else if (status == MC_WORLD_DIMENSION_WORLD_FAILED)
+            else if (status == MC_WORLD_PROVIDER_WORLD_FAILED)
                 runtime->last_error = cause.world;
             else
                 result(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -740,13 +741,13 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
     bool completed = false;
     const bool dedicated = runtime->construction.entry == MC_WORLD_RUNTIME_SERVER_DEDICATED;
     mc_world_runtime_world_arguments selected = *arguments;
-    mc_world_dimension *factory_dimension = NULL;
+    mc_world_provider *factory_dimension = NULL;
     bool prefix = true;
     if (dedicated) {
         runtime->dedicated_construction.failed_call_pc = 7;
         prefix = world_dimension_result(
             runtime,
-            mc_world_dimension_create(arguments->dimension_id, NULL, &factory_dimension, NULL), 7);
+            mc_world_provider_create(arguments->dimension_id, NULL, &factory_dimension, NULL), 7);
         selected.dimension = factory_dimension;
         if (prefix)
             runtime->dedicated_construction.failed_call_pc = 10;
@@ -760,21 +761,21 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
                 runtime->construction.entry == MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA ? 300u
                 : runtime->construction.entry == MC_WORLD_RUNTIME_CLIENT_COPY          ? 315u
                                                                                        : 398u;
-            mc_world_dimension_error dimension_cause = {0};
-            mc_world_dimension_status bound;
+            mc_world_provider_error dimension_cause = {0};
+            mc_world_provider_status bound;
             if (runtime->classes->registry != NULL) {
-                const mc_world_dimension_registry_binding binding = {
+                const mc_world_provider_registry_binding binding = {
                     .classes = runtime->classes->registry,
                     .side = runtime->classes->side == MC_WORLD_INFO_CLIENT ? MC_REGISTRY_CLIENT
                                                                            : MC_REGISTRY_SERVER,
                     .profile = runtime->classes->profile};
-                bound = mc_world_dimension_bind_game(runtime->fields.t, runtime, &binding,
-                                                     &dimension_cause);
+                bound = mc_world_provider_bind_game(runtime->fields.t, runtime, &binding,
+                                                    &dimension_cause);
             } else {
-                bound = mc_world_dimension_bind(runtime->fields.t, runtime, &dimension_cause);
+                bound = mc_world_provider_bind(runtime->fields.t, runtime, &dimension_cause);
             }
             bool dimension_ready = false;
-            if (bound != MC_WORLD_DIMENSION_OK &&
+            if (bound != MC_WORLD_PROVIDER_OK &&
                 dimension_cause.registry.status != MC_REGISTRY_OK) {
                 runtime->construction.failed_call_pc = bind_pc;
                 (void)mc_world_runtime_registry_result(runtime, dimension_cause.registry.status,
@@ -784,7 +785,7 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
                 dimension_ready = world_dimension_result(runtime, bound, bind_pc);
             }
             if (dimension_ready) {
-                if (world_provider(runtime, bind_pc + 5u)) {
+                if (world_chunk_provider(runtime, bind_pc + 5u)) {
                     bool spawn_ready = !new_world || world_initial_spawn(runtime);
                     if (!spawn_ready)
                         runtime->construction.failed_call_pc = 415;
@@ -802,7 +803,7 @@ mc_world_runtime_construct_world(mc_world_runtime *runtime,
     }
     if (completed && dedicated)
         completed = dedicated_tail(runtime, arguments);
-    mc_world_dimension_release(factory_dimension);
+    mc_world_provider_release(factory_dimension);
     runtime->construction.phase =
         completed ? MC_WORLD_RUNTIME_READY : MC_WORLD_RUNTIME_FAILED_CONSTRUCTION;
     --runtime->active_calls;
@@ -819,10 +820,12 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
     if (runtime->entity_membership.count != 0 || runtime->entity_deferral.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World Entity occurrences remain");
-    if (!mc_live_tiles_lists_valid(runtime))
-        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Tile ownership metadata");
-    if (runtime->tile_membership[0].count != 0 || runtime->tile_membership[1].count != 0)
-        return result(error, MC_WORLD_STORAGE_BUSY, "World Tile occurrences remain");
+    if (!mc_live_tile_entities_lists_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World TileEntity ownership metadata");
+    if (runtime->tile_entity_membership[0].count != 0 ||
+        runtime->tile_entity_membership[1].count != 0)
+        return result(error, MC_WORLD_STORAGE_BUSY, "World TileEntity occurrences remain");
     if (!mc_world_nearby_owned_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World nearby ownership metadata");
     if (runtime->nearby_entities.count != 0)
@@ -832,9 +835,8 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                       "World collision ownership metadata");
     if (runtime->collision_boxes.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World collision occurrences remain");
-    if (!mc_world_observers_retirement_valid(runtime))
-        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World observer ownership metadata");
+    if (!mc_world_accesses_retirement_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "WorldAccess ownership metadata");
     if (runtime->dedicated.F != NULL) {
         if (mc_server_runtime_release(runtime->dedicated.F) != MC_SERVER_OK)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -845,10 +847,10 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
     runtime->dedicated.G = NULL;
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_runtime_entity_list_release(runtime);
-    mc_live_tiles_lists_release(runtime);
+    mc_live_tile_entities_lists_release(runtime);
     mc_world_nearby_owned_release(runtime);
     mc_world_collision_owned_release(runtime);
-    mc_world_observers_owned_release(runtime);
+    mc_world_accesses_owned_release(runtime);
     mc_world_runtime_lighting_free(runtime);
     mc_world_reference_list *lists[] = {f->C,
                                         runtime->entity_membership.list,
@@ -857,7 +859,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                         f->G,
                                         f->d,
                                         f->e,
-                                        runtime->observers.list,
+                                        runtime->world_accesses.list,
                                         runtime->collision_boxes.list,
                                         runtime->nearby_entities.list};
     for (size_t i = 0; i < sizeof(lists) / sizeof(lists[0]); ++i) {
@@ -873,10 +875,10 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
         free(f->P->entries);
         free(f->P);
     }
-    mc_world_provider_free(f->v);
+    mc_chunk_provider_free(f->v);
     mc_world_info_release(f->x);
     mc_world_saved_data_free(f->z);
-    mc_world_dimension_release(f->t);
+    mc_world_provider_release(f->t);
     --runtime->classes->live_worlds;
     free(runtime);
     return result(error, MC_WORLD_STORAGE_OK, NULL);
@@ -895,12 +897,11 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     if (!mc_world_collision_owned_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World collision ownership metadata");
-    if (!mc_world_observers_retirement_valid(runtime))
-        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World observer ownership metadata");
+    if (!mc_world_accesses_retirement_valid(runtime))
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "WorldAccess ownership metadata");
     if (runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED &&
         !runtime->construction.contexts_bound && !runtime->construction.cache_registered &&
-        mc_world_dimension_world(runtime->fields.t) != runtime)
+        mc_world_provider_world(runtime->fields.t) != runtime)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     mc_world_runtime_fields *f = &runtime->fields;
     mc_world_reference_list *lists[] = {
@@ -936,11 +937,11 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         }
         runtime->construction.contexts_bound = false;
     }
-    if (mc_world_dimension_world(f->t) == runtime)
-        mc_world_dimension_unbind(f->t);
+    if (mc_world_provider_world(f->t) == runtime)
+        mc_world_provider_unbind(f->t);
     mc_world_entity_index_free(runtime->dedicated.G);
     runtime->dedicated.G = NULL;
-    mc_world_observers_owned_release(runtime);
+    mc_world_accesses_owned_release(runtime);
     runtime->construction.phase = MC_WORLD_RUNTIME_RETIRED;
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
@@ -971,18 +972,18 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     if (!mc_world_runtime_entity_list_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement ownership metadata");
-    if (!mc_live_tiles_lists_valid(world))
+    if (!mc_live_tile_entities_lists_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World Tile retirement ownership metadata");
+                      "World TileEntity retirement ownership metadata");
     if (!mc_world_nearby_owned_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World nearby retirement ownership metadata");
     if (!mc_world_collision_owned_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World collision retirement ownership metadata");
-    if (!mc_world_observers_retirement_valid(world))
+    if (!mc_world_accesses_retirement_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "World observer retirement ownership metadata");
+                      "WorldAccess retirement ownership metadata");
     if (!entity_retirement_other_collections_empty(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement untyped collections");
@@ -998,17 +999,17 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
      * to a separate API; this operation must not clear then report BUSY.
      * The latch is terminal: central source entry/acquire/lifecycle, constructor,
      * default Random creation/new bindings and context getters must reject it.
-     * Do not save or resume a World after discarding Entity or Tile state. */
+     * Do not save or resume a World after discarding Entity or TileEntity state. */
     world->entity_containers_retired = true;
-    world->tile_containers_retired = true;
+    world->tile_entity_containers_retired = true;
     world->construction.phase = MC_WORLD_RUNTIME_RETIRED;
     if (store != NULL)
         mc_world_store_entity_containers_release(store, world);
     mc_world_runtime_entity_list_release(world);
-    mc_live_tiles_lists_release(world);
+    mc_live_tile_entities_lists_release(world);
     mc_world_nearby_owned_release(world);
     mc_world_collision_owned_release(world);
-    mc_world_observers_owned_release(world);
+    mc_world_accesses_owned_release(world);
     mc_world_entity_index_free(world->dedicated.G);
     world->dedicated.G = NULL;
     return result(error, MC_WORLD_STORAGE_OK, NULL);

@@ -12,8 +12,8 @@ separate initialization, lifetime and partial-effect contracts. The numerical
 interfaces on this page retain their existing finite-input and preflight
 behavior.
 
-The [Dimension temperature-array module](temperature.md) provides the separate
-staged normal/fixed methods needed by population. It preserves raw output writes
+The [WorldChunkManager temperature-array module](temperature.md) provides the separate
+staged noise-backed/fixed methods needed by population. It preserves raw output writes
 before auxiliary allocation failure and keeps output ownership independent of
 the current manager. The numerical interface described below remains atomic.
 

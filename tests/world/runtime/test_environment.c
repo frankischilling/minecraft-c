@@ -1,6 +1,6 @@
 #include "mc/world/runtime/environment.h"
 
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 #include "runtime_internal.h"
 
 #include <math.h>
@@ -28,7 +28,7 @@ int main(void) {
     mc_java_random_profile *profile = NULL;
     mc_world_runtime_classes *classes = NULL;
     mc_world_runtime *world = NULL;
-    mc_world_dimension *dimension = NULL;
+    mc_world_provider *dimension = NULL;
     mc_world_storage_error error;
     float strength = 99.0f;
     int32_t light = -123;
@@ -42,11 +42,11 @@ int main(void) {
     CHECK(mc_world_runtime_celestial_angle(world, 1.0f, &strength, &error) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           strength == 99.0f);
-    CHECK(mc_world_dimension_create(1, NULL, &dimension, NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(1, NULL, &dimension, NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_world_arguments arguments = {.dimension = dimension, .seed = 17};
     CHECK(mc_world_runtime_construct_world(world, &arguments, NULL) != MC_WORLD_STORAGE_OK);
     CHECK(world->construction.phase == MC_WORLD_RUNTIME_FAILED_CONSTRUCTION);
-    CHECK(world->fields.x != NULL && mc_world_dimension_world(dimension) == world);
+    CHECK(world->fields.x != NULL && mc_world_provider_world(dimension) == world);
     CHECK(mc_world_info_time_set(world->fields.x, INT64_MIN) == MC_WORLD_INFO_OK);
     CHECK(mc_world_runtime_celestial_angle(world, NAN, &strength, NULL) == MC_WORLD_STORAGE_OK &&
           strength == 0.0f && !signbit(strength));
@@ -97,7 +97,7 @@ int main(void) {
     _mm_setcsr(controls);
     CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && strength == 77.0f);
     CHECK(mc_world_runtime_retire_world(world, NULL) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_dimension_world(dimension) == NULL);
+    CHECK(mc_world_provider_world(dimension) == NULL);
     CHECK(mc_world_runtime_rain_strength(world, 0.5f, &strength, NULL) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           strength == 77.0f);
@@ -110,7 +110,7 @@ cleanup:
         (void)mc_world_runtime_retire_world(world, NULL);
         (void)mc_world_runtime_free(world, NULL);
     }
-    mc_world_dimension_release(dimension);
+    mc_world_provider_release(dimension);
     if (mc_world_runtime_classes_free(classes, NULL) != MC_WORLD_STORAGE_OK)
         result = 1;
     mc_java_random_profile_free(profile);

@@ -419,7 +419,7 @@ static bool movement_contacts(fixture *f, size_t side, mc_entity *e, bool item) 
               MC_WORLD_STORAGE_OK &&
           wood_metadata == 0 && f->worlds[side]->fields.R->count == 0);
     mc_world_runtime *const w = f->worlds[side];
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     const bool remote = w->fields.B;
     w->fields.B = true;
     w->fields.v = NULL;
@@ -477,14 +477,14 @@ static bool movement_fire(fixture *f, size_t side, mc_entity *e, bool item) {
     expected = *e->random;
     (void)mc_java_random_next_float(&expected);
     (void)mc_java_random_next_float(&expected);
-    /* Actual constructor-created observer descriptor, with a temporary native
-     * one-null-entry projection. No observer callback or success is supplied. */
-    mc_world_reference_list *const observers = f->worlds[side]->fields.u;
-    const mc_world_reference_list saved = *observers;
+    /* Actual constructor-created WorldAccess descriptor, with a temporary native
+     * one-null-entry projection. No WorldAccess callback or success is supplied. */
+    mc_world_reference_list *const world_accesses = f->worlds[side]->fields.u;
+    const mc_world_reference_list saved = *world_accesses;
     void *entries[] = {NULL};
-    *observers = (mc_world_reference_list){entries, 1, 1};
+    *world_accesses = (mc_world_reference_list){entries, 1, 1};
     const mc_entity_status fizz = mc_entity_move(e, 0, 0, 0, NULL, &error);
-    *observers = saved;
+    *world_accesses = saved;
     CHECK(fizz == MC_ENTITY_WORLD_FAILED && error.bytecode == 2016 &&
           error.world.status != MC_WORLD_STORAGE_OK && e->base.bv == 12 &&
           mc_test_java_random_equal(e->random, &expected) && movement_quiet(f, side, e, 0));
@@ -496,7 +496,7 @@ cleanup:
 static bool movement_provider_binding(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *const w = f->worlds[side];
-    mc_world_provider *const original = w->fields.v;
+    mc_chunk_provider *const original = w->fields.v;
     mc_chunk_state *const state = f->states[side];
     const size_t count = f->providers[side].cache->count;
     const size_t insertions = f->providers[side].cache->insertion_count;

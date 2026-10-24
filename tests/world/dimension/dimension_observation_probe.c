@@ -1,6 +1,6 @@
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 
-#include "dimension_internal.h"
+#include "world_provider_internal.h"
 
 #include <errno.h>
 #include <inttypes.h>
@@ -23,7 +23,7 @@
 _Static_assert(sizeof(float) == sizeof(uint32_t), "binary32 float storage required");
 
 typedef struct dimension_observation {
-    mc_world_dimension *owners[PROBE_SLOT_LIMIT];
+    mc_world_provider *owners[PROBE_SLOT_LIMIT];
     bool assigned[PROBE_SLOT_LIMIT];
     const void *references[PROBE_REFERENCE_LIMIT];
     unsigned int reference_count, requests, rows;
@@ -181,9 +181,9 @@ static bool parse_float_bits(const char *text, uint32_t *out) {
 static bool factory(dimension_observation *observation, size_t slot, int32_t requested) {
     if (observation->assigned[slot])
         return fail(observation, "factory slot already assigned");
-    mc_world_dimension_error error = {0};
-    if (mc_world_dimension_create(requested, NULL, &observation->owners[slot], &error) !=
-        MC_WORLD_DIMENSION_OK)
+    mc_world_provider_error error = {0};
+    if (mc_world_provider_create(requested, NULL, &observation->owners[slot], &error) !=
+        MC_WORLD_PROVIDER_OK)
         return fail(observation, "native factory failed");
     observation->assigned[slot] = true;
     unsigned int owner = 0;
@@ -193,9 +193,8 @@ static bool factory(dimension_observation *observation, size_t slot, int32_t req
         if (!emit(observation, "FACTORY\t%zu\t%" PRId32 "\t%u\t-\n", slot, requested, owner))
             return false;
     } else {
-        mc_world_dimension_state state = {0};
-        if (mc_world_dimension_state_get(observation->owners[slot], &state) !=
-            MC_WORLD_DIMENSION_OK)
+        mc_world_provider_state state = {0};
+        if (mc_world_provider_state_get(observation->owners[slot], &state) != MC_WORLD_PROVIDER_OK)
             return fail(observation, "native factory state failed");
         if (!emit(observation, "FACTORY\t%zu\t%" PRId32 "\t%u\t%d\n", slot, requested, owner,
                   (int)state.kind))
@@ -223,11 +222,10 @@ static bool array(dimension_observation *observation, size_t slot, const char *f
 }
 
 static bool snapshot(dimension_observation *observation, size_t slot) {
-    mc_world_dimension_fields fields = {0};
-    mc_world_dimension_state state = {0};
-    if (mc_world_dimension_fields_get(observation->owners[slot], &fields) !=
-            MC_WORLD_DIMENSION_OK ||
-        mc_world_dimension_state_get(observation->owners[slot], &state) != MC_WORLD_DIMENSION_OK)
+    mc_world_provider_fields fields = {0};
+    mc_world_provider_state state = {0};
+    if (mc_world_provider_fields_get(observation->owners[slot], &fields) != MC_WORLD_PROVIDER_OK ||
+        mc_world_provider_state_get(observation->owners[slot], &state) != MC_WORLD_PROVIDER_OK)
         return fail(observation, "native snapshot failed");
     unsigned int owner = 0, world = 0, biome = 0;
     if (!reference(observation, observation->owners[slot], &owner) ||
@@ -246,9 +244,9 @@ static bool snapshot(dimension_observation *observation, size_t slot) {
 }
 
 static bool table(dimension_observation *observation, size_t slot) {
-    mc_world_dimension_error error = {0};
-    if (mc_world_dimension_initialize_light_table(observation->owners[slot], &error) !=
-        MC_WORLD_DIMENSION_OK)
+    mc_world_provider_error error = {0};
+    if (mc_world_provider_initialize_light_table(observation->owners[slot], &error) !=
+        MC_WORLD_PROVIDER_OK)
         return fail(observation, "native table initialization failed");
     if (!emit(observation, "TABLE\t%zu\n", slot))
         return false;
@@ -261,9 +259,9 @@ static bool angle(dimension_observation *observation, size_t slot, int64_t time,
     float partial;
     memcpy(&partial, &partial_bits, sizeof(partial));
     float value = 0.0f;
-    mc_world_dimension_error error = {0};
-    if (mc_world_dimension_celestial_angle(observation->owners[slot], time, partial, &value,
-                                           &error) != MC_WORLD_DIMENSION_OK)
+    mc_world_provider_error error = {0};
+    if (mc_world_provider_celestial_angle(observation->owners[slot], time, partial, &value,
+                                          &error) != MC_WORLD_PROVIDER_OK)
         return fail(observation, "native celestial angle failed");
     if (!emit(observation, "ANGLE\t%zu\t%" PRId64 "\t%08" PRIx32 "\t%08" PRIx32 "\n", slot, time,
               partial_bits, float_bits(value)))
@@ -352,7 +350,7 @@ int main(int argc, char **argv) {
     result = 0;
 cleanup:
     for (size_t i = 0; i < PROBE_SLOT_LIMIT; ++i)
-        mc_world_dimension_release(observation.owners[i]);
+        mc_world_provider_release(observation.owners[i]);
     if (result != 0)
         fprintf(stderr, "dimension observation probe: %s (request %u)\n",
                 observation.failure != NULL ? observation.failure : "failed", observation.requests);

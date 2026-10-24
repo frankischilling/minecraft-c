@@ -70,7 +70,7 @@ def validate_worlds(root):
                               "fingerprint": CAPTURE.file_fingerprint(path),
                               "tile_count": len(tiles)})
             else:
-                CAPTURE.require(tiles == [], "unsaved prepared inputs remain without live Tiles")
+                CAPTURE.require(tiles == [], "unsaved prepared inputs remain without live TileEntities")
     return saved
 
 
@@ -90,7 +90,7 @@ def main():
         paths.update({"driver": Path(__file__).resolve(), "region_capture": ENTITY_DRIVER,
                       "saving_capture": REGION.SAVING_DRIVER,
                       "test": ROOT / "tests/world/runtime/population/test_dungeon.c",
-                      "tile_fixture": ROOT / "tests/world/runtime/tiles/test_tiles.c"})
+                      "tile_fixture": ROOT / "tests/world/runtime/tile_entities/test_tile_entities.c"})
         for relative in ("src/item/registry", "include/mc/item/registry"):
             for path in sorted((ROOT / relative).rglob("*")):
                 if path.is_file() and path.suffix in (".c", ".h"):

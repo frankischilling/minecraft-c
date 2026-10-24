@@ -45,13 +45,13 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
 /* Complete synchronous sm/lo lifecycle. The enclosing concrete dispatch owns
  * this actual World entry and Registry Block. Shared receiver flags and Set
  * stay live across recursive metadata writes and independent list snapshots. */
-bool mc_world_mutation_wire_added(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                  int32_t y, int32_t z, mc_world_mutation_error *error);
-bool mc_world_mutation_wire_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                    int32_t y, int32_t z, mc_world_mutation_error *error);
-bool mc_world_mutation_wire_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                     int32_t y, int32_t z, int32_t source_id,
-                                     mc_world_mutation_error *error);
+bool mc_world_mutation_redstone_added(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_redstone_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                        int32_t y, int32_t z, mc_world_mutation_error *error);
+bool mc_world_mutation_redstone_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                         int32_t y, int32_t z, int32_t source_id,
+                                         mc_world_mutation_error *error);
 
 /* Concrete plant neighbors and ticks. The enclosing dispatch holds the actual
  * World and Block. Survival, drops and notifying writes keep their source order;
@@ -64,22 +64,22 @@ bool mc_world_mutation_plant_tick(mc_world_runtime *world, const mc_block *block
                                   mc_world_mutation_error *error);
 
 /* Actual ut/mz.b(World,III). Caller holds the real World and nullable Block
- * receiver has already been checked by virtual dispatch. The fetched Tile
+ * receiver has already been checked by virtual dispatch. The fetched TileEntity
  * owns a temporary hold through finalization or the actual rw/lb fallback. */
 bool mc_world_mutation_piston_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, mc_world_mutation_error *error);
 
 /* Complete ut/mz.b(World,IIII). Caller holds the actual World/Block; NULL World
- * is reached at B1, and B=true skips the acquiring Tile getter12 entirely.
+ * is reached at B1, and B=true skips the acquiring TileEntity getter12 entirely.
  * The nullable getter result is discarded only after releasing its native hold. */
 bool mc_world_mutation_piston_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                        int32_t y, int32_t z, int32_t source_id,
                                        mc_world_mutation_error *error);
 
-/* Field-only private join to the actual admitted, held Tile's class Registry.
+/* Field-only private join to the actual admitted, held TileEntity's class Registry.
  * No World lookup, allocation, initialization, or alternate class owner. The
  * finalizer reaches this only at its getstatic61, after the actual ID query. */
-mc_registry_classes *mc_tile_piston_registry_held(const mc_tile *tile);
+mc_registry_classes *mc_tile_entity_piston_registry_held(const mc_tile_entity *tile_entity);
 
 /* Concrete flowing/still fluid bodies share the actual receiver scratch.
  * Internal callers already hold World and preserve the supplied Random. */

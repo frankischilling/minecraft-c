@@ -16,7 +16,7 @@ The [native implementation](../world/falling.md) preserves their source order.
 | Shared flag initializer | gk / ei | 0–4; false store1 |
 | World-only FallingSand constructor | ju / gl | 0–10; base2, age7 |
 | Full FallingSand constructor | ju / gl | 0–80; base2, age7, carried ID13, size26, position45 |
-| FallingSand NBT write | ju.b / gl.b | 0–11; Tile narrowing7, setter8 |
+| FallingSand NBT write | ju.b / gl.b | 0–11; TileEntity narrowing7, setter8 |
 | FallingSand NBT read | ju.a / gl.a | 0–14; Byte getter4, mask10, carried store11 |
 
 The private body calls the predicate at19 before its Y sign test. Flag34
@@ -38,7 +38,7 @@ Each static invocation has declaring-class active use at its caller site.
 
 FallingSand's full constructor uses the genuine base owner once. Size changes
 leave old bounds intact until position45 updates the same bounds. Own age is
-not saved. Tile writes narrow the carried int to Byte; reads mask with255.
+not saved. TileEntity writes narrow the carried int to Byte; reads mask with255.
 The actual EntityList name is `FallingSand`, numerical registration21.
 
 Native contracts cover prepared method, queue, ownership, constructor and NBT

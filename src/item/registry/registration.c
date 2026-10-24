@@ -104,7 +104,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
         return MC_REGISTRY_INVALID_ARGUMENT;
 
     /* d: raw argument0. Class initialization precedes even that argument. */
-    NEW(19, MC_ITEM_WC_NY);
+    NEW(19, MC_ITEM_SHOVEL);
     ARG(23, id, 0);
     TOOL(24, c);
     CTOR(27);
@@ -113,7 +113,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(40, 0);
 
     /* e. */
-    NEW(43, MC_ITEM_AU_AH);
+    NEW(43, MC_ITEM_PICKAXE);
     ARG(47, id, 1);
     TOOL(48, c);
     CTOR(51);
@@ -122,7 +122,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(65, 1);
 
     /* f. */
-    NEW(68, MC_ITEM_TA_LY);
+    NEW(68, MC_ITEM_AXE);
     ARG(72, id, 2);
     TOOL(73, c);
     CTOR(76);
@@ -131,7 +131,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(90, 2);
 
     /* g. */
-    NEW(93, MC_ITEM_YE_PL);
+    NEW(93, MC_ITEM_FLINT_AND_STEEL);
     ARG(97, id, 3);
     CTOR(98);
     ICON(101, 5, 102, 0, 103);
@@ -139,7 +139,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(111, 3);
 
     /* h. */
-    NEW(114, MC_ITEM_YW_PX);
+    NEW(114, MC_ITEM_FOOD);
     ARG(118, id, 4);
     INTEGER(119, 0, 4);
     ARG(120, flag, false);
@@ -149,7 +149,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(135, 4);
 
     /* i. */
-    NEW(138, MC_ITEM_QZ_KJ);
+    NEW(138, MC_ITEM_BOW);
     ARG(142, id, 5);
     CTOR(143);
     ICON(146, 5, 147, 1, 148);
@@ -157,7 +157,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(156, 5);
 
     /* j. */
-    NEW(159, MC_ITEM_GM_EJ);
+    NEW(159, MC_ITEM_BASE);
     ARG(163, id, 6);
     CTOR(165);
     ICON(168, 5, 169, 2, 170);
@@ -165,7 +165,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(178, 6);
 
     /* k. */
-    NEW(181, MC_ITEM_RX_LC);
+    NEW(181, MC_ITEM_COAL);
     ARG(185, id, 7);
     CTOR(187);
     ICON(190, 7, 192, 0, 193);
@@ -173,7 +173,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(201, 7);
 
     /* l. */
-    NEW(204, MC_ITEM_GM_EJ);
+    NEW(204, MC_ITEM_BASE);
     ARG(208, id, 8);
     CTOR(210);
     ICON(213, 7, 215, 3, 216);
@@ -181,7 +181,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(224, 8);
 
     /* m. */
-    NEW(227, MC_ITEM_GM_EJ);
+    NEW(227, MC_ITEM_BASE);
     ARG(231, id, 9);
     CTOR(233);
     ICON(236, 7, 238, 1, 239);
@@ -189,7 +189,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(247, 9);
 
     /* n. */
-    NEW(250, MC_ITEM_GM_EJ);
+    NEW(250, MC_ITEM_BASE);
     ARG(254, id, 10);
     CTOR(256);
     ICON(259, 7, 261, 2, 262);
@@ -197,7 +197,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(270, 10);
 
     /* o. */
-    NEW(273, MC_ITEM_QD_JW);
+    NEW(273, MC_ITEM_SWORD);
     ARG(277, id, 11);
     TOOL(279, c);
     CTOR(282);
@@ -206,7 +206,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(295, 11);
 
     /* p. */
-    NEW(298, MC_ITEM_QD_JW);
+    NEW(298, MC_ITEM_SWORD);
     ARG(302, id, 12);
     TOOL(304, a);
     CTOR(307);
@@ -215,7 +215,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(320, 12);
 
     /* q. */
-    NEW(323, MC_ITEM_WC_NY);
+    NEW(323, MC_ITEM_SHOVEL);
     ARG(327, id, 13);
     TOOL(329, a);
     CTOR(332);
@@ -224,7 +224,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(345, 13);
 
     /* r. */
-    NEW(348, MC_ITEM_AU_AH);
+    NEW(348, MC_ITEM_PICKAXE);
     ARG(352, id, 14);
     TOOL(354, a);
     CTOR(357);
@@ -233,7 +233,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(371, 14);
 
     /* s. */
-    NEW(374, MC_ITEM_TA_LY);
+    NEW(374, MC_ITEM_AXE);
     ARG(378, id, 15);
     TOOL(380, a);
     CTOR(383);
@@ -242,7 +242,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(397, 15);
 
     /* t. */
-    NEW(400, MC_ITEM_QD_JW);
+    NEW(400, MC_ITEM_SWORD);
     ARG(404, id, 16);
     TOOL(406, b);
     CTOR(409);
@@ -251,7 +251,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(422, 16);
 
     /* u. */
-    NEW(425, MC_ITEM_WC_NY);
+    NEW(425, MC_ITEM_SHOVEL);
     ARG(429, id, 17);
     TOOL(431, b);
     CTOR(434);
@@ -260,7 +260,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(447, 17);
 
     /* v. */
-    NEW(450, MC_ITEM_AU_AH);
+    NEW(450, MC_ITEM_PICKAXE);
     ARG(454, id, 18);
     TOOL(456, b);
     CTOR(459);
@@ -269,7 +269,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(473, 18);
 
     /* w. */
-    NEW(476, MC_ITEM_TA_LY);
+    NEW(476, MC_ITEM_AXE);
     ARG(480, id, 19);
     TOOL(482, b);
     CTOR(485);
@@ -278,7 +278,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(499, 19);
 
     /* x. */
-    NEW(502, MC_ITEM_QD_JW);
+    NEW(502, MC_ITEM_SWORD);
     ARG(506, id, 20);
     TOOL(508, d);
     CTOR(511);
@@ -287,7 +287,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(524, 20);
 
     /* y. */
-    NEW(527, MC_ITEM_WC_NY);
+    NEW(527, MC_ITEM_SHOVEL);
     ARG(531, id, 21);
     TOOL(533, d);
     CTOR(536);
@@ -296,7 +296,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(549, 21);
 
     /* z. */
-    NEW(552, MC_ITEM_AU_AH);
+    NEW(552, MC_ITEM_PICKAXE);
     ARG(556, id, 22);
     TOOL(558, d);
     CTOR(561);
@@ -305,7 +305,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(575, 22);
 
     /* A. */
-    NEW(578, MC_ITEM_TA_LY);
+    NEW(578, MC_ITEM_AXE);
     ARG(582, id, 23);
     TOOL(584, d);
     CTOR(587);
@@ -314,7 +314,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(601, 23);
 
     /* B: ThreeD precedes the name. */
-    NEW(604, MC_ITEM_GM_EJ);
+    NEW(604, MC_ITEM_BASE);
     ARG(608, id, 24);
     CTOR(610);
     ICON(613, 5, 614, 3, 615);
@@ -323,7 +323,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(626, 24);
 
     /* C. */
-    NEW(629, MC_ITEM_GM_EJ);
+    NEW(629, MC_ITEM_BASE);
     ARG(633, id, 25);
     CTOR(635);
     ICON(638, 7, 640, 4, 641);
@@ -331,7 +331,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(649, 25);
 
     /* D. */
-    NEW(652, MC_ITEM_BZ_BF);
+    NEW(652, MC_ITEM_SOUP);
     ARG(656, id, 26);
     INTEGER(658, 0, 10);
     CTOR(660);
@@ -340,7 +340,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(674, 26);
 
     /* E. */
-    NEW(677, MC_ITEM_QD_JW);
+    NEW(677, MC_ITEM_SWORD);
     ARG(681, id, 27);
     TOOL(683, e);
     CTOR(686);
@@ -349,7 +349,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(699, 27);
 
     /* F. */
-    NEW(702, MC_ITEM_WC_NY);
+    NEW(702, MC_ITEM_SHOVEL);
     ARG(706, id, 28);
     TOOL(708, e);
     CTOR(711);
@@ -358,7 +358,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(724, 28);
 
     /* G. */
-    NEW(727, MC_ITEM_AU_AH);
+    NEW(727, MC_ITEM_PICKAXE);
     ARG(731, id, 29);
     TOOL(733, e);
     CTOR(736);
@@ -367,7 +367,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(750, 29);
 
     /* H. */
-    NEW(753, MC_ITEM_TA_LY);
+    NEW(753, MC_ITEM_AXE);
     ARG(757, id, 30);
     TOOL(759, e);
     CTOR(762);
@@ -376,7 +376,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(776, 30);
 
     /* I. */
-    NEW(779, MC_ITEM_GM_EJ);
+    NEW(779, MC_ITEM_BASE);
     ARG(783, id, 31);
     CTOR(785);
     ICON(788, 8, 790, 0, 791);
@@ -384,7 +384,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(799, 31);
 
     /* J. */
-    NEW(802, MC_ITEM_GM_EJ);
+    NEW(802, MC_ITEM_BASE);
     ARG(806, id, 32);
     CTOR(808);
     ICON(811, 8, 813, 1, 814);
@@ -392,7 +392,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(822, 32);
 
     /* K. */
-    NEW(825, MC_ITEM_GM_EJ);
+    NEW(825, MC_ITEM_BASE);
     ARG(829, id, 33);
     CTOR(831);
     ICON(834, 8, 836, 2, 837);
@@ -400,7 +400,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(845, 33);
 
     /* L. */
-    NEW(848, MC_ITEM_LA_GZ);
+    NEW(848, MC_ITEM_HOE);
     ARG(852, id, 34);
     TOOL(854, a);
     CTOR(857);
@@ -409,7 +409,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(871, 34);
 
     /* M. */
-    NEW(874, MC_ITEM_LA_GZ);
+    NEW(874, MC_ITEM_HOE);
     ARG(878, id, 35);
     TOOL(880, b);
     CTOR(883);
@@ -418,7 +418,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(897, 35);
 
     /* N. */
-    NEW(900, MC_ITEM_LA_GZ);
+    NEW(900, MC_ITEM_HOE);
     ARG(904, id, 36);
     TOOL(906, c);
     CTOR(909);
@@ -427,7 +427,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(923, 36);
 
     /* O. */
-    NEW(926, MC_ITEM_LA_GZ);
+    NEW(926, MC_ITEM_HOE);
     ARG(930, id, 37);
     TOOL(932, d);
     CTOR(935);
@@ -436,7 +436,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(949, 37);
 
     /* P. */
-    NEW(952, MC_ITEM_LA_GZ);
+    NEW(952, MC_ITEM_HOE);
     ARG(956, id, 38);
     TOOL(958, e);
     CTOR(961);
@@ -445,7 +445,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(975, 38);
 
     /* Q: read the actual Block.aA.bn after this Item's RAW allocation. */
-    NEW(978, MC_ITEM_RK_KR);
+    NEW(978, MC_ITEM_SEEDS);
     ARG(982, id, 39);
     BLOCK_ID(984, "aA", 987);
     CTOR(990);
@@ -454,7 +454,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1004, 39);
 
     /* R. */
-    NEW(1007, MC_ITEM_GM_EJ);
+    NEW(1007, MC_ITEM_BASE);
     ARG(1011, id, 40);
     CTOR(1013);
     ICON(1016, 9, 1018, 1, 1019);
@@ -462,7 +462,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1027, 40);
 
     /* S. */
-    NEW(1030, MC_ITEM_YW_PX);
+    NEW(1030, MC_ITEM_FOOD);
     ARG(1034, id, 41);
     INTEGER(1036, 0, 5);
     ARG(1037, flag, false);
@@ -472,7 +472,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1052, 41);
 
     /* T. */
-    NEW(1055, MC_ITEM_WA_NX);
+    NEW(1055, MC_ITEM_ARMOR);
     ARG(1059, id, 42);
     INTEGER(1061, 0, 0);
     INTEGER(1062, 1, 0);
@@ -483,7 +483,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1077, 42);
 
     /* U. */
-    NEW(1080, MC_ITEM_WA_NX);
+    NEW(1080, MC_ITEM_ARMOR);
     ARG(1084, id, 43);
     INTEGER(1086, 0, 0);
     INTEGER(1087, 1, 0);
@@ -494,7 +494,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1102, 43);
 
     /* V. */
-    NEW(1105, MC_ITEM_WA_NX);
+    NEW(1105, MC_ITEM_ARMOR);
     ARG(1109, id, 44);
     INTEGER(1111, 0, 0);
     INTEGER(1112, 1, 0);
@@ -505,7 +505,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1127, 44);
 
     /* W. */
-    NEW(1130, MC_ITEM_WA_NX);
+    NEW(1130, MC_ITEM_ARMOR);
     ARG(1134, id, 45);
     INTEGER(1136, 0, 0);
     INTEGER(1137, 1, 0);
@@ -516,7 +516,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1152, 45);
 
     /* X. */
-    NEW(1155, MC_ITEM_WA_NX);
+    NEW(1155, MC_ITEM_ARMOR);
     ARG(1159, id, 46);
     INTEGER(1161, 0, 1);
     INTEGER(1162, 1, 1);
@@ -527,7 +527,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1177, 46);
 
     /* Y. */
-    NEW(1180, MC_ITEM_WA_NX);
+    NEW(1180, MC_ITEM_ARMOR);
     ARG(1184, id, 47);
     INTEGER(1186, 0, 1);
     INTEGER(1187, 1, 1);
@@ -538,7 +538,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1202, 47);
 
     /* Z. */
-    NEW(1205, MC_ITEM_WA_NX);
+    NEW(1205, MC_ITEM_ARMOR);
     ARG(1209, id, 48);
     INTEGER(1211, 0, 1);
     INTEGER(1212, 1, 1);
@@ -549,7 +549,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1227, 48);
 
     /* aa. */
-    NEW(1230, MC_ITEM_WA_NX);
+    NEW(1230, MC_ITEM_ARMOR);
     ARG(1234, id, 49);
     INTEGER(1236, 0, 1);
     INTEGER(1237, 1, 1);
@@ -560,7 +560,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1252, 49);
 
     /* ab. */
-    NEW(1255, MC_ITEM_WA_NX);
+    NEW(1255, MC_ITEM_ARMOR);
     ARG(1259, id, 50);
     INTEGER(1261, 0, 2);
     INTEGER(1262, 1, 2);
@@ -571,7 +571,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1277, 50);
 
     /* ac. */
-    NEW(1280, MC_ITEM_WA_NX);
+    NEW(1280, MC_ITEM_ARMOR);
     ARG(1284, id, 51);
     INTEGER(1286, 0, 2);
     INTEGER(1287, 1, 2);
@@ -582,7 +582,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1302, 51);
 
     /* ad. */
-    NEW(1305, MC_ITEM_WA_NX);
+    NEW(1305, MC_ITEM_ARMOR);
     ARG(1309, id, 52);
     INTEGER(1311, 0, 2);
     INTEGER(1312, 1, 2);
@@ -593,7 +593,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1327, 52);
 
     /* ae. */
-    NEW(1330, MC_ITEM_WA_NX);
+    NEW(1330, MC_ITEM_ARMOR);
     ARG(1334, id, 53);
     INTEGER(1336, 0, 2);
     INTEGER(1337, 1, 2);
@@ -604,7 +604,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1352, 53);
 
     /* af. */
-    NEW(1355, MC_ITEM_WA_NX);
+    NEW(1355, MC_ITEM_ARMOR);
     ARG(1359, id, 54);
     INTEGER(1361, 0, 3);
     INTEGER(1362, 1, 3);
@@ -615,7 +615,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1377, 54);
 
     /* ag. */
-    NEW(1380, MC_ITEM_WA_NX);
+    NEW(1380, MC_ITEM_ARMOR);
     ARG(1384, id, 55);
     INTEGER(1386, 0, 3);
     INTEGER(1387, 1, 3);
@@ -626,7 +626,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1402, 55);
 
     /* ah. */
-    NEW(1405, MC_ITEM_WA_NX);
+    NEW(1405, MC_ITEM_ARMOR);
     ARG(1409, id, 56);
     INTEGER(1411, 0, 3);
     INTEGER(1412, 1, 3);
@@ -637,7 +637,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1427, 56);
 
     /* ai. */
-    NEW(1430, MC_ITEM_WA_NX);
+    NEW(1430, MC_ITEM_ARMOR);
     ARG(1434, id, 57);
     INTEGER(1436, 0, 3);
     INTEGER(1437, 1, 3);
@@ -648,7 +648,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1452, 57);
 
     /* aj: the first remaining argument is1, not the render value4. */
-    NEW(1455, MC_ITEM_WA_NX);
+    NEW(1455, MC_ITEM_ARMOR);
     ARG(1459, id, 58);
     INTEGER(1461, 0, 1);
     INTEGER(1462, 1, 4);
@@ -659,7 +659,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1477, 58);
 
     /* ak. */
-    NEW(1480, MC_ITEM_WA_NX);
+    NEW(1480, MC_ITEM_ARMOR);
     ARG(1484, id, 59);
     INTEGER(1486, 0, 1);
     INTEGER(1487, 1, 4);
@@ -670,7 +670,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1502, 59);
 
     /* al. */
-    NEW(1505, MC_ITEM_WA_NX);
+    NEW(1505, MC_ITEM_ARMOR);
     ARG(1509, id, 60);
     INTEGER(1511, 0, 1);
     INTEGER(1512, 1, 4);
@@ -681,7 +681,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1527, 60);
 
     /* am. */
-    NEW(1530, MC_ITEM_WA_NX);
+    NEW(1530, MC_ITEM_ARMOR);
     ARG(1534, id, 61);
     INTEGER(1536, 0, 1);
     INTEGER(1537, 1, 4);
@@ -692,7 +692,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1552, 61);
 
     /* an. */
-    NEW(1555, MC_ITEM_GM_EJ);
+    NEW(1555, MC_ITEM_BASE);
     ARG(1559, id, 62);
     CTOR(1561);
     ICON(1564, 6, 1566, 0, 1567);
@@ -700,7 +700,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1575, 62);
 
     /* ao. */
-    NEW(1578, MC_ITEM_YW_PX);
+    NEW(1578, MC_ITEM_FOOD);
     ARG(1582, id, 63);
     INTEGER(1584, 0, 3);
     ARG(1585, flag, true);
@@ -710,7 +710,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1600, 63);
 
     /* ap. */
-    NEW(1603, MC_ITEM_YW_PX);
+    NEW(1603, MC_ITEM_FOOD);
     ARG(1607, id, 64);
     INTEGER(1609, 0, 8);
     ARG(1611, flag, true);
@@ -720,7 +720,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1626, 64);
 
     /* aq. */
-    NEW(1629, MC_ITEM_YM_PS);
+    NEW(1629, MC_ITEM_PAINTING);
     ARG(1633, id, 65);
     CTOR(1635);
     ICON(1638, 10, 1640, 1, 1641);
@@ -728,7 +728,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1649, 65);
 
     /* ar. */
-    NEW(1652, MC_ITEM_YW_PX);
+    NEW(1652, MC_ITEM_FOOD);
     ARG(1656, id, 66);
     INTEGER(1658, 0, 42);
     ARG(1660, flag, false);
@@ -738,7 +738,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1675, 66);
 
     /* as. */
-    NEW(1678, MC_ITEM_VC_NG);
+    NEW(1678, MC_ITEM_SIGN);
     ARG(1682, id, 67);
     CTOR(1684);
     ICON(1687, 10, 1689, 2, 1690);
@@ -746,7 +746,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1698, 67);
 
     /* at. */
-    NEW(1701, MC_ITEM_HU_FG);
+    NEW(1701, MC_ITEM_DOOR);
     ARG(1705, id, 68);
     ARG(1707, material, mc_materials_get(classes->options.materials, MC_MATERIAL_d));
     CTOR(1710);
@@ -755,7 +755,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1724, 68);
 
     /* au: the empty contents argument is a literal zero. */
-    NEW(1727, MC_ITEM_BC_AL);
+    NEW(1727, MC_ITEM_BUCKET);
     ARG(1731, id, 69);
     INTEGER(1733, 0, 0);
     CTOR(1734);
@@ -764,7 +764,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1748, 69);
 
     /* av: read the current au only after name construction. */
-    NEW(1751, MC_ITEM_BC_AL);
+    NEW(1751, MC_ITEM_BUCKET);
     ARG(1755, id, 70);
     BLOCK_ID(1757, "B", 1760);
     CTOR(1763);
@@ -774,7 +774,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1783, 70);
 
     /* aw. */
-    NEW(1786, MC_ITEM_BC_AL);
+    NEW(1786, MC_ITEM_BUCKET);
     ARG(1790, id, 71);
     BLOCK_ID(1792, "D", 1795);
     CTOR(1798);
@@ -784,7 +784,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1818, 71);
 
     /* ax. */
-    NEW(1821, MC_ITEM_RL_KS);
+    NEW(1821, MC_ITEM_MINECART);
     ARG(1825, id, 72);
     INTEGER(1827, 0, 0);
     CTOR(1828);
@@ -793,7 +793,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1843, 72);
 
     /* ay. */
-    NEW(1846, MC_ITEM_SA_LG);
+    NEW(1846, MC_ITEM_SADDLE);
     ARG(1850, id, 73);
     CTOR(1852);
     ICON(1855, 8, 1857, 6, 1859);
@@ -801,7 +801,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1867, 73);
 
     /* az. */
-    NEW(1870, MC_ITEM_HU_FG);
+    NEW(1870, MC_ITEM_DOOR);
     ARG(1874, id, 74);
     ARG(1876, material, mc_materials_get(classes->options.materials, MC_MATERIAL_f));
     CTOR(1879);
@@ -810,7 +810,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1893, 74);
 
     /* aA. */
-    NEW(1896, MC_ITEM_IE_FK);
+    NEW(1896, MC_ITEM_REDSTONE);
     ARG(1900, id, 75);
     CTOR(1902);
     ICON(1905, 8, 1907, 3, 1908);
@@ -818,7 +818,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1916, 75);
 
     /* aB. */
-    NEW(1919, MC_ITEM_DM_CF);
+    NEW(1919, MC_ITEM_SNOWBALL);
     ARG(1923, id, 76);
     CTOR(1925);
     ICON(1928, 14, 1930, 0, 1931);
@@ -826,7 +826,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1939, 76);
 
     /* aC. */
-    NEW(1942, MC_ITEM_VD_NI);
+    NEW(1942, MC_ITEM_BOAT);
     ARG(1946, id, 77);
     CTOR(1948);
     ICON(1951, 8, 1953, 8, 1955);
@@ -834,7 +834,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1963, 77);
 
     /* aD. */
-    NEW(1966, MC_ITEM_GM_EJ);
+    NEW(1966, MC_ITEM_BASE);
     ARG(1970, id, 78);
     CTOR(1972);
     ICON(1975, 7, 1977, 6, 1979);
@@ -842,7 +842,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(1987, 78);
 
     /* aE: milk has the literal contents argument -1. */
-    NEW(1990, MC_ITEM_BC_AL);
+    NEW(1990, MC_ITEM_BUCKET);
     ARG(1994, id, 79);
     INTEGER(1996, 0, -1);
     CTOR(1997);
@@ -852,7 +852,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2017, 79);
 
     /* aF. */
-    NEW(2020, MC_ITEM_GM_EJ);
+    NEW(2020, MC_ITEM_BASE);
     ARG(2024, id, 80);
     CTOR(2026);
     ICON(2029, 6, 2031, 1, 2032);
@@ -860,7 +860,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2040, 80);
 
     /* aG. */
-    NEW(2043, MC_ITEM_GM_EJ);
+    NEW(2043, MC_ITEM_BASE);
     ARG(2047, id, 81);
     CTOR(2049);
     ICON(2052, 9, 2054, 3, 2055);
@@ -868,7 +868,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2063, 81);
 
     /* aH: retain the actual Block argument until its constructor reads bn. */
-    NEW(2066, MC_ITEM_LV_HN);
+    NEW(2066, MC_ITEM_BLOCK_PLACER);
     ARG(2070, id, 82);
     BLOCK(2072, "aY");
     CTOR(2075);
@@ -877,7 +877,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2089, 82);
 
     /* aI. */
-    NEW(2092, MC_ITEM_GM_EJ);
+    NEW(2092, MC_ITEM_BASE);
     ARG(2096, id, 83);
     CTOR(2098);
     ICON(2101, 10, 2103, 3, 2104);
@@ -885,7 +885,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2112, 83);
 
     /* aJ. */
-    NEW(2115, MC_ITEM_GM_EJ);
+    NEW(2115, MC_ITEM_BASE);
     ARG(2119, id, 84);
     CTOR(2121);
     ICON(2124, 11, 2126, 3, 2127);
@@ -893,7 +893,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2135, 84);
 
     /* aK. */
-    NEW(2138, MC_ITEM_GM_EJ);
+    NEW(2138, MC_ITEM_BASE);
     ARG(2142, id, 85);
     CTOR(2144);
     ICON(2147, 14, 2149, 1, 2150);
@@ -901,7 +901,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2158, 85);
 
     /* aL. */
-    NEW(2161, MC_ITEM_RL_KS);
+    NEW(2161, MC_ITEM_MINECART);
     ARG(2165, id, 86);
     INTEGER(2167, 0, 1);
     CTOR(2168);
@@ -910,7 +910,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2183, 86);
 
     /* aM. */
-    NEW(2186, MC_ITEM_RL_KS);
+    NEW(2186, MC_ITEM_MINECART);
     ARG(2190, id, 87);
     INTEGER(2192, 0, 2);
     CTOR(2193);
@@ -919,7 +919,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2208, 87);
 
     /* aN. */
-    NEW(2211, MC_ITEM_MO_HX);
+    NEW(2211, MC_ITEM_EGG);
     ARG(2215, id, 88);
     CTOR(2217);
     ICON(2220, 12, 2222, 0, 2223);
@@ -927,7 +927,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2231, 88);
 
     /* aO. */
-    NEW(2234, MC_ITEM_GM_EJ);
+    NEW(2234, MC_ITEM_BASE);
     ARG(2238, id, 89);
     CTOR(2240);
     ICON(2243, 6, 2245, 3, 2246);
@@ -935,7 +935,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2254, 89);
 
     /* aP. */
-    NEW(2257, MC_ITEM_CS_BV);
+    NEW(2257, MC_ITEM_FISHING_ROD);
     ARG(2261, id, 90);
     CTOR(2263);
     ICON(2266, 5, 2267, 4, 2268);
@@ -943,7 +943,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2276, 90);
 
     /* aQ. */
-    NEW(2279, MC_ITEM_GM_EJ);
+    NEW(2279, MC_ITEM_BASE);
     ARG(2283, id, 91);
     CTOR(2285);
     ICON(2288, 6, 2290, 4, 2291);
@@ -951,7 +951,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2299, 91);
 
     /* aR. */
-    NEW(2302, MC_ITEM_GM_EJ);
+    NEW(2302, MC_ITEM_BASE);
     ARG(2306, id, 92);
     CTOR(2308);
     ICON(2311, 9, 2313, 4, 2314);
@@ -959,7 +959,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2322, 92);
 
     /* aS. */
-    NEW(2325, MC_ITEM_YW_PX);
+    NEW(2325, MC_ITEM_FOOD);
     ARG(2329, id, 93);
     INTEGER(2331, 0, 2);
     ARG(2332, flag, false);
@@ -969,7 +969,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2347, 93);
 
     /* aT. */
-    NEW(2350, MC_ITEM_YW_PX);
+    NEW(2350, MC_ITEM_FOOD);
     ARG(2354, id, 94);
     INTEGER(2356, 0, 5);
     ARG(2357, flag, false);
@@ -979,7 +979,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2372, 94);
 
     /* aU. */
-    NEW(2375, MC_ITEM_KM_GU);
+    NEW(2375, MC_ITEM_DYE);
     ARG(2379, id, 95);
     CTOR(2381);
     ICON(2384, 14, 2386, 4, 2387);
@@ -987,7 +987,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2395, 95);
 
     /* aV: unlike stick, ThreeD follows the name. */
-    NEW(2398, MC_ITEM_GM_EJ);
+    NEW(2398, MC_ITEM_BASE);
     ARG(2402, id, 96);
     CTOR(2404);
     ICON(2407, 12, 2409, 1, 2410);
@@ -996,7 +996,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2421, 96);
 
     /* aW. */
-    NEW(2424, MC_ITEM_GM_EJ);
+    NEW(2424, MC_ITEM_BASE);
     ARG(2428, id, 97);
     CTOR(2430);
     ICON(2433, 13, 2435, 0, 2436);
@@ -1005,7 +1005,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2447, 97);
 
     /* aX. */
-    NEW(2450, MC_ITEM_LV_HN);
+    NEW(2450, MC_ITEM_BLOCK_PLACER);
     ARG(2454, id, 98);
     BLOCK(2456, "bh");
     CTOR(2459);
@@ -1018,7 +1018,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2477, 98);
 
     /* aY. */
-    NEW(2480, MC_ITEM_LP_HK);
+    NEW(2480, MC_ITEM_BED);
     ARG(2484, id, 99);
     CTOR(2486);
     AT(2489);
@@ -1030,7 +1030,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2504, 99);
 
     /* aZ. */
-    NEW(2507, MC_ITEM_LV_HN);
+    NEW(2507, MC_ITEM_BLOCK_PLACER);
     ARG(2511, id, 100);
     BLOCK(2513, "bi");
     CTOR(2516);
@@ -1039,7 +1039,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2530, 100);
 
     /* ba: descriptor(IIZI), with the boolean between the two extra ints. */
-    NEW(2533, MC_ITEM_QK_JY);
+    NEW(2533, MC_ITEM_COOKIE);
     ARG(2537, id, 101);
     INTEGER(2539, 0, 1);
     ARG(2540, flag, false);
@@ -1050,7 +1050,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2557, 101);
 
     /* bb: actual checkcast wr/ol at2580 preserves this same owner. */
-    NEW(2560, MC_ITEM_WR_OL);
+    NEW(2560, MC_ITEM_MAP);
     ARG(2564, id, 102);
     CTOR(2566);
     ICON(2569, 12, 2571, 3, 2572);
@@ -1059,7 +1059,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2583, 102);
 
     /* bc: actual checkcast bl/as at2606. */
-    NEW(2586, MC_ITEM_BL_AS);
+    NEW(2586, MC_ITEM_SHEARS);
     ARG(2590, id, 103);
     CTOR(2592);
     ICON(2595, 13, 2597, 5, 2598);
@@ -1068,7 +1068,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2609, 103);
 
     /* bd: the constructor's String differs from its later base name. */
-    NEW(2612, MC_ITEM_TR_MJ);
+    NEW(2612, MC_ITEM_RECORD);
     ARG(2616, id, 2000);
     TRY(2619, mc_registry_literal_ascii(classes, "13", &arguments.text));
     CTOR(2621);
@@ -1077,7 +1077,7 @@ mc_registry_status mc_registry_register_items(mc_registry_classes *classes) {
     PUBLISH(2635, 104);
 
     /* be. */
-    NEW(2638, MC_ITEM_TR_MJ);
+    NEW(2638, MC_ITEM_RECORD);
     ARG(2642, id, 2001);
     TRY(2645, mc_registry_literal_ascii(classes, "cat", &arguments.text));
     CTOR(2647);

@@ -78,7 +78,7 @@ mc_registry_status mc_registry_block_o_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_block_o_at(const mc_registry_block_o_view *array, int32_t index,
                                           bool *out, mc_registry_error *error);
 
-/* Actual Tile-bearing Block p reference captured before later Chunk lookup
+/* Actual TileEntity-bearing Block p reference captured before later Chunk lookup
  * work. A false element returns before the separate m capture. NULL capture
  * succeeds; at checks that retained reference before signed bounds, without
  * reloading p or invoking class initialization. Caller keeps the same Registry
@@ -109,7 +109,7 @@ mc_registry_status mc_registry_block_t_at(const mc_registry_block_t_view *array,
 
 /* Actual wj/od fields a..d. Active use initializes only this independent class:
  * four distinct six-int arrays, with retained earlier publications and a
- * first-failure latch. No Block/Tile/Random/bed-table initialization occurs.
+ * first-failure latch. No Block/TileEntity/Random/bed-table initialization occurs.
  * Nested exclusive Registry initializer flows are admitted and restored.
  * A successful capture may be NULL; no array element is inspected here. */
 typedef enum mc_registry_direction_field {

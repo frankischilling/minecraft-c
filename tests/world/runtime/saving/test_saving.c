@@ -2,7 +2,7 @@
  * changing its unchanged-region contract. All static helpers retain actual
  * implementations; the renamed complete program keeps their references. */
 #define main mc_tiles_fixture_program_main
-#include "../tiles/test_tiles.c"
+#include "../tile_entities/test_tile_entities.c"
 #undef main
 
 #include "mc/world/runtime/saving/saving.h"
@@ -26,7 +26,7 @@ static bool open_saving_store(fixture *f, size_t slot, const char *root) {
     const uint16_t title[] = {'S', 'a', 'v', 'e'};
     const int n = snprintf(path, sizeof(path), "%s/world%zu", root, slot);
     CHECK(n > 0 && (size_t)n < sizeof(path));
-    /* Saving uses identity normalization. The reused Tile-only fixture instead
+    /* Saving uses identity normalization. The reused TileEntity-only fixture instead
      * erases Chest/Spawner block IDs on its loaded pair to test import order;
      * that separate control must not erase these round-trip source blocks. */
     for (size_t i = 0; i < COUNT(map); ++i)
@@ -90,19 +90,19 @@ static bool snapshot_same(fixture *f, size_t slot, const save_snapshot *before) 
     return equal;
 }
 
-static bool fresh_live_save(const mc_live_tile_error *e) {
+static bool fresh_live_save(const mc_live_tile_entity_error *e) {
     return e->status == MC_WORLD_STORAGE_OK && e->operation == NULL && e->bytecode == 0 &&
            e->chunk_bytecode == 0 && e->cause.status == MC_WORLD_STORAGE_OK &&
            e->cause.operation == NULL && e->cause.system_error == 0 && empty_tile_children(e) &&
-           e->tile.base_save_bytecode == 0 && e->tile.save_bytecode == 0 &&
-           e->tile.item_save_bytecode == 0;
+           e->tile_entity.base_save_bytecode == 0 && e->tile_entity.save_bytecode == 0 &&
+           e->tile_entity.item_save_bytecode == 0;
 }
 
 static bool fresh_save(const mc_world_game_save_error *e) {
     return e->status == MC_WORLD_STORAGE_OK && e->cause.status == MC_WORLD_STORAGE_OK &&
            e->cause.operation == NULL && e->cause.system_error == 0 && e->region_bytecode == 0 &&
            e->serializer_bytecode == 0 && e->entity_slice == SIZE_MAX &&
-           e->entity_index == SIZE_MAX && fresh_live_save(&e->tile) &&
+           e->entity_index == SIZE_MAX && fresh_live_save(&e->tile_entity) &&
            e->composition.status == MC_STORED_CHUNK_OK && e->composition.field == NULL &&
            e->composition.nbt.status == MC_NBT_OK && e->composition.nbt.offset == 0 &&
            e->encoding.status == MC_NBT_OK && e->encoding.offset == 0;
@@ -122,7 +122,7 @@ static bool fresh_lifecycle(const mc_world_runtime_lifecycle_error *e) {
 static bool seed_saving(fixture *f, size_t slot) {
     bool ok = false;
     fixture_record *r = calloc(1, sizeof(*r));
-    tile_record tiles = {0};
+    tile_entity_record tile_entities = {0};
     mc_nbt_tag item = {.type = MC_NBT_COMPOUND}, root_extra = {.type = MC_NBT_LONG},
                level_extra = {.type = MC_NBT_LONG};
     const mc_nbt_tag *item_pointer = &item, *roots[2], *levels[12];
@@ -139,12 +139,12 @@ static bool seed_saving(fixture *f, size_t slot) {
     const size_t lengths[] = {MC_CHUNK_BLOCKS, MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_NIBBLE_BYTES,
                               MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_HEIGHTMAP_BYTES};
     CHECK(r != NULL);
-    prepare_tiles(&tiles);
-    item.value.compound.items = tiles.item_fields;
-    item.value.compound.length = COUNT(tiles.item_fields);
-    tiles.chest[4].value.list.items = &item_pointer;
-    tiles.records[0] = &tiles.tiles[0];
-    tiles.records[1] = &tiles.tiles[1];
+    prepare_tiles(&tile_entities);
+    item.value.compound.items = tile_entities.item_fields;
+    item.value.compound.length = COUNT(tile_entities.item_fields);
+    tile_entities.chest[4].value.list.items = &item_pointer;
+    tile_entities.records[0] = &tile_entities.tile_entities[0];
+    tile_entities.records[1] = &tile_entities.tile_entities[1];
     root_extra.name = ascii("RootExtra", extra_names[0]);
     root_extra.value.long_value = 901 + (int64_t)slot;
     level_extra.name = ascii("LevelExtra", extra_names[1]);
@@ -166,7 +166,7 @@ static bool seed_saving(fixture *f, size_t slot) {
     }
     r->fields[8].value.byte_value = 1;
     r->fields[9].value.list.element_type = r->fields[10].value.list.element_type = MC_NBT_COMPOUND;
-    r->fields[10].value.list.items = slot < 2 ? NULL : tiles.records;
+    r->fields[10].value.list.items = slot < 2 ? NULL : tile_entities.records;
     r->fields[10].value.list.length = slot < 2 ? 0 : 2;
     levels[0] = &level_extra;
     r->level.value.compound.items = levels;
@@ -204,7 +204,7 @@ static bool load_saving(fixture *f, size_t slot) {
     if (slot < 2)
         CHECK(install_primary(f, slot));
     else
-        CHECK(mc_live_tiles_get(f->worlds[slot], 8, 64, 8, &f->aliases[slot], NULL) ==
+        CHECK(mc_live_tile_entities_get(f->worlds[slot], 8, 64, 8, &f->aliases[slot], NULL) ==
                   MC_WORLD_STORAGE_OK &&
               f->aliases[slot] != NULL);
     ok = true;
@@ -247,29 +247,30 @@ static bool decoded_save(fixture *f, size_t slot) {
               memcmp(array->value.byte_array.data, arrays[i], lengths[i]) == 0);
     }
     const mc_nbt_tag *entities_tag = field(level, "Entities"),
-                     *tiles = field(level, "TileEntities");
+                     *tile_entities = field(level, "TileEntities");
     CHECK(entities_tag != NULL && entities_tag->type == MC_NBT_LIST &&
-          entities_tag->value.list.length == 0 && tiles != NULL && tiles->type == MC_NBT_LIST &&
-          tiles->value.list.length == chunk->l->count);
-    for (size_t i = 0; i < tiles->value.list.length; ++i) {
-        mc_tile *tile = NULL;
-        mc_tile_snapshot state;
-        CHECK(mc_live_tiles_map_at(chunk, i, &tile) == MC_WORLD_STORAGE_OK &&
-              mc_tile_get_snapshot(tile, &state) == MC_TILE_OK);
-        const mc_nbt_tag *record = tiles->value.list.items[i];
+          entities_tag->value.list.length == 0 && tile_entities != NULL &&
+          tile_entities->type == MC_NBT_LIST &&
+          tile_entities->value.list.length == chunk->l->count);
+    for (size_t i = 0; i < tile_entities->value.list.length; ++i) {
+        mc_tile_entity *tile_entity = NULL;
+        mc_tile_entity_snapshot state;
+        CHECK(mc_live_tile_entities_map_at(chunk, i, &tile_entity) == MC_WORLD_STORAGE_OK &&
+              mc_tile_entity_get_snapshot(tile_entity, &state) == MC_TILE_ENTITY_OK);
+        const mc_nbt_tag *record = tile_entities->value.list.items[i];
         const mc_nbt_tag *x = field(record, "x"), *y = field(record, "y"), *z = field(record, "z");
         CHECK(x != NULL && y != NULL && z != NULL && x->type == MC_NBT_INT &&
               y->type == MC_NBT_INT && z->type == MC_NBT_INT && x->value.int_value == state.x &&
               y->value.int_value == state.y && z->value.int_value == state.z);
-        const mc_nbt_tag *source_extra = field(mc_tile_source(tile), "TileExtra");
+        const mc_nbt_tag *source_extra = field(mc_tile_entity_source(tile_entity), "TileExtra");
         if (source_extra != NULL)
             CHECK(field(record, "TileExtra") != NULL &&
                   field(record, "TileExtra")->value.int_value == source_extra->value.int_value);
-        if (state.kind == MC_TILE_SPAWNER) {
+        if (state.kind == MC_TILE_ENTITY_SPAWNER) {
             const mc_nbt_tag *id = field(record, "EntityId"), *delay = field(record, "Delay");
-            mc_tile_name_view view;
-            CHECK(mc_tile_name_get_view(state.spawner_name, &view) == MC_TILE_OK && !view.is_null &&
-                  id != NULL && id->type == MC_NBT_STRING &&
+            mc_tile_entity_name_view view;
+            CHECK(mc_tile_entity_name_get_view(state.spawner_name, &view) == MC_TILE_ENTITY_OK &&
+                  !view.is_null && id != NULL && id->type == MC_NBT_STRING &&
                   id->value.string.length == view.text.length &&
                   memcmp(id->value.string.units, view.text.units,
                          view.text.length * sizeof(uint16_t)) == 0 &&
@@ -281,8 +282,9 @@ static bool decoded_save(fixture *f, size_t slot) {
             CHECK(items != NULL && items->type == MC_NBT_LIST);
             for (size_t index = 0; index < state.chest_capacity; ++index) {
                 mc_item_stack *stack = NULL;
-                const mc_tile_status got = mc_tile_chest_get(tile, (int32_t)index, &stack);
-                if (got != MC_TILE_OK)
+                const mc_tile_entity_status got =
+                    mc_tile_entity_chest_get(tile_entity, (int32_t)index, &stack);
+                if (got != MC_TILE_ENTITY_OK)
                     CHECK(false);
                 if (stack == NULL)
                     continue;
@@ -355,35 +357,38 @@ cleanup:
 static bool edit_live(fixture *f, size_t slot) {
     bool ok = false, changed = false;
     mc_item_stack *stack = NULL;
-    mc_tile *spawner = NULL;
-    mc_tile_name *name = NULL;
+    mc_tile_entity *spawner = NULL;
+    mc_tile_entity_name *name = NULL;
     mc_world_mutation_error mutation;
-    mc_live_tile_error detail;
-    mc_tile_snapshot chest;
-    CHECK(mc_tile_get_snapshot(f->aliases[slot], &chest) == MC_TILE_OK &&
+    mc_live_tile_entity_error detail;
+    mc_tile_entity_snapshot chest;
+    CHECK(mc_tile_entity_get_snapshot(f->aliases[slot], &chest) == MC_TILE_ENTITY_OK &&
           chest.chest_capacity == (slot < 2 ? 36u : 27u));
     if (slot >= 2)
-        CHECK(mc_tile_chest_get(f->aliases[slot], 0, &stack) == MC_TILE_OK && stack != NULL);
+        CHECK(mc_tile_entity_chest_get(f->aliases[slot], 0, &stack) == MC_TILE_ENTITY_OK &&
+              stack != NULL);
     else
         CHECK(mc_item_stack_allocate(&stack) == MC_ITEM_STACK_OK &&
               mc_item_stack_construct(stack, 262, 99, 7) == MC_ITEM_STACK_OK);
     CHECK(mc_item_stack_count_set(stack, 99) == MC_ITEM_STACK_OK &&
-          mc_tile_chest_set(f->aliases[slot], slot < 2 ? 0 : 1, stack) == MC_TILE_OK);
+          mc_tile_entity_chest_set(f->aliases[slot], slot < 2 ? 0 : 1, stack) == MC_TILE_ENTITY_OK);
     if (slot < 2)
-        CHECK(mc_tile_chest_set(f->aliases[slot], 35, stack) == MC_TILE_OK);
+        CHECK(mc_tile_entity_chest_set(f->aliases[slot], 35, stack) == MC_TILE_ENTITY_OK);
     else
-        CHECK(mc_tile_chest_set(f->aliases[slot], 0, NULL) == MC_TILE_OK);
+        CHECK(mc_tile_entity_chest_set(f->aliases[slot], 0, NULL) == MC_TILE_ENTITY_OK);
     mc_item_stack_fields clamped;
     CHECK(mc_item_stack_fields_get(stack, &clamped) == MC_ITEM_STACK_OK && clamped.count == 64);
     CHECK(mc_world_runtime_block_set_quiet(f->worlds[slot], 12, 64, 8, f->chest_id[slot % 2],
                                            &changed, &mutation) == MC_WORLD_STORAGE_OK &&
           changed &&
-          mc_live_tiles_set(f->worlds[slot], 12, 64, 8, f->aliases[slot], &detail) ==
+          mc_live_tile_entities_set(f->worlds[slot], 12, 64, 8, f->aliases[slot], &detail) ==
               MC_WORLD_STORAGE_OK);
-    CHECK(mc_live_tiles_get(f->worlds[slot], 9, 64, 8, &spawner, &detail) == MC_WORLD_STORAGE_OK &&
+    CHECK(mc_live_tile_entities_get(f->worlds[slot], 9, 64, 8, &spawner, &detail) ==
+              MC_WORLD_STORAGE_OK &&
           spawner != NULL &&
-          mc_live_tiles_literal(f->worlds[slot], "Spider", &name, &detail) == MC_WORLD_STORAGE_OK &&
-          mc_tile_spawner_set_name(spawner, name) == MC_TILE_OK);
+          mc_live_tile_entities_literal(f->worlds[slot], "Spider", &name, &detail) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_tile_entity_spawner_set_name(spawner, name) == MC_TILE_ENTITY_OK);
     /* Deterministic current source nibble bytes force actual compressed growth.
      * This is a labeled fixture input, not a copied voxel oracle or RNG state. */
     uint32_t bits = UINT32_C(0x8c1430a7) + (uint32_t)slot;
@@ -400,8 +405,8 @@ static bool edit_live(fixture *f, size_t slot) {
     ok = true;
 cleanup:
     mc_item_stack_release(stack);
-    mc_tile_release(spawner);
-    mc_tile_name_release(name);
+    mc_tile_entity_release(spawner);
+    mc_tile_entity_name_release(name);
     return ok;
 }
 
@@ -444,14 +449,14 @@ static bool failure_prefixes(fixture *f, size_t slot) {
           error.status == bad_session && error.cause.status == bad_session &&
           fresh_save_codecs(&error) && error.region_bytecode == 1 &&
           error.serializer_bytecode == 0 && error.entity_slice == SIZE_MAX &&
-          error.entity_index == SIZE_MAX && fresh_live_save(&error.tile) &&
+          error.entity_index == SIZE_MAX && fresh_live_save(&error.tile_entity) &&
           f->states[slot]->has_entities && growth == UINT32_MAX && snapshot_same(f, slot, &before));
     for (unsigned int control = 0; control < 5; ++control) {
         CHECK(set_q_by_source(f, slot));
         mc_world_chunk_nibble *saved_e = chunk->e;
         uint8_t *saved_a = saved_e->a, *saved_h = chunk->h;
         mc_world_chunk_list_array *saved_m = chunk->m;
-        mc_world_chunk_tile_map *saved_l = chunk->l;
+        mc_world_chunk_tile_entity_map *saved_l = chunk->l;
         if (control == 0)
             chunk->e = NULL;
         if (control == 1)
@@ -473,7 +478,7 @@ static bool failure_prefixes(fixture *f, size_t slot) {
         CHECK(status != MC_WORLD_STORAGE_OK && error.status == status &&
               error.cause.status == status && growth == UINT32_MAX &&
               f->states[slot]->has_entities == (control == 0) && error.entity_slice == SIZE_MAX &&
-              error.entity_index == SIZE_MAX && fresh_live_save(&error.tile) &&
+              error.entity_index == SIZE_MAX && fresh_live_save(&error.tile_entity) &&
               snapshot_same(f, slot, &before));
         if (control == 1 || control == 2)
             CHECK(error.region_bytecode == 57 && error.serializer_bytecode == 0 &&
@@ -500,42 +505,46 @@ cleanup:
 
 static bool spawner_and_lifecycle(fixture *f, size_t slot) {
     bool ok = false;
-    mc_tile *spawner = NULL;
-    mc_tile_name *old = NULL;
+    mc_tile_entity *spawner = NULL;
+    mc_tile_entity_name *old = NULL;
     save_snapshot before = {0};
     mc_world_game_save_error error;
     mc_world_runtime_lifecycle_error lifecycle;
     uint32_t growth = UINT32_MAX;
-    CHECK(mc_live_tiles_get(f->worlds[slot], 9, 64, 8, &spawner, NULL) == MC_WORLD_STORAGE_OK &&
-          spawner != NULL && mc_tile_spawner_get_name(spawner, &old) == MC_TILE_OK &&
+    CHECK(mc_live_tile_entities_get(f->worlds[slot], 9, 64, 8, &spawner, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          spawner != NULL && mc_tile_entity_spawner_get_name(spawner, &old) == MC_TILE_ENTITY_OK &&
           snapshot_take(f, slot, &before) && set_q_by_source(f, slot) &&
-          mc_tile_spawner_set_name(spawner, NULL) == MC_TILE_OK);
+          mc_tile_entity_spawner_set_name(spawner, NULL) == MC_TILE_ENTITY_OK);
     const mc_world_storage_status failed = mc_world_runtime_write_game_chunk(
         f->worlds[slot], f->states[slot], direct_stamp(slot), &growth, &error);
-    const mc_tile_status restored = mc_tile_spawner_set_name(spawner, old);
-    CHECK(restored == MC_TILE_OK && failed != MC_WORLD_STORAGE_OK && growth == UINT32_MAX &&
+    const mc_tile_entity_status restored = mc_tile_entity_spawner_set_name(spawner, old);
+    CHECK(restored == MC_TILE_ENTITY_OK && failed != MC_WORLD_STORAGE_OK && growth == UINT32_MAX &&
           error.status == failed && error.cause.status == failed && fresh_save_codecs(&error) &&
           error.entity_slice == SIZE_MAX && error.entity_index == SIZE_MAX &&
           !f->states[slot]->has_entities && error.region_bytecode == 51 &&
-          error.serializer_bytecode == 271 && error.tile.bytecode == 271 &&
-          error.tile.tile.save_bytecode == 12 && error.tile.tile.base_save_bytecode == 0 &&
-          error.tile.tile.item_save_bytecode == 0 &&
-          error.tile.tile.status == MC_TILE_INVALID_ARGUMENT && error.tile.tile.field != NULL &&
-          strcmp(error.tile.tile.field, "EntityId") == 0 &&
-          error.tile.tile.item_index == SIZE_MAX &&
-          fresh_registry(&error.tile.tile.registry, MC_REGISTRY_OK) &&
+          error.serializer_bytecode == 271 && error.tile_entity.bytecode == 271 &&
+          error.tile_entity.tile_entity.save_bytecode == 12 &&
+          error.tile_entity.tile_entity.base_save_bytecode == 0 &&
+          error.tile_entity.tile_entity.item_save_bytecode == 0 &&
+          error.tile_entity.tile_entity.status == MC_TILE_ENTITY_INVALID_ARGUMENT &&
+          error.tile_entity.tile_entity.field != NULL &&
+          strcmp(error.tile_entity.tile_entity.field, "EntityId") == 0 &&
+          error.tile_entity.tile_entity.item_index == SIZE_MAX &&
+          fresh_registry(&error.tile_entity.tile_entity.registry, MC_REGISTRY_OK) &&
           snapshot_same(f, slot, &before));
     CHECK(mc_world_info_time_set(f->worlds[slot]->fields.x, 20000 + (int64_t)slot) ==
               MC_WORLD_INFO_OK &&
-          mc_tile_spawner_set_name(spawner, NULL) == MC_TILE_OK);
+          mc_tile_entity_spawner_set_name(spawner, NULL) == MC_TILE_ENTITY_OK);
     bool completed = true;
     const mc_chunk_lifecycle_status failed_pass =
         mc_world_runtime_save_chunks_detailed(f->worlds[slot], true, &completed, &lifecycle);
-    const mc_tile_status restored_pass = mc_tile_spawner_set_name(spawner, old);
-    CHECK(restored_pass == MC_TILE_OK && failed_pass != MC_CHUNK_LIFECYCLE_OK && completed &&
+    const mc_tile_entity_status restored_pass = mc_tile_entity_spawner_set_name(spawner, old);
+    CHECK(restored_pass == MC_TILE_ENTITY_OK && failed_pass != MC_CHUNK_LIFECYCLE_OK && completed &&
           lifecycle.status == failed_pass && lifecycle.save.serializer_bytecode == 271 &&
-          lifecycle.save.tile.tile.save_bytecode == 12 && fresh_save_codecs(&lifecycle.save) &&
-          lifecycle.save.entity_slice == SIZE_MAX && lifecycle.save.entity_index == SIZE_MAX &&
+          lifecycle.save.tile_entity.tile_entity.save_bytecode == 12 &&
+          fresh_save_codecs(&lifecycle.save) && lifecycle.save.entity_slice == SIZE_MAX &&
+          lifecycle.save.entity_index == SIZE_MAX &&
           f->states[slot]->last_save_time == 20000 + (int64_t)slot &&
           snapshot_same(f, slot, &before));
     CHECK(mc_world_runtime_save_chunks_detailed(f->worlds[slot], true, &completed, &lifecycle) ==
@@ -544,8 +553,8 @@ static bool spawner_and_lifecycle(fixture *f, size_t slot) {
           decoded_save(f, slot));
     ok = true;
 cleanup:
-    mc_tile_release(spawner);
-    mc_tile_name_release(old);
+    mc_tile_entity_release(spawner);
+    mc_tile_entity_name_release(old);
     snapshot_free(&before);
     return ok;
 }
@@ -553,17 +562,17 @@ cleanup:
 static bool late_depth(fixture *f, size_t slot) {
     bool ok = false, changed = false;
 
-    /* Default depth is 64: Tile result reaches 64, outer Level reaches 65.
+    /* Default depth is 64: TileEntity result reaches 64, outer Level reaches 65.
      * Import alone reaches 62, so this input must fail only at composition. */
     enum { DEPTH_NODES = 61 };
 
     mc_nbt_tag deep[DEPTH_NODES] = {0}, values[5] = {0}, root = {.type = MC_NBT_COMPOUND};
     const mc_nbt_tag *links[DEPTH_NODES], *fields[5];
     uint16_t names[6][12], chest_name[5];
-    mc_tile *tile = NULL;
+    mc_tile_entity *tile_entity = NULL;
     save_snapshot before = {0};
     mc_world_mutation_error mutation;
-    mc_live_tile_error tile_error;
+    mc_live_tile_entity_error tile_entity_error;
     const char *const labels[] = {"id", "x", "y", "z", "Deep"};
     for (size_t i = 0; i < COUNT(values); ++i) {
         values[i].name = ascii(labels[i], names[i]);
@@ -586,12 +595,13 @@ static bool late_depth(fixture *f, size_t slot) {
     values[4] = deep[0];
     root.value.compound.items = fields;
     root.value.compound.length = COUNT(fields);
-    CHECK(mc_live_tiles_factory(f->worlds[slot], &root, NULL, true, &tile, &tile_error) ==
-          MC_WORLD_STORAGE_OK);
+    CHECK(mc_live_tile_entities_factory(f->worlds[slot], &root, NULL, true, &tile_entity,
+                                        &tile_entity_error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_block_set_quiet(f->worlds[slot], 13, 64, 8, f->chest_id[slot % 2],
                                            &changed, &mutation) == MC_WORLD_STORAGE_OK &&
           changed);
-    CHECK(mc_live_tiles_set(f->worlds[slot], 13, 64, 8, tile, &tile_error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_live_tile_entities_set(f->worlds[slot], 13, 64, 8, tile_entity, &tile_entity_error) ==
+          MC_WORLD_STORAGE_OK);
     CHECK(set_q_by_source(f, slot) && snapshot_take(f, slot, &before));
     uint32_t growth = UINT32_MAX;
     mc_world_game_save_error error;
@@ -601,12 +611,13 @@ static bool late_depth(fixture *f, size_t slot) {
           !f->states[slot]->has_entities && error.region_bytecode == 57 &&
           error.serializer_bytecode == 0 && error.composition.status == MC_STORED_CHUNK_LIMIT &&
           error.composition.nbt.status == MC_NBT_LIMIT && error.encoding.status == MC_NBT_OK &&
-          fresh_live_save(&error.tile) && snapshot_same(f, slot, &before));
-    CHECK(mc_live_tiles_remove(f->worlds[slot], 13, 64, 8, &tile_error) == MC_WORLD_STORAGE_OK &&
+          fresh_live_save(&error.tile_entity) && snapshot_same(f, slot, &before));
+    CHECK(mc_live_tile_entities_remove(f->worlds[slot], 13, 64, 8, &tile_entity_error) ==
+              MC_WORLD_STORAGE_OK &&
           write_success(f, slot, direct_stamp(slot), false));
     ok = true;
 cleanup:
-    mc_tile_release(tile);
+    mc_tile_entity_release(tile_entity);
     snapshot_free(&before);
     return ok;
 }
@@ -635,8 +646,8 @@ static bool reload_same_world(fixture *f, size_t slot, int32_t chest_x, bool emp
     CHECK(mc_world_runtime_maintain_detailed(continuing, &provider_result, &detail) ==
               MC_CHUNK_LIFECYCLE_OK &&
           fresh_lifecycle(&detail));
-    mc_tile_snapshot old;
-    CHECK(mc_tile_get_snapshot(f->aliases[slot], &old) == MC_TILE_OK && old.invalid &&
+    mc_tile_entity_snapshot old;
+    CHECK(mc_tile_entity_get_snapshot(f->aliases[slot], &old) == MC_TILE_ENTITY_OK && old.invalid &&
           old.world == continuing);
     CHECK(mc_world_store_retire_chunk(f->stores[slot], f->states[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
@@ -653,27 +664,28 @@ static bool reload_same_world(fixture *f, size_t slot, int32_t chest_x, bool emp
     if (empty)
         CHECK(f->chunks[slot]->l->count == 0);
     else {
-        mc_tile *current = NULL;
+        mc_tile_entity *current = NULL;
         const mc_world_storage_status got =
-            mc_live_tiles_get(continuing, chest_x, 64, 8, &current, NULL);
-        mc_tile_snapshot state = {0};
-        const mc_tile_status inspected =
-            current == NULL ? MC_TILE_INVALID_ARGUMENT : mc_tile_get_snapshot(current, &state);
+            mc_live_tile_entities_get(continuing, chest_x, 64, 8, &current, NULL);
+        mc_tile_entity_snapshot state = {0};
+        const mc_tile_entity_status inspected = current == NULL
+                                                    ? MC_TILE_ENTITY_INVALID_ARGUMENT
+                                                    : mc_tile_entity_get_snapshot(current, &state);
         const bool distinct = current != f->aliases[slot];
         mc_item_stack *carried = NULL;
         mc_item_stack_fields fields = {0};
-        const mc_tile_status carried_status =
-            mc_tile_chest_get(current, slot < 2 ? 0 : 1, &carried);
+        const mc_tile_entity_status carried_status =
+            mc_tile_entity_chest_get(current, slot < 2 ? 0 : 1, &carried);
         const mc_item_stack_status carried_fields = mc_item_stack_fields_get(carried, &fields);
         mc_item_stack *unchanged = carried;
-        const mc_tile_status high_slot = mc_tile_chest_get(current, 35, &unchanged);
+        const mc_tile_entity_status high_slot = mc_tile_entity_chest_get(current, 35, &unchanged);
         const bool output_unchanged = unchanged == carried;
         mc_item_stack_release(carried);
-        mc_tile_release(current);
-        CHECK(got == MC_WORLD_STORAGE_OK && inspected == MC_TILE_OK && distinct &&
+        mc_tile_entity_release(current);
+        CHECK(got == MC_WORLD_STORAGE_OK && inspected == MC_TILE_ENTITY_OK && distinct &&
               state.chest_capacity == 27 && f->chunks[slot]->l->count == 2 &&
-              carried_status == MC_TILE_OK && carried_fields == MC_ITEM_STACK_OK &&
-              fields.count == 64 && high_slot == MC_TILE_INVALID_SLOT && output_unchanged);
+              carried_status == MC_TILE_ENTITY_OK && carried_fields == MC_ITEM_STACK_OK &&
+              fields.count == 64 && high_slot == MC_TILE_ENTITY_INVALID_SLOT && output_unchanged);
     }
     /* The prior disk contains both original Map occurrences of one alias,
      * each with its current coordinates. Real import has now replaced that
@@ -688,7 +700,8 @@ static bool empty_records(fixture *f, size_t slot) {
     bool ok = false;
     const int32_t xs[] = {8, 9, 12};
     for (size_t i = 0; i < COUNT(xs); ++i)
-        CHECK(mc_live_tiles_remove(f->worlds[slot], xs[i], 64, 8, NULL) == MC_WORLD_STORAGE_OK);
+        CHECK(mc_live_tile_entities_remove(f->worlds[slot], xs[i], 64, 8, NULL) ==
+              MC_WORLD_STORAGE_OK);
     CHECK(f->chunks[slot]->l->count == 0 && f->chunks[slot]->l->backing != NULL &&
           !mc_world_chunk_storage_empty(f->chunks[slot]) &&
           write_success(f, slot, direct_stamp(slot), false) &&
@@ -731,7 +744,7 @@ static bool entity_boundary(fixture *f, size_t slot) {
           error.entity.status == MC_ENTITY_NBT_NULL_REFERENCE &&
           error.entity.wrapper_bytecode == 27 && error.entity.name_bytecode == 7 &&
           error.entity.item_bytecode == 37 && error.entity.stack_bytecode == 0 &&
-          fresh_save_codecs(&error) && fresh_live_save(&error.tile) &&
+          fresh_save_codecs(&error) && fresh_live_save(&error.tile_entity) &&
           snapshot_same(f, slot, &before));
     ok = true;
 cleanup:
@@ -802,7 +815,7 @@ cleanup:
         return 1;
     }
     if (result == 0 &&
-        printf("PASS: %u live Tile save integration checks (world-saving)\n", checks) < 0)
+        printf("PASS: %u live TileEntity save integration checks (world-saving)\n", checks) < 0)
         result = 1;
     return result;
 }

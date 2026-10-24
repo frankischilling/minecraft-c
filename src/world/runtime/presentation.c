@@ -2,7 +2,7 @@
 
 #include "construction_internal.h"
 #include "mutation/mutation_internal.h"
-#include "observers_internal.h"
+#include "world_access_internal.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -75,27 +75,27 @@ bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double
      * dereferences the String nor draws Random; caller-side fizz draws have
      * already happened. A callback can edit u before the next size9/get23. */
     for (size_t index = 0;; ++index) {
-        mc_world_observer *observer = NULL;
+        mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
-                                    &error->observer_bytecode, &cause))
+        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
+                                  &error->world_access_bytecode, &cause))
             return presentation_failure(world, error, cause);
         if (!present) {
-            error->observer_bytecode = 0;
+            error->world_access_bytecode = 0;
             return true;
         }
-        error->observer_bytecode = 41;
+        error->world_access_bytecode = 41;
         mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (observer != NULL && observer->callbacks.sound != NULL)
-            status = observer->callbacks.sound(observer->context, world, name, x, y, z, volume,
-                                               pitch, &cause);
+        if (world_access != NULL && world_access->callbacks.sound != NULL)
+            status = world_access->callbacks.sound(world_access->context, world, name, x, y, z,
+                                                   volume, pitch, &cause);
         else
-            cause.operation = "World sound observer invocation";
-        mc_world_observer_release_held(observer);
+            cause.operation = "World sound WorldAccess invocation";
+        mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return presentation_failure(world, error,
-                                        mc_world_observer_callback_error(status, cause));
+                                        mc_world_access_callback_error(status, cause));
     }
 }
 
@@ -105,27 +105,27 @@ bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_strin
     /* No Math.random, default-Random construction or velocity adjustment is
      * performed here. Every caller draw retains its original interleaving. */
     for (size_t index = 0;; ++index) {
-        mc_world_observer *observer = NULL;
+        mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
-                                    &error->observer_bytecode, &cause))
+        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
+                                  &error->world_access_bytecode, &cause))
             return presentation_failure(world, error, cause);
         if (!present) {
-            error->observer_bytecode = 0;
+            error->world_access_bytecode = 0;
             return true;
         }
-        error->observer_bytecode = 43;
+        error->world_access_bytecode = 43;
         mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-        if (observer != NULL && observer->callbacks.particle != NULL)
-            status = observer->callbacks.particle(observer->context, world, name, x, y, z,
-                                                  velocity_x, velocity_y, velocity_z, &cause);
+        if (world_access != NULL && world_access->callbacks.particle != NULL)
+            status = world_access->callbacks.particle(world_access->context, world, name, x, y, z,
+                                                      velocity_x, velocity_y, velocity_z, &cause);
         else
-            cause.operation = "World particle observer invocation";
-        mc_world_observer_release_held(observer);
+            cause.operation = "World particle WorldAccess invocation";
+        mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return presentation_failure(world, error,
-                                        mc_world_observer_callback_error(status, cause));
+                                        mc_world_access_callback_error(status, cause));
     }
 }
 

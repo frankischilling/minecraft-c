@@ -14,15 +14,15 @@
 #define PROBE_BLOCK_VALUES 32832u
 
 static char request[260];
-static mc_terrain_normal_state state;
-static mc_terrain_normal_state original_state;
+static mc_terrain_overworld_state state;
+static mc_terrain_overworld_state original_state;
 static mc_java_random constructor_random;
 static mc_java_random live_random;
 static mc_biome_memory memory;
 static mc_biome_manager manager;
 static mc_biome_buffer biomes;
 static double scratch[3][PROBE_SCRATCH_VALUES];
-static mc_terrain_normal_surface_workspace surface;
+static mc_terrain_overworld_surface_workspace surface;
 static mc_terrain_surface_material materials[256];
 static double density[425];
 static double density_volumes[3][425];
@@ -217,15 +217,16 @@ static int generate_base(int32_t x, int32_t z) {
                            ? (mc_terrain_surface_material){12, 12}
                            : (mc_terrain_surface_material){2, 3};
     }
-    mc_terrain_normal_workspace work = {{density_volumes[0], 425},
-                                        {density_volumes[1], 425},
-                                        {density_volumes[2], 425},
-                                        {density_columns[0], 25},
-                                        {density_columns[1], 25}};
-    mc_terrain_normal_climate climate = {manager.a.data, manager.a.length, manager.b.data,
-                                         manager.b.length};
-    if (!mc_terrain_normal_generate(&state, &work, x, z, &climate,
-                                    (mc_terrain_double_span){density, 425}, blocks, blocks_length))
+    mc_terrain_overworld_workspace work = {{density_volumes[0], 425},
+                                           {density_volumes[1], 425},
+                                           {density_volumes[2], 425},
+                                           {density_columns[0], 25},
+                                           {density_columns[1], 25}};
+    mc_terrain_overworld_climate climate = {manager.a.data, manager.a.length, manager.b.data,
+                                            manager.b.length};
+    if (!mc_terrain_overworld_generate(&state, &work, x, z, &climate,
+                                       (mc_terrain_double_span){density, 425}, blocks,
+                                       blocks_length))
         return 0;
     base_x = x;
     base_z = z;
@@ -259,14 +260,14 @@ static int handle_request(char *line) {
             return 0;
         mc_biome_buffer_free(&biomes);
         mc_biome_manager_free(&manager);
-        if (!mc_terrain_normal_init(&state, seed) ||
+        if (!mc_terrain_overworld_init(&state, seed) ||
             mc_biome_manager_init(&manager, seed, &memory) != MC_BIOME_OK)
             return 0;
         memcpy(&original_state, &state, sizeof(state));
         constructor_random = state.random_after_init;
         live_random = constructor_random;
         memset(scratch, 0, sizeof(scratch));
-        surface = (mc_terrain_normal_surface_workspace){
+        surface = (mc_terrain_overworld_surface_workspace){
             {scratch[0], 256}, {scratch[1], 256}, {scratch[2], 256}};
         blocks = NULL;
         blocks_length = 0;
@@ -319,7 +320,7 @@ static int handle_request(char *line) {
             !parse_signed(fields[2], INT32_MIN, INT32_MAX, &z))
             return 0;
         if (seed) {
-            chunk_seed = mc_terrain_normal_chunk_seed((int32_t)x, (int32_t)z);
+            chunk_seed = mc_terrain_overworld_chunk_seed((int32_t)x, (int32_t)z);
             mc_java_random_reseed(&live_random, chunk_seed);
             seed_observed = 1;
         } else if (base) {
@@ -330,11 +331,11 @@ static int handle_request(char *line) {
                 (apply && (!noise_valid || noise_x != x || noise_z != z)))
                 return 0;
             int success =
-                composed
-                    ? mc_terrain_normal_surface(&state, &surface, (int32_t)x, (int32_t)z, materials,
-                                                256, &live_random, blocks, blocks_length)
-                    : mc_terrain_normal_surface_apply(&surface, materials, 256, &live_random,
-                                                      blocks, blocks_length);
+                composed ? mc_terrain_overworld_surface(&state, &surface, (int32_t)x, (int32_t)z,
+                                                        materials, 256, &live_random, blocks,
+                                                        blocks_length)
+                         : mc_terrain_overworld_surface_apply(&surface, materials, 256,
+                                                              &live_random, blocks, blocks_length);
             if (!success)
                 return 0;
             noise_valid = 1;

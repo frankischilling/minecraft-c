@@ -636,8 +636,8 @@ static bool populate_chunk(void *owner, const mc_chunk_acquire_context *argument
                         index);
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *argument,
-                           mc_chunk_state *chunk) {
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *argument,
+                                   mc_chunk_state *chunk) {
     mc_chunk_state *mapped = NULL;
     const size_t id = chunk_id(chunk);
     if (owner != &world_owner || argument != &context || id == SIZE_MAX || !publication_known[id] ||
@@ -802,7 +802,7 @@ static bool initialize_context(void) {
                                          .provider = &provider_owner,
                                          .load = load_chunk,
                                          .generate = generate_chunk,
-                                         .register_tiles = register_tiles,
+                                         .register_tile_entities = register_tile_entities,
                                          .register_entities = register_entities,
                                          .populate = populate_chunk};
     memcpy(&saved_context, &context, sizeof(context));

@@ -12,7 +12,7 @@ typedef enum block_power_method {
     BLOCK_CAPABILITY,
     BLOCK_STRONG,
     BLOCK_WEAK,
-    WIRE_CONNECTIVITY
+    REDSTONE_CONNECTIVITY
 } block_power_method;
 
 static mc_world_storage_status capability_kernel(const mc_block *block, bool *out,
@@ -26,8 +26,8 @@ static mc_world_block_power_site *site(mc_world_power_error *error, block_power_
             return &error->strong;
         case BLOCK_WEAK:
             return &error->weak;
-        case WIRE_CONNECTIVITY:
-            return &error->wire_connectivity;
+        case REDSTONE_CONNECTIVITY:
+            return &error->redstone_connectivity;
     }
     return &error->weak;
 }
@@ -48,7 +48,7 @@ static void clear(mc_world_power_error *error, block_power_method method) {
     if (method == BLOCK_STRONG || method == BLOCK_WEAK)
         error->weak = empty.weak;
     if (method != BLOCK_CAPABILITY)
-        error->wire_connectivity = empty.wire_connectivity;
+        error->redstone_connectivity = empty.redstone_connectivity;
 }
 
 static mc_world_storage_status fail(mc_world_runtime *world, mc_world_power_error *error,
@@ -83,25 +83,25 @@ static void begin(const mc_block *block, block_power_method method, mc_world_pow
     const bool client = block->classes->options.side == MC_REGISTRY_CLIENT;
     const char *declaring_class;
     switch (block->kind) {
-        case MC_BLOCK_BV_BC:
+        case MC_BLOCK_PRESSURE_PLATE:
             declaring_class = client ? "bv" : "bc";
             break;
-        case MC_BLOCK_PH_JN:
+        case MC_BLOCK_DETECTOR_RAIL:
             declaring_class = client ? "ph" : "jn";
             break;
-        case MC_BLOCK_OI_IZ:
+        case MC_BLOCK_BUTTON:
             declaring_class = client ? "oi" : "iz";
             break;
-        case MC_BLOCK_XR_PD:
+        case MC_BLOCK_LEVER:
             declaring_class = client ? "xr" : "pd";
             break;
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             declaring_class = client ? "db" : "by";
             break;
-        case MC_BLOCK_SM_LO:
+        case MC_BLOCK_REDSTONE:
             declaring_class = client ? "sm" : "lo";
             break;
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             declaring_class = client ? "wo" : "oi";
             break;
         default:
@@ -119,7 +119,7 @@ static void begin(const mc_block *block, block_power_method method, mc_world_pow
         case BLOCK_WEAK:
             descriptor = client ? "c(Lxp;IIII)Z" : "a(Lpb;IIII)Z";
             break;
-        case WIRE_CONNECTIVITY:
+        case REDSTONE_CONNECTIVITY:
             descriptor = client ? "e(Lxp;IIII)Z" : "c(Lpb;IIII)Z";
             break;
         default:
@@ -177,18 +177,19 @@ static bool registry_failure(mc_world_runtime *world, const mc_registry_error *l
     return false;
 }
 
-static bool static_id(mc_world_runtime *world, const mc_block *wire, const char *field,
+static bool static_id(mc_world_runtime *world, const mc_block *redstone, const char *field,
                       unsigned int static_pc, unsigned int field_pc, int32_t *out,
                       mc_world_power_error *error) {
-    at(error, WIRE_CONNECTIVITY, static_pc);
+    at(error, REDSTONE_CONNECTIVITY, static_pc);
     mc_registry_error lower = mc_world_power_empty_error().registry;
     const mc_block *selected = NULL;
-    if (mc_registry_block_static_get(wire->classes, field, &selected, &lower) != MC_REGISTRY_OK)
-        return registry_failure(world, &lower, "Wire connectivity Block static active use", error);
-    at(error, WIRE_CONNECTIVITY, field_pc);
+    if (mc_registry_block_static_get(redstone->classes, field, &selected, &lower) != MC_REGISTRY_OK)
+        return registry_failure(world, &lower, "Redstone connectivity Block static active use",
+                                error);
+    at(error, REDSTONE_CONNECTIVITY, field_pc);
     if (selected == NULL) {
         (void)fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                   "Wire connectivity static Block receiver is null");
+                   "Redstone connectivity static Block receiver is null");
         return false;
     }
     *out = selected->fields.bn;
@@ -198,113 +199,114 @@ static bool static_id(mc_world_runtime *world, const mc_block *wire, const char 
 /* Paired sm.e/lo.c(BlockAccess,IIII), distinct from either directional
  * output. Source ID4 precedes every declaring-namespace static active use.
  * aw can match even ID0; bi/bj and the orientation class remain late. */
-static bool connectivity(mc_world_runtime *world, const mc_block *wire, int32_t x, int32_t y,
+static bool connectivity(mc_world_runtime *world, const mc_block *redstone, int32_t x, int32_t y,
                          int32_t z, int32_t direction, bool *out, mc_world_power_error *error) {
-    clear(error, WIRE_CONNECTIVITY);
-    begin(wire, WIRE_CONNECTIVITY, error);
+    clear(error, REDSTONE_CONNECTIVITY);
+    begin(redstone, REDSTONE_CONNECTIVITY, error);
     int32_t id, expected;
-    if (!read_value(world, x, y, z, false, &id, WIRE_CONNECTIVITY, 4, error) ||
-        !static_id(world, wire, "aw", 13, 16, &expected, error))
+    if (!read_value(world, x, y, z, false, &id, REDSTONE_CONNECTIVITY, 4, error) ||
+        !static_id(world, redstone, "aw", 13, 16, &expected, error))
         return false;
     bool value = id == expected;
     if (!value && id != 0) {
-        at(error, WIRE_CONNECTIVITY, 31);
+        at(error, REDSTONE_CONNECTIVITY, 31);
         mc_registry_block_m_view array;
         mc_registry_error lower = mc_world_power_empty_error().registry;
-        if (mc_registry_block_m_get(wire->classes, &array, &lower) != MC_REGISTRY_OK)
-            return registry_failure(world, &lower, "Wire connectivity Block.m active use", error);
-        at(error, WIRE_CONNECTIVITY, 36);
+        if (mc_registry_block_m_get(redstone->classes, &array, &lower) != MC_REGISTRY_OK)
+            return registry_failure(world, &lower, "Redstone connectivity Block.m active use",
+                                    error);
+        at(error, REDSTONE_CONNECTIVITY, 36);
         const mc_block *selected = NULL;
         if (mc_registry_block_m_at(&array, id, &selected, &lower) != MC_REGISTRY_OK)
-            return registry_failure(world, &lower, "Wire connectivity Block.m element", error);
-        at(error, WIRE_CONNECTIVITY, 37);
+            return registry_failure(world, &lower, "Redstone connectivity Block.m element", error);
+        at(error, REDSTONE_CONNECTIVITY, 37);
         if (capability_kernel(selected, &value, error) != MC_WORLD_STORAGE_OK) {
             if (world != NULL)
                 world->last_error = error->cause;
             return false;
         }
         if (!value) {
-            if (!static_id(world, wire, "bi", 47, 50, &expected, error))
+            if (!static_id(world, redstone, "bi", 47, 50, &expected, error))
                 return false;
             bool diode = id == expected;
             if (!diode) {
-                if (!static_id(world, wire, "bj", 58, 61, &expected, error))
+                if (!static_id(world, redstone, "bj", 58, 61, &expected, error))
                     return false;
                 diode = id == expected;
             }
             if (diode) {
                 int32_t metadata;
-                if (!read_value(world, x, y, z, true, &metadata, WIRE_CONNECTIVITY, 71, error))
+                if (!read_value(world, x, y, z, true, &metadata, REDSTONE_CONNECTIVITY, 71, error))
                     return false;
                 /* The actual jj/ge.b capture and iaload are supplied by the
                  * independent four-direction class, not wj/od or a constant. */
-                at(error, WIRE_CONNECTIVITY, 80);
+                at(error, REDSTONE_CONNECTIVITY, 80);
                 mc_registry_horizontal_view orientation;
                 lower = mc_world_power_empty_error().registry;
-                if (mc_registry_horizontal_b_get(wire->classes, &orientation, &lower) !=
+                if (mc_registry_horizontal_b_get(redstone->classes, &orientation, &lower) !=
                     MC_REGISTRY_OK)
-                    return registry_failure(world, &lower,
-                                            "Wire connectivity orientation b active use", error);
-                at(error, WIRE_CONNECTIVITY, 87);
+                    return registry_failure(
+                        world, &lower, "Redstone connectivity orientation b active use", error);
+                at(error, REDSTONE_CONNECTIVITY, 87);
                 if (mc_registry_horizontal_at(&orientation, metadata & 3, &expected, &lower) !=
                     MC_REGISTRY_OK)
-                    return registry_failure(world, &lower, "Wire connectivity orientation b index",
-                                            error);
+                    return registry_failure(world, &lower,
+                                            "Redstone connectivity orientation b index", error);
                 value = direction == expected;
             }
         }
     }
     *out = value;
-    clear(error, WIRE_CONNECTIVITY);
+    clear(error, REDSTONE_CONNECTIVITY);
     return true;
 }
 
-static bool connected(mc_world_runtime *world, const mc_block *wire, int32_t x, int32_t y,
+static bool connected(mc_world_runtime *world, const mc_block *redstone, int32_t x, int32_t y,
                       int32_t z, int32_t direction, unsigned int pc, bool *out,
                       mc_world_power_error *error) {
     at(error, BLOCK_WEAK, pc);
-    return connectivity(world, wire, x, y, z, direction, out, error);
+    return connectivity(world, redstone, x, y, z, direction, out, error);
 }
 
 /* Complete paired sm/lo weak body after the a/metadata/side1 prefix. The four
  * first horizontal tests and repeated elevated support tests remain separate.
  * Existing true locals do not skip later source support/connectivity reads. */
-static bool wire_output(mc_world_runtime *world, const mc_block *wire, int32_t x, int32_t y,
-                        int32_t z, int32_t side, bool *out, mc_world_power_error *error) {
+static bool redstone_output(mc_world_runtime *world, const mc_block *redstone, int32_t x, int32_t y,
+                            int32_t z, int32_t side, bool *out, mc_world_power_error *error) {
     const int32_t west_x = mc_java_i32_sub(x, 1), east_x = mc_java_i32_add(x, 1);
     const int32_t north_z = mc_java_i32_sub(z, 1), south_z = mc_java_i32_add(z, 1);
     const int32_t below = mc_java_i32_sub(y, 1), above = mc_java_i32_add(y, 1);
     bool west, east, north, south, solid, extra;
-    if (!connected(world, wire, west_x, y, z, 1, 40, &west, error))
+    if (!connected(world, redstone, west_x, y, z, 1, 40, &west, error))
         return false;
     if (!west) {
         if (!support(world, west_x, y, z, &solid, 53, error))
             return false;
-        if (!solid && !connected(world, wire, west_x, below, z, -1, 71, &west, error))
+        if (!solid && !connected(world, redstone, west_x, below, z, -1, 71, &west, error))
             return false;
     }
-    if (!connected(world, wire, east_x, y, z, 3, 92, &east, error))
+    if (!connected(world, redstone, east_x, y, z, 3, 92, &east, error))
         return false;
     if (!east) {
         if (!support(world, east_x, y, z, &solid, 105, error))
             return false;
-        if (!solid && !connected(world, wire, east_x, below, z, -1, 123, &east, error))
+        if (!solid && !connected(world, redstone, east_x, below, z, -1, 123, &east, error))
             return false;
     }
-    if (!connected(world, wire, x, y, north_z, 2, 144, &north, error))
+    if (!connected(world, redstone, x, y, north_z, 2, 144, &north, error))
         return false;
     if (!north) {
         if (!support(world, x, y, north_z, &solid, 157, error))
             return false;
-        if (!solid && !connected(world, wire, x, below, north_z, -1, 175, &north, error))
+        if (!solid && !connected(world, redstone, x, below, north_z, -1, 175, &north, error))
             return false;
     }
-    if (!connected(world, wire, x, y, south_z, 0, 196, &south, error))
+    if (!connected(world, redstone, x, y, south_z, 0, 196, &south, error))
         return false;
     if (!south) {
         if (!support(world, x, y, south_z, &solid, 209, error))
             return false;
-        if (!solid && !connected(world, wire, x, below, south_z, -1, 227, &south, error))
+        if (!solid && !connected(world, redstone, x, below, south_z, -1, 227, &south, error))
             return false;
     }
     if (!support(world, x, above, z, &solid, 247, error))
@@ -313,7 +315,7 @@ static bool wire_output(mc_world_runtime *world, const mc_block *wire, int32_t x
         if (!support(world, west_x, y, z, &solid, 262, error))
             return false;
         if (solid) {
-            if (!connected(world, wire, west_x, above, z, -1, 280, &extra, error))
+            if (!connected(world, redstone, west_x, above, z, -1, 280, &extra, error))
                 return false;
             if (extra)
                 west = true;
@@ -321,7 +323,7 @@ static bool wire_output(mc_world_runtime *world, const mc_block *wire, int32_t x
         if (!support(world, east_x, y, z, &solid, 296, error))
             return false;
         if (solid) {
-            if (!connected(world, wire, east_x, above, z, -1, 314, &extra, error))
+            if (!connected(world, redstone, east_x, above, z, -1, 314, &extra, error))
                 return false;
             if (extra)
                 east = true;
@@ -329,7 +331,7 @@ static bool wire_output(mc_world_runtime *world, const mc_block *wire, int32_t x
         if (!support(world, x, y, north_z, &solid, 330, error))
             return false;
         if (solid) {
-            if (!connected(world, wire, x, above, north_z, -1, 348, &extra, error))
+            if (!connected(world, redstone, x, above, north_z, -1, 348, &extra, error))
                 return false;
             if (extra)
                 north = true;
@@ -337,7 +339,7 @@ static bool wire_output(mc_world_runtime *world, const mc_block *wire, int32_t x
         if (!support(world, x, y, south_z, &solid, 364, error))
             return false;
         if (solid) {
-            if (!connected(world, wire, x, above, south_z, -1, 382, &extra, error))
+            if (!connected(world, redstone, x, above, south_z, -1, 382, &extra, error))
                 return false;
             if (extra)
                 south = true;
@@ -359,14 +361,14 @@ static mc_world_storage_status capability_kernel(const mc_block *block, bool *ou
     begin(block, BLOCK_CAPABILITY, frame);
     bool value;
     switch (block->kind) {
-        case MC_BLOCK_BV_BC:
-        case MC_BLOCK_PH_JN:
-        case MC_BLOCK_OI_IZ:
-        case MC_BLOCK_XR_PD:
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_PRESSURE_PLATE:
+        case MC_BLOCK_DETECTOR_RAIL:
+        case MC_BLOCK_BUTTON:
+        case MC_BLOCK_LEVER:
+        case MC_BLOCK_REDSTONE_TORCH:
             value = true;
             break;
-        case MC_BLOCK_SM_LO:
+        case MC_BLOCK_REDSTONE:
             at(frame, BLOCK_CAPABILITY, 1);
             value = block->subtype.sm.a;
             break;
@@ -389,15 +391,15 @@ static mc_world_storage_status weak_kernel(mc_world_runtime *world, const mc_blo
     bool value = false;
     int32_t metadata;
     switch (block->kind) {
-        case MC_BLOCK_BV_BC:
-        case MC_BLOCK_PH_JN:
-        case MC_BLOCK_OI_IZ:
-        case MC_BLOCK_XR_PD:
+        case MC_BLOCK_PRESSURE_PLATE:
+        case MC_BLOCK_DETECTOR_RAIL:
+        case MC_BLOCK_BUTTON:
+        case MC_BLOCK_LEVER:
             if (!read_value(world, x, y, z, true, &metadata, BLOCK_WEAK, 5, frame))
                 return frame->status;
-            value = block->kind == MC_BLOCK_BV_BC ? metadata > 0 : (metadata & 8) != 0;
+            value = block->kind == MC_BLOCK_PRESSURE_PLATE ? metadata > 0 : (metadata & 8) != 0;
             break;
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             at(frame, BLOCK_WEAK, 1);
             if (!block->subtype.db.a)
                 break;
@@ -408,7 +410,7 @@ static mc_world_storage_status weak_kernel(mc_world_runtime *world, const mc_blo
                       (metadata == 4 && side == 2) || (metadata == 1 && side == 5) ||
                       (metadata == 2 && side == 4));
             break;
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             at(frame, BLOCK_WEAK, 1);
             if (!block->subtype.wo.c)
                 break;
@@ -418,7 +420,7 @@ static mc_world_storage_status weak_kernel(mc_world_runtime *world, const mc_blo
             value = (metadata == 0 && side == 3) || (metadata == 1 && side == 4) ||
                     (metadata == 2 && side == 2) || (metadata == 3 && side == 5);
             break;
-        case MC_BLOCK_SM_LO:
+        case MC_BLOCK_REDSTONE:
             at(frame, BLOCK_WEAK, 1);
             if (!block->subtype.sm.a)
                 break;
@@ -428,7 +430,7 @@ static mc_world_storage_status weak_kernel(mc_world_runtime *world, const mc_blo
                 break;
             if (side == 1)
                 value = true;
-            else if (!wire_output(world, block, x, y, z, side, &value, frame))
+            else if (!redstone_output(world, block, x, y, z, side, &value, frame))
                 return frame->status;
             break;
         default:
@@ -449,37 +451,37 @@ static mc_world_storage_status strong_kernel(mc_world_runtime *world, const mc_b
     bool value = false;
     int32_t metadata;
     switch (block->kind) {
-        case MC_BLOCK_BV_BC:
-        case MC_BLOCK_PH_JN:
-        case MC_BLOCK_OI_IZ:
-        case MC_BLOCK_XR_PD:
+        case MC_BLOCK_PRESSURE_PLATE:
+        case MC_BLOCK_DETECTOR_RAIL:
+        case MC_BLOCK_BUTTON:
+        case MC_BLOCK_LEVER:
             if (!read_value(world, x, y, z, true, &metadata, BLOCK_STRONG, 5, frame))
                 return frame->status;
-            if (block->kind == MC_BLOCK_BV_BC)
+            if (block->kind == MC_BLOCK_PRESSURE_PLATE)
                 value = metadata != 0 && side == 1;
-            else if (block->kind == MC_BLOCK_PH_JN)
+            else if (block->kind == MC_BLOCK_DETECTOR_RAIL)
                 value = (metadata & 8) != 0 && side == 1;
             else if ((metadata & 8) != 0) {
                 const int32_t orientation = metadata & 7;
-                value = (block->kind == MC_BLOCK_XR_PD && orientation == 6 && side == 1) ||
+                value = (block->kind == MC_BLOCK_LEVER && orientation == 6 && side == 1) ||
                         (orientation == 5 && side == 1) || (orientation == 4 && side == 2) ||
                         (orientation == 3 && side == 3) || (orientation == 2 && side == 4) ||
                         (orientation == 1 && side == 5);
             }
             break;
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             if (side != 0)
                 break;
             at(frame, BLOCK_STRONG, 13);
             if (weak_kernel(world, block, x, y, z, side, &value, frame) != MC_WORLD_STORAGE_OK)
                 return frame->status;
             break;
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             at(frame, BLOCK_STRONG, 8);
             if (weak_kernel(world, block, x, y, z, side, &value, frame) != MC_WORLD_STORAGE_OK)
                 return frame->status;
             break;
-        case MC_BLOCK_SM_LO:
+        case MC_BLOCK_REDSTONE:
             at(frame, BLOCK_STRONG, 1);
             if (!block->subtype.sm.a)
                 break;

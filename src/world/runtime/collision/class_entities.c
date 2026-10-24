@@ -3,8 +3,8 @@
 #include "../../../entity/entity_internal.h"
 #include "../../chunk/object_state_internal.h"
 #include "../../storage/objects_internal.h"
+#include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
-#include "../provider_internal.h"
 #include "entities_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
@@ -353,7 +353,7 @@ static bool query(mc_world_runtime *world, const mc_entity_class_literal *target
             frame->query.provider_bytecode = 6;
             bool present;
             mc_world_storage_error child = {0};
-            if (mc_world_runtime_provider_contains(world, x, z, &present, &child) !=
+            if (mc_world_runtime_chunk_provider_contains(world, x, z, &present, &child) !=
                 MC_WORLD_STORAGE_OK) {
                 cause(frame, child);
                 goto failed;

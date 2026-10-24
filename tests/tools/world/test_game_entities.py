@@ -123,7 +123,7 @@ def main():
         paths = TILES.input_paths(args.executable)
         paths.update({"driver": Path(__file__).resolve(), "saving_capture": SAVING_DRIVER,
                       "test": ROOT / "tests/world/runtime/entities/test_game_entities.c",
-                      "tile_fixture": ROOT / "tests/world/runtime/tiles/test_tiles.c"})
+                      "tile_fixture": ROOT / "tests/world/runtime/tile_entities/test_tile_entities.c"})
         CAPTURE.require(all(path.is_file() and not path.is_symlink() for path in paths.values()),
                         "ordinary actual selected inputs")
         report["inputs"] = {name: CAPTURE.file_fingerprint(path) for name, path in paths.items()}

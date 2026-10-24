@@ -8,8 +8,8 @@
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/entity/entity_internal.h"
 #include "../../../src/platform/time/millis.h"
+#include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
-#include "../../../src/world/runtime/provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/files.h"
 #include "../../../src/world/storage/objects_internal.h"
@@ -32,7 +32,7 @@
     } while (0)
 
 /* Constructed native contracts, not original observed state. All eight loaded
- * records and GAME constructors are real. Native observer/nullable Stack controls are
+ * records and GAME constructors are real. Native WorldAccess/nullable Stack controls are
  * temporary and restored before assertions. No Entity phase/position fields,
  * holds, World/cache counts, limits, Random or returned results are injected. */
 enum { WORLD_COUNT = 8, ENTITY_COUNT = 32 };
@@ -67,8 +67,8 @@ typedef struct fixture {
     mc_entity_classes *entity_classes[2];
     mc_world_runtime_classes *classes[2];
     mc_world_runtime *worlds[WORLD_COUNT];
-    mc_world_dimension *dimensions[WORLD_COUNT];
-    mc_world_provider_fields providers[WORLD_COUNT];
+    mc_world_provider *dimensions[WORLD_COUNT];
+    mc_chunk_provider_fields providers[WORLD_COUNT];
     mc_chunk_state *states[WORLD_COUNT];
     mc_world_chunk *chunks[WORLD_COUNT];
     const mc_world_chunk_entity_list *slices[WORLD_COUNT][8];
@@ -91,7 +91,7 @@ typedef struct fixture_record {
 } fixture_record;
 
 /* Actual transport/codec helpers from the frozen real support/fluid fixture,
- * with no observer, allocator, clock or gameplay callback injected. */
+ * with no WorldAccess, allocator, clock or gameplay callback injected. */
 
 static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t capacity,
                                             size_t *count) {
@@ -285,7 +285,7 @@ static bool create_world(fixture *f, size_t slot) {
     limits.max_scheduled_entries = 0;
     if (slot == 4 || slot == 5)
         limits.max_direct_allocation_bytes = f->baseline_world_bytes[slot % 2u];
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[slot], NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(mc_world_runtime_allocate_world(slot % 2u == 0 ? MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE
                                                          : MC_WORLD_RUNTIME_SERVER_LOAD_OR_CREATE,
                                           f->classes[slot % 2u], &limits, &f->worlds[slot],
@@ -300,7 +300,7 @@ static bool create_world(fixture *f, size_t slot) {
         f->baseline_world_bytes[slot] = state.direct_allocation_bytes;
     if (slot == 4 || slot == 5)
         CHECK(state.direct_allocation_bytes == limits.max_direct_allocation_bytes);
-    CHECK(mc_world_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[slot]->fields.v, &f->providers[slot], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[slot] = true;
     CHECK(seed_record(f, slot));
@@ -563,7 +563,7 @@ cleanup:
     return ok;
 }
 
-static bool observer_prefix(fixture *f, size_t side, mc_entity *primary) {
+static bool world_access_prefix(fixture *f, size_t side, mc_entity *primary) {
     bool ok = false;
     const size_t slot = side + 2u;
     mc_world_runtime *w = f->worlds[slot];
@@ -579,7 +579,7 @@ static bool observer_prefix(fixture *f, size_t side, mc_entity *primary) {
         mc_world_runtime_insert_entity(w, entity, &value, &error);
     w->fields.u = actual_u;
     CHECK(null_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value && error.bytecode == 103 &&
-          error.observer_bytecode == 7);
+          error.world_access_bytecode == 7);
     int nonobserver = 1;
     void *items[] = {&nonobserver};
     mc_world_reference_list input = {.items = items, .count = 1, .capacity = 1};
@@ -588,14 +588,14 @@ static bool observer_prefix(fixture *f, size_t side, mc_entity *primary) {
         mc_world_runtime_insert_entity(w, entity, &value, &error);
     w->fields.u = actual_u;
     CHECK(cast_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value && error.bytecode == 103 &&
-          error.observer_bytecode == 25);
+          error.world_access_bytecode == 25);
     items[0] = NULL;
     w->fields.u = &input;
     const mc_world_storage_status invoke_status =
         mc_world_runtime_insert_entity(w, entity, &value, &error);
     w->fields.u = actual_u;
     CHECK(invoke_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value && error.bytecode == 103 &&
-          error.observer_bytecode == 29);
+          error.world_access_bytecode == 29);
     mc_entity *occurrences[] = {entity, entity, entity};
     mc_entity *world_order[] = {primary, entity, entity, entity};
     CHECK(slice_is(f, slot, 2, occurrences, COUNT(occurrences)) &&
@@ -884,7 +884,7 @@ static bool cleanup_fixture(fixture *f) {
         if (f->worlds[slot] != NULL &&
             mc_world_runtime_free(f->worlds[slot], NULL) != MC_WORLD_STORAGE_OK)
             return false;
-        mc_world_dimension_release(f->dimensions[slot]);
+        mc_world_provider_release(f->dimensions[slot]);
     }
     for (size_t side = 0; side < 2; ++side) {
         if (mc_world_runtime_classes_free(f->classes[side], NULL) != MC_WORLD_STORAGE_OK ||
@@ -950,7 +950,7 @@ int main(int argc, char **argv) {
     mc_entity *primary[2] = {0};
     for (size_t side = 0; side < 2; ++side) {
         CHECK(publication(f, side, &primary[side]));
-        CHECK(observer_prefix(f, side, primary[side]));
+        CHECK(world_access_prefix(f, side, primary[side]));
         CHECK(world_limit(f, side));
         CHECK(chunk_limit(f, side));
         CHECK(lease_blocks_retirement(f, side, primary[side]));

@@ -138,7 +138,7 @@ static const uint8_t nonopaque[] = {6,  8,  9,  10, 11, 20, 26, 27, 28, 29, 30, 
                                     75, 76, 77, 78, 79, 81, 83, 85, 90, 92, 93, 94, 96};
 static const uint8_t ticking[] = {2,  6,  8,  10, 11, 18, 28, 31, 32, 37, 38, 39, 40, 50, 51, 59,
                                   60, 70, 72, 74, 75, 76, 77, 78, 79, 80, 81, 83, 86, 91, 92, 95};
-static const uint8_t tiles[] = {23, 25, 36, 52, 54, 61, 62, 63, 68, 84};
+static const uint8_t tile_entities[] = {23, 25, 36, 52, 54, 61, 62, 63, 68, 84};
 static const uint8_t metadata[] = {5,  6,  8,  9,  10, 11, 17, 18, 23, 25, 26, 27, 28,
                                    29, 33, 34, 35, 50, 51, 53, 54, 55, 59, 61, 62, 63,
                                    64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76,
@@ -381,7 +381,7 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
         CHECK(check_bounds(f) == 0);
         CHECK(view->n[id] == HAS(ticking, id));
         CHECK(view->o[id] == !HAS(nonopaque, id));
-        CHECK(view->p[id] == HAS(tiles, id));
+        CHECK(view->p[id] == HAS(tile_entities, id));
         CHECK(view->r[id] == HAS(nonsupporting_material, id));
         CHECK(view->t[id] == HAS(metadata, id));
         int32_t opacity = HAS(nonopaque, id) ? 0 : 255;
@@ -458,7 +458,7 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
     CHECK(!owner->gk_a && !owner->tc_c);
     CHECK(owner->nr_state.phase == MC_REGISTRY_READY && owner->jp_state.phase == MC_REGISTRY_READY);
     CHECK(owner->rp_state.phase == MC_REGISTRY_READY && owner->rw_state.phase == MC_REGISTRY_READY);
-    CHECK(owner->block_states[MC_BLOCK_UU_NA].phase == MC_REGISTRY_FAILED);
+    CHECK(owner->block_states[MC_BLOCK_BASE].phase == MC_REGISTRY_FAILED);
     for (size_t i = 1; i < MC_BLOCK_KIND_COUNT; ++i)
         CHECK(owner->block_states[i].phase == MC_REGISTRY_READY);
     for (size_t id = 8; id <= 10; id += 2) {
@@ -506,14 +506,14 @@ static int check_complete(mc_registry_classes *owner, mc_materials *materials,
     }
     CHECK(view->m[70]->subtype.bv.a == owner->pressure_b);
     CHECK(view->m[72]->subtype.bv.a == owner->pressure_a);
-    const mc_registry_wire_set *wire = view->m[55]->subtype.sm.b;
-    mc_registry_wire_set_view wire_view;
-    CHECK(view->m[55]->subtype.sm.a && wire != NULL);
-    CHECK(mc_registry_wire_set_inspect(wire, &wire_view) == MC_REGISTRY_OK);
-    CHECK(wire_view.map != NULL && wire_view.table == NULL && wire_view.size == 0 &&
-          wire_view.capacity == 0 && wire_view.threshold == 0);
-    CHECK(wire_view.load_factor == 0.75f && wire_view.mod_count == 0 &&
-          wire_view.constructed_keys == 0);
+    const mc_registry_redstone_set *redstone = view->m[55]->subtype.sm.b;
+    mc_registry_redstone_set_view redstone_view;
+    CHECK(view->m[55]->subtype.sm.a && redstone != NULL);
+    CHECK(mc_registry_redstone_set_inspect(redstone, &redstone_view) == MC_REGISTRY_OK);
+    CHECK(redstone_view.map != NULL && redstone_view.table == NULL && redstone_view.size == 0 &&
+          redstone_view.capacity == 0 && redstone_view.threshold == 0);
+    CHECK(redstone_view.load_factor == 0.75f && redstone_view.mod_count == 0 &&
+          redstone_view.constructed_keys == 0);
     for (size_t i = 0; i < COUNT(random_ids); ++i) {
         const mc_java_random *random = random_at(view, random_ids[i]);
         uint64_t cache;
@@ -967,7 +967,7 @@ static int test_direction_prefix(mc_registry_side side, mc_java_random_profile *
     CHECK(low > 1);
     CHECK(limited_owner(side, profile, materials, low - 1, &owner) == 0);
     CHECK(owner != NULL && owner->ve_a == NULL);
-    const mc_registry_class_state *state = &owner->block_states[MC_BLOCK_VE_NJ];
+    const mc_registry_class_state *state = &owner->block_states[MC_BLOCK_BED];
     CHECK(state->phase == MC_REGISTRY_FAILED && state->pc == 49);
     CHECK(state->failure.status == MC_REGISTRY_LIMIT);
     CHECK(state->failure.active_initializer_pc == 49);

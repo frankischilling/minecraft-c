@@ -14,7 +14,7 @@ Current runtime navigation:
   [mutations](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/mutations.md) define actual World and Chunk services.
 - [Plant callbacks and growth](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md) dispatch through concrete
   Block receivers, including survival, drops, saplings and farmland.
-- [Normal population](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/normal.md) documents feature
+- [Overworld population](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/population/overworld.md) documents feature
   placement, generation dependencies and remaining acceptance work.
 - [Entity movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md) and
   [Minecart inventory](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/minecart-inventory.md) retain separate
@@ -29,7 +29,7 @@ The [World simulation page](https://github.com/frankischilling/minecraft-c/wiki/
 Finite original plant comparisons have the exact scope recorded in the
 [plant lifecycle evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/plant-lifecycle.md). They compare
 original Block bodies with prepared services against native GAME observations;
-original World/Chunk, observer, neighbor and light-propagation parity is unproved.
+original World/Chunk, WorldAccess, neighbor and light-propagation parity is unproved.
 
 See [development status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md),
 [testing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) and the [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
@@ -42,4 +42,4 @@ dedicated server yet.
 The [complete former architecture page](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md)
 preserves earlier technical checkpoints and their original evidence limits,
 including [save, unload and retirement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md#save-unload-and-retirement)
-and the [normal generator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md#normal-generator).
+and the [Overworld generator](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-architecture.md#normal-generator).

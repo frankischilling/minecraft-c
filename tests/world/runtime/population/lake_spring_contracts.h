@@ -23,7 +23,7 @@ typedef struct ls_inputs {
     uint8_t *h;
     mc_block *named[96];
     mc_world_reference_list *u;
-    mc_world_provider *v;
+    mc_chunk_provider *v;
     mc_java_random *r;
     bool a, o, B;
 } ls_inputs;
@@ -615,7 +615,7 @@ static bool ls_lakes(fixture *f, size_t side, mc_world_chunk *c, mc_world_runtim
     }
     CHECK(grass_seen); /* Fixed ordinary input set must actually reach saved-sky/grass. */
 
-    /* Quiet placement must actually complete with nullable observers when no
+    /* Quiet placement must actually complete with nullable WorldAccess when no
      * column height changes. A notifying substitute would fail real size9.
      * Saved-sky0 independently skips the late v load, even when v is NULL. */
     for (unsigned int dark = 0; dark < 2; ++dark) {
@@ -691,7 +691,7 @@ static bool ls_lakes(fixture *f, size_t side, mc_world_chunk *c, mc_world_runtim
 
     /* First real quiet mutation stores its block BEFORE NULL metadata fails.
      * Exactly one changed voxel; all three packed arrays and heights retain
-     * the prepared input. No observer/lighting/scheduler substitute is used. */
+     * the prepared input. No WorldAccess/lighting/scheduler substitute is used. */
     ls_terrain(c, w, stone);
     ls_image_read(before, c);
     ls_random(&random, 19);
@@ -944,7 +944,7 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
         ls_queues_free(&after);
     }
     /* Exact ignored ordinary false264: selected stone already occupies the
-     * center. NULL observer input proves the setter did not notify; the real
+     * center. NULL WorldAccess input proves the setter did not notify; the real
      * inherited stone tick is empty, with no substitute dispatcher. */
     CHECK(mc_population_spring_feature_init(&spring, stone) == MC_WORLD_STORAGE_OK);
     ls_cavity(c, w, stone, 8);
@@ -1033,7 +1033,7 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
     }
 
     /* Notify264 fails only after the actual quiet store/metadata/lighting.
-     * NULL observer-list input exercises real size9; it is not a callback. */
+     * NULL WorldAccess-list input exercises real size9; it is not a callback. */
     CHECK(mc_population_spring_feature_init(&spring, water) == MC_WORLD_STORAGE_OK);
     ls_cavity(c, w, stone, 8);
     ls_image_read(before, c);
@@ -1046,7 +1046,7 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
     w->fields.u = input->u;
     CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out &&
           ls_failure(&e, w, side, false, 264) && e.mutation.wrapper_bytecode == 18 &&
-          e.mutation.observer_bytecode == 9 && !w->fields.a &&
+          e.mutation.world_access_bytecode == 9 && !w->fields.a &&
           ls_spring_image(before, c, 8, water, -1, 0) &&
           mc_test_java_random_equal(&random, &expected) && ls_queues_after(w, &q, false, 0));
     ls_queues_free(&q);
@@ -1066,8 +1066,8 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
         CHECK(mc_population_spring_feature_init(&spring, flowing) == MC_WORLD_STORAGE_OK &&
               ls_queues_read(w, &q));
         const mc_block *block = r->blocks.m[flowing];
-        CHECK(block != NULL && block->kind == MC_BLOCK_OM_JC && block->subtype.om.b != NULL &&
-              block->subtype.om.c != NULL);
+        CHECK(block != NULL && block->kind == MC_BLOCK_FLOWING_FLUID &&
+              block->subtype.om.b != NULL && block->subtype.om.c != NULL);
         const int32_t old_sources = block->subtype.om.a;
         out = false;
         CHECK(mc_population_spring_place(&spring, w, &random, 8, 64, 8, &out, &e) ==
@@ -1126,7 +1126,7 @@ static bool ls_springs(fixture *f, size_t side, mc_world_chunk *c, mc_world_runt
 
     /* The repeated D key is already in F, so initial deferred containment
      * keeps that SAME queued owner. The nested added tick settles the center
-     * to E before explicit still→flow scheduling requests D again. Scheduler
+     * to E before explicit stillâ†’flow scheduling requests D again. Scheduler
      * comparison108 rejects that mismatch before its World.r read139. A real
      * NULL World.r therefore succeeds here, and both a/o flags clear. */
     ls_cavity(c, w, stone, 12);

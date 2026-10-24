@@ -983,8 +983,10 @@ static bool mp_initialize(mp_probe *probe) {
         return false;
     probe->blocks = view.m;
     const int32_t ids[] = {1, 28, 30, 70, 72, 81, 88, 90};
-    const mc_block_kind kinds[] = {MC_BLOCK_EO_CX, MC_BLOCK_PH_JN, MC_BLOCK_RN_KU, MC_BLOCK_BV_BC,
-                                   MC_BLOCK_BV_BC, MC_BLOCK_OR_JE, MC_BLOCK_OA_IU, MC_BLOCK_AK_Z};
+    const mc_block_kind kinds[] = {MC_BLOCK_STONE,          MC_BLOCK_DETECTOR_RAIL,
+                                   MC_BLOCK_COBWEB,         MC_BLOCK_PRESSURE_PLATE,
+                                   MC_BLOCK_PRESSURE_PLATE, MC_BLOCK_CACTUS,
+                                   MC_BLOCK_SOUL_SAND,      MC_BLOCK_PORTAL};
     for (size_t i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i) {
         const mc_block *block = NULL;
         if (mc_registry_block_get(probe->registry, ids[i], &block, NULL) != MC_REGISTRY_OK ||

@@ -110,6 +110,9 @@ static bool dedicated_fail(natural_probe *probe, const char *operation) {
 }
 
 static const char *dedicated_kind(dedicated_reference_kind kind) {
+    /* Schema discriminators retain their captured spellings. The current C
+     * owners are ChunkProvider, Overworld generator, WorldProvider and
+     * WorldChunkManager; these labels do not rename or reattribute old data. */
     static const char *const names[] = {"mc_world_runtime",
                                         "mc_server_runtime",
                                         "mc_world_provider",
@@ -571,16 +574,16 @@ static bool dedicated_biome_array(natural_probe *probe, const mc_biome_reference
     return emit(&probe->json, "]}");
 }
 
-static bool dedicated_grid(natural_probe *probe, int32_t (*grid)[MC_WORLD_PROVIDER_GRID_WIDTH]) {
+static bool dedicated_grid(natural_probe *probe, int32_t (*grid)[MC_CHUNK_PROVIDER_GRID_WIDTH]) {
     natural_json *json = &probe->json;
     if (grid == NULL || !emit(json, "{\"owner\":") || !dedicated_ref(probe, grid, D_GRID) ||
         !emit(json, ",\"shape\":[32,32],\"element_bits\":32,\"rows\":["))
         return dedicated_fail(probe, "Actual provider matrix");
-    for (size_t x = 0; x < MC_WORLD_PROVIDER_GRID_WIDTH; ++x) {
+    for (size_t x = 0; x < MC_CHUNK_PROVIDER_GRID_WIDTH; ++x) {
         if (!emit(json, "%s{\"owner\":", x == 0 ? "" : ",") ||
             !dedicated_ref(probe, grid[x], D_GRID_ROW) || !emit(json, ",\"values\":["))
             return false;
-        for (size_t z = 0; z < MC_WORLD_PROVIDER_GRID_WIDTH; ++z)
+        for (size_t z = 0; z < MC_CHUNK_PROVIDER_GRID_WIDTH; ++z)
             if (!emit(json, "%s%" PRId32, z == 0 ? "" : ",", grid[x][z]))
                 return false;
         if (!emit(json, "]}"))
@@ -589,15 +592,15 @@ static bool dedicated_grid(natural_probe *probe, int32_t (*grid)[MC_WORLD_PROVID
     return emit(json, "]}");
 }
 
-static bool dedicated_normal(natural_probe *probe) {
-    mc_normal_generator *generator = probe->provider.generator;
-    const mc_world_provider_generation_fields *generation = probe->provider.generation;
+static bool dedicated_overworld(natural_probe *probe) {
+    mc_overworld_generator *generator = probe->provider.generator;
+    const mc_chunk_provider_generation_fields *generation = probe->provider.generation;
     if (generator == NULL || generation == NULL || !generator->initialized ||
-        generator->phase != MC_NORMAL_GENERATOR_PHASE_READY ||
-        generator->origin != MC_NORMAL_GENERATOR_PROVIDER ||
+        generator->phase != MC_OVERWORLD_GENERATOR_PHASE_READY ||
+        generator->origin != MC_OVERWORLD_GENERATOR_PROVIDER ||
         generator->biome_manager != probe->provider.manager ||
         generator->trig != probe->classes->trig)
-        return dedicated_fail(probe, "Actual GAME normal generator");
+        return dedicated_fail(probe, "Actual GAME Overworld generator");
     natural_json *json = &probe->json;
     if (!emit(json, "{\"owner\":") || !dedicated_ref(probe, generator, D_GENERATOR) ||
         !emit(json, ",\"world\":") || !dedicated_ref(probe, probe->provider.world, D_WORLD) ||
@@ -617,7 +620,7 @@ static bool dedicated_normal(natural_probe *probe) {
     const char *const names[] = {
         "low",          "high",        "mix",  "surface_primary", "surface_secondary",
         "column_scale", "column_bias", "later"};
-    const mc_terrain_normal_state *terrain = &generator->terrain;
+    const mc_terrain_overworld_state *terrain = &generator->terrain;
     const mc_noise_perlin *groups[] = {terrain->low_layers,
                                        terrain->high_layers,
                                        terrain->mix_layers,
@@ -661,13 +664,13 @@ static bool dedicated_normal(natural_probe *probe) {
 }
 
 static bool dedicated_dimension(natural_probe *probe, const mc_world_runtime_fields *world) {
-    mc_world_dimension_fields fields;
-    mc_world_dimension_state state;
-    if (mc_world_dimension_fields_get(world->t, &fields) != MC_WORLD_DIMENSION_OK ||
-        mc_world_dimension_state_get(world->t, &state) != MC_WORLD_DIMENSION_OK ||
-        state.kind != MC_WORLD_DIMENSION_OVERWORLD || state.phase != MC_WORLD_DIMENSION_READY ||
+    mc_world_provider_fields fields;
+    mc_world_provider_state state;
+    if (mc_world_provider_fields_get(world->t, &fields) != MC_WORLD_PROVIDER_OK ||
+        mc_world_provider_state_get(world->t, &state) != MC_WORLD_PROVIDER_OK ||
+        state.kind != MC_WORLD_PROVIDER_OVERWORLD || state.phase != MC_WORLD_PROVIDER_READY ||
         fields.a != probe->world || fields.b != probe->provider.biome)
-        return dedicated_fail(probe, "Actual dedicated normal Dimension");
+        return dedicated_fail(probe, "Actual dedicated Overworld WorldProvider");
     natural_json *json = &probe->json;
     return emit(json, "{\"owner\":") && dedicated_ref(probe, world->t, D_DIMENSION) &&
            emit(json, ",\"a\":") && dedicated_ref(probe, fields.a, D_WORLD) &&
@@ -680,20 +683,19 @@ static bool dedicated_dimension(natural_probe *probe, const mc_world_runtime_fie
 }
 
 static bool dedicated_manager(natural_probe *probe) {
-    mc_world_dimension_biome_fields fields;
-    mc_world_biome_game_fields game;
-    if (mc_world_dimension_biome_fields_get(probe->provider.biome, &fields) !=
-            MC_WORLD_DIMENSION_OK ||
-        mc_world_dimension_biome_game_fields_get(probe->provider.biome, &game) !=
-            MC_WORLD_DIMENSION_OK ||
-        fields.fixed || fields.normal == NULL || fields.normal != probe->provider.manager ||
-        game.registry != probe->registry)
+    mc_world_chunk_manager_fields fields;
+    mc_world_chunk_manager_game_fields game;
+    if (mc_world_chunk_manager_fields_get(probe->provider.biome, &fields) != MC_WORLD_PROVIDER_OK ||
+        mc_world_chunk_manager_game_fields_get(probe->provider.biome, &game) !=
+            MC_WORLD_PROVIDER_OK ||
+        fields.fixed || fields.noise_backed == NULL ||
+        fields.noise_backed != probe->provider.manager || game.registry != probe->registry)
         return dedicated_fail(probe, "Actual GAME biome manager");
     natural_json *json = &probe->json;
     if (!emit(json, "{\"owner\":") ||
         !dedicated_ref(probe, probe->provider.biome, D_DIMENSION_BIOME) ||
         !emit(json, ",\"native_numerical_subobject\":") ||
-        !dedicated_ref(probe, fields.normal, D_MANAGER))
+        !dedicated_ref(probe, fields.noise_backed, D_MANAGER))
         return false;
     const mc_biome_double_buffer *buffers[] = {fields.a, fields.b, fields.c};
     for (size_t i = 0; i < sizeof(buffers) / sizeof(buffers[0]); ++i) {
@@ -705,11 +707,12 @@ static bool dedicated_manager(natural_probe *probe) {
     }
     return emit(json, ",\"d\":") && dedicated_biome_array(probe, game.d) &&
            emit(json, ",\"simplex\":{\"temperature\":") &&
-           dedicated_simplex_group(probe, fields.normal->temperature_layers, 4u) &&
+           dedicated_simplex_group(probe, fields.noise_backed->temperature_layers, 4u) &&
            emit(json, ",\"rainfall\":") &&
-           dedicated_simplex_group(probe, fields.normal->rainfall_layers, 4u) &&
+           dedicated_simplex_group(probe, fields.noise_backed->rainfall_layers, 4u) &&
            emit(json, ",\"auxiliary\":") &&
-           dedicated_simplex_group(probe, fields.normal->auxiliary_layers, 2u) && emit(json, "}}");
+           dedicated_simplex_group(probe, fields.noise_backed->auxiliary_layers, 2u) &&
+           emit(json, "}}");
 }
 
 static bool dedicated_spawn_list(natural_probe *probe, const mc_biome_spawn_list *list) {
@@ -801,13 +804,14 @@ static bool dedicated_nibble(natural_probe *probe, const mc_world_chunk_nibble *
 }
 
 static bool dedicated_chunk_children(natural_probe *probe, const mc_world_chunk_fields *fields) {
-    size_t tiles = 0;
+    size_t tile_entities = 0;
     if (fields->l == NULL || fields->m == NULL ||
-        mc_world_chunk_tile_count(fields->l, &tiles) != MC_WORLD_STORAGE_OK || tiles != 0)
-        return dedicated_fail(probe, "Unsupported nonempty actual Chunk Tile map");
+        mc_world_chunk_tile_entity_count(fields->l, &tile_entities) != MC_WORLD_STORAGE_OK ||
+        tile_entities != 0)
+        return dedicated_fail(probe, "Unsupported nonempty actual Chunk TileEntity map");
     natural_json *json = &probe->json;
     if (!emit(json, "\"l\":{\"owner\":") || !dedicated_ref(probe, fields->l, D_TILE_MAP) ||
-        !emit(json, ",\"size\":%zu,\"entries\":[]},\"m\":{\"owner\":", tiles) ||
+        !emit(json, ",\"size\":%zu,\"entries\":[]},\"m\":{\"owner\":", tile_entities) ||
         !dedicated_ref(probe, fields->m, D_SLICE_ARRAY) ||
         !emit(json, ",\"length\":8,\"entries\":["))
         return false;
@@ -1189,14 +1193,15 @@ static bool dedicated_native_private(natural_probe *probe, const mc_world_runtim
         probe->world->entity_deferral.list != world->D ||
         probe->world->nearby_entities.list != world->R ||
         probe->world->collision_boxes.list != world->K ||
-        probe->world->tile_membership[0].identity != world->c ||
-        probe->world->tile_membership[1].identity != world->G ||
+        probe->world->tile_entity_membership[0].identity != world->c ||
+        probe->world->tile_entity_membership[1].identity != world->G ||
         probe->world->entity_membership.count != 0 || probe->world->entity_deferral.count != 0 ||
         probe->world->nearby_entities.count != 0 || probe->world->collision_boxes.count != 0 ||
-        probe->world->tile_membership[0].count != 0 ||
-        probe->world->tile_membership[1].count != 0 || probe->world->entity_containers_retired ||
-        probe->world->tile_containers_retired)
-        return dedicated_fail(probe, "Unsupported actual retained Entity/Tile/collision ledger");
+        probe->world->tile_entity_membership[0].count != 0 ||
+        probe->world->tile_entity_membership[1].count != 0 ||
+        probe->world->entity_containers_retired || probe->world->tile_entity_containers_retired)
+        return dedicated_fail(probe,
+                              "Unsupported actual retained Entity/TileEntity/collision ledger");
     const char *root = mc_world_store_root(world->w);
     if (root == NULL || strlen(root) > MC_WS_PATH_MAX_BYTES)
         return dedicated_fail(probe, "Actual Store path binding");
@@ -1247,7 +1252,8 @@ static bool dedicated_native_private(natural_probe *probe, const mc_world_runtim
               probe->world->local_leases, probe->world->persistent_bindings,
               probe->world->entity_membership.count, probe->world->entity_deferral.count,
               probe->world->nearby_entities.count, probe->world->collision_boxes.count,
-              probe->world->tile_membership[0].count, probe->world->tile_membership[1].count) ||
+              probe->world->tile_entity_membership[0].count,
+              probe->world->tile_entity_membership[1].count) ||
         !storage(json, &probe->world->last_error) ||
         !emit(json, ",\"world_last_registry_error\":") ||
         !registry_diagnostic(json, &probe->world->last_registry_error) ||
@@ -1277,7 +1283,7 @@ static bool dedicated_boundary(natural_probe *probe) {
         construction.entry != MC_WORLD_RUNTIME_SERVER_DEDICATED || world.w != probe->store ||
         world.x != probe->persistence->info || derived.F != probe->dedicated->server ||
         derived.C != world.v ||
-        mc_world_provider_bind_fields(world.v, &probe->provider, &probe->inspection_error) !=
+        mc_chunk_provider_bind_fields(world.v, &probe->provider, &probe->inspection_error) !=
             MC_WORLD_STORAGE_OK ||
         mc_biome_registry_inspect(probe->registry, &biomes, NULL) != MC_REGISTRY_OK)
         return dedicated_fail(probe, "Actual dedicated boundary bindings");
@@ -1291,7 +1297,7 @@ static bool dedicated_boundary(natural_probe *probe) {
         dedicated_base_world(probe, &world) && emit(json, ",\"dedicated\":") &&
         dedicated_derived(probe, &derived) && emit(json, ",\"server\":") &&
         dedicated_server(probe) && emit(json, ",\"cache\":") && dedicated_cache(probe) &&
-        emit(json, ",\"normal\":") && dedicated_normal(probe) && emit(json, ",\"dimension\":") &&
+        emit(json, ",\"normal\":") && dedicated_overworld(probe) && emit(json, ",\"dimension\":") &&
         dedicated_dimension(probe, &world) && emit(json, ",\"manager\":") &&
         dedicated_manager(probe) && emit(json, ",\"biomes\":") &&
         dedicated_biomes(probe, &biomes) && emit(json, ",\"retained_chunks\":") &&

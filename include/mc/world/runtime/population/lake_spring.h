@@ -75,7 +75,7 @@ mc_world_storage_status mc_population_spring_feature_scale(mc_population_spring_
  *
  * Native failure preserves out and all reached world/class/Chunk/hook/queue/
  * Random/flag effects. Existing lower dispatch may explicitly reject genuine
- * unsupported concrete observers, ticks, drops or hooks; they remain unfinished
+ * unsupported concrete WorldAccess receivers, ticks, drops or hooks; they remain unfinished
  * descendants rather than ordinary false or accepted feature parity. See the
  * primary map for exact prefixes and remaining qualification.
  *

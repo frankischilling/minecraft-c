@@ -22,7 +22,7 @@ bool mc_stored_chunk_storage_valid(const mc_stored_chunk *chunk);
 
 /* Build the existing eleven-field fresh schema directly from ACTUAL live
  * state/data, without constructing/copying a mc_stored_chunk owner. Requires
- * normal fixed data and no entity/tile records; actual generated children are
+ * normal fixed data and no entity/TileEntity records; actual generated children are
  * checked by the store dispatcher. Preserve existing scratch/result budgets,
  * exact field types/order and output-failure contracts. No state mutation. */
 mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, int64_t world_time,
@@ -30,10 +30,10 @@ mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, 
                                                    mc_nbt_document **out,
                                                    mc_stored_chunk_error *error);
 
-/* Explicit GAME composition after genuine Entity traversal and live Tile
+/* Explicit GAME composition after genuine Entity traversal and live TileEntity
  * serialization. stored is the SAME payload owning state, or NULL for generated
  * state; chunk is the exact Store-held concrete header borrowing that state.
- * Current Tiles replace the baseline Tile list. For Entities, baseline_entities
+ * Current TileEntities replace the baseline TileEntity list. For Entities, baseline_entities
  * is the SAME retained nonempty List and consumed has exactly one completed
  * factory/adoption result per baseline occurrence. Replace consumed positions
  * with current serialized records in order, drop surplus consumed positions,
@@ -50,7 +50,7 @@ mc_stored_chunk_status mc_stored_chunk_build_fresh(const mc_chunk_state *state, 
  * BOTH simultaneously live input trees first. Failure preserves out. */
 mc_stored_chunk_status mc_stored_chunk_build_game_records(
     const mc_stored_chunk *stored, const mc_chunk_state *state, const mc_world_chunk *chunk,
-    int64_t world_time, const mc_nbt_tag *entity_records, const mc_nbt_tag *tile_records,
+    int64_t world_time, const mc_nbt_tag *entity_records, const mc_nbt_tag *tile_entity_records,
     const mc_nbt_tag *baseline_entities, const bool *consumed, size_t consumed_count,
     const mc_nbt_limits *limits, mc_nbt_tree **out, mc_stored_chunk_error *error);
 

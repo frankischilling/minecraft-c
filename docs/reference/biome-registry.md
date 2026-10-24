@@ -76,14 +76,14 @@ end-to-end original World/provider/surface sampling comparison.
 
 ## Manager source and native contracts
 
-The concrete World/Dimension binding and cached methods follow these paired
+The concrete World/WorldProvider binding and cached methods follow these paired
 method bodies. These source anchors supplement the bootstrap observations;
 they do not extend that observer into a running World comparison.
 
 | Client / server method | Source operations |
 | --- | --- |
 | `xv/ph` World constructor | Three separate seed reads14/41/68, noise publications28/55/82; no Biome active use or stored World field |
-| `xa/os.a()V` normal setup | Allocate manager1, capture Dimension.a6, constructor9, publish b12 |
+| `xa/os.a()V` normal setup | Allocate manager1, capture WorldProvider.a6, constructor9, publish b12 |
 | `wd/nz.a()V`, `ay/aj.a()V` fixed setup | Allocate manager1, actual Biome l/m active use5, constructor10/12, b13/15, then subtype flags/ID |
 | `hd/et` fixed constructor | Actual nullable e6, f11 and g17 after empty superclass construction |
 | `xv/ph` and `hd/et` cached wrapper | Capture d3, virtual direct11, publish d14, reload18, return21 |

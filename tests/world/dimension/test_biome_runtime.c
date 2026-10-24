@@ -1,5 +1,5 @@
 #include "mc/resources/translation/translation.h"
-#include "mc/world/dimension/biome_runtime.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/runtime.h"
 
 #include "../../../src/core/java/random_profile_internal.h"
@@ -39,8 +39,8 @@ typedef struct resources {
     mc_registry_classes *registry;
     mc_java_random_profile *profile;
     mc_world_runtime *world;
-    mc_world_dimension *dimension;
-    mc_world_dimension_biome *manager;
+    mc_world_provider *dimension;
+    mc_world_chunk_manager *manager;
     mc_biome_reference_array **outer_out;
     mc_biome_reference_array *outer_sentinel;
     bool missing, observe, invalid, rebound;
@@ -57,8 +57,8 @@ typedef struct fixture {
     mc_registry_classes *registries[6];
     mc_world_runtime_classes *classes[3];
     mc_world_runtime *worlds[3];
-    mc_world_dimension *dimensions[4];
-    mc_world_dimension_biome *held[2];
+    mc_world_provider *dimensions[4];
+    mc_world_chunk_manager *held[2];
     resources sources[6];
     const mc_biome_reference_array *failed_array;
     bool constructor_retirement_refused;
@@ -124,17 +124,17 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *out, size_t 
 }
 
 static void observe_callback(resources *r) {
-    mc_world_dimension_biome_fields fields = {0};
-    mc_world_biome_game_fields game;
-    mc_world_dimension_error bind_error;
-    mc_world_biome_error sample_error;
+    mc_world_chunk_manager_fields fields = {0};
+    mc_world_chunk_manager_game_fields game;
+    mc_world_provider_error bind_error;
+    mc_world_chunk_manager_error sample_error;
     mc_biome_reference_array *out = r->outer_sentinel;
-    const mc_world_dimension_registry_binding binding = {r->registry, MC_REGISTRY_CLIENT,
-                                                         r->profile};
+    const mc_world_provider_registry_binding binding = {r->registry, MC_REGISTRY_CLIENT,
+                                                        r->profile};
     if (r->world == NULL || r->manager == NULL ||
-        mc_world_dimension_biome_fields_get(r->manager, &fields) != MC_WORLD_DIMENSION_OK ||
-        fields.fixed || fields.normal == NULL || fields.holds < 2 ||
-        mc_world_dimension_biome_game_fields_get(r->manager, &game) != MC_WORLD_DIMENSION_OK ||
+        mc_world_chunk_manager_fields_get(r->manager, &fields) != MC_WORLD_PROVIDER_OK ||
+        fields.fixed || fields.noise_backed == NULL || fields.holds < 2 ||
+        mc_world_chunk_manager_game_fields_get(r->manager, &game) != MC_WORLD_PROVIDER_OK ||
         game.registry != r->registry || game.d != r->outer_sentinel || r->outer_out == NULL ||
         *r->outer_out != r->outer_sentinel ||
         mc_registry_classes_initialize_biomes(r->registry, NULL) != MC_REGISTRY_BUSY ||
@@ -152,22 +152,22 @@ static void observe_callback(resources *r) {
     }
     if (bits(r->channels[0][0]) != first_temperature || bits(r->channels[1][0]) != first_rainfall)
         r->invalid = true;
-    if (mc_world_dimension_bind_game(r->dimension, r->world, &binding, &bind_error) !=
-            MC_WORLD_DIMENSION_REGISTRY_FAILED ||
+    if (mc_world_provider_bind_game(r->dimension, r->world, &binding, &bind_error) !=
+            MC_WORLD_PROVIDER_REGISTRY_FAILED ||
         bind_error.registry.status != MC_REGISTRY_BUSY ||
-        mc_world_dimension_biome_sample(r->manager, 0, 0, 1, 1, NULL, &out, &sample_error) !=
-            MC_WORLD_DIMENSION_REGISTRY_FAILED ||
+        mc_world_chunk_manager_sample(r->manager, 0, 0, 1, 1, NULL, &out, &sample_error) !=
+            MC_WORLD_PROVIDER_REGISTRY_FAILED ||
         sample_error.sampling.registry.status != MC_REGISTRY_BUSY || sample_error.bytecode != 0 ||
         out != r->outer_sentinel)
         r->invalid = true;
     if (!r->rebound) {
-        mc_world_dimension_fields before, after;
-        if (mc_world_dimension_fields_get(r->dimension, &before) != MC_WORLD_DIMENSION_OK ||
+        mc_world_provider_fields before, after;
+        if (mc_world_provider_fields_get(r->dimension, &before) != MC_WORLD_PROVIDER_OK ||
             before.b != r->manager || before.a != r->world ||
-            mc_world_dimension_bind(r->dimension, r->world, NULL) != MC_WORLD_DIMENSION_OK ||
-            mc_world_dimension_fields_get(r->dimension, &after) != MC_WORLD_DIMENSION_OK ||
+            mc_world_provider_bind(r->dimension, r->world, NULL) != MC_WORLD_PROVIDER_OK ||
+            mc_world_provider_fields_get(r->dimension, &after) != MC_WORLD_PROVIDER_OK ||
             after.a != r->world || after.b == before.b ||
-            mc_world_dimension_biome_game_fields_get(after.b, &game) != MC_WORLD_DIMENSION_OK ||
+            mc_world_chunk_manager_game_fields_get(after.b, &game) != MC_WORLD_PROVIDER_OK ||
             game.registry != NULL || game.d != NULL)
             r->invalid = true;
         r->rebound = true;
@@ -245,7 +245,7 @@ static bool create_worlds(fixture *f) {
         if (i < 2)
             CHECK(mc_world_runtime_classes_bind_registry(f->classes[i], f->registries[i], NULL) ==
                   MC_REGISTRY_OK);
-        CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[i], NULL) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_create(0, NULL, &f->dimensions[i], NULL) == MC_WORLD_PROVIDER_OK);
         const mc_world_runtime_world_arguments arguments = {
             .store = f->store, .name = f->name, .seed = 0, .dimension = f->dimensions[i]};
         uint64_t before = uniquifier(f->profile);
@@ -255,19 +255,19 @@ static bool create_worlds(fixture *f) {
         CHECK(mc_world_runtime_construct_world(f->worlds[i], &arguments, NULL) ==
               MC_WORLD_STORAGE_OK);
         mc_world_runtime_construction construction;
-        mc_world_dimension_fields fields;
-        mc_world_biome_game_fields game;
+        mc_world_provider_fields fields;
+        mc_world_chunk_manager_game_fields game;
         CHECK(mc_world_runtime_construction_get(f->worlds[i], &construction) ==
               MC_WORLD_STORAGE_OK);
         CHECK(construction.phase == MC_WORLD_RUNTIME_READY);
-        CHECK(mc_world_dimension_fields_get(f->dimensions[i], &fields) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_fields_get(f->dimensions[i], &fields) == MC_WORLD_PROVIDER_OK);
         CHECK(fields.a == f->worlds[i] && fields.b != NULL);
-        CHECK(mc_world_dimension_biome_game_fields_get(fields.b, &game) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_game_fields_get(fields.b, &game) == MC_WORLD_PROVIDER_OK);
         CHECK(game.registry == (i < 2 ? f->registries[i] : NULL) && game.d == NULL &&
               game.fixed_e == NULL);
         CHECK(uniquifier(f->profile) == advance(before, 3));
         if (i < 2) {
-            CHECK(mc_world_dimension_biome_retain(fields.b) == MC_WORLD_DIMENSION_OK);
+            CHECK(mc_world_chunk_manager_retain(fields.b) == MC_WORLD_PROVIDER_OK);
             f->held[i] = fields.b;
             f->sources[i].world = f->worlds[i];
             f->sources[i].dimension = f->dimensions[i];
@@ -280,64 +280,63 @@ cleanup:
     return ok;
 }
 
-static bool fields_same(const mc_world_dimension_fields *a, const mc_world_dimension_fields *b) {
+static bool fields_same(const mc_world_provider_fields *a, const mc_world_provider_fields *b) {
     return a->a == b->a && a->b == b->b && a->c == b->c && a->d == b->d && a->e == b->e &&
            a->f == b->f && a->g == b->g && a->h == b->h;
 }
 
 static bool test_bindings(fixture *f) {
     bool ok = false;
-    mc_world_dimension_fields before, after;
-    mc_world_dimension_state state_before, state_after;
-    mc_world_dimension_error error;
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[3], NULL) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_fields_get(f->dimensions[3], &before) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_state_get(f->dimensions[3], &state_before) == MC_WORLD_DIMENSION_OK);
+    mc_world_provider_fields before, after;
+    mc_world_provider_state state_before, state_after;
+    mc_world_provider_error error;
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[3], NULL) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_fields_get(f->dimensions[3], &before) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_state_get(f->dimensions[3], &state_before) == MC_WORLD_PROVIDER_OK);
     uint64_t start = uniquifier(f->profile), other_start = uniquifier(f->other_profile);
-    const mc_world_dimension_registry_binding valid = {f->registries[0], MC_REGISTRY_CLIENT,
-                                                       f->profile};
-    const mc_world_dimension_registry_binding bad[] = {
+    const mc_world_provider_registry_binding valid = {f->registries[0], MC_REGISTRY_CLIENT,
+                                                      f->profile};
+    const mc_world_provider_registry_binding bad[] = {
         {NULL, MC_REGISTRY_CLIENT, f->profile},
         {f->registries[0], MC_REGISTRY_SERVER, f->profile},
         {f->registries[0], MC_REGISTRY_CLIENT, f->other_profile},
         {f->registries[3], MC_REGISTRY_SERVER, f->profile},
         {f->registries[4], MC_REGISTRY_CLIENT, f->other_profile},
         {f->registries[5], MC_REGISTRY_CLIENT, f->profile}};
-    CHECK(mc_world_dimension_bind_game(NULL, f->worlds[0], &valid, &error) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-    CHECK(mc_world_dimension_bind_game(f->dimensions[3], f->worlds[0], NULL, &error) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
+    CHECK(mc_world_provider_bind_game(NULL, f->worlds[0], &valid, &error) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+    CHECK(mc_world_provider_bind_game(f->dimensions[3], f->worlds[0], NULL, &error) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
     for (size_t i = 0; i < COUNT(bad); ++i) {
-        CHECK(mc_world_dimension_bind_game(f->dimensions[3], f->worlds[0], &bad[i], &error) ==
-              MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-        CHECK(mc_world_dimension_fields_get(f->dimensions[3], &after) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_bind_game(f->dimensions[3], f->worlds[0], &bad[i], &error) ==
+              MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+        CHECK(mc_world_provider_fields_get(f->dimensions[3], &after) == MC_WORLD_PROVIDER_OK &&
               fields_same(&before, &after));
-        CHECK(mc_world_dimension_state_get(f->dimensions[3], &state_after) ==
-              MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_state_get(f->dimensions[3], &state_after) == MC_WORLD_PROVIDER_OK);
         CHECK(state_after.holds == state_before.holds &&
               state_after.direct_allocation_bytes == state_before.direct_allocation_bytes);
         CHECK(state_after.bind_pc == state_before.bind_pc &&
               state_after.setup_pc == state_before.setup_pc);
     }
-    CHECK(mc_world_dimension_bind_game(f->dimensions[3], f->worlds[2], &valid, &error) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-    CHECK(mc_world_dimension_fields_get(f->dimensions[3], &after) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_bind_game(f->dimensions[3], f->worlds[2], &valid, &error) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+    CHECK(mc_world_provider_fields_get(f->dimensions[3], &after) == MC_WORLD_PROVIDER_OK &&
           fields_same(&before, &after));
     for (size_t i = 3; i < COUNT(f->registries); ++i) {
         CHECK(registry_cold(f->registries[i]) && f->sources[i].callbacks == 0);
         CHECK(mc_registry_classes_free(f->registries[i], NULL) == MC_REGISTRY_OK);
         f->registries[i] = NULL; /* Rejected candidates retained no hidden borrow. */
     }
-    CHECK(mc_world_dimension_bind_game(f->dimensions[3], f->worlds[0], &valid, &error) ==
-          MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_fields_get(f->dimensions[3], &after) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_bind_game(f->dimensions[3], f->worlds[0], &valid, &error) ==
+          MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_fields_get(f->dimensions[3], &after) == MC_WORLD_PROVIDER_OK);
     CHECK(after.a == f->worlds[0] && after.b != NULL && after.b != f->held[0]);
-    mc_world_biome_game_fields game;
-    mc_world_dimension_biome_fields fields;
-    CHECK(mc_world_dimension_biome_game_fields_get(after.b, &game) == MC_WORLD_DIMENSION_OK);
+    mc_world_chunk_manager_game_fields game;
+    mc_world_chunk_manager_fields fields;
+    CHECK(mc_world_chunk_manager_game_fields_get(after.b, &game) == MC_WORLD_PROVIDER_OK);
     CHECK(game.registry == f->registries[0] && game.d == NULL && game.fixed_e == NULL);
-    CHECK(mc_world_dimension_biome_fields_get(after.b, &fields) == MC_WORLD_DIMENSION_OK);
-    CHECK(!fields.fixed && fields.normal != NULL && fields.normal->initialized == 1);
+    CHECK(mc_world_chunk_manager_fields_get(after.b, &fields) == MC_WORLD_PROVIDER_OK);
+    CHECK(!fields.fixed && fields.noise_backed != NULL && fields.noise_backed->initialized == 1);
     CHECK(fields.a->data == NULL && fields.b->data == NULL && fields.c->data == NULL);
     CHECK(registry_cold(f->registries[0]) && f->sources[0].callbacks == 0);
     CHECK(uniquifier(f->profile) == start && uniquifier(f->other_profile) == other_start);
@@ -346,12 +345,12 @@ cleanup:
     return ok;
 }
 
-static bool result_matches(mc_world_dimension_biome *manager, const mc_biome_reference_array *array,
+static bool result_matches(mc_world_chunk_manager *manager, const mc_biome_reference_array *array,
                            size_t cells) {
-    mc_world_dimension_biome_fields fields;
-    mc_world_biome_game_fields game;
-    if (mc_world_dimension_biome_fields_get(manager, &fields) != MC_WORLD_DIMENSION_OK ||
-        mc_world_dimension_biome_game_fields_get(manager, &game) != MC_WORLD_DIMENSION_OK ||
+    mc_world_chunk_manager_fields fields;
+    mc_world_chunk_manager_game_fields game;
+    if (mc_world_chunk_manager_fields_get(manager, &fields) != MC_WORLD_PROVIDER_OK ||
+        mc_world_chunk_manager_game_fields_get(manager, &game) != MC_WORLD_PROVIDER_OK ||
         mc_biome_reference_array_length(array) < cells || fields.a->length < cells ||
         fields.b->length < cells)
         return false;
@@ -369,100 +368,100 @@ static bool result_matches(mc_world_dimension_biome *manager, const mc_biome_ref
 static bool test_success(fixture *f) {
     bool ok = false;
     resources *r = &f->sources[0];
-    mc_world_dimension_biome *manager = f->held[0];
-    mc_world_dimension_biome_fields fields;
-    mc_world_biome_game_fields game;
-    mc_world_dimension_fields dimension;
-    mc_world_biome_error error;
+    mc_world_chunk_manager *manager = f->held[0];
+    mc_world_chunk_manager_fields fields;
+    mc_world_chunk_manager_game_fields game;
+    mc_world_provider_fields dimension;
+    mc_world_chunk_manager_error error;
     mc_biome_reference_array *cached = NULL, *direct = NULL, *out = NULL;
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK);
     size_t holds_before = fields.holds;
     uint64_t start = uniquifier(f->profile);
     r->observe = true;
     r->outer_out = &cached;
     r->outer_sentinel = NULL;
-    CHECK(mc_world_dimension_biome_cached(manager, 0, 0, 2, 2, &cached, &error) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_cached(manager, 0, 0, 2, 2, &cached, &error) ==
+          MC_WORLD_PROVIDER_OK);
     r->observe = false;
     r->outer_out = NULL;
     CHECK(!r->invalid && r->callbacks == 3 && r->rebound);
     CHECK(cached != NULL && mc_biome_reference_array_length(cached) == 4 &&
           result_matches(manager, cached, 4));
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == cached);
-    CHECK(mc_world_dimension_fields_get(f->dimensions[0], &dimension) == MC_WORLD_DIMENSION_OK);
-    CHECK(dimension.b != manager && mc_world_dimension_world(f->dimensions[0]) == f->worlds[0]);
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_fields_get(f->dimensions[0], &dimension) == MC_WORLD_PROVIDER_OK);
+    CHECK(dimension.b != manager && mc_world_provider_world(f->dimensions[0]) == f->worlds[0]);
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.holds == holds_before - 1);
     CHECK(uniquifier(f->profile) == advance(start, 5) && f->profile->math == NULL);
 
     /* The new Dimension manager is numerical-only. The completed cached d
      * belongs to the separately held old receiver, not the replacement. */
-    mc_world_biome_game_fields replacement;
-    CHECK(mc_world_dimension_biome_game_fields_get(dimension.b, &replacement) ==
-          MC_WORLD_DIMENSION_OK);
+    mc_world_chunk_manager_game_fields replacement;
+    CHECK(mc_world_chunk_manager_game_fields_get(dimension.b, &replacement) ==
+          MC_WORLD_PROVIDER_OK);
     CHECK(replacement.registry == NULL && replacement.d == NULL);
     out = cached;
-    CHECK(mc_world_dimension_biome_sample(dimension.b, 0, 0, 1, 1, NULL, &out, &error) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_sample(dimension.b, 0, 0, 1, 1, NULL, &out, &error) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(error.sampling.registry.status == MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY &&
           error.bytecode == 0 && out == cached);
-    CHECK(mc_world_dimension_biome_sample(manager, 17, -9, 2, 2, NULL, &direct, &error) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_sample(manager, 17, -9, 2, 2, NULL, &direct, &error) ==
+          MC_WORLD_PROVIDER_OK);
     CHECK(direct != NULL && direct != cached && result_matches(manager, direct, 4));
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == cached);
-    CHECK(mc_world_dimension_biome_cached(manager, 16, 16, 3, 3, &cached, &error) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_cached(manager, 16, 16, 3, 3, &cached, &error) ==
+          MC_WORLD_PROVIDER_OK);
     CHECK(mc_biome_reference_array_length(cached) == 9 && result_matches(manager, cached, 9));
     const mc_biome *suffix[9];
     for (size_t i = 0; i < COUNT(suffix); ++i)
         suffix[i] = mc_biome_reference_array_data(cached)[i];
     out = NULL;
-    CHECK(mc_world_dimension_biome_sample(manager, -16, 16, 1, 1, cached, &out, &error) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_sample(manager, -16, 16, 1, 1, cached, &out, &error) ==
+          MC_WORLD_PROVIDER_OK);
     CHECK(out == cached && mc_biome_reference_array_length(out) == 9 &&
           result_matches(manager, out, 1));
     for (size_t i = 1; i < COUNT(suffix); ++i)
         CHECK(mc_biome_reference_array_data(cached)[i] == suffix[i]);
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == cached);
     const mc_biome *point = NULL, *chunk = NULL;
-    CHECK(mc_world_dimension_biome_point(manager, 7, -13, &point, &error) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_point(manager, 7, -13, &point, &error) == MC_WORLD_PROVIDER_OK);
     CHECK(point == mc_biome_reference_array_data(cached)[0]);
     const int32_t coordinates[][4] = {{INT32_MAX, INT32_MIN, -16, 0},
                                       {INT32_MIN, INT32_MAX, 0, -16},
                                       {-1, 1, -16, 16},
                                       {1, -1, 16, -16}};
     for (size_t i = 0; i < COUNT(coordinates); ++i) {
-        CHECK(mc_world_dimension_biome_chunk(manager, coordinates[i][0], coordinates[i][1], &chunk,
-                                             &error) == MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_chunk(manager, coordinates[i][0], coordinates[i][1], &chunk,
+                                           &error) == MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK);
         uint64_t temperature = bits(fields.a->data[0]), rainfall = bits(fields.b->data[0]);
-        CHECK(mc_world_dimension_biome_point(manager, coordinates[i][2], coordinates[i][3], &point,
-                                             &error) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_chunk_manager_point(manager, coordinates[i][2], coordinates[i][3], &point,
+                                           &error) == MC_WORLD_PROVIDER_OK);
         CHECK(point == chunk && bits(fields.a->data[0]) == temperature &&
               bits(fields.b->data[0]) == rainfall);
     }
     out = cached;
-    CHECK(mc_world_dimension_biome_sample(manager, 0, 0, 2, 1, cached, &out, &error) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
+    CHECK(mc_world_chunk_manager_sample(manager, 0, 0, 2, 1, cached, &out, &error) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
     CHECK(error.bytecode == 0 && out == cached);
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == cached);
-    CHECK(mc_world_dimension_biome_sample(NULL, 0, 0, 1, 1, NULL, &out, NULL) ==
-              MC_WORLD_DIMENSION_INVALID_ARGUMENT &&
+    CHECK(mc_world_chunk_manager_sample(NULL, 0, 0, 1, 1, NULL, &out, NULL) ==
+              MC_WORLD_PROVIDER_INVALID_ARGUMENT &&
           out == cached);
-    CHECK(mc_world_dimension_biome_cached(manager, 0, 0, 1, 1, NULL, NULL) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-    CHECK(mc_world_dimension_biome_point(manager, 0, 0, NULL, NULL) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-    CHECK(mc_world_dimension_biome_chunk(manager, 0, 0, NULL, NULL) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-    CHECK(mc_world_dimension_biome_game_fields_get(NULL, &game) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, NULL) ==
-          MC_WORLD_DIMENSION_INVALID_ARGUMENT);
+    CHECK(mc_world_chunk_manager_cached(manager, 0, 0, 1, 1, NULL, NULL) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+    CHECK(mc_world_chunk_manager_point(manager, 0, 0, NULL, NULL) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+    CHECK(mc_world_chunk_manager_chunk(manager, 0, 0, NULL, NULL) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+    CHECK(mc_world_chunk_manager_game_fields_get(NULL, &game) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, NULL) ==
+          MC_WORLD_PROVIDER_INVALID_ARGUMENT);
     CHECK(uniquifier(f->profile) == advance(start, 5) && r->callbacks == 3 && !r->invalid);
     ok = true;
 cleanup:
@@ -474,13 +473,12 @@ cleanup:
 static bool test_failure(fixture *f) {
     bool ok = false;
     resources *r = &f->sources[1];
-    mc_world_dimension_biome *manager = f->held[1];
-    mc_world_biome_game_fields game;
-    mc_world_dimension_biome_fields fields;
-    mc_world_biome_error first, retry;
+    mc_world_chunk_manager *manager = f->held[1];
+    mc_world_chunk_manager_game_fields game;
+    mc_world_chunk_manager_fields fields;
+    mc_world_chunk_manager_error first, retry;
     mc_biome_reference_array *empty = NULL, *out = NULL;
-    CHECK(mc_world_dimension_biome_cached(manager, 0, 0, 0, 0, &empty, NULL) ==
-          MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_cached(manager, 0, 0, 0, 0, &empty, NULL) == MC_WORLD_PROVIDER_OK);
     CHECK(empty != NULL && mc_biome_reference_array_length(empty) == 0 &&
           mc_biome_reference_array_data(empty) != NULL);
     CHECK(registry_cold(f->registries[1]) && r->callbacks == 0);
@@ -489,8 +487,8 @@ static bool test_failure(fixture *f) {
     r->observe = true;
     r->outer_out = &out;
     r->outer_sentinel = empty;
-    CHECK(mc_world_dimension_biome_cached(manager, 0, 0, 2, 2, &out, &first) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_cached(manager, 0, 0, 2, 2, &out, &first) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     r->observe = false;
     r->outer_out = NULL;
     CHECK(!r->invalid && r->callbacks == 1 && r->rebound && out == empty);
@@ -506,9 +504,9 @@ static bool test_failure(fixture *f) {
     for (size_t i = 0; i < 4; ++i)
         CHECK(mc_biome_reference_array_data(first.sampling.array)[i] == NULL);
     f->failed_array = first.sampling.array; /* Diagnostic view, never ordinary input. */
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == empty);
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK);
     const mc_biome_double_buffer *channels[] = {fields.a, fields.b, fields.c};
     for (size_t c = 0; c < COUNT(channels); ++c) {
         CHECK(channels[c]->length == 4);
@@ -516,33 +514,32 @@ static bool test_failure(fixture *f) {
             CHECK(bits(channels[c]->data[i]) == bits(r->channels[c][i]));
     }
     CHECK(uniquifier(f->profile) == advance(start, 5));
-    CHECK(mc_world_dimension_biome_sample(manager, 1, 2, 2, 2, empty, &out, &retry) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_sample(manager, 1, 2, 2, 2, empty, &out, &retry) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(out == empty && retry.sampling.registry.status == MC_REGISTRY_FAILED_INITIALIZATION);
     CHECK(retry.sampling.cells_completed == 0 && retry.sampling.next_index == 1 &&
           retry.sampling.sampler_pc == 314);
     CHECK(same_cause(&first.sampling.registry, &retry.sampling.registry));
     CHECK(retry.sampling.array != NULL && retry.sampling.array != first.sampling.array);
-    CHECK(mc_world_dimension_biome_game_fields_get(manager, &game) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_game_fields_get(manager, &game) == MC_WORLD_PROVIDER_OK &&
           game.d == empty);
-    mc_world_biome_game_fields good;
-    CHECK(mc_world_dimension_biome_game_fields_get(f->held[0], &good) == MC_WORLD_DIMENSION_OK);
+    mc_world_chunk_manager_game_fields good;
+    CHECK(mc_world_chunk_manager_game_fields_get(f->held[0], &good) == MC_WORLD_PROVIDER_OK);
     const mc_biome *sentinel = mc_biome_reference_array_data(good.d)[0];
     const mc_biome *saved_sentinel = sentinel;
     CHECK(sentinel != NULL);
-    CHECK(mc_world_dimension_biome_point(manager, 7, 9, &sentinel, &retry) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_point(manager, 7, 9, &sentinel, &retry) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(sentinel == saved_sentinel && retry.bytecode == 5 &&
           same_cause(&first.sampling.registry, &retry.sampling.registry));
-    CHECK(mc_world_dimension_biome_chunk(manager, -1, 1, &sentinel, &retry) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    CHECK(mc_world_chunk_manager_chunk(manager, -1, 1, &sentinel, &retry) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(sentinel == saved_sentinel && retry.bytecode == 13 &&
           same_cause(&first.sampling.registry, &retry.sampling.registry));
     CHECK(r->callbacks == 1 && r->streams[0].reads == 0 &&
           uniquifier(f->profile) == advance(start, 5));
     out = NULL;
-    CHECK(mc_world_dimension_biome_cached(manager, 0, 0, 0, 0, &out, NULL) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_cached(manager, 0, 0, 0, 0, &out, NULL) == MC_WORLD_PROVIDER_OK &&
           out == empty);
     CHECK(mc_biome_reference_array_data(f->failed_array) != NULL &&
           mc_biome_reference_array_length(f->failed_array) == 4);
@@ -557,7 +554,7 @@ static bool test_world_constructor_causes(fixture *f) {
     bool ok = false;
     mc_world_runtime_classes *classes = NULL;
     mc_world_runtime *worlds[3] = {NULL};
-    mc_world_dimension *dimensions[3] = {NULL};
+    mc_world_provider *dimensions[3] = {NULL};
     mc_registry_error first = {0};
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     const mc_world_runtime_entry entries[] = {MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA,
@@ -572,19 +569,19 @@ static bool test_world_constructor_causes(fixture *f) {
           MC_REGISTRY_OK);
     CHECK(registry_cold(f->registries[2]) && f->sources[2].callbacks == 0);
     for (size_t i = 0; i < COUNT(worlds); ++i) {
-        mc_world_dimension_fields before, after;
-        mc_world_dimension_state dimension_state;
-        mc_world_biome_game_fields game;
+        mc_world_provider_fields before, after;
+        mc_world_provider_state dimension_state;
+        mc_world_chunk_manager_game_fields game;
         mc_world_runtime_fields fields;
         mc_world_runtime_construction state;
         mc_world_storage_error error;
-        CHECK(mc_world_dimension_create(-1, NULL, &dimensions[i], NULL) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_create(-1, NULL, &dimensions[i], NULL) == MC_WORLD_PROVIDER_OK);
         /* This preceding numerical manager is real. Failed GAME setup must
          * preserve it while publishing the newly constructing World at a2. */
-        CHECK(mc_world_dimension_bind(dimensions[i], NULL, NULL) == MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_fields_get(dimensions[i], &before) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_bind(dimensions[i], NULL, NULL) == MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_provider_fields_get(dimensions[i], &before) == MC_WORLD_PROVIDER_OK);
         CHECK(before.a == NULL && before.b != NULL && before.g == -1);
-        CHECK(mc_world_dimension_biome_game_fields_get(before.b, &game) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_game_fields_get(before.b, &game) == MC_WORLD_PROVIDER_OK &&
               game.registry == NULL && game.d == NULL);
         const mc_world_runtime_world_arguments arguments = {.store = f->store,
                                                             .name = f->name,
@@ -605,12 +602,12 @@ static bool test_world_constructor_causes(fixture *f) {
         CHECK(mc_world_runtime_fields_get(worlds[i], &fields) == MC_WORLD_STORAGE_OK);
         CHECK(fields.w == f->store && fields.x != NULL && fields.z != NULL &&
               fields.t == dimensions[i] && fields.v == NULL);
-        CHECK(mc_world_dimension_fields_get(dimensions[i], &after) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_fields_get(dimensions[i], &after) == MC_WORLD_PROVIDER_OK);
         CHECK(after.a == worlds[i] && after.b == before.b && after.c == before.c &&
               after.d == before.d && after.e == before.e && after.f == before.f &&
               after.g == before.g && after.h == before.h);
-        CHECK(mc_world_dimension_state_get(dimensions[i], &dimension_state) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_provider_state_get(dimensions[i], &dimension_state) ==
+                  MC_WORLD_PROVIDER_OK &&
               dimension_state.setup_pc == 5);
         const mc_registry_error *cause = mc_world_runtime_last_registry_error(worlds[i]);
         CHECK(cause != NULL && cause->status == (i == 0 ? MC_REGISTRY_NULL_REFERENCE
@@ -640,7 +637,7 @@ static bool test_world_constructor_causes(fixture *f) {
     ok = true;
 cleanup:
     for (size_t i = 0; i < COUNT(dimensions); ++i)
-        mc_world_dimension_unbind(dimensions[i]);
+        mc_world_provider_unbind(dimensions[i]);
     for (size_t i = 0; i < COUNT(worlds); ++i) {
         if (worlds[i] == NULL)
             continue;
@@ -652,7 +649,7 @@ cleanup:
         worlds[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(dimensions); ++i)
-        mc_world_dimension_release(dimensions[i]);
+        mc_world_provider_release(dimensions[i]);
     if (mc_world_runtime_classes_free(classes, NULL) != MC_WORLD_STORAGE_OK) {
         f->constructor_retirement_refused = true;
         return false;
@@ -662,7 +659,7 @@ cleanup:
 
 static bool retire_worlds(fixture *f) {
     for (size_t i = 0; i < COUNT(f->dimensions); ++i)
-        mc_world_dimension_unbind(f->dimensions[i]);
+        mc_world_provider_unbind(f->dimensions[i]);
     for (size_t i = 0; i < COUNT(f->worlds); ++i) {
         if (f->worlds[i] == NULL)
             continue;
@@ -673,7 +670,7 @@ static bool retire_worlds(fixture *f) {
         f->sources[i].world = NULL;
     }
     for (size_t i = 0; i < COUNT(f->dimensions); ++i) {
-        mc_world_dimension_release(f->dimensions[i]);
+        mc_world_provider_release(f->dimensions[i]);
         f->dimensions[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->classes); ++i) {
@@ -687,24 +684,24 @@ static bool retire_worlds(fixture *f) {
 static bool test_lifetime(fixture *f) {
     bool ok = false;
     CHECK(retire_worlds(f));
-    mc_world_dimension_biome_fields fields;
+    mc_world_chunk_manager_fields fields;
     for (size_t i = 0; i < COUNT(f->held); ++i) {
-        CHECK(mc_world_dimension_biome_fields_get(f->held[i], &fields) == MC_WORLD_DIMENSION_OK);
-        CHECK(fields.holds == 1 && fields.normal != NULL && fields.normal->initialized == 1);
+        CHECK(mc_world_chunk_manager_fields_get(f->held[i], &fields) == MC_WORLD_PROVIDER_OK);
+        CHECK(fields.holds == 1 && fields.noise_backed != NULL &&
+              fields.noise_backed->initialized == 1);
         CHECK(mc_registry_classes_free(f->registries[i], NULL) == MC_REGISTRY_BUSY);
     }
     const mc_biome *point = NULL;
-    CHECK(mc_world_dimension_biome_point(f->held[0], 4, -8, &point, NULL) ==
-              MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_point(f->held[0], 4, -8, &point, NULL) == MC_WORLD_PROVIDER_OK &&
           point != NULL);
-    mc_world_biome_error failure;
-    CHECK(mc_world_dimension_biome_point(f->held[1], 4, -8, &point, &failure) ==
-          MC_WORLD_DIMENSION_REGISTRY_FAILED);
+    mc_world_chunk_manager_error failure;
+    CHECK(mc_world_chunk_manager_point(f->held[1], 4, -8, &point, &failure) ==
+          MC_WORLD_PROVIDER_REGISTRY_FAILED);
     CHECK(point != NULL && failure.sampling.registry.status == MC_REGISTRY_FAILED_INITIALIZATION);
     CHECK(f->sources[0].callbacks == 3 && f->sources[1].callbacks == 1);
     CHECK(mc_biome_reference_array_length(f->failed_array) == 4);
     for (size_t i = 0; i < COUNT(f->held); ++i) {
-        mc_world_dimension_biome_release(f->held[i]);
+        mc_world_chunk_manager_release(f->held[i]);
         f->held[i] = NULL;
         f->sources[i].manager = NULL;
         CHECK(mc_registry_classes_free(f->registries[i], NULL) == MC_REGISTRY_OK);
@@ -724,7 +721,7 @@ static bool cleanup_fixture(fixture *f) {
     if (!retire_worlds(f))
         return false; /* Never free dependencies beneath a surviving borrower. */
     for (size_t i = 0; i < COUNT(f->held); ++i) {
-        mc_world_dimension_biome_release(f->held[i]);
+        mc_world_chunk_manager_release(f->held[i]);
         f->held[i] = NULL;
     }
     for (size_t i = 0; i < COUNT(f->registries); ++i) {

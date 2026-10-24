@@ -23,7 +23,7 @@ import zlib
 ROOT = Path(__file__).absolute().parents[3]
 SCENARIO = "entity-minecart-storage"
 FIXTURE = "tests/entity/minecart/test_storage.c"
-INCLUDED_FIXTURE = "tests/world/runtime/tiles/test_tiles.c"
+INCLUDED_FIXTURE = "tests/world/runtime/tile_entities/test_tile_entities.c"
 
 
 class Failure(Exception):

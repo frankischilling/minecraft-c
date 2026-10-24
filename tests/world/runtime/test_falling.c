@@ -385,15 +385,15 @@ static bool falling_failure_prefix(fixture *f, size_t side) {
     CHECK(mc_registry_block_get(r, 12, &sand, NULL) == MC_REGISTRY_OK && sand != NULL &&
           mc_registry_falling_flag_get(r, &flag, NULL) == MC_REGISTRY_OK &&
           at(w, 12, 64, 16, 12, 0));
-    mc_world_reference_list *observers = w->fields.u;
+    mc_world_reference_list *world_accesses = w->fields.u;
     CHECK(mc_registry_falling_flag_set(r, true, NULL) == MC_REGISTRY_OK);
     w->fields.u = NULL;
     const bool completed = falling_call(w, sand, 12, 64, 16, NULL, &error);
-    w->fields.u = observers;
+    w->fields.u = world_accesses;
     const mc_registry_status restored = mc_registry_falling_flag_set(r, flag, NULL);
     CHECK(restored == MC_REGISTRY_OK && !completed && error.status != MC_WORLD_STORAGE_OK &&
           error.falling_tick_bytecode == 6 && error.falling_bytecode == 79 &&
-          error.observer_bytecode == 9 && at(w, 12, 64, 16, 0, 0) && at(w, 12, 5, 16, 0, 0) &&
+          error.world_access_bytecode == 9 && at(w, 12, 64, 16, 0, 0) && at(w, 12, 5, 16, 0, 0) &&
           w->active_calls == 0 && w->local_leases == 0);
     ok = true;
 cleanup:

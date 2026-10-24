@@ -149,43 +149,43 @@ static bool drop_quantity(mc_world_runtime *world, const mc_block *block, mc_jav
     int32_t draw, value;
     switch (block->kind) {
         /* Actual constant bodies, not a zero-drop fallback. */
-        case MC_BLOCK_AH_T:
-        case MC_BLOCK_AK_Z:
-        case MC_BLOCK_DD_BZ:
-        case MC_BLOCK_FK_DO:
-        case MC_BLOCK_H_G:
-        case MC_BLOCK_HB_ER:
-        case MC_BLOCK_JR_GJ:
-        case MC_BLOCK_NK_IK:
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
-        case MC_BLOCK_YQ_PT:
-        case MC_BLOCK_UM_MW:
+        case MC_BLOCK_TNT:
+        case MC_BLOCK_PORTAL:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_PISTON_HEAD:
+        case MC_BLOCK_BOOKSHELF:
+        case MC_BLOCK_SNOW_LAYER:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
+        case MC_BLOCK_FIRE:
+        case MC_BLOCK_CAKE:
             *out = 0;
             return true;
-        case MC_BLOCK_AC_P:
-        case MC_BLOCK_RZ_LF:
+        case MC_BLOCK_SNOW_BLOCK:
+        case MC_BLOCK_CLAY:
             *out = 4;
             return true;
-        case MC_BLOCK_BK_AR:
+        case MC_BLOCK_LEAVES:
             frame = drop_frame_make(world, block, "bk", "ar", "a(Ljava/util/Random;)I", error);
             if (!drop_random_int(&frame, random, 20, 3, &draw))
                 return false;
             *out = draw == 0 ? 1 : 0;
             return true;
-        case MC_BLOCK_BS_AZ:
+        case MC_BLOCK_REDSTONE_ORE:
             frame = drop_frame_make(world, block, "bs", "az", "a(Ljava/util/Random;)I", error);
             if (!drop_random_int(&frame, random, 2, 3, &draw))
                 return false;
             *out = mc_java_i32_add(4, draw);
             return true;
-        case MC_BLOCK_LY_HR:
+        case MC_BLOCK_GLOWSTONE:
             frame = drop_frame_make(world, block, "ly", "hr", "a(Ljava/util/Random;)I", error);
             if (!drop_random_int(&frame, random, 3, 3, &draw))
                 return false;
             *out = mc_java_i32_add(2, draw);
             return true;
-        case MC_BLOCK_MT_IC:
+        case MC_BLOCK_ORE:
             frame = drop_frame_make(world, block, "mt", "ic", "a(Ljava/util/Random;)I", error);
             value = block->fields.bn; /* own read1 precedes active static4 */
             if (!drop_block_id(&frame, "O", 4, 7, &draw))
@@ -198,10 +198,10 @@ static bool drop_quantity(mc_world_runtime *world, const mc_block *block, mc_jav
                 *out = 1;
             }
             return true;
-        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_SLAB:
             *out = block->subtype.ys.b ? 2 : 1;
             return true;
-        case MC_BLOCK_SS_LU:
+        case MC_BLOCK_STAIRS:
             frame = drop_frame_make(world, block, "ss", "lu", "a(Ljava/util/Random;)I", error);
             drop_at(&frame, 5);
             if (block->subtype.ss.a == NULL)
@@ -225,38 +225,38 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
     const mc_block *delegate;
     mc_registry_error cause;
     switch (block->kind) {
-        case MC_BLOCK_AC_P:
+        case MC_BLOCK_SNOW_BLOCK:
             frame = drop_frame_make(world, block, "ac", "p", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aB", 0, 3, out);
-        case MC_BLOCK_BK_AR:
+        case MC_BLOCK_LEAVES:
             frame = drop_frame_make(world, block, "bk", "ar", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "z", 0, 3, out);
-        case MC_BLOCK_BS_AZ:
+        case MC_BLOCK_REDSTONE_ORE:
             frame = drop_frame_make(world, block, "bs", "az", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aA", 0, 3, out);
-        case MC_BLOCK_DB_BY:
+        case MC_BLOCK_REDSTONE_TORCH:
             frame = drop_frame_make(world, block, "db", "by", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "aR", 0, 3, out);
-        case MC_BLOCK_DD_BZ:
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
-        case MC_BLOCK_UM_MW:
-        case MC_BLOCK_UT_MZ:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
+        case MC_BLOCK_CAKE:
+        case MC_BLOCK_MOVING_PISTON:
             *out = 0;
             return true;
-        case MC_BLOCK_EO_CX:
+        case MC_BLOCK_STONE:
             frame = drop_frame_make(world, block, "eo", "cx", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "x", 0, 3, out);
-        case MC_BLOCK_FB_DH:
+        case MC_BLOCK_OBSIDIAN:
             frame = drop_frame_make(world, block, "fb", "dh", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "aq", 0, 3, out);
-        case MC_BLOCK_JB_FZ:
+        case MC_BLOCK_DEAD_BUSH:
             *out = -1;
             return true;
-        case MC_BLOCK_JR_GJ:
+        case MC_BLOCK_SNOW_LAYER:
             frame = drop_frame_make(world, block, "jr", "gj", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aB", 0, 3, out);
-        case MC_BLOCK_LE_HC: {
+        case MC_BLOCK_DOOR: {
             frame = drop_frame_make(world, block, "le", "hc", "a(ILjava/util/Random;)I", error);
             if (((uint32_t)metadata & 8u) != 0) {
                 *out = 0;
@@ -272,10 +272,10 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
             return captured == material ? drop_item_id(&frame, "az", 19, 22, out)
                                         : drop_item_id(&frame, "at", 26, 29, out);
         }
-        case MC_BLOCK_LY_HR:
+        case MC_BLOCK_GLOWSTONE:
             frame = drop_frame_make(world, block, "ly", "hr", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aR", 0, 3, out);
-        case MC_BLOCK_MT_IC:
+        case MC_BLOCK_ORE:
             frame = drop_frame_make(world, block, "mt", "ic", "a(ILjava/util/Random;)I", error);
             own = block->fields.bn;
             if (!drop_block_id(&frame, "J", 4, 7, &value))
@@ -294,7 +294,7 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
                 return drop_item_id(&frame, "aU", 53, 56, out);
             *out = block->fields.bn;
             return true;
-        case MC_BLOCK_NE_IG:
+        case MC_BLOCK_GRAVEL:
             frame = drop_frame_make(world, block, "ne", "ig", "a(ILjava/util/Random;)I", error);
             if (!drop_random_int(&frame, random, 10, 3, &draw))
                 return false;
@@ -302,19 +302,19 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
                 return drop_item_id(&frame, "an", 9, 12, out);
             *out = block->fields.bn;
             return true;
-        case MC_BLOCK_NI_IJ:
+        case MC_BLOCK_CROPS:
             frame = drop_frame_make(world, block, "ni", "ij", "a(ILjava/util/Random;)I", error);
             if (metadata == 7)
                 return drop_item_id(&frame, "R", 6, 9, out);
             *out = -1;
             return true;
-        case MC_BLOCK_RI_KO:
+        case MC_BLOCK_SUGAR_CANE:
             frame = drop_frame_make(world, block, "ri", "ko", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aH", 0, 3, out);
-        case MC_BLOCK_RN_KU:
+        case MC_BLOCK_COBWEB:
             frame = drop_frame_make(world, block, "rn", "ku", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "I", 0, 3, out);
-        case MC_BLOCK_RU_KZ:
+        case MC_BLOCK_TALL_GRASS:
             frame = drop_frame_make(world, block, "ru", "kz", "a(ILjava/util/Random;)I", error);
             if (!drop_random_int(&frame, random, 8, 3, &draw))
                 return false;
@@ -322,39 +322,39 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
                 return drop_item_id(&frame, "Q", 9, 12, out);
             *out = -1;
             return true;
-        case MC_BLOCK_RZ_LF:
+        case MC_BLOCK_CLAY:
             frame = drop_frame_make(world, block, "rz", "lf", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aG", 0, 3, out);
-        case MC_BLOCK_SM_LO:
+        case MC_BLOCK_REDSTONE:
             frame = drop_frame_make(world, block, "sm", "lo", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aA", 0, 3, out);
-        case MC_BLOCK_SS_LU:
+        case MC_BLOCK_STAIRS:
             frame = drop_frame_make(world, block, "ss", "lu", "a(ILjava/util/Random;)I", error);
             drop_at(&frame, 6);
             if (block->subtype.ss.a == NULL)
                 return drop_fail(&frame, 6, "Block delegated item receiver is null");
             error->drop_call_bytecode = 6;
             return drop_item(world, block->subtype.ss.a, metadata, random, out, error);
-        case MC_BLOCK_TC_LZ:
+        case MC_BLOCK_FURNACE:
             frame = drop_frame_make(world, block, "tc", "lz", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "aC", 0, 3, out);
-        case MC_BLOCK_UJ_MT:
+        case MC_BLOCK_SIGN:
             frame = drop_frame_make(world, block, "uj", "mt", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "as", 0, 3, out);
-        case MC_BLOCK_VE_NJ:
+        case MC_BLOCK_BED:
             frame = drop_frame_make(world, block, "ve", "nj", "a(ILjava/util/Random;)I", error);
             if (((uint32_t)metadata & 8u) != 0) {
                 *out = 0;
                 return true;
             }
             return drop_item_id(&frame, "aY", 9, 12, out);
-        case MC_BLOCK_VG_NK:
+        case MC_BLOCK_LOG:
             frame = drop_frame_make(world, block, "vg", "nk", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "K", 0, 3, out);
-        case MC_BLOCK_VL_NO:
-        case MC_BLOCK_WP_OJ:
-            frame = drop_frame_make(world, block, block->kind == MC_BLOCK_VL_NO ? "vl" : "wp",
-                                    block->kind == MC_BLOCK_VL_NO ? "no" : "oj",
+        case MC_BLOCK_FARMLAND:
+        case MC_BLOCK_GRASS:
+            frame = drop_frame_make(world, block, block->kind == MC_BLOCK_FARMLAND ? "vl" : "wp",
+                                    block->kind == MC_BLOCK_FARMLAND ? "no" : "oj",
                                     "a(ILjava/util/Random;)I", error);
             cause = mc_world_mutation_empty_registry();
             drop_at(&frame, 0);
@@ -365,13 +365,13 @@ static bool drop_item(mc_world_runtime *world, const mc_block *block, int32_t me
                 return drop_fail(&frame, 5, "Block static delegated item receiver is null");
             error->drop_call_bytecode = 5;
             return drop_item(world, delegate, 0, random, out, error);
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             frame = drop_frame_make(world, block, "wo", "oi", "a(ILjava/util/Random;)I", error);
             return drop_item_id(&frame, "aZ", 0, 3, out);
-        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_DISPENSER:
             frame = drop_frame_make(world, block, "xq", "pa", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "Q", 0, 3, out);
-        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_SLAB:
             frame = drop_frame_make(world, block, "ys", "pw", "a(ILjava/util/Random;)I", error);
             return drop_block_id(&frame, "al", 0, 3, out);
         default:
@@ -386,16 +386,16 @@ static bool drop_damage(mc_world_runtime *world, const mc_block *block, int32_t 
     if (!drop_kind(&frame))
         return false;
     switch (block->kind) {
-        case MC_BLOCK_BK_AR:
-        case MC_BLOCK_HE_EU:
+        case MC_BLOCK_LEAVES:
+        case MC_BLOCK_SAPLING:
             *out = (int32_t)((uint32_t)metadata & 3u);
             return true;
-        case MC_BLOCK_EE_CQ:
-        case MC_BLOCK_VG_NK:
-        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_WOOL:
+        case MC_BLOCK_LOG:
+        case MC_BLOCK_SLAB:
             *out = metadata;
             return true;
-        case MC_BLOCK_MT_IC: {
+        case MC_BLOCK_ORE: {
             frame = drop_frame_make(world, block, "mt", "ic", drop_damage_method(block), error);
             const int32_t own = block->fields.bn;
             int32_t value;
@@ -772,7 +772,7 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
         return false;
     bool remote;
     switch (block->kind) {
-        case MC_BLOCK_FO_DT:
+        case MC_BLOCK_JUKEBOX:
             frame =
                 drop_frame_make(world, block, "fo", "dt", drop_probability_method(block), error);
             if (!drop_remote(&frame, 1, &remote))
@@ -782,9 +782,9 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
             drop_at(&frame, 18);
             error->drop_call_bytecode = 18;
             return drop_base_probability(world, block, x, y, z, metadata, chance, error);
-        case MC_BLOCK_NI_IJ:
+        case MC_BLOCK_CROPS:
             return drop_crop_probability(world, block, x, y, z, metadata, chance, error);
-        case MC_BLOCK_SS_LU:
+        case MC_BLOCK_STAIRS:
             frame =
                 drop_frame_make(world, block, "ss", "lu", drop_probability_method(block), error);
             drop_at(&frame, 13);
@@ -792,7 +792,7 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
                 return drop_fail(&frame, 13, "Block delegated probability receiver is null");
             error->drop_call_bytecode = 13;
             return drop_probability(world, block->subtype.ss.a, x, y, z, metadata, chance, error);
-        case MC_BLOCK_UT_MZ:
+        case MC_BLOCK_MOVING_PISTON:
             frame =
                 drop_frame_make(world, block, "ut", "mz", drop_probability_method(block), error);
             if (!drop_remote(&frame, 1, &remote))
@@ -802,7 +802,7 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
             /* Actual TileEntity lookup c14 is a missing concrete body. It
              * cannot be replaced by NULL (which would fabricate return24). */
             return drop_fail(&frame, 14, "Moving-piston drop TileEntity lookup is not implemented");
-        case MC_BLOCK_VE_NJ:
+        case MC_BLOCK_BED:
             if (((uint32_t)metadata & 8u) != 0)
                 return true;
             frame =

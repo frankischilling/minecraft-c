@@ -136,8 +136,8 @@ static void entered_checks(fixture *f) {
     /* Entered is caused only by the genuine cold flag -> superclass ->
      * Translation/achievement path, never a manufactured test assignment. */
     OBSERVE(f, owner->blocks_phase == MC_REGISTRY_INITIALIZING &&
-                   owner->block_states[MC_BLOCK_GK_EI].phase == MC_REGISTRY_INITIALIZING &&
-                   owner->block_states[MC_BLOCK_GK_EI].pc == -1 && !owner->gk_a);
+                   owner->block_states[MC_BLOCK_SAND].phase == MC_REGISTRY_INITIALIZING &&
+                   owner->block_states[MC_BLOCK_SAND].pc == -1 && !owner->gk_a);
     unsigned char before[sizeof(*owner)], frame_before[sizeof(*owner->initializer)];
     memcpy(before, owner, sizeof(before));
     memcpy(frame_before, owner->initializer, sizeof(frame_before));
@@ -229,8 +229,8 @@ refused:
 
 static bool cold(const fixture *f) {
     return f->owner != NULL && f->owner->blocks_phase == MC_REGISTRY_COLD &&
-           f->owner->block_states[MC_BLOCK_GK_EI].phase == MC_REGISTRY_COLD &&
-           f->owner->block_states[MC_BLOCK_GK_EI].pc == -1 && !f->owner->gk_a &&
+           f->owner->block_states[MC_BLOCK_SAND].phase == MC_REGISTRY_COLD &&
+           f->owner->block_states[MC_BLOCK_SAND].pc == -1 && !f->owner->gk_a &&
            f->owner->blocks.m == NULL && f->owner->entered == 0 && f->owner->initializer == NULL &&
            f->owner->runtime_borrows == 0 && f->opens == 0;
 }
@@ -289,9 +289,9 @@ static int cold_success(mc_registry_options options, bool first_store) {
     CHECK(fresh(error, MC_REGISTRY_OK) && !f.bad && f.opens == 3 && f.closes == 1 &&
           f.busy_checks == 18 && (first_store ? value : !value));
     CHECK(f.owner->blocks_phase == MC_REGISTRY_READY &&
-          f.owner->block_states[MC_BLOCK_GK_EI].phase == MC_REGISTRY_READY &&
-          f.owner->block_states[MC_BLOCK_GK_EI].pc == 4 &&
-          f.owner->block_states[MC_BLOCK_UU_NA].phase == MC_REGISTRY_READY &&
+          f.owner->block_states[MC_BLOCK_SAND].phase == MC_REGISTRY_READY &&
+          f.owner->block_states[MC_BLOCK_SAND].pc == 4 &&
+          f.owner->block_states[MC_BLOCK_BASE].phase == MC_REGISTRY_READY &&
           f.owner->entered == 0 && f.owner->initializer == NULL && f.owner->runtime_borrows == 0 &&
           f.owner->gk_a == first_store);
     CHECK(uniquifier(options.random_profile) == advanced(random_before, 5));
@@ -361,12 +361,12 @@ static int cold_failure(mc_registry_options options, bool first_store) {
                                      .item_argument = -1};
     CHECK(same_error(error, first) && same_error(f.owner->last_error, first));
     CHECK(f.owner->blocks_phase == MC_REGISTRY_FAILED &&
-          f.owner->block_states[MC_BLOCK_GK_EI].phase == MC_REGISTRY_FAILED &&
-          f.owner->block_states[MC_BLOCK_GK_EI].pc == -1 && !f.owner->gk_a &&
+          f.owner->block_states[MC_BLOCK_SAND].phase == MC_REGISTRY_FAILED &&
+          f.owner->block_states[MC_BLOCK_SAND].pc == -1 && !f.owner->gk_a &&
           f.owner->entered == 0 && f.owner->initializer == NULL && f.owner->runtime_borrows == 0);
-    CHECK(same_error(f.owner->block_states[MC_BLOCK_GK_EI].failure, first) &&
+    CHECK(same_error(f.owner->block_states[MC_BLOCK_SAND].failure, first) &&
           same_error(f.owner->block_failure, first) &&
-          same_error(f.owner->block_states[MC_BLOCK_UU_NA].failure, first) &&
+          same_error(f.owner->block_states[MC_BLOCK_BASE].failure, first) &&
           same_error(f.owner->translation_state.failure, first) &&
           same_error(f.owner->translation_wrapper_state.failure, first));
     const size_t bytes = f.owner->allocation_bytes;
@@ -398,7 +398,7 @@ static int cold_failure(mc_registry_options options, bool first_store) {
               MC_REGISTRY_FAILED_INITIALIZATION &&
           value);
     CHECK(mc_registry_falling_flag_set(f.owner, false, NULL) == MC_REGISTRY_FAILED_INITIALIZATION);
-    CHECK(same_error(f.owner->block_states[MC_BLOCK_GK_EI].failure, first) &&
+    CHECK(same_error(f.owner->block_states[MC_BLOCK_SAND].failure, first) &&
           same_error(f.owner->block_failure, first) && f.owner->allocation_bytes == bytes &&
           f.owner->allocations == allocations && f.owner->runtime_borrows == 0 &&
           f.owner->entered == 0 && f.owner->initializer == NULL && !f.owner->gk_a && f.opens == 1 &&

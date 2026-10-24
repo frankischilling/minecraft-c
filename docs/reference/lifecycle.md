@@ -45,7 +45,7 @@ original class files and captured records without starting Java or C.
 Relevant entries include client `ok.a(ZLyb;)Z`, base `jb.a(ZLpj;)Z`, dedicated
 `he.a(ZLpj;)Z`, and their `a()Z` maintenance methods. Normal detach is client
 `lm.f()V` or server `hi.e()V`: active becomes false at bytecode offset 5, before
-tile invalidation and all eight deferred entity slices. Dedicated maintenance
+TileEntity invalidation and all eight deferred entity slices. Dedicated maintenance
 observes pending/map/list removal at offsets 86/97/109. Method fingerprints and
 the complete watched catalog live in the validator beside the helpers.
 
@@ -71,7 +71,7 @@ the Boat. The raw loader return has inactive state and last-save time zero;
 the acquisition coordinator then stamps 6000 and publishes/activates it.
 
 Detach invalidates the Sign and defers the same eight slice owners in order.
-World entity/tile lists retain the Boat and invalid Sign; the deferred list gains
+World entity/TileEntity lists retain the Boat and invalid Sign; the deferred list gains
 the same Boat. Dedicated cache removal also leaves the entity-ID registry
 retaining that Boat. Unpublish therefore cannot imply immediate C retirement.
 No tick or general deferred-cleanup routine runs in this profile.

@@ -72,8 +72,8 @@ typedef struct fixture {
     mc_world_runtime_classes *classes;
     mc_world_runtime *world;
     mc_world_info_name *name;
-    mc_world_dimension *normal, *fixed[2];
-    mc_world_dimension_biome *fixed_manager[2]; /* Borrowed from genuine owners. */
+    mc_world_provider *overworld, *fixed[2];
+    mc_world_chunk_manager *fixed_manager[2]; /* Borrowed from genuine owners. */
     uint8_t map[256];
 } fixture;
 
@@ -96,7 +96,7 @@ static void poison_error(mc_temperature_error *error) {
                                     .bytecode = 999u,
                                     .raw_bytecode = 998u,
                                     .native_boundary = true,
-                                    .manager_status = MC_WORLD_DIMENSION_REGISTRY_FAILED,
+                                    .manager_status = MC_WORLD_PROVIDER_REGISTRY_FAILED,
                                     .reused_input = true,
                                     .temperature_filled = true,
                                     .auxiliary_published = true,
@@ -107,7 +107,7 @@ static bool fresh_error(const mc_temperature_error *error) {
     return error->status == MC_BIOME_OK && error->operation == NULL &&
            error->body == MC_TEMPERATURE_BODY_NONE && error->bytecode == 0 &&
            error->raw_bytecode == 0 && !error->native_boundary &&
-           error->manager_status == MC_WORLD_DIMENSION_OK && !error->reused_input &&
+           error->manager_status == MC_WORLD_PROVIDER_OK && !error->reused_input &&
            !error->temperature_filled && !error->auxiliary_published && error->cells_completed == 0;
 }
 
@@ -124,34 +124,34 @@ static bool failure_at(const mc_temperature_error *error, mc_biome_status status
                        bool filled) {
     return error->status == status && error->operation != NULL && error->body == body &&
            error->bytecode == pc && error->raw_bytecode == raw_pc && error->native_boundary &&
-           error->manager_status == MC_WORLD_DIMENSION_OK && error->reused_input == reused &&
+           error->manager_status == MC_WORLD_PROVIDER_OK && error->reused_input == reused &&
            error->temperature_filled == filled && !error->auxiliary_published &&
            error->cells_completed == 0;
 }
 
 static bool close_world(fixture *f) {
-    mc_world_dimension_unbind(f->normal);
+    mc_world_provider_unbind(f->overworld);
     if (f->world != NULL) {
         if (mc_world_runtime_retire_world(f->world, NULL) != MC_WORLD_STORAGE_OK ||
             mc_world_runtime_free(f->world, NULL) != MC_WORLD_STORAGE_OK)
             return false;
         f->world = NULL;
     }
-    mc_world_dimension_release(f->normal);
-    f->normal = NULL;
+    mc_world_provider_release(f->overworld);
+    f->overworld = NULL;
     return true;
 }
 
 static bool open_world(fixture *f, int64_t seed) {
     bool ok = false;
-    CHECK(f->world == NULL && f->normal == NULL);
-    CHECK(mc_world_dimension_create(0, NULL, &f->normal, NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(f->world == NULL && f->overworld == NULL);
+    CHECK(mc_world_provider_create(0, NULL, &f->overworld, NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 2;
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA, f->classes,
                                           &limits, &f->world, NULL) == MC_WORLD_STORAGE_OK);
     const mc_world_runtime_world_arguments arguments = {
-        .store = f->store, .name = f->name, .seed = seed, .dimension = f->normal};
+        .store = f->store, .name = f->name, .seed = seed, .dimension = f->overworld};
     CHECK(mc_world_runtime_construct_world(f->world, &arguments, NULL) == MC_WORLD_STORAGE_OK);
     mc_world_runtime_construction state;
     CHECK(mc_world_runtime_construction_get(f->world, &state) == MC_WORLD_STORAGE_OK &&
@@ -161,13 +161,13 @@ cleanup:
     return ok;
 }
 
-static bool normal_manager(fixture *f, mc_world_dimension_biome **out) {
-    mc_world_dimension_fields fields;
-    mc_world_dimension_biome_fields biome;
-    if (mc_world_dimension_fields_get(f->normal, &fields) != MC_WORLD_DIMENSION_OK ||
+static bool noise_backed_manager(fixture *f, mc_world_chunk_manager **out) {
+    mc_world_provider_fields fields;
+    mc_world_chunk_manager_fields biome;
+    if (mc_world_provider_fields_get(f->overworld, &fields) != MC_WORLD_PROVIDER_OK ||
         fields.a != f->world || fields.b == NULL ||
-        mc_world_dimension_biome_fields_get(fields.b, &biome) != MC_WORLD_DIMENSION_OK ||
-        biome.fixed || biome.normal == NULL)
+        mc_world_chunk_manager_fields_get(fields.b, &biome) != MC_WORLD_PROVIDER_OK ||
+        biome.fixed || biome.noise_backed == NULL)
         return false;
     *out = fields.b;
     return true;
@@ -191,15 +191,15 @@ cleanup:
     return ok;
 }
 
-static bool make_limited_manager(fixture *f, size_t buffer_limit, mc_world_dimension **dimension,
-                                 mc_world_dimension_biome **manager) {
-    mc_world_dimension_limits limits = mc_world_dimension_default_limits();
+static bool make_limited_manager(fixture *f, size_t buffer_limit, mc_world_provider **dimension,
+                                 mc_world_chunk_manager **manager) {
+    mc_world_provider_limits limits = mc_world_provider_default_limits();
     limits.max_biome_buffer_bytes = buffer_limit;
-    if (mc_world_dimension_create(0, &limits, dimension, NULL) != MC_WORLD_DIMENSION_OK ||
-        mc_world_dimension_bind(*dimension, f->world, NULL) != MC_WORLD_DIMENSION_OK)
+    if (mc_world_provider_create(0, &limits, dimension, NULL) != MC_WORLD_PROVIDER_OK ||
+        mc_world_provider_bind(*dimension, f->world, NULL) != MC_WORLD_PROVIDER_OK)
         return false;
-    mc_world_dimension_fields fields;
-    if (mc_world_dimension_fields_get(*dimension, &fields) != MC_WORLD_DIMENSION_OK)
+    mc_world_provider_fields fields;
+    if (mc_world_provider_fields_get(*dimension, &fields) != MC_WORLD_PROVIDER_OK)
         return false;
     *manager = fields.b;
     return true;
@@ -218,11 +218,11 @@ static bool test_original_rectangles(fixture *f) {
     for (size_t row = 0; row < COUNT(originals); ++row) {
         const original_temperature *source = &originals[row];
         CHECK(open_world(f, source->seed));
-        mc_world_dimension_biome *receiver = NULL;
-        CHECK(normal_manager(f, &receiver));
-        mc_world_dimension_biome_fields fields;
-        CHECK(mc_world_dimension_biome_fields_get(receiver, &fields) == MC_WORLD_DIMENSION_OK);
-        CHECK(mc_biome_cached_square(fields.normal, source->x, source->z, 2) == MC_BIOME_OK);
+        mc_world_chunk_manager *receiver = NULL;
+        CHECK(noise_backed_manager(f, &receiver));
+        mc_world_chunk_manager_fields fields;
+        CHECK(mc_world_chunk_manager_fields_get(receiver, &fields) == MC_WORLD_PROVIDER_OK);
+        CHECK(mc_biome_cached_square(fields.noise_backed, source->x, source->z, 2) == MC_BIOME_OK);
         CHECK(fields.a->length == 4 && fields.b->length == 4 && fields.d->length == 4);
         double saved_a[4], saved_b[4];
         mc_biome_id saved_d[4];
@@ -230,7 +230,7 @@ static bool test_original_rectangles(fixture *f) {
         memcpy(saved_b, fields.b->data, sizeof(saved_b));
         memcpy(saved_d, fields.d->data, sizeof(saved_d));
         const void *a_data = fields.a->data, *b_data = fields.b->data, *d_data = fields.d->data;
-        const size_t manager_bytes = fields.normal->memory->live_allocation_bytes;
+        const size_t manager_bytes = fields.noise_backed->memory->live_allocation_bytes;
         const size_t manager_holds = fields.holds;
         if (row == 0) {
             /* Actual successful fresh return, both source NULL and a genuine
@@ -287,7 +287,7 @@ static bool test_original_rectangles(fixture *f) {
               after.holds == before.holds + 1);
         for (size_t i = 0; i < COUNT(source->temperature); ++i)
             CHECK(bits(after.data[i]) == source->temperature[i]);
-        CHECK(mc_world_dimension_biome_fields_get(receiver, &fields) == MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_fields_get(receiver, &fields) == MC_WORLD_PROVIDER_OK &&
               fields.holds == manager_holds && fields.c->length == 6);
         for (size_t i = 0; i < COUNT(source->auxiliary); ++i)
             CHECK(bits(fields.c->data[i]) == source->auxiliary[i]);
@@ -296,7 +296,8 @@ static bool test_original_rectangles(fixture *f) {
               memcmp(saved_a, fields.a->data, sizeof(saved_a)) == 0 &&
               memcmp(saved_b, fields.b->data, sizeof(saved_b)) == 0 &&
               memcmp(saved_d, fields.d->data, sizeof(saved_d)) == 0);
-        CHECK(fields.normal->memory->live_allocation_bytes == manager_bytes + 2 * sizeof(double));
+        CHECK(fields.noise_backed->memory->live_allocation_bytes ==
+              manager_bytes + 2 * sizeof(double));
         mc_temperature_array_release(result);
         result = NULL;
         CHECK(close_world(f));
@@ -348,12 +349,12 @@ static bool test_empty_fixed_and_admission(fixture *f) {
     view.data[7] = value_of(UINT64_C(0x7ff8000000000123));
     uint64_t suffix[3] = {bits(view.data[6]), bits(view.data[7]), bits(view.data[8])};
     for (size_t fixed = 0; fixed < COUNT(f->fixed_manager); ++fixed) {
-        mc_world_dimension_biome_fields prior, current;
-        CHECK(mc_world_dimension_biome_fields_get(f->fixed_manager[fixed], &prior) ==
-              MC_WORLD_DIMENSION_OK);
+        mc_world_chunk_manager_fields prior, current;
+        CHECK(mc_world_chunk_manager_fields_get(f->fixed_manager[fixed], &prior) ==
+              MC_WORLD_PROVIDER_OK);
         const uint64_t expected =
             fixed == 0 ? UINT64_C(0x3ff0000000000000) : UINT64_C(0x3fe0000000000000);
-        CHECK(prior.fixed && prior.normal == NULL && bits(prior.fixed_f) == expected);
+        CHECK(prior.fixed && prior.noise_backed == NULL && bits(prior.fixed_f) == expected);
         poison_error(&error);
         status = mc_temperature_sample(f->fixed_manager[fixed], NULL, array, INT32_MAX, INT32_MIN,
                                        2, 3, &result, &error);
@@ -366,8 +367,8 @@ static bool test_empty_fixed_and_admission(fixture *f) {
         mc_temperature_array_release(result);
         result = NULL;
         result_owned = false;
-        CHECK(mc_world_dimension_biome_fields_get(f->fixed_manager[fixed], &current) ==
-                  MC_WORLD_DIMENSION_OK &&
+        CHECK(mc_world_chunk_manager_fields_get(f->fixed_manager[fixed], &current) ==
+                  MC_WORLD_PROVIDER_OK &&
               current.holds == prior.holds);
         CHECK(current.a == prior.a && current.b == prior.b && current.c == prior.c &&
               current.d == prior.d && current.a->data == NULL && current.b->data == NULL &&
@@ -387,7 +388,7 @@ static bool test_empty_fixed_and_admission(fixture *f) {
     status = mc_temperature_sample(NULL, owner, NULL, 0, 0, 1, 1, &result, &error);
     result_owned = status == MC_BIOME_OK;
     CHECK(status == MC_BIOME_INVALID_ARGUMENT && result == array &&
-          error.manager_status == MC_WORLD_DIMENSION_INVALID_ARGUMENT &&
+          error.manager_status == MC_WORLD_PROVIDER_INVALID_ARGUMENT &&
           error.body == MC_TEMPERATURE_BODY_NONE && error.bytecode == 0 &&
           error.raw_bytecode == 0 && !error.temperature_filled && error.native_boundary);
     poison_error(&error);
@@ -427,10 +428,10 @@ static bool test_lifetime_and_rebinding(fixture *f) {
     bool ok = false;
     mc_temperature_owner *owner = NULL;
     mc_temperature_array *field = NULL, *alias = NULL, *result = NULL;
-    mc_world_dimension *dimension = NULL;
-    mc_world_dimension_biome *old = NULL;
-    mc_world_dimension_fields fields;
-    mc_world_dimension_biome_fields biome;
+    mc_world_provider *dimension = NULL;
+    mc_world_chunk_manager *old = NULL;
+    mc_world_provider_fields fields;
+    mc_world_chunk_manager_fields biome;
     mc_temperature_array_view initial, current;
     mc_temperature_owner_state state;
     CHECK(mc_temperature_owner_create(NULL, &owner, NULL) == MC_BIOME_OK);
@@ -441,19 +442,19 @@ static bool test_lifetime_and_rebinding(fixture *f) {
     CHECK(mc_temperature_array_get(field, &initial) == MC_BIOME_OK && initial.holds == 2);
     CHECK(mc_temperature_owner_get(owner, &state) == MC_BIOME_OK && state.holds == 2 &&
           state.arrays == 1); /* Handle aliases do not add ledger holds. */
-    CHECK(mc_world_dimension_create(0, NULL, &dimension, NULL) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_bind(dimension, f->world, NULL) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_fields_get(dimension, &fields) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_biome_retain(fields.b) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &dimension, NULL) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_bind(dimension, f->world, NULL) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_fields_get(dimension, &fields) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_chunk_manager_retain(fields.b) == MC_WORLD_PROVIDER_OK);
     old = fields.b;
     CHECK(mc_temperature_sample(old, NULL, field, 0, 0, 2, 3, &result, NULL) == MC_BIOME_OK);
     CHECK(result == field);
     mc_temperature_array_release(result);
     result = NULL;
-    CHECK(mc_world_dimension_bind(dimension, f->world, NULL) == MC_WORLD_DIMENSION_OK);
-    CHECK(mc_world_dimension_fields_get(dimension, &fields) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_provider_bind(dimension, f->world, NULL) == MC_WORLD_PROVIDER_OK);
+    CHECK(mc_world_provider_fields_get(dimension, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.b != old);
-    CHECK(mc_world_dimension_biome_fields_get(old, &biome) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(old, &biome) == MC_WORLD_PROVIDER_OK &&
           biome.holds == 1 && biome.c->length == 6);
     CHECK(mc_temperature_sample(fields.b, NULL, field, 0, 0, 2, 3, &result, NULL) == MC_BIOME_OK);
     CHECK(result == field && mc_temperature_array_get(field, &current) == MC_BIOME_OK &&
@@ -462,10 +463,10 @@ static bool test_lifetime_and_rebinding(fixture *f) {
         CHECK(bits(current.data[i]) == originals[0].temperature[i]);
     mc_temperature_array_release(result);
     result = NULL;
-    mc_world_dimension_biome_release(old);
+    mc_world_chunk_manager_release(old);
     old = NULL;
-    mc_world_dimension_unbind(dimension);
-    mc_world_dimension_release(dimension);
+    mc_world_provider_unbind(dimension);
+    mc_world_provider_release(dimension);
     dimension = NULL; /* Neither old nor replacement receiver supplies w's life. */
     CHECK(mc_temperature_sample(f->fixed_manager[1], NULL, field, 0, 0, 1, 2, &result, NULL) ==
               MC_BIOME_OK &&
@@ -504,9 +505,9 @@ cleanup:
     mc_temperature_array_release(field);
     mc_temperature_array_release(alias);
     mc_temperature_owner_release(owner);
-    mc_world_dimension_biome_release(old);
-    mc_world_dimension_unbind(dimension);
-    mc_world_dimension_release(dimension);
+    mc_world_chunk_manager_release(old);
+    mc_world_provider_unbind(dimension);
+    mc_world_provider_release(dimension);
     return ok;
 }
 
@@ -516,11 +517,11 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     mc_temperature_array *array = NULL, *result = NULL, *empty = NULL;
     mc_biome_memory raw_memory = {0};
     mc_biome_double_buffer expected_raw = {0};
-    mc_world_dimension *dimension = NULL, *zero_dimension = NULL;
-    mc_world_dimension_biome *manager = NULL, *zero_manager = NULL;
+    mc_world_provider *dimension = NULL, *zero_dimension = NULL;
+    mc_world_chunk_manager *manager = NULL, *zero_manager = NULL;
     mc_temperature_owner_state initial, before, after;
     mc_temperature_array_view view, held_view;
-    mc_world_dimension_biome_fields fields;
+    mc_world_chunk_manager_fields fields;
     mc_temperature_error error;
     mc_biome_status status;
     size_t request4 = 0, request6 = 0;
@@ -529,12 +530,13 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     CHECK(make_limited_manager(f, 0, &zero_dimension, &zero_manager));
     CHECK(mc_temperature_owner_create(NULL, &owner, NULL) == MC_BIOME_OK);
     CHECK(mc_temperature_owner_get(owner, &initial) == MC_BIOME_OK);
-    mc_world_dimension_biome *normal = NULL;
-    CHECK(normal_manager(f, &normal));
-    CHECK(mc_temperature_sample(normal, owner, NULL, 0, 0, 0, 3, &empty, NULL) == MC_BIOME_OK);
+    mc_world_chunk_manager *noise_backed = NULL;
+    CHECK(noise_backed_manager(f, &noise_backed));
+    CHECK(mc_temperature_sample(noise_backed, owner, NULL, 0, 0, 0, 3, &empty, NULL) ==
+          MC_BIOME_OK);
     CHECK(mc_temperature_array_get(empty, &held_view) == MC_BIOME_OK && held_view.data != NULL &&
           held_view.length == 0);
-    CHECK(mc_world_dimension_biome_fields_get(normal, &fields) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(noise_backed, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.c->data != NULL && fields.c->length == 0 && fields.a->data == NULL &&
           fields.b->data == NULL && fields.d->data == NULL);
     mc_temperature_array_release(empty);
@@ -548,13 +550,13 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     mc_temperature_array_release(result);
     result = NULL;
     result_owned = false;
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK);
     CHECK(fields.c->length == 4 && fields.a->data == NULL && fields.b->data == NULL &&
           fields.d->data == NULL);
     const double *old_c = fields.c->data;
     double saved_c[4];
     memcpy(saved_c, old_c, sizeof(saved_c));
-    const size_t manager_bytes = fields.normal->memory->live_allocation_bytes;
+    const size_t manager_bytes = fields.noise_backed->memory->live_allocation_bytes;
     const size_t holds = fields.holds;
     CHECK(manager_bytes == request4 && request6 < request4 + request6 - 1);
     /* Explicit NATIVE lower-interface sequencing contract, not an original
@@ -564,7 +566,7 @@ static bool test_quota_and_raw_prefix(fixture *f) {
      * before c allocation. Successful originals[] remain the parity oracle. */
     CHECK(mc_biome_memory_init(&raw_memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) == MC_BIOME_OK);
     CHECK(mc_biome_double_buffer_resize(&raw_memory, &expected_raw, 9) == MC_BIOME_OK);
-    const mc_noise_simplex_octaves raw_noise = {fields.normal->temperature_layers, 4};
+    const mc_noise_simplex_octaves raw_noise = {fields.noise_backed->temperature_layers, 4};
     const mc_noise_simplex_grid raw_grid = {0.0, 0.0, 2, 3, (double)0.025f, (double)0.025f};
     CHECK(mc_noise_simplex_octaves_fill(&raw_noise, &raw_grid, 0.25,
                                         MC_NOISE_SIMPLEX_DEFAULT_DIVISOR_MULTIPLIER,
@@ -582,11 +584,11 @@ static bool test_quota_and_raw_prefix(fixture *f) {
         CHECK(bits(view.data[i]) == bits(expected_raw.data[i]));
     CHECK(mc_temperature_array_get(array, &held_view) == MC_BIOME_OK && held_view.holds == 1 &&
           held_view.data == view.data && held_view.length == 9);
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.holds == holds && fields.c->data == old_c && fields.c->length == 4 &&
           memcmp(saved_c, old_c, sizeof(saved_c)) == 0 &&
-          fields.normal->memory->live_allocation_bytes == manager_bytes && fields.a->data == NULL &&
-          fields.b->data == NULL && fields.d->data == NULL);
+          fields.noise_backed->memory->live_allocation_bytes == manager_bytes &&
+          fields.a->data == NULL && fields.b->data == NULL && fields.d->data == NULL);
     CHECK(mc_temperature_owner_get(owner, &after) == MC_BIOME_OK && owner_same(&before, &after));
     double unrelated_output[9];
     for (size_t i = 0; i < view.length; ++i)
@@ -598,12 +600,12 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     CHECK(status == MC_BIOME_LIMIT && result == array &&
           failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 74, 35, false, true));
     CHECK(mc_temperature_owner_get(owner, &after) == MC_BIOME_OK && owner_same(&before, &after));
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.holds == holds);
     CHECK(mc_temperature_array_get(array, &held_view) == MC_BIOME_OK && held_view.holds == 1);
     CHECK(memcmp(unrelated_output, view.data, sizeof(unrelated_output)) == 0);
     CHECK(fields.c->data == old_c && memcmp(saved_c, old_c, sizeof(saved_c)) == 0 &&
-          fields.normal->memory->live_allocation_bytes == manager_bytes);
+          fields.noise_backed->memory->live_allocation_bytes == manager_bytes);
     /* A zero-cell late c allocation still follows the entire raw output clear.
      * Every zero here is independently source-derived, not sampled by C as an
      * expected numerical oracle. Allocated-empty needs its real native header. */
@@ -616,9 +618,9 @@ static bool test_quota_and_raw_prefix(fixture *f) {
           failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 74, 35, true, true));
     for (size_t i = 0; i < view.length; ++i)
         CHECK(bits(view.data[i]) == 0);
-    CHECK(mc_world_dimension_biome_fields_get(zero_manager, &fields) == MC_WORLD_DIMENSION_OK &&
+    CHECK(mc_world_chunk_manager_fields_get(zero_manager, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.c->data == NULL && fields.a->data == NULL && fields.b->data == NULL &&
-          fields.d->data == NULL && fields.normal->memory->live_allocation_bytes == 0);
+          fields.d->data == NULL && fields.noise_backed->memory->live_allocation_bytes == 0);
     /* Source19 output budgets are independent of current manager.c's budget. */
     mc_temperature_limits limits = before.limits;
     limits.max_buffer_allocation_bytes = 0;
@@ -651,10 +653,10 @@ cleanup:
     mc_biome_double_buffer_free(&expected_raw);
     mc_temperature_owner_release(limited);
     mc_temperature_owner_release(owner);
-    mc_world_dimension_unbind(dimension);
-    mc_world_dimension_release(dimension);
-    mc_world_dimension_unbind(zero_dimension);
-    mc_world_dimension_release(zero_dimension);
+    mc_world_provider_unbind(dimension);
+    mc_world_provider_release(dimension);
+    mc_world_provider_unbind(zero_dimension);
+    mc_world_provider_release(zero_dimension);
     return ok;
 }
 
@@ -663,9 +665,9 @@ static bool test_fp_order(fixture *f) {
     const unsigned int saved_csr = _mm_getcsr();
     mc_temperature_owner *owner = NULL, *limited = NULL;
     mc_temperature_array *array = NULL, *result = NULL;
-    mc_world_dimension *dimension = NULL;
-    mc_world_dimension_biome *manager = NULL;
-    mc_world_dimension_biome_fields fields;
+    mc_world_provider *dimension = NULL;
+    mc_world_chunk_manager *manager = NULL;
+    mc_world_chunk_manager_fields fields;
     mc_temperature_owner_state before, after;
     mc_temperature_array_view view;
     mc_temperature_error error;
@@ -689,8 +691,8 @@ static bool test_fp_order(fixture *f) {
           failure_at(&error, MC_BIOME_INVALID_ARGUMENT, MC_TEMPERATURE_BODY_NORMAL, 44, 0, false,
                      false)); /* Allocation19 succeeded; unpublished result was freed. */
     CHECK(mc_temperature_owner_get(owner, &after) == MC_BIOME_OK && owner_same(&before, &after));
-    CHECK(mc_world_dimension_biome_fields_get(manager, &fields) == MC_WORLD_DIMENSION_OK &&
-          fields.c->data == NULL && fields.normal->memory->live_allocation_bytes == 0);
+    CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
+          fields.c->data == NULL && fields.noise_backed->memory->live_allocation_bytes == 0);
     _mm_setcsr(refused_csr);
     status = mc_temperature_sample(manager, NULL, array, 0, 0, 2, 3, &result, &error);
     _mm_setcsr(saved_csr);
@@ -728,8 +730,8 @@ cleanup:
     mc_temperature_array_release(array);
     mc_temperature_owner_release(limited);
     mc_temperature_owner_release(owner);
-    mc_world_dimension_unbind(dimension);
-    mc_world_dimension_release(dimension);
+    mc_world_provider_unbind(dimension);
+    mc_world_provider_release(dimension);
     return ok;
 }
 
@@ -762,7 +764,7 @@ static bool fixture_close(fixture *f) {
     if (!close_world(f))
         return false; /* Keep every supplying dependency alive if retirement refuses. */
     for (size_t i = 0; i < COUNT(f->fixed); ++i) {
-        mc_world_dimension_release(f->fixed[i]);
+        mc_world_provider_release(f->fixed[i]);
         f->fixed[i] = NULL;
     }
     if (f->classes != NULL &&
@@ -802,11 +804,11 @@ int main(int argc, char **argv) {
     CHECK(mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, f->profile, &trig, &f->classes,
                                           NULL) == MC_WORLD_STORAGE_OK);
     for (size_t i = 0; i < COUNT(f->fixed); ++i) {
-        CHECK(mc_world_dimension_create(i == 0 ? -1 : 1, NULL, &f->fixed[i], NULL) ==
-              MC_WORLD_DIMENSION_OK);
-        CHECK(mc_world_dimension_bind(f->fixed[i], NULL, NULL) == MC_WORLD_DIMENSION_OK);
-        mc_world_dimension_fields fields;
-        CHECK(mc_world_dimension_fields_get(f->fixed[i], &fields) == MC_WORLD_DIMENSION_OK);
+        CHECK(mc_world_provider_create(i == 0 ? -1 : 1, NULL, &f->fixed[i], NULL) ==
+              MC_WORLD_PROVIDER_OK);
+        CHECK(mc_world_provider_bind(f->fixed[i], NULL, NULL) == MC_WORLD_PROVIDER_OK);
+        mc_world_provider_fields fields;
+        CHECK(mc_world_provider_fields_get(f->fixed[i], &fields) == MC_WORLD_PROVIDER_OK);
         f->fixed_manager[i] = fields.b;
     }
     CHECK(test_original_rectangles(f));

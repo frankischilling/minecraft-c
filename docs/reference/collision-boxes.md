@@ -40,7 +40,7 @@ contribution invokes the actual virtual getter6, skips null, performs
 The separate state-shape setter is not an automatic prerequisite.
 
 Thirteen getter declarations genuinely return literal null: portal, pressure
-plate, button, rail, reeds, web, fluid, wire, sign, torch, plant, lever and fire
+plate, button, rail, reeds, web, fluid, redstone, sign, torch, plant, lever and fire
 families. Snow and moving piston have conditional null routes with preceding
 dependencies. All other routes use their actual inherited or concrete getter;
 opacity and Material are not substitutes for collision dispatch.
@@ -58,13 +58,13 @@ finally blocks. Piston bases `jq/gi` first force full bounds and then invoke
 the base contribution; they do not run their extended-state shape setter.
 Asymmetric piston-head rod coordinates are preserved.
 
-Moving `ut/mz.e` invokes the real typed Tile lookup before testing for absence
-or the wrong concrete Tile type. Positive geometry requires real `uk/mu`
+Moving `ut/mz.e` invokes the real typed TileEntity lookup before testing for absence
+or the wrong concrete TileEntity type. Positive geometry requires real `uk/mu`
 progress, direction, stored Block and the live `wj/od` Direction arrays. The
 separate added callback `ut/mz.c(World,III)` is literal return0. No native
 positive geometry follows from that callback alone. The separate
-[Piston closure](piston.md) supplies genuine Tile construction, interpolation,
-Direction initialization and held carrier-box translation. Active mechanics
+[Piston closure](piston.md) supplies genuine TileEntity construction, interpolation,
+Direction initialization and held carried Block-box translation. Active mechanics
 remain distinct unfinished descendants.
 
 The [original capture tool](../../tests/tools/world/collision/capture_block_shapes.py)
@@ -73,4 +73,4 @@ getters/contributions and explicit reflection-driven setter controls. Its
 null-World scenarios establish which descendants leave World unused and which
 fail at that dependency. They do not prove nonnull-World metadata or complete
 World collision behavior. Direct moving-geometry helper observations are
-separate from positive piston-Tile execution.
+separate from positive piston-TileEntity execution.

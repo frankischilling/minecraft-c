@@ -3,7 +3,7 @@
 The GAME World entry points in `mc/world/runtime/mutations.h` acquire the actual
 Chunk before calling its ID or ID-plus-metadata setter. Quiet ID setters still
 run the selected removal/addition hooks, incremental height repair and lighting
-submissions. The notifying variants then visit observers and six neighbors when
+submissions. The notifying variants then visit WorldAccess receivers and six neighbors when
 the quiet call returns true. The notifying metadata operation has a void game
 result; native status reports failures separately.
 
@@ -13,7 +13,9 @@ addition and neighbor bodies. [Wooden pressure plates](pressure-plates.md) have
 their actual added, support-neighbor, removal and shared contact/tick bodies.
 [Plant callbacks](plants.md) implement survival, drops, growth and farmland
 through the same World services. Population, complete fluid/falling closure,
-tile/entity effects and general observer dispatch remain unfinished.
+broader TileEntity/Entity effects and the remaining WorldAccess slots remain
+unfinished. The six implemented slots and their live-list behavior are described
+in [WorldAccess callbacks](world-access.md).
 
 ## Source order
 
@@ -26,12 +28,12 @@ Normal setters read unsigned old height and block bytes before comparison. They
 write the new low eight bits before removing the old Block. ID-only removal has
 no remote gate; its addition does. ID-plus-metadata removal is remote gated;
 its addition is not. That second overload writes metadata twice and gates its
-height/Sky sequence on the current Dimension. These differences are preserved.
+height/Sky sequence on the current WorldProvider. These differences are preserved.
 Opacity indexes use the requested ID's low eight bits; addition uses its full
 integer. A late invalid index retains earlier bytes, metadata and height changes.
 
 Incremental height repair is distinct from [full finishing](finishing.md).
-Height can become 128. A height-change observer call receives local x/z before
+Height can become 128. A height-change WorldAccess call receives local x/z before
 the height/minimum writes. Minimum rescanning starts at127. Opacity captures
 precede the current block reads, with Java integer wrapping and no upper light
 clamp before nibble masking. Retained height bytes above 128 retain the original
@@ -45,22 +47,22 @@ Mutation does not implicitly drain the queue.
 
 ## Notifications and lifetimes
 
-Observers precede neighbors. Each neighbor independently reads current World
+WorldAccess callbacks precede neighbors. Each neighbor independently reads current World
 suppression flags, captures Block.m, acquires the current block, indexes that
 captured array, and invokes the selected concrete handler. Order is -X, +X, -Y,
 +Y, -Z, +Z; the forwarded source ID remains the original full integer.
 
 Notifying metadata first performs the quiet write, then acquires the current ID
 again and reads actual Block.t at its low-eight-bit index. That flag chooses
-observer-plus-neighbors or neighbors alone. Equal nibble writes still reach it.
-The current finite observer owner supports genuine empty lists. Nonempty
-observer invocation remains an explicit reached dependency.
+WorldAccess-plus-neighbors or neighbors alone. Equal nibble writes still reach it.
+The live WorldAccess loop supports typed nonempty receivers; concrete game
+renderer, audio and tracker receivers remain unfinished.
 
 Native calls hold the initiating World and lease the exact selected Chunk
 through synchronous handlers. The Chunk's actual World is held separately.
 Failure preserves the ordinary output and completed effects, including effects
 on another owner. Error frames retain the reached World, Chunk, height,
-observer, neighbor and hook calls and complete returned Registry/light/storage
+WorldAccess, neighbor and hook calls and complete returned Registry/light/storage
 causes. Native admission and unsupported descendants are not Java Throwable or
 allocation-failure equivalence claims.
 
@@ -118,13 +120,13 @@ per side. All five target arrays and scalars are retained before/after each
 operation, with actual Boolean or exact Throwable class. Both originals agree
 on these local projections. The helper never computes expected mutation data.
 
-The measured neighboring entries are genuinely absent and observers empty.
+The measured neighboring entries are genuinely absent and WorldAccess lists empty.
 The helper preserves the existing setup cache and lighting queue, checks exact
 cached arrays and identity graphs, and reads actual Random state without draws.
 The controlled actual q element is restored in `finally`. Controls compare
 each World before and after calls; setup clocks, RNG and queue state vary between
 processes. This direct feature-API experiment has no native replay fixture yet
-and does not qualify ordinary cached population, arbitrary observers, dedicated
+and does not qualify ordinary cached population, arbitrary WorldAccess receivers, dedicated
 routes, instrumentation equivalence or original save interoperability.
 
 Compile the helper with JDK17 and run its CLI with a pinned local JAR, side

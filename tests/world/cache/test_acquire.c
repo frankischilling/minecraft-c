@@ -55,7 +55,7 @@ typedef struct fixture {
     mc_chunk_state *loaded, *generated;
     generate_action generate_action;
     population_action population_action;
-    bool bump_time, generate_ok, populate_ok, tiles_ok, callback_error, invalidate_cache;
+    bool bump_time, generate_ok, populate_ok, tile_entities_ok, callback_error, invalidate_cache;
     size_t fail_slice, generate_calls, population_calls, depth;
     int32_t requested_key;
     mc_chunk_acquire_status recursive_status;
@@ -163,8 +163,8 @@ static bool generate_chunk(void *owner, const mc_chunk_acquire_context *context,
     return f.generate_ok;
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk) {
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     bool published = false;
     for (size_t i = 0; i < f.cache.count; ++i) {
         if (f.entries[i].key == f.requested_key && f.entries[i].chunk == chunk)
@@ -178,7 +178,7 @@ static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
         !callback_check(chunk->last_save_time == f.time))
         return false;
     log_event('T', 0, 0, chunk, 0);
-    return f.tiles_ok;
+    return f.tile_entities_ok;
 }
 
 static bool register_entities(void *owner, const mc_chunk_acquire_context *context,
@@ -339,7 +339,7 @@ static bool replace_held_outer(const mc_chunk_acquire_context *context, mc_chunk
 
 static bool leased_tiles(void *owner, const mc_chunk_acquire_context *context,
                          mc_chunk_state *chunk) {
-    if (!observe_lease('T', chunk, 0) || !register_tiles(owner, context, chunk))
+    if (!observe_lease('T', chunk, 0) || !register_tile_entities(owner, context, chunk))
         return false;
     if (leases.action == LEASE_REPLACE_DURING_TILES && chunk == leases.outer &&
         leases.recursion_depth == 0u && !replace_held_outer(context, chunk))
@@ -390,7 +390,7 @@ static void enable_references(void) {
     leases.hooks =
         (mc_chunk_references){.owner = &leases, .retain = retain_chunk, .release = release_chunk};
     f.context.references = &leases.hooks;
-    f.context.register_tiles = leased_tiles;
+    f.context.register_tile_entities = leased_tiles;
     f.context.register_entities = leased_entities;
     if (f.context.populate != NULL)
         f.context.populate = leased_population;
@@ -437,14 +437,14 @@ static int reset_fixture(void) {
     }
     f.chunks[15].data = NULL;
     f.chunks[15].blank = true;
-    f.chunks[0].dirty = true; /* Constructed finished normal generator result. */
+    f.chunks[0].dirty = true; /* Constructed finished Overworld generator result. */
     CHECK(mc_chunk_cache_init(&f.cache, f.entries, MAP_CAPACITY, f.insertions, LIST_CAPACITY));
     CHECK(mc_chunk_pending_init(&f.pending, f.keys, PENDING_CAPACITY));
     f.time = 456;
     f.generated = &f.chunks[0];
     f.loaded = &f.chunks[1];
     f.load_result = MC_CHUNK_LOAD_MISS;
-    f.generate_ok = f.populate_ok = f.tiles_ok = true;
+    f.generate_ok = f.populate_ok = f.tile_entities_ok = true;
     f.fail_slice = SIZE_MAX;
     f.context = (mc_chunk_acquire_context){.cache = &f.cache,
                                            .pending = &f.pending,
@@ -459,7 +459,7 @@ static int reset_fixture(void) {
                                            .loader = &f.loader_owner,
                                            .provider = &f.provider_owner,
                                            .generate = generate_chunk,
-                                           .register_tiles = register_tiles,
+                                           .register_tile_entities = register_tile_entities,
                                            .register_entities = register_entities,
                                            .populate = populate_chunk};
     CHECK(mc_chunk_acquire_validate(&f.context));
@@ -760,7 +760,7 @@ static int test_limits_and_callback_failures(void) {
             f.generate_ok = false;
             f.generate_action = GENERATE_FILL;
         } else if (failure == 2) {
-            f.tiles_ok = false;
+            f.tile_entities_ok = false;
         } else if (failure == 3) {
             f.fail_slice = 3u;
         } else if (failure == 4) {
@@ -823,7 +823,7 @@ static int test_invalid_resources(void) {
         if (invalid == 0)
             f.context.world_time = NULL;
         else if (invalid == 1)
-            f.context.register_tiles = NULL;
+            f.context.register_tile_entities = NULL;
         else if (invalid == 2)
             f.context.register_entities = NULL;
         else if (invalid == 3)
@@ -1160,7 +1160,7 @@ static int test_reference_failure_releases(void) {
                 leases.invalidate_kind = kind;
                 leases.invalidate_slice = boundary - 1u;
             } else if (kind == 'T')
-                f.tiles_ok = false;
+                f.tile_entities_ok = false;
             else if (kind == 'E')
                 f.fail_slice = boundary - 1u;
             else

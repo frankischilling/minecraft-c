@@ -38,10 +38,10 @@ typedef struct fixture {
     mc_nbt_tag root, level, fields[FIELD_COUNT];
     mc_nbt_tag root_extra, root_tail, level_extra, level_tail;
     mc_nbt_tag entity[2], entity_id[2], entity_payload[2], entity_nested;
-    mc_nbt_tag tile, tile_id, tile_payload;
+    mc_nbt_tag tile_entity, tile_entity_id, tile_entity_payload;
     const mc_nbt_tag *root_items[3], *level_items[FIELD_COUNT + 2];
     const mc_nbt_tag *entity_items[2], *entity_children[2][2], *nested_items[1];
-    const mc_nbt_tag *tile_items[1], *tile_children[2];
+    const mc_nbt_tag *tile_entity_items[1], *tile_entity_children[2];
     uint16_t names[32][16];
     size_t name_count;
     uint8_t arrays[ARRAY_COUNT][MC_CHUNK_BLOCKS + 1];
@@ -63,7 +63,7 @@ static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type
 }
 
 /* Constructed contract cases. These do not claim original-runtime parity. */
-static void fixture_init(fixture *value, bool entities, bool tiles) {
+static void fixture_init(fixture *value, bool entities, bool tile_entities) {
     memset(value, 0, sizeof(*value));
     value->root.type = MC_NBT_COMPOUND;
     value->root.name = (mc_nbt_string){root_name, sizeof(root_name) / sizeof(root_name[0])};
@@ -102,23 +102,23 @@ static void fixture_init(fixture *value, bool entities, bool tiles) {
     value->fields[9].value.list.element_type = MC_NBT_COMPOUND;
     value->fields[9].value.list.items = value->entity_items;
     value->fields[9].value.list.length = entities ? 2u : 0u;
-    value->tile.type = MC_NBT_COMPOUND;
-    named(value, &value->tile_id, "id", MC_NBT_STRING);
-    value->tile_id.value.string = value->entity_id[0].value.string;
-    named(value, &value->tile_payload, "Unmodeled", MC_NBT_STRING);
-    value->tile_payload.value.string = value->tile_id.value.string;
-    value->tile_children[0] = &value->tile_id;
-    value->tile_children[1] = &value->tile_payload;
-    value->tile.value.compound.items = value->tile_children;
-    value->tile.value.compound.length = 2;
-    value->tile_items[0] = &value->tile;
+    value->tile_entity.type = MC_NBT_COMPOUND;
+    named(value, &value->tile_entity_id, "id", MC_NBT_STRING);
+    value->tile_entity_id.value.string = value->entity_id[0].value.string;
+    named(value, &value->tile_entity_payload, "Unmodeled", MC_NBT_STRING);
+    value->tile_entity_payload.value.string = value->tile_entity_id.value.string;
+    value->tile_entity_children[0] = &value->tile_entity_id;
+    value->tile_entity_children[1] = &value->tile_entity_payload;
+    value->tile_entity.value.compound.items = value->tile_entity_children;
+    value->tile_entity.value.compound.length = 2;
+    value->tile_entity_items[0] = &value->tile_entity;
     value->fields[10].value.list.element_type = MC_NBT_COMPOUND;
-    value->fields[10].value.list.items = value->tile_items;
-    value->fields[10].value.list.length = tiles ? 1u : 0u;
+    value->fields[10].value.list.items = value->tile_entity_items;
+    value->fields[10].value.list.length = tile_entities ? 1u : 0u;
     value->root_extra.type = MC_NBT_STRING;
     value->root_extra.name = (mc_nbt_string){unknown_root_name, sizeof(unknown_root_name) /
                                                                     sizeof(unknown_root_name[0])};
-    value->root_extra.value.string = value->tile_id.value.string;
+    value->root_extra.value.string = value->tile_entity_id.value.string;
     named(value, &value->root_tail, "Tail", MC_NBT_LONG);
     value->root_tail.value.long_value = INT64_MAX;
     value->level_extra.type = MC_NBT_BYTE_ARRAY;
@@ -126,7 +126,7 @@ static void fixture_init(fixture *value, bool entities, bool tiles) {
         unknown_level_name, sizeof(unknown_level_name) / sizeof(unknown_level_name[0])};
     value->level_extra.value.byte_array = value->entity_payload[0].value.byte_array;
     named(value, &value->level_tail, "Tail", MC_NBT_STRING);
-    value->level_tail.value.string = value->tile_id.value.string;
+    value->level_tail.value.string = value->tile_entity_id.value.string;
     static const size_t order[FIELD_COUNT] = {9, 3, 1, 0, 7, 8, 2, 10, 6, 4, 5};
     value->level_items[0] = &value->level_extra;
     for (size_t i = 0; i < FIELD_COUNT; ++i)
@@ -956,7 +956,7 @@ static int test_status_strings(void) {
                                            "missing Blocks",
                                            "wrong chunk field type",
                                            "unsupported chunk array shape",
-                                           "unsupported entity or tile edit",
+                                           "unsupported entity or TileEntity edit",
                                            "resource limit",
                                            "allocation failed",
                                            "invalid NBT record"};

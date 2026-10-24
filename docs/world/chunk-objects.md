@@ -17,10 +17,10 @@ The seventeen instance fields use the actual state and data cells. World d is
 the supplied receiver; active, population, dirty, never-save, entity and last-save
 fields share the cells consumed by existing lifecycle and storage operations.
 Each of the three Nibble objects has a distinct stable header and packed span.
-The height array, tile map, list array and eight entity lists also retain
+The height array, TileEntity map, list array and eight entity lists also retain
 their own identities. Inspection copies field values without replacing owners.
 The slice lists now retain [actual typed Entity occurrences](entities.md),
-including duplicates. Tile and activation support remains limited to known-empty
+including duplicates. TileEntity and activation support remains limited to known-empty
 children; general Java collection methods are outside this owner.
 
 Native storage combines the owner and embedded child backing in one allocation,

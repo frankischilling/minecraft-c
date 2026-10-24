@@ -142,8 +142,8 @@ static mc_chunk_lifecycle_status detach(const mc_chunk_lifecycle_context *contex
     if (chunk->blank)
         return MC_CHUNK_LIFECYCLE_OK;
     chunk->active = false;
-    mc_chunk_lifecycle_status status =
-        checked(context, context->invalidate_tiles(context->world, context, chunk), false, false);
+    mc_chunk_lifecycle_status status = checked(
+        context, context->invalidate_tile_entities(context->world, context, chunk), false, false);
     for (size_t slice = 0; status == MC_CHUNK_LIFECYCLE_OK && slice < 8; ++slice)
         status = checked(context, context->defer_entities(context->world, context, chunk, slice),
                          false, false);
@@ -153,7 +153,7 @@ static mc_chunk_lifecycle_status detach(const mc_chunk_lifecycle_context *contex
 mc_chunk_lifecycle_status mc_chunk_lifecycle_detach(const mc_chunk_lifecycle_context *context,
                                                     mc_chunk_state *chunk) {
     if (!mc_chunk_lifecycle_validate(context) || !chunk_valid(chunk) ||
-        context->invalidate_tiles == NULL || context->defer_entities == NULL)
+        context->invalidate_tile_entities == NULL || context->defer_entities == NULL)
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
     if (!retain(context, chunk))
         return MC_CHUNK_LIFECYCLE_LIMIT;
@@ -189,7 +189,7 @@ static void unpublish(mc_chunk_cache *cache, int32_t key, mc_chunk_state *chunk)
 mc_chunk_lifecycle_status mc_chunk_lifecycle_maintain(const mc_chunk_lifecycle_context *context,
                                                       bool *provider_result) {
     if (provider_result == NULL || !mc_chunk_lifecycle_validate(context) ||
-        context->pending->history == NULL || context->invalidate_tiles == NULL ||
+        context->pending->history == NULL || context->invalidate_tile_entities == NULL ||
         context->defer_entities == NULL || context->provider_maintenance == NULL)
         return MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT;
     if (context->policy != MC_CHUNK_ACQUIRE_DEDICATED || !*context->saving_disabled) {

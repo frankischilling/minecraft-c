@@ -1,5 +1,5 @@
 /* One real prepared GAME call per process. The included contract main and
- * original Tile main are compiled under other names and never executed here. */
+ * original TileEntity main are compiled under other names and never executed here. */
 #define MC_DUNGEON_TEST_MAIN mc_dungeon_placement_contract_fixture_main
 #include "test_dungeon.c"
 #undef MC_DUNGEON_TEST_MAIN
@@ -24,7 +24,7 @@ typedef struct dp_stack {
 
 typedef struct dp_tile {
     size_t identity;
-    mc_tile_snapshot fields;
+    mc_tile_entity_snapshot fields;
     bool world_binding, name_null;
     size_t name_length;
     uint16_t name[65535];
@@ -56,10 +56,10 @@ typedef struct dp_image {
     size_t light_count;
     dp_light lights[DP_LIGHTS];
     const mc_world_reference_list *c, *G;
-    size_t map_count, c_count, G_count, tile_count;
+    size_t map_count, c_count, G_count, tile_entity_count;
     dp_map_row map[DP_TILES];
     size_t active[DP_TILES], deferred[DP_TILES], entity_counts[8];
-    dp_tile tiles[DP_TILES];
+    dp_tile tile_entities[DP_TILES];
 } dp_image;
 
 typedef struct dp_capture {
@@ -72,7 +72,7 @@ typedef struct dp_capture {
     bool returned;
     mc_population_dungeon_error error;
     dp_image before, after;
-    mc_tile *held_tiles[DP_TILES];
+    mc_tile_entity *held_tiles[DP_TILES];
     mc_item_stack *held_stacks[DP_STACKS];
     size_t held_tile_count, held_stack_count;
     bool repeated_tile_same, repeated_stack_same;
@@ -136,19 +136,20 @@ static bool dp_index(const char *text, size_t *out) {
 
 /* IDs are only same-process identity joins. Each new actual identity receives
  * an ordinary hold until all before/after values have been copied. */
-static bool dp_tile_identity(dp_capture *capture, mc_tile *tile, size_t *out) {
-    if (tile == NULL) {
+static bool dp_tile_identity(dp_capture *capture, mc_tile_entity *tile_entity, size_t *out) {
+    if (tile_entity == NULL) {
         *out = 0;
         return true;
     }
     for (size_t i = 0; i < capture->held_tile_count; ++i)
-        if (capture->held_tiles[i] == tile) {
+        if (capture->held_tiles[i] == tile_entity) {
             *out = i + 1u;
             return true;
         }
-    if (capture->held_tile_count == DP_TILES || mc_tile_retain(tile) != MC_TILE_OK)
+    if (capture->held_tile_count == DP_TILES ||
+        mc_tile_entity_retain(tile_entity) != MC_TILE_ENTITY_OK)
         return false;
-    capture->held_tiles[capture->held_tile_count++] = tile;
+    capture->held_tiles[capture->held_tile_count++] = tile_entity;
     *out = capture->held_tile_count;
     return true;
 }
@@ -176,25 +177,27 @@ static void dp_release(dp_capture *capture) {
     for (size_t i = 0; i < capture->held_stack_count; ++i)
         mc_item_stack_release(capture->held_stacks[i]);
     for (size_t i = 0; i < capture->held_tile_count; ++i)
-        mc_tile_release(capture->held_tiles[i]);
+        mc_tile_entity_release(capture->held_tiles[i]);
     capture->held_stack_count = capture->held_tile_count = 0;
 }
 
 static bool dp_copy_tile(dp_capture *capture, mc_world_runtime *world, size_t identity,
                          dp_tile *out) {
-    mc_tile *tile = capture->held_tiles[identity - 1u];
+    mc_tile_entity *tile_entity = capture->held_tiles[identity - 1u];
     out->identity = identity;
-    if (mc_tile_get_snapshot(tile, &out->fields) != MC_TILE_OK)
+    if (mc_tile_entity_get_snapshot(tile_entity, &out->fields) != MC_TILE_ENTITY_OK)
         return false;
     out->world_binding = out->fields.world == world;
-    if (out->fields.kind == MC_TILE_CHEST) {
-        if (out->fields.phase != MC_TILE_READY || out->fields.chest_capacity > DP_SLOTS)
+    if (out->fields.kind == MC_TILE_ENTITY_CHEST) {
+        if (out->fields.phase != MC_TILE_ENTITY_READY || out->fields.chest_capacity > DP_SLOTS)
             return false;
         for (size_t slot = 0; slot < out->fields.chest_capacity; ++slot) {
             mc_item_stack *first = NULL, *second = NULL;
-            bool ok = mc_tile_chest_get(tile, (int32_t)slot, &first) == MC_TILE_OK;
+            bool ok =
+                mc_tile_entity_chest_get(tile_entity, (int32_t)slot, &first) == MC_TILE_ENTITY_OK;
             if (ok)
-                ok = mc_tile_chest_get(tile, (int32_t)slot, &second) == MC_TILE_OK;
+                ok = mc_tile_entity_chest_get(tile_entity, (int32_t)slot, &second) ==
+                     MC_TILE_ENTITY_OK;
             if (ok) {
                 capture->repeated_stack_same = capture->repeated_stack_same && first == second;
                 ok = first == second &&
@@ -208,13 +211,13 @@ static bool dp_copy_tile(dp_capture *capture, mc_world_runtime *world, size_t id
             if (!ok)
                 return false;
         }
-    } else if (out->fields.kind == MC_TILE_SPAWNER) {
-        mc_tile_name *name = out->fields.spawner_name;
-        if (mc_tile_name_retain(name) != MC_TILE_OK)
+    } else if (out->fields.kind == MC_TILE_ENTITY_SPAWNER) {
+        mc_tile_entity_name *name = out->fields.spawner_name;
+        if (mc_tile_entity_name_retain(name) != MC_TILE_ENTITY_OK)
             return false;
-        mc_tile_name_view view;
-        const mc_tile_status status = mc_tile_name_get_view(name, &view);
-        const bool ok = status == MC_TILE_OK && view.text.length <= COUNT(out->name) &&
+        mc_tile_entity_name_view view;
+        const mc_tile_entity_status status = mc_tile_entity_name_get_view(name, &view);
+        const bool ok = status == MC_TILE_ENTITY_OK && view.text.length <= COUNT(out->name) &&
                         (view.text.length == 0 || view.text.units != NULL);
         if (ok) {
             out->name_null = view.is_null;
@@ -222,7 +225,7 @@ static bool dp_copy_tile(dp_capture *capture, mc_world_runtime *world, size_t id
             if (view.text.length != 0)
                 memcpy(out->name, view.text.units, view.text.length * sizeof(*out->name));
         }
-        mc_tile_name_release(name);
+        mc_tile_entity_name_release(name);
         if (!ok)
             return false;
     } else {
@@ -238,7 +241,7 @@ static bool dp_collect_list(dp_capture *capture, const mc_world_reference_list *
         return false;
     *count = list->count;
     for (size_t i = 0; i < list->count; ++i)
-        if (!dp_tile_identity(capture, (mc_tile *)list->items[i], &identities[i]))
+        if (!dp_tile_identity(capture, (mc_tile_entity *)list->items[i], &identities[i]))
             return false;
     return true;
 }
@@ -265,9 +268,9 @@ static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out) {
     out->world_a = world->fields.a;
     out->world_o = world->fields.o;
     out->world_L = world->fields.L;
-    out->containers_retired = world->tile_containers_retired;
-    out->map_valid = mc_live_tiles_map_valid(chunk);
-    out->lists_valid = mc_live_tiles_lists_valid(world);
+    out->containers_retired = world->tile_entity_containers_retired;
+    out->map_valid = mc_live_tile_entities_map_valid(chunk);
+    out->lists_valid = mc_live_tile_entities_lists_valid(world);
     out->c = world->fields.c;
     out->G = world->fields.G;
     out->enqueue_depth = world->classes->enqueue_depth;
@@ -312,7 +315,7 @@ static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out) {
     }
     if (!out->map_valid || !out->lists_valid || out->fields.m == NULL ||
         out->fields.m->length != COUNT(out->entity_counts) ||
-        mc_world_chunk_tile_count(out->fields.l, &out->map_count) != MC_WORLD_STORAGE_OK ||
+        mc_world_chunk_tile_entity_count(out->fields.l, &out->map_count) != MC_WORLD_STORAGE_OK ||
         out->map_count > DP_TILES)
         return false;
     for (size_t i = 0; i < COUNT(out->entity_counts); ++i) {
@@ -323,21 +326,21 @@ static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out) {
             return false; /* Declared input is genuinely known-empty, not omitted live Entities. */
     }
     for (size_t i = 0; i < out->map_count; ++i) {
-        mc_tile *first = NULL, *second = NULL;
-        mc_live_tile_map_entry entry;
-        if (mc_live_tiles_map_entry_at(chunk, i, &entry) != MC_WORLD_STORAGE_OK ||
-            mc_live_tiles_map_at(chunk, i, &first) != MC_WORLD_STORAGE_OK ||
-            mc_live_tiles_map_at(chunk, i, &second) != MC_WORLD_STORAGE_OK || first == NULL)
+        mc_tile_entity *first = NULL, *second = NULL;
+        mc_live_tile_entity_map_entry entry;
+        if (mc_live_tile_entities_map_entry_at(chunk, i, &entry) != MC_WORLD_STORAGE_OK ||
+            mc_live_tile_entities_map_at(chunk, i, &first) != MC_WORLD_STORAGE_OK ||
+            mc_live_tile_entities_map_at(chunk, i, &second) != MC_WORLD_STORAGE_OK || first == NULL)
             return false;
         capture->repeated_tile_same = capture->repeated_tile_same && first == second;
-        mc_tile_snapshot tile;
-        if (entry.tile != first || first != second ||
+        mc_tile_entity_snapshot tile_entity;
+        if (entry.tile_entity != first || first != second ||
             !dp_tile_identity(capture, first, &out->map[i].identity) ||
-            mc_tile_get_snapshot(first, &tile) != MC_TILE_OK)
+            mc_tile_entity_get_snapshot(first, &tile_entity) != MC_TILE_ENTITY_OK)
             return false;
-        out->map[i].x = tile.x;
-        out->map[i].y = tile.y;
-        out->map[i].z = tile.z;
+        out->map[i].x = tile_entity.x;
+        out->map[i].y = tile_entity.y;
+        out->map[i].z = tile_entity.z;
         out->map[i].key_x = entry.x;
         out->map[i].key_y = entry.y;
         out->map[i].key_z = entry.z;
@@ -353,10 +356,11 @@ static bool dp_snapshot(dp_capture *capture, fixture *f, dp_image *out) {
                                     : group == 1 ? out->active[i]
                                                  : out->deferred[i];
             if (identity != 0 && !seen[identity]) {
-                if (out->tile_count == DP_TILES ||
-                    !dp_copy_tile(capture, world, identity, &out->tiles[out->tile_count]))
+                if (out->tile_entity_count == DP_TILES ||
+                    !dp_copy_tile(capture, world, identity,
+                                  &out->tile_entities[out->tile_entity_count]))
                     return false;
-                ++out->tile_count;
+                ++out->tile_entity_count;
                 seen[identity] = true;
             }
         }
@@ -428,18 +432,19 @@ static void dp_ids(dp_json *json, const size_t *identities, size_t count) {
     dp_write(json, "]");
 }
 
-static void dp_tile_json(dp_json *json, const dp_tile *tile) {
-    const mc_tile_snapshot *s = &tile->fields;
+static void dp_tile_json(dp_json *json, const dp_tile *tile_entity) {
+    const mc_tile_entity_snapshot *s = &tile_entity->fields;
     dp_write(json,
              "{\"tile_id\":%zu,\"kind\":\"%s\",\"phase\":%d,"
              "\"position\":[%" PRId32 ",%" PRId32 ",%" PRId32 "],"
              "\"invalid\":%s,\"world_binding\":%s",
-             tile->identity, s->kind == MC_TILE_CHEST ? "chest" : "spawner", (int)s->phase, s->x,
-             s->y, s->z, dp_bool(s->invalid), dp_bool(tile->world_binding));
-    if (s->kind == MC_TILE_CHEST) {
+             tile_entity->identity, s->kind == MC_TILE_ENTITY_CHEST ? "chest" : "spawner",
+             (int)s->phase, s->x, s->y, s->z, dp_bool(s->invalid),
+             dp_bool(tile_entity->world_binding));
+    if (s->kind == MC_TILE_ENTITY_CHEST) {
         dp_write(json, ",\"chest_capacity\":%zu,\"slots\":[", s->chest_capacity);
         for (size_t i = 0; i < s->chest_capacity; ++i) {
-            const dp_stack *stack = &tile->slots[i];
+            const dp_stack *stack = &tile_entity->slots[i];
             dp_write(json, "%s", i == 0 ? "" : ",");
             if (stack->identity == 0)
                 dp_write(json, "null");
@@ -453,12 +458,12 @@ static void dp_tile_json(dp_json *json, const dp_tile *tile) {
         dp_write(json, "]");
     } else {
         dp_write(json, ",\"spawner_name_utf16\":");
-        if (tile->name_null)
+        if (tile_entity->name_null)
             dp_write(json, "null");
         else {
             dp_write(json, "\"");
-            for (size_t i = 0; i < tile->name_length; ++i)
-                dp_write(json, "%04x", (unsigned int)tile->name[i]);
+            for (size_t i = 0; i < tile_entity->name_length; ++i)
+                dp_write(json, "%04x", (unsigned int)tile_entity->name[i]);
             dp_write(json, "\"");
         }
         dp_write(json,
@@ -505,9 +510,9 @@ static void dp_image_json(dp_json *json, const dp_image *image) {
     dp_write(json, ",\"L\":%s,\"valid\":%s,\"containers_retired\":%s},\"Tiles\":[",
              dp_bool(image->world_L), dp_bool(image->lists_valid),
              dp_bool(image->containers_retired));
-    for (size_t i = 0; i < image->tile_count; ++i) {
+    for (size_t i = 0; i < image->tile_entity_count; ++i) {
         dp_write(json, "%s", i == 0 ? "" : ",");
-        dp_tile_json(json, &image->tiles[i]);
+        dp_tile_json(json, &image->tile_entities[i]);
     }
     dp_write(json, "],\"Entity_slices\":");
     dp_ids(json, image->entity_counts, COUNT(image->entity_counts));
@@ -559,7 +564,7 @@ static bool dp_document(dp_json *json, const dp_capture *capture) {
              ",\"registry_status\":%d,\"material_status\":%d,\"mutation_status\":%d,"
              "\"tile_status\":%d,\"item_status\":%d},\"before\":",
              (int)error->registry.status, (int)error->material.status, (int)error->mutation.status,
-             (int)error->tile.status, (int)error->item.status);
+             (int)error->tile_entity.status, (int)error->item.status);
     dp_image_json(json, &capture->before);
     dp_write(json, ",\"after\":");
     dp_image_json(json, &capture->after);

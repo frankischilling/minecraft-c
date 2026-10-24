@@ -586,7 +586,7 @@ static mc_registry_status dye_wool(family_source *source, int32_t color) {
     mc_recipe_argument wool;
     TRY(named(source, true, "ac", 13, &wool));
     stage(source, 18);
-    TRY(mc_registry_block_class_initialize(source->classes, MC_BLOCK_EE_CQ));
+    TRY(mc_registry_block_class_initialize(source->classes, MC_BLOCK_WOOL));
     /* Actual ee.e/cq.d is (value ^ -1) & 15. */
     const int32_t damage = (int32_t)((~(uint32_t)color) & UINT32_C(15));
     stage(source, 21);

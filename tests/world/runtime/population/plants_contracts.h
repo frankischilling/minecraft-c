@@ -565,7 +565,7 @@ static bool pop_inherited_predicates(fixture *f, size_t side) {
           pop_block(f, side, "v", &grass) && pop_block(f, side, "w", &dirt) &&
           pop_block(f, side, "aB", &farm) && pop_block(f, side, "u", &stone) &&
           pop_block(f, side, "C", &water));
-    CHECK(sapling->kind == MC_BLOCK_HE_EU && crops->kind == MC_BLOCK_NI_IJ);
+    CHECK(sapling->kind == MC_BLOCK_SAPLING && crops->kind == MC_BLOCK_CROPS);
     const mc_block *receivers[] = {sapling, crops}, *soils[] = {grass, dirt, farm, stone};
     for (size_t receiver = 0; receiver < COUNT(receivers); ++receiver)
         for (size_t soil = 0; soil < COUNT(soils); ++soil)
@@ -714,7 +714,7 @@ static bool pop_layer_continuation_one(fixture *f, size_t side, const pop_case *
           plant->fields.bn != soil->fields.bn && water->fields.bA != NULL &&
           stone->fields.bA != NULL && !mc_material_a(water->fields.bA) &&
           mc_material_a(stone->fields.bA) &&
-          plant->kind == (t->family == POP_REED ? MC_BLOCK_RI_KO : MC_BLOCK_OR_JE));
+          plant->kind == (t->family == POP_REED ? MC_BLOCK_SUGAR_CANE : MC_BLOCK_CACTUS));
     CHECK(pop_find_probe(t, &p) && p.height == 3 && pop_layer_probe_no_revisit(t, &p));
     mc_java_random random, expected = p.conditional;
     const unsigned int first_coordinates = t->family == POP_REED ? 4u : 6u;

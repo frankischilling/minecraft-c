@@ -828,9 +828,9 @@ static const mc_nbt_tag *store_get(const mc_nbt_tag *parent, const char *name) {
 static bool store_opaque(const store_chunk *entry) {
     const mc_nbt_tag *level = store_get(store_chunk_root(entry), "Level");
     const mc_nbt_tag *entities = store_get(level, "Entities");
-    const mc_nbt_tag *tiles = store_get(level, "TileEntities");
+    const mc_nbt_tag *tile_entities = store_get(level, "TileEntities");
     return (entities != NULL && entities->value.list.length != 0) ||
-           (tiles != NULL && tiles->value.list.length != 0);
+           (tile_entities != NULL && tile_entities->value.list.length != 0);
 }
 
 static mc_world_storage_status store_load_chunk(mc_world_store *store, int32_t dimension, int32_t x,
@@ -857,7 +857,7 @@ static mc_world_storage_status store_load_chunk(mc_world_store *store, int32_t d
     mc_compression_buffer_free(&raw);
     if (status == MC_WORLD_STORAGE_OK && activation && store_opaque(entry))
         status = store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                             "opaque entity or tile activation");
+                             "opaque entity or TileEntity activation");
     if (status == MC_WORLD_STORAGE_OK) {
         mc_stored_chunk_status normalized = mc_stored_chunk_normalize(
             entry->owner.stored, store->block_map, sizeof(store->block_map));
@@ -954,7 +954,7 @@ static mc_world_storage_status store_write_chunk(mc_world_store *store, mc_chunk
         if (store_opaque(entry) ||
             (runtime_chunk != NULL && !mc_world_chunk_storage_empty(runtime_chunk)))
             return store_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                               "opaque entity or tile runtime save");
+                               "opaque entity or TileEntity runtime save");
         chunk->has_entities = false;
     }
     mc_nbt_document *document = NULL;
@@ -1392,14 +1392,14 @@ mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
 
 mc_world_storage_status mc_world_store_game_save_write(
     mc_world_store *store, mc_world_store_game_save *save, int64_t world_time, uint32_t timestamp,
-    const mc_nbt_tree *entity_records, const mc_nbt_tree *tile_records, uint32_t *growth,
+    const mc_nbt_tree *entity_records, const mc_nbt_tree *tile_entity_records, uint32_t *growth,
     mc_world_storage_error *error, mc_stored_chunk_error *composition_error,
     mc_nbt_error *encoding_error) {
     if (composition_error != NULL)
         *composition_error = (mc_stored_chunk_error){MC_STORED_CHUNK_OK, NULL, {MC_NBT_OK, 0}};
     if (encoding_error != NULL)
         *encoding_error = (mc_nbt_error){MC_NBT_OK, 0};
-    if (growth == NULL || entity_records == NULL || tile_records == NULL)
+    if (growth == NULL || entity_records == NULL || tile_entity_records == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME save write arguments");
     store_chunk *entry = store_find_game_save(store, save);
     if (entry == NULL)
@@ -1419,10 +1419,11 @@ mc_world_storage_status mc_world_store_game_save_write(
     if (entities == NULL || entities->type != MC_NBT_LIST ||
         entities->value.list.element_type != MC_NBT_COMPOUND)
         return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save Entities List");
-    const mc_nbt_tag *records_root = mc_nbt_tree_root(tile_records);
+    const mc_nbt_tag *records_root = mc_nbt_tree_root(tile_entity_records);
     if (records_root == NULL || records_root->type != MC_NBT_COMPOUND ||
         records_root->value.compound.length != 1)
-        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA, "GAME save Tile records root");
+        return store_error(error, MC_WORLD_STORAGE_INVALID_DATA,
+                           "GAME save TileEntity records root");
     const mc_nbt_tag *records = store_get(records_root, "TileEntities");
     if (records == NULL || records->type != MC_NBT_LIST ||
         records->value.list.element_type != MC_NBT_COMPOUND)
@@ -1432,9 +1433,9 @@ mc_world_storage_status mc_world_store_game_save_write(
     if (input_bytes > remaining.max_allocation_bytes)
         return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save Entity input tree budget");
     remaining.max_allocation_bytes -= input_bytes;
-    input_bytes = mc_nbt_tree_allocation_bytes(tile_records);
+    input_bytes = mc_nbt_tree_allocation_bytes(tile_entity_records);
     if (input_bytes > remaining.max_allocation_bytes)
-        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save Tile input tree budget");
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "GAME save TileEntity input tree budget");
     remaining.max_allocation_bytes -= input_bytes;
     mc_nbt_tree *document = NULL;
     mc_stored_chunk_error detail;

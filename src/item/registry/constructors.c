@@ -152,9 +152,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
                                            const mc_item_arguments *a) {
     mc_registry_block_array *effective;
     switch (item->kind) {
-        case MC_ITEM_GM_EJ:
+        case MC_ITEM_BASE:
             return mc_registry_item_base(classes, item, a->id);
-        case MC_ITEM_WC_NY:
+        case MC_ITEM_SHOVEL:
             STAGE("wc", "ny", 0);
             STAGE("wc", "ny", 4);
             effective = classes->items.wc_bk;
@@ -162,7 +162,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             TRY(dq_construct(classes, item, a->id, 1, a->tool, effective));
             STAGE("wc", "ny", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_AU_AH:
+        case MC_ITEM_PICKAXE:
             STAGE("au", "ah", 0);
             STAGE("au", "ah", 4);
             effective = classes->items.au_bk;
@@ -170,7 +170,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             TRY(dq_construct(classes, item, a->id, 2, a->tool, effective));
             STAGE("au", "ah", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_TA_LY:
+        case MC_ITEM_AXE:
             STAGE("ta", "ly", 0);
             STAGE("ta", "ly", 4);
             effective = classes->items.ta_bk;
@@ -178,7 +178,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             TRY(dq_construct(classes, item, a->id, 3, a->tool, effective));
             STAGE("ta", "ly", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_YE_PL:
+        case MC_ITEM_FLINT_AND_STEEL:
             TRY(base_prefix(classes, item, a->id, "ye", "pl"));
             STAGE("ye", "pl", 7);
             item->fields.bg = 1;
@@ -186,15 +186,15 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             mc_registry_item_durability(item, 64);
             STAGE("ye", "pl", 17);
             return MC_REGISTRY_OK;
-        case MC_ITEM_YW_PX:
+        case MC_ITEM_FOOD:
             return yw_construct(classes, item, a->id, a->integers[0], a->flag);
-        case MC_ITEM_QZ_KJ:
+        case MC_ITEM_BOW:
             TRY(base_prefix(classes, item, a->id, "qz", "kj"));
             STAGE("qz", "kj", 7);
             item->fields.bg = 1;
             STAGE("qz", "kj", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_RX_LC:
+        case MC_ITEM_COAL:
             TRY(base_prefix(classes, item, a->id, "rx", "lc"));
             STAGE("rx", "lc", 7);
             mc_registry_item_subtypes(item, true);
@@ -202,7 +202,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             mc_registry_item_durability(item, 0);
             STAGE("rx", "lc", 17);
             return MC_REGISTRY_OK;
-        case MC_ITEM_QD_JW: {
+        case MC_ITEM_SWORD: {
             TRY(base_prefix(classes, item, a->id, "qd", "jw"));
             STAGE("qd", "jw", 7);
             item->fields.bg = 1;
@@ -222,7 +222,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             STAGE("qd", "jw", 31);
             return MC_REGISTRY_OK;
         }
-        case MC_ITEM_LA_GZ: {
+        case MC_ITEM_HOE: {
             TRY(base_prefix(classes, item, a->id, "la", "gz"));
             STAGE("la", "gz", 7);
             item->fields.bg = 1;
@@ -236,23 +236,23 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             STAGE("la", "gz", 19);
             return MC_REGISTRY_OK;
         }
-        case MC_ITEM_RK_KR:
+        case MC_ITEM_SEEDS:
             TRY(base_prefix(classes, item, a->id, "rk", "kr"));
             STAGE("rk", "kr", 7);
             item->subtype.rk.a = a->integers[0];
             STAGE("rk", "kr", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_WA_NX:
+        case MC_ITEM_ARMOR:
             return armor(classes, item, a);
-        case MC_ITEM_YM_PS:
+        case MC_ITEM_PAINTING:
             return base_prefix(classes, item, a->id, "ym", "ps");
-        case MC_ITEM_VC_NG:
+        case MC_ITEM_SIGN:
             TRY(base_prefix(classes, item, a->id, "vc", "ng"));
             STAGE("vc", "ng", 7);
             item->fields.bg = 1;
             STAGE("vc", "ng", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_HU_FG:
+        case MC_ITEM_DOOR:
             TRY(base_prefix(classes, item, a->id, "hu", "fg"));
             STAGE("hu", "fg", 7);
             item->subtype.hu.a = a->material;
@@ -260,7 +260,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             item->fields.bg = 1;
             STAGE("hu", "fg", 15);
             return MC_REGISTRY_OK;
-        case MC_ITEM_BC_AL:
+        case MC_ITEM_BUCKET:
             TRY(base_prefix(classes, item, a->id, "bc", "al"));
             STAGE("bc", "al", 7);
             item->fields.bg = 1;
@@ -268,7 +268,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             item->subtype.bc.a = a->integers[0];
             STAGE("bc", "al", 15);
             return MC_REGISTRY_OK;
-        case MC_ITEM_RL_KS:
+        case MC_ITEM_MINECART:
             TRY(base_prefix(classes, item, a->id, "rl", "ks"));
             STAGE("rl", "ks", 7);
             item->fields.bg = 1;
@@ -276,27 +276,27 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             item->subtype.rl.a = a->integers[0];
             STAGE("rl", "ks", 15);
             return MC_REGISTRY_OK;
-        case MC_ITEM_SA_LG:
+        case MC_ITEM_SADDLE:
             TRY(base_prefix(classes, item, a->id, "sa", "lg"));
             STAGE("sa", "lg", 7);
             item->fields.bg = 1;
             STAGE("sa", "lg", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_IE_FK:
+        case MC_ITEM_REDSTONE:
             return base_prefix(classes, item, a->id, "ie", "fk");
-        case MC_ITEM_DM_CF:
+        case MC_ITEM_SNOWBALL:
             TRY(base_prefix(classes, item, a->id, "dm", "cf"));
             STAGE("dm", "cf", 8);
             item->fields.bg = 16;
             STAGE("dm", "cf", 11);
             return MC_REGISTRY_OK;
-        case MC_ITEM_VD_NI:
+        case MC_ITEM_BOAT:
             TRY(base_prefix(classes, item, a->id, "vd", "ni"));
             STAGE("vd", "ni", 7);
             item->fields.bg = 1;
             STAGE("vd", "ni", 10);
             return MC_REGISTRY_OK;
-        case MC_ITEM_LV_HN:
+        case MC_ITEM_BLOCK_PLACER:
             TRY(base_prefix(classes, item, a->id, "lv", "hn"));
             STAGE("lv", "hn", 7);
             if (a->block == NULL)
@@ -309,13 +309,13 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             }
             STAGE("lv", "hn", 13);
             return MC_REGISTRY_OK;
-        case MC_ITEM_MO_HX:
+        case MC_ITEM_EGG:
             TRY(base_prefix(classes, item, a->id, "mo", "hx"));
             STAGE("mo", "hx", 8);
             item->fields.bg = 16;
             STAGE("mo", "hx", 11);
             return MC_REGISTRY_OK;
-        case MC_ITEM_CS_BV:
+        case MC_ITEM_FISHING_ROD:
             TRY(base_prefix(classes, item, a->id, "cs", "bv"));
             STAGE("cs", "bv", 8);
             mc_registry_item_durability(item, 64);
@@ -323,7 +323,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             mc_registry_item_stack_limit(item, 1);
             STAGE("cs", "bv", 18);
             return MC_REGISTRY_OK;
-        case MC_ITEM_KM_GU:
+        case MC_ITEM_DYE:
             TRY(base_prefix(classes, item, a->id, "km", "gu"));
             STAGE("km", "gu", 7);
             mc_registry_item_subtypes(item, true);
@@ -331,9 +331,9 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             mc_registry_item_durability(item, 0);
             STAGE("km", "gu", 17);
             return MC_REGISTRY_OK;
-        case MC_ITEM_LP_HK:
+        case MC_ITEM_BED:
             return base_prefix(classes, item, a->id, "lp", "hk");
-        case MC_ITEM_BL_AS:
+        case MC_ITEM_SHEARS:
             TRY(base_prefix(classes, item, a->id, "bl", "as"));
             STAGE("bl", "as", 7);
             mc_registry_item_stack_limit(item, 1);
@@ -341,7 +341,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             mc_registry_item_durability(item, 238);
             STAGE("bl", "as", 19);
             return MC_REGISTRY_OK;
-        case MC_ITEM_TR_MJ:
+        case MC_ITEM_RECORD:
             TRY(base_prefix(classes, item, a->id, "tr", "mj"));
             STAGE("tr", "mj", 7);
             item->subtype.tr.a = a->text;
@@ -349,13 +349,13 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             item->fields.bg = 1;
             STAGE("tr", "mj", 15);
             return MC_REGISTRY_OK;
-        case MC_ITEM_BZ_BF:
+        case MC_ITEM_SOUP:
             STAGE("bz", "bf", 0);
             STAGE("bz", "bf", 4);
             TRY(yw_construct(classes, item, a->id, a->integers[0], false));
             STAGE("bz", "bf", 7);
             return MC_REGISTRY_OK;
-        case MC_ITEM_QK_JY:
+        case MC_ITEM_COOKIE:
             STAGE("qk", "jy", 0);
             STAGE("qk", "jy", 4);
             TRY(yw_construct(classes, item, a->id, a->integers[0], a->flag));
@@ -363,7 +363,7 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             item->fields.bg = a->integers[1];
             STAGE("qk", "jy", 13);
             return MC_REGISTRY_OK;
-        case MC_ITEM_WR_OL:
+        case MC_ITEM_MAP:
             STAGE("wr", "ol", 0);
             STAGE("wr", "ol", 2);
             TRY(base_prefix(classes, item, a->id, "cp", "bo"));
@@ -371,19 +371,19 @@ static mc_registry_status constructor_body(mc_registry_classes *classes, mc_item
             mc_registry_item_stack_limit(item, 1);
             STAGE("wr", "ol", 11);
             return MC_REGISTRY_OK;
-        case MC_ITEM_CK_BK:
+        case MC_ITEM_BLOCK:
             return mc_registry_item_ck(classes, item, a->id);
-        case MC_ITEM_BI_AP:
+        case MC_ITEM_WOOL_BLOCK:
             return block_item(classes, item, a->id, "bi", "ap", true);
-        case MC_ITEM_GO_EK:
+        case MC_ITEM_LOG_BLOCK:
             return block_item(classes, item, a->id, "go", "ek", true);
-        case MC_ITEM_EN_CW:
+        case MC_ITEM_SLAB_BLOCK:
             return block_item(classes, item, a->id, "en", "cw", true);
-        case MC_ITEM_MR_IA:
+        case MC_ITEM_SAPLING_BLOCK:
             return block_item(classes, item, a->id, "mr", "ia", true);
-        case MC_ITEM_UY_ND:
+        case MC_ITEM_LEAVES_BLOCK:
             return block_item(classes, item, a->id, "uy", "nd", true);
-        case MC_ITEM_QR_KC:
+        case MC_ITEM_PISTON_BLOCK:
             return block_item(classes, item, a->id, "qr", "kc", false);
         case MC_ITEM_KIND_COUNT:
             break;

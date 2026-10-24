@@ -184,8 +184,8 @@ bool mc_world_mutation_plant_neighbor(mc_world_runtime *world, const mc_block *b
                                       int32_t y, int32_t z, int32_t source_id,
                                       mc_world_mutation_error *error) {
     (void)source_id;
-    const bool cactus = block->kind == MC_BLOCK_OR_JE;
-    const bool reed = block->kind == MC_BLOCK_RI_KO;
+    const bool cactus = block->kind == MC_BLOCK_CACTUS;
+    const bool reed = block->kind == MC_BLOCK_SUGAR_CANE;
     const mc_plant_frame frame = mc_plant_frame_make(world, block, error,
                                                      cactus ? "or"
                                                      : reed ? "ri"
@@ -213,14 +213,14 @@ bool mc_world_mutation_plant_tick(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error) {
     switch (block->kind) {
-        case MC_BLOCK_HE_EU:
+        case MC_BLOCK_SAPLING:
             return mc_plant_sapling_tick(world, block, x, y, z, random, error);
-        case MC_BLOCK_NI_IJ:
+        case MC_BLOCK_CROPS:
             return mc_plant_crop_tick(world, block, x, y, z, random, error);
-        case MC_BLOCK_TL_MD:
+        case MC_BLOCK_MUSHROOM:
             return mc_plant_mushroom_tick(world, block, x, y, z, random, error);
-        case MC_BLOCK_OR_JE:
-        case MC_BLOCK_RI_KO:
+        case MC_BLOCK_CACTUS:
+        case MC_BLOCK_SUGAR_CANE:
             return mc_plant_upright_tick(world, block, x, y, z, error);
         default: {
             const mc_plant_frame frame = mc_plant_frame_make(world, block, error, "wb", "nw",

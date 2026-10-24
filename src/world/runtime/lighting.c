@@ -1,10 +1,10 @@
 #include "mc/world/runtime/lighting.h"
 
 #include "../../platform/text/stdout.h"
+#include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "lighting_internal.h"
 #include "mc/core/java/java.h"
-#include "provider_internal.h"
 #include "runtime_internal.h"
 
 #include <limits.h>
@@ -252,8 +252,8 @@ mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
     mc_light_submit_result submitted = MC_LIGHT_SUBMIT_SKIPPED;
     bool depth_entered = false;
     mc_world_light_region *unpublished = NULL;
-    mc_world_dimension_fields dimension;
-    if (mc_world_dimension_fields_get(runtime->fields.t, &dimension) != MC_WORLD_DIMENSION_OK) {
+    mc_world_provider_fields dimension;
+    if (mc_world_provider_fields_get(runtime->fields.t, &dimension) != MC_WORLD_PROVIDER_OK) {
         cause = native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World light Dimension receiver");
         goto failed;
     }
@@ -279,7 +279,7 @@ mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
     bool present = false;
     bytecode = 67;
     provider_bytecode = 6;
-    status = mc_world_runtime_provider_contains(runtime, chunk_x, chunk_z, &present, &cause);
+    status = mc_world_runtime_chunk_provider_contains(runtime, chunk_x, chunk_z, &present, &cause);
     if (status != MC_WORLD_STORAGE_OK)
         goto failed;
     if (!present)

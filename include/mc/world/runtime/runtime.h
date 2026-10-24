@@ -3,7 +3,7 @@
 
 #include "mc/core/java/random_profile.h"
 #include "mc/world/cache/lifecycle.h"
-#include "mc/world/generation/normal.h"
+#include "mc/world/generation/overworld.h"
 #include "mc/world/info/info.h"
 #include "mc/world/runtime/construction.h"
 #include "mc/world/storage/store.h"
@@ -36,8 +36,8 @@ typedef struct mc_world_runtime_options {
     mc_chunk_pending *pending;
     int32_t dimension;
     mc_chunk_acquire_policy policy;
-    mc_normal_generator *generator;
-    const mc_normal_generation_resources *generation;
+    mc_overworld_generator *generator;
+    const mc_overworld_generation_resources *generation;
     void *provider;
     mc_chunk_populate_callback populate;
     mc_chunk_maintenance_callback provider_maintenance;
@@ -63,7 +63,7 @@ typedef struct mc_world_runtime_options {
     mc_world_info *world_info;
 } mc_world_runtime_options;
 
-/* Compose storage, acquisition, normal generation, save/unload and owner leases.
+/* Compose storage, acquisition, Overworld generation, save/unload and owner leases.
  * Borrow store, validated cache/ordered pending and optional dependencies except
  * the retained world_info; borrowed dependencies must outlive this owner.
  * cache/list/pending must initially be empty and
@@ -73,7 +73,7 @@ typedef struct mc_world_runtime_options {
  * undone if construction cannot complete. This already-loaded metadata/generator composition does
  * not construct a World-owned Random, g or Q, or reproduce original World construction.
  *
- * Dimensions 0 and -1 are accepted. An optional initialized normal generator is
+ * Dimensions 0 and -1 are accepted. An optional initialized Overworld generator is
  * supported only for dimension0, with matching resources/cache/world seed and
  * explicit populate callback. Missing generation is load-only: missing records
  * stop instead of publishing a fabricated fallback. Actual feature population
@@ -82,7 +82,7 @@ typedef struct mc_world_runtime_options {
  * implementations. Normal region-loader extra/flush/maintenance are native
  * no-ops, matching the represented loaders.
  *
- * Only known-empty entity/tile runtime chunks activate here. Opaque records are
+ * Only known-empty entity/TileEntity runtime chunks activate here. Opaque records are
  * refused by the existing loader. Native registration/detachment callbacks are
  * therefore empty, but the coordinator still invokes each required boundary.
  * Generic lifecycle.h supports separately observed external feature seams.
@@ -143,7 +143,7 @@ mc_java_random_profile_status mc_world_runtime_construct_default_random(mc_world
  * INVALID_ARGUMENT without touching any owner or diagnostics. */
 mc_java_random_profile_status mc_world_runtime_last_random_status(const mc_world_runtime *runtime);
 
-/* Native lifetime operations for persistent Entity, Tile and feature World
+/* Native lifetime operations for persistent Entity, TileEntity and feature World
  * fields, including the retained big-oak c binding. Retain
  * before publishing such a pointer and release when that field is retired.
  * They invoke no callbacks and require exclusive access to the live runtime

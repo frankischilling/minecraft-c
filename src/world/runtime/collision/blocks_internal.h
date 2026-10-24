@@ -27,10 +27,10 @@ mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *worl
  * from the captured, nullable World argument. Caller keeps code_classes and
  * Block live/exclusive, and keeps a nonnull source World physically alive and
  * exclusive. A reached metadata call enters/leaves that actual World lazily;
- * the public Tile getter owns its entry. No outer World entry is required.
+ * the public TileEntity getter owns its entry. No outer World entry is required.
  * The Block must belong to code_classes->registry. Side, Registry,
  * FP admission and pooled bounds use this code owner; World-independent null
- * and pooled shapes do not inspect world. Metadata/Tile-dependent getters use
+ * and pooled shapes do not inspect world. Metadata/TileEntity-dependent getters use
  * only the supplied World when reached. A nonnull result owns one bounds hold
  * in code_classes->entities, which the caller releases through that same owner.
  * No Entity binding is required until an actual pooled factory is reached. */
@@ -42,12 +42,12 @@ mc_world_storage_status mc_world_collision_block_box_in_classes_held(
  * uu/na's inherited empty body. This mutates the real singleton's bs..bx; it
  * neither obtains nor resets pooled bounds. The World wrapper has the same
  * entered GAME World ownership contract as block_box_held. Its explicit-code
- * variant admits a nullable World until a source Tile/ID/metadata getter is
+ * variant admits a nullable World until a source TileEntity/ID/metadata getter is
  * reached, under the same lazy-entry and lifetime rules as block_box above.
- * MovingPiston retains the actual typed lookup result and captured carrier,
- * compares carrier object identity, calls its complete virtual state-shape,
+ * MovingPiston retains the actual typed lookup result and captured carried Block,
+ * compares carried Block object identity, calls its complete virtual state-shape,
  * then reads progress/extending/facing. Six independent Direction reads write
- * bs,bt,bu,bv,bw,bx in that order. Failure keeps all completed carrier/Moving
+ * bs,bt,bu,bv,bw,bx in that order. Failure keeps all completed carried Block/Moving
  * mutations, acquisition effects and initializer publications. piston_bytecode
  * identifies the enclosing MovingPiston state-shape call; block_class/bytecode
  * identify the deepest reached operation. No Entity binding is required. */
@@ -59,8 +59,8 @@ mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
     mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_world_collision_error *error);
 
-/* Actual MovingPiston a(World,IIIIFI), distinct from its Tile lookup in e.
- * The carrier's virtual getter supplies the same held box mutated in source
+/* Actual MovingPiston a(World,IIIIFI), distinct from its TileEntity lookup in e.
+ * The carried Block's virtual getter supplies the same held box mutated in source
  * order. A late failure keeps coordinate/pool prefixes and preserves out.
  * ID0/self and genuine null shapes return before any Direction active use. */
 mc_world_storage_status

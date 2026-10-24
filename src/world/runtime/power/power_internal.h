@@ -29,7 +29,7 @@ mc_world_storage_status mc_world_power_strong_at_held(mc_world_runtime *world, i
  * World through any reached source getter. World is used only at that getter;
  * guarded bodies admit NULL without any World entry. No constructor/READY/class active
  * use is implied by an instance invocation. NULL receiver fails with the body
- * unentered. Each entry returns a fresh frame; private strong-to-weak and wire
+ * unentered. Each entry returns a fresh frame; private strong-to-weak and redstone
  * helper calls preserve their current enclosing Block sites. The World caller
  * merges a failed Block child with its own retained World sites. */
 mc_world_storage_status mc_world_block_power_capability_held(const mc_block *block, bool *out,

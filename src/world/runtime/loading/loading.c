@@ -98,8 +98,8 @@ static mc_world_storage_status import_entities(mc_world_runtime *world, mc_world
     return MC_WORLD_STORAGE_OK;
 }
 
-static mc_world_storage_status import_tiles(const mc_world_store_game_stage_view *view,
-                                            mc_world_game_load_error *frame) {
+static mc_world_storage_status import_tile_entities(const mc_world_store_game_stage_view *view,
+                                                    mc_world_game_load_error *frame) {
     frame->builder_bytecode = 301;
     const mc_nbt_tag *records = field(view->level, "TileEntities");
     if (records != NULL && records->type != MC_NBT_LIST)
@@ -112,11 +112,11 @@ static mc_world_storage_status import_tiles(const mc_world_store_game_stage_view
      * In particular, it does not invent a provenance journal for zero records. */
     if (count == 0)
         return MC_WORLD_STORAGE_OK;
-    const mc_world_storage_status status =
-        mc_live_tiles_load_records(view->chunk, records, &view->limits, &frame->tile);
+    const mc_world_storage_status status = mc_live_tile_entities_load_records(
+        view->chunk, records, &view->limits, &frame->tile_entity);
     if (status != MC_WORLD_STORAGE_OK) {
-        frame->builder_bytecode = frame->tile.bytecode;
-        frame->cause = frame->tile.cause;
+        frame->builder_bytecode = frame->tile_entity.bytecode;
+        frame->cause = frame->tile_entity.cause;
     }
     return status;
 }
@@ -126,7 +126,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
                                                    mc_world_game_load_error *error) {
     mc_world_game_load_error frame = {.status = MC_WORLD_STORAGE_OK,
                                       .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                      .tile = mc_live_tiles_empty_error()};
+                                      .tile_entity = mc_live_tile_entities_empty_error()};
     frame.entity = mc_world_entity_load_empty_error();
     if (world == NULL || out == NULL) {
         frame.status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME load arguments");
@@ -162,7 +162,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
         frame.status = import_entities(world, store, stage, &view, &frame);
     }
     if (frame.status == MC_WORLD_STORAGE_OK)
-        frame.status = import_tiles(&view, &frame);
+        frame.status = import_tile_entities(&view, &frame);
     if (frame.status == MC_WORLD_STORAGE_OK) {
         mc_world_chunk_fields fields;
         frame.region_bytecode = 152;
@@ -191,7 +191,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
         *out = state;
         frame = (mc_world_game_load_error){.status = MC_WORLD_STORAGE_OK,
                                            .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                           .tile = mc_live_tiles_empty_error()};
+                                           .tile_entity = mc_live_tile_entities_empty_error()};
         frame.entity = mc_world_entity_load_empty_error();
     }
     mc_world_runtime_call_leave(world);

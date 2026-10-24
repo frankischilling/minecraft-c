@@ -222,16 +222,16 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
         status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Block contact receiver/kind");
     } else {
         switch (block->kind) {
-            case MC_BLOCK_AK_Z:
+            case MC_BLOCK_PORTAL:
                 status = portal(block, entity, &frame);
                 break;
-            case MC_BLOCK_BV_BC:
+            case MC_BLOCK_PRESSURE_PLATE:
                 status = pressure_contact(world, block, x, y, z, &frame);
                 break;
-            case MC_BLOCK_OA_IU:
+            case MC_BLOCK_SOUL_SAND:
                 status = soul_sand(block, entity, &frame);
                 break;
-            case MC_BLOCK_OR_JE: {
+            case MC_BLOCK_CACTUS: {
                 stage(block, &frame, "or", "je", 4);
                 bool ignored;
                 status = effect_result(
@@ -239,10 +239,10 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
                     "Block cactus Entity damage");
                 break;
             }
-            case MC_BLOCK_PH_JN:
+            case MC_BLOCK_DETECTOR_RAIL:
                 status = detector_contact(world, block, x, y, z, entity, &frame);
                 break;
-            case MC_BLOCK_RN_KU: {
+            case MC_BLOCK_COBWEB: {
                 stage(block, &frame, "rn", "ku", 3);
                 mc_entity_base_fields *const base = fields(entity, &frame);
                 if (base == NULL)

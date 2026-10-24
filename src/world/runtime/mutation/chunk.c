@@ -3,7 +3,7 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "../../chunk/object_internal.h"
 #include "mc/core/java/java.h"
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 
 static bool initial(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t *height,
                     int32_t *old, mc_world_mutation_error *error) {
@@ -187,9 +187,9 @@ bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, in
     if (!metadata(chunk, x, y, z, value, 154, error))
         return false;
     (void)mc_world_chunk_fields_get(chunk, &fields);
-    mc_world_dimension_fields dimension;
+    mc_world_provider_fields dimension;
     error->chunk_bytecode = 164;
-    if (mc_world_dimension_fields_get(fields.d->fields.t, &dimension) != MC_WORLD_DIMENSION_OK)
+    if (mc_world_provider_fields_get(fields.d->fields.t, &dimension) != MC_WORLD_PROVIDER_OK)
         return mc_world_mutation_fail(fields.d, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk setter current Dimension");
     if (!dimension.e && (!height(chunk, x, y, z, id, old_height, 170, 179, 195, 213, error) ||

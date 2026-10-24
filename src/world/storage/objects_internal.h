@@ -6,7 +6,7 @@
 #include "mc/world/storage/store.h"
 
 /* GAME load keeps the existing stored state/data and retained NBT document.
- * It rejects opaque entities/tiles and attaches actual known-empty Chunk child
+ * It rejects opaque entities/TileEntities and attaches actual known-empty Chunk child
  * headers before publishing the store link. Header allocation is native policy,
  * not original decoder allocation/partial-failure timing. Failure preserves out.
  * World and store must remain live, and store must be this actual World's w;
@@ -83,7 +83,7 @@ mc_world_store_game_stage_record_entity_result(mc_world_store *store,
                                                bool consumed, mc_world_storage_error *error);
 
 /* Only the concrete simulation coordinator calls finish after BOTH genuine
- * Entity and Tile traversals return normally. Every nonempty source Entity
+ * Entity and TileEntity traversals return normally. Every nonempty source Entity
  * occurrence must have its ordered result recorded; a missing/empty List is
  * checked passively without allocating or invoking a source operation.
  * Normalize the SAME stored owner, commit, balance only the coordinator lease
@@ -134,7 +134,7 @@ typedef struct mc_world_store_game_save_view {
  * its Store binding and selected READY Info (when nonnull) exclusively through
  * end. Begin admits the SAME committed/source-enabled concrete Chunk and owns
  * one actual Store identity lease, then checks the session. NULL account uses
- * existing Store metadata. No source field reset, Entity/Tile traversal, class
+ * existing Store metadata. No source field reset, Entity/TileEntity traversal, class
  * use or callback occurs. A nested begin for this entry is BUSY. Failure balances
  * its temporary lease and preserves both outputs. All outputs/errors must be
  * disjoint from each other, owners, input trees and borrowed dependencies. */
@@ -146,25 +146,25 @@ mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
 
 /* Only the concrete high coordinator calls write: after its second actual
  * shared-serializer session check, source prefix, q=false and genuine Entity
- * traversal, then actual Tile builder success. q may be true with zero emitted
+ * traversal, then actual TileEntity builder success. q may be true with zero emitted
  * records (dead/false results); it is not an admission shortcut. Dereference the
  * reached e/f/g descriptors before q in source order. No hidden session check,
- * source reset, Tile call, old-list replay or owner rebinding occurs here.
+ * source reset, TileEntity call, old-list replay or owner rebinding occurs here.
  * Compose actual b/e.a/f.a/g.a/h projections using the fixed native extents;
  * nibble descriptors must have exactly the packed extent, nonnull a/h spans
  * must be readable for those extents, and NULL array pointers are left for
  * codec failure after the reached q reset. No canonical array substitution.
- * entity_records and tile_records are the actual builders' independently owned
+ * entity_records and tile_entity_records are the actual builders' independently owned
  * root Compounds containing only their named Compound Entities/TileEntities
  * Lists, borrowed unchanged through the call. Caller retains/frees both trees.
  * Native storage policy ONLY: current serialized Entity records replace consumed
  * baseline occurrences in order; excess consumed positions are dropped, excess
  * current records appended, and unconsumed unknown records retained in relative
- * order. The journal is not a live Entity or source replay. Current Tiles replace
- * the baseline Tile list. Generic opaque builders remain unchanged.
+ * order. The journal is not a live Entity or source replay. Current TileEntities replace
+ * the baseline TileEntity list. Generic opaque builders remain unchanged.
  * The codec ceiling charges BOTH input trees + outer tree + overlapping
  * scratch/raw output. Retained Store payload/document, occurrence journal and
- * live World/Entity/Tile graphs retain
+ * live World/Entity/TileEntity graphs retain
  * their separate existing budgets; region budgets remain separate as well.
  * Success alone publishes growth and adds Java-int-narrowed growth to selected
  * Info/metadata. Failure preserves growth and all earlier source effects. */
@@ -173,7 +173,7 @@ mc_world_store_game_save_begin(mc_world_store *store, mc_world_runtime *world,
  * manufacture codec errors for operations that were never reached. */
 mc_world_storage_status mc_world_store_game_save_write(
     mc_world_store *store, mc_world_store_game_save *save, int64_t world_time, uint32_t timestamp,
-    const mc_nbt_tree *entity_records, const mc_nbt_tree *tile_records, uint32_t *growth,
+    const mc_nbt_tree *entity_records, const mc_nbt_tree *tile_entity_records, uint32_t *growth,
     mc_world_storage_error *error, mc_stored_chunk_error *composition_error,
     mc_nbt_error *encoding_error);
 
@@ -198,7 +198,7 @@ bool mc_world_store_has_chunks_for_world(const mc_world_store *store,
                                          const mc_world_runtime *world);
 
 /* Whole-Store native teardown admission, followed only after complete World
- * admission by infallible per-occurrence Entity/Tile release. The actual embedded
+ * admission by infallible per-occurrence Entity/TileEntity release. The actual embedded
  * Map is validated through its native inspector, independently of source l.
  * This does not save, unload,
  * remove cache identities or reset source flags. Retired containers cannot

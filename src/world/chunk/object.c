@@ -30,14 +30,14 @@ static void nibble_construct(mc_world_chunk_nibble *nibble, uint8_t *storage,
     nibble->length = packed_length;
 }
 
-static bool tile_map_virgin(const mc_world_chunk_tile_map *map) {
+static bool tile_entity_map_virgin(const mc_world_chunk_tile_entity_map *map) {
     return map->count == 0 && map->backing == NULL && map->release_backing == NULL &&
            map->backing_bytes == NULL;
 }
 
-static bool tile_map_owned_bytes(const mc_world_chunk *chunk, size_t *out) {
-    const mc_world_chunk_tile_map *const map = &chunk->tile_map;
-    if (tile_map_virgin(map)) {
+static bool tile_entity_map_owned_bytes(const mc_world_chunk *chunk, size_t *out) {
+    const mc_world_chunk_tile_entity_map *const map = &chunk->tile_entity_map;
+    if (tile_entity_map_virgin(map)) {
         *out = 0;
         return true;
     }
@@ -111,8 +111,8 @@ mc_world_storage_status mc_world_chunk_storage_create(mc_world_runtime *world, i
     chunk->release_entity = NULL;
 
     /* lm/hi.<init>(World,II)V: fresh empty Map, l12. */
-    chunk->tile_map = (mc_world_chunk_tile_map){0};
-    chunk->l = &chunk->tile_map;
+    chunk->tile_entity_map = (mc_world_chunk_tile_entity_map){0};
+    chunk->l = &chunk->tile_entity_map;
 
     /* Fresh List[8] with null elements at18, m21. */
     chunk->slices.length = CHUNK_ENTITY_SLICES;
@@ -197,8 +197,8 @@ mc_world_storage_status mc_world_chunk_storage_bind_loaded(mc_world_runtime *wor
     chunk->e = &chunk->metadata;
     chunk->f = &chunk->skylight;
     chunk->g = &chunk->block_light;
-    chunk->tile_map = (mc_world_chunk_tile_map){0};
-    chunk->l = &chunk->tile_map;
+    chunk->tile_entity_map = (mc_world_chunk_tile_entity_map){0};
+    chunk->l = &chunk->tile_entity_map;
     chunk->slices.length = CHUNK_ENTITY_SLICES;
     for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index)
         chunk->slices.items[index] = &chunk->entities[index];
@@ -262,7 +262,8 @@ mc_world_storage_status mc_world_chunk_slice_at(const mc_world_chunk_list_array 
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status mc_world_chunk_tile_count(const mc_world_chunk_tile_map *map, size_t *out) {
+mc_world_storage_status mc_world_chunk_tile_entity_count(const mc_world_chunk_tile_entity_map *map,
+                                                         size_t *out) {
     if (map == NULL || out == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = map->count;
@@ -278,14 +279,14 @@ mc_world_storage_status mc_world_chunk_entity_count(const mc_world_chunk_entity_
 }
 
 bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk) {
-    if (!mc_world_chunk_source_enabled(chunk) || !tile_map_virgin(&chunk->tile_map) ||
+    if (!mc_world_chunk_source_enabled(chunk) || !tile_entity_map_virgin(&chunk->tile_entity_map) ||
         !mc_world_chunk_entities_validate(chunk) || chunk->d == NULL || chunk->state == NULL ||
         chunk->data == NULL || chunk->state->blank || chunk->state->data != chunk->data ||
         chunk->bound_blocks == NULL || chunk->state->x != chunk->constructor_x ||
         chunk->state->z != chunk->constructor_z || chunk->data->blocks != chunk->bound_blocks ||
         chunk->data->blocks_capacity != (size_t)MC_CHUNK_BLOCKS || chunk->e != &chunk->metadata ||
         chunk->f != &chunk->skylight || chunk->g != &chunk->block_light ||
-        chunk->h != chunk->data->heightmap || chunk->l != &chunk->tile_map ||
+        chunk->h != chunk->data->heightmap || chunk->l != &chunk->tile_entity_map ||
         chunk->m != &chunk->slices || chunk->metadata.a != chunk->data->metadata ||
         chunk->metadata.length != (size_t)MC_CHUNK_NIBBLE_BYTES ||
         chunk->skylight.a != chunk->data->skylight ||
@@ -354,7 +355,7 @@ bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk) {
      * by subtracting another from allocation_bytes. The Map inspector must
      * not call this validator and must not acquire a source l dereference. */
     size_t map_bytes;
-    if (!tile_map_owned_bytes(chunk, &map_bytes) || map_bytes > SIZE_MAX - bytes)
+    if (!tile_entity_map_owned_bytes(chunk, &map_bytes) || map_bytes > SIZE_MAX - bytes)
         return false;
     bytes += map_bytes;
     for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index) {
@@ -408,8 +409,8 @@ void mc_world_chunk_containers_release(mc_world_chunk *chunk) {
     mc_world_chunk_entities_release(chunk);
     /* Finalize the actual embedded owner even if source l was replaced.
      * This is native held-resource cleanup, never a source Map callback. */
-    if (chunk->tile_map.release_backing != NULL)
-        chunk->tile_map.release_backing(&chunk->tile_map);
+    if (chunk->tile_entity_map.release_backing != NULL)
+        chunk->tile_entity_map.release_backing(&chunk->tile_entity_map);
 }
 
 bool mc_world_chunk_entity_containers_retired(const mc_world_chunk *chunk) {

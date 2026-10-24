@@ -40,20 +40,20 @@ typedef struct fixture {
     bool callback_error;
     mc_biome_memory memory;
     mc_biome_manager manager;
-    mc_normal_generator generator;
-    mc_normal_generator_materials materials;
+    mc_overworld_generator generator;
+    mc_overworld_generator_materials materials;
     mc_math_trig trig;
     mc_light_region light_entries[4096];
     mc_light_queue queue;
     int32_t depth, opacity[256];
     mc_world_lighting lighting;
-    mc_normal_generation_resources generation;
+    mc_overworld_generation_resources generation;
 } fixture;
 
 static fixture f;
 static mc_chunk_data saved_data;
 static uint8_t saved_blocks[MC_CHUNK_BLOCKS];
-static unsigned char saved_generator[sizeof(mc_normal_generator)];
+static unsigned char saved_generator[sizeof(mc_overworld_generator)];
 static mc_chunk_cache registered_caches[257];
 
 static uint32_t region_clock(void *owner) {
@@ -139,7 +139,7 @@ static int open_fixture(const char *root, size_t max_chunks, size_t nbt_budget) 
 }
 
 static void close_fixture(void) {
-    mc_normal_generator_free(&f.generator);
+    mc_overworld_generator_free(&f.generator);
     mc_biome_manager_free(&f.manager);
     mc_java_int_set_free(f.history);
     mc_world_store_free(f.store);
@@ -295,21 +295,21 @@ static int load_save_unload(const char *root) {
     CHECK(*live->time == 2000 && mc_world_store_info(f.store)->size_on_disk > previous_size);
     int64_t grown_size = mc_world_store_info(f.store)->size_on_disk;
     CHECK(mc_world_store_info(f.store)->last_played == -15);
-    mc_world_store *observer = NULL;
-    CHECK(mc_world_store_open(root, f.regions, &f.store_options, &observer, &f.error) ==
+    mc_world_store *world_access = NULL;
+    CHECK(mc_world_store_open(root, f.regions, &f.store_options, &world_access, &f.error) ==
           MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_store_load_info(observer, &f.error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_store_info(observer)->size_on_disk == previous_size);
-    CHECK(mc_world_store_info(observer)->time == 2000 &&
-          mc_world_store_info(observer)->last_played == metadata_clock(NULL));
+    CHECK(mc_world_store_load_info(world_access, &f.error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_store_info(world_access)->size_on_disk == previous_size);
+    CHECK(mc_world_store_info(world_access)->time == 2000 &&
+          mc_world_store_info(world_access)->last_played == metadata_clock(NULL));
     CHECK(mc_world_runtime_save(f.runtime, true) == MC_CHUNK_LIFECYCLE_OK);
-    CHECK(mc_world_store_load_info(observer, &f.error) == MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_store_info(observer)->size_on_disk == grown_size);
+    CHECK(mc_world_store_load_info(world_access, &f.error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_store_info(world_access)->size_on_disk == grown_size);
     CHECK(mc_world_store_info(f.store)->last_played == -15 && *live->time == 2000);
-    mc_world_store_free(observer);
+    mc_world_store_free(world_access);
     mc_world_store_options conflict_options = f.store_options;
     ++conflict_options.session_token;
-    CHECK(mc_world_store_open(root, f.regions, &conflict_options, &observer, &f.error) ==
+    CHECK(mc_world_store_open(root, f.regions, &conflict_options, &world_access, &f.error) ==
           MC_WORLD_STORAGE_OK);
     chunk->dirty = true;
     chunk->has_entities = true;
@@ -323,10 +323,10 @@ static int load_save_unload(const char *root) {
     CHECK(mc_world_runtime_read_info(f.runtime, &current_info, &f.error) == MC_WORLD_STORAGE_OK);
     CHECK(current_info.time == 3000 &&
           mc_world_runtime_last_error(f.runtime)->status == MC_WORLD_STORAGE_SESSION_MISMATCH);
-    mc_world_store_free(observer);
-    CHECK(mc_world_store_open(root, f.regions, &f.store_options, &observer, &f.error) ==
+    mc_world_store_free(world_access);
+    CHECK(mc_world_store_open(root, f.regions, &f.store_options, &world_access, &f.error) ==
           MC_WORLD_STORAGE_OK);
-    mc_world_store_free(observer);
+    mc_world_store_free(world_access);
     CHECK(mc_world_runtime_mark_drop(f.runtime, 16, 0) == MC_CHUNK_ACQUIRE_OK &&
           f.pending.count == 1);
     *live->saving_disabled = true;
@@ -388,18 +388,18 @@ static int init_generator(void) {
     CHECK(mc_math_trig_init(&f.trig));
     CHECK(mc_biome_memory_init(&f.memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) == MC_BIOME_OK);
     CHECK(mc_biome_manager_init(&f.manager, 23, &f.memory) == MC_BIOME_OK);
-    CHECK(mc_normal_generator_init(&f.generator, 23, &f.manager, &f.trig) ==
-          MC_NORMAL_GENERATOR_OK);
+    CHECK(mc_overworld_generator_init(&f.generator, 23, &f.manager, &f.trig) ==
+          MC_OVERWORLD_GENERATOR_OK);
     CHECK(mc_light_queue_init(&f.queue, f.light_entries, 4096));
     f.lighting = (mc_world_lighting){&f.cache, &f.queue, &f.depth, false};
-    for (size_t i = 0; i < MC_NORMAL_GENERATOR_BIOME_MATERIALS; ++i)
+    for (size_t i = 0; i < MC_OVERWORLD_GENERATOR_BIOME_MATERIALS; ++i)
         f.materials.by_biome[i] = (mc_terrain_surface_material){2, 3};
     for (size_t i = 1; i < 256; ++i)
         f.opacity[i] = 255; /* Constructed opacity, not an original registry. */
-    f.generation = (mc_normal_generation_resources){.lighting = &f.lighting,
-                                                    .materials = &f.materials,
-                                                    .opacity = f.opacity,
-                                                    .opacity_length = 256};
+    f.generation = (mc_overworld_generation_resources){.lighting = &f.lighting,
+                                                       .materials = &f.materials,
+                                                       .opacity = f.opacity,
+                                                       .opacity_length = 256};
     return 0;
 }
 

@@ -244,7 +244,7 @@ static bool context_close(context *c) {
 static int test_runtime_binding(const char *root) {
     int result = 1;
     mc_world_regions *regions = NULL;
-    mc_world_store *store = NULL, *observer = NULL, *conflict = NULL, *limited = NULL;
+    mc_world_store *store = NULL, *world_access = NULL, *conflict = NULL, *limited = NULL;
     mc_world_info *a = NULL, *b = NULL, *raw = NULL;
     mc_world_info_player *replacement = NULL, *held_player = NULL;
     mc_world_info_name *before = NULL, *held_name = NULL;
@@ -402,10 +402,11 @@ static int test_runtime_binding(const char *root) {
           get(saved_data, "LastPlayed")->type == MC_NBT_LONG);
     saved_at = get(saved_data, "LastPlayed")->value.long_value;
     CHECK(get(saved_data, "version") != NULL && get(saved_data, "version")->value.int_value == 17);
-    CHECK(mc_world_store_open(root, regions, &options, &observer, &error) == MC_WORLD_STORAGE_OK &&
-          mc_world_store_load_info(observer, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_store_open(root, regions, &options, &world_access, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_store_load_info(world_access, &error) == MC_WORLD_STORAGE_OK);
     expected.last_played = saved_at;
-    CHECK(same_values(mc_world_store_info(observer), &expected));
+    CHECK(same_values(mc_world_store_info(world_access), &expected));
     CHECK(mc_world_runtime_read_info(c[0].runtime, &view, &error) == MC_WORLD_STORAGE_OK &&
           view.last_played == -555 && view.version == 17);
     CHECK(mc_world_store_load_info(store, &error) == MC_WORLD_STORAGE_OK &&
@@ -503,8 +504,8 @@ static int test_runtime_binding(const char *root) {
     held_player = b_fields.player;
     for (size_t i = 0; i < 3; ++i)
         CHECK(context_close(&c[i]));
-    mc_world_store_free(observer);
-    observer = NULL;
+    mc_world_store_free(world_access);
+    world_access = NULL;
     mc_world_store_free(conflict);
     conflict = NULL;
     mc_world_store_free(store);
@@ -535,7 +536,7 @@ cleanup:
         if (!context_close(&c[i]))
             closed = false;
     if (closed) {
-        mc_world_store_free(observer);
+        mc_world_store_free(world_access);
         mc_world_store_free(conflict);
         mc_world_store_free(limited);
         mc_world_store_free(store);

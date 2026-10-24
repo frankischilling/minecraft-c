@@ -50,7 +50,7 @@ The [plant lifecycle comparison](https://github.com/frankischilling/minecraft-c/
 59 prepared cases per side: full bounded block/metadata maps, both four-field
 Random continuations and ordered actual Item drops. Public replay uses fixtures
 derived from those original captures. Prepared World services execute unchanged
-Block hooks and selected tree bodies; original World/Chunk, observer, neighbor
+Block hooks and selected tree bodies; original World/Chunk, WorldAccess, neighbor
 and light-propagation parity remain outside this result. Native
 [plant contracts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md) describe their own GAME services.
 
@@ -66,6 +66,6 @@ the [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/
 The [complete former storage/reference page](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md)
 preserves the historical [storage foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#storage-foundation-checkpoint),
 [lifecycle qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#lifecycle-qualification),
-[normal generation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#normal-generation-checkpoint)
+[Overworld generation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#normal-generation-checkpoint)
 and [cache/region](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-storage-reference.md#cache-and-region-checks)
 checkpoints, together with their technical details and evidence limits.

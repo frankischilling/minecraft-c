@@ -103,20 +103,20 @@ The [clean dedicated checkpoint](reference/dedicated-world-construction.md#commi
 passes 622 local tests on MSVC/GCC/Clang and 601 hosted public/JDK tests; the
 seven supplied-archive comparisons per compiler retain their local scope.
 
-`MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original normal density and
+`MC_ENABLE_DENSITY_REFERENCE_TESTS=ON` compares original Overworld density and
 base-block methods with the same supplied-JAR/JDK/source settings. Its local
 fixture constructs genuine original world contexts in newly owned ignored
 directories; the server path can create a session lock and directories during
 normal setup. See [the interface](world/terrain.md) and
 [setup/evidence](reference/density.md). Public tests need no original setup.
 
-`MC_ENABLE_SURFACE_REFERENCE_TESTS=ON` compares original normal surface
+`MC_ENABLE_SURFACE_REFERENCE_TESTS=ON` compares original Overworld surface
 replacement and explicit chunk-reseed contexts with the same JAR/JDK/source
 settings. It creates fresh original contexts and records live Random separately
 from constructor state. See the [interface](world/surface.md) and
 [reference notes](reference/surface.md); complete chunks remain outside this pass.
 
-`MC_ENABLE_CAVES_REFERENCE_TESTS=ON` compares the normal cave stage with the same
+`MC_ENABLE_CAVES_REFERENCE_TESTS=ON` compares the Overworld cave stage with the same
 JAR/source settings and a JDK containing `java`, `javac` and `javap`. The natural
 comparison prepares actual base/surface inputs in fresh original contexts,
 then checks the separate cave Random and complete retained state. A separate
@@ -148,9 +148,9 @@ snapshots must match. Public fixtures replay the full captured records without
 Java. See the [finishing contract](world/finishing.md) and
 [reproduction procedure](reference/finishing.md).
 
-`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.normal_generation`
-for the complete unpublished normal generator entry. Build target
-`mc_normal_generation_probe` replays imported original world/cache/manager
+`MC_ENABLE_GENERATION_REFERENCE_TESTS=ON` enables `reference.overworld_generation`
+for the complete unpublished Overworld generator entry. Build target
+`mc_overworld_generation_probe` replays imported original world/cache/manager
 baselines through the production C API. The comparison requires both supplied
 JARs, JDK17+ with `java`, `javac`, `javap` and `jdk.jdi`, and the exact source
 commit setting. It uses loopback debugging, fresh original worlds and separate
@@ -164,9 +164,9 @@ comparisons pass at
 After configuring the JAR paths and source commit, the production commands are:
 
 ```sh
-cmake --build build --target mc_normal_generation_probe
+cmake --build build --target mc_overworld_generation_probe
 ctest --test-dir build -R '^tools\.normal_(reference|interop)$' --output-on-failure
-ctest --test-dir build -R '^reference\.normal_generation$' --output-on-failure
+ctest --test-dir build -R '^reference\.overworld_generation$' --output-on-failure
 ```
 
 Add `-C Debug` for a multi-configuration build. The two public tool checks use

@@ -16,72 +16,72 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
     int32_t texture;
     switch (block->kind) {
         /* These fifty kinds inherit the actual uu/na body: read bm1/return4. */
-        case MC_BLOCK_UU_NA:
-        case MC_BLOCK_EO_CX:
-        case MC_BLOCK_WP_OJ:
-        case MC_BLOCK_OT_JF:
-        case MC_BLOCK_HE_EU:
-        case MC_BLOCK_GK_EI:
-        case MC_BLOCK_NE_IG:
-        case MC_BLOCK_MT_IC:
-        case MC_BLOCK_VG_NK:
-        case MC_BLOCK_BK_AR:
-        case MC_BLOCK_XF_OV:
-        case MC_BLOCK_FK_DO:
-        case MC_BLOCK_VE_NJ:
-        case MC_BLOCK_PC_JJ:
-        case MC_BLOCK_PH_JN:
-        case MC_BLOCK_JQ_GI:
-        case MC_BLOCK_RN_KU:
-        case MC_BLOCK_RU_KZ:
-        case MC_BLOCK_JB_FZ:
-        case MC_BLOCK_H_G:
-        case MC_BLOCK_EE_CQ:
-        case MC_BLOCK_UT_MZ:
-        case MC_BLOCK_WB_NW:
-        case MC_BLOCK_TL_MD:
-        case MC_BLOCK_FB_DH:
-        case MC_BLOCK_VM_NP:
-        case MC_BLOCK_YQ_PT:
-        case MC_BLOCK_DD_BZ:
-        case MC_BLOCK_SM_LO:
-        case MC_BLOCK_NI_IJ:
-        case MC_BLOCK_VL_NO:
-        case MC_BLOCK_UJ_MT:
-        case MC_BLOCK_LE_HC:
-        case MC_BLOCK_DP_CG:
-        case MC_BLOCK_XR_PD:
-        case MC_BLOCK_BV_BC:
-        case MC_BLOCK_BS_AZ:
-        case MC_BLOCK_DB_BY:
-        case MC_BLOCK_OI_IZ:
-        case MC_BLOCK_JR_GJ:
-        case MC_BLOCK_NK_IK:
-        case MC_BLOCK_AC_P:
-        case MC_BLOCK_RZ_LF:
-        case MC_BLOCK_RI_KO:
-        case MC_BLOCK_JW_GN:
-        case MC_BLOCK_YI_PO:
-        case MC_BLOCK_OA_IU:
-        case MC_BLOCK_LY_HR:
-        case MC_BLOCK_AK_Z:
-        case MC_BLOCK_OQ_JD:
+        case MC_BLOCK_BASE:
+        case MC_BLOCK_STONE:
+        case MC_BLOCK_GRASS:
+        case MC_BLOCK_DIRT:
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_SAND:
+        case MC_BLOCK_GRAVEL:
+        case MC_BLOCK_ORE:
+        case MC_BLOCK_LOG:
+        case MC_BLOCK_LEAVES:
+        case MC_BLOCK_SPONGE:
+        case MC_BLOCK_GLASS:
+        case MC_BLOCK_BED:
+        case MC_BLOCK_RAIL:
+        case MC_BLOCK_DETECTOR_RAIL:
+        case MC_BLOCK_PISTON_BASE:
+        case MC_BLOCK_COBWEB:
+        case MC_BLOCK_TALL_GRASS:
+        case MC_BLOCK_DEAD_BUSH:
+        case MC_BLOCK_PISTON_HEAD:
+        case MC_BLOCK_WOOL:
+        case MC_BLOCK_MOVING_PISTON:
+        case MC_BLOCK_FLOWER:
+        case MC_BLOCK_MUSHROOM:
+        case MC_BLOCK_OBSIDIAN:
+        case MC_BLOCK_TORCH:
+        case MC_BLOCK_FIRE:
+        case MC_BLOCK_MOB_SPAWNER:
+        case MC_BLOCK_REDSTONE:
+        case MC_BLOCK_CROPS:
+        case MC_BLOCK_FARMLAND:
+        case MC_BLOCK_SIGN:
+        case MC_BLOCK_DOOR:
+        case MC_BLOCK_LADDER:
+        case MC_BLOCK_LEVER:
+        case MC_BLOCK_PRESSURE_PLATE:
+        case MC_BLOCK_REDSTONE_ORE:
+        case MC_BLOCK_REDSTONE_TORCH:
+        case MC_BLOCK_BUTTON:
+        case MC_BLOCK_SNOW_LAYER:
+        case MC_BLOCK_ICE:
+        case MC_BLOCK_SNOW_BLOCK:
+        case MC_BLOCK_CLAY:
+        case MC_BLOCK_SUGAR_CANE:
+        case MC_BLOCK_FENCE:
+        case MC_BLOCK_NETHERRACK:
+        case MC_BLOCK_SOUL_SAND:
+        case MC_BLOCK_GLOWSTONE:
+        case MC_BLOCK_PORTAL:
+        case MC_BLOCK_TRAPDOOR:
         /* pt/jr and l/j each declare their own independently read bm body. */
-        case MC_BLOCK_PT_JR:
-        case MC_BLOCK_L_J:
+        case MC_BLOCK_NOTE_BLOCK:
+        case MC_BLOCK_MINERAL_STORAGE:
             texture = block->fields.bm;
             break;
 
         /* Both fluid kinds select their rp/kv ancestor's a(I)I. */
-        case MC_BLOCK_OM_JC:
-        case MC_BLOCK_NX_IS:
+        case MC_BLOCK_FLOWING_FLUID:
+        case MC_BLOCK_STILL_FLUID:
             if (side == 0 || side == 1)
                 texture = block->fields.bm;
             else
                 texture = mc_java_i32_add(block->fields.bm, 1);
             break;
 
-        case MC_BLOCK_XQ_PA:
+        case MC_BLOCK_DISPENSER:
             if (side == 1 || side == 0)
                 texture = mc_java_i32_add(block->fields.bm, 17);
             else if (side == 3)
@@ -90,7 +90,7 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_RD_KL:
+        case MC_BLOCK_SANDSTONE:
             if (side == 1)
                 texture = mc_java_i32_sub(block->fields.bm, 16);
             else if (side == 0)
@@ -99,13 +99,13 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_YS_PW:
+        case MC_BLOCK_SLAB:
             /* a(I)I passes metadata0 atPC2 to the actual a(II)I atPC3.
              * Its selected metadata0 branch returns6 for side<=1, else5. */
             texture = side <= 1 ? 6 : 5;
             break;
 
-        case MC_BLOCK_AH_T:
+        case MC_BLOCK_TNT:
             if (side == 0)
                 texture = mc_java_i32_add(block->fields.bm, 2);
             else if (side == 1)
@@ -114,19 +114,19 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_HB_ER:
+        case MC_BLOCK_BOOKSHELF:
             texture = side <= 1 ? 4 : block->fields.bm;
             break;
 
-        case MC_BLOCK_SS_LU: {
+        case MC_BLOCK_STAIRS: {
             /* getfield a1 retains the actual source before virtual call5. */
             const mc_block *source = block->subtype.ss.a;
             return mc_registry_block_texture_side(classes, source, side, out);
         }
 
         /* e/e and ks/gv independently declare the same face/bm arithmetic. */
-        case MC_BLOCK_E_E:
-        case MC_BLOCK_KS_GV:
+        case MC_BLOCK_CHEST:
+        case MC_BLOCK_LOCKED_CHEST:
             if (side == 1 || side == 0)
                 texture = mc_java_i32_sub(block->fields.bm, 1);
             else if (side == 3)
@@ -135,7 +135,7 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_FI_DN:
+        case MC_BLOCK_CRAFTING_TABLE:
             if (side == 1)
                 texture = mc_java_i32_sub(block->fields.bm, 16);
             else if (side == 0) {
@@ -149,7 +149,7 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_TC_LZ:
+        case MC_BLOCK_FURNACE:
             if (side == 1 || side == 0)
                 texture = mc_java_i32_add(block->fields.bm, 17);
             else if (side == 3)
@@ -158,7 +158,7 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_OR_JE:
+        case MC_BLOCK_CACTUS:
             if (side == 1)
                 texture = mc_java_i32_sub(block->fields.bm, 1);
             else if (side == 0)
@@ -167,13 +167,13 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = block->fields.bm;
             break;
 
-        case MC_BLOCK_FO_DT:
+        case MC_BLOCK_JUKEBOX:
             /* The source loads bm1 before choosing the increment5..13. */
             texture = block->fields.bm;
             texture = mc_java_i32_add(texture, side == 1 ? 1 : 0);
             break;
 
-        case MC_BLOCK_FC_DI:
+        case MC_BLOCK_PUMPKIN:
             if (side == 1 || side == 0)
                 texture = block->fields.bm;
             else if (side == 3) {
@@ -183,7 +183,7 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = mc_java_i32_add(block->fields.bm, 16);
             break;
 
-        case MC_BLOCK_UM_MW:
+        case MC_BLOCK_CAKE:
             if (side == 1)
                 texture = block->fields.bm;
             else if (side == 0)
@@ -192,7 +192,7 @@ mc_registry_status mc_registry_block_texture_side(mc_registry_classes *classes,
                 texture = mc_java_i32_add(block->fields.bm, 1);
             break;
 
-        case MC_BLOCK_WO_OI:
+        case MC_BLOCK_REPEATER:
             /* a(I)I calls the actual a(II)I with metadata0. That body ignores
              * metadata and reads its declaring-class c only for faces0/1. */
             if (side == 0)

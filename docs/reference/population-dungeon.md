@@ -32,13 +32,13 @@ Their current numeric values are not a replacement palette.
 
 All writes call the **notifying** `fd.f(IIII)Z` / `dj.e(IIII)Z`, whose quiet
 setter call6 is followed by notifier18 only on true. The feature discards the
-ordinary Boolean result while retaining all synchronous observer, neighbor,
-lighting, removal and Tile effects. A native failure stops at its real prefix.
+ordinary Boolean result while retaining all synchronous WorldAccess, neighbor,
+lighting, removal and TileEntity effects. A native failure stops at its real prefix.
 
 Each of two Chest groups tries three coordinates. Candidate X is drawn before
 Z. An air candidate tests all four adjacent materials in -X,+X,-Z,+Z order;
 exactly one solid neighbor admits it. A successful candidate retains the same
-nullable Chest after its real Tile lookup and cast. Eight loot calls follow.
+nullable Chest after its real TileEntity lookup and cast. Eight loot calls follow.
 NULL loot skips both Chest size and slot RNG; nonnull loot queries logical
 size27 before its slot draw and actual slot assignment. Repeated slots replace
 the old Stack identity. An accepted group does not retry because its loot was

@@ -10,7 +10,7 @@ Client class names and its cache route are separate.
 | `MinecraftServer.<init>()V` | q6, g11, h16, r27, s41, k49, thread construction57 | `src/server/runtime/construction.c` |
 | `bt.<init>(MinecraftServer)V` / `run()V` | retain Server field2, daemon11, start15; sleep-only loop | Inert native lifetime condition; host scheduling remains unqualified |
 | `dp.<init>(MinecraftServer,om,String,int,long)V` | dimension factory7, base10, D15, G construction23/store26, F31 | `src/world/runtime/construction.c` |
-| `dp.b()Lbl;` | loader8, normal provider25, cache28, C31, return38 | `src/world/runtime/provider.c`; same owner later stored in base v406 |
+| `dp.b()Lbl;` | loader8, Overworld ChunkProvider25, cache28, C31, return38 | `src/world/runtime/chunk_provider.c`; same owner later stored in base v406 |
 | `dp.c(Llq;)V` | base observer2, G6, current Entity ID10, put14 | `src/world/runtime/entity_publication.c` |
 | `dj.a(List)V` | entire b.addAll5, input size15/get26/cast31/hook34 | Whole-batch publication before per-element dedicated hooks |
 | `dj.b(List)V` | deferred D.addAll5 | Deferred detach; no G removal |
@@ -50,7 +50,7 @@ have explicit semantic correspondences rather than JVM heap identities.
 Within each run, complete file bytes and directory transitions are retained.
 Cross-run save comparison checks typed NBT, region allocation and padding;
 compressed record bytes differ. Measured clocks and host paths have separate
-checked correspondences. Empty Entity, Tile, named-data and index collections
+checked correspondences. Empty Entity, TileEntity, named-data and index collections
 leave their nonempty behavior outside this profile. Native Random draw callsites
 are not independently observed. Native schema 2 reads the actual held Store
 token at every boundary. The comparator binds that value to the retained Store,
@@ -146,7 +146,7 @@ per compiler. All 569 C/header files pass clang-format 18. Controller mirrors
 and 556 positive/2,011 negative lifecycle-interval controls pass on every local
 and hosted build.
 
-Complete server startup, networking, general scheduling, nonempty Entity, Tile,
+Complete server startup, networking, general scheduling, nonempty Entity, TileEntity,
 named-data and index behavior, unrestricted unload/restart and broader game
 parity remain unfinished. Native draw callsites, JVM heap identities and daemon
 scheduling are outside this finite comparison.

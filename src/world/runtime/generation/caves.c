@@ -21,7 +21,7 @@ static int32_t byte_load(const uint8_t *blocks, int32_t index) {
     return (int32_t)mc_java_i8_narrow((int64_t)blocks[(size_t)index]);
 }
 
-static bool water_scan(mc_world_provider *provider, uint8_t *blocks,
+static bool water_scan(mc_chunk_provider *provider, uint8_t *blocks,
                        const mc_terrain_cave_ellipsoid *ellipse, bool *out,
                        mc_world_generation_error *error) {
     bool water = false;
@@ -63,7 +63,7 @@ static bool water_scan(mc_world_provider *provider, uint8_t *blocks,
     return true;
 }
 
-static bool carve(mc_world_provider *provider, uint8_t *blocks,
+static bool carve(mc_chunk_provider *provider, uint8_t *blocks,
                   const mc_terrain_cave_ellipsoid *ellipse, mc_world_generation_error *error) {
     for (int32_t x = ellipse->low_x; x < ellipse->high_x; x = mc_java_i32_add(x, 1)) {
         const double normalized_x = mc_terrain_cave_ellipsoid_x(ellipse, x);
@@ -135,7 +135,7 @@ static bool carve(mc_world_provider *provider, uint8_t *blocks,
     return true;
 }
 
-static bool path(mc_world_provider *provider, uint8_t *blocks,
+static bool path(mc_chunk_provider *provider, uint8_t *blocks,
                  const mc_terrain_cave_path_args *args, mc_world_generation_error *error) {
     mc_terrain_cave_path_frame frame;
     mc_terrain_cave_path_begin(&frame, &provider->generator.cave_random, args);
@@ -174,7 +174,7 @@ static bool path(mc_world_provider *provider, uint8_t *blocks,
     return true;
 }
 
-static bool neighbor(mc_world_provider *provider, int32_t source_x, int32_t source_z,
+static bool neighbor(mc_chunk_provider *provider, int32_t source_x, int32_t source_z,
                      int32_t chunk_x, int32_t chunk_z, uint8_t *blocks,
                      mc_world_generation_error *error) {
     mc_java_random *random = &provider->generator.cave_random;
@@ -240,7 +240,7 @@ static bool neighbor(mc_world_provider *provider, int32_t source_x, int32_t sour
     return true;
 }
 
-static bool work_unit(mc_world_provider *provider, size_t *used, mc_world_generation_error *error) {
+static bool work_unit(mc_chunk_provider *provider, size_t *used, mc_world_generation_error *error) {
     if (*used == (size_t)MC_WORLD_GENERATION_CAVE_WORK_LIMIT) {
         error->cave_scheduler_bytecode = 123;
         error->cave_chunk_bytecode = 0;
@@ -252,7 +252,7 @@ static bool work_unit(mc_world_provider *provider, size_t *used, mc_world_genera
     return true;
 }
 
-bool mc_world_generation_caves(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
+bool mc_world_generation_caves(mc_chunk_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
                                mc_world_generation_error *error) {
     /* Enclosing generation already owns its actual World/Chunk call holds.
      * Capture source range1 once; no ordinary-coordinate whitelist is added. */

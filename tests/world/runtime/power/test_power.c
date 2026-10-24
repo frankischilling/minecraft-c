@@ -34,13 +34,16 @@ static bool power_cell(fixture *f, size_t side, int32_t x, int32_t y, int32_t z,
 static bool power_no_activation(const mc_world_nearby_error *e) {
     return !e->query.population.reached && e->query.population.current.provider_class == NULL &&
            e->query.population.origin.provider_class == NULL && e->entity.status == MC_ENTITY_OK &&
-           e->entity.operation == NULL && e->tile.status == MC_WORLD_STORAGE_OK &&
-           e->tile.operation == NULL && e->tile.bytecode == 0 && e->tile.chunk_bytecode == 0 &&
-           e->tile.activation_bytecode == 0 && e->tile.activation_world_bytecode == 0 &&
-           e->tile.load_bytecode == 0 && e->tile.load_builder_bytecode == 0 &&
-           e->tile.registry.status == MC_REGISTRY_OK && e->tile.registry.initializer_pc == -1 &&
-           e->tile.tile.item_index == SIZE_MAX && e->tile.tile.source_bytecode == 0 &&
-           e->batch.index == SIZE_MAX && e->batch.publication.status == MC_WORLD_STORAGE_OK &&
+           e->entity.operation == NULL && e->tile_entity.status == MC_WORLD_STORAGE_OK &&
+           e->tile_entity.operation == NULL && e->tile_entity.bytecode == 0 &&
+           e->tile_entity.chunk_bytecode == 0 && e->tile_entity.activation_bytecode == 0 &&
+           e->tile_entity.activation_world_bytecode == 0 && e->tile_entity.load_bytecode == 0 &&
+           e->tile_entity.load_builder_bytecode == 0 &&
+           e->tile_entity.registry.status == MC_REGISTRY_OK &&
+           e->tile_entity.registry.initializer_pc == -1 &&
+           e->tile_entity.tile_entity.item_index == SIZE_MAX &&
+           e->tile_entity.tile_entity.source_bytecode == 0 && e->batch.index == SIZE_MAX &&
+           e->batch.publication.status == MC_WORLD_STORAGE_OK &&
            e->batch.publication.bytecode == 0 && e->batch.publication.operation == NULL &&
            e->load_entity.index == SIZE_MAX &&
            e->load_entity.native.status == MC_WORLD_STORAGE_OK &&
@@ -54,7 +57,7 @@ static bool power_neutral(const mc_world_power_error *e) {
            e->cause.status == MC_WORLD_STORAGE_OK && e->cause.operation == NULL &&
            e->world_class == NULL && !e->weak_neighbors.entered && !e->weak_at.entered &&
            !e->strong_neighbors.entered && !e->strong_at.entered && !e->capability.entered &&
-           !e->strong.entered && !e->weak.entered && !e->wire_connectivity.entered &&
+           !e->strong.entered && !e->weak.entered && !e->redstone_connectivity.entered &&
            e->support.status == MC_WORLD_STORAGE_OK && e->support.bytecode == 0 &&
            e->access.query.status == MC_WORLD_STORAGE_OK && e->access.query.bytecode == 0 &&
            e->access.query.chunk_bytecode == 0 && e->access.query.provider_bytecode == 0 &&
@@ -113,9 +116,9 @@ static bool power_query_is(mc_world_runtime *w, power_call method, int32_t x, in
 }
 
 static bool power_special(mc_block_kind kind) {
-    return kind == MC_BLOCK_BV_BC || kind == MC_BLOCK_PH_JN || kind == MC_BLOCK_OI_IZ ||
-           kind == MC_BLOCK_XR_PD || kind == MC_BLOCK_DB_BY || kind == MC_BLOCK_SM_LO ||
-           kind == MC_BLOCK_WO_OI;
+    return kind == MC_BLOCK_PRESSURE_PLATE || kind == MC_BLOCK_DETECTOR_RAIL ||
+           kind == MC_BLOCK_BUTTON || kind == MC_BLOCK_LEVER || kind == MC_BLOCK_REDSTONE_TORCH ||
+           kind == MC_BLOCK_REDSTONE || kind == MC_BLOCK_REPEATER;
 }
 
 static bool power_capabilities(fixture *f, size_t side) {
@@ -128,9 +131,9 @@ static bool power_capabilities(fixture *f, size_t side) {
             continue;
         seen[block->kind] = true;
         ++kinds;
-        const bool expected = block->kind == MC_BLOCK_SM_LO
-                                  ? block->subtype.sm.a
-                                  : (power_special(block->kind) && block->kind != MC_BLOCK_WO_OI);
+        const bool expected = block->kind == MC_BLOCK_REDSTONE ? block->subtype.sm.a
+                                                               : (power_special(block->kind) &&
+                                                                  block->kind != MC_BLOCK_REPEATER);
         bool out = !expected;
         mc_world_power_error error;
         memset(&error, 0xa5, sizeof(error));
@@ -243,7 +246,8 @@ static bool power_guarded_metadata(fixture *f, size_t side) {
                   error.access.query.acquisition == MC_CHUNK_ACQUIRE_OK &&
                   error.access.query.registry.status == MC_REGISTRY_OK &&
                   error.registry.status == MC_REGISTRY_OK && !error.strong.entered &&
-                  !error.wire_connectivity.entered && w->local_leases == 0 && w->active_calls == 0);
+                  !error.redstone_connectivity.entered && w->local_leases == 0 &&
+                  w->active_calls == 0);
         }
     }
     CHECK(power_cell(f, side, 8, 64, 8, 76, 15));
@@ -270,14 +274,14 @@ static bool power_guarded_metadata(fixture *f, size_t side) {
     chunk->e = actual;
     CHECK(diode == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out && error.strong.bytecode == 8 &&
           error.weak.bytecode == 14 && error.strong.entered && error.weak.entered);
-    mc_block *const wire = r->blocks.m[55];
-    const bool a = wire->subtype.sm.a;
-    wire->subtype.sm.a = false;
+    mc_block *const redstone = r->blocks.m[55];
+    const bool a = redstone->subtype.sm.a;
+    redstone->subtype.sm.a = false;
     out = true;
-    const mc_world_storage_status wire_guard =
-        power_block(NULL, wire, false, INT32_MAX, &out, &error);
-    wire->subtype.sm.a = a;
-    CHECK(wire_guard == MC_WORLD_STORAGE_OK && !out && power_neutral(&error));
+    const mc_world_storage_status redstone_guard =
+        power_block(NULL, redstone, false, INT32_MAX, &out, &error);
+    redstone->subtype.sm.a = a;
+    CHECK(redstone_guard == MC_WORLD_STORAGE_OK && !out && power_neutral(&error));
     CHECK(
         power_block(NULL, r->blocks.m[75], false, 0, &out, &error) == MC_WORLD_STORAGE_OK && !out &&
         power_block(NULL, r->blocks.m[93], true, 0, &out, &error) == MC_WORLD_STORAGE_OK && !out &&
@@ -408,11 +412,11 @@ static bool power_conductor_and_errors(fixture *f, size_t side) {
           error.access.query.bytecode == 68 && error.access.query.chunk_bytecode == 7 &&
           error.access.query.acquisition == MC_CHUNK_ACQUIRE_OK &&
           error.registry.status == MC_REGISTRY_OK && !error.capability.entered &&
-          !error.wire_connectivity.entered && power_no_activation(&error.access) &&
+          !error.redstone_connectivity.entered && power_no_activation(&error.access) &&
           w->local_leases == 0 && w->active_calls == 0);
     power_air(f, side);
     mc_block **const m = r->blocks.m;
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     r->blocks.m = NULL;
     w->fields.v = NULL;
     out = true;
@@ -479,7 +483,7 @@ cleanup:
     return ok;
 }
 
-static bool power_wire_sides(fixture *f, size_t side, unsigned int horizontal) {
+static bool power_redstone_sides(fixture *f, size_t side, unsigned int horizontal) {
     for (int32_t direction = 0; direction < 6; ++direction)
         if (!power_query_is(f->worlds[side], WEAK_AT, 8, 64, 8, direction,
                             direction == 1 || ((horizontal >> (unsigned int)direction) & 1u)))
@@ -487,36 +491,36 @@ static bool power_wire_sides(fixture *f, size_t side, unsigned int horizontal) {
     return true;
 }
 
-static bool power_wire_geometry(fixture *f, size_t side) {
+static bool power_redstone_geometry(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
     power_air(f, side);
-    CHECK(power_cell(f, side, 8, 64, 8, 55, 15) && power_wire_sides(f, side, 60));
-    CHECK(power_cell(f, side, 7, 64, 8, 55, 0) && power_wire_sides(f, side, 16));
-    CHECK(power_cell(f, side, 9, 64, 8, 55, 0) && power_wire_sides(f, side, 48));
-    CHECK(power_cell(f, side, 8, 64, 7, 55, 0) && power_wire_sides(f, side, 0));
+    CHECK(power_cell(f, side, 8, 64, 8, 55, 15) && power_redstone_sides(f, side, 60));
+    CHECK(power_cell(f, side, 7, 64, 8, 55, 0) && power_redstone_sides(f, side, 16));
+    CHECK(power_cell(f, side, 9, 64, 8, 55, 0) && power_redstone_sides(f, side, 48));
+    CHECK(power_cell(f, side, 8, 64, 7, 55, 0) && power_redstone_sides(f, side, 0));
     CHECK(power_cell(f, side, 7, 64, 8, 0, 0) && power_cell(f, side, 9, 64, 8, 0, 0) &&
-          power_cell(f, side, 8, 64, 9, 55, 0) && power_wire_sides(f, side, 12));
+          power_cell(f, side, 8, 64, 9, 55, 0) && power_redstone_sides(f, side, 12));
     /* Below requires nonsolid adjacent; above requires support and open headroom. */
     power_air(f, side);
     CHECK(power_cell(f, side, 8, 64, 8, 55, 15) && power_cell(f, side, 7, 63, 8, 55, 0) &&
-          power_wire_sides(f, side, 16));
-    CHECK(power_cell(f, side, 7, 64, 8, 1, 0) && power_wire_sides(f, side, 60));
+          power_redstone_sides(f, side, 16));
+    CHECK(power_cell(f, side, 7, 64, 8, 1, 0) && power_redstone_sides(f, side, 60));
     CHECK(power_cell(f, side, 7, 63, 8, 0, 0) && power_cell(f, side, 7, 65, 8, 55, 0) &&
-          power_wire_sides(f, side, 16));
-    CHECK(power_cell(f, side, 8, 65, 8, 1, 0) && power_wire_sides(f, side, 60));
+          power_redstone_sides(f, side, 16));
+    CHECK(power_cell(f, side, 8, 65, 8, 1, 0) && power_redstone_sides(f, side, 60));
     /* True capability connects even with an ordinary false current output. */
     power_air(f, side);
     CHECK(power_cell(f, side, 8, 64, 8, 55, 15) && power_cell(f, side, 7, 64, 8, 70, 0) &&
-          power_wire_sides(f, side, 16));
+          power_redstone_sides(f, side, 16));
     const mc_registry_phase unrelated = r->direction_state.phase;
     const int32_t horizontal_b[4] = {2, 3, 0, 1};
     const uint8_t diode_ids[] = {93, 94};
     for (size_t i = 0; i < COUNT(diode_ids); ++i)
         for (int32_t metadata = 0; metadata < 16; ++metadata) {
             CHECK(power_cell(f, side, 7, 64, 8, diode_ids[i], metadata));
-            CHECK(power_wire_sides(f, side, horizontal_b[metadata & 3] == 1 ? 16u : 60u));
+            CHECK(power_redstone_sides(f, side, horizontal_b[metadata & 3] == 1 ? 16u : 60u));
         }
     CHECK(r->horizontal_state.phase == MC_REGISTRY_READY && r->horizontal_b != NULL &&
           r->direction_state.phase == unrelated);
@@ -530,9 +534,9 @@ static bool power_wire_geometry(fixture *f, size_t side) {
     r->horizontal_b = b;
     CHECK(missing_b == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out &&
           error.strong_at.bytecode == 28 && error.strong.bytecode == 17 &&
-          error.weak.bytecode == 40 && error.wire_connectivity.bytecode == 87 &&
+          error.weak.bytecode == 40 && error.redstone_connectivity.bytecode == 87 &&
           error.registry.status == MC_REGISTRY_NULL_REFERENCE &&
-          strcmp(error.wire_connectivity.declaring_class, side == 0 ? "sm" : "lo") == 0 &&
+          strcmp(error.redstone_connectivity.declaring_class, side == 0 ? "sm" : "lo") == 0 &&
           !error.capability.entered && w->local_leases == 0 && w->active_calls == 0);
     ok = true;
 cleanup:
@@ -550,45 +554,45 @@ static mc_block **power_named_cell(mc_registry_classes *r, uint8_t id) {
     return found;
 }
 
-static bool power_wire_namespace(fixture *f, size_t side) {
+static bool power_redstone_namespace(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side], *other = f->registry[1u - side];
-    mc_block *const wire = r->blocks.m[55];
-    mc_block *const foreign_wire = other->blocks.m[55];
+    mc_block *const redstone = r->blocks.m[55];
+    mc_block *const foreign_redstone = other->blocks.m[55];
     mc_block **const aw = power_named_cell(r, 55);
     mc_block **const foreign_aw = power_named_cell(other, 55);
-    CHECK(aw != NULL && foreign_aw != NULL && *aw == wire && *foreign_aw == foreign_wire);
+    CHECK(aw != NULL && foreign_aw != NULL && *aw == redstone && *foreign_aw == foreign_redstone);
     power_air(f, side);
     CHECK(power_cell(f, side, 8, 64, 8, 55, 15));
     bool out = false;
     mc_world_power_error error;
     *aw = NULL;
     const mc_world_storage_status foreign_success =
-        power_block(w, foreign_wire, false, 4, &out, &error);
-    *aw = wire;
+        power_block(w, foreign_redstone, false, 4, &out, &error);
+    *aw = redstone;
     CHECK(foreign_success == MC_WORLD_STORAGE_OK && out && power_neutral(&error));
     *foreign_aw = NULL;
     out = false;
-    const mc_world_storage_status own_success = power_block(w, wire, false, 4, &out, &error);
-    *foreign_aw = foreign_wire;
+    const mc_world_storage_status own_success = power_block(w, redstone, false, 4, &out, &error);
+    *foreign_aw = foreign_redstone;
     CHECK(own_success == MC_WORLD_STORAGE_OK && out && power_neutral(&error));
     *foreign_aw = NULL;
     out = false;
     const mc_world_storage_status foreign_failure =
-        power_block(w, foreign_wire, true, 4, &out, &error);
-    *foreign_aw = foreign_wire;
+        power_block(w, foreign_redstone, true, 4, &out, &error);
+    *foreign_aw = foreign_redstone;
     CHECK(foreign_failure == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !out &&
           error.strong.bytecode == 17 && error.weak.bytecode == 40 &&
-          error.wire_connectivity.bytecode == 16 && !error.weak_neighbors.entered &&
-          strcmp(error.wire_connectivity.declaring_class, side == 0 ? "lo" : "sm") == 0 &&
+          error.redstone_connectivity.bytecode == 16 && !error.weak_neighbors.entered &&
+          strcmp(error.redstone_connectivity.declaring_class, side == 0 ? "lo" : "sm") == 0 &&
           error.registry.status == MC_REGISTRY_OK && error.access.query.bytecode == 0);
     /* The live dust ID comparison precedes the air branch, even for ID0. */
-    const int32_t bn = wire->fields.bn;
-    wire->fields.bn = 0;
+    const int32_t bn = redstone->fields.bn;
+    redstone->fields.bn = 0;
     out = true;
-    const mc_world_storage_status dust_air = power_block(w, wire, false, 4, &out, &error);
-    wire->fields.bn = bn;
+    const mc_world_storage_status dust_air = power_block(w, redstone, false, 4, &out, &error);
+    redstone->fields.bn = bn;
     CHECK(dust_air == MC_WORLD_STORAGE_OK && !out && power_neutral(&error));
     mc_block **const bi = power_named_cell(r, 93), **const bj = power_named_cell(r, 94);
     CHECK(bi != NULL && bj != NULL);
@@ -596,33 +600,34 @@ static bool power_wire_namespace(fixture *f, size_t side) {
     mc_block *const actual_bi = *bi;
     *bi = NULL;
     out = true;
-    const mc_world_storage_status first_diode = power_block(w, wire, false, 4, &out, &error);
+    const mc_world_storage_status first_diode = power_block(w, redstone, false, 4, &out, &error);
     *bi = actual_bi;
     CHECK(first_diode == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out && error.weak.bytecode == 40 &&
-          error.wire_connectivity.bytecode == 50);
+          error.redstone_connectivity.bytecode == 50);
     CHECK(power_cell(f, side, 7, 64, 8, 94, 3));
     mc_block *const actual_bj = *bj;
     *bj = NULL;
     out = false;
-    const mc_world_storage_status second_diode = power_block(w, wire, false, 4, &out, &error);
+    const mc_world_storage_status second_diode = power_block(w, redstone, false, 4, &out, &error);
     *bj = actual_bj;
     CHECK(second_diode == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !out && error.weak.bytecode == 40 &&
-          error.wire_connectivity.bytecode == 61);
+          error.redstone_connectivity.bytecode == 61);
     CHECK(power_cell(f, side, 7, 64, 8, 255, 0));
     out = true;
     const mc_world_storage_status capability_receiver =
         power_held(w, STRONG_AT, 8, 64, 8, 4, &out, &error);
     CHECK(capability_receiver == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out &&
           error.strong_at.bytecode == 28 && error.strong.bytecode == 17 &&
-          error.weak.bytecode == 40 && error.wire_connectivity.bytecode == 37 &&
+          error.weak.bytecode == 40 && error.redstone_connectivity.bytecode == 37 &&
           !error.capability.entered && error.registry.status == MC_REGISTRY_OK);
     mc_block **const m = r->blocks.m;
     r->blocks.m = NULL;
     out = false;
-    const mc_world_storage_status connectivity_array = power_block(w, wire, false, 4, &out, &error);
+    const mc_world_storage_status connectivity_array =
+        power_block(w, redstone, false, 4, &out, &error);
     r->blocks.m = m;
     CHECK(connectivity_array == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !out &&
-          error.weak.bytecode == 40 && error.wire_connectivity.bytecode == 36 &&
+          error.weak.bytecode == 40 && error.redstone_connectivity.bytecode == 36 &&
           !error.capability.entered && error.registry.status == MC_REGISTRY_NULL_REFERENCE &&
           error.registry.initializer_pc == -1 && !error.strong_at.entered &&
           !error.strong.entered && power_no_activation(&error.access));
@@ -656,7 +661,7 @@ static bool power_lifetime(fixture *f, size_t side) {
     CHECK(busy && w->active_calls == 0);
     power_air(f, side);
     const bool remote = w->fields.B;
-    mc_world_provider *const provider = w->fields.v;
+    mc_chunk_provider *const provider = w->fields.v;
     w->fields.B = true;
     w->fields.v = NULL;
     const mc_world_storage_status no_remote_guard =
@@ -745,8 +750,8 @@ int main(int argc, char **argv) {
         CHECK(mc_entity_classes_get_snapshot(f->entity_classes[side], &before) == MC_ENTITY_OK);
         CHECK(power_capabilities(f, side) && power_emitter_matrix(f, side) &&
               power_guarded_metadata(f, side) && power_six_order(f, side) &&
-              power_conductor_and_errors(f, side) && power_wire_geometry(f, side) &&
-              power_wire_namespace(f, side) && power_lifetime(f, side));
+              power_conductor_and_errors(f, side) && power_redstone_geometry(f, side) &&
+              power_redstone_namespace(f, side) && power_lifetime(f, side));
         CHECK(mc_entity_classes_get_snapshot(f->entity_classes[side], &after) == MC_ENTITY_OK &&
               before.next_id == after.next_id &&
               before.bounds_pool_cursor == after.bounds_pool_cursor &&

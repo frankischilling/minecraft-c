@@ -11,18 +11,18 @@ struct mc_world_chunk_nibble {
     size_t length;
 };
 
-struct mc_tile_map_backing;
+struct mc_tile_entity_map_backing;
 
-struct mc_world_chunk_tile_map {
+struct mc_world_chunk_tile_entity_map {
     size_t count;
-    struct mc_tile_map_backing *backing;
+    struct mc_tile_entity_map_backing *backing;
     /* Native ownership hooks, never source Map operations. The finalizer
      * releases this descriptor's actual backing without inspecting source l.
      * The inspector validates and measures only the owner's embedded backing,
      * including its terminal state, independently of source l. It must not
      * allocate, invoke gameplay/callbacks, or recurse into Chunk validation;
      * it writes out only on success. Both hooks remain installed at retirement. */
-    void (*release_backing)(mc_world_chunk_tile_map *descriptor);
+    void (*release_backing)(mc_world_chunk_tile_entity_map *descriptor);
     bool (*backing_bytes)(const mc_world_chunk *owner, size_t *out);
 };
 
@@ -48,17 +48,17 @@ struct mc_world_chunk {
     mc_world_runtime *d;
     mc_world_chunk_nibble *e, *f, *g;
     uint8_t *h;
-    mc_world_chunk_tile_map *l;
+    mc_world_chunk_tile_entity_map *l;
     mc_world_chunk_list_array *m;
 
     mc_world_chunk_nibble metadata, skylight, block_light;
-    mc_world_chunk_tile_map tile_map;
+    mc_world_chunk_tile_entity_map tile_entity_map;
     mc_world_chunk_list_array slices;
     mc_world_chunk_entity_list entities[CHUNK_ENTITY_SLICES];
 
     /* Native ownership metadata, never additional Java fields. The current
      * ledger includes all currently allocated Entity pointer capacities and
-     * the embedded Tile Map's actual owned backing.
+     * the embedded TileEntity Map's actual owned backing.
      * max is retained verbatim from create/bind's admitted native budget. */
     chunk_storage_kind storage_kind;
     uint8_t *bound_blocks;
@@ -71,7 +71,7 @@ struct mc_world_chunk {
     bool source_disabled;
     /* Installed only by concrete Entity insertion after a real hold. This
      * native finalizer keeps lower Chunk storage independent of runtime
-     * constructors; it is never a source/gameplay observer callback. */
+     * constructors; it is never a source/gameplay WorldAccess callback. */
     void (*release_entity)(mc_entity *entity);
 };
 

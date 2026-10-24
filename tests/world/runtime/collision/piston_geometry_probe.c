@@ -245,7 +245,7 @@ static bool pg_setter(mc_block *block, const mc_entity_bounds *initial, char *sp
 static bool pg_world(fixture *f, size_t side, const char *root) {
     bool ok = false;
     CHECK(open_store(f, side, root));
-    CHECK(mc_world_dimension_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_DIMENSION_OK);
+    CHECK(mc_world_provider_create(0, NULL, &f->dimensions[side], NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 1;
     limits.max_scheduled_entries = 0;
@@ -257,7 +257,7 @@ static bool pg_world(fixture *f, size_t side, const char *root) {
         .store = f->stores[side], .name = f->name, .seed = -99, .dimension = f->dimensions[side]};
     CHECK(mc_world_runtime_construct_world(f->worlds[side], &arguments, NULL) ==
           MC_WORLD_STORAGE_OK);
-    CHECK(mc_world_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
+    CHECK(mc_chunk_provider_bind_fields(f->worlds[side]->fields.v, &f->providers[side], NULL) ==
           MC_WORLD_STORAGE_OK);
     f->bound[side] = true;
     CHECK(f->worlds[side]->fallback.blank && f->providers[side].cache->count == 0 &&
@@ -331,7 +331,7 @@ static bool pg_replay(fixture *f, size_t side, pg_case *row, const mc_block *mov
     }
     const bool array_failure = row->carried < 0 || row->carried >= 256;
     const bool null_carrier = row->carried >= 97 && row->carried < 256;
-    /* Only cube1's invalid-facing rows reach a nonnull carrier in this corpus.
+    /* Only cube1's invalid-facing rows reach a nonnull carried Block in this corpus.
      * ID0/self and genuine null shapes complete before Direction indexing. */
     const bool facing_failure = row->carried == 1 && (row->facing < 0 || row->facing >= 6);
     const bool expected_failure = array_failure || null_carrier || facing_failure;

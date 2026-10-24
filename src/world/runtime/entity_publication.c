@@ -3,12 +3,12 @@
 #include "../../entity/entity_internal.h"
 #include "../chunk/object_internal.h"
 #include "../storage/objects_internal.h"
+#include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "dedicated/entity_index.h"
 #include "entity_publication_internal.h"
 #include "mc/core/math/math.h"
-#include "observers_internal.h"
-#include "provider_internal.h"
+#include "world_access_internal.h"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -222,35 +222,35 @@ static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
                                    mc_world_entity_error *frame, unsigned int caller_bytecode) {
     frame->bytecode = caller_bytecode;
     for (size_t index = 0;; ++index) {
-        mc_world_observer *observer = NULL;
+        mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_observer_next(world, index, 7, 20, 25, &observer, &present,
-                                    &frame->observer_bytecode, &cause))
+        if (!mc_world_access_next(world, index, 7, 20, 25, &world_access, &present,
+                                  &frame->world_access_bytecode, &cause))
             return entity_cause(frame, cause);
         if (!present)
             return true; /* Actual base fd/dj.c(Entity)V return40. */
-        frame->observer_bytecode = 29;
-        if (observer == NULL || observer->callbacks.entity_added == NULL) {
-            mc_world_observer_release_held(observer);
+        frame->world_access_bytecode = 29;
+        if (world_access == NULL || world_access->callbacks.entity_added == NULL) {
+            mc_world_access_release_held(world_access);
             return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                               "World Entity observer invocation");
+                               "World Entity WorldAccess invocation");
         }
         if (entity != NULL) {
             const mc_entity_status held = mc_entity_retain(entity);
             if (held != MC_ENTITY_OK) {
-                mc_world_observer_release_held(observer);
+                mc_world_access_release_held(world_access);
                 frame->entity =
-                    (mc_entity_error){.status = held, .operation = "World observer Entity hold"};
+                    (mc_entity_error){.status = held, .operation = "WorldAccess Entity hold"};
                 return entity_fail(frame, ownership_status(held), frame->entity.operation);
             }
         }
         const mc_world_storage_status status =
-            observer->callbacks.entity_added(observer->context, world, entity, &cause);
+            world_access->callbacks.entity_added(world_access->context, world, entity, &cause);
         mc_entity_release(entity);
-        mc_world_observer_release_held(observer);
+        mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
-            return entity_cause(frame, mc_world_observer_callback_error(status, cause));
+            return entity_cause(frame, mc_world_access_callback_error(status, cause));
         /* iinc34 follows the callback. Reload both current u and size7 on the
          * next iteration; synchronous removals/appends remain observable. */
     }
@@ -360,7 +360,7 @@ static bool append_entity_batch(mc_world_runtime *world, const mc_world_chunk_en
         prepared[prepared_count++] = entity;
     }
     /* All actual occurrence holds and capacity requests succeeded. Publish the
-     * entire addAll before any source observer call, never one Entity at a time.
+     * entire addAll before any source WorldAccess call, never one Entity at a time.
      * No Entity fields/World binding/class or Chunk location are inspected. */
     for (size_t index = 0; index < count; ++index) {
         items[list->count + index] = prepared[index];
@@ -433,7 +433,7 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
                 break;
             }
             /* Source cast31 accepts actual typed Entity/NULL; the dedicated
-             * override reads its ID only after the base observer completes. */
+             * override reads its ID only after the base WorldAccess completes. */
             if (!observe_entity_at(world, entity, &frame.publication, 34)) {
                 complete = false;
                 break;
@@ -556,7 +556,7 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
     frame->presence_bytecode = 6;
     frame->provider_bytecode = 6;
     mc_world_storage_error cause = {0};
-    if (mc_world_runtime_provider_contains(world, chunk_x, chunk_z, &present, &cause) !=
+    if (mc_world_runtime_chunk_provider_contains(world, chunk_x, chunk_z, &present, &cause) !=
         MC_WORLD_STORAGE_OK)
         return entity_cause(frame, cause);
     if (!present) {

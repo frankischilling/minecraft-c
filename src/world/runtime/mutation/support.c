@@ -19,7 +19,7 @@ void mc_world_mutation_error_init(mc_world_mutation_error *error) {
         return;
     const mc_registry_error registry = mc_world_mutation_empty_registry();
     *error = zero;
-    error->tile = mc_live_tiles_empty_error();
+    error->tile_entity = mc_live_tile_entities_empty_error();
     error->load_entity = mc_world_entity_load_empty_error();
     error->batch.index = SIZE_MAX;
     error->registry = registry;

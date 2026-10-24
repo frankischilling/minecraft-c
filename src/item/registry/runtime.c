@@ -32,7 +32,7 @@ static mc_registry_status enter_items(mc_registry_classes *classes, mc_registry_
     const mc_registry_status status = quiescent(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;
-    if (classes->item_states[MC_ITEM_GM_EJ].phase == MC_REGISTRY_INITIALIZING)
+    if (classes->item_states[MC_ITEM_BASE].phase == MC_REGISTRY_INITIALIZING)
         return result(error, MC_REGISTRY_BUSY, "registry initialization entered");
     ++classes->entered;
     return MC_REGISTRY_OK;

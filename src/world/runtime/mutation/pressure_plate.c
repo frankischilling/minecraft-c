@@ -373,7 +373,7 @@ bool mc_world_mutation_pressure_update(mc_world_runtime *world, const mc_block *
         goto done;
     if (equal) {
         const mc_entity_class_literal *target;
-        if (!pressure_class_literal(&frame, 98, MC_ENTITY_CLASS_KIND_MOB, &target) ||
+        if (!pressure_class_literal(&frame, 98, MC_ENTITY_CLASS_KIND_LIVING_ENTITY, &target) ||
             !pressure_pooled(&frame, 101, 138, x, y, z, &boxes[1]) ||
             !pressure_class_query(&frame, 141, target, &boxes[1], &class_list, &list))
             goto done;

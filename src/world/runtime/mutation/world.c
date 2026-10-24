@@ -87,7 +87,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
         world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out, &detail);
     if (acquired == MC_CHUNK_ACQUIRE_OK)
         return true;
-    frame->tile = detail.tile;
+    frame->tile_entity = detail.tile_entity;
     frame->registry = detail.registry;
     frame->batch = detail.batch;
     frame->activation_bytecode = detail.activation_bytecode;

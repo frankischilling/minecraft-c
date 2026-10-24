@@ -1,7 +1,7 @@
 # Piston source map
 
 The [verified original binaries](binaries.md) remain the behavioral authority.
-The [native module](../world/tiles/piston.md) preserves the reached class, Tile,
+The [native module](../world/tile-entities/piston.md) preserves the reached class, TileEntity,
 Block and bounds identities. Mappings supply naming aliases only.
 
 For navigation, [jonkadelic's mappings](https://github.com/jonkadelic/b1.7.3-official-mappings)
@@ -15,7 +15,7 @@ and server descriptors below. Neither name establishes behavior or coverage.
 
 | Behavior | Client | Server | Reached order |
 | --- | --- | --- | --- |
-| Piston Tile | `uk extends ow` | `mu extends jh` | Separate class List `m`; fields ID `a`, metadata `b`, facing `c`, extending `i`, render flag `j`, current `k`, previous `l` |
+| Piston TileEntity | `uk extends ow` | `mu extends jh` | Separate class List `m`; fields ID `a`, metadata `b`, facing `c`, extending `i`, render flag `j`, current `k`, previous `l` |
 | Default constructor | `uk()` | `mu()` | Empty base constructor1; return4 |
 | Full constructor | `uk(IIIZZ)` | `mu(IIIZZ)` | Base1; ID6, metadata11, facing16, extending22, render flag28; return31 |
 | Class initializer | `uk.<clinit>` | `mu.<clinit>` | ArrayList new0, constructor4, publication7, return10 |
@@ -23,18 +23,18 @@ and server descriptors below. Neither name establishes behavior or coverage.
 | NBT read | `uk.a(nu)` | `mu.a(iq)` | Base2; Int ID9/store12, data19/store22, facing29/store32; Float progress40/stores44,47; Boolean54/store57 |
 | NBT write | `uk.b(nu)` | `mu.b(iq)` | Base2; ID12, data22, facing32; previous progress42; extending52 |
 | Explicit finalization | `uk.l()V` | `mu.k()V` | `fcmpg` previous5; current/previous stores13/16; World removal35; own invalidation39; World ID58; live moving Block61/64; notifying setter94; discard97 |
-| Tile tick | `uk.n_()V` | `mu.g_()V` | Current to previous5; completion push21, removal40, invalidation44, ID63, live moving Block66/69, setter99; otherwise fadd111/store112, cap126, extending push153 |
+| TileEntity tick | `uk.n_()V` | `mu.g_()V` | Current to previous5; completion push21, removal40, invalidation44, ID63, live moving Block66/69, setter99; otherwise fadd111/store112, cap126, extending push153 |
 | Private Entity push | `uk.a(FF)V` | `mu.a(FF)V` | Progress subtraction9/16; moving Block18, shifted box46, nearby60, isEmpty67, addAll80, iterator89, hasNext98, next108, actual movement156, normal clear165 |
-| Moving removed hook | `ut.b(fd,III)` | `mz.b(dj,III)` | Actual Tile lookup5; Piston finalizer28; inherited container removal40 |
-| Moving neighbor hook | `ut.b(fd,IIII)` | `mz.b(dj,IIII)` | World B1; true guard4; actual acquiring Tile getter12; return18 |
-| Container removal fallback | `rw.b(fd,III)` | `lb.b(dj,III)` | Empty Block parent body6, then actual World Tile removal14 |
+| Moving removed hook | `ut.b(fd,III)` | `mz.b(dj,III)` | Actual TileEntity lookup5; Piston finalizer28; inherited container removal40 |
+| Moving neighbor hook | `ut.b(fd,IIII)` | `mz.b(dj,IIII)` | World B1; true guard4; actual acquiring TileEntity getter12; return18 |
+| Container removal fallback | `rw.b(fd,III)` | `lb.b(dj,III)` | Empty Block parent body6, then actual World TileEntity removal14 |
 | Moving collision getter | `ut.e(fd,III)` | `mz.e(dj,III)` | Typed lookup6; interpolation21, extending28, optional fsub37, ID48, facing55, shifted helper58 |
-| Moving state shape | `ut.a(xp,III)` | `mz.a(pb,III)` | Typed lookup6; Block array16, ID21/index24; null/same-object return38; carrier state shape46; progress52, extending59, optional fsub68, facing73; singleton stores96/117/138/159/180/201 |
-| Typed Tile lookup | `ut.c(xp,III)` | `mz.b(pb,III)` | Actual BlockAccess Tile getter5, null/instanceof19, cast27 |
-| Shifted geometry | `ut.a(fd,IIIIFI)` | `mz.a(dj,IIIIFI)` | ID0/self return; capture Block array16, index21, actual carrier getter27; null returns38; six coordinate stores |
-| Direction class | `wj` | `od` | Four actual six-int arrays, independently initialized from Block/Tile classes |
+| Moving state shape | `ut.a(xp,III)` | `mz.a(pb,III)` | Typed lookup6; Block array16, ID21/index24; null/same-object return38; carried Block state shape46; progress52, extending59, optional fsub68, facing73; singleton stores96/117/138/159/180/201 |
+| Typed TileEntity lookup | `ut.c(xp,III)` | `mz.b(pb,III)` | Actual BlockAccess TileEntity getter5, null/instanceof19, cast27 |
+| Shifted geometry | `ut.a(fd,IIIIFI)` | `mz.a(dj,IIIIFI)` | ID0/self return; capture Block array16, index21, actual carried Block getter27; null returns38; six coordinate stores |
+| Direction class | `wj` | `od` | Four actual six-int arrays, independently initialized from Block/TileEntity classes |
 
-Base Tile registers Furnace, Chest, RecordPlayer, Trap, Sign, MobSpawner, Music
+Base TileEntity registers Furnace, Chest, RecordPlayer, Trap, Sign, MobSpawner, Music
 and Piston in that order. Its Piston Class literal does not run Piston's own
 initializer. Base read assigns coordinates in order. Base write resolves the
 actual runtime Class's registered name before writing `id` and coordinates.
@@ -70,12 +70,12 @@ Each current coordinate is read before its Direction getstatic. Conversion to
 binary32 precedes multiplication; widening precedes subtraction. The helper
 does not allocate a coordinate copy or invoke a generic add-based translation.
 The separate MovingPiston state-shape body updates the Block singleton fields
-in the order documented below. Tile tick and its private Entity push are
+in the order documented below. TileEntity tick and its private Entity push are
 implemented with supported actual movement dispatches. Explicit finalization and
 both MovingPiston removal and neighbor hooks also have constructed native
 coverage in fresh local MSVC and sanitized GCC/Clang contracts. The neighbor
 hook's true B guard skips acquisition; its false branch retains the real getter's effects,
-including lazy invalid-Tile Map cleanup, before discarding the returned hold.
+including lazy invalid-TileEntity Map cleanup, before discarding the returned hold.
 Earlier finalization finite state projections and source-backed completion/failure-prefix
 joins match on all three compilers. Full native errors remain distinct from
 Java Throwables. The retained interpolation and geometry observations below
@@ -105,23 +105,23 @@ side-specific.
 | `ss` / `lu` | Full-shape setter7 |
 | `uj` / `mt` | Standing flag1 returns7; otherwise metadata13, initial setter45 and directional setters68/89/112/133 |
 | `um` / `mw` | Metadata5; integer width arithmetic16..21, float division25, setter48 |
-| `ut` / `mz` | Held typed Tile, captured carrier, virtual state shape and six singleton stores as below |
+| `ut` / `mz` | Held typed TileEntity, captured carried Block, virtual state shape and six singleton stores as below |
 | `ve` / `nj` | Private helper1 (`ve.r()V` / `nj.o()V`), shape setter8 |
 | `xr` / `pd` | Metadata5; masked facing selects setters45/79/111/145 or default179 |
 
 MovingPiston retains the actual typed lookup result through the complete call.
-It captures the Block array before reading the Tile's carried ID and checking
-the signed index. A null carrier or the same Block object returns at38. The
+It captures the Block array before reading the TileEntity's carried ID and checking
+the signed index. A null carried Block or the same Block object returns at38. The
 guard compares object identity; equality of numerical IDs does not establish
 that identity, and a nonnull entry at ID zero still receives its virtual call.
 
-The captured carrier's state-shape call completes at46 before progress52,
-extending59 and facing73 are read from the held Tile. Factor positive zero still
+The captured carried Block's state-shape call completes at46 before progress52,
+extending59 and facing73 are read from the held TileEntity. Factor positive zero still
 executes the full interpolation arithmetic. Extending applies binary32
-`1 - progress` at68. Each later carrier field read precedes its independent
+`1 - progress` at68. Each later carried Block field read precedes its independent
 Direction active use and signed index check.
 
-| Singleton field | Carrier field read | Direction read | Index | Float multiply | Double subtract | Store |
+| Singleton field | Carried Block field read | Direction read | Index | Float multiply | Double subtract | Store |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `bs`, minX | 81 | 84 | 89 | 93 | 95 | 96 |
 | `bt`, minY | 102 | 105 | 110 | 114 | 116 | 117 |
@@ -131,13 +131,13 @@ Direction active use and signed index check.
 | `bx`, maxZ | 186 | 189 | 194 | 198 | 200 | 201 |
 
 Direction components convert to binary32 before multiplication. The product
-widens before binary64 subtraction from the current carrier field. Completed
-carrier updates, Direction publications, singleton stores and World acquisition
+widens before binary64 subtraction from the current carried Block field. Completed
+carried Block updates, Direction publications, singleton stores and World acquisition
 effects survive later failures. This body neither obtains nor resets pooled
 bounds; the collision helper's minX/maxX/minY/maxY/minZ/maxZ order remains separate.
 
 The expanded `world.piston_geometry` contract includes state-shape cases for
-carrier dispatch, object identity, progress order, partial stores, raw NaN
+carried Block dispatch, object identity, progress order, partial stores, raw NaN
 payloads and native holds. It passes 386 checks per compiler within the complete
 public suites described in [testing](../testing.md). No retained original runtime
 comparison of the state-shape body is established.
@@ -152,7 +152,7 @@ A new original client/server family admits all 114 ordered caller inputs per
 side, with 114 before and 114 after snapshots. Its recipe keeps a 34-case cold
 prefix, an explicit warm boundary and five genuine fresh seed23 Worlds. Each
 World receives 567 actual five-int quiet-air setters. Actors, duplicate
-publication, parked owners, reused Tiles and shared class-List history remain
+publication, parked owners, reused TileEntities and shared class-List history remain
 part of the same ordered recipe.
 
 Both sides finish observation normally, retaining 24 actual action throws each.
@@ -177,7 +177,7 @@ with separate context keys. Both complete side streams on each compiler pass
 offline protocol qualification for all 114 inputs and 228 snapshots per side.
 Finite comparison against the same qualified original family matches carried ID,
 metadata, facing, extending/render flags, raw current/previous progress and the
-actual Tile's inherited x/y/z and invalid flag: 5,016 primitive comparisons per
+actual TileEntity's inherited x/y/z and invalid flag: 5,016 primitive comparisons per
 compiler, or 2,508 per side. All 114 literal inputs and normal-return
 versus failure classifications match per side on each compiler.
 
@@ -212,11 +212,11 @@ completion gaps and invalid Chest Map discrepancy are absent on all six runs.
 Full actual native errors and Java Throwable records are retained separately;
 these source-backed joins do not equate every descendant failure representation.
 
-The joined projection covers source-mapped owners, Tile/Chunk/World fields,
+The joined projection covers source-mapped owners, TileEntity/Chunk/World fields,
 ordered membership and light records, full cached arrays and action-preserved
 Random/scalar state. It does not qualify whole-graph parity or constructor/
 generation history. The observed Chest slots are empty; this family supplies no
-arbitrary nonempty inventory claim. The [full projection limits and artifact pins](../wiki/Storage-and-reference.md#piston-finalization-and-neighbor-observations)
+arbitrary nonempty inventory claim. The [full projection limits and artifact pins](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/history/wiki-storage-reference.md#piston-finalization-and-neighbor-observations)
 retain Registry, registration-map, Store/JDK, generation, entropy and missing
 identity domains explicitly.
 
@@ -232,7 +232,7 @@ uses previous progress; semantic tags retain payloads and actual Java data-strea
 encoding canonicalizes NaNs.
 
 The direct geometry family executes 11,026 records per side after real registry
-bootstrap, including all registered carriers, exceptional binary32 inputs,
+bootstrap, including all registered carried Blocks, exceptional binary32 inputs,
 wrapping coordinates, genuine null shapes and live pool aliases. Both payload
 streams are identical. Its 10,870 positive results uniquely match the tested
 left-NaN double subtraction and negative invalid-result model. Only the complete
@@ -243,7 +243,7 @@ Native replay selects 11,001 geometry records: 10,986 successful payloads and
 and 22 real null-World dependency failures are explicitly excluded with their
 actual traces. Selected original getters leave World unused; native GAME Worlds
 supply the actual pool owner. This comparison does not establish original
-nonnull-World metadata or Tile traversal.
+nonnull-World metadata or TileEntity traversal.
 
 All original children exit naturally. The direct geometry capture's outer
 producer retains a failed final JAR-pin bookkeeping attempt after both subjects
@@ -265,7 +265,7 @@ control. The tools verify fixed capture identities and reject missing or
 changed evidence; they do not launch the original game again.
 
 ```text
-python tests/tools/world/tiles/compare_piston_interpolation.py --native <probe> --original <float-family> --output <new-output>
+python tests/tools/world/tile_entities/compare_piston_interpolation.py --native <probe> --original <float-family> --output <new-output>
 python tests/tools/world/collision/compare_piston_geometry.py --repo . --probe <probe> --original <geometry-family>/execution-a --output <new-output>
 ```
 

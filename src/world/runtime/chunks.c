@@ -4,7 +4,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../storage/generated_internal.h"
 #include "mc/core/java/java.h"
-#include "mc/world/dimension/dimension.h"
+#include "mc/world/dimension/world_provider.h"
 #include "runtime_internal.h"
 
 static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
@@ -54,11 +54,11 @@ mc_world_storage_status mc_world_runtime_chunk_construct(mc_world_runtime *world
 
     /* Catalog selection is an explicit native admission requirement, not an
      * extra source World method, Block active use or provider preflight. */
-    mc_world_dimension_state dimension;
+    mc_world_provider_state dimension;
     if (world->fields.w == NULL ||
-        mc_world_dimension_state_get(world->fields.t, &dimension) != MC_WORLD_DIMENSION_OK ||
-        (dimension.kind != MC_WORLD_DIMENSION_OVERWORLD &&
-         dimension.kind != MC_WORLD_DIMENSION_NETHER))
+        mc_world_provider_state_get(world->fields.t, &dimension) != MC_WORLD_PROVIDER_OK ||
+        (dimension.kind != MC_WORLD_PROVIDER_OVERWORLD &&
+         dimension.kind != MC_WORLD_PROVIDER_NETHER))
         return result(error, &frame,
                       native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk constructor catalog"),
                       0);
@@ -223,10 +223,10 @@ mc_world_storage_status mc_world_runtime_chunk_finish(mc_world_chunk *chunk,
                 minimum = height;
 
             /* h80 has already changed before current d91/t94/e97 is read. */
-            mc_world_dimension_fields dimension;
+            mc_world_provider_fields dimension;
             frame.bytecode = 97;
-            if (mc_world_dimension_fields_get(fields.d->fields.t, &dimension) !=
-                MC_WORLD_DIMENSION_OK) {
+            if (mc_world_provider_fields_get(fields.d->fields.t, &dimension) !=
+                MC_WORLD_PROVIDER_OK) {
                 frame.cause = native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                            "Chunk finalizer current Dimension");
                 goto failed;

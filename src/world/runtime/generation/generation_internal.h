@@ -1,8 +1,8 @@
 #ifndef MC_WORLD_RUNTIME_GENERATION_INTERNAL_H
 #define MC_WORLD_RUNTIME_GENERATION_INTERNAL_H
 
-#include "../provider_state_internal.h"
-#include "mc/world/dimension/biome_runtime.h"
+#include "../chunk_provider_state_internal.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/chunks.h"
 
 /* Source frame PCs remain separate from full nested Registry/manager/Chunk
@@ -17,7 +17,7 @@ typedef struct mc_world_generation_error {
     mc_chunk_state *retained_child;
     mc_world_store *retained_store;
     mc_registry_error registry;
-    mc_world_biome_error biome;
+    mc_world_chunk_manager_error biome;
     mc_world_chunk_error chunk;
 } mc_world_generation_error;
 
@@ -38,31 +38,31 @@ typedef struct mc_world_generation_error {
  * Source v/q publication and passive NULL climate captures remain late. Each
  * climate capture holds its exact allocation across replacement, charged to
  * its live supplier's memory owner. No owning descriptor is copied. */
-mc_world_storage_status mc_world_provider_generate_game(mc_world_provider *provider, int32_t x,
+mc_world_storage_status mc_chunk_provider_generate_game(mc_chunk_provider *provider, int32_t x,
                                                         int32_t z, mc_chunk_state **out,
                                                         mc_world_generation_error *error);
 
 /* Concrete child stages. The enclosing entry owns the World hold/Chunk lease
  * and exact32768 live block storage. These are not arbitrary reflection APIs.
  * Error.bytecode is already set to the actual outer invocation. */
-bool mc_world_generation_surface(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
+bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
                                  const mc_biome_reference_array *biomes,
                                  mc_world_generation_error *error);
-bool mc_world_generation_caves(mc_world_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
+bool mc_world_generation_caves(mc_chunk_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
                                mc_world_generation_error *error);
 
 /* Actual ordinary Block active use, then the selected receiver's full bn.
  * Keep source getstatic and getfield failure PCs distinct. Callers themselves
  * perform reached signed comparisons/i2b/byte stores; no palette caching. */
-bool mc_world_generation_block(mc_world_provider *provider, const char *name,
+bool mc_world_generation_block(mc_chunk_provider *provider, const char *name,
                                unsigned int static_pc, unsigned int field_pc,
                                unsigned int *inner_pc, int32_t *out,
                                mc_world_generation_error *error);
-bool mc_world_generation_seed(mc_world_provider *provider, unsigned int pc, unsigned int *inner_pc,
+bool mc_world_generation_seed(mc_chunk_provider *provider, unsigned int pc, unsigned int *inner_pc,
                               int64_t *out, mc_world_generation_error *error);
-bool mc_world_generation_fail(mc_world_provider *provider, mc_world_generation_error *error,
+bool mc_world_generation_fail(mc_chunk_provider *provider, mc_world_generation_error *error,
                               mc_world_storage_status status, const char *operation);
-bool mc_world_generation_registry_fail(mc_world_provider *provider,
+bool mc_world_generation_registry_fail(mc_chunk_provider *provider,
                                        mc_world_generation_error *error, mc_registry_status status,
                                        const char *operation);
 
