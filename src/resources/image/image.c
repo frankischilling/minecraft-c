@@ -15,7 +15,7 @@ enum { IMAGE_CHUNKS = 1024, IMAGE_ANCILLARY_BYTES = 65536 };
 struct mc_image {
     uint32_t width, height;
     size_t stride;
-    uint8_t pixels[];
+    uint8_t *pixels;
 };
 
 typedef union image_allocation image_allocation;
@@ -329,6 +329,7 @@ mc_image_status mc_image_decode_png(const uint8_t *encoded, size_t length,
     state->image->width = width;
     state->image->height = height;
     state->image->stride = stride;
+    state->image->pixels = (uint8_t *)(state->image + 1);
     memset(state->image->pixels, 0, decoded);
     for (int pass = 0; pass < passes; ++pass)
         for (uint32_t row = 0; row < height; ++row)
