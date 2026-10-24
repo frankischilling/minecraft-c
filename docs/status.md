@@ -13,7 +13,9 @@ retaining absolute World/cave Random differences. Linux Debug traces also match
 2,087 ordered engine calls per side, including arguments, returns, flags and
 Set structure, plus 605 local observations of 151 retained snapshots. The
 comparison declares its storage and final-counter adaptations; twelve file-only
-Windows corruption controls reject the intended errors. Full World-level
+Windows corruption controls reject the intended errors. A separate GCC Debug
+step comparison matches upward/downward wire paths and all retained arrays,
+while keeping absolute World/cave Random differences. Full World-level
 wire qualification, callback-driven cross-World reentry, wider persistence/failure
 schedules and the default identity source remain required.
 

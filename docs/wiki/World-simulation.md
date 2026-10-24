@@ -13,7 +13,9 @@ Random differences. Linux Debug traces match 2,087 ordered engine calls per side
 including arguments, returns, flags and Set structure. Local snapshot comparison
 now includes 605 observations of 151 retained copies per side, with explicit
 storage and final-counter adaptations. Twelve file-only Windows controls reject
-the intended corruptions. Full World-level
+the intended corruptions. A separate GCC Debug step comparison matches both
+vertical query directions and all 600 retained arrays, with absolute Random
+differences kept. Full World-level
 qualification, callback-driven cross-World
 reentry, wider persistence/failure schedules and default identity generation
 remain required.

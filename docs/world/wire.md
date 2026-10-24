@@ -114,7 +114,7 @@ table. List, backing-array and key aliases remain stable through nested drains.
 The debugger makes no target method calls, field writes, class redefinitions or
 collection pins. Target and observer exit naturally under bounded ownership.
 
-A separate Linux Debug GDB capture matches all 2,087 ordered engine calls and
+For the line plan, Linux Debug GDB captures match all 2,087 ordered engine calls and
 605 local snapshot observations per side. Nesting, typed arguments, semantic
 returns, source flags and raw Set structure match across 4,809 paired states.
 Global correspondence retains 76 node and 76 key identities and two table
@@ -179,6 +179,32 @@ build/mc_wire_world_probe client PREPARED_ROOT_HEX tests/reference/world/wire/li
 `PREPARED_ROOT_HEX` encodes the UTF-8 path whose `world/level.dat` already exists.
 Use a separate copied root for each execution. `server` selects the base-server
 World. This observer does not launch a client or server application.
+
+### Stepped path
+
+The separate [stairs plan](../../tests/reference/world/wire/stairs.plan) raises
+the last two wires by one block, with stone supports at Y64. Its fifteen inputs
+toggle the same pressure plate, then remove and reinsert the middle upper wire.
+The actual original traces record queries and recursive updates in both
+directions between `(7,64,8)` and `(8,65,8)`.
+
+Client and base-server comparisons against the selected GCC Debug GDB build
+each match 2,071 ordered engine calls, 599 local observations of 149 snapshots,
+and 4,771 state pairs. There are 141 empty and eight nonempty copies, 152
+current-position observations, 76 node and 76 key identity joins and two table epochs
+per side. The same storage and final-counter adaptations apply. The twelve
+corruption controls above retain their separate line-plan scope.
+
+Across both sides, the stepped boundary comparison matches 600 retained array
+records across 120 Chunk records and 62 World boundaries, including heightmaps, metadata, lighting
+work, cache order and flags. It retains 124 absolute World/cave Random
+differences; each run's Random owners remain unchanged. This reference result
+covers the selected GCC Debug build. Three-compiler stepped reference coverage,
+constructor-clock pairing and full World qualification remain open.
+
+To use the stepped inputs, pass `tests/reference/world/wire/stairs.plan` in
+place of `line.plan` in the native command above. The plan supplies inputs only;
+no expected strengths, arrays, collection graph or RNG state is installed.
 
 ## Source map
 
