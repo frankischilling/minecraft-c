@@ -292,7 +292,9 @@ static int test_identity_replay(mc_font_renderer *font) {
 }
 
 static int verify_maximum(const mc_font_command_run *run) {
-    CHECK(MC_FONT_RENDERER_MAX_TEXT_UNITS == 65536u && MC_FONT_RENDERER_MAX_COMMANDS == 131076u);
+    _Static_assert(MC_FONT_RENDERER_MAX_TEXT_UNITS == 65536u &&
+                       MC_FONT_RENDERER_MAX_COMMANDS == 131076u,
+                   "source FontRenderer text and command limits");
     CHECK(run->commands != NULL && run->count == 131076u && run->width == 327680);
     CHECK(begin_is(&run->commands[0], 11, 21, UINT32_C(0xff040d15)));
     CHECK(begin_is(&run->commands[65538], 10, 20, UINT32_C(0xff123456)));
