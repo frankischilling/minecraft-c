@@ -5,6 +5,7 @@
  * The FNV1a fingerprint covers every original big-endian raw float byte;
  * optional reference comparisons separately compare all entries directly. */
 static const uint64_t observed_table_fnv1a = UINT64_C(0x74c4d1bb1bf96b54);
+
 typedef struct math_table_fixture {
     size_t index;
     uint32_t bits;

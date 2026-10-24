@@ -2,29 +2,25 @@
 
 #include "mc/core/java/java.h"
 
-static bool metadata_valid(const mc_chunk_cache *cache)
-{
+static bool metadata_valid(const mc_chunk_cache *cache) {
     return cache != NULL && cache->count <= cache->capacity &&
            cache->insertion_count <= cache->insertion_capacity &&
            (cache->capacity == 0 || cache->entries != NULL) &&
            (cache->insertion_capacity == 0 || cache->insertions != NULL);
 }
 
-static bool chunk_valid(const mc_chunk_state *chunk)
-{
+static bool chunk_valid(const mc_chunk_state *chunk) {
     return chunk != NULL && (chunk->blank || chunk->data != NULL);
 }
 
-int32_t mc_chunk_cache_key(int32_t x, int32_t z)
-{
+int32_t mc_chunk_cache_key(int32_t x, int32_t z) {
     uint32_t key = (x < 0 ? UINT32_C(0x80000000) : 0u) | (((uint32_t)x & UINT32_C(0x7fff)) << 16u) |
                    (z < 0 ? UINT32_C(0x8000) : 0u) | ((uint32_t)z & UINT32_C(0x7fff));
     return mc_java_i32_narrow((int64_t)key);
 }
 
 bool mc_chunk_cache_init(mc_chunk_cache *cache, mc_chunk_cache_entry *entries, size_t capacity,
-                         mc_chunk_state **insertions, size_t insertion_capacity)
-{
+                         mc_chunk_state **insertions, size_t insertion_capacity) {
     if (cache == NULL || (capacity > 0 && entries == NULL) ||
         (insertion_capacity > 0 && insertions == NULL)) {
         return false;
@@ -33,8 +29,7 @@ bool mc_chunk_cache_init(mc_chunk_cache *cache, mc_chunk_cache_entry *entries, s
     return true;
 }
 
-bool mc_chunk_cache_validate(const mc_chunk_cache *cache)
-{
+bool mc_chunk_cache_validate(const mc_chunk_cache *cache) {
     if (!metadata_valid(cache))
         return false;
     for (size_t i = 0; i < cache->count; ++i) {
@@ -53,8 +48,7 @@ bool mc_chunk_cache_validate(const mc_chunk_cache *cache)
 }
 
 bool mc_chunk_cache_lookup(const mc_chunk_cache *cache, int32_t x, int32_t z,
-                           mc_chunk_state **chunk)
-{
+                           mc_chunk_state **chunk) {
     if (!metadata_valid(cache) || chunk == NULL)
         return false;
     int32_t key = mc_chunk_cache_key(x, z);
@@ -67,14 +61,12 @@ bool mc_chunk_cache_lookup(const mc_chunk_cache *cache, int32_t x, int32_t z,
     return false;
 }
 
-bool mc_chunk_cache_contains(const mc_chunk_cache *cache, int32_t x, int32_t z)
-{
+bool mc_chunk_cache_contains(const mc_chunk_cache *cache, int32_t x, int32_t z) {
     mc_chunk_state *chunk;
     return mc_chunk_cache_lookup(cache, x, z, &chunk);
 }
 
-bool mc_chunk_cache_publish(mc_chunk_cache *cache, int32_t x, int32_t z, mc_chunk_state *chunk)
-{
+bool mc_chunk_cache_publish(mc_chunk_cache *cache, int32_t x, int32_t z, mc_chunk_state *chunk) {
     if (!mc_chunk_cache_validate(cache) || !chunk_valid(chunk) ||
         cache->insertion_count == cache->insertion_capacity) {
         return false;

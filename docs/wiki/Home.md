@@ -1,74 +1,30 @@
 # minecraft-c
 
-The project targets Minecraft Beta 1.7.3 in C17, with a graphical single-player
-and multiplayer client plus a dedicated headless server. Players select local
-usernames; account authentication is excluded.
+minecraft-c is a C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows
+and Linux. Its native libraries cover compatibility primitives, storage,
+terrain generation and parts of World simulation. There is no playable client
+or dedicated server yet; the C runtime requires no JVM.
 
-There is no playable C client or server yet. Current code provides numerical/text
-compatibility, float lookup/floor helpers, raw NBT, bounded gzip/zlib memory
-compression, seeded Perlin/octave noise, 2D simplex/octave noise,
-climate/biome classification, normal density/base
-terrain, surface replacement, normal cave carving, chunk voxel-data helpers,
-ordered light-region storage, cached height queries, normal chunk finishing,
-unpublished normal generator composition, synchronous cache acquisition,
-region inspection and writing, world metadata, stable stored chunks, native
-world-file ownership, synchronous save/unload coordination, tracked retirement,
-native world-runtime composition, local resource import and native builds.
-The storage foundation is implemented through `mc_persistence` and its cache
-acquisition adapter. At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, all 71
-selected tests pass without skips on native MSVC and WSL GCC/Clang, with Linux
-ASan/UBSan. Independent platform, source/provenance and copied-world semantic
-audits pass. Hosted checks pass 59 public/numerical tests per compiler and
-clang-format18 for 111 C/header files. Both copied-world directions include
-opaque Boat/Sign transport. These finite storage results do not implement
-entity/player simulation, gameplay save/unload or running-server persistence.
-See the [storage checkpoint](Storage-and-reference#storage-foundation-checkpoint),
-[ownership contract](https://github.com/frankischilling/minecraft-c/blob/main/docs/world/storage.md)
-and [storage evidence](https://github.com/frankischilling/minecraft-c/blob/main/docs/reference/storage.md).
+The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
+draws imported resources on Windows and Linux. Timer, GUI layout, font,
+resource and actual OpenGL tests pass on MSVC and sanitized GCC/Clang.
+Child screens, options persistence, audio and gameplay remain unfinished.
 
-The [lifecycle boundary](Architecture#save-unload-and-retirement) adds live
-ordered saving, pending-key history, metadata-first accounting and safe owner
-retirement/reload. The [finite qualification](Storage-and-reference#lifecycle-qualification)
-for source `46546d8322de52beb6c3a51f30e827c0260d2b30` selects the complete
-Windows v10, GCC v9 and Clang v9 suites. Each passed 92 tests without failures
-or skips; independent source/semantic audits, storage rechecks and complete
-capture preservation also pass, with Linux ASan/UBSan. Empty entity/tile records are native;
-Boat/Sign bodies remain external callback evidence. General deferred cleanup,
-terrain-feature bodies, world ticking, gameplay dimension transitions,
-running-server persistence and crash recovery remain open. The v7 and v8
-matrices are excluded. Windows v9 is also excluded after an original setup
-skip; its successful rows are not carried into the fresh Windows v10 suite.
-The bounded debugger-mirror and scoped helper-interval
-corrections have separate Windows/Linux regression passes alongside the
-qualified full suites above.
+Plant lifecycle callbacks, farmland and World light queries are implemented.
+Local MSVC/GCC/Clang suites pass, including 59 matching prepared plant cases per
+original side on each compiler. The original fixture uses prepared World
+services; natural population and original World/Chunk acceptance remain open.
 
-The [normal generator API](Architecture#normal-generator) composes the existing
-stages through finishing with borrowed world resources. At exact source
-`a08c12056a06261ed01d9f66999459f7ce9543b4`, all 41 selected local tests pass
-on MSVC/GCC/Clang without skips, including four-seed original comparisons and
-complete untouched controls. Hosted checks pass 36 public/numerical tests per
-compiler and formatting for 79 C/header files. See the
-[generation checkpoint](Storage-and-reference#normal-generation-checkpoint)
-for evidence and its finite scope.
-The expanded generation/cache/region checkpoint at
-`28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56 selected local tests
-without skips on those toolchains, with Linux sanitizers and independent audit.
-Hosted checks pass 48 tests per compiler and formatting for 89 C/header files.
-See [cache and region evidence](Storage-and-reference#cache-and-region-checks)
-for successful original loads, population callbacks and their remaining scope.
-The [repository README](https://github.com/frankischilling/minecraft-c#readme),
-[parity matrix](https://github.com/frankischilling/minecraft-c/blob/main/docs/parity.md)
-and [feature inventory](https://github.com/frankischilling/minecraft-c/blob/main/docs/inventory.md)
-are the reviewable sources for current behavior and evidence.
+- [World simulation](World-simulation) links the plant, Minecart, rail, power,
+  Piston, movement and population contracts and their reference evidence.
+- [Build and tests](Build-and-tests) links build instructions and validation scope.
+- [Architecture](Architecture) describes the native systems and their boundaries.
+- [Storage and reference work](Storage-and-reference) links persistence and
+  reference-development documentation.
 
-Original Minecraft binaries/assets, decompiled source, launcher files and worlds
-are excluded from source and releases. New project work is MIT licensed. See
-[build and tests](Build-and-tests) for development setup and its current limits.
-
-Detailed pages cover [systems and subsystems](Architecture) and
-[storage and original-reference checks](Storage-and-reference). The
-[development status](https://github.com/frankischilling/minecraft-c/blob/main/docs/status.md)
-records the current branch, tested commits and remaining work.
-
-These pages are versioned under `docs/wiki/`. Exact tested sources, retained
-evidence and remaining work are recorded in the linked development documents.
+The repository's [current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+and [parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+separate implemented behavior, native tests and finite original comparisons.
+Detailed checkpoint records are in the
+[population and runtime history](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/population.md);
+[wiki history](History) preserves the earlier overview.

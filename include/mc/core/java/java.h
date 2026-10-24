@@ -43,13 +43,29 @@ int64_t mc_java_float_to_i64(float value);
  * concurrent access requires external synchronization. State is opaque to users. */
 typedef struct mc_java_random {
     uint64_t state;
+    double next_next_gaussian;
+    bool have_next_next_gaussian;
 } mc_java_random;
 
+/* Fully initialize a fresh native seeded value, including +0.0/false cache
+ * fields. Accepts uninitialized storage and consumes no constructor entropy. */
 void mc_java_random_seed(mc_java_random *random, int64_t seed);
+/* Java Random.setSeed on an initialized owner: reset the LCG and clear the
+ * cache-valid flag while preserving the stored Gaussian double's bits. */
+void mc_java_random_reseed(mc_java_random *random, int64_t seed);
 int32_t mc_java_random_next_i32(mc_java_random *random);
 int64_t mc_java_random_next_i64(mc_java_random *random);
 float mc_java_random_next_float(mc_java_random *random);
 double mc_java_random_next_double(mc_java_random *random);
+/* Ordinary Random's cached polar algorithm. Requires an initialized owner and
+ * the captured x86-64/SSE2 StrictMath backend environment: round-to-nearest,
+ * ties-to-even binary64 with gradual underflow, no FTZ/DAZ or excess intermediate
+ * precision, disabled floating traps, no reassociation and no FMA contraction.
+ * Uses concrete log/sqrt on positive finite arguments. A cache hit clears its
+ * valid flag and returns the stored double without drawing. Other draw methods
+ * do not invalidate that cache. No rejection cap, callback, constructor entropy
+ * or implicit synchronization is supplied. */
+double mc_java_random_next_gaussian(mc_java_random *random);
 /* Invalid bound (<= 0) or null output returns false without consuming randomness. */
 bool mc_java_random_next_bounded(mc_java_random *random, int32_t bound, int32_t *out);
 

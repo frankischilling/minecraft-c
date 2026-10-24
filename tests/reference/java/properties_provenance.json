@@ -1,0 +1,144 @@
+{
+  "schema": "PROPERTIES_OBSERVATION_PROVENANCE_V1",
+  "scope": "Actual JDK byte-stream loads and String identities; no game initialization",
+  "counts": {
+    "owners": 240,
+    "loads": 252,
+    "queries": 980,
+    "raw_rows": 5039,
+    "raw_rows_before_footer": 5038,
+    "input_rows": 1966,
+    "expected_rows": 3806
+  },
+  "fixture": {
+    "bytes": 1778120,
+    "sha256": "68541d5487f886ac443fd0e6519c08792b3d17b939bad299ef1a988f1a156707"
+  },
+  "sources": {
+    "tests/reference/java/PropertiesObservation.java": {
+      "bytes": 19128,
+      "sha256": "84fb0334a8e4e04f11ca667698cc0fe0b0a71a6cd9d173aa945af6322ce0ac9a"
+    },
+    "scripts/reference/java/properties_protocol.py": {
+      "bytes": 16065,
+      "sha256": "8939b0fd57f03ecb2a0ac97728c20d9e5f08ca3ab6f1d38c83fa6cd6057e0e77"
+    },
+    "scripts/reference/java/capture_nanotime_conversion.py": {
+      "bytes": 10182,
+      "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+    },
+    "scripts/reference/java/capture_properties.py": {
+      "bytes": 6099,
+      "sha256": "00f1ebee59ff3361f48bd951cd3f4e8713c528abe2bd9aa414cf2fc6a4175325"
+    }
+  },
+  "jdk_profile": {
+    "modules": {
+      "path": "modules",
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "jvm": {
+      "path": "jvm",
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "java": {
+      "path": "java",
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "javac": {
+      "path": "javac",
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "java_native": {
+      "path": "java_native",
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "release": {
+      "path": "release",
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "source_archive": {
+      "path": "source_archive",
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    }
+  },
+  "classes": {
+    "PropertiesObservation$Case.class": {
+      "bytes": 777,
+      "sha256": "44a8fcaf6c582ab2992ca8243cbd0dbfe99c080484839d81bcc408aea3e1debe"
+    },
+    "PropertiesObservation$Cell.class": {
+      "bytes": 428,
+      "sha256": "11d29632a678a5dec2a2e950afd69f3e279b9b91d41449f3717e63a279225d23"
+    },
+    "PropertiesObservation$FiniteStream.class": {
+      "bytes": 2145,
+      "sha256": "c2f870f445dc9cb16c944242b353cd192b66b07647fe71203c352b55920bf122"
+    },
+    "PropertiesObservation$Identities.class": {
+      "bytes": 1689,
+      "sha256": "49ae7134b4858f580631934a858d50f694ad32ff8fa0fae604be1843e2c42d6f"
+    },
+    "PropertiesObservation$Query.class": {
+      "bytes": 936,
+      "sha256": "1d33b65cf205ee934f475002c08c8668faa16a809a7da1b3d5dd6a1de791ed82"
+    },
+    "PropertiesObservation$Rows.class": {
+      "bytes": 1134,
+      "sha256": "cf185c851255b97c8036fefd5f3d97e00c2aeee5e755d8a2792f447b3384d636"
+    },
+    "PropertiesObservation$Step.class": {
+      "bytes": 773,
+      "sha256": "f9e63f1d9ed27ba1161202982c20c2191bf9c8ea8ca71b8587242b8c6cb51e32"
+    },
+    "PropertiesObservation.class": {
+      "bytes": 16011,
+      "sha256": "ca8081c25dfd7e53f5811c3c8d080eb0d0a53c449664f389bce24b8177ace671"
+    }
+  },
+  "modes": [
+    {
+      "name": "interpreted",
+      "flags": [
+        "-Xint"
+      ],
+      "trace": {
+        "bytes": 1778120,
+        "sha256": "68541d5487f886ac443fd0e6519c08792b3d17b939bad299ef1a988f1a156707"
+      },
+      "exit_code": 0,
+      "reaped": true
+    },
+    {
+      "name": "tier1",
+      "flags": [
+        "-XX:TieredStopAtLevel=1"
+      ],
+      "trace": {
+        "bytes": 1778120,
+        "sha256": "68541d5487f886ac443fd0e6519c08792b3d17b939bad299ef1a988f1a156707"
+      },
+      "exit_code": 0,
+      "reaped": true
+    },
+    {
+      "name": "default",
+      "flags": [],
+      "trace": {
+        "bytes": 1778120,
+        "sha256": "68541d5487f886ac443fd0e6519c08792b3d17b939bad299ef1a988f1a156707"
+      },
+      "exit_code": 0,
+      "reaped": true
+    }
+  ],
+  "limitation": "Equal mode output does not prove JIT compilation or whole-game parity",
+  "inputs_unchanged": true
+}

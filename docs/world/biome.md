@@ -6,6 +6,17 @@ simplex/octave channels, climate processing and biome lookup. It initializes no
 world, files, display, assets or Java. [Reference evidence](../reference/biome.md)
 distinguishes the explicit-seed numerical fixture from original world startup.
 
+The [shared Biome registry and reference sampler](biome-registry.md) provide
+the actual class-owned objects, spawn lists and pointer table. They have
+separate initialization, lifetime and partial-effect contracts. The numerical
+interfaces on this page retain their existing finite-input and preflight
+behavior.
+
+The [WorldChunkManager temperature-array module](temperature.md) provides the separate
+staged noise-backed/fixed methods needed by population. It preserves raw output writes
+before auxiliary allocation failure and keeps output ownership independent of
+the current manager. The numerical interface described below remains atomic.
+
 ## Classification and seeded state
 
 `mc_biome_classifier_init` builds all 4096 entries using binary32 index/63
@@ -19,8 +30,9 @@ The thirteen `mc_biome_id` values encode the original static object identities
 `a` through `m`. They are project encodings, not a game registry or wire format.
 `mc_biome_name` and `mc_biome_field` expose the original labels. `MC_BIOME_NONE`
 represents an unset array element. Ice Desert, Hell and Sky exist as identities
-but are not selected by this climate table. Surface blocks, spawning, feature
-generators and dimension-specific constant managers remain separate work.
+but are not selected by this climate table. Live surface application, spawning,
+feature placement and World/Dimension integration are separate from this
+numerical projection.
 
 A caller-owned `mc_biome_manager` embeds its classifier and ten simplex layers.
 Initialization uses three independent wrapped seed products, 9871/39811/543321,

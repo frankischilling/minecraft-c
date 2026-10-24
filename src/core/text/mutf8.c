@@ -2,8 +2,7 @@
 
 /* Caller validates the whole payload before decoding to its output buffer. */
 static mc_mutf8_status read_unit(const uint8_t *input, size_t length, size_t *offset,
-                                 uint16_t *unit)
-{
+                                 uint16_t *unit) {
     const uint8_t first = input[*offset];
     size_t width;
     uint16_t value;
@@ -36,8 +35,7 @@ static mc_mutf8_status read_unit(const uint8_t *input, size_t length, size_t *of
     return MC_MUTF8_OK;
 }
 
-mc_mutf8_status mc_mutf8_decoded_length(const uint8_t *input, size_t length, size_t *units)
-{
+mc_mutf8_status mc_mutf8_decoded_length(const uint8_t *input, size_t length, size_t *units) {
     size_t offset = 0;
     size_t count = 0;
 
@@ -60,8 +58,7 @@ mc_mutf8_status mc_mutf8_decoded_length(const uint8_t *input, size_t length, siz
 }
 
 mc_mutf8_status mc_mutf8_decode(const uint8_t *input, size_t length, uint16_t *output,
-                                size_t capacity, size_t *written)
-{
+                                size_t capacity, size_t *written) {
     size_t count;
     size_t offset = 0;
     size_t index = 0;
@@ -94,8 +91,7 @@ mc_mutf8_status mc_mutf8_decode(const uint8_t *input, size_t length, uint16_t *o
     return MC_MUTF8_OK;
 }
 
-static size_t unit_width(uint16_t unit)
-{
+static size_t unit_width(uint16_t unit) {
     if (unit >= UINT16_C(1) && unit <= UINT16_C(0x7f)) {
         return 1;
     }
@@ -105,8 +101,7 @@ static size_t unit_width(uint16_t unit)
     return 3;
 }
 
-mc_mutf8_status mc_mutf8_encoded_length(const uint16_t *input, size_t units, size_t *bytes)
-{
+mc_mutf8_status mc_mutf8_encoded_length(const uint16_t *input, size_t units, size_t *bytes) {
     size_t count = 0;
 
     if (bytes == NULL || (input == NULL && units != 0)) {
@@ -128,8 +123,7 @@ mc_mutf8_status mc_mutf8_encoded_length(const uint16_t *input, size_t units, siz
 }
 
 mc_mutf8_status mc_mutf8_encode(const uint16_t *input, size_t units, uint8_t *output,
-                                size_t capacity, size_t *written)
-{
+                                size_t capacity, size_t *written) {
     size_t count;
     size_t offset = 0;
     mc_mutf8_status status;

@@ -17,38 +17,33 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint32_t float_bits(float value)
-{
+static uint32_t float_bits(float value) {
     uint32_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary32 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static uint64_t double_bits(double value)
-{
+static uint64_t double_bits(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static float float_from_bits(uint32_t bits)
-{
+static float float_from_bits(uint32_t bits) {
     float value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static double double_from_bits(uint64_t bits)
-{
+static double double_from_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static int test_integers(void)
-{
+static int test_integers(void) {
     int32_t i32 = 123;
     int64_t i64 = 456;
     CHECK(mc_java_i32_add(INT32_MAX, 1) == INT32_MIN);
@@ -110,8 +105,7 @@ static int test_integers(void)
     return 0;
 }
 
-static int test_casts(void)
-{
+static int test_casts(void) {
     CHECK(mc_java_double_to_i32(NAN) == 0);
     CHECK(mc_java_double_to_i64(NAN) == 0);
     CHECK(mc_java_double_to_i32(INFINITY) == INT32_MAX);
@@ -137,8 +131,7 @@ static int test_casts(void)
     return 0;
 }
 
-static int test_random(void)
-{
+static int test_random(void) {
     /* Captured by JavaSemanticsProbe on the actual Temurin 17.0.17 runtime.
      * These are fixed oracle values, not a second C RNG implementation. */
     static const int32_t ints[] = {-1155484576, -723955400, 1033096058,  -1690734402,
@@ -207,8 +200,7 @@ static int test_random(void)
     return 0;
 }
 
-static void vectors(void)
-{
+static void vectors(void) {
     static const int32_t ints[] = {0, 1,     -1,    INT32_MIN,  INT32_MAX,  -7,
                                    7, 65535, 65536, 1431655765, -1431655766};
     static const int64_t longs[] = {0,
@@ -350,8 +342,7 @@ static void vectors(void)
     }
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc == 2 && strcmp(argv[1], "--vectors") == 0) {
         vectors();
         return ferror(stdout) ? 1 : 0;

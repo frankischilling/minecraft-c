@@ -2,8 +2,9 @@
 
 The storage compression module links statically to upstream zlib 1.3.2. It is
 written in C and provides gzip/zlib framing, deflate, and checksum validation.
-The shared numerical/text core remains independent of it. A graphical runtime
-and its window, renderer, and audio dependencies have not been added.
+The shared numerical/text core remains independent of it. The optional native
+client links SDL3 for windows and OpenGL contexts, and libpng for image decoding.
+Its current [title-screen scope](client/startup.md) remains incomplete.
 
 The [official release site](https://zlib.net/) lists version 1.3.2, released
 February 17, 2026. CMake downloads the versioned
@@ -27,3 +28,33 @@ The unmodified upstream source keeps its license. A copy is retained at
 [licenses/zlib.txt](../licenses/zlib.txt); the project's MIT license does not
 replace it. Include this notice with any future packaged source or executable
 that contains zlib. No release artifact has been published yet.
+
+## Client libraries
+
+`MC_BUILD_CLIENT=ON` is the default. It adds pinned static SDL3 3.4.18 and
+libpng 1.6.59 from their upstream source archives:
+
+| Library | Source archive | SHA-256 |
+| --- | --- | --- |
+| SDL3 3.4.18 | [SDL release](https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz) | `9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3` |
+| libpng 1.6.59 | [libpng release](https://sourceforge.net/projects/libpng/files/libpng16/1.6.59/libpng-1.6.59.tar.gz/download) | `86a3e4b501f7f50e392c4e456ea158893e9a595b1c63eb88c7bb9f6cf8772dad` |
+
+SDL supplies platform windowing and input; the project's OpenGL 3.3 core
+renderer draws the GUI. SDL's renderer and GPU modules are disabled. Audio is
+built into SDL but the client has no sound playback yet. libpng uses the same
+pinned static zlib as storage. No arbitrary system zlib is substituted.
+The simulation and server libraries do not link SDL, libpng or OpenGL.
+`-DMC_BUILD_CLIENT=OFF` excludes both client dependencies and client targets.
+
+Offline source overrides are `FETCHCONTENT_SOURCE_DIR_MC_SDL3` and
+`FETCHCONTENT_SOURCE_DIR_MC_LIBPNG`, each an absolute path to the unpacked
+corresponding source. As with zlib, source overrides bypass archive hashing;
+verify those sources before configuring. Build directories retain their own
+dependency configuration. Use a fresh directory when changing dependency sources.
+
+SDL3 and libpng retain their upstream licenses, copied verbatim in
+[licenses/SDL3.txt](../licenses/SDL3.txt) and
+[licenses/libpng.txt](../licenses/libpng.txt). Include those notices and the
+zlib notice with any future executable containing these static libraries.
+The project's MIT license does not replace them. Original Minecraft resources
+remain separately supplied through the local asset importer.

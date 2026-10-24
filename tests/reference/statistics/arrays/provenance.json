@@ -1,0 +1,49 @@
+{
+  "schema": "STATISTIC_ARRAY_PREFIX_OBSERVATION_V1",
+  "runtime": "Temurin17.0.17+10 Windows x86-64 with JDI",
+  "scope": "Numeric actual registry object graph before recipe d21 for Stats-first or achievement clinit624 for Block/Item-first. Requested debugger termination is not natural completion or successful bootstrap.",
+  "projection": "All map IDs/kinds/flags/formatter identities/associated IDs, 23 named references, every nonnull C/D/E/F slot, all ordered b/c/d/e references, G/H. Map rows sort signed IDs only for observation; Java HashMap iteration order is not claimed. Display/key resource text is omitted.",
+  "captures": 18,
+  "three_modes_equal_per_entry": true,
+  "inputs_unchanged": true,
+  "fixtures": {
+    "client-stats.tsv": {
+      "bytes": 22066,
+      "sha256": "4e90166fe0b4e75a959d623bdc40ddf2ef9b3dfafe8b9b7ffc19cfe6a2e1e282"
+    },
+    "client-block.tsv": {
+      "bytes": 8640,
+      "sha256": "1ddbe1d093c8cdc4a366d2b271c228cacf5b736fd1ceae1fe4d6283f82dce006"
+    },
+    "client-item.tsv": {
+      "bytes": 8639,
+      "sha256": "91841ab4b48ee652f8aff97a9ddd6323b4b3b981134613fa733f491f7dc2788c"
+    },
+    "server-stats.tsv": {
+      "bytes": 22066,
+      "sha256": "bc8c51ea4fb411a604a48fa9b0fd82592c846ed3a35736f296c763297f84074a"
+    },
+    "server-block.tsv": {
+      "bytes": 8640,
+      "sha256": "9eaf7cc555eab1999ae6cf9602a095d99a0055a74c0cc9bb75f08c6003c14fcb"
+    },
+    "server-item.tsv": {
+      "bytes": 8639,
+      "sha256": "bafefabbeb31f1498df30439784ed19f9f6ca643fae614494a33f0c054cb6f23"
+    }
+  },
+  "helper_sha256": "43e15f97eed27e67437a0925b59de6292490a50f3d138ae8d41f59511dcb19f3",
+  "controller_sha256": "a06596876896bd58b9f0da44397e51e1e484492a86a9aa57124514d16522a40b",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "server_jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+  "capture_receipt_sha256": "fc7d8366ac56743076b620cc9c5e91a1816960d7a4d35171ec73cc8f162e94fe",
+  "jdk_profile": {
+    "java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "java_native": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f",
+    "source_archive": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e",
+    "release": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+  }
+}

@@ -6,6 +6,8 @@
 *.md text eol=lf
 *.yml text eol=lf
 *.json text eol=lf
+*.tsv text eol=lf
+*.commands text eol=lf
 *.java text eol=lf
 *.txt text eol=lf
 .clang-format text eol=lf

@@ -90,8 +90,7 @@ static int world_owner, loader_owner, provider_owner;
 static bool publication_known[MAX_CHUNKS];
 static int32_t publication_x[MAX_CHUNKS], publication_z[MAX_CHUNKS];
 
-static void emit(const char *format, ...)
-{
+static void emit(const char *format, ...) {
     if (output_failed)
         return;
     char buffer[512];
@@ -108,16 +107,14 @@ static void emit(const char *format, ...)
         output_failed = true;
 }
 
-static bool read_bytes(FILE *file, void *data, size_t count)
-{
+static bool read_bytes(FILE *file, void *data, size_t count) {
     if (count > MAX_BYTES - input_bytes)
         return false;
     input_bytes += count;
     return fread(data, 1, count, file) == count;
 }
 
-static bool read_u32(FILE *file, uint32_t *value)
-{
+static bool read_u32(FILE *file, uint32_t *value) {
     uint8_t bytes[4];
     if (!read_bytes(file, bytes, sizeof(bytes)))
         return false;
@@ -126,8 +123,7 @@ static bool read_u32(FILE *file, uint32_t *value)
     return true;
 }
 
-static bool read_i32(FILE *file, int32_t *value)
-{
+static bool read_i32(FILE *file, int32_t *value) {
     uint32_t raw;
     if (!read_u32(file, &raw))
         return false;
@@ -135,8 +131,7 @@ static bool read_i32(FILE *file, int32_t *value)
     return true;
 }
 
-static bool read_i64(FILE *file, int64_t *value)
-{
+static bool read_i64(FILE *file, int64_t *value) {
     uint8_t bytes[8];
     uint64_t raw = 0;
     if (!read_bytes(file, bytes, sizeof(bytes)))
@@ -147,8 +142,7 @@ static bool read_i64(FILE *file, int64_t *value)
     return true;
 }
 
-static bool read_bool(FILE *file, bool *value)
-{
+static bool read_bool(FILE *file, bool *value) {
     uint8_t raw;
     if (!read_bytes(file, &raw, 1) || raw > 1u)
         return false;
@@ -156,8 +150,7 @@ static bool read_bool(FILE *file, bool *value)
     return true;
 }
 
-static void *allocate(size_t count, size_t size)
-{
+static void *allocate(size_t count, size_t size) {
     if (count == 0)
         return NULL;
     void *result = calloc(count, size);
@@ -166,8 +159,7 @@ static void *allocate(size_t count, size_t size)
     return result;
 }
 
-static void free_world(world_record *world)
-{
+static void free_world(world_record *world) {
     free(world->chunks);
     free(world->map);
     free(world->list);
@@ -176,8 +168,7 @@ static void free_world(world_record *world)
     memset(world, 0, sizeof(*world));
 }
 
-static bool read_chunk(FILE *file, chunk_record *chunk)
-{
+static bool read_chunk(FILE *file, chunk_record *chunk) {
     mc_chunk_state *state = &chunk->state;
     mc_chunk_data *data = &chunk->data;
     memset(chunk->blocks, 0xa7, sizeof(chunk->blocks));
@@ -201,8 +192,7 @@ static bool read_chunk(FILE *file, chunk_record *chunk)
     return true;
 }
 
-static bool read_world(FILE *file, world_record *world)
-{
+static bool read_world(FILE *file, world_record *world) {
     if (!read_i64(file, &world->time) || !read_bool(file, &world->world_force) ||
         !read_bool(file, &world->provider_force) || !read_i32(file, &world->spawn_x) ||
         !read_i32(file, &world->spawn_z) || !read_i32(file, &world->depth) ||
@@ -261,8 +251,7 @@ static bool read_world(FILE *file, world_record *world)
     return true;
 }
 
-static bool identity_growth(const world_record *before, const world_record *after)
-{
+static bool identity_growth(const world_record *before, const world_record *after) {
     if (after->chunk_count < before->chunk_count)
         return false;
     for (size_t i = 0; i < before->chunk_count; ++i) {
@@ -273,8 +262,7 @@ static bool identity_growth(const world_record *before, const world_record *afte
     return true;
 }
 
-static bool read_input(FILE *file)
-{
+static bool read_input(FILE *file) {
     char magic[4];
     if (!read_bytes(file, magic, sizeof(magic)) || memcmp(magic, "MCC1", 4) != 0 ||
         !read_i64(file, &seed) || !read_bool(file, &dedicated) ||
@@ -307,8 +295,7 @@ static bool read_input(FILE *file)
     return fgetc(file) == EOF && !ferror(file);
 }
 
-static size_t chunk_id(const mc_chunk_state *state)
-{
+static size_t chunk_id(const mc_chunk_state *state) {
     if (state != NULL) {
         for (size_t i = 0; i < chunk_count; ++i) {
             if (state == &chunks[i].state)
@@ -318,8 +305,7 @@ static size_t chunk_id(const mc_chunk_state *state)
     return SIZE_MAX;
 }
 
-static bool suffixes_retained(void)
-{
+static bool suffixes_retained(void) {
     if (cache.entries != entries || cache.capacity != MAX_ENTRIES ||
         cache.insertions != insertions || cache.insertion_capacity != MAX_ENTRIES ||
         pending.keys != pending_keys || pending.capacity != MAX_ENTRIES ||
@@ -341,8 +327,7 @@ static bool suffixes_retained(void)
     return true;
 }
 
-static bool equal_chunk(const chunk_record *a, const chunk_record *b)
-{
+static bool equal_chunk(const chunk_record *a, const chunk_record *b) {
     const mc_chunk_state *x = &a->state, *y = &b->state;
     if (x->x != y->x || x->z != y->z || x->blank != y->blank || x->dirty != y->dirty ||
         x->active != y->active || x->terrain_populated != y->terrain_populated ||
@@ -358,8 +343,7 @@ static bool equal_chunk(const chunk_record *a, const chunk_record *b)
             memcmp(a->data.block_light, b->data.block_light, sizeof(a->data.block_light)) == 0);
 }
 
-static bool matches(const world_record *world)
-{
+static bool matches(const world_record *world) {
     if (world->time != world_time || world->world_force != world_force ||
         world->provider_force != provider_force || world->spawn_x != spawn_x ||
         world->spawn_z != spawn_z || world->depth != depth || world->no_sky != no_sky ||
@@ -397,8 +381,7 @@ static bool matches(const world_record *world)
     return true;
 }
 
-static bool import_world(const world_record *world)
-{
+static bool import_world(const world_record *world) {
     for (size_t i = 0; i < world->chunk_count; ++i) {
         chunks[i] = world->chunks[i];
         if (!chunks[i].state.blank) {
@@ -429,8 +412,7 @@ static bool import_world(const world_record *world)
     return suffixes_retained() && mc_chunk_acquire_validate(&context) && matches(world);
 }
 
-static bool same_map(const world_record *a, const world_record *b)
-{
+static bool same_map(const world_record *a, const world_record *b) {
     if (a->map_count != b->map_count)
         return false;
     for (size_t i = 0; i < a->map_count; ++i) {
@@ -445,8 +427,7 @@ static bool same_map(const world_record *a, const world_record *b)
     return true;
 }
 
-static bool same_pending(const world_record *a, const world_record *b)
-{
+static bool same_pending(const world_record *a, const world_record *b) {
     if (a->pending_count != b->pending_count)
         return false;
     for (size_t i = 0; i < a->pending_count; ++i) {
@@ -461,8 +442,7 @@ static bool same_pending(const world_record *a, const world_record *b)
     return true;
 }
 
-static bool apply_effect(const world_record *before, const world_record *after)
-{
+static bool apply_effect(const world_record *before, const world_record *after) {
     if (!matches(before) || !identity_growth(before, after))
         return false;
     /* Preserve every unchanged coordinator field and every owner pointer.
@@ -544,8 +524,7 @@ static bool apply_effect(const world_record *before, const world_record *after)
 }
 
 static bool log_callback(const char *kind, const char *effect, int32_t x, int32_t z,
-                         const mc_chunk_state *chunk, size_t slice, size_t script_index)
-{
+                         const mc_chunk_state *chunk, size_t slice, size_t script_index) {
     size_t id = chunk_id(chunk);
     if (callback_count == MAX_CALLBACKS || (chunk != NULL && id == SIZE_MAX)) {
         callback_failed = true;
@@ -569,8 +548,7 @@ static bool log_callback(const char *kind, const char *effect, int32_t x, int32_
 }
 
 static script *next_script(uint32_t kind, const mc_chunk_acquire_context *argument, int32_t x,
-                           int32_t z)
-{
+                           int32_t z) {
     if (argument != &context || script_cursor == script_count ||
         memcmp(&context, &saved_context, sizeof(context)) != 0) {
         callback_failed = true;
@@ -590,8 +568,7 @@ static script *next_script(uint32_t kind, const mc_chunk_acquire_context *argume
 }
 
 static mc_chunk_load_result load_chunk(void *owner, const mc_chunk_acquire_context *argument,
-                                       int32_t x, int32_t z, mc_chunk_state **loaded)
-{
+                                       int32_t x, int32_t z, mc_chunk_state **loaded) {
     if (owner != &loader_owner || loaded == NULL || *loaded != NULL) {
         callback_failed = true;
         return MC_CHUNK_LOAD_FATAL;
@@ -616,8 +593,7 @@ static mc_chunk_load_result load_chunk(void *owner, const mc_chunk_acquire_conte
 }
 
 static bool generate_chunk(void *owner, const mc_chunk_acquire_context *argument, int32_t x,
-                           int32_t z, mc_chunk_state **generated)
-{
+                           int32_t z, mc_chunk_state **generated) {
     if (owner != &provider_owner || generated == NULL || *generated != NULL) {
         callback_failed = true;
         return false;
@@ -639,8 +615,7 @@ static bool generate_chunk(void *owner, const mc_chunk_acquire_context *argument
 }
 
 static bool populate_chunk(void *owner, const mc_chunk_acquire_context *argument, int32_t x,
-                           int32_t z)
-{
+                           int32_t z) {
     mc_chunk_state *target = NULL;
     if (owner != &provider_owner || argument != &context ||
         mc_chunk_acquire_get(argument, x, z, &target) != MC_CHUNK_ACQUIRE_OK ||
@@ -661,9 +636,8 @@ static bool populate_chunk(void *owner, const mc_chunk_acquire_context *argument
                         index);
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *argument,
-                           mc_chunk_state *chunk)
-{
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *argument,
+                                   mc_chunk_state *chunk) {
     mc_chunk_state *mapped = NULL;
     const size_t id = chunk_id(chunk);
     if (owner != &world_owner || argument != &context || id == SIZE_MAX || !publication_known[id] ||
@@ -678,8 +652,7 @@ static bool register_tiles(void *owner, const mc_chunk_acquire_context *argument
 }
 
 static bool register_entities(void *owner, const mc_chunk_acquire_context *argument,
-                              mc_chunk_state *chunk, size_t slice)
-{
+                              mc_chunk_state *chunk, size_t slice) {
     if (owner != &world_owner || argument != &context || !chunk->active || slice >= 8u ||
         memcmp(&context, &saved_context, sizeof(context)) != 0) {
         callback_failed = true;
@@ -688,21 +661,18 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *argum
     return log_callback("entities", "coordinator", chunk->x, chunk->z, chunk, slice, SIZE_MAX);
 }
 
-static const char *boolean(bool value)
-{
+static const char *boolean(bool value) {
     return value ? "true" : "false";
 }
 
-static void print_bytes(const char *name, const uint8_t *values, size_t count)
-{
+static void print_bytes(const char *name, const uint8_t *values, size_t count) {
     emit("\"%s\":{\"length\":%zu,\"values\":\"", name, count);
     for (size_t i = 0; i < count; ++i)
         emit("%02x", (unsigned int)values[i]);
     emit("\"}");
 }
 
-static void print_data(const mc_chunk_data *data)
-{
+static void print_data(const mc_chunk_data *data) {
     emit("{");
     print_bytes("blocks", data->blocks, MC_CHUNK_BLOCKS);
     emit(",");
@@ -716,8 +686,7 @@ static void print_data(const mc_chunk_data *data)
     emit(",\"minimum_height\":%" PRId32 "}", data->minimum_height);
 }
 
-static void print_snapshot(void)
-{
+static void print_snapshot(void) {
     emit("{\"context\":{\"dedicated\":%s,\"world_time\":\"%016" PRIx64
          "\",\"world_force\":%s,\"provider_force\":%s,\"spawn\":[%" PRId32 ",%" PRId32
          "],\"no_sky\":%s},\"world\":{\"map\":[",
@@ -779,8 +748,7 @@ static void print_snapshot(void)
     emit("],\"depth\":%" PRId32 "}}", depth);
 }
 
-static void print_callbacks(void)
-{
+static void print_callbacks(void) {
     emit("[");
     for (size_t i = 0; i < callback_count; ++i) {
         const callback_record *record = &callbacks[i];
@@ -813,8 +781,7 @@ static void print_callbacks(void)
     emit("]");
 }
 
-static bool initialize_context(void)
-{
+static bool initialize_context(void) {
     for (size_t i = 0; i < MAX_CHUNKS; ++i)
         memset(chunks[i].blocks, 0xa7, sizeof(chunks[i].blocks));
     if (!mc_chunk_cache_init(&cache, entries, MAX_ENTRIES, insertions, MAX_ENTRIES) ||
@@ -835,7 +802,7 @@ static bool initialize_context(void)
                                          .provider = &provider_owner,
                                          .load = load_chunk,
                                          .generate = generate_chunk,
-                                         .register_tiles = register_tiles,
+                                         .register_tile_entities = register_tile_entities,
                                          .register_entities = register_entities,
                                          .populate = populate_chunk};
     memcpy(&saved_context, &context, sizeof(context));
@@ -845,8 +812,7 @@ static bool initialize_context(void)
 /* Constructed diagnostic mode: metadata validity alone does not establish the
  * probe's expected storage owners. These valid alternative descriptors must
  * fail the same invariant used at every real replay callback and operation. */
-static int audit_owners(void)
-{
+static int audit_owners(void) {
     static mc_chunk_cache_entry alternate_entries[MAX_ENTRIES];
     static mc_chunk_state *alternate_list[MAX_ENTRIES];
     static int32_t alternate_pending[MAX_ENTRIES];
@@ -896,8 +862,7 @@ static int audit_owners(void)
     return output_failed || fflush(stdout) != 0 ? 1 : 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc > 2) {
         fputs("usage: callback_probe [MCC1-file]; otherwise binary stdin\n", stderr);
         return 2;

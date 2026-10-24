@@ -2,16 +2,14 @@
 
 #include "mc/core/java/java.h"
 
-static int32_t volume(const mc_light_bounds *bounds)
-{
+static int32_t volume(const mc_light_bounds *bounds) {
     int32_t x = mc_java_i32_sub(bounds->max_x, bounds->min_x);
     int32_t y = mc_java_i32_sub(bounds->max_y, bounds->min_y);
     int32_t z = mc_java_i32_sub(bounds->max_z, bounds->min_z);
     return mc_java_i32_mul(mc_java_i32_mul(x, y), z);
 }
 
-bool mc_light_bounds_merge(mc_light_bounds *stored, const mc_light_bounds *requested)
-{
+bool mc_light_bounds_merge(mc_light_bounds *stored, const mc_light_bounds *requested) {
     if (stored == NULL || requested == NULL) {
         return false;
     }
@@ -48,8 +46,7 @@ bool mc_light_bounds_merge(mc_light_bounds *stored, const mc_light_bounds *reque
     return true;
 }
 
-bool mc_light_queue_init(mc_light_queue *queue, mc_light_region *storage, size_t capacity)
-{
+bool mc_light_queue_init(mc_light_queue *queue, mc_light_region *storage, size_t capacity) {
     if (queue == NULL || capacity > MC_LIGHT_QUEUE_LIMIT || (capacity > 0 && storage == NULL)) {
         return false;
     }
@@ -58,8 +55,7 @@ bool mc_light_queue_init(mc_light_queue *queue, mc_light_region *storage, size_t
 }
 
 mc_light_queue_result mc_light_queue_enqueue(mc_light_queue *queue,
-                                             const mc_light_region *requested, bool coalesce)
-{
+                                             const mc_light_region *requested, bool coalesce) {
     if (queue == NULL || requested == NULL || queue->capacity > MC_LIGHT_QUEUE_LIMIT ||
         queue->count > queue->capacity || (queue->capacity > 0 && queue->entries == NULL) ||
         (requested->kind != MC_LIGHT_SKY && requested->kind != MC_LIGHT_BLOCK)) {

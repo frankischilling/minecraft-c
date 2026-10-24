@@ -9,11 +9,15 @@ There is no playable C client or server yet. Shared libraries cover numerical
 and text compatibility, NBT/compression, and terrain-generation components.
 Tests, reference tools and a local resource importer support development.
 The [parity matrix](docs/parity.md) records verified scenarios and outstanding work.
+A [native title screen](docs/client/startup.md) now builds and runs with locally
+imported resources; menus and gameplay remain unfinished.
 
 ## Build
 
 Use a C17 compiler, CMake 3.24+, Ninja, and Python 3.10+. On Windows, run from a
-Visual Studio developer shell. Initial configuration downloads pinned zlib.
+Visual Studio developer shell. Initial configuration downloads pinned zlib,
+SDL3 and libpng. Linux client builds also need the platform development packages
+listed in [build setup](docs/building.md).
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug

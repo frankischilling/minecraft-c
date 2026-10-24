@@ -136,8 +136,12 @@ external and destination links, reparse attributes, size limits, and cleanup aft
 invalid Ogg data. Tests patch the module's known hash only around generated
 fixtures; the production command has no hash-bypass option.
 
-There is no runnable C asset consumer yet. The intended native consumer will use
-the imported directory without a JAR or Java runtime. That behavior remains to be
-implemented and verified, as do rendering, audio, resource reloads, and parity
-against controlled original-runtime observations. These requirements extend
-beyond this local import increment.
+The native [translation consumer](../resources/translation.md) reads the two
+language resources from the imported `jar/` directory without a JAR or Java
+runtime. Both pinned originals supply identical language files, and native
+loading matches their complete 633-property observations on MSVC/GCC/Clang.
+The earlier client-only inventory above remains scoped to archive import.
+The native [achievement-key loader](../statistics/keys.md) consumes the third
+bootstrap resource, `achievement/map.txt`, from that same imported root. Its
+446 entries and 453 lookups match both original JARs on MSVC/GCC/Clang.
+Rendering, audio, resource reloads and complete startup remain unfinished.

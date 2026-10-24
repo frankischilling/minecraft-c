@@ -34,8 +34,7 @@ _Static_assert(MC_CHUNK_HEIGHTMAP_BYTES == 256u, "observed heightmap size");
 _Static_assert(ARRAY_COUNT(chunk_reference_cases) == 5u, "five paired original cases");
 
 /* The decoder expands captured bytes. It contains no height or light rules. */
-static bool decode_buffer(size_t identifier, uint8_t *target, size_t length)
-{
+static bool decode_buffer(size_t identifier, uint8_t *target, size_t length) {
     if (identifier >= ARRAY_COUNT(chunk_reference_buffers)) {
         return false;
     }
@@ -57,8 +56,7 @@ static bool decode_buffer(size_t identifier, uint8_t *target, size_t length)
     return used == length;
 }
 
-static int check_snapshot(const chunk_reference_snapshot *snapshot, size_t table)
-{
+static int check_snapshot(const chunk_reference_snapshot *snapshot, size_t table) {
     CHECK(data.blocks == blocks);
     CHECK(data.blocks_capacity == sizeof(blocks));
     CHECK(data.minimum_height == snapshot->minimum_height);
@@ -77,8 +75,7 @@ static int check_snapshot(const chunk_reference_snapshot *snapshot, size_t table
     return 0;
 }
 
-static int test_reference_case(const chunk_reference_case *fixture)
-{
+static int test_reference_case(const chunk_reference_case *fixture) {
     case_name = fixture->name;
     stage_name = "before";
     CHECK(fixture->opacity < ARRAY_COUNT(chunk_reference_opacity));
@@ -105,8 +102,7 @@ static int test_reference_case(const chunk_reference_case *fixture)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     for (size_t i = 0u; i < ARRAY_COUNT(chunk_reference_cases); ++i) {
         CHECK(test_reference_case(&chunk_reference_cases[i]) == 0);
     }

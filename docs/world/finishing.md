@@ -1,5 +1,9 @@
 # Normal chunk finishing
 
+The [concrete generated Chunk interface](chunk-objects.md) provides the GAME
+constructor and live finalizer. This page describes the separate caller-owned
+numerical contract and its preflight guarantees.
+
 `mc_world` provides normal chunk finishing through
 `mc/world/chunk/finish.h`, cache storage through `mc/world/cache/cache.h`, and
 world height and light admission through `mc/world/lighting/world.h`. These

@@ -73,11 +73,13 @@ baseline requires binary32 float and binary64 double and excludes fast-math.
 This API does not yet cover arbitrary Java floating expression evaluation,
 transcendentals, text encodings, collections, or exception propagation.
 
-The random helpers implement explicit seeding, unbounded/bounded int, long,
-float, and double. Invalid bounds return `false` without consuming state.
-Each instance requires one owner or external synchronization. Gaussian draws,
-byte arrays, boolean draws, default seeding, subclass overrides, and serialized
-Java object state are outside this increment.
+The random helpers implement fresh explicit seeding, initialized-owner
+reseeding, unbounded/bounded int, long, float, double and cached Gaussian draws.
+Invalid bounds return `false` without consuming state. Each instance requires
+one owner or external synchronization. The [Gaussian and strict-math evidence](random-gaussian.md)
+records complete cache semantics and its separate captured-JDK comparison.
+Byte arrays, boolean draws, default seeding, subclass overrides and serialized
+Java object state remain outside the current interface.
 
 The bounded-int rejection must use the sign of the wrapping Java expression.
 The long result must add the signed second half; concatenating two unsigned

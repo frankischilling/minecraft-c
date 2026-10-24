@@ -14,6 +14,8 @@ leaves the full inventory incomplete.
 `033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d`.
 See [binary verification](reference/binaries.md) for provenance, tooling, and
 limits. A symbol on one side does not name the same class on the other side.
+The [Minecraft naming reference](reference/minecraft-names.md) maps current
+object names and semantic Block/Item kinds to those paired aliases.
 
 All method descriptors in the table were checked with JDK 17 `javap -c -s -p`.
 They are navigation anchors: the broader attribution of a subsystem to a class
@@ -33,21 +35,65 @@ comparisons. They do not complete their parent checklists:
 
 | Parent checklist | Implemented boundary | Remaining behavior |
 | --- | --- | --- |
-| Terrain, biomes and population | [Unpublished normal generation](reference/generation.md), including climate, base terrain, surface, caves and finishing | Terrain-feature population bodies, other dimensions and general load-order effects |
-| Chunks and lighting | [Cached heights and finishing](reference/finishing.md); [retained-provider acquisition](reference/cache.md), with successful-load/natural-population [callback evidence](reference/cache-callbacks.md) passing exact-source MSVC/GCC/Clang acceptance; [owned disk decoding](world/storage.md) with separate exact-source MSVC/GCC/Clang acceptance | General tick-driven scheduling, propagation, simulation updates and entity/tile activation; synchronous [save/unload and retirement](world/lifecycle.md) has separate qualification |
+| Terrain, biomes and population | [Unpublished Overworld generation](reference/generation.md), including climate, base terrain, surface, caves and finishing; [fresh seed23 origin and ring population](reference/natural-population.md), including complete retained Chunk and numerical state; ring retains nine normal Chunks, populates four and ends with 6,968 ordered light regions | Other population schedules/seeds, all feature gates and recursive effects, other dimensions and general load-order effects |
+| Chunks and lighting | [Cached heights and finishing](reference/finishing.md); [retained-provider acquisition](reference/cache.md), with successful-load/natural-population [callback evidence](reference/cache-callbacks.md) passing exact-source MSVC/GCC/Clang acceptance; [owned disk decoding](world/storage.md) with separate exact-source MSVC/GCC/Clang acceptance | General tick-driven scheduling, propagation, simulation updates and entity/TileEntity activation; synchronous [save/unload and retirement](world/lifecycle.md) has separate qualification |
 | Saves and recovery | [Raw NBT](reference/nbt.md), [compression](reference/compression.md), [read-only inspection](reference/region.md), newer [metadata](storage/level.md), [region writing](storage/region-writer.md) and [native ownership](world/storage.md) | General tick-driven save scheduling, entity/player and subtype bodies, full running-game restart compatibility and recovery beyond checked host errors |
+
+The narrower [population World queries](world/queries.md) and
+[plant placement/survival predicates](world/plants.md) now have concrete native
+implementations. Their 986 checks cover acquired-Chunk identity, late live
+material/array reads, shared positive-sky state and seven actual plant receiver
+kinds. Separate original World-query observations retain full arrays and
+identity bridges; original/native replay and plant-feature comparisons remain
+unfinished. These boundaries do not complete feature bodies, callback closure
+or population/save acceptance.
 
 The [parity matrix](parity.md) records exact tested sources, narrower statuses
 and evidence limits. Callback replay imports observed effects within the recorded
 cache/world boundary; that replay itself does not implement a disk decoder or
 terrain features. The native storage work has [separate accepted finite copied-world scenarios](reference/storage.md#exact-source-storage-checkpoint); it does not complete gameplay saving.
 
+World startup now has a tested native [millisecond wall-clock backend](reference/wall-clock.md)
+and a separate [WorldInfo owner](reference/world-info.md) with copied scalars,
+shared references and no-list serialization. Native runtime binding and typed
+store serialization/accounting now use that owner. A separate
+[SavedData ID owner](reference/saved-data-ids.md) loads raw Short counters and
+preserves copied UTF-16 keys, wrapping and reached file-failure effects.
+Its native contracts and limited original-derived memory replay pass on all
+three compilers. Actual HashMap disk ordering remains unfinished. The
+[named SavedData manager](world/saved-data.md#named-values-and-mapdata) implements
+side-bound MapData values, retained String keys, ordered aliases and shared
+colors owners. Its [finite comparison](reference/population-named-data.md)
+covers one default value through full saves and a separate manager load.
+Trackers, terrain updates, map packets, other subtypes and source file-failure
+behavior remain unfinished or unqualified. The [native base-World constructor](world/construction.md) now
+retains all 43 fields, ordered Random/clock effects, actual Info bindings,
+WorldProvider/WorldChunkManager owners and a concrete Overworld ChunkProvider. Direct, copied and
+already-loaded normal paths can reach native constructor completion. Fresh
+spawn, full registry/bootstrap/subclass startup, live-player serialization and
+terrain-feature execution remain unfinished. The separate finite
+[Dimension observations](reference/dimension.md) qualify standalone fields,
+light tables and celestial angles; they do not qualify whole-World startup.
+These modules do not complete a startup checklist.
+
+The [World scheduling foundation](world/scheduling.md#world-insertion) adds actual
+scheduled insertion, shared lazy sequence ownership, separate membership/ordered
+effects and immediate tick dispatch. Its 424 native checks pass on all three
+compilers. Separate original observations cover 18 direct calls per side; they
+have no native replay. Scheduled processing, nonempty tick descendants, full
+population and scheduled persistence remain unfinished.
+
+The [World mutation foundation](world/mutations.md) adds concrete block setters,
+incremental height repair and ordered notifications. Its 218 native checks pass
+on all three compilers. Full synchronous handlers and population remain open;
+the selected native corpus does not establish original mutation parity.
+
 The [lifecycle boundary](world/lifecycle.md) implements synchronous saving,
 metadata-first accounting, history-sensitive pending unloads and explicit native
 retirement. Native empty collections and external Boat/Sign callback replay
 remain different domains. Accepted finite qualification and its exact-source evidence
 are recorded in the [lifecycle ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint).
-Entity/tile simulation, general deferred cleanup, terrain-feature bodies,
+Entity/TileEntity simulation, general deferred cleanup, terrain-feature bodies,
 world ticking and gameplay restart/recovery stay open.
 
 ## Subsystem checklist
@@ -68,11 +114,11 @@ world ticking and gameplay restart/recovery stay open.
 | Dimensions and portals | Overworld and Nether generation, light, time/sky, spawn rules, beds, portal construction/placement, travel scale/cooldown and return placement; dedicated-server `allow-nether`; saved dimension selection. Separately resolve the included Sky provider's reachability and required compatibility. | C `xa.a(I)Lxa;`, `xa.b()Lcl;`, `wd.a()V`, `wd.b()Lcl;`, `qn.b(II)Llm;`, `ay.a()V`, `ay.b()Lcl;`; S `net.minecraft.server.MinecraftServer.a(I)Ldp;`. Under research. |
 | Chunks and lighting | Chunk addressing, height limits, generation/load/unload/save queues, dirty state, skylight and block light, opacity/emission, heightmaps, neighbor propagation and updates across chunk boundaries. Test boundaries and serialization separately from appearance. | C `fd.c(II)Llm;`, `fd.a(Leb;IIIIII)V`; `lm` chunk disassembly; S `dp` and `dj` world disassembly. Queue/state ownership and every lighting method need finer mapping. Under research. |
 | Fluids, fire, weather and time | Water/lava levels and scheduling, source creation, mixing, flow vectors; fire ignition/spread/extinguishing; rain/thunder/lightning, snow/ice, sleep/weather reset; time/sky interpolation; interactions with loading, block updates and dimensions. | C `om.a(Lfd;IIILjava/util/Random;)V`, `yq.a(Lfd;IIILjava/util/Random;)V`, `fd.m()V`, `fd.n()V`, `xa.a(JF)F`; `ei.<init>(Lnu;)V`. Under research. |
-| Redstone, pistons and mechanical interactions | Wire connectivity/power propagation, torch behavior, lever/button/plates, repeater delay and locking behavior actually present, powered/detector rails; normal/sticky piston extension/retraction, moving blocks, push limits, dropped blocks and ordering; combine with fluids, containers, fire and chunk edges. Do not assume later quasi-connectivity or locking rules; observe them. | C `sm.a(Lfd;IIIIII)V`, `jq.a(Lfd;IIIII)V`, `jq.h(Lfd;III)V`; registries C `uu.<clinit>()V` and S `na.<clinit>()V` locate torches/repeaters/rails. Under research. |
+| Redstone, pistons and mechanical interactions | Redstone connectivity/power propagation, torch behavior, lever/button/plates, repeater delay and locking behavior actually present, powered/detector rails; normal/sticky piston extension/retraction, moving blocks, push limits, dropped blocks and ordering; combine with fluids, containers, fire and chunk edges. Do not assume later quasi-connectivity or locking rules; observe them. | C `sm.a(Lfd;IIIIII)V`, `jq.a(Lfd;IIIII)V`, `jq.h(Lfd;III)V`; registries C `uu.<clinit>()V` and S `na.<clinit>()V` locate torches/repeaters/rails. Under research. |
 | Entities, spawning and mob behavior | Enumerate registered classes and naturally reachable spawn sets; hostile/passive/water mobs, wolves/taming, despawn, difficulty/light conditions, navigation and attacks; arrows/snowballs, item pickups, paintings, primed TNT/falling blocks, minecarts/boats, riding and entity collisions; serialization and server tracking. Registered Giant/Mob/Monster names do not prove natural spawning. | C `jc.<clinit>()V`, `jc.a(Lnu;Lfd;)Lsn;`, `sn.d(Lnu;)V`, `sn.e(Lnu;)V`, `ls.w_()V`; `cq` spawn class signature inspected. S `ha` packet handling still needs entity-tracker mapping. Under research. |
 | Graphics and resources | Texture/font import, texture packs, animated water/lava/fire/portal/clock/compass assets, chunk/block/entity geometry, particles, sky/clouds/stars/sun/moon, rain/snow, fog, translucent sorting, light/shading, ambient occlusion and graphics options; item/hand/UI drawing. Capture original scenes with controlled settings and justified comparisons. | C `ji.b(Ljava/lang/String;)I`, `ji.a()V`, `n.a(F)V`, `px.a(FJ)V`, `dn` particle class signature; `ht.<clinit>()V` lists exposed settings. Texture or model recognition alone does not verify rendering. Under research. |
 | Audio | Resource discovery/import, effect/music/stream pools, random variants, triggers, music delay, spatial listener, attenuation, pitch/volume, record playback, stopping/cleanup and options. Locate external audio files and record unavailable resources separately. | C `yo.c()V`, `yo.a(Lls;F)V`, `yo.b(Ljava/lang/String;FFFFF)V`, `yo.a(Ljava/lang/String;FFFFF)V`, `yo.a(Ljava/lang/String;FF)V`. Under research; JAR aggregate inventory contains no audio-suffix files. |
-| Saves and recovery | NBT tag types/encoding, gzip and region compression, McRegion addressing, world metadata, block/metadata/light arrays, entities, tile entities, player inventories/dimensions, map/stat data, legacy conversion, locks, rename/delete, unknown fields, truncated/corrupt data and recovery. Test both directions through original-created and rewrite-created copied worlds. | C `as.a(Ljava/io/InputStream;)Lnu;`, `as.a(Lnu;Ljava/io/OutputStream;)V`, `to.a(Llm;Lfd;Lnu;)V`, `to.a(Lfd;Lnu;)Llm;`, `rj.a(Ljava/io/File;II)Lqj;`, `fm.a(Lei;)V`, `hi.a(Ljava/lang/String;Lyb;)Z`; S `mg.a(Lhi;Ldj;Liq;)V`, `hb.a(Ldj;II)Lhi;`. Under research. |
+| Saves and recovery | NBT tag types/encoding, gzip and region compression, McRegion addressing, world metadata, block/metadata/light arrays, entities, TileEntity entities, player inventories/dimensions, map/stat data, legacy conversion, locks, rename/delete, unknown fields, truncated/corrupt data and recovery. Test both directions through original-created and rewrite-created copied worlds. | C `as.a(Ljava/io/InputStream;)Lnu;`, `as.a(Lnu;Ljava/io/OutputStream;)V`, `to.a(Llm;Lfd;Lnu;)V`, `to.a(Lfd;Lnu;)Llm;`, `rj.a(Ljava/io/File;II)Lqj;`, `fm.a(Lei;)V`, `hi.a(Ljava/lang/String;Lyb;)Z`; S `mg.a(Lhi;Ldj;Liq;)V`, `hb.a(Ldj;II)Lhi;`. Under research. |
 | Multiplayer, server operations and shutdown | Packet IDs/field encodings and limits, connection/login/play/disconnect state, packet ordering, keepalive/timeouts, movement validation, chunks/entities/time/weather/inventory synchronization, chat, respawn/dimension travel; server properties, permissions, bans/allowlist, commands, persistence and clean shutdown. Account authentication is the approved exception; other legacy services require a separate decision if unavailable. | C `nb.a(Lmp;)V`, `pf` transport class; S `ee.a(Liv;)V`, `ha.a(Ljz;)V`, `gt.a(Ljava/io/DataInputStream;Z)Lgt;`, `net.minecraft.server.MinecraftServer.c()Z`, `run()V`, `fc.<init>(Lnet/minecraft/server/MinecraftServer;)V`. Under research; all four runtime interoperability combinations remain unverified. |
 
 ## Narrow instruction observations
@@ -84,10 +130,10 @@ specific original features or representations; they do not verify the C rewrite.
 | --- | --- | --- |
 | C `ht.<clinit>()V` | 7, 24, 41, 58, 75, 92, 110, 128, 146, 164, 182, 200, 218 | Loads option keys for music, sound, invert mouse, sensitivity, render distance, bobbing, anaglyph, advanced OpenGL, frame limit, difficulty, graphics, ambient occlusion and GUI scale. Rendering effects and defaults need separate checks. |
 | C `kv.<init>(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V` | 366 | Loads `options.txt`; read/write paths are `a()V`/`b()V`. Persistence behavior still needs fixtures. |
-| C `uu.<clinit>()V`; S `na.<clinit>()V` | 1147, 1262, 1959, 3270, 3309, 3384 | Loads sticky-piston, piston, redstone-wire, repeater and trapdoor registry names on both sides. IDs/metadata and per-block behavior remain to be exhaustively transcribed and tested. |
+| C `uu.<clinit>()V`; S `na.<clinit>()V` | 1147, 1262, 1959, 3270, 3309, 3384 | Loads sticky-piston, piston, redstone, repeater and trapdoor registry names on both sides. IDs/metadata and per-block behavior remain to be exhaustively transcribed and tested. |
 | C `ep.<clinit>()V` | 15 through 398 | Inspected initializer creates 16 achievement definitions, starting with `openInventory` and ending with `flyPig`. This is the observed achievements system; no modern advancement schema is established by this audit. |
 | C `xa.a(I)Lxa;` | 0-12, 13-24, 25-37 | Returns `wd` for -1, `rh` for 0 and `ay` for 1. Sky/provider code is present; ordinary availability is not proven by the factory alone. |
-| C `kd.<clinit>()V` | 277, 300 | Includes Hell and Sky biome names. Other inspected definitions include Rainforest, Swampland, Seasonal Forest, Forest, Savanna, Shrubland, Taiga, Desert, Plains, Ice Desert and Tundra; definition does not prove selection in normal generation. |
+| C `kd.<clinit>()V` | 277, 300 | Includes Hell and Sky biome names. Other inspected definitions include Rainforest, Swampland, Seasonal Forest, Forest, Savanna, Shrubland, Taiga, Desert, Plains, Ice Desert and Tundra; definition does not prove selection in Overworld generation. |
 | C `ei.<init>(Lnu;)V`; `ei.a(Lnu;Lnu;)V` | 96/90, 106/100, 116/110, 126/120 | Reads/writes `rainTime`, `raining`, `thunderTime`, `thundering`. Weather transitions and lightning behavior still need controlled observations. |
 | C `jc.<clinit>()V` | 42, 213, 240 | Registry contains Arrow, Wolf and Minecart names. Other entries were inspected for the entity checklist; spawn reachability is a separate task. |
 | C `as.a(Ljava/io/InputStream;)Lnu;`; `as.a(Lnu;Ljava/io/OutputStream;)V` | 4, 9 in each | Constructs gzip input/output wrappers. Exception/close paths and raw NBT behavior require separate fixtures. |

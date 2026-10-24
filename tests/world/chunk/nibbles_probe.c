@@ -24,8 +24,7 @@ typedef struct observation {
     uint8_t final_getters[MC_CHUNK_BLOCKS];
 } observation;
 
-static bool read_all(const uint8_t *packed, uint8_t *values)
-{
+static bool read_all(const uint8_t *packed, uint8_t *values) {
     size_t cursor = 0;
     for (int32_t x = 0; x < 16; ++x) {
         for (int32_t z = 0; z < 16; ++z) {
@@ -41,8 +40,7 @@ static bool read_all(const uint8_t *packed, uint8_t *values)
     return cursor == MC_CHUNK_BLOCKS;
 }
 
-static bool observe(mc_chunk_data *data, uint8_t *blocks, observation *result)
-{
+static bool observe(mc_chunk_data *data, uint8_t *blocks, observation *result) {
     if (!mc_chunk_data_init(data, blocks, MC_CHUNK_BLOCKS))
         return false;
     uint8_t *packed = data->metadata;
@@ -76,8 +74,7 @@ static bool observe(mc_chunk_data *data, uint8_t *blocks, observation *result)
            data->blocks_capacity == MC_CHUNK_BLOCKS;
 }
 
-static void print_hex(const uint8_t *bytes, size_t count)
-{
+static void print_hex(const uint8_t *bytes, size_t count) {
     static const char digits[] = "0123456789abcdef";
     putchar('"');
     for (size_t i = 0; i < count; ++i) {
@@ -87,8 +84,7 @@ static void print_hex(const uint8_t *bytes, size_t count)
     putchar('"');
 }
 
-static void print_record(const observation *result)
-{
+static void print_record(const observation *result) {
     printf("{\"schema\":1,\"side\":\"c\",\"constructor_cells\":%u,\"packed_length\":%u,"
            "\"fresh_packed\":",
            MC_CHUNK_BLOCKS, MC_CHUNK_NIBBLE_BYTES);
@@ -116,8 +112,7 @@ static void print_record(const observation *result)
            "\"final_getters_readonly\":true}}\n");
 }
 
-int main(void)
-{
+int main(void) {
     _Static_assert(MC_CHUNK_BLOCKS == 32768u && MC_CHUNK_NIBBLE_BYTES == 16384u,
                    "The reference scenario requires the normal original chunk shape.");
     mc_chunk_data *data = malloc(sizeof(*data));

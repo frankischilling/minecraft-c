@@ -23,7 +23,7 @@ Next implementation work covers world-height/cache queries, ordered light
 queues and dirty effects during chunk finishing; propagation remains separate.
 The graphical client, dedicated server and complete rewrite remain unfinished.
 
-Previous integrated implementation: normal caves, integrated at
+Previous integrated implementation: Overworld caves, integrated at
 `49f87ef9c803909ca8d89c8efe67a32da648cca1`. Exact source
 `a507f59d756acf2d035ac7d4ea2da7171f60ad2f` passes all 33 local CTests on native
 MSVC and WSL GCC/Clang without skips. All ten natural cases and 44 protected
@@ -47,7 +47,7 @@ nineteen tests per compiler plus formatting on the exact branch commit and resul
 main. This documentation checkpoint uses
 `docs/math-integration`; inspect the live worktree before resuming.
 
-Previous integrated implementation: normal surface replacement and chunk seeding,
+Previous integrated implementation: Overworld surface replacement and chunk seeding,
 integrated at
 `1394928cebbcbe31700db3d280d0faa071ea6a34`. Exact source
 `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360` passes all 24 local CTests on native
@@ -59,7 +59,7 @@ Its documentation checkpoint is integrated at
 [main CI](https://github.com/frankischilling/minecraft-c/actions/runs/39036383364)
 also passes. Inspect the live worktree before resuming.
 
-Previous integrated implementation: normal-dimension density and base-block interpolation,
+Previous integrated implementation: Overworld density and base-block interpolation,
 integrated at
 `6a98ab37457e9df342d366e9e336805e111b3c0d` on `main`. Exact source
 `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d` passes all 21 local CTests on
@@ -126,10 +126,10 @@ remain incomplete.
 | Perlin and octave noise | Caller-owned seeded Perlin/octave primitives, original bulk behavior, exact both-side numerical comparisons and public regressions |
 | 2D simplex and octave noise | Caller-owned 2D simplex/octave primitives, observed original constants, exact both-side numerical comparisons and public regressions |
 | Climate and biome lookup | Seeded climate blending, float-built biome lookup, bounded retained arrays and exact both-side numerical/state comparisons |
-| Density and base terrain | Allocation-free normal density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures |
-| Surface replacement | Allocation-free normal surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons |
+| Density and base terrain | Allocation-free Overworld density/base terrain, all 82 seeded layers, exact original numerical/state comparisons and complete fixed fixtures |
+| Surface replacement | Allocation-free Overworld surface replacement, explicit chunk/live Random contexts, current materials and exact state/block comparisons |
 | Float lookup and floor | Caller-owned float trig table and exact lookup/floor helpers, full-table original comparisons and public path-alias regressions |
-| Normal cave scheduling and carving | Complete natural and protected original comparisons, explicit Random/state preservation and public full-buffer fixtures |
+| Overworld cave scheduling and carving | Complete natural and protected original comparisons, explicit Random/state preservation and public full-buffer fixtures |
 | Local chunk data and packed access | Caller-owned voxel/nibble arrays, exact height/direct-skylight behavior, complete original comparisons and public full-array fixtures |
 
 All twelve listed increments are integrated and their feature branches removed. M1 is complete.
@@ -260,7 +260,7 @@ documented math prerequisite, with sampled scalar inputs and measured backends.
 
 Previous surface increment:
 
-Normal surface source: `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360`. All three
+Overworld surface source: `f7ac19ebed8a14c499bd233c2dcf3fb0f2502360`. All three
 toolchains pass sixteen public tests, the numerical Java oracle and seven
 original comparisons. All 21 manifests under
 `build-surface-*/reference-*/manifest.json` record this source, pass status and
@@ -286,7 +286,7 @@ with testing off and no Python/Java discovery. See the
 
 Previous density/base increment:
 
-Normal density/base source: `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`. All three toolchains
+Overworld density/base source: `1817417e8891e93ed5dbc205c9d1f6d8e6436a8d`. All three toolchains
 passed fourteen public tests, the numerical Java oracle and six original
 NBT/compression/Perlin/simplex/biome/density comparisons. All eighteen manifests
 under `build-density-*/reference-*/manifest.json` record this source, pass status
@@ -410,8 +410,8 @@ unavailable results. See [testing](testing.md) and the [reference notes](referen
 Read-only region inspection remains a draft implementation;
 its live original comparison is still pending. Preserve raw NBT and compression
 as separate interfaces, use explicit limits and retain unknown application fields.
-Normal density/base terrain, surface replacement and chunk seeding are integrated.
-The float lookup/floor prerequisite and normal cave runtime are integrated.
+Overworld density/base terrain, surface replacement and chunk seeding are integrated.
+The float lookup/floor prerequisite and Overworld cave runtime are integrated.
 [Fresh chunk data, heightmaps and direct skylight](world/chunk.md) are integrated
 for the local array contract. Continue with original world-height/cache queries,
 chunk visibility, ordered light queues and dirty effects. Record genuine setup

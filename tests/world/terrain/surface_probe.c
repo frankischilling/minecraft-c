@@ -14,15 +14,15 @@
 #define PROBE_BLOCK_VALUES 32832u
 
 static char request[260];
-static mc_terrain_normal_state state;
-static mc_terrain_normal_state original_state;
+static mc_terrain_overworld_state state;
+static mc_terrain_overworld_state original_state;
 static mc_java_random constructor_random;
 static mc_java_random live_random;
 static mc_biome_memory memory;
 static mc_biome_manager manager;
 static mc_biome_buffer biomes;
 static double scratch[3][PROBE_SCRATCH_VALUES];
-static mc_terrain_normal_surface_workspace surface;
+static mc_terrain_overworld_surface_workspace surface;
 static mc_terrain_surface_material materials[256];
 static double density[425];
 static double density_volumes[3][425];
@@ -43,16 +43,14 @@ static int32_t noise_x;
 static int32_t noise_z;
 static int64_t chunk_seed;
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out)
-{
+static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int64_t *out) {
     const char *digits = *text == '-' || *text == '+' ? text + 1 : text;
     if (*digits == '\0')
         return 0;
@@ -69,16 +67,14 @@ static int parse_signed(const char *text, int64_t minimum, int64_t maximum, int6
     return 1;
 }
 
-static void addresses(uintptr_t result[4])
-{
+static void addresses(uintptr_t result[4]) {
     result[0] = (uintptr_t)surface.sand.data;
     result[1] = (uintptr_t)surface.gravel.data;
     result[2] = (uintptr_t)surface.thickness.data;
     result[3] = (uintptr_t)blocks;
 }
 
-static void print_values(const double *values, size_t length)
-{
+static void print_values(const double *values, size_t length) {
     putchar('[');
     for (size_t i = 0; i < length; ++i) {
         if (i != 0)
@@ -88,8 +84,7 @@ static void print_values(const double *values, size_t length)
     putchar(']');
 }
 
-static void print_continuation(mc_java_random random)
-{
+static void print_continuation(mc_java_random random) {
     putchar('[');
     for (size_t i = 0; i < 4; ++i) {
         if (i != 0)
@@ -99,15 +94,13 @@ static void print_continuation(mc_java_random random)
     putchar(']');
 }
 
-static void print_span(mc_terrain_double_span span)
-{
+static void print_span(mc_terrain_double_span span) {
     printf("{\"length\":%zu,\"values\":", span.length);
     print_values(span.data, span.length);
     putchar('}');
 }
 
-static void print_state(void)
-{
+static void print_state(void) {
     static const char names[] = "klmnoabc";
     static const size_t counts[] = {16, 16, 8, 4, 4, 10, 16, 8};
     const mc_noise_perlin *channels[] = {state.low_layers,
@@ -143,8 +136,7 @@ static void print_state(void)
     putchar('}');
 }
 
-static void print_response(int full_state, int fixture, const uintptr_t before[4])
-{
+static void print_response(int full_state, int fixture, const uintptr_t before[4]) {
     fputs("OK\t{\"state\":", stdout);
     if (full_state)
         print_state();
@@ -211,8 +203,7 @@ static void print_response(int full_state, int fixture, const uintptr_t before[4
     puts("\"}");
 }
 
-static int generate_base(int32_t x, int32_t z)
-{
+static int generate_base(int32_t x, int32_t z) {
     if (mc_biome_sample_square(&manager, mc_java_i32_mul(x, 16), mc_java_i32_mul(z, 16), 16,
                                &biomes) != MC_BIOME_OK)
         return 0;
@@ -226,15 +217,16 @@ static int generate_base(int32_t x, int32_t z)
                            ? (mc_terrain_surface_material){12, 12}
                            : (mc_terrain_surface_material){2, 3};
     }
-    mc_terrain_normal_workspace work = {{density_volumes[0], 425},
-                                        {density_volumes[1], 425},
-                                        {density_volumes[2], 425},
-                                        {density_columns[0], 25},
-                                        {density_columns[1], 25}};
-    mc_terrain_normal_climate climate = {manager.a.data, manager.a.length, manager.b.data,
-                                         manager.b.length};
-    if (!mc_terrain_normal_generate(&state, &work, x, z, &climate,
-                                    (mc_terrain_double_span){density, 425}, blocks, blocks_length))
+    mc_terrain_overworld_workspace work = {{density_volumes[0], 425},
+                                           {density_volumes[1], 425},
+                                           {density_volumes[2], 425},
+                                           {density_columns[0], 25},
+                                           {density_columns[1], 25}};
+    mc_terrain_overworld_climate climate = {manager.a.data, manager.a.length, manager.b.data,
+                                            manager.b.length};
+    if (!mc_terrain_overworld_generate(&state, &work, x, z, &climate,
+                                       (mc_terrain_double_span){density, 425}, blocks,
+                                       blocks_length))
         return 0;
     base_x = x;
     base_z = z;
@@ -245,8 +237,7 @@ static int generate_base(int32_t x, int32_t z)
     return 1;
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *fields[5];
     size_t count = 1;
     fields[0] = line;
@@ -269,14 +260,14 @@ static int handle_request(char *line)
             return 0;
         mc_biome_buffer_free(&biomes);
         mc_biome_manager_free(&manager);
-        if (!mc_terrain_normal_init(&state, seed) ||
+        if (!mc_terrain_overworld_init(&state, seed) ||
             mc_biome_manager_init(&manager, seed, &memory) != MC_BIOME_OK)
             return 0;
         memcpy(&original_state, &state, sizeof(state));
         constructor_random = state.random_after_init;
         live_random = constructor_random;
         memset(scratch, 0, sizeof(scratch));
-        surface = (mc_terrain_normal_surface_workspace){
+        surface = (mc_terrain_overworld_surface_workspace){
             {scratch[0], 256}, {scratch[1], 256}, {scratch[2], 256}};
         blocks = NULL;
         blocks_length = 0;
@@ -329,8 +320,8 @@ static int handle_request(char *line)
             !parse_signed(fields[2], INT32_MIN, INT32_MAX, &z))
             return 0;
         if (seed) {
-            chunk_seed = mc_terrain_normal_chunk_seed((int32_t)x, (int32_t)z);
-            mc_java_random_seed(&live_random, chunk_seed);
+            chunk_seed = mc_terrain_overworld_chunk_seed((int32_t)x, (int32_t)z);
+            mc_java_random_reseed(&live_random, chunk_seed);
             seed_observed = 1;
         } else if (base) {
             if (blocks == NULL || !generate_base((int32_t)x, (int32_t)z))
@@ -340,11 +331,11 @@ static int handle_request(char *line)
                 (apply && (!noise_valid || noise_x != x || noise_z != z)))
                 return 0;
             int success =
-                composed
-                    ? mc_terrain_normal_surface(&state, &surface, (int32_t)x, (int32_t)z, materials,
-                                                256, &live_random, blocks, blocks_length)
-                    : mc_terrain_normal_surface_apply(&surface, materials, 256, &live_random,
-                                                      blocks, blocks_length);
+                composed ? mc_terrain_overworld_surface(&state, &surface, (int32_t)x, (int32_t)z,
+                                                        materials, 256, &live_random, blocks,
+                                                        blocks_length)
+                         : mc_terrain_overworld_surface_apply(&surface, materials, 256,
+                                                              &live_random, blocks, blocks_length);
             if (!success)
                 return 0;
             noise_valid = 1;
@@ -358,8 +349,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     if (mc_biome_memory_init(&memory, MC_BIOME_DEFAULT_ALLOCATION_BYTES) != MC_BIOME_OK)
         return 2;
     size_t requests = 0;
