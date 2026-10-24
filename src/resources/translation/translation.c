@@ -253,13 +253,14 @@ mc_registry_status mc_registry_translation_active_use(mc_registry_classes *class
     return status;
 }
 
-mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classes *classes,
-                                                              mc_registry_error *error) {
+static mc_registry_status initialize_translation(mc_registry_classes *classes, bool wrapper,
+                                                 mc_registry_error *error) {
     if (classes == NULL)
         return diagnostic(error, MC_REGISTRY_INVALID_ARGUMENT, "Translation registry owner");
     if (classes->entered != 0)
         return diagnostic(error, MC_REGISTRY_BUSY, "registry initialization entered");
-    const mc_registry_class_state *state = &classes->translation_wrapper_state;
+    const mc_registry_class_state *state =
+        wrapper ? &classes->translation_wrapper_state : &classes->translation_state;
     if (state->phase == MC_REGISTRY_READY)
         return diagnostic(error, MC_REGISTRY_OK, NULL);
     if (state->phase == MC_REGISTRY_INITIALIZING)
@@ -272,13 +273,25 @@ mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classe
         return MC_REGISTRY_FAILED_INITIALIZATION;
     }
     ++classes->entered;
-    mc_registry_status status = mc_registry_translation_active_use(classes);
+    mc_registry_status status =
+        wrapper ? mc_registry_translation_active_use(classes) : singleton_active_use(classes);
     --classes->entered;
     if (status == MC_REGISTRY_OK)
         return diagnostic(error, MC_REGISTRY_OK, NULL);
     if (error != NULL)
         *error = classes->last_error;
     return status;
+}
+
+mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classes *classes,
+                                                              mc_registry_error *error) {
+    return initialize_translation(classes, true, error);
+}
+
+mc_registry_status
+mc_registry_classes_initialize_translation_singleton(mc_registry_classes *classes,
+                                                     mc_registry_error *error) {
+    return initialize_translation(classes, false, error);
 }
 
 mc_registry_status mc_registry_classes_inspect_translation(const mc_registry_classes *classes,

@@ -55,3 +55,6 @@ The client's options, including graphics, sound, controls and the last server ad
 
 **KeyBinding**:
 A named client action and its assigned key code.
+
+**GameOption**:
+A client option such as music volume, render distance or view bobbing.

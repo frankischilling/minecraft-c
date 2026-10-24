@@ -41,13 +41,19 @@ typedef struct mc_registry_translation_view {
  * Caught-I/O stack-trace output remains an unfinished dependency. */
 mc_registry_status mc_registry_classes_initialize_translation(mc_registry_classes *classes,
                                                               mc_registry_error *error);
+/* Admit only nh/ii active use, retaining the same entry/BUSY/FAILED rules.
+ * This leaves the separately reached do/ch wrapper cold. Resource ownership,
+ * publication order and the unfinished caught-I/O diagnostic are unchanged. */
+mc_registry_status
+mc_registry_classes_initialize_translation_singleton(mc_registry_classes *classes,
+                                                     mc_registry_error *error);
 mc_registry_status mc_registry_classes_inspect_translation(const mc_registry_classes *classes,
                                                            mc_registry_translation_view *out,
                                                            mc_registry_error *error);
 
 /* Read an actual loaded String property without class initialization. Absence
  * succeeds with NULL; the source game's getProperty(key,key) fallback belongs
- * to its wrapper call. Returned String identities remain live through later
+ * to the reached lookup caller. Returned String identities remain live through later
  * operations until the common class owner is freed. No lookup allocation or
  * map iteration order is observable through this interface. */
 mc_registry_status mc_translation_property(const mc_translation *translation, const uint16_t *key,

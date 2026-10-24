@@ -27,7 +27,8 @@ typedef enum mc_client_assets_status {
     MC_CLIENT_ASSETS_UNSUPPORTED_IMAGE_FORMAT,
     MC_CLIENT_ASSETS_TRANSLATION_FAILED,
     MC_CLIENT_ASSETS_READER_FAILED,
-    MC_CLIENT_ASSETS_RANDOM_FAILED
+    MC_CLIENT_ASSETS_RANDOM_FAILED,
+    MC_CLIENT_ASSETS_NULL_REFERENCE
 } mc_client_assets_status;
 
 typedef struct mc_client_assets_error {
@@ -69,13 +70,37 @@ void mc_client_assets_free(mc_client_assets *assets); /* NULL is harmless. */
 mc_client_assets_status mc_client_assets_image(mc_client_assets *assets, const char *name,
                                                const mc_image **out, mc_client_assets_error *error);
 
-/* First use initializes/inspects the actual shared Translation, queries the
+/* Reach the actual nh/ii singleton before a caller's subsequent source
+ * null/index operation. This does not initialize the do/ch wrapper. Native
+ * argument errors remain distinct from reached class initialization failures. */
+mc_client_assets_status mc_client_assets_initialize_translation(mc_client_assets *assets,
+                                                                mc_client_assets_error *error);
+
+/* First use initializes only the actual shared nh/ii singleton, queries the
  * UTF-16 property and borrows its real String view. Absent keys get an owned
  * copied key fallback. No alternate language loader. Keys are ASCII C strings,
  * including an empty key, bounded to MAX_NAME_BYTES. Cached views live until
  * assets free while the borrowed Registry remains live. */
 mc_client_assets_status mc_client_assets_label(mc_client_assets *assets, const char *key,
                                                mc_font_text *out, mc_client_assets_error *error);
+
+/* Counted nullable UTF-16 keys retain every unit, including NUL and unpaired
+ * surrogates. is_null requires {NULL,0}; the same view with is_null=false is
+ * a nonnull empty key. A null source key fails NULL_REFERENCE after reached
+ * initialization and leaves out unchanged. Invalid native view shapes fail
+ * INVALID_ARGUMENT. Nonnull keys are bounded to MAX_TEXT_UNITS; no conversion,
+ * case fold or normalization occurs. Cache keys and missing-key fallbacks are
+ * owned copies, so temporary caller buffers need not survive the call.
+ * Successful values remain borrowed from the live Registry or Assets cache.
+ * Direct lookup admits only nh/ii. Wrapper lookup first admits do/ch and uses
+ * its actual retained receiver, even when a direct lookup cached this key. */
+mc_client_assets_status mc_client_assets_label_text(mc_client_assets *assets, mc_font_text key,
+                                                    bool is_null, mc_font_text *out,
+                                                    mc_client_assets_error *error);
+mc_client_assets_status mc_client_assets_label_text_wrapper(mc_client_assets *assets,
+                                                            mc_font_text key, bool is_null,
+                                                            mc_font_text *out,
+                                                            mc_client_assets_error *error);
 
 /* Lazy UTF-8 CoreReader load of /font.txt. Retain complete decoded lines with
  * LF separators and comments intact; FontRenderer performs its one fp parse.

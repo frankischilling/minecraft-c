@@ -17,6 +17,10 @@ Current runtime navigation:
   owns retained options, KeyBindings and binding arrays and uses the shared
   Reader/Writer for real-file persistence. The application has not yet adopted
   it or the effectful option setters.
+  [GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
+  keep metadata and value queries headless while client label composition uses
+  the real shared Translation and Assets owners. Direct singleton admission
+  remains separate from wrapper initialization.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

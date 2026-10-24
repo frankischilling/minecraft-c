@@ -29,6 +29,7 @@ English aliases for the same original class.
 | Carried Block | `carried_block` role | The selected `uu` / `na` Block | The Block type moved by a piston, distinct from the `ut` / `mz` MovingPistonBlock receiver |
 | GameSettings | `mc_game_settings` | `kv` / client only | Client options, KeyBinding references and the options File; persistence is separate from effectful setters |
 | KeyBinding | `mc_key_binding` | `qb` / client only | A named client action and its assigned key code |
+| GameOption | `mc_game_option` | `ht` / client only | One of the thirteen client options, with its ordinal, title key and float/boolean flags |
 
 The numerical `mc_biome_manager` remains a climate algorithm/storage helper.
 Noise-backed versus fixed WorldChunkManager methods are not Overworld versus

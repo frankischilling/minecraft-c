@@ -32,7 +32,8 @@ typedef struct image_entry {
 
 typedef struct label_entry {
     struct label_entry *next;
-    const char *key;
+    const uint16_t *key;
+    size_t key_length;
     mc_font_text text;
 } label_entry;
 
@@ -315,6 +316,8 @@ const char *mc_client_assets_status_string(mc_client_assets_status status) {
             return "client text reader failed";
         case MC_CLIENT_ASSETS_RANDOM_FAILED:
             return "client splash Random failed";
+        case MC_CLIENT_ASSETS_NULL_REFERENCE:
+            return "null client translation reference";
     }
     return "unknown client asset status";
 }
@@ -449,45 +452,81 @@ mc_client_assets_status mc_client_assets_image(mc_client_assets *assets, const c
     return finish(status, &detail, error);
 }
 
-mc_client_assets_status mc_client_assets_label(mc_client_assets *assets, const char *key,
-                                               mc_font_text *out, mc_client_assets_error *error) {
+static mc_client_assets_status translation_failure(mc_registry_status status,
+                                                   mc_client_assets_error *detail) {
+    return fail(detail,
+                status == MC_REGISTRY_LIMIT               ? MC_CLIENT_ASSETS_LIMIT
+                : status == MC_REGISTRY_ALLOCATION_FAILED ? MC_CLIENT_ASSETS_ALLOCATION_FAILED
+                                                          : MC_CLIENT_ASSETS_TRANSLATION_FAILED,
+                "translation property");
+}
+
+mc_client_assets_status mc_client_assets_initialize_translation(mc_client_assets *assets,
+                                                                mc_client_assets_error *error) {
     mc_client_assets_error detail = {0};
-    size_t length = 0;
-    if (assets == NULL || out == NULL)
+    if (assets == NULL)
+        return finish(fail(&detail, MC_CLIENT_ASSETS_INVALID_ARGUMENT, "translation arguments"),
+                      &detail, error);
+    const mc_registry_status registry = mc_registry_classes_initialize_translation_singleton(
+        assets->classes, &detail.registry_error);
+    const mc_client_assets_status status =
+        registry == MC_REGISTRY_OK ? MC_CLIENT_ASSETS_OK : translation_failure(registry, &detail);
+    return finish(status, &detail, error);
+}
+
+static mc_client_assets_status label_text(mc_client_assets *assets, mc_font_text key, bool is_null,
+                                          bool wrapper, mc_font_text *out,
+                                          mc_client_assets_error *error) {
+    mc_client_assets_error detail = {0};
+    if (assets == NULL || out == NULL || (key.units == NULL && key.length != 0) ||
+        (is_null && (key.units != NULL || key.length != 0)))
         return finish(fail(&detail, MC_CLIENT_ASSETS_INVALID_ARGUMENT, "label arguments"), &detail,
                       error);
-    const mc_client_assets_status key_status = ascii_name(key, &length);
-    if (key_status != MC_CLIENT_ASSETS_OK)
-        return finish(fail(&detail, key_status, "label key"), &detail, error);
+    mc_registry_status registry =
+        wrapper
+            ? mc_registry_classes_initialize_translation(assets->classes, &detail.registry_error)
+            : mc_registry_classes_initialize_translation_singleton(assets->classes,
+                                                                   &detail.registry_error);
+    mc_registry_translation_view translation = {0};
+    if (registry == MC_REGISTRY_OK)
+        registry = mc_registry_classes_inspect_translation(assets->classes, &translation,
+                                                           &detail.registry_error);
+    if (registry != MC_REGISTRY_OK)
+        return finish(translation_failure(registry, &detail), &detail, error);
+    const mc_translation *receiver = wrapper ? translation.wrapper_a : translation.singleton_a;
+    if (receiver == NULL || is_null) {
+        detail.registry_error =
+            (mc_registry_error){.status = MC_REGISTRY_NULL_REFERENCE,
+                                .message = receiver == NULL ? "Translation lookup receiver is null"
+                                                            : "Translation property key is null",
+                                .initializer_pc = -1,
+                                .block_id = -1,
+                                .constructor_pc = -1,
+                                .profile_status = MC_JAVA_RANDOM_PROFILE_OK,
+                                .active_initializer_pc = -1,
+                                .item_argument = -1};
+        return finish(fail(&detail, MC_CLIENT_ASSETS_NULL_REFERENCE,
+                           receiver == NULL ? "translation receiver" : "translation null key"),
+                      &detail, error);
+    }
+    if (key.length > MC_CLIENT_ASSETS_MAX_TEXT_UNITS ||
+        key.length > (SIZE_MAX - sizeof(label_entry)) / sizeof(uint16_t))
+        return finish(fail(&detail, MC_CLIENT_ASSETS_LIMIT, "label key units"), &detail, error);
     for (label_entry *entry = assets->labels; entry != NULL; entry = entry->next) {
-        if (strcmp(entry->key, key) == 0) {
+        if (entry->key_length == key.length &&
+            (key.length == 0 ||
+             memcmp(entry->key, key.units, key.length * sizeof(*key.units)) == 0)) {
             *out = entry->text;
             return finish(MC_CLIENT_ASSETS_OK, &detail, error);
         }
     }
     if (assets->label_count == MC_CLIENT_ASSETS_MAX_LABELS)
         return finish(fail(&detail, MC_CLIENT_ASSETS_LIMIT, "label cache entries"), &detail, error);
-    mc_registry_status registry =
-        mc_registry_classes_initialize_translation(assets->classes, &detail.registry_error);
-    mc_registry_translation_view translation = {0};
-    if (registry == MC_REGISTRY_OK)
-        registry = mc_registry_classes_inspect_translation(assets->classes, &translation,
-                                                           &detail.registry_error);
-    uint16_t units[MC_CLIENT_ASSETS_MAX_NAME_BYTES];
-    for (size_t i = 0; i < length; ++i)
-        units[i] = (unsigned char)key[i];
     const mc_registry_string *string = NULL;
-    if (registry == MC_REGISTRY_OK)
-        registry = mc_translation_property(translation.singleton_a, units, length, &string,
-                                           &detail.registry_error);
+    registry =
+        mc_translation_property(receiver, key.units, key.length, &string, &detail.registry_error);
     if (registry != MC_REGISTRY_OK)
-        return finish(fail(&detail,
-                           registry == MC_REGISTRY_LIMIT ? MC_CLIENT_ASSETS_LIMIT
-                           : registry == MC_REGISTRY_ALLOCATION_FAILED
-                               ? MC_CLIENT_ASSETS_ALLOCATION_FAILED
-                               : MC_CLIENT_ASSETS_TRANSLATION_FAILED,
-                           "translation property"),
-                      &detail, error);
+        return finish(translation_failure(registry, &detail), &detail, error);
     mc_font_text text = {0};
     if (string != NULL) {
         mc_registry_string_view view;
@@ -497,24 +536,51 @@ mc_client_assets_status mc_client_assets_label(mc_client_assets *assets, const c
                 &detail, error);
         text = (mc_font_text){.units = view.units, .length = view.length};
     }
-    const size_t fallback = string == NULL ? length * sizeof(uint16_t) : 0u;
-    label_entry *entry = arena_allocate(&assets->arena, sizeof(*entry) + fallback + length + 1u);
+    const size_t key_bytes = key.length * sizeof(uint16_t);
+    label_entry *entry = arena_allocate(&assets->arena, sizeof(*entry) + key_bytes);
     if (entry == NULL)
         return finish(fail(&detail, assets->arena.failure, "label cache allocation"), &detail,
                       error);
-    if (string == NULL) {
-        uint16_t *copy = (uint16_t *)(entry + 1);
-        if (length != 0)
-            memcpy(copy, units, fallback);
-        text = (mc_font_text){.units = length == 0 ? NULL : copy, .length = length};
-    }
-    char *copy = (char *)(entry + 1) + fallback;
-    memcpy(copy, key, length + 1u);
-    *entry = (label_entry){.next = assets->labels, .key = copy, .text = text};
+    uint16_t *copy = (uint16_t *)(entry + 1);
+    if (key.length != 0)
+        memcpy(copy, key.units, key_bytes);
+    if (string == NULL)
+        text = (mc_font_text){.units = key.length == 0 ? NULL : copy, .length = key.length};
+    *entry =
+        (label_entry){.next = assets->labels, .key = copy, .key_length = key.length, .text = text};
     assets->labels = entry;
     ++assets->label_count;
     *out = text;
     return finish(MC_CLIENT_ASSETS_OK, &detail, error);
+}
+
+mc_client_assets_status mc_client_assets_label_text(mc_client_assets *assets, mc_font_text key,
+                                                    bool is_null, mc_font_text *out,
+                                                    mc_client_assets_error *error) {
+    return label_text(assets, key, is_null, false, out, error);
+}
+
+mc_client_assets_status mc_client_assets_label_text_wrapper(mc_client_assets *assets,
+                                                            mc_font_text key, bool is_null,
+                                                            mc_font_text *out,
+                                                            mc_client_assets_error *error) {
+    return label_text(assets, key, is_null, true, out, error);
+}
+
+mc_client_assets_status mc_client_assets_label(mc_client_assets *assets, const char *key,
+                                               mc_font_text *out, mc_client_assets_error *error) {
+    mc_client_assets_error detail = {0};
+    size_t length = 0;
+    if (assets == NULL || out == NULL)
+        return finish(fail(&detail, MC_CLIENT_ASSETS_INVALID_ARGUMENT, "label arguments"), &detail,
+                      error);
+    const mc_client_assets_status status = ascii_name(key, &length);
+    if (status != MC_CLIENT_ASSETS_OK)
+        return finish(fail(&detail, status, "label key"), &detail, error);
+    uint16_t units[MC_CLIENT_ASSETS_MAX_NAME_BYTES];
+    for (size_t i = 0; i < length; ++i)
+        units[i] = (unsigned char)key[i];
+    return mc_client_assets_label_text(assets, (mc_font_text){units, length}, false, out, error);
 }
 
 mc_client_assets_status mc_client_assets_font_txt(mc_client_assets *assets, mc_font_text *out,

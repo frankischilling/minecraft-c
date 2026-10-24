@@ -2,7 +2,7 @@
 
 Minecraft Beta 1.7.3 stores client options in GameSettings (`kv`) and individual key bindings in `qb`. The verified class has 40 declared fields: 36 instance fields and four static label arrays. Constructor defaults, file parsing and saving are separate operations from the effectful option setters.
 
-The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. It does not qualify native persistence, effectful setters or the complete client.
+The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Effectful setters and the complete client remain unfinished.
 
 ## Fields and defaults
 
@@ -117,6 +117,66 @@ All 16 processes in each profile exited naturally with status 0, were reaped and
 
 The three retained report SHA-256 values are `14f3b45720baa0d5021e83423ab4005e14d054bd6ae9d5a54544393c59c34c9e`, `5bf06e082ac44961e5714f2ffbcb13f90166fed7b282c5302606606dadf909e5` and `24e6bfd73194905604cf66ee211e71be90af562cb37aa8627da3fbbfcca19794`, in table order. These observations used the unchanged original archive and one helper-only application class directory; no fake game classes, effectful setter calls, input system or rendering body ran.
 
+## Finite native comparisons
+
+These captures use the persistence owner and probe from code checkpoint
+`adb573dbc6998dcd5fabf72f81e2342e0feb147c`. The later
+[GameOption and label implementation](../client/game-options.md) has separate
+validation and is outside their projection.
+
+Two Windows comparisons pair the retained original profiles with the public
+MSVC GameSettings probe. One uses default windows-1252 and the other explicit
+UTF-8; both retain CRLF and measured Temurin 17.0.17+10 behavior. A separate
+GCC Linux comparison uses the actual Ubuntu 17.0.20.1+1-1-24.04-Ubuntu
+UTF-8/LF profile. Clang Linux comparison remains pending. No profile stands in
+for another runtime, JDK update or default charset.
+
+Each completed comparison covers all 16 authored cases and 64 paired stages:
+construction, reload, save and fresh construction. All 11,389 projected fields
+match, including 2,304 instance-role pairs and 2,877 logical reference joins.
+The projection includes complete saved bytes and file kinds, binary32 bits,
+counted UTF16 units, current-array KeyBinding order and typed alias relations
+across stages. Source identities map to the interface's native owner/storage
+roles; arbitrary Java String allocation/interning and general File
+normalization remain outside that mapping.
+
+| Profile and native compiler | Matched fields | Comparison report SHA-256 |
+| --- | ---: | --- |
+| Windows default windows-1252 / CRLF, MSVC | 11,389 | `8450eb37949a989e69edaec1d7290e82eb4ae4eb9be8b3479c6e4b211a78decc` |
+| Windows explicit UTF-8 / CRLF, MSVC | 11,389 | `92729fc6290aaddae2a9b9953933f12788a5bda2b0942f34c30d3015a75526b0` |
+| Linux default UTF-8 / LF, GCC | 11,389 | `4cd2e26c7c629d851646a2530c1c77e10929d815831af2a95f85ba1a4098cd04` |
+
+Every input plan is independently reconstructed from the authored catalog.
+Its exact bytes are joined to the original `input_control` records before any
+native target starts. The target receives only the plan and fresh scratch/output
+paths. Default-text inputs pass through the real native Writer; their actual
+bytes must match the declared stimulus before GameSettings is called. No
+expected settings state, saved output or alias graph is installed. All 16
+native processes per completed profile exit naturally with status 0 and empty
+owned process trees; consumed source and product pins remain unchanged.
+
+A separate file-only control run uses the Windows-1252 baseline. Eight controls
+change captured float bits, UTF16 units, binding codes/aliases/order or saved
+bytes. Four more corrupt native File spelling, the line profile, source-terminal
+order or frozen producer provenance. These twelve repeat the full comparison;
+two separately labeled admission checks add an empty preparation directory or
+alter a non-Markdown source pin. All fourteen reject the intended change.
+Every full evaluation passes its consumed-file after-check; every guard case
+has exactly its one intended error. Copies retain historical owner records and
+explicit derived lineage, and no control starts a target or JVM. The complete
+control report SHA-256 is
+`abdb8f4f35f5b7936b8e9228838b2f71ea4a9eab62ff5914f485cbd2783a6448`.
+
+Independent file audits rehash both Windows captures and their complete
+preparation/source trees. The explicit-UTF8 audit also reconstructs all 2,877
+reference joins from the raw stage records, preserving 641 typed identity
+pairs. Each comparison retains 80 unmatched evidence entries. The four static
+label arrays, original console/Throwable graphs and Java Thread behavior have
+no native equality claim. Native diagnostics and stream-close reports are not
+substituted for unobserved source internals. Late-write or mid-read failures,
+effectful setters, options screens and application integration remain
+unfinished. These finite results establish no whole-client equivalence.
+
 ## Setters and unfinished effects
 
 Load/save never read the stored Minecraft owner and do not call option setters. They can be measured with null `x` without claiming the following effects are implemented:
@@ -134,4 +194,4 @@ Load/save never read the stored Minecraft owner and do not call option setters. 
 
 There is no rollback or catch around those setter callbacks. An absent receiver or real callback failure can leave the preceding mutation while preventing the later save. A null/nonfloat option is ignored by the float setter; the discrete setter still saves for nonmatching options. The original label paths use translation tables, direct array indexing, Java float-to-int conversions and LWJGL key-name lookup. Invalid loaded indices can fail during labeling even though load accepted them.
 
-Real audio setup, renderer/texture rebuilds, platform key translation and physical key-name lookup remain unfinished dependencies of the client settings path. No-op effect receivers would not implement those bodies. The finite original persistence results above do not establish native persistence, menu setter behavior or whole-client correspondence.
+Real audio setup, renderer/texture rebuilds, platform key translation and physical key-name lookup remain unfinished dependencies of the client settings path. No-op effect receivers would not implement those bodies. The finite persistence comparisons above do not establish menu setter behavior or whole-client correspondence.

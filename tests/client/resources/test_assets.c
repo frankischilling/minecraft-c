@@ -131,6 +131,8 @@ struct memory_source {
     source_event events[SOURCE_EVENTS];
     size_t entry_count, stream_count, event_count, opens, closes, retired_streams;
     bool invalid, retired;
+    mc_registry_classes *busy_probe;
+    mc_registry_status busy_singleton, busy_wrapper;
 };
 
 static void event(memory_source *source, char kind, size_t stream, const char *name, size_t offset,
@@ -185,6 +187,15 @@ static mc_registry_status memory_open(void *context, const char *name,
     if (name == NULL || out == NULL || source->retired) {
         source->invalid = true;
         return MC_REGISTRY_INVALID_ARGUMENT;
+    }
+    if (source->busy_probe != NULL) {
+        /* An adversarial public reentry request must fail before admitting
+         * another initializer or recursively opening resources. */
+        mc_registry_classes *classes = source->busy_probe;
+        source->busy_probe = NULL;
+        source->busy_singleton =
+            mc_registry_classes_initialize_translation_singleton(classes, NULL);
+        source->busy_wrapper = mc_registry_classes_initialize_translation(classes, NULL);
     }
     ++source->opens;
     event(source, 'O', source->stream_count, name, 0, 0);
@@ -346,8 +357,8 @@ static int test_labels(void) {
     REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
             MC_REGISTRY_OK);
     REQUIRE(translation.singleton_phase == MC_REGISTRY_READY &&
-            translation.wrapper_phase == MC_REGISTRY_READY && translation.singleton_a != NULL &&
-            translation.singleton_a == translation.wrapper_a);
+            translation.wrapper_phase == MC_REGISTRY_COLD && translation.singleton_a != NULL &&
+            translation.wrapper_a == NULL);
     REQUIRE(mc_client_assets_label(f.assets, "shared", &label, NULL) == MC_CLIENT_ASSETS_OK &&
             ascii_is(label, "second"));
     const uint16_t key[] = {'s', 'h', 'a', 'r', 'e', 'd'};
@@ -395,6 +406,222 @@ static int test_labels(void) {
     REQUIRE(mc_client_assets_create(&source.api, f.classes, &f.assets) == MC_CLIENT_ASSETS_OK);
     REQUIRE(mc_client_assets_label(f.assets, "unicode", &label, NULL) == MC_CLIENT_ASSETS_OK &&
             label.units == retained.units && source.event_count == events);
+    result = 0;
+cleanup:
+    if (!fixture_free(&f))
+        return 1;
+    source_retire(&source);
+    if (source.invalid || (result == 0 && source.retired_streams != 2))
+        result = 1;
+    return result;
+}
+
+static int test_translation_routes(void) {
+    int result = 1;
+    fixture f = {0};
+    memory_source source;
+    source_init(&source);
+    REQUIRE(add(&source, "/lang/en_US.lang", english, sizeof(english) - 1u) != NULL);
+    REQUIRE(add(&source, "/lang/stats_US.lang", statistics, sizeof(statistics) - 1u) != NULL);
+    REQUIRE(fixture_create(&f, &source.api));
+    mc_registry_error registry_error;
+    REQUIRE(mc_registry_classes_initialize_translation_singleton(NULL, &registry_error) ==
+                MC_REGISTRY_INVALID_ARGUMENT &&
+            registry_error.status == MC_REGISTRY_INVALID_ARGUMENT);
+    mc_client_assets_error error;
+    REQUIRE(mc_client_assets_initialize_translation(NULL, &error) ==
+            MC_CLIENT_ASSETS_INVALID_ARGUMENT);
+    REQUIRE(source.opens == 0);
+    source.busy_probe = f.classes;
+    REQUIRE(mc_client_assets_initialize_translation(f.assets, &error) == MC_CLIENT_ASSETS_OK &&
+            error_clear(&error));
+    REQUIRE(source.busy_singleton == MC_REGISTRY_BUSY && source.busy_wrapper == MC_REGISTRY_BUSY);
+    mc_registry_translation_view translation;
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.singleton_phase == MC_REGISTRY_READY &&
+            translation.singleton_initializer_pc == 10 &&
+            translation.wrapper_phase == MC_REGISTRY_COLD && translation.wrapper_a == NULL);
+    const size_t events = source.event_count;
+    REQUIRE(mc_registry_classes_initialize_translation_singleton(f.classes, NULL) ==
+                MC_REGISTRY_OK &&
+            mc_client_assets_initialize_translation(f.assets, NULL) == MC_CLIENT_ASSETS_OK &&
+            source.event_count == events);
+    const uint16_t key[] = {'s', 'h', 'a', 'r', 'e', 'd'};
+    mc_font_text direct = {0}, wrapper = {0};
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){key, COUNT(key)}, false, &direct,
+                                        &error) == MC_CLIENT_ASSETS_OK &&
+            ascii_is(direct, "second") && error_clear(&error));
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.wrapper_phase == MC_REGISTRY_COLD);
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){key, COUNT(key)}, false,
+                                                &wrapper, &error) == MC_CLIENT_ASSETS_OK &&
+            wrapper.units == direct.units && wrapper.length == direct.length &&
+            error_clear(&error));
+    REQUIRE(
+        mc_registry_classes_inspect_translation(f.classes, &translation, NULL) == MC_REGISTRY_OK &&
+        translation.singleton_phase == MC_REGISTRY_READY &&
+        translation.wrapper_phase == MC_REGISTRY_READY && translation.wrapper_initializer_pc == 6 &&
+        translation.wrapper_a == translation.singleton_a && source.event_count == events);
+    REQUIRE(mc_client_assets_label(f.assets, "shared", &wrapper, NULL) == MC_CLIENT_ASSETS_OK &&
+            wrapper.units == direct.units && source.event_count == events);
+    result = 0;
+cleanup:
+    if (!fixture_free(&f))
+        return 1;
+    source_retire(&source);
+    if (source.invalid || (result == 0 && source.retired_streams != 2))
+        result = 1;
+    return result;
+}
+
+static int test_counted_labels(void) {
+    int result = 1;
+    fixture f = {0};
+    memory_source source;
+    uint16_t *large = NULL;
+    source_init(&source);
+    static const char counted[] = "a\\u0000b=nul-value\n\\ud800=high-surrogate\n=empty-key\n";
+    REQUIRE(add(&source, "/lang/en_US.lang", counted, sizeof(counted) - 1u) != NULL);
+    REQUIRE(add(&source, "/lang/stats_US.lang", "", 0) != NULL);
+    REQUIRE(fixture_create(&f, &source.api));
+    const uint16_t canary[] = {'s', 'a', 'f', 'e'};
+    mc_font_text text = {canary, COUNT(canary)};
+    mc_client_assets_error error;
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){NULL, 1}, false, &text, &error) ==
+                MC_CLIENT_ASSETS_INVALID_ARGUMENT &&
+            text.units == canary && source.opens == 0);
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){canary, 0}, true, &text, &error) ==
+                MC_CLIENT_ASSETS_INVALID_ARGUMENT &&
+            text.units == canary && source.opens == 0);
+    const uint16_t nul_key[] = {'a', 0, 'b'};
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){nul_key, COUNT(nul_key)}, false,
+                                        &text, &error) == MC_CLIENT_ASSETS_OK &&
+            ascii_is(text, "nul-value") && error_clear(&error));
+    const uint16_t high_key[] = {0xd800};
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){high_key, 1}, false, &text,
+                                        NULL) == MC_CLIENT_ASSETS_OK &&
+            ascii_is(text, "high-surrogate"));
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){NULL, 0}, false, &text, NULL) ==
+                MC_CLIENT_ASSETS_OK &&
+            ascii_is(text, "empty-key"));
+    uint16_t missing[] = {'x', 0, 0xd800, 0xdc00, 0xdfff};
+    const uint16_t expected[] = {'x', 0, 0xd800, 0xdc00, 0xdfff};
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){missing, COUNT(missing)}, false,
+                                        &text, NULL) == MC_CLIENT_ASSETS_OK &&
+            text_is(text, expected, COUNT(expected)) && text.units != missing);
+    const mc_font_text fallback = text;
+    memset(missing, 0, sizeof(missing));
+    REQUIRE(text_is(fallback, expected, COUNT(expected)));
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){expected, COUNT(expected)},
+                                                false, &text, NULL) == MC_CLIENT_ASSETS_OK &&
+            text.units == fallback.units && text_is(text, expected, COUNT(expected)));
+    large = malloc((MC_CLIENT_ASSETS_MAX_TEXT_UNITS + 1u) * sizeof(*large));
+    REQUIRE(large != NULL);
+    for (size_t i = 0; i <= MC_CLIENT_ASSETS_MAX_TEXT_UNITS; ++i)
+        large[i] = 0xd800;
+    REQUIRE(mc_client_assets_label_text(f.assets,
+                                        (mc_font_text){large, MC_CLIENT_ASSETS_MAX_TEXT_UNITS},
+                                        false, &text, NULL) == MC_CLIENT_ASSETS_OK &&
+            text_is(text, large, MC_CLIENT_ASSETS_MAX_TEXT_UNITS) && text.units != large);
+    const mc_font_text maximal = text;
+    large[0] = 'z';
+    REQUIRE(maximal.units[0] == 0xd800);
+    REQUIRE(mc_client_assets_label_text_wrapper(
+                f.assets, (mc_font_text){large, MC_CLIENT_ASSETS_MAX_TEXT_UNITS + 1u}, false, &text,
+                &error) == MC_CLIENT_ASSETS_LIMIT &&
+            text.units == maximal.units && text.length == maximal.length);
+    REQUIRE(source.opens == 2 && source.closes == 0);
+    result = 0;
+cleanup:
+    free(large);
+    if (!fixture_free(&f))
+        return 1;
+    source_retire(&source);
+    if (source.invalid || (result == 0 && source.retired_streams != 2))
+        result = 1;
+    return result;
+}
+
+static int test_null_labels(void) {
+    int result = 1;
+    fixture f = {0};
+    memory_source source;
+    source_init(&source);
+    REQUIRE(add(&source, "/lang/en_US.lang", english, sizeof(english) - 1u) != NULL);
+    REQUIRE(add(&source, "/lang/stats_US.lang", statistics, sizeof(statistics) - 1u) != NULL);
+    REQUIRE(fixture_create(&f, &source.api));
+    const uint16_t canary[] = {'s', 'a', 'f', 'e'};
+    mc_font_text text = {canary, COUNT(canary)};
+    mc_client_assets_error error;
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){NULL, 0}, true, &text, &error) ==
+                MC_CLIENT_ASSETS_NULL_REFERENCE &&
+            text.units == canary && text.length == COUNT(canary) &&
+            error.registry_error.status == MC_REGISTRY_NULL_REFERENCE);
+    mc_registry_translation_view translation;
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.singleton_phase == MC_REGISTRY_READY &&
+            translation.wrapper_phase == MC_REGISTRY_COLD && source.opens == 2);
+    const size_t events = source.event_count;
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){NULL, 0}, true, &text,
+                                                &error) == MC_CLIENT_ASSETS_NULL_REFERENCE &&
+            text.units == canary && error.registry_error.status == MC_REGISTRY_NULL_REFERENCE);
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.singleton_phase == MC_REGISTRY_READY &&
+            translation.wrapper_phase == MC_REGISTRY_READY && source.event_count == events);
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){NULL, 0}, false, &text, NULL) ==
+                MC_CLIENT_ASSETS_OK &&
+            text.length == 0);
+    REQUIRE(strcmp(mc_client_assets_status_string(MC_CLIENT_ASSETS_NULL_REFERENCE),
+                   "null client translation reference") == 0);
+    result = 0;
+cleanup:
+    if (!fixture_free(&f))
+        return 1;
+    source_retire(&source);
+    if (source.invalid || (result == 0 && source.retired_streams != 2))
+        result = 1;
+    return result;
+}
+
+static int test_label_cache_bound(void) {
+    int result = 1;
+    fixture f = {0};
+    memory_source source;
+    source_init(&source);
+    REQUIRE(add(&source, "/lang/en_US.lang", english, sizeof(english) - 1u) != NULL);
+    REQUIRE(add(&source, "/lang/stats_US.lang", statistics, sizeof(statistics) - 1u) != NULL);
+    REQUIRE(fixture_create(&f, &source.api));
+    mc_font_text text = {0};
+    for (size_t i = 0; i < MC_CLIENT_ASSETS_MAX_LABELS; ++i) {
+        const uint16_t key[] = {0x0800, (uint16_t)i};
+        REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){key, COUNT(key)}, false, &text,
+                                            NULL) == MC_CLIENT_ASSETS_OK &&
+                text_is(text, key, COUNT(key)));
+    }
+    mc_registry_translation_view translation;
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.wrapper_phase == MC_REGISTRY_COLD);
+    const uint16_t first[] = {0x0800, 0};
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){first, COUNT(first)},
+                                                false, &text, NULL) == MC_CLIENT_ASSETS_OK &&
+            text_is(text, first, COUNT(first)));
+    const mc_font_text cached = text;
+    const uint16_t other[] = {0x0800, MC_CLIENT_ASSETS_MAX_LABELS};
+    mc_client_assets_error error;
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){other, COUNT(other)},
+                                                false, &text, &error) == MC_CLIENT_ASSETS_LIMIT &&
+            text.units == cached.units && text.length == cached.length);
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){NULL, 0}, true, &text,
+                                                &error) == MC_CLIENT_ASSETS_NULL_REFERENCE &&
+            text.units == cached.units);
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.wrapper_phase == MC_REGISTRY_READY && source.opens == 2);
     result = 0;
 cleanup:
     if (!fixture_free(&f))
@@ -631,13 +858,25 @@ static int test_failed_translation(void) {
     REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
                 MC_REGISTRY_OK &&
             translation.singleton_phase == MC_REGISTRY_FAILED &&
-            translation.wrapper_phase == MC_REGISTRY_FAILED);
+            translation.wrapper_phase == MC_REGISTRY_COLD);
     const size_t events = source.event_count;
     REQUIRE(mc_client_assets_label(f.assets, "menu.native", &text, &error) ==
                 MC_CLIENT_ASSETS_TRANSLATION_FAILED &&
             text.units == canary &&
             error.registry_error.status == MC_REGISTRY_FAILED_INITIALIZATION &&
             source.event_count == events);
+    REQUIRE(mc_client_assets_label_text(f.assets, (mc_font_text){NULL, 0}, true, &text, &error) ==
+                MC_CLIENT_ASSETS_TRANSLATION_FAILED &&
+            text.units == canary &&
+            error.registry_error.status == MC_REGISTRY_FAILED_INITIALIZATION);
+    REQUIRE(mc_client_assets_label_text_wrapper(f.assets, (mc_font_text){NULL, 0}, true, &text,
+                                                &error) == MC_CLIENT_ASSETS_TRANSLATION_FAILED &&
+            text.units == canary &&
+            error.registry_error.status == MC_REGISTRY_FAILED_INITIALIZATION);
+    REQUIRE(mc_registry_classes_inspect_translation(f.classes, &translation, NULL) ==
+                MC_REGISTRY_OK &&
+            translation.singleton_phase == MC_REGISTRY_FAILED &&
+            translation.wrapper_phase == MC_REGISTRY_FAILED && source.event_count == events);
     result = 0;
 cleanup:
     if (!fixture_free(&f))
@@ -1010,7 +1249,8 @@ cleanup:
 }
 
 int main(void) {
-    if (test_labels() || test_images() || test_font() || test_splashes() ||
+    if (test_labels() || test_translation_routes() || test_counted_labels() || test_null_labels() ||
+        test_label_cache_bound() || test_images() || test_font() || test_splashes() ||
         test_failed_translation() || test_arguments_and_callbacks() || test_app_file_source())
         return 1;
     mc_client_assets_free(NULL);

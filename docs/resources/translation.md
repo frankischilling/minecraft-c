@@ -6,6 +6,12 @@ same native class owner as Block and Item. The wrapper and singleton have
 separate COLD, INITIALIZING, READY and FAILED states, initializer positions and
 retained first failures. READY here describes these translation classes only.
 
+Public singleton admission initializes only `nh`/`ii`; wrapper admission reaches
+`do`/`ch` separately. Both use the same entry, busy and cached-failure checks.
+The [client label paths](../client/game-options.md) use the direct singleton
+for ordinary lookups and the wrapper only when the original caller reaches it.
+Wrapper admission still occurs when a direct lookup has cached the same key.
+
 The singleton constructor publishes its Properties field at PC12, opens
 `/lang/en_US.lang` at PC23 and loads it at PC26, then opens
 `/lang/stats_US.lang` at PC37 and loads it at PC40. It publishes the singleton

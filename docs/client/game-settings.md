@@ -2,7 +2,8 @@
 
 The native GameSettings module implements constructor defaults, owned settings
 state and `options.txt` load/save. Its native contracts pass on MSVC, GCC and
-Clang. Comparison with the retained original observations remains pending.
+Clang. Separate Windows-1252 and explicit Windows UTF-8 comparisons each
+match all 11,389 projected persistence fields across 16 original/native cases.
 The client application does not yet use this module for its options menus or
 startup settings.
 
@@ -17,8 +18,9 @@ and both test executables' direct imports exclude graphics libraries.
 
 The owner exposes all 36 instance roles: 23 scalar/String fields, ten named
 KeyBinding references, the current binding array, a borrowed Minecraft receiver
-and an owned options File role. The four static label arrays are outside this
-interface. They are not replaced with invented native label state.
+and an owned options File role. The four static label-key tables live in the
+separate [GameOption module](game-options.md). The persistence observer does
+not emit them.
 
 Defaults include music/sound volume 1, sensitivity 0.5, distance/GUI scale 0,
 performance mode 1, difficulty 2, view bobbing/fancy graphics/ambient occlusion
@@ -182,8 +184,8 @@ Windows configure and build use recorded cleanup of the pinned compiler
 helper; those two process trees are qualified rather than natural. The test
 tree and six other Windows tool stages close naturally. Linux records normal
 kernel exits, final direct reaps, empty owned children and closed PIDFDs.
-These checks establish the declared native contracts, not original persistence
-or whole-client equality.
+These checks establish the declared native contracts. The separate original
+comparisons below qualify only their stated persistence projection.
 
 Build and run the two settings tests without a display, original archives or
 Java:
@@ -194,9 +196,34 @@ cmake --build build --config Debug --target mc_test_game_settings mc_game_settin
 ctest --test-dir build -C Debug --output-on-failure -R '^(client[.]game_settings|tools[.]client_game_settings_probe)$'
 ```
 
+## Finite original comparisons
+
+Two Windows profiles use the same 16 authored cases and MSVC probe: default
+windows-1252 and explicit UTF-8, both with CRLF output. Each comparison matches
+11,389 fields across 64 paired stages, including 2,304 instance-role pairs and
+2,877 logical reference joins. Complete file bytes, float bits, UTF16 units,
+binding-array order and repeated aliases are compared. No expected settings
+state or saved file enters the native producer.
+
+Fourteen file-only controls on the Windows-1252 baseline reject their intended
+changes. Twelve repeat the full comparison on copied records; two exercise
+explicit preparation-inventory and source-manifest admission checks. All full
+evaluations pass their consumed-file after-checks. The controls start no target
+or JVM, and the original evidence remains unchanged.
+
+The separate GCC Linux UTF-8/LF comparison also matches all 11,389 fields in
+the 16-case profile. Clang Linux comparison remains pending. The
+[reference record](../reference/game-settings.md#finite-native-comparisons)
+defines each profile and its exclusions. The four static label arrays,
+source Thread/Throwable behavior, late-write and mid-read failures, effectful
+setters and application integration remain outside these finite results.
+
+The separate [query and label module](game-options.md) uses the real current
+binding array and Translation owner. Its native Windows contracts pass; original
+label correspondence and Linux validation remain pending.
 Direct field-assignment functions do not implement the effectful GameSettings
 option setters. SoundManager changes, RenderEngine texture refresh,
-RenderGlobal rebuild, translation/labels and physical key-name lookup remain
-unfinished. Applying values to the real client and implementing the options
-menus require those bodies and their source order; persistence alone does not
-qualify complete settings or client behavior.
+RenderGlobal rebuild and physical input mapping remain unfinished. Applying
+values to the real client and implementing the options menus require those
+bodies and their source order; persistence alone does not qualify complete
+settings or client behavior.

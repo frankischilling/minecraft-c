@@ -2,6 +2,20 @@
 
 ## Native client frontend
 
+Code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
+221 MSVC, 224 GCC and 224 Clang tests. All 669 cases have complete Start/Passed
+records, with zero failures, skips or missing runs. Formatting covers all 635
+C/header files; controller mirrors and lifecycle interval checks pass. The
+actual synthetic checkout has the same complete tree as that head, and all
+1,199 literal source bodies match the published snapshot. The separate
+original/native persistence comparisons below retain their own finite scope.
+
+The actual checkout
+`e6f5a84b8c322fdea4b7842f0da814f71091e3c1` has complete tree
+`5250b9b78d8b76f6c1c11b56fb073122ef3814c0`, equal to the head tree. These hosted
+tests do not run the supplied-original settings comparison.
+
 Code checkpoint `389b57361d9454b447c0f956cc39c5a1d32245b3` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40117293002):
 218 MSVC, 221 GCC and 221 Clang tests, with 660 actual Passed records and no
@@ -92,9 +106,42 @@ native interface checks, six independent file checks and 26 observer transport
 controls per compiler. All 635 C/header files pass clang-format 18. The
 1,199-file tested cohort contains 1,024 non-Markdown files. A later independent
 file audit rehashes 1,706 artifacts, including all retained output trees and
-the actual products. This native result is separate from the earlier 660-case
-hosted checkpoint. Native/original settings comparison, options screens and
-application integration remain unfinished.
+the actual products. These focused native results and the later 669-case
+hosted checkpoint retain their separate source and execution records.
+
+The two Windows original/native comparisons each cover 16 cases and 64 paired
+stages: 2,304 instance-role pairs, 11,389 matching fields and 2,877 logical
+reference joins. Windows-1252/CRLF and explicit UTF-8/CRLF remain distinct
+profiles. The separate GCC Linux UTF-8/LF comparison matches the same declared
+projection; Clang Linux comparison remains pending. Exact plans are joined to
+actual original input controls before a native target runs; no expected state
+or saved output enters the producer. Independent Windows file audits verify
+complete output trees, raw records, aliases and unchanged inputs.
+
+Fourteen file-only controls on the Windows-1252 baseline reject the intended
+changes: twelve full comparisons and two explicitly labeled admission-helper
+checks. Full evaluations pass their consumed-file after-checks; an unrelated
+pin error cannot count as an intended rejection. They run no native or JVM
+target. The [reference record](reference/game-settings.md#finite-native-comparisons)
+defines the finite projection. Static labels, Thread and stream-internal
+correspondence, options screens and application integration remain unfinished.
+
+## GameOption queries and labels
+
+The [GameOption and label increment](client/game-options.md) passes six actual
+Windows MSVC x64 Debug CTest cases in separate headless/client builds:
+883 metadata/query checks, 1,241 label checks, 463 Assets checks, 4,404
+Translation checks, 481 persistence checks plus six independent file checks,
+and 26 probe controls. No test failed or skipped. The headless validation
+controller stopped after the tests because its broad failure-word search
+matched `0 tests failed`; its failed report is retained. An independent file-only
+audit checks the actual raw/JUnit records, complete output trees, file bytes,
+all controls, source/tool/SDK inputs and products. It does not repeat a test or
+invent the unrun after-test inventory. The corrected client controller completes
+all seven stages. Compile trees retain the declared qualified helper cleanup;
+all test trees close naturally. Formatting passes for all 641 C/header files
+with version 18.1.3. Linux execution and original-label comparison remain
+pending for this increment.
 
 ## Canonical Minecraft names
 

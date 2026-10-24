@@ -1,5 +1,14 @@
 # Development status
 
+Code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
+221 MSVC, 224 GCC and 224 Clang tests. All 669 cases have complete Start/Passed
+records, with zero failures, skips or missing runs. Formatting covers all 635
+C/header files; controller mirrors and lifecycle interval checks pass. The
+actual synthetic checkout has the same complete tree as that head, and all
+1,199 literal source bodies match the published snapshot. The separate
+original/native persistence comparisons below retain their own finite scope.
+
 At code checkpoint `389b57361d9454b447c0f956cc39c5a1d32245b3`,
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40117293002)
 pass: 218 MSVC, 221 GCC and 221 Clang tests, with no missing cases or skips.
@@ -73,8 +82,22 @@ retained KeyBindings, options loading and ordered saving through real files.
 All six new CTest cases pass across MSVC and sanitized GCC/Clang. Each compiler
 passes 481 native checks, six independent file checks and 26 observer controls;
 all 635 C/header files pass formatting. Independent file audits retain the
-complete tested outputs and product bytes. Native/original settings comparison,
-application integration and effectful menu setters remain unfinished.
+complete tested outputs and product bytes. Separate Windows-1252 and explicit
+Windows UTF-8 comparisons each match all 11,389 projected persistence fields in
+16 cases, including full file bytes and 2,877 logical reference joins. All 14
+file-only controls on the Windows-1252 baseline reject their intended changes.
+The separate GCC Linux UTF-8/LF comparison also matches that finite projection;
+Clang Linux comparison remains pending. Static-label correspondence, application
+integration and effectful menu setters remain unfinished.
+
+The [GameOption and label module](client/game-options.md) now implements option
+metadata, value queries, counted UTF-16 labels and the retained legacy key-name
+table. Direct Translation initialization is separate from wrapper use. Native
+Windows builds pass 883 GameOption, 1,241 label and 463 Assets checks, with
+persistence and Translation regressions. A file-only audit qualifies the
+headless tests after their controller's summary-parser failure; its failed
+report remains unchanged. Linux validation, original label correspondence,
+options screens and application adoption remain separate.
 
 The [WorldAccess interface](world/world-access.md) now dispatches typed
 cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its

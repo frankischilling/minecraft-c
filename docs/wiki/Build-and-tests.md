@@ -1,5 +1,21 @@
 # Build and tests
 
+[GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
+pass six actual Windows MSVC cases: 883 metadata/query, 1,241 label, 463 Assets,
+4,404 Translation and 481 persistence checks, plus six file checks and 26 probe
+controls. All 641 C/header files pass clang-format 18.1.3. A separate file audit
+qualifies the completed headless tests after their controller's summary-parser
+failure; the failed report and missing after-test inventory remain explicit.
+The corrected client profile closes all seven stages. Linux validation and
+original-label comparison remain pending.
+
+The [GameSettings checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174)
+`adb573d` passes all four hosted jobs: 221 MSVC, 224 GCC and 224 Clang tests,
+or 669 complete Start/Passed pairs, with zero failures, skips or missing runs.
+All 635 C/header files pass formatting; mirrors and lifecycle interval checks
+pass. The actual synthetic checkout has the same complete tree as the head,
+and all 1,199 literal source bodies match the published snapshot.
+
 The [writer code checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40117293002)
 `389b573` passes all four hosted jobs: 218 MSVC, 221 GCC and 221 Clang tests.
 All 660 cases passed without skips, alongside 630-file formatting, controller
@@ -22,8 +38,14 @@ adds real-file load/save without graphics dependencies. Both new CTests pass
 on MSVC and sanitized GCC/Clang: 481 native checks, six independent file checks
 and 26 observer controls per compiler. Formatting passes for all 635 C/header
 files. A separate file audit rehashes 1,706 retained artifacts and actual
-products. Native/original settings comparison, application integration,
-options screens and effectful setters remain unfinished.
+products. Separate Windows-1252/CRLF and explicit UTF-8/CRLF comparisons each
+match all 11,389 persistence fields in 16 cases, including 64 paired stages
+and 2,877 typed reference joins. The separate GCC Linux UTF-8/LF comparison
+also matches; Clang Linux comparison remains pending. All 14 file-only controls
+on the Windows-1252 baseline reject their intended changes. The
+[reference record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/game-settings.md#finite-native-comparisons)
+retains the finite scope. Static labels, application integration, options
+screens and effectful setters remain unfinished.
 
 The [native frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 passes eight focused tests on MSVC and sanitized GCC/Clang, including actual OpenGL
