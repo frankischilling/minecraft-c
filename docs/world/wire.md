@@ -60,9 +60,9 @@ complete tree as that commit. Earlier failed development attempts retain their
 own records. The existing-World observations below retain separate development
 attribution and incomplete qualification.
 
-These are native contracts. Original executed World-level wire equality,
-intermediate notification traces, wider persistence and failure schedules remain
-required. The collection's default identity-source boundary also remains open.
+These are native contracts. Full original World-state qualification and wider
+notification, persistence and failure schedules remain required. The
+collection's default identity-source boundary also remains open.
 Client display particles and other redstone Blocks retain their own unfinished
 behavior.
 
@@ -114,10 +114,11 @@ table. List, backing-array and key aliases remain stable through nested drains.
 The debugger makes no target method calls, field writes, class redefinitions or
 collection pins. Target and observer exit naturally under bounded ownership.
 
-A separate Linux Debug GDB capture matches all 2,087 ordered engine calls per
-side, including nesting, typed arguments, semantic returns, source flags and raw
-Set structure across 4,204 paired states. Global correspondence retains 76 node
-and 76 key identities and two table allocation epochs per side. Native addresses
+A separate Linux Debug GDB capture matches all 2,087 ordered engine calls and
+605 local snapshot observations per side. Nesting, typed arguments, semantic
+returns, source flags and raw Set structure match across 4,809 paired states.
+Global correspondence retains 76 node and 76 key identities and two table
+allocation epochs per side. Native addresses
 can be reused after retirement; actual node/key serials distinguish those
 lifetimes. Plain native nodes have an auxiliary backward bucket link absent
 from JDK plain nodes. That native invariant is checked against bucket order and
@@ -125,14 +126,48 @@ then excluded from cross-runtime fields; tree backward links remain exact.
 Native Boolean/status returns are checked separately from source Boolean,
 integer or void results.
 
+Each side compares 151 actual copies: 143 empty and eight nonempty. Ordered key
+identities and coordinates, per-drain List/snapshot owners and backing storage
+remain stable through nested callbacks. The 152 current-position observations
+compare the original key reference with the native by-value position's real key
+serial and coordinates. This does not claim a native stack-address alias.
+
+The storage comparison uses explicit adaptations. An empty Java List retains a
+nonnull shared Object array; an empty native snapshot has a null final array.
+Nonempty backing lengths and ordered contents match. The original and native
+in-scope iteration counters match. At the final cut, the C loop index is out of
+scope. The original actual counter compares to native snapshot size, successful
+completion and observed finished iterations. No native final counter is read or
+fabricated. Storage identities are retained per drain; there is no global
+Java-array-ID/native-address correspondence.
+
+Twelve file-only Windows controls reject altered local flags, retained owners,
+empty/nonempty backing representations, fabricated final counters, wrong loop
+indices, reordered keys and missing/reordered phases. Corrupted trace copies and
+repinned receipt copies are labeled as derived fixtures. Each comparator exits
+1 at the intended comparison or invariant check, with closed ownership and no
+cleanup intervention. The original observations remain unchanged.
+
+An earlier control attempt retains its failed ownership receipt. The revised
+runner gives actual owned helpers a bounded passive exit interval after a
+nonzero direct exit. Four process regressions pass: natural descendant exit,
+grace expiry, a controlled query error and actual stream overflow. Forced or
+faulted cleanup remains disqualifying for comparison controls; an expected
+exit 1 keeps its failed, non-natural classification.
+
 The GDB capture uses a separate nonsanitized Debug build; earlier GCC/Clang
-sanitizer validation remains separate. Kernel PIDFD exit observations and child
-adoption account for both debugger and inferior, with no intervention on the
-successful captures. Earlier attempts failed in debugger function-address
-conversion and retain failed receipts. Native snapshot correspondence, complete
-owner adaptation, constructor-clock pairing, default identity generation and
-wider persistence/failure profiles remain open. These observations retain
-development-source attribution and incomplete qualification status.
+sanitizer validation remains separate. A startup-only syscall trace records
+GDB's actual `iconv -l` helper and its exit/wait. The owner validates that trace,
+then sends a planned `SIGKILL` only to the startup tracer before any inferior
+starts. GDB must remain live, with every task detached, before release. Separate
+kernel PIDFD statuses establish the planned tracer termination and the adopted debugger's
+normal zero exit; the native exit event and cleanup terminal also report zero.
+Successful captures need no failure-cleanup intervention. Earlier attempts failed
+on function-address conversion, an unidentified startup child or SIGINT
+forwarding, and retain failed receipts. Complete correspondence of World owners,
+constructor-clock pairing, default identity generation and wider persistence/
+failure profiles remain open. These observations retain development-source
+attribution and incomplete qualification status.
 
 Build and invoke the native producer with a fresh output file:
 

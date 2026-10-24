@@ -10,8 +10,11 @@ sanitized GCC/Clang. Code checkpoint `2150299` passes all 613 hosted public/JDK
 tests. A bounded existing-World probe matches 600 complete arrays per
 compiler against original observations while retaining absolute World/cave
 Random differences. Linux Debug traces match 2,087 ordered engine calls per side,
-including arguments, returns, flags and Set structure. Full World-level and
-native snapshot qualification, callback-driven cross-World
+including arguments, returns, flags and Set structure. Local snapshot comparison
+now includes 605 observations of 151 retained copies per side, with explicit
+storage and final-counter adaptations. Twelve file-only Windows controls reject
+the intended corruptions. Full World-level
+qualification, callback-driven cross-World
 reentry, wider persistence/failure schedules and default identity generation
 remain required.
 
@@ -22,7 +25,7 @@ MSVC/GCC/Clang comparisons match sixteen original collection histories under
 measured identity inputs. The reference record retains development-source and
 test limits. The committed collection checkpoint separately passes 607 hosted
 public/JDK tests and predates lifecycle integration. Default identity generation
-and original World notification-order acceptance remain unfinished.
+and broader original World notification-order acceptance remain unfinished.
 
 [Dedicated construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md)
 now has actual Server and World owners, separate subclass fields and a

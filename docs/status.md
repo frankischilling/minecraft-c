@@ -11,8 +11,10 @@ public/JDK tests and 583-file formatting. A bounded existing-World probe
 matches 600 complete arrays per compiler against original observations while
 retaining absolute World/cave Random differences. Linux Debug traces also match
 2,087 ordered engine calls per side, including arguments, returns, flags and
-Set structure. Full World-level wire and native snapshot qualification,
-callback-driven cross-World reentry, wider persistence/failure
+Set structure, plus 605 local observations of 151 retained snapshots. The
+comparison declares its storage and final-counter adaptations; twelve file-only
+Windows corruption controls reject the intended errors. Full World-level
+wire qualification, callback-driven cross-World reentry, wider persistence/failure
 schedules and the default identity source remain required.
 
 The [wire position Set](reference/wire-position-set.md) has reclaimable

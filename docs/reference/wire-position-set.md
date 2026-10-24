@@ -74,6 +74,36 @@ Native object serials describe correspondence and never choose ordering.
 Measured inputs establish conditional collection behavior; the default JVM
 identity generator and its surrounding call history remain unimplemented.
 
+## Installed identity-source research
+
+Static research binds part of that dependency to the selected Windows x64
+Temurin `17.0.17+10` installation. Its `jvm.dll` has SHA-256
+`5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce`.
+The official [debug archive](https://github.com/adoptium/temurin17-binaries/releases/tag/jdk-17.0.17%2B10)
+matches its published SHA-256
+`5b28781b15da6c5821bb36ac998452f1617c56408dc5198c404b8f8566a4bf4b`.
+Its selected `jvm.pdb` matches the installed DLL's CodeView GUID
+`4122B868-D49F-1967-841D-94A6BA98A7A6`, age 1. Matching symbols bind the inspected
+`JVM_IHashCode` call path through `ObjectSynchronizer::FastHashCode` to
+`get_next_hash`. This was file inspection; no JVM was launched for this research.
+
+The installed generator corroborates the
+[selected source](https://github.com/adoptium/jdk17u/blob/3ae1373f8abb8add664985ab772915e681f56ea0/src/hotspot/share/runtime/synchronizer.cpp#L851-L927):
+selector 5 uses four thread-local 32-bit words, unsigned xor/shift arithmetic,
+a 31-bit result mask and `0xBAD` for zero. The installed thread constructor
+corroborates X from `os::random()`, Y=842502087, Z=`0x8767` and W=273326509.
+File data contains selector 5 and shared RNG seed 1234567. These initial file
+values do not establish any application's effective flag or live state.
+
+This narrows the remaining implementation work without supplying a default
+identity source. Thread construction, shared RNG consumers, prior identity
+requests, cached object hashes and candidate installation can affect later tie
+decisions. Intrinsic/interpreter entry paths and the complete relevant startup
+and concurrency history still need qualification. The current no-drop wire
+line has no required equal-full-hash identity ties. Its passing comparisons do
+not exercise this dependency. Captured per-key hashes or RNG state would remain
+conditional replay inputs.
+
 ## Development validation
 
 The dirty development source based on `6ddfa8e` passes 199 Windows MSVC CTests.
