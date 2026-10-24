@@ -497,7 +497,7 @@ public final class OverworldGenerationController {
                 byte[] encoded = (json(unavailable) + "\n").getBytes(StandardCharsets.UTF_8);
                 require(encoded.length <= MAX_BYTES, "unavailable report output bound");
                 Files.write(unavailablePath, encoded, StandardOpenOption.CREATE_NEW);
-                System.err.println("UNAVAILABLE: genuine normal generation setup before measurement"); status = 77;
+                System.err.println("UNAVAILABLE: genuine Overworld generation setup before measurement"); status = 77;
             } else {
                 require(process.exitValue() == 0, "original debuggee exit " + process.exitValue() + ":\n" + new String(err, StandardCharsets.UTF_8));
                 require(session.calls.size() == CALLS && session.active == -1 && session.pending == null && !session.finishing,
@@ -518,7 +518,7 @@ public final class OverworldGenerationController {
                 System.out.println(args[1] + " seed=" + args[2] + " calls=9 height_queries=9216 stages=153"); status = 0;
             }
         } catch (Throwable failure) {
-            System.err.println("FAILURE: normal generation controller"); failure.printStackTrace(System.err);
+            System.err.println("FAILURE: Overworld generation controller"); failure.printStackTrace(System.err);
         } finally {
             if (vm != null) try { vm.dispose(); } catch (RuntimeException ignored) { }
             if (process != null && process.isAlive()) {

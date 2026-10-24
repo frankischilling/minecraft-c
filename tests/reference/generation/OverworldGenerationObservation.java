@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-/** Observes sequential full normal generation without replacing original game state. */
+/** Observes sequential full Overworld generation without replacing original game state. */
 public final class OverworldGenerationObservation {
     private static final int MAX_BYTES = 32 * 1024 * 1024;
     private static final int MAX_REGIONS = 32768;
@@ -407,7 +407,7 @@ public final class OverworldGenerationObservation {
                         "controls", object("noise82_unchanged", true, "manager_d_unchanged", true, "prior_returns_unchanged", true,
                                 "fresh_unpublished_returns", true, "opacity_unchanged", opacityField.get(null) == opacity && Arrays.equals(opacity, initialOpacity)));
                 byte[] encoded = (((String) invoke(observed.json, null, record)) + "\n").getBytes(StandardCharsets.UTF_8);
-                require(encoded.length <= MAX_BYTES, "complete normal generation snapshot budget");
+                require(encoded.length <= MAX_BYTES, "complete Overworld generation snapshot budget");
                 require(hash(Files.readAllBytes(jarPath)).equals(expected), "original archive preserved");
                 Files.write(destination, encoded, StandardOpenOption.CREATE_NEW); status = 0;
             }
@@ -415,7 +415,7 @@ public final class OverworldGenerationObservation {
             boolean unavailable = !measuring && (failure instanceof OriginalDependencyUnavailable
                     || unavailableType != null && unavailableType.isInstance(failure)
                     && (failure.getCause() == null || dependencyCause(failure)));
-            System.err.println(unavailable ? "UNAVAILABLE: genuine normal generation setup" : "FAILURE: normal generation observation");
+            System.err.println(unavailable ? "UNAVAILABLE: genuine Overworld generation setup" : "FAILURE: Overworld generation observation");
             failure.printStackTrace(System.err); if (unavailable) status = 77;
         } finally { System.setOut(output); }
         System.exit(status);

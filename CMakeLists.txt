@@ -120,6 +120,7 @@ add_library(mc_core STATIC
     src/core/java/format_case.c
     src/core/java/properties.c
     src/core/java/reader.c
+    src/core/java/writer.c
     src/core/java/random_profile.c
     src/core/math/math.c
     src/core/math/strict.c
@@ -968,6 +969,14 @@ if(BUILD_TESTING)
     add_test(NAME core.java_reader COMMAND mc_test_java_reader)
     set_tests_properties(core.java_reader PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_java_writer tests/core/java/test_writer.c)
+    target_link_libraries(mc_test_java_writer PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_writer COMMAND mc_test_java_writer)
+    set_tests_properties(core.java_writer PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_java_writer_file tests/core/java/test_writer_file.c)
+    target_link_libraries(mc_test_java_writer_file PRIVATE mc_core mc_build_options)
+
     add_executable(mc_java_reader_probe tests/core/java/reader_probe.c)
     target_link_libraries(mc_java_reader_probe PRIVATE mc_core mc_build_options)
 
@@ -1134,6 +1143,11 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME core.java_writer_file
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/java/test_writer_file.py"
+            --executable "$<TARGET_FILE:mc_test_java_writer_file>")
+    set_tests_properties(core.java_writer_file PROPERTIES LABELS "public;integration;ownership" TIMEOUT 30)
+
     add_test(NAME tools.java_float_format_probe
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/test_float_format_probe.py"

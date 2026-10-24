@@ -23,8 +23,9 @@ typedef struct mc_chunk_provider_generation_fields {
     mc_terrain_double_span q, d, e, f, g, h, r, s, t;
 } mc_chunk_provider_generation_fields;
 
-/* Borrowed views of this concrete normal-provider/cache owner. These are the
- * actual mutable descriptors and the runtime's ONE embedded fallback identity,
+/* Borrowed views of this concrete Overworld ChunkProvider/cache owner.
+ * These are the actual mutable descriptors and the runtime's ONE embedded
+ * fallback identity,
  * not copies of owning state. constructor_grid is a retained native 32x32 zero
  * storage projection, not Java row-object allocation/aliasing equivalence. */
 typedef struct mc_chunk_provider_fields {
@@ -48,21 +49,24 @@ typedef struct mc_chunk_provider_fields {
     mc_java_int_set_limits pending_history_limits;
 } mc_chunk_provider_fields;
 
-/* Construct the concrete Overworld provider and its enclosing empty base-cache
- * storage. The caller has already asked the real store for its loader, as the
- * original outer World.b does BEFORE the Dimension provider factory. Require
- * the same live CONSTRUCTING game runtime, its nonnull actual fields.w/x/t,
- * a successfully bound normal Dimension whose a is that runtime, and the exact
- * class trig/profile bindings. Other actual Dimension kinds stop unsupported;
+/* Construct the concrete Overworld ChunkProvider and its enclosing empty
+ * base-cache storage. The caller has already asked the real store for its
+ * loader, as the original outer World.b does BEFORE the WorldProvider's
+ * ChunkProvider factory. Require the same live CONSTRUCTING game runtime,
+ * its nonnull actual fields.w/x/t, a successfully bound Overworld WorldProvider
+ * whose a is that runtime, and the exact class trig/profile bindings. Other
+ * WorldProvider kinds stop unsupported;
  * they are never replaced by Overworld generation. No file/loader/registry,
  * population, saving, user callback or implicit World construction occurs.
  *
- * Read the current Dimension.a World seed at the factory argument position,
- * then call the real private normal constructor ONCE. Its retained cave owns
- * the actual shared-profile default Random BEFORE seeded terrain/noise. Never
+ * Read the current WorldProvider.a World seed at the factory argument position,
+ * then call the real private Overworld generator constructor ONCE. Its retained
+ * cave owns the actual shared-profile default Random BEFORE seeded terrain/noise.
+ * Never
  * use numerical init, copy/reseed/erase the cave or discard a successful
- * generator. Retain the Dimension's actual biome owner separately, so later
- * Dimension rebind cannot invalidate this generator's manager or buffers.
+ * generator. Retain the WorldProvider's actual WorldChunkManager separately,
+ * so later WorldProvider rebind cannot invalidate this generator's manager
+ * or buffers.
  *
  * Direct bytes count the provider (including generator/fixed scratch/grid),
  * pending keys, cache entries/list, blank data and its 32768 blocks. Exclude
@@ -118,8 +122,9 @@ mc_world_storage_status mc_world_runtime_chunk_provider_contains(mc_world_runtim
                                                                  bool *out,
                                                                  mc_world_storage_error *error);
 
-/* Actual normal yf/pk a()Z body: literal false, without World/loader callbacks.
- * This is only the underlying Overworld provider result, not enclosing cache
+/* Actual Overworld generator yf/pk a()Z body: literal false, without
+ * World/loader callbacks.
+ * This is only the underlying Overworld generator result, not enclosing cache
  * unload/save/population or a claim that those descendants are implemented.
  * Invalid arguments preserve out; valid calls write false. */
 mc_world_storage_status mc_chunk_provider_maintenance(mc_chunk_provider *provider, bool *out,

@@ -3,9 +3,9 @@
 The seed-23 comparison runs the production GAME World against the supplied
 Beta 1.7.3 client and server archives. Both original runs construct genuine
 persistent base Worlds. C constructs the corresponding client or base-server
-load-or-create World with a fresh Store, the real normal Dimension and no saved
-metadata or prepared Chunk payloads. This does not establish dedicated-server
-startup.
+load-or-create World with a fresh Store, the real Overworld WorldProvider and
+no saved metadata or prepared Chunk payloads. This does not establish
+dedicated-server startup.
 
 The original constructor selects spawn `(0,64,0)` and retains origin Chunk
 `(0,0)`. The `origin` and `ring` profiles then use the actual cache's `c` route.

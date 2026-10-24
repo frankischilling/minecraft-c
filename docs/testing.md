@@ -2,8 +2,8 @@
 
 ## Native client frontend
 
-Code checkpoint `e614fb15ebb263784243811a5c9257ddc7fbd30d` passes
-[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40096880704):
+Code checkpoint `a5f691a0fd5b1975f84f989fe1698b9f28809805` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40106188840):
 216 MSVC, 219 GCC and 219 Clang tests, with 654 actual Passed records and no
 missing cases or skips. Formatting covers 626 C/header files. Controller
 mirrors and lifecycle interval checks pass. The synthetic checkout's complete
@@ -50,6 +50,36 @@ observed-JDK and 49,532 model-derived groups. The
 65,536-unit alphabet comparison per compiler. Its original controller reports
 retain their footer-parser failure; separate file-only audits verify the actual
 tests and rows and complete read-only binary checks without native reruns.
+
+## Java output writer and settings research
+
+The [shared output writer](core/java-writer.md) passes 110,708 stream checks,
+19 real-file checks and five independent file checks per MSVC/GCC/Clang build.
+All 15 selected headless cases pass on each compiler, including the renamed
+temperature, LivingEntity and Dungeon regressions. Linux enables ASan/UBSan.
+The complete retained source matches 1,014 current non-Markdown project files;
+all 630 C/header files pass clang-format 18.
+
+The MSVC/GCC CTest commands returned zero and every test passed. Their
+controllers then rejected CTest's truncated successful Dungeon footer in the
+JUnit file. Those reports remain failed. Independent file audits check the
+complete raw output, actual Start IDs, Passed records and source footers.
+Later metadata-only commands confirm unchanged test inventories and direct
+imports for the two writer executables, Server constructor and Dungeon probe.
+They rerun no tests. Clang's full controller passes with an explicit 256 KiB
+bound for each successful test's retained output.
+
+Run the public writer cases without Java, original archives or graphics:
+
+```sh
+ctest --test-dir build --output-on-failure -R '^core[.]java_writer(_file)?$'
+```
+
+The [GameSettings reference](reference/game-settings.md) separately records
+16 original persistence cases on each of three charset/platform profiles.
+The 68-case selected-JDK writer observation remains separate from the native
+contracts until an independent original/native comparison is qualified.
+Neither result implements client settings ownership or options screens.
 
 ## Canonical Minecraft names
 

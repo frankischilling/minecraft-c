@@ -27,8 +27,8 @@ typedef struct mc_world_generation_error {
  * LIMIT at cave119/scheduler123, retaining all earlier effects. */
 #define MC_WORLD_GENERATION_CAVE_WORK_LIMIT 65536u
 
-/* Concrete GAME normal operation. Require the actual exclusive module-owned
- * provider and stable class/profile/resource dependencies. No provider-wide
+/* Concrete GAME Overworld generation operation. Require the actual exclusive
+ * module-owned provider and stable class/profile/resource dependencies. No provider-wide
  * reentry lock, numerical preflight, Random copy/commit or palette exists.
  * Hold World and exact constructed Chunk across callbacks. Return the SAME
  * store-owned Chunk only after base/surface/caves/full finishing. Failure

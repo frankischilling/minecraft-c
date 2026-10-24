@@ -38,8 +38,8 @@ typedef struct mc_temperature_array_view {
 
 typedef enum mc_temperature_body {
     MC_TEMPERATURE_BODY_NONE = 0,
-    MC_TEMPERATURE_BODY_NORMAL, /* xv/ph.a([DIIII)[D */
-    MC_TEMPERATURE_BODY_FIXED   /* hd/et.a([DIIII)[D */
+    MC_TEMPERATURE_BODY_NOISE_BACKED, /* xv/ph.a([DIIII)[D */
+    MC_TEMPERATURE_BODY_FIXED         /* hd/et.a([DIIII)[D */
 } mc_temperature_body;
 
 typedef struct mc_temperature_error {
@@ -76,11 +76,11 @@ void mc_temperature_array_release(mc_temperature_array *array);
 mc_biome_status mc_temperature_array_get(const mc_temperature_array *array,
                                          mc_temperature_array_view *out);
 
-/* Concrete actual normal/fixed manager temperature methods. receiver is a
- * genuine module-owned Dimension biome manager, not a fabricated descriptor;
- * it is retained through the whole call. The call chooses its actual normal
- * or fixed body. No Registry/World callback, Random, biome classification or
- * replacement manager is supplied by this API.
+/* Concrete actual noise-backed/fixed WorldChunkManager temperature methods.
+ * receiver is a genuine module-owned WorldChunkManager, not a fabricated
+ * descriptor; it is retained through the whole call. The call chooses its
+ * actual noise-backed or fixed body. No Registry/World callback, Random,
+ * biome classification or replacement manager is supplied by this API.
  *
  * input is the caller's current actual nullable array, borrowed on entry.
  * Success returns ONE owned reference at out: the SAME handle when capacity
@@ -91,8 +91,8 @@ mc_biome_status mc_temperature_array_get(const mc_temperature_array *array,
  * source19, and may be NULL when reusing a sufficient input. Manager.c remains
  * allocated/charged to the actual current manager's existing memory owner.
  *
- * Normal: allocate output19 if needed, raw temperature fill44 (WHOLE retained
- * length cleared), then raw auxiliary74 and manager.c publication77, then
+ * Noise-backed: allocate output19 if needed, raw temperature fill44 (WHOLE
+ * retained length cleared), then raw auxiliary74 and manager.c publication77, then
  * exact temperature processing. No a/b/d admission or mutation occurs. Failure
  * at c retains completed reused-input raw writes. A newly allocated output is
  * private until return209 and is released on failure. Fixed: allocate19 if
@@ -103,9 +103,10 @@ mc_biome_status mc_temperature_array_get(const mc_temperature_array *array,
  * width/height/product must fit INT32_MAX and native spans. These checked
  * nonnegative dimensions, actual immutable embedded noise owners and the
  * captured x86-64 strict FP profile are a declared native domain, not every
- * original Java/reflection/aliasing/error case. Normal's FP guard is reached
- * at44 AFTER possible output allocation; no atomic numerical temperature API
- * is called. Successful completion is not original/native qualification.
+ * original Java/reflection/aliasing/error case. The noise-backed body's FP
+ * guard is reached at44 AFTER possible output allocation; no atomic numerical
+ * temperature API is called. Successful completion is not original/native
+ * qualification.
  *
  * Failure preserves out and reached effects; error is fresh and may be NULL.
  * out/error/owners/inputs are exclusive, live and disjoint. A previously stored

@@ -1,7 +1,7 @@
 # Development status
 
-At code checkpoint `e614fb15ebb263784243811a5c9257ddc7fbd30d`,
-[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40096880704)
+At code checkpoint `a5f691a0fd5b1975f84f989fe1698b9f28809805`,
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40106188840)
 pass: 216 MSVC, 219 GCC and 219 Clang tests, with no missing cases or skips.
 Formatting covers 626 C/header files; controller mirrors and lifecycle interval
 checks also pass. Linux includes actual software OpenGL tests and ASan/UBSan.
@@ -53,6 +53,16 @@ also matches 5,708 retained JDK rows and 49,532 separately derived model cases
 per compiler. The [integer parser](core/java-integer.md) also passes 43 unit
 checks and all 65,536 one-unit comparisons per compiler through the public
 client-disabled core. GameSettings and options persistence remain unfinished.
+
+The [output writer](core/java-writer.md) adds counted UTF-16 encoding and
+PrintWriter policy without graphics dependencies. Its public native builds
+pass all 15 selected cases per compiler: 110,708 stream checks, 19 real-file
+checks and five independent file checks, with Linux sanitizers. Independent
+raw-output audits and later metadata inspections retain two controller footer
+failures separately from the successful tests. The
+[GameSettings reference](reference/game-settings.md) records all 40 declared
+fields and three original persistence profiles. Native settings ownership,
+original/native writer comparison and effectful menu setters remain unfinished.
 
 The [WorldAccess interface](world/world-access.md) now dispatches typed
 cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its

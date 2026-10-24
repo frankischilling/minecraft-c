@@ -107,6 +107,13 @@ Both Linux compilers retain one differing pixel at `(658,85)` against that
 Windows baseline; alpha matches everywhere. The Linux comparison remains
 failed, with its cause and a same-driver original Linux baseline unresolved.
 
+A separate original Linux experiment creates and queries the requested
+single-buffer RGBA8/depth24 Pbuffer on Mesa llvmpipe. Its original title method
+returns and the passive observer records the actual clock, but `glFinish`
+reports an X `BadMatch` before pixel readback. No raw frame is available from
+that failed capture. Its target exits 1, its observer exits 0, and both owned
+process trees close. This does not qualify a Linux original/native comparison.
+
 The production renderer computes the selected arithmetic recipe from normal
 GUI inputs and replays each local glyph and advance. It accepts no captured
 coefficients or expected pixels. Actual display tests cover modelview geometry,

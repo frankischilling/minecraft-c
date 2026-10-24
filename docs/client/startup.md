@@ -34,9 +34,10 @@ frames waiting for a drawable; loss of focus also leaves fullscreen. Actual
 input comparisons with the original and fullscreen behavior remain unverified.
 
 Singleplayer, Multiplayer, Mods and Texture Packs, and Options remain unfinished;
-their buttons currently report an unavailable screen. Audio, options-file
-loading and saving, child screens, complete startup order, custom texture packs,
-and gameplay remain open. The title alone does not establish presentation or
+their buttons currently report an unavailable screen. Audio,
+[options-file loading and saving](../reference/game-settings.md), child screens,
+complete startup order, custom texture packs and gameplay remain open. The title
+alone does not establish presentation or
 input parity with the original client.
 
 ## Diagnostic runs and tests

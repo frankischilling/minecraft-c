@@ -303,7 +303,7 @@ mc_biome_status mc_temperature_sample(mc_world_chunk_manager *receiver,
         (void)dimension_failure(&frame, manager_status, "temperature receiver native fields");
         goto leave;
     }
-    frame.body = fields.fixed ? MC_TEMPERATURE_BODY_FIXED : MC_TEMPERATURE_BODY_NORMAL;
+    frame.body = fields.fixed ? MC_TEMPERATURE_BODY_FIXED : MC_TEMPERATURE_BODY_NOISE_BACKED;
     mc_temperature_array *target = input_hold;
     if (target == NULL || target->buffer.length < count) {
         frame.bytecode = 19u;
@@ -316,7 +316,7 @@ mc_biome_status mc_temperature_sample(mc_world_chunk_manager *receiver,
 
     if (fields.fixed) {
         /* Fresh actual f read at30, AFTER output allocation19. Never substitute
-         * the earlier passive dispatch snapshot or normal temperature noise. */
+         * the earlier passive dispatch snapshot or noise-backed temperature noise. */
         frame.bytecode = 30u;
         manager_status = mc_world_chunk_manager_fields_get(receiver, &fields);
         if (manager_status != MC_WORLD_PROVIDER_OK) {
@@ -332,7 +332,7 @@ mc_biome_status mc_temperature_sample(mc_world_chunk_manager *receiver,
     } else {
         mc_biome_manager *manager = fields.noise_backed;
         frame.bytecode = 44u;
-        /* The opaque Dimension owner supplies actual constructed embedded
+        /* The opaque WorldChunkManager supplies actual constructed embedded
          * noise. Do NOT use sampling_valid(), which preflights future c/a/b/d. */
         if (manager == NULL || manager->initialized != 1) {
             (void)fail(&frame, MC_BIOME_INVALID_ARGUMENT,

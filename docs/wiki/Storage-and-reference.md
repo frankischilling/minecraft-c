@@ -1,5 +1,14 @@
 # Storage and original references
 
+The [GameSettings reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/game-settings.md)
+records all 40 declared fields, 15 saved keys, ten distinct KeyBindings and
+three original persistence profiles. It preserves charset differences,
+caught failures and the lossy empty texture-pack reload. The shared
+[output writer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-writer.md)
+implements counted encoding and PrintWriter policy with native stream/file
+tests. Original/native writer comparison, native settings persistence,
+options screens and audio/rendering effects remain unfinished.
+
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
 uses genuine original constructors and the production GAME implementation for
 seed23 origin and ring profiles on both sides. Ring retains nine normal Chunks,

@@ -9,7 +9,10 @@ Current runtime navigation:
 - [Native client startup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
   owns SDL input, resources, GUI and OpenGL presentation. The shared
   [float parser](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-float.md)
-  remains usable without client graphics dependencies.
+  and [output writer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-writer.md)
+  remain usable without client graphics dependencies. The writer owns its
+  encoder and PrintWriter policy; caller-owned byte sinks and native file
+  adapters retain separate lifetimes.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

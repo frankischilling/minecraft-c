@@ -1,10 +1,19 @@
 # Build and tests
 
-The [numeric-text code checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40096880704)
-`e614fb1` passes all four hosted jobs: 216 MSVC, 219 GCC and 219 Clang tests.
+The [title-matrix code checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40106188840)
+`a5f691a` passes all four hosted jobs: 216 MSVC, 219 GCC and 219 Clang tests.
 All 654 cases passed without skips, alongside 626-file formatting, controller
 mirrors and lifecycle interval checks. A compile-time Font assertion resolves
 MSVC 19.44's C4127 diagnostic without relaxing strict warnings.
+
+The [shared output writer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-writer.md)
+passes 110,708 stream checks, 19 real-file checks and five independent file
+checks per compiler within 15 selected headless cases. Linux uses sanitizers.
+All 630 C/header files pass formatting. Independent raw-output audits and
+later metadata inspections qualify the successful MSVC/GCC tests while
+retaining their JUnit-footer controller failures. Clang's complete controller
+passes. Original/native writer comparison and client settings persistence
+remain unfinished.
 
 The [native frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 passes eight focused tests on MSVC and sanitized GCC/Clang, including actual OpenGL

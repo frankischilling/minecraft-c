@@ -17,10 +17,10 @@ mc_world_storage_status mc_world_runtime_thunder_strength(const mc_world_runtime
                                                           float partial_tick, float *out,
                                                           mc_world_storage_error *error);
 
-/* Capture actual Dimension t, then read current Info time before dispatching
- * its actual celestial-angle method. The normal dimension currently accepts
- * finite ticks; constant dimensions ignore their tick argument. No detached
- * time snapshot, wall-clock I, seed or caller-supplied angle is substituted. */
+/* Capture actual WorldProvider t, then read current Info time before dispatching
+ * its actual celestial-angle method. The Overworld WorldProvider currently
+ * accepts finite ticks; constant WorldProviders ignore their tick argument.
+ * No detached time snapshot, wall-clock I, seed or caller-supplied angle is substituted. */
 mc_world_storage_status mc_world_runtime_celestial_angle(const mc_world_runtime *runtime,
                                                          float partial_tick, float *out,
                                                          mc_world_storage_error *error);

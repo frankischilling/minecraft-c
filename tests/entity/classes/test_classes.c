@@ -306,7 +306,7 @@ static bool test_assignability(mc_entity_source source, mc_java_random_profile *
                   !actual);
         }
     const mc_entity_class_literal *entity = cells[MC_ENTITY_CLASS_KIND_ENTITY],
-                                  *mob = cells[MC_ENTITY_CLASS_KIND_LIVING_ENTITY],
+                                  *living_entity = cells[MC_ENTITY_CLASS_KIND_LIVING_ENTITY],
                                   *player = cells[MC_ENTITY_CLASS_KIND_PLAYER],
                                   *zombie = cells[MC_ENTITY_CLASS_KIND_ZOMBIE],
                                   *pig_zombie = cells[MC_ENTITY_CLASS_KIND_PIG_ZOMBIE];
@@ -357,7 +357,8 @@ static bool test_assignability(mc_entity_source source, mc_java_random_profile *
             (mc_entity_class_phase)phase;
         unsigned char phase_before[sizeof(*owner)];
         memcpy(phase_before, owner, sizeof(phase_before));
-        CHECK(mc_entity_class_literal_is_assignable_from(mob, player, &actual) == MC_ENTITY_OK &&
+        CHECK(mc_entity_class_literal_is_assignable_from(living_entity, player, &actual) ==
+                  MC_ENTITY_OK &&
               actual);
         CHECK(mc_entity_class_literal_is_assignable_from(zombie, pig_zombie, &actual) ==
                   MC_ENTITY_OK &&
@@ -365,7 +366,8 @@ static bool test_assignability(mc_entity_source source, mc_java_random_profile *
         CHECK(mc_entity_class_literal_is_assignable_from(entity, pig_zombie, &actual) ==
                   MC_ENTITY_OK &&
               actual);
-        CHECK(mc_entity_class_literal_is_assignable_from(player, mob, &actual) == MC_ENTITY_OK &&
+        CHECK(mc_entity_class_literal_is_assignable_from(player, living_entity, &actual) ==
+                  MC_ENTITY_OK &&
               !actual);
         CHECK(memcmp(phase_before, owner, sizeof(phase_before)) == 0);
     }

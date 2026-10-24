@@ -46,12 +46,13 @@ def validate_worlds(root):
                 CAPTURE.require(type(level[name]) is bytes and len(level[name]) == length,
                                 "complete real array: " + name)
             CAPTURE.require(level["Entities"] == [], "no invented Dungeon Entities")
-            tiles = level["TileEntities"]
+            tile_entities = level["TileEntities"]
             if epoch == 0:
-                CAPTURE.require(len(tiles) == 3, "two real Chests and one Spawner saved")
-                by_position = {(tile["x"], tile["y"], tile["z"]): tile for tile in tiles}
+                CAPTURE.require(len(tile_entities) == 3, "two real Chests and one Spawner saved")
+                by_position = {(tile_entity["x"], tile_entity["y"], tile_entity["z"]): tile_entity
+                               for tile_entity in tile_entities}
                 CAPTURE.require(set(by_position) == {(10, 64, 8), (8, 64, 10), (8, 64, 8)},
-                                "complete actual saved Tile coordinates")
+                                "complete actual saved TileEntity coordinates")
                 for position in ((10, 64, 8), (8, 64, 10)):
                     chest = by_position[position]
                     CAPTURE.require(chest["id"] == "Chest" and 0 < len(chest["Items"]) <= 8,
@@ -68,9 +69,10 @@ def validate_worlds(root):
                                 "real final Spawner name and unchanged delay")
                 saved.append({"path": path.relative_to(root).as_posix(),
                               "fingerprint": CAPTURE.file_fingerprint(path),
-                              "tile_count": len(tiles)})
+                              "tile_count": len(tile_entities)})
             else:
-                CAPTURE.require(tiles == [], "unsaved prepared inputs remain without live TileEntities")
+                CAPTURE.require(tile_entities == [],
+                                "unsaved prepared inputs remain without live TileEntities")
     return saved
 
 

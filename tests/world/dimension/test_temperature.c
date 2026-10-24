@@ -579,7 +579,7 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     status = mc_temperature_sample(manager, owner, array, 0, 0, 2, 3, &result, &error);
     result_owned = status == MC_BIOME_OK;
     CHECK(status == MC_BIOME_LIMIT && result == array &&
-          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 74, 35, true, true));
+          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NOISE_BACKED, 74, 35, true, true));
     for (size_t i = 0; i < view.length; ++i)
         CHECK(bits(view.data[i]) == bits(expected_raw.data[i]));
     CHECK(mc_temperature_array_get(array, &held_view) == MC_BIOME_OK && held_view.holds == 1 &&
@@ -597,8 +597,9 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     poison_error(&error);
     status = mc_temperature_sample(manager, owner, NULL, 0, 0, 2, 3, &result, &error);
     result_owned = status == MC_BIOME_OK;
-    CHECK(status == MC_BIOME_LIMIT && result == array &&
-          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 74, 35, false, true));
+    CHECK(
+        status == MC_BIOME_LIMIT && result == array &&
+        failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NOISE_BACKED, 74, 35, false, true));
     CHECK(mc_temperature_owner_get(owner, &after) == MC_BIOME_OK && owner_same(&before, &after));
     CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.holds == holds);
@@ -615,7 +616,7 @@ static bool test_quota_and_raw_prefix(fixture *f) {
                                    &error);
     result_owned = status == MC_BIOME_OK;
     CHECK(status == MC_BIOME_LIMIT && result == array &&
-          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 74, 35, true, true));
+          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NOISE_BACKED, 74, 35, true, true));
     for (size_t i = 0; i < view.length; ++i)
         CHECK(bits(view.data[i]) == 0);
     CHECK(mc_world_chunk_manager_fields_get(zero_manager, &fields) == MC_WORLD_PROVIDER_OK &&
@@ -627,8 +628,9 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     CHECK(mc_temperature_owner_create(&limits, &limited, NULL) == MC_BIOME_OK);
     status = mc_temperature_sample(manager, limited, NULL, 0, 0, 1, 1, &result, &error);
     result_owned = status == MC_BIOME_OK;
-    CHECK(status == MC_BIOME_LIMIT && result == array &&
-          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 19, 0, false, false));
+    CHECK(
+        status == MC_BIOME_LIMIT && result == array &&
+        failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NOISE_BACKED, 19, 0, false, false));
     CHECK(mc_temperature_owner_get(limited, &after) == MC_BIOME_OK && after.arrays == 0 &&
           after.holds == 1 && after.buffer_allocation_bytes == 0 &&
           after.direct_allocation_bytes == initial.direct_allocation_bytes);
@@ -639,8 +641,9 @@ static bool test_quota_and_raw_prefix(fixture *f) {
     CHECK(mc_temperature_owner_create(&limits, &limited, NULL) == MC_BIOME_OK);
     status = mc_temperature_sample(manager, limited, NULL, 0, 0, 0, 0, &result, &error);
     result_owned = status == MC_BIOME_OK;
-    CHECK(status == MC_BIOME_LIMIT && result == array &&
-          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 19, 0, false, false));
+    CHECK(
+        status == MC_BIOME_LIMIT && result == array &&
+        failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NOISE_BACKED, 19, 0, false, false));
     CHECK(mc_temperature_owner_get(limited, &after) == MC_BIOME_OK && after.arrays == 0 &&
           after.holds == 1 && after.buffer_allocation_bytes == 0 &&
           after.direct_allocation_bytes == initial.direct_allocation_bytes);
@@ -688,8 +691,8 @@ static bool test_fp_order(fixture *f) {
     _mm_setcsr(saved_csr);
     result_owned = status == MC_BIOME_OK;
     CHECK(status == MC_BIOME_INVALID_ARGUMENT && result == array &&
-          failure_at(&error, MC_BIOME_INVALID_ARGUMENT, MC_TEMPERATURE_BODY_NORMAL, 44, 0, false,
-                     false)); /* Allocation19 succeeded; unpublished result was freed. */
+          failure_at(&error, MC_BIOME_INVALID_ARGUMENT, MC_TEMPERATURE_BODY_NOISE_BACKED, 44, 0,
+                     false, false)); /* Allocation19 succeeded; unpublished result was freed. */
     CHECK(mc_temperature_owner_get(owner, &after) == MC_BIOME_OK && owner_same(&before, &after));
     CHECK(mc_world_chunk_manager_fields_get(manager, &fields) == MC_WORLD_PROVIDER_OK &&
           fields.c->data == NULL && fields.noise_backed->memory->live_allocation_bytes == 0);
@@ -698,8 +701,8 @@ static bool test_fp_order(fixture *f) {
     _mm_setcsr(saved_csr);
     result_owned = status == MC_BIOME_OK;
     CHECK(status == MC_BIOME_INVALID_ARGUMENT && result == array &&
-          failure_at(&error, MC_BIOME_INVALID_ARGUMENT, MC_TEMPERATURE_BODY_NORMAL, 44, 0, true,
-                     false));
+          failure_at(&error, MC_BIOME_INVALID_ARGUMENT, MC_TEMPERATURE_BODY_NOISE_BACKED, 44, 0,
+                     true, false));
     for (size_t i = 0; i < view.length; ++i)
         CHECK(bits(view.data[i]) == bits(-13.5));
     mc_temperature_limits limits = before.limits;
@@ -709,8 +712,9 @@ static bool test_fp_order(fixture *f) {
     status = mc_temperature_sample(manager, limited, NULL, 0, 0, 2, 3, &result, &error);
     _mm_setcsr(saved_csr);
     result_owned = status == MC_BIOME_OK;
-    CHECK(status == MC_BIOME_LIMIT && result == array &&
-          failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NORMAL, 19, 0, false, false));
+    CHECK(
+        status == MC_BIOME_LIMIT && result == array &&
+        failure_at(&error, MC_BIOME_LIMIT, MC_TEMPERATURE_BODY_NOISE_BACKED, 19, 0, false, false));
     result = NULL;
     poison_error(&error);
     _mm_setcsr(refused_csr);

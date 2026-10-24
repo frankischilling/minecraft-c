@@ -183,7 +183,7 @@ static bool class_order_and_filter(fixture *f, size_t side) {
     mc_entity_classes *foreign = NULL;
     mc_world_entity_list_view rview = {0};
     const mc_entity_class_literal *entity_class = NULL, *item_class = NULL, *falling_class = NULL;
-    const mc_entity_class_literal *mob = NULL, *player = NULL, *minecart = NULL,
+    const mc_entity_class_literal *living_entity = NULL, *player = NULL, *minecart = NULL,
                                   *foreign_item = NULL;
     CHECK(mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ENTITY,
                                       &entity_class) == MC_ENTITY_OK &&
@@ -192,7 +192,7 @@ static bool class_order_and_filter(fixture *f, size_t side) {
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_FALLING_SAND,
                                       &falling_class) == MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
-                                      &mob) == MC_ENTITY_OK &&
+                                      &living_entity) == MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_PLAYER,
                                       &player) == MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_MINECART,
@@ -231,7 +231,7 @@ static bool class_order_and_filter(fixture *f, size_t side) {
           item->holds == item_holds + 4 && falling->holds == falling_holds + 1 &&
           w->local_leases == 3);
     CHECK(class_query_is(w, falling_class, &class_box, falling_values, 1) &&
-          class_query_is(w, mob, &class_box, NULL, 0) &&
+          class_query_is(w, living_entity, &class_box, NULL, 0) &&
           class_query_is(w, player, &class_box, NULL, 0) &&
           class_query_is(w, minecart, &class_box, NULL, 0));
     CHECK(mc_entity_classes_create(side == 0 ? MC_ENTITY_CLIENT : MC_ENTITY_SERVER, f->profile,
@@ -284,21 +284,21 @@ static bool class_null_order_and_prefix(fixture *f, size_t side) {
     mc_world_runtime *w = f->worlds[slot];
     mc_entity *a = NULL, *b = NULL;
     mc_world_class_entity_list *destination = NULL, *foreign = NULL;
-    const mc_entity_class_literal *item = NULL, *mob = NULL;
+    const mc_entity_class_literal *item = NULL, *living_entity = NULL;
     CHECK(mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ITEM, &item) ==
               MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
-                                      &mob) == MC_ENTITY_OK);
+                                      &living_entity) == MC_ENTITY_OK);
     CHECK(make_entity(f, side, NULL, 8.0, 8.0, 8.0, &a) &&
           make_entity(f, side, NULL, 8.0, 16.0, 8.0, &b) &&
           mc_world_runtime_chunk_add_entity(f->chunks[slot], a, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_chunk_add_entity(f->chunks[slot], b, NULL) == MC_WORLD_STORAGE_OK);
     mc_world_nearby_error error = mc_world_nearby_empty_error();
-    CHECK(mc_world_runtime_class_entities(w, mob, &class_box, &destination, &error) ==
+    CHECK(mc_world_runtime_class_entities(w, living_entity, &class_box, &destination, &error) ==
               MC_WORLD_STORAGE_OK &&
           class_values(destination, NULL, 0) &&
-          mc_world_runtime_class_entities(f->worlds[side], mob, &class_box, &foreign, &error) ==
-              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_class_entities(f->worlds[side], living_entity, &class_box, &foreign,
+                                          &error) == MC_WORLD_STORAGE_OK &&
           class_values(foreign, NULL, 0));
     mc_world_class_entity_list *unchanged = destination; /* Non-owning out sentinel. */
     const size_t bytes = w->construction.direct_allocation_bytes;
@@ -330,7 +330,7 @@ static bool class_null_order_and_prefix(fixture *f, size_t side) {
     mc_entity_bounds *const a_bounds = a->bounds;
     a->bounds = NULL;
     const mc_world_storage_status nonmatch =
-        class_gather(w, f->states[slot], mob, &class_box, NULL, &error);
+        class_gather(w, f->states[slot], living_entity, &class_box, NULL, &error);
     a->bounds = a_bounds;
     CHECK(nonmatch == MC_WORLD_STORAGE_OK && class_values(destination, NULL, 0));
     a->bounds = NULL;
@@ -404,12 +404,12 @@ static bool class_native_budget(fixture *f, size_t side) {
     mc_world_runtime *w = f->worlds[slot];
     mc_entity *a = NULL;
     mc_world_class_entity_list *out = NULL, *empty = NULL;
-    const mc_entity_class_literal *item = NULL, *mob = NULL;
+    const mc_entity_class_literal *item = NULL, *living_entity = NULL;
     CHECK(make_entity(f, side, NULL, 8.0, 8.0, 8.0, &a) &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ITEM, &item) ==
               MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
-                                      &mob) == MC_ENTITY_OK);
+                                      &living_entity) == MC_ENTITY_OK);
     for (size_t i = 0; i < 5; ++i)
         CHECK(mc_world_runtime_chunk_add_entity(f->chunks[slot], a, NULL) == MC_WORLD_STORAGE_OK);
     const size_t bytes = w->construction.direct_allocation_bytes;
@@ -422,7 +422,7 @@ static bool class_native_budget(fixture *f, size_t side) {
           error.slice == 0 && error.index == 4 && error.entity.status == MC_ENTITY_OK &&
           a->holds == 6 && w->construction.direct_allocation_bytes == bytes &&
           w->local_leases == 0 && w->active_calls == 0 && w->fields.R->count == 0);
-    CHECK(mc_world_runtime_class_entities(w, mob, &class_box, &empty, &error) ==
+    CHECK(mc_world_runtime_class_entities(w, living_entity, &class_box, &empty, &error) ==
               MC_WORLD_STORAGE_OK &&
           class_values(empty, NULL, 0) &&
           w->construction.direct_allocation_bytes == bytes + class_header_bytes[side] &&
@@ -449,13 +449,13 @@ static bool class_native_overflow(fixture *f, size_t side) {
     mc_world_runtime *w = f->worlds[slot];
     mc_entity *const a = f->chunks[slot]->m->items[0]->items[0];
     mc_entity *const b = f->chunks[slot]->m->items[1]->items[0];
-    const mc_entity_class_literal *item = NULL, *mob = NULL;
+    const mc_entity_class_literal *item = NULL, *living_entity = NULL;
     mc_world_class_entity_list *out = NULL;
     mc_world_nearby_error error;
     CHECK(mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_ITEM, &item) ==
               MC_ENTITY_OK &&
           mc_entity_class_literal_get(f->entity_classes[side], MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
-                                      &mob) == MC_ENTITY_OK);
+                                      &living_entity) == MC_ENTITY_OK);
     const size_t bytes = w->construction.direct_allocation_bytes;
     const size_t a_holds = a->holds, b_holds = b->holds, leases = w->local_leases;
     /* Explicit native invariant controls, restored before assertions. Finite
@@ -471,7 +471,7 @@ static bool class_native_overflow(fixture *f, size_t side) {
           w->active_calls == 0);
     w->local_leases = SIZE_MAX;
     const mc_world_storage_status lease_limit =
-        mc_world_runtime_class_entities(w, mob, &class_box, &out, &error);
+        mc_world_runtime_class_entities(w, living_entity, &class_box, &out, &error);
     w->local_leases = leases;
     CHECK(lease_limit == MC_WORLD_STORAGE_LIMIT && out == NULL && error.query.bytecode == 137 &&
           error.query.chunk_bytecode == 0 && error.slice == SIZE_MAX && error.index == SIZE_MAX &&
