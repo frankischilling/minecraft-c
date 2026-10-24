@@ -5,6 +5,11 @@ and Linux. Its native libraries cover compatibility primitives, storage,
 terrain generation and parts of World simulation. There is no playable client
 or dedicated server yet; the C runtime requires no JVM.
 
+The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
+draws imported resources on Windows and Linux. Timer, GUI layout, font,
+resource and actual OpenGL tests pass on MSVC and sanitized GCC/Clang.
+Child screens, options persistence, audio and gameplay remain unfinished.
+
 Plant lifecycle callbacks, farmland and World light queries are implemented.
 Local MSVC/GCC/Clang suites pass, including 59 matching prepared plant cases per
 original side on each compiler. The original fixture uses prepared World

@@ -2,7 +2,7 @@
 """Import user-owned Beta 1.7.3 resources into a fresh local directory.
 
 This development tool has no network access and never extracts classes or launchers.
-It prepares files for a future native consumer; it does not provide that consumer.
+The native client reads the imported files; this tool only validates and copies them.
 """
 
 from __future__ import annotations

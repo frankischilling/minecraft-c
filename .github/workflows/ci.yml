@@ -39,6 +39,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Install client build and software graphics dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libasound2-dev libpulse-dev \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
+            libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev libgl1-mesa-dri xvfb xauth
       - name: Configure
         run: >-
           cmake -S . -B build -G Ninja
@@ -46,10 +52,11 @@ jobs:
           -DCMAKE_BUILD_TYPE=Debug
           -DMC_ENABLE_SANITIZERS=ON
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
+          -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON
       - name: Build
         run: cmake --build build
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --output-on-failure
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds

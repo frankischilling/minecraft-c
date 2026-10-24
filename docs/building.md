@@ -1,12 +1,28 @@
 # Build and development setup
 
 The working target is native x86-64 Linux and Windows, using C17 and CMake 3.24
-or newer. There is no playable client or dedicated C server yet. Shared-library
-builds and public tests need no display, graphics, audio, Minecraft assets, or
-Java runtime. Storage uses pinned static zlib; see [dependency setup](dependencies.md)
-for its verified source archive, license, and offline source override.
+or newer. There is no playable client or dedicated C server yet. The default
+build includes a native graphical title screen; see [client startup](client/startup.md)
+for its current behavior, required imported resources and remaining work.
+Client compilation needs SDL's platform development dependencies, but ordinary
+tests need no display or original assets. Use `-DMC_BUILD_CLIENT=OFF` for shared
+libraries and tests without client dependencies. See
+[dependency setup](dependencies.md) for pinned archives, licenses and offline
+source overrides. Java is needed only by enabled reference tests.
 
-Install GCC or Clang, CMake, Ninja and Python 3.10+ on Linux. Build with:
+Install GCC or Clang, CMake, Ninja and Python 3.10+ on Linux.
+
+For Ubuntu/Debian client builds, install the X11/OpenGL and audio development
+headers used by SDL:
+
+```sh
+sudo apt-get install pkg-config libasound2-dev libpulse-dev \
+  libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
+  libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev
+```
+
+The list follows [SDL's Linux build notes](https://github.com/libsdl-org/SDL/blob/release-3.4.18/docs/README-linux.md).
+Other distributions use their corresponding packages. Configure and build with:
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
@@ -32,6 +48,12 @@ Choose a separate build directory when changing generators or compilers.
 For GCC/Clang sanitizers, configure `-DMC_ENABLE_SANITIZERS=ON`; instrumentation
 covers project code and its zlib dependency. Strict diagnostics apply to project
 source. Set `-DBUILD_TESTING=OFF` to build libraries without Python/Java discovery.
+
+Client builds also instrument SDL and libpng with GCC/Clang sanitizers.
+`MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` adds the `client.display` integration test.
+It creates hidden windows with real OpenGL contexts and fails if the desktop
+cannot provide OpenGL 3.3 core. It uses authored pixels and needs no Minecraft
+resources. Keep this option off on runners without a graphics environment.
 
 Enable `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON` for the standard-library numerical
 oracle; it requires JDK8+ and uses no Minecraft files. The NBT and compression
@@ -256,8 +278,9 @@ python scripts/reference/binaries/inspect_jars.py --client b1.7.3.jar --server b
 
 Use explicit Linux paths on Linux. The importer requires a fresh output
 directory and reports missing resources. See [resource evidence](reference/resources.md)
-and [binary setup](reference/binaries.md). No native asset consumer is implemented
-yet. Keep originals, launcher files, credentials, recordings, logs and worlds in
+and [binary setup](reference/binaries.md). The [native title screen](client/startup.md)
+consumes a subset of those resources. Keep originals, launcher files,
+credentials, recordings, logs and worlds in
 ignored local directories. Copy a world before any writable reference test.
 
 Current compiler/platform results and remaining graphical access limits are in

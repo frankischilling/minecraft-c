@@ -1,12 +1,29 @@
 # Build and tests
 
+The [native frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
+passes six tests on MSVC and sanitized GCC/Clang, including actual OpenGL
+contexts, and a bounded 200-frame run per compiler. Windows controls also
+cover window close, Quit, and resize to 512x384 followed by Quit. Linux CI
+enables the display test under Xvfb with software Mesa; a missing context
+fails the test.
+
+The preceding complete snapshot passed 211 MSVC and 213 Clang cases.
+GCC passed 212 of 213 initially; its strict named-data replay rejected an
+observed 1,253 ms backward wall-clock step. One unchanged-code retry with
+fresh OS samples passed. The failed capture remains failed. The final
+minimized-window change then passed focused frontend tests and captures on
+all three compilers. These finite results do not establish playability or
+matched original rendering. See the
+[test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+and [original title evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/client-title.md).
+
 The [canonical naming build](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/minecraft-names.md)
 passes all 619 public/JDK tests: 205 MSVC, 207 GCC and 207 Clang. Linux enables
 ASan/UBSan. Formatting covers 587 C/header files; controller mirrors and lifecycle
 interval controls pass on both platforms. Eight separate file-only controls
 check historical/current module families and immutable recorder provenance.
-The complete retained source has 1,130 files, with all current non-Markdown inputs
-unchanged after testing. Earlier checkpoints below retain their original counts.
+The complete retained naming source has 1,130 files, with its non-Markdown
+inputs unchanged after testing. Earlier checkpoints below retain their original counts.
 
 Dedicated constructor, Entity-index and public fixture/replay tests run without
 original archives. `tools.population_dedicated` runs eighteen Python checks;

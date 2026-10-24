@@ -1,12 +1,36 @@
 # Test scope and reproduction
 
+## Native client frontend
+
+The [startup contract](client/startup.md) records six frontend tests: image,
+ScaledResolution, FontRenderer, assets, Timer and actual OpenGL display checks.
+All six pass on MSVC and sanitized GCC/Clang. The same profiles complete
+bounded 200-frame runs; Windows additionally passes window-close, Quit and
+positive-size resize/Quit controls. Fullscreen and zero-drawable controls
+remain unverified. The display test is opt-in with
+`MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` and fails if it cannot create a context.
+Linux CI runs it under Xvfb with software Mesa.
+
+The preceding full source snapshot passed 211 MSVC and 213 Clang cases.
+GCC passed 212 of 213 initially. Its named-data replay rejected an observed
+1,253 ms backward wall-clock step; one unchanged-code retry with fresh OS
+samples passed. The failed capture remains failed, and the strict comparison
+was preserved. A later minimized-window adjustment passed the focused
+frontend tests and captures on all three compilers. These results do not
+qualify subsequent source changes or matched original rendering.
+
+The [original title note](reference/client-title.md) records the independently
+observed method and clock, including retained controller failures. The
+[float parser](core/java-float.md) has separate primitive checks; it does not
+complete options-file persistence.
+
 ## Canonical Minecraft names
 
 The renamed source passes all 619 public/JDK tests: 205 MSVC, 207 GCC and
 207 Clang, with no failures or skips. Linux enables ASan/UBSan. All 587 C/header
 files pass clang-format 18; controller mirrors and 556 positive/2,011 negative
 lifecycle interval controls pass on both platforms. The retained 1,130-file
-source copy matches all current non-Markdown inputs.
+source copy matches the naming checkpoint's non-Markdown inputs.
 
 Eight additional file-only controls check complete historical/current module
 families and WorldProvider recorder provenance. Fixed JSON/TSV fixtures keep

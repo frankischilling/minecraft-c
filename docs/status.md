@@ -1,5 +1,37 @@
 # Development status
 
+The [native client](client/startup.md) draws the title screen on Windows with an
+NVIDIA RTX 3060 and on Linux through x11 with Mesa llvmpipe. All six frontend
+tests pass on MSVC and sanitized GCC/Clang, including 156 resource checks,
+96 Timer checks and 44 real OpenGL checks. Each platform also completed a
+bounded hidden 200-frame invocation with an actual exit0 and unchanged source,
+assets and binary hashes. Windows controls pass window close, Quit, and a
+resize to 512x384 followed by Quit, using the actual owned hidden window.
+
+The preceding complete source snapshot passes all 211 MSVC and 213 Clang cases.
+GCC passed 212 of 213 initially; the remaining strict named-data replay passed
+once with unchanged code and fresh OS samples. The first capture retained a
+measured 1,253 ms backward wall-clock step and remains failed at its chronological
+admission guard. No timestamps or comparisons were relaxed. The final
+minimized-window adjustment was then rebuilt and retested through the six
+frontend cases and actual captures on all three compilers. Earlier full suites
+below retain their own checkpoint scope.
+
+Child menus, options persistence, audio, complete startup, gameplay, real
+fullscreen/zero-drawable controls and matched original-render comparisons remain
+unfinished or unverified. An original title draw and exact clock witness have
+been observed in an arranged receiver; the first helper's teardown failed.
+The second helper completed with natural target/observer exits; its controller
+failed a JDI version-property check. A separate corrected file-only audit
+passed without a redraw. The [reference note](reference/client-title.md)
+records that lineage. These results do not qualify complete original startup
+or rendering equality.
+
+The [counted float parser](core/java-float.md) constructs binary32 values with
+bounded integer arithmetic. Standalone builds on MSVC/GCC/Clang each pass 100
+unit checks and 5,632 probe records. Shared-core integration is being checked;
+legacy float formatting, GameSettings and options persistence remain unfinished.
+
 The [WorldAccess interface](world/world-access.md) now dispatches typed
 cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its
 native controls pass 295 checks on MSVC and sanitized GCC/Clang, including live-list

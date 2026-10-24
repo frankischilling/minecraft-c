@@ -1,5 +1,12 @@
 # Runtime boundaries
 
+The [native client](client/startup.md) owns the resource source, shared Registry,
+asset cache, font layout and SDL/OpenGL display. The display draws supplied
+quads and manages context/texture ownership; it has no World or screen logic.
+Image decoding and font layout work without an OpenGL context. Client libraries
+remain outside the simulation and server link graph. The current title screen
+does not yet start gameplay, child menus or audio.
+
 [Dedicated World construction](world/construction.md#dedicated-construction)
 selects its cache during the base virtual provider call and retains separate
 subclass fields. Its Entity index preserves duplicate-key insertion and typed
@@ -131,6 +138,8 @@ keeps C until final free. Live Chunk finishing and propagation remain unfinished
 
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility,
 the shared Random profile and allocation-free modified UTF-8 text helpers.
+Its [counted float parser](core/java-float.md) uses bounded integer arithmetic
+to construct binary32 values without CRT parsing or a floating intermediate.
 Its profile uses the private `mc_platform_time` library and C17 atomics/threads.
 `mc_storage` depends on core and contains raw NBT, gzip/zlib memory compression,
 level metadata and region images.
