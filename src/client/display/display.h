@@ -47,6 +47,13 @@ typedef struct mc_client_display_info {
     char vendor[96], renderer[160], version[96];
 } mc_client_display_info;
 
+typedef struct mc_client_framebuffer_info {
+    int red_bits, green_bits, blue_bits, alpha_bits, depth_bits, stencil_bits;
+    bool double_buffer, stereo, srgb_enabled;
+    int sample_buffers, samples;
+    uint32_t color_attachment, color_encoding, draw_buffer, read_buffer;
+} mc_client_framebuffer_info;
+
 /* All operations require the SDL main/video thread and exclusive owner use.
  * Each owner retains exactly one SDL video reference, a resizable centered
  * high-DPI window, and its GL context/objects. It never quits other subsystems.
@@ -64,6 +71,17 @@ bool mc_client_display_create(const char *title, int width, int height, bool hid
  * is supplied by this module. */
 SDL_Window *mc_client_display_window(mc_client_display *display);
 const mc_client_display_info *mc_client_display_info_get(const mc_client_display *display);
+/* Read the current owner's effective default framebuffer, not merely SDL's
+ * requested attributes. Query makes its context current but changes no format,
+ * framebuffer binding, draw/read selection or sRGB state. Requires default draw
+ * and read framebuffer bindings; a foreign binding fails explicitly. Attachment
+ * sizes/encoding use the GL3.3 query for back-left when double buffered, or
+ * front-left otherwise, including zero for absent depth/stencil. The chosen
+ * color attachment and current draw/read selections are reported explicitly.
+ * out is unchanged on failure. No original/native format equality is implied. */
+bool mc_client_display_framebuffer_info_get(mc_client_display *display,
+                                            mc_client_framebuffer_info *out,
+                                            mc_client_display_error *error);
 bool mc_client_display_pixel_size(mc_client_display *display, int *width, int *height,
                                   mc_client_display_error *error);
 
@@ -77,13 +95,15 @@ bool mc_client_display_upload_texture(mc_client_display *display, const mc_image
                                       bool anaglyph, mc_client_texture *out,
                                       mc_client_display_error *error);
 
-/* Begin uses physical drawable pixels for the viewport and the exact scaled
- * doubles for XY projection. It clears depth only to1, enables depth LEQUAL,
- * and places quads at depth0.5. It does not clear color or sleep. A zero-sized
+/* Begin uses physical drawable pixels for the viewport and derives binary32
+ * projection coefficients from the exact scaled doubles. The vertex shader
+ * applies those coefficients to binary32 logical coordinates. It clears depth only to1, enables
+ * depth LEQUAL, and places quads at depth0.5. It does not clear color or sleep. A zero-sized
  * drawable reports NOT_DRAWABLE. Quads are supplied in perimeter order; the
  * renderer emits triangles 0/1/2 and0/2/3. Blend selects SRC_ALPHA and
  * ONE_MINUS_SRC_ALPHA; alpha_test discards final alpha <=0.1 in the shader.
- * Coordinates/UVs must be finite. A failed begin invalidates the prior frame. */
+ * Coordinates/UVs must be finite; coordinates and projection coefficients must
+ * fit binary32. A failed begin invalidates the prior frame. */
 bool mc_client_display_begin(mc_client_display *display, double exact_width, double exact_height,
                              mc_client_display_error *error);
 bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture texture,

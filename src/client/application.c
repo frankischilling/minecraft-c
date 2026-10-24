@@ -4,6 +4,7 @@
 
 #include "application.h"
 #include "display/display.h"
+#include "gui/gui_main_menu.h"
 #include "resources/assets.h"
 
 #include "mc/block/material/material.h"
@@ -11,14 +12,12 @@
 #include "mc/client/gui/font_renderer.h"
 #include "mc/client/gui/scaled_resolution.h"
 #include "mc/client/timer/timer.h"
-#include "mc/core/math/math.h"
 #include "mc/resources/files/files.h"
 #include "millis.h"
 #include "nanotime.h"
 
 #include <SDL3/SDL.h>
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,22 +39,15 @@ typedef struct client_application {
     mc_java_random_profile *profile;
     mc_registry_classes *registry;
     mc_client_assets *assets;
-    mc_font_renderer *font;
-    mc_image_view font_atlas;
-    mc_client_texture font_texture, background_texture, logo_texture, button_texture;
+    mc_gui_main_menu *main_menu;
     mc_java_random title_random;
     mc_client_string splash;
-    mc_math_trig trig;
     mc_scaled_resolution resolution;
     client_button buttons[5];
     int display_width, display_height, input_window_width, input_window_height;
-    bool running, captured, trig_ready;
+    bool running, captured;
     uint32_t frames;
 } client_application;
-
-typedef struct text_transform {
-    double x, y, scale, cosine, sine;
-} text_transform;
 
 static bool resource_error(mc_client_assets_status status, const mc_client_assets_error *error) {
     if (status == MC_CLIENT_ASSETS_OK)
@@ -65,80 +57,20 @@ static bool resource_error(mc_client_assets_status status, const mc_client_asset
     return true;
 }
 
-static bool texture(client_application *app, const char *name, mc_client_texture *out) {
-    const mc_image *image = NULL;
-    mc_client_assets_error error = {0};
-    if (resource_error(mc_client_assets_image(app->assets, name, &image, &error), &error))
-        return false;
-    mc_image_view view = {0};
-    return mc_image_view_get(image, &view) &&
-           mc_client_display_upload_texture(app->display, &view, false, out, &app->display_error);
-}
-
-static bool quad(client_application *app, mc_client_texture image, double x, double y, double width,
-                 double height, float u, float v, float du, float dv, uint32_t argb,
-                 const text_transform *transform) {
-    mc_client_vertex vertices[4] = {{x, y, u, v, argb},
-                                    {x, y + height, u, v + dv, argb},
-                                    {x + width, y + height, u + du, v + dv, argb},
-                                    {x + width, y, u + du, v, argb}};
-    if (transform != NULL) {
-        for (size_t i = 0; i < 4; ++i) {
-            const double px = vertices[i].x * transform->scale;
-            const double py = vertices[i].y * transform->scale;
-            vertices[i].x = transform->x + px * transform->cosine - py * transform->sine;
-            vertices[i].y = transform->y + px * transform->sine + py * transform->cosine;
-        }
-    }
-    return mc_client_display_draw_quad(app->display, image, vertices, false, true,
-                                       &app->display_error);
-}
-
-static bool font_ready(client_application *app) {
-    if (app->font != NULL)
-        return true;
-    mc_font_text mapping = {0};
-    mc_client_assets_error error = {0};
-    if (resource_error(mc_client_assets_font_txt(app->assets, &mapping, &error), &error))
-        return false;
-    return mc_font_renderer_create(&app->font_atlas, mapping.units, mapping.length, false,
-                                   &app->font) == MC_FONT_RENDERER_OK;
-}
-
-static bool text(client_application *app, const mc_font_text *value, int32_t x, int32_t y,
-                 uint32_t color, bool centered, const text_transform *transform) {
-    if (!font_ready(app))
-        return false;
-    int32_t width = 0;
-    if (mc_font_renderer_measure(app->font, value, &width) != MC_FONT_RENDERER_OK)
-        return false;
-    if (centered)
-        x = mc_java_i32_sub(x, width / 2);
-    mc_font_run run = {0};
-    if (mc_font_renderer_layout(app->font, value, x, y, color, true, &run) != MC_FONT_RENDERER_OK)
-        return false;
-    for (size_t i = 0; i < run.count; ++i) {
-        const mc_font_glyph *glyph = &run.glyphs[i];
-        const float u = (float)(glyph->glyph_index % 16u) / 16.0f;
-        const float v = (float)(glyph->glyph_index / 16u) / 16.0f;
-        if (!quad(app, app->font_texture, glyph->x, glyph->y, MC_FONT_RENDERER_GLYPH_EXTENT,
-                  MC_FONT_RENDERER_GLYPH_EXTENT, u, v, MC_FONT_RENDERER_GLYPH_EXTENT / 128.0f,
-                  MC_FONT_RENDERER_GLYPH_EXTENT / 128.0f, glyph->argb, transform))
-            return false;
-    }
-    return true;
-}
-
-static bool ascii_text(client_application *app, const char *value, int32_t x, int32_t y,
-                       uint32_t color) {
-    uint16_t units[128];
-    const size_t length = strlen(value);
-    if (length > sizeof(units) / sizeof(units[0]))
-        return false;
-    for (size_t i = 0; i < length; ++i)
-        units[i] = (unsigned char)value[i];
-    const mc_font_text view = {units, length};
-    return text(app, &view, x, y, color, false, NULL);
+static bool gui_failure(client_application *app, const mc_gui_main_menu_error *error) {
+    if (error->status == MC_GUI_MAIN_MENU_DISPLAY_FAILED)
+        app->display_error = error->display;
+    else if (error->status == MC_GUI_MAIN_MENU_ASSETS_FAILED &&
+             error->assets.status != MC_CLIENT_ASSETS_OK) {
+        fprintf(stderr, "%s: ", error->operation == NULL ? "GuiMainMenu" : error->operation);
+        (void)resource_error(error->assets.status, &error->assets);
+    } else if (error->status == MC_GUI_MAIN_MENU_FONT_FAILED)
+        fprintf(stderr, "%s: FontRenderer status %d\n",
+                error->operation == NULL ? "GuiMainMenu" : error->operation, (int)error->font);
+    else
+        fprintf(stderr, "%s: GUI status %d\n",
+                error->operation == NULL ? "GuiMainMenu" : error->operation, (int)error->status);
+    return false;
 }
 
 static bool hit(const client_button *button, int32_t x, int32_t y) {
@@ -209,79 +141,41 @@ static bool layout(client_application *app, int width, int height) {
     return true;
 }
 
-static bool draw(client_application *app, mc_gui_mouse_position mouse) {
-    const mc_scaled_resolution *scale = &app->resolution;
-    if (!mc_client_display_begin(app->display, scale->width_exact, scale->height_exact,
-                                 &app->display_error))
-        return false;
-    if (app->background_texture == 0 &&
-        !texture(app, "/gui/background.png", &app->background_texture))
-        return false;
-    if (!quad(app, app->background_texture, 0, 0, scale->width, scale->height, 0, 0,
-              (float)scale->width / 32.0f, (float)scale->height / 32.0f, UINT32_C(0xff404040),
-              NULL))
-        return false;
-    if (app->logo_texture == 0 && !texture(app, "/title/mclogo.png", &app->logo_texture))
-        return false;
-    const int32_t logo_x = scale->width / 2 - 274 / 2;
-    if (!quad(app, app->logo_texture, logo_x, 30, 155, 44, 0, 0, 155.0f / 256.0f, 44.0f / 256.0f,
-              UINT32_C(0xffffffff), NULL) ||
-        !quad(app, app->logo_texture, logo_x + 155, 30, 155, 44, 0, 45.0f / 256.0f, 155.0f / 256.0f,
-              44.0f / 256.0f, UINT32_C(0xffffffff), NULL))
-        return false;
-    const mc_font_text splash = {app->splash.units, app->splash.length};
-    int64_t millis = app->options.time_millis;
-    if (!app->options.fixed_time &&
-        mc_platform_current_time_millis(&millis) != MC_PLATFORM_MILLIS_OK)
-        return false;
-    float phase = (float)(millis % 1000) / 1000.0f;
-    phase = phase * 3.1415927f;
-    phase = phase * 2.0f;
-    if (!app->trig_ready) {
-        if (!mc_math_trig_init(&app->trig))
-            return false;
-        app->trig_ready = true;
+static bool title_millis(void *context, int64_t *out) {
+    const client_application *app = context;
+    if (app->options.fixed_time) {
+        *out = app->options.time_millis;
+        return true;
     }
-    float splash_scale = 1.8f - fabsf(mc_math_sin(&app->trig, phase) * 0.1f);
-    int32_t splash_width = 0;
-    if (!font_ready(app) ||
-        mc_font_renderer_measure(app->font, &splash, &splash_width) != MC_FONT_RENDERER_OK)
-        return false;
-    splash_scale = splash_scale * 100.0f / (float)(splash_width + 32);
-    const double angle = -20.0 * 3.14159265358979323846 / 180.0;
-    const text_transform transform = {(double)(scale->width / 2 + 90), 70, splash_scale, cos(angle),
-                                      sin(angle)};
-    if (!text(app, &splash, 0, -8, UINT32_C(0xffff00), true, &transform) ||
-        !ascii_text(app, "Minecraft Beta 1.7.3", 2, 2, UINT32_C(0x505050)))
-        return false;
-    static const char copyright[] = "Copyright Mojang AB. Do not distribute.";
-    uint16_t copyright_units[sizeof(copyright) - 1];
-    for (size_t i = 0; i < sizeof(copyright_units) / sizeof(copyright_units[0]); ++i)
-        copyright_units[i] = (unsigned char)copyright[i];
-    const mc_font_text copyright_text = {copyright_units, sizeof(copyright) - 1};
-    int32_t copyright_width = 0;
-    if (mc_font_renderer_measure(app->font, &copyright_text, &copyright_width) !=
-            MC_FONT_RENDERER_OK ||
-        !text(app, &copyright_text, scale->width - copyright_width - 2, scale->height - 10,
-              UINT32_C(0xffffff), false, NULL))
-        return false;
-    if (app->button_texture == 0 && !texture(app, "/gui/gui.png", &app->button_texture))
-        return false;
+    return mc_platform_current_time_millis(out) == MC_PLATFORM_MILLIS_OK;
+}
+
+static bool draw(client_application *app, mc_gui_mouse_position mouse) {
+    mc_gui_button buttons[5];
     for (size_t i = 0; i < 5; ++i) {
         const client_button *button = &app->buttons[i];
-        const bool hovered = hit(button, mouse.x, mouse.y);
-        const float row = hovered ? 86.0f : 66.0f;
-        const int32_t half = button->width / 2;
-        if (!quad(app, app->button_texture, button->x, button->y, half, button->height, 0,
-                  row / 256.0f, (float)half / 256.0f, 20.0f / 256.0f, UINT32_C(0xffffffff), NULL) ||
-            !quad(app, app->button_texture, button->x + half, button->y, half, button->height,
-                  (float)(200 - half) / 256.0f, row / 256.0f, (float)half / 256.0f, 20.0f / 256.0f,
-                  UINT32_C(0xffffffff), NULL) ||
-            !text(app, &button->label, button->x + half, button->y + 6,
-                  hovered ? UINT32_C(0xffffa0) : UINT32_C(0xe0e0e0), true, NULL))
-            return false;
+        buttons[i] = (mc_gui_button){.id = button->id,
+                                     .x = button->x,
+                                     .y = button->y,
+                                     .width = button->width,
+                                     .height = button->height,
+                                     .label = &button->label,
+                                     .enabled = true,
+                                     .visible = true};
     }
-    return true;
+    mc_timer_view timer = {0};
+    if (!mc_timer_view_get(app->timer, &timer))
+        return false;
+    const mc_font_text splash = {app->splash.units, app->splash.length};
+    const mc_gui_main_menu_frame frame = {.resolution = app->resolution,
+                                          .splash = &splash,
+                                          .buttons = buttons,
+                                          .button_count = 5,
+                                          .mouse = mouse,
+                                          .partial_tick = timer.partial_ticks};
+    mc_gui_main_menu_error error = {0};
+    return mc_gui_main_menu_draw(app->main_menu, &frame, title_millis, app, &error) ||
+           gui_failure(app, &error);
 }
 
 static bool capture(client_application *app) {
@@ -446,14 +340,11 @@ static bool initialize(client_application *app) {
         !mc_client_display_create("Minecraft", app->options.width, app->options.height,
                                   app->options.hidden, &app->display, &app->display_error))
         return false;
-    const mc_image *font = NULL;
+    mc_gui_main_menu_error menu_error = {0};
+    if (!mc_gui_main_menu_create(app->display, app->assets, &app->main_menu, &menu_error))
+        return gui_failure(app, &menu_error);
     mc_client_assets_error error = {0};
-    if (resource_error(mc_client_assets_image(app->assets, "/font/default.png", &font, &error),
-                       &error) ||
-        !mc_image_view_get(font, &app->font_atlas) ||
-        !mc_client_display_upload_texture(app->display, &app->font_atlas, false, &app->font_texture,
-                                          &app->display_error) ||
-        mc_java_random_construct_default(app->profile, &app->title_random) !=
+    if (mc_java_random_construct_default(app->profile, &app->title_random) !=
             MC_JAVA_RANDOM_PROFILE_OK ||
         resource_error(
             mc_client_assets_choose_splash(app->assets, &app->title_random, &app->splash, &error),
@@ -562,7 +453,7 @@ cleanup:
                                                      : app->display_error.operation,
                 app->display_error.detail);
     }
-    mc_font_renderer_free(app->font);
+    mc_gui_main_menu_free(app->main_menu);
     mc_client_string_free(&app->splash);
     if (!mc_client_display_destroy(app->display, &app->display_error))
         result = 1;

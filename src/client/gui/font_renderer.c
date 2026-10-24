@@ -12,6 +12,8 @@ struct mc_font_renderer {
     uint32_t palette[32];
     mc_font_glyph *scratch;
     size_t capacity;
+    mc_font_command *commands;
+    size_t command_capacity;
 };
 
 static mc_font_renderer_status text_valid(const mc_font_text *text) {
@@ -115,6 +117,7 @@ mc_font_renderer_status mc_font_renderer_create(const mc_image_view *atlas,
 void mc_font_renderer_free(mc_font_renderer *font) {
     if (font != NULL) {
         free(font->scratch);
+        free(font->commands);
         free(font);
     }
 }
@@ -172,27 +175,69 @@ static uint32_t initial_color(uint32_t argb, bool shadow) {
     return alpha | rgb;
 }
 
-static size_t emit_pass(const mc_font_renderer *font, const mc_font_text *text, int32_t x,
-                        int32_t y, uint32_t argb, bool shadow, mc_font_glyph *glyphs) {
-    size_t count = 0;
+typedef struct layout_counts {
+    size_t glyphs, commands;
+} layout_counts;
+
+static void command_emit(mc_font_command *commands, layout_counts *count, mc_font_command command) {
+    if (commands != NULL)
+        commands[count->commands] = command;
+    ++count->commands;
+}
+
+/* One walk owns mapping, format handling, color changes and source advances.
+ * The optional flat sink retains the existing compatibility projection; the
+ * command sink retains the operations instead of absolute cursor geometry. */
+static layout_counts walk_pass(const mc_font_renderer *font, const mc_font_text *text, int32_t x,
+                               int32_t y, uint32_t argb, bool shadow, mc_font_glyph *glyphs,
+                               mc_font_command *commands) {
+    layout_counts count = {0};
+    if (text == NULL)
+        return count;
     volatile float cursor = (float)x;
     const float baseline = (float)y;
     uint32_t color = initial_color(argb, shadow);
-    if (text != NULL)
-        for (size_t i = 0; i < text->length; ++i) {
-            while (i + 1 < text->length && text->units[i] == UINT16_C(0x00a7)) {
-                color = font->palette[color_code(text->units[i + 1]) + (shadow ? 16u : 0u)];
-                i += 2;
-            }
-            if (i < text->length) {
-                const int index = glyph_index(font, text->units[i]);
-                if (index >= 0) {
-                    glyphs[count++] = (mc_font_glyph){(uint16_t)index, cursor, baseline, color};
+    command_emit(commands, &count,
+                 (mc_font_command){.kind = MC_FONT_COMMAND_BEGIN_PASS,
+                                   .value.begin_pass = {(float)x, baseline, color}});
+    for (size_t i = 0; i < text->length; ++i) {
+        while (i + 1 < text->length && text->units[i] == UINT16_C(0x00a7)) {
+            color = font->palette[color_code(text->units[i + 1]) + (shadow ? 16u : 0u)];
+            command_emit(commands, &count,
+                         (mc_font_command){.kind = MC_FONT_COMMAND_COLOR, .value.argb = color});
+            i += 2;
+        }
+        if (i < text->length) {
+            const int index = glyph_index(font, text->units[i]);
+            if (index >= 0) {
+                if (glyphs != NULL) {
+                    glyphs[count.glyphs] =
+                        (mc_font_glyph){(uint16_t)index, cursor, baseline, color};
                     cursor = cursor + (float)font->advances[index];
                 }
+                ++count.glyphs;
+                command_emit(commands, &count,
+                             (mc_font_command){
+                                 .kind = MC_FONT_COMMAND_GLYPH_LIST,
+                                 .value.glyph_list = {(uint16_t)index, font->advances[index]}});
             }
         }
+    }
+    command_emit(commands, &count, (mc_font_command){.kind = MC_FONT_COMMAND_END_PASS});
     return count;
+}
+
+static mc_font_renderer_status layout_text_valid(const mc_font_text *text) {
+    const mc_font_renderer_status status = text_valid(text);
+    if (status != MC_FONT_RENDERER_OK)
+        return status;
+    bool non_ascii = false, formatting = false;
+    if (text != NULL)
+        for (size_t i = 0; i < text->length; ++i) {
+            non_ascii = non_ascii || (text->units[i] > 127u && text->units[i] != UINT16_C(0x00a7));
+            formatting = formatting || (text->units[i] == UINT16_C(0x00a7) && i + 1 < text->length);
+        }
+    return non_ascii && formatting ? MC_FONT_RENDERER_UNSUPPORTED_LOWERCASE : MC_FONT_RENDERER_OK;
 }
 
 mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc_font_text *text,
@@ -200,25 +245,10 @@ mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc
                                                 mc_font_run *out) {
     if (font == NULL || out == NULL)
         return MC_FONT_RENDERER_INVALID_ARGUMENT;
-    const mc_font_renderer_status status = text_valid(text);
+    const mc_font_renderer_status status = layout_text_valid(text);
     if (status != MC_FONT_RENDERER_OK)
         return status;
-    bool non_ascii = false, formatting = false;
-    size_t count = 0;
-    if (text != NULL) {
-        for (size_t i = 0; i < text->length; ++i) {
-            non_ascii = non_ascii || (text->units[i] > 127u && text->units[i] != UINT16_C(0x00a7));
-            formatting = formatting || (text->units[i] == UINT16_C(0x00a7) && i + 1 < text->length);
-        }
-        if (non_ascii && formatting)
-            return MC_FONT_RENDERER_UNSUPPORTED_LOWERCASE;
-        for (size_t i = 0; i < text->length; ++i) {
-            while (i + 1 < text->length && text->units[i] == UINT16_C(0x00a7))
-                i += 2;
-            if (i < text->length && glyph_index(font, text->units[i]) >= 0)
-                ++count;
-        }
-    }
+    const size_t count = walk_pass(font, text, 0, 0, 0, false, NULL, NULL).glyphs;
     const size_t passes = shadow ? 2u : 1u;
     if (count > SIZE_MAX / passes / sizeof(mc_font_glyph))
         return MC_FONT_RENDERER_LIMIT;
@@ -231,14 +261,58 @@ mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc
     }
     size_t written = 0;
     if (shadow)
-        written = emit_pass(font, text, mc_java_i32_add(x, 1), mc_java_i32_add(y, 1), argb, true,
-                            records);
-    written += emit_pass(font, text, x, y, argb, false, records == NULL ? NULL : records + written);
+        written = walk_pass(font, text, mc_java_i32_add(x, 1), mc_java_i32_add(y, 1), argb, true,
+                            records, NULL)
+                      .glyphs;
+    written +=
+        walk_pass(font, text, x, y, argb, false, records == NULL ? NULL : records + written, NULL)
+            .glyphs;
     if (records != font->scratch) {
         free(font->scratch);
         font->scratch = records;
         font->capacity = needed;
     }
     *out = (mc_font_run){written == 0 ? NULL : font->scratch, written, measured(font, text)};
+    return MC_FONT_RENDERER_OK;
+}
+
+mc_font_renderer_status mc_font_renderer_layout_commands(mc_font_renderer *font,
+                                                         const mc_font_text *text, int32_t x,
+                                                         int32_t y, uint32_t argb, bool shadow,
+                                                         mc_font_command_run *out) {
+    if (font == NULL || out == NULL)
+        return MC_FONT_RENDERER_INVALID_ARGUMENT;
+    const mc_font_renderer_status status = layout_text_valid(text);
+    if (status != MC_FONT_RENDERER_OK)
+        return status;
+    const size_t count = walk_pass(font, text, 0, 0, 0, false, NULL, NULL).commands;
+    const size_t passes = shadow ? 2u : 1u;
+    if (count > SIZE_MAX / passes / sizeof(mc_font_command))
+        return MC_FONT_RENDERER_LIMIT;
+    const size_t needed = count * passes;
+    if (needed > MC_FONT_RENDERER_MAX_COMMANDS ||
+        needed * sizeof(mc_font_command) > MC_FONT_RENDERER_COMMAND_BYTES_LIMIT)
+        return MC_FONT_RENDERER_LIMIT;
+    mc_font_command *records = font->commands;
+    if (needed > font->command_capacity) {
+        records = malloc(needed * sizeof(*records));
+        if (records == NULL)
+            return MC_FONT_RENDERER_ALLOCATION_FAILED;
+    }
+    size_t written = 0;
+    if (shadow)
+        written = walk_pass(font, text, mc_java_i32_add(x, 1), mc_java_i32_add(y, 1), argb, true,
+                            NULL, records)
+                      .commands;
+    written +=
+        walk_pass(font, text, x, y, argb, false, NULL, records == NULL ? NULL : records + written)
+            .commands;
+    if (records != font->commands) {
+        free(font->commands);
+        font->commands = records;
+        font->command_capacity = needed;
+    }
+    *out =
+        (mc_font_command_run){written == 0 ? NULL : font->commands, written, measured(font, text)};
     return MC_FONT_RENDERER_OK;
 }

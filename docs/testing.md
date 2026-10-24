@@ -2,6 +2,15 @@
 
 ## Native client frontend
 
+Commit `a1c9e0c33a7a410df9e50202f4b4b672ede79320` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40080961138):
+211 MSVC, 214 GCC and 214 Clang tests, with 639 actual Passed records and no
+missing cases or skips. Formatting covers 614 C/header files. Controller
+mirrors and lifecycle interval checks pass. The synthetic checkout's complete
+tree equals the head tree. The preceding Windows build failed at the image
+owner's flexible array under MSVC 19.44; the pointer-based allocation layout
+passes the same compiler without relaxing warnings.
+
 The [startup contract](client/startup.md) records six frontend tests: image,
 ScaledResolution, FontRenderer, assets, Timer and actual OpenGL display checks.
 All six pass on MSVC and sanitized GCC/Clang. The same profiles complete
@@ -10,6 +19,14 @@ positive-size resize/Quit controls. Fullscreen and zero-drawable controls
 remain unverified. The display test is opt-in with
 `MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` and fails if it cannot create a context.
 Linux CI runs it under Xvfb with software Mesa.
+
+The later shared [GuiMainMenu/probe checkpoint](client/gui-main-menu.md) passes
+eight focused cases per compiler, including 50 display checks and 53 scene
+admission controls. Actual conditional images retain one differing pixel on
+Windows and one on Linux against the original; the raw comparison fails and
+preserves those differences. The ordered FontRenderer interface passes 262,379
+additional checks while the original 220 glyph checks remain. Production
+matrix replay and full startup still need qualification.
 
 The preceding full source snapshot passed 211 MSVC and 213 Clang cases.
 GCC passed 212 of 213 initially. Its named-data replay rejected an observed
@@ -23,6 +40,14 @@ The [original title note](reference/client-title.md) records the independently
 observed method and clock, including retained controller failures. The
 [float parser](core/java-float.md) has separate primitive checks; it does not
 complete options-file persistence.
+
+The [legacy formatter](core/java-float-format.md) passes 55,240 external records
+per compiler through the public shared core, retaining the separate 5,708
+observed-JDK and 49,532 model-derived groups. The
+[integer parser](core/java-integer.md) passes 43 unit checks and the complete
+65,536-unit alphabet comparison per compiler. Its original controller reports
+retain their footer-parser failure; separate file-only audits verify the actual
+tests and rows and complete read-only binary checks without native reruns.
 
 ## Canonical Minecraft names
 

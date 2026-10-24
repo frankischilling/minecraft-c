@@ -87,9 +87,12 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_assets STATIC src/client/resources/assets.c)
     target_include_directories(mc_client_assets PUBLIC src/client/resources)
     target_link_libraries(mc_client_assets PUBLIC mc_client_gui mc_resources mc_image PRIVATE mc_build_options)
+    add_library(mc_client_gui_main_menu STATIC src/client/gui/gui_main_menu.c)
+    target_include_directories(mc_client_gui_main_menu PUBLIC src/client)
+    target_link_libraries(mc_client_gui_main_menu PUBLIC mc_client_assets mc_client_display PRIVATE mc_build_options)
     add_executable(minecraft-client WIN32 src/client/main.c src/client/application.c)
     target_include_directories(minecraft-client PRIVATE src/client src/platform/time)
-    target_link_libraries(minecraft-client PRIVATE mc_client_assets mc_client_display mc_client_timer mc_platform_time mc_build_options)
+    target_link_libraries(minecraft-client PRIVATE mc_client_gui_main_menu mc_client_timer mc_platform_time mc_build_options)
 endif()
 
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
@@ -111,6 +114,8 @@ add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
     src/core/java/float_parse.c
+    src/core/java/float_format.c
+    src/core/java/integer_parse.c
     src/core/java/format.c
     src/core/java/format_case.c
     src/core/java/properties.c
@@ -346,6 +351,8 @@ if(BUILD_TESTING)
         set_tests_properties(resources.image PROPERTIES LABELS "public;unit;resources" TIMEOUT 60)
         add_executable(mc_image_probe tests/resources/image/image_probe.c)
         target_link_libraries(mc_image_probe PRIVATE mc_image mc_build_options)
+        add_executable(mc_gui_main_menu_probe tests/client/gui/main_menu_probe.c)
+        target_link_libraries(mc_gui_main_menu_probe PRIVATE mc_client_gui_main_menu mc_build_options)
         add_executable(mc_test_scaled_resolution tests/client/gui/test_scaled_resolution.c)
         target_link_libraries(mc_test_scaled_resolution PRIVATE mc_client_gui mc_build_options)
         add_test(NAME client.scaled_resolution COMMAND mc_test_scaled_resolution)
@@ -354,6 +361,10 @@ if(BUILD_TESTING)
         target_link_libraries(mc_test_font_renderer PRIVATE mc_client_gui mc_build_options)
         add_test(NAME client.font_renderer COMMAND mc_test_font_renderer)
         set_tests_properties(client.font_renderer PROPERTIES LABELS "public;unit;client" TIMEOUT 60)
+        add_executable(mc_test_font_commands tests/client/gui/test_font_commands.c)
+        target_link_libraries(mc_test_font_commands PRIVATE mc_client_gui mc_build_options)
+        add_test(NAME client.font_commands COMMAND mc_test_font_commands)
+        set_tests_properties(client.font_commands PROPERTIES LABELS "public;unit;client;ownership" TIMEOUT 60)
         add_executable(mc_test_client_assets tests/client/resources/test_assets.c)
         target_include_directories(mc_test_client_assets PRIVATE src/client)
         target_link_libraries(mc_test_client_assets PRIVATE mc_client_assets ZLIB::ZLIBSTATIC mc_build_options)
@@ -899,6 +910,25 @@ if(BUILD_TESTING)
     add_executable(mc_java_float_parse_probe tests/core/java/float_parse_probe.c)
     target_link_libraries(mc_java_float_parse_probe PRIVATE mc_core mc_build_options)
 
+    add_executable(mc_test_java_float_format tests/core/java/test_float_format.c)
+    target_link_libraries(mc_test_java_float_format PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_float_format COMMAND mc_test_java_float_format)
+    set_tests_properties(core.java_float_format PROPERTIES LABELS "public;unit;numeric" TIMEOUT 60)
+
+    add_executable(mc_test_java_integer_parse tests/core/java/test_integer_parse.c)
+    target_link_libraries(mc_test_java_integer_parse PRIVATE mc_core mc_build_options)
+    add_test(NAME core.java_integer_parse COMMAND mc_test_java_integer_parse)
+    set_tests_properties(core.java_integer_parse PROPERTIES LABELS "public;unit;numeric" TIMEOUT 60)
+
+    add_executable(mc_java_integer_parse_probe tests/core/java/integer_parse_probe.c)
+    target_link_libraries(mc_java_integer_parse_probe PRIVATE mc_core mc_build_options)
+
+    add_executable(mc_java_float_format_probe tests/core/java/float_format_probe.c)
+    target_link_libraries(mc_java_float_format_probe PRIVATE mc_core mc_build_options)
+    if(UNIX)
+        target_link_libraries(mc_java_float_format_probe PRIVATE m)
+    endif()
+
     add_executable(mc_test_java_gaussian tests/core/java/test_gaussian.c)
     target_link_libraries(mc_test_java_gaussian PRIVATE mc_core mc_build_options)
     add_test(NAME core.java_gaussian COMMAND mc_test_java_gaussian)
@@ -1104,6 +1134,18 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME tools.java_float_format_probe
+        COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/test_float_format_probe.py"
+        --executable "$<TARGET_FILE:mc_java_float_format_probe>")
+    set_tests_properties(tools.java_float_format_probe PROPERTIES LABELS "public;tools;numeric" TIMEOUT 60)
+    if(MC_BUILD_CLIENT)
+        add_test(NAME tools.client_main_menu_probe
+            COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_main_menu_probe.py"
+            --executable "$<TARGET_FILE:mc_gui_main_menu_probe>")
+        set_tests_properties(tools.client_main_menu_probe PROPERTIES LABELS "public;tools;client" TIMEOUT 60)
+    endif()
 
     add_test(NAME entity.nbt_observation
         COMMAND "${Python3_EXECUTABLE}"

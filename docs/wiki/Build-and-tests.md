@@ -1,11 +1,26 @@
 # Build and tests
 
+The [native frontend/parser head](https://github.com/frankischilling/minecraft-c/actions/runs/40080961138)
+`a1c9e0c` passes all four hosted jobs: 211 MSVC, 214 GCC and 214 Clang tests.
+All 639 cases passed without skips, alongside 614-file formatting, controller
+mirrors and lifecycle interval checks. The preceding Windows compile failure
+on MSVC 19.44 is fixed without relaxing strict warnings.
+
 The [native frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
-passes six tests on MSVC and sanitized GCC/Clang, including actual OpenGL
+passes eight focused tests on MSVC and sanitized GCC/Clang, including actual OpenGL
 contexts, and a bounded 200-frame run per compiler. Windows controls also
 cover window close, Quit, and resize to 512x384 followed by Quit. Linux CI
 enables the display test under Xvfb with software Mesa; a missing context
 fails the test.
+
+The shared title renderer's exact conditional image comparison retains one
+different pixel on Windows and one on Linux. Its ordered FontRenderer interface
+adds 262,379 checks while retaining the existing 220 glyph checks. The
+[legacy float formatter](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-float-format.md)
+matches 5,708 retained JDK rows and 49,532 separate model cases per compiler
+through the public core library. All 13 selected client-disabled tests pass
+per compiler. These finite results do not complete options persistence or
+the client.
 
 The preceding complete snapshot passed 211 MSVC and 213 Clang cases.
 GCC passed 212 of 213 initially; its strict named-data replay rejected an

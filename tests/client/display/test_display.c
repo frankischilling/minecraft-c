@@ -142,10 +142,27 @@ int main(int argc, char **argv) {
             error.status == MC_CLIENT_DISPLAY_INVALID_ARGUMENT);
     REQUIRE(
         !quad(display, 0, 0, 0, 32, 24, 0, 0, 0, 0, UINT32_C(0xffffffff), false, false, &error));
+    REQUIRE(!mc_client_display_begin(display, 1e-40, 24.0, &error) &&
+            error.status == MC_CLIENT_DISPLAY_INVALID_ARGUMENT);
+    REQUIRE(mc_client_display_begin(display, 32.0, 24.0, &error));
+    REQUIRE(!quad(display, 0, 1e39, 0, 32, 24, 0, 0, 0, 0, UINT32_C(0xffffffff), false, false,
+                  &error) &&
+            error.status == MC_CLIENT_DISPLAY_INVALID_ARGUMENT);
 
     /* A second real context changes current ownership. Calls on the first
      * display must restore its context before using retained texture IDs. */
     REQUIRE(mc_client_display_create("Second display", 32, 32, true, &other, &error));
+    mc_client_framebuffer_info framebuffer = {0};
+    REQUIRE(mc_client_display_framebuffer_info_get(display, &framebuffer, &error));
+    REQUIRE(framebuffer.red_bits > 0 && framebuffer.green_bits > 0 && framebuffer.blue_bits > 0 &&
+            framebuffer.alpha_bits >= 0 && framebuffer.depth_bits >= 0 &&
+            framebuffer.stencil_bits >= 0 && framebuffer.sample_buffers >= 0 &&
+            framebuffer.samples >= 0 &&
+            SDL_GL_GetCurrentWindow() == mc_client_display_window(display));
+    mc_client_framebuffer_info untouched = {.red_bits = -1, .depth_bits = -2};
+    REQUIRE(!mc_client_display_framebuffer_info_get(NULL, &untouched, &error) &&
+            error.status == MC_CLIENT_DISPLAY_INVALID_ARGUMENT && untouched.red_bits == -1 &&
+            untouched.depth_bits == -2);
     REQUIRE(mc_client_display_begin(display, 32.0, 24.0, &error));
     REQUIRE(quad(display, texture, 0, 0, 32, 24, 0, 0, 1, 1, UINT32_C(0xffffffff), false, true,
                  &error));

@@ -86,4 +86,63 @@ mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc
                                                 int32_t x, int32_t y, uint32_t argb, bool shadow,
                                                 mc_font_run *out);
 
+/* Ordered source display-list semantics, independent of any matrix precision
+ * implementation. BEGIN_PASS sets initial color, pushes the inherited matrix,
+ * then postmultiplies its float translation. END_PASS pops only that matrix;
+ * color is not restored. A COLOR command represents glColor3f, including its
+ * alpha reset. GLYPH_LIST draws the local 7.99f square in the indexed atlas cell,
+ * then postmultiplies float(advance),0,0. Every mapped glyph emits this command,
+ * including spaces and transparent/blank cells. Never cull its advance.
+ * Unsupported units emit neither a glyph command nor an advance. */
+typedef enum mc_font_command_kind {
+    MC_FONT_COMMAND_BEGIN_PASS = 0,
+    MC_FONT_COMMAND_COLOR,
+    MC_FONT_COMMAND_GLYPH_LIST,
+    MC_FONT_COMMAND_END_PASS
+} mc_font_command_kind;
+
+typedef struct mc_font_command {
+    mc_font_command_kind kind;
+
+    union {
+        struct {
+            float x, y;
+            uint32_t argb;
+        } begin_pass;
+
+        uint32_t argb;
+
+        struct {
+            uint16_t glyph_index;
+            uint8_t advance;
+        } glyph_list;
+    } value;
+} mc_font_command;
+
+typedef struct mc_font_command_run {
+    const mc_font_command *commands;
+    size_t count;
+    int32_t width; /* Same independent source measurement as mc_font_run. */
+} mc_font_command_run;
+
+#define MC_FONT_RENDERER_MAX_COMMANDS (2u * (MC_FONT_RENDERER_MAX_TEXT_UNITS + 2u))
+#define MC_FONT_RENDERER_COMMAND_BYTES_LIMIT (8u * 1024u * 1024u)
+
+/* Same character/format admission as layout, without flattening translations.
+ * NULL text emits no commands. Nonnull empty text emits BEGIN/END per pass.
+ * shadow emits the complete Java-int-wrapped (x+1,y+1) pass first, then main.
+ * Duplicate color commands and commands after the final visible glyph remain.
+ * Source list-buffer flushes do not reset matrix/color and are not represented.
+ *
+ * The run borrows independent command scratch until the next successful
+ * command-layout or free. Legacy glyph scratch is unaffected, and legacy
+ * layout does not invalidate commands. Failure preserves prior scratch/out.
+ * Exclusive owner access and disjoint/live arguments are required as in layout.
+ * At most MAX_COMMANDS records and COMMAND_BYTES_LIMIT bytes per buffer; a
+ * replacement keeps one old buffer until success. No GL/SDL/renderer callback. */
+mc_font_renderer_status mc_font_renderer_layout_commands(mc_font_renderer *font,
+                                                         const mc_font_text *text, int32_t x,
+                                                         int32_t y, uint32_t argb, bool shadow,
+                                                         mc_font_command_run *out);
+
 #endif

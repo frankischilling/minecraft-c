@@ -24,6 +24,8 @@ translated button labels, tiled dirt background, two logo quads and animated
 splash text. Splash selection preserves file order and duplicate entries and
 uses the shared Java Random implementation. Calendar greetings follow selection.
 GUI scaling and mouse conversion use the original integer arithmetic.
+The [GuiMainMenu renderer](gui-main-menu.md) supplies the shared title draw body
+for the application and its conditional observation probe.
 The [Timer](timer.md) supplies elapsed 20 Hz GUI ticks. Each tick drains mouse
 events before keyboard events. Timer and GUI input continue when a native
 drawable has zero size, using the last positive input geometry while drawing
@@ -65,9 +67,14 @@ rendering results on those environments. Interactive play, audio and matched
 original-client frame comparisons remain unverified. Full regression results
 from earlier runtime checkpoints do not qualify this later client increment.
 
-The current frontend passes its six tests on MSVC and sanitized GCC/Clang,
+The later shared-renderer frontend passes eight tests on MSVC and sanitized GCC/Clang,
 plus a bounded 200-frame run on each. Windows posted-input controls additionally
 verify window close, the title's Quit button, and resizing the real client area
 to 512x384 before clicking Quit. They retain actual process status and owned
 window identity, and exercise positive drawable sizes. Fullscreen and zero-sized
 drawable behavior still need actual runtime qualification.
+
+The [GuiMainMenu probe](gui-main-menu.md) draws through the same module as the
+application. Its matched original comparison retains one differing pixel per
+backend. The ordered FontRenderer command API passes its own semantic and
+ownership tests; production matrix replay remains unfinished.

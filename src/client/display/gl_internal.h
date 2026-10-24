@@ -40,6 +40,8 @@ typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei 
 #define MC_CLIENT_GL_FUNCTIONS(X)                                                                  \
     X(mc_client_gl_get_error_fn, GetError, "glGetError")                                           \
     X(mc_client_gl_get_integer_fn, GetIntegerv, "glGetIntegerv")                                   \
+    X(PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC, GetFramebufferAttachmentParameteriv,           \
+      "glGetFramebufferAttachmentParameteriv")                                                     \
     X(mc_client_gl_get_string_fn, GetString, "glGetString")                                        \
     X(mc_client_gl_viewport_fn, Viewport, "glViewport")                                            \
     X(mc_client_gl_clear_fn, Clear, "glClear")                                                     \
@@ -71,6 +73,7 @@ typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei 
     X(PFNGLUSEPROGRAMPROC, UseProgram, "glUseProgram")                                             \
     X(PFNGLGETUNIFORMLOCATIONPROC, GetUniformLocation, "glGetUniformLocation")                     \
     X(PFNGLUNIFORM1IPROC, Uniform1i, "glUniform1i")                                                \
+    X(PFNGLUNIFORM2FPROC, Uniform2f, "glUniform2f")                                                \
     X(PFNGLGENVERTEXARRAYSPROC, GenVertexArrays, "glGenVertexArrays")                              \
     X(PFNGLDELETEVERTEXARRAYSPROC, DeleteVertexArrays, "glDeleteVertexArrays")                     \
     X(PFNGLBINDVERTEXARRAYPROC, BindVertexArray, "glBindVertexArray")                              \

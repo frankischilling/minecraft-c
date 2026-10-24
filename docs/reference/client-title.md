@@ -61,16 +61,49 @@ release file and passed the retained source, trace, frame, GL, cleanup and
 process checks. The failed controller report remains unchanged; no redraw
 occurred during the corrected audit.
 
+## Active matrix observation
+
+A separate experiment invokes a prepared, target-owned sampler through JDI
+on the suspended GL thread. The sampler only reads GL matrices and three state
+values into its own buffers. It does not set matrices, replay lists, replace
+the clock or modify game fields. These getter invocations can affect driver
+work and timing; this is an active observation profile, separate from the
+passive capture above.
+
+The actual draw completed with 38 matrix samples around rotation, scale and
+16 font-list batches. All 38 helper invocations returned; target and observer
+exited naturally with status 0 and complete owned-process cleanup. The clock
+trace retained 13 records and the combined profile delivered 46 events. The
+constructor selected `Thematic!`; its actual clock result was
+`1792842596462`. Earlier captures remain unchanged.
+
+An independent file-only model compared 40 arithmetic recipes at every sampled
+boundary, checking 1,216 binary32 and 1,216 binary64 query coefficients per
+recipe. Two indistinguishable angle recipes fit. Both round radians to binary32
+before computing sine/cosine, then use binary32 matrix storage. Translation
+rounds each product and addition separately, sums the x/y/z terms before adding
+the old translation, and applies every glyph advance. A recipe using exact-degree
+trigonometry differs in the rotation's sine coefficient. Independently decoded
+font pixels reproduce all 256 constructor advances and all 16 batch counts.
+
+This is a fit to reached command boundaries on the recorded NVIDIA backend.
+Individual glyph-prefix matrices, vertex-transform contraction and other driver
+implementations remain unobserved. Measured coefficients are comparison data,
+not production renderer inputs.
+
 ## Native evidence and open comparison
 
 Native Windows and Linux runs establish finite rendering and exit behavior.
 Separate authored GL tests cover texture sampling, alpha cutoff, blending,
 depth ordering and context ownership. Windows posted-input controls cover
-window close, Quit, and positive-size resize followed by Quit. These checks
-do not compare original input semantics or title pixels.
+window close, Quit, and positive-size resize followed by Quit. These input
+checks do not establish original input semantics.
 
-A matched comparison still needs the same complete conditional scene inputs,
-the actual original clock result, compatible framebuffer state, and raw native
-readback. It must exercise the production title renderer rather than a second
-probe-only implementation. Full startup ordering, Random constructor history,
+A matched conditional scene now uses the actual earlier clock, resources,
+button state and the shared production renderer. Exact comparison of all
+409,920 raw RGBA pixels still fails at one pixel on Windows and one different
+pixel on both Linux compilers. Alpha matches everywhere; only the original
+capture's row order is reversed. Ordered matrix replay remains implementation
+work. See the [GuiMainMenu contract](../client/gui-main-menu.md) for coordinates
+and finite native checks. Full startup ordering, Random constructor history,
 audio, child screens, focus/fullscreen and gameplay remain open.

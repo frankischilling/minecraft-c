@@ -34,7 +34,7 @@ struct mc_client_display {
     mc_client_gl gl;
     mc_client_display_info info;
     GLuint vertex_shader, fragment_shader, program, vao, vbo;
-    GLint textured, alpha_test;
+    GLint textured, alpha_test, projection_scale;
     GLint max_texture_size;
     double exact_width, exact_height;
     display_texture textures[DISPLAY_TEXTURES];
@@ -164,7 +164,9 @@ static bool renderer_create(mc_client_display *display, mc_client_display_error 
                                         "layout(location=1) in vec2 uv;\n"
                                         "layout(location=2) in vec4 color;\n"
                                         "out vec2 fragmentUV; out vec4 fragmentColor;\n"
-                                        "void main(){gl_Position=vec4(position,0.0,1.0);"
+                                        "uniform vec2 projectionScale;\n"
+                                        "void main(){gl_Position=vec4(position*projectionScale+"
+                                        "vec2(-1.0,1.0),0.0,1.0);"
                                         "fragmentUV=uv;fragmentColor=color;}\n";
     static const char fragment_source[] =
         "#version 330 core\n"
@@ -200,9 +202,11 @@ static bool renderer_create(mc_client_display *display, mc_client_display_error 
     const GLint sampler = display->gl.GetUniformLocation(display->program, "guiTexture");
     display->textured = display->gl.GetUniformLocation(display->program, "textured");
     display->alpha_test = display->gl.GetUniformLocation(display->program, "alphaTest");
+    display->projection_scale = display->gl.GetUniformLocation(display->program, "projectionScale");
     if (!gl_check(display, "locate GUI uniforms", error))
         return false;
-    if (sampler < 0 || display->textured < 0 || display->alpha_test < 0)
+    if (sampler < 0 || display->textured < 0 || display->alpha_test < 0 ||
+        display->projection_scale < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "locate GUI uniforms", "missing uniform", 0);
     display->gl.Uniform1i(sampler, 0);
     display->gl.GenVertexArrays(1, &display->vao);
@@ -338,6 +342,71 @@ const mc_client_display_info *mc_client_display_info_get(const mc_client_display
     return display == NULL ? NULL : &display->info;
 }
 
+static GLint attachment_value(mc_client_display *display, GLenum attachment, GLenum name) {
+    GLint type = GL_NONE, value = 0;
+    display->gl.GetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, attachment,
+                                                    GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
+    if (type != GL_NONE)
+        display->gl.GetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, attachment, name,
+                                                        &value);
+    return value;
+}
+
+bool mc_client_display_framebuffer_info_get(mc_client_display *display,
+                                            mc_client_framebuffer_info *out,
+                                            mc_client_display_error *error) {
+    if (out == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "query effective framebuffer",
+                    "null output", 0);
+    if (!current(display, "query effective framebuffer", error))
+        return false;
+    if (!display->functions_ready)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "query effective framebuffer",
+                    "incomplete function table", 0);
+    if (!gl_check(display, "before effective framebuffer query", error))
+        return false;
+    GLint draw_binding = 0, read_binding = 0;
+    display->gl.GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw_binding);
+    display->gl.GetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read_binding);
+    if (!gl_check(display, "query framebuffer bindings", error))
+        return false;
+    if (draw_binding != 0 || read_binding != 0)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "query effective framebuffer",
+                    "default draw/read framebuffer required", 0);
+    GLint double_buffer = 0, stereo = 0, srgb = 0, sample_buffers = 0, samples = 0;
+    GLint draw_buffer = 0, read_buffer = 0;
+    display->gl.GetIntegerv(GL_DOUBLEBUFFER, &double_buffer);
+    display->gl.GetIntegerv(GL_STEREO, &stereo);
+    display->gl.GetIntegerv(GL_FRAMEBUFFER_SRGB, &srgb);
+    display->gl.GetIntegerv(GL_SAMPLE_BUFFERS, &sample_buffers);
+    display->gl.GetIntegerv(GL_SAMPLES, &samples);
+    display->gl.GetIntegerv(GL_DRAW_BUFFER, &draw_buffer);
+    display->gl.GetIntegerv(GL_READ_BUFFER, &read_buffer);
+    const GLenum color = double_buffer != 0 ? GL_BACK_LEFT : GL_FRONT_LEFT;
+    const mc_client_framebuffer_info value = {
+        .red_bits = attachment_value(display, color, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE),
+        .green_bits = attachment_value(display, color, GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE),
+        .blue_bits = attachment_value(display, color, GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE),
+        .alpha_bits = attachment_value(display, color, GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE),
+        .depth_bits = attachment_value(display, GL_DEPTH, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE),
+        .stencil_bits =
+            attachment_value(display, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE),
+        .double_buffer = double_buffer != 0,
+        .stereo = stereo != 0,
+        .srgb_enabled = srgb != 0,
+        .sample_buffers = sample_buffers,
+        .samples = samples,
+        .color_attachment = (uint32_t)color,
+        .color_encoding =
+            (uint32_t)attachment_value(display, color, GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING),
+        .draw_buffer = (uint32_t)draw_buffer,
+        .read_buffer = (uint32_t)read_buffer};
+    if (!gl_check(display, "query effective framebuffer", error))
+        return false;
+    *out = value;
+    return success(error);
+}
+
 bool mc_client_display_pixel_size(mc_client_display *display, int *width, int *height,
                                   mc_client_display_error *error) {
     if (display == NULL || width == NULL || height == NULL || width == height)
@@ -449,6 +518,11 @@ bool mc_client_display_begin(mc_client_display *display, double exact_width, dou
     if (!isfinite(exact_width) || !isfinite(exact_height) || exact_width <= 0 || exact_height <= 0)
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "begin GUI frame",
                     "invalid scaled dimensions", 0);
+    const double projection_x = 2.0 / exact_width, projection_y = -2.0 / exact_height;
+    if (!isfinite(projection_x) || !isfinite(projection_y) || fabs(projection_x) > FLT_MAX ||
+        fabs(projection_y) > FLT_MAX)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "begin GUI frame",
+                    "excessive binary32 projection coefficient", 0);
     if (!current(display, "begin GUI frame", error))
         return false;
     int width = 0, height = 0;
@@ -470,6 +544,7 @@ bool mc_client_display_begin(mc_client_display *display, double exact_width, dou
     display->gl.UseProgram(display->program);
     display->gl.BindVertexArray(display->vao);
     display->gl.Uniform1i(display->alpha_test, 1);
+    display->gl.Uniform2f(display->projection_scale, (GLfloat)projection_x, (GLfloat)projection_y);
     if (!gl_check(display, "begin GUI frame", error))
         return false;
     display->exact_width = exact_width;
@@ -490,12 +565,13 @@ bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture t
         const double x = vertices[i].x / display->exact_width * 2.0 - 1.0;
         const double y = 1.0 - vertices[i].y / display->exact_height * 2.0;
         if (!isfinite(x) || !isfinite(y) || x < -FLT_MAX || x > FLT_MAX || y < -FLT_MAX ||
-            y > FLT_MAX || !isfinite(vertices[i].u) || !isfinite(vertices[i].v))
+            y > FLT_MAX || fabs(vertices[i].x) > FLT_MAX || fabs(vertices[i].y) > FLT_MAX ||
+            !isfinite(vertices[i].u) || !isfinite(vertices[i].v))
             return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "project GUI quad",
                         "nonfinite or excessive coordinate", 0);
         corners[i] = (display_vertex){
-            .x = (GLfloat)x,
-            .y = (GLfloat)y,
+            .x = (GLfloat)vertices[i].x,
+            .y = (GLfloat)vertices[i].y,
             .u = vertices[i].u,
             .v = vertices[i].v,
             .color = {(GLubyte)(vertices[i].argb >> 16), (GLubyte)(vertices[i].argb >> 8),

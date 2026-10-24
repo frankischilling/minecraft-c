@@ -4,7 +4,8 @@ The [parser](../../include/mc/core/java/float_parse.h) reads counted UTF-16 text
 and constructs IEEE binary32 bits directly. It belongs to `mc_core` and needs
 no graphics, locale, Java runtime or original assets. GameSettings' exact
 `true`/`false` mapping belongs to its caller; this primitive rejects those words.
-Float output formatting and options-file persistence remain unfinished.
+The [legacy formatter](java-float-format.md) is a separately validated primitive;
+options-file persistence remains unfinished.
 
 ## Admission and results
 
@@ -55,7 +56,7 @@ subnormals, distant nonzero tails, counted text and the full text budget.
 The [probe](../../tests/core/java/float_parse_probe.c) accepts input tokens
 only and emits statuses and raw result bits. Expectations stay outside it.
 
-Private standalone builds passed those checks and 5,632 probe records on
+Standalone and public shared-core builds passed those checks and 5,632 probe records on
 MSVC 19.51, GCC 13.3 and Clang 18.1. Linux used ASan and UBSan. The corpus
 combines 494 lexical/rounding cases, exact decimal representations of 5 source
 defaults and 5,132 other binary32 controls, and one null-text record. Integer
@@ -64,11 +65,17 @@ probes on Temurin 17.0.17 and Oracle JDK 21.0.10 corroborated the original
 494 parsing cases. These are finite primitive observations, not executed
 Minecraft settings-load or whole-client parity.
 
+The later public integration builds disabled the client and passed 13 selected core,
+server-construction and standard-library reference tests per compiler. The
+actual target and direct-import graphs contained no graphics dependencies.
+This verifies shared server construction, not a standalone server loop.
+
 The original client `kv.a(String)F` recognizes exact `true` and `false` before
 calling `Float.parseFloat` at PC 23. Its save method `kv.b()V` uses
 `StringBuilder.append(F)` for music, sound and sensitivity. Arbitrary loaded
 floats are not restricted to normal slider positions. Installed JDK 17 and 21
 produced 591 different output strings across 585 tested bit patterns, despite
 matching parsing results. A general shortest-decimal formatter or `snprintf`
-does not establish the required legacy save strings. Formatting, the
-GameSettings wrapper, file ordering and options-screen integration remain open.
+does not establish the required legacy save strings. The new legacy formatter
+has separate implementation and validation scope. The GameSettings wrapper,
+file ordering and options-screen integration remain open.
