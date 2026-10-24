@@ -109,6 +109,26 @@ bool mc_client_display_begin(mc_client_display *display, double exact_width, dou
 bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture texture,
                                  const mc_client_vertex vertices[4], bool blend, bool alpha_test,
                                  mc_client_display_error *error);
+
+/* Optional local-geometry path. Matrix values are column-major binary32 and
+ * borrowed only during this call; the uniform upload copies them. Supply the
+ * modelview derived from normal GUI operations, including source z=-2000.
+ * The display derives its orthographic projection from begin's exact extents;
+ * no caller-provided projection or observed target coefficients are accepted.
+ * Only finite affine matrices are admitted. Conservative transformed magnitude
+ * bounds are checked before GL work; this is a bounded GUI profile, not every
+ * representable OpenGL transform. No mutable matrix stack is kept by Display.
+ * Local positions remain local through float vertex submission. Separate GLSL
+ * modelview/projection expressions express the stages but do not qualify the
+ * driver's intermediate precision, contraction or matrix-update behavior. */
+typedef struct mc_client_modelview {
+    float column_major[16];
+} mc_client_modelview;
+
+bool mc_client_display_draw_quad_modelview(mc_client_display *display, mc_client_texture texture,
+                                           const mc_client_vertex vertices[4],
+                                           const mc_client_modelview *modelview, bool blend,
+                                           bool alpha_test, mc_client_display_error *error);
 bool mc_client_display_swap(mc_client_display *display, mc_client_display_error *error);
 
 /* Read the current back buffer before swap into owned, top-down raw RGBA8.

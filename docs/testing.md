@@ -2,14 +2,15 @@
 
 ## Native client frontend
 
-Commit `a1c9e0c33a7a410df9e50202f4b4b672ede79320` passes
-[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40080961138):
-211 MSVC, 214 GCC and 214 Clang tests, with 639 actual Passed records and no
-missing cases or skips. Formatting covers 614 C/header files. Controller
+Code checkpoint `e614fb15ebb263784243811a5c9257ddc7fbd30d` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40096880704):
+216 MSVC, 219 GCC and 219 Clang tests, with 654 actual Passed records and no
+missing cases or skips. Formatting covers 626 C/header files. Controller
 mirrors and lifecycle interval checks pass. The synthetic checkout's complete
-tree equals the head tree. The preceding Windows build failed at the image
-owner's flexible array under MSVC 19.44; the pointer-based allocation layout
-passes the same compiler without relaxing warnings.
+tree equals the head tree. The preceding Windows build rejected the Font test's
+constant condition as C4127 under MSVC 19.44. A C17 compile-time assertion fixes
+that condition without relaxing warnings. The earlier image allocation-layout
+fix also remains covered.
 
 The [startup contract](client/startup.md) records six frontend tests: image,
 ScaledResolution, FontRenderer, assets, Timer and actual OpenGL display checks.
@@ -21,12 +22,13 @@ remain unverified. The display test is opt-in with
 Linux CI runs it under Xvfb with software Mesa.
 
 The later shared [GuiMainMenu/probe checkpoint](client/gui-main-menu.md) passes
-eight focused cases per compiler, including 50 display checks and 53 scene
-admission controls. Actual conditional images retain one differing pixel on
-Windows and one on Linux against the original; the raw comparison fails and
-preserves those differences. The ordered FontRenderer interface passes 262,379
-additional checks while the original 220 glyph checks remain. Production
-matrix replay and full startup still need qualification.
+eight focused cases per compiler, including 100 display checks and 53 scene
+admission controls. Ordered matrix replay makes the Windows conditional image
+match every original RGBA pixel; Linux still differs at one pixel against that
+Windows/NVIDIA baseline. The failed Linux comparisons remain failed. The
+ordered FontRenderer interface passes 262,377
+additional checks while the original 220 glyph checks remain. Complete startup
+still needs qualification.
 
 The preceding full source snapshot passed 211 MSVC and 213 Clang cases.
 GCC passed 212 of 213 initially. Its named-data replay rejected an observed

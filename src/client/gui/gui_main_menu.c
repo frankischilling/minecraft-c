@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct text_transform {
-    double x, y, scale, cosine, sine;
-} text_transform;
-
 struct mc_gui_main_menu {
     mc_client_display *display;
     mc_client_assets *assets;
@@ -74,23 +70,87 @@ static bool texture(mc_gui_main_menu *menu, const char *name, mc_client_texture 
 
 static bool quad(mc_gui_main_menu *menu, mc_client_texture image, double x, double y, double width,
                  double height, float u, float v, float du, float dv, uint32_t argb,
-                 const text_transform *transform, mc_gui_main_menu_error *error) {
+                 mc_gui_main_menu_error *error) {
     /* Source quads start at bottom left, preserving the Tessellator's diagonal. */
     mc_client_vertex vertices[4] = {{x, y + height, u, v + dv, argb},
                                     {x + width, y + height, u + du, v + dv, argb},
                                     {x + width, y, u + du, v, argb},
                                     {x, y, u, v, argb}};
-    if (transform != NULL) {
-        for (size_t i = 0; i < 4; ++i) {
-            const double px = vertices[i].x * transform->scale;
-            const double py = vertices[i].y * transform->scale;
-            vertices[i].x = transform->x + px * transform->cosine - py * transform->sine;
-            vertices[i].y = transform->y + px * transform->sine + py * transform->cosine;
-        }
-    }
     mc_client_display_error display = {0};
     if (!mc_client_display_draw_quad(menu->display, image, vertices, false, true, &display))
         return display_failure(error, "draw GuiMainMenu quad", &display);
+    return true;
+}
+
+/* Keep each source binary32 product/add as a separate rounded operation.
+ * Volatile stores also prevent a contracted multiply-add across helpers. */
+static float model_product(float left, float right) {
+    volatile float rounded = left * right;
+    return rounded;
+}
+
+static float model_sum(float left, float right) {
+    volatile float rounded = left + right;
+    return rounded;
+}
+
+static void model_translate(mc_client_modelview *matrix, float x, float y, float z) {
+    for (size_t row = 0; row < 4; ++row) {
+        const float px = model_product(matrix->column_major[row], x);
+        const float py = model_product(matrix->column_major[4 + row], y);
+        const float pz = model_product(matrix->column_major[8 + row], z);
+        const float xy = model_sum(px, py);
+        const float xyz = model_sum(xy, pz);
+        matrix->column_major[12 + row] = model_sum(xyz, matrix->column_major[12 + row]);
+    }
+}
+
+static mc_client_modelview model_base(void) {
+    mc_client_modelview matrix = {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
+    model_translate(&matrix, 0.0f, 0.0f, -2000.0f);
+    return matrix;
+}
+
+static void model_rotate_z(mc_client_modelview *matrix, float degrees) {
+    const float radians = (float)((double)degrees * 3.14159265358979323846 / 180.0);
+    const float cosine = (float)cos((double)radians);
+    const float sine = (float)sin((double)radians);
+    for (size_t row = 0; row < 4; ++row) {
+        const float x = matrix->column_major[row], y = matrix->column_major[4 + row];
+        const float xc = model_product(x, cosine);
+        const float ys = model_product(y, sine);
+        const float column_x = model_sum(xc, ys);
+        const float xns = model_product(x, -sine);
+        const float yc = model_product(y, cosine);
+        const float column_y = model_sum(xns, yc);
+        matrix->column_major[row] = column_x;
+        matrix->column_major[4 + row] = column_y;
+    }
+}
+
+static void model_scale(mc_client_modelview *matrix, float x, float y, float z) {
+    const float scale[3] = {x, y, z};
+    for (size_t column = 0; column < 3; ++column)
+        for (size_t row = 0; row < 4; ++row)
+            matrix->column_major[4 * column + row] =
+                model_product(matrix->column_major[4 * column + row], scale[column]);
+}
+
+static bool glyph_list(mc_gui_main_menu *menu, uint16_t index, uint32_t color,
+                       const mc_client_modelview *matrix, mc_gui_main_menu_error *error) {
+    const float extent = MC_FONT_RENDERER_GLYPH_EXTENT;
+    const float atlas_x = (float)(index % 16u * MC_FONT_RENDERER_CELL_SIZE);
+    const float atlas_y = (float)(index / 16u * MC_FONT_RENDERER_CELL_SIZE);
+    const float left = atlas_x / 128.0f, right = model_sum(atlas_x, extent) / 128.0f;
+    const float top = atlas_y / 128.0f, bottom = model_sum(atlas_y, extent) / 128.0f;
+    const mc_client_vertex vertices[4] = {{0, extent, left, bottom, color},
+                                          {extent, extent, right, bottom, color},
+                                          {extent, 0, right, top, color},
+                                          {0, 0, left, top, color}};
+    mc_client_display_error display = {0};
+    if (!mc_client_display_draw_quad_modelview(menu->display, menu->font_texture, vertices, matrix,
+                                               false, true, &display))
+        return display_failure(error, "draw FontRenderer glyph list", &display);
     return true;
 }
 
@@ -138,7 +198,7 @@ static bool measure(mc_gui_main_menu *menu, const mc_font_text *value, int32_t *
 }
 
 static bool text(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x, int32_t y,
-                 uint32_t color, bool centered, const text_transform *transform,
+                 uint32_t color, bool centered, const mc_client_modelview *inherited,
                  mc_gui_main_menu_error *error) {
     if (value == NULL)
         return true;
@@ -147,21 +207,63 @@ static bool text(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x, i
         return false;
     if (centered)
         x = mc_java_i32_sub(x, width / 2);
-    mc_font_run run = {0};
+    mc_font_command_run run = {0};
     const mc_font_renderer_status status =
-        mc_font_renderer_layout(menu->font, value, x, y, color, true, &run);
+        mc_font_renderer_layout_commands(menu->font, value, x, y, color, true, &run);
     if (status != MC_FONT_RENDERER_OK)
         return font_failure(error, "draw GuiMainMenu text", status);
+    if (run.count > MC_FONT_RENDERER_MAX_COMMANDS || (run.count != 0 && run.commands == NULL))
+        return fail(error, MC_GUI_MAIN_MENU_UNSUPPORTED_STATE, "FontRenderer command buffer");
+    const mc_client_modelview entry = inherited == NULL ? model_base() : *inherited;
+    mc_client_modelview pass = entry;
+    bool active = false;
+    uint32_t current_color = color;
     for (size_t i = 0; i < run.count; ++i) {
-        const mc_font_glyph *glyph = &run.glyphs[i];
-        const float u = (float)(glyph->glyph_index % 16u) / 16.0f;
-        const float v = (float)(glyph->glyph_index / 16u) / 16.0f;
-        if (!quad(menu, menu->font_texture, glyph->x, glyph->y, MC_FONT_RENDERER_GLYPH_EXTENT,
-                  MC_FONT_RENDERER_GLYPH_EXTENT, u, v, MC_FONT_RENDERER_GLYPH_EXTENT / 128.0f,
-                  MC_FONT_RENDERER_GLYPH_EXTENT / 128.0f, glyph->argb, transform, error))
-            return false;
+        const mc_font_command *command = &run.commands[i];
+        switch (command->kind) {
+            case MC_FONT_COMMAND_BEGIN_PASS:
+                if (active)
+                    goto invalid_command;
+                pass = entry;
+                model_translate(&pass, command->value.begin_pass.x, command->value.begin_pass.y,
+                                0.0f);
+                current_color = command->value.begin_pass.argb;
+                active = true;
+                break;
+            case MC_FONT_COMMAND_COLOR:
+                if (!active)
+                    goto invalid_command;
+                current_color = command->value.argb;
+                break;
+            case MC_FONT_COMMAND_GLYPH_LIST:
+                if (!active || command->value.glyph_list.glyph_index >= 256u)
+                    goto invalid_command;
+                if (!glyph_list(menu, command->value.glyph_list.glyph_index, current_color, &pass,
+                                error))
+                    goto failure;
+                /* Blank/transparent glyphs still execute their source advance. */
+                model_translate(&pass, (float)command->value.glyph_list.advance, 0.0f, 0.0f);
+                break;
+            case MC_FONT_COMMAND_END_PASS:
+                if (!active)
+                    goto invalid_command;
+                pass = entry;
+                active = false;
+                break;
+            default:
+                goto invalid_command;
+        }
     }
+    if (active)
+        goto invalid_command;
     return true;
+invalid_command:
+    fail(error, MC_GUI_MAIN_MENU_UNSUPPORTED_STATE, "FontRenderer command order");
+failure:
+    /* Only these local copies are pushed; inherited/frame state is untouched. */
+    pass = entry;
+    active = false;
+    return false;
 }
 
 static bool ascii_text(mc_gui_main_menu *menu, const char *value, int32_t x, int32_t y,
@@ -258,7 +360,7 @@ bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame 
         !texture(menu, "/gui/background.png", &menu->background_texture, error))
         return false;
     if (!quad(menu, menu->background_texture, 0, 0, scale->width, scale->height, 0, 0,
-              (float)scale->width / 32.0f, (float)scale->height / 32.0f, UINT32_C(0xff404040), NULL,
+              (float)scale->width / 32.0f, (float)scale->height / 32.0f, UINT32_C(0xff404040),
               error))
         return false;
     if (menu->logo_texture == 0 && !texture(menu, "/title/mclogo.png", &menu->logo_texture, error))
@@ -267,10 +369,13 @@ bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame 
     if (frame->z_level != 0.0f)
         return fail(error, MC_GUI_MAIN_MENU_UNSUPPORTED_STATE, "draw GuiMainMenu logo z-level");
     if (!quad(menu, menu->logo_texture, logo_x, 30, 155, 44, 0, 0, 155.0f / 256.0f, 44.0f / 256.0f,
-              UINT32_C(0xffffffff), NULL, error) ||
+              UINT32_C(0xffffffff), error) ||
         !quad(menu, menu->logo_texture, mc_java_i32_add(logo_x, 155), 30, 155, 44, 0,
-              45.0f / 256.0f, 155.0f / 256.0f, 44.0f / 256.0f, UINT32_C(0xffffffff), NULL, error))
+              45.0f / 256.0f, 155.0f / 256.0f, 44.0f / 256.0f, UINT32_C(0xffffffff), error))
         return false;
+    mc_client_modelview splash = model_base();
+    model_translate(&splash, (float)mc_java_i32_add(scale->width / 2, 90), 70.0f, 0.0f);
+    model_rotate_z(&splash, -20.0f);
     int64_t millis = 0;
     if (!read_millis(clock_context, &millis))
         return fail(error, MC_GUI_MAIN_MENU_CLOCK_FAILED, "GuiMainMenu currentTimeMillis");
@@ -287,10 +392,8 @@ bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame 
     if (!measure(menu, frame->splash, &splash_width, error))
         return false;
     splash_scale = splash_scale * 100.0f / (float)mc_java_i32_add(splash_width, 32);
-    const double angle = -20.0 * 3.14159265358979323846 / 180.0;
-    const text_transform transform = {(double)mc_java_i32_add(scale->width / 2, 90), 70,
-                                      splash_scale, cos(angle), sin(angle)};
-    if (!text(menu, frame->splash, 0, -8, UINT32_C(0xffff00), true, &transform, error) ||
+    model_scale(&splash, splash_scale, splash_scale, splash_scale);
+    if (!text(menu, frame->splash, 0, -8, UINT32_C(0xffff00), true, &splash, error) ||
         !ascii_text(menu, "Minecraft Beta 1.7.3", 2, 2, UINT32_C(0x505050), error))
         return false;
     static const char copyright[] = "Copyright Mojang AB. Do not distribute.";

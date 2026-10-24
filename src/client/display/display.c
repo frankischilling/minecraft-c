@@ -35,6 +35,7 @@ struct mc_client_display {
     mc_client_display_info info;
     GLuint vertex_shader, fragment_shader, program, vao, vbo;
     GLint textured, alpha_test, projection_scale;
+    GLint model_enabled, projection_matrix, modelview_matrix;
     GLint max_texture_size;
     double exact_width, exact_height;
     display_texture textures[DISPLAY_TEXTURES];
@@ -159,15 +160,21 @@ static bool shader(mc_client_display *display, GLenum kind, const char *source, 
 }
 
 static bool renderer_create(mc_client_display *display, mc_client_display_error *error) {
-    static const char vertex_source[] = "#version 330 core\n"
-                                        "layout(location=0) in vec2 position;\n"
-                                        "layout(location=1) in vec2 uv;\n"
-                                        "layout(location=2) in vec4 color;\n"
-                                        "out vec2 fragmentUV; out vec4 fragmentColor;\n"
-                                        "uniform vec2 projectionScale;\n"
-                                        "void main(){gl_Position=vec4(position*projectionScale+"
-                                        "vec2(-1.0,1.0),0.0,1.0);"
-                                        "fragmentUV=uv;fragmentColor=color;}\n";
+    static const char vertex_source[] =
+        "#version 330 core\n"
+        "layout(location=0) in vec2 position;\n"
+        "layout(location=1) in vec2 uv;\n"
+        "layout(location=2) in vec4 color;\n"
+        "out vec2 fragmentUV; out vec4 fragmentColor;\n"
+        "uniform vec2 projectionScale;\n"
+        "uniform mat4 projectionMatrix; uniform mat4 modelviewMatrix;\n"
+        "uniform int modelEnabled;\n"
+        "void main(){if(modelEnabled!=0){"
+        "vec4 eye=modelviewMatrix*vec4(position,0.0,1.0);"
+        "gl_Position=projectionMatrix*eye;}else{"
+        "gl_Position=vec4(position*projectionScale+"
+        "vec2(-1.0,1.0),0.0,1.0);}"
+        "fragmentUV=uv;fragmentColor=color;}\n";
     static const char fragment_source[] =
         "#version 330 core\n"
         "in vec2 fragmentUV; in vec4 fragmentColor; layout(location=0) out vec4 outputColor;\n"
@@ -203,10 +210,15 @@ static bool renderer_create(mc_client_display *display, mc_client_display_error 
     display->textured = display->gl.GetUniformLocation(display->program, "textured");
     display->alpha_test = display->gl.GetUniformLocation(display->program, "alphaTest");
     display->projection_scale = display->gl.GetUniformLocation(display->program, "projectionScale");
+    display->model_enabled = display->gl.GetUniformLocation(display->program, "modelEnabled");
+    display->projection_matrix =
+        display->gl.GetUniformLocation(display->program, "projectionMatrix");
+    display->modelview_matrix = display->gl.GetUniformLocation(display->program, "modelviewMatrix");
     if (!gl_check(display, "locate GUI uniforms", error))
         return false;
     if (sampler < 0 || display->textured < 0 || display->alpha_test < 0 ||
-        display->projection_scale < 0)
+        display->projection_scale < 0 || display->model_enabled < 0 ||
+        display->projection_matrix < 0 || display->modelview_matrix < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "locate GUI uniforms", "missing uniform", 0);
     display->gl.Uniform1i(sampler, 0);
     display->gl.GenVertexArrays(1, &display->vao);
@@ -545,6 +557,24 @@ bool mc_client_display_begin(mc_client_display *display, double exact_width, dou
     display->gl.BindVertexArray(display->vao);
     display->gl.Uniform1i(display->alpha_test, 1);
     display->gl.Uniform2f(display->projection_scale, (GLfloat)projection_x, (GLfloat)projection_y);
+    const GLfloat projection[16] = {(GLfloat)projection_x,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    (GLfloat)projection_y,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    (GLfloat)(-2.0 / (3000.0 - 1000.0)),
+                                    0,
+                                    -1,
+                                    1,
+                                    (GLfloat)(-(3000.0 + 1000.0) / (3000.0 - 1000.0)),
+                                    1};
+    display->gl.UniformMatrix4fv(display->projection_matrix, 1, GL_FALSE, projection);
+    display->gl.Uniform1i(display->model_enabled, 0);
     if (!gl_check(display, "begin GUI frame", error))
         return false;
     display->exact_width = exact_width;
@@ -553,13 +583,23 @@ bool mc_client_display_begin(mc_client_display *display, double exact_width, dou
     return success(error);
 }
 
-bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture texture,
-                                 const mc_client_vertex vertices[4], bool blend, bool alpha_test,
-                                 mc_client_display_error *error) {
+static bool draw_quad(mc_client_display *display, mc_client_texture texture,
+                      const mc_client_vertex vertices[4], const mc_client_modelview *modelview,
+                      bool blend, bool alpha_test, mc_client_display_error *error) {
     if (display == NULL || vertices == NULL || !display->frame_started ||
         (texture != 0 && !texture_known(display, texture)))
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "draw GUI quad",
                     "invalid frame/texture/vertices", 0);
+    if (modelview != NULL) {
+        for (size_t i = 0; i < 16; ++i)
+            if (!isfinite(modelview->column_major[i]))
+                return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "draw modelview quad",
+                            "nonfinite modelview", 0);
+        if (modelview->column_major[3] != 0 || modelview->column_major[7] != 0 ||
+            modelview->column_major[11] != 0 || modelview->column_major[15] != 1)
+            return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "draw modelview quad",
+                        "non-affine modelview", 0);
+    }
     display_vertex corners[4];
     for (size_t i = 0; i < 4; ++i) {
         const double x = vertices[i].x / display->exact_width * 2.0 - 1.0;
@@ -569,6 +609,26 @@ bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture t
             !isfinite(vertices[i].u) || !isfinite(vertices[i].v))
             return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "project GUI quad",
                         "nonfinite or excessive coordinate", 0);
+        if (modelview != NULL) {
+            double bound[4] = {0};
+            for (size_t row = 0; row < 4; ++row) {
+                bound[row] = fabs((double)modelview->column_major[row]) * fabs(vertices[i].x) +
+                             fabs((double)modelview->column_major[4 + row]) * fabs(vertices[i].y) +
+                             fabs((double)modelview->column_major[12 + row]);
+                if (bound[row] > (double)FLT_MAX / 16.0)
+                    return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "draw modelview quad",
+                                "excessive modelview product bound", 0);
+            }
+            const double bx =
+                fabs((double)(GLfloat)(2.0 / display->exact_width)) * bound[0] + bound[3];
+            const double by =
+                fabs((double)(GLfloat)(-2.0 / display->exact_height)) * bound[1] + bound[3];
+            const double bz = fabs((double)(GLfloat)(-2.0 / 2000.0)) * bound[2] + 2.0 * bound[3];
+            if (bx > (double)FLT_MAX / 16.0 || by > (double)FLT_MAX / 16.0 ||
+                bz > (double)FLT_MAX / 16.0)
+                return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "draw modelview quad",
+                            "excessive projection product bound", 0);
+        }
         corners[i] = (display_vertex){
             .x = (GLfloat)vertices[i].x,
             .y = (GLfloat)vertices[i].y,
@@ -589,6 +649,10 @@ bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture t
     display->gl.BufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)sizeof(triangles), triangles);
     display->gl.ActiveTexture(GL_TEXTURE0);
     display->gl.BindTexture(GL_TEXTURE_2D, texture);
+    display->gl.Uniform1i(display->model_enabled, modelview != NULL ? 1 : 0);
+    if (modelview != NULL)
+        display->gl.UniformMatrix4fv(display->modelview_matrix, 1, GL_FALSE,
+                                     modelview->column_major);
     display->gl.Uniform1i(display->textured, texture != 0 ? 1 : 0);
     display->gl.Uniform1i(display->alpha_test, alpha_test ? 1 : 0);
     if (blend) {
@@ -599,6 +663,22 @@ bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture t
     }
     display->gl.DrawArrays(GL_TRIANGLES, 0, 6);
     return gl_check(display, "draw GUI quad", error) && success(error);
+}
+
+bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture texture,
+                                 const mc_client_vertex vertices[4], bool blend, bool alpha_test,
+                                 mc_client_display_error *error) {
+    return draw_quad(display, texture, vertices, NULL, blend, alpha_test, error);
+}
+
+bool mc_client_display_draw_quad_modelview(mc_client_display *display, mc_client_texture texture,
+                                           const mc_client_vertex vertices[4],
+                                           const mc_client_modelview *modelview, bool blend,
+                                           bool alpha_test, mc_client_display_error *error) {
+    if (modelview == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "draw modelview quad",
+                    "null modelview", 0);
+    return draw_quad(display, texture, vertices, modelview, blend, alpha_test, error);
 }
 
 bool mc_client_display_swap(mc_client_display *display, mc_client_display_error *error) {

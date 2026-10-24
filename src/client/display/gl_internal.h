@@ -74,6 +74,7 @@ typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei 
     X(PFNGLGETUNIFORMLOCATIONPROC, GetUniformLocation, "glGetUniformLocation")                     \
     X(PFNGLUNIFORM1IPROC, Uniform1i, "glUniform1i")                                                \
     X(PFNGLUNIFORM2FPROC, Uniform2f, "glUniform2f")                                                \
+    X(PFNGLUNIFORMMATRIX4FVPROC, UniformMatrix4fv, "glUniformMatrix4fv")                           \
     X(PFNGLGENVERTEXARRAYSPROC, GenVertexArrays, "glGenVertexArrays")                              \
     X(PFNGLDELETEVERTEXARRAYSPROC, DeleteVertexArrays, "glDeleteVertexArrays")                     \
     X(PFNGLBINDVERTEXARRAYPROC, BindVertexArray, "glBindVertexArray")                              \

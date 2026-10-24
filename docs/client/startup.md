@@ -51,7 +51,8 @@ Public tests cover the PNG reader, ScaledResolution, FontRenderer, Timer and res
 ownership, caching and failure handling. The optional `client.display` test
 requires an actual desktop OpenGL context. It checks authored texture
 orientation, nearest sampling, repeat, anaglyph conversion, alpha cutoff,
-blending, equal-depth drawing and two-context ownership. It has no original
+blending, local modelview geometry, source z clipping, both mixed-path
+equal-depth orders and two-context ownership. It has no original
 assets or original-client comparison.
 
 The client resource loader currently admits only 8-bit RGB, palette and RGBA
@@ -63,9 +64,9 @@ whole-String and default-locale lowercasing behavior is implemented.
 
 Actual hidden title frames have rendered on Windows with an NVIDIA RTX 3060
 and on Linux with Mesa llvmpipe. Those checks establish finite startup and
-rendering results on those environments. Interactive play, audio and matched
-original-client frame comparisons remain unverified. Full regression results
-from earlier runtime checkpoints do not qualify this later client increment.
+rendering results on those environments. Interactive play and audio remain
+unfinished. Full regression results from earlier runtime checkpoints do not
+qualify this later client increment.
 
 The later shared-renderer frontend passes eight tests on MSVC and sanitized GCC/Clang,
 plus a bounded 200-frame run on each. Windows posted-input controls additionally
@@ -75,6 +76,9 @@ window identity, and exercise positive drawable sizes. Fullscreen and zero-sized
 drawable behavior still need actual runtime qualification.
 
 The [GuiMainMenu probe](gui-main-menu.md) draws through the same module as the
-application. Its matched original comparison retains one differing pixel per
-backend. The ordered FontRenderer command API passes its own semantic and
-ownership tests; production matrix replay remains unfinished.
+application. Its ordered FontRenderer commands retain source matrix operations,
+glyph order and individual advances. A conditional Windows/NVIDIA scene matches
+all 409,920 original RGBA pixels after reversing only the original row order.
+Both Linux compilers retain one differing pixel against that Windows baseline.
+Its cause remains unresolved; a same-driver original Linux baseline is still
+needed. These results do not qualify complete original startup or input.

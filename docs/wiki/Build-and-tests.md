@@ -1,21 +1,24 @@
 # Build and tests
 
-The [native frontend/parser head](https://github.com/frankischilling/minecraft-c/actions/runs/40080961138)
-`a1c9e0c` passes all four hosted jobs: 211 MSVC, 214 GCC and 214 Clang tests.
-All 639 cases passed without skips, alongside 614-file formatting, controller
-mirrors and lifecycle interval checks. The preceding Windows compile failure
-on MSVC 19.44 is fixed without relaxing strict warnings.
+The [numeric-text code checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40096880704)
+`e614fb1` passes all four hosted jobs: 216 MSVC, 219 GCC and 219 Clang tests.
+All 654 cases passed without skips, alongside 626-file formatting, controller
+mirrors and lifecycle interval checks. A compile-time Font assertion resolves
+MSVC 19.44's C4127 diagnostic without relaxing strict warnings.
 
 The [native frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 passes eight focused tests on MSVC and sanitized GCC/Clang, including actual OpenGL
-contexts, and a bounded 200-frame run per compiler. Windows controls also
+contexts, and a bounded 200-frame run per compiler. Earlier Windows controls also
 cover window close, Quit, and resize to 512x384 followed by Quit. Linux CI
 enables the display test under Xvfb with software Mesa; a missing context
 fails the test.
 
-The shared title renderer's exact conditional image comparison retains one
-different pixel on Windows and one on Linux. Its ordered FontRenderer interface
-adds 262,379 checks while retaining the existing 220 glyph checks. The
+The later shared title renderer replays ordered binary32 matrix operations.
+Its conditional Windows/NVIDIA image matches all 409,920 original RGBA pixels.
+Linux retains one differing pixel against that Windows baseline; the cause
+remains unresolved. All eight focused cases pass per compiler, including
+100 actual display checks. Its ordered FontRenderer interface adds 262,377
+checks while retaining the existing 220 glyph checks. The
 [legacy float formatter](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-float-format.md)
 matches 5,708 retained JDK rows and 49,532 separate model cases per compiler
 through the public core library. All 13 selected client-disabled tests pass
@@ -28,7 +31,7 @@ observed 1,253 ms backward wall-clock step. One unchanged-code retry with
 fresh OS samples passed. The failed capture remains failed. The final
 minimized-window change then passed focused frontend tests and captures on
 all three compilers. These finite results do not establish playability or
-matched original rendering. See the
+general original rendering parity. See the
 [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
 and [original title evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/client-title.md).
 

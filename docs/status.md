@@ -1,23 +1,25 @@
 # Development status
 
-At `a1c9e0c33a7a410df9e50202f4b4b672ede79320`,
-[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40080961138)
-pass: 211 MSVC, 214 GCC and 214 Clang tests, with no missing cases or skips.
-Formatting covers 614 C/header files; controller mirrors and lifecycle interval
+At code checkpoint `e614fb15ebb263784243811a5c9257ddc7fbd30d`,
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40096880704)
+pass: 216 MSVC, 219 GCC and 219 Clang tests, with no missing cases or skips.
+Formatting covers 626 C/header files; controller mirrors and lifecycle interval
 checks also pass. Linux includes actual software OpenGL tests and ASan/UBSan.
-The preceding Windows build failed on MSVC 19.44's flexible-array diagnostic.
-The image owner now points into its checked contiguous allocation, preserving
-strict warnings and allocation accounting; that compiler's full build and tests pass.
+The preceding Windows build rejected a constant test condition under MSVC
+19.44's C4127 diagnostic. A compile-time assertion replaces that condition;
+strict warnings remain enabled. The earlier image flexible-array diagnostic
+was resolved with a pointer into the same checked allocation.
 
 The [native client](client/startup.md) draws the title screen on Windows with an
 NVIDIA RTX 3060 and on Linux through x11 with Mesa llvmpipe. A later focused
 checkpoint passes all eight frontend tests on MSVC and sanitized GCC/Clang,
-including 156 resource checks, 96 Timer checks, 50 real OpenGL checks and the
-scene parser controls. The ordered FontRenderer interface adds 262,379 checks
+including 156 resource checks, 96 Timer checks, 100 real OpenGL checks and the
+scene parser controls. The ordered FontRenderer interface adds 262,377 checks
 while preserving the existing 220 glyph checks. Each platform also completed a
 bounded hidden 200-frame invocation with an actual exit0 and unchanged source,
-assets and binary hashes. Windows controls pass window close, Quit, and a
-resize to 512x384 followed by Quit, using the actual owned hidden window.
+assets and binary hashes. Separate earlier Windows controls passed window
+close, Quit, and a resize to 512x384 followed by Quit, using the actual owned
+hidden window.
 
 The preceding complete source snapshot passes all 211 MSVC and 213 Clang cases.
 GCC passed 212 of 213 initially; the remaining strict named-data replay passed
@@ -31,10 +33,9 @@ below retain their own checkpoint scope.
 Child menus, options persistence, audio, complete startup, gameplay and real
 fullscreen/zero-drawable controls remain unfinished or unverified. The shared
 [GuiMainMenu renderer](client/gui-main-menu.md) supports a matched conditional
-scene. Exact raw-image comparisons still fail at one pixel on Windows and one
-different pixel on Linux; transform arithmetic remains under investigation.
-Production text still uses flattened glyph positions; ordered matrix replay
-remains unfinished.
+scene with ordered binary32 modelview operations. Windows now matches all
+409,920 original RGBA pixels in that scene. Linux/Mesa retains one differing
+pixel against the original Windows/NVIDIA capture; the cause remains unresolved.
 An original title draw and exact clock witness have
 been observed in an arranged receiver; the first helper's teardown failed.
 The second helper completed with natural target/observer exits; its controller

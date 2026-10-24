@@ -91,7 +91,7 @@ Individual glyph-prefix matrices, vertex-transform contraction and other driver
 implementations remain unobserved. Measured coefficients are comparison data,
 not production renderer inputs.
 
-## Native evidence and open comparison
+## Native evidence and conditional comparison
 
 Native Windows and Linux runs establish finite rendering and exit behavior.
 Separate authored GL tests cover texture sampling, alpha cutoff, blending,
@@ -101,9 +101,18 @@ checks do not establish original input semantics.
 
 A matched conditional scene now uses the actual earlier clock, resources,
 button state and the shared production renderer. Exact comparison of all
-409,920 raw RGBA pixels still fails at one pixel on Windows and one different
-pixel on both Linux compilers. Alpha matches everywhere; only the original
-capture's row order is reversed. Ordered matrix replay remains implementation
-work. See the [GuiMainMenu contract](../client/gui-main-menu.md) for coordinates
-and finite native checks. Full startup ordering, Random constructor history,
-audio, child screens, focus/fullscreen and gameplay remain open.
+409,920 raw RGBA pixels matches every byte on Windows/NVIDIA after ordered
+binary32 modelview replay. Only the original capture's row order is reversed.
+Both Linux compilers retain one differing pixel at `(658,85)` against that
+Windows baseline; alpha matches everywhere. The Linux comparison remains
+failed, with its cause and a same-driver original Linux baseline unresolved.
+
+The production renderer computes the selected arithmetic recipe from normal
+GUI inputs and replays each local glyph and advance. It accepts no captured
+coefficients or expected pixels. Actual display tests cover modelview geometry,
+source z clipping, mixed rendering paths and equal-depth ordering in both
+directions. The finite Windows match does not prove a universal legacy-driver
+precision model. See the [GuiMainMenu contract](../client/gui-main-menu.md) for
+the matrix operations and native checks. Full startup ordering, Random
+constructor history, audio, child screens, focus/fullscreen and gameplay remain
+open.

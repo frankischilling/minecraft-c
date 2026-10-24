@@ -73,20 +73,36 @@ history, input timing or pixel equality. See the
 experiment and its limits.
 
 A focused native checkpoint passes all eight frontend cases on MSVC 19.51,
-GCC 13.3 and Clang 18.1, with ASan/UBSan on Linux. It includes 50 real-display
+GCC 13.3 and Clang 18.1, with ASan/UBSan on Linux. It includes 100 real-display
 checks and 19 accepted/34 rejected scene controls. Each compiler also completes
 the bounded 200-frame application invocation and the conditional probe using
 the retained original scene. FontRenderer retains its original 220 checks and
-adds 262,379 command checks, including complete shadow/main passes, color and
+adds 262,377 command checks, including complete shadow/main passes, color and
 blank-glyph advances, independent scratch lifetimes and the maximal run.
-The application still uses the flat glyph view in this checkpoint; ordered
-modelview replay remains separate implementation work.
+The application replays those commands through local binary32 modelview copies.
+Each shadow/main pass starts from its inherited matrix; every glyph draws its
+local square before applying its advance. Blank glyphs retain that advance.
 
 The independent raw-image comparison checks all 409,920 pixels after reversing
-only the original capture's row order. It fails at one pixel on Windows and
-one different pixel on both Linux compilers; alpha matches everywhere. Windows
-differs at `(553,141)`, Linux at `(658,85)`. Changing quad topology retained
-the earlier images; moving source binary32 projection to the GPU removed one
-of Linux's two earlier differences. Per-glyph matrix accumulation and the
-legacy driver's transform arithmetic remain under investigation. No color
-normalization, pixel tolerance or coordinate correction hides these failures.
+only the original capture's row order. Windows now matches every RGBA byte.
+Both Linux compilers retain one differing pixel at `(658,85)` against that
+Windows/NVIDIA baseline; alpha matches everywhere. The earlier Windows
+difference at `(553,141)` is resolved by ordered matrix replay. No color
+normalization, pixel tolerance or coordinate correction hides the remaining
+failure. Its cause and a same-driver original Linux baseline remain open.
+
+## Matrix operations
+
+The selected profile rounds radians to binary32 before evaluating sine/cosine,
+then stores each matrix product and addition separately as binary32. Translation
+sums x/y/z terms before adding the old translation; scaling updates the first
+three columns. Source operations retain their order, including the splash
+translation/rotation before the clock and its scale after measurement.
+The coefficients are computed from ordinary inputs, not supplied by captures.
+
+Display accepts finite affine modelview matrices for local glyph geometry and
+derives the orthographic projection from the frame's exact extents. Its GLSL
+stages express modelview then projection. Bounds are checked before GL work;
+the matrix seam does not admit every representable OpenGL transform. The
+selected recipe fits the recorded original matrix boundaries and the matched
+Windows scene, without proving a universal legacy-driver precision model.
