@@ -332,7 +332,11 @@ typedef struct mc_tile_list_ledger {
 
 /* Detailed concrete World dirty entry. The legacy bool/status-only wrappers
  * remain available but source-facing dungeon/mutation callers use the detailed
- * variants; no operation-string or ambient diagnostic reconstruction occurs. */
+ * variants; no operation-string or ambient diagnostic reconstruction occurs.
+ * Presence guards only Chunk dirty; each live typed observer still receives
+ * the same nullable Tile. A reached callback temporarily holds a nonnull Tile;
+ * callers keep its owner live through synchronous reentry. Empty lists do not
+ * preflight Tile arguments. Failures retain the earlier dirty/callback effects. */
 mc_world_storage_status mc_world_runtime_tile_dirty_detailed(mc_world_runtime *world, int32_t x,
                                                              int32_t y, int32_t z, mc_tile *tile,
                                                              mc_live_tile_error *error);

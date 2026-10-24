@@ -1,5 +1,34 @@
 # Test scope and reproduction
 
+## World observers and wire constructor inputs
+
+`world.observers` runs 295 native checks through actual GAME World methods and
+typed callback receivers. It covers all six implemented slots, raw numerical
+arguments, live append/removal/replacement, duplicate and NULL registrations,
+missing callbacks, partial failures, Entity sound coordinate changes, bounded
+allocation and terminal holds. Callback-driven wire updates reenter another
+World sharing the same Registry. These controls pass on MSVC and sanitized
+GCC/Clang; original nonempty observer correspondence remains unverified.
+
+`world.wire_probe_inputs` runs 52 native subprocess controls on authored copied
+Worlds. It verifies the old unpaired CLI and declared constructor tapes, including
+signed int64 boundary samples, actual discovered consumption, exhausted/unused
+inputs, early witness rejection, canonical-format/size limits and existing-output
+protection. Full operation prefixes and file preservation are checked separately
+from consumption. It does not claim original tape provenance or clock parity.
+
+```sh
+ctest --test-dir build --output-on-failure -R '^world[.](observers|wire_probe_inputs|wire_lifecycle|wire_multichunk)$'
+```
+
+Add `-C Debug` for a Visual Studio build. These tests need no original archives.
+
+The complete local public/JDK suites pass 205 MSVC, 207 GCC and 207 Clang tests,
+619 in total, with no failures or skips. Linux builds enable ASan and UBSan.
+All 587 C/header files pass clang-format 18; controller mirrors and all 556
+positive/2,011 negative interval controls pass on Windows and Linux. The retained
+project source copy matches the current working tree for every non-Markdown file.
+
 ## Dedicated construction and synchronous fluid recursion
 
 Public `server.construction`, `world.dedicated_entity_index` and

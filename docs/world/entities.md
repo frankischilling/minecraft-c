@@ -17,8 +17,9 @@ chunk uses the provider's `b` getter, then its actual virtual add method. A
 cached hit preserves that Chunk's pending key; it does not enter the separate
 cache `c` method that removes pending work.
 Normal completion appends to the current World.b and invokes the observer hook
-before returning true. The current empty observer list completes. Reached
-nonempty untyped dispatch fails explicitly after both publications.
+before returning true. The live [typed observer loop](observers.md) dispatches
+`entity_added` after both publications and before dedicated Entity-index
+insertion. Untyped or missing reached callbacks fail after both publications.
 
 Normal Chunk insertion sets q before reading the Entity. It computes X and Z
 again, checks the actual final Chunk coordinates, then computes and clamps Y to
@@ -41,7 +42,8 @@ insertion. It appends the whole slice to World.b before reading each live input
 occurrence and invoking its observer. Deferral appends the whole slice to the
 constructor-created D list without observing it. Duplicate references own
 separate holds; typed NULL values own none. The real empty observer body returns
-normally, while reached nonempty interface dispatch remains unsupported.
+normally. Nonempty typed dispatch visits the current observer list by index;
+callback changes affect the next size/get operation.
 
 Native allocation and occurrence holds are admitted before publishing the
 complete append. A later observer failure preserves every appended occurrence.
@@ -110,9 +112,9 @@ No save, callback or apparent unload is used to break the ownership cycle.
 
 ## Validation and limits
 
-Whole-batch activation and deferral pass 353 native checks per host within all
-149 configured MSVC cases and 151 cases on each sanitized Linux GCC/Clang build,
-with zero skips and local JDK comparisons enabled. Actual late observer failure
+At the whole-batch checkpoint, activation and deferral passed 353 native checks
+per host within all 149 configured MSVC cases and 151 cases on each sanitized
+Linux GCC/Clang build, with zero skips and local JDK comparisons enabled. Actual late observer failure
 retains the whole appended batch, including occurrences after the failing one.
 Separate b/D holds, duplicate and NULL occurrences, foreign construction Worlds,
 RAW Entities, real allocation ceilings and terminal retirement are covered.
@@ -148,5 +150,6 @@ Separate [original client and server observations](../reference/entity-publicati
 record actual constructors, base World insertion and direct normal/Blank Chunk
 calls. These captures and the native contracts are separate evidence. There is
 no native replay or complete original/native Entity, fluid or population parity
-claim. Batch activation has its separate native contract; arbitrary observers, dedicated indexing, player
-descendants, item ticking and Entity save interoperability remain unfinished.
+claim. Batch activation has its separate native contract. Original nonempty
+observer traces, concrete renderer/tracker receivers, player descendants, item
+ticking and complete Entity save interoperability remain unfinished.

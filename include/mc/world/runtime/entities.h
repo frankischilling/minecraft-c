@@ -26,8 +26,9 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
  * native holds. It does not change Entity.world or precheck source membership.
  *
  * This runtime constructs actual Item and FallingSand Entities; player
- * sleep/tracker descendants remain separate implementations. Empty observer lists
- * complete; unsupported reached nonempty dispatch retains both publications.
+ * sleep/tracker descendants remain separate implementations. The live observer
+ * loop dispatches entity_added after both publications, before a dedicated
+ * World's Entity-index insertion. Reached failures retain those publications.
  * NULL Entity is admitted until its reached source field read. A nonnull Entity
  * must belong to this World's bound application EntityClasses, independently
  * of its nullable/different construction World. This is native type admission,

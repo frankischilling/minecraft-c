@@ -8,6 +8,7 @@
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/environment.h"
 #include "mutation/mutation_internal.h"
+#include "observers_internal.h"
 #include "provider_internal.h"
 #include "runtime_internal.h"
 
@@ -383,70 +384,76 @@ mc_world_storage_status mc_world_runtime_burning(mc_world_runtime *world,
     return finish(world, &frame, error);
 }
 
-static bool observer_shape(const mc_world_reference_list *list) {
-    return list != NULL && list->count <= list->capacity && list->count <= (size_t)INT32_MAX &&
-           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
-           (list->capacity == 0 || list->items != NULL);
-}
-
-static bool observer_failure(mc_world_runtime *world, mc_world_movement_error *frame,
-                             unsigned int pc, const char *operation) {
+static bool observer_cause(mc_world_runtime *world, mc_world_movement_error *frame, unsigned int pc,
+                           mc_world_storage_error cause) {
     frame->bytecode = frame->observer_bytecode = pc;
     frame->presentation.observer_bytecode = pc;
-    (void)mc_world_mutation_fail(world, &frame->presentation, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                 operation);
-    return storage_failure(frame, frame->presentation.cause);
+    frame->presentation.status = cause.status;
+    frame->presentation.operation = cause.operation;
+    frame->presentation.cause = cause;
+    world->last_error = cause;
+    return storage_failure(frame, cause);
 }
 
 static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
+                              const mc_registry_string *name, float volume, float pitch,
                               mc_world_movement_error *frame) {
-    const mc_world_reference_list *list = world->fields.u; /* getfield6 */
-    if (!observer_shape(list))
-        return observer_failure(world, frame, 9, "World Entity sound observer size");
-    if (list->count == 0)
-        return true;        /* return64, before any Entity/FP access */
-    list = world->fields.u; /* separate getfield18 */
-    if (!observer_shape(list) || list->count == 0)
-        return observer_failure(world, frame, 23, "World Entity sound observer get");
-    const void *observer = list->items[0];
-    if (observer != NULL)
-        return observer_failure(world, frame, 28, "World Entity sound observer cast");
-    frame->bytecode = 33;
-    if (entity == NULL)
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                    "World Entity sound Entity receiver");
-    const mc_entity_status held = mc_entity_retain(entity);
-    if (held != MC_ENTITY_OK) {
-        frame->entity =
-            (mc_entity_error){.status = held, .operation = "World Entity sound Entity hold"};
-        return fail(frame, entity_status(held), frame->entity.operation);
-    }
-    const mc_entity_base_fields *fields = mc_entity_runtime_fields(entity);
-    volatile double x = fields->x;
-    frame->bytecode = 37;
-    volatile double y = fields->y;
-    frame->bytecode = 41;
-    volatile float offset = fields->offset;
-    frame->bytecode = 44;
-    if (!fp_ready(frame, "World Entity sound FP admission")) {
+    for (size_t index = 0;; ++index) {
+        mc_world_observer *observer = NULL;
+        bool present = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
+                                    &frame->observer_bytecode, &cause))
+            return observer_cause(world, frame, frame->observer_bytecode, cause);
+        if (!present)
+            return true; /* return64, before any Entity/FP access */
+        frame->bytecode = 33;
+        if (entity == NULL) {
+            mc_world_observer_release_held(observer);
+            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World Entity sound Entity receiver");
+        }
+        const mc_entity_status held = mc_entity_retain(entity);
+        if (held != MC_ENTITY_OK) {
+            mc_world_observer_release_held(observer);
+            frame->entity =
+                (mc_entity_error){.status = held, .operation = "World Entity sound Entity hold"};
+            return fail(frame, entity_status(held), frame->entity.operation);
+        }
+        const mc_entity_base_fields *fields = mc_entity_runtime_fields(entity);
+        volatile double x = fields->x;
+        frame->bytecode = 37;
+        volatile double y = fields->y;
+        frame->bytecode = 41;
+        volatile float offset = fields->offset;
+        frame->bytecode = 44;
+        if (!fp_ready(frame, "World Entity sound FP admission")) {
+            mc_entity_release(entity);
+            mc_world_observer_release_held(observer);
+            return false;
+        }
+        volatile double widened_offset = (double)offset;
+        frame->bytecode = 45;
+        volatile double sound_y = y - widened_offset;
+        frame->bytecode = 47;
+        volatile double z = fields->z;
+        /* Even a NULL receiver or missing slot is tested only after the
+         * Entity x/y/offset/z reads and actual y-offset argument arithmetic. */
+        frame->bytecode = frame->observer_bytecode = 53;
+        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        if (observer == NULL || observer->callbacks.sound == NULL)
+            cause.operation = "World Entity sound observer invocation";
+        else
+            status = observer->callbacks.sound(observer->context, world, name, x, sound_y, z,
+                                               volume, pitch, &cause);
         mc_entity_release(entity);
-        return false;
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            return observer_cause(world, frame, 53,
+                                  mc_world_observer_callback_error(status, cause));
+        /* iinc58 follows the callback; the next receiver gets fresh live
+         * Entity fields, including edits made by this callback. */
     }
-    volatile double widened_offset = (double)offset;
-    frame->bytecode = 45;
-    volatile double sound_y = y - widened_offset;
-    frame->bytecode = 47;
-    volatile double z = fields->z;
-    (void)x;
-    (void)sound_y;
-    (void)z;
-    /* NULL passed checkcast28. Actual x/y/offset/z argument evaluation and
-     * y-offset finish before invokeinterface53 rejects that same receiver.
-     * No concrete observer can yet complete one iteration and reach iinc58. */
-    const bool completed =
-        observer_failure(world, frame, 53, "World Entity sound observer receiver");
-    mc_entity_release(entity);
-    return completed;
 }
 
 mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, mc_entity *entity,
@@ -457,9 +464,6 @@ mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, m
         return result(error, &frame);
     /* Already evaluated caller arguments are neither dereferenced nor changed.
      * The actual Entity-coordinate overload is not the coordinate-sound body. */
-    (void)name;
-    (void)volume;
-    (void)pitch;
-    (void)entity_sound_held(world, entity, &frame);
+    (void)entity_sound_held(world, entity, name, volume, pitch, &frame);
     return finish(world, &frame, error);
 }

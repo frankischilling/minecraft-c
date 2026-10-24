@@ -60,8 +60,9 @@ mc_world_storage_status mc_world_runtime_burning(mc_world_runtime *world,
 /* Distinct fd/dj.a(Entity,String,FF)V overload. An actual empty observer List
  * returns before dereferencing entity or doing FP arithmetic. A reached null
  * observer accepts its cast, then reads current Entity x,y,offset,z around
- * y-offset before failing at invocation53. Nonnull native observers remain
- * explicitly unsupported at their reached cast28. entity and name may be NULL;
+ * y-offset before failing at invocation53. Each typed observer receives fresh
+ * Entity fields after the preceding callback; a missing sound slot fails at53
+ * after the same argument evaluation. entity and name may be NULL;
  * no Registry/String read, Random draw or coordinate-sound substitution occurs.
  * A nonnull name borrows its actual live Registry-owned identity. */
 mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, mc_entity *entity,
@@ -77,6 +78,6 @@ mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, m
  * diagnostics. Native argument/phase admission changes only this error frame.
  * The strict x86-64 FP environment is checked only at reached arithmetic;
  * area presence and empty sound do not require FP admission. No save, rollback,
- * implicit pool reset, observer implementation or later movement work occurs. */
+ * implicit pool reset or later movement work occurs. */
 
 #endif

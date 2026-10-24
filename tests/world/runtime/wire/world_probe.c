@@ -2,7 +2,9 @@
  * operations and coordinates, never expected arrays, strengths or owner state.
  * Construction alone may replace session.lock. No save or tick is requested.
  * Pointer labels describe actual native address aliases, not JVM identities;
- * source wire key/node identities come from the real collection inspector. */
+ * source wire key/node identities come from the real collection inspector.
+ * Optional constructor inputs are declared U witnesses and nanoTime samples;
+ * replay is conditional and the normal default-clock route remains unpaired. */
 #include "mc/block/registry/runtime.h"
 #include "mc/entity/classes/classes.h"
 #include "mc/storage/region/region.h"
@@ -10,12 +12,14 @@
 #include "mc/world/runtime/scheduling.h"
 
 #include "../../../../src/block/registry/registry_internal.h"
+#include "../../../../src/core/java/random_profile_internal.h"
 #include "../../../../src/platform/time/millis.h"
 #include "../../../../src/world/chunk/object_state_internal.h"
 #include "../../../../src/world/runtime/construction_internal.h"
 #include "../../../../src/world/runtime/mutation/mutation_internal.h"
 #include "../../../../src/world/runtime/provider_internal.h"
 #include "../../../../src/world/runtime/runtime_internal.h"
+#include "../../../../src/world/storage/files.h"
 #include "../../../../src/world/storage/objects_internal.h"
 
 #include <ctype.h>
@@ -70,6 +74,12 @@ typedef struct probe {
     resources resources;
     mc_materials *materials;
     mc_java_random_profile *profile;
+    mc_java_random_constructor_input *constructor_inputs;
+    mc_java_random_constructor_inputs_view constructor_view;
+    size_t constructor_input_count;
+    mc_java_random_profile_status constructor_binding_status, constructor_completion_status;
+    bool constructor_inputs_requested, constructor_binding_attempted;
+    bool constructor_completion_checked, constructor_view_available;
     mc_registry_classes *registry;
     mc_entity_classes *entities;
     mc_world_runtime_classes *classes;
@@ -99,6 +109,11 @@ static const char *boolean(bool value) {
     return value ? "true" : "false";
 }
 
+static const char *constructor_mode(const probe *p) {
+    return p->constructor_inputs_requested ? "conditional-constructor-input-replay"
+                                           : "unpaired-default-clock";
+}
+
 static bool fail(probe *p, const char *stage) {
     if (p->failure == NULL)
         p->failure = stage;
@@ -112,6 +127,79 @@ static FILE *open_file(const char *path, const char *mode) {
 #else
     return fopen(path, mode);
 #endif
+}
+
+static bool constructor_decimal(const uint8_t *text, size_t length, int64_t *out) {
+    if (length == 0 || length > 20u)
+        return false;
+    const bool negative = text[0] == '-';
+    size_t i = negative ? 1u : 0u;
+    if (i == length || (text[i] == '0' && (length - i != 1u || negative)))
+        return false;
+    const uint64_t limit = negative ? (UINT64_C(1) << 63) : (uint64_t)INT64_MAX;
+    uint64_t magnitude = 0;
+    for (; i < length; ++i) {
+        if (text[i] < '0' || text[i] > '9')
+            return false;
+        const uint64_t digit = (uint64_t)(text[i] - '0');
+        if (magnitude > (limit - digit) / 10u)
+            return false;
+        magnitude = magnitude * 10u + digit;
+    }
+    *out = !negative                          ? (int64_t)magnitude
+           : magnitude == (UINT64_C(1) << 63) ? INT64_MIN
+                                              : -(int64_t)magnitude;
+    return true;
+}
+
+static bool read_constructor_inputs(probe *p, const char *path) {
+    static const char header[] = "minecraft-c-random-constructor-inputs-v1\n";
+    mc_ws_file_bytes bytes = {0};
+    if (mc_ws_read_file(path, sizeof(header) + 39u * MC_JAVA_RANDOM_PROFILE_MAX_CONSTRUCTOR_INPUTS,
+                        &bytes, &p->storage) != MC_WORLD_STORAGE_OK)
+        return fail(p, "constructor input artifact read");
+    bool ok =
+        bytes.length >= sizeof(header) - 1u && memcmp(bytes.data, header, sizeof(header) - 1u) == 0;
+    size_t count = 0;
+    for (size_t i = sizeof(header) - 1u; ok && i < bytes.length; ++i)
+        if (bytes.data[i] == '\n' && ++count > MC_JAVA_RANDOM_PROFILE_MAX_CONSTRUCTOR_INPUTS)
+            ok = false;
+    if (ok && count != 0) {
+        p->constructor_inputs = calloc(count, sizeof(*p->constructor_inputs));
+        ok = p->constructor_inputs != NULL;
+    }
+    size_t offset = sizeof(header) - 1u, row = 0;
+    while (ok && offset < bytes.length) {
+        size_t end = offset;
+        while (end < bytes.length && bytes.data[end] != '\n')
+            ++end;
+        if (row >= count || end == bytes.length || end - offset < 18u || end - offset > 37u ||
+            bytes.data[offset + 16u] != '\t') {
+            ok = false;
+            break;
+        }
+        uint64_t committed = 0;
+        for (size_t i = 0; ok && i < 16u; ++i) {
+            const uint8_t c = bytes.data[offset + i];
+            const unsigned int digit = c >= '0' && c <= '9'   ? (unsigned int)(c - '0')
+                                       : c >= 'a' && c <= 'f' ? (unsigned int)(c - 'a') + 10u
+                                                              : 16u;
+            if (digit > 15u)
+                ok = false;
+            else
+                committed = (committed << 4) | digit;
+        }
+        int64_t sample = 0;
+        ok = ok && constructor_decimal(bytes.data + offset + 17u, end - offset - 17u, &sample);
+        if (ok)
+            p->constructor_inputs[row++] = (mc_java_random_constructor_input){committed, sample};
+        offset = end + 1u;
+    }
+    mc_ws_free_file_bytes(&bytes);
+    if (!ok || row != count)
+        return fail(p, "constructor input artifact shape");
+    p->constructor_input_count = count;
+    return true;
 }
 
 static bool reserve(json *j, size_t extra) {
@@ -174,6 +262,30 @@ static bool string(json *j, const char *text) {
             TRY(emit(j, "%c", *c));
     }
     return emit(j, "\"");
+}
+
+static bool constructor_inputs_state(probe *p) {
+    json *j = &p->json;
+    TRY(emit(j, "{\"mode\":\"%s\",\"supplied\":%zu,\"binding_attempted\":%s,\"binding_status\":",
+             constructor_mode(p), p->constructor_input_count,
+             boolean(p->constructor_binding_attempted)));
+    TRY(p->constructor_binding_attempted
+            ? emit(j, "%u", (unsigned int)p->constructor_binding_status)
+            : emit(j, "null"));
+    TRY(emit(j, ",\"completion_checked\":%s,\"completion_status\":",
+             boolean(p->constructor_completion_checked)));
+    TRY(p->constructor_completion_checked
+            ? emit(j, "%u", (unsigned int)p->constructor_completion_status)
+            : emit(j, "null"));
+    TRY(emit(j, ",\"profile_view_before_retirement\":"));
+    if (p->constructor_view_available) {
+        const mc_java_random_constructor_inputs_view *view = &p->constructor_view;
+        TRY(emit(j, "{\"bound\":%s,\"count\":%zu,\"consumed\":%zu,\"failure\":%u}",
+                 boolean(view->bound), view->count, view->consumed, (unsigned int)view->failure));
+    } else {
+        TRY(emit(j, "null"));
+    }
+    return emit(j, "}");
 }
 
 static bool finish_line(json *j) {
@@ -421,6 +533,13 @@ static bool initialize(probe *p, const char *root, const mc_math_trig *trig) {
     TRY(mc_materials_create(&p->materials));
     TRY(mc_java_random_profile_create(4u * 1024u * 1024u, &p->profile) ==
         MC_JAVA_RANDOM_PROFILE_OK);
+    if (p->constructor_inputs_requested) {
+        p->constructor_binding_attempted = true;
+        p->constructor_binding_status = mc_java_random_profile_bind_constructor_inputs(
+            p->profile, p->constructor_inputs, p->constructor_input_count);
+        if (p->constructor_binding_status != MC_JAVA_RANDOM_PROFILE_OK)
+            return fail(p, "constructor input binding");
+    }
     p->resources.streams[0] = (input_stream){.bytes = language, .length = sizeof(language) - 1u};
     p->resources.streams[1] = p->resources.streams[2] = (input_stream){.bytes = language};
     p->resources.api =
@@ -920,6 +1039,8 @@ static bool failure_record(probe *p) {
     }
     TRY(emit(j, ",\"mutation\":"));
     TRY(diagnostic(p));
+    TRY(emit(j, ",\"constructor_inputs\":"));
+    TRY(constructor_inputs_state(p));
     TRY(emit(j, "}"));
     return finish_line(j);
 }
@@ -967,6 +1088,7 @@ static bool cleanup(probe *p) {
     TRY(mc_world_store_free_checked(&p->store, &p->storage) == MC_WORLD_STORAGE_OK);
     mc_world_regions_free(p->regions);
     mc_java_random_profile_free(p->profile);
+    p->profile = NULL;
     mc_materials_destroy(p->materials);
     return true;
 }
@@ -975,9 +1097,11 @@ int main(int argc, char **argv) {
     int result = 1;
     char root[8192];
     static mc_math_trig trig;
-    if (argc != 5 || (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0) ||
+    if ((argc != 5 && argc != 7) || (argc == 7 && strcmp(argv[5], "--constructor-inputs") != 0) ||
+        (strcmp(argv[1], "client") != 0 && strcmp(argv[1], "server") != 0) ||
         !path_decode(argv[2], root, sizeof(root)) || !mc_math_trig_init(&trig)) {
-        fputs("usage: world_probe client|server PREPARED_ROOT_HEX PLAN_TXT FRESH_OUTPUT_JSONL\n",
+        fputs("usage: world_probe client|server PREPARED_ROOT_HEX PLAN_TXT FRESH_OUTPUT_JSONL "
+              "[--constructor-inputs FILE]\n",
               stderr);
         return 1;
     }
@@ -985,11 +1109,13 @@ int main(int argc, char **argv) {
     if (p == NULL)
         return 1;
     p->client = strcmp(argv[1], "client") == 0;
+    p->constructor_inputs_requested = argc == 7;
     p->references = calloc(MAX_REFS, sizeof(*p->references));
     p->ticks = calloc(MAX_ENTRIES, sizeof(*p->ticks));
     p->json.output = open_file(argv[4], "wbx");
     if (p->references == NULL || p->ticks == NULL || p->json.output == NULL ||
-        !parse_plan(p, argv[3]))
+        !parse_plan(p, argv[3]) ||
+        (p->constructor_inputs_requested && !read_constructor_inputs(p, argv[6])))
         goto finish;
     json *j = &p->json;
     if (!emit(
@@ -1002,14 +1128,17 @@ int main(int argc, char **argv) {
             "\"aliases\":\"labels compare native storage addresses; structural adaptation is "
             "required; "
             "wire key/node IDs are actual owner history\","
-            "\"random\":\"actual default-clock World/cave state retained; continuations from value "
-            "copies\","
+            "\"constructor_input_mode\":\"%s\",\"constructor_input_count\":%zu,"
+            "\"random\":\"%s; actual World/cave state retained; continuations from value copies; "
+            "tape counts do not identify constructor roles\","
             "\"gaps\":\"no original local snapshot or in-method trace; no JVM identity-hash "
             "schedule; "
             "entity/tile/generated/unpopulated Chunks fail; native E/F inventories omit tree/hash "
             "links; "
             "native fallback has no normal child handles; finite failure diagnostic projection\"}",
-            argv[1], p->command_count) ||
+            argv[1], p->command_count, constructor_mode(p), p->constructor_input_count,
+            p->constructor_inputs_requested ? "conditional replay of declared constructor inputs"
+                                            : "unpaired actual native default clock") ||
         !finish_line(j))
         goto finish;
     if (!initialize(p, root, &trig)) {
@@ -1040,10 +1169,24 @@ int main(int argc, char **argv) {
         }
         ++p->completed;
     }
+    if (p->constructor_inputs_requested && p->failure == NULL && !p->json.failed) {
+        p->constructor_completion_checked = true;
+        p->constructor_completion_status =
+            mc_java_random_profile_constructor_inputs_complete(p->profile);
+        if (p->constructor_completion_status != MC_JAVA_RANDOM_PROFILE_OK) {
+            (void)fail(p, "terminal constructor input completeness");
+            goto finish;
+        }
+    }
     result = 0;
 finish:
     if (p->json.length != 0)
         p->json.length = 0; /* Failed partial records are never successful snapshots. */
+    if (p->profile != NULL) {
+        const mc_java_random_profile_status viewed =
+            mc_java_random_profile_constructor_inputs_get(p->profile, &p->constructor_view);
+        p->constructor_view_available = viewed == MC_JAVA_RANDOM_PROFILE_OK;
+    }
     if (p->failure != NULL && p->json.output != NULL && !p->json.failed)
         (void)failure_record(p);
     const bool released = cleanup(p);
@@ -1060,7 +1203,8 @@ finish:
                   "\",\"failure\":",
                   boolean(result == 0), boolean(released), p->completed, p->command_count,
                   p->operation_status, (uint64_t)p->session_token) ||
-            !string(&p->json, p->failure) || !emit(&p->json, "}") || !finish_line(&p->json))
+            !string(&p->json, p->failure) || !emit(&p->json, ",\"constructor_inputs\":") ||
+            !constructor_inputs_state(p) || !emit(&p->json, "}") || !finish_line(&p->json))
             result = 1;
     }
     if (p->json.output != NULL && fclose(p->json.output) != 0)
@@ -1071,6 +1215,8 @@ finish:
     free(p->json.bytes);
     free(p->references);
     free(p->ticks);
+    if (p->profile == NULL)
+        free(p->constructor_inputs);
     free(p);
     return result;
 }

@@ -31,8 +31,10 @@ setters exercise power rise/decay, a 25-cell path past attenuation range,
 removal/reinsertion, vertical steps, blocked overhead and a loop. Support loss
 publishes a real ItemEntity with one redstone item. Separate native controls
 check remote guards and exact partial effects at failed power, observer and
-collection-budget operations. Controls restore nullable inputs before checking
-results; they provide no successful replacement World or observer callbacks.
+collection-budget operations. Those failure controls restore nullable inputs
+before checking results. Separate [typed observer controls](observers.md) now
+exercise synchronous callbacks, including wire reentry across constructed
+Worlds that share the defining Registry.
 
 `world.wire_multichunk` adds 350 checks in 25 cases across four real Worlds:
 client, base server, dedicated and a second base server. Three loaded Chunks per
@@ -46,7 +48,7 @@ A retained snapshot survives a second World's refill and drain of the shared
 Set. The test also checks the intermediate update boundary: the first wire has
 strength 15 and seven positions remain pending; draining their actual World
 notifications completes propagation. This is sequential shared-owner coverage.
-Callback-driven cross-World reentry remains required. Both native cases check
+Original callback-driven reentry comparison remains required. Both native cases check
 unchanged World Random where no drop occurs, source flags, empty notification
 storage after successful drains and balanced calls/leases/snapshots.
 
@@ -179,6 +181,42 @@ build/mc_wire_world_probe client PREPARED_ROOT_HEX tests/reference/world/wire/li
 `PREPARED_ROOT_HEX` encodes the UTF-8 path whose `world/level.dat` already exists.
 Use a separate copied root for each execution. `server` selects the base-server
 World. This observer does not launch a client or server application.
+
+### Declared constructor inputs
+
+The optional `--constructor-inputs FILE` suffix binds a declared input tape to
+the fresh native Random profile before Registry, Entity or World construction:
+
+```sh
+build/mc_wire_world_probe client PREPARED_ROOT_HEX tests/reference/world/wire/stairs.plan output.jsonl --constructor-inputs inputs.txt
+```
+
+The format starts with `minecraft-c-random-constructor-inputs-v1` and LF. Each
+following LF-terminated row contains a 16-digit lowercase hexadecimal committed
+uniquifier witness, one tab and a canonical signed decimal int64 nanoTime sample.
+There are at most 65,536 rows. CRLF, extra whitespace, leading decimal zeros,
+plus signs and negative zero reject. The private binding checks every full-width
+witness against the fresh profile's multiplication progression. Constructors
+still commit their actual CAS, obtain the corresponding supplied sample and
+execute the normal XOR/seed tail. No live uniquifier, seed, RNG state, expected
+array or constructor role is installed.
+
+The header labels this mode `conditional-constructor-input-replay`. Failure and
+terminal records retain actual binding, consumption and completion diagnostics.
+Only the successful final after-snapshot reaches the tape-completeness check;
+failed prefixes skip it. Unused rows therefore fail after the complete plan,
+while exhausted rows retain the actual earlier constructor failure. The default
+CLI remains `unpaired-default-clock` and never binds or checks a tape.
+
+`world.wire_probe_inputs` runs 52 native controls across both sides on authored
+populated-air Worlds. It discovers the needed row count from actual consumption,
+then exercises exact, extra, empty and short tapes, signed int64 boundary samples,
+bad witnesses, canonical-format/size limits and exclusive output creation. It
+checks full operation chronology, cleanup and unchanged level/region bytes;
+pre-Store rejections must also preserve the session lock. These are native
+input controls. Original wire constructor ordering, role/draw observations and
+independent tape provenance remain unqualified. Earlier pinned original/native
+captures retain their historical producer and executable bytes.
 
 ### Stepped path
 

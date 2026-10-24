@@ -58,6 +58,13 @@ the Map. The explicit deferred-G phase preserves duplicate occurrences. These
 bodies do not supply the missing complete World tick. The separate Entity
 activation phase uses its actual whole-batch ownership protocol.
 
+World dirty now dispatches the [typed `tile_dirty` observer slot](observers.md)
+after its presence/acquisition/Chunk-dirty prefix. A false presence result still
+reaches the live observer loop. Every callback receives the same nullable Tile;
+an empty list returns without preflighting that argument. Reached failures retain
+earlier dirty and callback effects. These native callbacks do not implement a
+concrete renderer or establish original nonempty observer equivalence.
+
 Detailed diagnostics carry the whole Tile/Registry/Stack/NBT/Entity/publication
 cause with separate caller, provider, load and activation positions. Each
 acquisition attempt owns a fresh synchronous diagnostic frame. A nested attempt

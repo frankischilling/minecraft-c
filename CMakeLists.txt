@@ -259,6 +259,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/power/world.c
     src/world/runtime/power/blocks.c
     src/world/runtime/presentation.c
+    src/world/runtime/observers.c
     src/world/runtime/entity_publication.c
     src/world/runtime/collision/entities.c
     src/world/runtime/collision/class_entities.c
@@ -609,6 +610,8 @@ if(BUILD_TESTING)
 
     add_executable(mc_wire_world_probe tests/world/runtime/wire/world_probe.c)
     target_link_libraries(mc_wire_world_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_observers tests/world/runtime/observers/test_observers.c)
+    target_link_libraries(mc_test_world_observers PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_rails tests/world/runtime/rails/test_rails.c)
     target_link_libraries(mc_test_world_rails PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1379,6 +1382,18 @@ if(BUILD_TESTING)
         --scenario world-wire-multichunk)
     set_tests_properties(world.wire_multichunk PROPERTIES
         LABELS "public;integration;ownership;mutation;power;dedicated" TIMEOUT 90)
+
+    add_test(NAME world.observers COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/run_observers.py"
+        --executable "$<TARGET_FILE:mc_test_world_observers>")
+    set_tests_properties(world.observers PROPERTIES
+        LABELS "public;integration;ownership;mutation;power" TIMEOUT 90)
+
+    add_test(NAME world.wire_probe_inputs COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_wire_probe_inputs.py"
+        --executable "$<TARGET_FILE:mc_wire_world_probe>")
+    set_tests_properties(world.wire_probe_inputs PROPERTIES
+        LABELS "public;integration;ownership;mutation;random" TIMEOUT 240)
 
     add_test(NAME world.rails
         COMMAND "${Python3_EXECUTABLE}"

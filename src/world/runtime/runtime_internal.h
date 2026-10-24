@@ -3,6 +3,7 @@
 
 #include "acquisition_internal.h"
 #include "mc/world/runtime/construction.h"
+#include "mc/world/runtime/observers.h"
 #include "mc/world/runtime/runtime.h"
 #include "mc/world/runtime/saving/errors.h"
 #include "mc/world/runtime/tiles/tiles.h"
@@ -18,6 +19,13 @@ typedef struct mc_world_collision_reference {
     struct mc_entity_classes *pool;
     struct mc_entity *entity;
 } mc_world_collision_reference;
+
+typedef struct mc_world_observer_list_ledger {
+    mc_world_reference_list *list;
+    void **items;
+    mc_world_observer **entries;
+    size_t count, capacity;
+} mc_world_observer_list_ledger;
 
 typedef struct mc_world_collision_list_ledger {
     mc_world_reference_list *list;
@@ -62,6 +70,9 @@ struct mc_world_runtime {
     /* Actual K203, independent of current source K. Each occurrence owns
      * either one pooled bounds hold or one permanent bounds' Entity hold. */
     mc_world_collision_list_ledger collision_boxes;
+    /* Constructor-created u192 and its separately owned typed occurrences.
+     * Current source u is replaceable; unknown void* values own no observer. */
+    mc_world_observer_list_ledger observers;
     bool entity_containers_retired;
     mc_tile_list_ledger tile_membership[2];
     bool tile_containers_retired;

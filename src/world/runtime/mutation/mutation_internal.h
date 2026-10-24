@@ -161,8 +161,8 @@ bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_strin
                                 double velocity_z, mc_world_mutation_error *error);
 
 /* Callers hold this actual World. u reload/size/get order is source behavior;
- * native empty-list support must validate the reached descriptor. Nonempty
- * unsupported observer calls fail at their reached cast/invocation, never succeed.
+ * typed receivers remain held across synchronous callbacks. Untyped nonnull
+ * entries fail at the reached cast; null/missing callbacks fail at invocation.
  * The sorted column wrapper receives source LOCAL x,z without correction. */
 bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                     mc_world_mutation_error *error);

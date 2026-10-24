@@ -9,6 +9,7 @@
 #include "../../storage/objects_internal.h"
 #include "../construction_internal.h"
 #include "../mutation/mutation_internal.h"
+#include "../observers_internal.h"
 #include "../provider_internal.h"
 #include "../runtime_internal.h"
 #include "mc/world/runtime/blocks.h"
@@ -3895,31 +3896,43 @@ mc_world_storage_status mc_world_runtime_tile_dirty_detailed(mc_world_runtime *w
                 state->dirty = true;
         }
     }
-    /* The real World owner has no typed pm/jp observer registration yet.
-     * Empty reaches size28/return66. A nonempty list preserves get42/cast47/
-     * invoke55; no invented successful renderer/server observer is installed. */
-    if (frame.status == MC_WORLD_STORAGE_OK) {
-        frame.bytecode = 28;
-        const mc_world_reference_list *list = world->fields.u;
-        if (!live_list_shape(list))
-            live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile dirty observer size");
-        else if (list->count != 0) {
-            frame.observer_bytecode = 42;
-            list = world->fields.u;
-            if (!live_list_shape(list) || list->count == 0)
-                live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile dirty observer get");
-            else if (list->items[0] == NULL) {
-                frame.observer_bytecode = 55;
-                live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "Tile dirty observer invocation receiver");
-            } else {
-                frame.observer_bytecode = 47;
-                live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "Tile dirty concrete observer owner/cast");
+    /* Presence only guards the Chunk dirty prefix. The live observer loop is
+     * still reached when presence was false, with the same nullable Tile. */
+    for (size_t index = 0; frame.status == MC_WORLD_STORAGE_OK; ++index) {
+        mc_world_observer *observer = NULL;
+        bool has = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 28, 42, 47, &observer, &has,
+                                    &frame.observer_bytecode, &cause)) {
+            frame.bytecode = frame.observer_bytecode;
+            live_cause(&frame, cause);
+            break;
+        }
+        if (!has)
+            break; /* return66, without preflighting the Tile argument */
+        frame.bytecode = frame.observer_bytecode = 55;
+        if (observer == NULL || observer->callbacks.tile_dirty == NULL) {
+            mc_world_observer_release_held(observer);
+            live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Tile dirty observer invocation");
+            break;
+        }
+        if (tile != NULL) {
+            const mc_tile_status held = mc_tile_retain(tile);
+            if (held != MC_TILE_OK) {
+                mc_world_observer_release_held(observer);
+                live_tile_error(&frame, held, "Tile dirty callback Tile hold");
+                break;
             }
         }
+        const mc_world_storage_status status =
+            observer->callbacks.tile_dirty(observer->context, world, x, y, z, tile, &cause);
+        mc_tile_release(tile);
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            live_cause(&frame, mc_world_observer_callback_error(status, cause));
+        /* iinc60 occurs only after callback success. Reentry may change the
+         * next reached current-u size/get without changing this argument. */
     }
-    (void)tile; /* Same owner argument reaches invoke55 only with actual observer support. */
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
 }

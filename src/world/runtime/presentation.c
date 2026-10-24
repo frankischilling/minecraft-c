@@ -2,6 +2,7 @@
 
 #include "construction_internal.h"
 #include "mutation/mutation_internal.h"
+#include "observers_internal.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -35,46 +36,13 @@ static bool presentation_admit(mc_world_runtime *world, mc_world_mutation_error 
     return false;
 }
 
-static bool presentation_list_metadata(const mc_world_reference_list *list) {
-    return list != NULL && list->count <= list->capacity &&
-           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
-           (list->capacity == 0 || list->items != NULL);
-}
-
-/* fd/dj.a(DDD,String,FF)V and a(String,DDDDDD)V have the same u loop until
- * their interface invocation. The enclosing caller holds this exact World.
- * The current native observer domain cannot complete any nonempty iteration,
- * so only source index0 is reachable. Successful future concrete observers
- * would require the real iinc46/48 and size9 reload on every next iteration. */
-static bool presentation_observe_held(mc_world_runtime *world, unsigned int invocation_pc,
-                                      const char *operation, mc_world_mutation_error *frame) {
-    frame->observer_bytecode = 9;
-    const mc_world_reference_list *list = world->fields.u; /* getfield6 */
-    if (!presentation_list_metadata(list))
-        return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
-    if (list->count == 0) {
-        /* Actual source return52(sound)/54(particle). No argument or Registry
-         * reference has been dereferenced, and no callback or RNG call ran. */
-        frame->observer_bytecode = 0;
-        return true;
-    }
-
-    frame->observer_bytecode = 23;
-    list = world->fields.u; /* Separate source getfield18 before List.get23. */
-    if (!presentation_list_metadata(list) || list->count == 0)
-        return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
-    const void *observer = list->items[0];
-    if (observer != NULL) {
-        frame->observer_bytecode = 28;
-        /* The native list has untyped elements. Do not assert a pm/jp cast
-         * succeeded or replace the missing concrete observer with success. */
-        return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
-    }
-
-    /* checkcast28 accepts NULL. The original argument loads31..39/41 do not
-     * dereference String; only invokeinterface41/43 then rejects the receiver. */
-    frame->observer_bytecode = invocation_pc;
-    return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
+static bool presentation_failure(mc_world_runtime *world, mc_world_mutation_error *frame,
+                                 mc_world_storage_error cause) {
+    frame->status = cause.status;
+    frame->operation = cause.operation;
+    frame->cause = cause;
+    world->last_error = cause;
+    return false;
 }
 
 static bool presentation_enter(mc_world_runtime *world, mc_world_mutation_error *frame) {
@@ -103,17 +71,32 @@ static mc_world_storage_status presentation_finish(mc_world_runtime *world, bool
 bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double z,
                              const mc_registry_string *name, float volume, float pitch,
                              mc_world_mutation_error *error) {
-    /* Preserve source values, including NULL String and all floating bits.
-     * No observer can currently return normally from a nonempty iteration.
-     * Thus the arguments require no conversion, read, clipping or validation.
-     * In particular, caller-side fizz draws remain before this actual call. */
-    (void)x;
-    (void)y;
-    (void)z;
-    (void)name;
-    (void)volume;
-    (void)pitch;
-    return presentation_observe_held(world, 41, "World sound observer", error);
+    /* Preserve the original argument order and values. This body neither
+     * dereferences the String nor draws Random; caller-side fizz draws have
+     * already happened. A callback can edit u before the next size9/get23. */
+    for (size_t index = 0;; ++index) {
+        mc_world_observer *observer = NULL;
+        bool present = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
+                                    &error->observer_bytecode, &cause))
+            return presentation_failure(world, error, cause);
+        if (!present) {
+            error->observer_bytecode = 0;
+            return true;
+        }
+        error->observer_bytecode = 41;
+        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        if (observer != NULL && observer->callbacks.sound != NULL)
+            status = observer->callbacks.sound(observer->context, world, name, x, y, z, volume,
+                                               pitch, &cause);
+        else
+            cause.operation = "World sound observer invocation";
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            return presentation_failure(world, error,
+                                        mc_world_observer_callback_error(status, cause));
+    }
 }
 
 bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_string *name, double x,
@@ -121,14 +104,29 @@ bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_strin
                                 double velocity_z, mc_world_mutation_error *error) {
     /* No Math.random, default-Random construction or velocity adjustment is
      * performed here. Every caller draw retains its original interleaving. */
-    (void)name;
-    (void)x;
-    (void)y;
-    (void)z;
-    (void)velocity_x;
-    (void)velocity_y;
-    (void)velocity_z;
-    return presentation_observe_held(world, 43, "World particle observer", error);
+    for (size_t index = 0;; ++index) {
+        mc_world_observer *observer = NULL;
+        bool present = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
+                                    &error->observer_bytecode, &cause))
+            return presentation_failure(world, error, cause);
+        if (!present) {
+            error->observer_bytecode = 0;
+            return true;
+        }
+        error->observer_bytecode = 43;
+        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        if (observer != NULL && observer->callbacks.particle != NULL)
+            status = observer->callbacks.particle(observer->context, world, name, x, y, z,
+                                                  velocity_x, velocity_y, velocity_z, &cause);
+        else
+            cause.operation = "World particle observer invocation";
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            return presentation_failure(world, error,
+                                        mc_world_observer_callback_error(status, cause));
+    }
 }
 
 mc_world_storage_status mc_world_runtime_sound(mc_world_runtime *world, double x, double y,

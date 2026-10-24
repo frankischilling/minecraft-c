@@ -2,73 +2,73 @@
 
 #include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
+#include "../observers_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 
-static bool list_metadata(const mc_world_reference_list *list) {
-    return list != NULL && list->count <= list->capacity &&
-           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
-           (list->capacity == 0 || list->items != NULL);
-}
-
-/* The current finite World has no concrete observer registration owner. Empty
- * u still reaches size9. On nonempty input, preserve get23/null/invoke order;
- * an untyped nonnull element cannot establish the source pm/jp cast at28.
- * No successful stand-in observer or Java collection internals are supplied. */
-static bool observe(mc_world_runtime *world, unsigned int invocation_pc,
-                    mc_world_mutation_error *error) {
-    error->observer_bytecode = 9;
-    const mc_world_reference_list *list = world->fields.u;
-    if (!list_metadata(list))
-        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                      "World observer size receiver metadata");
-    if (list->count == 0) {
-        error->observer_bytecode = 0;
-        return true;
-    }
-
-    /* This is a separate actual u reload at18, not a saved loop receiver. The
-     * first index is0; no later iteration is reached without a real observer. */
-    error->observer_bytecode = 23;
-    list = world->fields.u;
-    if (!list_metadata(list) || list->count == 0)
-        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                      "World observer get receiver or index");
-    const void *observer = list->items[0];
-    if (observer != NULL) {
-        error->observer_bytecode = 28;
-        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                      "World concrete observer cast unavailable");
-    }
-
-    /* checkcast accepts NULL; its actual interface invocation then fails. */
-    error->observer_bytecode = invocation_pc;
-    return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                  "World observer invocation receiver is null");
+static bool observer_failure(mc_world_runtime *world, mc_world_mutation_error *error,
+                             mc_world_storage_error cause) {
+    error->status = cause.status;
+    error->operation = cause.operation;
+    error->cause = cause;
+    world->last_error = cause;
+    return false;
 }
 
 bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                     mc_world_mutation_error *error) {
-    /* Coordinates would be passed unchanged at34. No observer body is reached
-     * successfully in the supported empty/cast-unavailable domain. */
-    (void)x;
-    (void)y;
-    (void)z;
-    return observe(world, 34, error);
+    for (size_t index = 0;; ++index) {
+        mc_world_observer *observer = NULL;
+        bool present = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
+                                    &error->observer_bytecode, &cause))
+            return observer_failure(world, error, cause);
+        if (!present) {
+            error->observer_bytecode = 0;
+            return true;
+        }
+        error->observer_bytecode = 34;
+        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        if (observer != NULL && observer->callbacks.cell != NULL)
+            status = observer->callbacks.cell(observer->context, world, x, y, z, &cause);
+        else
+            cause.operation = "World cell observer invocation";
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            return observer_failure(world, error, mc_world_observer_callback_error(status, cause));
+        /* Source iinc39 follows a normally returned callback, even when it
+         * removed this occurrence. The next size/get reload the current u. */
+    }
 }
 
 bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int32_t min_y,
                                      int32_t min_z, int32_t max_x, int32_t max_y, int32_t max_z,
                                      mc_world_mutation_error *error) {
-    /* The full range interface invocation is40, not the separate same-cell
-     * range observer method's37. No coordinate clipping is performed. */
-    (void)min_x;
-    (void)min_y;
-    (void)min_z;
-    (void)max_x;
-    (void)max_y;
-    (void)max_z;
-    return observe(world, 40, error);
+    /* fd/dj.b(IIIIII)V: pass the supplied bounds without sorting or clipping.
+     * Equal endpoints do not select the separate fd.k/dj.i(III)V body. */
+    for (size_t index = 0;; ++index) {
+        mc_world_observer *observer = NULL;
+        bool present = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 9, 23, 28, &observer, &present,
+                                    &error->observer_bytecode, &cause))
+            return observer_failure(world, error, cause);
+        if (!present) {
+            error->observer_bytecode = 0;
+            return true;
+        }
+        error->observer_bytecode = 40;
+        mc_world_storage_status status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        if (observer != NULL && observer->callbacks.range != NULL)
+            status = observer->callbacks.range(observer->context, world, min_x, min_y, min_z, max_x,
+                                               max_y, max_z, &cause);
+        else
+            cause.operation = "World range observer invocation";
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            return observer_failure(world, error, mc_world_observer_callback_error(status, cause));
+    }
 }
 
 bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_t z, int32_t a,

@@ -1,5 +1,20 @@
 # Development status
 
+The [World access observer interface](world/observers.md) now dispatches typed
+cell, range, sound, particle, Entity-added and Tile-dirty callbacks. Its native
+controls pass 295 checks on MSVC and sanitized GCC/Clang, including live-list
+edits, retained receivers, failure prefixes and wire reentry across Worlds
+sharing a Registry. The existing-World wire probe also accepts declared
+constructor inputs; 52 controls per compiler check consumption, failure ordering
+and file preservation. Original nonempty observer traces, concrete presentation
+and tracking receivers, and original wire constructor-input admission remain
+unfinished.
+
+The current local public/JDK suites pass all 619 tests across MSVC and sanitized
+GCC/Clang. All 587 C/header files pass formatting; controller mirrors and
+lifecycle interval controls also pass. These results cover native contracts and
+the existing finite replays; they do not establish new original observer parity.
+
 The [synchronous wire hooks](world/wire.md) now use actual World mutations,
 recursive strength updates and independently retained notification snapshots.
 The native contracts cover both sides, a 25-cell path, rise/decay, vertical
@@ -16,7 +31,7 @@ comparison declares its storage and final-counter adaptations; twelve file-only
 Windows corruption controls reject the intended errors. A separate GCC Debug
 step comparison matches upward/downward wire paths and all retained arrays,
 while keeping absolute World/cave Random differences. Full World-level
-wire qualification, callback-driven cross-World reentry, wider persistence/failure
+wire qualification, original callback-driven reentry comparison, wider persistence/failure
 schedules and the default identity source remain required.
 
 The [wire position Set](reference/wire-position-set.md) has reclaimable

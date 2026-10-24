@@ -1,5 +1,18 @@
 # World simulation
 
+The [World access observer interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/observers.md)
+dispatches six typed callback slots with live-list iteration and retained receiver
+ownership. Native controls pass 295 checks on MSVC and sanitized GCC/Clang,
+including wire reentry across Worlds sharing the defining Registry. The wire
+probe's declared constructor-input route passes 52 native controls per compiler.
+Original nonempty observer traces, concrete presentation/tracking receivers and
+original wire constructor-input admission remain unfinished.
+
+The complete local public/JDK suites pass all 619 tests across MSVC and sanitized
+GCC/Clang, with 587-file formatting and controller checks passing. This validates
+the native contracts and existing finite replays; original nonempty observer
+equivalence remains unverified.
+
 The [synchronous wire hooks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/wire.md)
 now run real World mutations, recursive strength updates and shared notification
 snapshots. Native contracts cover both sides, a 25-cell path, vertical connections,
@@ -16,8 +29,8 @@ storage and final-counter adaptations. Twelve file-only Windows controls reject
 the intended corruptions. A separate GCC Debug step comparison matches both
 vertical query directions and all 600 retained arrays, with absolute Random
 differences kept. Full World-level
-qualification, callback-driven cross-World
-reentry, wider persistence/failure schedules and default identity generation
+qualification, original callback-driven reentry comparison,
+wider persistence/failure schedules and default identity generation
 remain required.
 
 The [wire position Set](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/wire-position-set.md)

@@ -7,6 +7,7 @@
 #include "dedicated/entity_index.h"
 #include "entity_publication_internal.h"
 #include "mc/core/math/math.h"
+#include "observers_internal.h"
 #include "provider_internal.h"
 
 #include <limits.h>
@@ -217,28 +218,47 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity,
     return true;
 }
 
-static bool observe_base_entity_at(mc_world_runtime *world, mc_world_entity_error *frame,
-                                   unsigned int caller_bytecode) {
+static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
+                                   mc_world_entity_error *frame, unsigned int caller_bytecode) {
     frame->bytecode = caller_bytecode;
-    frame->observer_bytecode = 7;
-    const mc_world_reference_list *list = world->fields.u; /* getfield4 */
-    if (!list_shape(list))
-        return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                           "World Entity observer List size");
-    if (list->count == 0)
-        return true; /* Actual base fd/dj.c(Entity)V return40. */
-    frame->observer_bytecode = 20;
-    list = world->fields.u; /* Separate current u16 before get20. */
-    if (!list_shape(list) || list->count == 0)
-        return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                           "World Entity observer List get");
-    frame->observer_bytecode = list->items[0] == NULL ? 29u : 25u;
-    return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity observer dispatch");
+    for (size_t index = 0;; ++index) {
+        mc_world_observer *observer = NULL;
+        bool present = false;
+        mc_world_storage_error cause = {0};
+        if (!mc_world_observer_next(world, index, 7, 20, 25, &observer, &present,
+                                    &frame->observer_bytecode, &cause))
+            return entity_cause(frame, cause);
+        if (!present)
+            return true; /* Actual base fd/dj.c(Entity)V return40. */
+        frame->observer_bytecode = 29;
+        if (observer == NULL || observer->callbacks.entity_added == NULL) {
+            mc_world_observer_release_held(observer);
+            return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "World Entity observer invocation");
+        }
+        if (entity != NULL) {
+            const mc_entity_status held = mc_entity_retain(entity);
+            if (held != MC_ENTITY_OK) {
+                mc_world_observer_release_held(observer);
+                frame->entity =
+                    (mc_entity_error){.status = held, .operation = "World observer Entity hold"};
+                return entity_fail(frame, ownership_status(held), frame->entity.operation);
+            }
+        }
+        const mc_world_storage_status status =
+            observer->callbacks.entity_added(observer->context, world, entity, &cause);
+        mc_entity_release(entity);
+        mc_world_observer_release_held(observer);
+        if (status != MC_WORLD_STORAGE_OK)
+            return entity_cause(frame, mc_world_observer_callback_error(status, cause));
+        /* iinc34 follows the callback. Reload both current u and size7 on the
+         * next iteration; synchronous removals/appends remain observable. */
+    }
 }
 
 static bool observe_entity_at(mc_world_runtime *world, mc_entity *entity,
                               mc_world_entity_error *frame, unsigned int caller_bytecode) {
-    if (!observe_base_entity_at(world, frame, caller_bytecode))
+    if (!observe_base_entity_at(world, entity, frame, caller_bytecode))
         return false;
     if (world->construction.entry != MC_WORLD_RUNTIME_SERVER_DEDICATED)
         return true;
@@ -256,6 +276,7 @@ static bool observe_entity_at(mc_world_runtime *world, mc_entity *entity,
         frame->index_bytecode = cause.bytecode;
         return entity_cause(frame, cause.cause);
     }
+    frame->dedicated_bytecode = frame->index_bytecode = 0;
     return true;
 }
 
