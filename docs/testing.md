@@ -2,10 +2,10 @@
 
 ## Native client frontend
 
-Code checkpoint `a5f691a0fd5b1975f84f989fe1698b9f28809805` passes
-[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40106188840):
-216 MSVC, 219 GCC and 219 Clang tests, with 654 actual Passed records and no
-missing cases or skips. Formatting covers 626 C/header files. Controller
+Code checkpoint `389b57361d9454b447c0f956cc39c5a1d32245b3` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40117293002):
+218 MSVC, 221 GCC and 221 Clang tests, with 660 actual Passed records and no
+missing cases or skips. Formatting covers 630 C/header files. Controller
 mirrors and lifecycle interval checks pass. The synthetic checkout's complete
 tree equals the head tree. The preceding Windows build rejected the Font test's
 constant condition as C4127 under MSVC 19.44. A C17 compile-time assertion fixes
@@ -51,14 +51,14 @@ observed-JDK and 49,532 model-derived groups. The
 retain their footer-parser failure; separate file-only audits verify the actual
 tests and rows and complete read-only binary checks without native reruns.
 
-## Java output writer and settings research
+## Java output writer and GameSettings
 
 The [shared output writer](core/java-writer.md) passes 110,708 stream checks,
 19 real-file checks and five independent file checks per MSVC/GCC/Clang build.
 All 15 selected headless cases pass on each compiler, including the renamed
 temperature, LivingEntity and Dungeon regressions. Linux enables ASan/UBSan.
-The complete retained source matches 1,014 current non-Markdown project files;
-all 630 C/header files pass clang-format 18.
+The complete retained source matches checkpoint `389b573`'s 1,014 non-Markdown
+Git blobs; all 630 C/header files pass clang-format 18.
 
 The MSVC/GCC CTest commands returned zero and every test passed. Their
 controllers then rejected CTest's truncated successful Dungeon footer in the
@@ -77,9 +77,24 @@ ctest --test-dir build --output-on-failure -R '^core[.]java_writer(_file)?$'
 
 The [GameSettings reference](reference/game-settings.md) separately records
 16 original persistence cases on each of three charset/platform profiles.
-The 68-case selected-JDK writer observation remains separate from the native
-contracts until an independent original/native comparison is qualified.
-Neither result implements client settings ownership or options screens.
+The later writer observer passes 25 transport controls on each compiler.
+Its finite Windows original/native comparison matches 13,391 fields in 68
+scenarios, with all 14 corruption controls rejected. The
+[writer contract](core/java-writer.md#finite-original-comparison) defines the
+matched projection and the unpaired Thread/private-state evidence.
+
+The [native GameSettings owner](client/game-settings.md) adds headless defaults,
+load/save and a public-state observer. Its two new tests are
+`client.game_settings` and `tools.client_game_settings_probe`. They keep their
+authored files, complete output and receipts below the build directory.
+Both pass on MSVC and sanitized GCC/Clang: six actual CTest cases, with 481
+native interface checks, six independent file checks and 26 observer transport
+controls per compiler. All 635 C/header files pass clang-format 18. The
+1,199-file tested cohort contains 1,024 non-Markdown files. A later independent
+file audit rehashes 1,706 artifacts, including all retained output trees and
+the actual products. This native result is separate from the earlier 660-case
+hosted checkpoint. Native/original settings comparison, options screens and
+application integration remain unfinished.
 
 ## Canonical Minecraft names
 

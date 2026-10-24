@@ -1,11 +1,11 @@
 # Development status
 
-At code checkpoint `a5f691a0fd5b1975f84f989fe1698b9f28809805`,
-[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40106188840)
-pass: 216 MSVC, 219 GCC and 219 Clang tests, with no missing cases or skips.
-Formatting covers 626 C/header files; controller mirrors and lifecycle interval
+At code checkpoint `389b57361d9454b447c0f956cc39c5a1d32245b3`,
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40117293002)
+pass: 218 MSVC, 221 GCC and 221 Clang tests, with no missing cases or skips.
+Formatting covers 630 C/header files; controller mirrors and lifecycle interval
 checks also pass. Linux includes actual software OpenGL tests and ASan/UBSan.
-The preceding Windows build rejected a constant test condition under MSVC
+An earlier Windows build rejected a constant test condition under MSVC
 19.44's C4127 diagnostic. A compile-time assertion replaces that condition;
 strict warnings remain enabled. The earlier image flexible-array diagnostic
 was resolved with a pointer into the same checked allocation.
@@ -30,7 +30,7 @@ minimized-window adjustment was then rebuilt and retested through the six
 frontend cases and actual captures on all three compilers. Earlier full suites
 below retain their own checkpoint scope.
 
-Child menus, options persistence, audio, complete startup, gameplay and real
+Child menus, settings integration, audio, complete startup, gameplay and real
 fullscreen/zero-drawable controls remain unfinished or unverified. The shared
 [GuiMainMenu renderer](client/gui-main-menu.md) supports a matched conditional
 scene with ordered binary32 modelview operations. Windows now matches all
@@ -52,17 +52,29 @@ targets or direct imports. The [legacy float formatter](core/java-float-format.m
 also matches 5,708 retained JDK rows and 49,532 separately derived model cases
 per compiler. The [integer parser](core/java-integer.md) also passes 43 unit
 checks and all 65,536 one-unit comparisons per compiler through the public
-client-disabled core. GameSettings and options persistence remain unfinished.
+client-disabled core. The new GameSettings owner builds on those primitives;
+its verification has the separate scope below.
 
 The [output writer](core/java-writer.md) adds counted UTF-16 encoding and
 PrintWriter policy without graphics dependencies. Its public native builds
 pass all 15 selected cases per compiler: 110,708 stream checks, 19 real-file
 checks and five independent file checks, with Linux sanitizers. Independent
 raw-output audits and later metadata inspections retain two controller footer
-failures separately from the successful tests. The
-[GameSettings reference](reference/game-settings.md) records all 40 declared
-fields and three original persistence profiles. Native settings ownership,
-original/native writer comparison and effectful menu setters remain unfinished.
+failures separately from the successful tests. A later input-driven observer
+passes 25 transport controls per compiler. Its Windows comparison matches all
+13,391 declared fields across 68 original/native scenarios; all 14 file
+corruption controls reject the intended changes. Thread controls and private
+state remain unpaired. See the writer contract for the finite projection.
+
+The [GameSettings reference](reference/game-settings.md) records all 40 declared
+fields and three original persistence profiles. The
+[native persistence owner](client/game-settings.md) now implements defaults,
+retained KeyBindings, options loading and ordered saving through real files.
+All six new CTest cases pass across MSVC and sanitized GCC/Clang. Each compiler
+passes 481 native checks, six independent file checks and 26 observer controls;
+all 635 C/header files pass formatting. Independent file audits retain the
+complete tested outputs and product bytes. Native/original settings comparison,
+application integration and effectful menu setters remain unfinished.
 
 The [WorldAccess interface](world/world-access.md) now dispatches typed
 cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its

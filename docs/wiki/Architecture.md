@@ -13,6 +13,10 @@ Current runtime navigation:
   remain usable without client graphics dependencies. The writer owns its
   encoder and PrintWriter policy; caller-owned byte sinks and native file
   adapters retain separate lifetimes.
+  [GameSettings](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-settings.md)
+  owns retained options, KeyBindings and binding arrays and uses the shared
+  Reader/Writer for real-file persistence. The application has not yet adopted
+  it or the effectful option setters.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

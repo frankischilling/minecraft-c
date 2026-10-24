@@ -7,6 +7,12 @@ Image decoding and font layout work without an OpenGL context. Client libraries
 remain outside the simulation and server link graph. The current title screen
 does not yet start gameplay, child menus or audio.
 
+The [GameSettings owner](client/game-settings.md) keeps options persistence
+separate from display and audio. It owns retained UTF-16 Strings, KeyBindings
+and binding arrays, and uses the shared Reader/Writer interfaces for real
+files. It can build with `MC_BUILD_CLIENT=OFF`. The current application has
+not yet adopted this owner or the effectful option setters.
+
 [Dedicated World construction](world/construction.md#dedicated-construction)
 selects its cache during the base virtual provider call and retains separate
 subclass fields. Its Entity index preserves duplicate-key insertion and typed

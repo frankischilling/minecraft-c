@@ -128,6 +128,10 @@ add_library(mc_core STATIC
     src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_c_atomics mc_build_options)
+
+add_library(mc_game_settings STATIC src/client/settings/game_settings.c)
+target_include_directories(mc_game_settings PUBLIC include)
+target_link_libraries(mc_game_settings PUBLIC mc_core PRIVATE mc_build_options)
 if(UNIX)
     target_link_libraries(mc_core PRIVATE m)
 endif()
@@ -977,6 +981,9 @@ if(BUILD_TESTING)
     add_executable(mc_test_java_writer_file tests/core/java/test_writer_file.c)
     target_link_libraries(mc_test_java_writer_file PRIVATE mc_core mc_build_options)
 
+    add_executable(mc_java_writer_probe tests/core/java/writer_probe.c)
+    target_link_libraries(mc_java_writer_probe PRIVATE mc_core mc_build_options)
+
     add_executable(mc_java_reader_probe tests/core/java/reader_probe.c)
     target_link_libraries(mc_java_reader_probe PRIVATE mc_core mc_build_options)
 
@@ -1143,10 +1150,38 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_executable(mc_test_game_settings tests/client/settings/test_game_settings.c)
+    target_link_libraries(mc_test_game_settings PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME client.game_settings
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_game_settings_file.py"
+            --executable "$<TARGET_FILE:mc_test_game_settings>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(client.game_settings PROPERTIES
+        LABELS "public;integration;ownership" TIMEOUT 60)
+
+    add_executable(mc_game_settings_probe tests/client/settings/game_settings_probe.c)
+    target_link_libraries(mc_game_settings_probe PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME tools.client_game_settings_probe
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_game_settings_probe_inputs.py"
+            --executable "$<TARGET_FILE:mc_game_settings_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(tools.client_game_settings_probe PROPERTIES
+        LABELS "public;tools;ownership" TIMEOUT 120)
+
     add_test(NAME core.java_writer_file
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/java/test_writer_file.py"
             --executable "$<TARGET_FILE:mc_test_java_writer_file>")
     set_tests_properties(core.java_writer_file PROPERTIES LABELS "public;integration;ownership" TIMEOUT 30)
+
+    add_test(NAME tools.java_writer_probe_inputs
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/java/test_writer_probe_inputs.py"
+            --executable "$<TARGET_FILE:mc_java_writer_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(tools.java_writer_probe_inputs PROPERTIES
+        LABELS "public;tools;ownership;transport" TIMEOUT 90)
 
     add_test(NAME tools.java_float_format_probe
         COMMAND "${Python3_EXECUTABLE}"

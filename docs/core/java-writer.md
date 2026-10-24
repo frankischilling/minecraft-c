@@ -86,16 +86,65 @@ wide process arguments explicitly rather than interpreting the active code
 page as UTF-8. Each actual public-CMake build on MSVC, GCC and Clang passes
 110,708 stream checks, 19 real-file checks and five independent file checks.
 All 15 selected headless tests pass per compiler; Linux enables ASan/UBSan.
-The retained 1,188-file source copy matches all 1,014 current non-Markdown
-project files, including 630 formatted C/header files.
+At writer checkpoint `389b573`, the retained 1,188-file source copy matches all
+1,014 non-Markdown Git blobs, including 630 formatted C/header files. That
+checkpoint passes all 660 hosted tests across MSVC and sanitized GCC/Clang.
 
 The MSVC and GCC controllers stopped after CTest clipped one successful
 Dungeon footer in its JUnit output. Their failed reports remain failed.
 Separate file audits verify every complete raw Passed record and source
 footer; subsequent inventory and import inspections complete the missing
 metadata without rerunning tests. Clang's complete controller passes with an
-explicit passed-output bound. These are native contracts. The separate
-68-case original JDK observation does not yet establish native correspondence.
+explicit passed-output bound. These are native contracts. The later finite
+original comparison is described below.
+
+## Input-driven observation tool
+
+`mc_java_writer_probe PLAN FRESH_JSONL` calls the same public writer interface
+with an authored memory sink. It reads an input-only ASCII/LF plan before
+exclusively creating its output. A literal `-` selects binary stdout. The
+[transport driver](../../tests/tools/java/test_writer_probe_inputs.py) shows
+the exact tab-separated grammar and exercises 25 admission, lifecycle and pipe
+controls. All 25 pass on each of MSVC, GCC and Clang, with ASan/UBSan on Linux.
+These 75 controls check the observer's transport and lifecycle; they do not
+independently establish original-game behavior.
+
+Plans select stream/PrintWriter mode and one of the four charsets. They contain
+counted UTF-16 writes, print/println, flush, close, checkError and optional sink
+faults with a method, occurrence, I/O kind and committed byte prefix. No expected
+output or encoder state is accepted. The result retains the exact consumed plan,
+operation inputs, public state, complete sink bytes, callback order and fault
+usage. Schema 2 flushes the source terminal before a separate native-retirement
+record; both successful cleanup and an actual zero process exit are required.
+
+Thread-control inputs remain explicitly unpaired. The tool does not simulate
+Thread flags, inspect private encoder layout or convert native errors into
+Java Throwable objects. NEWLINE uses the declared `println(empty String)` route,
+including its additional empty-write check. Observer limits and transport
+failures fail the capture; they are never clipped into successful source data.
+These records supply the native side of the finite comparison below.
+
+## Finite original comparison
+
+The 68 authored scenarios run against both the original Temurin 17.0.17+10
+writer classes on Windows and the MSVC public producer. The original capture
+uses four explicit charsets and CRLF. The native capture uses the same inputs
+and retained fault plans. It contains 630 rows; the original contains 562.
+The additional native rows report cleanup separately from source operations.
+
+All 13,391 compared fields match across 347 supported operations. The comparison
+covers emitted bytes, complete write attempts and committed prefixes, callback
+order, counts, source close and PrintWriter reference state, trouble,
+encoder-closed state, native status, checkError results and fault consumption.
+All 14 independently altered file controls fail at their intended comparison
+or input guard. Each control retains its changed input and complete result.
+
+Eleven Thread controls remain unpaired. The captures retain private buffers,
+Throwable graphs and native causes as separate evidence; those fields are not
+qualified by the matching projection. A separate audit rehashes 5,158 consumed
+and derived files and confirms both raw capture trees unchanged. No Linux JDK
+capture supplies this 68-case comparison, and LF output is not normalized into
+CRLF equality.
 
 Native allocation and length limits do not model Java heap failure timing.
 Arbitrary Java File paths, CRT/JDK partial-write and interruption differences,
@@ -103,5 +152,7 @@ sharing/security behavior, disk-full devices and exception-text equality need
 separate real-file observations. Callback controls do not establish those
 claims. BufferedWriter, channels, nested PrintWriters, auto-flush, arbitrary
 encoders and concurrent Java monitor behavior are outside this interface.
-Complete GameSettings ownership, file loading/saving, menus and effects remain
-unfinished.
+The [GameSettings persistence owner](../client/game-settings.md) uses this
+interface for saving. Its native integration and original comparisons have
+their own scope; menus, effectful option setters and complete client behavior
+remain unfinished.

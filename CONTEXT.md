@@ -49,3 +49,9 @@ _Avoid_: Carrier as the name of the block.
 
 **MovingPistonBlock**:
 The temporary block containing a moving piston's TileEntity.
+
+**GameSettings**:
+The client's options, including graphics, sound, controls and the last server address.
+
+**KeyBinding**:
+A named client action and its assigned key code.

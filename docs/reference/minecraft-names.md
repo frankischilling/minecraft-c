@@ -27,6 +27,8 @@ English aliases for the same original class.
 | Overworld generator | `mc_overworld_generator` | `yf` / `pk` | Terrain generation and population for dimension 0 |
 | LivingEntity | `MC_ENTITY_CLASS_KIND_LIVING_ENTITY` | `ls` / `hl` | The shared living base of Players, animals and monsters |
 | Carried Block | `carried_block` role | The selected `uu` / `na` Block | The Block type moved by a piston, distinct from the `ut` / `mz` MovingPistonBlock receiver |
+| GameSettings | `mc_game_settings` | `kv` / client only | Client options, KeyBinding references and the options File; persistence is separate from effectful setters |
+| KeyBinding | `mc_key_binding` | `qb` / client only | A named client action and its assigned key code |
 
 The numerical `mc_biome_manager` remains a climate algorithm/storage helper.
 Noise-backed versus fixed WorldChunkManager methods are not Overworld versus
