@@ -1,5 +1,26 @@
 # Test scope and reproduction
 
+## Continuous integration scheduling
+
+The hosted workflow runs two CTest cases concurrently and allows four parallel
+Windows build jobs. The existing compiler, sanitizer, graphics, formatting and
+controller checks stay enabled. New revisions cancel superseded review checks;
+default-branch runs are allowed to finish. The grouping follows the documented
+[workflow concurrency rules](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
+
+The earlier `a59b168` hosted test steps took 457 seconds on GCC, 730 on Clang
+and 538 on Windows while running serially; its Windows build took 286 seconds.
+These observations motivate bounded parallelism. A hosted timing comparison
+is still required before claiming a measured speedup.
+
+The client Display header now forwards only the SDL Window type. Source files
+that call SDL video functions include the SDL header directly. This lets the
+actual application state compile in CPU-only notice tests without SDL headers.
+A complete MSVC rebuild and all six affected client tests pass with CTest
+parallelism two; the full application-access source also passes strict Clang
+syntax checking without an SDL include path. These focused checks are separate
+from the earlier complete material cohort below.
+
 ## Material immersion and acceleration
 
 The complete combined cohort passes all 268 Windows MSVC tests and all 250

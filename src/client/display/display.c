@@ -2,6 +2,7 @@
 #include "gl_internal.h"
 
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_video.h>
 #include <float.h>
 #include <math.h>
 #include <stddef.h>

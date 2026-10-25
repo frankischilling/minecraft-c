@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include "gl_internal.h"
 
+#include <SDL3/SDL_video.h>
 #include <float.h>
 #include <limits.h>
 #include <math.h>

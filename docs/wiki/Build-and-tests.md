@@ -1,5 +1,10 @@
 # Build and tests
 
+The workflow now runs two tests concurrently and allows four parallel Windows
+build jobs. Superseded review checks are cancelled; default-branch runs finish.
+All existing checks stay enabled. The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+records the serial timing baseline; a measured hosted speedup is not yet claimed.
+
 The [material movement integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/material-movement.md)
 passes all 268 Windows tests and all 250 headless tests each on fresh sanitized
 Clang/GCC builds: 768 completed cases, no failures or skips. All 754 C/header

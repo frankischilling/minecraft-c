@@ -3,7 +3,7 @@
 
 #include "mc/resources/image/image.h"
 
-#include <SDL3/SDL_video.h>
+typedef struct SDL_Window SDL_Window;
 
 typedef struct mc_client_display mc_client_display;
 typedef uint32_t mc_client_texture; /* Zero selects an untextured colored quad. */
