@@ -5,6 +5,8 @@
 #include "mc/entity/classes/classes.h"
 
 struct mc_minecart_shape_array;
+struct mc_entity_vector;
+struct mc_entity_vector_object;
 struct mc_entity_bounds;
 struct mc_entity_bounds_object;
 
@@ -14,6 +16,11 @@ typedef struct mc_entity_bounds_pool {
     struct mc_entity_bounds **elements;
     size_t length, capacity;
 } mc_entity_bounds_pool;
+
+typedef struct mc_entity_vector_pool {
+    struct mc_entity_vector **elements;
+    size_t length, capacity;
+} mc_entity_vector_pool;
 
 typedef struct mc_entity_type_entry {
     int32_t kind, value;
@@ -42,6 +49,11 @@ struct mc_entity_classes {
     mc_entity_bounds_pool *bounds_pool;
     struct mc_entity_bounds_object *bounds_objects;
     size_t bounds_holds;
+    mc_entity_class_phase vector_phase;
+    int32_t vector_cursor;
+    mc_entity_vector_pool *vector_pool;
+    struct mc_entity_vector_object *vector_objects;
+    size_t vector_holds;
     mc_entity_type_map *types;
     mc_entity_class_literal literals[MC_ENTITY_CLASS_KIND_COUNT];
     mc_entity_class_phase registry_phase;

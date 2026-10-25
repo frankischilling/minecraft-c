@@ -78,7 +78,10 @@ from the public runtime patch. Region wall-clock timestamps, arbitrary caught
 I/O outcomes and raw compressed-file equality are outside these comparisons.
 
 `world.provider_maintenance` uses authored resources and unique owned runs;
-`tools.provider_maintenance_controller` checks eight subprocess failure controls.
+`tools.provider_maintenance_controller` checks twelve subprocess controls.
+Capture records open/read/write/close errors, rejects short writes and requires
+explicit empty `reader_errors` metadata. A dead reader thread cannot stand in
+for completed empty stderr; legacy reports lacking that metadata are rejected.
 The optional `reference.provider_maintenance` runs both products and compares
 all six cases after verifying successful native completion and output hashes.
 Enable it with `MC_ENABLE_MAINTENANCE_REFERENCE_TESTS=ON`, the supplied client

@@ -28,6 +28,13 @@ operations. Separate [World publication](world/player-publication.md) retains
 each Player occurrence. Application adoption and the World entity tick loop
 remain unfinished.
 
+[Material immersion and acceleration](world/material-movement.md) use the same
+World, Entity, Block and Material owners. Their Vec3 pool belongs to the shared
+Entity classes owner and survives individual Worlds. Pool reset and client clear
+are explicit operations; retained vectors prevent class retirement. The reached
+fluid and Stairs dispatch preserves virtual calls and sequential velocity stores.
+Living movement and the Player tick remain unfinished.
+
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.
 Synchronous input notifications execute the real sorted recipe scan and publish

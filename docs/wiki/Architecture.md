@@ -6,6 +6,10 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [Material immersion and acceleration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/material-movement.md)
+  use real World/Entity/Block/Material owners, shared Vec3 lifetimes, fluid flow
+  and the actual wrapped Stairs dispatch. Living movement and Player ticks
+  remain unfinished.
 - [World lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md)
   propagates actual queued regions into Chunk nibble arrays, preserving live
   WorldAccess callbacks, detached region ownership and nested drain guards.

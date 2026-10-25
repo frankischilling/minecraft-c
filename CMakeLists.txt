@@ -19,6 +19,7 @@ option(MC_ENABLE_PLAYER_REFERENCE_TESTS "Compare local Player construction with 
 option(MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS "Compare World Player publication with supplied client JAR" OFF)
 option(MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS "Compare local Player input forwarding with supplied client JAR" OFF)
 option(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS "Compare World provider maintenance with supplied client JAR" OFF)
+option(MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS "Compare material movement with supplied client JAR" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
@@ -250,6 +251,7 @@ add_library(mc_entity_classes STATIC
     src/entity/classes/memory.c
     src/entity/minecart/classes.c
     src/entity/bounds/bounds.c
+    src/entity/vector/vector.c
     src/entity/registry/registry.c)
 target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 
@@ -359,6 +361,7 @@ add_library(mc_simulation STATIC
     src/entity/movement/movement.c
     src/entity/movement/effects.c
     src/entity/movement/turn.c
+    src/entity/movement/material.c
     src/entity/nbt/factory.c
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
@@ -376,6 +379,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/environment.c
     src/world/runtime/movement.c
     src/world/runtime/contact.c
+    src/world/runtime/material_movement.c
     src/world/runtime/blocks.c
     src/world/runtime/height.c
     src/world/runtime/queries.c
@@ -1046,6 +1050,34 @@ if(BUILD_TESTING)
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-provider-maintenance")
         set_tests_properties(reference.provider_maintenance PROPERTIES
             LABELS "local;reference;world;storage;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_material_movement tests/world/runtime/test_material_movement.c)
+    target_link_libraries(mc_test_material_movement PRIVATE mc_simulation mc_build_options)
+    add_test(NAME world.material_movement COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/material_movement/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_material_movement>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/material-movement-contracts")
+    set_tests_properties(world.material_movement PROPERTIES
+        LABELS "public;integration;world;entity;ownership" TIMEOUT 210)
+    add_test(NAME tools.material_movement_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/material_movement/test_controller.py")
+    set_tests_properties(tools.material_movement_controller PROPERTIES
+        LABELS "public;unit;tools;world" TIMEOUT 30)
+    if(MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Material movement reference tests require client JAR and library paths")
+        endif()
+        add_test(NAME reference.material_movement COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/material_movement/compare_material_movement.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --native "$<TARGET_FILE:mc_test_material_movement>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-material-movement")
+        set_tests_properties(reference.material_movement PROPERTIES
+            LABELS "local;reference;world;entity;ownership" TIMEOUT 480)
     endif()
 
     add_executable(mc_test_game_entities tests/world/runtime/entities/test_game_entities.c)

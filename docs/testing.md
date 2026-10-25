@@ -1,5 +1,36 @@
 # Test scope and reproduction
 
+## Material immersion and acceleration
+
+The complete combined cohort passes all 268 Windows MSVC tests and all 250
+headless tests each on fresh Clang 18/GCC 13 builds with ASan, UBSan and leak
+checks. All 768 cases run without failures, errors, disabled tests or skips.
+The 1,464 frozen inputs contain 1,261 non-Markdown files; all 754 C/header files
+pass clang-format 18. Each product passes 1,944 material/Vec3 checks and all
+300 fresh original-client records plus 172 shared native server crosschecks.
+Both controller suites also pass with Python optimization enabled on Windows
+and Linux. Earlier World/Player/input/crafting/lighting comparisons pass again
+in the same source cohort. Windows includes real GL captures; these local
+Linux profiles are headless.
+
+`world.material_movement` runs the actual dual-side World/Registry/Chunk/Entity
+contracts without a JVM or imported assets. It covers identity and liquid scans,
+fluid acceleration, eye immersion, the shared Vec3 pool, ownership, allocation
+failures and checked work limits. `tools.material_movement_controller` runs twelve
+subprocess controls, including real log-write, short-write and close failures.
+The separate maintenance controller now has the same twelve controls. Capture
+success requires an explicit empty `reader_errors` dictionary as well as complete
+pipes, bounded output, zero exit, empty stderr and a positive final marker.
+
+Enable `MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS` for the optional unchanged
+client comparison. Supply `MC_REFERENCE_CLIENT_JAR`,
+`MC_REFERENCE_CLIENT_LIBRARY_DIR` and matching JDK17 Runtime/Development tools.
+The controller creates fresh native and original runs, verifies their completed
+reports and compares all 300 client records plus 172 shared native server rows.
+The server evidence is paired bytecode and a native crosscheck; the comparison
+does not run an original server process. See the [contract](world/material-movement.md)
+for prepared inputs and remaining movement scope.
+
 ## World lighting, Player publication and input
 
 The complete integrated suite passes all 265 Windows tests and all 247 headless

@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import capture
 from run_native import validate_report
@@ -56,6 +57,68 @@ class NativeEvidence(unittest.TestCase):
                 self.control("import sys; sys.stdout.write('x'*1000000)")
         finally:
             capture.STDOUT_LIMIT = previous
+
+    def io_fault(self, fault):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            real_open = Path.open
+            channel = "stdout" if fault == "short" else "stderr"
+
+            class FailedWriter:
+                def __init__(self, stream):
+                    self.stream = stream
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    self.stream.close()
+                    if fault == "close":
+                        raise OSError("authored captured stream close failure")
+
+                def write(self, data):
+                    if fault == "write":
+                        raise OSError("authored stderr log write failure")
+                    if fault == "short":
+                        return self.stream.write(data[:-1])
+                    return self.stream.write(data)
+
+            def open_control(path, *args, **kwargs):
+                stream = real_open(path, *args, **kwargs)
+                if path == root / ("native." + channel) and args and args[0] == "xb":
+                    return FailedWriter(stream)
+                return stream
+
+            code = "print('Provider maintenance: 1 checks')"
+            if fault == "write":
+                code += "; import sys; print('actual native diagnostic', file=sys.stderr)"
+            command = [sys.executable, "-c", code]
+            with mock.patch.object(Path, "open", open_control):
+                report = capture.capture(command, root, "native", 5)
+            report.update(kind="native_maintenance", checks=1)
+            path = root / "run.json"
+            path.write_text(json.dumps(report))
+            with self.assertRaises(AssertionError):
+                validate_report(path)
+            with self.assertRaises(AssertionError):
+                capture.require_success(report)
+            self.assertIn(channel, report.get("reader_errors", {}))
+            self.assertIn("OSError", report["reader_errors"][channel])
+
+    def test_stderr_log_write_failure_is_rejected(self):
+        self.io_fault("write")
+
+    def test_partial_write_is_rejected(self):
+        self.io_fault("short")
+
+    def test_close_failure_is_rejected(self):
+        self.io_fault("close")
+
+    def test_missing_reader_metadata_is_rejected(self):
+        report = {"exit": 0, "timed_out": False, "output_overflow": False,
+                  "pipe_capture_complete": True, "stderr_bytes": 0}
+        with self.assertRaises(AssertionError):
+            capture.require_success(report)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,18 @@
 # Build and tests
 
+The [material movement integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/material-movement.md)
+passes all 268 Windows tests and all 250 headless tests each on fresh sanitized
+Clang/GCC builds: 768 completed cases, no failures or skips. All 754 C/header
+files pass formatting. Each compiler passes 1,944 new checks and matches 300
+original-client records plus 172 shared native server rows. The server scope
+is paired bytecode and a native crosscheck. Both capture controllers pass twelve
+controls, including real log-write failures. Player ticks and gameplay remain
+unfinished.
+
+The [World/Player checkpoint `a59b168`](https://github.com/frankischilling/minecraft-c/actions/runs/40240886139)
+passes all four hosted jobs: 251 Windows, 257 GCC and 257 Clang tests, with
+765 matched Start/Passed pairs and checkout trees equal to that code head.
+
 The [World/Player integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
 passes all 265 Windows tests and all 247 headless tests each on fresh sanitized
 Clang/GCC builds, with no failures or skips. All 745 C/header files pass

@@ -1,5 +1,28 @@
 # Development status
 
+[Material immersion and acceleration](world/material-movement.md) now use actual
+World/Entity/Block/Material owners and a shared Vec3 pool. The combined source
+passes all 268 Windows MSVC tests and all 250 headless tests each on fresh
+sanitized Clang 18/GCC 13 builds: 768 completed cases, no failures or skips.
+Each product passes 1,944 new native checks and matches 300 unchanged-client
+records plus 172 shared native server rows. Original server evidence remains
+paired bytecode and a native crosscheck. Living movement, active Player ticks
+and application gameplay remain unfinished; there is no playable client yet.
+
+All 754 C/header files pass clang-format 18. The frozen 1,464-file cohort has
+1,261 non-Markdown inputs; source and original class/Code pins pass readback.
+Both material and maintenance controllers pass twelve subprocess controls,
+normally and under Python optimization. Reader I/O failures and short writes
+now fail capture explicitly, and legacy reports lacking reader-error metadata
+are rejected. The native runtime and completed clean earlier comparisons retain
+their documented scope.
+
+The World/Player checkpoint `a59b168af91d64a72d9de072b6ecccb9747c684a`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40240886139):
+251 Windows, 257 GCC and 257 Clang tests, with 765 complete Start/Passed pairs.
+All checkouts use merge `53ddb2cd57f16f3b04ffd21383b3cb4a4a81c6bd`; its tree
+equals that code head. These checks precede the new log-write failure control.
+
 The integrated World/Player source passes all 265 Windows MSVC tests and all
 247 headless tests each on fresh Clang 18/GCC 13 builds with ASan, UBSan and leak
 checks. All 759 cases run without failures, disabled tests or skips. The

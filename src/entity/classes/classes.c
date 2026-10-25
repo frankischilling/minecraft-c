@@ -1,5 +1,6 @@
 #include "../bounds/bounds_internal.h"
 #include "../minecart/classes_internal.h"
+#include "../vector/vector_internal.h"
 #include "classes_internal.h"
 #include "memory_internal.h"
 
@@ -148,7 +149,8 @@ static void class_retire(mc_entity_classes *classes, void *storage, size_t bytes
 mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
     if (classes == NULL)
         return MC_ENTITY_OK;
-    if (classes->live_entities != 0 || classes->borrowers != 0 || classes->bounds_holds != 0)
+    if (classes->live_entities != 0 || classes->borrowers != 0 || classes->bounds_holds != 0 ||
+        classes->vector_holds != 0)
         return MC_ENTITY_BUSY;
     mc_minecart_class_dispose(classes);
     mc_entity_registry_dispose(classes);
@@ -162,6 +164,7 @@ mc_entity_status mc_entity_classes_free(mc_entity_classes *classes) {
         class_retire(classes, classes->types, sizeof(*classes->types));
     }
     mc_entity_bounds_dispose(classes);
+    mc_entity_vector_dispose(classes);
     free(classes);
     return MC_ENTITY_OK;
 }
