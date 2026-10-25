@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-25",
+  "scope": "complete ordinary source operation closure of client MovementInput/MovementInputFromOptions; finite original observation projection and native owner policies",
+  "source_sha256": {
+    "include/mc/client/input/movement_input.h": "997dba2172e630070b11b7a214058821db7555a25ed9a6e762442af9b3601c13",
+    "src/client/input/movement_input.c": "717426941334fdd8eaa627a38913e3f0cf88ceea716ac9a5dfb0f0be3906c71c",
+    "tests/client/input/test_movement_input.c": "f399b266814c303d285f198c37b3bb9d8f4d8497365dd106676f3d2982e2a83f",
+    "tests/client/input/movement_input_probe.c": "fb13ca8c966dd4e6d44a7d51c808dcd5bd2a01e837836165f2c93244b63496f9",
+    "tests/reference/client/input/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tests/reference/client/input/compare.py": "575cf829c1ef943a984259319cda4a331a008d94c70a80afcb76f128674370d6",
+    "tests/reference/client/input/inputs.json": "312e244f4c76b0075e31dbe38784010516197aa051be96477845ded9d088215e",
+    "tests/reference/client/input/MovementInputProbe.java": "436014bd7662e0d3ee2c6f71f615f9b56190077cc26a5375d2d26326c7c008e6",
+    "tests/reference/client/input/provenance.json": "e31165ef3d829d522004017c3d0b41e5fb0044414204f658cff451515ad960cb"
+  },
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "existing_support_source_manifest_sha256": "857a33608a251abc1e563a2804390af670a498ef359063242cb36148a1f2e93c",
+  "profiles": {
+    "msvc": {
+      "compiler": "MSVC 19.51.36260.0",
+      "jdk": "Temurin 17.0.17+10",
+      "flags": [
+        "C17",
+        "/W4",
+        "/WX",
+        "/fp:strict",
+        "/experimental:c11atomics"
+      ],
+      "native_checks_passed": 1214,
+      "original_scenarios": 77,
+      "original_records": 857,
+      "projected_fields_matched": 8570,
+      "original_initialized_classes": [
+        "kv",
+        "lr",
+        "qb",
+        "uo"
+      ],
+      "native_probe_sha256": "aff34d992410b33b119be0a543052f3f2f5d7cab6dbb9c2c077ade886c296693",
+      "native_test_sha256": "1396eb464cc0ca8f86c642ff157611ae4e4dcb62902c0341b8a5b4d167ee540a"
+    },
+    "gcc": {
+      "compiler": "GCC 13.3.0",
+      "jdk": "Ubuntu OpenJDK 21.0.12.1+1",
+      "flags": [
+        "C17",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Wconversion",
+        "-Wshadow",
+        "-Werror",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer"
+      ],
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1"
+      },
+      "native_checks_passed": 1214,
+      "original_scenarios": 77,
+      "original_records": 857,
+      "projected_fields_matched": 8570,
+      "original_initialized_classes": [
+        "kv",
+        "lr",
+        "qb",
+        "uo"
+      ],
+      "native_probe_sha256": "b52148915e2cd2da800b18755012149b24a4156341d42411f4aae32f4ed48034",
+      "native_test_sha256": "fd58fcfca3243909451c76152ae99fab47086a7ae55dea4a356512f455b09048"
+    },
+    "clang": {
+      "compiler": "Clang 18.1.3",
+      "jdk": "Ubuntu OpenJDK 21.0.12.1+1",
+      "flags": [
+        "C17",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Wconversion",
+        "-Wshadow",
+        "-Werror",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer"
+      ],
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1"
+      },
+      "native_checks_passed": 1214,
+      "original_scenarios": 77,
+      "original_records": 857,
+      "projected_fields_matched": 8570,
+      "original_initialized_classes": [
+        "kv",
+        "lr",
+        "qb",
+        "uo"
+      ],
+      "native_probe_sha256": "7c4826e86f155ce5503ceeda1855804df2bf583fb614f68f42416af449a23007",
+      "native_test_sha256": "e3d12bc94dd5ba83026d47a9e02fdd7ad8de2dcc22690e3d7b2c566a5e5118f5"
+    }
+  },
+  "root_builds_run": false,
+  "player_constructed": false,
+  "game_classes_modified": false,
+  "format": "clang-format 18.1.3, four C/header files passed",
+  "limitations": [
+    "No platform keyboard or mouse adapter, Player/World tick or camera integration.",
+    "Borrowed settings must outlive input; retirement order is a caller contract.",
+    "No JVM allocation/exception allocation equivalence or every-heap-failure timing claim.",
+    "Original NPE category compares; exact source PCs are independently checked by native tests and Code pins."
+  ],
+  "publication_note": "Metadata JSON line endings normalized to LF; executable source bytes unchanged. Integrated builds validate the published files separately."
+}

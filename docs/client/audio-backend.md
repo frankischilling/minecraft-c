@@ -52,6 +52,11 @@ Every fixture checks created/deleted OpenAL buffer counters. Displaced sources,
 partial cache publication, interrupted drains, retained first-worker diagnostics
 and full SoundManager/settings composition have separate regressions. Cleanup
 and native retirement remain distinct, including their reported reached state.
+`client.sound_allocation` injects failure at the real normal-buffer ownership
+ledger allocation after decoded publication. It verifies the native allocation
+error propagates, the decoded entry remains owned and no ordinary source rejection
+is reported. A separate leaf owner build overrides only host allocation; normal
+runtime construction has no injection state. The earlier branch fails this case.
 It needs no original assets, Java or physical audio output.
 
 The test executable also accepts `--default-device` after the absolute

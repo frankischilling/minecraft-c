@@ -1,5 +1,16 @@
 # Build and tests
 
+The [renderer/audio checkpoint `3d26621`](https://github.com/frankischilling/minecraft-c/actions/runs/40213051132)
+passes all four hosted jobs: 237 Windows, 243 GCC and 243 Clang tests, with
+723 complete Start/Passed pairs. All checkouts use merge `17ad0d82`; its tree
+equals that code head.
+
+The next input/turn and allocation-error increment passes 248 Windows tests
+and 250 tests each on sanitized Clang/GCC, without failures or skips.
+MovementInput matches 857 original records; Entity turning matches 3,330,
+including raw NaN bits. All 707 C/header files pass formatting. Actual Player
+construction and the World gameplay loop remain unfinished.
+
 The frozen World/audio increment passes 243 Windows MSVC tests and 245 tests
 each on sanitized Ubuntu Clang 18/GCC 13, without failures or skips. It includes
 60 exact original WAV profiles, exact CPU face/AO/family comparisons, real

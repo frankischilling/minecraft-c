@@ -12,6 +12,8 @@ option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop Open
 option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
 option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
 option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
+option(MC_ENABLE_INPUT_REFERENCE_TESTS "Compare MovementInput with the supplied client" OFF)
+option(MC_ENABLE_TURN_REFERENCE_TESTS "Compare Entity turning with the supplied client" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
@@ -166,6 +168,9 @@ add_library(mc_game_settings STATIC
     src/client/sound/sound_manager.c)
 target_include_directories(mc_game_settings PUBLIC include)
 target_link_libraries(mc_game_settings PUBLIC mc_core mc_client_sound_pool PRIVATE mc_build_options)
+add_library(mc_movement_input STATIC src/client/input/movement_input.c)
+target_include_directories(mc_movement_input PUBLIC include)
+target_link_libraries(mc_movement_input PUBLIC mc_game_settings PRIVATE mc_build_options)
 add_library(mc_client_sound_files STATIC src/client/sound/sound_file.c)
 target_include_directories(mc_client_sound_files PUBLIC include)
 target_link_libraries(mc_client_sound_files PUBLIC mc_core PRIVATE mc_build_options)
@@ -340,6 +345,7 @@ add_library(mc_simulation STATIC
     src/server/runtime/construction.c
     src/entity/movement/movement.c
     src/entity/movement/effects.c
+    src/entity/movement/turn.c
     src/entity/nbt/factory.c
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
@@ -1324,6 +1330,23 @@ if(BUILD_TESTING)
             add_test(NAME client.sound_backend COMMAND mc_test_sound_backend
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis")
             set_tests_properties(client.sound_backend PROPERTIES LABELS "public;integration;client;audio;ownership" TIMEOUT 60)
+            add_library(mc_sound_failure_owner OBJECT src/client/sound/backend/owner.c)
+            target_compile_definitions(mc_sound_failure_owner PRIVATE MC_SOUND_BACKEND_CALLOC=mc_test_sound_calloc)
+            target_include_directories(mc_sound_failure_owner PRIVATE include)
+            target_link_libraries(mc_sound_failure_owner PRIVATE OpenAL::OpenAL mc_c_atomics mc_build_options)
+            add_executable(mc_test_sound_allocation tests/client/sound/backend/test_allocation.c
+                $<TARGET_OBJECTS:mc_sound_failure_owner>)
+            target_include_directories(mc_test_sound_allocation PRIVATE src/client/sound/backend)
+            target_link_libraries(mc_test_sound_allocation PRIVATE mc_sound_backend OpenAL::OpenAL
+                mc_c_atomics mc_build_options)
+            set_property(TARGET mc_test_sound_allocation PROPERTY LINKER_LANGUAGE CXX)
+            if(WIN32)
+                add_custom_command(TARGET mc_test_sound_allocation POST_BUILD COMMAND ${CMAKE_COMMAND}
+                    -E copy_if_different "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_sound_allocation>")
+            endif()
+            add_test(NAME client.sound_allocation COMMAND mc_test_sound_allocation
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis")
+            set_tests_properties(client.sound_allocation PROPERTIES LABELS "public;integration;client;audio;ownership" TIMEOUT 60)
         endif()
         add_executable(mc_test_vorbis_codec tests/client/sound/test_vorbis_codec.c)
         target_link_libraries(mc_test_vorbis_codec PRIVATE mc_sound_decoder mc_build_options)
@@ -1369,6 +1392,40 @@ if(BUILD_TESTING)
                 --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
         set_tests_properties(client.vorbis_nonzero PROPERTIES
             LABELS "public;integration;client;ownership" TIMEOUT 120)
+    endif()
+
+    add_executable(mc_test_entity_turn tests/entity/movement/test_turn.c)
+    target_include_directories(mc_test_entity_turn PRIVATE src/entity)
+    target_link_libraries(mc_test_entity_turn PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.turn COMMAND mc_test_entity_turn)
+    set_tests_properties(entity.turn PROPERTIES LABELS "public;unit;ownership;numeric" TIMEOUT 60)
+    add_executable(mc_entity_turn_probe tests/entity/movement/turn_probe.c)
+    target_include_directories(mc_entity_turn_probe PRIVATE src/entity)
+    target_link_libraries(mc_entity_turn_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    if(MC_ENABLE_TURN_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.entity_turn COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/turn/compare.py"
+            --jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_entity_turn_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-turn")
+        set_tests_properties(reference.entity_turn PROPERTIES LABELS "reference;original;entity;numeric" TIMEOUT 120)
+    endif()
+
+    add_executable(mc_test_movement_input tests/client/input/test_movement_input.c)
+    target_link_libraries(mc_test_movement_input PRIVATE mc_movement_input mc_build_options)
+    add_test(NAME client.movement_input COMMAND mc_test_movement_input)
+    set_tests_properties(client.movement_input PROPERTIES LABELS "public;unit;client;input;ownership" TIMEOUT 60)
+    add_executable(mc_movement_input_probe tests/client/input/movement_input_probe.c)
+    target_link_libraries(mc_movement_input_probe PRIVATE mc_movement_input mc_build_options)
+    if(MC_ENABLE_INPUT_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.movement_input COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/input/compare.py"
+            --jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_movement_input_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-input")
+        set_tests_properties(reference.movement_input PROPERTIES LABELS "reference;original;client;input" TIMEOUT 120)
     endif()
 
     add_executable(mc_test_game_option tests/client/settings/test_game_option.c)

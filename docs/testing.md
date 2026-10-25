@@ -2,6 +2,24 @@
 
 ## Native client frontend
 
+Checkpoint `3d26621d5e66741c4a4383336fd12e729fe7439b` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40213051132):
+237 Windows, 243 GCC and 243 Clang tests. All 723 Start/Passed pairs are present.
+Every checkout uses merge `17ad0d82d141591bc123d4450a2ed52e49fa98a6`, whose tree
+equals that code head. These hosted profiles omit the locally supplied original
+archives and Windows desktop-only cases; they do not replace those local checks.
+
+The next input/turn increment passes six selected integrated tests per compiler
+on MSVC and sanitized Ubuntu Clang/GCC. They include 1,214 native MovementInput
+checks, 137 Entity turn checks, 857 exact original input records and 3,330 exact
+turn records. The backend's injected ledger-allocation regression fails against
+the earlier branch and passes after preserving `ALLOCATION_FAILED`. It uses a
+leaf allocation override with a real decoded cache and OpenAL context; the
+normal backend has no runtime fault-injection option.
+The complete frozen suites for this increment pass 248 Windows MSVC tests and
+250 tests each on Clang 18/GCC 13 with ASan/UBSan/leak checks. All tests run,
+without failures or skips. Formatting covers all 707 C/header files.
+
 The frozen World/audio increment passes all 243 Windows MSVC tests and all
 245 tests each on Ubuntu Clang 18 and GCC 13 with ASan/UBSan and leak checks.
 No test fails or skips. These runs include public/JDK tests and both optional

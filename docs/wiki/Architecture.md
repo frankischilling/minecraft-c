@@ -6,6 +6,11 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [MovementInput](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/movement-input.md)
+  owns key cells and borrows live settings. Inherited
+  [Entity turning](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/turn.md)
+  preserves current/previous angle arithmetic on actual constructed Entities.
+  Player construction, platform event routing and gameplay remain unfinished.
 - [World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md)
   connects actual GAME World construction, leased CPU section meshes and owned
   GL3.3 buffers to a fixed native inspection scene. It has no Player or world

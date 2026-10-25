@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* A leaf regression build replaces only this host allocation call. The normal
+ * backend has no allocator option or runtime fault-injection state. */
+#ifdef MC_SOUND_BACKEND_CALLOC
+void *MC_SOUND_BACKEND_CALLOC(size_t count, size_t bytes);
+#else
+#define MC_SOUND_BACKEND_CALLOC calloc
+#endif
+
 typedef union allocation_header {
     long double long_double_alignment;
     void *pointer_alignment;
@@ -70,7 +78,7 @@ void *backend_alloc(mc_sound_backend *b, size_t bytes) {
         backend_fail(b, MC_SOUND_BACKEND_LIMIT, "Sound backend allocation budget", 0);
         return NULL;
     }
-    allocation_header *header = calloc(1, sizeof(*header) + bytes);
+    allocation_header *header = MC_SOUND_BACKEND_CALLOC(1, sizeof(*header) + bytes);
     if (header == NULL) {
         backend_fail(b, MC_SOUND_BACKEND_ALLOCATION_FAILED, "Sound backend allocation", 0);
         return NULL;

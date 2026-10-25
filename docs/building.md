@@ -64,6 +64,14 @@ It creates hidden windows with real OpenGL contexts and fails if the desktop
 cannot provide OpenGL 3.3 core. It uses authored pixels and needs no Minecraft
 resources. Keep this option off on runners without a graphics environment.
 
+`client.movement_input` and `entity.turn` build without graphics or audio.
+Optional `MC_ENABLE_INPUT_REFERENCE_TESTS=ON` and
+`MC_ENABLE_TURN_REFERENCE_TESTS=ON` compare their configured native observers
+with the supplied client JAR. Set `MC_REFERENCE_CLIENT_JAR` and select Java/Javac
+from one JDK17+ installation. These CPU observations construct no Player and
+do not establish the client gameplay loop. See [MovementInput](client/movement-input.md)
+and [Entity turning](entity/turn.md).
+
 Enable `-DMC_ENABLE_JAVA_REFERENCE_TESTS=ON` for the standard-library numerical
 oracle; it requires JDK8+ and uses no Minecraft files. The NBT and compression
 original-class comparisons are separate local checks requiring JDK11+ and both

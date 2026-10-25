@@ -17,6 +17,12 @@ files. It can build with `MC_BUILD_CLIENT=OFF`. The application loads this owner
 after Display and uses its initial scale and anaglyph before title consumers.
 Options screens and real effectful receivers remain unfinished.
 
+[MovementInput](client/movement-input.md) borrows the actual live named bindings
+and owns its ten key cells. [Entity turning](entity/turn.md) mutates genuine
+constructed Entity angle fields with the original double scaling and previous
+angle adjustments. Neither component substitutes for the missing local Player,
+its constructor graph or the World entity tick loop.
+
 The [sound resource owners](client/sound.md) retain grouped entries, resolved
 file URLs and actual raw/MUS input streams. Their native retirement stays
 separate from source close behavior. Optional C Vorbis decoding has no display

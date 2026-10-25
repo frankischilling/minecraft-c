@@ -168,8 +168,9 @@ static mc_sound_backend_status cache_device_load(mc_sound_backend *b, backend_ca
         return MC_SOUND_BACKEND_OK;
     }
     if (!backend_generate_buffer(b, &cache->buffer)) {
-        if (b->state.last_error.status == MC_SOUND_BACKEND_LIMIT)
-            return MC_SOUND_BACKEND_LIMIT;
+        if (b->state.last_error.status == MC_SOUND_BACKEND_LIMIT ||
+            b->state.last_error.status == MC_SOUND_BACKEND_ALLOCATION_FAILED)
+            return b->state.last_error.status;
         ++b->state.source_rejections;
         return MC_SOUND_BACKEND_OK;
     }
