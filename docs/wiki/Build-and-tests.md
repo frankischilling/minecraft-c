@@ -1,15 +1,28 @@
 # Build and tests
 
-The preceding [code checkpoint `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
-passes all four hosted jobs: 223 MSVC, 226 GCC and 226 Clang cases, or 675
+The preceding [code checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
+passes all four hosted jobs: 224 MSVC, 228 GCC and 228 Clang cases, or 680
 complete Start/Passed pairs with zero failures, skips or missing runs.
-Formatting covers 641 C/header files; controller mirrors and lifecycle interval
-checks pass. The source audit accounts for all 1,206 literal publication bodies
-and rejoins the 1,030 non-Markdown tested inputs. Native GameOption/label
-contracts therefore have Linux GCC/Clang coverage as well as Windows coverage.
-Original-label and original-action comparisons remain pending. This run
-includes native binding-action tests on all three compilers and precedes the
-new App/GameDirectory connection.
+Formatting covers 644 C/header files; mirrors and all 556 positive/2,011 negative
+lifecycle checks pass. All four actual checkouts use synthetic merge `2be1dc6`
+with a complete tree equal to the head. The audit rejoins all 1,213 literal
+publication bodies and 1,035 non-Markdown tested inputs. GameDirectory passes on
+all three compilers and startup on Linux, alongside the binding/query/label
+contracts. Linux requests software OpenGL/Xvfb without recording an actual
+vendor; hosted JUnit and artifacts are not retained. Original-label,
+original-action, original-startup and ordinary-default comparisons remain open.
+
+The newer `client.game_settings_actions` test passes 702 native checks and
+eight independent file-check categories in one Windows MSVC x64 Debug headless
+profile. The same profile passes 548 settings checks plus six file checks and
+883 GameOption checks: three CTests, seven stages and eleven final audits.
+All 645 C/header files pass formatting before execution. Tests exit 0 naturally
+and are reaped; configure/build keep the explicit pinned-vctip allowance.
+An independent file-only readback rejoins 2,788 retained members, eight products
+and two capture trees from the 1,215-member/1,037-non-Markdown tested source.
+No new client-mode or Linux action profile ran. Six audio/renderer paths stop
+after mutation at missing receiver fields. Original actions, real effects and
+Options UI remain unfinished; the preceding 680-case CI excludes these bodies.
 
 The [App startup connection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md#settings-at-startup)
 now loads real GameSettings after Display and uses loaded scale and initial
@@ -25,9 +38,10 @@ finish seven stages and eleven final audits; test trees close naturally while
 configure/build retain their explicit pinned-helper cleanup allowance. The
 tested family has 1,213 members and 1,035 non-Markdown inputs. The earlier
 fixture C4310 build failure remains failed; [testing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#startup-settings-and-game-directory)
-records its correction and precise formatting/readback scope. Linux startup,
-original/default-directory correspondence, custom packs, audio, source pacing,
-child menus and complete startup remain unfinished. No new hosted result is claimed.
+records its correction and precise formatting/readback scope. The hosted run
+above adds Linux startup execution; original/default-directory correspondence,
+custom packs, audio, source pacing, child menus and complete startup remain
+unfinished.
 
 [GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
 passed six earlier local Windows MSVC cases: 883 metadata/query, 1,241 label, 463 Assets,

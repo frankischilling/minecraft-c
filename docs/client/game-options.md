@@ -1,4 +1,4 @@
-# GameOption queries and labels
+# GameOption values, labels and actions
 
 GameOption describes the thirteen options in the original client enum `ht`.
 The headless [interface](../../include/mc/client/settings/game_option.h) exposes
@@ -80,6 +80,51 @@ action, and the raw binding field mutator still does not save. The new action's
 native contracts pass separately; these query results do not qualify a
 Controls screen.
 
+## Float and discrete actions
+
+The headless interface now declares `mc_game_settings_set_option_float` and
+`mc_game_settings_set_option`. Both accept a real descriptor or null. Foreign
+nonnull descriptors are rejected by identity before mutation. Native admission,
+foreign-descriptor and BUSY failures preserve the caller's action report.
+The owner stays active across assignment and any real nested save, so diagnostic
+reentry and retirement remain BUSY.
+
+The float action stores music, sound or sensitivity without arithmetic, finite
+filters or slider clamps. Null and other options return at PC56 without a
+store or direct save. A float's received representation is copied; this does
+not prove that an original signaling-NaN argument preserved its requested bits
+before reaching the method. Sensitivity completes without an effect dependency.
+
+Discrete comparisons retain their source order. Distance, GUI scale and
+difficulty use Java wrapping addition followed by `& 3`; performance wraps
+both additions in `(old + step + 3) % 3` and can retain a negative remainder.
+Every completed path, including null and float descriptors, invokes the real
+save body at PC257 and reaches PC260 on native success. Source-caught save
+errors remain in its nested report. A later native failure retains assignment
+and file effects rather than rolling them back.
+
+Six paths remain partial after their stores: music/sound reach SoundManager
+field reads at PCs 16/38; advanced OpenGL, graphics and ambient occlusion reach
+RenderGlobal at PCs 111/217/250; anaglyph reaches RenderEngine at PC 144. Null Minecraft
+returns `SOURCE_EXCEPTION` with `NULL_MINECRAFT`. A nonnull opaque receiver
+returns the appended status 9, `UNIMPLEMENTED_DEPENDENCY`, at that same first
+unreadable field access. No pointer cast, effect callback or later save occurs.
+Existing status 0..8 values and persistence schemas remain unchanged.
+
+The report records `source_pc`, `value_assigned`, `effect_dependency`,
+`uncaught_exception`, `save_reached` and the real nested save report. These PCs
+are [static bytecode provenance](../reference/game-settings.md#setters-and-unfinished-effects),
+not observed original execution PCs. One Windows MSVC x64 Debug headless
+profile now passes 702 native action checks and eight independent file-check
+categories, plus 548 persistence checks/six file checks and 883 metadata/query
+checks. It completes seven stages and eleven final audits. Test children close
+naturally; configure/build retain the explicit pinned compiler-helper allowance.
+The tested source has 1,215 public members, 1,037 non-Markdown inputs and
+645 C/header files, all formatter-checked before the target run. There is no
+new client-mode run, Linux action run or current hosted result. Actual audio,
+texture refresh, RenderGlobal rebuild, Options UI and original actions remain
+unqualified.
+
 ## Bounds and unfinished work
 
 Assets retains at most 256 cached labels, 65,536 units per key and its existing
@@ -111,20 +156,22 @@ corrected client controller completes all seven stages and its three cases.
 Both builds retain their qualified compiler-helper cleanup; test processes
 close naturally. All 641 C/header files pass clang-format 18.1.3.
 
-The later [hosted run for `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
-passes all 223 MSVC, 226 GCC and 226 Clang cases, including these six native
-test families. All 675 cases have complete Start/Passed records without
-failures or skips. Linux runs with ASan/UBSan; all 641 C/header files pass
-formatting. The audit rejoins all 1,206 literal publication bodies and 1,030
-non-Markdown tested inputs. The earlier local controller failure and unrun
-after-test inventory remain historical facts; the hosted run is separate.
+The later [hosted run for `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
+passes all 224 MSVC, 228 GCC and 228 Clang cases, including these six native
+test families. All 680 cases have complete Start/Passed records without
+failures, skips or missing runs. Linux runs with ASan/UBSan; all 644 C/header
+files pass formatting. The audit rejoins all 1,213 literal publication bodies
+and 1,035 non-Markdown tested inputs. It precedes the new float/discrete actions.
+The earlier local controller failure and unrun after-test inventory remain
+historical facts; the hosted run is separate.
 
 These results establish native contracts on all three compilers. They do not
 establish original label equality or interactive input. The App now loads real
 settings before title consumers and applies initial GUI scale and anaglyph;
 that [startup connection](startup.md#settings-at-startup) passes nine Windows
 App cases and eight exact decoded-pixel relations. The separate headless run
-also passes all 883 option queries. Linux startup execution remains pending.
-The App still draws Default resources. The Translation constructor's caught-I/O
-diagnostic, effectful option setters, pack selection, audio, child menus,
-physical key mapping and full original correspondence remain unfinished.
+also passes all 883 option queries. The hosted run passes the directory test
+on all three compilers and the startup test on Linux. The App still draws
+Default resources. The Translation constructor's caught-I/O diagnostic, real
+option-effect receivers, pack selection, audio, child menus, physical key
+mapping and full original correspondence remain unfinished.

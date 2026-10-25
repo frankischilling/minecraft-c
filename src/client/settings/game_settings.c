@@ -3,9 +3,12 @@
 #endif
 #include "mc/client/settings/game_settings.h"
 
+#include "mc/client/settings/game_option.h"
+
 #include "mc/core/java/float_format.h"
 #include "mc/core/java/float_parse.h"
 #include "mc/core/java/integer_parse.h"
+#include "mc/core/java/java.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -1086,6 +1089,160 @@ mc_game_settings_status mc_game_settings_save(mc_game_settings *settings,
     settings->active = true;
     status = save_admitted(settings, diagnostics, out, error);
     settings->active = false;
+    return status;
+}
+
+static mc_game_settings_status admit_option_action(mc_game_settings *settings,
+                                                   const mc_game_option *option,
+                                                   mc_game_option_id *id,
+                                                   mc_game_settings_error *error) {
+    mc_game_settings_status status = admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    *id = MC_GAME_OPTION_COUNT;
+    if (option != NULL) {
+        mc_game_option_info info;
+        if (!mc_game_option_read(option, &info))
+            return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0,
+                          "GameSettings option descriptor identity");
+        *id = info.id;
+    }
+    return MC_GAME_SETTINGS_OK;
+}
+
+static mc_game_settings_status missing_option_effect(const mc_game_settings *settings,
+                                                     int32_t source_pc,
+                                                     mc_game_settings_option_effect effect,
+                                                     mc_game_settings_option_action_report *report,
+                                                     mc_game_settings_error *error) {
+    report->source_pc = source_pc;
+    report->effect_dependency = effect;
+    if (settings->state.minecraft == NULL) {
+        report->uncaught_exception = MC_GAME_SETTINGS_OPTION_ACTION_NULL_MINECRAFT;
+        return result(error, MC_GAME_SETTINGS_SOURCE_EXCEPTION, 0,
+                      "GameSettings option null Minecraft receiver");
+    }
+    return result(error, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY, 0,
+                  "GameSettings option Minecraft receiver field");
+}
+
+mc_game_settings_status
+mc_game_settings_set_option_float(mc_game_settings *settings, const mc_game_option *option,
+                                  float value, const mc_game_settings_diagnostics *diagnostics,
+                                  mc_game_settings_option_action_report *out,
+                                  mc_game_settings_error *error) {
+    (void)diagnostics; /* kv.a(ht,F)V has no direct diagnostic/save operation. */
+    mc_game_option_id id;
+    mc_game_settings_status status = admit_option_action(settings, option, &id, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    settings->active = true;
+    mc_game_settings_option_action_report report = {0};
+    if (id == MC_GAME_OPTION_MUSIC) {
+        memcpy(&settings->state.values.music_volume, &value, sizeof(value)); /* store9 */
+        report.value_assigned = true;
+        status = missing_option_effect(settings, 16, MC_GAME_SETTINGS_OPTION_EFFECT_SOUND_MANAGER,
+                                       &report, error);
+        goto done;
+    }
+    if (id == MC_GAME_OPTION_SOUND) {
+        memcpy(&settings->state.values.sound_volume, &value, sizeof(value)); /* store31 */
+        report.value_assigned = true;
+        status = missing_option_effect(settings, 38, MC_GAME_SETTINGS_OPTION_EFFECT_SOUND_MANAGER,
+                                       &report, error);
+        goto done;
+    }
+    if (id == MC_GAME_OPTION_SENSITIVITY) {
+        memcpy(&settings->state.values.mouse_sensitivity, &value, sizeof(value)); /* store53 */
+        report.value_assigned = true;
+    }
+    report.source_pc = 56;
+    status = result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+done:
+    settings->active = false;
+    if (out != NULL)
+        *out = report;
+    return status;
+}
+
+mc_game_settings_status mc_game_settings_set_option(mc_game_settings *settings,
+                                                    const mc_game_option *option, int32_t step,
+                                                    const mc_game_settings_diagnostics *diagnostics,
+                                                    mc_game_settings_option_action_report *out,
+                                                    mc_game_settings_error *error) {
+    mc_game_option_id id;
+    mc_game_settings_status status = admit_option_action(settings, option, &id, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    settings->active = true;
+    mc_game_settings_option_action_report report = {0};
+    mc_game_settings_values *values = &settings->state.values;
+    if (id == MC_GAME_OPTION_INVERT_MOUSE) {
+        values->invert_mouse = !values->invert_mouse; /* store20 */
+        report.value_assigned = true;
+    }
+    if (id == MC_GAME_OPTION_RENDER_DISTANCE) {
+        values->render_distance =
+            (int32_t)((uint32_t)mc_java_i32_add(values->render_distance, step) & UINT32_C(3));
+        report.value_assigned = true; /* store39 */
+    }
+    if (id == MC_GAME_OPTION_GUI_SCALE) {
+        values->gui_scale =
+            (int32_t)((uint32_t)mc_java_i32_add(values->gui_scale, step) & UINT32_C(3));
+        report.value_assigned = true; /* store58 */
+    }
+    if (id == MC_GAME_OPTION_VIEW_BOBBING) {
+        values->view_bobbing = !values->view_bobbing; /* store81 */
+        report.value_assigned = true;
+    }
+    if (id == MC_GAME_OPTION_ADVANCED_OPENGL) {
+        values->advanced_opengl = !values->advanced_opengl; /* store104 */
+        report.value_assigned = true;
+        status = missing_option_effect(settings, 111, MC_GAME_SETTINGS_OPTION_EFFECT_RENDER_GLOBAL,
+                                       &report, error);
+        goto done;
+    }
+    if (id == MC_GAME_OPTION_ANAGLYPH) {
+        values->anaglyph = !values->anaglyph; /* store137 */
+        report.value_assigned = true;
+        status = missing_option_effect(settings, 144, MC_GAME_SETTINGS_OPTION_EFFECT_RENDER_ENGINE,
+                                       &report, error);
+        goto done;
+    }
+    if (id == MC_GAME_OPTION_FRAMERATE_LIMIT) {
+        const int32_t wrapped = mc_java_i32_add(mc_java_i32_add(values->performance_mode, step), 3);
+        /* C17 remainder has Java's sign here; divisor3 cannot overflow. */
+        values->performance_mode = wrapped % INT32_C(3); /* store168 */
+        report.value_assigned = true;
+    }
+    if (id == MC_GAME_OPTION_DIFFICULTY) {
+        values->difficulty =
+            (int32_t)((uint32_t)mc_java_i32_add(values->difficulty, step) & UINT32_C(3));
+        report.value_assigned = true; /* store187 */
+    }
+    if (id == MC_GAME_OPTION_GRAPHICS) {
+        values->fancy_graphics = !values->fancy_graphics; /* store210 */
+        report.value_assigned = true;
+        status = missing_option_effect(settings, 217, MC_GAME_SETTINGS_OPTION_EFFECT_RENDER_GLOBAL,
+                                       &report, error);
+        goto done;
+    }
+    if (id == MC_GAME_OPTION_AMBIENT_OCCLUSION) {
+        values->ambient_occlusion = !values->ambient_occlusion; /* store243 */
+        report.value_assigned = true;
+        status = missing_option_effect(settings, 250, MC_GAME_SETTINGS_OPTION_EFFECT_RENDER_GLOBAL,
+                                       &report, error);
+        goto done;
+    }
+    report.source_pc = 257;
+    report.save_reached = true;
+    status = save_admitted(settings, diagnostics, &report.save, error);
+    if (status == MC_GAME_SETTINGS_OK)
+        report.source_pc = 260;
+done:
+    settings->active = false;
+    if (out != NULL)
+        *out = report;
     return status;
 }
 

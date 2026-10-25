@@ -24,7 +24,8 @@ typedef enum mc_game_settings_status {
     MC_GAME_SETTINGS_BUSY,
     MC_GAME_SETTINGS_NATIVE_IO_ERROR,
     MC_GAME_SETTINGS_DIAGNOSTIC_FAILED,
-    MC_GAME_SETTINGS_SOURCE_EXCEPTION
+    MC_GAME_SETTINGS_SOURCE_EXCEPTION,
+    MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY
 } mc_game_settings_status;
 
 typedef struct mc_game_settings_error {
@@ -72,7 +73,7 @@ typedef struct mc_game_settings_state {
     mc_key_binding *const *bindings;
     size_t binding_count;
     bool bindings_null;
-    void *minecraft;           /* borrowed x; never dereferenced by persistence */
+    void *minecraft;           /* borrowed x; never dereferenced by this owner */
     const char *options_path;  /* owned File-role N; NULL in noarg construction */
     const void *file_identity; /* native File owner identity, not Java address */
 } mc_game_settings_state;

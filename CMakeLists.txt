@@ -1195,6 +1195,16 @@ if(BUILD_TESTING)
     set_tests_properties(client.game_settings PROPERTIES
         LABELS "public;integration;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_game_settings_actions tests/client/settings/test_game_settings_actions.c)
+    target_link_libraries(mc_test_game_settings_actions PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME client.game_settings_actions
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_game_settings_actions_file.py"
+            --executable "$<TARGET_FILE:mc_test_game_settings_actions>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(client.game_settings_actions PROPERTIES
+        LABELS "public;integration;client;ownership" TIMEOUT 65)
+
     add_executable(mc_game_settings_probe tests/client/settings/game_settings_probe.c)
     target_link_libraries(mc_game_settings_probe PRIVATE mc_game_settings mc_build_options)
     add_test(NAME tools.client_game_settings_probe

@@ -22,9 +22,10 @@ Current runtime navigation:
   settings. Loaded scale and initial anaglyph reach the title; explicit scale
   overrides include zero, and startup/retirement perform no save. Windows
   native tests pass 57 directory checks plus six file checks and nine App cases
-  with eight exact decoded-pixel relations. Linux startup execution remains
-  pending. General File/locale behavior, ordinary defaults, custom pack
-  selection, audio, source pacing and effectful setters remain unfinished.
+  with eight exact decoded-pixel relations. Hosted `ea1aefc` also passes
+  GameDirectory on MSVC/GCC/Clang and startup on Linux within 680 complete cases
+  and 644-file formatting. General File/locale behavior, ordinary defaults,
+  custom packs, audio and source pacing remain unfinished.
   The binding-code action selects the
   current array entry, stores the code and invokes the same real save body.
   Source null/index failures and native errors remain distinct; later save
@@ -35,9 +36,14 @@ Current runtime navigation:
   [GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
   keep metadata and value queries headless while client label composition uses
   the real shared Translation and Assets owners. Direct singleton admission
-  remains separate from wrapper initialization. Hosted checkpoint `fce1539`
+  remains separate from wrapper initialization. Hosted checkpoint `ea1aefc`
   passes their native contracts on MSVC and sanitized Linux GCC/Clang;
-  original-label correspondence remains pending.
+  original-label correspondence remains pending. New float/discrete actions
+  pass one Windows headless profile with 702 native checks and eight file-check
+  categories, using real stores and completed-path save. Six audio/renderer
+  paths stop after assignment at the first missing receiver field; no callback
+  or later save is substituted. Linux actions, original-action comparison,
+  Options UI and real effect owners remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

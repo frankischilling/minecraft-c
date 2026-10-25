@@ -1,13 +1,27 @@
 # Development status
 
-The preceding code checkpoint `fce15390e8c191a2533a38eadb1f90dab5ad0a6b`
-passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048):
-223 MSVC, 226 GCC and 226 Clang tests. All 675 cases have complete Start/Passed
-records with zero failures, skips or missing runs; 641 C/header files pass
-formatting. Controller mirrors and lifecycle interval checks pass. The audit
-rejoins all 1,206 literal source bodies and 1,030 non-Markdown tested inputs.
-These results include native binding-action and GameOption/label contracts on
-both Linux compilers. They precede the current App/GameDirectory integration.
+The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):
+224 MSVC, 228 GCC and 228 Clang tests. All 680 cases have complete Start/Passed
+records with zero failures, skips or missing runs; 644 C/header files pass
+formatting. Controller mirrors and all 556 positive/2,011 negative lifecycle
+checks pass. All four actual checkouts use synthetic merge `2be1dc6`, whose
+complete tree equals the head. The audit rejoins all 1,213 literal source bodies
+and 1,035 non-Markdown tested inputs. This includes GameDirectory on all three
+compilers and startup graphics tests on Linux, which request software OpenGL
+under Xvfb without retaining an actual vendor measurement.
+
+The newer [float/discrete option actions](client/game-options.md#float-and-discrete-actions)
+pass one Windows MSVC x64 Debug headless profile: 702 native checks and eight
+independent file-check categories, alongside 548 persistence checks/six file
+checks and 883 GameOption checks. All three CTests, seven stages and eleven
+final audits pass; all 645 C/header files pass formatting. The tested family
+has 1,215 public members and 1,037 non-Markdown inputs. An independent file-only
+readback rehashes 2,788 retained members, eight products and two capture trees.
+No new client-mode, Linux action or hosted run is claimed. Six audio/renderer
+paths retain assignment then stop at their first missing field; actual effects,
+Options UI and original-action correspondence remain unfinished. The preceding
+680-case CI result excludes these new bodies.
 
 The App now loads one real file-backed GameSettings owner after Display and
 before font/menu consumers. [GameDirectory](client/game-directory.md) performs
@@ -20,9 +34,9 @@ checks plus six file checks, 883 option checks, 100 display checks, 53 scene
 admission controls and nine App cases with eight exact decoded-pixel relations.
 Both profiles finish all seven stages and eleven final audits. App runs use an
 NVIDIA RTX 3060 core context and exit naturally. These results cover the frozen
-1,213-member source, including 1,035 non-Markdown inputs. Linux startup tests,
-ordinary default selection, broader File/locale behavior and original
-startup/pixel correspondence remain unqualified; no new hosted result is claimed.
+1,213-member source, including 1,035 non-Markdown inputs. The hosted result
+above adds Linux startup execution; ordinary default selection, broader
+File/locale behavior and original startup/pixel correspondence remain unqualified.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):

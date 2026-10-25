@@ -42,6 +42,64 @@ typedef enum mc_game_option_status {
 const mc_game_option *mc_game_option_by_id(int32_t id);
 bool mc_game_option_read(const mc_game_option *option, mc_game_option_info *out);
 
+/* Missing receiver-field dependencies of the source option actions. These
+ * roles report the reached Minecraft getfield, not a completed effect call. */
+typedef enum mc_game_settings_option_effect {
+    MC_GAME_SETTINGS_OPTION_EFFECT_NONE,
+    MC_GAME_SETTINGS_OPTION_EFFECT_SOUND_MANAGER,
+    MC_GAME_SETTINGS_OPTION_EFFECT_RENDER_ENGINE,
+    MC_GAME_SETTINGS_OPTION_EFFECT_RENDER_GLOBAL
+} mc_game_settings_option_effect;
+
+typedef enum mc_game_settings_option_action_exception {
+    MC_GAME_SETTINGS_OPTION_ACTION_NONE,
+    MC_GAME_SETTINGS_OPTION_ACTION_NULL_MINECRAFT
+} mc_game_settings_option_action_exception;
+
+typedef struct mc_game_settings_option_action_report {
+    /* Reached/failing instruction in kv.a(ht,F)V or kv.a(ht,I)V. Normal
+     * returns are56/260; a reached nested save remains257 on native failure. */
+    int32_t source_pc;
+    bool value_assigned;
+    mc_game_settings_option_effect effect_dependency;
+    mc_game_settings_option_action_exception uncaught_exception;
+    bool save_reached;
+    mc_game_settings_report save;
+} mc_game_settings_option_action_report;
+
+/* Execute kv's actual option assignments in source independent-if order.
+ * NULL option is allowed: float does nothing; discrete still saves. A foreign
+ * nonnull descriptor is rejected by identity before mutation. Float input is
+ * assigned without arithmetic, finite checks or a slider clamp. Float never
+ * directly saves; its diagnostics parameter is unused until real effects exist.
+ * Discrete distance/scale/difficulty wrap addition then mask with3; performance
+ * wraps both additions in (old+step+3)%3 and retains a negative remainder.
+ *
+ * This implementation is partial at SoundManager/RenderEngine/RenderGlobal.
+ * After the reached field assignment, NULL Minecraft returns SOURCE_EXCEPTION
+ * with NULL_MINECRAFT at the failing getfield16/38/111/144/217/250. A nonnull
+ * borrowed Minecraft pointer returns UNIMPLEMENTED_DEPENDENCY at that same
+ * unreadable field access. This owner never casts/dereferences it or invents a
+ * callback. Both failures prevent the later save and retain the assignment.
+ * Sensitivity and no-effect discrete paths execute fully. Completed discrete
+ * work invokes the production save body at257; its caught exceptions remain
+ * native OK in the nested report. No rollback or additional save is added.
+ *
+ * Admission/BUSY/foreign failures preserve report. Reached work publishes it
+ * even on failure. The existing exclusive-owner/reentry guard is held across
+ * mutation, diagnostics and nested save. Report/error must not alias owner
+ * storage. Nullable report/error/diagnostics follow the persistence API. */
+mc_game_settings_status
+mc_game_settings_set_option_float(mc_game_settings *settings, const mc_game_option *option,
+                                  float value, const mc_game_settings_diagnostics *diagnostics,
+                                  mc_game_settings_option_action_report *report,
+                                  mc_game_settings_error *error);
+mc_game_settings_status mc_game_settings_set_option(mc_game_settings *settings,
+                                                    const mc_game_option *option, int32_t step,
+                                                    const mc_game_settings_diagnostics *diagnostics,
+                                                    mc_game_settings_option_action_report *report,
+                                                    mc_game_settings_error *error);
+
 /* Read the actual public owner projection. NULL option returns positive zero
  * from the float query; the boolean query reports the original null-ordinal
  * failure. GRAPHICS is not one of the five boolean getter cases. Native

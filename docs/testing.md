@@ -2,16 +2,20 @@
 
 ## Native client frontend
 
-The preceding code checkpoint `fce15390e8c191a2533a38eadb1f90dab5ad0a6b`
-passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048):
-223 MSVC, 226 GCC and 226 Clang cases, 675 complete Start/Passed pairs, with
-zero failures, skips or missing runs. Formatting covers 641 C/header files;
-controller mirrors and lifecycle interval checks pass. The audit rejoins all
-1,206 literal Git source bodies and the 1,030 non-Markdown tested inputs. Its
-actual synthetic checkout `a1931c39c826c046c9daa2e0d62dd5e2284f54ee`
-is tied to that head by the complete tree and parent records. This run includes
-native binding-action and query/label tests on sanitized Linux GCC and Clang.
-It precedes the App/GameDirectory connection and new startup tests below.
+The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):
+224 MSVC, 228 GCC and 228 Clang cases, 680 complete Start/Passed pairs, with
+zero failures, skips or missing runs. Formatting covers 644 C/header files;
+controller mirrors and all 556 positive/2,011 negative lifecycle checks pass.
+The audit rejoins all 1,213 literal Git source bodies and 1,035 non-Markdown
+tested inputs. All four actual checkouts use synthetic merge
+`2be1dc660f3bddbba4c1788c612cad18e963a3db`, with complete tree
+`f7c2f270c059b83f10c31500160dd2e9c07861dd` equal to the head. The full tree has
+1,540 entries and 328 trees. No hosted JUnit or artifact archive was retained;
+raw console Start/Passed records supply the complete test chronology.
+This includes GameDirectory on all hosts and startup graphics tests on Linux.
+Linux CI requests software OpenGL under Xvfb; no actual vendor was measured.
+The new float/discrete option actions below are outside this checkpoint.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
@@ -106,8 +110,9 @@ cast in the malformed UTF-8 test fixture. Expressing the same authored bytes
 as a C string literal fixed that compile failure without changing production
 behavior or relaxing diagnostics. The 644-file formatter check passed before
 that fixture edit; the corrected file then passed a dry-run check and diff
-validation. The preceding 675-case hosted result remains a separate checkpoint.
-No new CI, Linux startup or original rendering result is claimed.
+validation. The later 680-case hosted result above passes GameDirectory on
+all three compilers and startup on Linux. It adds no original rendering or
+ordinary-default-directory comparison.
 
 `client.game_directory` runs the real native component in fresh authored
 Unicode paths. It covers existing directories and accepted regular-file final
@@ -130,8 +135,9 @@ unchanged; no run may save options automatically.
 
 One splash, fixed splash time, identical button texture rows and empty button
 labels remove the intended Random/time/hover variation without supplying an
-expected image to the App. The successful runs use an NVIDIA RTX 3060 core
-context and the actual physical capture profile is 854 by 480;
+expected image to the App. The local Windows runs use an NVIDIA RTX 3060 core
+context; the hosted Linux jobs request software OpenGL under Xvfb without
+recording a graphics vendor. The actual physical capture profile is 854 by 480;
 other high-DPI outcomes fail that finite profile rather than changing the
 expected scale. The PNG decoder checks framing, CRCs, legal chunk names,
 noninterlaced RGB8/RGBA8, filters and a bounded complete deflate stream; palette
@@ -206,7 +212,7 @@ target. The [reference record](reference/game-settings.md#finite-native-comparis
 defines the finite projection. Static labels, Thread and stream-internal
 correspondence and options screens remain unfinished. The new startup
 connection is outside these older persistence projections and has only the
-finite Windows validation above. Linux startup execution remains pending.
+finite Windows and hosted Linux validation above.
 
 ## GameOption queries and labels
 
@@ -222,10 +228,50 @@ all controls, source/tool/SDK inputs and products. It does not repeat a test or
 invent the unrun after-test inventory. The corrected client controller completes
 all seven stages. Compile trees retain the declared qualified helper cleanup;
 all test trees close naturally. Formatting passes for all 641 C/header files
-with version 18.1.3. The later 675-case hosted run above also passes these native
+with version 18.1.3. The later 680-case hosted run above also passes these native
 contracts on Linux GCC and Clang with sanitizers. Original-label comparison and
-interactive input remain pending. App startup has the finite Windows tests
-above; options screens remain unfinished.
+interactive input remain pending. App startup has the finite Windows and
+hosted Linux tests above; options screens remain unfinished.
+
+## Float and discrete option actions
+
+One fresh Windows MSVC x64 Debug headless profile passes these three CTests:
+
+| Test | Actual result |
+| --- | --- |
+| `client.game_settings_actions` | 702 native checks and eight independent file-check categories |
+| `client.game_settings` | 548 native checks and six independent file checks |
+| `client.game_option` | 883 metadata/query checks |
+
+The action target is `mc_test_game_settings_actions`. Its driver exercises the
+real `mc_game_settings_set_option_float`/`mc_game_settings_set_option` APIs with
+authored values and real files. The single profile closes all seven stages and
+eleven independent final audits in 85.887 seconds. Tests exit 0 naturally and
+are reaped; configure/build retain their qualified byte-pinned vctip cleanup.
+There is no new client-mode profile, Linux action run, current hosted result
+or original-action comparison. Earlier labels and App results retain their
+separate source and scene scopes.
+
+The actual tested source contains 1,215 public members, 1,037 non-Markdown
+inputs and 645 C/header files. All 645 pass formatting before target execution
+with unchanged source. A later file-only readback rehashes 2,788 retained members,
+eight products, two capture trees, raw/JUnit records, identical test inventories
+and source/tool/product pins. All seven consumed-file pins join the complete
+actual output inventory. The retained input archive is a directory containing
+the original authored files. Later result-documentation changes have separate
+Markdown byte pins.
+
+Before execution, review corrected bounded reads and joins between consumed
+bytes and retained file hashes. The corrected driver and validation helper
+were used for the first native action run, which passed.
+
+The [implementation contract](client/game-options.md#float-and-discrete-actions)
+covers all 13 descriptors plus null; foreign/BUSY report preservation;
+float no-save behavior; completed no-effect discrete saves; signed arithmetic;
+retained assignments at all six missing receiver fields; real completed-path
+save output and reload; aliases, partial file prefixes and diagnostic reentry.
+No fake SoundManager/RenderEngine/RenderGlobal callback can satisfy those
+dependencies. Source PCs are static provenance, not measured action execution.
 
 ## Binding-code action
 

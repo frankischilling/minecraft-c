@@ -8,7 +8,10 @@ handles. Freeing an owner releases memory only; it neither deletes directories
 nor saves options.
 
 The real-file tests pass on Windows MSVC x64 Debug: 57 native checks and six
-independent file checks. Linux execution remains pending.
+independent file checks. The later [hosted run for `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
+also passes `client.game_directory` on MSVC, GCC and Clang, within 680 complete
+cases and 644-file formatting. Linux native-account default creation remains
+excluded from this driver.
 The [reference contract](../reference/game-directory.md) records the original
 File policy and the selected JDK home-path source. Static source agreement is
 not a measured default-directory or filesystem comparison.

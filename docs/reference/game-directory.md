@@ -1,8 +1,9 @@
 # Game directory and startup settings contract
 
 This record describes static original bytecode, selected JDK sources and the
-new native implementation. Windows native tests now pass for the finite cases
-below. No original/default-directory observation has been established. The
+new native implementation. Windows tests and the later hosted MSVC/GCC/Clang
+run pass the specified native cases below. No original/default-directory
+observation has been established. The
 [earlier isolated persistence comparisons](game-settings.md#finite-native-comparisons)
 pass an explicit scratch constructor directory; they do not measure ordinary
 game-directory selection.
@@ -119,9 +120,14 @@ second pixel decoder. [Testing](../testing.md#startup-settings-and-game-director
 keeps the earlier fixture compile failure and precise validation scope.
 
 Windows default-directory testing is confined to a fresh supplied APPDATA
-parent; Linux native-default creation is excluded. Linux execution of the new
-startup code remains pending. These inputs do not establish an unmodified
-user.home, JVM property cache or original native-library default.
+parent; Linux native-default creation is excluded. The later
+[hosted run for `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
+passes GameDirectory on all three compilers and startup on Linux, within
+680 complete cases and 644-file formatting. Linux jobs request software OpenGL
+under Xvfb; the graphics vendor is not recorded. The audit joins all 1,213
+literal source bodies and 1,035 non-Markdown tested inputs. These inputs do not
+establish an unmodified user.home, JVM property cache, original rendering or
+original native-library default.
 
 General filename/locale conversion, malformed bytes and arbitrary UTF-16,
 Windows long/wildcard/trailing-dot paths, duplicate APPDATA names,

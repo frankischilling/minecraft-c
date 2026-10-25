@@ -97,16 +97,22 @@ six independent file checks. The App completes nine natural-exit runs on an
 NVIDIA RTX 3060 core context, passing all eight exact decoded-pixel relations
 for the 854-by-480 physical profile. These cover scale overrides, initial
 anaglyph, bad-line continuation and caught load errors using authored inputs.
-No original image is compared. Linux execution of this startup change remains
-pending; ordinary default-directory and broader File/locale correspondence
-remain unqualified.
+No original image is compared. The later hosted run below also passes
+`client.game_directory` on all three compilers and `client.startup` on Linux.
+Ordinary default-directory and broader File/locale correspondence remain
+unqualified.
 See [test scope](../testing.md#startup-settings-and-game-directory).
 
-The preceding [hosted checkpoint `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
-passes 223 MSVC, 226 GCC and 226 Clang cases and 641-file formatting. It covers
-the earlier binding/query/label contracts and precedes this App/GameDirectory
-integration. No new hosted result is claimed. The older rendering results below
-retain their separate source and scene scopes.
+The preceding [hosted checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
+passes 224 MSVC, 228 GCC and 228 Clang cases, 680 in total, and 644-file
+formatting. Its Linux jobs request software OpenGL under Xvfb; their actual
+graphics vendor is not recorded. These are native startup tests, with no
+original-image or ordinary-default comparison. The newer
+[option actions](game-options.md#float-and-discrete-actions) pass one separate
+Windows headless profile: 702 native checks and eight file-check categories.
+No new App/client-mode run is part of that profile. Linux actions and real
+effect owners remain unqualified. The older rendering results below retain
+their separate source and scene scopes.
 
 Public tests cover the PNG reader, ScaledResolution, FontRenderer, Timer and resource
 ownership, caching and failure handling. The optional `client.display` test

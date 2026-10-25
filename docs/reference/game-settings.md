@@ -2,7 +2,7 @@
 
 Minecraft Beta 1.7.3 stores client options in GameSettings (`kv`) and individual key bindings in `qb`. The verified class has 40 declared fields: 36 instance fields and four static label arrays. Constructor defaults, file parsing and saving are separate operations from the effectful option setters.
 
-The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Binding-code assignment with real save has passing native Windows contracts. The other effectful setters and the complete client remain unfinished.
+The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Binding-code assignment with real save has passing native contracts on all three compilers. The new float/discrete action contracts pass one finite Windows MSVC headless profile. Linux actions, original-action correspondence, real audio/renderer dependencies and the complete client remain unfinished.
 
 ## Fields and defaults
 
@@ -204,14 +204,63 @@ The native [binding action](../client/game-settings.md#binding-code-action)
 shares the existing admitted save body and reports source failures separately
 from native admission, resource and diagnostic errors. Its action report keeps
 the reached PC, assignment/save flags and real nested save report. Windows
-MSVC passes the specified native action contracts; Linux action validation
-remains pending. The original profiles above did not invoke this setter,
+MSVC and the [hosted `ea1aefc` run](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
+pass the specified native binding-action contracts on all three compilers. The original profiles above did not invoke this setter,
 so their persistence matches provide no original-action or Controls UI
 comparison. The raw native binding field edit remains a separate no-save API.
 
 <a id="setters-and-unfinished-effects"></a>
 
-## Other setters and unfinished effects
+## Float and discrete option actions
+
+The supplied `kv.a(Lht;F)V` has 57 instruction bytes with SHA-256
+`98f6e5ba5b350e0d913c04af6f998d0479ef872d5d230fdbed1e0f310e4566bf`;
+`kv.a(Lht;I)V` has 261 with SHA-256
+`9fc2abbfffe97bb0985e7bceb8201b130f423556a7220ef3b57a3756b0f61e7f`.
+Both have no exception table. Their independent identity comparisons retain
+source order, rather than a metadata-driven preflight of every effect.
+These hashes and PCs describe retained static bytecode, not observed execution.
+
+The native `mc_game_settings_set_option_float` and `mc_game_settings_set_option`
+use the real owner and the existing admitted save body. One Windows MSVC
+headless profile passes 702 native action checks and eight independent file-check
+categories, with persistence and metadata regressions in its other two CTests.
+This qualifies the finite native store/save and missing-field policies below,
+not an original-action execution or real effect-owner comparison. Linux actions
+remain unrun. The current boundary cannot read fields through the borrowed
+opaque Minecraft pointer:
+
+| Action | Store PC | First receiver-field PC | Missing role |
+| --- | ---: | ---: | --- |
+| Music float | 9 | 16, `Minecraft.B` | SoundManager |
+| Sound float | 31 | 38, `Minecraft.B` | SoundManager |
+| Advanced OpenGL | 104 | 111, `Minecraft.g` | RenderGlobal |
+| Anaglyph | 137 | 144, `Minecraft.p` | RenderEngine |
+| Graphics | 210 | 217, `Minecraft.g` | RenderGlobal |
+| Ambient occlusion | 243 | 250, `Minecraft.g` | RenderGlobal |
+
+Each store survives the subsequent stop. Null Minecraft returns the uncaught
+source-null outcome at that field access; a nonnull opaque pointer returns
+`UNIMPLEMENTED_DEPENDENCY` there. No effect invocation or later save is claimed.
+Status 9 is appended, preserving prior status 0..8 and persistence schemas.
+Admission, BUSY and foreign-descriptor failures preserve the report; reached
+work reports assignment, dependency, exception and nested-save state while
+holding the existing active guard. No fake effect callback or rollback is added.
+
+Null/nonmatching float options return at PC56 without assignment or direct save;
+sensitivity stores at PC53 and completes. Float assignment performs no arithmetic
+or clamp and admits signed zero, infinities and NaNs. Requested signaling-NaN
+payloads need not survive an original runtime's argument copying, so static
+source alone supplies no all-NaN raw-bit correspondence claim.
+
+Completed discrete paths, including null and float options, call real save at PC257
+and return at PC260 on native success. A source-caught save exception still permits
+that return; a native save/diagnostic/cleanup failure retains PC257 and the real
+nested report. The active guard stays set throughout the save. The exact
+discrete comparison order is invert, distance, scale, bobbing, advanced OpenGL,
+anaglyph, performance, difficulty, graphics, ambient occlusion. Distance/scale/
+difficulty wrap signed32 addition before masking with 3. Performance wraps both
+additions before signed remainder by 3, retaining negative results.
 
 Load/save never read the stored Minecraft owner and do not call option setters. They can be measured with null `x` without claiming the following effects are implemented:
 
@@ -224,7 +273,7 @@ Load/save never read the stored Minecraft owner and do not call option setters. 
 | Performance mode | Java `(old + delta + 3) % 3`, including possible negative remainder, then save. |
 | Advanced OpenGL, graphics or ambient occlusion | Toggle the field, call the real RenderGlobal (`n`) rebuild, then save only if the callback returns. |
 | Anaglyph | Toggle the field, call the real RenderEngine (`ji`) texture refresh, then save only if it returns. |
-| Key binding by index | Write the current array element's code, then save; no duplicate-code resolution. Native implementation and finite Windows validation are described above. |
+| Key binding by index | Write the current array element's code, then save; no duplicate-code resolution. Native implementation and its separate finite contracts are described above. |
 
 There is no rollback or catch around those setter callbacks. An absent receiver or real callback failure can leave the preceding mutation while preventing the later save. A null/nonfloat option is ignored by the float setter; the discrete setter still saves for nonmatching options. The original label paths use translation tables, direct array indexing, Java float-to-int conversions and LWJGL key-name lookup. Invalid loaded indices can fail during labeling even though load accepted them.
 
