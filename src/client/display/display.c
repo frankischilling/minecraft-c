@@ -30,7 +30,7 @@ typedef struct display_vertex {
 struct mc_client_display {
     SDL_Window *window;
     SDL_GLContext context;
-    bool video, functions_ready, context_lost, frame_started;
+    bool video, functions_ready, context_lost, frame_started, scene_started;
     mc_client_gl gl;
     mc_client_display_info info;
     GLuint vertex_shader, fragment_shader, program, vao, vbo;
@@ -122,6 +122,25 @@ static bool current(mc_client_display *display, const char *operation,
         !SDL_GL_MakeCurrent(display->window, display->context))
         return sdl_failure(error, operation);
     return true;
+}
+
+bool mc_client_display_make_current(mc_client_display *display, mc_client_display_error *error) {
+    if (!current(display, "make client renderer context current", error))
+        return false;
+    return success(error);
+}
+
+bool mc_client_display_check_gl(mc_client_display *display, const char *operation,
+                                mc_client_display_error *error) {
+    if (operation == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "check client renderer GL errors",
+                    "null operation", 0);
+    if (!current(display, operation, error) || !gl_check(display, operation, error)) {
+        if (display != NULL)
+            display->frame_started = display->scene_started = false;
+        return false;
+    }
+    return success(error);
 }
 
 static bool load_gl(mc_client_display *display, mc_client_display_error *error) {
@@ -435,6 +454,33 @@ bool mc_client_display_pixel_size(mc_client_display *display, int *width, int *h
     return success(error);
 }
 
+bool mc_client_display_begin_scene(mc_client_display *display, float red, float green, float blue,
+                                   mc_client_display_error *error) {
+    if (display != NULL)
+        display->frame_started = display->scene_started = false;
+    if (!isfinite(red) || !isfinite(green) || !isfinite(blue))
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "begin scene frame",
+                    "nonfinite clear color", 0);
+    if (!current(display, "begin scene frame", error))
+        return false;
+    int width = 0, height = 0;
+    if (!mc_client_display_pixel_size(display, &width, &height, error))
+        return false;
+    if (width == 0 || height == 0)
+        return fail(error, MC_CLIENT_DISPLAY_NOT_DRAWABLE, "begin scene frame", "empty drawable",
+                    0);
+    display->gl.Viewport(0, 0, width, height);
+    display->gl.Disable(GL_SCISSOR_TEST);
+    display->gl.DepthMask(GL_TRUE);
+    display->gl.ClearColor(red, green, blue, 1.0f);
+    display->gl.ClearDepth(1.0);
+    display->gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (!gl_check(display, "begin scene frame", error))
+        return false;
+    display->scene_started = true;
+    return success(error);
+}
+
 static bool texture_known(const mc_client_display *display, mc_client_texture texture) {
     for (size_t i = 0; i < display->texture_count; ++i)
         if (display->textures[i].id == texture)
@@ -525,8 +571,10 @@ bool mc_client_display_upload_texture(mc_client_display *display, const mc_image
 
 bool mc_client_display_begin(mc_client_display *display, double exact_width, double exact_height,
                              mc_client_display_error *error) {
-    if (display != NULL)
+    if (display != NULL) {
         display->frame_started = false;
+        display->scene_started = false;
+    }
     if (!isfinite(exact_width) || !isfinite(exact_height) || exact_width <= 0 || exact_height <= 0)
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "begin GUI frame",
                     "invalid scaled dimensions", 0);
@@ -689,12 +737,13 @@ bool mc_client_display_swap(mc_client_display *display, mc_client_display_error 
     if (!SDL_GL_SwapWindow(display->window))
         return sdl_failure(error, "swap display buffers");
     display->frame_started = false;
+    display->scene_started = false;
     return gl_check(display, "swap display buffers", error) && success(error);
 }
 
 bool mc_client_display_capture_rgba(mc_client_display *display, mc_client_capture *out,
                                     mc_client_display_error *error) {
-    if (display == NULL || out == NULL || !display->frame_started)
+    if (display == NULL || out == NULL || (!display->frame_started && !display->scene_started))
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "capture GUI frame",
                     "invalid frame/output", 0);
     if (!current(display, "capture GUI frame", error))

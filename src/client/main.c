@@ -24,7 +24,9 @@ static bool integer(const char *value, int64_t minimum, int64_t maximum, int64_t
 static void usage(void) {
     puts("minecraft-client --assets IMPORT_DIRECTORY [--username NAME]\n"
          "  --game-directory DIRECTORY --width N --height N --gui-scale N\n"
-         "  --frames N --capture OUTPUT.png --hidden --time-millis N");
+         "  --frames N --capture OUTPUT.png --hidden --time-millis N\n"
+         "  --inspect-world FRESH_OR_COPIED_DIRECTORY --world-seed N\n"
+         "World inspection is a fixed diagnostic scene with no gameplay or implicit save.");
 }
 
 int main(int argc, char **argv) {
@@ -53,6 +55,11 @@ int main(int argc, char **argv) {
             options.username = value;
         else if (strcmp(option, "--capture") == 0)
             options.capture = value;
+        else if (strcmp(option, "--inspect-world") == 0)
+            options.inspect_world = value;
+        else if (strcmp(option, "--world-seed") == 0 &&
+                 integer(value, INT64_MIN, INT64_MAX, &parsed))
+            options.world_seed = parsed;
         else if (strcmp(option, "--width") == 0 && integer(value, 1, 16384, &parsed))
             options.width = (int32_t)parsed;
         else if (strcmp(option, "--height") == 0 && integer(value, 1, 16384, &parsed))

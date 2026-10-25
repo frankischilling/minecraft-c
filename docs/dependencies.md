@@ -44,7 +44,10 @@ renderer draws the GUI. SDL's renderer and GPU modules are disabled. Audio is
 built into SDL but the client has no sound playback yet. libpng uses the same
 pinned static zlib as storage. No arbitrary system zlib is substituted.
 The simulation and server libraries do not link SDL, libpng or OpenGL.
-`-DMC_BUILD_CLIENT=OFF` excludes both client dependencies and client targets.
+Fresh `-DMC_BUILD_CLIENT=OFF` configurations exclude SDL/libpng/OpenGL and
+default to audio/codec dependencies off. Pure C client helpers remain available
+for headless tests. Explicit audio/codec options can enable their separate
+graphs without making the simulation or server libraries depend on them.
 
 Offline source overrides are `FETCHCONTENT_SOURCE_DIR_MC_SDL3` and
 `FETCHCONTENT_SOURCE_DIR_MC_LIBPNG`, each an absolute path to the unpacked
@@ -84,6 +87,32 @@ targets. Sanitizer instrumentation covers Ogg and those targets.
 
 Both libraries retain their BSD notices in [licenses/libogg.txt](../licenses/libogg.txt)
 and [licenses/libvorbis.txt](../licenses/libvorbis.txt). Keep the notices with any
-distributed executable or source containing these libraries. The decoder has
-no device backend yet, and its native contracts do not establish original
-JOrbis PCM equivalence.
+distributed executable or source containing these libraries. The decoder's
+native contracts do not establish original JOrbis PCM equivalence.
+
+## OpenAL device runtime
+
+`MC_BUILD_CLIENT_AUDIO` adds shared OpenAL Soft 1.25.2 through its C API. It
+defaults to the graphical client setting and requires the codec target. The
+dependency is C++20; all project-owned runtime sources remain C17. Headless
+simulation and server targets do not link it.
+
+CMake downloads the [official source archive](https://openal-soft.org/openal-releases/openal-soft-1.25.2.tar.bz2)
+with SHA-256 `1dbaac44e7579d5bc8847ca8db4b2e8b9fd3961041f35ee20def4958301e1089`.
+An offline override is `FETCHCONTENT_SOURCE_DIR_MC_OPENAL`. Its original tree
+stays unchanged. A private build copy contains four hash-guarded explicit
+aggregate initializations needed by Clang 18 with libstdc++ 13. Build metadata,
+the C header, the four source files and their common filter header are checked
+before applying those equivalent expressions. No diagnostic or sanitizer is
+disabled.
+
+Utilities, examples, installation, router, EAX and unrelated output transports
+are disabled. Native Windows/Linux devices, loopback and embedded HRTF data
+remain available. The shared runtime is copied beside Windows backend test
+executables. Audio consumers use the matching C++ linker for the dependency's
+sanitizer runtime; their own sources compile as C17.
+
+[OpenAL notices](../licenses/openal-soft/NOTICE.txt) retain the LGPL, BSD, PFFFT,
+fmt, GSL, bs2b and KEMAR terms and attributions. A future executable distribution
+must account for the shared library's license and corresponding source. No
+release package is created by the current build.

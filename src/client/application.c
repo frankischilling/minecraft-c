@@ -7,6 +7,8 @@
 #include "gui/gui_main_menu.h"
 #include "resources/assets.h"
 #include "startup/game_directory.h"
+#include "world/session.h"
+#include "world/view.h"
 
 #include "mc/block/material/material.h"
 #include "mc/block/registry/registry.h"
@@ -15,6 +17,7 @@
 #include "mc/client/settings/game_settings.h"
 #include "mc/client/timer/timer.h"
 #include "mc/resources/files/files.h"
+#include "mc/world/runtime/entities.h"
 #include "millis.h"
 #include "nanotime.h"
 
@@ -41,6 +44,11 @@ typedef struct client_application {
     mc_materials *materials;
     mc_java_random_profile *profile;
     mc_registry_classes *registry;
+    mc_entity_classes *entities;
+    mc_world_runtime_classes *world_classes;
+    mc_math_trig *trig;
+    mc_client_world_session *world_session;
+    mc_client_world_view *world_view;
     mc_client_assets *assets;
     mc_client_game_directory *game_directory;
     mc_game_settings *settings;
@@ -324,6 +332,15 @@ static bool timer_sample(client_application *app, mc_timer_clock_sample *out) {
  * and other platform events are serviced even between ticks or while there is
  * no drawable. The application owns this SDL event queue. */
 static bool platform_events(client_application *app) {
+    if (app->world_view != NULL) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+            if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED ||
+                (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE))
+                app->running = false;
+        return true;
+    }
+
     static const struct {
         Uint32 first, last;
     } ranges[] = {{SDL_EVENT_FIRST, SDL_EVENT_KEY_DOWN - 1},
@@ -403,6 +420,52 @@ static bool gui_tick(client_application *app, int *width, int *height) {
     return count >= 0;
 }
 
+static bool initialize_world(client_application *app) {
+    if (app->options.inspect_world == NULL)
+        return true;
+    app->trig = malloc(sizeof(*app->trig));
+    if (app->trig == NULL || !mc_math_trig_init(app->trig) ||
+        mc_entity_classes_create(MC_ENTITY_CLIENT, app->profile, NULL, &app->entities) !=
+            MC_ENTITY_OK ||
+        mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, app->profile, app->trig,
+                                        &app->world_classes, NULL) != MC_WORLD_STORAGE_OK ||
+        mc_world_runtime_classes_bind_registry(app->world_classes, app->registry, NULL) !=
+            MC_REGISTRY_OK ||
+        mc_world_runtime_classes_bind_entities(app->world_classes, app->entities) != MC_ENTITY_OK)
+        return false;
+    mc_client_world_session_error session_error = {0};
+    const uint16_t name[] = {'W', 'o', 'r', 'l', 'd'};
+    if (!mc_client_world_session_allocate(app->world_classes, app->registry, &app->world_session,
+                                          &session_error) ||
+        !mc_client_world_session_open(app->world_session, app->options.inspect_world,
+                                      (mc_nbt_string){name, sizeof(name) / sizeof(name[0])},
+                                      app->options.world_seed, 512, &session_error)) {
+        fprintf(stderr, "World construction: %s: %s (Registry %d, name %d, clock %d)\n",
+                session_error.storage.operation == NULL ? "session"
+                                                        : session_error.storage.operation,
+                mc_world_storage_status_string(session_error.storage.status),
+                (int)session_error.registry.status, (int)session_error.name_status,
+                (int)session_error.clock_status);
+        return false;
+    }
+    mc_game_settings_state settings = {0};
+    mc_client_world_view_error view_error = {0};
+    if (!mc_game_settings_read_state(app->settings, &settings) ||
+        !mc_client_world_view_create(
+            mc_client_world_session_world(app->world_session), app->display, app->assets, app->trig,
+            settings.values.anaglyph, settings.values.ambient_occlusion,
+            settings.values.fancy_graphics, &app->world_view, &view_error)) {
+        app->display_error = view_error.display;
+        fprintf(stderr, "World view: %s (mesh %d, block %d, type %d at %d,%d,%d)\n",
+                view_error.operation == NULL ? "settings" : view_error.operation,
+                (int)view_error.mesher.status, (int)view_error.mesher.block_id,
+                (int)view_error.mesher.render_type, (int)view_error.mesher.x,
+                (int)view_error.mesher.y, (int)view_error.mesher.z);
+        return false;
+    }
+    return true;
+}
+
 static bool initialize(client_application *app) {
     mc_timer_clock_sample clocks = {0};
     if (mc_platform_nanotime_init(&app->clock) != MC_PLATFORM_NANOTIME_OK ||
@@ -453,7 +516,8 @@ static bool initialize(client_application *app) {
     if (!mc_client_display_pixel_size(app->display, &width, &height, &app->display_error))
         return false;
     return layout(app, width > 0 ? width : app->options.width,
-                  height > 0 ? height : app->options.height);
+                  height > 0 ? height : app->options.height) &&
+           initialize_world(app);
 }
 
 int mc_client_application_run(const mc_client_application_options *options) {
@@ -493,7 +557,7 @@ int mc_client_application_run(const mc_client_application_options *options) {
             goto cleanup;
         int input_width = app->display_width, input_height = app->display_height;
         for (int32_t tick = 0; tick < timer.ticks && app->running; ++tick)
-            if (!gui_tick(app, &input_width, &input_height))
+            if (app->world_view == NULL && !gui_tick(app, &input_width, &input_height))
                 goto cleanup;
         if (!app->running)
             break;
@@ -516,7 +580,9 @@ int mc_client_application_run(const mc_client_application_options *options) {
         mc_gui_mouse_position mouse = {0};
         if (!mouse_position(app, x, y, width, height, &mouse))
             goto cleanup;
-        if (!draw(app, mouse)) {
+        if (!(app->world_view == NULL
+                  ? draw(app, mouse)
+                  : mc_client_world_view_draw(app->world_view, &app->display_error))) {
             if (app->display_error.status == MC_CLIENT_DISPLAY_NOT_DRAWABLE) {
                 if (!finish_window_frame(app, true))
                     goto cleanup;
@@ -553,6 +619,13 @@ cleanup:
                 app->display_error.detail);
     }
     mc_gui_main_menu_free(app->main_menu);
+    if (!mc_client_world_view_retire(&app->world_view, &app->display_error))
+        result = 1;
+    if (!mc_client_world_session_retire(&app->world_session, NULL) ||
+        mc_world_runtime_classes_free(app->world_classes, NULL) != MC_WORLD_STORAGE_OK) {
+        fprintf(stderr, "World cleanup retained a live owner\n");
+        return 1;
+    }
     mc_client_string_free(&app->splash);
     if (mc_game_settings_retire(&app->settings, NULL) != MC_GAME_SETTINGS_OK)
         result = 1;
@@ -562,7 +635,10 @@ cleanup:
     mc_client_assets_free(app->assets);
     mc_registry_error free_error = {0};
     if (mc_registry_classes_free(app->registry, &free_error) != MC_REGISTRY_OK)
-        result = 1;
+        return 1;
+    if (mc_entity_classes_free(app->entities) != MC_ENTITY_OK)
+        return 1;
+    free(app->trig);
     mc_materials_destroy(app->materials);
     if (mc_resource_files_free(app->files) != MC_REGISTRY_OK)
         result = 1;

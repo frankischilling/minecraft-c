@@ -4,7 +4,8 @@
 It draws the Beta 1.7.3 title screen from locally imported textures,
 translations and font data. It does not yet start a playable World. After asset
 import, normal startup needs neither the original JAR nor a Java runtime or
-launcher.
+launcher. A separate [World inspection](world-renderer.md) renders a fixed area
+of a real generated World; its diagnostic flag does not start gameplay.
 
 Build with the default `MC_BUILD_CLIENT=ON`, then supply the asset import root:
 

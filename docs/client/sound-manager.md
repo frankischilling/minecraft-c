@@ -7,8 +7,9 @@ the original static SoundSystem reference and initialized flag. Creating or
 retiring a manager does not reset that shared state.
 
 The backend interface represents actual SoundSystem calls and playing queries.
-It must copy borrowed command arguments before returning. The current tests
-record those calls; they do not open an audio device or prove playback.
+It must copy borrowed command arguments before returning. Manager unit tests
+record those calls. Separate [backend tests](audio-backend.md) use real OpenAL
+buffers, loopback and workers; they do not establish original device correspondence.
 The [original sound contract](../reference/client-sound.md) identifies the
 supplied class bodies and their ordering.
 
@@ -61,8 +62,9 @@ profiles each pass all 11 selected sound/settings/reference tests without
 failures or skips. The tests cover command order, Random continuation,
 counter wrap, nonfinite volumes, failures, nested saves, retained field prefixes
 and public reentry. They use an authored backend recorder and real settings
-owners. Original SoundManager execution, backend queues/channels, WAV, device
-playback, resource registration order and GUI/WorldAccess adoption remain open.
+owners. The concrete backend and [WAV codec](sound/wav-codec.md) have separate
+contracts and evidence. Original SoundManager execution, device correspondence,
+resource registration order and GUI/WorldAccess adoption remain open.
 
 Run `client.sound_manager` and `client.settings_sound` without a display, audio
 device, original archive or Java. Settings and manager sources share one static

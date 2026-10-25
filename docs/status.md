@@ -1,11 +1,39 @@
 # Development status
 
+The client now renders a fixed area of a fresh actual GAME World through its
+[CPU mesher](client/world-meshing.md) and [OpenGL renderer](client/world-renderer.md).
+A native Windows seed23 run and sanitized Clang Linux/Mesa run both exit
+successfully after two frames. Player controls, world ticking, interactions,
+inventory and child menus remain unfinished. There is no playable client yet.
+
+The [native OpenAL backend](client/audio-backend.md) implements real loopback,
+device channels, decoded/device caches, streaming and separate command/stream
+workers. Review fixed displaced-buffer cleanup, worker wake synchronization and
+first-fault retention. The updated native loopback and default-device tests
+pass with empty stderr. The application has not yet
+adopted it. The [WAV codec](client/sound/wav-codec.md) preserves source frame and
+buffer policy rather than forcing all input to PCM16.
+
+The SoundManager checkpoint `2c311612d78028e8ab17e454925e1d0106d4f124`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40203404635).
+Those checks cover the earlier manager/Vorbis increment, not the new renderer,
+WAV and concrete backend work described above.
+
+The frozen World/audio increment passes all 243 Windows MSVC tests and all
+245 tests each on Ubuntu Clang 18 and GCC 13 with ASan/UBSan and leak checks.
+There are no failures or skips. The runs include the unchanged-original WAV and
+CPU mesh comparisons, the actual client World capture test and real loopback
+workers. All 697 C/header files pass clang-format 18; controller mirrors and
+556 positive/2,011 negative lifecycle controls pass. The final color-map error
+preservation change additionally passes all three focused World tests per
+compiler. These local results retain the [documented scope](testing.md).
+
 The [SoundManager](client/sound-manager.md) now owns shared setup, real nested
 settings saves, effects, streaming, music and listener requests at the backend
 call boundary. Windows MSVC passes 20,066 manager checks and 62 separate settings
 integration checks. Fresh sanitized Ubuntu Clang/GCC profiles each pass all 11
-selected sound/settings/reference tests without failures or skips. Device
-playback and real client adoption remain unfinished.
+selected sound/settings/reference tests without failures or skips. Original
+device correspondence and real client adoption remain unfinished.
 
 The [source-policy Vorbis codec](client/vorbis-codec.md) passes 14 fresh
 original/native page and buffer comparisons, including tiny buffers, saved-tail

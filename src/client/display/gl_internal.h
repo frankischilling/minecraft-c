@@ -14,6 +14,8 @@ typedef const GLubyte *(GLAPIENTRY *mc_client_gl_get_string_fn)(GLenum name);
 typedef void(GLAPIENTRY *mc_client_gl_viewport_fn)(GLint x, GLint y, GLsizei width, GLsizei height);
 typedef void(GLAPIENTRY *mc_client_gl_clear_fn)(GLbitfield mask);
 typedef void(GLAPIENTRY *mc_client_gl_clear_depth_fn)(GLclampd depth);
+typedef void(GLAPIENTRY *mc_client_gl_clear_color_fn)(GLfloat red, GLfloat green, GLfloat blue,
+                                                      GLfloat alpha);
 typedef void(GLAPIENTRY *mc_client_gl_enable_fn)(GLenum capability);
 typedef void(GLAPIENTRY *mc_client_gl_disable_fn)(GLenum capability);
 typedef void(GLAPIENTRY *mc_client_gl_depth_function_fn)(GLenum function);
@@ -46,6 +48,7 @@ typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei 
     X(mc_client_gl_viewport_fn, Viewport, "glViewport")                                            \
     X(mc_client_gl_clear_fn, Clear, "glClear")                                                     \
     X(mc_client_gl_clear_depth_fn, ClearDepth, "glClearDepth")                                     \
+    X(mc_client_gl_clear_color_fn, ClearColor, "glClearColor")                                     \
     X(mc_client_gl_enable_fn, Enable, "glEnable")                                                  \
     X(mc_client_gl_disable_fn, Disable, "glDisable")                                               \
     X(mc_client_gl_depth_function_fn, DepthFunc, "glDepthFunc")                                    \

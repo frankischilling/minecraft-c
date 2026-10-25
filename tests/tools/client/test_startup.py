@@ -215,7 +215,9 @@ def options(scale: int, anaglyph: bool = False, bad_line: bool = False) -> bytes
 
 
 def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | str,
-             override: int | None, diagnostics: list[bytes]) -> tuple[dict, tuple | None]:
+             override: int | None, diagnostics: list[bytes],
+             extra_arguments: tuple[str, ...] = (),
+             startup_lines: tuple[bytes, ...] = ()) -> tuple[dict, tuple | None]:
     case = root / name
     case.mkdir()
     game = case / "game"
@@ -231,6 +233,7 @@ def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | 
     command = [str(binary), "--assets", str(assets), "--game-directory", str(game),
                "--hidden", "--frames", "1", "--time-millis", "0", "--width", str(WIDTH),
                "--height", str(HEIGHT), "--capture", str(capture)]
+    command.extend(extra_arguments)
     if override is not None:
         command.extend(["--gui-scale", str(override)])
     receipt = {"passed": False, "command": command, "cwd": str(case),
@@ -261,7 +264,8 @@ def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | 
         need(receipt["returncode"] == 0, "native startup return status")
         need(raw_stderr == b"", "unexpected native startup stderr")
         lines = raw_stdout.splitlines()
-        need(lines[:len(diagnostics)] == diagnostics and len(lines) == len(diagnostics) + 1,
+        prefix = diagnostics + list(startup_lines)
+        need(lines[:len(prefix)] == prefix and len(lines) == len(prefix) + 1,
              "exact reached settings diagnostics and one graphics banner")
         banner = re.fullmatch(rb"OpenGL ([0-9]+)\.([0-9]+) core: .+ / .+", lines[-1])
         need(banner is not None and (int(banner[1]), int(banner[2])) >= (3, 3), "actual OpenGL3.3+ banner")

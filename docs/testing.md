@@ -2,6 +2,27 @@
 
 ## Native client frontend
 
+The frozen World/audio increment passes all 243 Windows MSVC tests and all
+245 tests each on Ubuntu Clang 18 and GCC 13 with ASan/UBSan and leak checks.
+No test fails or skips. These runs include public/JDK tests and both optional
+unchanged-original WAV/CPU rendering comparisons. All 697 C/header files pass
+clang-format 18. Controller mirrors and 556 positive/2,011 negative lifecycle
+controls pass. A final first-color-map-error preservation fix additionally
+passes `client.world_session`, `client.world_renderer` and
+`client.world_inspection` on all three compilers.
+
+GPU tests use Mesa through Xvfb on Linux; audio uses real OpenAL loopback and
+workers. `client.world_inspection` runs the actual executable with authored
+resources, three fresh Worlds and two native pixel relations. Native Windows
+and sanitized Linux/Mesa imported-resource seed23 runs also capture generated
+scenes. Their finite scope and unresolved cross-driver pixels are recorded in
+[World rendering](client/world-renderer.md). These results do not establish
+playability or original whole-frame/device correspondence.
+
+The SoundManager checkpoint `2c311612d78028e8ab17e454925e1d0106d4f124`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40203404635).
+That earlier hosted result predates the World renderer, WAV and OpenAL backend.
+
 The nonzero sound checkpoint `aa39f8f663d250052d6d2b9cae9c691cfa7136f3`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923):
 229 Windows, 233 GCC and 233 Clang tests, with 695 complete Start/Passed pairs

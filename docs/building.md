@@ -2,15 +2,19 @@
 
 The working target is native x86-64 Linux and Windows, using C17 and CMake 3.24
 or newer. There is no playable client or dedicated C server yet. The default
-build includes a native graphical title screen; see [client startup](client/startup.md)
-for its current behavior, required imported resources and remaining work.
+build includes a native graphical title screen and fixed generated-world
+inspection; see [client startup](client/startup.md) and
+[World rendering](client/world-renderer.md) for their scope and resources.
 Client compilation needs SDL's platform development dependencies, but ordinary
 tests need no display or original assets. Use `-DMC_BUILD_CLIENT=OFF` for shared
 libraries and tests without client dependencies. See
 [dependency setup](dependencies.md) for pinned archives, licenses and offline
 source overrides. Java is needed only by enabled reference tests.
 
-Install GCC or Clang, CMake, Ninja and Python 3.10+ on Linux.
+Install GCC/G++ or Clang/Clang++, CMake, Ninja and Python 3.10+ on Linux.
+OpenAL Soft needs C++20; project-owned runtime code remains C17. Select matching
+C and C++ compiler families when enabling sanitizers, for example
+`-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++`.
 
 For Ubuntu/Debian client builds, install the X11/OpenGL and audio development
 headers used by SDL:
@@ -49,8 +53,13 @@ For GCC/Clang sanitizers, configure `-DMC_ENABLE_SANITIZERS=ON`; instrumentation
 covers project code and its zlib dependency. Strict diagnostics apply to project
 source. Set `-DBUILD_TESTING=OFF` to build libraries without Python/Java discovery.
 
-Client builds also instrument SDL and libpng with GCC/Clang sanitizers.
-`MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` adds the `client.display` integration test.
+Client builds also instrument SDL, libpng, Ogg/Vorbis and OpenAL Soft with
+GCC/Clang sanitizers. `MC_BUILD_CLIENT_AUDIO` defaults to `MC_BUILD_CLIENT` and
+requires `MC_BUILD_CLIENT_SOUND`. It adds the shared OpenAL device backend and
+its real loopback test. Set audio off for codec-only builds; fresh headless
+configurations leave both audio and graphical dependencies disabled.
+`MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` adds `client.display` and
+`client.world_renderer` integration tests.
 It creates hidden windows with real OpenGL contexts and fails if the desktop
 cannot provide OpenGL 3.3 core. It uses authored pixels and needs no Minecraft
 resources. Keep this option off on runners without a graphics environment.

@@ -7,8 +7,11 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 option(MC_BUILD_CLIENT "Build the native graphical client" ON)
 option(MC_BUILD_CLIENT_SOUND "Build client sound decoding modules" ${MC_BUILD_CLIENT})
+option(MC_BUILD_CLIENT_AUDIO "Build the native OpenAL client audio backend" ${MC_BUILD_CLIENT})
 option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop OpenGL context" OFF)
 option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
+option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
+option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
@@ -34,8 +37,12 @@ option(MC_ENABLE_PLANT_REFERENCE_TESTS "Compare plant lifecycle projections with
 option(MC_ENABLE_POPULATION_REFERENCE_TESTS "Compare natural GAME population with supplied originals" OFF)
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
+set(MC_REFERENCE_CLIENT_LIBRARY_DIR "" CACHE PATH "Local pinned original client library archives")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
 set(MC_REGION_CAPTURE_MANIFEST "" CACHE FILEPATH "Local recorded region observation manifest")
+if(MC_ENABLE_RENDERING_REFERENCE_TESTS AND NOT MC_BUILD_CLIENT)
+    message(FATAL_ERROR "MC_ENABLE_RENDERING_REFERENCE_TESTS requires MC_BUILD_CLIENT")
+endif()
 
 # Strict diagnostics apply to project-owned code; dependencies share sanitizers only.
 add_library(mc_build_options INTERFACE)
@@ -86,6 +93,23 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_display STATIC src/client/display/display.c)
     target_include_directories(mc_client_display PUBLIC src/client/display)
     target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static PRIVATE mc_build_options)
+    add_library(mc_client_world_renderer STATIC src/client/world/renderer.c)
+    target_include_directories(mc_client_world_renderer PUBLIC src/client/world)
+    target_link_libraries(mc_client_world_renderer PUBLIC mc_client_display PRIVATE mc_build_options)
+    if(UNIX)
+        target_link_libraries(mc_client_world_renderer PRIVATE m)
+    endif()
+    add_library(mc_client_world_session STATIC src/client/world/session.c)
+    target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
+    target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_platform_time mc_build_options)
+    add_library(mc_client_world_mesher STATIC src/client/world/mesher.c
+        src/client/world/mesher_faces.c src/client/world/mesher_lighting.c)
+    target_include_directories(mc_client_world_mesher PUBLIC src/client/world)
+    target_link_libraries(mc_client_world_mesher PUBLIC mc_simulation PRIVATE mc_build_options)
+    add_library(mc_client_world_view STATIC src/client/world/view.c)
+    target_include_directories(mc_client_world_view PUBLIC src/client/world)
+    target_link_libraries(mc_client_world_view PUBLIC mc_client_world_renderer mc_client_world_mesher
+        mc_client_assets PRIVATE mc_build_options)
     add_library(mc_client_assets STATIC src/client/resources/assets.c)
     target_include_directories(mc_client_assets PUBLIC src/client/resources)
     target_link_libraries(mc_client_assets PUBLIC mc_client_gui mc_resources mc_image PRIVATE mc_build_options)
@@ -98,7 +122,8 @@ if(MC_BUILD_CLIENT)
     add_executable(minecraft-client WIN32 src/client/main.c src/client/application.c)
     target_include_directories(minecraft-client PRIVATE src/client src/platform/time)
     target_link_libraries(minecraft-client PRIVATE mc_client_gui_main_menu mc_client_timer
-        mc_client_game_directory mc_game_settings mc_platform_time mc_build_options)
+        mc_client_game_directory mc_game_settings mc_platform_time mc_client_world_session
+        mc_client_world_view mc_build_options)
 endif()
 
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
@@ -147,6 +172,9 @@ target_link_libraries(mc_client_sound_files PUBLIC mc_core PRIVATE mc_build_opti
 add_library(mc_client_sound_pool STATIC src/client/sound/sound_pool.c)
 target_include_directories(mc_client_sound_pool PUBLIC include)
 target_link_libraries(mc_client_sound_pool PUBLIC mc_client_sound_files PRIVATE mc_build_options)
+add_library(mc_sound_wav STATIC src/client/sound/wav_codec.c)
+target_include_directories(mc_sound_wav PUBLIC include)
+target_link_libraries(mc_sound_wav PUBLIC mc_client_sound_files PRIVATE mc_build_options)
 if(MC_BUILD_CLIENT_SOUND)
     include(cmake/sound_dependencies.cmake)
     add_library(mc_sound_decoder STATIC
@@ -160,6 +188,18 @@ if(MC_BUILD_CLIENT_SOUND)
 endif()
 if(MC_ENABLE_SOUND_REFERENCE_TESTS AND NOT MC_BUILD_CLIENT_SOUND)
     message(FATAL_ERROR "MC_ENABLE_SOUND_REFERENCE_TESTS requires MC_BUILD_CLIENT_SOUND")
+endif()
+if(MC_BUILD_CLIENT_AUDIO)
+    if(NOT MC_BUILD_CLIENT_SOUND)
+        message(FATAL_ERROR "MC_BUILD_CLIENT_AUDIO requires MC_BUILD_CLIENT_SOUND")
+    endif()
+    include(cmake/openal_dependencies.cmake)
+    add_library(mc_sound_backend STATIC src/client/sound/backend/owner.c
+        src/client/sound/backend/codec.c src/client/sound/backend/device.c
+        src/client/sound/backend/source.c src/client/sound/backend/worker.c)
+    target_include_directories(mc_sound_backend PUBLIC include)
+    target_link_libraries(mc_sound_backend PUBLIC mc_game_settings PRIVATE
+        mc_sound_decoder mc_sound_wav OpenAL::OpenAL mc_c_atomics Threads::Threads mc_build_options)
 endif()
 add_library(mc_client_game_directory STATIC src/client/startup/game_directory.c)
 target_include_directories(mc_client_game_directory PUBLIC src/client/startup)
@@ -205,6 +245,7 @@ add_library(mc_entity_classes STATIC
 target_link_libraries(mc_entity_classes PUBLIC mc_core PRIVATE mc_build_options)
 
 add_library(mc_registry STATIC
+    src/block/registry/rendering.c
     src/block/registry/registry.c
     src/block/registry/managed.c
     src/block/registry/redstone_set.c
@@ -424,7 +465,40 @@ if(BUILD_TESTING)
         set_tests_properties(client.timer PROPERTIES LABELS "public;unit;client;numeric" TIMEOUT 60)
         add_executable(mc_test_client_display tests/client/display/test_display.c)
         target_link_libraries(mc_test_client_display PRIVATE mc_client_display mc_build_options)
+        add_executable(mc_test_world_renderer tests/client/world/test_renderer.c)
+        target_link_libraries(mc_test_world_renderer PRIVATE mc_client_world_renderer mc_build_options)
+        add_executable(mc_test_client_world_session tests/client/world/test_session.c)
+        target_link_libraries(mc_test_client_world_session PRIVATE mc_client_world_session mc_resources mc_build_options)
+        add_test(NAME client.world_session COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/world/check_session.py"
+            --executable "$<TARGET_FILE:mc_test_client_world_session>"
+            --output "${CMAKE_CURRENT_BINARY_DIR}/world-session-output")
+        set_tests_properties(client.world_session PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 120)
+        add_executable(mc_test_world_mesher tests/client/world/test_mesher.c)
+        target_link_libraries(mc_test_world_mesher PRIVATE mc_client_world_mesher mc_build_options)
+        add_test(NAME client.world_mesher COMMAND mc_test_world_mesher)
+        set_tests_properties(client.world_mesher PROPERTIES LABELS "public;unit;client;graphics" TIMEOUT 60)
+        if(MC_ENABLE_RENDERING_REFERENCE_TESTS)
+            find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+            foreach(probe IN ITEMS faces ambient_occlusion families)
+                add_executable(mc_rendering_${probe}_probe "tests/reference/client/rendering/${probe}.c")
+                target_link_libraries(mc_rendering_${probe}_probe PRIVATE
+                    mc_client_world_mesher mc_simulation mc_build_options)
+            endforeach()
+            add_test(NAME reference.client_rendering COMMAND Python3::Interpreter
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/rendering/compare.py"
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+                --library-dir "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --faces-native "$<TARGET_FILE:mc_rendering_faces_probe>"
+                --ao-native "$<TARGET_FILE:mc_rendering_ambient_occlusion_probe>"
+                --families-native "$<TARGET_FILE:mc_rendering_families_probe>"
+                --output-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-client-rendering")
+            set_tests_properties(reference.client_rendering PROPERTIES LABELS "reference;original;client;graphics" TIMEOUT 180)
+        endif()
         if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.world_renderer COMMAND mc_test_world_renderer)
+            set_tests_properties(client.world_renderer PROPERTIES LABELS "public;integration;client;graphics" TIMEOUT 60)
             add_test(NAME client.display COMMAND mc_test_client_display)
             set_tests_properties(client.display PROPERTIES LABELS "public;integration;client;graphics" TIMEOUT 60)
         endif()
@@ -1198,6 +1272,26 @@ if(BUILD_TESTING)
     add_test(NAME client.sound_pool COMMAND mc_test_sound_pool)
     set_tests_properties(client.sound_pool PROPERTIES LABELS "public;unit;client;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_wav_codec tests/client/sound/test_wav_codec.c)
+    target_link_libraries(mc_test_wav_codec PRIVATE mc_sound_wav mc_build_options)
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/wav-codec-output")
+    add_test(NAME client.wav_codec COMMAND mc_test_wav_codec "${CMAKE_CURRENT_BINARY_DIR}/wav-codec-output")
+    set_tests_properties(client.wav_codec PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 60)
+    add_test(NAME tools.wav_reference_protocol COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/sound/wav/test_protocol.py")
+    set_tests_properties(tools.wav_reference_protocol PROPERTIES LABELS "public;tools;client;audio" TIMEOUT 60)
+    if(MC_ENABLE_WAV_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.wav_policy COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/sound/wav/compare.py"
+            --jar "${MC_REFERENCE_CLIENT_JAR}" --java "${Java_JAVA_EXECUTABLE}"
+            --javac "${Java_JAVAC_EXECUTABLE}" --native "$<TARGET_FILE:mc_test_wav_codec>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-wav"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}")
+        set_tests_properties(reference.wav_policy PROPERTIES LABELS "reference;original;client;audio"
+            TIMEOUT 180 SKIP_RETURN_CODE 77)
+    endif()
+
     add_executable(mc_test_sound_manager tests/client/sound/test_sound_manager.c)
     target_link_libraries(mc_test_sound_manager PRIVATE mc_game_settings mc_build_options)
     add_test(NAME client.sound_manager COMMAND mc_test_sound_manager)
@@ -1219,6 +1313,18 @@ if(BUILD_TESTING)
     set_tests_properties(client.sound_file PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 45)
 
     if(MC_BUILD_CLIENT_SOUND)
+        if(MC_BUILD_CLIENT_AUDIO)
+            add_executable(mc_test_sound_backend tests/client/sound/backend/test_backend.c)
+            target_link_libraries(mc_test_sound_backend PRIVATE mc_sound_backend mc_build_options)
+            set_property(TARGET mc_test_sound_backend PROPERTY LINKER_LANGUAGE CXX)
+            if(WIN32)
+                add_custom_command(TARGET mc_test_sound_backend POST_BUILD COMMAND ${CMAKE_COMMAND}
+                    -E copy_if_different "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_sound_backend>")
+            endif()
+            add_test(NAME client.sound_backend COMMAND mc_test_sound_backend
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis")
+            set_tests_properties(client.sound_backend PROPERTIES LABELS "public;integration;client;audio;ownership" TIMEOUT 60)
+        endif()
         add_executable(mc_test_vorbis_codec tests/client/sound/test_vorbis_codec.c)
         target_link_libraries(mc_test_vorbis_codec PRIVATE mc_sound_decoder mc_build_options)
         file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/vorbis-codec-output")
@@ -1342,6 +1448,11 @@ if(BUILD_TESTING)
                     --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
             set_tests_properties(client.startup PROPERTIES
                 LABELS "public;integration;client;graphics" TIMEOUT 240)
+            add_test(NAME client.world_inspection COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_inspection.py"
+                --executable "$<TARGET_FILE:minecraft-client>" --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+            set_tests_properties(client.world_inspection PROPERTIES
+                LABELS "public;integration;client;graphics;ownership" TIMEOUT 120)
         endif()
     endif()
 

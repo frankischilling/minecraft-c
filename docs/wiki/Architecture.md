@@ -6,6 +6,17 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md)
+  connects actual GAME World construction, leased CPU section meshes and owned
+  GL3.3 buffers to a fixed native inspection scene. It has no Player or world
+  tick. The [CPU mesher](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-meshing.md)
+  implements eight render families; remaining families fail explicitly.
+- The [OpenAL backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/audio-backend.md)
+  owns actual buffers, sources, caches and command/stream workers. Its manager
+  composition and loopback tests use real devices. The
+  [WAV codec](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound/wav-codec.md)
+  preserves raw encoding and source buffer policy. Application audio adoption
+  and original device correspondence remain unfinished.
 - [Native client startup](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
   owns SDL input, resources, GUI and OpenGL presentation. The shared
   [float parser](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-float.md)

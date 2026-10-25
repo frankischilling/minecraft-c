@@ -1,5 +1,16 @@
 # Build and tests
 
+The frozen World/audio increment passes 243 Windows MSVC tests and 245 tests
+each on sanitized Ubuntu Clang 18/GCC 13, without failures or skips. It includes
+60 exact original WAV profiles, exact CPU face/AO/family comparisons, real
+OpenAL loopback/workers and three actual client captures with authored Worlds.
+All 697 C/header files pass clang-format 18; controller/lifecycle checks pass.
+The final color-map error fix passes three focused World tests per compiler.
+See [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md),
+[World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md)
+and [audio backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/audio-backend.md).
+The scene remains a fixed inspection, without Player gameplay.
+
 SoundManager now passes 20,066 Windows native checks and 62 separate settings
 integration checks. Its backend recorder verifies call ordering and genuine
 nested saves; no device playback is claimed. The source-policy Vorbis codec

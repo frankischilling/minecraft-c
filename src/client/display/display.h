@@ -70,6 +70,13 @@ bool mc_client_display_create(const char *title, int width, int height, bool hid
  * No World, input routing, frame timing, background geometry or GUI ownership
  * is supplied by this module. */
 SDL_Window *mc_client_display_window(mc_client_display *display);
+/* Make this owner's context current for another client renderer. The caller
+ * must remain on the SDL main/video thread and leave default framebuffer
+ * ownership with Display. This does not begin or validate a GUI frame. */
+bool mc_client_display_make_current(mc_client_display *display, mc_client_display_error *error);
+/* Share actual context-error ownership with other concrete client renderers. */
+bool mc_client_display_check_gl(mc_client_display *display, const char *operation,
+                                mc_client_display_error *error);
 const mc_client_display_info *mc_client_display_info_get(const mc_client_display *display);
 /* Read the current owner's effective default framebuffer, not merely SDL's
  * requested attributes. Query makes its context current but changes no format,
@@ -106,6 +113,11 @@ bool mc_client_display_upload_texture(mc_client_display *display, const mc_image
  * fit binary32. A failed begin invalidates the prior frame. */
 bool mc_client_display_begin(mc_client_display *display, double exact_width, double exact_height,
                              mc_client_display_error *error);
+/* Begin a scene surface for a concrete 3D renderer. Clear its actual color and
+ * depth buffers and mark it capturable, without enabling GUI drawing. A later
+ * GUI begin establishes the overlay independently. Colors must be finite. */
+bool mc_client_display_begin_scene(mc_client_display *display, float red, float green, float blue,
+                                   mc_client_display_error *error);
 bool mc_client_display_draw_quad(mc_client_display *display, mc_client_texture texture,
                                  const mc_client_vertex vertices[4], bool blend, bool alpha_test,
                                  mc_client_display_error *error);

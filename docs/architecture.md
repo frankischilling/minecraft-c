@@ -5,7 +5,10 @@ asset cache, font layout and SDL/OpenGL display. The display draws supplied
 quads and manages context/texture ownership; it has no World or screen logic.
 Image decoding and font layout work without an OpenGL context. Client libraries
 remain outside the simulation and server link graph. The current title screen
-does not yet start gameplay, child menus or audio.
+does not yet start gameplay, child menus or audio. A separate
+[World inspection](client/world-renderer.md) owns actual World construction,
+finite CPU section meshes and independent GPU buffers. It retains no Chunk view
+after meshing and does not substitute a camera for a Player.
 
 The [GameSettings owner](client/game-settings.md) keeps options persistence
 separate from display and audio. It owns retained UTF-16 Strings, KeyBindings
@@ -20,7 +23,9 @@ separate from source close behavior. Optional C Vorbis decoding has no display
 or audio-device initialization and remains outside the server link graph.
 The [SoundManager](client/sound-manager.md) owns call ordering, shared setup and
 nested settings saves. The [Vorbis codec](client/vorbis-codec.md) adds the
-original page/buffer policy. Backend playback and startup adoption remain unfinished.
+original page/buffer policy. The [OpenAL backend](client/audio-backend.md) owns
+actual devices, channels, caches and workers; startup adoption and original
+device correspondence remain unfinished.
 
 [Dedicated World construction](world/construction.md#dedicated-construction)
 selects its cache during the base virtual provider call and retains separate
