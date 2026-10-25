@@ -170,7 +170,8 @@ chain-budget case. Helper tests drain a nonzero planar suffix across calls;
 the encoded chain case checks a bounded stereo prefix and terminal limit.
 It does not prove a later successful decoder drain of a pending suffix. Those
 encoded fixtures are silence; the separate nonzero regression below exercises
-real encoded audio. No original nonzero PCM comparison has run.
+real encoded audio. The separate original comparison below records four
+one-step sample differences in a nonzero mono stream.
 
 Earlier failed runs remain failed: private-copy CRLF drift, a rejected MSVC
 fixture cast, stale stdio reads and the chain's false packet hole. Their captures
@@ -178,7 +179,16 @@ remain preserved. The final run uses explicit LF copies, unsigned byte fixtures,
 native descriptors and the exact chain correction above; assertions and strict
 warnings remain enabled.
 
-The [sound checkpoint `e10a5e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434)
+The [nonzero sound checkpoint `aa39f8f`](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923)
+passes all four hosted jobs: 229 Windows, 233 GCC and 233 Clang cases, with 695
+complete Start/Passed pairs and no failures, skips or missing tests. All 658
+C/header files, controller mirrors and 556 positive/2,011 negative lifecycle
+controls pass. All four checkouts use synthetic merge `839f22e`, whose complete
+tree equals the head. Independent readback reconstructs 331 trees/1,566 entries
+and joins all 1,236 literal public files and 1,056 Windows-tested non-Markdown
+inputs.
+
+The earlier [sound checkpoint `e10a5e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434)
 passes all four hosted jobs: 228 Windows, 232 GCC and 232 Clang cases, with 692
 complete Start/Passed pairs and no failures, skips or missing tests. Formatting
 covers 657 C/header files; controller mirrors and all 556 positive/2,011 negative
@@ -266,6 +276,13 @@ from those same encoded bytes. The original's granule-zero EOS branch and the
 captured buffered page explain this edge. Floating synthesis was not compared.
 The native decoder does not yet implement the original page-level read/readAll
 policy; that adapter remains required before SoundManager adoption.
+
+A separate [nonzero original observation](../reference/client-sound.md#nonzero-original-pcm-observation)
+returns the same 4,096 mono frames as native decoding. Four samples differ by
+one signed16 step. Independent readback verifies the complete outputs and all
+retained evidence; exact equality fails without relaxing tolerance. The
+conversion-entry floats were not captured, and the numerical cause remains
+unresolved.
 
 Complete audio still needs WAV behavior, original JOrbis/native PCM and error
 comparisons, canonical resource and registration order, queued backend commands,

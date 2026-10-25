@@ -1,5 +1,14 @@
 # Build and tests
 
+The [nonzero sound checkpoint `aa39f8f`](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923)
+passes all four hosted jobs: 229 Windows, 233 GCC and 233 Clang tests, with 695
+complete Start/Passed pairs and no failures, skips or missing cases. All 658
+C/header files, controller mirrors and 556 positive/2,011 negative lifecycle
+checks pass. The four checkouts use synthetic merge `839f22e`, with a complete
+tree equal to that head. Independent readback reconstructs 331 trees/1,566
+entries and joins all 1,236 literal files and 1,056 Windows-tested non-Markdown
+inputs.
+
 The [sound checkpoint `e10a5e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434)
 passes all four hosted jobs: 228 Windows, 232 GCC and 232 Clang cases, with 692
 complete Start/Passed pairs and no failures, skips or missing tests. Formatting
@@ -55,6 +64,13 @@ initializes but returns null/EOS for the authored split-page mono stream. Its
 later readAll returns a SoundBuffer with null data. Native decoding emits
 6,400 PCM bytes from the same input. This policy difference remains open;
 the completed observation does not qualify floating synthesis or PCM equality.
+
+A separate [nonzero original mono comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/client-sound.md#nonzero-original-pcm-observation)
+returns 8,192 PCM bytes on both sides. Four of 4,096 samples differ by one
+signed16 step; exact equality fails. Independent readback passes 2,368 final
+file/tree checks and retains every differing value and both complete-output
+hashes. No tolerance or prefix-only acceptance is applied. The numerical cause
+and conversion-entry float comparison remain unresolved.
 
 The preceding [code checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
 passes all four hosted jobs: 224 MSVC, 228 GCC and 228 Clang cases, or 680

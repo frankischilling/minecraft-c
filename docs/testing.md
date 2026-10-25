@@ -2,7 +2,18 @@
 
 ## Native client frontend
 
-The sound checkpoint `e10a5e2708e81c81ea2cc9b721c060a2d2f056d7`
+The nonzero sound checkpoint `aa39f8f663d250052d6d2b9cae9c691cfa7136f3`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923):
+229 Windows, 233 GCC and 233 Clang tests, with 695 complete Start/Passed pairs
+and no failures, skips or missing cases. Formatting covers all 658 C/header
+files; controller mirrors and 556 positive/2,011 negative lifecycle controls
+pass. Every checkout uses synthetic merge `839f22e2f21181a27d9b27f2381976bb0c412b51`,
+whose complete tree equals that head. Independent readback reconstructs 331
+trees/1,566 entries, consumes every one of the 1,236 literal source bodies and
+joins all 1,056 Windows-tested non-Markdown inputs. The full console supplies
+the test chronology; no hosted JUnit or artifact archive was retained.
+
+The earlier sound checkpoint `e10a5e2708e81c81ea2cc9b721c060a2d2f056d7`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434):
 228 Windows, 232 GCC and 232 Clang tests, or 692 complete Start/Passed pairs,
 with no failures, skips or missing cases. Formatting covers 657 C/header files;
@@ -93,6 +104,14 @@ completes its eight-operation plan and eleven final audits. It records a
 null/EOS result for the authored mono stream and a later SoundBuffer with null
 data. The generic native decoder emits 6,400 bytes from the same encoded input.
 That difference remains explicit; observation completion is not a PCM match.
+
+The [nonzero original mono comparison](reference/client-sound.md#nonzero-original-pcm-observation)
+reuses the unchanged compiled helper and supplies only the actual authored
+encoded input. Both decoders return 8,192 bytes. Complete comparison finds
+four one-step differences among 4,096 signed16 samples, with no unmatched
+suffix and no tolerance. Independent evidence readback passes all 2,368 final
+file/tree checks; the comparison exits 1 for failed exact equality. It does not
+capture conversion-entry floats or locate the numerical cause.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):

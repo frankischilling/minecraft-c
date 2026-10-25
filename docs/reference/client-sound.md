@@ -118,7 +118,7 @@ endian. No dither or rounding offset is added. For identical float +0.5, this
 policy yields 16383; libvorbis's `ov_read` integer path yields 16384. The native
 owner now uses `ov_read_float` and applies the source conversion explicitly.
 These are supplied-code and arithmetic facts, not measured original PCM.
-The observation below covers one outer read/buffer/EOS path. JOrbis/libvorbis
+The observations below cover two outer read/buffer/EOS paths. JOrbis/libvorbis
 floating synthesis remains unqualified.
 
 ## Arranged original codec observation
@@ -161,8 +161,60 @@ JDK/Python file pins and Python origins are recorded; actual OS loaded-DLL
 mapping and the process's full filesystem effects are not measured. No device,
 SoundSystem backend or original game main runs. Two earlier preparations stop
 before compilation on inventory ordering checks; their failure records remain
-separate from the successful control. Wider cases and nonzero PCM comparison
+separate from the successful control. Wider cases and additional PCM comparison
 remain required.
+
+## Nonzero original PCM observation
+
+A second Windows control reuses the six actual compiled helper classes and the
+same eight operations, with a separate input-only plan. It does not recompile
+the observer or change the original classes. The mono 32 kHz input is generated
+by `client.vorbis_nonzero`, with ordinary audio pages. Its 5,019 encoded bytes
+have SHA-256
+`e176dad1c2979c5375f03f6fd551b7726ce024e232a3d3f52316385f8355c499`.
+No expected PCM or decoded state is supplied to the original.
+
+The original returns one nonnull SoundBuffer containing 8,192 PCM bytes and
+sets EOS. Its repeated read returns null; the subsequent readAll returns a
+SoundBuffer with null data. The native Clang decoder produces 8,192 bytes from
+the identical encoded input. Both complete outputs contain 4,096 nonzero
+signed16 little-endian mono samples. Their lengths agree, but four samples
+differ by one PCM step:
+
+| Zero-based sample | Original | Native |
+| ---: | ---: | ---: |
+| 2,500 | -1,839 | -1,840 |
+| 2,571 | -2,106 | -2,105 |
+| 3,024 | 289 | 290 |
+| 3,350 | 1,967 | 1,966 |
+
+The complete original output has SHA-256
+`d6439d8c9780b79d71834e962e0843f32133dfd1a540be8a733344155e18b0f8`;
+the native output has
+`ba4fe9ae1a08ca5be338c23e98d669f4bb20534cde658a91d8d252ba08a264d8`.
+All other samples agree. Neither side has an unpaired suffix. No tolerance,
+sample correction, normalization or prefix-only acceptance is applied. Exact
+PCM equality fails for this input.
+
+Independent file readback reconstructs output only from each returned
+SoundBuffer's data alias and the preceding array version at that operation.
+Encoded buffers and later snapshots of retained buffers do not append output.
+It rederives all 49 original class resources and 337 Code bodies, checks the
+complete observation and compilation trees, and passes 2,368 final file/tree
+checks. The original control's 15 audits and the earlier compilation's 11
+audits pass, with natural exit, reaping and empty process Jobs. The comparison
+receipt has 713,896 bytes, SHA-256
+`58916d0c395e6257f874b537699ff38167d8bf693f3127ebdfec0f3fd5b6f364`;
+it records valid evidence and failed PCM equality separately.
+
+This compares the arranged Windows JOrbis route with native Linux decoding.
+Native provenance joins the separately audited decoder capture; the copied
+PCM receipt does not measure new native format metadata or process state.
+Conversion-entry float planes remain uncaptured, so this result does not
+locate the numerical cause. Wider inputs, codec read policy and device
+behavior remain unfinished.
+
+## Resource availability
 
 The local availability check finds 326 matching imported/external audio files,
 44,011,339 bytes. This is an availability floor, not a canonical Beta track list

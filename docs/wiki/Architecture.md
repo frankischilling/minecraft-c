@@ -52,12 +52,15 @@ Current runtime navigation:
   interleaving, silence inputs and authored nonzero streams. A focused Ubuntu GCC ASan/UBSan
   decoder run passes 563 checks after exact private-copy Vorbis corrections;
   a corrected Clang run also passes 563 after the private Ogg null-buffer guard.
-  The `e10a5e2` checkpoint passes the full native suites on Windows/GCC/Clang.
+  The `aa39f8f` checkpoint passes all 695 native cases on Windows/GCC/Clang.
   A separate nonzero regression passes 5,469 checks on sanitized Clang and
   5,480 on MSVC after a bounded floor-deviation correction. Both runs pass
   independent source, dependency and capture readback.
   An arranged original mono control returns null/EOS where native decoding
-  emits 6,400 bytes from the same input. Original codec policy, PCM comparisons,
+  emits 6,400 bytes from the same input. A separate nonzero mono comparison
+  returns 4,096 samples on both sides but differs in four samples by one PCM
+  step. Complete capture readback confirms failed exact equality, without
+  tolerance. Original codec policy, wider PCM comparisons,
   device playback, shared SoundManager setup and real GUI/WorldAccess adoption
   remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)

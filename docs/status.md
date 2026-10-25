@@ -1,6 +1,15 @@
 # Development status
 
-The sound checkpoint `e10a5e2708e81c81ea2cc9b721c060a2d2f056d7`
+The nonzero sound checkpoint `aa39f8f663d250052d6d2b9cae9c691cfa7136f3`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923):
+229 Windows, 233 GCC and 233 Clang tests, with 695 complete Start/Passed pairs
+and no failures, skips or missing cases. All 658 C/header files, controller
+mirrors and 556 positive/2,011 negative lifecycle checks pass. The four checkouts
+use synthetic merge `839f22e`, whose complete tree equals that head. Independent
+readback reconstructs 331 trees/1,566 entries and joins all 1,236 literal
+published files and 1,056 Windows-tested non-Markdown inputs.
+
+The earlier sound checkpoint `e10a5e2708e81c81ea2cc9b721c060a2d2f056d7`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434):
 228 Windows, 232 GCC and 232 Clang tests, with 692 complete Start/Passed pairs
 and no failures, skips or missing cases. Formatting covers 657 C/header files;
@@ -54,6 +63,13 @@ returns null and reaches EOS on its first read. A later readAll returns a
 SoundBuffer with null data. The same authored split-page input produces 6,400
 PCM bytes through the generic native decoder. The [reference note](reference/client-sound.md#arranged-original-codec-observation)
 retains this output-policy difference; it supplies no floating-synthesis match.
+
+A separate nonzero mono control returns complete 8,192-byte PCM on both sides,
+but four of 4,096 samples differ by one signed16 step. Independent original
+and native capture readback confirms the difference without trimming or
+tolerance. The [nonzero observation](reference/client-sound.md#nonzero-original-pcm-observation)
+retains all four values and full-output hashes. The numerical cause remains
+unresolved; original PCM equality is not established.
 
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):
