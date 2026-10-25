@@ -59,18 +59,21 @@ typedef struct mc_gui_main_menu_frame {
  * time from pixels or accepts a precomputed pulse/scale. */
 typedef bool (*mc_gui_main_menu_millis_fn)(void *context, int64_t *out);
 
-/* Default-pack, non-anaglyph, no-World GuiMainMenu draw owner. Borrow assets
+/* Default-pack, no-World GuiMainMenu draw owner. Borrow assets
  * and display, which must outlive it and remain exclusively usable here.
  * Creation loads/uploads the genuine font image at this caller-selected point;
  * App must place it at its existing font-image step before title Random/splash
  * construction. Font.txt parsing, FontRenderer creation and trig initialization
  * remain lazy inside draw after background/logo and the real clock call.
+ * The initial anaglyph flag selects the real texture RGB conversion and font
+ * palette construction. It stays fixed for this owner; live texture refresh
+ * and replacement after an options action remain separate operations.
  * No label translation, splash selection, calendar, event or frame-clock owner.
  * GL IDs belong to display; decoded images belong to assets. out is unchanged
  * on failure. Retire any prior owner before successful replacement. An uploaded
  * prefix remains display-owned after a later failure. out/error storage is
  * disjoint from owners and their dependencies. */
-bool mc_gui_main_menu_create(mc_client_display *display, mc_client_assets *assets,
+bool mc_gui_main_menu_create(mc_client_display *display, mc_client_assets *assets, bool anaglyph,
                              mc_gui_main_menu **out, mc_gui_main_menu_error *error);
 void mc_gui_main_menu_free(mc_gui_main_menu *menu); /* NULL is harmless; no GL call. */
 

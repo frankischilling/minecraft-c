@@ -1,14 +1,28 @@
 # Development status
 
-The preceding code checkpoint `2e02a61b0f574f9ea4253a5b8f66a5a234b2d2e8`
-passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146):
+The preceding code checkpoint `fce15390e8c191a2533a38eadb1f90dab5ad0a6b`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048):
 223 MSVC, 226 GCC and 226 Clang tests. All 675 cases have complete Start/Passed
 records with zero failures, skips or missing runs; 641 C/header files pass
 formatting. Controller mirrors and lifecycle interval checks pass. The audit
 rejoins all 1,206 literal source bodies and 1,030 non-Markdown tested inputs.
-These results include the native GameOption/label contracts on both Linux
-compilers. They precede the new binding-code action, whose native validation
-passes on Windows as described below. Linux action validation remains pending.
+These results include native binding-action and GameOption/label contracts on
+both Linux compilers. They precede the current App/GameDirectory integration.
+
+The App now loads one real file-backed GameSettings owner after Display and
+before font/menu consumers. [GameDirectory](client/game-directory.md) performs
+native path selection and real creation; load failures keep defaults and any
+partial field changes without choosing another directory. Loaded GUI scale
+and initial anaglyph feed the title, and explicit GUI-scale overrides include
+zero. Startup and retirement do not save. Fresh Windows MSVC x64 Debug profiles
+pass six selected CTests: 57 directory checks plus six file checks, 548 settings
+checks plus six file checks, 883 option checks, 100 display checks, 53 scene
+admission controls and nine App cases with eight exact decoded-pixel relations.
+Both profiles finish all seven stages and eleven final audits. App runs use an
+NVIDIA RTX 3060 core context and exit naturally. These results cover the frozen
+1,213-member source, including 1,035 non-Markdown inputs. Linux startup tests,
+ordinary default selection, broader File/locale behavior and original
+startup/pixel correspondence remain unqualified; no new hosted result is claimed.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
@@ -49,7 +63,7 @@ minimized-window adjustment was then rebuilt and retested through the six
 frontend cases and actual captures on all three compilers. Earlier full suites
 below retain their own checkpoint scope.
 
-Child menus, settings integration, audio, complete startup, gameplay and real
+Child menus, effectful settings setters, audio, complete startup, gameplay and real
 fullscreen/zero-drawable controls remain unfinished or unverified. The shared
 [GuiMainMenu renderer](client/gui-main-menu.md) supports a matched conditional
 scene with ordered binary32 modelview operations. Windows now matches all
@@ -98,8 +112,9 @@ Windows UTF-8 comparisons each match all 11,389 projected persistence fields in
 16 cases, including full file bytes and 2,877 logical reference joins. All 14
 file-only controls on the Windows-1252 baseline reject their intended changes.
 The separate GCC Linux UTF-8/LF comparison also matches that finite projection;
-Clang Linux comparison remains pending. Static-label correspondence, application
-integration and effectful menu setters remain unfinished.
+Clang Linux comparison remains pending. Static-label correspondence and
+effectful menu setters remain unfinished. The new App connection is implemented
+with finite Windows tests above; these persistence comparisons do not qualify it.
 
 The [GameOption and label module](client/game-options.md) now implements option
 metadata, value queries, counted UTF-16 labels and the retained legacy key-name
@@ -108,8 +123,9 @@ Windows builds pass 883 GameOption, 1,241 label and 463 Assets checks, with
 persistence and Translation regressions. A file-only audit qualifies the
 headless tests after their controller's summary-parser failure; its failed
 report remains unchanged. The later 675-case hosted run also passes the native
-contracts on sanitized Linux GCC and Clang. Original label correspondence,
-options screens and application adoption remain separate.
+contracts on sanitized Linux GCC and Clang. Original label correspondence and
+options screens remain separate. The new App startup connection has only the
+finite Windows validation above, with Linux startup execution still pending.
 
 The [binding-code action](client/game-settings.md#binding-code-action) now
 selects the current array entry, commits its code and calls the real save body.
@@ -121,7 +137,8 @@ controls, 883 option checks, 1,241 label checks, 463 Assets checks and 4,404
 Translation checks. Both profiles finish their before/after inventories and
 input/product audits. Configure/build retain the pinned compiler-helper
 cleanup allowance; every test tree closes naturally. No original-action or
-Controls UI correspondence is claimed, and Linux action execution is pending.
+Controls UI correspondence is claimed. The later hosted run at the top also
+passes these native action contracts on Linux GCC and Clang.
 
 The [WorldAccess interface](world/world-access.md) now dispatches typed
 cell, range, sound, particle, Entity-added and TileEntity-dirty callbacks. Its

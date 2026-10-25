@@ -1,14 +1,33 @@
 # Build and tests
 
-The preceding [code checkpoint `2e02a61`](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146)
+The preceding [code checkpoint `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
 passes all four hosted jobs: 223 MSVC, 226 GCC and 226 Clang cases, or 675
 complete Start/Passed pairs with zero failures, skips or missing runs.
 Formatting covers 641 C/header files; controller mirrors and lifecycle interval
 checks pass. The source audit accounts for all 1,206 literal publication bodies
 and rejoins the 1,030 non-Markdown tested inputs. Native GameOption/label
 contracts therefore have Linux GCC/Clang coverage as well as Windows coverage.
-Original-label comparison remains pending. This run precedes the new
-binding-code action; its fresh Windows results are recorded below.
+Original-label and original-action comparisons remain pending. This run
+includes native binding-action tests on all three compilers and precedes the
+new App/GameDirectory connection.
+
+The [App startup connection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md#settings-at-startup)
+now loads real GameSettings after Display and uses loaded scale and initial
+anaglyph before title consumers. A retained
+[GameDirectory](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-directory.md)
+owner supplies actual path selection and creation. Startup and retirement
+perform no options save; native failures do not choose a second directory.
+Fresh Windows MSVC x64 Debug headless/client profiles pass six selected CTests:
+57 directory checks plus six file checks, 548 settings checks plus six file
+checks, 883 option checks, 100 display checks, 53 scene controls and nine App
+cases with eight exact decoded-pixel relations on NVIDIA RTX 3060. Both profiles
+finish seven stages and eleven final audits; test trees close naturally while
+configure/build retain their explicit pinned-helper cleanup allowance. The
+tested family has 1,213 members and 1,035 non-Markdown inputs. The earlier
+fixture C4310 build failure remains failed; [testing](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#startup-settings-and-game-directory)
+records its correction and precise formatting/readback scope. Linux startup,
+original/default-directory correspondence, custom packs, audio, source pacing,
+child menus and complete startup remain unfinished. No new hosted result is claimed.
 
 [GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
 passed six earlier local Windows MSVC cases: 883 metadata/query, 1,241 label, 463 Assets,
@@ -55,8 +74,9 @@ and 2,877 typed reference joins. The separate GCC Linux UTF-8/LF comparison
 also matches; Clang Linux comparison remains pending. All 14 file-only controls
 on the Windows-1252 baseline reject their intended changes. The
 [reference record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/game-settings.md#finite-native-comparisons)
-retains the finite scope. Original static-label correspondence, application integration, options
-screens and effectful setters remain unfinished.
+retains the finite scope. Original static-label correspondence, options screens
+and effectful setters remain unfinished. The new App connection has its own
+finite Windows tests and is outside those original persistence comparisons.
 
 The new [binding-code action](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-settings.md#binding-code-action)
 stores the code in the current array's binding, then reaches the real save even
@@ -69,8 +89,9 @@ pass six CTests with 548 native settings checks, six independent file checks,
 26 controls and the option/label/Assets/Translation regressions. Both profiles
 close all seven stages and ten final audits; test trees exit naturally while
 configure/build retain their pinned compiler-helper cleanup allowance. All
-641 C/header files pass formatting. Linux action execution, original-action
-comparison and Controls UI adoption remain pending.
+641 C/header files pass formatting. The later hosted run at the top also
+passes native action contracts on Linux GCC/Clang. Original-action comparison
+and Controls UI adoption remain pending.
 
 The [native frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 passes eight focused tests on MSVC and sanitized GCC/Clang, including actual OpenGL

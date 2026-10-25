@@ -23,7 +23,7 @@ static bool integer(const char *value, int64_t minimum, int64_t maximum, int64_t
 
 static void usage(void) {
     puts("minecraft-client --assets IMPORT_DIRECTORY [--username NAME]\n"
-         "  --width N --height N --gui-scale N\n"
+         "  --game-directory DIRECTORY --width N --height N --gui-scale N\n"
          "  --frames N --capture OUTPUT.png --hidden --time-millis N");
 }
 
@@ -47,6 +47,8 @@ int main(int argc, char **argv) {
         int64_t parsed = 0;
         if (strcmp(option, "--assets") == 0)
             options.assets = value;
+        else if (strcmp(option, "--game-directory") == 0)
+            options.game_directory = value;
         else if (strcmp(option, "--username") == 0)
             options.username = value;
         else if (strcmp(option, "--capture") == 0)
@@ -56,9 +58,10 @@ int main(int argc, char **argv) {
         else if (strcmp(option, "--height") == 0 && integer(value, 1, 16384, &parsed))
             options.height = (int32_t)parsed;
         else if (strcmp(option, "--gui-scale") == 0 &&
-                 integer(value, INT32_MIN, INT32_MAX, &parsed))
+                 integer(value, INT32_MIN, INT32_MAX, &parsed)) {
             options.gui_scale = (int32_t)parsed;
-        else if (strcmp(option, "--frames") == 0 && integer(value, 1, UINT32_MAX, &parsed))
+            options.gui_scale_override = true;
+        } else if (strcmp(option, "--frames") == 0 && integer(value, 1, UINT32_MAX, &parsed))
             options.frame_limit = (uint32_t)parsed;
         else if (strcmp(option, "--time-millis") == 0 &&
                  integer(value, INT64_MIN, INT64_MAX, &parsed)) {

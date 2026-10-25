@@ -360,7 +360,7 @@ int main(int argc, char **argv) {
     if (!mc_client_display_pixel_size(display, &width, &height, &display_error) ||
         width != value->width || height != value->height ||
         !mc_scaled_resolution_init(width, height, value->gui_scale, &value->frame.resolution) ||
-        !mc_gui_main_menu_create(display, assets, &menu, &menu_error))
+        !mc_gui_main_menu_create(display, assets, false, &menu, &menu_error))
         goto cleanup;
     clock.millis = value->millis;
     if (!mc_gui_main_menu_draw(menu, &value->frame, clock_read, &clock, &menu_error) ||

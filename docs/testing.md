@@ -2,16 +2,16 @@
 
 ## Native client frontend
 
-The preceding code checkpoint `2e02a61b0f574f9ea4253a5b8f66a5a234b2d2e8`
-passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146):
+The preceding code checkpoint `fce15390e8c191a2533a38eadb1f90dab5ad0a6b`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048):
 223 MSVC, 226 GCC and 226 Clang cases, 675 complete Start/Passed pairs, with
 zero failures, skips or missing runs. Formatting covers 641 C/header files;
 controller mirrors and lifecycle interval checks pass. The audit rejoins all
 1,206 literal Git source bodies and the 1,030 non-Markdown tested inputs. Its
-actual signed synthetic checkout `56bd71f401efb432481b45fe7429d8704666591c`
+actual synthetic checkout `a1931c39c826c046c9daa2e0d62dd5e2284f54ee`
 is tied to that head by the complete tree and parent records. This run includes
-the native query/label tests on sanitized Linux GCC and Clang. It precedes the
-binding-code action; its fresh Windows results are recorded below.
+native binding-action and query/label tests on sanitized Linux GCC and Clang.
+It precedes the App/GameDirectory connection and new startup tests below.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
@@ -76,6 +76,74 @@ observed-JDK and 49,532 model-derived groups. The
 retain their footer-parser failure; separate file-only audits verify the actual
 tests and rows and complete read-only binary checks without native reruns.
 
+## Startup settings and GameDirectory
+
+The App now loads one real GameSettings owner after Display and uses its GUI
+scale and initial anaglyph for the title. Explicit `--gui-scale 0` overrides a
+loaded value; absence of that flag preserves the loaded value. Fresh Windows
+MSVC x64 Debug headless and client profiles pass these six selected CTests:
+
+| Profile | Test | Actual result |
+| --- | --- | --- |
+| Headless | `client.game_directory` | 57 native checks and six independent file checks |
+| Headless | `client.game_settings` | 548 native checks and six independent file checks |
+| Headless | `client.game_option` | 883 metadata/query checks |
+| Client | `client.display` | 100 actual OpenGL checks |
+| Client | `tools.client_main_menu_probe` | 19 admitted and 34 rejected scenes |
+| Client | `client.startup` | Nine App cases and eight exact decoded-pixel relations |
+
+Both profiles complete all seven stages, identical before/after test inventories
+and eleven independent final audits. The frozen family has 1,213 members,
+including 1,035 non-Markdown files and 644 C/header files. Source, SDK/tool,
+dependency, product, stream and capture-tree pins remain joined. Configure/build
+retain the explicit byte-pinned compiler-helper cleanup allowance; test trees
+close naturally with no residual owned processes. A later file-only readback
+rehashes 5,603 retained members, including raw/JUnit records, complete capture
+trees and products. It repeats neither a native run nor pixel decoding.
+
+An earlier B build remains failed: strict MSVC reported C4310 for a narrowing
+cast in the malformed UTF-8 test fixture. Expressing the same authored bytes
+as a C string literal fixed that compile failure without changing production
+behavior or relaxing diagnostics. The 644-file formatter check passed before
+that fixture edit; the corrected file then passed a dry-run check and diff
+validation. The preceding 675-case hosted result remains a separate checkpoint.
+No new CI, Linux startup or original rendering result is claimed.
+
+`client.game_directory` runs the real native component in fresh authored
+Unicode paths. It covers existing directories and accepted regular-file final
+components, nested creation, canonical creation through a missing-prefix
+`..` path, failure with a regular-file ancestor, independent owner lifetime,
+and null/invalid/empty/encoding/length controls. Python independently checks
+the exact created directory family and untouched sentinels after retirement.
+No directory is deleted. Its Windows default case uses and checks a fresh
+child-process APPDATA parent. Linux native-account default creation remains
+excluded from the driver; no HOME override substitutes for that policy.
+
+`client.startup` requires `MC_BUILD_CLIENT=ON`,
+`MC_ENABLE_CLIENT_DISPLAY_TESTS=ON` and an actual OpenGL context. It creates
+eight authored PNG/font/language/splash resources, then runs the real App nine
+times with separate fresh game directories. Eight decoded-pixel relations
+check loaded scale, explicit 1/0/negative overrides, initial anaglyph, malformed
+line continuation, caught directory-load failure and absent-directory
+creation. Ordinary options bytes, including an unknown key, must remain
+unchanged; no run may save options automatically.
+
+One splash, fixed splash time, identical button texture rows and empty button
+labels remove the intended Random/time/hover variation without supplying an
+expected image to the App. The successful runs use an NVIDIA RTX 3060 core
+context and the actual physical capture profile is 854 by 480;
+other high-DPI outcomes fail that finite profile rather than changing the
+expected scale. The PNG decoder checks framing, CRCs, legal chunk names,
+noninterlaced RGB8/RGBA8, filters and a bounded complete deflate stream; palette
+and transparency-key chunks are refused for this capture profile.
+
+Each driver retains the complete raw streams, files, captures and receipts,
+with binary and resource/input pins and failure cleanup. Forced direct-child
+cleanup cannot pass. The outer process owner must supervise the complete
+tree. These tests establish no original filesystem, unmodified default-home
+or original rendered correspondence. [GameDirectory's reference contract](reference/game-directory.md)
+records the remaining File, locale and startup requirements.
+
 ## Java output writer and GameSettings
 
 The [shared output writer](core/java-writer.md) passes 110,708 stream checks,
@@ -136,7 +204,9 @@ checks. Full evaluations pass their consumed-file after-checks; an unrelated
 pin error cannot count as an intended rejection. They run no native or JVM
 target. The [reference record](reference/game-settings.md#finite-native-comparisons)
 defines the finite projection. Static labels, Thread and stream-internal
-correspondence, options screens and application integration remain unfinished.
+correspondence and options screens remain unfinished. The new startup
+connection is outside these older persistence projections and has only the
+finite Windows validation above. Linux startup execution remains pending.
 
 ## GameOption queries and labels
 
@@ -153,8 +223,9 @@ invent the unrun after-test inventory. The corrected client controller completes
 all seven stages. Compile trees retain the declared qualified helper cleanup;
 all test trees close naturally. Formatting passes for all 641 C/header files
 with version 18.1.3. The later 675-case hosted run above also passes these native
-contracts on Linux GCC and Clang with sanitizers. Original-label comparison,
-interactive input and application adoption remain pending.
+contracts on Linux GCC and Clang with sanitizers. Original-label comparison and
+interactive input remain pending. App startup has the finite Windows tests
+above; options screens remain unfinished.
 
 ## Binding-code action
 
@@ -171,8 +242,9 @@ source inputs. All 641 C/header files pass clang-format 18.1.3.
 Configure and build retain the admitted pinned compiler-helper cleanup
 allowance; all test trees exit naturally. Complete streams, JUnit, file receipts
 and products are rehashed after execution. These results qualify the specified
-native Windows contracts; Linux action execution remains pending. The earlier
-481-check and hosted `2e02a61` results retain their historical scopes.
+native Windows contracts. The later `fce1539` hosted run also covers the action
+on Linux GCC/Clang. The earlier 481-check and `2e02a61` results retain their
+historical scopes.
 
 The added authored cases target current-array aliases, signed int32 codes,
 same-code calls that still rewrite the real file, and the noarg null-File save.

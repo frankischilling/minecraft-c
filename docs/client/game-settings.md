@@ -4,9 +4,11 @@ The native GameSettings module implements constructor defaults, owned settings
 state and `options.txt` load/save. Earlier persistence contracts passed on
 MSVC, GCC and Clang. Separate Windows-1252 and explicit Windows UTF-8 comparisons each
 match all 11,389 projected persistence fields across 16 original/native cases.
-The client application does not yet use this module for its options menus or
-startup settings. The binding-code action described below is implemented;
-its native Windows contracts pass and have no original-action comparison yet.
+The App now owns and loads these settings at startup before font/menu
+consumers; its new finite native tests pass on Windows. Options menus remain
+unfinished. The binding-code action's native contracts pass on all three
+compilers in the preceding hosted checkpoint; no original-action comparison
+has been added.
 
 The interface is [game_settings.h](../../include/mc/client/settings/game_settings.h).
 The [original source contract](../reference/game-settings.md) records the
@@ -101,6 +103,32 @@ emits `Failed to load options` and retains earlier field effects. The explicit
 source Reader close is reached at EOF; failing paths do not acquire an invented
 source finally block.
 
+## Application startup
+
+After creating Display, the App obtains a real [GameDirectory](game-directory.md)
+and constructs one file-backed settings owner with the App as its borrowed
+Minecraft receiver. A caught load failure retains defaults and any earlier
+field changes; there is no second-directory fallback or replacement owner.
+Native directory/settings failures stop startup.
+
+Layout and resize read that owner's GUI scale. An explicit `--gui-scale`,
+including zero, overrides the loaded value after load without saving. Initial
+anaglyph reaches the font upload, lazy title texture uploads and FontRenderer
+palette. The menu caches this initial flag; no effectful live refresh setter
+is supplied. Custom pack selection, audio, source performance pacing, options
+screens and physical input remain unfinished. The App performs no automatic
+startup or shutdown save.
+
+The native diagnostic adapter emits source messages and counted line text as
+UTF-8 with host line separators. It retains NUL, joins surrogate pairs and
+substitutes `?` for an unpaired surrogate, without fabricating a Java stack.
+The [startup tests](../testing.md#startup-settings-and-game-directory) pass on
+Windows MSVC x64 Debug: 57 native directory checks plus six file checks, and
+nine real App cases with eight exact decoded-pixel relations. The headless
+profile also passes 548 settings checks plus six file checks and 883 option
+checks. Linux startup execution remains pending. Earlier isolated persistence
+comparisons do not establish directory or original rendered correspondence.
+
 ## Saving and failures
 
 Save opens the real non-append FileWriter before allocating the line workspace
@@ -176,11 +204,11 @@ action report unchanged; reached work reports its prefix even on failure.
 
 The existing `mc_game_settings_binding_set` remains a raw name/code field edit
 with no save. The new action adds no audio, renderer, key-name or Controls UI
-callback. Application adoption, pending-key selection policy and an original
+callback. Controls adoption, pending-key selection policy and an original
 action comparison remain separate work. Fresh Windows MSVC x64 Debug tests
 pass 548 native settings assertions and six independent file checks, including
-the real-file, alias, same-code-save, partial-write and reentry cases. Linux
-execution of this action remains pending.
+the real-file, alias, same-code-save, partial-write and reentry cases. The later
+hosted checkpoint below also passes the native contracts on Linux GCC/Clang.
 
 ## Bounds and native validation
 
@@ -221,12 +249,13 @@ trees and all four build products per compiler. Eight Linux products are
 retained by a later file-only copy with their original before/after hashes.
 That copy executes no tests or product binaries.
 
-The later [hosted run for `2e02a61`](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146)
+The later [hosted run for `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
 passes 223 MSVC, 226 GCC and 226 Clang cases, 675 in total, with zero failures
 or skips. Formatting covers 641 C/header files. Its audit rejoins all 1,206
 literal source bodies and the 1,030 non-Markdown tested inputs. This run
-includes the native query/label contracts on both Linux compilers; it precedes
-the new binding action and supplies no original-label comparison.
+includes native binding-action and query/label contracts on both Linux
+compilers. It precedes the new App/GameDirectory connection and supplies no
+original-label, original-action or startup comparison.
 
 Windows configure and build use recorded cleanup of the pinned compiler
 helper; those two process trees are qualified rather than natural. The test
@@ -264,7 +293,7 @@ the 16-case profile. Clang Linux comparison remains pending. The
 [reference record](../reference/game-settings.md#finite-native-comparisons)
 defines each profile and its exclusions. The four static label arrays,
 source Thread/Throwable behavior, late-write and mid-read failures, effectful
-setters and application integration remain outside these finite results.
+setters and the new application connection remain outside these finite results.
 
 The separate [query and label module](game-options.md) uses the real current
 binding array and Translation owner. Its native contracts pass on MSVC and
@@ -273,6 +302,7 @@ correspondence remains pending.
 Direct field-assignment functions do not implement the effectful GameSettings
 option setters. SoundManager changes, RenderEngine texture refresh,
 RenderGlobal rebuild and physical input mapping remain unfinished. Applying
-values to the real client and implementing the options menus require those
-bodies and their source order; persistence alone does not qualify complete
-settings or client behavior.
+changes through options menus still requires those bodies and their source
+order. Initial startup use has the finite Windows validation above; broader
+native/default-path and original startup correspondence remain unqualified.
+Persistence alone does not qualify complete settings or client behavior.

@@ -6,11 +6,13 @@
 #include "display/display.h"
 #include "gui/gui_main_menu.h"
 #include "resources/assets.h"
+#include "startup/game_directory.h"
 
 #include "mc/block/material/material.h"
 #include "mc/block/registry/registry.h"
 #include "mc/client/gui/font_renderer.h"
 #include "mc/client/gui/scaled_resolution.h"
+#include "mc/client/settings/game_settings.h"
 #include "mc/client/timer/timer.h"
 #include "mc/resources/files/files.h"
 #include "millis.h"
@@ -18,6 +20,7 @@
 
 #include <SDL3/SDL.h>
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +42,8 @@ typedef struct client_application {
     mc_java_random_profile *profile;
     mc_registry_classes *registry;
     mc_client_assets *assets;
+    mc_client_game_directory *game_directory;
+    mc_game_settings *settings;
     mc_gui_main_menu *main_menu;
     mc_java_random title_random;
     mc_client_string splash;
@@ -54,6 +59,93 @@ static bool resource_error(mc_client_assets_status status, const mc_client_asset
         return false;
     fprintf(stderr, "%s: %s\n", error->operation == NULL ? "Client resource" : error->operation,
             mc_client_assets_status_string(status));
+    return true;
+}
+
+/* Native diagnostics retain counted text, including embedded NUL. They use
+ * UTF8 output and the host line separator, without inventing a Java stack. */
+static bool diagnostic_text(FILE *stream, mc_game_settings_text text) {
+    if (text.is_null)
+        return fputs("null", stream) >= 0;
+    for (size_t i = 0; i < text.length; ++i) {
+        uint32_t point = text.units[i];
+        if (point >= 0xd800u && point <= 0xdbffu && i + 1u < text.length &&
+            text.units[i + 1u] >= 0xdc00u && text.units[i + 1u] <= 0xdfffu) {
+            point = UINT32_C(0x10000) + ((point - 0xd800u) << 10u) + (text.units[++i] - 0xdc00u);
+        } else if (point >= 0xd800u && point <= 0xdfffu)
+            point = '?';
+        uint8_t bytes[4];
+        size_t count;
+        if (point <= 0x7fu) {
+            bytes[0] = (uint8_t)point;
+            count = 1;
+        } else if (point <= 0x7ffu) {
+            bytes[0] = (uint8_t)(0xc0u | (point >> 6u));
+            bytes[1] = (uint8_t)(0x80u | (point & 0x3fu));
+            count = 2;
+        } else if (point <= 0xffffu) {
+            bytes[0] = (uint8_t)(0xe0u | (point >> 12u));
+            bytes[1] = (uint8_t)(0x80u | ((point >> 6u) & 0x3fu));
+            bytes[2] = (uint8_t)(0x80u | (point & 0x3fu));
+            count = 3;
+        } else {
+            bytes[0] = (uint8_t)(0xf0u | (point >> 18u));
+            bytes[1] = (uint8_t)(0x80u | ((point >> 12u) & 0x3fu));
+            bytes[2] = (uint8_t)(0x80u | ((point >> 6u) & 0x3fu));
+            bytes[3] = (uint8_t)(0x80u | (point & 0x3fu));
+            count = 4;
+        }
+        if (fwrite(bytes, 1, count, stream) != count)
+            return false;
+    }
+    return true;
+}
+
+static mc_game_settings_status settings_diagnostic(void *context,
+                                                   const mc_game_settings_diagnostic *event,
+                                                   mc_game_settings_error *error) {
+    (void)context;
+    errno = 0;
+    if (fputs(event->message, stdout) < 0 ||
+        (event->kind == MC_GAME_SETTINGS_BAD_OPTION && !diagnostic_text(stdout, event->line)) ||
+        fputc('\n', stdout) == EOF || fflush(stdout) != 0) {
+        if (error != NULL)
+            *error =
+                (mc_game_settings_error){MC_GAME_SETTINGS_DIAGNOSTIC_FAILED,
+                                         errno == 0 ? EIO : errno, "write settings diagnostic"};
+        return MC_GAME_SETTINGS_DIAGNOSTIC_FAILED;
+    }
+    return MC_GAME_SETTINGS_OK;
+}
+
+static bool initialize_settings(client_application *app) {
+    mc_client_game_directory_error directory_error = {0};
+    if (mc_client_game_directory_create(app->options.game_directory, NULL, &app->game_directory,
+                                        NULL, &directory_error) != MC_CLIENT_GAME_DIRECTORY_OK) {
+        fprintf(stderr, "%s: native error %d\n",
+                directory_error.operation == NULL ? "Select game directory"
+                                                  : directory_error.operation,
+                directory_error.system_error);
+        return false;
+    }
+    const mc_game_settings_diagnostics diagnostics = {NULL, settings_diagnostic};
+    mc_game_settings_error error = {0};
+    mc_game_settings_status status =
+        mc_game_settings_create_file(app, mc_client_game_directory_path(app->game_directory), NULL,
+                                     &diagnostics, &app->settings, NULL, &error);
+    if (status == MC_GAME_SETTINGS_OK && app->options.gui_scale_override) {
+        mc_game_settings_state state = {0};
+        if (!mc_game_settings_read_state(app->settings, &state))
+            return false;
+        state.values.gui_scale = app->options.gui_scale;
+        status = mc_game_settings_set_values(app->settings, &state.values, &error);
+    }
+    if (status != MC_GAME_SETTINGS_OK) {
+        fprintf(stderr, "%s: status %d, native error %d\n",
+                error.operation == NULL ? "Load settings" : error.operation, (int)status,
+                error.system_error);
+        return false;
+    }
     return true;
 }
 
@@ -112,8 +204,9 @@ static bool holiday_splash(client_application *app) {
 }
 
 static bool layout(client_application *app, int width, int height) {
-    if (!holiday_splash(app) ||
-        !mc_scaled_resolution_init(width, height, app->options.gui_scale, &app->resolution))
+    mc_game_settings_state settings = {0};
+    if (!holiday_splash(app) || !mc_game_settings_read_state(app->settings, &settings) ||
+        !mc_scaled_resolution_init(width, height, settings.values.gui_scale, &app->resolution))
         return false;
     static const int32_t ids[] = {1, 2, 3, 0, 4};
     static const char *const keys[] = {"menu.singleplayer", "menu.multiplayer", "menu.mods",
@@ -340,8 +433,14 @@ static bool initialize(client_application *app) {
         !mc_client_display_create("Minecraft", app->options.width, app->options.height,
                                   app->options.hidden, &app->display, &app->display_error))
         return false;
+    if (!initialize_settings(app))
+        return false;
+    mc_game_settings_state settings = {0};
+    if (!mc_game_settings_read_state(app->settings, &settings))
+        return false;
     mc_gui_main_menu_error menu_error = {0};
-    if (!mc_gui_main_menu_create(app->display, app->assets, &app->main_menu, &menu_error))
+    if (!mc_gui_main_menu_create(app->display, app->assets, settings.values.anaglyph,
+                                 &app->main_menu, &menu_error))
         return gui_failure(app, &menu_error);
     mc_client_assets_error error = {0};
     if (mc_java_random_construct_default(app->profile, &app->title_random) !=
@@ -455,6 +554,9 @@ cleanup:
     }
     mc_gui_main_menu_free(app->main_menu);
     mc_client_string_free(&app->splash);
+    if (mc_game_settings_retire(&app->settings, NULL) != MC_GAME_SETTINGS_OK)
+        result = 1;
+    mc_client_game_directory_free(app->game_directory);
     if (!mc_client_display_destroy(app->display, &app->display_error))
         result = 1;
     mc_client_assets_free(app->assets);

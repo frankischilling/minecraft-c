@@ -77,7 +77,7 @@ Changing a code is a separate
 [GameSettings action](game-settings.md#binding-code-action): it updates the
 current array's binding and calls real save. Label queries do not perform that
 action, and the raw binding field mutator still does not save. The new action's
-Windows contracts pass separately; these query results do not qualify a
+native contracts pass separately; these query results do not qualify a
 Controls screen.
 
 ## Bounds and unfinished work
@@ -111,7 +111,7 @@ corrected client controller completes all seven stages and its three cases.
 Both builds retain their qualified compiler-helper cleanup; test processes
 close naturally. All 641 C/header files pass clang-format 18.1.3.
 
-The later [hosted run for `2e02a61`](https://github.com/frankischilling/minecraft-c/actions/runs/40138021146)
+The later [hosted run for `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
 passes all 223 MSVC, 226 GCC and 226 Clang cases, including these six native
 test families. All 675 cases have complete Start/Passed records without
 failures or skips. Linux runs with ASan/UBSan; all 641 C/header files pass
@@ -120,7 +120,11 @@ non-Markdown tested inputs. The earlier local controller failure and unrun
 after-test inventory remain historical facts; the hosted run is separate.
 
 These results establish native contracts on all three compilers. They do not
-establish original label equality or interactive input. The Translation
-constructor's caught-I/O diagnostic, effectful option setters, application
-startup/settings use, child menus and full original correspondence remain
-unfinished.
+establish original label equality or interactive input. The App now loads real
+settings before title consumers and applies initial GUI scale and anaglyph;
+that [startup connection](startup.md#settings-at-startup) passes nine Windows
+App cases and eight exact decoded-pixel relations. The separate headless run
+also passes all 883 option queries. Linux startup execution remains pending.
+The App still draws Default resources. The Translation constructor's caught-I/O
+diagnostic, effectful option setters, pack selection, audio, child menus,
+physical key mapping and full original correspondence remain unfinished.

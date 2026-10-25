@@ -95,7 +95,8 @@ if(MC_BUILD_CLIENT)
     target_link_libraries(mc_client_gui_main_menu PUBLIC mc_client_assets mc_client_display PRIVATE mc_build_options)
     add_executable(minecraft-client WIN32 src/client/main.c src/client/application.c)
     target_include_directories(minecraft-client PRIVATE src/client src/platform/time)
-    target_link_libraries(minecraft-client PRIVATE mc_client_gui_main_menu mc_client_timer mc_platform_time mc_build_options)
+    target_link_libraries(minecraft-client PRIVATE mc_client_gui_main_menu mc_client_timer
+        mc_client_game_directory mc_game_settings mc_platform_time mc_build_options)
 endif()
 
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
@@ -137,6 +138,16 @@ add_library(mc_game_settings STATIC
     src/client/settings/game_option.c)
 target_include_directories(mc_game_settings PUBLIC include)
 target_link_libraries(mc_game_settings PUBLIC mc_core PRIVATE mc_build_options)
+add_library(mc_client_game_directory STATIC src/client/startup/game_directory.c)
+target_include_directories(mc_client_game_directory PUBLIC src/client/startup)
+target_link_libraries(mc_client_game_directory PUBLIC mc_core PRIVATE mc_build_options)
+if(WIN32)
+    target_link_libraries(mc_client_game_directory PRIVATE shell32 ole32)
+    if(MSVC)
+        target_link_libraries(mc_client_game_directory PRIVATE delayimp)
+        target_link_options(mc_client_game_directory INTERFACE "/DELAYLOAD:shell32.dll")
+    endif()
+endif()
 if(UNIX)
     target_link_libraries(mc_core PRIVATE m)
 endif()
@@ -1164,6 +1175,16 @@ if(BUILD_TESTING)
     add_test(NAME client.game_option COMMAND mc_test_game_option)
     set_tests_properties(client.game_option PROPERTIES LABELS "public;unit" TIMEOUT 60)
 
+    add_executable(mc_test_client_game_directory tests/client/startup/test_game_directory.c)
+    target_link_libraries(mc_test_client_game_directory PRIVATE mc_client_game_directory mc_build_options)
+    add_test(NAME client.game_directory
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_game_directory_file.py"
+            --executable "$<TARGET_FILE:mc_test_client_game_directory>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(client.game_directory PROPERTIES
+        LABELS "public;integration;client;ownership" TIMEOUT 45)
+
     add_executable(mc_test_game_settings tests/client/settings/test_game_settings.c)
     target_link_libraries(mc_test_game_settings PRIVATE mc_game_settings mc_build_options)
     add_test(NAME client.game_settings
@@ -1208,6 +1229,15 @@ if(BUILD_TESTING)
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_main_menu_probe.py"
             --executable "$<TARGET_FILE:mc_gui_main_menu_probe>")
         set_tests_properties(tools.client_main_menu_probe PROPERTIES LABELS "public;tools;client" TIMEOUT 60)
+        if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.startup
+                COMMAND "${Python3_EXECUTABLE}"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_startup.py"
+                    --executable "$<TARGET_FILE:minecraft-client>"
+                    --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+            set_tests_properties(client.startup PROPERTIES
+                LABELS "public;integration;client;graphics" TIMEOUT 240)
+        endif()
     endif()
 
     add_test(NAME entity.nbt_observation

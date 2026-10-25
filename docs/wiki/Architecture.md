@@ -15,18 +15,27 @@ Current runtime navigation:
   adapters retain separate lifetimes.
   [GameSettings](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-settings.md)
   owns retained options, KeyBindings and binding arrays and uses the shared
-  Reader/Writer for real-file persistence. The application has not yet adopted
-  it or the effectful option setters. Its new binding-code action selects the
+  Reader/Writer for real-file persistence. The App now loads one owner after
+  Display and before title font/texture/layout consumers. Its
+  [GameDirectory](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-directory.md)
+  owner performs real native path selection and creation and stays live above
+  settings. Loaded scale and initial anaglyph reach the title; explicit scale
+  overrides include zero, and startup/retirement perform no save. Windows
+  native tests pass 57 directory checks plus six file checks and nine App cases
+  with eight exact decoded-pixel relations. Linux startup execution remains
+  pending. General File/locale behavior, ordinary defaults, custom pack
+  selection, audio, source pacing and effectful setters remain unfinished.
+  The binding-code action selects the
   current array entry, stores the code and invokes the same real save body.
   Source null/index failures and native errors remain distinct; later save
   failures retain the code and file prefix. The raw binding field edit still
-  does not save. Native Windows action contracts pass; Linux action execution
-  and an original-action comparison remain pending. No Controls screen has
-  adopted it.
+  does not save. Hosted checkpoint `fce1539` passes native action contracts on
+  MSVC and sanitized GCC/Clang. Original-action comparison and Controls screen
+  adoption remain pending.
   [GameOption queries and labels](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/game-options.md)
   keep metadata and value queries headless while client label composition uses
   the real shared Translation and Assets owners. Direct singleton admission
-  remains separate from wrapper initialization. Hosted checkpoint `2e02a61`
+  remains separate from wrapper initialization. Hosted checkpoint `fce1539`
   passes their native contracts on MSVC and sanitized Linux GCC/Clang;
   original-label correspondence remains pending.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)

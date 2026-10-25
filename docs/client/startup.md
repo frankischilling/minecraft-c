@@ -1,23 +1,66 @@
 # Native client startup
 
 `minecraft-client` is a C17 native executable using SDL3 and OpenGL 3.3 core.
-The current client draws the Beta 1.7.3 title screen from locally imported
-textures, translations and font data. It does not yet start a playable World.
-The supplied original JAR is used only by the import tool; normal client startup
-uses the imported files and needs no Java runtime or launcher.
+It draws the Beta 1.7.3 title screen from locally imported textures,
+translations and font data. It does not yet start a playable World. After asset
+import, normal startup needs neither the original JAR nor a Java runtime or
+launcher.
 
 Build with the default `MC_BUILD_CLIENT=ON`, then supply the asset import root:
 
 ```sh
-./build/minecraft-client --assets /absolute/path/to/imported-assets
+./build/minecraft-client --assets /absolute/path/to/imported-assets --game-directory /absolute/path/to/game
 ```
 
 For Visual Studio builds, use `build/Debug/minecraft-client.exe`. The import
-root contains `jar/`, `resources/` and the import manifest. See
-[resource import](../reference/resources.md) for the local importer. SDL creates a
-resizable 854-by-480 window by default. `--width`, `--height` and `--gui-scale`
-override the initial dimensions and GUI scale. F11 toggles fullscreen; the
-window close action and title's Quit Game button exit.
+root contains `jar/`, `resources/` and the import manifest. It is separate from
+the game directory containing `options.txt`. See
+[resource import](../reference/resources.md) and [GameDirectory](game-directory.md).
+Without `--game-directory`, the client selects and, when required, creates the
+native default game directory. Controlled runs should use a fresh explicit
+directory.
+
+SDL creates a resizable 854-by-480 window by default. `--width` and `--height`
+set its initial dimensions; physical pixels can differ on a high-DPI display.
+F11 toggles fullscreen. Window close and the title's Quit Game button exit.
+
+## Settings at startup
+
+The App creates Display first, then a real GameDirectory owner and one
+file-backed [GameSettings](game-settings.md) owner. Settings load before the
+menu's font texture, lazy title textures and GUI layout. A directory or native
+settings failure stops startup. There is no asset-directory, temporary-directory
+or SDL preference-path fallback. Source-caught load failures retain defaults
+and any fields already changed, then allow later startup work to use that same
+owner. No replacement settings object hides the failure.
+
+GUI layout and resize read the retained `guiScale`. A supplied `--gui-scale N`
+applies after load, including when N is 0 or negative. Zero requests automatic
+scaling; a negative value leaves the scale factor at 1 in the source loop.
+Without the flag, the loaded value is used. The override changes memory only.
+Startup, resize and retirement do not save or rewrite `options.txt`.
+
+Loaded initial anaglyph reaches the font-atlas upload during menu creation,
+later background/logo/button texture uploads, and FontRenderer's palette
+construction at first use. The menu retains that initial flag for its lifetime.
+This does not provide the effectful texture-refresh setter or live RenderEngine
+settings reads. Rendering still uses Default imported resources; a loaded
+texture-pack name does not select or scan custom packs.
+
+Bad-option and caught load messages go to stdout. The adapter writes counted
+UTF-16 text as UTF-8 with the host line separator, retains embedded NUL,
+combines surrogate pairs and substitutes `?` for an unpaired surrogate.
+Native failures have their separate status and diagnostic path. No Java
+Throwable or stack trace is fabricated.
+
+The original startup also constructs its save manager before settings and
+performs texture-pack, color-map, audio, input and screen-switch work around
+these consumers. Those descendants and their exact order remain unfinished.
+Original audio setup can save options; this App has no audio owner and performs
+no such save. The [source contract](../reference/game-directory.md) separates
+this implemented connection from complete original startup.
+
+## Title rendering and input
 
 The title uses the original font atlas's blue-channel advance calculation,
 translated button labels, tiled dirt background, two logo quads and animated
@@ -34,11 +77,11 @@ frames waiting for a drawable; loss of focus also leaves fullscreen. Actual
 input comparisons with the original and fullscreen behavior remain unverified.
 
 Singleplayer, Multiplayer, Mods and Texture Packs, and Options remain unfinished;
-their buttons currently report an unavailable screen. Audio,
-[application use of GameSettings](game-settings.md), child screens,
-complete startup order, custom texture packs and gameplay remain open. The title
-alone does not establish presentation or
-input parity with the original client.
+their buttons currently report an unavailable screen. Options/Controls UI,
+physical key mapping, effectful settings setters, audio, custom texture packs
+and gameplay remain open. Loaded performance mode does not yet select source
+frame pacing. The title alone does not establish complete presentation or input
+parity with the original client.
 
 ## Diagnostic runs and tests
 
@@ -47,6 +90,23 @@ that limit. `--capture OUTPUT.png` writes the first completed frame before swap;
 `--time-millis N` fixes only the splash animation's clock input. It does not fix
 the default Random constructor or pretend to observe the original clock.
 These flags support bounded startup checks; they are not original game options.
+
+The new `client.game_directory` and optional graphics `client.startup` tests
+pass on Windows MSVC x64 Debug. The directory test passes 57 native checks and
+six independent file checks. The App completes nine natural-exit runs on an
+NVIDIA RTX 3060 core context, passing all eight exact decoded-pixel relations
+for the 854-by-480 physical profile. These cover scale overrides, initial
+anaglyph, bad-line continuation and caught load errors using authored inputs.
+No original image is compared. Linux execution of this startup change remains
+pending; ordinary default-directory and broader File/locale correspondence
+remain unqualified.
+See [test scope](../testing.md#startup-settings-and-game-directory).
+
+The preceding [hosted checkpoint `fce1539`](https://github.com/frankischilling/minecraft-c/actions/runs/40142736048)
+passes 223 MSVC, 226 GCC and 226 Clang cases and 641-file formatting. It covers
+the earlier binding/query/label contracts and precedes this App/GameDirectory
+integration. No new hosted result is claimed. The older rendering results below
+retain their separate source and scene scopes.
 
 Public tests cover the PNG reader, ScaledResolution, FontRenderer, Timer and resource
 ownership, caching and failure handling. The optional `client.display` test

@@ -13,7 +13,7 @@ struct mc_gui_main_menu {
     mc_image_view font_atlas;
     mc_client_texture font_texture, background_texture, logo_texture, button_texture;
     mc_math_trig trig;
-    bool trig_ready;
+    bool trig_ready, anaglyph;
 };
 
 static bool fail(mc_gui_main_menu_error *error, mc_gui_main_menu_status status,
@@ -63,7 +63,7 @@ static bool texture(mc_gui_main_menu *menu, const char *name, mc_client_texture 
     if (!mc_image_view_get(image, &view))
         return fail(error, MC_GUI_MAIN_MENU_ASSETS_FAILED, "inspect GuiMainMenu image");
     mc_client_display_error display = {0};
-    if (!mc_client_display_upload_texture(menu->display, &view, false, out, &display))
+    if (!mc_client_display_upload_texture(menu->display, &view, menu->anaglyph, out, &display))
         return display_failure(error, "upload GuiMainMenu image", &display);
     return true;
 }
@@ -162,7 +162,7 @@ static bool font_ready(mc_gui_main_menu *menu, mc_gui_main_menu_error *error) {
     if (mc_client_assets_font_txt(menu->assets, &mapping, &assets) != MC_CLIENT_ASSETS_OK)
         return asset_failure(error, "load FontRenderer mapping", &assets);
     const mc_font_renderer_status status = mc_font_renderer_create(
-        &menu->font_atlas, mapping.units, mapping.length, false, &menu->font);
+        &menu->font_atlas, mapping.units, mapping.length, menu->anaglyph, &menu->font);
     return status == MC_FONT_RENDERER_OK || font_failure(error, "create FontRenderer", status);
 }
 
@@ -304,7 +304,7 @@ static bool button(mc_gui_main_menu *menu, const mc_gui_button *value, mc_gui_mo
                 error);
 }
 
-bool mc_gui_main_menu_create(mc_client_display *display, mc_client_assets *assets,
+bool mc_gui_main_menu_create(mc_client_display *display, mc_client_assets *assets, bool anaglyph,
                              mc_gui_main_menu **out, mc_gui_main_menu_error *error) {
     if (display == NULL || assets == NULL || out == NULL)
         return fail(error, MC_GUI_MAIN_MENU_INVALID_ARGUMENT, "create GuiMainMenu renderer");
@@ -313,6 +313,7 @@ bool mc_gui_main_menu_create(mc_client_display *display, mc_client_assets *asset
         return fail(error, MC_GUI_MAIN_MENU_ALLOCATION_FAILED, "create GuiMainMenu renderer");
     menu->display = display;
     menu->assets = assets;
+    menu->anaglyph = anaglyph;
     const mc_image *font = NULL;
     mc_client_assets_error assets_error = {0};
     if (mc_client_assets_image(assets, "/font/default.png", &font, &assets_error) !=
@@ -325,7 +326,7 @@ bool mc_gui_main_menu_create(mc_client_display *display, mc_client_assets *asset
         return fail(error, MC_GUI_MAIN_MENU_ASSETS_FAILED, "inspect GuiMainMenu font image");
     }
     mc_client_display_error display_error = {0};
-    if (!mc_client_display_upload_texture(display, &menu->font_atlas, false, &menu->font_texture,
+    if (!mc_client_display_upload_texture(display, &menu->font_atlas, anaglyph, &menu->font_texture,
                                           &display_error)) {
         free(menu);
         return display_failure(error, "upload GuiMainMenu font image", &display_error);
