@@ -76,6 +76,19 @@ function(mc_add_sound_dependencies)
         @ONLY NEWLINE_STYLE LF)
     add_subdirectory("${compat_source}" "${vorbis_binary}/build" EXCLUDE_FROM_ALL)
 
+    # Upstream's CMake omits the configure-script check used by os.h. Strict
+    # C17 needs the actual declaration instead of an implicit alloca function.
+    if(UNIX)
+        include(CheckIncludeFile)
+        check_include_file(alloca.h MC_VORBIS_HAVE_ALLOCA_H)
+        if(NOT MC_VORBIS_HAVE_ALLOCA_H)
+            message(FATAL_ERROR "libvorbis requires the native alloca.h header on this platform")
+        endif()
+        foreach(dependency IN ITEMS vorbis vorbisfile vorbisenc)
+            target_compile_definitions(${dependency} PRIVATE HAVE_ALLOCA_H=1)
+        endforeach()
+    endif()
+
     foreach(dependency IN ITEMS ogg vorbis vorbisfile vorbisenc)
         target_compile_options(${dependency} PRIVATE
             $<TARGET_PROPERTY:mc_sanitizers,INTERFACE_COMPILE_OPTIONS>)

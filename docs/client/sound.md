@@ -88,10 +88,27 @@ branch spelling are checked before this change. Genuine packet holes remain
 decoder errors. Both libraries retain their BSD license notices under
 `licenses/`.
 
+The UNIX build probes for `alloca.h` and enables libvorbis's existing include
+guard on its three targets. Upstream CMake omits that check; strict C17 Clang
+otherwise rejects implicit `alloca` calls. No warning suppression or upstream
+source change is used for this header configuration. Linux qualification of
+this correction is still pending.
+
 `mc_vorbis_decoder` opens the retained file identity through sequential callbacks.
-Each read makes at most one `ov_read` call and publishes interleaved signed
+Each read makes at most one `ov_read_float` call and publishes interleaved signed
 16-bit little-endian PCM with its actual logical link, channel count and sample
-rate. Changed links recheck their format. Decode and stream errors are terminal;
+rate. Conversion multiplies each binary32 sample by 32767, applies Java's
+float-to-int truncation and saturation, then clamps to signed16. It adds no
+dither or gain. This follows the original conversion policy; libvorbis's integer
+API instead scales by 32768 and rounds. Zero-valued PCM cannot expose that
+difference. The floating synthesis engines still need direct comparison.
+
+Changed links recheck their format. A new link can return more channels than the
+request's previous format, so the decoder retains borrowed planar samples and
+emits complete frames that fit the output capacity. Pending frames drain before
+another library read; passive state reads leave those samples intact. Retirement
+can discard a pending suffix after a native prefix limit.
+Decode and stream errors are terminal;
 there is no packet-hole retry. EOF returns an empty view and remains stable on
 later reads. Retirement clears initialized decoder state once, source-closes
 the stream and always retires its native handle, including the MUS facade.
@@ -104,14 +121,14 @@ policy, not measured original codec behavior.
 
 ## Verified native scope
 
-The Windows MSVC 19.51.36260.0 x64 Debug headless run passes all five selected
-tests with no failures or skips:
+The final Windows MSVC 19.51.36260.0 x64 Debug headless run passes all five
+selected tests with no failures or skips:
 
 | Test | Checks |
 | --- | ---: |
 | `client.sound_pool` | 18,654 |
 | `client.sound_file` | 581 |
-| `client.vorbis_decoder` | 469 |
+| `client.vorbis_decoder` | 579 |
 | `core.java_integer_parse` | 43 |
 | `core.java_random_profile` | 191 |
 
@@ -124,18 +141,30 @@ exercise malformed/truncated headers, a real missing-page error, prefix limits
 and cleanup. The chain changes from mono 32 kHz to stereo 48 kHz.
 
 All seven supervised stages and eleven final audits pass. Independent file-only
-readback consumes 14,273 retained source, input, product, stream, tool and SDK
-files, joining all 1,402 physical source files, including 1,232 public members
-and 1,052 non-Markdown inputs. All 655 C/header files pass clang-format 18.1.3.
+readback consumes 14,275 retained source, input, product, stream, tool and SDK
+files, joining all 1,404 physical source files, including 1,234 public members
+and 1,054 non-Markdown inputs. All 657 C/header files pass clang-format 18.1.3.
 The terminal report's SHA-256 is
-`f3df20b9c88d5cbf09b5e8ec66e2890b3e57cb03707c0959651eb918fba2c10e`.
+`dd84357f77475747442913aab3b6ba9e6213f2d4c785ccce1e6018d22ac1702e`.
 Later result-documentation changes are recorded separately from that snapshot.
+
+The decoder tests include 24 literal nonzero/special-value vectors through the
+production converter, pending-plane interleaving and an actual 7,000-byte
+chain-budget case. Helper tests drain a nonzero planar suffix across calls;
+the encoded chain case checks a bounded stereo prefix and terminal limit.
+It does not prove a later successful decoder drain of a pending suffix. Encoded
+fixtures remain silence, and no original nonzero PCM comparison has run.
 
 Earlier failed runs remain failed: private-copy CRLF drift, a rejected MSVC
 fixture cast, stale stdio reads and the chain's false packet hole. Their captures
 remain preserved. The final run uses explicit LF copies, unsigned byte fixtures,
 native descriptors and the exact chain correction above; assertions and strict
 warnings remain enabled.
+
+The preceding [hosted sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
+passes all 228 Windows cases and 655-file formatting. Both Linux builds fail
+on the missing `alloca` declaration or link; their test stages never execute.
+The UNIX header correction above still needs qualification on Linux.
 
 To run the same five public contracts in a headless build:
 

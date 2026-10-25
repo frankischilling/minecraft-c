@@ -30,15 +30,22 @@ The new float/discrete option actions below are outside this checkpoint.
 
 The [sound resource foundation](client/sound.md#verified-native-scope) passes one
 Windows MSVC 19.51.36260.0 x64 Debug headless profile: 18,654 SoundPool, 581 file,
-469 Vorbis, 43 integer-parser and 191 Random-profile checks. All five CTests,
+579 Vorbis, 43 integer-parser and 191 Random-profile checks. All five CTests,
 seven supervised stages and eleven final audits pass. Independent file-only
-readback consumes 14,273 files and rejoins all 1,402 physical source bodies,
-including 1,232 public members and 1,052 non-Markdown inputs. Formatting covers
-655 C/header files. Retained decoder inputs are authored zero PCM, including a
-mono-to-stereo chain and a real missing-page rejection. Four earlier failed
+readback consumes 14,275 files and rejoins all 1,404 physical source bodies,
+including 1,234 public members and 1,054 non-Markdown inputs. Formatting covers
+657 C/header files. Retained decoder inputs are authored zero PCM, including a
+mono-to-stereo chain and a real missing-page rejection. Four earlier local failed
 attempts remain preserved, with their fixes and scope in the sound note. These
 tests initialize no audio device; Linux sound and original PCM correspondence
 remain unqualified. The 683-case hosted result above predates these modules.
+
+Nonzero vectors exercise the actual binary32-times-32767/Java-conversion
+helper and planar suffix interleaving. Encoded fixtures remain silence. The
+[preceding sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
+passes all 228 Windows cases and 655-file formatting; Clang/GCC builds fail on
+the missing upstream `alloca` declaration/link before Linux tests can run.
+The current UNIX header configuration correction awaits CI for this source.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):

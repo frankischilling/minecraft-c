@@ -1,5 +1,7 @@
 #include "mc/client/sound/vorbis_decoder.h"
 
+#include "pcm_internal.h"
+
 #include <ogg/ogg.h>
 #include <vorbis/vorbisenc.h>
 #include <vorbis/vorbisfile.h>
@@ -25,6 +27,71 @@ static unsigned int checks;
             exit(1);                                                                               \
         }                                                                                          \
     } while (0)
+
+static float float_bits(uint32_t bits) {
+    _Static_assert(sizeof(float) == sizeof(bits), "PCM vectors require binary32 storage");
+    float value;
+    memcpy(&value, &bits, sizeof(value));
+    return value;
+}
+
+static void pcm_vectors(void) {
+    static const struct {
+        uint32_t bits;
+        uint8_t low, high;
+    } vectors[] = {{UINT32_C(0x00000000), 0x00, 0x00}, {UINT32_C(0x80000000), 0x00, 0x00},
+                   {UINT32_C(0x3e800000), 0xff, 0x1f}, {UINT32_C(0xbe800000), 0x01, 0xe0},
+                   {UINT32_C(0x3f000000), 0xff, 0x3f}, {UINT32_C(0xbf000000), 0x01, 0xc0},
+                   {UINT32_C(0x3f000100), 0x00, 0x40}, {UINT32_C(0xbf000100), 0x00, 0xc0},
+                   {UINT32_C(0x3f7fffff), 0xfe, 0x7f}, {UINT32_C(0xbf7fffff), 0x02, 0x80},
+                   {UINT32_C(0x3f800000), 0xff, 0x7f}, {UINT32_C(0xbf800000), 0x01, 0x80},
+                   {UINT32_C(0x3f800001), 0xff, 0x7f}, {UINT32_C(0xbf800001), 0x01, 0x80},
+                   {UINT32_C(0x40000000), 0xff, 0x7f}, {UINT32_C(0xc0000000), 0x00, 0x80},
+                   {UINT32_C(0x7f800000), 0xff, 0x7f}, {UINT32_C(0xff800000), 0x00, 0x80},
+                   {UINT32_C(0x7fc12345), 0x00, 0x00}, {UINT32_C(0xffc12345), 0x00, 0x00},
+                   {UINT32_C(0x00000001), 0x00, 0x00}, {UINT32_C(0x80000001), 0x00, 0x00},
+                   {UINT32_C(0x7f7fffff), 0xff, 0x7f}, {UINT32_C(0xff7fffff), 0x00, 0x80}};
+
+    /* Literal policy results: half amplitude truncates to 16383. For 3f000100,
+     * the binary32 product rounds to 16384 before the Java conversion. */
+    for (size_t i = 0; i < sizeof(vectors) / sizeof(*vectors); ++i) {
+        uint8_t sample_bytes[] = {0xa5, 0xa5, 0xa5, 0xa5};
+        mc_sound_pcm_write_s16le(float_bits(vectors[i].bits), sample_bytes + 1u);
+        CHECK(sample_bytes[1] == vectors[i].low && sample_bytes[2] == vectors[i].high);
+        CHECK(sample_bytes[0] == 0xa5 && sample_bytes[3] == 0xa5);
+    }
+
+    float left[] = {0.5f, -1.0f, 0.0f};
+    float right[] = {-0.5f, 1.0f, 0.0f};
+    left[2] = float_bits(UINT32_C(0x7fc12345));
+    right[2] = float_bits(UINT32_C(0x7f800000));
+    float *planes[] = {left, right};
+    uint8_t source_left[sizeof(left)], source_right[sizeof(right)];
+    memcpy(source_left, left, sizeof(left));
+    memcpy(source_right, right, sizeof(right));
+    mc_sound_pcm_pending pending = {.planes = planes, .frames = 3, .channel_count = 2};
+    static const uint8_t expected[] = {0xff, 0x3f, 0x01, 0xc0, 0x01, 0x80,
+                                       0xff, 0x7f, 0x00, 0x00, 0xff, 0x7f};
+    uint8_t actual[16], untouched[16];
+    memset(actual, 0xa5, sizeof(actual));
+    memset(untouched, 0xa5, sizeof(untouched));
+    CHECK(mc_sound_pcm_write_pending(&pending, actual + 1u, 3u) == 0);
+    CHECK(memcmp(actual, untouched, sizeof(actual)) == 0);
+    CHECK(pending.planes == planes && pending.frames == 3u && pending.offset == 0 &&
+          pending.channel_count == 2u);
+    CHECK(mc_sound_pcm_write_pending(&pending, actual + 1u, 5u) == 4u);
+    CHECK(memcmp(actual + 1u, expected, 4u) == 0 && actual[0] == 0xa5 && actual[5] == 0xa5);
+    CHECK(pending.planes == planes && pending.frames == 2u && pending.offset == 1u &&
+          pending.channel_count == 2u);
+    memset(actual, 0xa5, sizeof(actual));
+    CHECK(mc_sound_pcm_write_pending(&pending, actual + 1u, 8u) == 8u);
+    CHECK(memcmp(actual + 1u, expected + 4u, 8u) == 0 && actual[0] == 0xa5 && actual[9] == 0xa5);
+    CHECK(pending.planes == NULL && pending.frames == 0 && pending.offset == 0 &&
+          pending.channel_count == 0);
+    CHECK(mc_sound_pcm_write_pending(&pending, NULL, 0) == 0);
+    CHECK(memcmp(left, source_left, sizeof(left)) == 0 &&
+          memcmp(right, source_right, sizeof(right)) == 0);
+}
 
 typedef struct bytes {
     uint8_t *data;
@@ -409,7 +476,49 @@ static void failures(const char *root) {
     retire(&decoder); /* The admitted ceiling does not allocate that many bytes. */
 }
 
+static void chain_budget(const char *root) {
+    mc_vorbis_decoder *decoder = open_decoder(root, "chain.ogg", false, 7000u);
+    size_t total = 0, mono = 0, stereo = 0;
+    int32_t last_link = 0;
+    bool limited = false;
+    for (size_t calls = 0; calls < 128u; ++calls) {
+        mc_vorbis_chunk chunk;
+        const mc_vorbis_decoder_status status = mc_vorbis_decoder_read(decoder, &chunk, NULL);
+        CHECK(!chunk.eof && chunk.total_bytes <= 7000u);
+        if (status != MC_VORBIS_DECODER_OK) {
+            CHECK(status == MC_VORBIS_DECODER_LIMIT && chunk.bytes == 0 && chunk.pcm_le == NULL);
+            limited = true;
+            break;
+        }
+        CHECK(chunk.bytes > 0 && chunk.pcm_le != NULL && zeroes(chunk.pcm_le, chunk.bytes));
+        CHECK(chunk.logical_link >= last_link && chunk.logical_link <= 1);
+        if (chunk.logical_link == 0) {
+            CHECK(chunk.channels == 1 && chunk.sample_rate == 32000 && chunk.bytes % 2u == 0);
+            mono += chunk.bytes;
+        } else {
+            CHECK(chunk.channels == 2 && chunk.sample_rate == 48000 && chunk.bytes % 4u == 0);
+            stereo += chunk.bytes;
+        }
+        total += chunk.bytes;
+        CHECK(chunk.total_bytes == total && total <= 7000u);
+        last_link = chunk.logical_link;
+        mc_vorbis_decoder_state first, second;
+        CHECK(mc_vorbis_decoder_read_state(decoder, &first) &&
+              mc_vorbis_decoder_read_state(decoder, &second));
+        CHECK(first.total_bytes == second.total_bytes && first.source_bytes == second.source_bytes);
+    }
+    /* Do not assume packet sizes or exact budget filling: the unchanged 510-byte
+     * guard may stop with a smaller valid stereo prefix. */
+    CHECK(limited && mono == 6400u && stereo > 0 && total == mono + stereo && total <= 7000u);
+    mc_vorbis_decoder_state state;
+    CHECK(mc_vorbis_decoder_read_state(decoder, &state) && state.failed && !state.eof &&
+          state.terminal_status == MC_VORBIS_DECODER_LIMIT && state.total_bytes == total &&
+          state.logical_link == 1 && state.channels == 2 && state.sample_rate == 48000);
+    retire(&decoder); /* May discard still-borrowed planes after a capacity-limited slice. */
+}
+
 static int check_fixtures(const char *root) {
+    pcm_vectors();
     bytes mono = decode(root, "mono.ogg", false, false);
     bytes stereo = decode(root, "stereo.ogg", false, false);
     bytes chain = decode(root, "chain.ogg", false, true);
@@ -419,6 +528,7 @@ static int check_fixtures(const char *root) {
           memcmp(chain.data, mono.data, mono.length) == 0 &&
           memcmp(chain.data + mono.length, stereo.data, stereo.length) == 0);
     failures(root);
+    chain_budget(root);
     write_file(root, "mono.pcm", &mono);
     write_file(root, "stereo.pcm", &stereo);
     write_file(root, "chain.pcm", &chain);

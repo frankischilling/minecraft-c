@@ -10,14 +10,20 @@ trees and joins all 1,215 literal committed bodies and 1,037 non-Markdown tested
 inputs. Original actions, real effects and complete client behavior remain open.
 
 The [sound foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md#verified-native-scope)
-passes five selected Windows MSVC x64 Debug tests: 18,654 pool, 581 file, 469
+passes five selected Windows MSVC x64 Debug tests: 18,654 pool, 581 file, 579
 Vorbis, 43 integer-parser and 191 Random-profile checks. All seven stages and
-eleven audits pass; independent readback consumes 14,273 retained files, and all
-655 C/header files pass formatting. Authored decoder cases cover mono, stereo,
+eleven audits pass; independent readback consumes 14,275 retained files, and all
+657 C/header files pass formatting. Authored decoder cases cover mono, stereo,
 MUS, a format-changing chain and real packet holes. No audio device or original
 PCM comparison runs. Shared SoundManager, playback, Linux sound qualification
 and real client integration remain unfinished. The hosted result above predates
 these sound modules.
+
+Nonzero vectors exercise the production converter and planar suffix helper;
+encoded fixtures remain silence. The [preceding sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
+passes 228 Windows cases and 655-file formatting. Clang/GCC builds fail on
+missing upstream `alloca` declarations/linking before Linux tests run. The
+current header configuration correction awaits CI for this source.
 
 The preceding [code checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
 passes all four hosted jobs: 224 MSVC, 228 GCC and 228 Clang cases, or 680

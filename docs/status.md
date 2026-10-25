@@ -12,12 +12,18 @@ host; original actions and real effect owners remain unfinished.
 
 The [sound resource foundation](client/sound.md) owns SoundPool entries, resolved
 URLs, raw/MUS streams and sequential Vorbis decoding. A Windows MSVC x64 Debug
-headless run passes 18,654 pool, 581 file and 469 decoder checks, alongside 43
+headless run passes 18,654 pool, 581 file and 579 decoder checks, alongside 43
 integer-parser and 191 Random-profile checks. All seven stages and eleven audits
-pass; independent readback consumes 14,273 retained files. Formatting covers all
-655 C/header files. These authored contracts initialize no audio device and
+pass; independent readback consumes 14,275 retained files. Formatting covers all
+657 C/header files. These authored contracts initialize no audio device and
 make no original PCM comparison. SoundManager, WAV, backend playback, real
 client adoption and Linux sound qualification remain unfinished.
+
+The [preceding sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
+passes all 228 Windows cases and 655-file formatting. Clang rejects missing
+`alloca` declarations in upstream Vorbis; GCC fails the corresponding link.
+Neither Linux test stage runs. The current target-specific header correction
+and PCM conversion still need qualification on Linux.
 
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):

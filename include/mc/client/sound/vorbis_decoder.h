@@ -68,9 +68,12 @@ mc_vorbis_decoder_status mc_vorbis_decoder_open(const mc_sound_file *file, bool 
                                                 size_t input_budget, size_t pcm_budget,
                                                 mc_vorbis_decoder **out, mc_vorbis_error *error);
 
-/* At most one ov_read call; no hole retry or progress loop. Positive chunks
+/* At most one ov_read_float call; no hole retry or progress loop. Pending
+ * float frames drain before another library read. Positive chunks
  * are interleaved signed 16-bit little-endian bytes with their actual current link,
  * channel count and rate. Every changed link rechecks metadata before delivery.
+ * Conversion multiplies each binary32 sample by 32767, applies Java float-to-int
+ * truncation/saturation, then clamps to signed16; it adds no dither or gain.
  * EOF publishes a clear view (NULL/0), with eof=true and retained format/totals.
  * source_bytes counts bytes returned by the real stream to callbacks, not
  * internal stdio buffering or its input-limit probe.

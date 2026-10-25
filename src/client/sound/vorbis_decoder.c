@@ -1,5 +1,7 @@
 #include "mc/client/sound/vorbis_decoder.h"
 
+#include "pcm_internal.h"
+
 #include <vorbis/vorbisfile.h>
 
 #include <errno.h>
@@ -16,6 +18,7 @@ struct mc_vorbis_decoder {
     mc_sound_error callback_error;
     mc_sound_status callback_status;
     bool initialized;
+    mc_sound_pcm_pending pending;
     uint8_t pcm[MC_VORBIS_DECODER_CHUNK_BYTES];
 };
 
@@ -181,26 +184,44 @@ mc_vorbis_decoder_status mc_vorbis_decoder_read(mc_vorbis_decoder *decoder, mc_v
     }
     mc_vorbis_decoder_status status = MC_VORBIS_DECODER_OK;
     const size_t remaining = decoder->state.pcm_budget - decoder->state.total_bytes;
-    long bytes = 0;
-    int link = -1;
+    size_t bytes = 0;
     if (remaining < MC_VORBIS_DECODER_MAX_FRAME_BYTES) {
         status = MC_VORBIS_DECODER_LIMIT;
     } else {
         const size_t capacity = remaining < sizeof(decoder->pcm) ? remaining : sizeof(decoder->pcm);
-        bytes = ov_read(&decoder->file, (char *)decoder->pcm, (int)capacity, 0, 2, 1, &link);
-        if (bytes < 0) {
-            decoder->state.vorbis_code = (int)bytes;
-            status = MC_VORBIS_DECODER_DECODE_FAILED;
-        } else if (bytes > 0) {
-            if (!metadata(decoder, link) || (size_t)bytes > capacity ||
-                (size_t)bytes % ((size_t)decoder->state.channels * 2u) != 0) {
-                status = MC_VORBIS_DECODER_FORMAT_FAILED;
-                bytes = 0;
+        if (decoder->pending.frames == 0) {
+            /* Request using the current format, not a worst-case 255-channel
+             * divisor. A new link may return more channels; retain every frame
+             * that does not fit the actual new format's output capacity. */
+            const size_t requested = capacity / ((size_t)decoder->state.channels * 2u);
+            float **planes = NULL;
+            int link = -1;
+            const long frames = ov_read_float(&decoder->file, &planes, (int)requested, &link);
+            if (frames < 0) {
+                decoder->state.vorbis_code = (int)frames;
+                status = MC_VORBIS_DECODER_DECODE_FAILED;
+            } else if (frames > 0) {
+                /* ov_info is a passive accessor. Validate before installing
+                 * pending planes; while pending, no library calls are made. */
+                if (!metadata(decoder, link) || frames > (long)requested || planes == NULL) {
+                    status = MC_VORBIS_DECODER_FORMAT_FAILED;
+                } else {
+                    for (int32_t channel = 0; channel < decoder->state.channels; ++channel)
+                        if (planes[channel] == NULL)
+                            status = MC_VORBIS_DECODER_FORMAT_FAILED;
+                    if (status == MC_VORBIS_DECODER_OK)
+                        decoder->pending = (mc_sound_pcm_pending){
+                            .planes = planes,
+                            .frames = (size_t)frames,
+                            .channel_count = (size_t)decoder->state.channels};
+                }
             } else {
-                decoder->state.total_bytes += (size_t)bytes;
+                decoder->state.eof = true;
             }
-        } else {
-            decoder->state.eof = true;
+        }
+        if (status == MC_VORBIS_DECODER_OK && decoder->pending.frames != 0) {
+            bytes = mc_sound_pcm_write_pending(&decoder->pending, decoder->pcm, capacity);
+            decoder->state.total_bytes += bytes;
         }
         if (decoder->callback_status != MC_SOUND_OK) {
             status = MC_VORBIS_DECODER_STREAM_FAILED;
@@ -211,7 +232,7 @@ mc_vorbis_decoder_status mc_vorbis_decoder_read(mc_vorbis_decoder *decoder, mc_v
         decoder->state.failed = true;
         decoder->state.terminal_status = status;
     }
-    *out = view(decoder, bytes > 0 ? (size_t)bytes : 0);
+    *out = view(decoder, bytes);
     return result(error, status, status == MC_VORBIS_DECODER_OK ? NULL : "Vorbis decoder read",
                   decoder->state.vorbis_code, decoder->callback_error);
 }

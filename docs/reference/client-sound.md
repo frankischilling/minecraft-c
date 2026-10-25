@@ -109,6 +109,18 @@ from listener distance. Selecting an OpenAL distance mode alone omits that code.
 Source gain, pitch, reuse, channel stealing, streaming refill and shutdown still
 need complete native implementation and controlled observations.
 
+CodecJOrbis `decodeCurrentPacket()[B` has 311 Code bytes, SHA-256
+`1c1fe3773ef560a5125514c98b6118995909ebbec0874e186542054989e3ab23`.
+It loads 32767.0f at PC145, performs binary32 multiply147 and Java float-to-int
+conversion148, then upper/lower signed16 clamps151–175. Channel/sample loops
+write interleaved bytes195–260. The selected x86-64 native-order flag is little
+endian. No dither or rounding offset is added. For identical float +0.5, this
+policy yields 16383; libvorbis's `ov_read` integer path yields 16384. The native
+owner now uses `ov_read_float` and applies the source conversion explicitly.
+These are supplied-code and arithmetic facts, not measured original PCM.
+Outer read/buffer/EOS behavior and JOrbis/libvorbis floating synthesis remain
+unqualified.
+
 The local availability check finds 326 matching imported/external audio files,
 44,011,339 bytes. This is an availability floor, not a canonical Beta track list
 or registration-order proof. Bounded MUS header projections, including differing

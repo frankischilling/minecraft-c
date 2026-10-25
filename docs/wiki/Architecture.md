@@ -47,9 +47,10 @@ Current runtime navigation:
   comparison, Options UI and real effect owners remain unfinished.
 - [Sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md)
   own SoundPool entries, retained file URLs, actual raw/MUS streams and sequential
-  Vorbis decoding. Their five selected Windows contracts pass without a device.
-  Original PCM comparisons, device playback, shared SoundManager setup and real
-  GUI/WorldAccess adoption remain unfinished.
+  Vorbis decoding. Their five selected Windows contracts include nonzero
+  float conversion matching the original scalar operations and bounded planar
+  interleaving. Encoded inputs remain silence. Linux qualification, original PCM comparisons, device playback,
+  shared SoundManager setup and real GUI/WorldAccess adoption remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

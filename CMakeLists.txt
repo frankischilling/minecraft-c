@@ -147,7 +147,9 @@ target_include_directories(mc_client_sound_pool PUBLIC include)
 target_link_libraries(mc_client_sound_pool PUBLIC mc_client_sound_files PRIVATE mc_build_options)
 if(MC_BUILD_CLIENT_SOUND)
     include(cmake/sound_dependencies.cmake)
-    add_library(mc_sound_decoder STATIC src/client/sound/vorbis_decoder.c)
+    add_library(mc_sound_decoder STATIC
+        src/client/sound/vorbis_decoder.c
+        src/client/sound/pcm.c)
     target_include_directories(mc_sound_decoder PUBLIC include)
     # This owner supplies callbacks; omit Vorbisfile's unused header copies.
     target_compile_definitions(mc_sound_decoder PRIVATE OV_EXCLUDE_STATIC_CALLBACKS)
@@ -1201,6 +1203,7 @@ if(BUILD_TESTING)
 
     if(MC_BUILD_CLIENT_SOUND)
         add_executable(mc_test_vorbis_decoder tests/client/sound/test_vorbis_decoder.c)
+        target_include_directories(mc_test_vorbis_decoder PRIVATE src/client/sound)
         target_compile_definitions(mc_test_vorbis_decoder PRIVATE OV_EXCLUDE_STATIC_CALLBACKS)
         target_link_libraries(mc_test_vorbis_decoder PRIVATE mc_sound_decoder vorbisenc mc_build_options)
         add_test(NAME client.vorbis_decoder
