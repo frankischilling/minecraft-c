@@ -1,6 +1,7 @@
 * text=auto
 *.c text eol=lf
 *.h text eol=lf
+*.inc text eol=lf
 *.py text eol=lf
 *.sh text eol=lf
 *.md text eol=lf
@@ -10,6 +11,7 @@
 *.commands text eol=lf
 *.java text eol=lf
 *.txt text eol=lf
+.gitattributes text eol=lf
 .clang-format text eol=lf
 LICENSE text eol=lf
 licenses/openal-soft/* text eol=lf

@@ -76,7 +76,7 @@ _Static_assert(COUNT(expected) == 24, "EntityList still registers exactly 24 Cla
 _Static_assert(MC_ENTITY_CLASS_KIND_BOAT == 23 && MC_ENTITY_CLASS_KIND_ENTITY == 24 &&
                    MC_ENTITY_CLASS_KIND_PLAYER == 25,
                "query Classes follow the unchanged registration selectors");
-_Static_assert(COUNT(expected) + COUNT(query_only) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
+_Static_assert(COUNT(expected) + COUNT(query_only) == (size_t)MC_ENTITY_CLASS_KIND_LOCAL_PLAYER,
                "one diagnostic record per admitted Entity Class");
 
 /* Complete expected ancestor sets, independently stated rather than walking
@@ -110,7 +110,7 @@ static const uint32_t expected_ancestors[] = {
     CLASS_BIT(BOAT) | CLASS_BIT(ENTITY),
     CLASS_BIT(ENTITY),
     CLASS_BIT(PLAYER) | CLASS_BIT(LIVING_ENTITY) | CLASS_BIT(ENTITY)};
-_Static_assert(COUNT(expected_ancestors) == (size_t)MC_ENTITY_CLASS_KIND_COUNT,
+_Static_assert(COUNT(expected_ancestors) == (size_t)MC_ENTITY_CLASS_KIND_LOCAL_PLAYER,
                "complete Class-to-Class expectation matrix");
 static const mc_entity_class_kind biome_kinds[] = {
     MC_ENTITY_CLASS_KIND_SPIDER,    MC_ENTITY_CLASS_KIND_ZOMBIE,  MC_ENTITY_CLASS_KIND_SKELETON,
@@ -216,7 +216,7 @@ static bool check_cells(mc_entity_classes *a, mc_entity_classes *b, mc_entity_so
            mc_entity_classes_get_snapshot(b, &other_before) == MC_ENTITY_OK);
     const profile_state p = profile_get(a->profile);
     const mc_entity_class_phase registry_phase = a->registry_phase, other_phase = b->registry_phase;
-    for (size_t i = 0; i < (size_t)MC_ENTITY_CLASS_KIND_COUNT; ++i) {
+    for (size_t i = 0; i < (size_t)MC_ENTITY_CLASS_KIND_LOCAL_PLAYER; ++i) {
         const mc_entity_class_literal *again = NULL, *other = NULL;
         mc_entity_class_literal_view view;
         const mc_entity_class_kind kind = (mc_entity_class_kind)i;
@@ -277,9 +277,10 @@ static bool test_assignability(mc_entity_source source, mc_java_random_profile *
     memcpy(before, owner, sizeof(before));
     memcpy(foreign_before, foreign, sizeof(foreign_before));
     memcpy(side_before, other_side, sizeof(side_before));
-    const mc_entity_class_literal *cells[MC_ENTITY_CLASS_KIND_COUNT],
-        *foreign_cells[MC_ENTITY_CLASS_KIND_COUNT], *side_cells[MC_ENTITY_CLASS_KIND_COUNT];
-    for (size_t i = 0; i < (size_t)MC_ENTITY_CLASS_KIND_COUNT; ++i) {
+    const mc_entity_class_literal *cells[MC_ENTITY_CLASS_KIND_LOCAL_PLAYER],
+        *foreign_cells[MC_ENTITY_CLASS_KIND_LOCAL_PLAYER],
+        *side_cells[MC_ENTITY_CLASS_KIND_LOCAL_PLAYER];
+    for (size_t i = 0; i < (size_t)MC_ENTITY_CLASS_KIND_LOCAL_PLAYER; ++i) {
         const mc_entity_class_kind kind = (mc_entity_class_kind)i;
         CHECK(mc_entity_class_literal_get(owner, kind, &cells[i]) == MC_ENTITY_OK);
         CHECK(mc_entity_class_literal_get(foreign, kind, &foreign_cells[i]) == MC_ENTITY_OK);

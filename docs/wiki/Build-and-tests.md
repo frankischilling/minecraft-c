@@ -1,5 +1,15 @@
 # Build and tests
 
+The [local Player constructor](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-construction.md)
+passes full ABI rebuilds and 254 Windows tests plus 236 headless tests each on
+sanitized Clang/GCC, without failures or skips. Fresh JDK 17 normal/JDI runs
+verify actual completed and failed receivers; production Math entropy remains
+separate from scalar replay. All 730 C/header files pass formatting.
+
+The [crafting checkpoint `d113527`](https://github.com/frankischilling/minecraft-c/actions/runs/40224136061)
+passes all four hosted jobs: 242 Windows, 248 GCC and 248 Clang tests, with
+738 complete Start/Passed pairs. Every checkout tree equals that code head.
+
 The [crafting integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/inventory/crafting.md)
 passes three selected tests on MSVC and sanitized Clang/GCC. Each product matches
 1,153 original rows per source side across 1,047 cases and passes 48 strict

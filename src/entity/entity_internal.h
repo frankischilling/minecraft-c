@@ -29,6 +29,7 @@ struct mc_entity_watcher {
 };
 
 struct mc_minecart_entity_state;
+struct mc_local_player_state;
 
 struct mc_entity {
     mc_entity_classes *classes;
@@ -49,6 +50,8 @@ struct mc_entity {
     mc_nbt_tree *storage_source;
     /* A real embedded subobject of the Minecart native allocation, else NULL. */
     struct mc_minecart_entity_state *minecart;
+    /* Actual embedded subobject of a dc allocation, never an invented Player. */
+    struct mc_local_player_state *local_player;
 };
 
 /* Passive actual subtype admission, valid in every phase. The immutable

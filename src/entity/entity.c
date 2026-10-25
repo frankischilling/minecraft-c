@@ -4,6 +4,7 @@
 #include "entity_internal.h"
 #include "minecart/classes_internal.h"
 #include "minecart/entity_internal.h"
+#include "player/player_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -155,6 +156,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
             bytes = sizeof(mc_entity);
             status = mc_entity_base_class_initialize(classes, error);
             break;
+        case MC_ENTITY_CLASS_KIND_LOCAL_PLAYER:
+            if (classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_local_player_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
         case MC_ENTITY_CLASS_KIND_MINECART:
             bytes = sizeof(mc_minecart_entity_object);
             status = mc_minecart_class_initialize(classes, error);
@@ -176,6 +183,11 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         *object = (mc_minecart_entity_object){0};
         entity = &object->entity;
         entity->minecart = &object->state;
+    } else if (kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) {
+        mc_local_player_object *object = storage;
+        *object = (mc_local_player_object){0};
+        entity = &object->entity;
+        entity->local_player = &object->state;
     } else {
         entity = storage;
         *entity = (mc_entity){0};
@@ -264,18 +276,19 @@ static mc_entity_status make_watcher(mc_entity *entity, mc_entity_error *error) 
     return MC_ENTITY_OK;
 }
 
-static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *error) {
+mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t index,
+                                                     mc_entity_error *error) {
     const mc_entity_type_entry *type = entity->classes->types->head;
     while (type != NULL && type->kind != 0)
         type = type->next;
-    if (type == NULL || type->value != 0 || entity->watcher->map->size != 0)
+    if (type == NULL || type->value != 0 || (index == 0 && entity->watcher->map->size != 0))
         return mc_entity_error_set(error, MC_ENTITY_STATE_ERROR, "watcher registration", 7);
     mc_entity_watch_record *record =
         allocate(entity->classes, entity, sizeof(*record), error, "watcher registration", 144);
     if (record == NULL)
         return error->status;
     /* ma/ht constructor store order. This is typed Byte0, not a new box. */
-    record->index = 0;
+    record->index = index;
     record->byte_value = 0;
     record->type = type->value;
     record->dirty = true;
@@ -285,9 +298,10 @@ static mc_entity_status register_byte_zero(mc_entity *entity, mc_entity_error *e
         retire(entity->classes, entity, record, sizeof(*record));
         return error->status;
     }
-    *node = (mc_entity_watch_node){.key = 0, .record = record};
+    *node =
+        (mc_entity_watch_node){.key = index, .record = record, .next = entity->watcher->map->head};
     entity->watcher->map->head = node;
-    entity->watcher->map->size = 1;
+    ++entity->watcher->map->size;
     return MC_ENTITY_OK;
 }
 
@@ -371,11 +385,17 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
     entity->base_bytecode = 212;
     /* The exposed watcher holds a typed Byte value; no per-entity Byte box. */
     entity->base_bytecode = 221;
-    status = register_byte_zero(entity, error);
+    status = mc_entity_construct_watch_byte_zero(entity, 0, error);
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez, ju/gl and yl/pr b()V hooks are empty returns. */
+    /* Actual hl/ez, ju/gl and yl/pr b()V hooks are empty returns. The
+     * concrete dc owner dispatches to gs.b DURING this base constructor. */
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        status = mc_local_player_watcher_initialize(entity, error);
+        if (status != MC_ENTITY_OK)
+            return status;
+    }
     entity->base_bytecode = 231;
     return MC_ENTITY_OK;
 }
@@ -562,9 +582,13 @@ void mc_entity_release(mc_entity *entity) {
     mc_entity_classes *classes = entity->classes;
     const size_t bytes = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)
                              ? sizeof(mc_minecart_entity_object)
+                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
+                             ? sizeof(mc_local_player_object)
                              : sizeof(*entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         mc_minecart_entity_dispose(entity);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        mc_local_player_dispose(entity);
     mc_nbt_tree_free(entity->storage_source);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);

@@ -15,6 +15,7 @@ option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the su
 option(MC_ENABLE_INPUT_REFERENCE_TESTS "Compare MovementInput with the supplied client" OFF)
 option(MC_ENABLE_TURN_REFERENCE_TESTS "Compare Entity turning with the supplied client" OFF)
 option(MC_ENABLE_CRAFTING_REFERENCE_TESTS "Compare crafting with supplied client/server JARs" OFF)
+option(MC_ENABLE_PLAYER_REFERENCE_TESTS "Compare local Player construction with supplied client JAR" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
@@ -435,12 +436,15 @@ add_library(mc_simulation STATIC
     src/world/dimension/world_provider.c
     src/world/dimension/temperature.c
     src/entity/entity.c
+    src/entity/player/construction.c
+    src/entity/player/session.c
+    src/entity/player/strings.c
     src/entity/minecart/entity.c
     src/entity/minecart/inventory.c
     src/entity/minecart/nbt.c
     src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
-target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry mc_inventory
     PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_build_options)
 
 include(CTest)
@@ -662,6 +666,14 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME entity.construction COMMAND mc_test_entity)
     set_tests_properties(entity.construction PROPERTIES LABELS "public;unit" TIMEOUT 60)
+
+    add_executable(mc_test_player_construction tests/entity/player/test_construction.c)
+    target_link_libraries(mc_test_player_construction PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+
+    add_executable(mc_player_construction_probe tests/entity/player/trace_construction.c)
+    target_link_libraries(mc_player_construction_probe PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
 
     add_executable(mc_test_entity_bounds tests/entity/bounds/test_bounds.c)
     target_link_libraries(mc_test_entity_bounds PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1290,6 +1302,29 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME entity.player_construction COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_construction.py"
+        --executable "$<TARGET_FILE:mc_test_player_construction>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-construction-contracts")
+    set_tests_properties(entity.player_construction PROPERTIES
+        LABELS "public;integration;entity;ownership" TIMEOUT 90)
+    add_test(NAME tools.player_construction_probe_inputs COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_construction_probe.py"
+        --executable "$<TARGET_FILE:mc_player_construction_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-construction-protocol")
+    set_tests_properties(tools.player_construction_probe_inputs PROPERTIES
+        LABELS "public;tools;entity;ownership" TIMEOUT 180)
+    if(MC_ENABLE_PLAYER_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.player_construction COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/player/compare_construction.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_player_construction_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-construction")
+        set_tests_properties(reference.player_construction PROPERTIES
+            LABELS "reference;original;entity;constructor" TIMEOUT 480)
+    endif()
+
     add_test(NAME inventory.crafting COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/inventory/test_crafting.py"
         --executable "$<TARGET_FILE:mc_test_crafting>"

@@ -1,5 +1,29 @@
 # Test scope and reproduction
 
+## Local Player construction
+
+The [constructor contract](client/player-construction.md) passes a complete
+Windows MSVC ABI rebuild and all 254 tests. Complete headless Clang 18/GCC 13
+rebuilds each pass all 236 tests with ASan, UBSan and leak checks. Every recorded
+case runs without failures, disabled tests or skips. All 730 C/header files pass
+clang-format 18. The Linux profiles build with `MC_BUILD_CLIENT=OFF`; they do not
+qualify a new Linux desktop or audio-device run.
+
+Six focused tests per compiler include the new constructor, its 32 authored
+probe controls, the unchanged-original comparison and existing Entity/Class/
+Minecart regressions. Native constructor tests pass 736 checks. Fresh JDK 17
+normal and read-only JDI runs verify 187 class origins and 1,862 Code bodies,
+six completed constructors, two actual failed receivers and 71 checkpoints.
+The [reference README](../tests/reference/entity/player/README.md) separates
+deterministic fields, aliases, bounds and Slot comparisons from scalar replay
+of observed Math returns. Production constructors use their independent real
+application Math profile.
+
+Enable `MC_ENABLE_PLAYER_REFERENCE_TESTS` with `MC_REFERENCE_CLIENT_JAR` and
+explicit JDK 17 tools for the local original comparison. The public constructor
+and probe tests use authored resources and require no original archive or JVM.
+Full Player/World gameplay remains unfinished.
+
 ## Crafting inventories and containers
 
 The [crafting contracts](inventory/crafting.md) pass three integrated tests on

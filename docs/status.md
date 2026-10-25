@@ -1,5 +1,20 @@
 # Development status
 
+[Local Player construction](client/player-construction.md) now executes the
+actual `dc -> gs -> ls -> sn` constructor chain, including the early watcher
+hook, four shared Math calls, Inventory/Container aliases, World spawn and
+Session/filter ownership. Full ABI rebuilds pass all 254 Windows tests and
+all 236 headless tests each on sanitized Linux Clang/GCC. The new constructor,
+protocol and original comparisons pass on all three products. Source-supported
+null failures retain their actual constructed prefixes. Player publication,
+ticks, movement, input attachment and rendering remain unfinished.
+
+The crafting checkpoint `d113527bfb4c306bfa94b5b56bb62277b9b392db` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40224136061):
+242 Windows, 248 GCC and 248 Clang tests, with 738 complete Start/Passed pairs.
+All checkouts use merge `ba83182df0d9bf222f21273151f54f8eb1265113`; its tree
+equals that code head. These checks precede the Player constructor increment.
+
 The input/turn checkpoint `5143b58fbba506bec1d9753080e5fcb3a70906a3`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40218311052):
 240 Windows, 246 GCC and 246 Clang tests, with 732 complete Start/Passed pairs.
@@ -12,8 +27,8 @@ InventoryPlayer and the actual Player/Workbench containers, notify grid changes
 synchronously and match all 151 recipes in source order. A bounded probe scanner
 replaces a NUL-truncating reader. The final native, protocol and unchanged-original
 tests pass on MSVC and sanitized Clang/GCC. Each product matches 1,153 original
-rows per side and passes 48 protocol checks. Full Player construction,
-crafting-output effects and gameplay remain unfinished.
+rows per side and passes 48 protocol checks. Crafting-output effects and gameplay
+remain unfinished; Player construction has its separate scope above.
 The complete frozen Windows suite passes all 251 tests without failures or
 skips. Linux verification of this increment covers the three selected native,
 protocol and original tests per compiler with ASan, UBSan and leak checks.
@@ -29,7 +44,7 @@ comparisons pass on MSVC and sanitized Clang/GCC. They preserve live key binding
 duplicate precedence, double sneak/turn arithmetic, pitch clamps and previous
 angles. They do not construct or tick a Player. Concrete crafting owners now
 provide the inventory/container graph and actual recipe scan. Living/Player
-construction and World lifecycle integration remain unfinished.
+ticks, Player publication and World lifecycle integration remain unfinished.
 The combined input/turn and allocation-error increment passes all 248 Windows
 tests and all 250 tests each on sanitized Clang/GCC, with no failures or skips.
 All 707 C/header files pass clang-format 18. The allocation case is verified

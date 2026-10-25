@@ -6,6 +6,10 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [Local Player construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-construction.md)
+  owns the genuine base/Living/Player constructor graph, early watcher hook,
+  Inventory/Container aliases, Session Strings and MouseFilters. Publication,
+  ticks, input attachment, movement and rendering remain unfinished.
 - [Crafting inventories and containers](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/inventory/crafting.md)
   own Player inventory, the grid/result owners and concrete Player/Workbench
   Slot graphs. Input notifications scan the actual 151 recipes and replace

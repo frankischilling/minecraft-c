@@ -3,7 +3,7 @@
 
 #include "mc/entity/entity.h"
 
-/* Concrete callers are Item, FallingSand and Minecart only. This is not a
+/* Concrete callers are Item, FallingSand, Minecart and local Player only. This is not a
  * public generic-kind factory. Preserve args -> actual active use -> live
  * count/budget -> actual header object -> canonical literal/hold/publication.
  * The concrete Minecart branch runs its class initializer before the header;
@@ -24,6 +24,11 @@ mc_entity_status mc_entity_constructor_begin(mc_entity *entity, mc_entity_class_
  * The concrete Item/Falling/Minecart b()V targets are verified empty returns. */
 mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,
                                           mc_entity_error *error);
+
+/* Exact typed Byte registration used by base index0 and the real gs.b hook
+ * index16. Called only on the constructor-owned actual watcher. */
+mc_entity_status mc_entity_construct_watch_byte_zero(mc_entity *entity, int32_t index,
+                                                     mc_entity_error *error);
 
 /* Called only after successful begin, once per public concrete constructor.
  * Failure stores FAILED_CONSTRUCTION and preserves the entire supplied error.

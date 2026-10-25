@@ -212,7 +212,7 @@ static const uint16_t allocation_pcs[31] = {2,   8,   14,  32,  51,  57,  75,  9
 static const uint16_t previous_pcs[31] = {0,   2,   8,   28,  47,  51,  71,  90,  94,  114, 133,
                                           137, 157, 176, 180, 200, 219, 223, 243, 262, 267, 287,
                                           306, 311, 331, 350, 355, 375, 394, 399, 419};
-_Static_assert(MC_ENTITY_CLASS_KIND_MINECART == 22 && MC_ENTITY_CLASS_KIND_COUNT == 26,
+_Static_assert(MC_ENTITY_CLASS_KIND_MINECART == 22 && MC_ENTITY_CLASS_KIND_COUNT == 27,
                "canonical selectors remain unchanged");
 _Static_assert(COUNT(shapes) == 10 && COUNT(allocation_pcs) == 31 && COUNT(previous_pcs) == 31,
                "complete literal Minecart initializer");

@@ -20,8 +20,10 @@ Options screens and real effectful receivers remain unfinished.
 [MovementInput](client/movement-input.md) borrows the actual live named bindings
 and owns its ten key cells. [Entity turning](entity/turn.md) mutates genuine
 constructed Entity angle fields with the original double scaling and previous
-angle adjustments. Neither component substitutes for the missing local Player,
-its constructor graph or the World entity tick loop.
+angle adjustments. [Local Player construction](client/player-construction.md)
+owns the real base/Living/Player state, Inventory/Container aliases, Session
+Strings and MouseFilters. Input attachment, Player publication and the World
+entity tick loop remain unfinished.
 
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.
