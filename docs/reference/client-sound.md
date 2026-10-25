@@ -118,8 +118,51 @@ endian. No dither or rounding offset is added. For identical float +0.5, this
 policy yields 16383; libvorbis's `ov_read` integer path yields 16384. The native
 owner now uses `ov_read_float` and applies the source conversion explicitly.
 These are supplied-code and arithmetic facts, not measured original PCM.
-Outer read/buffer/EOS behavior and JOrbis/libvorbis floating synthesis remain
-unqualified.
+The observation below covers one outer read/buffer/EOS path. JOrbis/libvorbis
+floating synthesis remains unqualified.
+
+## Arranged original codec observation
+
+A Windows x64 Temurin 17.0.17+10 control invokes the unchanged original
+CodecJOrbis through an isolated loader. It constructs the genuine logger,
+checks 49 original resources and all 337 Code bodies, then runs INIT, STATE,
+a bounded READ loop, repeated READ, READ_ALL, STATE, CLEANUP and STATE. The
+loop reaches EOS after one read. The helper observes complete byte-array
+versions and aliases without installing decoder fields or expected PCM.
+Its compiler uses a separate empty classpath; the original JAR is only an
+input to the later isolated loader.
+
+The 3,351-byte authored mono input has SHA-256
+`ec50e92ca86ed1a3454790a3cba31d9fe22f969b58c7effb4b604f33cdf7a8c8`.
+It comes from the native encoder, with each audio packet forced onto a separate
+page. The first audio page has granule 0; later pages end at 576, 1,600, 2,624
+and 3,200. These are encoded input properties, not supplied decoded results.
+
+Initialization returns true with mono signed16 little-endian 32 kHz metadata.
+The first READ returns null and sets EOS; repeated READ also returns null.
+READ_ALL returns a distinct SoundBuffer whose audioData is null. Cleanup leaves
+initialized/EOS true and the format retained while clearing the stream field.
+The original emits no PCM array. The generic native decoder emits 6,400 zero
+bytes from the identical encoded input, so this observation is a policy
+difference rather than a PCM-equivalence result.
+
+Actual `readBytes()[B` has 287 Code bytes, SHA-256
+`63f0675e2db2f69bd022890b39c96baa5cc6d403234b3c31c9e3cb5d3ab128e6`.
+It calls Page.granulepos at PC 86, compares with zero at 89-91 and calls its
+EOS setter at 97 on equality. The captured buffer begins with the exact
+145-byte audio-page tail, including that zero-granule page. This static path
+and the retained buffer explain the observed early-EOS edge; the observer
+does not capture floating conversion-entry planes or qualify synthesis.
+
+Both compiler and probe exit naturally with empty stdout/stderr, are reaped
+and leave empty process Jobs. Six actual helper class files, the frozen input
+family and all eleven final audits pass independent file readback. Physical
+JDK/Python file pins and Python origins are recorded; actual OS loaded-DLL
+mapping and the process's full filesystem effects are not measured. No device,
+SoundSystem backend or original game main runs. Two earlier preparations stop
+before compilation on inventory ordering checks; their failure records remain
+separate from the successful control. Wider cases and nonzero PCM comparison
+remain required.
 
 The local availability check finds 326 matching imported/external audio files,
 44,011,339 bytes. This is an availability floor, not a canonical Beta track list

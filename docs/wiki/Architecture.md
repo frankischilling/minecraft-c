@@ -47,13 +47,19 @@ Current runtime navigation:
   comparison, Options UI and real effect owners remain unfinished.
 - [Sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md)
   own SoundPool entries, retained file URLs, actual raw/MUS streams and sequential
-  Vorbis decoding. Their five selected Windows contracts include nonzero
+  Vorbis decoding. Their six selected Windows contracts include nonzero
   float conversion matching the original scalar operations and bounded planar
-  interleaving. Encoded inputs remain silence. A focused Ubuntu GCC ASan/UBSan
+  interleaving, silence inputs and authored nonzero streams. A focused Ubuntu GCC ASan/UBSan
   decoder run passes 563 checks after exact private-copy Vorbis corrections;
   a corrected Clang run also passes 563 after the private Ogg null-buffer guard.
-  Full Linux qualification, original PCM comparisons, device playback,
-  shared SoundManager setup and real GUI/WorldAccess adoption remain unfinished.
+  The `e10a5e2` checkpoint passes the full native suites on Windows/GCC/Clang.
+  A separate nonzero regression passes 5,469 checks on sanitized Clang and
+  5,480 on MSVC after a bounded floor-deviation correction. Both runs pass
+  independent source, dependency and capture readback.
+  An arranged original mono control returns null/EOS where native decoding
+  emits 6,400 bytes from the same input. Original codec policy, PCM comparisons,
+  device playback, shared SoundManager setup and real GUI/WorldAccess adoption
+  remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

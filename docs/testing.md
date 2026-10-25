@@ -2,7 +2,18 @@
 
 ## Native client frontend
 
-The option-action checkpoint `2afd39a70935a3ae167f7cb7fad6452392828c6d`
+The sound checkpoint `e10a5e2708e81c81ea2cc9b721c060a2d2f056d7`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434):
+228 Windows, 232 GCC and 232 Clang tests, or 692 complete Start/Passed pairs,
+with no failures, skips or missing cases. Formatting covers 657 C/header files;
+controller mirrors and all 556 positive/2,011 negative lifecycle controls pass.
+All checkouts use synthetic merge `ec63077a8db7674a197219458a9343fbedcd35cc`,
+whose complete tree equals that head. Independent readback reconstructs 331
+trees/1,564 entries and joins all 1,234 literal published files and 1,054
+Windows-tested non-Markdown inputs. The console supplies the full chronology;
+no hosted JUnit or artifact archive was retained.
+
+The earlier option-action checkpoint `2afd39a70935a3ae167f7cb7fad6452392828c6d`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178):
 225 MSVC, 229 GCC and 229 Clang cases, 683 complete Start/Passed pairs, with zero
 failures, skips or missing runs. Formatting covers 645 C/header files; mirrors
@@ -37,8 +48,8 @@ including 1,234 public members and 1,054 non-Markdown inputs. Formatting covers
 657 C/header files. Retained decoder inputs are authored zero PCM, including a
 mono-to-stereo chain and a real missing-page rejection. Four earlier local failed
 attempts remain preserved, with their fixes and scope in the sound note. These
-tests initialize no audio device; Linux sound and original PCM correspondence
-remain unqualified. The 683-case hosted result above predates these modules.
+tests initialize no audio device; original PCM correspondence remains
+unqualified. The 683-case hosted result above predates these modules.
 
 Nonzero vectors exercise the actual binary32-times-32767/Java-conversion
 helper and planar suffix interleaving. Encoded fixtures remain silence. The
@@ -54,10 +65,34 @@ shift, last-band interpolation read and signed decode search-word shift. The
 corrected public driver passes 563 GCC checks, seven inputs and four exact
 zero-PCM outputs. Independent file readback verifies its 1,234-member copied
 source, captures and closed PIDFD ledger. These focused diagnostics do not
-qualify the full platform. Hosted qualification of the Ogg correction remains
-pending. A fresh corrected Ubuntu Clang ASan/UBSan build passes all 563 decoder
-checks and independent file readback with empty child stderr. Empty stderr,
+qualify the full platform. The later 692-case hosted result above includes the
+Ogg correction on all three compilers. A fresh corrected Ubuntu Clang ASan/UBSan
+build passes all 563 decoder checks and independent file readback with empty
+child stderr. Empty stderr,
 successful status, exact footers, bounds and cleanup remain required.
+
+The separate `client.vorbis_nonzero` regression encodes mono, distinct-channel
+stereo, a format-changing chain and a longer stream from authored nonzero
+rational PCM. It first reproduces a negative floor-deviation shift in
+libvorbis. An exact private-copy multiplication correction passes a fresh
+Clang 18 ASan/UBSan run: 5,469 nonzero checks plus the existing 563 decoder
+checks. Independent readback verifies all 1,236 source members, four encoded
+inputs, four nonzero PCM outputs, exact chain joins and complete dependency
+copies. A fresh Windows MSVC 19.51.36260.0 x64 Debug headless run passes all six
+selected tests: the existing five counts remain unchanged, and the nonzero
+case passes 5,480 checks. All seven supervised stages and eleven final audits
+pass. Independent readback consumes 14,431 files and joins all 1,406 physical
+source files, including 1,236 public members and 1,056 non-Markdown inputs.
+All 658 C/header files pass clang-format 18.1.3. The terminal report SHA-256 is
+`1a2a9ae0aa7e1fc4e20b9e8c764d1776b28faf10dabb4375a46b37ec334665cf`.
+Later result-documentation changes remain separate from this tested snapshot.
+Original PCM is not compared.
+
+The separate [arranged original codec control](reference/client-sound.md#arranged-original-codec-observation)
+completes its eight-operation plan and eleven final audits. It records a
+null/EOS result for the authored mono stream and a later SoundBuffer with null
+data. The generic native decoder emits 6,400 bytes from the same encoded input.
+That difference remains explicit; observation completion is not a PCM match.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):

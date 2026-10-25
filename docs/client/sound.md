@@ -136,7 +136,7 @@ policy, not measured original codec behavior.
 
 ## Verified native scope
 
-The final Windows MSVC 19.51.36260.0 x64 Debug headless run passes all five
+The Windows MSVC 19.51.36260.0 x64 Debug headless run passes all six
 selected tests with no failures or skips:
 
 | Test | Checks |
@@ -144,31 +144,33 @@ selected tests with no failures or skips:
 | `client.sound_pool` | 18,654 |
 | `client.sound_file` | 581 |
 | `client.vorbis_decoder` | 579 |
+| `client.vorbis_nonzero` | 5,480 |
 | `core.java_integer_parse` | 43 |
 | `core.java_random_profile` | 191 |
 
 Pool checks cover independent LCG selection, duplicates, UTF-16 names, allocation
 prefixes and bounds. File checks preserve two literal inputs and cover URL/MUS
 vectors, concurrent writes, close behavior and pool-selection-to-stream ownership.
-Decoder checks retain seven authored inputs and four exact zero-PCM outputs:
+`client.vorbis_decoder` retains seven authored inputs and four exact zero-PCM outputs:
 6,400-byte mono and MUS, 19,200-byte stereo and a 25,600-byte chain. They also
 exercise malformed/truncated headers, a real missing-page error, prefix limits
 and cleanup. The chain changes from mono 32 kHz to stereo 48 kHz.
 
 All seven supervised stages and eleven final audits pass. Independent file-only
-readback consumes 14,410 retained source, input, product, stream, tool and SDK
-files, joining all 1,404 physical source files, including 1,234 public members
-and 1,054 non-Markdown inputs. All 657 C/header files pass clang-format 18.1.3.
+readback consumes 14,431 retained source, input, product, stream, tool and SDK
+files, joining all 1,406 physical source files, including 1,236 public members
+and 1,056 non-Markdown inputs. All 658 C/header files pass clang-format 18.1.3.
 The terminal report's SHA-256 is
-`454080cc2f58f82b0819ccf82d1840698d57a1b8d1e7a14c88849c25b90b940f`.
+`1a2a9ae0aa7e1fc4e20b9e8c764d1776b28faf10dabb4375a46b37ec334665cf`.
 Later result-documentation changes are recorded separately from that snapshot.
 
 The decoder tests include 24 literal nonzero/special-value vectors through the
 production converter, pending-plane interleaving and an actual 7,000-byte
 chain-budget case. Helper tests drain a nonzero planar suffix across calls;
 the encoded chain case checks a bounded stereo prefix and terminal limit.
-It does not prove a later successful decoder drain of a pending suffix. Encoded
-fixtures remain silence, and no original nonzero PCM comparison has run.
+It does not prove a later successful decoder drain of a pending suffix. Those
+encoded fixtures are silence; the separate nonzero regression below exercises
+real encoded audio. No original nonzero PCM comparison has run.
 
 Earlier failed runs remain failed: private-copy CRLF drift, a rejected MSVC
 fixture cast, stale stdio reads and the chain's false packet hole. Their captures
@@ -176,7 +178,16 @@ remain preserved. The final run uses explicit LF copies, unsigned byte fixtures,
 native descriptors and the exact chain correction above; assertions and strict
 warnings remain enabled.
 
-The [sanitized checkpoint `184a6ce`](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
+The [sound checkpoint `e10a5e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434)
+passes all four hosted jobs: 228 Windows, 232 GCC and 232 Clang cases, with 692
+complete Start/Passed pairs and no failures, skips or missing tests. Formatting
+covers 657 C/header files; controller mirrors and all 556 positive/2,011 negative
+lifecycle controls pass. The four checkouts share synthetic merge `ec63077`,
+whose complete tree equals that head. Independent readback reconstructs 331
+trees and joins all 1,234 literal source files and 1,054 Windows-tested
+non-Markdown inputs. This includes the Ogg and Vorbis corrections above.
+
+The earlier [sanitized checkpoint `184a6ce`](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
 passes all 228 Windows and 232 GCC cases, plus 657-file formatting. Clang passes
 231 of 232 tests. Its decoder check exits 0 but emits a UBSan report for
 libogg's null-buffer page offset, so the strict stderr assertion rejects it.
@@ -208,21 +219,53 @@ all 563 decoder checks with empty child stderr. Its independent file readback
 passes against the copied source and complete retained captures. The prior
 exact-commit Clang failure stays preserved separately.
 
+`client.vorbis_nonzero` encodes four deterministic inputs from authored rational
+PCM: mono 32 kHz, distinct-channel stereo 48 kHz, their exact concatenated chain
+and a longer mono 44.1 kHz stream. It uses ordinary audio-page output and forces
+only the headers. The production decoder checks format changes, complete frame
+counts, repeated EOF, progress and owner retirement. The driver preserves all
+four inputs and four nonzero PCM outputs (8,192, 19,200, 27,392 and 160,000 bytes),
+checks distinct stereo planes and joins chained PCM to the two separate decodes.
+These lossy codec contracts do not assert identity with the supplied PCM.
+
+This regression first fails under Clang UBSan at libvorbis `floor1.c:820`:
+packing a negative floor deviation left-shifts a negative integer. The pinned
+private copy replaces that shift with multiplication by two. The reached
+deviation is between -128 and -1, so the product is defined and preserves the
+intended zigzag value. The official dependency source remains unchanged.
+
+A fresh Ubuntu Clang 18 ASan/UBSan build passes 5,469 nonzero checks and all
+563 existing decoder checks, with empty child stderr. Independent file readback
+checks the 1,236-member source snapshot, all retained inputs/PCM, closed process
+ledgers and complete dependency copies. Only the five reviewed Vorbis files
+and one Ogg file differ from their supplied sources. The fresh Windows profile
+above passes 5,480 checks in the same regression; its complete capture and
+dependency readback also passes. Neither run compares original PCM.
+
 The earlier [sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
 passes all 228 Windows cases and 655-file formatting. Both Linux builds fail
 on the missing `alloca` declaration or link; their test stages never execute.
 
-To run the same five public contracts in a headless build:
+To run all six public contracts in a headless build:
 
 ```sh
 cmake -S . -B build-sound -DMC_BUILD_CLIENT=OFF -DMC_BUILD_CLIENT_SOUND=ON
-cmake --build build-sound --config Debug --target mc_test_sound_pool mc_test_sound_file mc_test_vorbis_decoder mc_test_java_integer_parse mc_test_java_random_profile
-ctest --test-dir build-sound -C Debug --output-on-failure -R '^(client\.(sound_pool|sound_file|vorbis_decoder)|core\.(java_integer_parse|java_random_profile))$'
+cmake --build build-sound --config Debug --target mc_test_sound_pool mc_test_sound_file mc_test_vorbis_decoder mc_test_vorbis_nonzero mc_test_java_integer_parse mc_test_java_random_profile
+ctest --test-dir build-sound -C Debug --output-on-failure -R '^(client\.(sound_pool|sound_file|vorbis_decoder|vorbis_nonzero)|core\.(java_integer_parse|java_random_profile))$'
 ```
 
 These are native contracts. They execute no original game classes, original
-audio assets or audio device. Linux qualification and original PCM comparisons
-remain separate work.
+audio assets or audio device. Original PCM and device comparisons remain
+separate work.
+
+An [arranged original mono control](../reference/client-sound.md#arranged-original-codec-observation)
+now records a source-policy difference. CodecJOrbis initializes, then returns
+null and sets EOS on the authored split-page input; its later readAll returns
+a SoundBuffer with null data. The generic native decoder emits 6,400 PCM bytes
+from those same encoded bytes. The original's granule-zero EOS branch and the
+captured buffered page explain this edge. Floating synthesis was not compared.
+The native decoder does not yet implement the original page-level read/readAll
+policy; that adapter remains required before SoundManager adoption.
 
 Complete audio still needs WAV behavior, original JOrbis/native PCM and error
 comparisons, canonical resource and registration order, queued backend commands,

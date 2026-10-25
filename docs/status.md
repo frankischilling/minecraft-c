@@ -1,6 +1,15 @@
 # Development status
 
-The option-action checkpoint `2afd39a70935a3ae167f7cb7fad6452392828c6d`
+The sound checkpoint `e10a5e2708e81c81ea2cc9b721c060a2d2f056d7`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434):
+228 Windows, 232 GCC and 232 Clang tests, with 692 complete Start/Passed pairs
+and no failures, skips or missing cases. Formatting covers 657 C/header files;
+controller mirrors and all 556 positive/2,011 negative lifecycle checks pass.
+The four checkouts use synthetic merge `ec63077`, whose complete tree equals
+that head. Independent readback reconstructs 331 trees and joins all 1,234
+literal published files and 1,054 Windows-tested non-Markdown inputs.
+
+The earlier option-action checkpoint `2afd39a70935a3ae167f7cb7fad6452392828c6d`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178):
 225 MSVC, 229 GCC and 229 Clang cases, 683 complete Start/Passed pairs with zero
 failures, skips or missing runs. Formatting covers 645 C/header files; controller
@@ -12,12 +21,13 @@ host; original actions and real effect owners remain unfinished.
 
 The [sound resource foundation](client/sound.md) owns SoundPool entries, resolved
 URLs, raw/MUS streams and sequential Vorbis decoding. A Windows MSVC x64 Debug
-headless run passes 18,654 pool, 581 file and 579 decoder checks, alongside 43
-integer-parser and 191 Random-profile checks. All seven stages and eleven audits
-pass; independent readback consumes 14,410 retained files. Formatting covers all
-657 C/header files. These authored contracts initialize no audio device and
+headless run passes 18,654 pool, 581 file, 579 decoder and 5,480 nonzero decoder
+checks, alongside 43 integer-parser and 191 Random-profile checks. All seven
+stages and eleven audits pass; independent readback consumes 14,431 retained
+files and joins all 1,236 public members. Formatting covers all
+658 C/header files. These authored contracts initialize no audio device and
 make no original PCM comparison. SoundManager, WAV, backend playback, real
-client adoption and Linux sound qualification remain unfinished.
+client adoption and original PCM correspondence remain unfinished.
 
 The [sanitized sound checkpoint `184a6ce`](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
 passes 228 Windows and 232 GCC cases, plus 657-file formatting. Clang passes
@@ -28,7 +38,22 @@ need-more-data result and the unchanged supplied source. Earlier private Vorbis
 corrections pass the focused Ubuntu GCC decoder driver with 563 checks and
 exact authored PCM. With the Ogg correction, a fresh Ubuntu Clang ASan/UBSan
 decoder run also passes all 563 checks and its independent file readback.
-Hosted qualification of that correction remains pending.
+The later 692-case checkpoint above qualifies these native contracts on all
+three compilers. It does not qualify device playback or original PCM.
+
+A new nonzero Vorbis regression reproduces a signed floor-deviation shift in
+libvorbis. The pinned private-copy correction passes a fresh Clang 18
+ASan/UBSan run: 5,469 nonzero checks and all 563 existing decoder checks.
+Independent readback verifies four authored encoded inputs, four nonzero PCM
+outputs, exact chain joins and the complete 1,236-member source snapshot.
+The fresh Windows profile above passes the same regression with 5,480 checks
+and independent source, product, stream and capture readback.
+
+An arranged original CodecJOrbis mono control initializes successfully but
+returns null and reaches EOS on its first read. A later readAll returns a
+SoundBuffer with null data. The same authored split-page input produces 6,400
+PCM bytes through the generic native decoder. The [reference note](reference/client-sound.md#arranged-original-codec-observation)
+retains this output-policy difference; it supplies no floating-synthesis match.
 
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):

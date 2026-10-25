@@ -1,5 +1,14 @@
 # Build and tests
 
+The [sound checkpoint `e10a5e2`](https://github.com/frankischilling/minecraft-c/actions/runs/40171237434)
+passes all four hosted jobs: 228 Windows, 232 GCC and 232 Clang cases, with 692
+complete Start/Passed pairs and no failures, skips or missing tests. Formatting
+covers 657 C/header files; controller mirrors and all 556 positive/2,011 negative
+lifecycle controls pass. All checkouts use synthetic merge `ec63077`, with a
+complete tree equal to that head. Independent readback reconstructs 331 trees
+and joins all 1,234 literal source files and 1,054 Windows-tested non-Markdown
+inputs. Original PCM and device playback remain unqualified.
+
 The [option-action checkpoint `2afd39a`](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
 passes all four hosted jobs: 225 MSVC, 229 GCC and 229 Clang cases, 683 complete
 Start/Passed pairs, with zero failures, skips or missing runs. All 645 C/header
@@ -10,17 +19,18 @@ trees and joins all 1,215 literal committed bodies and 1,037 non-Markdown tested
 inputs. Original actions, real effects and complete client behavior remain open.
 
 The [sound foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md#verified-native-scope)
-passes five selected Windows MSVC x64 Debug tests: 18,654 pool, 581 file, 579
-Vorbis, 43 integer-parser and 191 Random-profile checks. All seven stages and
-eleven audits pass; independent readback consumes 14,410 retained files, and all
-657 C/header files pass formatting. Authored decoder cases cover mono, stereo,
+passes six selected Windows MSVC x64 Debug tests: 18,654 pool, 581 file, 579
+Vorbis, 5,480 nonzero Vorbis, 43 integer-parser and 191 Random-profile checks.
+All seven stages and eleven audits pass; independent readback consumes 14,431
+retained files, and all 658 C/header files pass formatting. Authored decoder
+cases cover mono, stereo,
 MUS, a format-changing chain and real packet holes. No audio device or original
-PCM comparison runs. Shared SoundManager, playback, Linux sound qualification
-and real client integration remain unfinished. The hosted result above predates
-these sound modules.
+PCM comparison runs. Shared SoundManager, playback
+and real client integration remain unfinished. The 683-case hosted result above
+predates these sound modules.
 
-Nonzero vectors exercise the production converter and planar suffix helper;
-encoded fixtures remain silence. The [sanitized sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
+Separate nonzero vectors exercise the production converter and planar suffix
+helper. The earlier silence-fixture [sanitized sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
 passes 228 Windows and 232 GCC cases, plus 657-file formatting. Clang passes
 231 of 232 tests; decoder checking emits a libogg null-pointer-offset report
 despite exiting 0. The strict stderr assertion rejects it. An exact-commit
@@ -28,9 +38,23 @@ Ubuntu Clang 18 build reproduces the report. The private Ogg copy now guards
 that empty-buffer pointer. Earlier Vorbis corrections pass the focused Ubuntu
 GCC ASan/UBSan decoder driver with 563 checks, seven authored inputs and four
 exact PCM outputs, with independent file readback. Hosted qualification of
-the Ogg correction remains pending. A fresh corrected Ubuntu Clang ASan/UBSan
-decoder run passes all 563 checks and independent file readback, with empty
-child stderr.
+the Ogg correction is covered by the later 692-case result above. A fresh corrected
+Ubuntu Clang ASan/UBSan decoder run passes all 563 checks and independent file
+readback, with empty child stderr.
+
+The new `client.vorbis_nonzero` regression first exposes a negative signed shift
+in libvorbis floor encoding. A pinned private-copy multiplication correction
+passes 5,469 nonzero checks on Clang 18 ASan/UBSan, alongside the existing 563
+decoder checks. Independent readback checks all 1,236 source members and four
+nonzero PCM outputs, including the exact chain join. The fresh Windows profile
+above passes 5,480 checks in this regression and independent capture readback.
+These are native codec contracts, without original PCM or device comparison.
+
+A separate [arranged original codec control](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/client-sound.md#arranged-original-codec-observation)
+initializes but returns null/EOS for the authored split-page mono stream. Its
+later readAll returns a SoundBuffer with null data. Native decoding emits
+6,400 PCM bytes from the same input. This policy difference remains open;
+the completed observation does not qualify floating synthesis or PCM equality.
 
 The preceding [code checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
 passes all four hosted jobs: 224 MSVC, 228 GCC and 228 Clang cases, or 680

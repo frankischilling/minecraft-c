@@ -1213,6 +1213,16 @@ if(BUILD_TESTING)
                 --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
         set_tests_properties(client.vorbis_decoder PROPERTIES
             LABELS "public;integration;client;ownership" TIMEOUT 120)
+
+        add_executable(mc_test_vorbis_nonzero tests/client/sound/test_vorbis_nonzero.c)
+        target_link_libraries(mc_test_vorbis_nonzero PRIVATE mc_sound_decoder vorbisenc mc_build_options)
+        add_test(NAME client.vorbis_nonzero
+            COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_vorbis_nonzero.py"
+                --executable "$<TARGET_FILE:mc_test_vorbis_nonzero>"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+        set_tests_properties(client.vorbis_nonzero PROPERTIES
+            LABELS "public;integration;client;ownership" TIMEOUT 120)
     endif()
 
     add_executable(mc_test_game_option tests/client/settings/test_game_option.c)

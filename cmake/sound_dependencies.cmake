@@ -141,6 +141,25 @@ function(mc_add_sound_dependencies)
     string(REPLACE "${old_codeword}" "${new_codeword}" sharedbook "${sharedbook}")
     file(CONFIGURE OUTPUT "${compat_source}/lib/sharedbook.c" CONTENT "${sharedbook}"
         @ONLY NEWLINE_STYLE LF)
+
+    # A negative floor deviation takes the bounded zigzag branch. Its magnitude
+    # is at most quant_q / 2 (128), so multiplication preserves the intended
+    # packed value without left-shifting a negative signed integer.
+    file(SHA256 "${vorbis_source}/lib/floor1.c" floor1_sha256)
+    if(NOT floor1_sha256 STREQUAL
+        "fd4f403b56bf5538d1cc33fcf9236bca230553c143273fe17f5846ed928b6a64")
+        message(FATAL_ERROR "Pinned libvorbis floor source does not match the reviewed source")
+    endif()
+    file(READ "${vorbis_source}/lib/floor1.c" floor1)
+    set(old_floor_deviation "            val=-1-(val<<1);")
+    set(new_floor_deviation "            val=-1-(val*2);")
+    string(FIND "${floor1}" "${old_floor_deviation}" floor_deviation_offset)
+    if(floor_deviation_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned libvorbis floor deviation branch is missing")
+    endif()
+    string(REPLACE "${old_floor_deviation}" "${new_floor_deviation}" floor1 "${floor1}")
+    file(CONFIGURE OUTPUT "${compat_source}/lib/floor1.c" CONTENT "${floor1}"
+        @ONLY NEWLINE_STYLE LF)
     add_subdirectory("${compat_source}" "${vorbis_binary}/build" EXCLUDE_FROM_ALL)
 
     # Upstream's CMake omits the configure-script check used by os.h. Strict
