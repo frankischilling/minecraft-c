@@ -6,6 +6,8 @@
 typedef struct mc_game_settings mc_game_settings;
 typedef struct mc_key_binding mc_key_binding;
 
+struct mc_sound_manager;
+
 #define MC_GAME_SETTINGS_NAMED_BINDINGS 10u
 #define MC_GAME_SETTINGS_MAX_BINDINGS 1024u
 #define MC_GAME_SETTINGS_MAX_BINDING_OWNERS 256u
@@ -169,6 +171,14 @@ mc_game_settings_status mc_game_settings_create_file(
 
 bool mc_game_settings_read_state(const mc_game_settings *settings, mc_game_settings_state *out);
 bool mc_key_binding_read(const mc_key_binding *binding, mc_game_settings_text *name, int32_t *code);
+
+/* Bind the actual Minecraft SoundManager field for option actions. This is a
+ * borrowed owner, separate from the opaque Minecraft identity; a null Minecraft
+ * still reaches its original dereference failure. Detach before retiring the
+ * manager. Binding performs no setup, settings action, save or playback. */
+mc_game_settings_status mc_game_settings_attach_sound_manager(mc_game_settings *settings,
+                                                              struct mc_sound_manager *manager,
+                                                              mc_game_settings_error *error);
 
 /* Direct public-field assignments, not kv's effectful option setters. Copy
  * external strings into retained owner storage before committing the values;

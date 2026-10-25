@@ -1,5 +1,19 @@
 # Development status
 
+The [SoundManager](client/sound-manager.md) now owns shared setup, real nested
+settings saves, effects, streaming, music and listener requests at the backend
+call boundary. Windows MSVC passes 20,066 manager checks and 62 separate settings
+integration checks. Fresh sanitized Ubuntu Clang/GCC profiles each pass all 11
+selected sound/settings/reference tests without failures or skips. Device
+playback and real client adoption remain unfinished.
+
+The [source-policy Vorbis codec](client/vorbis-codec.md) passes 14 fresh
+original/native page and buffer comparisons, including tiny buffers, saved-tail
+trimming and fresh readAll thresholds. Stereo PCM matches all 21,248 bytes.
+Short and long mono retain exact synthesis mismatches. No tolerance is applied.
+The focused public codec test passes; broader validation of these changes is
+recorded separately from the earlier checkpoints below.
+
 The nonzero sound checkpoint `aa39f8f663d250052d6d2b9cae9c691cfa7136f3`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923):
 229 Windows, 233 GCC and 233 Clang tests, with 695 complete Start/Passed pairs
@@ -35,7 +49,7 @@ checks, alongside 43 integer-parser and 191 Random-profile checks. All seven
 stages and eleven audits pass; independent readback consumes 14,431 retained
 files and joins all 1,236 public members. Formatting covers all
 658 C/header files. These authored contracts initialize no audio device and
-make no original PCM comparison. SoundManager, WAV, backend playback, real
+make no original PCM comparison. At that checkpoint, SoundManager, WAV, backend playback, real
 client adoption and original PCM correspondence remain unfinished.
 
 The [sanitized sound checkpoint `184a6ce`](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)

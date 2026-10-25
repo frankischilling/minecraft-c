@@ -18,7 +18,9 @@ The [sound resource owners](client/sound.md) retain grouped entries, resolved
 file URLs and actual raw/MUS input streams. Their native retirement stays
 separate from source close behavior. Optional C Vorbis decoding has no display
 or audio-device initialization and remains outside the server link graph.
-Actual SoundManager/backend playback and startup adoption remain unfinished.
+The [SoundManager](client/sound-manager.md) owns call ordering, shared setup and
+nested settings saves. The [Vorbis codec](client/vorbis-codec.md) adds the
+original page/buffer policy. Backend playback and startup adoption remain unfinished.
 
 [Dedicated World construction](world/construction.md#dedicated-construction)
 selects its cache during the base virtual provider call and retains separate

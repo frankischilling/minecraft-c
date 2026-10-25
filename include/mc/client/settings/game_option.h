@@ -65,20 +65,25 @@ typedef struct mc_game_settings_option_action_report {
     mc_game_settings_option_action_exception uncaught_exception;
     bool save_reached;
     mc_game_settings_report save;
+    bool sound_manager_reached;
 } mc_game_settings_option_action_report;
 
 /* Execute kv's actual option assignments in source independent-if order.
  * NULL option is allowed: float does nothing; discrete still saves. A foreign
  * nonnull descriptor is rejected by identity before mutation. Float input is
  * assigned without arithmetic, finite checks or a slider clamp. Float never
- * directly saves; its diagnostics parameter is unused until real effects exist.
+ * directly saves; SoundManager setup may execute its two genuine nested saves.
  * Discrete distance/scale/difficulty wrap addition then mask with3; performance
  * wraps both additions in (old+step+3)%3 and retains a negative remainder.
  *
- * This implementation is partial at SoundManager/RenderEngine/RenderGlobal.
+ * Attached SoundManager owners receive the actual options-changed call. Native
+ * admission requires that manager to retain this same settings owner. Its
+ * setup can assign both volumes and save while this action remains exclusive;
+ * public diagnostic reentry still returns BUSY. Unattached sound fields and
+ * RenderEngine/RenderGlobal retain their missing dependency boundary.
  * After the reached field assignment, NULL Minecraft returns SOURCE_EXCEPTION
  * with NULL_MINECRAFT at the failing getfield16/38/111/144/217/250. A nonnull
- * borrowed Minecraft pointer returns UNIMPLEMENTED_DEPENDENCY at that same
+ * borrowed Minecraft pointer with an unresolved field returns UNIMPLEMENTED_DEPENDENCY at that same
  * unreadable field access. This owner never casts/dereferences it or invents a
  * callback. Both failures prevent the later save and retain the assignment.
  * Sensitivity and no-effect discrete paths execute fully. Completed discrete

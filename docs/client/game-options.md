@@ -103,15 +103,18 @@ save body at PC257 and reaches PC260 on native success. Source-caught save
 errors remain in its nested report. A later native failure retains assignment
 and file effects rather than rolling them back.
 
-Six paths remain partial after their stores: music/sound reach SoundManager
-field reads at PCs 16/38; advanced OpenGL, graphics and ambient occlusion reach
+Music/sound now call an attached concrete [SoundManager](sound-manager.md)
+after field reads at PCs 16/38. Setup can perform its two nested production
+saves while public diagnostic reentry remains BUSY. Unattached music/sound,
+advanced OpenGL, graphics and ambient occlusion reach
 RenderGlobal at PCs 111/217/250; anaglyph reaches RenderEngine at PC 144. Null Minecraft
 returns `SOURCE_EXCEPTION` with `NULL_MINECRAFT`. A nonnull opaque receiver
 returns the appended status 9, `UNIMPLEMENTED_DEPENDENCY`, at that same first
-unreadable field access. No pointer cast, effect callback or later save occurs.
+unreadable field access. Those unresolved paths perform no pointer cast,
+effect callback or later save.
 Existing status 0..8 values and persistence schemas remain unchanged.
 
-The report records `source_pc`, `value_assigned`, `effect_dependency`,
+The report records `source_pc`, `value_assigned`, `sound_manager_reached`, `effect_dependency`,
 `uncaught_exception`, `save_reached` and the real nested save report. These PCs
 are [static bytecode provenance](../reference/game-settings.md#setters-and-unfinished-effects),
 not observed original execution PCs. One Windows MSVC x64 Debug headless
@@ -125,8 +128,8 @@ new local client-mode or Linux action run. The subsequent
 [hosted checkpoint `2afd39a`](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
 passes these contracts on MSVC and sanitized GCC/Clang within all 683 cases.
 Actual audio, texture refresh, RenderGlobal rebuild, Options UI and original
-actions remain unqualified. The [sound resource foundation](sound.md) does not
-yet satisfy the real SoundManager dependency.
+actions remain unqualified. The concrete SoundManager now satisfies the native
+audio option-call boundary; backend playback and UI adoption remain unfinished.
 
 ## Bounds and unfinished work
 

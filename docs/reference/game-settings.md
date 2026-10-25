@@ -229,8 +229,9 @@ This qualifies the finite native store/save and missing-field policies below,
 not an original-action execution or real effect-owner comparison. The later
 [hosted `2afd39a` checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
 passes native actions on MSVC and sanitized GCC/Clang within all 683 cases.
-The current boundary cannot read fields through the borrowed opaque Minecraft
-pointer:
+The native boundary does not cast the borrowed opaque Minecraft pointer.
+An explicit typed attachment now supplies the concrete SoundManager for
+music/sound actions; the remaining receiver fields stay unresolved:
 
 | Action | Store PC | First receiver-field PC | Missing role |
 | --- | ---: | ---: | --- |
@@ -241,9 +242,11 @@ pointer:
 | Graphics | 210 | 217, `Minecraft.g` | RenderGlobal |
 | Ambient occlusion | 243 | 250, `Minecraft.g` | RenderGlobal |
 
-Each store survives the subsequent stop. Null Minecraft returns the uncaught
-source-null outcome at that field access; a nonnull opaque pointer returns
-`UNIMPLEMENTED_DEPENDENCY` there. No effect invocation or later save is claimed.
+Each store survives a subsequent stop. Null Minecraft returns the uncaught
+source-null outcome at that field access; an unresolved field on a nonnull
+opaque receiver returns `UNIMPLEMENTED_DEPENDENCY` there. Attached SoundManager
+actions execute the actual options-changed body and its reached nested saves.
+Unresolved fields perform no effect invocation or later save.
 Status 9 is appended, preserving prior status 0..8 and persistence schemas.
 Admission, BUSY and foreign-descriptor failures preserve the report; reached
 work reports assignment, dependency, exception and nested-save state while

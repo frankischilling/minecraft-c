@@ -2,8 +2,9 @@
 
 The authority is the supplied Beta 1.7.3 client JAR, SHA-256
 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`.
-The following are observations of class bytes, Code instructions and exception
-tables. They are not original audio execution or a measured PCM comparison.
+The owner table and static notes describe class bytes, Code instructions and
+exception tables. Later sections record separate original codec execution and
+PCM comparisons.
 The [native resource owners](../client/sound.md) implement the current foundation.
 
 | Owner | Original client alias | Relevant body |
@@ -213,6 +214,52 @@ PCM receipt does not measure new native format metadata or process state.
 Conversion-entry float planes remain uncaptured, so this result does not
 locate the numerical cause. Wider inputs, codec read policy and device
 behavior remain unfinished.
+
+## Native source-policy comparison
+
+The native `mc_vorbis_codec` uses low-level Ogg/Vorbis calls and the original
+page/buffer policy. CodecJOrbis class SHA-256 is
+`446cdac7d0340ffdc24e4e5b1414f396245842b9b8df6a189e7a95ed5bfd4a4b`.
+JOrbis DspState `synthesis_blockin(Block)I` has 711 Code bytes and SHA-256
+`f1ac28c1537bdc00be192f6e895fbbde41e509cf44e7c3bd630b86b14c7b0538`.
+Its first known granule assignment at PCs584-603 does not perform the later
+known-granule trim at PCs606-677. The native adapter preserves that distinction.
+
+A fresh JDK17 reflective probe invokes unchanged supplied classes in an
+isolated loader. It writes no decoder fields and opens no device. The native
+probe receives the identical frozen authored bytes. Their complete declared
+traces compare initialized/EOS flags, nullable result/data state, result sizes,
+channels/rate and source count/index after every operation.
+
+All 14 Windows original/native policy profiles match:
+
+| Profile | Cases | Scope |
+| --- | ---: | --- |
+| Zero mono, nonzero mono, stereo, long mono and chain | 5 | Initialization, each page read, repeated EOF, readAll after EOS and cleanup |
+| Fresh long-stream readAll | 5 | Maximum sizes -1, 0, 1, 25000 and 268435456; threshold follows the second append |
+| Prepared zero stream | 3 | First audio granule changed to -1 with CRC recomputed; streaming sizes 256, 512 and 2048 |
+| Prepared end-granule trim | 1 | Tiny buffer plus an EOS trim reaching saved unread PCM |
+
+The prepared inputs change authored page metadata and checksums; audio packets
+remain unchanged. They are separate branch experiments. Tiny conversion
+buffers expose a library distinction: libvorbis rejects a new block while
+prior PCM is unread, whereas JOrbis retains it. The native owner saves those
+exact float bits, consumes the library view, then converts the saved prefix
+before new PCM. An end trim can remove its saved suffix. Original runs confirm
+the complete declared results for those cases. No expected PCM is installed.
+
+The complete 21,248-byte stereo output matches. Short mono has four differing
+bytes; long mono has 33; the chain keeps the short-mono difference. No suffix is
+unpaired. Zero and prepared-silence outputs match exactly. PCM failures remain
+separate from successful policy comparisons; no tolerance or sample correction
+is applied. Complete hashes, traces and difference counts are retained in the
+local comparison receipt. Wider synthesis and device correspondence remain open.
+
+`tests/tools/client/compare_vorbis_policy.py` reproduces the comparison using
+`tests/reference/client/sound/CodecPolicyProbe.java` and the native codec test's
+trace modes. `--require-pcm` also fails on the known mono differences.
+`MC_ENABLE_SOUND_REFERENCE_TESTS` adds the policy comparison to local CTest;
+ordinary CI uses only project-authored inputs and needs no supplied archive.
 
 ## Resource availability
 

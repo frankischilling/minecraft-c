@@ -8,6 +8,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 option(MC_BUILD_CLIENT "Build the native graphical client" ON)
 option(MC_BUILD_CLIENT_SOUND "Build client sound decoding modules" ${MC_BUILD_CLIENT})
 option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop OpenGL context" OFF)
+option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
@@ -136,9 +137,10 @@ target_link_libraries(mc_core PRIVATE mc_platform_time mc_platform_text Threads:
 
 add_library(mc_game_settings STATIC
     src/client/settings/game_settings.c
-    src/client/settings/game_option.c)
+    src/client/settings/game_option.c
+    src/client/sound/sound_manager.c)
 target_include_directories(mc_game_settings PUBLIC include)
-target_link_libraries(mc_game_settings PUBLIC mc_core PRIVATE mc_build_options)
+target_link_libraries(mc_game_settings PUBLIC mc_core mc_client_sound_pool PRIVATE mc_build_options)
 add_library(mc_client_sound_files STATIC src/client/sound/sound_file.c)
 target_include_directories(mc_client_sound_files PUBLIC include)
 target_link_libraries(mc_client_sound_files PUBLIC mc_core PRIVATE mc_build_options)
@@ -149,11 +151,15 @@ if(MC_BUILD_CLIENT_SOUND)
     include(cmake/sound_dependencies.cmake)
     add_library(mc_sound_decoder STATIC
         src/client/sound/vorbis_decoder.c
+        src/client/sound/vorbis_codec.c
         src/client/sound/pcm.c)
     target_include_directories(mc_sound_decoder PUBLIC include)
     # This owner supplies callbacks; omit Vorbisfile's unused header copies.
     target_compile_definitions(mc_sound_decoder PRIVATE OV_EXCLUDE_STATIC_CALLBACKS)
     target_link_libraries(mc_sound_decoder PUBLIC mc_client_sound_files PRIVATE vorbisfile mc_build_options)
+endif()
+if(MC_ENABLE_SOUND_REFERENCE_TESTS AND NOT MC_BUILD_CLIENT_SOUND)
+    message(FATAL_ERROR "MC_ENABLE_SOUND_REFERENCE_TESTS requires MC_BUILD_CLIENT_SOUND")
 endif()
 add_library(mc_client_game_directory STATIC src/client/startup/game_directory.c)
 target_include_directories(mc_client_game_directory PUBLIC src/client/startup)
@@ -1192,6 +1198,17 @@ if(BUILD_TESTING)
     add_test(NAME client.sound_pool COMMAND mc_test_sound_pool)
     set_tests_properties(client.sound_pool PROPERTIES LABELS "public;unit;client;ownership" TIMEOUT 60)
 
+    add_executable(mc_test_sound_manager tests/client/sound/test_sound_manager.c)
+    target_link_libraries(mc_test_sound_manager PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME client.sound_manager COMMAND mc_test_sound_manager)
+    set_tests_properties(client.sound_manager PROPERTIES LABELS "public;unit;client;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_settings_sound tests/client/sound/test_settings_sound.c)
+    target_link_libraries(mc_test_settings_sound PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME client.settings_sound COMMAND mc_test_settings_sound
+        "${CMAKE_CURRENT_BINARY_DIR}/settings-sound-missing-parent/child")
+    set_tests_properties(client.settings_sound PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 60)
+
     add_executable(mc_test_sound_file tests/client/sound/test_sound_file.c)
     target_link_libraries(mc_test_sound_file PRIVATE mc_client_sound_pool mc_build_options)
     add_test(NAME client.sound_file
@@ -1202,6 +1219,29 @@ if(BUILD_TESTING)
     set_tests_properties(client.sound_file PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 45)
 
     if(MC_BUILD_CLIENT_SOUND)
+        add_executable(mc_test_vorbis_codec tests/client/sound/test_vorbis_codec.c)
+        target_link_libraries(mc_test_vorbis_codec PRIVATE mc_sound_decoder mc_build_options)
+        file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/vorbis-codec-output")
+        add_test(NAME client.vorbis_codec COMMAND mc_test_vorbis_codec
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis"
+            "${CMAKE_CURRENT_BINARY_DIR}/vorbis-codec-output")
+        set_tests_properties(client.vorbis_codec PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 60)
+
+        if(MC_ENABLE_SOUND_REFERENCE_TESTS)
+            find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+            if(NOT EXISTS "${MC_REFERENCE_CLIENT_JAR}")
+                message(FATAL_ERROR "Sound reference comparison requires the local verified client JAR")
+            endif()
+            add_test(NAME reference.vorbis_policy COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/compare_vorbis_policy.py"
+                --jar "${MC_REFERENCE_CLIENT_JAR}"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --native "$<TARGET_FILE:mc_test_vorbis_codec>"
+                --fixtures "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/vorbis-policy-reference")
+            set_tests_properties(reference.vorbis_policy PROPERTIES LABELS "local;reference;client;audio" TIMEOUT 180)
+        endif()
+
         add_executable(mc_test_vorbis_decoder tests/client/sound/test_vorbis_decoder.c)
         target_include_directories(mc_test_vorbis_decoder PRIVATE src/client/sound)
         target_compile_definitions(mc_test_vorbis_decoder PRIVATE OV_EXCLUDE_STATIC_CALLBACKS)

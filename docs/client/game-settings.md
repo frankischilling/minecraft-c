@@ -197,7 +197,9 @@ results qualify the finite stores, saves, reentry and explicit missing-field
 policies; they do not execute real audio or renderer effects. Hosted `2afd39a`
 adds GCC/Clang native action coverage within 683 passing cases. Options UI
 adoption and original-action comparison remain required; the
-[sound resource foundation](sound.md) still needs the real shared SoundManager.
+[SoundManager owner](sound-manager.md) now supplies shared setup and its two
+nested production saves for attached music/sound actions. Public diagnostic
+reentry remains BUSY; native backend playback remains separate.
 
 ## Binding-code action
 
@@ -328,10 +330,11 @@ binding array and Translation owner. Its native contracts pass on MSVC and
 sanitized Linux GCC/Clang in the preceding hosted checkpoint. Original-label
 correspondence remains pending.
 Direct field assignments remain separate from the new option actions.
-SoundManager changes, RenderEngine texture refresh, RenderGlobal rebuild and
-physical input mapping remain unfinished; the new actions stop before those
-receiver fields can be read. Applying changes through Options menus still
-requires the real effects and UI. Initial startup use has the finite Windows
+Attached music/sound actions now call the concrete SoundManager. RenderEngine
+texture refresh, RenderGlobal rebuild and physical input mapping remain
+unfinished; their actions stop at the unresolved receiver fields. Applying
+changes through Options menus still requires backend playback and UI.
+Initial startup use has the finite Windows
 and hosted Linux validation above; broader native/default-path and original
 startup correspondence remain unqualified.
 Persistence alone does not qualify complete settings or client behavior.

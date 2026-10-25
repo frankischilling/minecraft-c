@@ -60,9 +60,11 @@ Current runtime navigation:
   emits 6,400 bytes from the same input. A separate nonzero mono comparison
   returns 4,096 samples on both sides but differs in four samples by one PCM
   step. Complete capture readback confirms failed exact equality, without
-  tolerance. Original codec policy, wider PCM comparisons,
-  device playback, shared SoundManager setup and real GUI/WorldAccess adoption
-  remain unfinished.
+  tolerance. The [source-policy codec](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/vorbis-codec.md)
+  now matches 14 original page/buffer profiles, including tiny-buffer retained
+  PCM and fresh readAll thresholds. The [SoundManager](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound-manager.md)
+  owns shared setup, nested settings saves and ordered backend requests.
+  Wider PCM equality, device playback and real GUI/WorldAccess adoption remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

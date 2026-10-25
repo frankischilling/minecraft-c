@@ -1,5 +1,13 @@
 # Build and tests
 
+SoundManager now passes 20,066 Windows native checks and 62 separate settings
+integration checks. Its backend recorder verifies call ordering and genuine
+nested saves; no device playback is claimed. The source-policy Vorbis codec
+matches 14 fresh original/native page/buffer profiles. All 21,248 stereo PCM
+bytes match; short/long mono synthesis differences remain. See the
+[manager contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound-manager.md)
+and [codec evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/vorbis-codec.md).
+
 The [nonzero sound checkpoint `aa39f8f`](https://github.com/frankischilling/minecraft-c/actions/runs/40190426923)
 passes all four hosted jobs: 229 Windows, 233 GCC and 233 Clang tests, with 695
 complete Start/Passed pairs and no failures, skips or missing cases. All 658
@@ -34,8 +42,8 @@ All seven stages and eleven audits pass; independent readback consumes 14,431
 retained files, and all 658 C/header files pass formatting. Authored decoder
 cases cover mono, stereo,
 MUS, a format-changing chain and real packet holes. No audio device or original
-PCM comparison runs. Shared SoundManager, playback
-and real client integration remain unfinished. The 683-case hosted result above
+PCM comparison runs. At that checkpoint, shared SoundManager, playback
+and real client integration remained unfinished. The 683-case hosted result above
 predates these sound modules.
 
 Separate nonzero vectors exercise the production converter and planar suffix

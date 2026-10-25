@@ -4,6 +4,8 @@
 #include "mc/client/settings/game_settings.h"
 
 #include "mc/client/settings/game_option.h"
+#include "mc/client/sound/sound_manager.h"
+#include "sound_access.h"
 
 #include "mc/core/java/float_format.h"
 #include "mc/core/java/float_parse.h"
@@ -66,6 +68,8 @@ struct mc_game_settings {
     retained_text *texts;
     size_t binding_owners;
     bool active;
+    mc_sound_manager *sound_manager;
+    bool sound_access, sound_saving;
 };
 
 typedef struct file_input {
@@ -215,6 +219,39 @@ bool mc_game_settings_read_state(const mc_game_settings *settings, mc_game_setti
         return false;
     *out = settings->state;
     return true;
+}
+
+mc_game_settings_status mc_game_settings_attach_sound_manager(mc_game_settings *settings,
+                                                              mc_sound_manager *manager,
+                                                              mc_game_settings_error *error) {
+    const mc_game_settings_status status = admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    settings->sound_manager = manager;
+    return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+}
+
+static mc_game_settings_status admit_sound(mc_game_settings *settings,
+                                           const mc_sound_manager *manager,
+                                           mc_game_settings_error *error) {
+    if (settings == NULL || manager == NULL)
+        return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0, "SoundManager settings access");
+    if (settings->active &&
+        (!settings->sound_access || settings->sound_saving || settings->sound_manager != manager))
+        return result(error, MC_GAME_SETTINGS_BUSY, 0, "SoundManager settings access");
+    return MC_GAME_SETTINGS_OK;
+}
+
+mc_game_settings_status mc_game_settings_sound_set_volumes(mc_game_settings *settings,
+                                                           const mc_sound_manager *manager,
+                                                           float music, float sound,
+                                                           mc_game_settings_error *error) {
+    const mc_game_settings_status status = admit_sound(settings, manager, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    memcpy(&settings->state.values.music_volume, &music, sizeof(music));
+    memcpy(&settings->state.values.sound_volume, &sound, sizeof(sound));
+    return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
 }
 
 bool mc_key_binding_read(const mc_key_binding *binding, mc_game_settings_text *name,
@@ -1092,6 +1129,22 @@ mc_game_settings_status mc_game_settings_save(mc_game_settings *settings,
     return status;
 }
 
+mc_game_settings_status mc_game_settings_sound_save(mc_game_settings *settings,
+                                                    const mc_sound_manager *manager,
+                                                    const mc_game_settings_diagnostics *diagnostics,
+                                                    mc_game_settings_report *out,
+                                                    mc_game_settings_error *error) {
+    const mc_game_settings_status admitted = admit_sound(settings, manager, error);
+    if (admitted != MC_GAME_SETTINGS_OK)
+        return admitted;
+    if (!settings->active)
+        return mc_game_settings_save(settings, diagnostics, out, error);
+    settings->sound_saving = true;
+    const mc_game_settings_status status = save_admitted(settings, diagnostics, out, error);
+    settings->sound_saving = false;
+    return status;
+}
+
 static mc_game_settings_status admit_option_action(mc_game_settings *settings,
                                                    const mc_game_option *option,
                                                    mc_game_option_id *id,
@@ -1126,12 +1179,47 @@ static mc_game_settings_status missing_option_effect(const mc_game_settings *set
                   "GameSettings option Minecraft receiver field");
 }
 
+static mc_game_settings_status sound_option_effect(mc_game_settings *settings, int32_t source_pc,
+                                                   const mc_game_settings_diagnostics *diagnostics,
+                                                   mc_game_settings_option_action_report *report,
+                                                   mc_game_settings_error *error) {
+    if (settings->state.minecraft == NULL || settings->sound_manager == NULL)
+        return missing_option_effect(settings, source_pc,
+                                     MC_GAME_SETTINGS_OPTION_EFFECT_SOUND_MANAGER, report, error);
+    report->source_pc = source_pc + 3; /* invoke after the Minecraft field read */
+    mc_sound_manager_state state;
+    if (!mc_sound_manager_read_state(settings->sound_manager, &state) || state.settings != settings)
+        return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0,
+                      "GameSettings attached SoundManager settings identity");
+    settings->sound_access = true;
+    report->sound_manager_reached = true;
+    mc_sound_manager_report sound_report = {0};
+    mc_sound_error sound_error = {0};
+    const mc_sound_status status = mc_sound_manager_options_changed(
+        settings->sound_manager, diagnostics, &sound_report, &sound_error);
+    settings->sound_access = false;
+    if (status == MC_SOUND_OK)
+        return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+    if (sound_report.setup.settings_status != MC_GAME_SETTINGS_OK) {
+        if (error != NULL)
+            *error = sound_report.setup.settings_error;
+        return sound_report.setup.settings_status;
+    }
+    const mc_game_settings_status mapped =
+        status == MC_SOUND_BUSY                ? MC_GAME_SETTINGS_BUSY
+        : status == MC_SOUND_LIMIT             ? MC_GAME_SETTINGS_LIMIT
+        : status == MC_SOUND_ALLOCATION_FAILED ? MC_GAME_SETTINGS_ALLOCATION_FAILED
+        : status == MC_SOUND_SOURCE_EXCEPTION  ? MC_GAME_SETTINGS_SOURCE_EXCEPTION
+        : status == MC_SOUND_IO_FAILED         ? MC_GAME_SETTINGS_NATIVE_IO_ERROR
+                                               : MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY;
+    return result(error, mapped, sound_error.system_error, sound_error.operation);
+}
+
 mc_game_settings_status
 mc_game_settings_set_option_float(mc_game_settings *settings, const mc_game_option *option,
                                   float value, const mc_game_settings_diagnostics *diagnostics,
                                   mc_game_settings_option_action_report *out,
                                   mc_game_settings_error *error) {
-    (void)diagnostics; /* kv.a(ht,F)V has no direct diagnostic/save operation. */
     mc_game_option_id id;
     mc_game_settings_status status = admit_option_action(settings, option, &id, error);
     if (status != MC_GAME_SETTINGS_OK)
@@ -1141,15 +1229,17 @@ mc_game_settings_set_option_float(mc_game_settings *settings, const mc_game_opti
     if (id == MC_GAME_OPTION_MUSIC) {
         memcpy(&settings->state.values.music_volume, &value, sizeof(value)); /* store9 */
         report.value_assigned = true;
-        status = missing_option_effect(settings, 16, MC_GAME_SETTINGS_OPTION_EFFECT_SOUND_MANAGER,
-                                       &report, error);
+        status = sound_option_effect(settings, 16, diagnostics, &report, error);
+        if (status == MC_GAME_SETTINGS_OK)
+            report.source_pc = 56;
         goto done;
     }
     if (id == MC_GAME_OPTION_SOUND) {
         memcpy(&settings->state.values.sound_volume, &value, sizeof(value)); /* store31 */
         report.value_assigned = true;
-        status = missing_option_effect(settings, 38, MC_GAME_SETTINGS_OPTION_EFFECT_SOUND_MANAGER,
-                                       &report, error);
+        status = sound_option_effect(settings, 38, diagnostics, &report, error);
+        if (status == MC_GAME_SETTINGS_OK)
+            report.source_pc = 56;
         goto done;
     }
     if (id == MC_GAME_OPTION_SENSITIVITY) {

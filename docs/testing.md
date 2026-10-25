@@ -370,6 +370,19 @@ save output and reload; aliases, partial file prefixes and diagnostic reentry.
 No fake SoundManager/RenderEngine/RenderGlobal callback can satisfy those
 dependencies. Source PCs are static provenance, not measured action execution.
 
+The concrete [SoundManager](client/sound-manager.md) now supplies the audio
+option dependency. `client.sound_manager` records authored backend call traces,
+while `client.settings_sound` checks genuine nested settings saves and guarded
+diagnostic reentry. These tests do not qualify original SoundSystem or devices.
+
+`client.vorbis_codec` exercises the low-level source-policy owner with frozen
+authored Ogg bytes. Enable `MC_BUILD_CLIENT_SOUND=ON` for headless codec tests.
+`MC_ENABLE_SOUND_REFERENCE_TESTS=ON` adds `reference.vorbis_policy`, requiring
+JDK17 and `MC_REFERENCE_CLIENT_JAR`. It compares complete declared page/buffer
+traces and reports exact PCM equality separately. Current mono synthesis
+differences remain failed PCM comparisons; policy success never covers them.
+The direct tool's `--require-pcm` makes those differences fail the command.
+
 ## Binding-code action
 
 The new [binding-code action](client/game-settings.md#binding-code-action)

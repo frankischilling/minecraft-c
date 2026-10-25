@@ -1,9 +1,10 @@
 # Client sound resources
 
 The sound foundation owns SoundPool entries, resolved file identities and binary
-streams. It does not yet play sound. SoundManager, its shared backend, device
-channels, startup registration and the actual GUI/WorldAccess routes remain
-required. The [source contract](../reference/client-sound.md) records the
+streams. [SoundManager](sound-manager.md) owns shared setup, nested settings saves
+and ordered playback requests; the [Vorbis codec](vorbis-codec.md) implements
+the original page/buffer policy. Device channels, startup registration and the
+actual GUI/WorldAccess routes remain required. The [source contract](../reference/client-sound.md) records the
 original owners and ordering.
 
 ## SoundPool ownership
@@ -274,8 +275,8 @@ null and sets EOS on the authored split-page input; its later readAll returns
 a SoundBuffer with null data. The generic native decoder emits 6,400 PCM bytes
 from those same encoded bytes. The original's granule-zero EOS branch and the
 captured buffered page explain this edge. Floating synthesis was not compared.
-The native decoder does not yet implement the original page-level read/readAll
-policy; that adapter remains required before SoundManager adoption.
+The separate [source-policy codec](vorbis-codec.md) now reproduces that
+granule-zero stop while retaining the generic decoder's independent behavior.
 
 A separate [nonzero original observation](../reference/client-sound.md#nonzero-original-pcm-observation)
 returns the same 4,096 mono frames as native decoding. Four samples differ by
@@ -287,6 +288,6 @@ unresolved.
 Complete audio still needs WAV behavior, original JOrbis/native PCM and error
 comparisons, canonical resource and registration order, queued backend commands,
 normal/streaming channel ownership, pitch/gain/listener behavior and controlled
-device measurements. Options effects require the real shared SoundManager and
-its two nested settings saves; an acknowledging callback does not satisfy that
-dependency.
+device measurements. Music/sound option actions now reach the concrete
+SoundManager and its two nested settings saves. Backend calls remain an
+explicit boundary; device playback and real client adoption are unfinished.

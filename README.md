@@ -16,8 +16,8 @@ imported resources; menus and gameplay remain unfinished.
 
 Use a C17 compiler, CMake 3.24+, Ninja, and Python 3.10+. On Windows, run from a
 Visual Studio developer shell. Initial configuration downloads pinned zlib,
-SDL3 and libpng. Linux client builds also need the platform development packages
-listed in [build setup](docs/building.md).
+SDL3, libpng, libogg and libvorbis. Linux client builds also need the platform
+development packages listed in [build setup](docs/building.md).
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
