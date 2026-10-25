@@ -14,6 +14,7 @@ option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplie
 option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
 option(MC_ENABLE_INPUT_REFERENCE_TESTS "Compare MovementInput with the supplied client" OFF)
 option(MC_ENABLE_TURN_REFERENCE_TESTS "Compare Entity turning with the supplied client" OFF)
+option(MC_ENABLE_CRAFTING_REFERENCE_TESTS "Compare crafting with supplied client/server JARs" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
@@ -292,6 +293,15 @@ target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world mc_en
 
 add_library(mc_resources STATIC src/resources/files/files.c)
 target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
+
+add_library(mc_inventory STATIC
+    src/inventory/crafting/errors.c
+    src/inventory/crafting/inventory.c
+    src/inventory/crafting/result.c
+    src/inventory/player/constructor.c
+    src/inventory/container/container.c
+    src/item/recipes/matching.c)
+target_link_libraries(mc_inventory PUBLIC mc_registry mc_item PRIVATE mc_build_options)
 
 add_library(mc_world_info STATIC src/world/info/info.c)
 target_include_directories(mc_world_info PRIVATE src/platform/time)
@@ -636,6 +646,13 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_recipes PRIVATE mc_registry mc_c_atomics mc_build_options)
     add_test(NAME item.recipes COMMAND mc_test_recipes)
     set_tests_properties(item.recipes PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_crafting tests/inventory/crafting/test_crafting.c
+        tests/item/recipes/test_matching.c)
+    target_link_libraries(mc_test_crafting PRIVATE mc_inventory mc_resources mc_build_options)
+
+    add_executable(mc_crafting_probe tests/inventory/crafting/trace_crafting.c)
+    target_link_libraries(mc_crafting_probe PRIVATE mc_inventory mc_resources mc_build_options)
 
     add_executable(mc_stack_values_probe tests/item/registry/stack_values_probe.c)
     target_link_libraries(mc_stack_values_probe PRIVATE mc_registry mc_build_options)
@@ -1273,6 +1290,30 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME inventory.crafting COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/inventory/test_crafting.py"
+        --executable "$<TARGET_FILE:mc_test_crafting>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/crafting-contracts")
+    set_tests_properties(inventory.crafting PROPERTIES
+        LABELS "public;integration;ownership;crafting" TIMEOUT 100)
+    add_test(NAME tools.crafting_probe_inputs COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/inventory/test_crafting_probe.py"
+        --executable "$<TARGET_FILE:mc_crafting_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/crafting-protocol")
+    set_tests_properties(tools.crafting_probe_inputs PROPERTIES
+        LABELS "public;tools;crafting" TIMEOUT 120)
+    if(MC_ENABLE_CRAFTING_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.crafting COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/inventory/crafting/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --server-jar "${MC_REFERENCE_SERVER_JAR}"
+            --native "$<TARGET_FILE:mc_crafting_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-crafting")
+        set_tests_properties(reference.crafting PROPERTIES
+            LABELS "reference;original;crafting" TIMEOUT 360)
+    endif()
+
     add_executable(mc_test_sound_pool tests/client/sound/test_sound_pool.c)
     target_link_libraries(mc_test_sound_pool PRIVATE mc_client_sound_pool mc_build_options)
     add_test(NAME client.sound_pool COMMAND mc_test_sound_pool)

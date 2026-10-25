@@ -23,6 +23,12 @@ constructed Entity angle fields with the original double scaling and previous
 angle adjustments. Neither component substitutes for the missing local Player,
 its constructor graph or the World entity tick loop.
 
+[Crafting inventories and containers](inventory/crafting.md) own the concrete
+Player inventory, crafting grid/result and Player/Workbench Slot graphs.
+Synchronous input notifications execute the real sorted recipe scan and publish
+fresh preview Stacks. The shared library has no display or audio dependency.
+Player construction, slot clicks and crafting-output effects remain unfinished.
+
 The [sound resource owners](client/sound.md) retain grouped entries, resolved
 file URLs and actual raw/MUS input streams. Their native retirement stays
 separate from source close behavior. Optional C Vorbis decoding has no display

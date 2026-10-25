@@ -1,6 +1,33 @@
 # Test scope and reproduction
 
+## Crafting inventories and containers
+
+The [crafting contracts](inventory/crafting.md) pass three integrated tests on
+Windows MSVC 19.51 and sanitized Linux Clang 18/GCC 13. Native tests cover all
+151 recipes and pass 254 outer inventory/container assertions per side on
+Windows and 253 on Linux; native allocation-budget branches depend on layout.
+Each product passes 48 strict protocol controls and fresh JDK 17 comparisons
+against both supplied original archives: 1,047 authored cases and 1,153 exact
+rows per side. Class/Code pins, actual class origins and initialization
+boundaries are checked. The final published input/pin files use LF endings.
+
+The complete frozen Windows suite passes all 251 cases without failures,
+disabled tests or skips. All 723 C/header files pass clang-format 18.
+
+Use `MC_ENABLE_CRAFTING_REFERENCE_TESTS=ON` with both `MC_REFERENCE_CLIENT_JAR`
+and `MC_REFERENCE_SERVER_JAR` for the opt-in original comparison. The public
+`inventory.crafting` and `tools.crafting_probe_inputs` tests use authored
+resources and need no original archive or JVM. Reproduction and finite limits
+are in the [reference README](../tests/reference/inventory/crafting/README.md).
+Output pickup, full Player construction and gameplay remain unfinished.
+
 ## Native client frontend
+
+Checkpoint `5143b58fbba506bec1d9753080e5fcb3a70906a3` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40218311052):
+240 Windows, 246 GCC and 246 Clang tests. All 732 Start/Passed pairs are present.
+Every checkout uses merge `1d012bd644dd57b0b767de78b747aebcd9307016`, whose tree
+equals that code head. The later crafting changes have separate validation.
 
 Checkpoint `3d26621d5e66741c4a4383336fd12e729fe7439b` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40213051132):

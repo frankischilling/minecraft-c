@@ -1,5 +1,23 @@
 # Development status
 
+The input/turn checkpoint `5143b58fbba506bec1d9753080e5fcb3a70906a3`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40218311052):
+240 Windows, 246 GCC and 246 Clang tests, with 732 complete Start/Passed pairs.
+Every checkout uses merge `1d012bd644dd57b0b767de78b747aebcd9307016`; its tree
+equals that code head. These checks cover input, turning and the backend
+allocation regression, before the crafting increment below.
+
+[Crafting inventories and containers](inventory/crafting.md) now construct
+InventoryPlayer and the actual Player/Workbench containers, notify grid changes
+synchronously and match all 151 recipes in source order. A bounded probe scanner
+replaces a NUL-truncating reader. The final native, protocol and unchanged-original
+tests pass on MSVC and sanitized Clang/GCC. Each product matches 1,153 original
+rows per side and passes 48 protocol checks. Full Player construction,
+crafting-output effects and gameplay remain unfinished.
+The complete frozen Windows suite passes all 251 tests without failures or
+skips. Linux verification of this increment covers the three selected native,
+protocol and original tests per compiler with ASan, UBSan and leak checks.
+
 The renderer/audio checkpoint `3d26621d5e66741c4a4383336fd12e729fe7439b`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40213051132):
 237 Windows, 243 GCC and 243 Clang tests, with 723 complete Start/Passed pairs.
@@ -9,8 +27,9 @@ The next Player dependencies implement [MovementInput](client/movement-input.md)
 and inherited [Entity turning](entity/turn.md). Integrated native and original
 comparisons pass on MSVC and sanitized Clang/GCC. They preserve live key bindings,
 duplicate precedence, double sneak/turn arithmetic, pitch clamps and previous
-angles. They do not construct or tick a Player. Real Player construction still
-requires its inventory/container graph and the actual ordered recipe scan.
+angles. They do not construct or tick a Player. Concrete crafting owners now
+provide the inventory/container graph and actual recipe scan. Living/Player
+construction and World lifecycle integration remain unfinished.
 The combined input/turn and allocation-error increment passes all 248 Windows
 tests and all 250 tests each on sanitized Clang/GCC, with no failures or skips.
 All 707 C/header files pass clang-format 18. The allocation case is verified

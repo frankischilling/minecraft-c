@@ -1,5 +1,17 @@
 # Build and tests
 
+The [crafting integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/inventory/crafting.md)
+passes three selected tests on MSVC and sanitized Clang/GCC. Each product matches
+1,153 original rows per source side across 1,047 cases and passes 48 strict
+protocol checks. The full Windows suite passes all 251 tests without failures
+or skips; all 723 C/header files pass formatting.
+Player construction and crafting-output effects remain unfinished.
+
+The [input/turn checkpoint `5143b58`](https://github.com/frankischilling/minecraft-c/actions/runs/40218311052)
+passes all four hosted jobs: 240 Windows, 246 GCC and 246 Clang tests, with
+732 complete Start/Passed pairs. All checkouts use merge `1d012bd6`; its tree
+equals that code head. The later crafting increment has separate validation.
+
 The [renderer/audio checkpoint `3d26621`](https://github.com/frankischilling/minecraft-c/actions/runs/40213051132)
 passes all four hosted jobs: 237 Windows, 243 GCC and 243 Clang tests, with
 723 complete Start/Passed pairs. All checkouts use merge `17ad0d82`; its tree

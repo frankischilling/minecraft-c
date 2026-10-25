@@ -6,6 +6,11 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [Crafting inventories and containers](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/inventory/crafting.md)
+  own Player inventory, the grid/result owners and concrete Player/Workbench
+  Slot graphs. Input notifications scan the actual 151 recipes and replace
+  the preview with a fresh Stack. Player construction, slot clicks and output
+  pickup remain unfinished.
 - [MovementInput](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/movement-input.md)
   owns key cells and borrows live settings. Inherited
   [Entity turning](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/turn.md)
