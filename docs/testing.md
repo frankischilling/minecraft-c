@@ -32,7 +32,7 @@ The [sound resource foundation](client/sound.md#verified-native-scope) passes on
 Windows MSVC 19.51.36260.0 x64 Debug headless profile: 18,654 SoundPool, 581 file,
 579 Vorbis, 43 integer-parser and 191 Random-profile checks. All five CTests,
 seven supervised stages and eleven final audits pass. Independent file-only
-readback consumes 14,275 files and rejoins all 1,404 physical source bodies,
+readback consumes 14,410 files and rejoins all 1,404 physical source bodies,
 including 1,234 public members and 1,054 non-Markdown inputs. Formatting covers
 657 C/header files. Retained decoder inputs are authored zero PCM, including a
 mono-to-stereo chain and a real missing-page rejection. Four earlier local failed
@@ -42,18 +42,22 @@ remain unqualified. The 683-case hosted result above predates these modules.
 
 Nonzero vectors exercise the actual binary32-times-32767/Java-conversion
 helper and planar suffix interleaving. Encoded fixtures remain silence. The
-[PCM CI](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
-passes all 228 Windows cases and 657-file formatting. Clang/GCC builds now
-finish; each passes 231 of 232 tests and fails decoder fixture creation. A
-bounded Ubuntu GCC ASan/UBSan loop preserves successive failures at libvorbis's
-negative Bark shift, last-band interpolation read and decode search-word shift.
-The private build copy corrects those exact operations. Native child stderr now
-appears in the public driver's failure message; empty stderr, successful status,
-exact footers, bounds and cleanup remain required. A fresh corrected build
-passes the full public decoder driver: 563 checks, seven inputs and four exact
-zero-PCM outputs. Independent file readback verifies the 1,234-member copied
-source, captures and closed PIDFD ledger. This focused Linux diagnostic does
-not qualify the full platform. Hosted qualification remains pending.
+[sanitized sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
+passes all 228 Windows and 232 GCC cases, plus 657-file formatting. Clang passes
+231 of 232 tests; only decoder checking fails. Its native child exits 0 but
+emits a UBSan null-pointer-offset report in libogg. The driver's strict stderr
+assertion rejects that outcome. An exact-commit Ubuntu Clang 18 build reproduces
+the same path; the private Ogg copy now guards the null page pointer.
+
+Earlier bounded Ubuntu GCC ASan/UBSan failures locate libvorbis's negative Bark
+shift, last-band interpolation read and signed decode search-word shift. The
+corrected public driver passes 563 GCC checks, seven inputs and four exact
+zero-PCM outputs. Independent file readback verifies its 1,234-member copied
+source, captures and closed PIDFD ledger. These focused diagnostics do not
+qualify the full platform. Hosted qualification of the Ogg correction remains
+pending. A fresh corrected Ubuntu Clang ASan/UBSan build passes all 563 decoder
+checks and independent file readback with empty child stderr. Empty stderr,
+successful status, exact footers, bounds and cleanup remain required.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):

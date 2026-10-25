@@ -73,7 +73,8 @@ link graph. Their pinned archives are:
 
 Offline overrides are `FETCHCONTENT_SOURCE_DIR_MC_OGG` and
 `FETCHCONTENT_SOURCE_DIR_MC_VORBIS`. CMake leaves those supplied trees unchanged.
-A private Vorbis copy adapts its build metadata and corrects the exact chain,
+A private Ogg copy guards empty-buffer page synchronization. A private Vorbis
+copy adapts its build metadata and corrects the exact chain,
 Bark packing, noise interpolation and decode search-word operations described
 in the [sound contract](client/sound.md#sequential-vorbis-decoding). Source hashes
 and expression checks reject an unexpected codec version. UNIX configuration

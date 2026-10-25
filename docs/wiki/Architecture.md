@@ -50,7 +50,8 @@ Current runtime navigation:
   Vorbis decoding. Their five selected Windows contracts include nonzero
   float conversion matching the original scalar operations and bounded planar
   interleaving. Encoded inputs remain silence. A focused Ubuntu GCC ASan/UBSan
-  decoder run passes 563 checks after exact private-copy Vorbis corrections.
+  decoder run passes 563 checks after exact private-copy Vorbis corrections;
+  a corrected Clang run also passes 563 after the private Ogg null-buffer guard.
   Full Linux qualification, original PCM comparisons, device playback,
   shared SoundManager setup and real GUI/WorldAccess adoption remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)

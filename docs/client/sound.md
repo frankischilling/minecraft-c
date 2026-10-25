@@ -77,8 +77,14 @@ libvorbis 1.3.7. CMake keeps these outside the shared runtime and dedicated-serv
 link graph. `MC_BUILD_CLIENT_SOUND` defaults to the graphical-client setting;
 it can be enabled with `MC_BUILD_CLIENT=OFF` for decoder tests without a display.
 Offline overrides are `FETCHCONTENT_SOURCE_DIR_MC_OGG` and
-`FETCHCONTENT_SOURCE_DIR_MC_VORBIS`. Vorbis build compatibility changes apply
-only to a private build copy; the supplied override tree stays unchanged.
+`FETCHCONTENT_SOURCE_DIR_MC_VORBIS`. Codec corrections apply only to private
+build copies; both supplied override trees stay unchanged.
+
+The Ogg copy guards page synchronization before evaluating a pointer offset.
+A fresh sync owner has a null buffer and zero counters; adding its zero offset
+to null is still undefined C. Keeping that page pointer null preserves the
+normal need-more-data return. The pristine source hash and exact expression
+are checked before the correction.
 
 That copy also corrects one libvorbis nonseekable chain branch. The header reader
 has already submitted the final header page when a new logical stream opens.
@@ -150,11 +156,11 @@ exercise malformed/truncated headers, a real missing-page error, prefix limits
 and cleanup. The chain changes from mono 32 kHz to stereo 48 kHz.
 
 All seven supervised stages and eleven final audits pass. Independent file-only
-readback consumes 14,275 retained source, input, product, stream, tool and SDK
+readback consumes 14,410 retained source, input, product, stream, tool and SDK
 files, joining all 1,404 physical source files, including 1,234 public members
 and 1,054 non-Markdown inputs. All 657 C/header files pass clang-format 18.1.3.
 The terminal report's SHA-256 is
-`0e4e371694ae9699a2e90e78d9c238c06fcfc1dc36f4d3a31939552e0731df8a`.
+`454080cc2f58f82b0819ccf82d1840698d57a1b8d1e7a14c88849c25b90b940f`.
 Later result-documentation changes are recorded separately from that snapshot.
 
 The decoder tests include 24 literal nonzero/special-value vectors through the
@@ -170,7 +176,15 @@ remain preserved. The final run uses explicit LF copies, unsigned byte fixtures,
 native descriptors and the exact chain correction above; assertions and strict
 warnings remain enabled.
 
-The [hosted PCM checkpoint `d9456c2`](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
+The [sanitized checkpoint `184a6ce`](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
+passes all 228 Windows and 232 GCC cases, plus 657-file formatting. Clang passes
+231 of 232 tests. Its decoder check exits 0 but emits a UBSan report for
+libogg's null-buffer page offset, so the strict stderr assertion rejects it.
+An exact-commit Ubuntu Clang 18 reproduction confirms that same path before
+the Ogg correction above. This failed run and its complete chronology remain
+preserved; the success-only hosted auditor was not executed.
+
+The earlier [PCM checkpoint `d9456c2`](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
 passes all 228 Windows cases and 657-file formatting. Both Linux builds finish;
 each passes 231 of 232 tests and fails only `client.vorbis_decoder`, during
 fixture creation. Local Ubuntu GCC ASan/UBSan reproduction identifies the
@@ -188,6 +202,11 @@ all 1,234 copied source members, retained inputs/outputs, closed streams and
 the supervisor's closed PIDFD ledger. This is a focused decoder diagnostic,
 not a full Linux suite or original PCM comparison. Windows has 16 additional
 platform-specific decoder checks.
+
+After the Ogg correction, a fresh Ubuntu Clang 18 ASan/UBSan build also passes
+all 563 decoder checks with empty child stderr. Its independent file readback
+passes against the copied source and complete retained captures. The prior
+exact-commit Clang failure stays preserved separately.
 
 The earlier [sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
 passes all 228 Windows cases and 655-file formatting. Both Linux builds fail

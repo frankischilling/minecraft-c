@@ -43,7 +43,7 @@ remain available.
 
 [World power queries](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/power.md)
 preserve ordered neighbors, solid-block conduction and concrete Block outputs.
-Full wire connectivity uses the actual separate horizontal-direction class,
+Full redstone connectivity uses the actual separate horizontal-direction class,
 including lazy allocation and failure prefixes. World and Block namespaces
 remain distinct, and nested failures retain their actual acquisition children.
 Propagation, redstone lifecycle, rail integration and original power-runtime

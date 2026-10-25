@@ -64,7 +64,7 @@ unverified.
 
 [World power queries](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/world/power.md) execute the four World bodies,
 solid-block conduction and all admitted output/capability bodies, including
-complete wire connectivity and independent lazy horizontal directions. At
+complete redstone connectivity and independent lazy horizontal directions. At
 source `9f9d3a2`, a separate original/MSVC comparison matches all 5,365 literal
 rows per side under the [seven-field projection](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/power.md#validation-boundary),
 completion and normally returned boolean rules. The 201 target failures per
@@ -88,7 +88,7 @@ pressure, 373 query and 13,819 Class identity/ancestry checks per host.
 Original pressure/Class-query comparisons, other Entity constructors,
 nonempty concrete observers and tick draining remain unfinished.
 
-Wire propagation, torch/switch/repeater lifecycle, gameplay rail physics,
+Redstone propagation, torch/switch/repeater lifecycle, gameplay rail physics,
 rendering/audio, and playable client/server integration remain unfinished.
 The [parity matrix](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/parity.md) separates finite verified scenarios from these
 remaining requirements. There is no complete playable C client or server.

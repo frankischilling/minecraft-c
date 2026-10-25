@@ -46,7 +46,7 @@ and reference links remain intact.
 ## World power queries
 
 The [power source map](https://github.com/frankischilling/minecraft-c/blob/ef1434015420678559cfa3d3b2f21018c5b733ce/docs/reference/power.md)
-records the four World methods, all concrete outputs, full wire connectivity
+records the four World methods, all concrete outputs, full redstone connectivity
 and the independent horizontal-direction initializer. Each host passes 7,593
 power and 359 horizontal-direction checks. The real two-World fixture retains
 two input Chunk records and explicit clocks. Complete suites pass 173/175/175

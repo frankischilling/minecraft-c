@@ -14,21 +14,21 @@ The [sound resource foundation](client/sound.md) owns SoundPool entries, resolve
 URLs, raw/MUS streams and sequential Vorbis decoding. A Windows MSVC x64 Debug
 headless run passes 18,654 pool, 581 file and 579 decoder checks, alongside 43
 integer-parser and 191 Random-profile checks. All seven stages and eleven audits
-pass; independent readback consumes 14,275 retained files. Formatting covers all
+pass; independent readback consumes 14,410 retained files. Formatting covers all
 657 C/header files. These authored contracts initialize no audio device and
 make no original PCM comparison. SoundManager, WAV, backend playback, real
 client adoption and Linux sound qualification remain unfinished.
 
-The [PCM checkpoint `d9456c2`](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
-passes 228 Windows cases and 657-file formatting. Both Linux builds finish;
-each passes 231 of 232 tests and fails only decoder fixture creation. Local
-sanitized reproduction finds a negative Bark shift and a last-band table read
-in libvorbis. Correcting them exposes an unsigned decode search-word shift
-requirement. These exact corrections apply to the private build copy, preserving
-the official override tree and sanitizer checks. A fresh Ubuntu GCC ASan/UBSan
-build passes the public decoder driver with 563 checks and exact authored PCM
-outputs. Its independent file readback passes. Full Linux sound qualification
-remains unfinished.
+The [sanitized sound checkpoint `184a6ce`](https://github.com/frankischilling/minecraft-c/actions/runs/40169607338)
+passes 228 Windows and 232 GCC cases, plus 657-file formatting. Clang passes
+231 of 232 tests; only decoder checking fails, on libogg's empty-buffer pointer
+arithmetic. Exact-commit Ubuntu Clang reproduction confirms the report.
+The private Ogg copy now keeps that page pointer null, preserving the normal
+need-more-data result and the unchanged supplied source. Earlier private Vorbis
+corrections pass the focused Ubuntu GCC decoder driver with 563 checks and
+exact authored PCM. With the Ogg correction, a fresh Ubuntu Clang ASan/UBSan
+decoder run also passes all 563 checks and its independent file readback.
+Hosted qualification of that correction remains pending.
 
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):

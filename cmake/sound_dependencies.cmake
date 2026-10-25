@@ -21,7 +21,28 @@ function(mc_add_sound_dependencies)
         SOURCE_SUBDIR __mc_deferred_configuration)
     FetchContent_MakeAvailable(mc_ogg)
     FetchContent_GetProperties(mc_ogg SOURCE_DIR ogg_source BINARY_DIR ogg_binary)
-    add_subdirectory("${ogg_source}" "${ogg_binary}" EXCLUDE_FROM_ALL)
+
+    # A fresh sync owner has no allocation yet. Its need-more-data path must
+    # not evaluate NULL + 0 before checking whether a page header is present.
+    file(SHA256 "${ogg_source}/src/framing.c" framing_sha256)
+    if(NOT framing_sha256 STREQUAL
+        "04373c7f155e0f6d8a5f355108b2908002a6ffe3895da89796619090a3313bdc")
+        message(FATAL_ERROR "Pinned libogg framing source does not match the reviewed source")
+    endif()
+    file(READ "${ogg_source}/src/framing.c" framing)
+    set(old_page "  page=oy->data+oy->returned;")
+    set(new_page "  page=oy->data ? oy->data+oy->returned : NULL;")
+    string(FIND "${framing}" "${old_page}" page_offset)
+    if(page_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned libogg page synchronization branch is missing")
+    endif()
+    string(REPLACE "${old_page}" "${new_page}" framing "${framing}")
+    set(ogg_compat_source "${ogg_binary}/mc-configured-source")
+    file(MAKE_DIRECTORY "${ogg_compat_source}")
+    file(COPY "${ogg_source}/" DESTINATION "${ogg_compat_source}")
+    file(CONFIGURE OUTPUT "${ogg_compat_source}/src/framing.c" CONTENT "${framing}"
+        @ONLY NEWLINE_STYLE LF)
+    add_subdirectory("${ogg_compat_source}" "${ogg_binary}/build" EXCLUDE_FROM_ALL)
 
     FetchContent_Declare(mc_vorbis
         URL https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.zip
