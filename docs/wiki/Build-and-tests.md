@@ -20,10 +20,15 @@ and real client integration remain unfinished. The hosted result above predates
 these sound modules.
 
 Nonzero vectors exercise the production converter and planar suffix helper;
-encoded fixtures remain silence. The [preceding sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
-passes 228 Windows cases and 655-file formatting. Clang/GCC builds fail on
-missing upstream `alloca` declarations/linking before Linux tests run. The
-current header configuration correction awaits CI for this source.
+encoded fixtures remain silence. The [PCM CI](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
+passes 228 Windows cases and 657-file formatting. Clang/GCC builds finish;
+each passes 231 of 232 tests and fails decoder fixture creation. Local Ubuntu
+sanitizers expose a negative Bark shift, a last-band interpolation read and a
+decode search-word shift in libvorbis. Exact private-copy corrections preserve
+the official sources and strict diagnostics. The corrected Ubuntu GCC
+ASan/UBSan decoder driver passes 563 checks, seven authored inputs and four
+exact PCM outputs, with an independent file readback. This focused result
+does not qualify the full Linux platform. Hosted qualification remains pending.
 
 The preceding [code checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
 passes all four hosted jobs: 224 MSVC, 228 GCC and 228 Clang cases, or 680

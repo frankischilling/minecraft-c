@@ -42,10 +42,18 @@ remain unqualified. The 683-case hosted result above predates these modules.
 
 Nonzero vectors exercise the actual binary32-times-32767/Java-conversion
 helper and planar suffix interleaving. Encoded fixtures remain silence. The
-[preceding sound CI](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
-passes all 228 Windows cases and 655-file formatting; Clang/GCC builds fail on
-the missing upstream `alloca` declaration/link before Linux tests can run.
-The current UNIX header configuration correction awaits CI for this source.
+[PCM CI](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
+passes all 228 Windows cases and 657-file formatting. Clang/GCC builds now
+finish; each passes 231 of 232 tests and fails decoder fixture creation. A
+bounded Ubuntu GCC ASan/UBSan loop preserves successive failures at libvorbis's
+negative Bark shift, last-band interpolation read and decode search-word shift.
+The private build copy corrects those exact operations. Native child stderr now
+appears in the public driver's failure message; empty stderr, successful status,
+exact footers, bounds and cleanup remain required. A fresh corrected build
+passes the full public decoder driver: 563 checks, seven inputs and four exact
+zero-PCM outputs. Independent file readback verifies the 1,234-member copied
+source, captures and closed PIDFD ledger. This focused Linux diagnostic does
+not qualify the full platform. Hosted qualification remains pending.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):

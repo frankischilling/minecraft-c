@@ -58,3 +58,30 @@ SDL3 and libpng retain their upstream licenses, copied verbatim in
 zlib notice with any future executable containing these static libraries.
 The project's MIT license does not replace them. Original Minecraft resources
 remain separately supplied through the local asset importer.
+
+## Sound codecs
+
+`MC_BUILD_CLIENT_SOUND` enables static libogg 1.3.6 and libvorbis 1.3.7.
+It defaults to `MC_BUILD_CLIENT` and can be enabled in a headless build for
+decoder tests. These C libraries stay outside the shared simulation and server
+link graph. Their pinned archives are:
+
+| Library | Source archive | SHA-256 |
+| --- | --- | --- |
+| libogg 1.3.6 | [Xiph release](https://downloads.xiph.org/releases/ogg/libogg-1.3.6.zip) | `e347b59c29e8f938bb48b2fda5da02f2d5d97316c004abaa76e171cf4a2fbdd7` |
+| libvorbis 1.3.7 | [Xiph release](https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.zip) | `57c8bc92d2741934b8dc939af49c2639edc44b8879cba2ec14ad3189e2814582` |
+
+Offline overrides are `FETCHCONTENT_SOURCE_DIR_MC_OGG` and
+`FETCHCONTENT_SOURCE_DIR_MC_VORBIS`. CMake leaves those supplied trees unchanged.
+A private Vorbis copy adapts its build metadata and corrects the exact chain,
+Bark packing, noise interpolation and decode search-word operations described
+in the [sound contract](client/sound.md#sequential-vorbis-decoding). Source hashes
+and expression checks reject an unexpected codec version. UNIX configuration
+probes `alloca.h` and enables its existing include guard on the three Vorbis
+targets. Sanitizer instrumentation covers Ogg and those targets.
+
+Both libraries retain their BSD notices in [licenses/libogg.txt](../licenses/libogg.txt)
+and [licenses/libvorbis.txt](../licenses/libvorbis.txt). Keep the notices with any
+distributed executable or source containing these libraries. The decoder has
+no device backend yet, and its native contracts do not establish original
+JOrbis PCM equivalence.

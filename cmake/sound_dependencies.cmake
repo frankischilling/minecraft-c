@@ -31,7 +31,7 @@ function(mc_add_sound_dependencies)
     FetchContent_MakeAvailable(mc_vorbis)
     FetchContent_GetProperties(mc_vorbis SOURCE_DIR vorbis_source BINARY_DIR vorbis_binary)
 
-    # Apply the reviewed build and nonseekable-chain changes in a private copy.
+    # Apply the reviewed build and codec changes in a private copy.
     # Offline source overrides remain byte-identical to the official archive.
     file(READ "${vorbis_source}/CMakeLists.txt" upstream)
     set(adapted "${upstream}")
@@ -73,6 +73,52 @@ function(mc_add_sound_dependencies)
     endif()
     string(REPLACE "${old_chain}" "${new_chain}" vorbisfile "${vorbisfile}")
     file(CONFIGURE OUTPUT "${compat_source}/lib/vorbisfile.c" CONTENT "${vorbisfile}"
+        @ONLY NEWLINE_STYLE LF)
+
+    # The Bark lookup packs a possibly negative lower index. Multiplication is
+    # defined for the codec's bounded block sizes; left-shifting it is not.
+    file(SHA256 "${vorbis_source}/lib/psy.c" psy_sha256)
+    if(NOT psy_sha256 STREQUAL
+        "e8ccec1fba7d00961d5c67fec30b488c912f0ad7842ec7b1aeab987b97744b6e")
+        message(FATAL_ERROR "Pinned libvorbis psychoacoustic source does not match the reviewed source")
+    endif()
+    file(READ "${vorbis_source}/lib/psy.c" psy)
+    set(old_bark "    p->bark[i]=((lo-1)<<16)+(hi-1);")
+    set(new_bark "    p->bark[i]=(lo-1)*65536L+(hi-1);")
+    string(FIND "${psy}" "${old_bark}" bark_offset)
+    if(bark_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned libvorbis Bark packing branch is missing")
+    endif()
+    string(REPLACE "${old_bark}" "${new_bark}" psy "${psy}")
+    # At the last noise band, del is zero but the next table access is still
+    # evaluated. Reuse the endpoint instead of reading beyond noiseoff's row.
+    set(old_noise_endpoint "        p->vi->noiseoff[j][inthalfoc+1]*del;")
+    set(new_noise_endpoint
+        "        p->vi->noiseoff[j][inthalfoc < P_BANDS-1 ? inthalfoc+1 : inthalfoc]*del;")
+    string(FIND "${psy}" "${old_noise_endpoint}" noise_endpoint_offset)
+    if(noise_endpoint_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned libvorbis noise interpolation branch is missing")
+    endif()
+    string(REPLACE "${old_noise_endpoint}" "${new_noise_endpoint}" psy "${psy}")
+    file(CONFIGURE OUTPUT "${compat_source}/lib/psy.c" CONTENT "${psy}"
+        @ONLY NEWLINE_STYLE LF)
+
+    # The decode search table intentionally places bits in the high unsigned
+    # word. Convert before shifting so setting bit 31 remains defined C.
+    file(SHA256 "${vorbis_source}/lib/sharedbook.c" sharedbook_sha256)
+    if(NOT sharedbook_sha256 STREQUAL
+        "a883767bf16552f5cf8686b58b86e55819dcb63487c5307fee5d45820b836a40")
+        message(FATAL_ERROR "Pinned libvorbis codebook source does not match the reviewed source")
+    endif()
+    file(READ "${vorbis_source}/lib/sharedbook.c" sharedbook)
+    set(old_codeword "          ogg_uint32_t word=i<<(32-c->dec_firsttablen);")
+    set(new_codeword "          ogg_uint32_t word=(ogg_uint32_t)i<<(32-c->dec_firsttablen);")
+    string(FIND "${sharedbook}" "${old_codeword}" codeword_offset)
+    if(codeword_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned libvorbis decode search table branch is missing")
+    endif()
+    string(REPLACE "${old_codeword}" "${new_codeword}" sharedbook "${sharedbook}")
+    file(CONFIGURE OUTPUT "${compat_source}/lib/sharedbook.c" CONTENT "${sharedbook}"
         @ONLY NEWLINE_STYLE LF)
     add_subdirectory("${compat_source}" "${vorbis_binary}/build" EXCLUDE_FROM_ALL)
 

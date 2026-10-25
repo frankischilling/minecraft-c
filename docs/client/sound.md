@@ -91,8 +91,17 @@ decoder errors. Both libraries retain their BSD license notices under
 The UNIX build probes for `alloca.h` and enables libvorbis's existing include
 guard on its three targets. Upstream CMake omits that check; strict C17 Clang
 otherwise rejects implicit `alloca` calls. No warning suppression or upstream
-source change is used for this header configuration. Linux qualification of
-this correction is still pending.
+source change is used for this header configuration. Both Linux builds at
+`d9456c2` reach the test suite with this correction.
+
+The private copy also corrects three operations reached by the sanitized
+authored-fixture test. Bark packing multiplies a bounded signed index by 65536
+instead of left-shifting a negative value. Noise interpolation reuses the last
+band when its next-band weight is zero, avoiding an out-of-range read that C
+still evaluates. Decode search-table construction converts its index to
+`ogg_uint32_t` before shifting bits into the high word. Exact upstream source
+hashes and expression spellings guard each change. Sanitizers remain enabled
+on Ogg and all three Vorbis targets.
 
 `mc_vorbis_decoder` opens the retained file identity through sequential callbacks.
 Each read makes at most one `ov_read_float` call and publishes interleaved signed
@@ -145,7 +154,7 @@ readback consumes 14,275 retained source, input, product, stream, tool and SDK
 files, joining all 1,404 physical source files, including 1,234 public members
 and 1,054 non-Markdown inputs. All 657 C/header files pass clang-format 18.1.3.
 The terminal report's SHA-256 is
-`dd84357f77475747442913aab3b6ba9e6213f2d4c785ccce1e6018d22ac1702e`.
+`0e4e371694ae9699a2e90e78d9c238c06fcfc1dc36f4d3a31939552e0731df8a`.
 Later result-documentation changes are recorded separately from that snapshot.
 
 The decoder tests include 24 literal nonzero/special-value vectors through the
@@ -161,10 +170,28 @@ remain preserved. The final run uses explicit LF copies, unsigned byte fixtures,
 native descriptors and the exact chain correction above; assertions and strict
 warnings remain enabled.
 
-The preceding [hosted sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
+The [hosted PCM checkpoint `d9456c2`](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
+passes all 228 Windows cases and 657-file formatting. Both Linux builds finish;
+each passes 231 of 232 tests and fails only `client.vorbis_decoder`, during
+fixture creation. Local Ubuntu GCC ASan/UBSan reproduction identifies the
+negative Bark shift, then the last-band table read. After those corrections,
+the full public driver creates its inputs and exposes the decode search-word
+shift. Each failed source/build/capture family remains preserved. The driver
+now includes the actual bounded child stderr in its failure message without
+changing its success conditions.
+
+With all three arithmetic/bounds corrections, a fresh Ubuntu x86-64 GCC 13
+Debug build passes the complete public decoder driver under ASan/UBSan:
+563 checks, seven authored inputs and four exact PCM outputs. Both native
+children exit naturally with empty stderr. Independent file-only readback joins
+all 1,234 copied source members, retained inputs/outputs, closed streams and
+the supervisor's closed PIDFD ledger. This is a focused decoder diagnostic,
+not a full Linux suite or original PCM comparison. Windows has 16 additional
+platform-specific decoder checks.
+
+The earlier [sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
 passes all 228 Windows cases and 655-file formatting. Both Linux builds fail
 on the missing `alloca` declaration or link; their test stages never execute.
-The UNIX header correction above still needs qualification on Linux.
 
 To run the same five public contracts in a headless build:
 

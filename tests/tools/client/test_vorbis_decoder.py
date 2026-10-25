@@ -88,7 +88,8 @@ def run_phase(binary, parent, root, name, mode, pattern, receipt):
         raw, out_pin = consume(stdout_path, STREAM_LIMIT)
         errors, err_pin = consume(stderr_path, STREAM_LIMIT)
         row["consumed_streams"] = {"stdout": out_pin, "stderr": err_pin}
-        need(row["returncode"] == 0 and errors == b"", "native phase status/stderr")
+        need(row["returncode"] == 0 and errors == b"",
+             f"native phase status={row['returncode']}; stderr={errors!r}")
         match = re.fullmatch(pattern, raw)
         need(match is not None, "complete native phase footer")
         if match.lastindex:

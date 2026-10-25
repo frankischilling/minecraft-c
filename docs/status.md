@@ -19,11 +19,16 @@ pass; independent readback consumes 14,275 retained files. Formatting covers all
 make no original PCM comparison. SoundManager, WAV, backend playback, real
 client adoption and Linux sound qualification remain unfinished.
 
-The [preceding sound checkpoint `d4838ea`](https://github.com/frankischilling/minecraft-c/actions/runs/40162747830)
-passes all 228 Windows cases and 655-file formatting. Clang rejects missing
-`alloca` declarations in upstream Vorbis; GCC fails the corresponding link.
-Neither Linux test stage runs. The current target-specific header correction
-and PCM conversion still need qualification on Linux.
+The [PCM checkpoint `d9456c2`](https://github.com/frankischilling/minecraft-c/actions/runs/40165382172)
+passes 228 Windows cases and 657-file formatting. Both Linux builds finish;
+each passes 231 of 232 tests and fails only decoder fixture creation. Local
+sanitized reproduction finds a negative Bark shift and a last-band table read
+in libvorbis. Correcting them exposes an unsigned decode search-word shift
+requirement. These exact corrections apply to the private build copy, preserving
+the official override tree and sanitizer checks. A fresh Ubuntu GCC ASan/UBSan
+build passes the public decoder driver with 563 checks and exact authored PCM
+outputs. Its independent file readback passes. Full Linux sound qualification
+remains unfinished.
 
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):
