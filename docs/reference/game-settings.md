@@ -2,7 +2,7 @@
 
 Minecraft Beta 1.7.3 stores client options in GameSettings (`kv`) and individual key bindings in `qb`. The verified class has 40 declared fields: 36 instance fields and four static label arrays. Constructor defaults, file parsing and saving are separate operations from the effectful option setters.
 
-The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Binding-code assignment with real save has passing native contracts on all three compilers. The new float/discrete action contracts pass one finite Windows MSVC headless profile. Linux actions, original-action correspondence, real audio/renderer dependencies and the complete client remain unfinished.
+The authority is the supplied client archive, SHA-256 `af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`. Its unchanged `kv.class` and `qb.class` hashes are `fd62ebcc36e2f2a1428cb41b2f1f8ebd86fee9855ec1b7f7055ba307d6577102` and `4c1524aeb93b82f91517c5ed5a3dcce02c1b110a9d65b3db7089cfc8a37cd7aa`. Bytecode establishes the field and method contracts below. Controlled execution of the original constructors and load/save bodies supplies the finite persistence observations. The separate finite native comparisons below qualify only their declared persistence projection. Binding-code assignment with real save has passing native contracts on all three compilers. The float/discrete action contracts pass one finite Windows MSVC headless profile and the later hosted MSVC/GCC/Clang checkpoint. Original-action correspondence, real audio/renderer dependencies and the complete client remain unfinished.
 
 ## Fields and defaults
 
@@ -226,9 +226,11 @@ use the real owner and the existing admitted save body. One Windows MSVC
 headless profile passes 702 native action checks and eight independent file-check
 categories, with persistence and metadata regressions in its other two CTests.
 This qualifies the finite native store/save and missing-field policies below,
-not an original-action execution or real effect-owner comparison. Linux actions
-remain unrun. The current boundary cannot read fields through the borrowed
-opaque Minecraft pointer:
+not an original-action execution or real effect-owner comparison. The later
+[hosted `2afd39a` checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
+passes native actions on MSVC and sanitized GCC/Clang within all 683 cases.
+The current boundary cannot read fields through the borrowed opaque Minecraft
+pointer:
 
 | Action | Store PC | First receiver-field PC | Missing role |
 | --- | ---: | ---: | --- |

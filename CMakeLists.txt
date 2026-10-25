@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 option(MC_BUILD_CLIENT "Build the native graphical client" ON)
+option(MC_BUILD_CLIENT_SOUND "Build client sound decoding modules" ${MC_BUILD_CLIENT})
 option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop OpenGL context" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
@@ -138,6 +139,20 @@ add_library(mc_game_settings STATIC
     src/client/settings/game_option.c)
 target_include_directories(mc_game_settings PUBLIC include)
 target_link_libraries(mc_game_settings PUBLIC mc_core PRIVATE mc_build_options)
+add_library(mc_client_sound_files STATIC src/client/sound/sound_file.c)
+target_include_directories(mc_client_sound_files PUBLIC include)
+target_link_libraries(mc_client_sound_files PUBLIC mc_core PRIVATE mc_build_options)
+add_library(mc_client_sound_pool STATIC src/client/sound/sound_pool.c)
+target_include_directories(mc_client_sound_pool PUBLIC include)
+target_link_libraries(mc_client_sound_pool PUBLIC mc_client_sound_files PRIVATE mc_build_options)
+if(MC_BUILD_CLIENT_SOUND)
+    include(cmake/sound_dependencies.cmake)
+    add_library(mc_sound_decoder STATIC src/client/sound/vorbis_decoder.c)
+    target_include_directories(mc_sound_decoder PUBLIC include)
+    # This owner supplies callbacks; omit Vorbisfile's unused header copies.
+    target_compile_definitions(mc_sound_decoder PRIVATE OV_EXCLUDE_STATIC_CALLBACKS)
+    target_link_libraries(mc_sound_decoder PUBLIC mc_client_sound_files PRIVATE vorbisfile mc_build_options)
+endif()
 add_library(mc_client_game_directory STATIC src/client/startup/game_directory.c)
 target_include_directories(mc_client_game_directory PUBLIC src/client/startup)
 target_link_libraries(mc_client_game_directory PUBLIC mc_core PRIVATE mc_build_options)
@@ -1170,6 +1185,33 @@ if(BUILD_TESTING)
     target_link_libraries(mc_caves_geometry_probe PRIVATE mc_world mc_build_options)
 
     find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+    add_executable(mc_test_sound_pool tests/client/sound/test_sound_pool.c)
+    target_link_libraries(mc_test_sound_pool PRIVATE mc_client_sound_pool mc_build_options)
+    add_test(NAME client.sound_pool COMMAND mc_test_sound_pool)
+    set_tests_properties(client.sound_pool PROPERTIES LABELS "public;unit;client;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_sound_file tests/client/sound/test_sound_file.c)
+    target_link_libraries(mc_test_sound_file PRIVATE mc_client_sound_pool mc_build_options)
+    add_test(NAME client.sound_file
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_sound_file.py"
+            --executable "$<TARGET_FILE:mc_test_sound_file>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+    set_tests_properties(client.sound_file PROPERTIES LABELS "public;integration;client;ownership" TIMEOUT 45)
+
+    if(MC_BUILD_CLIENT_SOUND)
+        add_executable(mc_test_vorbis_decoder tests/client/sound/test_vorbis_decoder.c)
+        target_compile_definitions(mc_test_vorbis_decoder PRIVATE OV_EXCLUDE_STATIC_CALLBACKS)
+        target_link_libraries(mc_test_vorbis_decoder PRIVATE mc_sound_decoder vorbisenc mc_build_options)
+        add_test(NAME client.vorbis_decoder
+            COMMAND "${Python3_EXECUTABLE}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_vorbis_decoder.py"
+                --executable "$<TARGET_FILE:mc_test_vorbis_decoder>"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+        set_tests_properties(client.vorbis_decoder PROPERTIES
+            LABELS "public;integration;client;ownership" TIMEOUT 120)
+    endif()
+
     add_executable(mc_test_game_option tests/client/settings/test_game_option.c)
     target_link_libraries(mc_test_game_option PRIVATE mc_game_settings mc_build_options)
     add_test(NAME client.game_option COMMAND mc_test_game_option)

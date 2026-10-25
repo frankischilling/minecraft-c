@@ -121,9 +121,12 @@ checks. It completes seven stages and eleven final audits. Test children close
 naturally; configure/build retain the explicit pinned compiler-helper allowance.
 The tested source has 1,215 public members, 1,037 non-Markdown inputs and
 645 C/header files, all formatter-checked before the target run. There is no
-new client-mode run, Linux action run or current hosted result. Actual audio,
-texture refresh, RenderGlobal rebuild, Options UI and original actions remain
-unqualified.
+new local client-mode or Linux action run. The subsequent
+[hosted checkpoint `2afd39a`](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
+passes these contracts on MSVC and sanitized GCC/Clang within all 683 cases.
+Actual audio, texture refresh, RenderGlobal rebuild, Options UI and original
+actions remain unqualified. The [sound resource foundation](sound.md) does not
+yet satisfy the real SoundManager dependency.
 
 ## Bounds and unfinished work
 

@@ -10,8 +10,15 @@ does not yet start gameplay, child menus or audio.
 The [GameSettings owner](client/game-settings.md) keeps options persistence
 separate from display and audio. It owns retained UTF-16 Strings, KeyBindings
 and binding arrays, and uses the shared Reader/Writer interfaces for real
-files. It can build with `MC_BUILD_CLIENT=OFF`. The current application has
-not yet adopted this owner or the effectful option setters.
+files. It can build with `MC_BUILD_CLIENT=OFF`. The application loads this owner
+after Display and uses its initial scale and anaglyph before title consumers.
+Options screens and real effectful receivers remain unfinished.
+
+The [sound resource owners](client/sound.md) retain grouped entries, resolved
+file URLs and actual raw/MUS input streams. Their native retirement stays
+separate from source close behavior. Optional C Vorbis decoding has no display
+or audio-device initialization and remains outside the server link graph.
+Actual SoundManager/backend playback and startup adoption remain unfinished.
 
 [Dedicated World construction](world/construction.md#dedicated-construction)
 selects its cache during the base virtual provider call and retains separate

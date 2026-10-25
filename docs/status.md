@@ -1,5 +1,24 @@
 # Development status
 
+The option-action checkpoint `2afd39a70935a3ae167f7cb7fad6452392828c6d`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178):
+225 MSVC, 229 GCC and 229 Clang cases, 683 complete Start/Passed pairs with zero
+failures, skips or missing runs. Formatting covers 645 C/header files; controller
+mirrors and lifecycle guards pass. All four actual checkouts use synthetic merge
+`c37ce7331a8bf643587081c7ae07e5e2a117797b`, with a complete tree equal to that head.
+Independent readback reconstructs 328 trees and joins all 1,215 literal committed
+bodies and 1,037 non-Markdown tested inputs. Native option actions run on every
+host; original actions and real effect owners remain unfinished.
+
+The [sound resource foundation](client/sound.md) owns SoundPool entries, resolved
+URLs, raw/MUS streams and sequential Vorbis decoding. A Windows MSVC x64 Debug
+headless run passes 18,654 pool, 581 file and 469 decoder checks, alongside 43
+integer-parser and 191 Random-profile checks. All seven stages and eleven audits
+pass; independent readback consumes 14,273 retained files. Formatting covers all
+655 C/header files. These authored contracts initialize no audio device and
+make no original PCM comparison. SoundManager, WAV, backend playback, real
+client adoption and Linux sound qualification remain unfinished.
+
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):
 224 MSVC, 228 GCC and 228 Clang tests. All 680 cases have complete Start/Passed
@@ -18,10 +37,11 @@ checks and 883 GameOption checks. All three CTests, seven stages and eleven
 final audits pass; all 645 C/header files pass formatting. The tested family
 has 1,215 public members and 1,037 non-Markdown inputs. An independent file-only
 readback rehashes 2,788 retained members, eight products and two capture trees.
-No new client-mode, Linux action or hosted run is claimed. Six audio/renderer
+No new local client-mode or Linux action profile ran. Six audio/renderer
 paths retain assignment then stop at their first missing field; actual effects,
 Options UI and original-action correspondence remain unfinished. The preceding
-680-case CI result excludes these new bodies.
+680-case CI result excludes these bodies; the later 683-case result above
+includes their native contracts.
 
 The App now loads one real file-backed GameSettings owner after Display and
 before font/menu consumers. [GameDirectory](client/game-directory.md) performs

@@ -42,8 +42,14 @@ Current runtime navigation:
   pass one Windows headless profile with 702 native checks and eight file-check
   categories, using real stores and completed-path save. Six audio/renderer
   paths stop after assignment at the first missing receiver field; no callback
-  or later save is substituted. Linux actions, original-action comparison,
-  Options UI and real effect owners remain unfinished.
+  or later save is substituted. Hosted `2afd39a` adds the native actions on
+  sanitized GCC/Clang within 683 complete passing cases. Original-action
+  comparison, Options UI and real effect owners remain unfinished.
+- [Sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md)
+  own SoundPool entries, retained file URLs, actual raw/MUS streams and sequential
+  Vorbis decoding. Their five selected Windows contracts pass without a device.
+  Original PCM comparisons, device playback, shared SoundManager setup and real
+  GUI/WorldAccess adoption remain unfinished.
 - [Server construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/server/construction.md)
   owns default fields and native lifetime; dedicated World construction selects
   the actual cache and retains separate subclass and Entity-index owners.

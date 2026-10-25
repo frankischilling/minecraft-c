@@ -58,3 +58,12 @@ A named client action and its assigned key code.
 
 **GameOption**:
 A client option such as music volume, render distance or view bobbing.
+
+**SoundManager**:
+The client's sound effects, music, streaming playback and listener behavior.
+
+**SoundPool**:
+Registered audio entries grouped for random variant selection.
+
+**SoundPoolEntry**:
+One registered audio resource, with its logical name and file URL.

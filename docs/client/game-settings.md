@@ -10,8 +10,10 @@ Linux run. Options menus remain unfinished. The binding-code action's native
 contracts pass on all three compilers; no original-action comparison has been
 added. The newer float/discrete action contracts pass one Windows MSVC
 headless profile: 702 native checks and eight file-check categories. Six paths
-stop after assignment at their missing audio/renderer fields. Linux action
-execution and original-action correspondence remain open.
+stop after assignment at their missing audio/renderer fields. The subsequent
+[hosted `2afd39a` checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
+passes the action contracts on MSVC and sanitized GCC/Clang. Original-action
+correspondence and real effects remain open.
 
 The interface is [game_settings.h](../../include/mc/client/settings/game_settings.h).
 The [original source contract](../reference/game-settings.md) records the
@@ -192,8 +194,10 @@ Debug. The same single headless profile passes the existing 548 settings
 checks plus six file checks and 883 GameOption checks, with seven validation
 stages and eleven final audits. All 645 C/header files pass formatting. These
 results qualify the finite stores, saves, reentry and explicit missing-field
-policies; they do not execute real audio or renderer effects. Linux actions,
-Options UI adoption and original-action comparison remain required.
+policies; they do not execute real audio or renderer effects. Hosted `2afd39a`
+adds GCC/Clang native action coverage within 683 passing cases. Options UI
+adoption and original-action comparison remain required; the
+[sound resource foundation](sound.md) still needs the real shared SoundManager.
 
 ## Binding-code action
 

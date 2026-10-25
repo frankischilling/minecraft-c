@@ -1,5 +1,24 @@
 # Build and tests
 
+The [option-action checkpoint `2afd39a`](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
+passes all four hosted jobs: 225 MSVC, 229 GCC and 229 Clang cases, 683 complete
+Start/Passed pairs, with zero failures, skips or missing runs. All 645 C/header
+files pass formatting; mirror/lifecycle guards pass. Every host runs the native
+option-action test. The four actual checkouts share synthetic merge `c37ce73`,
+whose complete tree equals that head. Independent readback reconstructs 328
+trees and joins all 1,215 literal committed bodies and 1,037 non-Markdown tested
+inputs. Original actions, real effects and complete client behavior remain open.
+
+The [sound foundation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md#verified-native-scope)
+passes five selected Windows MSVC x64 Debug tests: 18,654 pool, 581 file, 469
+Vorbis, 43 integer-parser and 191 Random-profile checks. All seven stages and
+eleven audits pass; independent readback consumes 14,273 retained files, and all
+655 C/header files pass formatting. Authored decoder cases cover mono, stereo,
+MUS, a format-changing chain and real packet holes. No audio device or original
+PCM comparison runs. Shared SoundManager, playback, Linux sound qualification
+and real client integration remain unfinished. The hosted result above predates
+these sound modules.
+
 The preceding [code checkpoint `ea1aefc`](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841)
 passes all four hosted jobs: 224 MSVC, 228 GCC and 228 Clang cases, or 680
 complete Start/Passed pairs with zero failures, skips or missing runs.
@@ -22,7 +41,8 @@ An independent file-only readback rejoins 2,788 retained members, eight products
 and two capture trees from the 1,215-member/1,037-non-Markdown tested source.
 No new client-mode or Linux action profile ran. Six audio/renderer paths stop
 after mutation at missing receiver fields. Original actions, real effects and
-Options UI remain unfinished; the preceding 680-case CI excludes these bodies.
+Options UI remain unfinished; the preceding 680-case CI excludes these bodies,
+while the later 683-case checkpoint includes their native contracts.
 
 The [App startup connection](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md#settings-at-startup)
 now loads real GameSettings after Display and uses loaded scale and initial

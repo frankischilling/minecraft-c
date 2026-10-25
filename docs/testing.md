@@ -2,6 +2,17 @@
 
 ## Native client frontend
 
+The option-action checkpoint `2afd39a70935a3ae167f7cb7fad6452392828c6d`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178):
+225 MSVC, 229 GCC and 229 Clang cases, 683 complete Start/Passed pairs, with zero
+failures, skips or missing runs. Formatting covers 645 C/header files; mirrors
+and lifecycle guards pass. Every host runs `client.game_settings_actions`.
+All four actual checkouts use synthetic merge `c37ce7331a8bf643587081c7ae07e5e2a117797b`,
+whose complete tree equals that head. Independent readback reconstructs 328
+trees/1,542 entries and joins all 1,215 literal current committed bodies and
+1,037 non-Markdown tested inputs. Nine later result-documentation changes retain
+separate pins. This hosted result does not execute the new sound foundation.
+
 The preceding code checkpoint `ea1aefc952739fd6e7fba023646039856324e721`
 passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40150298841):
 224 MSVC, 228 GCC and 228 Clang cases, 680 complete Start/Passed pairs, with
@@ -16,6 +27,18 @@ raw console Start/Passed records supply the complete test chronology.
 This includes GameDirectory on all hosts and startup graphics tests on Linux.
 Linux CI requests software OpenGL under Xvfb; no actual vendor was measured.
 The new float/discrete option actions below are outside this checkpoint.
+
+The [sound resource foundation](client/sound.md#verified-native-scope) passes one
+Windows MSVC 19.51.36260.0 x64 Debug headless profile: 18,654 SoundPool, 581 file,
+469 Vorbis, 43 integer-parser and 191 Random-profile checks. All five CTests,
+seven supervised stages and eleven final audits pass. Independent file-only
+readback consumes 14,273 files and rejoins all 1,402 physical source bodies,
+including 1,232 public members and 1,052 non-Markdown inputs. Formatting covers
+655 C/header files. Retained decoder inputs are authored zero PCM, including a
+mono-to-stereo chain and a real missing-page rejection. Four earlier failed
+attempts remain preserved, with their fixes and scope in the sound note. These
+tests initialize no audio device; Linux sound and original PCM correspondence
+remain unqualified. The 683-case hosted result above predates these modules.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40129932174):
@@ -248,9 +271,10 @@ real `mc_game_settings_set_option_float`/`mc_game_settings_set_option` APIs with
 authored values and real files. The single profile closes all seven stages and
 eleven independent final audits in 85.887 seconds. Tests exit 0 naturally and
 are reaped; configure/build retain their qualified byte-pinned vctip cleanup.
-There is no new client-mode profile, Linux action run, current hosted result
-or original-action comparison. Earlier labels and App results retain their
-separate source and scene scopes.
+There is no new local client-mode or Linux action profile and no original-action
+comparison. The later hosted `2afd39a` checkpoint passes these native actions on
+MSVC and sanitized GCC/Clang within all 683 cases, with 645-file formatting.
+Earlier labels and App results retain their separate source and scene scopes.
 
 The actual tested source contains 1,215 public members, 1,037 non-Markdown
 inputs and 645 C/header files. All 645 pass formatting before target execution

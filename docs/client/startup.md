@@ -110,9 +110,12 @@ graphics vendor is not recorded. These are native startup tests, with no
 original-image or ordinary-default comparison. The newer
 [option actions](game-options.md#float-and-discrete-actions) pass one separate
 Windows headless profile: 702 native checks and eight file-check categories.
-No new App/client-mode run is part of that profile. Linux actions and real
-effect owners remain unqualified. The older rendering results below retain
-their separate source and scene scopes.
+No new App/client-mode run is part of that local profile. The subsequent
+[hosted `2afd39a` checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40154472178)
+passes all 683 cases, including native actions on MSVC and sanitized GCC/Clang.
+Real effect owners remain unqualified. The [sound resource foundation](sound.md)
+is separate from App playback. Older rendering results below retain their
+source and scene scopes.
 
 Public tests cover the PNG reader, ScaledResolution, FontRenderer, Timer and resource
 ownership, caching and failure handling. The optional `client.display` test
