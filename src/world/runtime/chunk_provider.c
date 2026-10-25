@@ -143,7 +143,8 @@ mc_world_storage_status mc_chunk_provider_create(mc_world_runtime *runtime,
     mc_chunk_provider *provider = calloc(1, sizeof(*provider));
     if (provider == NULL)
         return result(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "provider owner allocation");
-    *provider = (mc_chunk_provider){.world = dimension_fields.a,
+    *provider = (mc_chunk_provider){.concrete_kind = MC_CHUNK_PROVIDER_MAP_CACHE,
+                                    .world = dimension_fields.a,
                                     .policy = runtime->construction.entry ==
                                                       MC_WORLD_RUNTIME_SERVER_DEDICATED
                                                   ? MC_CHUNK_ACQUIRE_DEDICATED
@@ -287,6 +288,11 @@ mc_world_storage_status mc_chunk_provider_bind_fields(mc_chunk_provider *provide
                                       .max_direct_allocation_bytes = provider->max_direct_bytes,
                                       .pending_history_limits = provider->history_limits};
     return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_chunk_provider_concrete_kind
+mc_chunk_provider_concrete_kind_of(const mc_chunk_provider *provider) {
+    return provider == NULL ? MC_CHUNK_PROVIDER_NULL : provider->concrete_kind;
 }
 
 mc_world_storage_status mc_chunk_provider_maintenance(mc_chunk_provider *provider, bool *out,

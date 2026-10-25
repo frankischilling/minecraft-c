@@ -25,8 +25,10 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
  * World.b before invoking the concrete WorldAccess hook. Duplicates own separate
  * native holds. It does not change Entity.world or precheck source membership.
  *
- * This runtime constructs actual Item and FallingSand Entities; player
- * sleep/tracker descendants remain separate implementations. The live WorldAccess
+ * This runtime publishes actual Item, FallingSand, Minecart and LocalPlayer owners.
+ * A real LocalPlayer bypasses presence, appends lowercase World.d, updates J
+ * through fd.y, then enters the same Chunk/b/WorldAccess sequence. It retains
+ * d/J even when a later getter, Chunk operation or callback fails. The live WorldAccess
  * loop dispatches entity_added after both publications, before a dedicated
  * World's Entity-index insertion. Reached failures retain those publications.
  * NULL Entity is admitted until its reached source field read. A nonnull Entity
@@ -59,7 +61,7 @@ mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk,
 
 /* Explicit terminal native teardown, separate from game removal/save/unload.
  * First retire borrowed views/calls/leases. Admission validates the complete
- * typed World.b/D/c/G/R ledgers and every bound Chunk slice/embedded TileEntity Map
+ * typed World.b/D/d/c/G/R ledgers and every bound Chunk slice/embedded TileEntity Map
  * before releasing any hold. This includes each nearby-result occurrence and
  * every actual dedicated Entity-index occurrence. The latter owner is released
  * and subclass G becomes NULL without a source clear/removal callback.

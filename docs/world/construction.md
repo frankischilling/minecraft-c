@@ -124,7 +124,10 @@ concrete synchronous descendants still unfinished.
 
 ## Native limits and retirement
 
-Default World direct storage is bounded to 16 MiB and 65,536 scheduled entries.
+Default World direct storage is bounded to 16 MiB and 262,144 scheduled entries.
+The entry bound admits the measured 17-by-17 startup acquisition, which retains
+about 114,000 scheduled entries. The earlier 65,536-entry policy stopped that
+valid path before allocation-byte or provider limits were exhausted.
 Provider storage has a separate 8 MiB direct bound and 512 cache/list/pending
 slots. Its Integer HashSet history retains the existing separate 8 MiB retained
 and 16 MiB peak bounds, with its entry limit clipped to the provider bound.

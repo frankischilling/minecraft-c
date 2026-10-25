@@ -5,6 +5,8 @@
 #include "mesher.h"
 #include "renderer.h"
 
+#include "mc/world/runtime/propagation.h"
+
 typedef struct mc_client_world_view mc_client_world_view;
 
 typedef struct mc_client_world_view_error {
@@ -12,11 +14,16 @@ typedef struct mc_client_world_view_error {
     mc_client_assets_error assets;
     mc_client_display_error display;
     mc_client_world_mesher_error mesher;
+    mc_chunk_acquire_status acquisition;
+    mc_world_storage_error world;
+    mc_world_light_operation_error light;
 } mc_client_world_view_error;
 
 /* Finite native World inspection: actual generated/populated sections, textures
  * and GL buffers. This is not a Player, world tick or RenderGlobal scheduler.
  * Build a fixed three-by-three column view around the actual World spawn.
+ * Acquire its padded ChunkCache footprint and drain actual World lighting
+ * before building any section, so later population cannot stale earlier meshes.
  * World/profile/Registry/Assets remain exclusive during creation. The finished
  * owner retains only Display and copied GPU geometry; no World view survives. */
 bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *display,

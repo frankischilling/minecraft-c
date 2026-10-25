@@ -3,8 +3,8 @@
 The C owner implements the complete original client `uo` MovementInput and
 `lr` MovementInputFromOptions constructors and three methods. It uses the
 actual [GameSettings](game-settings.md) named KeyBinding objects and their
-current codes. It supplies input state for the future local Player; it does
-not construct a Player or move an Entity.
+current codes. [LocalPlayer forwarding](player-input.md) now attaches this same
+owner and calls its key/reset methods. It does not construct or move a Player.
 
 The public interface is
 [movement_input.h](../../include/mc/client/input/movement_input.h). Original
@@ -24,12 +24,12 @@ stores the supplied GameSettings identity. NULL settings is permitted: the
 constructor, update and reset never dereference it. A later key event reaches
 the original null-reference failure.
 
-The options owner borrows GameSettings. Retire every dependent input owner
-before retiring settings. Keep both owners live and exclusive throughout each
-call; settings mutations between calls are visible to the next event. This
-contract does not add a retain counter or an automatic settings-retirement
-guard. Input retirement frees only its own array and header, performs no
-source reset or settings save, and clears the caller's input pointer.
+The options owner borrows GameSettings. Keep settings live through every input
+hold, including attached Player fields. Settings mutations between calls remain
+visible. The input now has a native retain counter: retirement clears the
+caller's pointer and releases one hold; the final hold frees its array/header.
+It performs no source reset or settings save. There is no automatic
+settings-retirement guard. Owners remain live and exclusive throughout calls.
 
 `read_state` copies the five fields and ten key cells. Its array identity and
 settings pointer are borrowed diagnostics: keep their owners live while using

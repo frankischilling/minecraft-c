@@ -1,8 +1,44 @@
 # Test scope and reproduction
 
+## World lighting, Player publication and input
+
+The complete integrated suite passes all 265 Windows tests and all 247 headless
+tests each on fresh sanitized Clang/GCC builds. Every case runs; there are no
+failures, errors, disabled tests or skips. The same 1,446 source inputs cover all
+three products, with all 745 C/header files formatted by clang-format 18.
+Linux coverage here is headless; the Windows suite includes actual GL captures.
+
+The integrated contracts use real World/Store/Registry/Player/input owners.
+`world.light_propagation` covers saved-light writes, live callback mutation,
+failed popped records, 499-record limits and 50 actual nested drains. The
+inspection test acquires its full footprint and drains before final meshes.
+Its separate 60-second process deadline covers the measured strict Debug work;
+pixel relations and exit/stderr checks remain exact.
+
+`world.player_publication` covers duplicate Player occurrences, sleeping scans,
+Chunk/World membership, callback reentry/failure, saved-tag prefixes and terminal
+ownership. `entity.player_input` covers actual field attachment, shared/replaced
+holds, source key/reset/sneaking forwarding and RAW/failed receiver prefixes.
+`world.provider_maintenance` covers natural empty/cached state and declared
+pending-Set inputs, including real Item unload/save and session failure.
+The public controller/reader controls need neither original files nor a JDK.
+
+Optional original comparisons use the supplied JARs and matching explicit JDK17
+tools. Configure `MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS`,
+`MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS`, `MC_ENABLE_MAINTENANCE_REFERENCE_TESTS`
+and `MC_ENABLE_PROPAGATION_REFERENCE_TESTS` to run their finite comparisons.
+Maintenance also requires the pinned client library directory. The propagation
+default compares newly produced 25-Chunk arrays, all ordered light regions,
+scheduler ownership/order and boundary Random states. It supplies an explicit
+post-constructor World.r seed on both sides; production default entropy stays
+unchanged. Full 289-point fresh/warm profiles require the separate expensive
+`MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS` option. They are not default test coverage.
+See [propagation reproduction](../tests/reference/world/propagation/README.md)
+and [current results](status.md) for exact cohort qualifications.
+
 ## Local Player construction
 
-The [constructor contract](client/player-construction.md) passes a complete
+The earlier [constructor contract](client/player-construction.md) passes a complete
 Windows MSVC ABI rebuild and all 254 tests. Complete headless Clang 18/GCC 13
 rebuilds each pass all 236 tests with ASan, UBSan and leak checks. Every recorded
 case runs without failures, disabled tests or skips. All 730 C/header files pass
@@ -43,7 +79,8 @@ and `MC_REFERENCE_SERVER_JAR` for the opt-in original comparison. The public
 `inventory.crafting` and `tools.crafting_probe_inputs` tests use authored
 resources and need no original archive or JVM. Reproduction and finite limits
 are in the [reference README](../tests/reference/inventory/crafting/README.md).
-Output pickup, full Player construction and gameplay remain unfinished.
+Output pickup and gameplay remain unfinished. The actual Player constructor
+has the separate coverage above.
 
 ## Native client frontend
 

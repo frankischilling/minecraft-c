@@ -7,8 +7,10 @@ still has its original 24 registrations. The server rejects the `dc` selector.
 
 `mc_local_player_construct` executes construction only. It does not attach
 MovementInput, tick Living/Player, run collision or controller actions, publish
-the Player into a World, or render it. Those concrete operations remain required
-before a playable client exists. The runtime is C17 and does not call a JVM.
+the Player into a World, or render it. Separate [World attachment and publication](../world/player-publication.md)
+now preserve actual Player membership and callback ordering. Application adoption,
+ticks, input, movement and rendering remain required before a playable client
+exists. The runtime is C17 and does not call a JVM.
 
 The base constructor dispatches its actual virtual hook to `gs.b()V`, registering
 watcher 16/Byte0 after watcher 0 and before the first Living initializer. The

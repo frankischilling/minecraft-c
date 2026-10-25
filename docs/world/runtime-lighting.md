@@ -92,6 +92,6 @@ platform writer's closed-handle and broken-pipe controls pass separately.
 The [generated Chunk constructor and finalizer](chunk-objects.md) now call these
 operations on the same store-owned Chunk. All 38 selected native cases pass on
 MSVC/GCC/Clang, including 33,458 new Chunk checks and Linux sanitizers.
-Queue draining, light propagation, complete GAME generation, synchronous block
-mutations and population remain unfinished. No new executed-original World
-comparison or complete startup/persistence acceptance follows from this module.
+[Queue draining and light propagation](light-propagation.md) now have a separate
+concrete World API and verification scope. Complete startup/persistence
+acceptance does not follow from the earlier height/enqueue checks above.

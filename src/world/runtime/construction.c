@@ -36,7 +36,7 @@ static mc_world_storage_status result(mc_world_storage_error *error, mc_world_st
 mc_world_runtime_construction_limits mc_world_runtime_default_construction_limits(void) {
     return (mc_world_runtime_construction_limits){
         .max_direct_allocation_bytes = 16u * 1024u * 1024u,
-        .max_scheduled_entries = 65536u,
+        .max_scheduled_entries = 262144u,
         .max_provider_chunks = 512u,
         .max_provider_allocation_bytes = 8u * 1024u * 1024u,
         .max_dedicated_entities = 65536u,
@@ -282,6 +282,8 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
         runtime->entity_membership.list = list;
     else if (field == &runtime->fields.D)
         runtime->entity_deferral.list = list;
+    else if (field == &runtime->fields.d)
+        runtime->player_membership.list = list;
     else if (field == &runtime->fields.R)
         runtime->nearby_entities.list = list;
     else if (field == &runtime->fields.K)
@@ -816,9 +818,11 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                                    mc_world_storage_error *error) {
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
-    if (!mc_world_runtime_entity_list_valid(runtime))
+    if (!mc_world_runtime_entity_list_valid(runtime) ||
+        !mc_world_runtime_player_list_retirement_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
-    if (runtime->entity_membership.count != 0 || runtime->entity_deferral.count != 0)
+    if (runtime->entity_membership.count != 0 || runtime->entity_deferral.count != 0 ||
+        runtime->player_membership.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World Entity occurrences remain");
     if (!mc_live_tile_entities_lists_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -857,7 +861,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                         runtime->entity_deferral.list,
                                         f->c,
                                         f->G,
-                                        f->d,
+                                        runtime->player_membership.list,
                                         f->e,
                                         runtime->world_accesses.list,
                                         runtime->collision_boxes.list,
@@ -890,7 +894,8 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World retirement arguments");
     if (runtime->active_calls != 0 || runtime->local_leases != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World call or lease during retirement");
-    if (!mc_world_runtime_entity_list_valid(runtime))
+    if (!mc_world_runtime_entity_list_valid(runtime) ||
+        !mc_world_runtime_player_list_retirement_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
     if (!mc_world_nearby_owned_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World nearby ownership metadata");
@@ -904,9 +909,15 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
         mc_world_provider_world(runtime->fields.t) != runtime)
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     mc_world_runtime_fields *f = &runtime->fields;
-    mc_world_reference_list *lists[] = {
-        f->C, runtime->entity_membership.list, runtime->entity_deferral.list, f->c, f->G, f->d,
-        f->e, runtime->collision_boxes.list,   runtime->nearby_entities.list};
+    mc_world_reference_list *lists[] = {f->C,
+                                        runtime->entity_membership.list,
+                                        runtime->entity_deferral.list,
+                                        f->c,
+                                        f->G,
+                                        runtime->player_membership.list,
+                                        f->e,
+                                        runtime->collision_boxes.list,
+                                        runtime->nearby_entities.list};
     /* C contains typed World-owned records, retired at final native free.
      * Valid typed u occurrences release only at the terminal commit below.
      * Other unimplemented collection descendants still require emptiness. */
@@ -949,9 +960,9 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
 static bool entity_retirement_other_collections_empty(const mc_world_runtime *world) {
     const mc_world_runtime_fields *fields = &world->fields;
     /* C/E/F are already concrete typed owners retained until final native free.
-     * b/D/c/G/R/K/u are admitted separately. Never reinterpret entries of these remaining
+     * b/D/d/c/G/R/K/u are admitted separately. Never reinterpret entries of these remaining
      * finite void* lists, clear their counts, or discard a nonempty active set. */
-    const mc_world_reference_list *lists[] = {fields->d, fields->e};
+    const mc_world_reference_list *lists[] = {fields->e};
     for (size_t index = 0; index < sizeof(lists) / sizeof(lists[0]); ++index) {
         const mc_world_reference_list *list = lists[index];
         if (list != NULL && (list->count != 0 || list->capacity > SIZE_MAX / sizeof(*list->items) ||
@@ -984,7 +995,8 @@ mc_world_storage_status mc_world_runtime_retire_entity_containers(mc_world_runti
     if (!mc_world_accesses_retirement_valid(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "WorldAccess retirement ownership metadata");
-    if (!entity_retirement_other_collections_empty(world))
+    if (!mc_world_runtime_player_list_retirement_valid(world) ||
+        !entity_retirement_other_collections_empty(world))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World entity retirement untyped collections");
     mc_world_store *store = world->fields.w;

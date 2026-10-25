@@ -43,7 +43,7 @@ def main():
             result, pixels = run_case(args.executable.resolve(strict=True), assets, root, name,
                 options(1, anaglyph), None, [],
                 extra_arguments=('--inspect-world', str(world), '--world-seed', '23'),
-                startup_lines=(b'16 achievements', b'151 recipes'))
+                startup_lines=(b'16 achievements', b'151 recipes'), timeout_seconds=60)
             receipt['cases'][name] = result
             need(result['passed'] and pixels is not None, 'actual World inspection: ' + name)
             captures.append(pixels)

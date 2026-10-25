@@ -1,5 +1,16 @@
 # Build and tests
 
+The [World/Player integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+passes all 265 Windows tests and all 247 headless tests each on fresh sanitized
+Clang/GCC builds, with no failures or skips. All 745 C/header files pass
+formatting. Real original comparisons cover finite World lighting, Player
+publication/input and provider maintenance. Full startup and gameplay remain
+unfinished; the detailed contracts qualify every comparison.
+
+The [Player constructor checkpoint `42b9169`](https://github.com/frankischilling/minecraft-c/actions/runs/40232088249)
+passes all four hosted jobs: 244 Windows, 250 GCC and 250 Clang tests, with
+744 complete Start/Passed pairs. Every checkout tree equals that code head.
+
 The [local Player constructor](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-construction.md)
 passes full ABI rebuilds and 254 Windows tests plus 236 headless tests each on
 sanitized Clang/GCC, without failures or skips. Fresh JDK 17 normal/JDI runs
@@ -15,7 +26,8 @@ passes three selected tests on MSVC and sanitized Clang/GCC. Each product matche
 1,153 original rows per source side across 1,047 cases and passes 48 strict
 protocol checks. The full Windows suite passes all 251 tests without failures
 or skips; all 723 C/header files pass formatting.
-Player construction and crafting-output effects remain unfinished.
+Crafting-output effects remain unfinished; the later Player constructor has
+separate coverage above.
 
 The [input/turn checkpoint `5143b58`](https://github.com/frankischilling/minecraft-c/actions/runs/40218311052)
 passes all four hosted jobs: 240 Windows, 246 GCC and 246 Clang tests, with

@@ -16,6 +16,11 @@ option(MC_ENABLE_INPUT_REFERENCE_TESTS "Compare MovementInput with the supplied 
 option(MC_ENABLE_TURN_REFERENCE_TESTS "Compare Entity turning with the supplied client" OFF)
 option(MC_ENABLE_CRAFTING_REFERENCE_TESTS "Compare crafting with supplied client/server JARs" OFF)
 option(MC_ENABLE_PLAYER_REFERENCE_TESTS "Compare local Player construction with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS "Compare World Player publication with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS "Compare local Player input forwarding with supplied client JAR" OFF)
+option(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS "Compare World provider maintenance with supplied client JAR" OFF)
+option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
+option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(MC_ENABLE_JAVA_REFERENCE_TESTS "Compare numeric and collection helpers with a local JDK" OFF)
 option(MC_ENABLE_MATH_REFERENCE_TESTS "Compare float lookup and floor helpers with originals" OFF)
@@ -103,9 +108,6 @@ if(MC_BUILD_CLIENT)
     if(UNIX)
         target_link_libraries(mc_client_world_renderer PRIVATE m)
     endif()
-    add_library(mc_client_world_session STATIC src/client/world/session.c)
-    target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
-    target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_platform_time mc_build_options)
     add_library(mc_client_world_mesher STATIC src/client/world/mesher.c
         src/client/world/mesher_faces.c src/client/world/mesher_lighting.c)
     target_include_directories(mc_client_world_mesher PUBLIC src/client/world)
@@ -385,6 +387,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/population/dungeon.c
     src/world/runtime/population/overworld.c
     src/world/runtime/lighting.c
+    src/world/runtime/propagation.c
     src/world/runtime/chunks.c
     src/world/runtime/presence.c
     src/world/runtime/solid_support.c
@@ -437,6 +440,7 @@ add_library(mc_simulation STATIC
     src/world/dimension/temperature.c
     src/entity/entity.c
     src/entity/player/construction.c
+    src/entity/player/input.c
     src/entity/player/session.c
     src/entity/player/strings.c
     src/entity/minecart/entity.c
@@ -444,8 +448,12 @@ add_library(mc_simulation STATIC
     src/entity/minecart/nbt.c
     src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
-target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry mc_inventory
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input
     PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_build_options)
+
+add_library(mc_client_world_session STATIC src/client/world/session.c)
+target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
+target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_platform_time mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -803,6 +811,63 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_light_queue_runtime tests/world/runtime/test_light_queue_runtime.c)
     target_link_libraries(mc_test_world_light_queue_runtime PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_world_light_propagation tests/world/test_propagation.c)
+    target_link_libraries(mc_test_world_light_propagation PRIVATE
+        mc_client_world_session mc_resources mc_build_options)
+    add_test(NAME world.light_propagation COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/world/check_propagation.py"
+        --executable "$<TARGET_FILE:mc_test_world_light_propagation>"
+        --output "${CMAKE_CURRENT_BINARY_DIR}/light-propagation-output")
+    set_tests_properties(world.light_propagation PROPERTIES
+        LABELS "public;integration;world;ownership;lighting" TIMEOUT 150)
+    add_test(NAME tools.light_propagation_driver COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/world/test_check_propagation.py")
+    set_tests_properties(tools.light_propagation_driver PROPERTIES
+        LABELS "public;unit;tools;lighting" TIMEOUT 30)
+
+    add_executable(mc_world_propagation_reference_probe
+        tests/reference/world/propagation/native.c
+        tests/reference/world/propagation/owner.c)
+    target_include_directories(mc_world_propagation_reference_probe PRIVATE
+        src/world/runtime src/world/storage src/platform/time)
+    target_link_libraries(mc_world_propagation_reference_probe PRIVATE
+        mc_simulation mc_resources mc_platform_time mc_c_atomics mc_build_options)
+    add_test(NAME tools.propagation_processes COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_propagation_processes.py")
+    set_tests_properties(tools.propagation_processes PROPERTIES
+        LABELS "public;unit;tools;lighting" TIMEOUT 30)
+    if(MC_ENABLE_PROPAGATION_REFERENCE_TESTS OR MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Propagation reference tests require MC_REFERENCE_CLIENT_JAR")
+        endif()
+        set(mc_propagation_server_arguments)
+        if(MC_REFERENCE_SERVER_JAR)
+            list(APPEND mc_propagation_server_arguments --server-jar "${MC_REFERENCE_SERVER_JAR}")
+        endif()
+        add_test(NAME reference.world_propagation COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/propagation/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" ${mc_propagation_server_arguments}
+            --native-probe "$<TARGET_FILE:mc_world_propagation_reference_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --timeout 240 --tested-source-id "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-world-propagation")
+        set_tests_properties(reference.world_propagation PROPERTIES
+            LABELS "local;reference;world;lighting;ownership" TIMEOUT 360 SKIP_RETURN_CODE 77)
+        if(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS)
+            add_test(NAME reference.world_startup_grid COMMAND Python3::Interpreter
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/propagation/compare.py"
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}" ${mc_propagation_server_arguments}
+                --native-probe "$<TARGET_FILE:mc_world_propagation_reference_probe>"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --profiles fresh warm --timeout 1800
+                --tested-source-id "${MC_REFERENCE_TESTED_COMMIT}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-world-startup-grid")
+            set_tests_properties(reference.world_startup_grid PROPERTIES
+                LABELS "local;reference;world;lighting;expensive" TIMEOUT 3900 SKIP_RETURN_CODE 77)
+        endif()
+    endif()
+
     add_executable(mc_test_world_chunk_objects tests/world/runtime/test_chunk_objects.c)
     target_link_libraries(mc_test_world_chunk_objects PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
@@ -923,11 +988,65 @@ if(BUILD_TESTING)
     add_executable(mc_test_world_entity_publication tests/world/runtime/test_entity_publication.c)
     target_link_libraries(mc_test_world_entity_publication PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
+    add_executable(mc_test_world_player_publication
+        tests/world/runtime/player_publication/test_publication.c)
+    target_link_libraries(mc_test_world_player_publication PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME world.player_publication COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_player_publication.py"
+        --executable "$<TARGET_FILE:mc_test_world_player_publication>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-player-publication-contracts")
+    set_tests_properties(world.player_publication PROPERTIES
+        LABELS "public;integration;world;entity;ownership" TIMEOUT 120)
+    if(MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Player publication reference tests require MC_REFERENCE_CLIENT_JAR")
+        endif()
+        add_test(NAME reference.player_publication COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/player_publication/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --native "$<TARGET_FILE:mc_test_world_player_publication>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-publication")
+        set_tests_properties(reference.player_publication PROPERTIES
+            LABELS "local;reference;world;entity;ownership" TIMEOUT 240)
+    endif()
+
     add_executable(mc_test_world_tile_entities tests/world/runtime/tile_entities/test_tile_entities.c)
     target_link_libraries(mc_test_world_tile_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_saving tests/world/runtime/saving/test_saving.c)
     target_link_libraries(mc_test_world_saving PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_world_provider_maintenance tests/world/runtime/test_maintenance.c)
+    target_link_libraries(mc_test_world_provider_maintenance PRIVATE
+        mc_simulation mc_resources mc_build_options)
+    add_test(NAME world.provider_maintenance COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/maintenance/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_world_provider_maintenance>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/provider-maintenance-contracts")
+    set_tests_properties(world.provider_maintenance PROPERTIES
+        LABELS "public;integration;world;ownership;storage" TIMEOUT 210)
+    add_test(NAME tools.provider_maintenance_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/maintenance/test_controller.py")
+    set_tests_properties(tools.provider_maintenance_controller PROPERTIES
+        LABELS "public;unit;tools;storage" TIMEOUT 30)
+    if(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Maintenance reference tests require client JAR and library paths")
+        endif()
+        add_test(NAME reference.provider_maintenance COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/maintenance/compare_maintenance.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --native "$<TARGET_FILE:mc_test_world_provider_maintenance>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-provider-maintenance")
+        set_tests_properties(reference.provider_maintenance PROPERTIES
+            LABELS "local;reference;world;storage;ownership" TIMEOUT 480)
+    endif()
 
     add_executable(mc_test_game_entities tests/world/runtime/entities/test_game_entities.c)
     target_link_libraries(mc_test_game_entities PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -1308,6 +1427,29 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-construction-contracts")
     set_tests_properties(entity.player_construction PROPERTIES
         LABELS "public;integration;entity;ownership" TIMEOUT 90)
+    add_executable(mc_test_player_input tests/entity/player/test_input.c)
+    target_link_libraries(mc_test_player_input PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME entity.player_input COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_input.py"
+        --executable "$<TARGET_FILE:mc_test_player_input>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-input-contracts")
+    set_tests_properties(entity.player_input PROPERTIES
+        LABELS "public;integration;entity;input;ownership" TIMEOUT 120)
+    if(MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Player input reference tests require MC_REFERENCE_CLIENT_JAR")
+        endif()
+        add_test(NAME reference.player_input COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/player_input/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --native "$<TARGET_FILE:mc_test_player_input>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-input")
+        set_tests_properties(reference.player_input PROPERTIES
+            LABELS "local;reference;entity;input;ownership" TIMEOUT 240)
+    endif()
     add_test(NAME tools.player_construction_probe_inputs COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_construction_probe.py"
         --executable "$<TARGET_FILE:mc_player_construction_probe>"
@@ -1585,7 +1727,7 @@ if(BUILD_TESTING)
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_inspection.py"
                 --executable "$<TARGET_FILE:minecraft-client>" --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
             set_tests_properties(client.world_inspection PROPERTIES
-                LABELS "public;integration;client;graphics;ownership" TIMEOUT 120)
+                LABELS "public;integration;client;graphics;ownership" TIMEOUT 210)
         endif()
     endif()
 

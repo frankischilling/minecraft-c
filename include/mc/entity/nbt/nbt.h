@@ -8,7 +8,11 @@
 /* Actual sn/lq.e(NBT), followed by the actual hl/ez Item, ju/gl FallingSand
  * or yl/pr Minecart a(NBT) hook selected by this Entity's immutable same-owner
  * canonical Class.
- * Other concrete subclasses require real dispatch and fields before use.
+ * LocalPlayer executes the same complete base read, then dc.a2 -> gs.a2
+ * stops explicitly before the missing Living read body. Earlier malformed
+ * tags retain their ordinary earlier failure sites. No Player tag is cleared
+ * and no complete Player NBT load is claimed. Other concrete subclasses
+ * require real dispatch and fields before use.
  * No dead/name/factory decision, constructor, READY gate, source preservation,
  * World callback or Random draw is added. A balanced temporary Entity hold
  * precedes source work; native hold overflow preserves the Entity unchanged.

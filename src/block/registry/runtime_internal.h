@@ -141,4 +141,16 @@ mc_registry_status mc_registry_direction_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_direction_at(const mc_registry_direction_view *array, int32_t index,
                                             int32_t *out, mc_registry_error *error);
 
+/* Actual nullable captured emission array. No reload or active use at at. */
+typedef struct mc_registry_block_s_view {
+    mc_registry_classes *classes;
+    const int32_t *identity;
+    size_t length;
+} mc_registry_block_s_view;
+
+mc_registry_status mc_registry_block_s_get(mc_registry_classes *classes,
+                                           mc_registry_block_s_view *out, mc_registry_error *error);
+mc_registry_status mc_registry_block_s_at(const mc_registry_block_s_view *array, int32_t index,
+                                          int32_t *out, mc_registry_error *error);
+
 #endif

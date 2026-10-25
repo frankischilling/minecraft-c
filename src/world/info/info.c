@@ -620,6 +620,14 @@ mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *
     return MC_WORLD_INFO_OK;
 }
 
+mc_world_info_status mc_world_info_player_get(const mc_world_info *info,
+                                              mc_world_info_player **out) {
+    if (info == NULL || out == NULL || info->state.side != MC_WORLD_INFO_CLIENT)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = info->fields.player;
+    return MC_WORLD_INFO_OK;
+}
+
 mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out) {
     if (out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;

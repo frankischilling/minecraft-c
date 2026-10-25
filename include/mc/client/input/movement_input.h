@@ -17,7 +17,8 @@ typedef enum mc_movement_input_status {
     MC_MOVEMENT_INPUT_OK,
     MC_MOVEMENT_INPUT_INVALID_ARGUMENT,
     MC_MOVEMENT_INPUT_ALLOCATION_FAILED,
-    MC_MOVEMENT_INPUT_SOURCE_EXCEPTION
+    MC_MOVEMENT_INPUT_SOURCE_EXCEPTION,
+    MC_MOVEMENT_INPUT_LIMIT
 } mc_movement_input_status;
 
 typedef enum mc_movement_input_exception {
@@ -44,6 +45,7 @@ typedef struct mc_movement_input_fields {
 
 typedef struct mc_movement_input_state {
     mc_movement_input_kind kind;
+    size_t native_holds; /* Native occurrence ownership, not a uo/lr source field. */
     mc_movement_input_fields fields;
     const mc_game_settings *settings; /* Borrowed lr.g; NULL for base or null g. */
     const void *keys_identity;        /* Actual private ten-cell array, else NULL. */
@@ -54,9 +56,10 @@ typedef struct mc_movement_input_state {
 /* Constructors reproduce uo() or lr(GameSettings), including inherited +0/false
  * fields and the derived class's separately allocated ten false cells. The
  * options owner borrows the supplied settings identity, including NULL; it
- * never copies bindings/codes or performs settings I/O. Retire input BEFORE
- * retiring nonnull settings. Settings must remain live/exclusive for every
- * input operation; its public mutations between calls remain visible.
+ * never copies bindings/codes or performs settings I/O. Every constructor
+ * publishes one native hold. Release ALL input holds before retiring nonnull
+ * settings, including holds in attached Players. Settings must remain live and
+ * exclusive for every input operation; its mutations between calls remain visible.
  *
  * Fixed native allocation failure preserves out. No Entity, Player, World,
  * platform keyboard, clock, Random, renderer or audio operation occurs. */
@@ -65,6 +68,13 @@ mc_movement_input_status mc_movement_input_create(mc_movement_input **out,
 mc_movement_input_status mc_movement_input_create_from_options(mc_game_settings *settings,
                                                                mc_movement_input **out,
                                                                mc_movement_input_error *error);
+
+/* Acquire one independent native hold on this exact identity. NULL is invalid;
+ * SIZE_MAX holds returns LIMIT without change. This does not copy/reset source
+ * fields/keys, retain settings, or perform a source operation. All shared
+ * owners and settings remain exclusive across synchronous calls. */
+mc_movement_input_status mc_movement_input_retain(mc_movement_input *input,
+                                                  mc_movement_input_error *error);
 
 bool mc_movement_input_read_state(const mc_movement_input *input, mc_movement_input_state *out);
 /* Direct assignment of the five source public fields, not a source update.
@@ -97,8 +107,10 @@ mc_movement_input_status mc_movement_input_update(mc_movement_input *input,
                                                   struct mc_entity *player,
                                                   mc_movement_input_error *error);
 
-/* Native retirement only: frees its array/owner, clears the caller's pointer,
- * and never resets fields/keys through source methods or retires settings.
+/* Release the caller's ONE native hold and clear its pointer. Free the actual
+ * array/owner only after the last hold. Other counted occurrences remain live;
+ * borrowed pointers are not holds and must not be retired independently.
+ * Never reset fields/keys through source methods or retire settings.
  * NULL *input succeeds. All calls require exclusive live owners; arguments,
  * output/error storage and borrowed views must be disjoint from owner storage.
  * No stale-pointer detection or automatic settings-retirement guard is added. */

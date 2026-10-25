@@ -11,6 +11,17 @@
 
 #define MC_CHUNK_PROVIDER_GRID_WIDTH 32u
 
+/* Native concrete class provenance, independent of cache policy or grid
+ * projections. Current constructors create the actual ok/jb map-cache family;
+ * no constructor here creates the unrelated client kx centered-grid class. */
+typedef enum mc_chunk_provider_concrete_kind {
+    MC_CHUNK_PROVIDER_NULL = 0,
+    MC_CHUNK_PROVIDER_MAP_CACHE
+} mc_chunk_provider_concrete_kind;
+
+mc_chunk_provider_concrete_kind
+mc_chunk_provider_concrete_kind_of(const mc_chunk_provider *provider);
+
 /* Actual nullable source fields over the provider's fixed native reservation.
  * A zero span is an unpublished Java array, not the reserved C backing. r/s/t
  * are constructor-published; q/d/e/f/g/h publish only at their reached stores.

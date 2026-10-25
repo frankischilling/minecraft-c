@@ -32,8 +32,9 @@ World. It initializes Blocks/Biomes, derives the store block map from registered
 IDs, samples the native session clock and executes `CLIENT_LOAD_OR_CREATE`.
 Constructor failures retain their real prefix; the same owner cannot retry.
 
-Inspection builds all eight vertical sections in each of nine columns around
-the actual spawn. Each [CPU mesh](world-meshing.md) retains independent two-pass
+Inspection first acquires the full padded ChunkCache footprint around the actual
+spawn and [drains World lighting](../world/light-propagation.md). It then builds
+all eight vertical sections in each of nine columns. Each [CPU mesh](world-meshing.md) retains independent two-pass
 arrays after its source ChunkCache leases end. Unknown shape families stop with
 the block, render type and coordinates. The renderer copies the supplied
 vertices into owned GPU buffers; the CPU arrays are then freed. The completed
@@ -89,9 +90,13 @@ title/terrain/color-map resources and fresh Worlds. It checks same-seed native
 pixel repeatability, a changed anaglyph result, unchanged resource/options
 inputs and only the expected session-token/empty-region side effects. Its two
 pixel relations compare native runs on one driver; they are not original images.
+Each inspection has a 60-second observer deadline; the enclosing test has 210
+seconds for three captures. Real generation, population, propagation and meshing
+take 25.3–25.5 seconds per strict Debug capture in the measured loaded Windows
+profile. The title-only startup test retains its separate 20-second limit.
 
 These checks establish the specified native contracts. Original mesh helper
 comparisons have their [separate scope](world-meshing.md). Matched whole-frame
-pixel comparison, complete lighting propagation, dynamic section scheduling,
+pixel comparison, broader lighting acceptance, dynamic section scheduling,
 chunk streaming, sky/clouds/weather, entities and remaining block families are
 unfinished. A generated scene does not establish client playability.

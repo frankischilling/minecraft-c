@@ -69,8 +69,9 @@ mc_world_runtime_light_region_fields_get(const mc_world_light_region *region);
 /* Passive actual C storage views, without class use or provider calls. A RAW
  * null C is reported as null identity/count0/capacity0. at requires a current
  * live index and preserves out on failure. Region pointers keep their identity
- * through list growth and in-place merging; clear/free retires those borrowed
- * pointers. Keep the World and its class live and grant exclusive access. */
+ * through list growth and in-place merging; removal by drain, clear, or final
+ * free retires those borrowed pointers. Keep the World and its class live and grant exclusive
+ * access. */
 mc_world_storage_status mc_world_runtime_light_list_get(const mc_world_runtime *runtime,
                                                         mc_world_light_list_view *out,
                                                         mc_world_storage_error *error);

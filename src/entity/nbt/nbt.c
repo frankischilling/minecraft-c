@@ -193,6 +193,13 @@ static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
 
 static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound,
                          mc_entity_nbt_error *frame) {
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        /* The two actual forwarding bodies perform no earlier field stores.
+         * Preserve the complete sn.e prefix before the missing ls.a body. */
+        frame->local_player_bytecode = 2;
+        frame->player_bytecode = 2;
+        return fail(frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Player NBT Living read dependency");
+    }
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return read_item(entity, compound, frame);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))

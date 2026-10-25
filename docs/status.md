@@ -1,13 +1,50 @@
 # Development status
 
+The integrated World/Player source passes all 265 Windows MSVC tests and all
+247 headless tests each on fresh Clang 18/GCC 13 builds with ASan, UBSan and leak
+checks. All 759 cases run without failures, disabled tests or skips. The
+1,446-file input snapshot stays unchanged through verification; all 745 C/header
+files pass clang-format 18. Controller mirror identities and the 556 positive /
+2,011 negative lifecycle interval controls also pass.
+
+[Lighting propagation](world/light-propagation.md) writes actual Chunk nibbles
+and preserves live callbacks, detached queue records and 50-level reentry.
+The inspection view drains after footprint acquisition and before final meshes.
+Each compiler's fresh original comparison matches all five arrays, all 49 drain
+calls, ordered regions, scheduler records/aliases and boundary Random states
+for the controlled 25-Chunk view. The post-constructor World.r seed is an
+explicit fixture input; default production entropy is unchanged. Full 289-point
+profiles retain the separate older Release/transport qualifications recorded in
+the [reference package](../tests/reference/world/propagation/README.md).
+
+[Player publication](world/player-publication.md) passes 163 native checks and
+three genuine original projections per compiler. [Input attachment](client/player-input.md)
+passes 193 native checks and 21 new original projections; the underlying
+MovementInput still matches all 857 prior records and passes 1,222 native
+checks. [Provider maintenance](world/provider-maintenance.md) passes 949 native
+checks and six original cases with 30 matching state groups/104 Chunk vectors
+per compiler. The eight maintenance-controller and seven propagation-reader
+controls pass. These operations still require application event routing,
+Player/Living/World ticks, controller actions and gameplay integration.
+
+The earlier Player constructor checkpoint `42b91699b9a7313f5af3946496e6c599005419be`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40232088249):
+244 Windows, 250 GCC and 250 Clang tests, with 744 complete Start/Passed pairs.
+Every checkout uses merge `2e0c2c94c913e81a0ff2b997532b6e0dddd9ebb7`; its tree
+equals that code head. These checks precede the lighting integration.
+
 [Local Player construction](client/player-construction.md) now executes the
 actual `dc -> gs -> ls -> sn` constructor chain, including the early watcher
 hook, four shared Math calls, Inventory/Container aliases, World spawn and
 Session/filter ownership. Full ABI rebuilds pass all 254 Windows tests and
 all 236 headless tests each on sanitized Linux Clang/GCC. The new constructor,
 protocol and original comparisons pass on all three products. Source-supported
-null failures retain their actual constructed prefixes. Player publication,
-ticks, movement, input attachment and rendering remain unfinished.
+null failures retain their actual constructed prefixes. Separate
+[World Player attachment and publication](world/player-publication.md) now
+preserve the lowercase Player ledger, sleeping scan, Chunk/World membership and
+live WorldAccess callbacks. [Player input attachment](client/player-input.md)
+now retains the actual MovementInput and forwards key/reset/sneaking operations.
+Application event routing, ticks, movement and Player rendering remain unfinished.
 
 The crafting checkpoint `d113527bfb4c306bfa94b5b56bb62277b9b392db` passes
 [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40224136061):

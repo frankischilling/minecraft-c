@@ -40,6 +40,8 @@ typedef struct mc_entity_nbt_error {
     size_t index;
     unsigned int wrapper_bytecode, name_bytecode, factory_bytecode;
     unsigned int base_bytecode, item_bytecode, falling_bytecode, stack_bytecode;
+    /* dc.a2 -> gs.a2 forwards to the still-missing Living read body. */
+    unsigned int local_player_bytecode, player_bytecode;
     unsigned int initializer_bytecode, registration_bytecode;
     mc_entity_error construction;
     mc_item_stack_error stack;

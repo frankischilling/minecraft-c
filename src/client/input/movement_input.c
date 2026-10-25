@@ -1,4 +1,4 @@
-#include "mc/client/input/movement_input.h"
+#include "movement_input_internal.h"
 
 #include <float.h>
 #include <stdlib.h>
@@ -10,13 +10,6 @@ _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128 && DBL
     (defined(_M_FP_FAST) && _M_FP_FAST)
 #error "MovementInput requires strict floating evaluation"
 #endif
-
-struct mc_movement_input {
-    mc_movement_input_kind kind;
-    mc_movement_input_fields fields;
-    bool *keys;
-    mc_game_settings *settings;
-};
 
 static mc_movement_input_status result(mc_movement_input_error *error,
                                        mc_movement_input_status status,
@@ -48,7 +41,7 @@ static mc_movement_input_status create(mc_movement_input_kind kind, mc_game_sett
     if (input == NULL)
         return result(error, MC_MOVEMENT_INPUT_ALLOCATION_FAILED, MC_MOVEMENT_INPUT_EXCEPTION_NONE,
                       "MovementInput allocation", 0, -1);
-    *input = (mc_movement_input){.kind = kind};
+    *input = (mc_movement_input){.kind = kind, .holds = 1};
     if (kind == MC_MOVEMENT_INPUT_FROM_OPTIONS) {
         input->keys = calloc(MC_MOVEMENT_INPUT_KEYS, sizeof(*input->keys));
         if (input->keys == NULL) {
@@ -78,6 +71,7 @@ bool mc_movement_input_read_state(const mc_movement_input *input, mc_movement_in
     if (input == NULL || out == NULL)
         return false;
     mc_movement_input_state state = {.kind = input->kind,
+                                     .native_holds = input->holds,
                                      .fields = input->fields,
                                      .settings = input->settings,
                                      .keys_identity = input->keys};
@@ -88,6 +82,17 @@ bool mc_movement_input_read_state(const mc_movement_input *input, mc_movement_in
     }
     *out = state;
     return true;
+}
+
+mc_movement_input_status mc_movement_input_retain(mc_movement_input *input,
+                                                  mc_movement_input_error *error) {
+    if (input == NULL)
+        return invalid(error, "MovementInput retain receiver");
+    if (input->holds == SIZE_MAX)
+        return result(error, MC_MOVEMENT_INPUT_LIMIT, MC_MOVEMENT_INPUT_EXCEPTION_NONE,
+                      "MovementInput native hold limit", 0, -1);
+    ++input->holds;
+    return okay(error);
 }
 
 mc_movement_input_status mc_movement_input_set_fields(mc_movement_input *input,
@@ -169,9 +174,12 @@ mc_movement_input_status mc_movement_input_retire(mc_movement_input **input,
     if (input == NULL)
         return invalid(error, "MovementInput retirement pointer");
     if (*input != NULL) {
-        free((*input)->keys);
-        free(*input);
+        mc_movement_input *owner = *input;
         *input = NULL;
+        if (--owner->holds == 0) {
+            free(owner->keys);
+            free(owner);
+        }
     }
     return okay(error);
 }

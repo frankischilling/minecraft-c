@@ -168,8 +168,10 @@ typedef struct mc_player_mouse_filter_fields {
 typedef struct mc_local_player_snapshot {
     mc_living_entity_fields living;
     mc_player_fields player;
-    struct mc_movement_input *input; /* dc.a remains null in the constructor. */
-    void *minecraft;                 /* dc.b, borrowed actual client; NULL supported. */
+    /* Borrowed view of actual dc.a; constructor leaves NULL. An attachment
+     * owns one native input hold. Retain before independent use/retirement. */
+    struct mc_movement_input *input;
+    void *minecraft; /* dc.b, borrowed actual client; NULL supported. */
     const mc_player_mouse_filter_fields *filters[3]; /* dc.bN/bO/bP, distinct objects. */
     const mc_player_string *skin_url;                /* same identity as base.client_only.bA */
     unsigned int living_pc, player_pc, local_pc, watcher_hook_pc;
@@ -210,5 +212,10 @@ mc_player_status mc_local_player_construct(mc_entity *raw, mc_world_runtime *wor
                                            mc_player_error *error);
 mc_entity_status mc_local_player_get_snapshot(const mc_entity *entity,
                                               mc_local_player_snapshot *out);
+
+/* Actual gs.N()Z: read only u on a real concrete LocalPlayer, including RAW
+ * and failed prefixes. No health, World, watcher, callback or sleep transition.
+ * Native admission holds the Entity; a null receiver reports source getfield1. */
+mc_player_status mc_player_is_sleeping(mc_entity *entity, bool *out, mc_player_error *error);
 
 #endif

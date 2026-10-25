@@ -2,6 +2,7 @@
 
 #include "../../world/runtime/runtime_internal.h"
 #include "../construction_internal.h"
+#include "mc/client/input/movement_input.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/runtime.h"
 
@@ -353,8 +354,38 @@ mc_entity_status mc_local_player_get_snapshot(const mc_entity *entity,
     return MC_ENTITY_OK;
 }
 
+mc_player_status mc_player_is_sleeping(mc_entity *entity, bool *out, mc_player_error *out_error) {
+    mc_player_error error = {0};
+    if (out == NULL)
+        mc_player_fail(&error, MC_PLAYER_INVALID_ARGUMENT, "Player sleeping output", NULL, NULL,
+                       NULL, 0);
+    else if (entity == NULL)
+        mc_player_fail(&error, MC_PLAYER_NULL_REFERENCE, "Player sleeping receiver", "gs", "N",
+                       "()Z", 1);
+    else if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        mc_player_fail(&error, MC_PLAYER_INVALID_ARGUMENT, "Player sleeping concrete owner", NULL,
+                       NULL, NULL, 0);
+    else {
+        mc_entity_status held = mc_entity_retain(entity);
+        if (held != MC_ENTITY_OK) {
+            error.entity =
+                (mc_entity_error){.status = held, .operation = "Player sleeping Entity hold"};
+            mc_player_fail(&error, MC_PLAYER_ENTITY_FAILED, error.entity.operation, NULL, NULL,
+                           NULL, 0);
+        } else {
+            *out = entity->local_player->fields.player.u;
+            mc_entity_release(entity);
+        }
+    }
+    if (out_error != NULL)
+        *out_error = error;
+    return error.status;
+}
+
 void mc_local_player_dispose(mc_entity *entity) {
     mc_local_player_snapshot *s = &entity->local_player->fields;
+    /* Drop this field's native occurrence hold, without a source input reset. */
+    (void)mc_movement_input_retire(&s->input, NULL);
     /* Constructor aliases d/e own one Container, with a borrowed inventory
      * back-link. Native teardown is quiescent; no source close/drop is called. */
     (void)mc_container_retire(&s->player.d, NULL);

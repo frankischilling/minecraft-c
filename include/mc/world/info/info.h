@@ -166,6 +166,11 @@ const mc_nbt_tag *mc_world_info_source(const mc_world_info *info);
  * No snapshot, allocation, clock, normalization or other field read occurs. */
 mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out);
 
+/* Actual client ei.h() Player reference read. No READY gate, copy, retain,
+ * cached dimension read or mutation. The nullable output borrows Info's hold. */
+mc_world_info_status mc_world_info_player_get(const mc_world_info *info,
+                                              mc_world_info_player **out);
+
 /* READY-only direct flag reads. Each reads only its named current scalar;
  * failure preserves out, and no allocation, clock or other flag read occurs. */
 mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out);

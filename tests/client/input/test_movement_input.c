@@ -1,3 +1,4 @@
+#include "../../../src/client/input/movement_input_internal.h"
 #include "mc/client/input/movement_input.h"
 
 #include <inttypes.h>
@@ -64,6 +65,20 @@ int main(void) {
     CHECK(mc_movement_input_create(NULL, &error) == MC_MOVEMENT_INPUT_INVALID_ARGUMENT);
     CHECK(mc_movement_input_create(&base, &error) == MC_MOVEMENT_INPUT_OK);
     CHECK(error.status == MC_MOVEMENT_INPUT_OK && error.named_index == -1);
+    CHECK(mc_movement_input_read_state(base, &state) && state.native_holds == 1);
+    CHECK(mc_movement_input_retain(NULL, &error) == MC_MOVEMENT_INPUT_INVALID_ARGUMENT);
+    CHECK(mc_movement_input_retain(base, &error) == MC_MOVEMENT_INPUT_OK);
+    mc_movement_input *alias = base;
+    CHECK(mc_movement_input_read_state(alias, &state) && state.native_holds == 2);
+    CHECK(mc_movement_input_retire(&alias, &error) == MC_MOVEMENT_INPUT_OK && alias == NULL);
+    CHECK(mc_movement_input_read_state(base, &state) && state.native_holds == 1);
+    /* Native overflow control; source fields/keys are not modified. */
+    base->holds = SIZE_MAX;
+    CHECK(mc_movement_input_retain(base, &error) == MC_MOVEMENT_INPUT_LIMIT);
+    CHECK(error.exception == MC_MOVEMENT_INPUT_EXCEPTION_NONE && error.bytecode == 0 &&
+          base->holds == SIZE_MAX);
+    base->holds = 1;
+
     CHECK(mc_movement_input_read_state(base, &state));
     CHECK(state.kind == MC_MOVEMENT_INPUT_BASE && state.settings == NULL &&
           state.keys_identity == NULL && state.key_count == 0 && keys(&state) == 0);

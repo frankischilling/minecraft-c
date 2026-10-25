@@ -3,10 +3,12 @@
 
 #include "runtime_internal.h"
 
-/* Validate native ownership of the actual constructor-created b/D Lists,
+/* Validate native ownership of the actual constructor-created b/D/d Lists,
  * independently of replaceable source projections. NULL typed occurrences own
  * no hold. Never reinterpret an unknown void* collection as Entity ownership. */
 bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world);
+/* Current d may be its captured owner, NULL or a shaped empty borrowed List. */
+bool mc_world_runtime_player_list_retirement_valid(const mc_world_runtime *world);
 /* Infallible after complete quiescent admission. No source callback, World
  * binding rewrite, serialization, dirty/q or Entity membership store occurs. */
 void mc_world_runtime_entity_list_release(mc_world_runtime *world);

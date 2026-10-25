@@ -217,7 +217,8 @@ def options(scale: int, anaglyph: bool = False, bad_line: bool = False) -> bytes
 def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | str,
              override: int | None, diagnostics: list[bytes],
              extra_arguments: tuple[str, ...] = (),
-             startup_lines: tuple[bytes, ...] = ()) -> tuple[dict, tuple | None]:
+             startup_lines: tuple[bytes, ...] = (),
+             timeout_seconds: int = CASE_SECONDS) -> tuple[dict, tuple | None]:
     case = root / name
     case.mkdir()
     game = case / "game"
@@ -237,7 +238,7 @@ def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | 
     if override is not None:
         command.extend(["--gui-scale", str(override)])
     receipt = {"passed": False, "command": command, "cwd": str(case),
-               "game_before": before, "timeout_seconds": CASE_SECONDS,
+               "game_before": before, "timeout_seconds": timeout_seconds,
                "stdout_limit": STREAM_LIMIT, "stderr_limit": STREAM_LIMIT,
                "ownership": "direct Popen child; enclosing CTest owner supervises descendants"}
     child, pixels = None, None
@@ -249,7 +250,7 @@ def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | 
                                      stdout=stdout, stderr=stderr)
             receipt["pid"] = child.pid
             while child.poll() is None:
-                need(time.monotonic() - started <= CASE_SECONDS, "native startup deadline")
+                need(time.monotonic() - started <= timeout_seconds, "native startup deadline")
                 for stream in ("native.stdout", "native.stderr"):
                     need((case / stream).stat().st_size <= STREAM_LIMIT, "native startup stream bound")
                 if capture.exists():

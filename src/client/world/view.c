@@ -47,6 +47,38 @@ static int farther_first(const void *left, const void *right) {
     return a->distance > b->distance ? -1 : a->distance < b->distance ? 1 : 0;
 }
 
+static bool prepare(mc_world_runtime *world, int32_t center_x, int32_t center_z,
+                    mc_client_world_view_error *error) {
+    const int32_t chunk_x = mc_java_i32_shr(center_x, 4);
+    const int32_t chunk_z = mc_java_i32_shr(center_z, 4);
+    /* Keep the mesher's section/ChunkCache acquisition order. Every padded
+     * cache is acquired before any final geometry reads the populated World. */
+    for (int32_t x = -1; x <= 1; ++x)
+        for (int32_t z = -1; z <= 1; ++z)
+            for (int32_t dx = -1; dx <= 1; ++dx)
+                for (int32_t dz = -1; dz <= 1; ++dz) {
+                    mc_chunk_state *chunk = NULL;
+                    error->acquisition =
+                        mc_world_runtime_get(world, chunk_x + x + dx, chunk_z + z + dz, &chunk);
+                    if (error->acquisition != MC_CHUNK_ACQUIRE_OK || chunk == NULL) {
+                        const mc_world_storage_error *cause = mc_world_runtime_last_error(world);
+                        if (cause != NULL)
+                            error->world = *cause;
+                        error->operation = "World view ChunkCache preparation";
+                        return false;
+                    }
+                }
+    bool more;
+    do {
+        if (mc_world_runtime_light_drain(world, SIZE_MAX, &more, &error->light) !=
+            MC_WORLD_STORAGE_OK) {
+            error->operation = "World view lighting preparation";
+            return false;
+        }
+    } while (more);
+    return true;
+}
+
 bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *display,
                                  mc_client_assets *assets, const mc_math_trig *trig, bool anaglyph,
                                  bool ambient_occlusion, bool fancy_leaves,
@@ -107,6 +139,8 @@ bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *dis
     options.foliage_colors = foliage;
     options.grass_color_count = options.foliage_color_count = 65536;
     options.trig = trig;
+    if (!prepare(world, center_x, center_z, &frame))
+        goto failure;
     for (int32_t x = -1; x <= 1; ++x)
         for (int32_t z = -1; z <= 1; ++z)
             for (int32_t y = 0; y < 128; y += 16) {

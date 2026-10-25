@@ -6,20 +6,32 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [World lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md)
+  propagates actual queued regions into Chunk nibble arrays, preserving live
+  WorldAccess callbacks, detached region ownership and nested drain guards.
+  The fixed inspection view drains after footprint acquisition and before meshes.
 - [Local Player construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-construction.md)
   owns the genuine base/Living/Player constructor graph, early watcher hook,
-  Inventory/Container aliases, Session Strings and MouseFilters. Publication,
-  ticks, input attachment, movement and rendering remain unfinished.
+  Inventory/Container aliases, Session Strings and MouseFilters. Separate
+  [World attachment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/player-publication.md)
+  preserves Player membership, sleeping scans and live publication callbacks.
+  [Input attachment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-input.md)
+  retains actual MovementInput and forwards key/reset/sneaking operations.
+  Application adoption, ticks, movement and rendering remain unfinished.
+- [Provider maintenance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/provider-maintenance.md)
+  preserves the normal client's actual 100-entry pass and real loader/generator
+  calls, including naturally empty pending state. Full client startup adoption
+  and broader provider/exception behavior remain unfinished.
 - [Crafting inventories and containers](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/inventory/crafting.md)
   own Player inventory, the grid/result owners and concrete Player/Workbench
   Slot graphs. Input notifications scan the actual 151 recipes and replace
-  the preview with a fresh Stack. Player construction, slot clicks and output
+  the preview with a fresh Stack. Slot clicks and output
   pickup remain unfinished.
 - [MovementInput](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/movement-input.md)
   owns key cells and borrows live settings. Inherited
   [Entity turning](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/turn.md)
   preserves current/previous angle arithmetic on actual constructed Entities.
-  Player construction, platform event routing and gameplay remain unfinished.
+  Platform event routing and gameplay remain unfinished.
 - [World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md)
   connects actual GAME World construction, leased CPU section meshes and owned
   GL3.3 buffers to a fixed native inspection scene. It has no Player or world

@@ -5,6 +5,7 @@
 
 /* The one actual provider owner, shared only by its concrete method bodies. */
 struct mc_chunk_provider {
+    mc_chunk_provider_concrete_kind concrete_kind;
     mc_world_runtime *world;
     mc_chunk_acquire_policy policy;
     bool force_load;

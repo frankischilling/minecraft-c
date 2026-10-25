@@ -404,3 +404,49 @@ mc_registry_status mc_registry_block_t_at(const mc_registry_block_t_view *array,
         *error = array->classes->last_error;
     return status;
 }
+
+/* Actual captured Block.s emission array; same active-use/nullable rules as q. */
+mc_registry_status mc_registry_block_s_get(mc_registry_classes *classes,
+                                           mc_registry_block_s_view *out,
+                                           mc_registry_error *error) {
+    if (out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime s output");
+    mc_registry_status status = enter_blocks(classes, error);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    const int32_t *identity = NULL;
+    status = mc_registry_blocks_active_use(classes);
+    if (status == MC_REGISTRY_OK)
+        identity = classes->blocks.s;
+    status = leave_blocks(classes, status, error);
+    if (status == MC_REGISTRY_OK)
+        *out =
+            (mc_registry_block_s_view){.classes = classes,
+                                       .identity = identity,
+                                       .length = identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
+    return status;
+}
+
+mc_registry_status mc_registry_block_s_at(const mc_registry_block_s_view *array, int32_t index,
+                                          int32_t *out, mc_registry_error *error) {
+    if (array == NULL || array->classes == NULL || out == NULL)
+        return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime s element arguments");
+    mc_registry_status status;
+    if (array->identity == NULL) {
+        status = result(&array->classes->last_error, MC_REGISTRY_NULL_REFERENCE,
+                        "Block runtime captured s array is null");
+    } else {
+        if (array->length > MC_REGISTRY_BLOCK_SLOTS)
+            return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime s native extent");
+        if (index < 0 || (size_t)index >= array->length) {
+            status = result(&array->classes->last_error, MC_REGISTRY_INDEX_OUT_OF_RANGE,
+                            "Block runtime captured s index");
+        } else {
+            *out = array->identity[index];
+            return result(error, MC_REGISTRY_OK, NULL);
+        }
+    }
+    if (error != NULL)
+        *error = array->classes->last_error;
+    return status;
+}

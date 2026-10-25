@@ -1,4 +1,7 @@
+#include "mc/entity/nbt/nbt.h"
+#include "mc/entity/player/player.h"
 #include "mc/world/runtime/entities.h"
+#include "mc/world/runtime/players.h"
 
 #include "../../entity/entity_internal.h"
 #include "../chunk/object_internal.h"
@@ -100,20 +103,34 @@ static bool entity_ledger_valid(const mc_world_runtime *world,
 bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world) {
     if (world == NULL)
         return false;
-    const mc_world_entity_list_ledger *a = &world->entity_membership;
-    const mc_world_entity_list_ledger *b = &world->entity_deferral;
-    size_t a_bytes, b_bytes;
-    if (!entity_ledger_valid(world, a, &a_bytes) || !entity_ledger_valid(world, b, &b_bytes) ||
-        (a->list != NULL && a->list == b->list) || a_bytes > SIZE_MAX - b_bytes ||
-        a_bytes + b_bytes > world->construction.direct_allocation_bytes)
+    const mc_world_entity_list_ledger *ledgers[] = {
+        &world->entity_membership, &world->entity_deferral, &world->player_membership};
+    const void *spans[6] = {0};
+    size_t total = 0;
+    for (size_t i = 0; i < 3; ++i) {
+        size_t bytes;
+        if (!entity_ledger_valid(world, ledgers[i], &bytes) || bytes > SIZE_MAX - total)
+            return false;
+        total += bytes;
+        spans[2 * i] = ledgers[i]->list == NULL ? NULL : (void *)ledgers[i]->list->items;
+        spans[2 * i + 1] = ledgers[i]->entries;
+        for (size_t j = 0; j < i; ++j)
+            if (ledgers[i]->list != NULL && ledgers[i]->list == ledgers[j]->list)
+                return false;
+    }
+    if (total > world->construction.direct_allocation_bytes)
         return false;
-    const void *spans[] = {a->list == NULL ? NULL : (void *)a->list->items, (void *)a->entries,
-                           b->list == NULL ? NULL : (void *)b->list->items, (void *)b->entries};
-    for (size_t i = 0; i < sizeof(spans) / sizeof(spans[0]); ++i)
+    for (size_t i = 0; i < 6; ++i)
         for (size_t j = 0; j < i; ++j)
             if (spans[i] != NULL && spans[i] == spans[j])
                 return false;
     return true;
+}
+
+bool mc_world_runtime_player_list_retirement_valid(const mc_world_runtime *world) {
+    const mc_world_reference_list *current = world->fields.d;
+    return current == world->player_membership.list || current == NULL ||
+           (list_shape(current) && current->count == 0);
 }
 
 static void entity_ledger_release(mc_world_runtime *world, mc_world_entity_list_ledger *ledger) {
@@ -143,21 +160,21 @@ static void entity_ledger_release(mc_world_runtime *world, mc_world_entity_list_
 void mc_world_runtime_entity_list_release(mc_world_runtime *world) {
     entity_ledger_release(world, &world->entity_membership);
     entity_ledger_release(world, &world->entity_deferral);
+    entity_ledger_release(world, &world->player_membership);
 }
 
-static bool append_entity(mc_world_runtime *world, mc_entity *entity,
-                          mc_world_entity_error *frame) {
-    mc_world_reference_list *list = world->fields.b; /* getfield91 */
-    frame->bytecode = 95;
-    if (!mc_world_runtime_entity_list_valid(world) || list == NULL ||
-        list != world->entity_membership.list)
+static bool append_owned_entity(mc_world_runtime *world, mc_world_reference_list *list,
+                                mc_world_entity_list_ledger *ledger, mc_entity *entity,
+                                unsigned int pc, mc_world_entity_error *frame) {
+    frame->bytecode = pc;
+    if (!mc_world_runtime_entity_list_valid(world) || list == NULL || list != ledger->list)
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity List ownership");
     if (list->count == (size_t)INT32_MAX)
         return entity_fail(frame, MC_WORLD_STORAGE_LIMIT, "World Entity List size");
 
     void **items = list->items;
-    mc_entity **holds = world->entity_membership.entries;
+    mc_entity **holds = ledger->entries;
     size_t capacity = list->capacity;
     size_t bytes = 0;
     if (list->count == capacity) {
@@ -186,7 +203,7 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity,
         world->construction.direct_allocation_bytes += bytes;
         if (list->count != 0) {
             memcpy(items, list->items, list->count * sizeof(*items));
-            memcpy(holds, world->entity_membership.entries, list->count * sizeof(*holds));
+            memcpy(holds, ledger->entries, list->count * sizeof(*holds));
         }
     }
     const mc_entity_status held = mc_entity_retain(entity);
@@ -203,19 +220,25 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity,
     items[list->count] = entity;
     holds[list->count] = entity;
     if (bytes != 0) {
-        const size_t old_bytes = list->capacity * sizeof(*list->items) +
-                                 world->entity_membership.capacity * sizeof(*holds);
+        const size_t old_bytes =
+            list->capacity * sizeof(*list->items) + ledger->capacity * sizeof(*holds);
         free(list->items);
-        free(world->entity_membership.entries);
+        free(ledger->entries);
         list->items = items;
         list->capacity = capacity;
-        world->entity_membership.entries = holds;
-        world->entity_membership.capacity = capacity;
+        ledger->entries = holds;
+        ledger->capacity = capacity;
         world->construction.direct_allocation_bytes -= old_bytes;
     }
     ++list->count;
-    ++world->entity_membership.count;
+    ++ledger->count;
     return true;
+}
+
+static bool append_entity(mc_world_runtime *world, mc_entity *entity,
+                          mc_world_entity_error *frame) {
+    return append_owned_entity(world, world->fields.b, &world->entity_membership, entity, 95,
+                               frame);
 }
 
 static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
@@ -494,7 +517,8 @@ static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_en
                            "World Entity application class");
     if (entity != NULL && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
-        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
         return entity_fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World concrete Entity type");
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK)
@@ -532,6 +556,71 @@ static bool add_to_chunk(mc_world_runtime *world, mc_chunk_state *state, mc_enti
     return entity_cause(frame, detail.cause);
 }
 
+static bool sleeping_fail(mc_world_player_sleep_error *frame, mc_world_storage_status status,
+                          const char *operation) {
+    frame->status = status;
+    frame->operation = operation;
+    frame->cause = (mc_world_storage_error){status, operation, 0};
+    return false;
+}
+
+/* Actual iterator capture25 is distinct from the earlier current d/isEmpty5.
+ * gs.N reads one bool and has no callbacks or user-supplied virtual body in
+ * this concrete profile. No snapshot or precomputed all-asleep answer is used. */
+static bool update_sleeping_held(mc_world_runtime *world, mc_world_player_sleep_error *frame) {
+    frame->index = SIZE_MAX;
+    frame->bytecode = 5;
+    mc_world_reference_list *list = world->fields.d;
+    if (!list_shape(list))
+        return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "World sleeping d isEmpty receiver");
+    world->fields.J = list->count != 0;
+    frame->bytecode = 25;
+    list = world->fields.d;
+    if (!list_shape(list))
+        return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "World sleeping d iterator receiver");
+    for (size_t index = 0;; ++index) {
+        frame->bytecode = 32;
+        if (index >= list->count)
+            break;
+        frame->index = index;
+        frame->bytecode = 41;
+        if (index >= list->capacity || list->items == NULL)
+            return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World sleeping iterator next");
+        frame->bytecode = 46;
+        if (!mc_world_runtime_entity_list_valid(world) || list != world->player_membership.list ||
+            index >= world->player_membership.count ||
+            list->items[index] != world->player_membership.entries[index])
+            return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World sleeping typed Player occurrence");
+        mc_entity *player = world->player_membership.entries[index];
+        if (player != NULL && !mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+            return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World sleeping Player cast");
+        frame->bytecode = 51;
+        bool sleeping;
+        mc_player_error cause = {0};
+        const mc_player_status status = mc_player_is_sleeping(player, &sleeping, &cause);
+        if (status != MC_PLAYER_OK) {
+            frame->player_bytecode = cause.site.pc;
+            frame->entity = cause.entity;
+            return sleeping_fail(frame,
+                                 status == MC_PLAYER_LIMIT || cause.entity.status == MC_ENTITY_LIMIT
+                                     ? MC_WORLD_STORAGE_LIMIT
+                                     : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 cause.operation);
+        }
+        if (!sleeping) {
+            world->fields.J = false; /* Actual store59, before terminating. */
+            break;
+        }
+    }
+    *frame = (mc_world_player_sleep_error){.index = SIZE_MAX};
+    return true;
+}
+
 static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *value,
                           mc_world_entity_error *frame) {
     frame->bytecode = 1;
@@ -547,23 +636,39 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
     frame->bytecode = 13;
     fields = mc_entity_runtime_fields(entity);
     const int32_t chunk_z = mc_math_floor_double(fields->z / 16.0); /* floor20 */
-    /* The admitted hl/ez, ju/gl and yl/pr classes are nonplayers. Their
-     * actual immutable class identities make the two distinct source
-     * instanceof gs/em tests28/52 false. Player/sleep descendants remain
-     * separate implementations. */
-    bool present;
-    frame->bytecode = 45;
-    frame->presence_bytecode = 6;
-    frame->provider_bytecode = 6;
-    mc_world_storage_error cause = {0};
-    if (mc_world_runtime_chunk_provider_contains(world, chunk_x, chunk_z, &present, &cause) !=
-        MC_WORLD_STORAGE_OK)
-        return entity_cause(frame, cause);
-    if (!present) {
-        *value = false; /* Actual false108/return109. */
-        return true;
+    /* Two real instanceof sites28/52. Concrete dc has canonical gs ancestry;
+     * testing exact PLAYER (gs) literal equality would incorrectly reject dc. */
+    const bool player = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
+    if (!player) {
+        bool present;
+        frame->bytecode = 45;
+        frame->presence_bytecode = 6;
+        frame->provider_bytecode = 6;
+        mc_world_storage_error cause = {0};
+        if (mc_world_runtime_chunk_provider_contains(world, chunk_x, chunk_z, &present, &cause) !=
+            MC_WORLD_STORAGE_OK)
+            return entity_cause(frame, cause);
+        if (!present) {
+            *value = false; /* Actual false108/return109. */
+            return true;
+        }
+        frame->presence_bytecode = 0;
     }
-    frame->presence_bytecode = 0;
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        if (!append_owned_entity(world, world->fields.d, &world->player_membership, entity, 70,
+                                 frame))
+            return false;
+        frame->bytecode = 77;
+        mc_world_player_sleep_error sleep = {.index = SIZE_MAX};
+        if (!update_sleeping_held(world, &sleep)) {
+            frame->sleep = (mc_world_player_sleep_context){
+                .bytecode = (uint16_t)sleep.bytecode,
+                .player_bytecode = (uint16_t)sleep.player_bytecode,
+                .index = sleep.index == SIZE_MAX ? -1 : (int32_t)sleep.index};
+            frame->entity = sleep.entity;
+            return entity_cause(frame, sleep.cause);
+        }
+    }
     frame->bytecode = 83;
     mc_chunk_state *state = NULL;
     /* World.c invokes provider b: a cached hit preserves pending work. */
@@ -618,6 +723,134 @@ mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, 
     if (completed)
         *out = value;
     return finish_entity(world, entity, completed, &frame, error);
+}
+
+mc_world_storage_status
+mc_world_runtime_update_player_sleeping(mc_world_runtime *world,
+                                        mc_world_player_sleep_error *error) {
+    mc_world_player_sleep_error frame = {.index = SIZE_MAX};
+    mc_world_entity_error admission = {0};
+    if (world != NULL && (world->classes == NULL || world->classes->side != MC_WORLD_INFO_CLIENT)) {
+        (void)sleeping_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World sleeping client source owner");
+    } else if (!enter_entity(world, NULL, &admission)) {
+        frame.status = admission.status;
+        frame.operation = admission.operation;
+        frame.cause = admission.cause;
+    } else {
+        if (!update_sleeping_held(world, &frame))
+            world->last_error = frame.cause;
+        mc_world_runtime_call_leave(world);
+    }
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
+}
+
+static void attachment_fail(mc_world_player_attachment_error *frame, mc_world_storage_status status,
+                            const char *operation) {
+    frame->status = status;
+    frame->operation = operation;
+    frame->cause = (mc_world_storage_error){status, operation, 0};
+}
+
+mc_world_storage_status
+mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
+                               mc_world_player_attachment_error *out_error) {
+    mc_world_player_attachment_error frame = {0};
+    frame.nbt = mc_entity_nbt_empty_error();
+    bool entered = false;
+    mc_world_info_player *tag = NULL;
+    if (player != NULL && !mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        attachment_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                        "World attach concrete Player argument");
+        goto done;
+    }
+    if (world != NULL && (world->classes == NULL || world->classes->side != MC_WORLD_INFO_CLIENT)) {
+        attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World attach client source owner");
+        goto done;
+    }
+    if (!enter_entity(world, player, &frame.publication)) {
+        frame.status = frame.publication.status;
+        frame.operation = frame.publication.operation;
+        frame.cause = frame.publication.cause;
+        goto done;
+    }
+    entered = true;
+    frame.bytecode = 4;
+    frame.info = mc_world_info_player_get(world->fields.x, &tag);
+    if (frame.info != MC_WORLD_INFO_OK) {
+        attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World attach Info Player receiver");
+        goto done;
+    }
+    if (tag != NULL) {
+        /* Source local2 retains this exact object across the inherited load
+         * and later clear. Native holding neither copies nor renames its root. */
+        mc_world_info_status held = mc_world_info_player_retain(tag);
+        if (held != MC_WORLD_INFO_OK) {
+            tag = NULL; /* The Info still owns its unchanged source reference. */
+            frame.info = held;
+            attachment_fail(&frame, MC_WORLD_STORAGE_LIMIT,
+                            "World attach captured Player NBT hold");
+            goto done;
+        }
+        frame.bytecode = 14;
+        if (player == NULL) {
+            attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World attach Player NBT receiver");
+            goto done;
+        }
+        mc_entity_nbt_status loaded =
+            mc_entity_read_nbt(player, mc_world_info_player_root(tag), &frame.nbt);
+        if (loaded != MC_ENTITY_NBT_OK) {
+            attachment_fail(&frame,
+                            loaded == MC_ENTITY_NBT_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                            : loaded == MC_ENTITY_NBT_ALLOCATION_FAILED
+                                ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            frame.nbt.operation);
+            goto done;
+        }
+        frame.bytecode = 22;
+        frame.info = mc_world_info_player_set(world->fields.x, NULL);
+        if (frame.info != MC_WORLD_INFO_OK) {
+            attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World attach Info Player clear");
+            goto done;
+        }
+    }
+    frame.bytecode = 29;
+    mc_chunk_provider_concrete_kind kind = mc_chunk_provider_concrete_kind_of(world->fields.v);
+    if (kind != MC_CHUNK_PROVIDER_NULL && kind != MC_CHUNK_PROVIDER_MAP_CACHE) {
+        attachment_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World attach provider concrete class dependency");
+        goto done;
+    }
+    /* The actual implemented constructor created ok/jb, an unrelated class to
+     * client kx. Never infer kx from BASE/DEDICATED policy or retained grid. */
+    frame.bytecode = 79;
+    bool ignored;
+    if (!insert_entity(world, player, &ignored, &frame.publication)) {
+        frame.status = frame.publication.status;
+        frame.operation = frame.publication.operation;
+        frame.cause = frame.publication.cause;
+        goto done;
+    }
+    frame = (mc_world_player_attachment_error){0};
+    frame.nbt = mc_entity_nbt_empty_error();
+done:
+    mc_world_info_player_release(tag);
+    if (entered) {
+        if (frame.status != MC_WORLD_STORAGE_OK)
+            world->last_error = frame.cause;
+        mc_entity_release(player);
+        mc_world_runtime_call_leave(world);
+    }
+    if (out_error != NULL)
+        *out_error = frame;
+    return frame.status;
 }
 
 mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk, mc_entity *entity,

@@ -22,14 +22,18 @@ and owns its ten key cells. [Entity turning](entity/turn.md) mutates genuine
 constructed Entity angle fields with the original double scaling and previous
 angle adjustments. [Local Player construction](client/player-construction.md)
 owns the real base/Living/Player state, Inventory/Container aliases, Session
-Strings and MouseFilters. Input attachment, Player publication and the World
-entity tick loop remain unfinished.
+Strings and MouseFilters. [Player input attachment](client/player-input.md)
+retains the same MovementInput owner and forwards actual key/reset/sneaking
+operations. Separate [World publication](world/player-publication.md) retains
+each Player occurrence. Application adoption and the World entity tick loop
+remain unfinished.
 
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.
 Synchronous input notifications execute the real sorted recipe scan and publish
-fresh preview Stacks. The shared library has no display or audio dependency.
-Player construction, slot clicks and crafting-output effects remain unfinished.
+fresh preview Stacks. The shared library requires no graphics or audio-device
+initialization; its Player input/settings dependencies use plain C owners.
+Slot clicks and crafting-output effects remain unfinished.
 
 The [sound resource owners](client/sound.md) retain grouped entries, resolved
 file URLs and actual raw/MUS input streams. Their native retirement stays
@@ -168,7 +172,19 @@ current/deepest-site projection, not an unbounded recursive Throwable graph.
 The [concrete World height and lighting operations](world/runtime-lighting.md)
 use its current provider, actual C list and class-owned shared A. Regions retain
 stable addresses through pointer-array growth and merging. Native retirement
-keeps C until final free. Live Chunk finishing and propagation remain unfinished.
+keeps C until final free. [Light propagation](world/light-propagation.md) removes
+the newest region before invoking it, retains its detached lifetime through
+reentry and writes actual Chunk nibbles before live WorldAccess callbacks.
+The fixed inspection view acquires its padded footprint and drains before
+building final meshes. Ordinary startup and dynamic rendering remain unfinished.
+
+[World Player attachment](world/player-publication.md) reads actual Info.Player
+and invokes the Player-positive publication path. A nonnull saved tag retains
+the completed base Entity NBT effects before the explicit missing Living reader;
+it is neither cleared nor published after failure. A null tag reaches actual
+Player membership, sleeping state, Chunk and World ledgers, then live callbacks.
+Each duplicate occurrence owns its own hold. Terminal teardown validates all
+typed ledgers before releasing any occurrence.
 
 Project-owned runtime code uses C17. `mc_core` contains numerical compatibility,
 the shared Random profile and allocation-free modified UTF-8 text helpers.

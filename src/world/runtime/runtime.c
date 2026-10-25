@@ -6,6 +6,7 @@
 #include "construction_internal.h"
 #include "generation/generation_internal.h"
 #include "loading/loading_internal.h"
+#include "mc/world/runtime/maintenance.h"
 #include "mc/world/runtime/population/overworld.h"
 #include "millis.h"
 #include "runtime_internal.h"
@@ -868,7 +869,8 @@ typedef enum lifecycle_operation {
     LIFECYCLE_SAVE_CHUNKS,
     LIFECYCLE_SAVE_WORLD,
     LIFECYCLE_SAVE_CLIENT,
-    LIFECYCLE_MAINTAIN
+    LIFECYCLE_MAINTAIN,
+    LIFECYCLE_FINISH_MAINTENANCE
 } lifecycle_operation;
 
 static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bool force,
@@ -894,6 +896,25 @@ static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bo
                 break;
             case LIFECYCLE_MAINTAIN:
                 frame.status = mc_chunk_lifecycle_maintain(&runtime->lifecycle, out);
+                break;
+            case LIFECYCLE_FINISH_MAINTENANCE:
+                if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
+                    runtime->classes->side != MC_WORLD_INFO_CLIENT ||
+                    runtime->lifecycle.policy != MC_CHUNK_ACQUIRE_BASE) {
+                    frame.status = MC_CHUNK_LIFECYCLE_STATE_ERROR;
+                    runtime_error(&frame.cause, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "World.p concrete normal client GAME provider");
+                    break;
+                }
+                /* fd.p reloads the actual provider each pass. The concrete
+                 * cache pass runs even with no pending entries; its return is
+                 * the actual yf generator result, not pending emptiness. */
+                for (;;) {
+                    bool again = false;
+                    frame.status = mc_chunk_lifecycle_maintain(&runtime->lifecycle, &again);
+                    if (frame.status != MC_CHUNK_LIFECYCLE_OK || !again)
+                        break;
+                }
                 break;
         }
         runtime->lifecycle_error = previous;
@@ -951,6 +972,12 @@ mc_chunk_lifecycle_status mc_world_runtime_save(mc_world_runtime *runtime, bool 
 mc_chunk_lifecycle_status mc_world_runtime_save_client(mc_world_runtime *runtime, int32_t pass,
                                                        bool *completed) {
     return mc_world_runtime_save_client_detailed(runtime, pass, completed, NULL);
+}
+
+mc_chunk_lifecycle_status
+mc_world_runtime_finish_maintenance(mc_world_runtime *runtime,
+                                    mc_world_runtime_lifecycle_error *error) {
+    return lifecycle_attempt(runtime, false, 0, NULL, LIFECYCLE_FINISH_MAINTENANCE, error);
 }
 
 mc_chunk_lifecycle_status mc_world_runtime_maintain(mc_world_runtime *runtime,
