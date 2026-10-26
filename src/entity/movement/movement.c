@@ -1,10 +1,12 @@
 #include "mc/entity/movement/movement.h"
 
+#include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/collision/blocks_internal.h"
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
+#include "mc/block/registry/step_sound.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 
@@ -67,6 +69,7 @@ void mc_entity_move_error_init(mc_entity_move_error *error) {
     error->block_read = mc_world_collision_empty_error();
     error->world = mc_world_movement_empty_error();
     error->contact = mc_world_entity_contact_empty_error();
+    mc_world_step_error_init(&error->step);
     error->effect = mc_entity_effect_empty_error();
     error->registry = error->collision.nearby.query.registry;
 }
@@ -256,7 +259,165 @@ static bool contacts(mc_entity *entity, mc_entity_move_error *error) {
     return true;
 }
 
-static bool finish_environment(mc_entity *entity, const mc_world_collision_list_view *list,
+static bool walking_block(mc_entity *entity, int32_t x, int32_t y, int32_t z, int32_t *out,
+                          unsigned int pc, mc_entity_move_error *error) {
+    error->bytecode = pc;
+    mc_world_runtime *world = entity->base.world;
+    mc_world_storage_error admission = {0};
+    mc_world_storage_status status = mc_world_runtime_call_enter(world, &admission);
+    if (status == MC_WORLD_STORAGE_OK) {
+        status =
+            mc_world_collision_block_value_held(world, x, y, z, false, out, &error->block_read);
+        mc_world_runtime_call_leave(world);
+    } else {
+        error->block_read = mc_world_collision_empty_error();
+        error->block_read.nearby.query.status = status;
+        error->block_read.nearby.query.operation = admission.operation;
+        error->block_read.nearby.query.cause = admission;
+    }
+    return world_result(error, status, "Entity walking actual World block read");
+}
+
+static bool walking_code(mc_entity *entity, mc_registry_classes *classes, unsigned int pc,
+                         mc_entity_move_error *error) {
+    error->bytecode = pc;
+    return (classes != NULL && classes->entities == entity->classes) ||
+           fail(error, MC_ENTITY_STATE_ERROR, "Entity walking actual code Registry namespace");
+}
+
+static bool walking_static(mc_entity *entity, mc_registry_classes *classes, const char *name,
+                           unsigned int capture_pc, unsigned int field_pc, const mc_block **out,
+                           mc_entity_move_error *error) {
+    if (!walking_code(entity, classes, capture_pc, error))
+        return false;
+    if (mc_registry_block_static_get(classes, name, out, &error->registry) != MC_REGISTRY_OK)
+        return fail(error, MC_ENTITY_WORLD_FAILED, "Entity walking actual Block getstatic");
+    error->bytecode = field_pc;
+    return *out != NULL ||
+           fail(error, MC_ENTITY_STATE_ERROR, "Entity walking null static Block field receiver");
+}
+
+static bool walking_element(mc_entity *entity, mc_registry_classes *classes, int32_t id,
+                            unsigned int capture_pc, unsigned int element_pc, const mc_block **out,
+                            mc_entity_move_error *error) {
+    if (!walking_code(entity, classes, capture_pc, error))
+        return false;
+    mc_registry_block_m_view array;
+    if (mc_registry_block_m_get(classes, &array, &error->registry) != MC_REGISTRY_OK)
+        return fail(error, MC_ENTITY_WORLD_FAILED, "Entity walking Block.m active use");
+    error->bytecode = element_pc;
+    if (mc_registry_block_m_at(&array, id, out, &error->registry) != MC_REGISTRY_OK)
+        return fail(error, MC_ENTITY_WORLD_FAILED, "Entity walking Block.m element");
+    return true;
+}
+
+static bool walking_sound(mc_entity *entity, mc_registry_classes *classes,
+                          const mc_block_sound *sound, bool snow, mc_entity_move_error *error) {
+    /* World receiver and Entity argument are captured before d/b/c dispatch.
+     * The fresh d() String stays the SAME identity throughout WorldAccess
+     * iteration; a recipient may explicitly retain that identity. */
+    mc_world_runtime *receiver = entity->base.world;
+    mc_step_sound_name name = {0};
+    error->bytecode = snow ? 1597u : 1641u;
+    if (mc_registry_step_sound_name(classes, sound, false, &name, &error->registry) !=
+        MC_REGISTRY_OK)
+        return fail(error, MC_ENTITY_WORLD_FAILED, "Entity walking actual StepSound.d");
+    float volume = 0.0f, pitch = 0.0f;
+    error->bytecode = snow ? 1602u : 1646u;
+    bool okay = mc_registry_step_sound_volume(sound, &volume, &error->registry) == MC_REGISTRY_OK;
+    if (okay) {
+        volume = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(volume), _mm_set_ss(0.15f)));
+        error->bytecode = snow ? 1610u : 1654u;
+        okay = mc_registry_step_sound_pitch(sound, &pitch, &error->registry) == MC_REGISTRY_OK;
+    }
+    if (!okay)
+        fail(error, MC_ENTITY_WORLD_FAILED, "Entity walking actual StepSound b/c");
+    else {
+        error->bytecode = snow ? 1613u : 1657u;
+        okay = world_result(error,
+                            mc_world_runtime_entity_sound(receiver, entity, name.string, volume,
+                                                          pitch, &error->world),
+                            "Entity walking sound");
+    }
+    /* The frame keeps the reached source failure, not retirement diagnostics. */
+    (void)mc_registry_step_sound_name_release(&name, NULL);
+    return okay;
+}
+
+static bool walking(mc_entity *entity, mc_registry_classes *classes, double dx, double dz,
+                    bool sneaking, mc_entity_move_error *error) {
+    bool walks;
+    error->bytecode = 1378;
+    if (!effect_result(error, mc_entity_effect_walks(entity, &walks, &error->effect)))
+        return false;
+    if (!walks || sneaking || entity->base.aH != NULL)
+        return true;
+    const double squared = add(multiply(dx, dx), multiply(dz, dz));
+    const double root = _mm_cvtsd_f64(_mm_sqrt_sd(_mm_setzero_pd(), _mm_set_sd(squared)));
+    const float narrowed = _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(root)));
+    entity->base.bj = _mm_cvtss_f32(_mm_cvtsd_ss(
+        _mm_setzero_ps(), _mm_set_sd(add(widen(entity->base.bj), multiply(widen(narrowed), 0.6)))));
+    const int32_t x = mc_math_floor_double(entity->base.x);
+    const int32_t y = mc_math_floor_double(
+        subtract(subtract(entity->base.y, 0.20000000298023224), widen(entity->base.offset)));
+    const int32_t z = mc_math_floor_double(entity->base.z);
+    int32_t id, below;
+    if (!walking_block(entity, x, y, z, &id, 1473, error) ||
+        !walking_block(entity, x, mc_java_i32_sub(y, 1), z, &below, 1490, error))
+        return false;
+    const mc_block *fence;
+    if (!walking_static(entity, classes, "ba", 1493, 1496, &fence, error))
+        return false;
+    if (below == fence->fields.bn &&
+        !walking_block(entity, x, mc_java_i32_sub(y, 1), z, &id, 1514, error))
+        return false;
+    const float counter = _mm_cvtss_f32(_mm_cvtsi32_ss(_mm_setzero_ps(), entity->base.private_b));
+    if (!(entity->base.bj > counter) || id <= 0)
+        return true;
+    entity->base.private_b = mc_java_i32_add(entity->base.private_b, 1);
+    const mc_block *block;
+    if (!walking_element(entity, classes, id, 1547, 1552, &block, error))
+        return false;
+    error->bytecode = 1553;
+    if (block == NULL)
+        return fail(error, MC_ENTITY_STATE_ERROR, "Entity walking null Block.by receiver");
+    const mc_block_sound *sound = block->fields.by;
+    int32_t above;
+    if (!walking_block(entity, x, mc_java_i32_add(y, 1), z, &above, 1570, error))
+        return false;
+    const mc_block *snow;
+    if (!walking_static(entity, classes, "aT", 1573, 1576, &snow, error))
+        return false;
+    if (above == snow->fields.bn) {
+        if (!walking_static(entity, classes, "aT", 1582, 1585, &snow, error))
+            return false;
+        sound = snow->fields.by;
+        if (!walking_sound(entity, classes, sound, true, error))
+            return false;
+    } else {
+        if (!walking_element(entity, classes, id, 1619, 1624, &block, error))
+            return false;
+        error->bytecode = 1625;
+        if (block == NULL)
+            return fail(error, MC_ENTITY_STATE_ERROR, "Entity walking null Block.bA receiver");
+        mc_material *material = block->fields.bA;
+        error->bytecode = 1628;
+        if (material == NULL)
+            return fail(error, MC_ENTITY_STATE_ERROR, "Entity walking null Material.d receiver");
+        if (!mc_material_d(material) && !walking_sound(entity, classes, sound, false, error))
+            return false;
+    }
+    if (!walking_element(entity, classes, id, 1660, 1665, &block, error))
+        return false;
+    error->bytecode = 1677;
+    return world_result(error,
+                        mc_world_runtime_entity_step(entity->base.world, block, x, y, z, entity,
+                                                     NULL, &error->step),
+                        "Entity walking Block.b step-on");
+}
+
+static bool finish_environment(mc_entity *entity, mc_registry_classes *code_registry,
+                               const mc_world_collision_list_view *list,
                                mc_entity_move_error *error) {
     bool wet;
     error->bytecode = 1890;
@@ -278,7 +439,8 @@ static bool finish_environment(mc_entity *entity, const mc_world_collision_list_
         return false;
     if (burning) {
         error->bytecode = 1923;
-        if (!effect_result(error, mc_entity_effect_fire_damage(entity, 1, &error->effect)))
+        if (!effect_result(error, mc_entity_effect_fire_damage_in_context(entity, code_registry, 1,
+                                                                          &error->effect)))
             return false;
         if (!wet) {
             entity->base.bv = mc_java_i32_add(entity->base.bv, 1);
@@ -319,8 +481,10 @@ static bool finish_environment(mc_entity *entity, const mc_world_collision_list_
     return true;
 }
 
-mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
-                                const mc_entity_move_limits *limits, mc_entity_move_error *error) {
+mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classes *code_registry,
+                                           double x, double y, double z,
+                                           const mc_entity_move_limits *limits,
+                                           mc_entity_move_error *error) {
     mc_entity_move_error frame;
     mc_entity_move_error_init(&frame);
     frame.max_loop_work = limits == NULL ? MC_ENTITY_MOVE_DEFAULT_LOOP_WORK : limits->max_loop_work;
@@ -329,7 +493,8 @@ mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
     else if (entity->phase != MC_ENTITY_READY)
         fail(&frame, MC_ENTITY_INVALID_PHASE, "Entity movement phase");
     else if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
-             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND))
+             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
+             !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
         fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement concrete virtuals");
     else if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         fail(&frame, MC_ENTITY_UNSUPPORTED_FP, "Entity movement FP admission");
@@ -461,8 +626,9 @@ mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
             entity->base.aX = original_y != y && original_y < 0.0;
             entity->base.ba = entity->base.aY || entity->base.aZ;
             frame.bytecode = 1319;
-            if (!effect_result(
-                    &frame, mc_entity_effect_fall_state(entity, y, entity->base.aX, &frame.effect)))
+            if (!effect_result(&frame, mc_entity_effect_fall_state_in_context(entity, code_registry,
+                                                                              y, entity->base.aX,
+                                                                              &frame.effect)))
                 goto done;
             if (original_x != x)
                 entity->base.velocity_x = 0.0;
@@ -474,17 +640,10 @@ mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
              * the current concrete n=false bodies skip all walking effects. */
             volatile double walked_x = subtract(entity->base.x, old_x);
             volatile double walked_z = subtract(entity->base.z, old_z);
-            (void)walked_x;
-            (void)walked_z;
-            bool walks;
-            frame.bytecode = 1378;
-            if (!effect_result(&frame, mc_entity_effect_walks(entity, &walks, &frame.effect)))
+            if (!walking(entity, code_registry, walked_x, walked_z, sneaking, &frame))
                 goto done;
-            if (walks) {
-                fail(&frame, MC_ENTITY_STATE_ERROR, "Entity walking concrete descendant");
-                goto done;
-            }
-            if (!contacts(entity, &frame) || !finish_environment(entity, &list, &frame))
+            if (!contacts(entity, &frame) ||
+                !finish_environment(entity, code_registry, &list, &frame))
                 goto done;
             frame.bytecode = 2028;
         done:
@@ -499,4 +658,9 @@ mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
     if (error != NULL)
         *error = frame;
     return frame.status;
+}
+
+mc_entity_status mc_entity_move(mc_entity *entity, double x, double y, double z,
+                                const mc_entity_move_limits *limits, mc_entity_move_error *error) {
+    return mc_entity_move_in_context(entity, NULL, x, y, z, limits, error);
 }

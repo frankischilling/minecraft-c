@@ -20,6 +20,11 @@ mc_registry_status mc_registry_managed_allocate(mc_registry_classes *classes, si
  * reclaim its entire charge; historical peak and last_error stay unchanged.
  * No source callback or other object's lifetime operation is performed. */
 void mc_registry_managed_release(mc_registry_classes *classes, void *storage);
+/* Read-only exact payload provenance/extent. Foreign/NULL storage, malformed
+ * ledger or absent output returns false and preserves out. No payload read,
+ * allocation, borrow, class use or diagnostic mutation occurs. */
+bool mc_registry_managed_extent(const mc_registry_classes *classes, const void *storage,
+                                size_t *out);
 
 /* Joint admission for complete native charges, including allocation metadata
  * where applicable. fits rejects NULL or inconsistent/over-budget accounting.

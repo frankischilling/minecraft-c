@@ -1,5 +1,59 @@
 # Test scope and reproduction
 
+## LocalPlayer movement and walking effects
+
+`entity.player_movement` constructs the real Player, Input, Session, Registry,
+World and loaded Chunk owners using authored resources. It covers movement,
+walking effects, block step-on dispatch, reclaimable sound identities and
+explicit unsupported descendants. The existing Item/Falling regression stays
+separate. The two `tools.player_movement_controller` variants check twelve
+capture faults normally and under optimized Python. These public tests need
+neither Java nor original assets.
+
+The complete combined source passes 280 Windows MSVC tests and 261 headless
+tests each on fresh Clang 18/GCC 13 builds with ASan, UBSan and leak detection:
+802 completed cases, no failures, errors, disabled cases or skips. Each product
+passes 40,373 movement/step/sound and 15,297 environment checks. Existing
+Item/Falling, Player/input/publication, crafting, material, lighting, persistence
+and notice checks pass in the same cohort. Windows includes real OpenGL/client
+tests; these local Linux builds are headless.
+
+All 773 C/header files pass clang-format 18. The 1,511-file frozen snapshot
+contains 1,303 non-Markdown inputs. Readback checks source, executable and capture
+hashes and all actual rows, including 21 original movement records and twelve
+separately labelled JDK rounding records per product. Both new twelve-case
+controller suites pass normally and with Python optimization. Controller mirrors
+and all 556 positive/2,011 negative lifecycle interval controls also pass.
+
+Enable `MC_ENABLE_PLAYER_MOVEMENT_REFERENCE_TESTS` with the supplied client JAR,
+`MC_REFERENCE_CLIENT_LIBRARY_DIR` and matching JDK17 runtime/compiler for
+`reference.player_movement`. The controller compares 21 unchanged-client records
+on actual constructed owners and twelve separate JDK rounding records. It checks
+the exact executable, original class metadata and source/helper hashes before and
+after capture. `MC_REFERENCE_TESTED_COMMIT` identifies the tested source; an
+uncommitted snapshot must retain its separate complete source manifest.
+These finite operations do not execute a Player tick or establish gameplay.
+
+## Entity environment helpers
+
+`entity.environment` runs the real dual-side World, Registry, Chunk and Entity
+owners without Java or original assets. The two
+`tools.entity_environment_controller` variants run the same twelve process and
+capture-fault controls normally and with optimized Python. The integrated
+Windows preflight passes all four selected cases, including the optional
+unchanged-original comparison. The complete combined qualification above then
+passes on MSVC and both sanitized Linux compilers.
+
+Enable `MC_ENABLE_ENTITY_ENVIRONMENT_REFERENCE_TESTS` and supply
+`MC_REFERENCE_CLIENT_JAR`, `MC_REFERENCE_SERVER_JAR`,
+`MC_REFERENCE_CLIENT_LIBRARY_DIR` and matching JDK17 runtime/compiler paths for
+`reference.entity_environment`. This portable comparison checks 1,353 original
+client records and 1,027 original server records. The server observations cover
+relative acceleration and null-World exception prefixes. Its 51 successful
+native server World rows use client observations and paired bytecode evidence;
+they are not successful original-server World observations. See the
+[runtime contract](entity/environment.md) for exact scope and remaining ticks.
+
 ## Achievement notice and model construction
 
 The final combined source passes all 272 Windows MSVC tests and all 253 tests

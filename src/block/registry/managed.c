@@ -84,6 +84,25 @@ void mc_registry_managed_release(mc_registry_classes *classes, void *storage) {
     free(allocation);
 }
 
+bool mc_registry_managed_extent(const mc_registry_classes *classes, const void *storage,
+                                size_t *out) {
+    if (classes == NULL || storage == NULL || out == NULL)
+        return false;
+    size_t count = 0;
+    const size_t maximum = classes->managed_current_bytes / sizeof(mc_registry_managed_allocation);
+    for (const mc_registry_managed_allocation *node = classes->managed_allocations; node != NULL;
+         node = node->metadata.next) {
+        if (count++ == maximum || node->metadata.owner != classes ||
+            node->metadata.bytes < sizeof(*node))
+            return false;
+        if (node + 1 == storage) {
+            *out = node->metadata.bytes - sizeof(*node);
+            return true;
+        }
+    }
+    return false;
+}
+
 void mc_registry_managed_retire(mc_registry_classes *classes) {
     if (classes == NULL)
         return;

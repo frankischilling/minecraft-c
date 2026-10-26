@@ -20,6 +20,8 @@ option(MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS "Compare World Player public
 option(MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS "Compare local Player input forwarding with supplied client JAR" OFF)
 option(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS "Compare World provider maintenance with supplied client JAR" OFF)
 option(MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS "Compare material movement with supplied client JAR" OFF)
+option(MC_ENABLE_ENTITY_ENVIRONMENT_REFERENCE_TESTS "Compare Entity environment helpers with supplied original JARs" OFF)
+option(MC_ENABLE_PLAYER_MOVEMENT_REFERENCE_TESTS "Compare LocalPlayer movement with supplied client JAR" OFF)
 option(MC_ENABLE_NOTICE_REFERENCE_TESTS "Compare achievement notice with supplied Windows client" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
@@ -262,6 +264,7 @@ add_library(mc_registry STATIC
     src/block/registry/rendering.c
     src/block/registry/registry.c
     src/block/registry/managed.c
+    src/block/registry/step_sound.c
     src/block/registry/redstone_set.c
     src/block/registry/runtime.c
     src/block/registry/directions.c
@@ -375,6 +378,7 @@ add_library(mc_simulation STATIC
     src/entity/movement/effects.c
     src/entity/movement/turn.c
     src/entity/movement/material.c
+    src/entity/movement/environment.c
     src/entity/nbt/factory.c
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
@@ -392,6 +396,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/environment.c
     src/world/runtime/movement.c
     src/world/runtime/contact.c
+    src/world/runtime/step.c
     src/world/runtime/material_movement.c
     src/world/runtime/blocks.c
     src/world/runtime/height.c
@@ -996,6 +1001,66 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_entity_movement tests/entity/movement/test_movement.c)
     target_link_libraries(mc_test_entity_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)
+
+    add_executable(mc_test_entity_environment tests/entity/movement/test_environment.c)
+    target_link_libraries(mc_test_entity_environment PRIVATE mc_simulation mc_build_options)
+    add_test(NAME entity.environment COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/environment/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_entity_environment>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/entity-environment-contracts")
+    set_tests_properties(entity.environment PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 210)
+    add_test(NAME tools.entity_environment_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/environment/test_controller.py")
+    add_test(NAME tools.entity_environment_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/environment/test_controller.py")
+    set_tests_properties(tools.entity_environment_controller tools.entity_environment_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;entity" TIMEOUT 30)
+    if(MC_ENABLE_ENTITY_ENVIRONMENT_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_SERVER_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Entity environment reference tests require both original JARs and client libraries")
+        endif()
+        add_test(NAME reference.entity_environment COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/environment/compare_environment.py"
+            --executable "$<TARGET_FILE:mc_test_entity_environment>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --server-jar "${MC_REFERENCE_SERVER_JAR}"
+            --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-entity-environment")
+        set_tests_properties(reference.entity_environment PROPERTIES
+            LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_movement tests/entity/movement/test_player_movement.c)
+    target_link_libraries(mc_test_player_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.player_movement COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/movement/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_movement>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-movement-contracts")
+    set_tests_properties(entity.player_movement PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 210)
+    add_test(NAME tools.player_movement_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/movement/test_controller.py")
+    add_test(NAME tools.player_movement_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/movement/test_controller.py")
+    set_tests_properties(tools.player_movement_controller tools.player_movement_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;entity" TIMEOUT 30)
+    if(MC_ENABLE_PLAYER_MOVEMENT_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Player movement reference tests require client JAR and library paths")
+        endif()
+        add_test(NAME reference.player_movement COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/movement/compare.py"
+            --executable "$<TARGET_FILE:mc_test_player_movement>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}" --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-movement")
+        set_tests_properties(reference.player_movement PROPERTIES
+            LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+    endif()
 
     add_executable(mc_test_world_movement tests/entity/movement/test_world_movement.c)
     target_link_libraries(mc_test_world_movement PRIVATE mc_simulation mc_c_atomics mc_build_options)

@@ -44,6 +44,22 @@ are explicit operations; retained vectors prevent class retirement. The reached
 fluid and Stairs dispatch preserves virtual calls and sequential velocity stores.
 Living movement and the Player tick remain unfinished.
 
+[Entity environment helpers](entity/environment.md) preserve the actual water,
+lava, stored-water, clearance and relative-acceleration operations. The caller
+supplies its real Registry or trigonometric context independently of a nullable
+World. Item water testing keeps its genuine bounds override; canonical
+LocalPlayer collision queries use the two inherited null-box methods. These
+helpers neither update the stored water flag nor advance a tick.
+
+[LocalPlayer movement](entity/player-movement.md) extends the actual base mover
+with walking, step sounds and complete current Block step-on inheritance.
+Fresh sound Strings retain the same identity through WorldAccess callbacks and
+free their managed storage after the last hold. Player fall, damage and close
+methods retain their reached source prefixes and explicit remaining descendants.
+All callers rebuild with the expanded movement/effect error records; Entity,
+World and Registry storage layouts are unchanged. Living travel, complete ticks
+and application adoption remain unfinished.
+
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.
 Synchronous input notifications execute the real sorted recipe scan and publish

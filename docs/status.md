@@ -1,5 +1,38 @@
 # Development status
 
+[LocalPlayer movement](entity/player-movement.md) and the
+[Entity environment helpers](entity/environment.md) now use the real World,
+Registry, Input and Entity owners. Player clipping, sneaking, walking, step
+sounds and the current Block step-on family retain source order and reclaim
+temporary sound Strings. Water/lava, stored-water, clearance and relative
+acceleration retain their distinct actual calls and nullable-World prefixes.
+Living travel, complete Player/World ticks and application adoption remain
+unfinished; there is no playable client yet.
+
+The complete combined source passes all 280 Windows MSVC cases and all 261
+headless cases each on fresh sanitized Clang 18/GCC 13 builds: 802 completed
+cases without failures, errors, disabled cases or skips. Each product passes
+15,297 environment and 40,373 movement/step/sound checks, all 1,353 original
+client environment records, 1,027 original server relative/null-World-prefix
+records and 51 separately labelled native server World crosschecks. Movement
+matches 21 unchanged-client records plus twelve separate JDK rounding records.
+Successful original-server World environment execution is not claimed.
+
+All 773 C/header files pass clang-format 18. The frozen 1,511-file source cohort
+contains 1,303 non-Markdown inputs; readback verifies code, native/helper pins,
+original class metadata, executable identities and complete retained captures.
+Both new twelve-case capture-control suites pass normally and under optimized
+Python. Controller mirrors and all 556 positive/2,011 negative lifecycle
+interval controls pass. Windows includes real OpenGL/client checks; the local
+Linux profiles are headless.
+
+The notice checkpoint `04be54b0518e61ca70c48270eb95ab1f8d9ed696` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40251364177):
+256 Windows, 262 GCC and 262 Clang tests, with 780 matched Start/Passed pairs.
+Every checkout uses merge `79d9c8e09de20ed967b4057baf1eea890406b22a`, whose tree
+equals that checkpoint. These hosted results precede the movement/environment
+integration qualified locally above.
+
 [Achievement notice/model construction](client/achievement-notice.md) now uses
 the complete application storage and the real Entity/Vec3, Registry and Settings
 owners. Final combined validation passes all 272 Windows MSVC tests and all
