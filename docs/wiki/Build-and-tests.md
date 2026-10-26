@@ -1,5 +1,24 @@
 # Build and tests
 
+The [LocalPlayer movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-movement.md)
+and [environment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/environment.md)
+integration passes 280 Windows MSVC tests and 261 headless tests each on fresh
+sanitized Clang 18/GCC 13 builds: 802 completed cases, no failures or skips.
+All 773 C/header files pass formatting. The frozen cohort contains 1,511 files
+and 1,303 non-Markdown inputs; final readback checks code, executables and full
+captures. Each product passes 15,297 environment and 40,373 movement checks.
+Original comparisons match 1,353 client environment records, 1,027 server
+relative/null-World-prefix records and 21 client movement records. The 51
+native server World crosschecks and twelve JDK rounding records are separately
+labelled. Successful original-server World queries are not claimed. Both new
+twelve-case capture-control suites pass normally and under optimized Python.
+Living travel, Player/World ticks and application gameplay remain unfinished.
+
+The [notice checkpoint `04be54b`](https://github.com/frankischilling/minecraft-c/actions/runs/40251364177)
+passes all four hosted jobs, with 256 Windows, 262 GCC and 262 Clang tests:
+780 complete Start/Passed pairs and checkout trees equal to that checkpoint.
+Those hosted results precede the movement integration qualified locally above.
+
 The [notice/model integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md)
 passes all 272 Windows and 253 headless tests each on sanitized Clang/GCC:
 778 completed cases, no failures or skips. All 765 C/header files pass formatting.

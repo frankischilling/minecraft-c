@@ -6,6 +6,15 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [LocalPlayer movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-movement.md)
+  uses the actual collision mover, sneaking/walking effects and current Block
+  step-on family. StepSound Strings retain callback identity and free after
+  their final hold. Larger fall/damage/close descendants remain explicit.
+- [Entity environment helpers](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/environment.md)
+  preserve water, lava, stored-water, clearance and relative acceleration on
+  actual owners and separately supplied Registry/trigonometric contexts.
+  Living travel, active Player/World ticks and application adoption remain
+  unfinished; there is no playable client yet.
 - [Achievement notice and model construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md)
   preserve the Biped/Vec3 graph, distinct RenderBlocks owners, live inventory-key
   descriptions and runtime String retirement. Production and CPU tests share
@@ -25,7 +34,7 @@ Current runtime navigation:
   preserves Player membership, sleeping scans and live publication callbacks.
   [Input attachment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-input.md)
   retains actual MovementInput and forwards key/reset/sneaking operations.
-  Application adoption, ticks, movement and rendering remain unfinished.
+  Application adoption, ticks and Player rendering remain unfinished.
 - [Provider maintenance](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/provider-maintenance.md)
   preserves the normal client's actual 100-entry pass and real loader/generator
   calls, including naturally empty pending state. Full client startup adoption
