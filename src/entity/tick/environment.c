@@ -153,6 +153,13 @@ static bool lava_damage(mc_entity *entity, mc_registry_classes *classes, mc_enti
 }
 
 static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM)) {
+        e->source_class = "sn";
+        e->source_method = "ab()V";
+        e->void_bytecode = 1;
+        return mc_tick_effect(e, mc_entity_effect_dead(entity, &e->effect),
+                              "Item void actual inherited K", 1);
+    }
     e->source_class = "ls";
     e->source_method = "ab()V";
     e->void_bytecode = 3;
@@ -462,4 +469,13 @@ mc_entity_status mc_entity_tick_base_body_in_context(mc_entity *entity,
                                                      const mc_entity_tick_limits *limits,
                                                      mc_entity_tick_error *out) {
     return run(entity, classes, limits, false, out);
+}
+
+/* Private selected hl caller already owns the real Item and its native hold.
+ * hl inherits U from sn; it must not run the separate Living body. */
+bool mc_tick_item_base_body(mc_entity *entity, mc_registry_classes *classes,
+                            const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
+    error->max_particle_work =
+        limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
+    return base_body(entity, classes, limits, error);
 }

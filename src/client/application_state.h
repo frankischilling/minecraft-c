@@ -18,6 +18,8 @@ typedef struct mc_player_session_classes mc_player_session_classes;
 typedef struct mc_player_session mc_player_session;
 typedef struct mc_client_stats_writer mc_client_stats_writer;
 typedef struct mc_client_water_texture_effect mc_client_water_texture_effect;
+typedef struct mc_client_effect_renderer mc_client_effect_renderer;
+typedef struct mc_client_render_engine mc_client_render_engine;
 
 /* The actual application storage, extracted without a shadow representation.
  * Existing fields retain their order; notice/class lifetime fields are explicit. */
@@ -65,6 +67,13 @@ struct client_application {
     mc_client_water_texture_effect *water_effect; /* actual ad, published at122 */
     mc_client_water_texture_effect *water_effect_retained;
     bool water_effect_constructing;
+    /* Actual f/p/j slots. World and manager native holds are explicit; p is
+     * borrowed from its concrete GL resource owner. No World is inferred from
+     * a Player or the separate inspection-session wrapper. */
+    mc_world_runtime *active_world;
+    mc_client_render_engine *render_engine;
+    mc_client_effect_renderer *effect_renderer, *effect_renderer_retained;
+    bool effect_renderer_constructing;
 };
 
 #endif

@@ -100,8 +100,8 @@
       "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 3291,
-      "sha256": "2d63df9fa2b9df5e38cf8f167b0c6cb95ba72030805f92f84725364563d4133d"
+      "bytes": 3435,
+      "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/construction.c": {
       "bytes": 17742,
@@ -168,16 +168,16 @@
       "sha256": "c0459e59987816af23e7cfc6313c336faa2b6588174dbe50e166575d9512c377"
     },
     "src/client/application_state.h": {
-      "bytes": 2815,
-      "sha256": "6e9ae83cb93d829520579b9649b4c7bd1119b1c10f8a8bc906b9f02ac2291e83"
+      "bytes": 3360,
+      "sha256": "08891526c24cba9fd49f60b998e1d6054dfea2458e1d3b4b86775f162e47782e"
     },
     "src/client/application_access.h": {
-      "bytes": 856,
-      "sha256": "8f51e5a6a7d41da967b87ad313e6c0f824924993e46942cebaaa36af69b7dcb4"
+      "bytes": 1153,
+      "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
     },
     "src/client/application_access.c": {
-      "bytes": 2411,
-      "sha256": "61c9aa0f33f21395d210d72dc14659f1c2a783f527654beff1c90b8f7004acd6"
+      "bytes": 2710,
+      "sha256": "f1689d2a936d079703b87d0be8960c30de431f353a9727a2921a4ff6b744d200"
     },
     "src/client/statistics/application.h": {
       "bytes": 4768,
@@ -244,12 +244,12 @@
       "sha256": "8852392d806c51c1e51a4b8d92699b5d7b32d53677012ceb0f62392d2e647c19"
     },
     "include/mc/client/texture_effects/water.h": {
-      "bytes": 3171,
-      "sha256": "2db47ea8d1f211dbeaf93712c2bd220497c3897e82ae7f4a3a8dd36e4a4b4e05"
+      "bytes": 4513,
+      "sha256": "0c31bb6964d32453ee1785ad0df17bf4babe8940307bced9bdec4d69a3ea6dcb"
     },
     "src/client/texture_effects/water.c": {
-      "bytes": 7216,
-      "sha256": "1c303113a73a06586fa9a64a19e1cb1ee38d5863f9d5c842b560e8537691c0f1"
+      "bytes": 17481,
+      "sha256": "dd01fc5a772485ab52775ac60ebe7a5f9739ca8b2049454425924485b80a3f67"
     },
     "src/block/registry/registration.c": {
       "bytes": 32164,

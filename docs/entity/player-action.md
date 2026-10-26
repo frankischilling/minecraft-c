@@ -4,8 +4,9 @@
 ready LocalPlayer. It ticks that Player's Inventory, copies the previous
 head-bob value, invokes the real `ls.o()` body, updates head bob, and visits
 the actual nearby Entity List. It does not execute the earlier `dc.o()`
-tutorial, portal, Input update or push-out prefix. Neither `w_()` wrapper nor
-the surrounding World tick is supplied by this module.
+tutorial, portal, Input update or push-out prefix. The separate
+[active Player entry](player-active-tick.md) composes those bodies with both
+`w_()` wrappers. World scheduling remains unfinished.
 
 The context borrows the existing Registry namespace and initialized trig table
 through `mc_player_travel_context`. Its optional Inventory limits are passed
@@ -36,7 +37,7 @@ The current native Entity families have these actual descendants:
 | Receiver | `i_()` | `h(Entity)` | `b(Player)` |
 |---|---|---|---|
 | LocalPlayer | Living `!be` | base Entity push | inherited literal return |
-| Item | inherited false | base body, if directly reached | real Item pickup prefix |
+| Item | inherited false | base body, if directly reached | real Item insertion, notification and death check |
 | FallingSand | inherited false | base body, if directly reached | inherited literal return |
 | Minecart | literal true | real Minecart push with Player argument | inherited literal return |
 
@@ -82,16 +83,19 @@ uses no Unsafe allocation, and verifies actual game-class origins.
 
 There are 36 exact raw-state records: 32 complete calls and four interrupted
 prefix comparisons. Two original calls fail in `dc.a` because their Minecraft
-field is null. The qualified native travel dependency stops before those two
-actual statistic calls and retains the canonical descriptor and amount. Those
-two rows compare the completed state prefix, not equal failure depth or
-completed statistics. Two other calls fail at the actual null Input access in
+field is null. Those two rows compare the completed state prefix and the canonical statistic
+descriptor/amount. Separate full-App tests cover completed statistics through
+the concrete application bridge. Two other calls fail at the actual null Input access in
 `dc.f_()` on both sides. The original helper verifies the top failure frame.
 
-The native Item with zero pickup delay reaches real Inventory insertion at
-`hl` PC34 and stops explicitly. That additional native case is excluded from
-the original comparison: no debugger checkpoint or completed pickup is claimed.
-The nonzero-delay Item takes its genuine return after reading Stack count.
+The additional zero-delay Item case uses a null-App fixture. It retains real
+Inventory insertion, sound and Random effects before the notification fails
+at `hl` PC123 / `dc` PC4. That case remains outside the 36 original records.
+Separate real-App tests now complete notification, enqueue the particle and
+reach the later Item death check. The nonzero-delay Item still returns after
+reading Stack count. See
+[Item insertion and pickup](item-pickup.md) for the connected closure and its
+separately qualified original observations.
 
 The original profile explicitly prepares real `jl` statistics before Player
 construction, authors source fields and Chunk arrays, and sets the existing
@@ -135,9 +139,14 @@ sources and native executable before/after execution, and pins compiled helper
 classes immediately after compilation and after the runs. Reports and fresh
 world directories stay in the caller-selected private output directory.
 
-Travel's reached statistics now use the [actual application bridge](../client/player-statistics.md),
-with separate full-App native qualification. Remaining full-client dependencies
-include completed Item pickup and other unsupported Entity
-descendants, the earlier DC action prefix, both active tick wrappers and World
-tick composition. This module does not establish a complete Player tick,
-gameplay loop or playable client.
+Travel statistics use the [application bridge](../client/player-statistics.md).
+The [active Player entry](player-active-tick.md) supplies dc.o and both wrappers;
+[Item pickup](item-pickup.md) supplies the connected notification/death path.
+Each has separate qualification. World Entity scheduling, remaining concrete
+Entity descendants and a playable client remain unfinished.
+
+Travel and Item pickup diagnostics now share a tagged union in the Action error.
+A failed travel returns before pickup; reaching pickup requires completed travel
+with a fresh child. Read `.pickup` for `MC_PLAYER_ACTION_CHILD_PICKUP`, and
+`.travel` for NONE/TRAVEL. Successful calls restore the legacy fresh travel
+sentinels and NONE. Independent meaningful siblings/PCs remain separate.

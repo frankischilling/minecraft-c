@@ -96,8 +96,8 @@
       "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 3291,
-      "sha256": "2d63df9fa2b9df5e38cf8f167b0c6cb95ba72030805f92f84725364563d4133d"
+      "bytes": 3435,
+      "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
     },
     "src/entity/player/construction.c": {
       "bytes": 17742,

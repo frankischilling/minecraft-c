@@ -204,12 +204,14 @@ static bool action_cases(fixture *f, mc_entity *p, mc_entity *other, mc_entity *
         }
         const bool expected =
             !(scenario == 11 || scenario == 12 || scenario == 13 || scenario == 14);
+        const mc_java_random item_random_before = *item->random;
         const mc_entity_status status = mc_player_action(p, &context, NULL, &error);
         if ((status == MC_ENTITY_OK) != expected)
             fprintf(stderr, "action%d status%d %s gs%u ls%u\n", scenario, (int)status,
                     error.operation == NULL ? "-" : error.operation, error.player_bytecode,
                     error.living_bytecode);
-        if ((status == MC_ENTITY_OK) != expected)
+        if ((status == MC_ENTITY_OK) != expected &&
+            error.child_kind == MC_PLAYER_ACTION_CHILD_TRAVEL)
             fprintf(stderr, "travel %s, move %s collision %s\n",
                     error.travel.operation == NULL ? "-" : error.travel.operation,
                     error.travel.movement.operation == NULL ? "-" : error.travel.movement.operation,
@@ -218,6 +220,10 @@ static bool action_cases(fixture *f, mc_entity *p, mc_entity *other, mc_entity *
                         : error.travel.movement.collision.nearby.query.operation);
         CHECK((status == MC_ENTITY_OK) == expected && p->holds >= 1 &&
               f->worlds[0]->active_calls == 0 && f->worlds[0]->local_leases == 0);
+        if (expected)
+            CHECK(error.child_kind == MC_PLAYER_ACTION_CHILD_NONE &&
+                  error.travel.status == MC_ENTITY_OK &&
+                  error.travel.registry.initializer_pc == -1 && error.nearby_index == SIZE_MAX);
         CHECK(row_action(p, other, cart, item, scenario, status == MC_ENTITY_OK));
         if (scenario == 1)
             CHECK(v->Y == 20 && p->base.by == 10);
@@ -227,13 +233,37 @@ static bool action_cases(fixture *f, mc_entity *p, mc_entity *other, mc_entity *
             CHECK(p->base.y == 9.0);
         if (scenario == 7)
             CHECK(s->k == 7 && v->X == .875f && s->j);
-        if (scenario == 11)
-            CHECK(error.pickup_bytecode == 34 && error.player_bytecode == 242 &&
-                  error.contact_bytecode == 2);
+        if (scenario == 11) {
+            mc_item_stack_fields incoming, stored;
+            mc_inventory_player_state inventory_state;
+            mc_java_random expected_random = item_random_before;
+            (void)mc_java_random_next_float(&expected_random);
+            (void)mc_java_random_next_float(&expected_random);
+            CHECK(error.child_kind == MC_PLAYER_ACTION_CHILD_PICKUP &&
+                  error.pickup_bytecode == 123 && error.player_bytecode == 242 &&
+                  error.contact_bytecode == 2 && error.pickup.notification_bytecode == 4 &&
+                  error.pickup.insertion_returned && error.pickup.inserted && !item->base.be &&
+                  item->random->state == expected_random.state);
+            CHECK(mc_item_stack_fields_get(item->stack, &incoming) == MC_ITEM_STACK_OK &&
+                  incoming.count == 0 &&
+                  mc_inventory_player_read_state(p->local_player->fields.player.c,
+                                                 &inventory_state) &&
+                  inventory_state.main_slots[0] != item->stack &&
+                  mc_item_stack_fields_get(inventory_state.main_slots[0], &stored) ==
+                      MC_ITEM_STACK_OK &&
+                  stored.count == 5 && stored.animation == 5);
+            /* This extra native-only case stays excluded from original rows.
+             * Restore the subsequent scenes' actual previous setup. */
+            CHECK(mc_inventory_player_set(p->local_player->fields.player.c, 0, NULL, NULL) ==
+                      MC_INVENTORY_OK &&
+                  mc_item_stack_source_count_set(item->stack, 5) == MC_ITEM_STACK_OK);
+            *item->random = item_random_before;
+        }
         if (scenario == 12)
             CHECK(error.living_bytecode == 414 && p->base.velocity_y == 0.41999998688697815);
         if (scenario == 12 || scenario == 13)
-            CHECK(error.travel.statistic != NULL && error.travel.statistic_field != NULL &&
+            CHECK(error.child_kind == MC_PLAYER_ACTION_CHILD_TRAVEL &&
+                  error.travel.statistic != NULL && error.travel.statistic_field != NULL &&
                   strcmp(error.travel.statistic_field, scenario == 12 ? "u" : "p") == 0 &&
                   error.travel.statistic_amount == (scenario == 12 ? 1 : 55));
         if (scenario == 14)

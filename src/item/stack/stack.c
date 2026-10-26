@@ -279,19 +279,22 @@ mc_item_stack_status mc_item_stack_damage_set(mc_item_stack *stack, int32_t dama
     return status == MC_ITEM_STACK_OK ? mc_item_stack_source_damage_set(stack, damage) : status;
 }
 
-mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_stack **out) {
-    if (out == NULL) {
+mc_item_stack_status mc_item_stack_source_clone(const mc_item_stack *stack,
+                                                mc_item_stack_source_allocator allocate,
+                                                mc_item_stack **out,
+                                                mc_item_stack_source_site *site) {
+    if (stack == NULL || out == NULL || allocate == NULL) {
         return MC_ITEM_STACK_INVALID_ARGUMENT;
     }
-    mc_item_stack_status status = item_stack_ready(stack);
-    if (status != MC_ITEM_STACK_OK) {
-        return status;
-    }
+    if (site != NULL)
+        *site = (mc_item_stack_source_site){true, true, 0};
     mc_item_stack *copy;
-    status = mc_item_stack_allocate(&copy);
+    mc_item_stack_status status = allocate(&copy);
     if (status != MC_ITEM_STACK_OK) {
         return status;
     }
+    if (site != NULL)
+        site->bytecode = 16;
     status =
         mc_item_stack_construct(copy, stack->fields.id, stack->fields.count, stack->fields.damage);
     if (status != MC_ITEM_STACK_OK) {
@@ -300,6 +303,15 @@ mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_sta
     }
     *out = copy;
     return MC_ITEM_STACK_OK;
+}
+
+mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_stack **out) {
+    if (out == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    const mc_item_stack_status status = item_stack_ready(stack);
+    return status == MC_ITEM_STACK_OK
+               ? mc_item_stack_source_clone(stack, mc_item_stack_allocate, out, NULL)
+               : status;
 }
 
 mc_item_stack_status mc_item_stack_clone_nullable(const mc_item_stack *stack, mc_item_stack **out) {

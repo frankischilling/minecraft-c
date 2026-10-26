@@ -8,6 +8,15 @@ mc_client_stats_writer *mc_client_application_live_stats_writer(const client_app
     return app == NULL ? NULL : app->stats_writer;
 }
 
+mc_world_runtime *mc_client_application_live_world(const client_application *app) {
+    return app == NULL ? NULL : app->active_world;
+}
+
+mc_client_effect_renderer *
+mc_client_application_live_effect_renderer(const client_application *app) {
+    return app == NULL ? NULL : app->effect_renderer;
+}
+
 mc_client_achievement_notice *
 mc_client_application_live_achievement_notice(const client_application *app) {
     return app == NULL ? NULL : app->achievement_notice;

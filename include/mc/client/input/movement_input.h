@@ -18,7 +18,8 @@ typedef enum mc_movement_input_status {
     MC_MOVEMENT_INPUT_INVALID_ARGUMENT,
     MC_MOVEMENT_INPUT_ALLOCATION_FAILED,
     MC_MOVEMENT_INPUT_SOURCE_EXCEPTION,
-    MC_MOVEMENT_INPUT_LIMIT
+    MC_MOVEMENT_INPUT_LIMIT,
+    MC_MOVEMENT_INPUT_UNSUPPORTED_FP
 } mc_movement_input_status;
 
 typedef enum mc_movement_input_exception {
@@ -102,7 +103,10 @@ mc_movement_input_status mc_movement_input_reset(mc_movement_input *input,
  * settings read occurs here, including when the stored settings is NULL.
  *
  * Requires IEEE binary32/binary64, nearest-even, gradual underflow and strict
- * evaluation without reassociation, excess precision or fused operations. */
+ * evaluation without reassociation, excess precision or fused operations.
+ * Native unsupported FP stops immediately before the first reached lr float
+ * operation, after completed axis/key stores. Literal-empty uo, and lr paths
+ * with no float arithmetic, do not acquire an invented FP guard. */
 mc_movement_input_status mc_movement_input_update(mc_movement_input *input,
                                                   struct mc_entity *player,
                                                   mc_movement_input_error *error);

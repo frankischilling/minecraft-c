@@ -8,6 +8,14 @@ component comparison and original Player-method comparisons are described in
 [Player action](entity/player-action.md). Include that notice with distributed
 source or executables containing the kernel.
 
+Active Player animation also uses the Sun fdlibm atan2 kernel. Its permission
+notice is retained in [licenses/fdlibm-player-atan2.txt](../licenses/fdlibm-player-atan2.txt);
+the port shares the qualified atan implementation above. The separate JDK
+comparison and source scope are recorded in [active Player ticking](entity/player-active-tick.md).
+Keep both notices with distributions containing these kernels. CPU water
+animation, pickup particles and the effect manager add no graphics, JVM or
+other third-party runtime dependency to simulation.
+
 The storage compression module links statically to upstream zlib 1.3.2. It is
 written in C and provides gzip/zlib framing, deflate, and checksum validation.
 The shared numerical/text core remains independent of it. The optional native
@@ -49,7 +57,8 @@ libpng 1.6.59 from their upstream source archives:
 
 SDL supplies platform windowing and input; the project's OpenGL 3.3 core
 renderer draws the GUI. SDL's renderer and GPU modules are disabled. Audio is
-built into SDL but the client has no sound playback yet. libpng uses the same
+built into SDL; the separate OpenAL backend owns device playback. Application
+audio startup remains unfinished. libpng uses the same
 pinned static zlib as storage. No arbitrary system zlib is substituted.
 The simulation and server libraries do not link SDL, libpng or OpenGL.
 Fresh `-DMC_BUILD_CLIENT=OFF` configurations exclude SDL/libpng/OpenGL and

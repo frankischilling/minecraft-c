@@ -134,32 +134,26 @@ bool mc_action_push(mc_entity *candidate, mc_entity *player, mc_player_action_er
                           536);
 }
 
-bool mc_action_pickup(mc_entity *candidate, mc_entity *player, mc_player_action_error *e) {
-    (void)player;
+bool mc_action_pickup(mc_entity *candidate, mc_entity *player, mc_registry_classes *classes,
+                      mc_player_action_error *e) {
     if (candidate == NULL)
         return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Nearby pickup null receiver", 1);
     if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_ITEM)) {
-        e->source_class = "hl";
-        e->source_method = "b(Lgs;)V";
-        e->pickup_bytecode = 4;
-        if (candidate->base.world == NULL)
-            return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Item pickup null World B receiver", 4);
-        if (candidate->base.world->fields.B)
+        mc_item_pickup_error_init(&e->pickup);
+        e->child_kind = MC_PLAYER_ACTION_CHILD_PICKUP;
+        const mc_entity_status status =
+            mc_item_entity_pickup(candidate, player, classes, NULL, &e->pickup);
+        if (status == MC_ENTITY_OK) {
+            mc_player_travel_error_init(&e->travel);
+            e->child_kind = MC_PLAYER_ACTION_CHILD_NONE;
             return true;
-        e->pickup_bytecode = 15;
-        if (candidate->stack == NULL)
-            return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Item pickup null Stack count receiver",
-                                  15);
-        mc_item_stack_fields fields;
-        e->stack = mc_item_stack_fields_get(candidate->stack, &fields);
-        if (e->stack != MC_ITEM_STACK_OK)
-            return mc_action_fail(e, MC_ENTITY_STATE_ERROR, "Item pickup actual Stack count", 15);
-        (void)fields.count; /* Source local n2 is captured before delay guard. */
-        if (candidate->item.c != 0)
-            return true;
-        e->pickup_bytecode = 34;
-        return mc_action_fail(e, MC_ENTITY_STATE_ERROR,
-                              "Item pickup actual InventoryPlayer insertion descendant", 34);
+        }
+        e->source_class = e->pickup.source_class;
+        e->source_method = e->pickup.source_method;
+        e->pickup_bytecode = e->pickup.pickup_bytecode;
+        e->stack = e->pickup.stack;
+        return mc_action_fail(e, status, "Action actual Item pickup descendant",
+                              e->pickup.bytecode);
     }
     if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
         mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||

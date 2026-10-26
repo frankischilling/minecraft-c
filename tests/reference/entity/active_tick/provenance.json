@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "source": "Beta1.7.3 unchanged client; genuine canonical dc and actual owners",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "class_metadata": {
+    "classes": 45,
+    "methods": 844,
+    "Code_bodies": 837,
+    "pins": "source-pins.json",
+    "actual_virtual_resolutions": 10
+  },
+  "aliases": {
+    "LocalPlayer": "dc",
+    "Player": "gs",
+    "LivingEntity": "ls",
+    "Entity": "sn",
+    "InputFromOptions": "lr",
+    "MovementInput": "uo",
+    "PlayerContainer": "aa",
+    "WorkbenchContainer": "it",
+    "World": "fd",
+    "Chunk": "lm",
+    "StatsFileWriter": "xi",
+    "AchievementNotice": "vu"
+  },
+  "selected_bodies": [
+    "dc.o()V",
+    "ls.w_()V",
+    "gs.w_()V",
+    "dc.c(DDD)Z",
+    "dc.d(III)Z",
+    "gs.am()Z",
+    "aa.b(Lgs;)Z",
+    "it.b(Lgs;)Z",
+    "sn.i(Lsn;)V only null argument reached by portal",
+    "sn.c(DDDFF)V reached by dismount"
+  ],
+  "finite_profiles": {
+    "native": {
+      "MSVC_Debug": 678,
+      "Clang_Debug_ASan_UBSan_leaks": 678,
+      "GCC_Debug_ASan_UBSan_leaks": 678
+    },
+    "native_allocation_reentry_frontiers": {
+      "MSVC_Debug": 247,
+      "Clang_Debug_ASan_UBSan_leaks": 247,
+      "GCC_Debug_ASan_UBSan_leaks": 247
+    },
+    "existing_Input": 1222,
+    "Windows_default_stack_reserve": 1048576,
+    "unchanged_original_game": {
+      "host": "Windows x64 only; pinned lwjgl64.dll",
+      "jdk": "Temurin17.0.17+10",
+      "inherited_tick_rows": 39,
+      "complete": 34,
+      "actual_null_prefixes": 5,
+      "additional_actual_private_pushout_rows": 10,
+      "consecutive_forward_ticks": 16
+    },
+    "atan2_component": {
+      "records_each": 8676,
+      "MSVC_Windows_JDK": "17.0.17+10",
+      "Clang_GCC_Linux_JDK": "17.0.20.1",
+      "scope": "Math.atan2 and StrictMath.atan2 raw values only; errno and floating flags excluded"
+    },
+    "controllers": {
+      "Windows_normal": 13,
+      "Windows_optimized": 13,
+      "Linux_normal": 13,
+      "Linux_optimized": 13
+    }
+  },
+  "controlled_inputs": "Existing Entity and World Random setSeed(38) after actual constructors; source fields and actual Chunk arrays authored identically. Native authored resources are separate from optional original resource inputs.",
+  "remaining": [
+    "dc.o70 actual Minecraft.r screen owner and portal GUI/sound/transition",
+    "gs.w_53/73 actual wake descendant",
+    "dc.r9 actual Minecraft.a(Screen) after superclass e=d prefix",
+    "Existing explicit Inventory/pickup/damage/other concrete Entity frontiers",
+    "Outer World Entity/riding update, Minecraft.k writer.service, frontend input/timing/render composition; general gameplay and default-entropy parity unproven"
+  ],
+  "permissive_math_origin": "math-origin.json and licenses/fdlibm-player-atan2.txt; separate OpenJDK source audit input is not redistributed",
+  "public_source_sha256": {
+    "docs/entity/player-active-tick.md": "d3257b7973886c294db343ef3566a93b619d1fc7804e4a8ad0a050f5f55bb442",
+    "include/mc/client/input/movement_input.h": "1acb11415719d45a9cd6792b67c1a9a81c5e3b25279acf19fc5b0c336ec1add3",
+    "include/mc/entity/player/tick.h": "6ecc84528d11f8c9947e24570f5e74fab0f13bc89e49778f84125cbb743802d6",
+    "licenses/fdlibm-player-atan2.txt": "783f7ed99f86be85011782d3cc34dfe2e2a63e2984477b8a500fc9c5c5e526ff",
+    "src/client/input/movement_input.c": "51d32f17706ef09e68101ef6dde41085565659240d7a413277f00f773924e691",
+    "src/entity/player/active_internal.h": "1f7f316f12437756baca6aa74a01b4442d6646336061a94dd6eb4962bc4aa794",
+    "src/entity/player/atan2.c": "ef0a1b014a62eef7cc47e1977eecb4fd5d494a3b9590fb2d1d761e0a007587e0",
+    "src/entity/player/eligibility.c": "ef13eda0e82f484e788f9fb7f295891bb9c1d386ef2732319b652c47a5034c45",
+    "src/entity/player/living_tick.c": "dbea6691d2fe477c482fd47c177e45139b55f05eb94406a5756807edf1709e73",
+    "src/entity/player/local_tick.c": "e1c15bf2cdb044f9e10f86db3b70eb39ccc52294c6756c1744f48ea080a74d38",
+    "src/entity/player/player_tick.c": "85765e0766b3f60ae9b3d34cef7dd23e8f4c9f33e61508297fd264897aff9925",
+    "src/entity/player/pushout.c": "3a8c98debe84eaa784858abce3ed0d9f92c15d509902d4dcb7db3531c9f20c0a",
+    "src/entity/player/tick.c": "2207b2d8dca87468a203810357e37c83859c08c34a8d776886b707937ab8f90e",
+    "src/entity/player/tick_math_internal.h": "28ad6ee0613008180953a86630da80e13a6c0aa598b1a9782513235b5f7425b1",
+    "tests/entity/player/atan2_probe.c": "0f64b1dfa18b74e656ef288949fee3e7a456c72ab04e045f5675ff7414e54536",
+    "tests/entity/player/test_tick.c": "04705574e3ecfb0eb615b3c77b2e06fbf13ba0cc236aad5a01cb1563c27cb8f8",
+    "tests/entity/player/test_tick_allocation.c": "69254080066beab108940de3ecfdd2f00b253c455aa1e88ba7fa04a3b955f4b3",
+    "tests/reference/entity/active_tick/ActiveTickObservation.java": "d01b1f3b678f160fad93bb3c89d326de366eaaff8dcd94ba4394227a34c45d75",
+    "tests/reference/entity/active_tick/Atan2Observation.java": "829f2d22f0b4c6eb46223f5895073e299b2b8a1973a516a25b56f42a3e22353b",
+    "tests/reference/entity/active_tick/audit_dispatch.py": "059ca24f2020da228b046c32ad23d064562554ab6a29ca6705709e8ad425074f",
+    "tests/reference/entity/active_tick/audit_math_origin.py": "40d5291d9da37e080a5ea51d66e55f021b2d988c1ac285bbfa690820fa0a73ca",
+    "tests/reference/entity/active_tick/capture.py": "174e08675a6e14859bab0cd29976d8d15a7af374f0043fd3d44566a42e0da66a",
+    "tests/reference/entity/active_tick/compare.py": "49226704ebce92e4f8a095457d8530a5d12c063d209a700a25af6bdb890d6531",
+    "tests/reference/entity/active_tick/compare_math.py": "6bd3469d61e661a1c0bf7063d31aeacc37784a1610bcb6f7c1bd3cd9ff75796a",
+    "tests/reference/entity/active_tick/dispatch-pins.json": "6ad0ae24c2884ebbb15a9889468d307cf96db48865770bcbf7bb459172c5746a",
+    "tests/reference/entity/active_tick/math-origin.json": "f30d9e9f7d28adec5054aa2fc48e68cf1263771cb2448c07bb983dd4949642ea",
+    "tests/reference/entity/active_tick/README.md": "f03e153a5658c3e0896ffc5657feb0273be1b806f9d1c8f5a71a4181b0abc45f",
+    "tests/reference/entity/active_tick/run_native.py": "260027d6089c230bff7538cd5fb0c0f2727e645655d48e2ac9fd3f0b97846dca",
+    "tests/reference/entity/active_tick/source-pins.json": "3cc15e8518f922f428f47e6b1f277e4fce14c820747b655a7b2a5951cd21181d",
+    "tests/reference/entity/active_tick/test_controller.py": "dd89524616c39e3af8ed1dd0711b729c568cd135480e4646c4acdc6447947798"
+  }
+}

@@ -6,6 +6,7 @@
 #include "application_state.h"
 #include "display/display.h"
 #include "gui/gui_main_menu.h"
+#include "particles/application.h"
 #include "resources/assets.h"
 #include "startup/game_directory.h"
 #include "world/session.h"
@@ -705,6 +706,19 @@ cleanup:
                                                      : app->display_error.operation,
                 app->display_error.detail);
     }
+    if (!mc_client_world_view_retire(&app->world_view, &app->display_error))
+        result = 1;
+    /* Particles and World Lists can retain real Players and their Sessions.
+     * Detach those native owners before retiring the Session class namespace. */
+    if (mc_client_application_retire_effect_renderer(app) != MC_EFFECT_RENDERER_OK ||
+        (app->active_world != NULL &&
+         mc_client_application_publish_world(app, NULL) != MC_EFFECT_RENDERER_OK))
+        return 1;
+    if (!mc_client_world_session_retire(&app->world_session, NULL) ||
+        mc_world_runtime_classes_free(app->world_classes, NULL) != MC_WORLD_STORAGE_OK) {
+        fprintf(stderr, "World cleanup retained a live owner\n");
+        return 1;
+    }
     mc_client_statistics_owner_error owner_error = {0};
     if (mc_client_application_retire_statistics(app, &owner_error) !=
             MC_CLIENT_STATISTICS_OWNER_OK ||
@@ -717,13 +731,6 @@ cleanup:
         mc_client_render_classes_free(app->render_classes) != MC_CLIENT_MODEL_OK)
         return 1;
     mc_gui_main_menu_free(app->main_menu);
-    if (!mc_client_world_view_retire(&app->world_view, &app->display_error))
-        result = 1;
-    if (!mc_client_world_session_retire(&app->world_session, NULL) ||
-        mc_world_runtime_classes_free(app->world_classes, NULL) != MC_WORLD_STORAGE_OK) {
-        fprintf(stderr, "World cleanup retained a live owner\n");
-        return 1;
-    }
     mc_client_string_free(&app->splash);
     if (mc_game_settings_retire(&app->settings, NULL) != MC_GAME_SETTINGS_OK)
         result = 1;

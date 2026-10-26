@@ -317,8 +317,8 @@
       "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "include/mc/client/input/movement_input.h": {
-      "bytes": 6415,
-      "sha256": "ad4d4dc509044a83db6d64b04783755280fd900731579aba2ffdd67e2df53b2e"
+      "bytes": 6674,
+      "sha256": "1acb11415719d45a9cd6792b67c1a9a81c5e3b25279acf19fc5b0c336ec1add3"
     },
     "src/entity/player/construction.c": {
       "bytes": 17742,
@@ -329,8 +329,8 @@
       "sha256": "2c0b814c54ee7c1c9d1bcf5b8ee2844c99b8d6b54c62c04b7c63ae58ad34d242"
     },
     "src/client/input/movement_input.c": {
-      "bytes": 8421,
-      "sha256": "fb3feff07609287823f5ccfe6957127b89be9c7bf79ad57a4662c42e4c847565"
+      "bytes": 9512,
+      "sha256": "51d32f17706ef09e68101ef6dde41085565659240d7a413277f00f773924e691"
     },
     "src/client/input/movement_input_internal.h": {
       "bytes": 402,

@@ -5,8 +5,9 @@ notice, then initializes statistics at the reached Minecraft constructor call.
 The water constructor reads the real flowing-water Block before statistics
 initialization. The resulting catalog messages are `16 achievements` followed
 by `151 recipes`; a cold standalone statistics entry has a different, separately
-qualified order. Texture animation and RenderEngine registration remain separate
-unfinished operations.
+qualified order. The existing water owner now executes the CPU animation body,
+including array swaps, RGBA output and shared Math continuation. RenderEngine
+registration, texture upload and normal graphics startup remain unfinished.
 
 A locally selected username is decoded from UTF-8 into an owned UTF-16 String.
 The application creates a real Session and retains it through statistics-writer
@@ -58,10 +59,18 @@ old-body failing regression and independent corrected-product verification.
 The unchanged-original profile currently qualifies Windows x64 only. Native
 Debug and Linux sanitizer qualification remain distinct from that profile.
 
-The initial combined Windows Debug integration passes 25 selected cases, including
-the real App callsite regression, original comparisons, nine startup runs and
-three terrain-view captures. The final full source then passes 307 Windows tests and 286 tests each on
-sanitized Clang/GCC, with no failures or skips. These checks establish their
-finite operations, not an active Player/World tick or a playable session. Full tick composition,
-Living hurt, Container close, Item pickup, Map tracking/terrain updates and
-complete startup/render/audio behavior remain unfinished.
+At the earlier `9da869d` checkpoint, the combined source passed 307 Windows tests
+and 286 tests each on sanitized Clang/GCC. Its 879 local cases and separate
+855-case hosted public/JDK matrix predate the current integration.
+
+The later combined runtime passes 332 Windows Debug CTests and 310 cases on
+each fresh sanitized Clang/GCC Debug build with leak detection: 952 completed
+cases. The real-App particle fixture retains its 82 checks, including completed
+pickup and separate application World reads. The [test record](../testing.md)
+keeps the native and original profiles distinct.
+
+The active Player bodies and Item pickup path are implemented in their declared
+scope. World Entity scheduling, Living hurt, Container close, Map tracking/
+terrain updates, particle/notice drawing, fog and complete startup/render/audio
+behavior remain unfinished. Normal RenderEngine startup is still a dependency;
+the CPU effect-manager startup operation does not complete it.

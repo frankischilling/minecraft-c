@@ -2,6 +2,10 @@
 
 #include <float.h>
 #include <stdlib.h>
+#if !defined(__SSE2__) && !defined(_M_X64) && !(defined(_M_IX86_FP) && _M_IX86_FP >= 2)
+#error "MovementInput floating admission requires SSE2"
+#endif
+#include <xmmintrin.h>
 
 _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128 && DBL_MANT_DIG == 53 &&
                    DBL_MAX_EXP == 1024,
@@ -31,6 +35,13 @@ static mc_movement_input_status okay(mc_movement_input_error *error) {
 static mc_movement_input_status invalid(mc_movement_input_error *error, const char *operation) {
     return result(error, MC_MOVEMENT_INPUT_INVALID_ARGUMENT, MC_MOVEMENT_INPUT_EXCEPTION_NONE,
                   operation, 0, -1);
+}
+
+static mc_movement_input_status floating(mc_movement_input_error *error, unsigned int pc) {
+    if ((_mm_getcsr() & 0xffc0u) == 0x1f80u)
+        return MC_MOVEMENT_INPUT_OK;
+    return result(error, MC_MOVEMENT_INPUT_UNSUPPORTED_FP, MC_MOVEMENT_INPUT_EXCEPTION_NONE,
+                  "MovementInput native FP admission", pc, -1);
 }
 
 static mc_movement_input_status create(mc_movement_input_kind kind, mc_game_settings *settings,
@@ -152,17 +163,31 @@ mc_movement_input_status mc_movement_input_update(mc_movement_input *input,
         return okay(error);
     input->fields.strafe = 0.0f;
     input->fields.forward = 0.0f;
-    if (input->keys[0])
+    if (input->keys[0]) {
+        if (floating(error, 25) != MC_MOVEMENT_INPUT_OK)
+            return MC_MOVEMENT_INPUT_UNSUPPORTED_FP;
         input->fields.forward += 1.0f;
-    if (input->keys[1])
+    }
+    if (input->keys[1]) {
+        if (floating(error, 44) != MC_MOVEMENT_INPUT_OK)
+            return MC_MOVEMENT_INPUT_UNSUPPORTED_FP;
         input->fields.forward -= 1.0f;
-    if (input->keys[2])
+    }
+    if (input->keys[2]) {
+        if (floating(error, 63) != MC_MOVEMENT_INPUT_OK)
+            return MC_MOVEMENT_INPUT_UNSUPPORTED_FP;
         input->fields.strafe += 1.0f;
-    if (input->keys[3])
+    }
+    if (input->keys[3]) {
+        if (floating(error, 82) != MC_MOVEMENT_INPUT_OK)
+            return MC_MOVEMENT_INPUT_UNSUPPORTED_FP;
         input->fields.strafe -= 1.0f;
+    }
     input->fields.jump = input->keys[4];
     input->fields.sneak = input->keys[5];
     if (input->fields.sneak) {
+        if (floating(error, 122) != MC_MOVEMENT_INPUT_OK)
+            return MC_MOVEMENT_INPUT_UNSUPPORTED_FP;
         input->fields.strafe = (float)((double)input->fields.strafe * 0.3);
         input->fields.forward = (float)((double)input->fields.forward * 0.3);
     }

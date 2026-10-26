@@ -1,0 +1,253 @@
+{
+  "receiver": "exact canonical client hl, superclass sn",
+  "dispatch": {
+    "w_()V": {
+      "owner": "hl",
+      "method": {
+        "name": "w_",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 367,
+        "code_sha256": "f47f7e091cb5c0c5cea7f2e944d2471342ec5695113046c0c1d3d846796f98f5",
+        "code_attribute_sha256": "8d55229f78d4001da64d2de28adfe51575d59569f5bf287d51b24d9ea7744bb1",
+        "max_stack": 7,
+        "max_locals": 3
+      }
+    },
+    "U()V": {
+      "owner": "sn",
+      "method": {
+        "name": "U",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 591,
+        "code_sha256": "27d2f9bdb1a48fbe3e54bb69e0d61e51d97fbeafa2e614b34b4a980f16b1cfca",
+        "code_attribute_sha256": "aaa87b4855854d7c9d0d96d31139d3fbc418dcd2a2b18a4adaba3c75f83fac83",
+        "max_stack": 14,
+        "max_locals": 6
+      }
+    },
+    "k_()Z": {
+      "owner": "hl",
+      "method": {
+        "name": "k_",
+        "descriptor": "()Z",
+        "access": 1,
+        "code_bytes": 16,
+        "code_sha256": "54f6dcece745c85ad1bb60d9fb62f20da9930ad0734ad4ac15b7ec8a70939acb",
+        "code_attribute_sha256": "860c1712c8fe8548e40c864c7075295bc2f5a95f2a1910d4ee80f0b7831d8a0e",
+        "max_stack": 4,
+        "max_locals": 1
+      }
+    },
+    "ah()Z": {
+      "owner": "sn",
+      "method": {
+        "name": "ah",
+        "descriptor": "()Z",
+        "access": 1,
+        "code_bytes": 27,
+        "code_sha256": "de98e91737cf72bf1e843f587830966303b0d752afcd0c631cb31ebbfff07a70",
+        "code_attribute_sha256": "968834cfa8284e0f21ee89124a6892edf43b305f942a72fc6cbf04b7bd558707",
+        "max_stack": 8,
+        "max_locals": 1
+      }
+    },
+    "ae()V": {
+      "owner": "sn",
+      "method": {
+        "name": "ae",
+        "descriptor": "()V",
+        "access": 4,
+        "code_bytes": 25,
+        "code_sha256": "952d5556310852257a70f9aaf0f649005151ef3e81fdf28e6bec5a5590f36fb4",
+        "code_attribute_sha256": "a09525b03ae4f05f17649cadb4d0260e58811d57e650f5b031a16c0331ac6fb4",
+        "max_stack": 3,
+        "max_locals": 1
+      }
+    },
+    "ab()V": {
+      "owner": "sn",
+      "method": {
+        "name": "ab",
+        "descriptor": "()V",
+        "access": 4,
+        "code_bytes": 5,
+        "code_sha256": "2dee845053dc2cd6f2dda3aba6ebc72a36a8d8533836abafd91ccf36395a4494",
+        "code_attribute_sha256": "88c4554d3877b0861d60cd1c06621e5c4022cd4f4ec7dcc8f1064133534a99bc",
+        "max_stack": 1,
+        "max_locals": 1
+      }
+    },
+    "a(Lsn;I)Z": {
+      "owner": "hl",
+      "method": {
+        "name": "a",
+        "descriptor": "(Lsn;I)Z",
+        "access": 1,
+        "code_bytes": 27,
+        "code_sha256": "b0dc0ba5c7260061a51cfe97db7c85949039f4c5ac032147abd0b51cf0b4ee84",
+        "code_attribute_sha256": "cc4d68b0bcccfea4db4483f820a9689820440091dc0d0475d90dae6d1fcd9620",
+        "max_stack": 3,
+        "max_locals": 3
+      }
+    },
+    "a(I)V": {
+      "owner": "hl",
+      "method": {
+        "name": "a",
+        "descriptor": "(I)V",
+        "access": 4,
+        "code_bytes": 8,
+        "code_sha256": "4b421f83334362f1546ae285ad74552011f19a27ffe9ced8dd0fb691e6846159",
+        "code_attribute_sha256": "50c69857784fe9c56917c1336aa4b64612987b92fb92f31b378d6fcaf41d2c95",
+        "max_stack": 3,
+        "max_locals": 2
+      }
+    },
+    "ai()V": {
+      "owner": "sn",
+      "method": {
+        "name": "ai",
+        "descriptor": "()V",
+        "access": 4,
+        "code_bytes": 6,
+        "code_sha256": "dc6e573d1b7bdfda609ccd51944653f406235e4ba16d8d00485f7e092356efd0",
+        "code_attribute_sha256": "f60e2949c87b5be1a4b81b1b1ab8aff0c22f651355f8a05f2760c30916813f03",
+        "max_stack": 2,
+        "max_locals": 1
+      }
+    },
+    "K()V": {
+      "owner": "sn",
+      "method": {
+        "name": "K",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 6,
+        "code_sha256": "15bf6e310fb9f5cbb8f2e588164d3b58c0a72933aba2392bd8c63ef7ad852357",
+        "code_attribute_sha256": "48118edee7dd93139350f20d203440291400303bb2365e6a0152883632fbb885",
+        "max_stack": 2,
+        "max_locals": 1
+      }
+    },
+    "b(DDD)V": {
+      "owner": "sn",
+      "method": {
+        "name": "b",
+        "descriptor": "(DDD)V",
+        "access": 1,
+        "code_bytes": 2029,
+        "code_sha256": "bc91e7daec2eea6393ccec1db61f09366d75ac360a55a63cf7105619abbb8e09",
+        "code_attribute_sha256": "2205b6e0c07370932e21631d041dba76b9fc67c594778b615df0a4c22cb2b063",
+        "max_stack": 9,
+        "max_locals": 35
+      }
+    },
+    "c(DDD)Z": {
+      "owner": "sn",
+      "method": {
+        "name": "c",
+        "descriptor": "(DDD)Z",
+        "access": 4,
+        "code_bytes": 444,
+        "code_sha256": "b1b17aa1f706377c45395b6974cef0b906dd58d51b16e5de9f62bc971108aafc",
+        "code_attribute_sha256": "b10dd84bed12fe540680a43fc969d02f8e8ba74e315e125e476fe54b02873e7a",
+        "max_stack": 5,
+        "max_locals": 26
+      }
+    },
+    "n()Z": {
+      "owner": "hl",
+      "method": {
+        "name": "n",
+        "descriptor": "()Z",
+        "access": 4,
+        "code_bytes": 2,
+        "code_sha256": "42ca1f85243342bd41983ab86f2235408fa46ded7466d4525196f66b9dbb5f3e",
+        "code_attribute_sha256": "cf8110aa763a3e5871bb9cd6f0a2de460482cb08b1384215d4baa60158768c70",
+        "max_stack": 1,
+        "max_locals": 1
+      }
+    },
+    "af()Z": {
+      "owner": "sn",
+      "method": {
+        "name": "af",
+        "descriptor": "()Z",
+        "access": 1,
+        "code_bytes": 44,
+        "code_sha256": "e376a3c205243aa127ed4c8e7e365d162612a881917d87b63da89e18f874e45d",
+        "code_attribute_sha256": "84df2e9f473ae7c34dc928b21dafaea2c8fc8da54ca244e99fd716c1c2a2c3c6",
+        "max_stack": 5,
+        "max_locals": 1
+      }
+    },
+    "a(DZ)V": {
+      "owner": "sn",
+      "method": {
+        "name": "a",
+        "descriptor": "(DZ)V",
+        "access": 4,
+        "code_bytes": 48,
+        "code_sha256": "b42f685353529dac8ffa3d206f1deba4ac0e1908c3d12020731eec7b9f2ce44a",
+        "code_attribute_sha256": "8d1f764d682e4b54eb6cb8cd084a1522af03465e88f3e4adf3aa9afbcdb6624c",
+        "max_stack": 5,
+        "max_locals": 4
+      }
+    },
+    "b(F)V": {
+      "owner": "sn",
+      "method": {
+        "name": "b",
+        "descriptor": "(F)V",
+        "access": 4,
+        "code_bytes": 16,
+        "code_sha256": "751b68f49e7c546a50c199b200f2e7298cd17ba49c1f9fb7a25bd2cdabbdd347",
+        "code_attribute_sha256": "370b7b8ee42547cbcd2ac4ba88f65629b17a3812648c65181c499b6df783079a",
+        "max_stack": 2,
+        "max_locals": 2
+      }
+    },
+    "b(IZ)V": {
+      "owner": "sn",
+      "method": {
+        "name": "b",
+        "descriptor": "(IZ)V",
+        "access": 4,
+        "code_bytes": 53,
+        "code_sha256": "39f95801708690079b64b7231cb1ff4da9c36acd3f5988c9a7c8117badc130e4",
+        "code_attribute_sha256": "f7e392d4ad851e0011a9635c42ad829dc9fa1496000ad0c8cb9e4c6a1bafb9b9",
+        "max_stack": 5,
+        "max_locals": 4
+      }
+    },
+    "f()Leq;": {
+      "owner": "sn",
+      "method": {
+        "name": "f",
+        "descriptor": "()Leq;",
+        "access": 1,
+        "code_bytes": 2,
+        "code_sha256": "146cb1bd5c639e50589db67598e4a3f423eb736f7911d3b8329f72e0f5cd5fac",
+        "code_attribute_sha256": "6a01c4869864d7ee9b83f29dc72397f8372ad752b2f0a76408dae836ddeb8b2d",
+        "max_stack": 1,
+        "max_locals": 1
+      }
+    },
+    "a(Lsn;)Leq;": {
+      "owner": "sn",
+      "method": {
+        "name": "a",
+        "descriptor": "(Lsn;)Leq;",
+        "access": 1,
+        "code_bytes": 2,
+        "code_sha256": "146cb1bd5c639e50589db67598e4a3f423eb736f7911d3b8329f72e0f5cd5fac",
+        "code_attribute_sha256": "2d3a3cdfdd67ffb7a37cfb1bacf4f5cd24433dee908e1bd1a8c6afa0ce2dc1e4",
+        "max_stack": 1,
+        "max_locals": 2
+      }
+    }
+  },
+  "scope": "Metadata for actual tick and mover closure. No new generic Entity vtable or descendant success stub."
+}

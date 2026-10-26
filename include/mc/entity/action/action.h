@@ -1,5 +1,6 @@
 #ifndef MC_ENTITY_ACTION_ACTION_H
 #define MC_ENTITY_ACTION_ACTION_H
+#include "mc/entity/item/pickup.h"
 #include "mc/entity/living/travel.h"
 #include "mc/entity/player/input.h"
 #include "mc/inventory/runtime/tick.h"
@@ -15,6 +16,12 @@ typedef struct mc_player_action_limits {
 
 #define MC_PLAYER_ACTION_DEFAULT_LOOP_WORK ((size_t)1048576)
 
+typedef enum mc_player_action_child_kind {
+    MC_PLAYER_ACTION_CHILD_NONE = 0,
+    MC_PLAYER_ACTION_CHILD_TRAVEL,
+    MC_PLAYER_ACTION_CHILD_PICKUP
+} mc_player_action_child_kind;
+
 typedef struct mc_player_action_error {
     mc_entity_status status;
     const char *operation, *source_class, *source_method;
@@ -27,7 +34,19 @@ typedef struct mc_player_action_error {
     mc_registry_error registry;
     mc_item_stack_status stack;
     mc_inventory_tick_error inventory;
-    mc_player_travel_error travel;
+    /* A failed jump/travel returns before pickup. Pickup is reached only after
+     * completed travel returned its fresh empty child. Keep the full active
+     * failed child without adding another large automatic frame to this chain.
+     * NONE/fresh storage has the legacy fresh travel sentinels. Read pickup
+     * only for PICKUP; read travel only for NONE/TRAVEL. Independent meaningful
+     * Inventory/Registry/bounds/nearby siblings and caller PCs remain separate. */
+    mc_player_action_child_kind child_kind;
+
+    union {
+        mc_player_travel_error travel;
+        mc_item_pickup_error pickup;
+    };
+
     mc_entity_environment_error environment;
     mc_world_collision_error collision;
     mc_world_nearby_error nearby;

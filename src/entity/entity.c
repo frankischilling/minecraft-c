@@ -4,6 +4,7 @@
 #include "entity_internal.h"
 #include "minecart/classes_internal.h"
 #include "minecart/entity_internal.h"
+#include "particles/particle_internal.h"
 #include "player/player_internal.h"
 
 #include <float.h>
@@ -162,6 +163,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
             bytes = sizeof(mc_local_player_object);
             status = mc_entity_base_class_initialize(classes, error);
             break;
+        case MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE:
+            if (classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_pickup_particle_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
         case MC_ENTITY_CLASS_KIND_MINECART:
             bytes = sizeof(mc_minecart_entity_object);
             status = mc_minecart_class_initialize(classes, error);
@@ -188,6 +195,11 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         *object = (mc_local_player_object){0};
         entity = &object->entity;
         entity->local_player = &object->state;
+    } else if (kind == MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) {
+        mc_pickup_particle_object *object = storage;
+        *object = (mc_pickup_particle_object){0};
+        entity = &object->entity;
+        entity->particle = &object->state;
     } else {
         entity = storage;
         *entity = (mc_entity){0};
@@ -389,7 +401,7 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez, ju/gl and yl/pr b()V hooks are empty returns. The
+    /* Actual hl/ez, ju/gl, yl/pr and client xw b()V hooks are empty returns. The
      * concrete dc owner dispatches to gs.b DURING this base constructor. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         status = mc_local_player_watcher_initialize(entity, error);
@@ -584,11 +596,15 @@ void mc_entity_release(mc_entity *entity) {
                              ? sizeof(mc_minecart_entity_object)
                          : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
                              ? sizeof(mc_local_player_object)
+                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)
+                             ? sizeof(mc_pickup_particle_object)
                              : sizeof(*entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         mc_minecart_entity_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
         mc_local_player_dispose(entity);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE))
+        mc_pickup_particle_dispose(entity);
     mc_nbt_tree_free(entity->storage_source);
     mc_item_stack_release(entity->stack);
     mc_world_runtime_binding_release(entity->base.world);

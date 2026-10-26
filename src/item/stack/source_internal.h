@@ -35,6 +35,16 @@ typedef struct mc_item_stack_source_error {
  * Stack hold. Called only at reached new10 after the source count store7. */
 typedef mc_item_stack_status (*mc_item_stack_source_allocator)(mc_item_stack **out);
 
+/* Actual iz.k(): allocate at0 before reading id5/count9/damage13, then
+ * numeric construct16. Source is live/exclusive in every phase, with an
+ * independent hold across the allocator. Neither phase nor provenance is
+ * changed; the copy is a fresh READY owner with animation0/no provenance.
+ * Public clone retains its separate READY admission. */
+mc_item_stack_status mc_item_stack_source_clone(const mc_item_stack *source,
+                                                mc_item_stack_source_allocator allocate,
+                                                mc_item_stack **out,
+                                                mc_item_stack_source_site *site);
+
 /* Live nonnull exclusive owners in all phases; phase/provenance unchanged.
  * These are private source field/kernel operations, not wider public READY
  * APIs. split reads original id15/damage20 only AFTER the actual allocation,

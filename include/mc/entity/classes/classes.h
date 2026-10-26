@@ -64,7 +64,9 @@ typedef enum mc_entity_class_kind {
     MC_ENTITY_CLASS_KIND_BOAT,
     MC_ENTITY_CLASS_KIND_ENTITY,
     MC_ENTITY_CLASS_KIND_PLAYER,
-    MC_ENTITY_CLASS_KIND_LOCAL_PLAYER, /* Client dc; existing selectors stay stable. */
+    MC_ENTITY_CLASS_KIND_LOCAL_PLAYER,    /* Client dc; existing selectors stay stable. */
+    MC_ENTITY_CLASS_KIND_PARTICLE,        /* Client xw, query-only ancestor. */
+    MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE, /* Client em. */
     MC_ENTITY_CLASS_KIND_COUNT
 } mc_entity_class_kind;
 
@@ -86,7 +88,7 @@ typedef struct mc_entity_class_literal_view {
  * their reached point. External stack/world/profile owners, allocator overhead
  * and C stack are excluded. Failure preserves out. All access is exclusive;
  * the profile must outlive every dependent class/entity and concurrent user.
- * create alone performs no game-class initialization or entropy draw. The 27
+ * create alone performs no game-class initialization or entropy draw. The 29
  * passive canonical literal cells are charged in this actual native header. */
 mc_entity_status mc_entity_classes_create(mc_entity_source source, mc_java_random_profile *profile,
                                           const mc_entity_limits *limits, mc_entity_classes **out);

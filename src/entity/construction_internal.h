@@ -3,11 +3,10 @@
 
 #include "mc/entity/entity.h"
 
-/* Concrete callers are Item, FallingSand, Minecart and local Player only. This is not a
- * public generic-kind factory. Preserve args -> actual active use -> live
- * count/budget -> actual header object -> canonical literal/hold/publication.
- * The concrete Minecart branch runs its class initializer before the header;
- * the two old branches retain Entity-only initialization. */
+/* Concrete callers are Item, FallingSand, Minecart, local Player and pickup particle only. This is
+ * not a public generic-kind factory. Preserve args -> actual active use -> live count/budget ->
+ * actual header object -> canonical literal/hold/publication. The concrete Minecart branch runs its
+ * class initializer before the header; the two old branches retain Entity-only initialization. */
 mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_entity_class_kind kind,
                                               const char *operation, mc_entity **out,
                                               mc_entity_error *error);
@@ -21,7 +20,8 @@ mc_entity_status mc_entity_constructor_begin(mc_entity *entity, mc_entity_class_
                                              const char *profile_operation, mc_entity_error *error);
 
 /* Shared base body owns ID/bounds/Random/watcher/World binding/position/Byte0.
- * The concrete Item/Falling/Minecart b()V targets are verified empty returns. */
+ * The concrete Item/Falling/Minecart and client particle b()V targets are verified empty returns.
+ */
 mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,
                                           mc_entity_error *error);
 

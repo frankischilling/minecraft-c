@@ -168,7 +168,8 @@ done:
     return okay;
 }
 
-static bool nearby(mc_entity *p, bool pickup, mc_player_action_error *e) {
+static bool nearby(mc_entity *p, bool pickup, const mc_player_action_context *context,
+                   mc_player_action_error *e) {
     mc_world_runtime *world = p->base.world;
     const unsigned int transform_pc = pickup ? 193u : 478u, query_pc = pickup ? 196u : 481u;
     const unsigned int count_pc = pickup ? 210u : 504u, get_pc = pickup ? 221u : 515u,
@@ -259,7 +260,7 @@ static bool nearby(mc_entity *p, bool pickup, mc_player_action_error *e) {
             if (!candidate->base.be) {
                 player_at(e, 242);
                 e->contact_bytecode = 2; /* Actual private gs.j(sn) invoke. */
-                if (!mc_action_pickup(candidate, p, e))
+                if (!mc_action_pickup(candidate, p, registry(context), e))
                     goto done;
             }
         } else {
@@ -323,9 +324,11 @@ static bool living_body(mc_entity *p, const mc_player_action_context *context,
             p->base.velocity_y = ac_add(p->base.velocity_y, ac_widen(.04f));
         } else if (p->base.aX) {
             living_at(e, 414);
+            e->child_kind = MC_PLAYER_ACTION_CHILD_TRAVEL;
             if (!entity_status(e, mc_player_jump(p, travel_context(context), &e->travel),
                                "Action actual Player jump virtual", 414))
                 return false;
+            e->child_kind = MC_PLAYER_ACTION_CHILD_NONE;
         }
     }
     living_at(e, 424);
@@ -337,10 +340,12 @@ static bool living_body(mc_entity *p, const mc_player_action_context *context,
     living_at(e, 446);
     v->ay = ac_fmul(v->ay, .9f);
     living_at(e, 459);
+    e->child_kind = MC_PLAYER_ACTION_CHILD_TRAVEL;
     if (!entity_status(e, mc_player_travel(p, travel_context(context), v->aw, v->ax, &e->travel),
                        "Action actual Player travel virtual", 459))
         return false;
-    return nearby(p, false, e);
+    e->child_kind = MC_PLAYER_ACTION_CHILD_NONE;
+    return nearby(p, false, context, e);
 }
 
 static bool player_body(mc_entity *p, const mc_player_action_context *context,
@@ -396,7 +401,7 @@ static bool player_body(mc_entity *p, const mc_player_action_context *context,
     player->i = ac_fadd(player->i, ac_fmul(ac_fsub(magnitude, player->i), .4f));
     v->ag = ac_fadd(v->ag, ac_fmul(ac_fsub(vertical, v->ag), .8f));
     if (v->Y > 0)
-        return nearby(p, true, e);
+        return nearby(p, true, context, e);
     return true;
 }
 

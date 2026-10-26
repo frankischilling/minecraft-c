@@ -16,8 +16,8 @@ The complete private application storage is shared by production and CPU tests.
 Entity/render classes live above menu and World lifetimes; the concrete inventory
 description callback reloads the same application's current Settings. Runtime
 formatted Strings retire on replacement. This construction/state layer requires
-no SDL headers or graphics/audio runtime. Notice drawing, complete startup and
-active Player ticks remain unfinished.
+no SDL headers or graphics/audio runtime. Notice drawing and complete startup remain unfinished. The
+[active Player tick](entity/player-active-tick.md) uses these same application owners.
 
 The [GameSettings owner](client/game-settings.md) keeps options persistence
 separate from display and audio. It owns retained UTF-16 Strings, KeyBindings
@@ -42,8 +42,8 @@ World, Entity, Block and Material owners. Their Vec3 pool belongs to the shared
 Entity classes owner and survives individual Worlds. Pool reset and client clear
 are explicit operations; retained vectors prevent class retirement. The reached
 fluid and Stairs dispatch preserves virtual calls and sequential velocity stores.
-Living travel and action bodies use these same owners; the active Player
-tick remains unfinished.
+Living travel and the active Player bodies use these same owners. World
+scheduling and gameplay adoption remain unfinished.
 
 [Entity environment helpers](entity/environment.md) preserve the actual water,
 lava, stored-water, clearance and relative-acceleration operations. The caller
@@ -62,7 +62,28 @@ World and Registry storage layouts are unchanged. [Travel](entity/living-travel.
 [base environment ticking](entity/base-environment-tick.md),
 [inventory updates](entity/inventory-tick.md) and [action bodies](entity/player-action.md)
 compose actual descendants. The [application statistics owners](client/player-statistics.md)
-provide real reached dc dispatch. Complete active ticks and gameplay remain unfinished.
+provide the concrete dc dispatch. [Active Player ticking](entity/player-active-tick.md)
+composes the Player/Living wrappers and local action on the same owner. The
+World Entity update loop and playable client remain unfinished.
+
+[Item pickup](entity/item-pickup.md) runs Inventory insertion, achievements, sound,
+the concrete Player notification and the later Item death check. The
+[pickup particle and effect manager](client/particles.md) own real em construction,
+four distinct effect Lists and the captured manager lifetime. Application f/p/j
+fields preserve the source World/RenderEngine/manager reads; a null manager fails
+after particle construction. The selected dn startup operation is implemented,
+while normal RenderEngine startup, effect drawing and frame scheduling remain
+unfinished.
+
+[Item ticking](entity/item-tick.md) executes hl.w_, inherited environment update,
+six-neighbor push-out, movement, friction and aging on constructed Items. Its
+three isolated native/original profiles remain separate from the combined
+runtime matrix. World scheduling still has to call the implemented Entity
+bodies in source order.
+
+The water effect has a CPU animation body on its existing constructor-owned
+float/RGBA arrays and shared Math profile. Texture registration, upload and
+normal RenderEngine startup remain unfinished.
 
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.
@@ -130,9 +151,9 @@ and the same permanent box. Held pooled copies and collision views retain mutabl
 identities across repeated queries. Each source call reloads its actual World
 receiver, while reached code statics require the exact canonical Entity class
 owner. Typed effects, Block inheritance dispatch and actual World queries keep
-independent error frames. Other constructors, active ticks, positive pressure/
-detector helpers, concrete sound WorldAccess receivers and unowned passenger recursion remain
-unfinished. Movement does not implement Piston pushing or the game loop.
+independent error frames. Other Entity behaviors, concrete sound WorldAccess
+receivers and unowned passenger recursion retain their separate limits. The
+active LocalPlayer entry is described above. Movement does not implement Piston pushing or the game loop.
 
 The [collision module](world/collision/boxes.md) owns the actual constructor
 K descriptor independently of source K. Each typed occurrence retains either
@@ -236,7 +257,9 @@ decoded-document lifetime. `mc_item` builds on storage with stable
 and their receiver methods. Every world in one material-class lifetime must
 borrow the same stable owner; material identity is separate from block IDs.
 The lower `mc_entity_classes` library owns passive canonical Class cells and
-EntityList namespace metadata. Registry can retain that same owner for its
+EntityList namespace metadata. The client xw/em cells append selectors 27/28;
+the earlier selectors 22..26 and the 24 EntityList registrations retain their
+identities. Registry can retain that same owner for its
 Biome handles without depending on concrete Entity constructors or simulation.
 See the [Class/NBT lifetime contract](entity/nbt.md).
 Passive Entity NBT/load diagnostics also stay below simulation. The borrowed
@@ -617,8 +640,8 @@ As implementation proceeds, the intended boundaries are:
 Add interfaces as reference-backed game behavior is implemented.
 CMake build options apply strict diagnostics
 and floating-point rules to project code; future dependencies need their own
-licensing and build review. SDL3 is a candidate, and its current APIs must be
-verified before use. Storage uses pinned static zlib; its
+licensing and build review. The client uses pinned SDL3 for its window and
+OpenGL context. Storage uses pinned static zlib; its
 [license and build configuration](dependencies.md) remain separate from project code.
 
 Use checked allocation, bounded buffers, and explicit ownership/cleanup paths.

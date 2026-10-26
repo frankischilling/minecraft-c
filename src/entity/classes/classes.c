@@ -14,7 +14,7 @@ static const char *const literal_names[MC_ENTITY_CLASS_KIND_COUNT][2] = {
     {"gb", "ec"}, {"fr", "dv"}, {"cn", "bn"}, {"nt", "ip"}, {"uz", "ne"}, {"uw", "nb"},
     {"bp", "aw"}, {"ya", "pi"}, {"wh", "oc"}, {"dl", "ce"}, {"bx", "bd"}, {"ww", "or"},
     {"xt", "pf"}, {"gi", "eh"}, {"qw", "kg"}, {"ju", "gl"}, {"yl", "pr"}, {"fz", "eb"},
-    {"sn", "lq"}, {"gs", "em"}, {"dc", NULL}};
+    {"sn", "lq"}, {"gs", "em"}, {"dc", NULL}, {"xw", NULL}, {"em", NULL}};
 
 /* Nearest admitted superclass from the paired class declarations. Monster
  * gz/ep reaches Living ls/hl through ii/fp; animals through bg/ao -> ii/fp;
@@ -49,7 +49,9 @@ static const mc_entity_class_kind literal_parents[MC_ENTITY_CLASS_KIND_COUNT] = 
     [MC_ENTITY_CLASS_KIND_BOAT] = MC_ENTITY_CLASS_KIND_ENTITY,
     [MC_ENTITY_CLASS_KIND_ENTITY] = MC_ENTITY_CLASS_KIND_COUNT,
     [MC_ENTITY_CLASS_KIND_PLAYER] = MC_ENTITY_CLASS_KIND_LIVING_ENTITY,
-    [MC_ENTITY_CLASS_KIND_LOCAL_PLAYER] = MC_ENTITY_CLASS_KIND_PLAYER};
+    [MC_ENTITY_CLASS_KIND_LOCAL_PLAYER] = MC_ENTITY_CLASS_KIND_PLAYER,
+    [MC_ENTITY_CLASS_KIND_PARTICLE] = MC_ENTITY_CLASS_KIND_ENTITY,
+    [MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE] = MC_ENTITY_CLASS_KIND_PARTICLE};
 
 mc_entity_status mc_entity_base_class_initialize(mc_entity_classes *classes,
                                                  mc_entity_error *error) {
@@ -174,7 +176,9 @@ mc_entity_status mc_entity_class_literal_get(const mc_entity_classes *classes,
                                              const mc_entity_class_literal **out) {
     if (classes == NULL || out == NULL ||
         (unsigned int)kind >= (unsigned int)MC_ENTITY_CLASS_KIND_COUNT ||
-        (kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER && classes->source != MC_ENTITY_CLIENT))
+        ((kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER || kind == MC_ENTITY_CLASS_KIND_PARTICLE ||
+          kind == MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&
+         classes->source != MC_ENTITY_CLIENT))
         return MC_ENTITY_INVALID_ARGUMENT;
     *out = &classes->literals[(size_t)kind];
     return MC_ENTITY_OK;
@@ -196,7 +200,9 @@ static bool literal_is_canonical(const mc_entity_class_literal *literal) {
     return literal != NULL && literal->owner != NULL &&
            (literal->source == MC_ENTITY_CLIENT || literal->source == MC_ENTITY_SERVER) &&
            literal->source == literal->owner->source &&
-           (literal->kind != MC_ENTITY_CLASS_KIND_LOCAL_PLAYER ||
+           ((literal->kind != MC_ENTITY_CLASS_KIND_LOCAL_PLAYER &&
+             literal->kind != MC_ENTITY_CLASS_KIND_PARTICLE &&
+             literal->kind != MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) ||
             literal->source == MC_ENTITY_CLIENT) &&
            (unsigned int)literal->kind < (unsigned int)MC_ENTITY_CLASS_KIND_COUNT &&
            literal == &literal->owner->literals[(size_t)literal->kind];

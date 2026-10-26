@@ -1,14 +1,97 @@
 # Test scope and reproduction
 
+## Current public runtime integration
+
+The combined water animation, Item pickup/tick, active Player and pickup-particle
+source passes 952 local CTests: 332 Windows MSVC Debug cases and 310 cases on each
+fresh Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection. Every case
+from the previous 307/286/286 matrix remains enabled. No case failed, skipped,
+was disabled or remained unrun. Windows includes actual OpenGL startup and World
+inspection; the local Linux profiles are headless. Hosted public/JDK results are
+tracked separately from these local checks.
+
+The frozen build cohort contains 1,700 files and 1,476 non-Markdown inputs. All
+859 project C/header files pass clang-format 18.1.3. Before execution, 157 current
+native/helper fingerprints and eleven original class/Code metadata families
+verify. Source inventories and bytes match before/after each suite. Actual Debug
+target artifacts, copied runtime libraries, PDBs and compiler/link configuration
+are also unchanged across each suite. All configured Windows executables retain
+their default 1 MiB stack. Retained native captures and the new water, particle
+and Item original records verify independently after execution.
+
+The earlier particle integration passed 37 selected Windows tests before Item
+tick import. Its 854-file format check and the isolated module qualifications
+below remain dated evidence; they are not additional full-suite cases.
+
+The first combined build stopped at an old Minecart enum-count assertion. The
+existing selectors 22..26 retain their values; client xw/em append 27/28 and COUNT
+is 29. The corrected assertion and class tests pass their two focused cases,
+followed by the complete 37-case selected pass. This compiler assertion failure
+is retained separately from runtime test results.
+
+The preintegration module qualifications use their own coherent source and
+products. Their counts do not add up to a new full-suite total:
+
+| Operation | Scoped evidence |
+| --- | --- |
+| Pickup particle constructors/tick and CPU effect manager | 4,571 native checks; the paired original run passes 4,592 checks and 71 exact records |
+| Effect-manager ownership and Lists | 12,095 native checks |
+| Complete-App pickup notification and Item lifetime | 82 native checks |
+| Active Player bodies and allocation lifetime | 678 active checks and 247 allocator checks |
+| Input arithmetic/admission | 1,222 native checks |
+| Active animation atan 2 | 8,676 separate JDK results |
+| Water CPU animation | 103,098 native checks, with the separate exact original array/RGBA comparison |
+| Item tick | 1,089 native checks and 70 exact original records across 37 states: 33 complete calls and four prefixes |
+
+The CPU particle and water comparisons run on the qualified Windows and Linux
+products. The original active-App profile retains its Windows LWJGL scope.
+Particle drawing, normal RenderEngine startup, fog, the World Entity loop and
+a playable client remain unfinished. [Item ticking](entity/item-tick.md) now
+executes its concrete body; its three isolated profiles predate the current
+combined matrix.
+
+`entity.pickup_particles`, `client.effect_renderer` and
+`client.player_pickup_particles` use authored native owners. The optional
+`MC_ENABLE_PARTICLE_REFERENCE_TESTS` enables `reference.pickup_particles` with
+the verified client JAR, pinned support archives and matching JDK17 tools.
+Its controller checks the full 71-record order, class/Code pins, actual runtime
+origins, helper inventory and before/after inputs/products. Native and original
+captures require exit 0, empty stderr, bounded output and positive final markers.
+See [particle ownership](client/particles.md) and its
+[finite CPU qualification](client/particles-qualification.md).
+
+`client.water_animation` and its normal/optimized driver controls need no JDK
+or original assets. `MC_ENABLE_WATER_ANIMATION_REFERENCE_TESTS` enables
+`reference.water_animation`; the [reproduction guide](../tests/reference/client/water_animation/README.md)
+describes the 23 declared array/state cases, holder continuation and source
+failure prefixes. The runtime uses its shared Math owner; the finite comparison
+explicitly seeds that existing owner and supplies no draw outputs.
+
+`entity.item_tick` and its two controller tests use authored native owners.
+`MC_ENABLE_ITEM_TICK_REFERENCE_TESTS` enables `reference.item_tick` with the
+verified client JAR, pinned libraries and matching JDK17 tools. Its original
+profile compares 37 states and 33 events on constructed Item/World/Stack owners;
+33 calls return and four retain their reached source prefixes.
+
+[Active Player ticking](entity/player-active-tick.md) composes the real Player,
+Living, Inventory, Input, travel, nearby and statistic bodies.
+[Item pickup](entity/item-pickup.md) completes notification before the later
+Stack/death check. These method-level results leave World scheduling, Map
+tracking/terrain updates, later Living hurt, GUI closure and drawing as separate
+work.
+
 ## Player runtime and application statistics
 
-The final combined source passes all 307 Windows MSVC Debug cases and all 286
-headless cases each on fresh Clang 18/GCC 13 Debug builds with ASan, UBSan and
+At the earlier `9da869d` checkpoint, the combined source passed all 307 Windows
+MSVC Debug cases and all 286
+headless cases each on fresh Clang 18/GCC13 Debug builds with ASan, UBSan and
 leak detection: 879 completed cases without failures, errors, disabled cases or
-skips. Every case from the preceding movement checkpoint remains enabled.
+skips. Its separately retained hosted public/JDK matrix passed 855 cases. These
+counts date that earlier checkpoint; they do not describe the current combined
+source. Every case from the preceding movement checkpoint remains enabled.
 Windows includes real OpenGL startup and terrain captures. The frozen cohort
-contains 1,617 files and 1,400 non-Markdown inputs; all 822 C/header files pass
-clang-format 18. Current native/helper provenance and seven original class/Code
+contains1,617 files and 1,400 non-Markdown inputs; all 822 C/header files pass
+clang-format18. Current native/helper provenance and seven original class/Code
 cohorts verify before execution; source and retained capture/product readback
 are checked after execution.
 
@@ -48,8 +131,9 @@ complete qualification.
 [Player statistics](client/player-statistics.md), [travel](entity/living-travel.md),
 [base tick](entity/base-environment-tick.md), [inventory](entity/inventory-tick.md)
 and [action](entity/player-action.md) describe the finite source boundaries.
-Active Player/World tick composition, Item pickup, Map tracking/terrain updates,
-Living hurt, Container close and complete gameplay remain unfinished.
+The later active Player and Item pickup bodies have their own current entries
+above. World Entity scheduling, Map tracking/terrain updates, Living hurt,
+Container close and complete gameplay remain unfinished.
 
 ## LocalPlayer movement and walking effects
 
@@ -62,15 +146,15 @@ capture faults normally and under optimized Python. These public tests need
 neither Java nor original assets.
 
 The complete combined source passes 280 Windows MSVC tests and 261 headless
-tests each on fresh Clang 18/GCC 13 builds with ASan, UBSan and leak detection:
+tests each on fresh Clang 18/GCC13 builds with ASan, UBSan and leak detection:
 802 completed cases, no failures, errors, disabled cases or skips. Each product
 passes 40,373 movement/step/sound and 15,297 environment checks. Existing
 Item/Falling, Player/input/publication, crafting, material, lighting, persistence
 and notice checks pass in the same cohort. Windows includes real OpenGL/client
 tests; these local Linux builds are headless.
 
-All 773 C/header files pass clang-format 18. The 1,511-file frozen snapshot
-contains 1,303 non-Markdown inputs. Readback checks source, executable and capture
+All 773 C/header files pass clang-format18. The 1,511-file frozen snapshot
+contains1,303 non-Markdown inputs. Readback checks source, executable and capture
 hashes and all actual rows, including 21 original movement records and twelve
 separately labelled JDK rounding records per product. Both new twelve-case
 controller suites pass normally and with Python optimization. Controller mirrors
@@ -108,12 +192,12 @@ they are not successful original-server World observations. See the
 ## Achievement notice and model construction
 
 The final combined source passes all 272 Windows MSVC tests and all 253 tests
-each on fresh headless Clang 18/GCC 13 builds with ASan, UBSan and leak checks.
+each on fresh headless Clang 18/GCC13 builds with ASan, UBSan and leak checks.
 All 778 cases run without failures, errors, disabled tests or skips. The frozen
-1,484-file cohort contains 1,279 non-Markdown inputs; all 765 C/header files pass
-clang-format 18. Windows includes real GL captures and the unchanged-original
+1,484-file cohort contains1,279 non-Markdown inputs; all 765 C/header files pass
+clang-format18. Windows includes real GL captures and the unchanged-original
 notice comparison; local Linux notice coverage uses authored CPU resources.
-The original comparison matches 140 geometry and 151 callback records plus
+The original comparison matches140 geometry and 151 callback records plus
 source diagnostics in order, including 1000 actual reminders. Both capture
 controller modes pass nine controls on all three native products.
 
@@ -139,7 +223,7 @@ Enable `MC_ENABLE_NOTICE_REFERENCE_TESTS` and supply `MC_REFERENCE_CLIENT_JAR`,
 `MC_REFERENCE_CLIENT_RESOURCE_DIR`, plus matching explicit JDK17 tools. The
 resource root contains the imported JAR's `lang` and `achievement` directories.
 The pinned LWJGL DLL profile is Windows-specific; it does not qualify original
-execution on Linux. Missing private prerequisites return 77 and count as skipped,
+execution on Linux. Missing private prerequisites return77 and count as skipped,
 never a parity pass. See the [reference commands](../tests/reference/client/notice/README.md)
 and [constructor/state scope](client/achievement-notice.md).
 
@@ -148,7 +232,10 @@ and [constructor/state scope](client/achievement-notice.md).
 The hosted workflow runs two CTest cases concurrently and allows four parallel
 Windows build jobs. The existing compiler, sanitizer, graphics, formatting and
 controller checks stay enabled. New revisions cancel superseded review checks;
-default-branch runs are allowed to finish. The grouping follows the documented
+default-branch runs are allowed to finish. Linux build jobs cache downloaded APT
+package archives and still run package installation and every existing check.
+Measured cold/warm cache results are pending; no new hosted speed claim follows
+from the cache configuration. The grouping follows the documented
 [workflow concurrency rules](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
 
 The [serial material run](https://github.com/frankischilling/minecraft-c/actions/runs/40244894912)
@@ -178,11 +265,11 @@ from the earlier complete material cohort below.
 ## Material immersion and acceleration
 
 The complete combined cohort passes all 268 Windows MSVC tests and all 250
-headless tests each on fresh Clang 18/GCC 13 builds with ASan, UBSan and leak
+headless tests each on fresh Clang 18/GCC13 builds with ASan, UBSan and leak
 checks. All 768 cases run without failures, errors, disabled tests or skips.
 The 1,464 frozen inputs contain 1,261 non-Markdown files; all 754 C/header files
-pass clang-format 18. Each product passes 1,944 material/Vec3 checks and all
-300 fresh original-client records plus 172 shared native server crosschecks.
+pass clang-format18. Each product passes 1,944 material/Vec3 checks and all
+300 fresh original-client records plus172 shared native server crosschecks.
 Both controller suites also pass with Python optimization enabled on Windows
 and Linux. Earlier World/Player/input/crafting/lighting comparisons pass again
 in the same source cohort. Windows includes real GL captures; these local
@@ -201,7 +288,7 @@ Enable `MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS` for the optional unchanged
 client comparison. Supply `MC_REFERENCE_CLIENT_JAR`,
 `MC_REFERENCE_CLIENT_LIBRARY_DIR` and matching JDK17 Runtime/Development tools.
 The controller creates fresh native and original runs, verifies their completed
-reports and compares all 300 client records plus 172 shared native server rows.
+reports and compares all 300 client records plus172 shared native server rows.
 The server evidence is paired bytecode and a native crosscheck; the comparison
 does not run an original server process. See the [contract](world/material-movement.md)
 for prepared inputs and remaining movement scope.
@@ -211,7 +298,7 @@ for prepared inputs and remaining movement scope.
 The complete integrated suite passes all 265 Windows tests and all 247 headless
 tests each on fresh sanitized Clang/GCC builds. Every case runs; there are no
 failures, errors, disabled tests or skips. The same 1,446 source inputs cover all
-three products, with all 745 C/header files formatted by clang-format 18.
+three products, with all 745 C/header files formatted by clang-format18.
 Linux coverage here is headless; the Windows suite includes actual GL captures.
 
 The integrated contracts use real World/Store/Registry/Player/input owners.
@@ -245,15 +332,15 @@ and [current results](status.md) for exact cohort qualifications.
 ## Local Player construction
 
 The earlier [constructor contract](client/player-construction.md) passes a complete
-Windows MSVC ABI rebuild and all 254 tests. Complete headless Clang 18/GCC 13
+Windows MSVC ABI rebuild and all 254 tests. Complete headless Clang 18/GCC13
 rebuilds each pass all 236 tests with ASan, UBSan and leak checks. Every recorded
 case runs without failures, disabled tests or skips. All 730 C/header files pass
-clang-format 18. The Linux profiles build with `MC_BUILD_CLIENT=OFF`; they do not
+clang-format18. The Linux profiles build with `MC_BUILD_CLIENT=OFF`; they do not
 qualify a new Linux desktop or audio-device run.
 
 Six focused tests per compiler include the new constructor, its 32 authored
 probe controls, the unchanged-original comparison and existing Entity/Class/
-Minecart regressions. Native constructor tests pass 736 checks. Fresh JDK 17
+Minecart regressions. Native constructor tests pass 736 checks. Fresh JDK17
 normal and read-only JDI runs verify 187 class origins and 1,862 Code bodies,
 six completed constructors, two actual failed receivers and 71 checkpoints.
 The [reference README](../tests/reference/entity/player/README.md) separates
@@ -262,23 +349,23 @@ of observed Math returns. Production constructors use their independent real
 application Math profile.
 
 Enable `MC_ENABLE_PLAYER_REFERENCE_TESTS` with `MC_REFERENCE_CLIENT_JAR` and
-explicit JDK 17 tools for the local original comparison. The public constructor
+explicit JDK17 tools for the local original comparison. The public constructor
 and probe tests use authored resources and require no original archive or JVM.
 Full Player/World gameplay remains unfinished.
 
 ## Crafting inventories and containers
 
 The [crafting contracts](inventory/crafting.md) pass three integrated tests on
-Windows MSVC 19.51 and sanitized Linux Clang 18/GCC 13. Native tests cover all
+Windows MSVC19.51 and sanitized Linux Clang 18/GCC13. Native tests cover all
 151 recipes and pass 254 outer inventory/container assertions per side on
 Windows and 253 on Linux; native allocation-budget branches depend on layout.
-Each product passes 48 strict protocol controls and fresh JDK 17 comparisons
+Each product passes 48 strict protocol controls and fresh JDK17 comparisons
 against both supplied original archives: 1,047 authored cases and 1,153 exact
 rows per side. Class/Code pins, actual class origins and initialization
 boundaries are checked. The final published input/pin files use LF endings.
 
 The complete frozen Windows suite passes all 251 cases without failures,
-disabled tests or skips. All 723 C/header files pass clang-format 18.
+disabled tests or skips. All 723 C/header files pass clang-format18.
 
 Use `MC_ENABLE_CRAFTING_REFERENCE_TESTS=ON` with both `MC_REFERENCE_CLIENT_JAR`
 and `MC_REFERENCE_SERVER_JAR` for the opt-in original comparison. The public
@@ -311,14 +398,14 @@ the earlier branch and passes after preserving `ALLOCATION_FAILED`. It uses a
 leaf allocation override with a real decoded cache and OpenAL context; the
 normal backend has no runtime fault-injection option.
 The complete frozen suites for this increment pass 248 Windows MSVC tests and
-250 tests each on Clang 18/GCC 13 with ASan/UBSan/leak checks. All tests run,
+250 tests each on Clang 18/GCC13 with ASan/UBSan/leak checks. All tests run,
 without failures or skips. Formatting covers all 707 C/header files.
 
 The frozen World/audio increment passes all 243 Windows MSVC tests and all
-245 tests each on Ubuntu Clang 18 and GCC 13 with ASan/UBSan and leak checks.
+245 tests each on Ubuntu Clang 18 and GCC13 with ASan/UBSan and leak checks.
 No test fails or skips. These runs include public/JDK tests and both optional
 unchanged-original WAV/CPU rendering comparisons. All 697 C/header files pass
-clang-format 18. Controller mirrors and 556 positive/2,011 negative lifecycle
+clang-format18. Controller mirrors and 556 positive/2,011 negative lifecycle
 controls pass. A final first-color-map-error preservation fix additionally
 passes `client.world_session`, `client.world_renderer` and
 `client.world_inspection` on all three compilers.
@@ -384,10 +471,10 @@ Linux CI requests software OpenGL under Xvfb; no actual vendor was measured.
 The new float/discrete option actions below are outside this checkpoint.
 
 The [sound resource foundation](client/sound.md#verified-native-scope) passes one
-Windows MSVC 19.51.36260.0 x64 Debug headless profile: 18,654 SoundPool, 581 file,
+Windows MSVC19.51.36260.0 x64 Debug headless profile: 18,654 SoundPool, 581 file,
 579 Vorbis, 43 integer-parser and 191 Random-profile checks. All five CTests,
 seven supervised stages and eleven final audits pass. Independent file-only
-readback consumes 14,410 files and rejoins all 1,404 physical source bodies,
+readback consumes14,410 files and rejoins all 1,404 physical source bodies,
 including 1,234 public members and 1,054 non-Markdown inputs. Formatting covers
 657 C/header files. Retained decoder inputs are authored zero PCM, including a
 mono-to-stereo chain and a real missing-page rejection. Four earlier local failed
@@ -407,7 +494,7 @@ the same path; the private Ogg copy now guards the null page pointer.
 Earlier bounded Ubuntu GCC ASan/UBSan failures locate libvorbis's negative Bark
 shift, last-band interpolation read and signed decode search-word shift. The
 corrected public driver passes 563 GCC checks, seven inputs and four exact
-zero-PCM outputs. Independent file readback verifies its 1,234-member copied
+zero-PCM outputs. Independent file readback verifies its1,234-member copied
 source, captures and closed PIDFD ledger. These focused diagnostics do not
 qualify the full platform. The later 692-case hosted result above includes the
 Ogg correction on all three compilers. A fresh corrected Ubuntu Clang ASan/UBSan
@@ -422,12 +509,12 @@ libvorbis. An exact private-copy multiplication correction passes a fresh
 Clang 18 ASan/UBSan run: 5,469 nonzero checks plus the existing 563 decoder
 checks. Independent readback verifies all 1,236 source members, four encoded
 inputs, four nonzero PCM outputs, exact chain joins and complete dependency
-copies. A fresh Windows MSVC 19.51.36260.0 x64 Debug headless run passes all six
+copies. A fresh Windows MSVC19.51.36260.0 x64 Debug headless run passes all six
 selected tests: the existing five counts remain unchanged, and the nonzero
 case passes 5,480 checks. All seven supervised stages and eleven final audits
-pass. Independent readback consumes 14,431 files and joins all 1,406 physical
+pass. Independent readback consumes14,431 files and joins all 1,406 physical
 source files, including 1,236 public members and 1,056 non-Markdown inputs.
-All 658 C/header files pass clang-format 18.1.3. The terminal report SHA-256 is
+All 658 C/header files pass clang-format18.1.3. The terminal report SHA-256 is
 `1a2a9ae0aa7e1fc4e20b9e8c764d1776b28faf10dabb4375a46b37ec334665cf`.
 Later result-documentation changes remain separate from this tested snapshot.
 Original PCM is not compared.
@@ -443,7 +530,7 @@ reuses the unchanged compiled helper and supplies only the actual authored
 encoded input. Both decoders return 8,192 bytes. Complete comparison finds
 four one-step differences among 4,096 signed16 samples, with no unmatched
 suffix and no tolerance. Independent evidence readback passes all 2,368 final
-file/tree checks; the comparison exits 1 for failed exact equality. It does not
+file/tree checks; the comparison exits1 for failed exact equality. It does not
 capture conversion-entry floats or locate the numerical cause.
 
 Earlier code checkpoint `adb573dbc6998dcd5fabf72f81e2342e0feb147c` passes
@@ -466,7 +553,7 @@ Code checkpoint `389b57361d9454b447c0f956cc39c5a1d32245b3` passes
 missing cases or skips. Formatting covers 630 C/header files. Controller
 mirrors and lifecycle interval checks pass. The synthetic checkout's complete
 tree equals the head tree. The preceding Windows build rejected the Font test's
-constant condition as C4127 under MSVC 19.44. A C17 compile-time assertion fixes
+constant condition as C4127 under MSVC19.44. A C17 compile-time assertion fixes
 that condition without relaxing warnings. The earlier image allocation-layout
 fix also remains covered.
 
@@ -512,7 +599,7 @@ tests and rows and complete read-only binary checks without native reruns.
 ## Startup settings and GameDirectory
 
 The App now loads one real GameSettings owner after Display and uses its GUI
-scale and initial anaglyph for the title. Explicit `--gui-scale 0` overrides a
+scale and initial anaglyph for the title. Explicit `--gui-scale0` overrides a
 loaded value; absence of that flag preserves the loaded value. Fresh Windows
 MSVC x64 Debug headless and client profiles pass these six selected CTests:
 
@@ -526,7 +613,7 @@ MSVC x64 Debug headless and client profiles pass these six selected CTests:
 | Client | `client.startup` | Nine App cases and eight exact decoded-pixel relations |
 
 Both profiles complete all seven stages, identical before/after test inventories
-and eleven independent final audits. The frozen family has 1,213 members,
+and eleven independent final audits. The frozen family has1,213 members,
 including 1,035 non-Markdown files and 644 C/header files. Source, SDK/tool,
 dependency, product, stream and capture-tree pins remain joined. Configure/build
 retain the explicit byte-pinned compiler-helper cleanup allowance; test trees
@@ -585,8 +672,8 @@ The [shared output writer](core/java-writer.md) passes 110,708 stream checks,
 19 real-file checks and five independent file checks per MSVC/GCC/Clang build.
 All 15 selected headless cases pass on each compiler, including the renamed
 temperature, LivingEntity and Dungeon regressions. Linux enables ASan/UBSan.
-The complete retained source matches checkpoint `389b573`'s 1,014 non-Markdown
-Git blobs; all 630 C/header files pass clang-format 18.
+The complete retained source matches checkpoint `389b573`'s1,014 non-Markdown
+Git blobs; all 630 C/header files pass clang-format18.
 
 The MSVC/GCC CTest commands returned zero and every test passed. Their
 controllers then rejected CTest's truncated successful Dungeon footer in the
@@ -606,7 +693,7 @@ ctest --test-dir build --output-on-failure -R '^core[.]java_writer(_file)?$'
 The [GameSettings reference](reference/game-settings.md) separately records
 16 original persistence cases on each of three charset/platform profiles.
 The later writer observer passes 25 transport controls on each compiler.
-Its finite Windows original/native comparison matches 13,391 fields in 68
+Its finite Windows original/native comparison matches13,391 fields in 68
 scenarios, with all 14 corruption controls rejected. The
 [writer contract](core/java-writer.md#finite-original-comparison) defines the
 matched projection and the unpaired Thread/private-state evidence.
@@ -618,9 +705,9 @@ authored files, complete output and receipts below the build directory.
 At the earlier persistence-only checkpoint, both pass on MSVC and sanitized
 GCC/Clang: six actual CTest cases, with 481
 native interface checks, six independent file checks and 26 observer transport
-controls per compiler. All 635 C/header files pass clang-format 18. The
-1,199-file tested cohort contains 1,024 non-Markdown files. A later independent
-file audit rehashes 1,706 artifacts, including all retained output trees and
+controls per compiler. All 635 C/header files pass clang-format18. The
+1,199-file tested cohort contains1,024 non-Markdown files. A later independent
+file audit rehashes1,706 artifacts, including all retained output trees and
 the actual products. These focused native results and the later 669-case
 hosted checkpoint retain their separate source and execution records.
 
@@ -682,7 +769,7 @@ comparison. The later hosted `2afd39a` checkpoint passes these native actions on
 MSVC and sanitized GCC/Clang within all 683 cases, with 645-file formatting.
 Earlier labels and App results retain their separate source and scene scopes.
 
-The actual tested source contains 1,215 public members, 1,037 non-Markdown
+The actual tested source contains1,215 public members, 1,037 non-Markdown
 inputs and 645 C/header files. All 645 pass formatting before target execution
 with unchanged source. A later file-only readback rehashes 2,788 retained members,
 eight products, two capture trees, raw/JUnit records, identical test inventories
@@ -726,7 +813,7 @@ independent file checks, 26 probe controls, 883 option checks, 1,241 label check
 463 Assets checks and 4,404 Translation checks. Each profile completes all seven
 stages, including byte-identical before/after test inventories, and all ten
 independent final audits. Both use the same 1,206 public files and 1,376 physical
-source inputs. All 641 C/header files pass clang-format 18.1.3.
+source inputs. All 641 C/header files pass clang-format18.1.3.
 
 Configure and build retain the admitted pinned compiler-helper cleanup
 allowance; all test trees exit naturally. Complete streams, JUnit, file receipts
@@ -748,7 +835,7 @@ Controls UI execution has been added.
 
 The renamed source passes all 619 public/JDK tests: 205 MSVC, 207 GCC and
 207 Clang, with no failures or skips. Linux enables ASan/UBSan. All 587 C/header
-files pass clang-format 18; controller mirrors and 556 positive/2,011 negative
+files pass clang-format18; controller mirrors and 556 positive/2,011 negative
 lifecycle interval controls pass on both platforms. The retained 1,130-file
 source copy matches the naming checkpoint's non-Markdown inputs.
 
@@ -787,7 +874,7 @@ Add `-C Debug` for a Visual Studio build. These tests need no original archives.
 At `ef1434015420678559cfa3d3b2f21018c5b733ce`, the complete local public/JDK suites
 passed 205 MSVC, 207 GCC and 207 Clang tests, 619 in total, with no failures or
 skips. Linux builds enabled ASan and UBSan. All 587 C/header files passed
-clang-format 18; controller mirrors and all 556 positive/2,011 negative interval
+clang-format18; controller mirrors and all 556 positive/2,011 negative interval
 controls passed on Windows and Linux. The retained project copy matched that
 checkpoint's sources. Its [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40052114598)
 also passed all four jobs, all 619 tests and 587-file formatting. These results
@@ -844,13 +931,13 @@ ctest --test-dir build --output-on-failure -R '^reference[.]population_dedicated
 ```
 
 The native child has a 120-second deadline, separate 4 MiB stream bounds and a
-watched 64 MiB JSON bound. Public replay has a 300-second CTest limit; the optional
-fresh reference test has a 600-second limit. Capture receipts record child
+watched 64 MiB JSON bound. Public replay has a300-second CTest limit; the optional
+fresh reference test has a600-second limit. Capture receipts record child
 completion, termination, reaping and retained files.
 
 The [dedicated evidence](reference/dedicated-world-construction.md) distinguishes
 the inherited schema-1 original fixture from fresh schema-2 observations and
-requires native schema 2 throughout. Actual held Store tokens match the session
+requires native schema2 throughout. Actual held Store tokens match the session
 files at all eighteen boundaries on both sides. The eighteen Python tests and
 eight actual-native corruption controls pass.
 
@@ -933,7 +1020,7 @@ Code checkpoint `4414dfd` passes complete local suites of 188 MSVC, 190 GCC and
 190 Clang tests, 568 total, with no failures, errors or skips. Every compiler
 runs both fresh original population profiles, both public native replays and
 the prepared plant comparisons. Linux enables ASan, UBSan and leak checks.
-All 550 C/header files pass clang-format 18; all three hosts pass controller
+All 550 C/header files pass clang-format18; all three hosts pass controller
 mirrors and 556 positive/2,011 negative lifecycle-interval controls.
 
 The independent [source and capture audit](reference/natural-population.md#committed-checkpoint)
@@ -1003,7 +1090,7 @@ and 196 Clang, without failures, errors or skips. Linux sanitizers and leak
 checks are enabled. All four fresh population profiles, all four public replays,
 plant comparisons, formatting and mirror/interval controls pass. The
 [independent audit](reference/population-full-save.md#committed-checkpoint)
-verifies 1,057 source files, 24 fresh/public captures and 24 resource-variant
+verifies1,057 source files, 24 fresh/public captures and 24 resource-variant
 pairings. Hosted verification is tracked in its [separate run](https://github.com/frankischilling/minecraft-c/actions/runs/39951520244).
 Five supplied-archive comparisons per compiler retain their local scope.
 
@@ -1033,7 +1120,7 @@ ctest --test-dir build --output-on-failure -R '^reference[.]population_named_dat
 The [committed checkpoint](reference/population-named-data.md#committed-checkpoint)
 passes all 601 local executions on MSVC/GCC/Clang, with Linux sanitizers and
 leak checks, 559-file formatting and all mirror/interval controls. The
-independent audit verifies 1,073 source files, 30 fresh/public captures and
+independent audit verifies1,073 source files, 30 fresh/public captures and
 30 resource-variant pairings. Hosted public/JDK checks pass 583 executions;
 the eighteen supplied-archive comparisons retain their local scope.
 Map updates, trackers and packets, nonempty Players, other subtypes, original
@@ -1055,7 +1142,7 @@ defines the projection and its limits.
 Registry, mutation and publication services. The separate
 `world.plant_lifecycle_replay` compares those native projections with public
 fixtures derived from original captures. Replay covers all 59 cases and twelve
-semantic corruption guards plus 154 malformed-input guards per side, including
+semantic corruption guards plus154 malformed-input guards per side, including
 altered maps, drops, every Random-tail field, request order and strict field types. Both tests run without Java or original archives:
 
 ```sh
@@ -1086,10 +1173,10 @@ fresh test directories and retains its report under the build's
 `reference-plant-lifecycle` directory. See the [plant contract](world/plants.md)
 for implemented callbacks and remaining gameplay work.
 
-At the plant checkpoint, complete local suites pass 183 MSVC, 185 GCC and 185
+At the plant checkpoint, complete local suites pass183 MSVC, 185 GCC and 185
 Clang tests, 553 executions with zero failures, errors or skips. Each suite includes the optional original
 plant comparison; normal hosted builds omit those three archive-dependent tests.
-Native plant contracts pass 17,595 checks per compiler, including two adjacent
+Native plant contracts pass17,595 checks per compiler, including two adjacent
 127-block columns removed recursively. Linux enables ASan, UBSan and leak
 checks. All three hosts pass controller mirrors and 556 positive/2,011 negative
 lifecycle-interval controls. Clang-format18 checks all 549 C/header files.
@@ -1108,11 +1195,11 @@ tool versions, retained input/stream checks and the local-original distinction.
 ## Earlier Minecart inventory, NBT and storage validation
 
 Full local suites pass all 180 MSVC, 182 GCC and 182 Clang tests, 544 total,
-with zero failures, errors or skips. The C17 profiles use MSVC 19.51.36260.0,
-GCC 13.3 and Clang 18.1.3; Linux enables ASan, UBSan and leak checks. Each host
+with zero failures, errors or skips. The C17 profiles use MSVC19.51.36260.0,
+GCC13.3 and Clang18.1.3; Linux enables ASan, UBSan and leak checks. Each host
 also passes controller mirrors and lifecycle intervals, including 556 positive
 and 2,011 negative interval checks with zero failures. All 540 C/header files
-pass clang-format 18.
+pass clang-format18.
 
 | Native case | Checks per host | Source cases |
 | --- | ---: | ---: |
@@ -1147,7 +1234,7 @@ validation result.
 ### Hosted checkpoint and CMake E probes
 
 Hosted `5ddb4f0` run `39855800472` passed 543 of 544 CTests. Windows passed
-179/180, with the storage driver's redirected Python 3.12.10 `python3.exe`
+179/180, with the storage driver's redirected Python3.12.10 `python3.exe`
 refused before native launch; GCC and Clang passed 182 each. All 540-file
 formatting and Linux mirror/interval checks passed. Windows mirror/interval
 checks were skipped after the failure.
@@ -1170,8 +1257,8 @@ does not cover the hosted file-alias case. The CMake-only fix is committed at
 ### Corrected hosted checkpoint
 
 The [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/39859975602)
-at `dd560492` passes all 544 CTest executions: 180 MSVC 19.44.35229.0,
-182 GCC 13.3.0 and 182 Clang 18.1.3, with zero failures, errors or skips.
+at `dd560492` passes all 544 CTest executions: 180 MSVC19.44.35229.0,
+182 GCC13.3.0 and 182 Clang18.1.3, with zero failures, errors or skips.
 Storage passes on every host. Formatting checks all 540 C/header files;
 all three hosts pass mirrors and 556 positive/2,011 negative lifecycle
 interval controls. All four actual checkouts share the merge tree matching
@@ -1202,7 +1289,7 @@ Throwable/native errors are not equated. The
 [finite evidence record](reference/power.md#validation-boundary) defines the
 seven fields, source binding, hashes and remaining exclusions.
 
-The [rail case](world/rails.md) passes 814 checks across 144 literal constructed
+The [rail case](world/rails.md) passes 814 checks across144 literal constructed
 cases per host. Two real GAME Worlds and two loaded Chunks exercise topology,
 search, reached lifecycle callers, namespace order and retained partial writes.
 Exact allocation checks account for actual persistent lighting records and
@@ -1238,7 +1325,7 @@ lazy invalid-TileEntity cleanup and hold/pool preservation.
 | Case | Checks per host |
 | --- | ---: |
 | `world.power` | 7,593 |
-| `world.rails` | 814 across 144 cases |
+| `world.rails` | 814 across144 cases |
 | `world.rail_errors` | 1,444 across 94 cases |
 | `world.snow` | 392 |
 | `block.horizontal_directions` | 359 |
@@ -1268,7 +1355,7 @@ The tested source-map SHA-256 is
 This is a canonical file-map digest, not a Git commit or tree ID. Windows and
 native Linux source bytes were also independently rehashed after closure.
 Validation prose is added afterward; implementation, test and driver bytes
-remain unchanged. All 515 C files and headers pass clang-format 18. These are
+remain unchanged. All 515 C files and headers pass clang-format18. These are
 public regression results, not complete original acceptance.
 
 Earlier Linux runs using `/mnt/c` sources each hit the existing 180-second
@@ -1278,7 +1365,7 @@ all 76 cases in 15.9 seconds. Fresh Linux source/build trees pass without changi
 test limits. Failed mounted-source attempts and their complete streams remain
 retained; they are not relabeled as successful runs.
 
-The separate original tick family qualifies 114 inputs and 228 snapshots per
+The separate original tick family qualifies114 inputs and 228 snapshots per
 side. At source `eab4533`, MSVC, GCC and Clang replays pass complete native
 protocol qualification against the same original family. All 114 literal inputs
 and normal-return versus failure classifications match per side on each compiler.
@@ -1311,7 +1398,7 @@ initialization; production bytes are unchanged. Independent audits join retained
 source snapshots, compiled products and all five captures per host, plus the
 single-case recheck. All 476 C files and headers pass the requested format.
 Full local suites were not run because retained builds exceeded available disk
-space. Hosted CI runs the configured 167 MSVC and 169 per Linux compiler cases;
+space. Hosted CI runs the configured167 MSVC and 169 per Linux compiler cases;
 that full-suite scope is distinct from these focused local results.
 
 The [movement source map](reference/entity-movement.md) records native reproduction
@@ -1322,7 +1409,7 @@ receipts and missing historical before-pin objects remain explicit.
 The [retained-original native replay](reference/entity-movement.md#retained-original-native-replay)
 passes all 83,763 selected rows on each of MSVC and sanitized GCC/Clang: 59,654
 client and 24,109 intact server rows, including 10,874/4,741 exact failure
-prefixes. Each server process also executes 11,639 unobserved state-only inputs
+prefixes. Each server process also executes11,639 unobserved state-only inputs
 to preserve pool history. New captures retain every raw byte through gzip,
 with raw/encoded hashes, decompression/CRC and natural-zero ownership closure.
 Probe objects relink unchanged qualified core archives; a subsequent Python-only
@@ -1454,7 +1541,7 @@ Fresh qualification checks all 742 selected source inputs, 254 dependency pins,
 actual Snow process/stream/executable joins. Linux capture collection and a
 separate fresh inventory/hash audit run on the native filesystem. Failed earlier
 compile/test attempts and their evidence remain retained. All 438 C source/
-header files pass clang-format 18. These are native constructed scenarios;
+header files pass clang-format18. These are native constructed scenarios;
 saved Snow regions are fixture inputs, and no fresh original snow execution,
 original/native replay or arbitrary recursive resource qualification follows.
 
@@ -1513,7 +1600,7 @@ The [live save integration](world/saving.md) passes all 144 configured MSVC and
 146 GCC/Clang cases with zero skips and local JDK comparisons enabled. Linux
 uses ASan/UBSan and leak checks with fresh byte-verified source/dependency copies.
 Each host retains 678 unchanged selected inputs, 254 zlib pins, 163 products and
-32 captures. Formatting passes all 388 C files/headers with clang-format 18.
+32 captures. Formatting passes all 388 C files/headers with clang-format18.
 The new `world.saving` case passes 1,003 checks per host, including actual saved
 arrays/records, provenance, session and late errors, retry freshness and explicit
 native coordinator reload on the same World. It does not establish natural
@@ -1645,7 +1732,7 @@ full keys, immediate dispatch, separate queue failures and ownership. All twelve
 loaded known-empty records finish actual GAME save/unload maintenance with
 timestamps inside the child execution interval. Each host retains 624 selected
 inputs and 51 products. Separate original client/base-server experiments each
-complete 18 calls and retain 39 full contexts; all 18 framing controls reject per
+complete 18 calls and retain39 full contexts; all 18 framing controls reject per
 side. The optional present-stone call was skipped on both sides. These original
 captures have no native replay or complete gameplay/persistence qualification.
 
@@ -1672,7 +1759,7 @@ fixture replay, without a new executed-original Chunk comparison or complete
 GAME generation, propagation, population or save interoperability acceptance.
 
 The [concrete World height and lighting contracts](world/runtime-lighting.md)
-pass 177 height and 2,000,382 queue checks within 38 selected cases on MSVC,
+pass177 height and 2,000,382 queue checks within38 selected cases on MSVC,
 GCC and Clang. Linux uses ASan/UBSan and leak detection. The queue unit performs
 one million-and-first actual append, verifies the complete ordered bootstrap
 and overflow transcript, and tests real nonempty pointer-array growth at a
@@ -1717,7 +1804,7 @@ MSVC, GCC and Clang, with Linux ASan/UBSan and leak detection. This includes
 recorded Dimension, registry, recipe/Stack and statistic graph replays.
 All 559 code/tool/fixture inputs match before/after and across retained host
 copies; 22 products per host are retained. Formatting passes 284 C/header files.
-The array unit now reports 11,312,060 checks: the added native borrow counter
+The array unit now reports11,312,060 checks: the added native borrow counter
 changes its allocation-budget search, while every selected assertion passes.
 No new original World, fresh-generation or full population/persistence result
 follows from these constructed cache baselines.
@@ -1732,7 +1819,7 @@ catalogs and both numeric Stack projections match on MSVC/GCC/Clang using
 imported and synthetic resources. Thirty-six historical observer replays remain
 byte-equal. All 555 code/tool/fixture inputs agree before/after, across retained
 host source copies and with that checkpoint's source; 32 build products per host are
-retained. clang-format 18 checks 280 C/header files. This selected run qualifies
+retained. clang-format18 checks 280 C/header files. This selected run qualifies
 the recorded initialization scenarios; full World startup, gameplay,
 population and persistence acceptance remain unfinished.
 
@@ -1757,7 +1844,7 @@ noise, climate and terrain comparisons remain local.
 The preceding [statistic-array addition](statistics/registry.md) passes 23 selected
 cases on native Windows MSVC and 25 on Linux GCC/Clang with ASan/UBSan and leak
 detection. Its units report 14,564 statistic checks and 3,841,912 array checks;
-each explicit Linux locale regression reports 14,565 statistic checks.
+each explicit Linux locale regression reports14,565 statistic checks.
 All six numeric array/map/list graphs match actual original prefixes from 18
 JDI captures. The [formatter](reference/string-format.md) matches 275 captured
 cases, 109 typed error operands and all 1,114,112 uppercase code-point values.
@@ -1784,7 +1871,7 @@ units, both `registry_base_observation` comparisons, `block.material` and
 `core.java_random_profile`. Linux uses ASan/UBSan and leak checks. Item has
 530,295 checks covering both entry orders, all 32,000 array cells, subtype and
 tool identities, five real Random owners, unchanged retries and actual
-allocation-budget publication boundaries. Block has 102,659 checks, including
+allocation-budget publication boundaries. Block has102,659 checks, including
 the retained class/PC of a nested failure after another class fails.
 The finite original comparisons match all
 [33,064 Item rows](reference/item-registry.md) and
@@ -1802,7 +1889,7 @@ in-memory typed codec round trip. All 377 code/tool/fixture inputs remain
 unchanged across these runs. No fresh complete-suite or new executed-original
 claim is attached to this selected addition.
 
-A following MSVC 19.44 compatibility change scopes C4200 suppression to the
+A following MSVC19.44 compatibility change scopes C4200 suppression to the
 standard C17 flexible-array declaration and evaluates material-test conditions
 through a local boolean. The material unit, SavedData unit/replay and two World
 constructor cases pass on MSVC (0.61s), GCC (0.69s) and Clang (0.70s), with Linux
@@ -1815,7 +1902,7 @@ The [World construction checkpoint](world/construction.md) at `e227e57` passes a
 cases on native MSVC (103.08s), Linux GCC (243.25s) and Linux
 Clang (250.72s). Linux uses ASan/UBSan and leak checks; Windows uses
 strict Debug without sanitizers. All 377 code/tool/fixture inputs remain
-unchanged across the runs and retained copies. clang-format 18 passes all
+unchanged across the runs and retained copies. clang-format18 passes all
 196 C/header files.
 
 The five new native cases cover 5,548 prefix, 4,318 GAME World, 348 typed Info,
@@ -1840,7 +1927,7 @@ Clang (139.38s), with Linux ASan/UBSan and leak checks. Its new unit passes
 196,823 checks per compiler. The memory replay matches 78 original-derived
 rows, rejects fourteen altered outputs and executes four protocol refusals.
 All 352 code/tool/fixture inputs remain unchanged across these runs;
-clang-format 18 passes all 176 C/header files. The declared public inventory
+clang-format18 passes all 176 C/header files. The declared public inventory
 was then 91; that selected run made no fresh complete-suite or hosted-CI
 claim. Original disk captures and native disk contracts have distinct limits.
 
@@ -1849,14 +1936,14 @@ passes all 89 public cases on native MSVC (126.50s), Linux GCC (274.28s) and
 Linux Clang (272.83s). Linux uses ASan/UBSan and leak checks; Windows uses strict
 Debug without sanitizers. Its new `world.runtime_info_bindings` case passes
 173 checks, initially selected and again in each complete run. All 339
-code/tool/fixture files stay unchanged across the runs. clang-format 18 passes
+code/tool/fixture files stay unchanged across the runs. clang-format18 passes
 all 172 C/header files. This matrix refreshes the existing Info unit and graph
 replay, without adding a new original-game capture or hosted-CI result.
 
 At the Entity construction checkpoint, all 85 public CTest cases passed on
 native MSVC (114.62s), WSL GCC (244.09s) and WSL Clang (246.16s). Linux used
 ASan/UBSan and leak checks; Windows used strict Debug without sanitizers.
-After that matrix, test field macros were adjusted for stable clang-format 18
+After that matrix, test field macros were adjusted for stable clang-format18
 output, retaining all 63 ordered selectors. The 1,276-check Entity unit was
 rebuilt and passed again on all three compilers. No production body changed
 between those runs. These runs exclude opt-in original-game comparisons;
@@ -1906,9 +1993,9 @@ above; that increment brought the declared public inventory to 86 cases.
 | `world.scheduled_membership` | 329 native full-key collision, duplicate identity, held-alias, time-wrap, growth-budget and output-preservation checks; Linux GCC/Clang with sanitizers and Windows MSVC without sanitizers | Membership layer only; no world scheduler, original comparison or forced allocator failure |
 | `world.scheduling` | 424 checks using actual client Worlds, shared sequence owners, full keys, immediate ticks, RAW Info, separate F/E failure effects and twelve actual maintenance saves; MSVC/GCC/Clang with Linux sanitizers | Client native contracts; separate original observations have no native replay; tick draining, nonempty tick descendants and scheduled persistence remain unfinished |
 | `world.scheduled_ordered` | 940 native identity, successor-hold, deletion-history, mutable-key, limit and output-preservation checks on GCC/Clang/MSVC | Finite collection contracts; no world drain/reentry or forced allocator/hold failure |
-| `world.scheduled_ordered_replay` | All 13,584 captured JDK public-API steps match GCC/Clang/MSVC; immutable expected trace and provenance are checked | Captured Temurin 17 profile with project-owned comparable records; no original game classes, Java 6 or whole-world qualification |
+| `world.scheduled_ordered_replay` | All 13,584 captured JDK public-API steps match GCC/Clang/MSVC; immutable expected trace and provenance are checked | Captured Temurin17 profile with project-owned comparable records; no original game classes, Java6 or whole-world qualification |
 | `tools.scheduled_ordered_protocol` | 101 constructed native protocol cases pass on GCC/Clang/MSVC, covering numeric/ID bounds, line endings, control bytes, the 160-byte line limit and exact failure output | Probe boundary only; no JDK/assets, operation-limit stress or world behavior |
-| `core.java_gaussian_replay` | All 14,013 immutable JDK result/full-owner-state events match GCC/Clang with sanitizers and native MSVC; includes seeded Gaussian histories and positive-finite strict log/sqrt | Captured Windows Temurin 17 profile; no constructor entropy, clocks, original game classes or exhaustive input claim |
+| `core.java_gaussian_replay` | All 14,013 immutable JDK result/full-owner-state events match GCC/Clang with sanitizers and native MSVC; includes seeded Gaussian histories and positive-finite strict log/sqrt | Captured Windows Temurin17 profile; no constructor entropy, clocks, original game classes or exhaustive input claim |
 | `core.java_gaussian` | 85 captured-result/cache contracts pass on GCC/Clang/MSVC, including stale bits after reseed, signed zero, no-draw hits, owner copies and strict-math boundaries | Explicit seeds and admitted FP environment only; no constructor entropy or arbitrary math-input claim |
 | `tools.java_gaussian_protocol` | 157 exact native cases pass on GCC/Clang/MSVC: seed/ID/bound limits, malformed math, line endings/control bytes, 160/161-byte boundaries, full cache snapshots and exact rejection prefixes | No operation-limit stress, changed-FP experiment, JDK or original-game execution |
 | `platform.nanotime` | 172 Windows / 173 Linux checks pass on MSVC/GCC/Clang: exact conversions, native OS brackets, unchanged outputs/clock storage and controlled unsupported MXCSR states | Native clock contracts; no original nanoTime/QPC conversion or timing-performance proof |
@@ -2041,17 +2128,17 @@ python tests/tools/cache/check_lifecycle_intervals.py
 ```
 
 It compiles the validator's actual interval checks and verifies their operation,
-role and profile bindings. The observed dedicated 101-chunk profile permits a
+role and profile bindings. The observed dedicated101-chunk profile permits a
 600-second helper interval, matching its controller budget. Other profiles and
 control, preparation and constructor intervals retain their 180-second bound.
 The check also rejects events outside their own sampled interval. CI runs it
 separately from CTest; full original capture validation remains required.
 
-NBT comparisons require JDK 11 or newer and both pinned supplied JARs. Enable
+NBT comparisons require JDK11 or newer and both pinned supplied JARs. Enable
 `MC_ENABLE_NBT_REFERENCE_TESTS` and set `MC_REFERENCE_CLIENT_JAR`,
 `MC_REFERENCE_SERVER_JAR` and `MC_REFERENCE_TESTED_COMMIT` to the exact source
 commit used to build the C probe. Missing, mismatched or unsupported prerequisites
-produce exit 77 and skipped status, not parity success. The manifest records
+produce exit77 and skipped status, not parity success. The manifest records
 an omitted commit as unrecorded. Comparison execution errors return 1. Reports
 replace old running/unavailable/fail results; output paths containing inputs or
 sources are refused. See [the original-class procedure](reference/nbt.md).
@@ -2086,7 +2173,7 @@ the shared client/server cases. See [biome evidence](reference/biome.md) and
 Overworld density/base comparisons use `MC_ENABLE_DENSITY_REFERENCE_TESTS` with
 those same supplied-JAR/JDK/commit settings. The helper constructs real untouched
 original world contexts in fresh ignored directories, then fresh Overworld generators.
-It refreshes each original manager's 16?16 processed climate before sampling.
+It refreshes each original manager's16?16 processed climate before sampling.
 Full constructor state, retained spans, exact double bits and base bytes must
 agree between C/client, C/server and client/server. The internal original base
 pass density is checked against the separately observed density. See
@@ -2159,10 +2246,10 @@ Complete unpublished Overworld generation uses `MC_ENABLE_GENERATION_REFERENCE_T
 and the same JDK17+/`jdk.jdi`, supplied-JAR and exact-source settings. Its C target
 is `mc_overworld_generation_probe`; the opt-in test is `reference.overworld_generation`.
 The verified corpus retains one fresh generator through nine ordered calls for
-each seed 23, 24, 26 and 51, including repeated, negative, packed-key-alias,
+each seed23, 24, 26 and 51, including repeated, negative, packed-key-alias,
 world-border and accepted cave-domain endpoint coordinates. It compares complete
 data, queues, climate/scratch, all 82 terrain layers and separate Random
-continuations, plus 1024 ordered height queries per call. Each original traced
+continuations, plus1024 ordered height queries per call. Each original traced
 run needs a byte-equal untouched control. See [generation evidence](reference/generation.md)
 and the [generation contract](world/generation.md) for exact capture hashes,
 source attribution and observation bounds. The measured server context is base
@@ -2185,7 +2272,7 @@ complete 80-case public suite on native MSVC strict Debug and Linux GCC/Clang
 with ASan/UBSan and leak checks. Windows runs use no sanitizers. This checkpoint
 does not include opt-in original-game comparisons.
 
-Both capture scripts require the pinned Windows Temurin 17.0.17 installation
+Both capture scripts require the pinned Windows Temurin17.0.17 installation
 and fresh output directories. Scalar capture compares three complete JVM-mode
 outputs; constructor capture records one instrumented `-Xint` execution whose
 clock samples change under debugger pauses. Its full nanoTime returns are not
@@ -2226,15 +2313,15 @@ The [lifecycle ledger](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
 binds actual CTest rows, manifests, inputs, native build/executable bytes,
 sanitizer flags, independent audits and hosted results to the source.
 
-Dedicated `unload101` alone has a 600-second controller/660-second exporter
-allowance. Other observed profiles retain 300/360 seconds, with unchanged
+Dedicated `unload101` alone has a600-second controller/660-second exporter
+allowance. Other observed profiles retain300/360 seconds, with unchanged
 180-second control/preparation process limits. Complete evidence and every other
 bound remain required. A timeout is failed observation, never native parity.
 
 The controller now retains each serialized JDI object mirror through the session,
-with a 32768-mirror bound. The standalone regression above passed both marker and
+with a32768-mirror bound. The standalone regression above passed both marker and
 pre-label observation cases on Windows JDK17 and Linux JDK21, including proved
-disposal of 128 separate control mirrors and capacity/duplicate-label checks.
+disposal of128 separate control mirrors and capacity/duplicate-label checks.
 The preceding v7 matrix remains excluded: Windows passed 92 tests; GCC passed 91
 and failed 1; Clang passed 90, failed 1 and skipped 1. Its failures are recorded in
 the [v7 history](reference/lifecycle.md#excluded-v7-attempt). The v8 matrix also
@@ -2260,7 +2347,7 @@ original/control captures or independent exact-source audits.
 Expanded source `28a55b52c001c4c114a11ca7df844fc1f286d328` passes all 56
 selected tests without skips on native MSVC19.51 and WSL GCC13.3/Clang18.1,
 with Linux ASan/UBSan. The suite has 47 public tests, the numerical Java oracle
-and eight original comparisons. Independent audit verifies 168 actual passed
+and eight original comparisons. Independent audit verifies168 actual passed
 rows, complete callback projections/controls, exact callback source objects,
 source attribution for all 24 original manifests and the archived logs.
 [Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39089309334)
@@ -2325,13 +2412,13 @@ audit compares 800 complete arrays to retained original records, including all
 three fresh runs. The report audit verifies 660 fingerprints and the tested
 source snapshot. See [chunk evidence](reference/chunk.md) for hashes and scope.
 
-Chunk contract, nibble and full-fixture units pass 101534, 414 and 335 checks.
-The chunk-data helper has 12 public guards, including renamed-source and
-injected-compiler-option regressions. The nibble helper has 18 after adding a
+Chunk contract, nibble and full-fixture units pass101534, 414 and 335 checks.
+The chunk-data helper has12 public guards, including renamed-source and
+injected-compiler-option regressions. The nibble helper has18 after adding a
 temporary-directory alias regression. Canonicalizing the synthetic fixture
 root fixes the Windows short-path mismatch; both successful and unavailable
 captures preserve their expected results. All 18 guards pass on native
-Python 3.14 and WSL Python 3.12, with Windows short paths also checked directly.
+Python3.14 and WSL Python3.12, with Windows short paths also checked directly.
 The C and comparison sources are unchanged from the recorded original runs.
 Clang-format18 checks 61 C/header files. Public CI runs 28 tests per compiler,
 without private JARs or world captures. Integration results belong in
@@ -2350,7 +2437,7 @@ Independent review also verifies the source Git objects and 634 current file
 hashes across the six new reports. See [cave evidence](reference/caves.md).
 
 The natural/protected units pass 2021631/2917405 checks and both helper suites
-pass 18 guards per toolchain. Isolated native MSVC AddressSanitizer runs also
+pass18 guards per toolchain. Isolated native MSVC AddressSanitizer runs also
 pass. Clang-format18 checks 50 C/header files; the native testing-disabled build
 produces the three libraries without Python or Java discovery. Public CI runs
 23 tests per compiler; integration results belong in [status](status.md).
@@ -2388,7 +2475,7 @@ independently in all three pairings, including complete fields, blocks,
 materials, climate, constructor state and live Random continuation. All
 equivalence, preservation, suffix and retained-apply controls agree.
 
-Public surface tests pass 1114102 checks and all six helper guards, including
+Public surface tests pass1114102 checks and all six helper guards, including
 filesystem links and completed-mismatch precedence, run without skips. Seven
 fixed fixtures are traced to paired untouched originals; constructed C controls
 separately exercise state-machine boundaries. Clang-format18 checks 36 C/header
@@ -2402,7 +2489,7 @@ Overworld density/base implementation source `1817417e8891e93ed5dbc205c9d1f6d8e6
 all 21 configured tests on native Windows/MSVC and WSL GCC/Clang without skips:
 fourteen public checks, the numerical Java oracle and six original comparisons.
 All eighteen original manifests identify that source, pass status and empty
-errors, with matching executable hashes. Density's 150 snapshots match in all
+errors, with matching executable hashes. Density's150 snapshots match in all
 three pairings, including 341732 binary64 values, 1427456 permutation entries,
 600 continuation longs, 4358904 block bytes and 31744 biome identities per side.
 All state/equivalence/preservation/suffix controls and 82 original q/scratch
@@ -2445,7 +2532,7 @@ Observed on 2026-10-17, Intel Core i9-10900F, x86-64:
 
 | Environment | Toolchain and configuration | Result before integration |
 | --- | --- | --- |
-| Native Windows 10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 33 CTests pass at the cave source, with explicit Temurin17 |
+| Native Windows10 Home 10.0.19045 | Visual Studio 18 Community, MSVC19.51.36260.0, CMake4.2.3, Ninja, Debug, `/W4 /WX /fp:strict`, Python3.14.3 | All 33 CTests pass at the cave source, with explicit Temurin17 |
 | Ubuntu WSL2, Linux6.6.87.2, Ubuntu24.04 userspace | GCC13.3.0, CMake3.28.3, Ninja, Debug, ASan/UBSan, strict diagnostics, Python3.12.3 | All 33 CTests pass at the cave source with JDK21 |
 | Same Linux environment | Clang18.1.3, same diagnostics/sanitizers | All 33 CTests pass at the cave source with JDK21 |
 

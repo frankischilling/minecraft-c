@@ -30,6 +30,9 @@ bool mc_tick_code(mc_entity *, mc_registry_classes *, mc_entity_tick_error *, un
 mc_entity_status mc_tick_finish(mc_entity_tick_error *, mc_entity_tick_error *);
 bool mc_tick_flag(mc_entity *, int32_t, bool, mc_entity_tick_error *);
 bool mc_tick_suffocating(mc_entity *, bool *, mc_entity_tick_error *);
+/* Held canonical Item caller only; no public Player admission is widened. */
+bool mc_tick_item_base_body(mc_entity *, mc_registry_classes *, const mc_entity_tick_limits *,
+                            mc_entity_tick_error *);
 
 static inline float mc_tick_fadd(float a, float b) {
     return _mm_cvtss_f32(_mm_add_ss(_mm_set_ss(a), _mm_set_ss(b)));

@@ -27,7 +27,12 @@ option(MC_ENABLE_PLAYER_TRAVEL_REFERENCE_TESTS "Compare Player travel with suppl
 option(MC_ENABLE_PLAYER_BASE_TICK_REFERENCE_TESTS "Compare Player environment ticks with supplied client JAR" OFF)
 option(MC_ENABLE_INVENTORY_TICK_REFERENCE_TESTS "Compare inventory updates with supplied client JAR" OFF)
 option(MC_ENABLE_PLAYER_ACTION_REFERENCE_TESTS "Compare Player action bodies with supplied client JAR" OFF)
+option(MC_ENABLE_ITEM_PICKUP_REFERENCE_TESTS "Compare Inventory insertion and Item pickup with supplied client JAR" OFF)
+option(MC_ENABLE_ITEM_TICK_REFERENCE_TESTS "Compare Item updates with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_ACTIVE_TICK_REFERENCE_TESTS "Compare inherited Player ticks with supplied client JAR" OFF)
+option(MC_ENABLE_PARTICLE_REFERENCE_TESTS "Compare pickup particles with supplied client JAR and observed JDK17 constructor inputs" OFF)
 option(MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS "Compare Player statistic dispatch with supplied Windows client" OFF)
+option(MC_ENABLE_WATER_ANIMATION_REFERENCE_TESTS "Compare water texture animation with supplied client JAR" OFF)
 option(MC_ENABLE_NOTICE_REFERENCE_TESTS "Compare achievement notice with supplied Windows client" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
@@ -388,6 +393,21 @@ add_library(mc_simulation STATIC
     src/entity/action/push.c
     src/entity/action/atan.c
     src/entity/action/angle.c
+    src/entity/item/pickup.c
+    src/entity/item/tick.c
+    src/entity/item/pushout.c
+    src/inventory/runtime/insertion.c
+    src/entity/player/tick.c
+    src/entity/player/local_tick.c
+    src/entity/player/living_tick.c
+    src/entity/player/player_tick.c
+    src/entity/player/pushout.c
+    src/entity/player/eligibility.c
+    src/entity/player/atan2.c
+    src/entity/particles/pickup.c
+    src/entity/player/pickup.c
+    src/client/particles/effect_renderer.c
+    src/client/particles/application.c
     src/client/statistics/checksum.c
     src/client/statistics/diagnostic.c
     src/client/statistics/files.c
@@ -1122,6 +1142,35 @@ if(BUILD_TESTING)
             LABELS "local;reference;client;storage;ownership" TIMEOUT 480)
     endif()
 
+    add_executable(mc_test_water_animation tests/client/texture_effects/test_water_animation.c)
+    target_link_libraries(mc_test_water_animation PRIVATE
+        mc_client_notice mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.water_animation COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_water_animation.py"
+        --executable "$<TARGET_FILE:mc_test_water_animation>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/water-animation-contracts")
+    set_tests_properties(client.water_animation PROPERTIES
+        LABELS "public;integration;client;texture;ownership;numeric" TIMEOUT 240)
+    add_test(NAME tools.water_animation_driver COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_water_animation_driver.py")
+    add_test(NAME tools.water_animation_driver_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_water_animation_driver.py")
+    set_tests_properties(tools.water_animation_driver tools.water_animation_driver_optimized
+        PROPERTIES LABELS "public;unit;tools;client;texture" TIMEOUT 90)
+    if(MC_ENABLE_WATER_ANIMATION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Water animation reference tests require MC_REFERENCE_CLIENT_JAR")
+        endif()
+        add_test(NAME reference.water_animation COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/water_animation/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_test_water_animation>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-water-animation")
+        set_tests_properties(reference.water_animation PROPERTIES
+            LABELS "local;reference;client;texture;numeric;ownership" TIMEOUT 480)
+    endif()
+
     add_executable(mc_test_player_statistics tests/client/statistics/test_player_dispatch.c)
     target_include_directories(mc_test_player_statistics PRIVATE src/platform/time)
     target_link_libraries(mc_test_player_statistics PRIVATE
@@ -1306,6 +1355,184 @@ if(BUILD_TESTING)
             --client-jar "${MC_REFERENCE_CLIENT_JAR}" --source-root "${CMAKE_CURRENT_SOURCE_DIR}")
         set_tests_properties(reference.player_action reference.player_action_math reference.player_action_dispatch
             PROPERTIES LABELS "local;reference;entity;world;math" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_item_tick tests/entity/item/test_tick.c)
+    target_include_directories(mc_test_item_tick PRIVATE src)
+    target_link_libraries(mc_test_item_tick PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.item_tick COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_tick/run.py"
+        --native "$<TARGET_FILE:mc_test_item_tick>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/item-tick-contracts")
+    set_tests_properties(entity.item_tick PROPERTIES
+        LABELS "public;integration;entity;world;ownership;math" TIMEOUT 240)
+    add_test(NAME tools.item_tick_controller COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_tick/test_controller.py")
+    add_test(NAME tools.item_tick_controller_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_tick/test_controller.py")
+    set_tests_properties(tools.item_tick_controller tools.item_tick_controller_optimized PROPERTIES
+        LABELS "public;unit;tools;entity" TIMEOUT 60)
+    if(MC_ENABLE_ITEM_TICK_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Item tick reference requires original client JAR and libraries")
+        endif()
+        add_test(NAME reference.item_tick COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_tick/run.py"
+            --native "$<TARGET_FILE:mc_test_item_tick>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --library-dir "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-item-tick")
+        set_tests_properties(reference.item_tick PROPERTIES
+            LABELS "local;reference;entity;world;ownership;math" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_item_pickup tests/entity/item/test_pickup.c)
+    target_include_directories(mc_test_item_pickup PRIVATE src/platform/time)
+    target_link_libraries(mc_test_item_pickup PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME entity.item_pickup COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_pickup/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_item_pickup>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/item-pickup-contracts")
+    set_tests_properties(entity.item_pickup PROPERTIES
+        LABELS "public;integration;entity;inventory;ownership;math" TIMEOUT 240)
+    if(MC_ENABLE_ITEM_PICKUP_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Item pickup reference tests require client JAR and libraries")
+        endif()
+        add_test(NAME reference.item_pickup COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_pickup/compare.py"
+            --executable "$<TARGET_FILE:mc_test_item_pickup>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-item-pickup")
+        add_test(NAME reference.item_pickup_dispatch COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/item_pickup/audit_dispatch.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}")
+        set_tests_properties(reference.item_pickup reference.item_pickup_dispatch PROPERTIES
+            LABELS "local;reference;entity;inventory;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_active_tick tests/entity/player/test_tick.c)
+    add_executable(mc_test_player_active_allocation tests/entity/player/test_tick_allocation.c)
+    foreach(target mc_test_player_active_tick mc_test_player_active_allocation)
+        target_include_directories(${target} PRIVATE src/platform/time)
+        target_link_libraries(${target} PRIVATE
+            mc_simulation mc_resources mc_c_atomics mc_build_options)
+    endforeach()
+    add_test(NAME entity.player_active_tick COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_active_tick>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-active-tick-contracts")
+    add_test(NAME entity.player_active_allocation COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_active_allocation>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-active-allocation-contracts")
+    set_tests_properties(entity.player_active_tick entity.player_active_allocation PROPERTIES
+        LABELS "public;integration;entity;world;ownership;math" TIMEOUT 240)
+    add_test(NAME tools.player_active_tick_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/test_controller.py")
+    add_test(NAME tools.player_active_tick_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/test_controller.py")
+    set_tests_properties(tools.player_active_tick_controller tools.player_active_tick_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;entity" TIMEOUT 60)
+    if(MC_ENABLE_PLAYER_ACTIVE_TICK_REFERENCE_TESTS OR MC_ENABLE_JAVA_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_executable(mc_player_atan2_probe tests/entity/player/atan2_probe.c)
+        target_link_libraries(mc_player_atan2_probe PRIVATE mc_simulation mc_build_options)
+        add_test(NAME reference.player_active_tick_math COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/compare_math.py"
+            --executable "$<TARGET_FILE:mc_player_atan2_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-active-math")
+        set_tests_properties(reference.player_active_tick_math PROPERTIES
+            LABELS "public;jdk;reference;entity;math" TIMEOUT 180)
+    endif()
+    if(MC_ENABLE_PLAYER_ACTIVE_TICK_REFERENCE_TESTS)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Player active tick dispatch audit requires client JAR")
+        endif()
+        add_test(NAME reference.player_active_tick_dispatch COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/audit_dispatch.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --source-root "${CMAKE_CURRENT_SOURCE_DIR}")
+        set_tests_properties(reference.player_active_tick_dispatch PROPERTIES
+            LABELS "local;reference;entity;ownership" TIMEOUT 60)
+        if(WIN32)
+            if(NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+                message(FATAL_ERROR "Original Player active tick profile requires Windows client libraries/native")
+            endif()
+            add_test(NAME reference.player_active_tick COMMAND Python3::Interpreter
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/active_tick/compare.py"
+                --executable "$<TARGET_FILE:mc_test_player_active_tick>"
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+                --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --source-root "${CMAKE_CURRENT_SOURCE_DIR}" --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-active-tick")
+            set_tests_properties(reference.player_active_tick PROPERTIES
+                LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+        endif()
+    endif()
+
+    add_executable(mc_test_pickup_particles tests/entity/particles/test_pickup.c)
+    target_include_directories(mc_test_pickup_particles PRIVATE src)
+    target_link_libraries(mc_test_pickup_particles PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.pickup_particles COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/particles/run.py"
+        --native "$<TARGET_FILE:mc_test_pickup_particles>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/pickup-particle-contracts")
+    set_tests_properties(entity.pickup_particles PROPERTIES
+        LABELS "public;integration;entity;client;ownership;math" TIMEOUT 180)
+    add_executable(mc_test_effect_renderer tests/client/particles/test_effect_renderer.c)
+    target_link_libraries(mc_test_effect_renderer PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME client.effect_renderer COMMAND mc_test_effect_renderer)
+    set_tests_properties(client.effect_renderer PROPERTIES
+        LABELS "public;integration;client;entity;ownership" TIMEOUT 180)
+    add_executable(mc_test_player_pickup_particles tests/client/particles/test_player_pickup.c)
+    target_include_directories(mc_test_player_pickup_particles PRIVATE src/platform/time)
+    target_link_libraries(mc_test_player_pickup_particles PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.player_pickup_particles COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_player_pickup_particles.py"
+        --executable "$<TARGET_FILE:mc_test_player_pickup_particles>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-pickup-particle-contracts")
+    set_tests_properties(client.player_pickup_particles PROPERTIES
+        LABELS "public;integration;client;entity;inventory;ownership" TIMEOUT 240)
+    add_test(NAME tools.particle_controller COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/particles/test_driver.py")
+    add_test(NAME tools.particle_controller_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/particles/test_driver.py")
+    set_tests_properties(tools.particle_controller tools.particle_controller_optimized PROPERTIES
+        LABELS "public;unit;tools;entity" TIMEOUT 60)
+    if(MC_ENABLE_PARTICLE_REFERENCE_TESTS OR MC_ENABLE_JAVA_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME tools.particle_observer_cleanup COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/particles/test_cleanup.py"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/particle-observer-cleanup")
+        set_tests_properties(tools.particle_observer_cleanup PROPERTIES
+            LABELS "public;jdk;tools;ownership" TIMEOUT 120)
+    endif()
+    if(MC_ENABLE_PARTICLE_REFERENCE_TESTS)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Pickup particle reference requires original client JAR and pinned libraries")
+        endif()
+        add_test(NAME reference.pickup_particles COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/particles/run.py"
+            --native "$<TARGET_FILE:mc_test_pickup_particles>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --library-dir "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-pickup-particles")
+        set_tests_properties(reference.pickup_particles PROPERTIES
+            LABELS "local;reference;entity;client;ownership;math" TIMEOUT 240)
     endif()
 
     add_executable(mc_test_world_movement tests/entity/movement/test_world_movement.c)

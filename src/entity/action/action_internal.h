@@ -28,7 +28,7 @@ bool mc_action_work(mc_player_action_error *, unsigned int);
 mc_entity_status mc_action_finish(mc_player_action_error *, mc_player_action_error *);
 bool mc_action_input(mc_entity *, mc_player_action_error *);
 bool mc_action_push(mc_entity *, mc_entity *, mc_player_action_error *);
-bool mc_action_pickup(mc_entity *, mc_entity *, mc_player_action_error *);
+bool mc_action_pickup(mc_entity *, mc_entity *, mc_registry_classes *, mc_player_action_error *);
 bool mc_action_collidable(mc_entity *, bool *, mc_player_action_error *);
 bool mc_action_candidate(mc_entity *, mc_entity *, mc_player_action_error *, unsigned int);
 
