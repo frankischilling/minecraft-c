@@ -32,6 +32,12 @@ performs the real Player size/collision search before health/death stores. The
 updates live Info timers, toggles and rain/thunder values in source order.
 Neither completes application World entry.
 
+The [singleplayer controller](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/singleplayer-controller.md)
+constructs genuine LocalPlayers from the live Session and World provider,
+preserves failed candidates and applies yaw preparation. Its World and final
+Player hooks use the actual empty bodies. Application Player/view publication,
+controller updates, mining, item use and complete World entry remain unfinished.
+
 The water owner has its CPU animation body on the existing arrays and shared
 Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)
 records the finite raw-array/RGBA scope. Texture registration and upload remain

@@ -13,6 +13,7 @@ option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supp
 option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
 option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
 option(MC_ENABLE_CAMERA_REFERENCE_TESTS "Compare first-person matrices with supplied Windows client" OFF)
+option(MC_ENABLE_SINGLEPLAYER_CONTROLLER_REFERENCE_TESTS "Compare singleplayer controller with supplied Windows client" OFF)
 option(MC_ENABLE_INPUT_REFERENCE_TESTS "Compare MovementInput with the supplied client" OFF)
 option(MC_ENABLE_TURN_REFERENCE_TESTS "Compare Entity turning with the supplied client" OFF)
 option(MC_ENABLE_CRAFTING_REFERENCE_TESTS "Compare crafting with supplied client/server JARs" OFF)
@@ -549,12 +550,60 @@ if(UNIX)
     target_link_libraries(mc_client_first_person PRIVATE m)
 endif()
 
+add_library(mc_client_singleplayer_controller STATIC src/client/controller/singleplayer.c)
+target_include_directories(mc_client_singleplayer_controller PRIVATE src/platform/time)
+target_link_libraries(mc_client_singleplayer_controller PUBLIC mc_simulation PRIVATE mc_build_options)
+
 add_library(mc_client_world_session STATIC src/client/world/session.c)
 target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
 target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_platform_time mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_singleplayer_controller tests/client/controller/test_singleplayer.c)
+    target_include_directories(mc_test_singleplayer_controller PRIVATE src/platform/time)
+    target_link_libraries(mc_test_singleplayer_controller PRIVATE
+        mc_client_singleplayer_controller mc_resources mc_c_atomics mc_build_options)
+    add_executable(mc_test_singleplayer_controller_allocation tests/client/controller/test_singleplayer.c)
+    target_compile_definitions(mc_test_singleplayer_controller_allocation PRIVATE
+        MC_SINGLEPLAYER_CONTROLLER_TEST_ALLOCATOR=1)
+    target_include_directories(mc_test_singleplayer_controller_allocation PRIVATE src/platform/time)
+    target_link_libraries(mc_test_singleplayer_controller_allocation PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    foreach(mode singleplayer_controller singleplayer_controller_allocation)
+        add_test(NAME client.${mode} COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/controller/run_native.py"
+            --executable "$<TARGET_FILE:mc_test_${mode}>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/${mode}-contracts")
+        set_tests_properties(client.${mode} PROPERTIES
+            LABELS "public;integration;client;entity;world;ownership" TIMEOUT 240)
+    endforeach()
+    add_test(NAME tools.singleplayer_controller COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/controller/test_reference.py")
+    add_test(NAME tools.singleplayer_controller_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/controller/test_reference.py")
+    set_tests_properties(tools.singleplayer_controller tools.singleplayer_controller_optimized PROPERTIES
+        LABELS "public;unit;tools;client;entity;ownership" TIMEOUT 60)
+    if(MC_ENABLE_SINGLEPLAYER_CONTROLLER_REFERENCE_TESTS)
+        if(NOT WIN32)
+            message(FATAL_ERROR "Original singleplayer controller profile requires qualified Windows x64")
+        endif()
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+            message(FATAL_ERROR "Original singleplayer controller profile requires client JAR, libraries and native directory")
+        endif()
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        add_test(NAME reference.singleplayer_controller COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/controller/compare.py"
+            --executable "$<TARGET_FILE:mc_test_singleplayer_controller>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-singleplayer-controller")
+        set_tests_properties(reference.singleplayer_controller PROPERTIES
+            LABELS "local;reference;original;client;entity;world;ownership" TIMEOUT 480)
+    endif()
+
     add_executable(mc_test_world_entity_tick tests/world/runtime/test_entity_tick.c)
     target_include_directories(mc_test_world_entity_tick PRIVATE src src/platform/time)
     target_link_libraries(mc_test_world_entity_tick PRIVATE

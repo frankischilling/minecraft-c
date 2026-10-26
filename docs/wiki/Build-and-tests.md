@@ -1,18 +1,20 @@
 # Build and tests
 
-The combined camera, World Entity updates, Player spawn/reset and weather source
-passes 1,019 local CTests: 357 Windows MSVC Debug cases and 331 cases on each
-sanitized Clang/GCC Debug build with leak detection. All preceding 332/310/310
-cases remain enabled, without skips or failures. Windows includes OpenGL startup,
-World inspection and camera comparisons; local Linux coverage is headless. Formatting passes for 893
-C/header files. Source inventories and configured build products stay unchanged
-through each full suite. Hosted public/JDK checks run separately.
+The combined singleplayer controller, camera, World Entity updates, Player
+spawn/reset and weather source passes 1,032 local CTests: 362 Windows MSVC Debug
+cases and 335 cases on each sanitized Clang/GCC Debug build with leak detection.
+Every preceding 357/331/331 case remains enabled, without skips or failures.
+Windows includes OpenGL startup, World inspection and camera comparisons; local
+Linux coverage is headless. Formatting passes for 897 C/header files. Source
+inventories and configured build products stay unchanged through each full suite.
+Hosted public/JDK checks run separately.
 
 The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) separates the complete matrix from
 individual operation profiles:
 
 | Operation | Scoped evidence |
 | --- | --- |
+| Singleplayer controller | 230 normal and 256 allocator checks per compiler; twenty original records per target, with fresh original execution on Windows |
 | World Entity/TileEntity updates | 881 native checks and 54 exact original records per compiler |
 | Weather method | 473 native checks, unchanged 8,565-check Info regression and 68 exact original records per compiler |
 | Player spawn/reset | 270 native checks and 273 allocator checks; Windows compares 42 reset records and 36 position vectors |
@@ -31,18 +33,21 @@ World gameplay loop, fog, normal RenderEngine startup, drawing or a playable
 client. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
 [pickup/effects](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) and [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md).
 
-At the previous checkpoint `100adbe`, 952 local cases pass: 332 Windows and 310
-headless cases on each sanitized Linux compiler. Its separately retained hosted
-public/JDK matrix passes 909 cases. Those dated results predate the current
-combined source and are not new full-suite counts.
+At the preceding published checkpoint `2f65ade`, all 1,019 local cases pass:
+357 Windows and 331 per sanitized Linux compiler. Its separately retained
+[hosted matrix](https://github.com/frankischilling/minecraft-c/actions/runs/40395106185)
+passes 968 public/JDK cases: 318 Windows and 325 per Linux compiler. Those dated
+results predate the current controller integration.
 
 CI runs two CTests concurrently and allows four parallel Windows build jobs.
 Linux build jobs cache downloaded APT package archives, then still install the
-packages and run every existing compiler, sanitizer, graphics, formatting and
-controller check. Cold/warm cache measurements are pending. The earlier
-[serial](https://github.com/frankischilling/minecraft-c/actions/runs/40244894912) and [parallel](https://github.com/frankischilling/minecraft-c/actions/runs/40245956977) runs retain their measured scheduling
-comparison in the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#continuous-integration-scheduling);
-no new hosted speed result is claimed for the cache.
+packages and run every compiler, sanitizer, graphics, formatting and controller
+check. At `2f65ade`, both Linux jobs restored the cache, needed zero package-archive
+download bytes and spent eleven seconds on dependency installation. Package
+indexes were still updated. These observed timings do not establish a controlled
+whole-run speedup. The earlier
+[scheduling comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#continuous-integration-scheduling)
+retains its separate measurements.
 
 Build with C17, CMake 3.24+ and Python 3.10+. Client audio also needs a C++20
 compiler for OpenAL Soft; project-owned runtime remains C17. Ordinary native

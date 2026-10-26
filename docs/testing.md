@@ -4,36 +4,60 @@
 
 ## Current client runtime integration
 
-The combined camera, World Entity updates, Player spawn/reset and weather source
-passes 1,019 local CTests: 357 Windows MSVC Debug cases and 331 cases on each
-Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection. Every case from
-the preceding 332/310/310 matrix remains enabled. No case failed, skipped, was
-disabled or remained unrun.
+The combined singleplayer controller, camera, World Entity updates, Player
+spawn/reset and weather source passes 1,032 local CTests: 362 Windows MSVC Debug
+cases and 335 cases on each Clang 18/GCC 13 Debug build with ASan, UBSan and leak
+detection. Every case from the preceding 357/331/331 matrix remains enabled.
+No case failed, skipped, was disabled or remained unrun.
 
-The frozen build cohort contains 1,775 files and 1,544 non-Markdown inputs.
-All 893 C/header files pass clang-format 18.1.3. Before execution, 211 current
-native/helper fingerprints and sixteen original class/Code metadata families
+The frozen build cohort contains 1,788 files and 1,556 non-Markdown inputs.
+All 897 C/header files pass clang-format 18.1.3. Before execution, 211 existing
+native/helper fingerprints and seventeen original class/Code metadata families
 verify. Source inventories and actual configured artifacts, runtime libraries,
 symbols and compiler/link configuration remain unchanged across each full suite.
 All configured Windows executables retain the default 1 MiB stack reserve.
 
 Windows includes real OpenGL startup, three executable World inspection captures,
 GPU camera drawing and the original camera comparison. Local Linux coverage is
-headless; its CPU camera has no SDL, OpenGL or FreeType dependency. Hosted
-public/JDK checks run separately.
+headless; the CPU controller and camera closures have no SDL, OpenGL or FreeType
+dependency. Hosted public/JDK checks run separately.
 
-Independent readback of retained full captures verifies 881 native World Entity
-checks with 54 exact original records and 473 weather checks with 68 records on
-each compiler. The Windows spawn/reset comparison verifies 42 records, and its
-position comparison verifies 36 raw-bit vectors. Native process completion,
-bounded streams, original inputs and helper products are checked separately
-from numerical row equality. The earlier isolated Linux spawn/position results
-retain their Windows-original observation scope described below.
+Independent readback verifies 230 ordinary and 256 allocation checks for the
+singleplayer controller on each compiler. Each native target matches twenty
+unchanged-original records. Windows runs a fresh original comparison through
+the public wrapper; Linux native comparisons retain their Windows-original
+observation scope. The existing World Entity, weather, spawn/reset and camera
+capture audits also pass without changing their declared scenarios.
 
-Normal application Player publication, controller/World entry, the enclosing
-World time/block scheduler, physical input, dynamic rendering and the playable
-frontend remain unfinished. The scoped camera and method comparisons below
-describe their own supported operations and remaining descendants.
+Normal application Player/view publication, complete controller/World entry,
+World time/block scheduling, physical input, dynamic rendering and the playable
+frontend remain unfinished. The scoped method comparisons below describe their
+supported operations and remaining descendants.
+
+## Singleplayer controller integration
+
+`client.singleplayer_controller` exercises the canonical constructor and selected
+World-entry methods on actual App, World and LocalPlayer owners. The allocation
+variant checks retained failures, aliases and allocation-free clear/retirement.
+Together they pass 230 and 256 checks. The parser/process controls run normally
+and with Python optimization; twenty-one controls reject incomplete or changed
+process evidence and malformed records.
+
+`MC_ENABLE_SINGLEPLAYER_CONTROLLER_REFERENCE_TESTS` adds the Windows-only
+`reference.singleplayer_controller`. It starts a fresh native observer, requires
+its complete process receipt and unchanged executable, then compares its twenty
+records with actual unchanged-original execution. The original cohort contains
+twenty classes, 736 methods and 731 Code bodies. Its records cover fourteen
+completed observations and six interrupted factory prefixes. Original archive,
+class origins, runtime/helper inputs and generated helper bytes are checked
+before and after execution. The original does not return failed allocated
+Players; their retained native prefixes are checked separately.
+
+The controller reloads the current Session for each Player factory call,
+allocates LocalPlayer before argument reads and stores only yaw during its
+preparation hook. The two empty hooks are actual reference bodies. Application
+publication, controller updates, mining and item use remain unfinished. See the
+[controller contract](client/singleplayer-controller.md).
 
 ## Player spawn/reset integration
 
