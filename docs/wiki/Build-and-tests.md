@@ -1,9 +1,22 @@
 # Build and tests
 
+The [notice/model integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md)
+passes all 272 Windows and 253 headless tests each on sanitized Clang/GCC:
+778 completed cases, no failures or skips. All 765 C/header files pass formatting.
+The original Windows comparison matches 140 geometry and 151 callback records,
+including ordered diagnostics and 1000 reminders. Public native tests require
+no original assets, JDK, SDL or devices. The [testing notes](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+retain the initial Clang controller timeout and final bounded-schedule results.
+Drawing and Player ticks remain unfinished.
+
 The workflow now runs two tests concurrently and allows four parallel Windows
 build jobs. Superseded review checks are cancelled; default-branch runs finish.
-All existing checks stay enabled. The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
-records the serial timing baseline; a measured hosted speedup is not yet claimed.
+All existing checks stay enabled. Both the [serial](https://github.com/frankischilling/minecraft-c/actions/runs/40244894912)
+and [parallel](https://github.com/frankischilling/minecraft-c/actions/runs/40245956977)
+runs pass all four jobs and 771 complete test pairs. Observed test-step times
+fall from 690 to 402 seconds on Windows, 550 to 218 on GCC and 667 to 375 on
+Clang. The [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+records the finite timing comparison and its qualifications.
 
 The [material movement integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/material-movement.md)
 passes all 268 Windows tests and all 250 headless tests each on fresh sanitized

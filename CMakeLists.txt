@@ -20,6 +20,7 @@ option(MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS "Compare World Player public
 option(MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS "Compare local Player input forwarding with supplied client JAR" OFF)
 option(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS "Compare World provider maintenance with supplied client JAR" OFF)
 option(MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS "Compare material movement with supplied client JAR" OFF)
+option(MC_ENABLE_NOTICE_REFERENCE_TESTS "Compare achievement notice with supplied Windows client" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
 option(MC_ENABLE_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
@@ -48,6 +49,8 @@ option(MC_ENABLE_POPULATION_REFERENCE_TESTS "Compare natural GAME population wit
 set(MC_REFERENCE_CLIENT_JAR "" CACHE FILEPATH "Local verified original client JAR")
 set(MC_REFERENCE_SERVER_JAR "" CACHE FILEPATH "Local verified original server JAR")
 set(MC_REFERENCE_CLIENT_LIBRARY_DIR "" CACHE PATH "Local pinned original client library archives")
+set(MC_REFERENCE_CLIENT_NATIVE_DIR "" CACHE PATH "Local pinned original Windows x64 native libraries")
+set(MC_REFERENCE_CLIENT_RESOURCE_DIR "" CACHE PATH "Local imported original client JAR resource root")
 set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local reference reports")
 set(MC_REGION_CAPTURE_MANIFEST "" CACHE FILEPATH "Local recorded region observation manifest")
 if(MC_ENABLE_RENDERING_REFERENCE_TESTS AND NOT MC_BUILD_CLIENT)
@@ -130,7 +133,7 @@ if(MC_BUILD_CLIENT)
     target_include_directories(minecraft-client PRIVATE src/client src/platform/time)
     target_link_libraries(minecraft-client PRIVATE mc_client_gui_main_menu mc_client_timer
         mc_client_game_directory mc_game_settings mc_platform_time mc_client_world_session
-        mc_client_world_view mc_build_options)
+        mc_client_world_view mc_client_notice mc_build_options)
 endif()
 
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
@@ -295,6 +298,16 @@ add_library(mc_registry STATIC
     src/world/biome/sampling.c
     src/world/biome/fixed_sampling.c)
 target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world mc_entity_classes PRIVATE mc_platform_text mc_build_options)
+
+target_sources(mc_registry PRIVATE src/client/achievements/description_registry.c)
+add_library(mc_client_notice STATIC
+    src/client/render/model.c
+    src/client/gui/achievement_notice.c
+    src/client/achievements/description.c
+    src/client/application_access.c)
+target_include_directories(mc_client_notice PUBLIC include PRIVATE src/client src/platform/time)
+target_link_libraries(mc_client_notice PUBLIC mc_registry mc_game_settings
+    PRIVATE mc_platform_time mc_build_options)
 
 add_library(mc_resources STATIC src/resources/files/files.c)
 target_link_libraries(mc_resources PUBLIC mc_registry PRIVATE mc_build_options)
@@ -461,6 +474,44 @@ target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_pl
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_notice_probe tests/client/gui/notice_probe.c)
+    target_include_directories(mc_notice_probe PRIVATE src/client src/core/java src/platform/time)
+    target_link_libraries(mc_notice_probe PRIVATE mc_client_notice mc_resources
+        mc_platform_time mc_c_atomics mc_build_options)
+    add_test(NAME client.achievement_notice COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/notice/run_native.py"
+        --native-probe "$<TARGET_FILE:mc_notice_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/notice-contracts")
+    set_tests_properties(client.achievement_notice PROPERTIES
+        LABELS "public;integration;client;ownership" TIMEOUT 150)
+    add_test(NAME tools.achievement_notice_capture COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/notice/test_capture.py")
+    add_test(NAME tools.achievement_notice_capture_optimized COMMAND Python3::Interpreter
+        -O "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/notice/test_capture.py")
+    set_tests_properties(tools.achievement_notice_capture tools.achievement_notice_capture_optimized
+        PROPERTIES LABELS "public;unit;tools;client" TIMEOUT 30)
+    if(MC_ENABLE_NOTICE_REFERENCE_TESTS)
+        if(NOT WIN32)
+            message(FATAL_ERROR "The original notice reference profile currently qualifies Windows x64 only")
+        endif()
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR
+           NOT MC_REFERENCE_CLIENT_NATIVE_DIR OR NOT MC_REFERENCE_CLIENT_RESOURCE_DIR)
+            message(FATAL_ERROR "Notice reference tests require explicit client JAR, libraries, natives and resources")
+        endif()
+        add_test(NAME reference.achievement_notice COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/notice/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+            --resources "${MC_REFERENCE_CLIENT_RESOURCE_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --native-probe "$<TARGET_FILE:mc_notice_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-achievement-notice")
+        set_tests_properties(reference.achievement_notice PROPERTIES
+            LABELS "local;reference;client;ownership" TIMEOUT 300 SKIP_RETURN_CODE 77)
+    endif()
+
     if(MC_BUILD_CLIENT)
         add_executable(mc_test_image tests/resources/image/test_image.c)
         target_link_libraries(mc_test_image PRIVATE mc_image ZLIB::ZLIBSTATIC mc_build_options)

@@ -10,6 +10,15 @@ does not yet start gameplay, child menus or audio. A separate
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.
 
+The [achievement notice](client/achievement-notice.md) constructs its actual
+Item renderer, Biped, direct Vec3 positions and two distinct RenderBlocks owners.
+The complete private application storage is shared by production and CPU tests.
+Entity/render classes live above menu and World lifetimes; the concrete inventory
+description callback reloads the same application's current Settings. Runtime
+formatted Strings retire on replacement. This construction/state layer requires
+no SDL headers or graphics/audio runtime. Notice drawing, complete startup and
+active Player ticks remain unfinished.
+
 The [GameSettings owner](client/game-settings.md) keeps options persistence
 separate from display and audio. It owns retained UTF-16 Strings, KeyBindings
 and binding arrays, and uses the shared Reader/Writer interfaces for real

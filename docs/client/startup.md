@@ -27,6 +27,13 @@ F11 toggles fullscreen. Window close and the title's Quit Game button exit.
 
 ## Settings at startup
 
+The App now owns the [achievement notice/model constructor graph](achievement-notice.md)
+before Display and Settings creation. Its Entity and render-class owners survive
+menu/World changes, and each notice/model child retires before its Registry and
+Entity namespace. This supplies construction and notification state; full startup,
+notice drawing and Player ticking remain unfinished. The inventory-description
+callback installation awaits the actual StatsWriter publication site.
+
 The App creates Display first, then a real GameDirectory owner and one
 file-backed [GameSettings](game-settings.md) owner. Settings load before the
 menu's font texture, lazy title textures and GUI layout. A directory or native

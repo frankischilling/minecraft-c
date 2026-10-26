@@ -1,5 +1,43 @@
 # Test scope and reproduction
 
+## Achievement notice and model construction
+
+The final combined source passes all 272 Windows MSVC tests and all 253 tests
+each on fresh headless Clang 18/GCC 13 builds with ASan, UBSan and leak checks.
+All 778 cases run without failures, errors, disabled tests or skips. The frozen
+1,484-file cohort contains 1,279 non-Markdown inputs; all 765 C/header files pass
+clang-format 18. Windows includes real GL captures and the unchanged-original
+notice comparison; local Linux notice coverage uses authored CPU resources.
+The original comparison matches 140 geometry and 151 callback records plus
+source diagnostics in order, including 1000 actual reminders. Both capture
+controller modes pass nine controls on all three native products.
+
+The initial Clang four-way suite retained a 120.02-second timeout in the unchanged
+Java-free Python `tools.region_write_reference` controller. No child remained.
+The same test passed under its existing deadline in isolation in 28.67 seconds.
+Final Clang/GCC suites use CI's bounded parallelism two and pass in full; no
+assertion, timeout or production algorithm was relaxed. The initial failure
+does not count as a completed pass.
+
+`client.achievement_notice` creates authored localization/map files in a fresh
+directory and executes real Registry, Settings, Entity/Vec3, model, notice and
+complete application owners. It requires neither original assets nor a JDK,
+SDL, window or audio device. The two `tools.achievement_notice_capture` tests
+run nine subprocess controls normally and under optimized Python. Native cases
+cover aliases, mirrored geometry, borrowed lifetimes, 16 allocation prefixes,
+default-Random failure order, null/failed prefixes and 1000 reminders without
+permanent Registry growth.
+
+The optional `reference.achievement_notice` currently qualifies Windows x86-64.
+Enable `MC_ENABLE_NOTICE_REFERENCE_TESTS` and supply `MC_REFERENCE_CLIENT_JAR`,
+`MC_REFERENCE_CLIENT_LIBRARY_DIR`, `MC_REFERENCE_CLIENT_NATIVE_DIR` and
+`MC_REFERENCE_CLIENT_RESOURCE_DIR`, plus matching explicit JDK17 tools. The
+resource root contains the imported JAR's `lang` and `achievement` directories.
+The pinned LWJGL DLL profile is Windows-specific; it does not qualify original
+execution on Linux. Missing private prerequisites return 77 and count as skipped,
+never a parity pass. See the [reference commands](../tests/reference/client/notice/README.md)
+and [constructor/state scope](client/achievement-notice.md).
+
 ## Continuous integration scheduling
 
 The hosted workflow runs two CTest cases concurrently and allows four parallel
@@ -8,10 +46,21 @@ controller checks stay enabled. New revisions cancel superseded review checks;
 default-branch runs are allowed to finish. The grouping follows the documented
 [workflow concurrency rules](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
 
-The earlier `a59b168` hosted test steps took 457 seconds on GCC, 730 on Clang
-and 538 on Windows while running serially; its Windows build took 286 seconds.
-These observations motivate bounded parallelism. A hosted timing comparison
-is still required before claiming a measured speedup.
+The [serial material run](https://github.com/frankischilling/minecraft-c/actions/runs/40244894912)
+and [parallel scheduling run](https://github.com/frankischilling/minecraft-c/actions/runs/40245956977)
+both pass all four jobs and the same 771 complete Start/Passed pairs. Every
+checkout tree matches its corresponding code head. The observed test-step
+durations were:
+
+| Compiler | Serial | Parallel |
+| --- | ---: | ---: |
+| Windows MSVC | 690 seconds | 402 seconds |
+| Linux GCC | 550 seconds | 218 seconds |
+| Linux Clang | 667 seconds | 375 seconds |
+
+The Windows build also falls from 372 to 314 seconds. These consecutive hosted
+runs include ordinary runner and network variation; they establish these measured
+results, not a fixed performance guarantee.
 
 The client Display header now forwards only the SDL Window type. Source files
 that call SDL video functions include the SDL header directly. This lets the

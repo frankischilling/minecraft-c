@@ -1,5 +1,36 @@
 # Development status
 
+[Achievement notice/model construction](client/achievement-notice.md) now uses
+the complete application storage and the real Entity/Vec3, Registry and Settings
+owners. Final combined validation passes all 272 Windows MSVC tests and all
+253 headless tests each on sanitized Clang 18/GCC 13: 778 completed cases,
+no failures or skips. Windows original comparisons match all 140 geometry and
+151 callback records plus ordered diagnostics. Each native profile checks ten
+authored notification cases, 16 allocation prefixes, failure/alias lifetimes and
+1000 reminders without permanent Registry growth. Nine capture controls pass
+normally and under optimized Python. Drawing, complete startup and Player ticks
+remain unfinished; there is no playable client yet.
+
+All 765 C/header files pass clang-format 18. The 1,484-file frozen cohort has
+1,279 non-Markdown inputs, with original class/Code and native/helper pins
+verified. An initial four-way Clang run timed out in the unchanged Python
+region-write controller at 120 seconds. It passed unchanged in isolation in
+28.67 seconds, then both complete Linux suites passed at CI's parallelism two.
+The original failure is retained; its deadline and assertions stay unchanged.
+
+The CI scheduling/header checkpoint `4aa603872a29048fc73122a9aa03c5fcc929fd1d`
+passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40245956977),
+with 771 complete test pairs. All checkout trees equal that head. Bounded
+parallelism reduces the observed test steps from 690 to 402 seconds on Windows,
+550 to 218 on GCC and 667 to 375 on Clang. These are consecutive-run measurements;
+all checks remain enabled. The [testing notes](testing.md) record their scope.
+
+The material checkpoint `989176653d3a4672ddecd3364e532c80ea1d75be` passes
+[all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40244894912):
+253 Windows, 259 GCC and 259 Clang tests, with 771 complete Start/Passed pairs.
+All checkouts use merge `29ca9414f3ae0a238d0401eddc00f2c48d88926d`; its tree
+equals that code head. The later CI scheduling/header change has separate checks.
+
 [Material immersion and acceleration](world/material-movement.md) now use actual
 World/Entity/Block/Material owners and a shared Vec3 pool. The combined source
 passes all 268 Windows MSVC tests and all 250 headless tests each on fresh

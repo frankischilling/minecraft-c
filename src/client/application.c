@@ -2,7 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
-#include "application.h"
+#include "application_state.h"
 #include "display/display.h"
 #include "gui/gui_main_menu.h"
 #include "resources/assets.h"
@@ -28,39 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-typedef struct client_button {
-    int32_t id, x, y, width, height;
-    mc_font_text label;
-} client_button;
-
-typedef struct client_application {
-    mc_client_application_options options;
-    mc_client_display *display;
-    mc_client_display_error display_error;
-    mc_platform_nanotime clock;
-    mc_timer *timer;
-    mc_resource_files *files;
-    mc_materials *materials;
-    mc_java_random_profile *profile;
-    mc_registry_classes *registry;
-    mc_entity_classes *entities;
-    mc_world_runtime_classes *world_classes;
-    mc_math_trig *trig;
-    mc_client_world_session *world_session;
-    mc_client_world_view *world_view;
-    mc_client_assets *assets;
-    mc_client_game_directory *game_directory;
-    mc_game_settings *settings;
-    mc_gui_main_menu *main_menu;
-    mc_java_random title_random;
-    mc_client_string splash;
-    mc_scaled_resolution resolution;
-    client_button buttons[5];
-    int display_width, display_height, input_window_width, input_window_height;
-    bool running, captured;
-    uint32_t frames;
-} client_application;
 
 static bool resource_error(mc_client_assets_status status, const mc_client_assets_error *error) {
     if (status == MC_CLIENT_ASSETS_OK)
@@ -425,8 +392,6 @@ static bool initialize_world(client_application *app) {
         return true;
     app->trig = malloc(sizeof(*app->trig));
     if (app->trig == NULL || !mc_math_trig_init(app->trig) ||
-        mc_entity_classes_create(MC_ENTITY_CLIENT, app->profile, NULL, &app->entities) !=
-            MC_ENTITY_OK ||
         mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, app->profile, app->trig,
                                         &app->world_classes, NULL) != MC_WORLD_STORAGE_OK ||
         mc_world_runtime_classes_bind_registry(app->world_classes, app->registry, NULL) !=
@@ -471,7 +436,11 @@ static bool initialize(client_application *app) {
     if (mc_platform_nanotime_init(&app->clock) != MC_PLATFORM_NANOTIME_OK ||
         !timer_sample(app, &clocks) || !mc_timer_create(20.0f, clocks, &app->timer) ||
         mc_java_random_profile_create(1024u * 1024u, &app->profile) != MC_JAVA_RANDOM_PROFILE_OK ||
-        !mc_materials_create(&app->materials))
+        !mc_materials_create(&app->materials) ||
+        mc_entity_classes_create(MC_ENTITY_CLIENT, app->profile, NULL, &app->entities) !=
+            MC_ENTITY_OK ||
+        mc_client_render_classes_create(app->entities, app->profile, &app->render_classes) !=
+            MC_CLIENT_MODEL_OK)
         return false;
     const size_t root_length = strlen(app->options.assets);
     if (root_length > SIZE_MAX - 5)
@@ -490,7 +459,13 @@ static bool initialize(client_application *app) {
                                          .materials = app->materials,
                                          .resources = mc_resource_files_source(app->files)};
     mc_registry_error registry_error = {0};
+    mc_client_notice_error notice_error = {0};
     if (mc_registry_classes_allocate(&options, &app->registry, &registry_error) != MC_REGISTRY_OK ||
+        mc_client_achievement_notice_allocate(app->render_classes, app->registry, app->profile,
+                                              &app->achievement_notice,
+                                              &notice_error) != MC_CLIENT_NOTICE_OK ||
+        mc_client_achievement_notice_construct(app->achievement_notice, app, &notice_error) !=
+            MC_CLIENT_NOTICE_OK ||
         mc_client_assets_create(options.resources, app->registry, &app->assets) !=
             MC_CLIENT_ASSETS_OK ||
         !mc_client_display_create("Minecraft", app->options.width, app->options.height,
@@ -618,6 +593,9 @@ cleanup:
                                                      : app->display_error.operation,
                 app->display_error.detail);
     }
+    if (mc_client_achievement_notice_free(&app->achievement_notice, NULL) != MC_CLIENT_NOTICE_OK ||
+        mc_client_render_classes_free(app->render_classes) != MC_CLIENT_MODEL_OK)
+        return 1;
     mc_gui_main_menu_free(app->main_menu);
     if (!mc_client_world_view_retire(&app->world_view, &app->display_error))
         result = 1;

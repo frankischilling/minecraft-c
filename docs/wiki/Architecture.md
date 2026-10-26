@@ -6,6 +6,10 @@ public headers and implementations follow the same system/subsystem layout.
 
 Current runtime navigation:
 
+- [Achievement notice and model construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/achievement-notice.md)
+  preserve the Biped/Vec3 graph, distinct RenderBlocks owners, live inventory-key
+  descriptions and runtime String retirement. Production and CPU tests share
+  the complete application storage. Drawing and Player ticks remain unfinished.
 - [Material immersion and acceleration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/material-movement.md)
   use real World/Entity/Block/Material owners, shared Vec3 lifetimes, fluid flow
   and the actual wrapped Stairs dispatch. Living movement and Player ticks
