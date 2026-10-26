@@ -1,0 +1,226 @@
+{
+  "scope": "Selected constructor-profile CPU camera and genuine live-App/Settings/World callback prefix matrices; native strict-FP policy separately labelled; not complete px/h-i publication, fog, ji or visual equality",
+  "native_sources": {
+    "include/mc/block/registry/registry.h": {
+      "bytes": 7950,
+      "sha256": "db4dec4547b63592bdecd00e5b1af5165acb788c578663eac5afca57a3c70ef0"
+    },
+    "include/mc/block/registry/runtime.h": {
+      "bytes": 3673,
+      "sha256": "b21cb904b7f982462963480de732ee5100748a287dd8ca45becfb4b8d3e5c750"
+    },
+    "include/mc/client/settings/game_settings.h": {
+      "bytes": 13882,
+      "sha256": "63019b031ddfe14773b98dc3c6b48edec774eb4c9edb4ec4a263e2f0d748c596"
+    },
+    "include/mc/client/world/first_person.h": {
+      "bytes": 5197,
+      "sha256": "7741a4d72cc501c4f77bac247e60a6987416ebc3a54826364d2bb061c0cb2d30"
+    },
+    "include/mc/core/java/java.h": {
+      "bytes": 3573,
+      "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
+    },
+    "include/mc/core/math/math.h": {
+      "bytes": 1885,
+      "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
+    },
+    "include/mc/entity/classes/classes.h": {
+      "bytes": 6476,
+      "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+    },
+    "include/mc/entity/entity.h": {
+      "bytes": 8689,
+      "sha256": "2efbee4630c8e9a20ba0fbb071d9482bac4e3215b8413b1354c98df8102ec2ac"
+    },
+    "include/mc/entity/movement/material.h": {
+      "bytes": 1659,
+      "sha256": "1e2adb4be0c8f734b8eeace51f8bd077a05a15fd366e7852481b2c8f3bd8ca97"
+    },
+    "include/mc/entity/player/player.h": {
+      "bytes": 9912,
+      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+    },
+    "include/mc/world/runtime/blocks.h": {
+      "bytes": 6598,
+      "sha256": "647ee1c47d3895a821b2c256d52187db47ec034f64661ed026e9fa7eb8e5f78a"
+    },
+    "include/mc/world/runtime/construction.h": {
+      "bytes": 11962,
+      "sha256": "5a20cf55f40ed6f1b30dd6837ebe805321ad7bf909cd038cfe902800e81d0031"
+    },
+    "include/mc/world/runtime/runtime.h": {
+      "bytes": 12283,
+      "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+    },
+    "src/client/settings/game_settings.c": {
+      "bytes": 66929,
+      "sha256": "ab1b6daf6c1ce28e22154a0da6a769fd7a2b644cdc0d8468f4fc603cf1eb6541"
+    },
+    "src/client/world/first_person.c": {
+      "bytes": 20028,
+      "sha256": "5f1de8fffa05367977085750ae532010da9228cec0cfbef31265ef43df87ecd5"
+    },
+    "src/client/world/renderer.c": {
+      "bytes": 26203,
+      "sha256": "1ef95c29e9bc96b1a1cc38565138bc70a2f407cf9429f3986ecb005cd51f59ea"
+    },
+    "src/client/world/renderer.h": {
+      "bytes": 4645,
+      "sha256": "2a310a2a7dc100d314316c669f1d21d82f88ed4e8debc39bb4cca63f6819e55f"
+    },
+    "src/client/world/view.c": {
+      "bytes": 14831,
+      "sha256": "f44042acc9d6ca2f8ebf1f83ec12320d998f6841998fcc1aa79e42de50b4bc2a"
+    },
+    "src/client/world/view.h": {
+      "bytes": 4007,
+      "sha256": "ea53da592f7f996392cc98125ea7187d241c43a5b6a966ab7deadb106a26635b"
+    },
+    "src/core/java/java.c": {
+      "bytes": 8217,
+      "sha256": "efa5f6b0c997ed9a160184785f699ab822d2ba2dd501a1b2228d63a5360fa2db"
+    },
+    "src/core/math/math.c": {
+      "bytes": 1203,
+      "sha256": "a28b1681f42433d221c6e0b66b2e81515b9e3d53f60abf78a63a4c9ed729c202"
+    },
+    "src/entity/classes/classes_internal.h": {
+      "bytes": 2535,
+      "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
+    },
+    "src/entity/entity_internal.h": {
+      "bytes": 3435,
+      "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
+    },
+    "src/entity/movement/material.c": {
+      "bytes": 7033,
+      "sha256": "a30f814a880be7c7081103016c2635ae5c72b106da6bb59f008d4f88ac797040"
+    },
+    "src/entity/player/construction.c": {
+      "bytes": 17742,
+      "sha256": "e495889027bc824732f2212c75d373bd1d1b3c0a683e16df245f2a54a5da397f"
+    },
+    "src/entity/player/player_internal.h": {
+      "bytes": 1769,
+      "sha256": "fc998e13845a1adbc530fd0faaa3d62f72f236e95f5ce6ca8b2d6e57f1595c75"
+    },
+    "src/world/runtime/blocks.c": {
+      "bytes": 6850,
+      "sha256": "ae21886892edc547f20680098f27aa732bac925db30847aa16a716d76196c9a8"
+    },
+    "src/world/runtime/construction.c": {
+      "bytes": 49158,
+      "sha256": "75634be271dddf277f60f5c14e2819b8457a046c55f725e5e8842b15d8a09572"
+    },
+    "tests/client/world/test_first_person.c": {
+      "bytes": 19098,
+      "sha256": "7da3f050f2d8e2261b8a0f5ee3c8a830e5053d66a9d2b9db555eb91169f478e1"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    },
+    "src/client/application_state.h": {
+      "bytes": 3360,
+      "sha256": "08891526c24cba9fd49f60b998e1d6054dfea2458e1d3b4b86775f162e47782e"
+    },
+    "src/client/application_access.h": {
+      "bytes": 1153,
+      "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
+    },
+    "src/client/application_access.c": {
+      "bytes": 2710,
+      "sha256": "f1689d2a936d079703b87d0be8960c30de431f353a9727a2921a4ff6b744d200"
+    },
+    "src/client/particles/application.h": {
+      "bytes": 1290,
+      "sha256": "537b0eda61b3d90454aa7e776ed3a9ad459a0d290e072d10fee7bedd2e7ecf1b"
+    },
+    "src/client/particles/application.c": {
+      "bytes": 2727,
+      "sha256": "7a0174d02c14a7a0ea6a74c8641a38ae8070c435f480f9de29a6c7686e7a29ba"
+    },
+    "src/world/runtime/runtime_internal.h": {
+      "bytes": 5783,
+      "sha256": "81935974adc1d96d0e34d615435ca3a2cd2cb4d96c704b363f39d159a2b0ddf0"
+    },
+    "src/world/runtime/construction_internal.h": {
+      "bytes": 1127,
+      "sha256": "6326fded50194dacef8bc1bbb199dc8b4c17cccc8fcb9f6fa2c98f4046b8230e"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 14073,
+      "sha256": "ee2d3505c3a83737ff6f2ffc4f6292fc1c4f04ca51de4a2c74467310705cda20"
+    },
+    "src/world/runtime/loading/loading.c": {
+      "bytes": 9892,
+      "sha256": "b340b805592eaea0ac0c7a1940ab5e5776b7432a270396abe0cca7b5ba096252"
+    },
+    "src/entity/nbt/nbt.c": {
+      "bytes": 22964,
+      "sha256": "8c0db749de7f9df57a2879148206b8f03bdbb47f61357fd87130cdd6bb6dff8c"
+    },
+    "src/entity/nbt/storage.c": {
+      "bytes": 15096,
+      "sha256": "ffbb4c8ee91e1fba3376dafa8247335567b1027571938cc5f01b8be566c8e621"
+    },
+    "src/entity/entity.c": {
+      "bytes": 29957,
+      "sha256": "d83b3fc457fce01f73f5b5b137a59bda5a9610673e540c045e419ea4deeba455"
+    },
+    "tests/client/world/test_first_person_callbacks.c": {
+      "bytes": 22985,
+      "sha256": "1dba34915890ee38b360d8617de41c76abc66bb1ba7cd8f8cf5d8596091912fe"
+    },
+    "src/entity/position.c": {
+      "bytes": 1905,
+      "sha256": "f38aa259ca89ec5f14dc529e8db5d1b22741d9cf97d2325b514de66fe982807d"
+    },
+    "src/entity/position_internal.h": {
+      "bytes": 531,
+      "sha256": "c384eea289560d143a229ce742f8cfd3fd4e91f94640a4bca02ee7058b72e4ab"
+    }
+  },
+  "reference_files": {
+    "CameraGLObservation.java": {
+      "bytes": 14709,
+      "sha256": "55b2b97e1efc143ed29ac778aac2daf3f857439979aa553ad09f7d533fa44a5e"
+    },
+    "compare.py": {
+      "bytes": 13337,
+      "sha256": "e6c0cc70c64edb65b53a0d7858378bf4f3fec1dcfe8cfe1875793a5b6e4b229d"
+    },
+    "README.md": {
+      "bytes": 11214,
+      "sha256": "db4f296ed1e22d79606270dd111790bb95306e52076cedd206bcc236c769a8ab"
+    },
+    "source-pins.json": {
+      "bytes": 324755,
+      "sha256": "05f7bba25b2ca416d010fedc248d992f8eb1ab41f5a706a0a38e22c77e5ea7ca"
+    },
+    "support.py": {
+      "bytes": 6971,
+      "sha256": "99a2a7388a74e24485ac1e953f5e63690df19510ec7d0a63fcdd281f086d3fcb"
+    }
+  },
+  "controller_files": {
+    "tests/tools/client/test_first_person.py": {
+      "bytes": 1718,
+      "sha256": "b5ac0d55c634a7114f85e00f87c43cbfedd5a9b04c0290cb780acbfc6b7388e6"
+    },
+    "tests/tools/client/test_first_person_driver.py": {
+      "bytes": 2914,
+      "sha256": "01b7708f4411bf3cee99e393e1bfd47ba5bb5883751e073aca8f8f012968e18c"
+    },
+    "tests/tools/client/test_first_person_callbacks.py": {
+      "bytes": 2880,
+      "sha256": "a6505c529523425e20999d2c5624a11323d3c3cff62d50c83c28ed7f40eb986e"
+    }
+  },
+  "compiler_policy": "C17 x86-64 strict FP, /W4 /WX /fp:strict or warnings-as-errors -fno-fast-math -ffp-contract=off; native sanitizer profiles do not create an original Linux GL context"
+}

@@ -1,27 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_ACQUISITION_INTERNAL_H
 #define MC_WORLD_RUNTIME_ACQUISITION_INTERNAL_H
 
-#include "mc/world/runtime/entity_errors.h"
-#include "mc/world/runtime/population/context.h"
-#include "mc/world/runtime/runtime.h"
-#include "mc/world/runtime/tile_entities/errors.h"
-
-/* One synchronous acquisition attempt owns this value on its caller's stack.
- * Callback adapters write only the currently installed attempt; nested calls
- * install independent values and restore their predecessor before returning.
- * No ambient last-error lookup, operation-string decoding or owner hold occurs.
- * Outputs/errors are disjoint from owners and remain readable through the call. */
-typedef struct mc_world_runtime_acquisition_error {
-    mc_chunk_acquire_status status;
-    mc_world_storage_error cause;
-    mc_registry_error registry;
-    mc_live_tile_entity_error tile_entity;
-    mc_world_entity_batch_error batch;
-    unsigned int activation_bytecode, activation_world_bytecode;
-    unsigned int load_bytecode, load_builder_bytecode;
-    mc_world_entity_load_error load_entity;
-    mc_world_population_context population;
-} mc_world_runtime_acquisition_error;
+#include "mc/world/runtime/acquisition_error.h"
 
 mc_chunk_acquire_status mc_world_runtime_get_detailed(mc_world_runtime *runtime, int32_t x,
                                                       int32_t z, mc_chunk_state **out,

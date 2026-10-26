@@ -67,6 +67,8 @@ struct mc_world_runtime {
     /* Actual lowercase d94 Player List, distinct from deferred uppercase D39.
      * Each publication occurrence retains the same concrete Entity separately. */
     mc_world_entity_list_ledger player_membership;
+    /* Constructor e105; one genuine hold per weather occurrence. */
+    mc_world_entity_list_ledger weather_membership;
     /* Actual constructor-created R254. Each query occurrence owns one real
      * Entity hold, independently of b/D and replaceable source R. */
     mc_world_entity_list_ledger nearby_entities;

@@ -1,6 +1,7 @@
 #include "mc/entity/nbt/nbt.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/entities.h"
+#include "mc/world/runtime/entity_tick.h"
 #include "mc/world/runtime/players.h"
 
 #include "../../entity/entity_internal.h"
@@ -112,10 +113,11 @@ bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world) {
     if (world == NULL)
         return false;
     const mc_world_entity_list_ledger *ledgers[] = {
-        &world->entity_membership, &world->entity_deferral, &world->player_membership};
-    const void *spans[6] = {0};
+        &world->entity_membership, &world->entity_deferral, &world->player_membership,
+        &world->weather_membership};
+    const void *spans[8] = {0};
     size_t total = 0;
-    for (size_t i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < 4; ++i) {
         size_t bytes;
         if (!entity_ledger_valid(world, ledgers[i], &bytes) || bytes > SIZE_MAX - total)
             return false;
@@ -128,7 +130,7 @@ bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world) {
     }
     if (total > world->construction.direct_allocation_bytes)
         return false;
-    for (size_t i = 0; i < 6; ++i)
+    for (size_t i = 0; i < 8; ++i)
         for (size_t j = 0; j < i; ++j)
             if (spans[i] != NULL && spans[i] == spans[j])
                 return false;
@@ -138,6 +140,12 @@ bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world) {
 bool mc_world_runtime_player_list_retirement_valid(const mc_world_runtime *world) {
     const mc_world_reference_list *current = world->fields.d;
     return current == world->player_membership.list || current == NULL ||
+           (list_shape(current) && current->count == 0);
+}
+
+bool mc_world_runtime_weather_list_retirement_valid(const mc_world_runtime *world) {
+    const mc_world_reference_list *current = world->fields.e;
+    return current == world->weather_membership.list || current == NULL ||
            (list_shape(current) && current->count == 0);
 }
 
@@ -169,6 +177,7 @@ void mc_world_runtime_entity_list_release(mc_world_runtime *world) {
     entity_ledger_release(world, &world->entity_membership);
     entity_ledger_release(world, &world->entity_deferral);
     entity_ledger_release(world, &world->player_membership);
+    entity_ledger_release(world, &world->weather_membership);
 }
 
 static bool append_owned_entity(mc_world_runtime *world, mc_world_reference_list *list,
@@ -214,7 +223,7 @@ static bool append_owned_entity(mc_world_runtime *world, mc_world_reference_list
             memcpy(holds, ledger->entries, list->count * sizeof(*holds));
         }
     }
-    const mc_entity_status held = mc_entity_retain(entity);
+    const mc_entity_status held = entity == NULL ? MC_ENTITY_OK : mc_entity_retain(entity);
     if (held != MC_ENTITY_OK) {
         if (bytes != 0) {
             free(items);
@@ -716,6 +725,23 @@ static mc_world_storage_status finish_entity(mc_world_runtime *world, mc_entity 
     mc_entity_release(entity);
     mc_world_runtime_call_leave(world);
     return entity_result(error, frame);
+}
+
+mc_world_storage_status mc_world_runtime_add_weather_entity(mc_world_runtime *world,
+                                                            mc_entity *entity, bool *out,
+                                                            mc_world_entity_error *error) {
+    mc_world_entity_error frame = {0};
+    if (out == NULL) {
+        (void)entity_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World weather result");
+        return entity_result(error, &frame);
+    }
+    if (!enter_entity(world, entity, &frame))
+        return entity_result(error, &frame);
+    const bool completed =
+        append_owned_entity(world, world->fields.e, &world->weather_membership, entity, 5, &frame);
+    if (completed)
+        *out = true;
+    return finish_entity(world, entity, completed, &frame, error);
 }
 
 mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, mc_entity *entity,

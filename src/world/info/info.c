@@ -1,4 +1,5 @@
 #include "mc/world/info/info.h"
+#include "weather_source_internal.h"
 
 #include "mc/storage/nbt/tree.h"
 #include "millis.h"
@@ -628,14 +629,33 @@ mc_world_info_status mc_world_info_player_get(const mc_world_info *info,
     return MC_WORLD_INFO_OK;
 }
 
+/* Source weather accessors are valid on every live allocated phase. */
+#define INFO_WEATHER_SOURCE(name, type)                                                            \
+    mc_world_info_status mc_world_info_source_##name##_get(const mc_world_info *info, type *out) { \
+        if (info == NULL || out == NULL)                                                           \
+            return MC_WORLD_INFO_INVALID_ARGUMENT;                                                 \
+        *out = info->fields.value.name;                                                            \
+        return MC_WORLD_INFO_OK;                                                                   \
+    }                                                                                              \
+    mc_world_info_status mc_world_info_source_##name##_set(mc_world_info *info, type value) {      \
+        if (info == NULL)                                                                          \
+            return MC_WORLD_INFO_INVALID_ARGUMENT;                                                 \
+        info->fields.value.name = value;                                                           \
+        return MC_WORLD_INFO_OK;                                                                   \
+    }
+INFO_WEATHER_SOURCE(thunder_time, int32_t)
+INFO_WEATHER_SOURCE(thundering, bool)
+INFO_WEATHER_SOURCE(rain_time, int32_t)
+INFO_WEATHER_SOURCE(raining, bool)
+#undef INFO_WEATHER_SOURCE
+
 mc_world_info_status mc_world_info_raining_get(const mc_world_info *info, bool *out) {
     if (out == NULL)
         return MC_WORLD_INFO_INVALID_ARGUMENT;
     mc_world_info_status status = info_ready(info);
     if (status != MC_WORLD_INFO_OK)
         return status;
-    *out = info->fields.value.raining;
-    return MC_WORLD_INFO_OK;
+    return mc_world_info_source_raining_get(info, out);
 }
 
 mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, bool *out) {
@@ -644,8 +664,7 @@ mc_world_info_status mc_world_info_thundering_get(const mc_world_info *info, boo
     mc_world_info_status status = info_ready(info);
     if (status != MC_WORLD_INFO_OK)
         return status;
-    *out = info->fields.value.thundering;
-    return MC_WORLD_INFO_OK;
+    return mc_world_info_source_thundering_get(info, out);
 }
 
 mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world_info_state *out) {
@@ -702,10 +721,35 @@ mc_world_info_status mc_world_info_player_set(mc_world_info *info, mc_world_info
 INFO_SETTER(mc_world_info_time_set, time, int64_t)
 INFO_SETTER(mc_world_info_size_set, size_on_disk, int64_t)
 INFO_SETTER(mc_world_info_version_set, version, int32_t)
-INFO_SETTER(mc_world_info_rain_time_set, rain_time, int32_t)
-INFO_SETTER(mc_world_info_thunder_time_set, thunder_time, int32_t)
-INFO_SETTER(mc_world_info_raining_set, raining, bool)
-INFO_SETTER(mc_world_info_thundering_set, thundering, bool)
+
+mc_world_info_status mc_world_info_rain_time_set(mc_world_info *info, int32_t value) {
+    const mc_world_info_status status = info_ready(info);
+    if (status != MC_WORLD_INFO_OK)
+        return status;
+    return mc_world_info_source_rain_time_set(info, value);
+}
+
+mc_world_info_status mc_world_info_thunder_time_set(mc_world_info *info, int32_t value) {
+    const mc_world_info_status status = info_ready(info);
+    if (status != MC_WORLD_INFO_OK)
+        return status;
+    return mc_world_info_source_thunder_time_set(info, value);
+}
+
+mc_world_info_status mc_world_info_raining_set(mc_world_info *info, bool value) {
+    const mc_world_info_status status = info_ready(info);
+    if (status != MC_WORLD_INFO_OK)
+        return status;
+    return mc_world_info_source_raining_set(info, value);
+}
+
+mc_world_info_status mc_world_info_thundering_set(mc_world_info *info, bool value) {
+    const mc_world_info_status status = info_ready(info);
+    if (status != MC_WORLD_INFO_OK)
+        return status;
+    return mc_world_info_source_thundering_set(info, value);
+}
+
 #undef INFO_SETTER
 
 mc_world_info_status mc_world_info_spawn_set(mc_world_info *info, int32_t x, int32_t y, int32_t z) {

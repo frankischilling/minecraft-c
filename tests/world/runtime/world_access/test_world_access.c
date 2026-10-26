@@ -164,9 +164,13 @@ static mc_world_storage_status tile_entity_callback(void *context, mc_world_runt
     return observed(r, world, TILE_DIRTY, error);
 }
 
-static const mc_world_access_callbacks callbacks = {cell_callback,   range_callback,
-                                                    sound_callback,  particle_callback,
-                                                    entity_callback, tile_entity_callback};
+static const mc_world_access_callbacks callbacks = {.cell = cell_callback,
+                                                    .range = range_callback,
+                                                    .sound = sound_callback,
+                                                    .particle = particle_callback,
+                                                    .entity_added = entity_callback,
+                                                    .tile_entity_dirty = tile_entity_callback,
+                                                    .entity_removed = NULL};
 
 static void reset_log(world_access_log *log) {
     log->count = 0;

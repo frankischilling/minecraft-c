@@ -1,9 +1,127 @@
 # Test scope and reproduction
 
-## Current public runtime integration
+<a id="current-public-runtime-integration"></a>
 
-The combined water animation, Item pickup/tick, active Player and pickup-particle
-source passes 952 local CTests: 332 Windows MSVC Debug cases and 310 cases on each
+## Current client runtime integration
+
+The combined camera, World Entity updates, Player spawn/reset and weather source
+passes 1,019 local CTests: 357 Windows MSVC Debug cases and 331 cases on each
+Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection. Every case from
+the preceding 332/310/310 matrix remains enabled. No case failed, skipped, was
+disabled or remained unrun.
+
+The frozen build cohort contains 1,775 files and 1,544 non-Markdown inputs.
+All 893 C/header files pass clang-format 18.1.3. Before execution, 211 current
+native/helper fingerprints and sixteen original class/Code metadata families
+verify. Source inventories and actual configured artifacts, runtime libraries,
+symbols and compiler/link configuration remain unchanged across each full suite.
+All configured Windows executables retain the default 1 MiB stack reserve.
+
+Windows includes real OpenGL startup, three executable World inspection captures,
+GPU camera drawing and the original camera comparison. Local Linux coverage is
+headless; its CPU camera has no SDL, OpenGL or FreeType dependency. Hosted
+public/JDK checks run separately.
+
+Independent readback of retained full captures verifies 881 native World Entity
+checks with 54 exact original records and 473 weather checks with 68 records on
+each compiler. The Windows spawn/reset comparison verifies 42 records, and its
+position comparison verifies 36 raw-bit vectors. Native process completion,
+bounded streams, original inputs and helper products are checked separately
+from numerical row equality. The earlier isolated Linux spawn/position results
+retain their Windows-original observation scope described below.
+
+Normal application Player publication, controller/World entry, the enclosing
+World time/block scheduler, physical input, dynamic rendering and the playable
+frontend remain unfinished. The scoped camera and method comparisons below
+describe their own supported operations and remaining descendants.
+
+## Player spawn/reset integration
+
+`entity.player_spawn_reset` runs genuine LocalPlayer spawn/reset and inherited
+base-body cases. `entity.player_spawn_allocation` exercises retained failure
+prefixes with the real descendants. `entity.position` executes the 36 raw-input
+position vectors and requires native completion; its default route does not
+supply an original numerical oracle. The reset and position parser/process
+controls run normally and with Python optimization.
+
+The isolated coherent MSVC and sanitized Clang/GCC qualifications pass 270 reset
+and 273 allocation checks, 42 reset records and 36 position vectors. The old
+position body differs from the unchanged original in eight two-NaN cases on
+MSVC and Clang; the shared arithmetic correction matches all 36 on each compiler.
+Linux native comparisons use the retained Windows-original observations and
+do not claim execution of the original application on Linux.
+
+On Windows, `MC_ENABLE_PLAYER_SPAWN_REFERENCE_TESTS` and
+`MC_ENABLE_POSITION_REFERENCE_TESTS` add `reference.player_spawn_reset` and
+`reference.entity_position`. Each starts a fresh native process, validates its
+exit, bounded streams, executable fingerprints and positive marker, then passes
+that exact stdout and process receipt to the unchanged-original comparison.
+The reset comparison covers 34 completed calls and eight interrupted prefixes.
+Both modes verify original inputs and helper products before/after execution.
+See [spawn/reset](entity/player-spawn-reset.md) and the
+[reference guide](../tests/reference/entity/spawn_reset/README.md).
+
+## World Entity update integration
+
+`world.entity_tick` exercises the actual client Entity/TileEntity pass on real
+World, Store, Registry and Chunk owners. The isolated MSVC Debug and sanitized
+Clang/GCC qualification passes 881 native checks per compiler, including 32
+World-to-Player updates, Item updates, live removal callbacks, iterator failures,
+Piston/Spawner state and retained riding actors. `world.entity_tick_abi` checks
+the public layout contract. The normal and optimized controller controls require
+completed native execution and retain capture failures.
+
+`MC_ENABLE_WORLD_ENTITY_TICK_REFERENCE_TESTS` enables
+`reference.world_entity_tick`. The untouched original CPU harness compares 54
+ordered records: 37 states and 17 events. This covers the declared CLIENT GAME
+owners and source prefixes. Server-owner admission, mob construction, the later
+World time/block scheduler and application ticking have separate limits.
+These isolated results do not establish a newer full combined matrix. See
+[World Entity updates](world/entity-update.md) and the
+[reference driver](../tests/reference/world/entity_tick/run.py).
+
+## Weather method integration
+
+`world.weather` exercises the client weather descendant with real World,
+WorldInfo, provider and Random owners. Its isolated MSVC Debug and sanitized
+Clang/GCC runs pass 473 native checks and the unchanged 8,565-check WorldInfo
+regression. Eight controller controls run normally and under Python optimization;
+the existing statistics capture controls cover the shared subprocess helper.
+
+`MC_ENABLE_WEATHER_REFERENCE_TESTS` adds `reference.world_weather`. Its 68 exact
+original records contain four completed Overworld initialization states and
+64 weather observations: 58 method returns and six interrupted prefixes. Three
+returning no-sky cases use the genuine failed native Nether constructor prefix;
+they establish the weather early return while leaving construction failed at
+PC403. They do not establish completed Nether generation. The enclosing World
+tick and dedicated-server weather entry remain unfinished. See
+[weather](world/weather.md) for the full source and finite qualification scope.
+
+## First-person camera integration
+
+The subsequent camera integration passes 34 selected Windows Debug CTests and
+26 cases on each fresh sanitized Clang/GCC Debug build with leak detection.
+Its tested cohort has 1,713 files and 863 formatted C/header files. All matching
+targets rebuild; the selected Windows cases include the actual client
+executable, startup, three World inspection captures, GPU drawing and the
+unchanged-original GL comparison. Source inventories and configured products
+stay unchanged across each selected suite. These 86 selected cases are separate
+from the earlier full matrix below.
+
+The native camera has 438 checks; sixteen genuine saved-Item callback cases have
+1,198 checks. Late App/Settings/World reads, reached FP failures and hold limits
+retain their source prefixes. The original Windows profile compares 42 baseline
+matrices and ten callback prefix matrices under its declared `2e-6` coefficient
+policy. It does not qualify full EntityRenderer construction, source fog/clear,
+portal clock, third-person, normal App h/i publication or a playable frontend.
+See [the camera contract](client/first-person.md) and its
+[reproduction guide](../tests/reference/client/camera/README.md).
+
+## Earlier water, Item and Player checkpoint
+
+At published checkpoint `100adbe`, the combined water animation, Item pickup/tick,
+active Player and pickup-particle source passes 952 local CTests: 332 Windows
+MSVC Debug cases and 310 cases on each
 fresh Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection. Every case
 from the previous 307/286/286 matrix remains enabled. No case failed, skipped,
 was disabled or remained unrun. Windows includes actual OpenGL startup and World

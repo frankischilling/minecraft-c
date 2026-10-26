@@ -2,6 +2,7 @@
 #define MC_CLIENT_WORLD_RENDERER_H
 
 #include "display.h"
+#include "mc/client/world/first_person.h"
 #include "vertex.h"
 
 typedef struct mc_client_world_renderer mc_client_world_renderer;
@@ -58,6 +59,15 @@ bool mc_client_world_mesh_retire(mc_client_world_mesh **mesh, mc_client_display_
 bool mc_client_world_renderer_begin(mc_client_world_renderer *renderer,
                                     const mc_client_world_camera *camera,
                                     const mc_client_world_fog *fog, mc_client_display_error *error);
+/* Consume a completed selected source camera frame on this actual renderer.
+ * Dimensions must be the current drawable dimensions used to build the frame;
+ * caller rebuilds after resize. Preserve raw render origin separately from the
+ * source modelview's height translation. No EntityRenderer constructor, fog,
+ * texture registration, render tick or scene scheduling is synthesized. */
+bool mc_client_world_renderer_begin_first_person(mc_client_world_renderer *renderer,
+                                                 const mc_client_camera_frame *frame,
+                                                 const mc_client_world_fog *fog,
+                                                 mc_client_display_error *error);
 bool mc_client_world_renderer_draw(mc_client_world_renderer *renderer,
                                    const mc_client_world_mesh *mesh, bool blend, bool alpha_test,
                                    bool depth_write, mc_client_display_error *error);

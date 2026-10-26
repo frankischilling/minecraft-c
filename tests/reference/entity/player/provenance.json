@@ -56,8 +56,8 @@
       "sha256": "291dc46598bfd631eabbeff5ee185263b243d9a5ee65bc6e1b0cf488ddaf69b1"
     },
     "src/entity/entity.c": {
-      "bytes": 30588,
-      "sha256": "25b4815a2c73f00bf3a3ad63f7b509bd8e821cab7a8dcb294f40a56dcf22c0bb"
+      "bytes": 29957,
+      "sha256": "d83b3fc457fce01f73f5b5b137a59bda5a9610673e540c045e419ea4deeba455"
     },
     "src/entity/entity_internal.h": {
       "bytes": 3435,
@@ -98,6 +98,14 @@
     "tests/entity/player/trace_fields.inc": {
       "bytes": 5474,
       "sha256": "42706633d94b5134d6fa540f65b3f2f2aa4fda4fa3c50f632f69e4e13d842b4b"
+    },
+    "src/entity/position.c": {
+      "bytes": 1905,
+      "sha256": "f38aa259ca89ec5f14dc529e8db5d1b22741d9cf97d2325b514de66fe982807d"
+    },
+    "src/entity/position_internal.h": {
+      "bytes": 531,
+      "sha256": "c384eea289560d143a229ce742f8cfd3fd4e91f94640a4bca02ee7058b72e4ab"
     }
   },
   "helper_classes": {

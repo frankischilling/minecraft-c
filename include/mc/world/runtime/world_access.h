@@ -8,7 +8,7 @@ typedef struct mc_world_access mc_world_access;
 typedef struct mc_entity mc_entity;
 typedef struct mc_tile_entity mc_tile_entity;
 
-/* Native adapters for the six presently reached pm/jp method slots. Each
+/* Native adapters for the seven presently reached pm/jp method slots. Each
  * callback receives the actual World and already-evaluated source arguments.
  * Returning non-OK stops that source loop without rolling back earlier work.
  * error carries a static operation string and native system_error; an absent
@@ -32,6 +32,8 @@ typedef struct mc_world_access_callbacks {
     mc_world_storage_status (*tile_entity_dirty)(void *context, mc_world_runtime *world, int32_t x,
                                                  int32_t y, int32_t z, mc_tile_entity *tile_entity,
                                                  mc_world_storage_error *error);
+    mc_world_storage_status (*entity_removed)(void *context, mc_world_runtime *world,
+                                              mc_entity *entity, mc_world_storage_error *error);
 } mc_world_access_callbacks;
 
 /* Copies the table and borrows context until successful free. The table may

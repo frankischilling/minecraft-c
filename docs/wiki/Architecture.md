@@ -20,8 +20,17 @@ four dn effect Lists. The application captures its manager before constructing
 the effect and checks a null manager afterward. The selected manager startup
 body is implemented; normal RenderEngine (ji) startup and particle drawing
 remain unfinished. [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md) supplies the actual
-Item environment, push-out, movement, friction and aging body. World scheduling
-still has to invoke these Entity methods in source order.
+Item environment, push-out, movement, friction and aging body. The
+[client World Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entity-update.md)
+now invokes genuine Player/Item updates through live lists, removals, Chunk
+membership and retained riding actors. The enclosing World scheduler and normal
+application ticking remain unfinished.
+
+[Spawn/reset](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-spawn-reset.md)
+performs the real Player size/collision search before health/death stores. The
+[weather descendant](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/weather.md)
+updates live Info timers, toggles and rain/thunder values in source order.
+Neither completes application World entry.
 
 The water owner has its CPU animation body on the existing arrays and shared
 Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)
@@ -31,7 +40,11 @@ separate from notice and Item drawing.
 
 [World rendering](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-renderer.md) remains a fixed inspection of a
 constructed GAME World with leased CPU meshes and owned GL buffers. It does not
-run the Player/World gameplay loop. [Lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md),
+run the Player/World gameplay loop. The separate
+[first-person camera](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person.md)
+reads genuine Player state and late App Settings/World fields; finite geometry
+can consume those matrices. Normal App h/i publication and render scheduling
+remain unfinished. [Lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md),
 [Player publication](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/player-publication.md), [World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md),
 [storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) and [saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md) have their own
 source-order and lifetime contracts. [Input attachment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-input.md)
@@ -49,10 +62,10 @@ Application audio startup and original device correspondence remain unfinished.
 The shared simulation and server graph initializes no graphics or audio device.
 See [dependencies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/dependencies.md) for source pins and notices.
 
-World Entity scheduling, Map tracking/terrain updates, remaining wake/hurt/GUI
-operations, fog, normal RenderEngine startup and drawing still prevent a
+Application World entry, complete World time/block scheduling, Map tracking and
+terrain updates, remaining wake/hurt/GUI operations, fog, normal RenderEngine startup and drawing still prevent a
 playable client. Dedicated-server startup and ticking remain separate work.
-[Test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) distinguishes the current selected integration
+[Test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) distinguishes the current full integration
 from earlier full matrices and isolated module comparisons.
 
 <a id="save-unload-and-retirement"></a>

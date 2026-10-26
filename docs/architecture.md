@@ -10,6 +10,12 @@ does not yet start gameplay, child menus or audio. A separate
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.
 
+The [first-person component](client/first-person.md) reads genuine Player state
+and the actual App's late Settings/World fields. Its finite view can draw copied
+section geometry through those matrices while retaining its real World. Normal
+App Player publication, render tick, source fog and gameplay adoption remain
+unfinished.
+
 The [achievement notice](client/achievement-notice.md) constructs its actual
 Item renderer, Biped, direct Vec3 positions and two distinct RenderBlocks owners.
 The complete private application storage is shared by production and CPU tests.
@@ -34,8 +40,9 @@ owns the real base/Living/Player state, Inventory/Container aliases, Session
 Strings and MouseFilters. [Player input attachment](client/player-input.md)
 retains the same MovementInput owner and forwards actual key/reset/sneaking
 operations. Separate [World publication](world/player-publication.md) retains
-each Player occurrence. The application now owns a real Session and statistics writer; the World
-entity tick loop and gameplay adoption remain unfinished.
+each Player occurrence. The application owns a real Session and statistics
+writer. The World Entity pass is implemented separately; normal application
+World entry and gameplay adoption remain unfinished.
 
 [Material immersion and acceleration](world/material-movement.md) use the same
 World, Entity, Block and Material owners. Their Vec3 pool belongs to the shared
@@ -63,8 +70,20 @@ World and Registry storage layouts are unchanged. [Travel](entity/living-travel.
 [inventory updates](entity/inventory-tick.md) and [action bodies](entity/player-action.md)
 compose actual descendants. The [application statistics owners](client/player-statistics.md)
 provide the concrete dc dispatch. [Active Player ticking](entity/player-active-tick.md)
-composes the Player/Living wrappers and local action on the same owner. The
-World Entity update loop and playable client remain unfinished.
+composes the Player/Living wrappers and local action on the same owner.
+[World Entity updates](world/entity-update.md) now invoke those bodies and Item
+updates through actual World lists, presence checks and Chunk membership.
+World time/block/weather scheduling and the playable client remain unfinished.
+
+The separate [weather descendant](world/weather.md) updates actual WorldInfo
+timers, toggles and live rain/thunder interpolation in source order. Its private
+scalar kernels preserve the public WorldInfo phase guards. The enclosing World
+tick and dedicated-server weather entry remain unfinished.
+
+[Player spawn/reset](entity/player-spawn-reset.md) composes the real size and
+collision search bodies before health/death stores. Its shared position helper
+preserves the observed two-NaN arithmetic order across compilers. It does not
+publish an application Player or complete World entry.
 
 [Item pickup](entity/item-pickup.md) runs Inventory insertion, achievements, sound,
 the concrete Player notification and the later Item death check. The
@@ -77,9 +96,9 @@ unfinished.
 
 [Item ticking](entity/item-tick.md) executes hl.w_, inherited environment update,
 six-neighbor push-out, movement, friction and aging on constructed Items. Its
-three isolated native/original profiles remain separate from the combined
-runtime matrix. World scheduling still has to call the implemented Entity
-bodies in source order.
+three isolated native/original profiles retain their own scope. The client
+World Entity pass dispatches the implemented body; application ticking and
+the later World scheduler remain unfinished.
 
 The water effect has a CPU animation body on its existing constructor-owned
 float/RGBA arrays and shared Math profile. Texture registration, upload and

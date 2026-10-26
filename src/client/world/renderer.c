@@ -306,6 +306,53 @@ static bool valid_fog(const mc_client_world_fog *fog) {
            (fog->kind != MC_CLIENT_WORLD_FOG_EXPONENTIAL || fog->density >= 0.0f);
 }
 
+static bool begin_matrices(mc_client_world_renderer *renderer, const mc_client_world_camera *camera,
+                           const float projection[16], const float modelview[16],
+                           const mc_client_world_fog *fog, mc_client_display_error *error) {
+    if (renderer != NULL)
+        renderer->frame_started = false;
+    if (renderer == NULL || camera == NULL || !isfinite(camera->eye_x) ||
+        !isfinite(camera->eye_y) || !isfinite(camera->eye_z) || !valid_fog(fog))
+        return failure(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "World frame admission");
+    int width = 0, height = 0;
+    if (!mc_client_display_make_current(renderer->display, error) ||
+        !mc_client_display_pixel_size(renderer->display, &width, &height, error))
+        return false;
+    if (width == 0 || height == 0)
+        return failure(error, MC_CLIENT_DISPLAY_NOT_DRAWABLE, "World drawable size");
+    for (size_t i = 0; i < 16; ++i)
+        if (!isfinite(projection[i]) || !isfinite(modelview[i]))
+            return failure(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "World matrix finite values");
+    if (!mc_client_display_begin_scene(renderer->display, fog->red, fog->green, fog->blue, error))
+        return false;
+    mc_client_gl *gl = &renderer->gl.base;
+    gl->Viewport(0, 0, width, height);
+    gl->Disable(GL_MULTISAMPLE);
+    gl->Disable(GL_FRAMEBUFFER_SRGB);
+    gl->Disable(GL_SCISSOR_TEST);
+    gl->Disable(GL_STENCIL_TEST);
+    gl->Enable(GL_DEPTH_TEST);
+    gl->DepthFunc(GL_LEQUAL);
+    gl->DepthMask(GL_TRUE);
+    gl->Enable(GL_CULL_FACE);
+    renderer->gl.CullFace(GL_BACK);
+    gl->UseProgram(renderer->program);
+    gl->UniformMatrix4fv(renderer->projection, 1, GL_FALSE, projection);
+    gl->UniformMatrix4fv(renderer->modelview, 1, GL_FALSE, modelview);
+    gl->Uniform1i(renderer->fog_mode, (int)fog->kind);
+    gl->Uniform1i(renderer->fog_radial, fog->radial ? 1 : 0);
+    renderer->gl.Uniform3f(renderer->fog_color, fog->red, fog->green, fog->blue);
+    renderer->gl.Uniform1f(renderer->fog_start, fog->start);
+    renderer->gl.Uniform1f(renderer->fog_end, fog->end);
+    renderer->gl.Uniform1f(renderer->fog_density, fog->density);
+    if (!check(renderer, "begin World frame", error))
+        return false;
+    renderer->camera = *camera;
+    memcpy(renderer->camera_matrix, modelview, 16u * sizeof(*modelview));
+    renderer->frame_started = true;
+    return success(error);
+}
+
 bool mc_client_world_renderer_begin(mc_client_world_renderer *renderer,
                                     const mc_client_world_camera *camera,
                                     const mc_client_world_fog *fog,
@@ -350,37 +397,28 @@ bool mc_client_world_renderer_begin(mc_client_world_renderer *renderer,
     const float cp = cosf(pitch), sp = sinf(pitch), cy = cosf(yaw), sy = sinf(yaw);
     const float modelview[16] = {cy, sp * sy,  -cp * sy, 0, 0, cp, sp,    0,
                                  sy, -sp * cy, cp * cy,  0, 0, 0,  -0.1f, 1};
-    for (size_t i = 0; i < 16; ++i)
-        if (!isfinite(projection[i]) || !isfinite(modelview[i]))
-            return failure(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "World matrix finite values");
-    if (!mc_client_display_begin_scene(renderer->display, fog->red, fog->green, fog->blue, error))
-        return false;
-    mc_client_gl *gl = &renderer->gl.base;
-    gl->Viewport(0, 0, width, height);
-    gl->Disable(GL_MULTISAMPLE);
-    gl->Disable(GL_FRAMEBUFFER_SRGB);
-    gl->Disable(GL_SCISSOR_TEST);
-    gl->Disable(GL_STENCIL_TEST);
-    gl->Enable(GL_DEPTH_TEST);
-    gl->DepthFunc(GL_LEQUAL);
-    gl->DepthMask(GL_TRUE);
-    gl->Enable(GL_CULL_FACE);
-    renderer->gl.CullFace(GL_BACK);
-    gl->UseProgram(renderer->program);
-    gl->UniformMatrix4fv(renderer->projection, 1, GL_FALSE, projection);
-    gl->UniformMatrix4fv(renderer->modelview, 1, GL_FALSE, modelview);
-    gl->Uniform1i(renderer->fog_mode, (int)fog->kind);
-    gl->Uniform1i(renderer->fog_radial, fog->radial ? 1 : 0);
-    renderer->gl.Uniform3f(renderer->fog_color, fog->red, fog->green, fog->blue);
-    renderer->gl.Uniform1f(renderer->fog_start, fog->start);
-    renderer->gl.Uniform1f(renderer->fog_end, fog->end);
-    renderer->gl.Uniform1f(renderer->fog_density, fog->density);
-    if (!check(renderer, "begin World frame", error))
-        return false;
-    renderer->camera = *camera;
-    memcpy(renderer->camera_matrix, modelview, sizeof(modelview));
-    renderer->frame_started = true;
-    return success(error);
+    return begin_matrices(renderer, camera, projection, modelview, fog, error);
+}
+
+bool mc_client_world_renderer_begin_first_person(mc_client_world_renderer *renderer,
+                                                 const mc_client_camera_frame *frame,
+                                                 const mc_client_world_fog *fog,
+                                                 mc_client_display_error *error) {
+    if (renderer != NULL)
+        renderer->frame_started = false;
+    if (frame == NULL || !frame->complete)
+        return failure(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "Incomplete Player camera frame");
+    int width = 0, height = 0;
+    if (renderer == NULL ||
+        !mc_client_display_pixel_size(renderer->display, &width, &height, error))
+        return renderer == NULL
+                   ? failure(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "Player renderer receiver")
+                   : false;
+    if (width != frame->width || height != frame->height)
+        return failure(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "Player camera drawable changed");
+    const mc_client_world_camera origin = {
+        .eye_x = frame->render_x, .eye_y = frame->render_y, .eye_z = frame->render_z};
+    return begin_matrices(renderer, &origin, frame->projection, frame->modelview, fog, error);
 }
 
 static void matrix_translate(float matrix[16], float x, float y, float z) {

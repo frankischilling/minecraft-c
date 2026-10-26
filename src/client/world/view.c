@@ -3,12 +3,14 @@
 #include "mc/core/java/java.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 enum { VIEW_SECTIONS = 3 * 3 * 8 };
 
 typedef struct view_section {
     mc_client_world_mesh *meshes[2];
     double distance;
+    int32_t x, y, z;
 } view_section;
 
 struct mc_client_world_view {
@@ -16,6 +18,7 @@ struct mc_client_world_view {
     mc_client_world_camera camera;
     view_section sections[VIEW_SECTIONS];
     size_t count;
+    mc_world_runtime *world; /* Native hold only for create_for_player. */
 };
 
 static uint32_t *colors(mc_client_assets *assets, const char *name,
@@ -79,10 +82,10 @@ static bool prepare(mc_world_runtime *world, int32_t center_x, int32_t center_z,
     return true;
 }
 
-bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *display,
-                                 mc_client_assets *assets, const mc_math_trig *trig, bool anaglyph,
-                                 bool ambient_occlusion, bool fancy_leaves,
-                                 mc_client_world_view **out, mc_client_world_view_error *error) {
+static bool create(mc_world_runtime *world, mc_client_display *display, mc_client_assets *assets,
+                   const mc_math_trig *trig, bool anaglyph, bool ambient_occlusion,
+                   bool fancy_leaves, bool retain_world, mc_client_world_view **out,
+                   mc_client_world_view_error *error) {
     mc_client_world_view_error frame = {0};
     mc_client_world_cpu_mesh cpu = {0};
     mc_client_world_view *view = NULL;
@@ -97,6 +100,13 @@ bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *dis
     if (view == NULL) {
         frame.operation = "World view allocation";
         goto failure;
+    }
+    if (retain_world) {
+        if (!mc_world_runtime_binding_retain(world)) {
+            frame.operation = "Player view World native hold";
+            goto failure;
+        }
+        view->world = world;
     }
     const int32_t center_x = mc_java_i32_shr(*live->spawn_x, 4) * 16;
     const int32_t center_z = mc_java_i32_shr(*live->spawn_z, 4) * 16;
@@ -151,6 +161,9 @@ bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *dis
                     goto failure;
                 }
                 view_section *section = &view->sections[view->count++];
+                section->x = ox;
+                section->y = y;
+                section->z = oz;
                 const double dx = (double)ox + 8 - view->camera.eye_x;
                 const double dy = (double)y + 8 - view->camera.eye_y;
                 const double dz = (double)oz + 8 - view->camera.eye_z;
@@ -182,6 +195,33 @@ failure:
     return false;
 }
 
+bool mc_client_world_view_create(mc_world_runtime *world, mc_client_display *display,
+                                 mc_client_assets *assets, const mc_math_trig *trig, bool anaglyph,
+                                 bool ambient_occlusion, bool fancy_leaves,
+                                 mc_client_world_view **out, mc_client_world_view_error *error) {
+    return create(world, display, assets, trig, anaglyph, ambient_occlusion, fancy_leaves, false,
+                  out, error);
+}
+
+bool mc_client_world_view_create_for_player(mc_entity *player, mc_client_display *display,
+                                            mc_client_assets *assets, const mc_math_trig *trig,
+                                            bool anaglyph, bool ambient_occlusion,
+                                            bool fancy_leaves, mc_client_world_view **out,
+                                            mc_client_world_view_error *error) {
+    mc_entity_snapshot state;
+    mc_local_player_snapshot actual;
+    if (mc_entity_get_snapshot(player, &state) != MC_ENTITY_OK || state.phase != MC_ENTITY_READY ||
+        mc_local_player_get_snapshot(player, &actual) != MC_ENTITY_OK || state.base.world == NULL) {
+        if (error != NULL) {
+            memset(error, 0, sizeof(*error));
+            error->operation = "Player view genuine World owner";
+        }
+        return false;
+    }
+    return create(state.base.world, display, assets, trig, anaglyph, ambient_occlusion,
+                  fancy_leaves, true, out, error);
+}
+
 bool mc_client_world_view_draw(mc_client_world_view *view, mc_client_display_error *error) {
     if (view == NULL)
         return false;
@@ -198,6 +238,87 @@ bool mc_client_world_view_draw(mc_client_world_view *view, mc_client_display_err
     return true;
 }
 
+static bool draw_player_frame(mc_client_world_view *view, const mc_client_camera_frame *frame,
+                              const mc_client_world_fog *fog, mc_client_world_view_error *result) {
+    if (!mc_client_world_renderer_begin_first_person(view->renderer, frame, fog,
+                                                     &result->display)) {
+        result->operation = "Player renderer frame";
+        return false;
+    }
+    for (size_t i = 0; i < view->count; ++i) {
+        view_section *section = &view->sections[i];
+        const double x = (double)section->x + 8 - frame->render_x;
+        const double y = (double)section->y + 8 - frame->render_y;
+        const double z = (double)section->z + 8 - frame->render_z;
+        section->distance = x * x + y * y + z * z;
+    }
+    qsort(view->sections, view->count, sizeof(*view->sections), farther_first);
+    for (size_t pass = 0; pass < 2; ++pass)
+        for (size_t i = 0; i < view->count; ++i)
+            if (view->sections[i].meshes[pass] != NULL &&
+                !mc_client_world_renderer_draw(view->renderer, view->sections[i].meshes[pass],
+                                               pass == 1, true, pass == 0, &result->display)) {
+                result->operation = "Player finite section draw";
+                return false;
+            }
+    return true;
+}
+
+static bool player_view(mc_client_world_view *view, mc_entity *player,
+                        mc_client_world_view_error *result) {
+    mc_entity_snapshot actual;
+    if (view == NULL || view->world == NULL ||
+        mc_entity_get_snapshot(player, &actual) != MC_ENTITY_OK ||
+        actual.base.world != view->world) {
+        result->operation = "Player view World identity";
+        return false;
+    }
+    return true;
+}
+
+bool mc_client_world_view_draw_first_person(
+    mc_client_world_view *view, mc_entity *player, const mc_game_settings *settings,
+    mc_world_runtime *application_world, mc_registry_classes *code_registry,
+    const mc_math_trig *trig, int32_t width, int32_t height, float partial_tick, int32_t eye_pass,
+    const mc_client_world_fog *fog, mc_client_world_view_error *error) {
+    mc_client_world_view_error result = {0};
+    mc_client_camera_frame frame;
+    bool ok = player_view(view, player, &result);
+    if (ok && mc_client_first_person_camera(player, settings, application_world, code_registry,
+                                            trig, width, height, partial_tick, eye_pass, &frame,
+                                            &result.camera) != MC_CLIENT_CAMERA_OK) {
+        result.operation = "Player source camera";
+        ok = false;
+    }
+    if (ok)
+        ok = draw_player_frame(view, &frame, fog, &result);
+    if (error != NULL)
+        *error = result;
+    return ok;
+}
+
+bool mc_client_world_view_draw_application(mc_client_world_view *view,
+                                           const client_application *application, mc_entity *player,
+                                           mc_registry_classes *code_registry,
+                                           const mc_math_trig *trig, float partial_tick,
+                                           int32_t eye_pass, const mc_client_world_fog *fog,
+                                           mc_client_world_view_error *error) {
+    mc_client_world_view_error result = {0};
+    mc_client_camera_frame frame;
+    bool ok = player_view(view, player, &result);
+    if (ok && mc_client_first_person_camera_for_application(
+                  application, player, code_registry, trig, partial_tick, eye_pass, &frame,
+                  &result.camera) != MC_CLIENT_CAMERA_OK) {
+        result.operation = "Application Player source camera";
+        ok = false;
+    }
+    if (ok)
+        ok = draw_player_frame(view, &frame, fog, &result);
+    if (error != NULL)
+        *error = result;
+    return ok;
+}
+
 bool mc_client_world_view_retire(mc_client_world_view **owner, mc_client_display_error *error) {
     if (owner == NULL)
         return false;
@@ -205,6 +326,8 @@ bool mc_client_world_view_retire(mc_client_world_view **owner, mc_client_display
     if (view == NULL)
         return true;
     const bool result = mc_client_world_renderer_retire(&view->renderer, error);
+    if (view->world != NULL)
+        mc_world_runtime_binding_release(view->world);
     free(view);
     *owner = NULL;
     return result;

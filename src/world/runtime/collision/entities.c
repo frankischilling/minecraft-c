@@ -79,9 +79,9 @@ static bool owned_shape(const mc_world_runtime *world) {
     if (list == NULL)
         return ledger->entries == NULL && ledger->count == 0 && ledger->capacity == 0;
     if (list == world->entity_membership.list || list == world->entity_deferral.list ||
-        list == world->collision_boxes.list || list->count != ledger->count ||
-        list->capacity != ledger->capacity || list->count > list->capacity ||
-        list->capacity > (size_t)INT32_MAX ||
+        list == world->weather_membership.list || list == world->collision_boxes.list ||
+        list->count != ledger->count || list->capacity != ledger->capacity ||
+        list->count > list->capacity || list->capacity > (size_t)INT32_MAX ||
         list->capacity > SIZE_MAX / (sizeof(*list->items) + sizeof(*ledger->entries)) ||
         ((list->capacity == 0) != (list->items == NULL)) ||
         ((ledger->capacity == 0) != (ledger->entries == NULL)) ||
@@ -90,8 +90,8 @@ static bool owned_shape(const mc_world_runtime *world) {
     const size_t bytes = list->capacity * (sizeof(*list->items) + sizeof(*ledger->entries));
     if (bytes > world->construction.direct_allocation_bytes)
         return false;
-    const mc_world_entity_list_ledger *others[] = {&world->entity_membership,
-                                                   &world->entity_deferral};
+    const mc_world_entity_list_ledger *others[] = {
+        &world->entity_membership, &world->entity_deferral, &world->weather_membership};
     for (size_t i = 0; i < sizeof(others) / sizeof(others[0]); ++i) {
         const mc_world_entity_list_ledger *other = others[i];
         const void *a[] = {list->items, ledger->entries};

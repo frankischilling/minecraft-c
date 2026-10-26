@@ -12,6 +12,7 @@ option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop Open
 option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
 option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
 option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
+option(MC_ENABLE_CAMERA_REFERENCE_TESTS "Compare first-person matrices with supplied Windows client" OFF)
 option(MC_ENABLE_INPUT_REFERENCE_TESTS "Compare MovementInput with the supplied client" OFF)
 option(MC_ENABLE_TURN_REFERENCE_TESTS "Compare Entity turning with the supplied client" OFF)
 option(MC_ENABLE_CRAFTING_REFERENCE_TESTS "Compare crafting with supplied client/server JARs" OFF)
@@ -19,6 +20,8 @@ option(MC_ENABLE_PLAYER_REFERENCE_TESTS "Compare local Player construction with 
 option(MC_ENABLE_PLAYER_PUBLICATION_REFERENCE_TESTS "Compare World Player publication with supplied client JAR" OFF)
 option(MC_ENABLE_PLAYER_INPUT_REFERENCE_TESTS "Compare local Player input forwarding with supplied client JAR" OFF)
 option(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS "Compare World provider maintenance with supplied client JAR" OFF)
+option(MC_ENABLE_WORLD_ENTITY_TICK_REFERENCE_TESTS "Compare client World Entity updates with supplied client JAR" OFF)
+option(MC_ENABLE_WEATHER_REFERENCE_TESTS "Compare client weather updates with supplied client JAR" OFF)
 option(MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS "Compare material movement with supplied client JAR" OFF)
 option(MC_ENABLE_ENTITY_ENVIRONMENT_REFERENCE_TESTS "Compare Entity environment helpers with supplied original JARs" OFF)
 option(MC_ENABLE_PLAYER_MOVEMENT_REFERENCE_TESTS "Compare LocalPlayer movement with supplied client JAR" OFF)
@@ -30,6 +33,8 @@ option(MC_ENABLE_PLAYER_ACTION_REFERENCE_TESTS "Compare Player action bodies wit
 option(MC_ENABLE_ITEM_PICKUP_REFERENCE_TESTS "Compare Inventory insertion and Item pickup with supplied client JAR" OFF)
 option(MC_ENABLE_ITEM_TICK_REFERENCE_TESTS "Compare Item updates with supplied client JAR" OFF)
 option(MC_ENABLE_PLAYER_ACTIVE_TICK_REFERENCE_TESTS "Compare inherited Player ticks with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_SPAWN_REFERENCE_TESTS "Compare Player spawn/reset with supplied Windows client" OFF)
+option(MC_ENABLE_POSITION_REFERENCE_TESTS "Compare Entity position arithmetic with supplied Windows client" OFF)
 option(MC_ENABLE_PARTICLE_REFERENCE_TESTS "Compare pickup particles with supplied client JAR and observed JDK17 constructor inputs" OFF)
 option(MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS "Compare Player statistic dispatch with supplied Windows client" OFF)
 option(MC_ENABLE_WATER_ANIMATION_REFERENCE_TESTS "Compare water texture animation with supplied client JAR" OFF)
@@ -132,7 +137,7 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_world_view STATIC src/client/world/view.c)
     target_include_directories(mc_client_world_view PUBLIC src/client/world)
     target_link_libraries(mc_client_world_view PUBLIC mc_client_world_renderer mc_client_world_mesher
-        mc_client_assets PRIVATE mc_build_options)
+        mc_client_assets PRIVATE mc_client_first_person mc_build_options)
     add_library(mc_client_assets STATIC src/client/resources/assets.c)
     target_include_directories(mc_client_assets PUBLIC src/client/resources)
     target_link_libraries(mc_client_assets PUBLIC mc_client_gui mc_resources mc_image PRIVATE mc_build_options)
@@ -401,6 +406,8 @@ add_library(mc_simulation STATIC
     src/entity/player/local_tick.c
     src/entity/player/living_tick.c
     src/entity/player/player_tick.c
+    src/entity/player/spawn.c
+    src/entity/position.c
     src/entity/player/pushout.c
     src/entity/player/eligibility.c
     src/entity/player/atan2.c
@@ -468,6 +475,18 @@ add_library(mc_simulation STATIC
     src/world/runtime/presentation.c
     src/world/runtime/world_access.c
     src/world/runtime/entity_publication.c
+    src/world/chunk/entity_remove.c
+    src/world/runtime/entity_tick.c
+    src/world/runtime/entity_tick_chunks.c
+    src/world/runtime/entity_tick_dispatch.c
+    src/world/runtime/entity_tick_lists.c
+    src/world/runtime/entity_tick_loops.c
+    src/world/runtime/entity_tick_nearest.c
+    src/world/runtime/entity_tick_observers.c
+    src/world/runtime/entity_tick_spawner.c
+    src/world/runtime/entity_tick_tiles.c
+    src/world/runtime/weather.c
+    src/world/runtime/entity_update.c
     src/world/runtime/collision/entities.c
     src/world/runtime/collision/class_entities.c
     src/world/runtime/collision/boxes.c
@@ -523,12 +542,145 @@ target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input
     PRIVATE mc_client_notice mc_client_game_directory mc_platform_time mc_platform_text Threads::Threads mc_build_options)
 
+add_library(mc_client_first_person STATIC src/client/world/first_person.c)
+target_include_directories(mc_client_first_person PRIVATE src/platform/time)
+target_link_libraries(mc_client_first_person PUBLIC mc_simulation mc_game_settings PRIVATE mc_build_options)
+if(UNIX)
+    target_link_libraries(mc_client_first_person PRIVATE m)
+endif()
+
 add_library(mc_client_world_session STATIC src/client/world/session.c)
 target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
 target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_platform_time mc_build_options)
 
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_world_entity_tick tests/world/runtime/test_entity_tick.c)
+    target_include_directories(mc_test_world_entity_tick PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_world_entity_tick PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_entity_tick_abi tests/world/runtime/test_entity_tick_abi.c)
+    target_link_libraries(mc_test_world_entity_tick_abi PRIVATE mc_simulation mc_build_options)
+    add_test(NAME world.entity_tick COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/entity_tick/run.py"
+        --native "$<TARGET_FILE:mc_test_world_entity_tick>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-entity-tick")
+    add_test(NAME world.entity_tick_abi COMMAND mc_test_world_entity_tick_abi)
+    add_test(NAME tools.world_entity_tick_controller COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/entity_tick/test_controller.py")
+    add_test(NAME tools.world_entity_tick_controller_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/entity_tick/test_controller.py")
+    set_tests_properties(world.entity_tick PROPERTIES
+        LABELS "public;integration;world;entity;ownership;math" TIMEOUT 240)
+    set_tests_properties(world.entity_tick_abi tools.world_entity_tick_controller tools.world_entity_tick_controller_optimized
+        PROPERTIES LABELS "public;unit;world;entity;ownership" TIMEOUT 60)
+    if(MC_ENABLE_WORLD_ENTITY_TICK_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "World Entity reference requires the client JAR and libraries")
+        endif()
+        add_test(NAME reference.world_entity_tick COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/entity_tick/run.py"
+            --native "$<TARGET_FILE:mc_test_world_entity_tick>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --library-dir "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-world-entity-tick")
+        set_tests_properties(reference.world_entity_tick PROPERTIES
+            LABELS "local;reference;world;entity;ownership;math" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_world_weather tests/world/runtime/test_weather.c)
+    target_link_libraries(mc_test_world_weather PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.weather COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/weather/run.py"
+        --native "$<TARGET_FILE:mc_test_world_weather>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-weather")
+    add_test(NAME tools.world_weather_controller COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/weather/test_controller.py")
+    add_test(NAME tools.world_weather_controller_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/weather/test_controller.py")
+    set_tests_properties(world.weather PROPERTIES
+        LABELS "public;integration;world;weather;ownership;math" TIMEOUT 240)
+    set_tests_properties(tools.world_weather_controller tools.world_weather_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;world;weather" TIMEOUT 60)
+    if(MC_ENABLE_WEATHER_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "World weather reference requires the client JAR and libraries")
+        endif()
+        add_test(NAME reference.world_weather COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/weather/run.py"
+            --native "$<TARGET_FILE:mc_test_world_weather>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --library-dir "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-world-weather")
+        set_tests_properties(reference.world_weather PROPERTIES
+            LABELS "local;reference;world;weather;ownership;math" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_first_person tests/client/world/test_first_person.c)
+    add_executable(mc_test_first_person_callbacks tests/client/world/test_first_person_callbacks.c)
+    foreach(target mc_test_first_person mc_test_first_person_callbacks)
+        target_include_directories(${target} PRIVATE src/platform/time)
+        target_link_libraries(${target} PRIVATE
+            mc_client_first_person mc_resources mc_c_atomics mc_build_options)
+    endforeach()
+    add_test(NAME client.first_person COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_first_person.py"
+        --executable "$<TARGET_FILE:mc_test_first_person>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/first-person-contracts")
+    add_test(NAME client.first_person_callbacks COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_first_person_callbacks.py"
+        --executable "$<TARGET_FILE:mc_test_first_person_callbacks>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/first-person-callback-contracts")
+    add_test(NAME client.first_person_callbacks_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_first_person_callbacks.py"
+        --executable "$<TARGET_FILE:mc_test_first_person_callbacks>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/first-person-callback-optimized-contracts")
+    add_test(NAME tools.first_person_driver COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_first_person_driver.py"
+        --executable "$<TARGET_FILE:mc_test_first_person>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/first-person-driver-contracts")
+    add_test(NAME tools.first_person_driver_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_first_person_driver.py"
+        --executable "$<TARGET_FILE:mc_test_first_person>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/first-person-driver-optimized-contracts")
+    set_tests_properties(client.first_person client.first_person_callbacks client.first_person_callbacks_optimized
+        tools.first_person_driver tools.first_person_driver_optimized PROPERTIES
+        LABELS "public;integration;client;entity;world;ownership;math" TIMEOUT 240)
+    if(MC_BUILD_CLIENT AND MC_ENABLE_CLIENT_DISPLAY_TESTS)
+        add_executable(mc_test_first_person_gpu tests/client/world/test_first_person.c)
+        target_compile_definitions(mc_test_first_person_gpu PRIVATE MC_CAMERA_GPU=1)
+        target_include_directories(mc_test_first_person_gpu PRIVATE src/platform/time)
+        target_link_libraries(mc_test_first_person_gpu PRIVATE
+            mc_client_first_person mc_client_world_renderer mc_resources mc_c_atomics mc_build_options)
+        add_test(NAME client.first_person_gpu COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_first_person.py"
+            --executable "$<TARGET_FILE:mc_test_first_person_gpu>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/first-person-gpu-contracts")
+        set_tests_properties(client.first_person_gpu PROPERTIES
+            LABELS "public;integration;client;graphics;entity;world" TIMEOUT 240)
+    endif()
+    if(MC_ENABLE_CAMERA_REFERENCE_TESTS AND WIN32)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+            message(FATAL_ERROR "Original camera profile requires Windows client JAR, libraries and native directory")
+        endif()
+        add_test(NAME reference.first_person_camera COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/camera/compare.py"
+            --native "$<TARGET_FILE:mc_test_first_person>"
+            --callbacks "$<TARGET_FILE:mc_test_first_person_callbacks>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --native-dir "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-first-person-camera")
+        set_tests_properties(reference.first_person_camera PROPERTIES
+            LABELS "local;reference;client;graphics;entity;world;math" TIMEOUT 480)
+    endif()
+
     add_executable(mc_notice_probe tests/client/gui/notice_probe.c)
     target_include_directories(mc_notice_probe PRIVATE src/client src/core/java src/platform/time)
     target_link_libraries(mc_notice_probe PRIVATE mc_client_notice mc_resources
@@ -1475,6 +1627,74 @@ if(BUILD_TESTING)
                 --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-active-tick")
             set_tests_properties(reference.player_active_tick PROPERTIES
                 LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+        endif()
+    endif()
+
+    add_executable(mc_test_player_spawn tests/entity/player/test_spawn.c)
+    add_executable(mc_test_player_spawn_allocation tests/entity/player/test_spawn_allocation.c)
+    add_executable(mc_position_probe tests/entity/player/position_probe.c)
+    foreach(target mc_test_player_spawn mc_test_player_spawn_allocation mc_position_probe)
+        target_include_directories(${target} PRIVATE src/platform/time)
+        target_link_libraries(${target} PRIVATE
+            mc_simulation mc_resources mc_c_atomics mc_build_options)
+    endforeach()
+    add_test(NAME entity.player_spawn_reset COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_spawn>" --mode spawn-reference
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-spawn-contracts")
+    add_test(NAME entity.player_spawn_allocation COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_spawn_allocation>" --mode spawn
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-spawn-allocation-contracts")
+    add_test(NAME entity.position COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/run_native.py"
+        --executable "$<TARGET_FILE:mc_position_probe>" --mode position-probe
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/entity-position-contracts")
+    set_tests_properties(entity.player_spawn_reset entity.player_spawn_allocation entity.position
+        PROPERTIES LABELS "public;integration;entity;world;ownership;math" TIMEOUT 240)
+    add_test(NAME tools.spawn_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/test_reference.py")
+    add_test(NAME tools.spawn_reference_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/test_reference.py")
+    add_test(NAME tools.position_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/position/test_position.py")
+    add_test(NAME tools.position_reference_optimized COMMAND Python3::Interpreter -O -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/position/test_position.py")
+    set_tests_properties(tools.spawn_reference tools.spawn_reference_optimized
+        tools.position_reference tools.position_reference_optimized PROPERTIES
+        LABELS "public;unit;tools;entity;math" TIMEOUT 60)
+    if(MC_ENABLE_PLAYER_SPAWN_REFERENCE_TESTS OR MC_ENABLE_POSITION_REFERENCE_TESTS)
+        if(NOT WIN32)
+            message(FATAL_ERROR "Original spawn/reset and position profiles require qualified Windows x64")
+        endif()
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR
+                NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+            message(FATAL_ERROR "Original spawn/reset and position profiles require client JAR/libraries/natives")
+        endif()
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(MC_ENABLE_PLAYER_SPAWN_REFERENCE_TESTS)
+            add_test(NAME reference.player_spawn_reset COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/compare.py"
+                --executable "$<TARGET_FILE:mc_test_player_spawn>" --mode spawn
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+                --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-spawn")
+            set_tests_properties(reference.player_spawn_reset PROPERTIES
+                LABELS "local;reference;original;entity;world;ownership;math" TIMEOUT 480)
+        endif()
+        if(MC_ENABLE_POSITION_REFERENCE_TESTS)
+            add_test(NAME reference.entity_position COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/spawn_reset/compare.py"
+                --executable "$<TARGET_FILE:mc_position_probe>" --mode position
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+                --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-entity-position")
+            set_tests_properties(reference.entity_position PROPERTIES
+                LABELS "local;reference;original;entity;world;math" TIMEOUT 480)
         endif()
     endif()
 

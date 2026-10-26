@@ -32,6 +32,17 @@ static bool registry_result(mc_entity_material_error *e, mc_registry_status s, u
     return false;
 }
 
+static bool retain_world(mc_world_runtime *world, unsigned int pc, mc_entity_material_error *e) {
+    if (world == NULL || mc_world_runtime_binding_retain(world))
+        return true;
+    const mc_world_storage_error *cause = mc_world_runtime_last_error(world);
+    if (cause != NULL)
+        e->world = *cause;
+    fail(e, e->world.status == MC_WORLD_STORAGE_LIMIT ? MC_ENTITY_LIMIT : MC_ENTITY_STATE_ERROR,
+         "Entity immersion World receiver hold", pc);
+    return false;
+}
+
 static bool execute(mc_entity *entity, mc_material *m, bool *out, mc_entity_material_error *e) {
     float eye_offset;
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) ||
@@ -53,52 +64,81 @@ static bool execute(mc_entity *entity, mc_material *m, bool *out, mc_entity_mate
         _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(f->y), _mm_set_sd((double)eye_offset)));
     const int32_t x = mc_math_floor_double(f->x);
     const float narrowed = (float)mc_math_floor_double(eye);
-    /* The input is already binary32. Widening it for the canonical floor
-     * preserves in/fq.d(F)I at all narrowing saturation and unordered cases. */
     const int32_t y = mc_math_floor_double((double)narrowed);
     const int32_t z = mc_math_floor_double(f->z);
-    mc_world_runtime *w = f->world;
-    int32_t id;
-    if (mc_world_runtime_block_get(w, x, y, z, &id, &e->world) != MC_WORLD_STORAGE_OK) {
-        fail(e, MC_ENTITY_WORLD_FAILED, e->world.operation, 49);
+    mc_world_runtime *block_world = f->world; /* Actual aI40. */
+    mc_world_runtime *metadata_world = NULL;
+    bool block_held = false, metadata_held = false, completed = false;
+    if (!retain_world(block_world, 49, e))
         return false;
+    block_held = block_world != NULL;
+    int32_t id;
+    if (mc_world_runtime_block_get(block_world, x, y, z, &id, &e->world) != MC_WORLD_STORAGE_OK) {
+        fail(e, MC_ENTITY_WORLD_FAILED, e->world.operation, 49);
+        goto done;
     }
     if (id == 0) {
         *out = false;
-        return true;
+        completed = true;
+        goto done;
     }
-    if (mc_world_runtime_entities(w) != entity->classes) {
+    if (mc_world_runtime_entities(block_world) != entity->classes) {
         fail(e, MC_ENTITY_STATE_ERROR, "Entity immersion code namespace", 59);
-        return false;
+        goto done;
     }
+    mc_registry_classes *code_registry = block_world->classes->registry;
     mc_registry_block_m_view array;
-    if (!registry_result(e, mc_registry_block_m_get(w->classes->registry, &array, &e->registry),
-                         59))
-        return false;
+    if (!registry_result(e, mc_registry_block_m_get(code_registry, &array, &e->registry), 59))
+        goto done;
     const mc_block *b;
     if (!registry_result(e, mc_registry_block_m_at(&array, id, &b, &e->registry), 64))
-        return false;
+        goto done;
     const mc_block_fields *fields = mc_block_fields_get(b);
     if (fields == NULL) {
         e->registry.status = MC_REGISTRY_NULL_REFERENCE;
         e->registry.message = "Entity immersion Block.bA receiver";
         fail(e, MC_ENTITY_STATE_ERROR, e->registry.message, 65);
-        return false;
+        goto done;
     }
     if (fields->bA != m) {
         *out = false;
-        return true;
+        completed = true;
+        goto done;
+    }
+    metadata_world = f->world; /* Fresh actual aI73 after block/Registry callbacks. */
+    if (metadata_world != NULL && (mc_world_runtime_entities(metadata_world) != entity->classes ||
+                                   mc_world_runtime_registry(metadata_world) != code_registry)) {
+        fail(e, MC_ENTITY_STATE_ERROR, "Entity immersion metadata World namespace", 82);
+        goto done;
+    }
+    if (!retain_world(metadata_world, 82, e))
+        goto done;
+    metadata_held = metadata_world != NULL;
+    if (block_held) {
+        mc_world_runtime_binding_release(block_world);
+        block_held = false;
     }
     int32_t metadata;
-    if (mc_world_runtime_metadata_get(w, x, y, z, &metadata, &e->world) != MC_WORLD_STORAGE_OK) {
+    if (mc_world_runtime_metadata_get(metadata_world, x, y, z, &metadata, &e->world) !=
+        MC_WORLD_STORAGE_OK) {
         fail(e, MC_ENTITY_WORLD_FAILED, e->world.operation, 82);
-        return false;
+        goto done;
+    }
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        fail(e, MC_ENTITY_UNSUPPORTED_FP, "Entity immersion FP admission before rp.d", 85);
+        goto done;
     }
     volatile float fraction = mc_material_fluid_height(metadata) - 0.11111111f;
     volatile float top = (float)mc_java_i32_add(y, 1);
     volatile float surface = top - fraction;
     *out = eye < (double)surface;
-    return true;
+    completed = true;
+done:
+    if (metadata_held)
+        mc_world_runtime_binding_release(metadata_world);
+    if (block_held)
+        mc_world_runtime_binding_release(block_world);
+    return completed;
 }
 
 mc_entity_status mc_entity_inside_material(mc_entity *entity, mc_material *m, bool *out,

@@ -6,6 +6,7 @@
 #include "minecart/entity_internal.h"
 #include "particles/particle_internal.h"
 #include "player/player_internal.h"
+#include "position_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -255,15 +256,7 @@ void mc_entity_source_position(mc_entity *entity, double x, double y, double z) 
     entity->base.z = z;
     const float half_width = entity->base.width / 2.0f;
     const float height = entity->base.height;
-    const double minimum_y_before_size = y - (double)entity->base.offset;
-    const double minimum_y = minimum_y_before_size + (double)entity->base.y_size;
-    /* Repeat the original maximum-Y association instead of deriving from a
-     * reordered height/offset sum. Each intermediate has binary64 precision. */
-    const double maximum_y_before_size = y - (double)entity->base.offset;
-    const double maximum_y_before_height = maximum_y_before_size + (double)entity->base.y_size;
-    const double maximum_y = maximum_y_before_height + (double)height;
-    *entity->bounds = (mc_entity_bounds){x - (double)half_width, minimum_y, z - (double)half_width,
-                                         x + (double)half_width, maximum_y, z + (double)half_width};
+    *entity->bounds = mc_entity_source_position_values(entity, x, y, z, half_width, height);
 }
 
 static mc_entity_status make_watcher(mc_entity *entity, mc_entity_error *error) {

@@ -59,6 +59,10 @@ bool mc_world_chunk_storage_empty(const mc_world_chunk *chunk);
 mc_world_storage_status mc_world_chunk_insert_entity(mc_world_chunk *chunk, mc_entity *entity,
                                                      mc_world_chunk_entity_error *error);
 
+mc_world_storage_status mc_world_chunk_remove_entity(mc_world_chunk *chunk, mc_entity *entity,
+                                                     int32_t slice, size_t *work, size_t max_work,
+                                                     mc_world_chunk_entity_error *error);
+
 /* Borrow an actual indexed occurrence without an extra hold. Valid only while
  * the same live, exclusive List owner remains unchanged. Failure preserves out.
  * This neither merges duplicates nor searches by Entity equality/ID. */

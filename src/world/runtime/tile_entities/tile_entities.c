@@ -1,4 +1,5 @@
 #include "mc/world/runtime/tile_entities/tile_entities.h"
+#include "tick_internal.h"
 
 #include "mc/storage/nbt/tree.h"
 
@@ -3705,13 +3706,13 @@ static bool live_world_get_held(mc_world_runtime *world, int32_t x, int32_t y, i
 static bool live_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
                                    mc_live_tile_entity_error *error) {
     error->chunk_bytecode = 16;
+    if (!chunk->state->active)
+        return true;
+    error->chunk_bytecode = 25;
     if (!mc_live_tile_entities_map_valid(chunk)) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity removal Map ownership");
         return false;
     }
-    if (!chunk->state->active)
-        return true;
-    error->chunk_bytecode = 25;
     mc_tile_entity *tile_entity = live_map_remove(chunk, x, y, z);
     if (tile_entity != NULL) {
         error->chunk_bytecode = 42;
@@ -5239,4 +5240,123 @@ mc_world_storage_status mc_live_tile_entities_literal(mc_world_runtime *world, c
         *out = name;
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
+}
+
+/* Captured active iterator kernels. Native ownership is checked against the
+ * actual captured ledger, independently of replaceable current source c/G. */
+static mc_tile_entity_list_ledger *tick_iterator_owner(mc_world_runtime *world,
+                                                       mc_world_reference_list *identity,
+                                                       mc_live_tile_entity_error *error,
+                                                       unsigned int pc) {
+    for (size_t k = 0; identity != NULL && k < 2; ++k) {
+        mc_tile_entity_list_ledger *ledger = &world->tile_entity_membership[k];
+        if (identity != ledger->identity)
+            continue;
+        if (!live_list_shape(identity) || identity->count != ledger->count ||
+            identity->capacity != ledger->capacity ||
+            ((ledger->capacity == 0) != (ledger->holds == NULL)) ||
+            (identity->items != NULL && (void *)identity->items == (void *)ledger->holds))
+            break;
+        return ledger;
+    }
+    error->bytecode = pc;
+    live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity captured iterator owner");
+    return NULL;
+}
+
+bool mc_live_tile_iterator_begin_held(mc_world_runtime *world, mc_world_reference_list *identity,
+                                      mc_live_tile_iterator *out,
+                                      mc_live_tile_entity_error *error) {
+    mc_live_tile_entities_error_init(error);
+    mc_tile_entity_list_ledger *ledger = tick_iterator_owner(world, identity, error, 357);
+    if (ledger == NULL)
+        return false;
+    *out = (mc_live_tile_iterator){
+        .identity = identity, .last_returned = SIZE_MAX, .expected_mod_count = ledger->mod_count};
+    return true;
+}
+
+bool mc_live_tile_iterator_has_next_held(mc_world_runtime *world, mc_live_tile_iterator *iterator,
+                                         bool *out, mc_live_tile_entity_error *error) {
+    mc_live_tile_entities_error_init(error);
+    if (tick_iterator_owner(world, iterator->identity, error, 364) == NULL)
+        return false;
+    *out = iterator->cursor != iterator->identity->count;
+    return true;
+}
+
+bool mc_live_tile_iterator_next_held(mc_world_runtime *world, mc_live_tile_iterator *iterator,
+                                     mc_tile_entity **out, mc_live_tile_entity_error *error) {
+    mc_live_tile_entities_error_init(error);
+    mc_tile_entity_list_ledger *ledger = tick_iterator_owner(world, iterator->identity, error, 373);
+    if (ledger == NULL)
+        return false;
+    error->bytecode = 373;
+    if (ledger->mod_count != iterator->expected_mod_count ||
+        iterator->cursor >= iterator->identity->count) {
+        live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "TileEntity actual iterator next concurrent modification/extent");
+        return false;
+    }
+    const size_t index = iterator->cursor;
+    if (iterator->identity->items[index] != ledger->holds[index]) {
+        error->bytecode = 378;
+        live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "TileEntity iterator reached cast provenance");
+        return false;
+    }
+    mc_tile_entity *tile = ledger->holds[index];
+    if (tile != NULL) {
+        const mc_tile_entity_status held = mc_tile_entity_retain(tile);
+        if (held != MC_TILE_ENTITY_OK) {
+            live_tile_entity_error(error, held, "TileEntity iterator local hold");
+            return false;
+        }
+    }
+    iterator->cursor = index + 1;
+    iterator->last_returned = index;
+    *out = tile;
+    return true;
+}
+
+bool mc_live_tile_iterator_remove_held(mc_world_runtime *world, mc_live_tile_iterator *iterator,
+                                       mc_live_tile_entity_error *error) {
+    mc_live_tile_entities_error_init(error);
+    mc_tile_entity_list_ledger *ledger = tick_iterator_owner(world, iterator->identity, error, 401);
+    if (ledger == NULL)
+        return false;
+    const size_t index = iterator->last_returned;
+    error->bytecode = 401;
+    if (index == SIZE_MAX || ledger->mod_count != iterator->expected_mod_count ||
+        index >= iterator->identity->count ||
+        iterator->identity->items[index] != ledger->holds[index]) {
+        live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "TileEntity actual iterator remove state/concurrent modification");
+        return false;
+    }
+    mc_tile_entity *victim = ledger->holds[index];
+    memmove(iterator->identity->items + index, iterator->identity->items + index + 1,
+            (ledger->count - index - 1) * sizeof(*iterator->identity->items));
+    memmove(ledger->holds + index, ledger->holds + index + 1,
+            (ledger->count - index - 1) * sizeof(*ledger->holds));
+    --ledger->count;
+    iterator->identity->count = ledger->count;
+    iterator->identity->items[ledger->count] = NULL;
+    ledger->holds[ledger->count] = NULL;
+    ledger->mod_count = mc_java_i32_add(ledger->mod_count, 1);
+    iterator->expected_mod_count = ledger->mod_count;
+    iterator->cursor = index;
+    iterator->last_returned = SIZE_MAX;
+    mc_tile_entity_release(victim);
+    return true;
+}
+
+bool mc_live_tile_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
+                                    mc_live_tile_entity_error *error) {
+    mc_live_tile_entities_error_init(error);
+    return live_chunk_remove_held(chunk, x, y, z, error);
+}
+
+mc_registry_classes *mc_live_tile_tick_code_registry(const mc_tile_entity *tile) {
+    return tile == NULL || tile->classes == NULL ? NULL : tile->classes->registry;
 }

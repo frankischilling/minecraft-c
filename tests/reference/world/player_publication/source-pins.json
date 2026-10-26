@@ -328,8 +328,8 @@
       "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "src/world/info/info.c": {
-      "bytes": 34388,
-      "sha256": "a23dca4f6fe5bcfb6ed109abadd242392d4f799ec7a7ed4dfc90aa1c79be39a1"
+      "bytes": 36700,
+      "sha256": "8586eadabd4d98aaf9484b2eb132e1185010bcca1c24b6a7a4c786a8369b44ad"
     },
     "src/world/runtime/chunk_provider.c": {
       "bytes": 17171,
@@ -344,20 +344,20 @@
       "sha256": "0ee33701f314bbb11dc31aa52ddcdba70422bf878bfd7dc5fce3df31d3b824fa"
     },
     "src/world/runtime/construction.c": {
-      "bytes": 49148,
-      "sha256": "a6afc0f7ab182b0e694e68fad322d1b7b0a412df82d52c472c5ece5194ab8d19"
+      "bytes": 49158,
+      "sha256": "75634be271dddf277f60f5c14e2819b8457a046c55f725e5e8842b15d8a09572"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 40282,
-      "sha256": "b4bc5e494bcd75cfe143f1b505eabc13f0ee960d8aafbdc34770fe4099adf3ea"
+      "bytes": 41538,
+      "sha256": "1458a15d5332fba3d761b2b086d22ee38d209f4f6a6a947f1b748047c58e5c6e"
     },
     "src/world/runtime/entity_publication_internal.h": {
-      "bytes": 2471,
-      "sha256": "21bd6183647320f3be9fa936074eec811ed43d02a5311ff0831e512ebfe262d9"
+      "bytes": 2555,
+      "sha256": "713607ffce5ef00899cf3052b7fa026162d48f149aeb846debbe2946eb43b213"
     },
     "src/world/runtime/runtime_internal.h": {
-      "bytes": 5662,
-      "sha256": "ffa21a62e1813afd5cd9ec9d6f85af952dac9ce84ea6d5ca38f92a93ec677a40"
+      "bytes": 5783,
+      "sha256": "81935974adc1d96d0e34d615435ca3a2cd2cb4d96c704b363f39d159a2b0ddf0"
     },
     "src/entity/nbt/nbt.c": {
       "bytes": 22964,
@@ -370,6 +370,10 @@
     "tests/world/runtime/player_publication/test_publication.c": {
       "bytes": 19674,
       "sha256": "b2c053817f3b730206a20549dd3727fdef608c6a989146920643e11cf8a83313"
+    },
+    "src/world/info/weather_source_internal.h": {
+      "bytes": 1212,
+      "sha256": "0a975f1f7116c54687f3f1e2af79ef87319118c43b3caeefa1236eedc7793da4"
     }
   },
   "private_resources": {

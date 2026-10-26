@@ -76,13 +76,16 @@ static bool owned_shape(const mc_world_runtime *world) {
     const size_t bytes = list->capacity * (sizeof(*list->items) + sizeof(*ledger->entries));
     if (bytes > world->construction.direct_allocation_bytes)
         return false;
-    const mc_world_reference_list *others[] = {
-        world->entity_membership.list, world->entity_deferral.list, world->nearby_entities.list,
-        world->tile_entity_membership[0].identity, world->tile_entity_membership[1].identity};
-    const void *backings[] = {world->entity_membership.entries, world->entity_deferral.entries,
-                              world->nearby_entities.entries,
-                              world->tile_entity_membership[0].holds,
-                              world->tile_entity_membership[1].holds};
+    const mc_world_reference_list *others[] = {world->entity_membership.list,
+                                               world->entity_deferral.list,
+                                               world->weather_membership.list,
+                                               world->nearby_entities.list,
+                                               world->tile_entity_membership[0].identity,
+                                               world->tile_entity_membership[1].identity};
+    const void *backings[] = {
+        world->entity_membership.entries,       world->entity_deferral.entries,
+        world->weather_membership.entries,      world->nearby_entities.entries,
+        world->tile_entity_membership[0].holds, world->tile_entity_membership[1].holds};
     for (size_t i = 0; i < sizeof(others) / sizeof(others[0]); ++i) {
         if (list == others[i])
             return false;

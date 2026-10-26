@@ -284,6 +284,8 @@ static bool world_list(mc_world_runtime *runtime, mc_world_reference_list **fiel
         runtime->entity_deferral.list = list;
     else if (field == &runtime->fields.d)
         runtime->player_membership.list = list;
+    else if (field == &runtime->fields.e)
+        runtime->weather_membership.list = list;
     else if (field == &runtime->fields.R)
         runtime->nearby_entities.list = list;
     else if (field == &runtime->fields.K)
@@ -819,10 +821,11 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
     if (runtime->construction.contexts_bound || runtime->construction.cache_registered)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World context retirement");
     if (!mc_world_runtime_entity_list_valid(runtime) ||
-        !mc_world_runtime_player_list_retirement_valid(runtime))
+        (!mc_world_runtime_player_list_retirement_valid(runtime) ||
+         !mc_world_runtime_weather_list_retirement_valid(runtime)))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
     if (runtime->entity_membership.count != 0 || runtime->entity_deferral.count != 0 ||
-        runtime->player_membership.count != 0)
+        runtime->player_membership.count != 0 || runtime->weather_membership.count != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World Entity occurrences remain");
     if (!mc_live_tile_entities_lists_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -862,7 +865,7 @@ mc_world_storage_status mc_world_runtime_game_free(mc_world_runtime *runtime,
                                         f->c,
                                         f->G,
                                         runtime->player_membership.list,
-                                        f->e,
+                                        runtime->weather_membership.list,
                                         runtime->world_accesses.list,
                                         runtime->collision_boxes.list,
                                         runtime->nearby_entities.list};
@@ -895,7 +898,8 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
     if (runtime->active_calls != 0 || runtime->local_leases != 0)
         return result(error, MC_WORLD_STORAGE_BUSY, "World call or lease during retirement");
     if (!mc_world_runtime_entity_list_valid(runtime) ||
-        !mc_world_runtime_player_list_retirement_valid(runtime))
+        (!mc_world_runtime_player_list_retirement_valid(runtime) ||
+         !mc_world_runtime_weather_list_retirement_valid(runtime)))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World Entity ownership metadata");
     if (!mc_world_nearby_owned_valid(runtime))
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World nearby ownership metadata");
@@ -915,7 +919,7 @@ mc_world_storage_status mc_world_runtime_retire_world(mc_world_runtime *runtime,
                                         f->c,
                                         f->G,
                                         runtime->player_membership.list,
-                                        f->e,
+                                        runtime->weather_membership.list,
                                         runtime->collision_boxes.list,
                                         runtime->nearby_entities.list};
     /* C contains typed World-owned records, retired at final native free.
@@ -962,13 +966,8 @@ static bool entity_retirement_other_collections_empty(const mc_world_runtime *wo
     /* C/E/F are already concrete typed owners retained until final native free.
      * b/D/d/c/G/R/K/u are admitted separately. Never reinterpret entries of these remaining
      * finite void* lists, clear their counts, or discard a nonempty active set. */
-    const mc_world_reference_list *lists[] = {fields->e};
-    for (size_t index = 0; index < sizeof(lists) / sizeof(lists[0]); ++index) {
-        const mc_world_reference_list *list = lists[index];
-        if (list != NULL && (list->count != 0 || list->capacity > SIZE_MAX / sizeof(*list->items) ||
-                             (list->capacity != 0 && list->items == NULL)))
-            return false;
-    }
+    if (!mc_world_runtime_weather_list_retirement_valid(world))
+        return false;
     return fields->P == NULL || fields->P->count == 0;
 }
 

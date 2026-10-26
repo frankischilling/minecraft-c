@@ -57,9 +57,10 @@ source-alpha blending and an explicit depth-write flag.
 
 Projection preserves the pinned LWJGL GLU float operation order. Mesh origins
 preserve the original 1024-block high/clip split, float camera subtraction and
-`1.000001f` section dilation. The camera interface provides ordinary pitch/yaw
-and first-person translation. Hurt, bobbing, portal, third-person and debug-camera
-paths are unfinished. Linear and exponential fog have explicit shader inputs;
+`1.000001f` section dilation. The [first-person component](first-person.md) adds
+source-ordered FOV, hurt/death, bobbing, sleep/debug and anaglyph operations over
+actual Player and App owners. Normal frontend adoption, positive portal and
+third-person paths remain unfinished. Linear and exponential fog have explicit shader inputs;
 the fixed diagnostic uses a constant clear color without fog. This does not
 implement the original sky, weather or complete EntityRenderer.
 
