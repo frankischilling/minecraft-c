@@ -35,20 +35,21 @@ static mc_world_block_power_site *site(mc_world_power_error *error, block_power_
 /* Reset only this callee and its descendants. Explicit World and strong/weak
  * callers survive a delegated output or static connectivity failure. */
 static void clear(mc_world_power_error *error, block_power_method method) {
-    const mc_world_power_error empty = mc_world_power_empty_error();
-    error->status = empty.status;
-    error->operation = empty.operation;
-    error->cause = empty.cause;
-    error->registry = empty.registry;
-    error->support = empty.support;
-    error->access = empty.access;
-    error->capability = empty.capability;
+    static const mc_world_storage_error cause = {0};
+    static const mc_world_block_power_site empty = {0};
+    error->status = MC_WORLD_STORAGE_OK;
+    error->operation = NULL;
+    error->cause = cause;
+    error->registry = mc_world_power_empty_registry();
+    mc_world_power_support_error_init(&error->support);
+    mc_world_nearby_error_init(&error->access);
+    error->capability = empty;
     if (method == BLOCK_STRONG)
-        error->strong = empty.strong;
+        error->strong = empty;
     if (method == BLOCK_STRONG || method == BLOCK_WEAK)
-        error->weak = empty.weak;
+        error->weak = empty;
     if (method != BLOCK_CAPABILITY)
-        error->redstone_connectivity = empty.redstone_connectivity;
+        error->redstone_connectivity = empty;
 }
 
 static mc_world_storage_status fail(mc_world_runtime *world, mc_world_power_error *error,
@@ -138,7 +139,8 @@ static bool read_value(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                        int32_t *out, block_power_method method, unsigned int pc,
                        mc_world_power_error *error) {
     at(error, method, pc);
-    mc_world_collision_error lower = mc_world_collision_empty_error();
+    mc_world_collision_error lower;
+    mc_world_collision_error_init(&lower);
     const mc_world_storage_status status =
         mc_world_collision_block_value_held(world, x, y, z, metadata, out, &lower);
     if (status == MC_WORLD_STORAGE_OK)
@@ -181,7 +183,7 @@ static bool static_id(mc_world_runtime *world, const mc_block *redstone, const c
                       unsigned int static_pc, unsigned int field_pc, int32_t *out,
                       mc_world_power_error *error) {
     at(error, REDSTONE_CONNECTIVITY, static_pc);
-    mc_registry_error lower = mc_world_power_empty_error().registry;
+    mc_registry_error lower = mc_world_power_empty_registry();
     const mc_block *selected = NULL;
     if (mc_registry_block_static_get(redstone->classes, field, &selected, &lower) != MC_REGISTRY_OK)
         return registry_failure(world, &lower, "Redstone connectivity Block static active use",
@@ -211,7 +213,7 @@ static bool connectivity(mc_world_runtime *world, const mc_block *redstone, int3
     if (!value && id != 0) {
         at(error, REDSTONE_CONNECTIVITY, 31);
         mc_registry_block_m_view array;
-        mc_registry_error lower = mc_world_power_empty_error().registry;
+        mc_registry_error lower = mc_world_power_empty_registry();
         if (mc_registry_block_m_get(redstone->classes, &array, &lower) != MC_REGISTRY_OK)
             return registry_failure(world, &lower, "Redstone connectivity Block.m active use",
                                     error);
@@ -242,7 +244,7 @@ static bool connectivity(mc_world_runtime *world, const mc_block *redstone, int3
                  * independent four-direction class, not wj/od or a constant. */
                 at(error, REDSTONE_CONNECTIVITY, 80);
                 mc_registry_horizontal_view orientation;
-                lower = mc_world_power_empty_error().registry;
+                lower = mc_world_power_empty_registry();
                 if (mc_registry_horizontal_b_get(redstone->classes, &orientation, &lower) !=
                     MC_REGISTRY_OK)
                     return registry_failure(
@@ -501,7 +503,8 @@ static mc_world_storage_status strong_kernel(mc_world_runtime *world, const mc_b
  * frame. Only the private kernels above share their current source callers. */
 mc_world_storage_status mc_world_block_power_capability_held(const mc_block *block, bool *out,
                                                              mc_world_power_error *error) {
-    mc_world_power_error frame = mc_world_power_empty_error();
+    mc_world_power_error frame;
+    mc_world_power_error_init(&frame);
     const mc_world_storage_status status = capability_kernel(block, out, &frame);
     if (error != NULL)
         *error = frame;
@@ -512,7 +515,8 @@ mc_world_storage_status mc_world_block_weak_power_held(mc_world_runtime *world,
                                                        const mc_block *block, int32_t x, int32_t y,
                                                        int32_t z, int32_t side, bool *out,
                                                        mc_world_power_error *error) {
-    mc_world_power_error frame = mc_world_power_empty_error();
+    mc_world_power_error frame;
+    mc_world_power_error_init(&frame);
     const mc_world_storage_status status = weak_kernel(world, block, x, y, z, side, out, &frame);
     if (error != NULL)
         *error = frame;
@@ -523,7 +527,8 @@ mc_world_storage_status mc_world_block_strong_power_held(mc_world_runtime *world
                                                          const mc_block *block, int32_t x,
                                                          int32_t y, int32_t z, int32_t side,
                                                          bool *out, mc_world_power_error *error) {
-    mc_world_power_error frame = mc_world_power_empty_error();
+    mc_world_power_error frame;
+    mc_world_power_error_init(&frame);
     const mc_world_storage_status status = strong_kernel(world, block, x, y, z, side, out, &frame);
     if (error != NULL)
         *error = frame;

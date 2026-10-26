@@ -136,6 +136,7 @@ mc_player_status mc_player_session_create(mc_player_session_classes *classes,
     }
     session->session_id = session_id;
     session->classes = classes;
+    session->holds = 1;
     ++classes->live_sessions;
     *out = session;
     return MC_PLAYER_OK;
@@ -145,17 +146,28 @@ void mc_player_session_retire(mc_player_session **owner) {
     if (owner == NULL || *owner == NULL)
         return;
     mc_player_session *session = *owner;
+    *owner = NULL;
+    if (--session->holds != 0)
+        return;
     mc_player_string_release(session->username);
     mc_player_string_release(session->session_id);
     --session->classes->live_sessions;
     free(session);
-    *owner = NULL;
+}
+
+mc_player_status mc_player_session_retain(mc_player_session *session) {
+    if (session == NULL)
+        return MC_PLAYER_INVALID_ARGUMENT;
+    if (session->holds == SIZE_MAX)
+        return MC_PLAYER_LIMIT;
+    ++session->holds;
+    return MC_PLAYER_OK;
 }
 
 bool mc_player_session_read(const mc_player_session *session, mc_player_session_state *out) {
     if (session == NULL || out == NULL)
         return false;
-    *out = (mc_player_session_state){session->username, session->session_id, NULL};
+    *out = (mc_player_session_state){session->username, session->session_id, NULL, session->holds};
     return true;
 }
 
@@ -163,6 +175,11 @@ bool mc_player_session_matches(const mc_player_session *session, const mc_entity
                                const mc_registry_classes *registry) {
     return session != NULL && session->classes->entities == entities &&
            (registry == NULL || session->classes->registry == registry);
+}
+
+bool mc_player_session_registry_matches(const mc_player_session *session,
+                                        const mc_registry_classes *registry) {
+    return session != NULL && session->classes->registry == registry;
 }
 
 bool mc_player_session_classes_read(const mc_player_session_classes *classes,

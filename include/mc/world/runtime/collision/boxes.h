@@ -46,6 +46,8 @@ mc_world_storage_status mc_world_collision_list_view_get(const mc_world_collisio
                                                          size_t index,
                                                          const mc_entity_bounds **out);
 void mc_world_collision_list_view_release(mc_world_collision_list_view *view);
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_world_collision_error_init(mc_world_collision_error *error);
 mc_world_collision_error mc_world_collision_empty_error(void);
 
 #endif

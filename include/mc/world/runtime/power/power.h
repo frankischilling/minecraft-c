@@ -28,6 +28,9 @@ typedef struct mc_world_power_error {
     mc_registry_error registry;
 } mc_world_power_error;
 
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_world_power_error_init(mc_world_power_error *error);
+
 /* Actual fd.s/dj.r(III)Z. Ask below, above, Z-, Z+, X-, X+ in source order
  * with side arguments0..5 and Java wrapping coordinates, returning on the first
  * true result. Each directional weak query first executes actual solid support;

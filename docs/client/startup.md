@@ -31,8 +31,11 @@ The App now owns the [achievement notice/model constructor graph](achievement-no
 before Display and Settings creation. Its Entity and render-class owners survive
 menu/World changes, and each notice/model child retires before its Registry and
 Entity namespace. This supplies construction and notification state; full startup,
-notice drawing and Player ticking remain unfinished. The inventory-description
-callback installation awaits the actual StatsWriter publication site.
+notice drawing and Player ticking remain unfinished. The App also constructs
+its real water-effect owner before statistics initialization and adopts a real
+Session and StatsWriter, then installs the inventory-description callback after
+writer publication. [Player statistics](player-statistics.md) describes that
+ownership, reached dispatch and remaining filename profile.
 
 The App creates Display first, then a real GameDirectory owner and one
 file-backed [GameSettings](game-settings.md) owner. Settings load before the

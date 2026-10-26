@@ -4,6 +4,8 @@
 #include "../runtime_internal.h"
 #include "mc/world/runtime/power/power.h"
 
+mc_registry_error mc_world_power_empty_registry(void);
+void mc_world_power_support_error_init(mc_world_solid_support_error *error);
 mc_world_power_error mc_world_power_empty_error(void);
 
 /* Actual World bodies. Caller holds/enters the same live GAME World; no new

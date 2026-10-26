@@ -12,6 +12,7 @@ struct mc_player_string {
 struct mc_player_session {
     mc_player_session_classes *classes;
     mc_player_string *username, *session_id;
+    size_t holds;
 };
 
 typedef struct mc_local_player_state {
@@ -30,6 +31,8 @@ const mc_player_string *mc_player_model_literal(void);
 mc_player_status mc_player_skin_string(const mc_player_string *name, mc_player_string **out);
 bool mc_player_session_matches(const mc_player_session *session, const mc_entity_classes *entities,
                                const mc_registry_classes *registry);
+bool mc_player_session_registry_matches(const mc_player_session *session,
+                                        const mc_registry_classes *registry);
 float mc_local_player_aj_from_draw(double value);
 float mc_local_player_g_from_draw(double value);
 float mc_local_player_f_from_draw(double value);

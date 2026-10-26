@@ -21,13 +21,23 @@
 #endif
 #include <emmintrin.h>
 
+void mc_world_nearby_error_init(mc_world_nearby_error *error) {
+    static const mc_world_nearby_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    error->slice = SIZE_MAX;
+    error->index = SIZE_MAX;
+    mc_live_tile_entities_error_init(&error->tile_entity);
+    mc_world_entity_batch_error_init(&error->batch);
+    mc_world_entity_load_error_init(&error->load_entity);
+    error->query.registry = error->tile_entity.registry;
+}
+
 mc_world_nearby_error mc_world_nearby_empty_error(void) {
-    mc_world_nearby_error result = {.slice = SIZE_MAX, .index = SIZE_MAX};
-    result.tile_entity = mc_live_tile_entities_empty_error();
-    result.batch = mc_world_entity_batch_empty_error();
-    result.load_entity = mc_world_entity_load_empty_error();
-    result.query.registry = result.tile_entity.registry;
-    return result;
+    mc_world_nearby_error error;
+    mc_world_nearby_error_init(&error);
+    return error;
 }
 
 static mc_world_storage_status fail(mc_world_nearby_error *frame, mc_world_storage_status status,
@@ -287,7 +297,11 @@ mc_world_storage_status mc_world_nearby_gather_held(mc_world_runtime *world, mc_
                                                     const mc_entity_bounds *bounds,
                                                     mc_world_reference_list *destination,
                                                     mc_world_nearby_error *error) {
-    mc_world_nearby_error frame = error == NULL ? mc_world_nearby_empty_error() : *error;
+    mc_world_nearby_error frame;
+    if (error == NULL)
+        mc_world_nearby_error_init(&frame);
+    else
+        frame = *error;
     mc_world_storage_status status;
     frame.query.chunk_bytecode = 0;
     if (state == NULL)
@@ -435,7 +449,8 @@ mc_world_storage_status mc_world_runtime_nearby_entities(mc_world_runtime *world
                                                          const mc_entity_bounds *bounds,
                                                          mc_world_entity_list_view *out,
                                                          mc_world_nearby_error *error) {
-    mc_world_nearby_error frame = mc_world_nearby_empty_error();
+    mc_world_nearby_error frame;
+    mc_world_nearby_error_init(&frame);
     if (world == NULL || out == NULL)
         fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Nearby arguments");
     else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -456,7 +471,7 @@ mc_world_storage_status mc_world_runtime_nearby_entities(mc_world_runtime *world
                 mc_world_entity_list_view value = {0};
                 if (query(world, excluded, bounds, &value, &frame)) {
                     *out = value;
-                    frame = mc_world_nearby_empty_error();
+                    mc_world_nearby_error_init(&frame);
                 }
                 mc_entity_release(excluded);
             }

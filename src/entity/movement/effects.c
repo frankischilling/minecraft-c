@@ -5,6 +5,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
 #include "../player/player_internal.h"
+#include "../player/statistics_status_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 
@@ -31,11 +32,21 @@ _Static_assert(CHAR_BIT == 8 && sizeof(float) == sizeof(uint32_t) &&
                    FLT_EVAL_METHOD == 0,
                "strict binary32/binary64 storage and evaluation required");
 
+void mc_entity_effect_error_init(mc_entity_effect_error *error) {
+    static const mc_entity_effect_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    error->watcher_index = -1;
+    error->statistic_error.writer.index = SIZE_MAX;
+    error->statistic_error.writer.text_offset = SIZE_MAX;
+    mc_world_movement_error_init(&error->world);
+    error->registry = error->world.registry;
+}
+
 mc_entity_effect_error mc_entity_effect_empty_error(void) {
-    mc_entity_effect_error error = {0};
-    error.watcher_index = -1;
-    error.world = mc_world_movement_empty_error();
-    error.registry = error.world.registry;
+    mc_entity_effect_error error;
+    mc_entity_effect_error_init(&error);
     return error;
 }
 
@@ -162,7 +173,8 @@ static bool flag(mc_entity *entity, int32_t bit, bool *out, mc_entity_effect_err
 
 mc_entity_status mc_entity_effect_watcher_byte(mc_entity *entity, int32_t index, int8_t *out,
                                                mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Watcher Byte output", 0);
@@ -177,7 +189,8 @@ mc_entity_status mc_entity_effect_watcher_byte(mc_entity *entity, int32_t index,
 
 mc_entity_status mc_entity_effect_flag(mc_entity *entity, int32_t bit, bool *out,
                                        mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER, "Entity flag output",
              0);
@@ -192,7 +205,8 @@ mc_entity_status mc_entity_effect_flag(mc_entity *entity, int32_t bit, bool *out
 
 mc_entity_status mc_entity_effect_sneaking(mc_entity *entity, bool *out,
                                            mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity sneaking output", 0);
@@ -218,7 +232,8 @@ mc_entity_status mc_entity_effect_sneaking(mc_entity *entity, bool *out,
 }
 
 mc_entity_status mc_entity_effect_wet(mc_entity *entity, bool *out, mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER, "Entity wet output",
              0);
@@ -289,12 +304,19 @@ static bool statistic_get(mc_entity *entity, mc_registry_classes *classes, size_
     return true;
 }
 
-static bool statistic_pending(mc_entity_effect_error *error, int32_t amount, uint16_t pc) {
+static bool statistic_dispatch(mc_entity *entity, mc_entity_effect_error *error, int32_t amount,
+                               uint16_t pc) {
     error->statistic_amount = amount;
     error->player_bytecode = pc;
-    error->statistic_bytecode = 0;
-    fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-         "LocalPlayer a(Statistic,int) actual application Stats/notice dispatch", pc);
+    const mc_player_statistic_status status =
+        mc_local_player_add_statistic(entity, error->statistic, amount, &error->statistic_error);
+    error->statistic_bytecode = (uint16_t)error->statistic_error.site.pc;
+    if (status == MC_PLAYER_STATISTIC_OK)
+        return true;
+    fail(error, mc_player_statistic_entity_status(&error->statistic_error),
+         status == MC_PLAYER_STATISTIC_NULL_REFERENCE ? MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE
+                                                      : MC_ENTITY_EFFECT_CAUSE_STATISTIC,
+         "LocalPlayer actual application statistic descendant", pc);
     return false;
 }
 
@@ -324,7 +346,8 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
             return false;
         const double widened = _mm_cvtsd_f64(_mm_cvtss_sd(_mm_setzero_pd(), _mm_set_ss(distance)));
         const double scaled = _mm_cvtsd_f64(_mm_mul_sd(_mm_set_sd(widened), _mm_set_sd(100.0)));
-        return statistic_pending(error, mc_java_i32_narrow(round_double(scaled)), 20);
+        if (!statistic_dispatch(entity, error, mc_java_i32_narrow(round_double(scaled)), 20))
+            return false;
     }
     /* gs invokespecial25 -> ls invokespecial2 -> actual sn passenger virtual. */
     error->player_bytecode = 25;
@@ -352,13 +375,14 @@ static bool fall(mc_entity *entity, mc_registry_classes *classes, float distance
 
 mc_entity_status mc_entity_effect_fall_in_context(mc_entity *entity, mc_registry_classes *classes,
                                                   float distance, mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         (void)fall(entity, classes, distance, &frame);
         mc_entity_release(entity);
     }
     if (frame.status == MC_ENTITY_OK)
-        frame = mc_entity_effect_empty_error();
+        mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
 
@@ -371,7 +395,8 @@ mc_entity_status mc_entity_effect_fall_state_in_context(mc_entity *entity,
                                                         mc_registry_classes *classes,
                                                         double displacement, bool grounded,
                                                         mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         if (grounded) {
             if (fp(&frame, "Entity grounded fall-distance comparison", 9)) {
@@ -397,7 +422,7 @@ mc_entity_status mc_entity_effect_fall_state_in_context(mc_entity *entity,
         mc_entity_release(entity);
     }
     if (frame.status == MC_ENTITY_OK)
-        frame = mc_entity_effect_empty_error();
+        mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
 
@@ -426,7 +451,8 @@ static bool dead(mc_entity *entity, mc_entity_effect_error *error) {
 }
 
 mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         attacked(entity);
         mc_entity_release(entity);
@@ -435,7 +461,8 @@ mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_e
 }
 
 mc_entity_status mc_entity_effect_dead(mc_entity *entity, mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         (void)dead(entity, &frame);
         mc_entity_release(entity);
@@ -518,7 +545,12 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *s
          * branch returns63. Null/non-Living skips that call altogether. */
         if (!statistic_get(entity, classes, 18, 148, error))
             return false;
-        return statistic_pending(error, amount, 152);
+        if (!statistic_dispatch(entity, error, amount, 152))
+            return false;
+        error->living_bytecode = 158;
+        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+             "Player damage actual Living hurt continuation", 158);
+        return false;
     }
     attacked(entity); /* Both actual damage bodies dispatch inherited ai/af at1. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM)) {
@@ -533,7 +565,8 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_entity *s
 mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity, mc_registry_classes *classes,
                                                     mc_entity *source, int32_t amount, bool *out,
                                                     mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity damage output", 0);
@@ -542,7 +575,7 @@ mc_entity_status mc_entity_effect_damage_in_context(mc_entity *entity, mc_regist
         mc_entity_release(entity);
     }
     if (frame.status == MC_ENTITY_OK)
-        frame = mc_entity_effect_empty_error();
+        mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
 
@@ -555,7 +588,8 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
                                                          mc_registry_classes *classes,
                                                          int32_t amount,
                                                          mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         /* Item hl/ez invokes damage at3 without reading immunity. Falling
          * inherits sn/lq immunity1 and, when false, damage call10. */
@@ -567,7 +601,7 @@ mc_entity_status mc_entity_effect_fire_damage_in_context(mc_entity *entity,
         mc_entity_release(entity);
     }
     if (frame.status == MC_ENTITY_OK)
-        frame = mc_entity_effect_empty_error();
+        mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
 }
 
@@ -578,7 +612,8 @@ mc_entity_status mc_entity_effect_fire_damage(mc_entity *entity, int32_t amount,
 
 mc_entity_status mc_entity_effect_walks(mc_entity *entity, bool *out,
                                         mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity walking-effect output", 0);
@@ -590,7 +625,8 @@ mc_entity_status mc_entity_effect_walks(mc_entity *entity, bool *out,
 }
 
 mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_effect_error *error) {
-    mc_entity_effect_error frame = mc_entity_effect_empty_error();
+    mc_entity_effect_error frame;
+    mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
             mc_player_fields *fields = &entity->local_player->fields.player;

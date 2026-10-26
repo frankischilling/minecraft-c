@@ -3,7 +3,7 @@
 The [native client](client/startup.md) owns the resource source, shared Registry,
 asset cache, font layout and SDL/OpenGL display. The display draws supplied
 quads and manages context/texture ownership; it has no World or screen logic.
-Image decoding and font layout work without an OpenGL context. Client libraries
+Image decoding and font layout work without an OpenGL context. Graphics and audio device libraries
 remain outside the simulation and server link graph. The current title screen
 does not yet start gameplay, child menus or audio. A separate
 [World inspection](client/world-renderer.md) owns actual World construction,
@@ -34,15 +34,16 @@ owns the real base/Living/Player state, Inventory/Container aliases, Session
 Strings and MouseFilters. [Player input attachment](client/player-input.md)
 retains the same MovementInput owner and forwards actual key/reset/sneaking
 operations. Separate [World publication](world/player-publication.md) retains
-each Player occurrence. Application adoption and the World entity tick loop
-remain unfinished.
+each Player occurrence. The application now owns a real Session and statistics writer; the World
+entity tick loop and gameplay adoption remain unfinished.
 
 [Material immersion and acceleration](world/material-movement.md) use the same
 World, Entity, Block and Material owners. Their Vec3 pool belongs to the shared
 Entity classes owner and survives individual Worlds. Pool reset and client clear
 are explicit operations; retained vectors prevent class retirement. The reached
 fluid and Stairs dispatch preserves virtual calls and sequential velocity stores.
-Living movement and the Player tick remain unfinished.
+Living travel and action bodies use these same owners; the active Player
+tick remains unfinished.
 
 [Entity environment helpers](entity/environment.md) preserve the actual water,
 lava, stored-water, clearance and relative-acceleration operations. The caller
@@ -57,8 +58,11 @@ Fresh sound Strings retain the same identity through WorldAccess callbacks and
 free their managed storage after the last hold. Player fall, damage and close
 methods retain their reached source prefixes and explicit remaining descendants.
 All callers rebuild with the expanded movement/effect error records; Entity,
-World and Registry storage layouts are unchanged. Living travel, complete ticks
-and application adoption remain unfinished.
+World and Registry storage layouts are unchanged. [Travel](entity/living-travel.md),
+[base environment ticking](entity/base-environment-tick.md),
+[inventory updates](entity/inventory-tick.md) and [action bodies](entity/player-action.md)
+compose actual descendants. The [application statistics owners](client/player-statistics.md)
+provide real reached dc dispatch. Complete active ticks and gameplay remain unfinished.
 
 [Crafting inventories and containers](inventory/crafting.md) own the concrete
 Player inventory, crafting grid/result and Player/Workbench Slot graphs.

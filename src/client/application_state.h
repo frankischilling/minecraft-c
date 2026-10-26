@@ -14,6 +14,10 @@ typedef struct mc_gui_main_menu mc_gui_main_menu;
 typedef struct mc_client_game_directory mc_client_game_directory;
 typedef struct mc_client_world_session mc_client_world_session;
 typedef struct mc_client_world_view mc_client_world_view;
+typedef struct mc_player_session_classes mc_player_session_classes;
+typedef struct mc_player_session mc_player_session;
+typedef struct mc_client_stats_writer mc_client_stats_writer;
+typedef struct mc_client_water_texture_effect mc_client_water_texture_effect;
 
 /* The actual application storage, extracted without a shadow representation.
  * Existing fields retain their order; notice/class lifetime fields are explicit. */
@@ -50,6 +54,17 @@ struct client_application {
     int display_width, display_height, input_window_width, input_window_height;
     bool running, captured;
     uint32_t frames;
+    /* Actual k/I fields on this complete application. Native retention is
+     * separate so an allocated/failed xi is never published as completed I. */
+    mc_player_session_classes *session_classes;
+    mc_player_session *session;
+    mc_client_stats_writer *stats_writer;
+    mc_client_stats_writer *stats_writer_retained;
+    bool statistics_active_use_completed;
+    bool session_constructing, stats_writer_constructing, statistics_retiring, statistics_retired;
+    mc_client_water_texture_effect *water_effect; /* actual ad, published at122 */
+    mc_client_water_texture_effect *water_effect_retained;
+    bool water_effect_constructing;
 };
 
 #endif

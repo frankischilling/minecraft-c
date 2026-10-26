@@ -354,9 +354,13 @@ static bool published_boxes(fixture *f, mc_entity *falling, mc_entity *player, m
           inserted);
     value = true;
     mc_entity_environment_error error;
-    CHECK(mc_entity_environment_clearance(player, 0, 0, 0, NULL, &value, &error) ==
-              MC_ENTITY_WORLD_FAILED &&
-          value && error.bytecode == 20 && error.collision.world_bytecode == 218);
+    const mc_entity_status candidate_status =
+        mc_entity_environment_clearance(player, 0, 0, 0, NULL, &value, &error);
+    /* Actual yl.f() returns null; the moving Player inherits the other null
+     * body. Publishing the Minecart therefore does not block clearance. */
+    CHECK(candidate_status == MC_ENTITY_OK && value && error.status == MC_ENTITY_OK &&
+          error.bytecode == 0 && error.collision.world_bytecode == 0 &&
+          f->worlds[0]->local_leases == 0 && f->worlds[0]->active_calls == 0);
     ok = true;
 cleanup:
     return ok;

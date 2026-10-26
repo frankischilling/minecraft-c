@@ -65,12 +65,12 @@ void mc_entity_move_error_init(mc_entity_move_error *error) {
     if (error == NULL)
         return;
     memset(error, 0, sizeof(*error));
-    error->collision = mc_world_collision_empty_error();
-    error->block_read = mc_world_collision_empty_error();
-    error->world = mc_world_movement_empty_error();
-    error->contact = mc_world_entity_contact_empty_error();
+    mc_world_collision_error_init(&error->collision);
+    mc_world_collision_error_init(&error->block_read);
+    mc_world_movement_error_init(&error->world);
+    mc_world_entity_contact_error_init(&error->contact);
     mc_world_step_error_init(&error->step);
-    error->effect = mc_entity_effect_empty_error();
+    mc_entity_effect_error_init(&error->effect);
     error->registry = error->collision.nearby.query.registry;
 }
 
@@ -220,7 +220,7 @@ static bool contacts(mc_entity *entity, mc_entity_move_error *error) {
                     return false;
                 mc_world_runtime *const world = entity->base.world;
                 mc_world_storage_error admission = {0};
-                error->block_read = mc_world_collision_empty_error();
+                mc_world_collision_error_init(&error->block_read);
                 mc_world_storage_status status = mc_world_runtime_call_enter(world, &admission);
                 int32_t id = 0;
                 if (status == MC_WORLD_STORAGE_OK) {
@@ -270,7 +270,7 @@ static bool walking_block(mc_entity *entity, int32_t x, int32_t y, int32_t z, in
             mc_world_collision_block_value_held(world, x, y, z, false, out, &error->block_read);
         mc_world_runtime_call_leave(world);
     } else {
-        error->block_read = mc_world_collision_empty_error();
+        mc_world_collision_error_init(&error->block_read);
         error->block_read.nearby.query.status = status;
         error->block_read.nearby.query.operation = admission.operation;
         error->block_read.nearby.query.cause = admission;

@@ -295,7 +295,11 @@ mc_world_storage_status mc_world_class_entities_gather_held(mc_world_runtime *wo
                                                             const mc_entity_bounds *bounds,
                                                             mc_world_class_entity_list *destination,
                                                             mc_world_nearby_error *error) {
-    mc_world_nearby_error frame = error == NULL ? mc_world_nearby_empty_error() : *error;
+    mc_world_nearby_error frame;
+    if (error == NULL)
+        mc_world_nearby_error_init(&frame);
+    else
+        frame = *error;
     mc_world_storage_status status;
     frame.query.chunk_bytecode = 0;
     if (state == NULL)
@@ -393,7 +397,8 @@ mc_world_storage_status mc_world_runtime_class_entities(mc_world_runtime *world,
                                                         const mc_entity_bounds *bounds,
                                                         mc_world_class_entity_list **out,
                                                         mc_world_nearby_error *error) {
-    mc_world_nearby_error frame = mc_world_nearby_empty_error();
+    mc_world_nearby_error frame;
+    mc_world_nearby_error_init(&frame);
     if (world == NULL || out == NULL)
         fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Class query arguments");
     else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -405,7 +410,7 @@ mc_world_storage_status mc_world_runtime_class_entities(mc_world_runtime *world,
             cause(&frame, child);
         else {
             if (query(world, target, bounds, out, &frame))
-                frame = mc_world_nearby_empty_error();
+                mc_world_nearby_error_init(&frame);
             if (frame.query.status != MC_WORLD_STORAGE_OK)
                 world->last_error = frame.query.cause;
             mc_world_runtime_call_leave(world);

@@ -27,6 +27,8 @@ typedef struct mc_world_material_movement_error {
     mc_entity_error entity;
 } mc_world_material_movement_error;
 
+/* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
+void mc_world_material_movement_error_init(mc_world_material_movement_error *error);
 mc_world_material_movement_error mc_world_material_movement_empty_error(void);
 
 /* Exact fd.a(eq,ln)/dj.a(cz,hj): half-open floored cell scan with identity

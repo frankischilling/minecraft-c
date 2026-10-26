@@ -22,6 +22,12 @@ option(MC_ENABLE_MAINTENANCE_REFERENCE_TESTS "Compare World provider maintenance
 option(MC_ENABLE_MATERIAL_MOVEMENT_REFERENCE_TESTS "Compare material movement with supplied client JAR" OFF)
 option(MC_ENABLE_ENTITY_ENVIRONMENT_REFERENCE_TESTS "Compare Entity environment helpers with supplied original JARs" OFF)
 option(MC_ENABLE_PLAYER_MOVEMENT_REFERENCE_TESTS "Compare LocalPlayer movement with supplied client JAR" OFF)
+option(MC_ENABLE_CLIENT_STATS_REFERENCE_TESTS "Compare client statistics files with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_TRAVEL_REFERENCE_TESTS "Compare Player travel with supplied Windows client" OFF)
+option(MC_ENABLE_PLAYER_BASE_TICK_REFERENCE_TESTS "Compare Player environment ticks with supplied client JAR" OFF)
+option(MC_ENABLE_INVENTORY_TICK_REFERENCE_TESTS "Compare inventory updates with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_ACTION_REFERENCE_TESTS "Compare Player action bodies with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS "Compare Player statistic dispatch with supplied Windows client" OFF)
 option(MC_ENABLE_NOTICE_REFERENCE_TESTS "Compare achievement notice with supplied Windows client" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
@@ -307,6 +313,7 @@ add_library(mc_client_notice STATIC
     src/client/render/model.c
     src/client/gui/achievement_notice.c
     src/client/achievements/description.c
+    src/client/texture_effects/water.c
     src/client/application_access.c)
 target_include_directories(mc_client_notice PUBLIC include PRIVATE src/client src/platform/time)
 target_link_libraries(mc_client_notice PUBLIC mc_registry mc_game_settings
@@ -373,7 +380,30 @@ target_include_directories(mc_world_saved_data PRIVATE src/world/storage)
 target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build_options)
 
 add_library(mc_simulation STATIC
+    src/client/statistics/application.c
+    src/entity/player/statistics.c
+    src/entity/action/action.c
+    src/entity/action/common.c
+    src/entity/action/input.c
+    src/entity/action/push.c
+    src/entity/action/atan.c
+    src/entity/action/angle.c
+    src/client/statistics/checksum.c
+    src/client/statistics/diagnostic.c
+    src/client/statistics/files.c
+    src/client/statistics/json.c
+    src/client/statistics/maps.c
+    src/client/statistics/owner.c
+    src/client/statistics/workers.c
+    src/client/statistics/writer.c
     src/server/runtime/construction.c
+    src/entity/living/travel.c
+    src/entity/tick/common.c
+    src/entity/tick/environment.c
+    src/entity/tick/suffocation.c
+    src/entity/tick/watcher.c
+    src/inventory/runtime/tick.c
+    src/inventory/runtime/map.c
     src/entity/movement/movement.c
     src/entity/movement/effects.c
     src/entity/movement/turn.c
@@ -471,7 +501,7 @@ add_library(mc_simulation STATIC
     src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
 target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input
-    PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_build_options)
+    PRIVATE mc_client_notice mc_client_game_directory mc_platform_time mc_platform_text Threads::Threads mc_build_options)
 
 add_library(mc_client_world_session STATIC src/client/world/session.c)
 target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
@@ -1060,6 +1090,222 @@ if(BUILD_TESTING)
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-movement")
         set_tests_properties(reference.player_movement PROPERTIES
             LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_client_stats_file tests/client/statistics/test_writer.c)
+    target_link_libraries(mc_test_client_stats_file PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.stats_file COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_stats_file.py"
+        --executable "$<TARGET_FILE:mc_test_client_stats_file>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/stats-contracts")
+    set_tests_properties(client.stats_file PROPERTIES
+        LABELS "public;integration;client;storage;ownership" TIMEOUT 180)
+    add_test(NAME tools.stats_capture COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_stats_capture.py")
+    add_test(NAME tools.stats_capture_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_stats_capture.py")
+    set_tests_properties(tools.stats_capture tools.stats_capture_optimized PROPERTIES
+        LABELS "public;unit;tools;client" TIMEOUT 60)
+    if(MC_ENABLE_CLIENT_STATS_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Client statistics reference tests require MC_REFERENCE_CLIENT_JAR")
+        endif()
+        add_test(NAME reference.client_stats_file COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/statistics/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_test_client_stats_file>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-client-statistics")
+        set_tests_properties(reference.client_stats_file PROPERTIES
+            LABELS "local;reference;client;storage;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_statistics tests/client/statistics/test_player_dispatch.c)
+    target_include_directories(mc_test_player_statistics PRIVATE src/platform/time)
+    target_link_libraries(mc_test_player_statistics PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_executable(mc_test_player_statistics_fault
+        tests/client/statistics/test_player_dispatch.c tests/client/statistics/notice_clock_fault.c)
+    target_compile_definitions(mc_test_player_statistics_fault PRIVATE MC_PLAYER_STATISTICS_FAULT_TEST)
+    target_include_directories(mc_test_player_statistics_fault PRIVATE src/platform/time)
+    target_link_libraries(mc_test_player_statistics_fault PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.player_statistics COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_player_statistics.py"
+        --executable "$<TARGET_FILE:mc_test_player_statistics>"
+        --fault-executable "$<TARGET_FILE:mc_test_player_statistics_fault>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-statistics-contracts")
+    set_tests_properties(client.player_statistics PROPERTIES
+        LABELS "public;integration;client;entity;storage;ownership" TIMEOUT 240)
+    add_test(NAME tools.player_statistics_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_player_statistics_controller.py")
+    add_test(NAME tools.player_statistics_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_player_statistics_controller.py")
+    set_tests_properties(tools.player_statistics_controller tools.player_statistics_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;client;entity" TIMEOUT 60)
+    add_executable(mc_test_player_callsites tests/client/statistics/test_player_callsites.c)
+    target_include_directories(mc_test_player_callsites PRIVATE src/platform/time)
+    target_link_libraries(mc_test_player_callsites PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.player_statistic_callsites COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_player_callsites.py"
+        --executable "$<TARGET_FILE:mc_test_player_callsites>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-callsite-contracts")
+    set_tests_properties(client.player_statistic_callsites PROPERTIES
+        LABELS "public;integration;client;entity;world;storage;ownership" TIMEOUT 240)
+    if(MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS)
+        if(NOT WIN32)
+            message(FATAL_ERROR "The original Player statistic dispatch profile currently qualifies Windows x64 only")
+        endif()
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+            message(FATAL_ERROR "Player statistic reference tests require client JAR, libraries and Windows natives")
+        endif()
+        add_test(NAME reference.player_statistics COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/player_statistics/compare.py"
+            --native-probe "$<TARGET_FILE:mc_test_player_statistics>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-statistics")
+        set_tests_properties(reference.player_statistics PROPERTIES
+            LABELS "local;reference;client;entity;storage;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_travel tests/entity/living/test_travel.c)
+    target_link_libraries(mc_test_player_travel PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.player_travel COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/travel/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_travel>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-travel-contracts")
+    set_tests_properties(entity.player_travel PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 210)
+    add_test(NAME tools.player_travel_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/travel/test_controller.py")
+    add_test(NAME tools.player_travel_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/travel/test_controller.py")
+    set_tests_properties(tools.player_travel_controller tools.player_travel_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;entity" TIMEOUT 30)
+    if(MC_ENABLE_PLAYER_TRAVEL_REFERENCE_TESTS)
+        if(NOT WIN32)
+            message(FATAL_ERROR "The original Player travel reference profile currently qualifies Windows x64 only")
+        endif()
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+            message(FATAL_ERROR "Player travel reference tests require client JAR, libraries and Windows natives")
+        endif()
+        add_test(NAME reference.player_travel COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/travel/compare.py"
+            --executable "$<TARGET_FILE:mc_test_player_travel>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --native-dir "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-travel")
+        set_tests_properties(reference.player_travel PROPERTIES
+            LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_base_tick tests/entity/tick/test_environment_tick.c)
+    target_link_libraries(mc_test_player_base_tick PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.player_base_tick COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/base_tick/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_base_tick>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-base-tick-contracts")
+    set_tests_properties(entity.player_base_tick PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 210)
+    add_test(NAME tools.player_base_tick_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/base_tick/test_controller.py")
+    add_test(NAME tools.player_base_tick_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/base_tick/test_controller.py")
+    set_tests_properties(tools.player_base_tick_controller tools.player_base_tick_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;entity" TIMEOUT 30)
+    if(MC_ENABLE_PLAYER_BASE_TICK_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Player environment reference tests require client JAR and libraries")
+        endif()
+        add_test(NAME reference.player_base_tick COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/base_tick/compare.py"
+            --executable "$<TARGET_FILE:mc_test_player_base_tick>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}" --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-base-tick")
+        set_tests_properties(reference.player_base_tick PROPERTIES
+            LABELS "local;reference;entity;world;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_inventory_tick tests/entity/inventory/test_tick.c)
+    target_link_libraries(mc_test_inventory_tick PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.inventory_tick COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/inventory_tick/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_inventory_tick>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/inventory-tick-contracts")
+    set_tests_properties(entity.inventory_tick PROPERTIES
+        LABELS "public;integration;entity;inventory;world;ownership" TIMEOUT 210)
+    add_test(NAME tools.inventory_tick_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/inventory_tick/test_controller.py")
+    add_test(NAME tools.inventory_tick_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/inventory_tick/test_controller.py")
+    set_tests_properties(tools.inventory_tick_controller tools.inventory_tick_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;inventory" TIMEOUT 30)
+    if(MC_ENABLE_INVENTORY_TICK_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Inventory tick reference tests require client JAR and libraries")
+        endif()
+        add_test(NAME reference.inventory_tick COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/inventory_tick/compare.py"
+            --executable "$<TARGET_FILE:mc_test_inventory_tick>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-inventory-tick")
+        set_tests_properties(reference.inventory_tick PROPERTIES
+            LABELS "local;reference;inventory;entity;world;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_action tests/entity/action/test_action.c)
+    target_link_libraries(mc_test_player_action PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.player_action COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/action/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_action>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-action-contracts")
+    set_tests_properties(entity.player_action PROPERTIES
+        LABELS "public;integration;entity;world;ownership;math" TIMEOUT 240)
+    add_test(NAME tools.player_action_controller COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/action/test_controller.py")
+    add_test(NAME tools.player_action_controller_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/action/test_controller.py")
+    set_tests_properties(tools.player_action_controller tools.player_action_controller_optimized
+        PROPERTIES LABELS "public;unit;tools;entity" TIMEOUT 60)
+    if(MC_ENABLE_PLAYER_ACTION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Player action reference tests require client JAR and libraries")
+        endif()
+        add_executable(mc_action_math_probe tests/entity/action/math_probe.c)
+        target_link_libraries(mc_action_math_probe PRIVATE mc_simulation mc_build_options)
+        add_test(NAME reference.player_action COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/action/compare.py"
+            --executable "$<TARGET_FILE:mc_test_player_action>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}" --tested-commit "${MC_REFERENCE_TESTED_COMMIT}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-action")
+        add_test(NAME reference.player_action_math COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/action/compare_math.py"
+            --executable "$<TARGET_FILE:mc_action_math_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-action-math")
+        add_test(NAME reference.player_action_dispatch COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/action/audit_dispatch.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --source-root "${CMAKE_CURRENT_SOURCE_DIR}")
+        set_tests_properties(reference.player_action reference.player_action_math reference.player_action_dispatch
+            PROPERTIES LABELS "local;reference;entity;world;math" TIMEOUT 480)
     endif()
 
     add_executable(mc_test_world_movement tests/entity/movement/test_world_movement.c)

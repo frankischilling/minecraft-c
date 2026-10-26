@@ -8,6 +8,13 @@
 #include <limits.h>
 #include <string.h>
 
+static void game_load_error_init(mc_world_game_load_error *error) {
+    static const mc_world_game_load_error zero = {0};
+    *error = zero;
+    mc_live_tile_entities_error_init(&error->tile_entity);
+    mc_world_entity_load_error_init(&error->entity);
+}
+
 static const mc_nbt_tag *field(const mc_nbt_tag *compound, const char *name) {
     uint16_t units[16];
     const size_t length = strlen(name);
@@ -44,7 +51,7 @@ static mc_world_storage_status import_entities(mc_world_runtime *world, mc_world
     if (count > (size_t)INT32_MAX)
         return fail(frame, MC_WORLD_STORAGE_LIMIT, "GAME Entities list length");
     for (size_t index = 0; index < count; ++index) {
-        frame->entity = mc_world_entity_load_empty_error();
+        mc_world_entity_load_error_init(&frame->entity);
         frame->entity.index = index;
         frame->builder_bytecode = 258;
         if (records->value.list.items == NULL)
@@ -94,7 +101,7 @@ static mc_world_storage_status import_entities(mc_world_runtime *world, mc_world
         if (status != MC_WORLD_STORAGE_OK)
             return status;
     }
-    frame->entity = mc_world_entity_load_empty_error();
+    mc_world_entity_load_error_init(&frame->entity);
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -124,10 +131,8 @@ static mc_world_storage_status import_tile_entities(const mc_world_store_game_st
 mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int32_t x, int32_t z,
                                                    mc_chunk_state **out,
                                                    mc_world_game_load_error *error) {
-    mc_world_game_load_error frame = {.status = MC_WORLD_STORAGE_OK,
-                                      .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                      .tile_entity = mc_live_tile_entities_empty_error()};
-    frame.entity = mc_world_entity_load_empty_error();
+    mc_world_game_load_error frame;
+    game_load_error_init(&frame);
     if (world == NULL || out == NULL) {
         frame.status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "GAME load arguments");
         if (error != NULL)
@@ -189,10 +194,7 @@ mc_world_storage_status mc_world_runtime_load_game(mc_world_runtime *world, int3
         (void)mc_world_store_game_stage_fail(store, stage, frame.status, NULL);
     if (committed) {
         *out = state;
-        frame = (mc_world_game_load_error){.status = MC_WORLD_STORAGE_OK,
-                                           .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                           .tile_entity = mc_live_tile_entities_empty_error()};
-        frame.entity = mc_world_entity_load_empty_error();
+        game_load_error_init(&frame);
     }
     mc_world_runtime_call_leave(world);
     if (error != NULL)

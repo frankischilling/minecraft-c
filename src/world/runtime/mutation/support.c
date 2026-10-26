@@ -19,18 +19,18 @@ void mc_world_mutation_error_init(mc_world_mutation_error *error) {
         return;
     const mc_registry_error registry = mc_world_mutation_empty_registry();
     *error = zero;
-    error->tile_entity = mc_live_tile_entities_empty_error();
-    error->load_entity = mc_world_entity_load_empty_error();
+    mc_live_tile_entities_error_init(&error->tile_entity);
+    mc_world_entity_load_error_init(&error->load_entity);
     error->batch.index = SIZE_MAX;
     error->registry = registry;
-    error->nearby = mc_world_nearby_empty_error();
+    mc_world_nearby_error_init(&error->nearby);
     error->schedule.registry = registry;
     error->plant.registry = registry;
     error->plant.query.registry = registry;
     error->plant.material.registry = registry;
     error->plant.support.registry = registry;
-    error->power = mc_world_power_empty_error();
-    error->rail_access = mc_world_collision_empty_error();
+    mc_world_power_error_init(&error->power);
+    mc_world_collision_error_init(&error->rail_access);
     error->rail_support.registry = registry;
 }
 

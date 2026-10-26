@@ -242,17 +242,41 @@ mc_item_stack_status mc_item_stack_source_count_set(mc_item_stack *stack, int32_
     return MC_ITEM_STACK_OK;
 }
 
+mc_item_stack_status mc_item_stack_source_animation_set(mc_item_stack *stack, int32_t animation) {
+    if (stack == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    stack->fields.animation = animation;
+    return MC_ITEM_STACK_OK;
+}
+
+mc_item_stack_status mc_item_stack_source_inventory_animation_tick(mc_item_stack *stack,
+                                                                   bool *stored) {
+    if (stack == NULL || stored == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    bool changed = false;
+    if (stack->fields.animation > 0) {
+        stack->fields.animation = mc_java_i32_sub(stack->fields.animation, 1);
+        changed = true;
+    }
+    *stored = changed;
+    return MC_ITEM_STACK_OK;
+}
+
 mc_item_stack_status mc_item_stack_count_set(mc_item_stack *stack, int32_t count) {
     const mc_item_stack_status status = item_stack_ready(stack);
     return status == MC_ITEM_STACK_OK ? mc_item_stack_source_count_set(stack, count) : status;
 }
 
+mc_item_stack_status mc_item_stack_source_damage_set(mc_item_stack *stack, int32_t damage) {
+    if (stack == NULL)
+        return MC_ITEM_STACK_INVALID_ARGUMENT;
+    stack->fields.damage = damage;
+    return MC_ITEM_STACK_OK;
+}
+
 mc_item_stack_status mc_item_stack_damage_set(mc_item_stack *stack, int32_t damage) {
     const mc_item_stack_status status = item_stack_ready(stack);
-    if (status == MC_ITEM_STACK_OK) {
-        stack->fields.damage = damage;
-    }
-    return status;
+    return status == MC_ITEM_STACK_OK ? mc_item_stack_source_damage_set(stack, damage) : status;
 }
 
 mc_item_stack_status mc_item_stack_clone(const mc_item_stack *stack, mc_item_stack **out) {

@@ -20,13 +20,21 @@
 #endif
 #include <emmintrin.h>
 
+void mc_world_material_movement_error_init(mc_world_material_movement_error *error) {
+    static const mc_world_material_movement_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_movement_error_init(&error->area);
+    mc_world_collision_error_init(&error->block);
+    error->registry = error->area.registry;
+    error->material.registry = error->registry;
+}
+
 mc_world_material_movement_error mc_world_material_movement_empty_error(void) {
-    mc_world_material_movement_error e = {0};
-    e.area = mc_world_movement_empty_error();
-    e.block = mc_world_collision_empty_error();
-    e.registry = e.area.registry;
-    e.material.registry = e.registry;
-    return e;
+    mc_world_material_movement_error error;
+    mc_world_material_movement_error_init(&error);
+    return error;
 }
 
 static bool fail(mc_world_material_movement_error *e, mc_world_storage_status status,
@@ -441,7 +449,8 @@ static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *
                                    mc_entity *entity, int kind,
                                    const mc_world_material_movement_limits *limits, bool *out,
                                    mc_world_material_movement_error *error) {
-    mc_world_material_movement_error e = mc_world_material_movement_empty_error();
+    mc_world_material_movement_error e;
+    mc_world_material_movement_error_init(&e);
     e.max_cell_work =
         limits == NULL ? MC_WORLD_MATERIAL_MOVEMENT_DEFAULT_CELL_WORK : limits->max_cell_work;
     bool entered = false;
@@ -463,7 +472,7 @@ static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *
     }
     if (e.status == MC_WORLD_STORAGE_OK) {
         size_t work = e.cell_work, maximum = e.max_cell_work;
-        e = mc_world_material_movement_empty_error();
+        mc_world_material_movement_error_init(&e);
         e.cell_work = work;
         e.max_cell_work = maximum;
     }

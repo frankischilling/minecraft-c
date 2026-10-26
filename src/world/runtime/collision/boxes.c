@@ -22,8 +22,18 @@
 #endif
 #include <emmintrin.h>
 
+void mc_world_collision_error_init(mc_world_collision_error *error) {
+    static const mc_world_collision_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_nearby_error_init(&error->nearby);
+}
+
 mc_world_collision_error mc_world_collision_empty_error(void) {
-    return (mc_world_collision_error){.nearby = mc_world_nearby_empty_error()};
+    mc_world_collision_error error;
+    mc_world_collision_error_init(&error);
+    return error;
 }
 
 static mc_world_storage_status fail(mc_world_collision_error *frame, mc_world_storage_status status,
@@ -288,6 +298,15 @@ static bool base_null_virtual(mc_entity *entity, mc_world_collision_error *frame
     return true;
 }
 
+/* Actual candidate f() has a separate dispatch from moving a(candidate).
+ * Canonical yl.f() is literally aconst_null/areturn. Its a(sn), in contrast,
+ * returns the argument permanent bounds and remains an explicit dependency. */
+static bool candidate_null_virtual(mc_entity *entity, mc_world_collision_error *frame) {
+    if (entity != NULL && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
+        return true;
+    return base_null_virtual(entity, frame);
+}
+
 static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bounds *bounds,
                   mc_world_collision_list_view *value, mc_world_collision_error *frame) {
     frame->world_bytecode = 4;
@@ -319,7 +338,7 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
             frame->x = x;
             frame->y = 64;
             frame->z = z;
-            frame->nearby = mc_world_nearby_empty_error();
+            mc_world_nearby_error_init(&frame->nearby);
             frame->nearby.query.bytecode = 20; /* column's private presence call */
             frame->nearby.query.provider_bytecode = 6;
             bool present;
@@ -332,7 +351,7 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
                 frame->nearby.query.cause = child;
                 return false;
             }
-            frame->nearby = mc_world_nearby_empty_error();
+            mc_world_nearby_error_init(&frame->nearby);
             if (!present)
                 continue;
             for (int32_t y = mc_java_i32_sub(low_y, 1); y < high_y; y = mc_java_i32_add(y, 1)) {
@@ -369,7 +388,7 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
         }
     }
     frame->world_bytecode = 183;
-    frame->nearby = mc_world_nearby_empty_error();
+    mc_world_nearby_error_init(&frame->nearby);
     mc_entity_bounds *expanded;
     const mc_entity_status expansion = mc_entity_bounds_expand(
         mc_world_runtime_entities(world), bounds, 0.25, 0.25, 0.25, &expanded, &frame->bounds);
@@ -405,7 +424,7 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
             break;
         }
         frame->world_bytecode = 218;
-        if (!base_null_virtual(candidate, frame)) {
+        if (!candidate_null_virtual(candidate, frame)) {
             success = false;
             break;
         }
@@ -446,7 +465,8 @@ mc_world_storage_status mc_world_runtime_collision_boxes(mc_world_runtime *world
                                                          const mc_entity_bounds *bounds,
                                                          mc_world_collision_list_view *out,
                                                          mc_world_collision_error *error) {
-    mc_world_collision_error frame = mc_world_collision_empty_error();
+    mc_world_collision_error frame;
+    mc_world_collision_error_init(&frame);
     if (world == NULL || out == NULL)
         fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Collision arguments");
     else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -468,7 +488,7 @@ mc_world_storage_status mc_world_runtime_collision_boxes(mc_world_runtime *world
                 mc_world_collision_list_view value = {0};
                 if (query(world, moving, bounds, &value, &frame)) {
                     *out = value;
-                    frame = mc_world_collision_empty_error();
+                    mc_world_collision_error_init(&frame);
                 }
                 mc_entity_release(moving);
             }

@@ -67,6 +67,8 @@ mc_world_storage_status mc_world_entity_list_view_get(const mc_world_entity_list
                                                       size_t index, mc_entity **out);
 void mc_world_entity_list_view_release(mc_world_entity_list_view *view);
 
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_world_nearby_error_init(mc_world_nearby_error *error);
 mc_world_nearby_error mc_world_nearby_empty_error(void);
 
 #endif

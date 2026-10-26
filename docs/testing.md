@@ -1,5 +1,56 @@
 # Test scope and reproduction
 
+## Player runtime and application statistics
+
+The final combined source passes all 307 Windows MSVC Debug cases and all 286
+headless cases each on fresh Clang 18/GCC 13 Debug builds with ASan, UBSan and
+leak detection: 879 completed cases without failures, errors, disabled cases or
+skips. Every case from the preceding movement checkpoint remains enabled.
+Windows includes real OpenGL startup and terrain captures. The frozen cohort
+contains 1,617 files and 1,400 non-Markdown inputs; all 822 C/header files pass
+clang-format 18. Current native/helper provenance and seven original class/Code
+cohorts verify before execution; source and retained capture/product readback
+are checked after execution.
+
+New public tests cover real statistics files/workers, genuine application/Session/
+writer ownership, actual statistic callsites, travel, base environment ticking,
+inventory updates and Player/Living action bodies. Each product passes 601
+application checks, 79 separately instrumented clock-fault checks, 115 connected
+callsite checks, 195 travel checks, 1,109 base-tick checks, 33,158 inventory checks
+and 523 action checks. These tests use authored resources and real native owners;
+they require neither the original archives nor a JVM.
+
+Optional reference switches are `MC_ENABLE_CLIENT_STATS_REFERENCE_TESTS`,
+`MC_ENABLE_PLAYER_TRAVEL_REFERENCE_TESTS`,
+`MC_ENABLE_PLAYER_BASE_TICK_REFERENCE_TESTS`,
+`MC_ENABLE_INVENTORY_TICK_REFERENCE_TESTS`,
+`MC_ENABLE_PLAYER_ACTION_REFERENCE_TESTS` and
+`MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS`. Supply the original client JAR,
+pinned client libraries and matching explicit JDK17 executables. The genuine
+Minecraft/xi travel and direct-statistic profiles additionally need the pinned
+Windows x64 native library and currently qualify Windows only. Other new original
+profiles run on the qualified Windows and Linux products. JDK math component
+records, completed original calls and source failure prefixes stay separate.
+
+The initial combined Debug travel test exposed a stack overflow in nested
+passive diagnostic initialization. Pointer initializers preserve typed defaults
+and layouts without increasing the default 1 MiB stack or hiding the failure
+with optimization. Its original failing products and default-stack fix remain
+retained. The first full runtime cohort then exposed three failures on both
+Windows and Clang: two older predicates still expected the newly supported
+Minecart candidate-box method to fail, and the environment comparison repeated
+that native failure. Actual client yl.f/server pr.e_ return null; the null-moving
+pair call is later at260. The corrected exact assertions retain cases, rows,
+cleanup and the separate moving-Minecart guard. The failing full runs, tight red
+reproductions and subsequent four-case green run remain distinct from the final
+complete qualification.
+
+[Player statistics](client/player-statistics.md), [travel](entity/living-travel.md),
+[base tick](entity/base-environment-tick.md), [inventory](entity/inventory-tick.md)
+and [action](entity/player-action.md) describe the finite source boundaries.
+Active Player/World tick composition, Item pickup, Map tracking/terrain updates,
+Living hurt, Container close and complete gameplay remain unfinished.
+
 ## LocalPlayer movement and walking effects
 
 `entity.player_movement` constructs the real Player, Input, Session, Registry,

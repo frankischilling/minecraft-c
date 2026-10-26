@@ -29,6 +29,8 @@ typedef struct mc_entity_environment_error {
     mc_world_material_movement_error material;
 } mc_entity_environment_error;
 
+/* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
+void mc_entity_environment_error_init(mc_entity_environment_error *error);
 mc_entity_environment_error mc_entity_environment_empty_error(void);
 
 /* Actual sn/lq water, lava, stored-in-water, clearance and relative-velocity

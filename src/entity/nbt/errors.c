@@ -1,15 +1,24 @@
 #include "mc/entity/nbt/errors.h"
 
+void mc_entity_nbt_error_init(mc_entity_nbt_error *error) {
+    static const mc_entity_nbt_error empty = {
+        .status = MC_ENTITY_NBT_OK,
+        .index = SIZE_MAX,
+        .construction = {.status = MC_ENTITY_OK,
+                         .profile = MC_JAVA_RANDOM_PROFILE_OK,
+                         .item = MC_ITEM_STACK_OK,
+                         .world = MC_WORLD_STORAGE_OK},
+        .stack = {.status = MC_ITEM_STACK_OK, .nbt = {MC_NBT_OK, 0}},
+        .nbt = {MC_NBT_OK, 0},
+        .inventory = {.status = MC_MINECART_INVENTORY_OK}};
+    if (error != NULL)
+        *error = empty;
+}
+
 mc_entity_nbt_error mc_entity_nbt_empty_error(void) {
-    return (mc_entity_nbt_error){.status = MC_ENTITY_NBT_OK,
-                                 .index = SIZE_MAX,
-                                 .construction = {.status = MC_ENTITY_OK,
-                                                  .profile = MC_JAVA_RANDOM_PROFILE_OK,
-                                                  .item = MC_ITEM_STACK_OK,
-                                                  .world = MC_WORLD_STORAGE_OK},
-                                 .stack = {.status = MC_ITEM_STACK_OK, .nbt = {MC_NBT_OK, 0}},
-                                 .nbt = {MC_NBT_OK, 0},
-                                 .inventory = {.status = MC_MINECART_INVENTORY_OK}};
+    mc_entity_nbt_error error;
+    mc_entity_nbt_error_init(&error);
+    return error;
 }
 
 const char *mc_entity_nbt_status_string(mc_entity_nbt_status status) {

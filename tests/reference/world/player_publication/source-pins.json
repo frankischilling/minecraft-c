@@ -308,24 +308,24 @@
       "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
     },
     "include/mc/world/runtime/entity_errors.h": {
-      "bytes": 1845,
-      "sha256": "1327d9320e40ddb9ada56c31de7b05c56e65845b278953784c6ea2eda9d2387f"
+      "bytes": 1976,
+      "sha256": "d5d95b544f211c8f0d3cac36ebde0ede2f3fa06b3b4e5c54085d35b5c8a0bec7"
     },
     "include/mc/world/runtime/players.h": {
       "bytes": 2791,
       "sha256": "08e8d72c957f6efc8822fa69efafc055453f19b90e932cc7937c3aa2104478c6"
     },
     "include/mc/entity/nbt/errors.h": {
-      "bytes": 2495,
-      "sha256": "216edc26dfb6f349e30ca6bbb2681e7dd74aeb721aed43fcb0f9f9b1362d5293"
+      "bytes": 2610,
+      "sha256": "223cb8916439eae6ec46c39417a93b7ff66c13d326bf23e07b05a483cf60e043"
     },
     "include/mc/entity/nbt/nbt.h": {
       "bytes": 6080,
       "sha256": "0efbddaae198997b885e2339abc70b025f0ee6869650f96485eb809f3d4096e1"
     },
     "include/mc/entity/player/player.h": {
-      "bytes": 9375,
-      "sha256": "4b9eb9edbbada14bef347ea88435ba12d9dbd117d0fef40b9392c2ddc6f97b3b"
+      "bytes": 9912,
+      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "src/world/info/info.c": {
       "bytes": 34388,
@@ -348,8 +348,8 @@
       "sha256": "a6afc0f7ab182b0e694e68fad322d1b7b0a412df82d52c472c5ece5194ab8d19"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 40041,
-      "sha256": "0ecdab05dfaea4b8dbbf5b6ea7b4fb9480bba4abbdb06179885b4811c42ab10d"
+      "bytes": 40282,
+      "sha256": "b4bc5e494bcd75cfe143f1b505eabc13f0ee960d8aafbdc34770fe4099adf3ea"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 2471,

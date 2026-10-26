@@ -24,6 +24,8 @@ typedef struct mc_world_entity_contact_error {
     mc_world_mutation_error mutation;
 } mc_world_entity_contact_error;
 
+/* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
+void mc_world_entity_contact_error_init(mc_world_entity_contact_error *error);
 mc_world_entity_contact_error mc_world_entity_contact_empty_error(void);
 
 /* Actual Block.a(World,III,Entity) contact dispatch on the supplied live Block.

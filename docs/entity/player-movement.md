@@ -44,11 +44,13 @@ updates Player.z/A. Small falls execute Player, Living and base bodies in order.
 Fall distance resets only after the delegated callback completes.
 
 Larger falls, nonzero damage and retirement have explicit reached frontiers.
-A fall of at least2 resolves actual `jl.n`, computes the Java-rounded amount,
-then stops at the unfinished concrete LocalPlayer statistics/application call.
-Player damage preserves its av, health, sleep, Class and difficulty prefix;
-nonzero damage resolves actual `jl.x` before stopping at that same concrete
-dispatch. Wake, Arrow attacker ownership and other Living ally handling have
+A fall of at least 2 resolves actual `jl.n`, computes the Java-rounded amount
+and invokes the [real LocalPlayer statistics/application bridge](../client/player-statistics.md).
+Successful dispatch continues through the Living/base fall body. A fall of 2.5
+blocks completes; a nonnull passenger retains the increment before its recursive
+virtual dependency. Player damage preserves its av, health, sleep, Class and
+difficulty prefix, increments actual `jl.x`, then reaches the unfinished Living
+hurt invocation at gs158. Wake, Arrow attacker ownership and other Living ally handling have
 separate failures. Later Living hurt, armor, landed sound and death are not
 implemented here. Player.K stores be through its superclass, then fails at the
 first actual inventory Container close call. None of these failures is a

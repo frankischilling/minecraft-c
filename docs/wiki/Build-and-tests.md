@@ -1,5 +1,18 @@
 # Build and tests
 
+The [Player runtime/statistics integration](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-statistics.md)
+passes 307 Windows MSVC Debug tests and 286 headless tests each on fresh sanitized
+Clang 18/GCC 13 builds: 879 completed cases, with no failures or skips. All prior
+cases remain enabled. All 822 C/header files pass formatting. The complete frozen
+cohort contains 1,617 files and 1,400 non-Markdown inputs; native/helper pins,
+original class/Code metadata, full captures and source/product identities verify.
+Real App callsites check completed writer totals, source failures and owner
+balance. Startup and terrain inspection retain their actual GL capture checks.
+The testing notes preserve the initial Debug stack overflow and the first full
+suite's older Minecart-failure expectations separately from the final pass.
+Travel, base environment, Inventory and action bodies are implemented in their
+declared scope. Full Player/World ticks and a playable session remain unfinished.
+
 The [LocalPlayer movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-movement.md)
 and [environment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/environment.md)
 integration passes 280 Windows MSVC tests and 261 headless tests each on fresh
@@ -12,7 +25,8 @@ relative/null-World-prefix records and 21 client movement records. The 51
 native server World crosschecks and twelve JDK rounding records are separately
 labelled. Successful original-server World queries are not claimed. Both new
 twelve-case capture-control suites pass normally and under optimized Python.
-Living travel, Player/World ticks and application gameplay remain unfinished.
+This earlier movement checkpoint precedes the travel/statistics integration above.
+Active Player/World ticks and application gameplay remain unfinished.
 
 The [notice checkpoint `04be54b`](https://github.com/frankischilling/minecraft-c/actions/runs/40251364177)
 passes all four hosted jobs, with 256 Windows, 262 GCC and 262 Clang tests:

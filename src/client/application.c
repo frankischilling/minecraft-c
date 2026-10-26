@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
+#include "statistics/application.h"
 #include "application_state.h"
 #include "display/display.h"
 #include "gui/gui_main_menu.h"
@@ -91,6 +92,91 @@ static mc_game_settings_status settings_diagnostic(void *context,
         return MC_GAME_SETTINGS_DIAGNOSTIC_FAILED;
     }
     return MC_GAME_SETTINGS_OK;
+}
+
+static bool statistics_failure(const mc_client_statistics_owner_error *error) {
+    fprintf(stderr, "Client statistics: %s (status %d, source %s:%u, writer %d)\n",
+            error->operation == NULL ? "native owner operation" : error->operation,
+            (int)error->status, error->site.class_name == NULL ? "native" : error->site.class_name,
+            error->site.pc, (int)error->writer.status);
+    return false;
+}
+
+/* CLI text is an explicit UTF8 input boundary. Session still receives an
+ * actual immutable UTF16 String; no ASCII filtering or line splitting is used. */
+static mc_player_status username_string(const char *argument, mc_player_string **out) {
+    const unsigned char *text = (const unsigned char *)(argument == NULL ? "Player" : argument);
+    const size_t bytes = strlen((const char *)text);
+    if (bytes > (size_t)MC_PLAYER_MAX_TEXT_UNITS * 4u)
+        return MC_PLAYER_LIMIT;
+    uint16_t *units = malloc((bytes == 0 ? 1 : bytes) * sizeof(*units));
+    if (units == NULL)
+        return MC_PLAYER_ALLOCATION_FAILED;
+    size_t at = 0, used = 0;
+    mc_player_status status = MC_PLAYER_INVALID_ARGUMENT;
+    while (at < bytes) {
+        const unsigned int first = text[at++];
+        unsigned int scalar = first, remaining = 0, minimum = 0;
+        if (first >= 0xc2u && first <= 0xdfu) {
+            scalar = first & 0x1fu;
+            remaining = 1;
+            minimum = 0x80u;
+        } else if (first >= 0xe0u && first <= 0xefu) {
+            scalar = first & 0x0fu;
+            remaining = 2;
+            minimum = 0x800u;
+        } else if (first >= 0xf0u && first <= 0xf4u) {
+            scalar = first & 7u;
+            remaining = 3;
+            minimum = 0x10000u;
+        } else if (first >= 0x80u)
+            goto done;
+        if (remaining > bytes - at)
+            goto done;
+        for (unsigned int i = 0; i < remaining; ++i) {
+            const unsigned int next = text[at++];
+            if ((next & 0xc0u) != 0x80u)
+                goto done;
+            scalar = (scalar << 6) | (next & 0x3fu);
+        }
+        if (scalar < minimum || scalar > 0x10ffffu || (scalar >= 0xd800u && scalar <= 0xdfffu))
+            goto done;
+        const size_t count = scalar > 0xffffu ? 2u : 1u;
+        if (used > MC_PLAYER_MAX_TEXT_UNITS - count) {
+            status = MC_PLAYER_LIMIT;
+            goto done;
+        }
+        if (count == 2) {
+            scalar -= 0x10000u;
+            units[used++] = (uint16_t)(0xd800u + (scalar >> 10));
+            units[used++] = (uint16_t)(0xdc00u + (scalar & 0x3ffu));
+        } else
+            units[used++] = (uint16_t)scalar;
+    }
+    status = mc_player_string_create(units, used, out);
+done:
+    free(units);
+    return status;
+}
+
+static bool initialize_session(client_application *app) {
+    mc_player_string *username = NULL, *session_id = NULL;
+    mc_player_status status = username_string(app->options.username, &username);
+    if (status == MC_PLAYER_OK)
+        status = mc_player_string_create(NULL, 0, &session_id);
+    mc_client_statistics_owner_error error = {0};
+    const bool okay = status == MC_PLAYER_OK &&
+                      mc_client_application_create_session(app, username, session_id, &error) ==
+                          MC_CLIENT_STATISTICS_OWNER_OK;
+    mc_player_string_release(username);
+    mc_player_string_release(session_id);
+    if (!okay) {
+        if (status != MC_PLAYER_OK)
+            fprintf(stderr, "Local username/session String: status %d\n", (int)status);
+        else
+            (void)statistics_failure(&error);
+    }
+    return okay;
 }
 
 static bool initialize_settings(client_application *app) {
@@ -387,6 +473,18 @@ static bool gui_tick(client_application *app, int *width, int *height) {
     return count >= 0;
 }
 
+static bool service_statistics(client_application *app) {
+    /* Actual Minecraft.k invokes I.d at18 before GUI/input/world work. This
+     * selected callsite does not supply the other unfinished k descendants. */
+    mc_client_stats_error error;
+    if (mc_client_stats_writer_service(app->stats_writer, NULL, &error) == MC_CLIENT_STATS_OK)
+        return true;
+    fprintf(stderr, "Client statistics service: %s (status %d, source %s:%u)\n",
+            error.operation == NULL ? "writer service" : error.operation, (int)error.status,
+            error.class_name == NULL ? "native" : error.class_name, error.bytecode);
+    return false;
+}
+
 static bool initialize_world(client_application *app) {
     if (app->options.inspect_world == NULL)
         return true;
@@ -465,14 +563,26 @@ static bool initialize(client_application *app) {
                                               &app->achievement_notice,
                                               &notice_error) != MC_CLIENT_NOTICE_OK ||
         mc_client_achievement_notice_construct(app->achievement_notice, app, &notice_error) !=
-            MC_CLIENT_NOTICE_OK ||
-        mc_client_assets_create(options.resources, app->registry, &app->assets) !=
+            MC_CLIENT_NOTICE_OK)
+        return false;
+    mc_client_statistics_owner_error owner_error = {0};
+    if (mc_client_application_construct_water_effect(app, NULL, &owner_error) !=
+            MC_CLIENT_STATISTICS_OWNER_OK ||
+        mc_client_application_statistics_active_use(app, &owner_error) !=
+            MC_CLIENT_STATISTICS_OWNER_OK)
+        return statistics_failure(&owner_error);
+    if (!initialize_session(app))
+        return false;
+    if (mc_client_assets_create(options.resources, app->registry, &app->assets) !=
             MC_CLIENT_ASSETS_OK ||
         !mc_client_display_create("Minecraft", app->options.width, app->options.height,
                                   app->options.hidden, &app->display, &app->display_error))
         return false;
     if (!initialize_settings(app))
         return false;
+    if (mc_client_application_construct_statistics(app, NULL, NULL, &owner_error) !=
+        MC_CLIENT_STATISTICS_OWNER_OK)
+        return statistics_failure(&owner_error);
     mc_game_settings_state settings = {0};
     if (!mc_game_settings_read_state(app->settings, &settings))
         return false;
@@ -531,9 +641,11 @@ int mc_client_application_run(const mc_client_application_options *options) {
             !mc_timer_view_get(app->timer, &timer))
             goto cleanup;
         int input_width = app->display_width, input_height = app->display_height;
-        for (int32_t tick = 0; tick < timer.ticks && app->running; ++tick)
-            if (app->world_view == NULL && !gui_tick(app, &input_width, &input_height))
+        for (int32_t tick = 0; tick < timer.ticks && app->running; ++tick) {
+            if (!service_statistics(app) ||
+                (app->world_view == NULL && !gui_tick(app, &input_width, &input_height)))
                 goto cleanup;
+        }
         if (!app->running)
             break;
         if (!mc_client_display_pixel_size(app->display, &width, &height, &app->display_error))
@@ -592,6 +704,14 @@ cleanup:
                 app->display_error.operation == NULL ? "resource or GUI operation"
                                                      : app->display_error.operation,
                 app->display_error.detail);
+    }
+    mc_client_statistics_owner_error owner_error = {0};
+    if (mc_client_application_retire_statistics(app, &owner_error) !=
+            MC_CLIENT_STATISTICS_OWNER_OK ||
+        mc_client_application_retire_water_effect(app, &owner_error) !=
+            MC_CLIENT_STATISTICS_OWNER_OK) {
+        (void)statistics_failure(&owner_error);
+        return 1;
     }
     if (mc_client_achievement_notice_free(&app->achievement_notice, NULL) != MC_CLIENT_NOTICE_OK ||
         mc_client_render_classes_free(app->render_classes) != MC_CLIENT_MODEL_OK)

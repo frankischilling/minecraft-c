@@ -13,15 +13,34 @@ typedef enum power_method {
     POWER_STRONG_AT
 } power_method;
 
+mc_registry_error mc_world_power_empty_registry(void) {
+    return (mc_registry_error){.initializer_pc = -1,
+                               .block_id = -1,
+                               .constructor_pc = -1,
+                               .active_initializer_pc = -1,
+                               .item_argument = -1};
+}
+
+void mc_world_power_support_error_init(mc_world_solid_support_error *error) {
+    static const mc_world_solid_support_error zero = {0};
+    *error = zero;
+    error->registry = mc_world_power_empty_registry();
+}
+
+void mc_world_power_error_init(mc_world_power_error *error) {
+    static const mc_world_power_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_power_support_error_init(&error->support);
+    mc_world_nearby_error_init(&error->access);
+    error->registry = mc_world_power_empty_registry();
+}
+
 mc_world_power_error mc_world_power_empty_error(void) {
-    const mc_registry_error registry = {.initializer_pc = -1,
-                                        .block_id = -1,
-                                        .constructor_pc = -1,
-                                        .active_initializer_pc = -1,
-                                        .item_argument = -1};
-    return (mc_world_power_error){.support = {.registry = registry},
-                                  .access = mc_world_nearby_empty_error(),
-                                  .registry = registry};
+    mc_world_power_error error;
+    mc_world_power_error_init(&error);
+    return error;
 }
 
 static mc_world_storage_status admission(mc_world_power_error *error,
@@ -56,13 +75,13 @@ static mc_world_power_site site(int32_t x, int32_t y, int32_t z, int32_t side) {
 }
 
 static void clear_leaf(mc_world_power_error *error) {
-    const mc_world_power_error empty = mc_world_power_empty_error();
-    error->capability = empty.capability;
-    error->strong = empty.strong;
-    error->weak = empty.weak;
-    error->redstone_connectivity = empty.redstone_connectivity;
-    error->access = empty.access;
-    error->registry = empty.registry;
+    static const mc_world_block_power_site empty = {0};
+    error->capability = empty;
+    error->strong = empty;
+    error->weak = empty;
+    error->redstone_connectivity = empty;
+    mc_world_nearby_error_init(&error->access);
+    error->registry = mc_world_power_empty_registry();
 }
 
 /* Private kernels share their actual enclosing frame. Reset only the callee
@@ -85,7 +104,7 @@ static void enter_weak_at(mc_world_power_error *error, int32_t x, int32_t y, int
     error->weak_at = site(x, y, z, side);
     error->strong_neighbors = (mc_world_power_site){0};
     error->strong_at = (mc_world_power_site){0};
-    error->support = mc_world_power_empty_error().support;
+    mc_world_power_support_error_init(&error->support);
     clear_leaf(error);
 }
 
@@ -110,7 +129,8 @@ static mc_world_storage_status block_failure(mc_world_runtime *world, mc_world_p
 
 static mc_world_storage_status block_id(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                         int32_t *out, mc_world_power_error *error) {
-    mc_world_collision_error lower = mc_world_collision_empty_error();
+    mc_world_collision_error lower;
+    mc_world_collision_error_init(&lower);
     const mc_world_storage_status status =
         mc_world_collision_block_value_held(world, x, y, z, false, out, &lower);
     if (status == MC_WORLD_STORAGE_OK)
@@ -128,7 +148,7 @@ static mc_world_storage_status selected_block(mc_world_runtime *world, int32_t i
                                               mc_world_power_error *error) {
     caller->bytecode = capture_pc;
     mc_registry_classes *const classes = mc_world_runtime_registry(world);
-    mc_registry_error cause = mc_world_power_empty_error().registry;
+    mc_registry_error cause = mc_world_power_empty_registry();
     if (classes == NULL) {
         cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         cause.message = "World power Registry binding";
@@ -163,7 +183,8 @@ static mc_world_storage_status strong_at(mc_world_runtime *world, int32_t x, int
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     error->strong_at.bytecode = 28;
-    mc_world_power_error lower = mc_world_power_empty_error();
+    mc_world_power_error lower;
+    mc_world_power_error_init(&lower);
     bool value;
     status = mc_world_block_strong_power_held(world, block, x, y, z, side, &value, &lower);
     if (status != MC_WORLD_STORAGE_OK)
@@ -227,8 +248,9 @@ static mc_world_storage_status weak_at(mc_world_runtime *world, int32_t x, int32
                                        int32_t side, bool *out, mc_world_power_error *error) {
     enter_weak_at(error, x, y, z, side);
     error->weak_at.bytecode = 4;
-    mc_world_solid_support_detail support = {.error = mc_world_power_empty_error().support,
-                                             .access = mc_world_nearby_empty_error()};
+    mc_world_solid_support_detail support;
+    mc_world_power_support_error_init(&support.error);
+    mc_world_nearby_error_init(&support.access);
     bool solid;
     mc_world_storage_status status =
         mc_world_solid_support_detailed_held(world, x, y, z, &solid, &support);
@@ -256,7 +278,8 @@ static mc_world_storage_status weak_at(mc_world_runtime *world, int32_t x, int32
     if (status != MC_WORLD_STORAGE_OK)
         return status;
     error->weak_at.bytecode = 46;
-    mc_world_power_error lower = mc_world_power_empty_error();
+    mc_world_power_error lower;
+    mc_world_power_error_init(&lower);
     bool value;
     status = mc_world_block_weak_power_held(world, block, x, y, z, side, &value, &lower);
     if (status != MC_WORLD_STORAGE_OK)
@@ -288,7 +311,8 @@ static mc_world_storage_status weak_neighbors(mc_world_runtime *world, int32_t x
 static mc_world_storage_status held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                     int32_t side, bool *out, mc_world_power_error *error,
                                     power_method method) {
-    mc_world_power_error frame = mc_world_power_empty_error();
+    mc_world_power_error frame;
+    mc_world_power_error_init(&frame);
     mc_world_storage_status status;
     if (world == NULL || out == NULL)
         status = admission(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World power held arguments");
@@ -318,7 +342,7 @@ static mc_world_storage_status held(mc_world_runtime *world, int32_t x, int32_t 
         }
         if (status == MC_WORLD_STORAGE_OK) {
             *out = value;
-            frame = mc_world_power_empty_error();
+            mc_world_power_error_init(&frame);
         }
     }
     if (error != NULL)
@@ -353,7 +377,8 @@ mc_world_storage_status mc_world_power_strong_at_held(mc_world_runtime *world, i
 mc_world_storage_status mc_world_runtime_is_powered(mc_world_runtime *world, int32_t x, int32_t y,
                                                     int32_t z, bool *out,
                                                     mc_world_power_error *error) {
-    mc_world_power_error frame = mc_world_power_empty_error();
+    mc_world_power_error frame;
+    mc_world_power_error_init(&frame);
     mc_world_storage_status status;
     if (world == NULL || out == NULL)
         status = admission(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World power arguments");

@@ -115,6 +115,7 @@ def resources(root: Path) -> None:
         "lang/en_US.lang": (b"menu.singleplayer=\nmenu.multiplayer=\nmenu.mods=\n"
                             b"menu.options=\nmenu.quit=\n"),
         "lang/stats_US.lang": b"# Authored empty statistics translation resource\n",
+        "achievement/map.txt": b"",
     }
     for name, raw in {**images, **text}.items():
         path = root / "jar" / name
@@ -217,7 +218,7 @@ def options(scale: int, anaglyph: bool = False, bad_line: bool = False) -> bytes
 def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | str,
              override: int | None, diagnostics: list[bytes],
              extra_arguments: tuple[str, ...] = (),
-             startup_lines: tuple[bytes, ...] = (),
+             startup_lines: tuple[bytes, ...] = (b"16 achievements", b"151 recipes"),
              timeout_seconds: int = CASE_SECONDS) -> tuple[dict, tuple | None]:
     case = root / name
     case.mkdir()
@@ -265,7 +266,7 @@ def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | 
         need(receipt["returncode"] == 0, "native startup return status")
         need(raw_stderr == b"", "unexpected native startup stderr")
         lines = raw_stdout.splitlines()
-        prefix = diagnostics + list(startup_lines)
+        prefix = list(startup_lines) + diagnostics
         need(lines[:len(prefix)] == prefix and len(lines) == len(prefix) + 1,
              "exact reached settings diagnostics and one graphics banner")
         banner = re.fullmatch(rb"OpenGL ([0-9]+)\.([0-9]+) core: .+ / .+", lines[-1])
@@ -308,7 +309,8 @@ def run_case(binary: Path, assets: Path, root: Path, name: str, source: bytes | 
             after = tree(game)
             receipt["game_after"] = after
             expected = {"kind": "directory", "directories": [], "files": {}} if source == "absent" else before
-            need(after == expected, "startup changed options/unknown input bytes or created settings output")
+            expected = {**expected, "directories": sorted(expected["directories"] + ["stats"])}
+            need(after == expected, "startup must create only its empty stats directory and preserve settings inputs")
         except BaseException as error:
             cleanup_errors.append(f"game inputs: {type(error).__name__}: {error}")
         receipt["outputs"] = {}

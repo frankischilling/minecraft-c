@@ -33,14 +33,22 @@ static mc_registry_error empty_registry(void) {
                                .item_argument = -1};
 }
 
+void mc_world_movement_error_init(mc_world_movement_error *error) {
+    static const mc_world_movement_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_mutation_error_init(&error->presentation);
+    mc_world_collision_error_init(&error->block);
+    error->registry = error->presentation.registry;
+    error->query.registry = error->registry;
+    error->biome.sampling.registry = error->registry;
+}
+
 mc_world_movement_error mc_world_movement_empty_error(void) {
-    mc_world_movement_error frame = {0};
-    frame.presentation = mc_world_mutation_empty_error();
-    frame.block = mc_world_collision_empty_error();
-    frame.registry = frame.presentation.registry;
-    frame.query.registry = frame.registry;
-    frame.biome.sampling.registry = frame.registry;
-    return frame;
+    mc_world_movement_error error;
+    mc_world_movement_error_init(&error);
+    return error;
 }
 
 static bool fail(mc_world_movement_error *frame, mc_world_storage_status status,
@@ -110,7 +118,7 @@ static mc_world_storage_status result(mc_world_movement_error *error,
 static mc_world_storage_status finish(mc_world_runtime *world, mc_world_movement_error *frame,
                                       mc_world_movement_error *error) {
     if (frame->status == MC_WORLD_STORAGE_OK)
-        *frame = mc_world_movement_empty_error();
+        mc_world_movement_error_init(frame);
     else
         world->last_error = frame->cause;
     mc_world_runtime_call_leave(world);
@@ -165,7 +173,8 @@ mc_world_storage_status mc_world_runtime_area_loaded(mc_world_runtime *world, in
                                                      int32_t min_y, int32_t min_z, int32_t max_x,
                                                      int32_t max_y, int32_t max_z, bool *out,
                                                      mc_world_movement_error *error) {
-    mc_world_movement_error frame = mc_world_movement_empty_error();
+    mc_world_movement_error frame;
+    mc_world_movement_error_init(&frame);
     if (!enter(world, out != NULL, &frame))
         return result(error, &frame);
     bool value;
@@ -279,7 +288,8 @@ static bool rain_at_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t 
 mc_world_storage_status mc_world_runtime_rain_at(mc_world_runtime *world, int32_t x, int32_t y,
                                                  int32_t z, bool *out,
                                                  mc_world_movement_error *error) {
-    mc_world_movement_error frame = mc_world_movement_empty_error();
+    mc_world_movement_error frame;
+    mc_world_movement_error_init(&frame);
     if (!enter(world, out != NULL, &frame))
         return result(error, &frame);
     bool value;
@@ -375,7 +385,8 @@ static bool burning_held(mc_world_runtime *world, const mc_entity_bounds *bounds
 mc_world_storage_status mc_world_runtime_burning(mc_world_runtime *world,
                                                  const mc_entity_bounds *bounds, bool *out,
                                                  mc_world_movement_error *error) {
-    mc_world_movement_error frame = mc_world_movement_empty_error();
+    mc_world_movement_error frame;
+    mc_world_movement_error_init(&frame);
     if (!enter(world, out != NULL, &frame))
         return result(error, &frame);
     bool value;
@@ -459,7 +470,8 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
 mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, mc_entity *entity,
                                                       const mc_registry_string *name, float volume,
                                                       float pitch, mc_world_movement_error *error) {
-    mc_world_movement_error frame = mc_world_movement_empty_error();
+    mc_world_movement_error frame;
+    mc_world_movement_error_init(&frame);
     if (!enter(world, true, &frame))
         return result(error, &frame);
     /* Already evaluated caller arguments are neither dereferenced nor changed.

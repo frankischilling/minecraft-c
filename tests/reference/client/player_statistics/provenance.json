@@ -1,0 +1,265 @@
+{
+  "schema": "CLIENT_PLAYER_STATISTICS_REFERENCE_V1",
+  "reference_files": {
+    "README.md": {
+      "bytes": 7820,
+      "sha256": "60f73c02aae25aaee7dc02bbfe075479c1464cb77a7468684471f40a6cec35db"
+    },
+    "compare.py": {
+      "bytes": 10198,
+      "sha256": "d75ce960f19d7a0bec4e05129b7bfb3b83932511cf0b473c26359d0b54e8deb5"
+    },
+    "support.py": {
+      "bytes": 6492,
+      "sha256": "2db422833411feb3c3f6157305246a1894d33781309028832fbf3c41b929365e"
+    },
+    "source-pins.json": {
+      "bytes": 274422,
+      "sha256": "06ecf3c622df8e1d130c2ae32ae1e1dd5385038527a606409daa14b5ccdf3935"
+    },
+    "PlayerStatisticsObservation.java": {
+      "bytes": 8100,
+      "sha256": "a8b732c3c8e307be1765539ba21e1c895378f5889587d337334ad9a79806d4ef"
+    },
+    "../notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "../statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    }
+  },
+  "native_sources": {
+    "include/mc/client/statistics/writer.h": {
+      "bytes": 13738,
+      "sha256": "27ff592a8f737a20885d893bd2becc9f0c4b250bef1c3179a2e8c43eff44e12c"
+    },
+    "include/mc/entity/player/player.h": {
+      "bytes": 9912,
+      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+    },
+    "src/block/registry/registry_internal.h": {
+      "bytes": 13672,
+      "sha256": "dfa07e99d8ebd2483fc912b47eeacacf5d50bf88ec0f8e529e7c034653344ecf"
+    },
+    "src/block/registry/runtime.c": {
+      "bytes": 20864,
+      "sha256": "dcd072d81e5ce622d876cec42323b2efd6c4229af425beed8cfae864414c754b"
+    },
+    "src/client/statistics/checksum.c": {
+      "bytes": 8547,
+      "sha256": "3017ef52fd95728ef02a61ed223f6799cdf00d2a4c8af14859ef898230eee88d"
+    },
+    "src/client/statistics/diagnostic.c": {
+      "bytes": 2689,
+      "sha256": "b0845c7a102af7d6c4afd891902988ff9c6183534bf110055a85e744c136799a"
+    },
+    "src/client/statistics/files.c": {
+      "bytes": 28784,
+      "sha256": "83778026ba679f4836c10f1371c9c666ad64fe08609bd97cc5c238036ef65ccf"
+    },
+    "src/client/statistics/internal.h": {
+      "bytes": 8672,
+      "sha256": "8e6aa43d7273e0849ee272533b5f58610040a7389221295852500e7893baf514"
+    },
+    "src/client/statistics/json.c": {
+      "bytes": 29360,
+      "sha256": "aeac0dad99a3cbb6ca4c49674958332f19559591fc6bc7a72741554308cca0e7"
+    },
+    "src/client/statistics/maps.c": {
+      "bytes": 10853,
+      "sha256": "50e25b8497d171494738ff8715fb2b164d972aada721263d8994706b64e43c45"
+    },
+    "src/client/statistics/owner.c": {
+      "bytes": 10708,
+      "sha256": "fa8de03d896ebedf807d62f2ce91c8a19d53e88e76ee73e55b7591b0d545ebf2"
+    },
+    "src/client/statistics/workers.c": {
+      "bytes": 7907,
+      "sha256": "e4f793efc42fbcfe85b8344cd4458fd9e679335ec2a6a0bb60d36b8b014d9237"
+    },
+    "src/client/statistics/writer.c": {
+      "bytes": 23298,
+      "sha256": "b390af2b7829d22729f1f838dabaf3f92008222c5f18c5e1318e3cf58b7f82b0"
+    },
+    "src/core/java/integer_parse.c": {
+      "bytes": 2482,
+      "sha256": "ee53aa32e83c0d7706f22bf52dea92f8b06495193d42df11c4adbc6985bc42c3"
+    },
+    "src/core/java/reader.c": {
+      "bytes": 17077,
+      "sha256": "b0e8934f73989f8aaa1a41297355041f616144b1f750d4f2b98a98243760f965"
+    },
+    "src/core/java/writer.c": {
+      "bytes": 24554,
+      "sha256": "7c4abfb51db1fc43c4638d2c4cb7ddb63050e042f2ea6a42acd2fc822a9cf310"
+    },
+    "src/entity/classes/classes_internal.h": {
+      "bytes": 2535,
+      "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
+    },
+    "src/entity/entity_internal.h": {
+      "bytes": 3291,
+      "sha256": "2d63df9fa2b9df5e38cf8f167b0c6cb95ba72030805f92f84725364563d4133d"
+    },
+    "src/entity/player/construction.c": {
+      "bytes": 17742,
+      "sha256": "e495889027bc824732f2212c75d373bd1d1b3c0a683e16df245f2a54a5da397f"
+    },
+    "src/entity/player/player_internal.h": {
+      "bytes": 1769,
+      "sha256": "fc998e13845a1adbc530fd0faaa3d62f72f236e95f5ce6ca8b2d6e57f1595c75"
+    },
+    "src/entity/player/session.c": {
+      "bytes": 9465,
+      "sha256": "577ebfa4de26e898335ff82a837203484c43df1616f817babee3b30f605a3240"
+    },
+    "src/entity/player/strings.c": {
+      "bytes": 4062,
+      "sha256": "5eada78cac15c7c12b22dbe932b0dfdae8fe4d15de526cd7e254160ff2173cd6"
+    },
+    "src/statistics/achievements/achievements.c": {
+      "bytes": 26180,
+      "sha256": "3b9f49429bd55cd5a1658ac01bb860939a206ec13ae3f02529b35e16f1af49e1"
+    },
+    "src/statistics/achievements/achievements_internal.h": {
+      "bytes": 2017,
+      "sha256": "422ab462b62d13125123d808908fa53549e4b9e22f9087eebf1af1b7c987d059"
+    },
+    "src/statistics/registry/arrays.c": {
+      "bytes": 27163,
+      "sha256": "46247a6f565bdee88b4fb5f59683a5071ba9b22932159adeda76bc1785daf112"
+    },
+    "src/statistics/registry/base.c": {
+      "bytes": 12663,
+      "sha256": "ac1b6a2d5f53f2fc5172c2c05475ce4811083d6ad9fc8117eb6991df8d785e75"
+    },
+    "src/statistics/registry/format.c": {
+      "bytes": 5145,
+      "sha256": "10daa370f1dd57950743bea5f970036fce39a6ef0fda1460e5e2fe490b46977b"
+    },
+    "src/statistics/registry/initializer.c": {
+      "bytes": 10404,
+      "sha256": "1034eea28e4f2e42f364839ae338aceb0de66a243d1f84ad1b4d193e69a51fbe"
+    },
+    "src/statistics/registry/names.c": {
+      "bytes": 7265,
+      "sha256": "1763eac4a4ab99255df570295fc0efe28fdbab36dcb93f00d89c74b224875666"
+    },
+    "src/statistics/registry/registration.c": {
+      "bytes": 16979,
+      "sha256": "d90b3244c5c61e9727a3446e44622193eb874a6178c860ffa8e2c4d57f3e0d31"
+    },
+    "src/statistics/registry/registry_internal.h": {
+      "bytes": 4574,
+      "sha256": "cee9636f498a7d718ec856068c83d510a6f34e5f47b86845fb05f45f70bfbe8e"
+    },
+    "tests/client/statistics/test_writer.c": {
+      "bytes": 37129,
+      "sha256": "902016f3cb36dd5b170902175ddd8af250a064238c42c9065c1a2addf612774e"
+    },
+    "include/mc/entity/player/statistics.h": {
+      "bytes": 1789,
+      "sha256": "ed03d18203b44f74735df6ee30d3f0e3a8136ce8f638981773881e277c36edee"
+    },
+    "src/entity/player/statistics.c": {
+      "bytes": 6386,
+      "sha256": "c0459e59987816af23e7cfc6313c336faa2b6588174dbe50e166575d9512c377"
+    },
+    "src/client/application_state.h": {
+      "bytes": 2815,
+      "sha256": "6e9ae83cb93d829520579b9649b4c7bd1119b1c10f8a8bc906b9f02ac2291e83"
+    },
+    "src/client/application_access.h": {
+      "bytes": 856,
+      "sha256": "8f51e5a6a7d41da967b87ad313e6c0f824924993e46942cebaaa36af69b7dcb4"
+    },
+    "src/client/application_access.c": {
+      "bytes": 2411,
+      "sha256": "61c9aa0f33f21395d210d72dc14659f1c2a783f527654beff1c90b8f7004acd6"
+    },
+    "src/client/statistics/application.h": {
+      "bytes": 4768,
+      "sha256": "ea09093754f344143555b5273617c9f994a94f9fc63ea63ce115a252ec78a4e6"
+    },
+    "src/client/statistics/application.c": {
+      "bytes": 15349,
+      "sha256": "7f414a218a02eaee417087ef8c7cbab32fe7a4bc1b34fc72b5a2a29783592a23"
+    },
+    "include/mc/client/gui/achievement_notice.h": {
+      "bytes": 6188,
+      "sha256": "8df61d7ae5db1432d6b7f2fceac2983eced90eb9beb71eafe7f69a07924475c2"
+    },
+    "src/client/gui/achievement_notice.c": {
+      "bytes": 9209,
+      "sha256": "1257d61ecf59477bd22736881c300255cd1d428238269109ce1a3196406afdec"
+    },
+    "src/client/achievements/description.c": {
+      "bytes": 3127,
+      "sha256": "6f01c5375927e48a4f8305a0fa0356df9347f17b060835a0fa4ad3b89887533a"
+    },
+    "src/client/achievements/description_registry.c": {
+      "bytes": 10391,
+      "sha256": "03118a3c6c5bc1ccec1f6a9ab3486e155f83b0d1e9f41d804e481b4d896661d5"
+    },
+    "src/client/achievements/description_registry.h": {
+      "bytes": 1446,
+      "sha256": "ed04a7f4aa107501b92753cfe59e42d4b4f6460e93627b5d3d12bf27bbe0d913"
+    },
+    "src/client/render/model.c": {
+      "bytes": 15224,
+      "sha256": "82c980f5f5fda5934c40c66a0c3ec709e4ab51250878ac9eddfbdfde8bad09cf"
+    },
+    "src/client/startup/game_directory.c": {
+      "bytes": 33020,
+      "sha256": "2c88616cedd4fbc05c1274986e749b89b99d6387c21c54d171c1bb0bd2230945"
+    },
+    "src/client/startup/game_directory.h": {
+      "bytes": 3889,
+      "sha256": "862c712a357622003dc9e365aef19dc6502d1e8e71f9a23b8450ba08df35da5e"
+    },
+    "src/platform/time/millis.c": {
+      "bytes": 2886,
+      "sha256": "45d7a7d0ebe3d6ddeed64f3dbdc396c6bd4b5e7fa42de2f45fc77ebda4ea5866"
+    },
+    "src/platform/time/millis.h": {
+      "bytes": 1796,
+      "sha256": "be29675facc5b5b98d186c89374c0486228182d6d8bfa9fea0ec64f8785b7da9"
+    },
+    "tests/client/statistics/test_player_dispatch.c": {
+      "bytes": 30834,
+      "sha256": "b769eb7f573da5feb675ade25c16803996db1a97774810c62b3d05d4e7e6f6aa"
+    },
+    "tests/client/statistics/notice_clock_fault.c": {
+      "bytes": 1116,
+      "sha256": "040184fc0697fea0282a221844a6a92193d816a0c0ad164e9ba248ba379050d4"
+    },
+    "tests/tools/client/test_player_statistics.py": {
+      "bytes": 2486,
+      "sha256": "677de35f1c61270d79ee033977b0fd3d9a636b0dcb412a02f78e33d6690d4bac"
+    },
+    "tests/tools/client/test_player_statistics_controller.py": {
+      "bytes": 3071,
+      "sha256": "8852392d806c51c1e51a4b8d92699b5d7b32d53677012ceb0f62392d2e647c19"
+    },
+    "include/mc/client/texture_effects/water.h": {
+      "bytes": 3171,
+      "sha256": "2db47ea8d1f211dbeaf93712c2bd220497c3897e82ae7f4a3a8dd36e4a4b4e05"
+    },
+    "src/client/texture_effects/water.c": {
+      "bytes": 7216,
+      "sha256": "1c303113a73a06586fa9a64a19e1cb1ee38d5863f9d5c842b560e8537691c0f1"
+    },
+    "src/block/registry/registration.c": {
+      "bytes": 32164,
+      "sha256": "9a7559bcef39e1c73a81ef3a9d969b18ea870390c5723e82129f77b9022a08c3"
+    },
+    "src/block/registry/constructors.c": {
+      "bytes": 35922,
+      "sha256": "6b8eff1cf00801deef14108da8c819400f4cf31f9c2ef994fd1306b2395bc703"
+    }
+  },
+  "helper_class": "PlayerStatisticsObservation.class; freshly compiled hash and immutable helper-only inventory retained per run report",
+  "scope": "Genuine aw/vs water constructor119/ad122 -> jl186, real App Session/xi/I/kh adoption, and actual dc.a statistic dispatch. Full startup, vs animation and ji registration510 remain incomplete."
+}

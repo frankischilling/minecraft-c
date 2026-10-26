@@ -2,6 +2,7 @@
 #define MC_ENTITY_MOVEMENT_EFFECTS_H
 
 #include "mc/entity/entity.h"
+#include "mc/entity/player/statistics.h"
 #include "mc/statistics/registry/registry.h"
 #include "mc/world/runtime/movement.h"
 
@@ -13,7 +14,8 @@ typedef enum mc_entity_effect_cause {
     MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_RELATIONSHIP,
     MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE,
     MC_ENTITY_EFFECT_CAUSE_FP,
-    MC_ENTITY_EFFECT_CAUSE_WORLD
+    MC_ENTITY_EFFECT_CAUSE_WORLD,
+    MC_ENTITY_EFFECT_CAUSE_STATISTIC
 } mc_entity_effect_cause;
 
 /* Passive reached-operation frames, independent of constructor diagnostics.
@@ -35,8 +37,11 @@ typedef struct mc_entity_effect_error {
     int32_t watcher_index;
     mc_entity_error entity;
     mc_world_movement_error world;
+    mc_player_statistic_error statistic_error;
 } mc_entity_effect_error;
 
+/* Full passive initialization without a returned diagnostic copy. NULL is a no-op. */
+void mc_entity_effect_error_init(mc_entity_effect_error *error);
 mc_entity_effect_error mc_entity_effect_empty_error(void);
 
 /* Actual typed watcher Map lookup and signed Byte flag operation. No watcher

@@ -25,13 +25,22 @@ _Static_assert(FLT_RADIX == 2 && DBL_MANT_DIG == 53 && DBL_MAX_EXP == 1024 && FL
  * A new canonical kind requires that inheritance audit before extending this. */
 _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit new Block contact inheritance");
 
+void mc_world_entity_contact_error_init(mc_world_entity_contact_error *error) {
+    static const mc_world_entity_contact_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_collision_error_init(&error->metadata);
+    error->registry = error->metadata.nearby.query.registry;
+    error->query = error->metadata.nearby.query;
+    mc_world_mutation_error_init(&error->mutation);
+    mc_entity_effect_error_init(&error->effect);
+}
+
 mc_world_entity_contact_error mc_world_entity_contact_empty_error(void) {
-    const mc_world_collision_error metadata = mc_world_collision_empty_error();
-    return (mc_world_entity_contact_error){.registry = metadata.nearby.query.registry,
-                                           .query = metadata.nearby.query,
-                                           .metadata = metadata,
-                                           .mutation = mc_world_mutation_empty_error(),
-                                           .effect = mc_entity_effect_empty_error()};
+    mc_world_entity_contact_error error;
+    mc_world_entity_contact_error_init(&error);
+    return error;
 }
 
 static mc_world_storage_status fail(mc_world_entity_contact_error *frame,
@@ -211,7 +220,8 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
                                                         const mc_block *block, int32_t x, int32_t y,
                                                         int32_t z, mc_entity *entity,
                                                         mc_world_entity_contact_error *error) {
-    mc_world_entity_contact_error frame = mc_world_entity_contact_empty_error();
+    mc_world_entity_contact_error frame;
+    mc_world_entity_contact_error_init(&frame);
     frame.block = block;
     frame.x = x;
     frame.y = y;
@@ -260,7 +270,7 @@ mc_world_storage_status mc_world_runtime_entity_contact(mc_world_runtime *world,
         }
     }
     if (status == MC_WORLD_STORAGE_OK)
-        frame = mc_world_entity_contact_empty_error();
+        mc_world_entity_contact_error_init(&frame);
     if (error != NULL)
         *error = frame;
     return status;

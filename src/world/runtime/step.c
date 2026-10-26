@@ -28,7 +28,7 @@ void mc_world_step_error_init(mc_world_step_error *error) {
         return;
     memset(error, 0, sizeof(*error));
     error->particle_face = -1;
-    error->block_read = mc_world_collision_empty_error();
+    mc_world_collision_error_init(&error->block_read);
     error->registry = error->block_read.nearby.query.registry;
     mc_world_mutation_error_init(&error->mutation);
 }

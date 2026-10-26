@@ -472,13 +472,14 @@ static bool unsupported_frontiers(fixture *f, size_t side) {
           push_z->value.double_bits == UINT64_C(0));
     CHECK(fuel != NULL && fuel->type == MC_NBT_SHORT && fuel->value.short_value == 0);
     CHECK(mc_nbt_compound_get(root, items_name, COUNT(items_name)) == NULL);
-    CHECK(mc_world_runtime_collision_boxes(world, NULL, &detector_box, &collision, &error) ==
-              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          collision.owner == NULL && error.world_bytecode == 218 &&
-          error.nearby.query.operation != NULL &&
-          strcmp(error.nearby.query.operation, "Collision Entity concrete virtual") == 0);
+    const mc_world_storage_status candidate_status =
+        mc_world_runtime_collision_boxes(world, NULL, &detector_box, &collision, &error);
+    CHECK(candidate_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && collision.owner == NULL &&
+          error.world_bytecode == 260 && error.nearby.query.operation != NULL &&
+          strcmp(error.nearby.query.operation, "Collision Entity receiver") == 0);
     /* Retire only the actual mutable R contents through another ordinary query.
-     * The failed collision query must not pretend Minecart virtuals return null. */
+     * Client yl.f/server pr.e_ genuinely return null. The distinct pair call
+     * then reaches its null moving receiver; moving-Minecart remains separate. */
     CHECK(mc_world_runtime_nearby_entities(world, NULL, &miss_box, &nearby, NULL) ==
           MC_WORLD_STORAGE_OK);
     mc_world_entity_list_view_release(&nearby);

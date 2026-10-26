@@ -1,5 +1,13 @@
 # Runtime dependencies
 
+Player action arithmetic includes a C adaptation of the permissively licensed
+Sun fdlibm `atan` kernel distributed by Netlib. Its original permission notice
+is retained in the source and [licenses/fdlibm-action-atan.txt](../licenses/fdlibm-action-atan.txt).
+The adaptation preserves the captured x86-64 arithmetic; the separate JDK
+component comparison and original Player-method comparisons are described in
+[Player action](entity/player-action.md). Include that notice with distributed
+source or executables containing the kernel.
+
 The storage compression module links statically to upstream zlib 1.3.2. It is
 written in C and provides gzip/zlib framing, deflate, and checksum validation.
 The shared numerical/text core remains independent of it. The optional native

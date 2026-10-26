@@ -76,6 +76,7 @@ typedef struct mc_player_session_class_state {
 
 typedef struct mc_player_session_state {
     const mc_player_string *username, *session_id, *password;
+    size_t native_holds; /* Native ownership, not a gr source field. */
 } mc_player_session_state;
 
 /* Real client gr class/instance closure. Class creation retains the exact
@@ -98,6 +99,12 @@ mc_player_status mc_player_session_create(mc_player_session_classes *classes,
                                           mc_player_string *username, mc_player_string *session_id,
                                           mc_player_session **out, mc_player_error *error);
 void mc_player_session_retire(mc_player_session **session);
+/* Independent native hold for concrete owners retaining this actual Session.
+ * NULL is invalid; native counter overflow preserves the owner. Retire releases
+ * one hold and clears its caller pointer; only the final hold frees Strings
+ * and decrements the Session class's live-object count. Registry/profile/class
+ * dependencies remain live until all Session objects are finally retired. */
+mc_player_status mc_player_session_retain(mc_player_session *session);
 bool mc_player_session_read(const mc_player_session *session, mc_player_session_state *out);
 
 /* All declaring-class ls instance fields; raw defaults remain represented.

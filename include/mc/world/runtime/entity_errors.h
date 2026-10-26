@@ -46,6 +46,8 @@ typedef struct mc_world_entity_batch_error {
     size_t index;
 } mc_world_entity_batch_error;
 
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_world_entity_batch_error_init(mc_world_entity_batch_error *error);
 mc_world_entity_batch_error mc_world_entity_batch_empty_error(void);
 
 #endif

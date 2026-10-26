@@ -34,15 +34,15 @@ static bool at_least_one(uint32_t bits) {
 
 /* Initialize caller storage without a full tick-error return temporary. The
  * typed static template supplies C-defined zero/null values and the sentinel;
- * each existing child factory still supplies its complete nested defaults. */
+ * each canonical child initializer supplies its complete nested defaults. */
 static void initialize_error(mc_piston_tick_error *out) {
     static const mc_piston_tick_error zero = {.entity_index = SIZE_MAX};
     memcpy(out, &zero, sizeof(*out));
-    out->mutation = mc_world_mutation_empty_error();
-    out->tile_entity = mc_live_tile_entities_empty_error();
+    mc_world_mutation_error_init(&out->mutation);
+    mc_live_tile_entities_error_init(&out->tile_entity);
     out->registry = out->mutation.registry;
-    out->nearby = mc_world_nearby_empty_error();
-    out->collision = mc_world_collision_empty_error();
+    mc_world_nearby_error_init(&out->nearby);
+    mc_world_collision_error_init(&out->collision);
     mc_entity_move_error_init(&out->movement);
 }
 

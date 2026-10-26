@@ -15,6 +15,8 @@ typedef struct mc_world_entity_load_error {
     mc_world_storage_error native;
 } mc_world_entity_load_error;
 
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_world_entity_load_error_init(mc_world_entity_load_error *error);
 mc_world_entity_load_error mc_world_entity_load_empty_error(void);
 
 #endif

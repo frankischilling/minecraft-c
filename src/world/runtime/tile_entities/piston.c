@@ -96,7 +96,8 @@ bool mc_tile_entity_piston_current_block_held(mc_tile_entity *tile_entity, int32
     const int32_t x = tile_entity->x;
     const int32_t y = tile_entity->y;
     const int32_t z = tile_entity->z;
-    mc_world_collision_error child = mc_world_collision_empty_error();
+    mc_world_collision_error child;
+    mc_world_collision_error_init(&child);
     if (world != NULL) {
         mc_world_storage_error cause = {0};
         if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK) {
@@ -126,7 +127,8 @@ static bool finalize_held(mc_tile_entity *tile_entity, mc_world_mutation_error *
     int32_t x = tile_entity->x;
     int32_t y = tile_entity->y;
     int32_t z = tile_entity->z;
-    mc_live_tile_entity_error removed = mc_live_tile_entities_empty_error();
+    mc_live_tile_entity_error removed;
+    mc_live_tile_entities_error_init(&removed);
     error->piston_finalize_bytecode = 35;
     if (mc_live_tile_entities_remove(world, x, y, z, &removed) != MC_WORLD_STORAGE_OK)
         return tile_entity_failure(world, error, &removed);
@@ -174,7 +176,8 @@ static bool finalize_held(mc_tile_entity *tile_entity, mc_world_mutation_error *
     const int32_t carried_id = tile_entity->state.piston.block_id;
     const int32_t carried_data = tile_entity->state.piston.block_data;
     bool ordinary = false;
-    mc_world_mutation_error lower = mc_world_mutation_empty_error();
+    mc_world_mutation_error lower;
+    mc_world_mutation_error_init(&lower);
     if (mc_world_runtime_block_metadata_set(world, x, y, z, carried_id, carried_data, &ordinary,
                                             &lower) != MC_WORLD_STORAGE_OK) {
         finalize_nested(error, &lower, 94);
@@ -185,7 +188,8 @@ static bool finalize_held(mc_tile_entity *tile_entity, mc_world_mutation_error *
 
 mc_world_storage_status mc_tile_entity_piston_finalize(mc_tile_entity *tile_entity,
                                                        mc_world_mutation_error *error) {
-    mc_world_mutation_error frame = mc_world_mutation_empty_error();
+    mc_world_mutation_error frame;
+    mc_world_mutation_error_init(&frame);
     bool retained = false;
     if (tile_entity == NULL) {
         frame.tile_entity.tile_entity.status = MC_TILE_ENTITY_INVALID_ARGUMENT;
@@ -212,7 +216,7 @@ mc_world_storage_status mc_tile_entity_piston_finalize(mc_tile_entity *tile_enti
         } else {
             retained = true;
             if (finalize_held(tile_entity, &frame))
-                frame = mc_world_mutation_empty_error();
+                mc_world_mutation_error_init(&frame);
         }
     }
     if (retained)
@@ -247,14 +251,16 @@ static void removed_nested(const mc_block *block, unsigned int pc,
 bool mc_world_mutation_piston_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, mc_world_mutation_error *error) {
     mc_tile_entity *tile_entity = NULL;
-    mc_live_tile_entity_error lookup = mc_live_tile_entities_empty_error();
+    mc_live_tile_entity_error lookup;
+    mc_live_tile_entities_error_init(&lookup);
     removed_at(block, 5, error);
     if (mc_live_tile_entities_get(world, x, y, z, &tile_entity, &lookup) != MC_WORLD_STORAGE_OK)
         return tile_entity_failure(world, error, &lookup);
 
     bool completed;
     if (tile_entity != NULL && tile_entity->kind == MC_TILE_ENTITY_PISTON) {
-        mc_world_mutation_error lower = mc_world_mutation_empty_error();
+        mc_world_mutation_error lower;
+        mc_world_mutation_error_init(&lower);
         completed = mc_tile_entity_piston_finalize(tile_entity, &lower) == MC_WORLD_STORAGE_OK;
         if (!completed)
             removed_nested(block, 28, &lower, error);
@@ -263,7 +269,8 @@ bool mc_world_mutation_piston_removed(mc_world_runtime *world, const mc_block *b
          * is the complete return0 body; World remove14 executes afterwards.
          * No receiver substitution, factory, drop or alternate TileEntity is used. */
         removed_at(block, 40, error);
-        mc_live_tile_entity_error lower = mc_live_tile_entities_empty_error();
+        mc_live_tile_entity_error lower;
+        mc_live_tile_entities_error_init(&lower);
         completed = mc_live_tile_entities_remove(world, x, y, z, &lower) == MC_WORLD_STORAGE_OK;
         if (!completed) {
             lower.caller_bytecode = 14;
@@ -300,7 +307,8 @@ bool mc_world_mutation_piston_neighbor(mc_world_runtime *world, const mc_block *
                                       "Moving Piston neighbor World B receiver");
     if (!world->fields.B) {
         mc_tile_entity *tile_entity = NULL;
-        mc_live_tile_entity_error lookup = mc_live_tile_entities_empty_error();
+        mc_live_tile_entity_error lookup;
+        mc_live_tile_entities_error_init(&lookup);
         error->hook_bytecode = 12;
         if (mc_live_tile_entities_get(world, x, y, z, &tile_entity, &lookup) != MC_WORLD_STORAGE_OK)
             return tile_entity_failure(world, error, &lookup);

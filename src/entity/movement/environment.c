@@ -16,12 +16,20 @@
 #endif
 #include <emmintrin.h>
 
+void mc_entity_environment_error_init(mc_entity_environment_error *error) {
+    static const mc_entity_environment_error zero = {0};
+    if (error == NULL)
+        return;
+    *error = zero;
+    mc_world_material_movement_error_init(&error->material);
+    mc_world_collision_error_init(&error->collision);
+    error->registry = error->material.registry;
+}
+
 mc_entity_environment_error mc_entity_environment_empty_error(void) {
-    mc_entity_environment_error e = {0};
-    e.material = mc_world_material_movement_empty_error();
-    e.collision = mc_world_collision_empty_error();
-    e.registry = e.material.registry;
-    return e;
+    mc_entity_environment_error error;
+    mc_entity_environment_error_init(&error);
+    return error;
 }
 
 static bool fail(mc_entity_environment_error *e, mc_entity_status status,
@@ -174,7 +182,8 @@ leave:
 static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry, bool water,
                                const mc_world_material_movement_limits *limits, bool *out,
                                mc_entity_environment_error *error) {
-    mc_entity_environment_error e = mc_entity_environment_empty_error();
+    mc_entity_environment_error e;
+    mc_entity_environment_error_init(&e);
     bool value = false, completed = false;
     if (enter(entity, out != NULL, &e)) {
         const mc_registry_status held = mc_registry_classes_retain(
@@ -196,7 +205,7 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
     if (completed)
         *out = value;
     if (e.status == MC_ENTITY_OK)
-        e = mc_entity_environment_empty_error();
+        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -214,13 +223,14 @@ mc_entity_status mc_entity_environment_lava(mc_entity *entity, mc_registry_class
 
 mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *out,
                                                        mc_entity_environment_error *error) {
-    mc_entity_environment_error e = mc_entity_environment_empty_error();
+    mc_entity_environment_error e;
+    mc_entity_environment_error_init(&e);
     if (enter(entity, out != NULL, &e)) {
         *out = entity->base.bx;
         mc_entity_release(entity);
     }
     if (e.status == MC_ENTITY_OK)
-        e = mc_entity_environment_empty_error();
+        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -276,7 +286,8 @@ leave:
 mc_entity_status mc_entity_environment_clearance(mc_entity *entity, double x, double y, double z,
                                                  const mc_world_material_movement_limits *limits,
                                                  bool *out, mc_entity_environment_error *error) {
-    mc_entity_environment_error e = mc_entity_environment_empty_error();
+    mc_entity_environment_error e;
+    mc_entity_environment_error_init(&e);
     bool value = false, complete = false;
     if (enter(entity, out != NULL, &e)) {
         complete = clearance(entity, x, y, z, limits, &value, &e);
@@ -285,7 +296,7 @@ mc_entity_status mc_entity_environment_clearance(mc_entity *entity, double x, do
     if (complete)
         *out = value;
     if (e.status == MC_ENTITY_OK)
-        e = mc_entity_environment_empty_error();
+        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -340,12 +351,13 @@ static bool relative(mc_entity *entity, const mc_math_trig *trig, float strafe, 
 mc_entity_status mc_entity_environment_relative(mc_entity *entity, const mc_math_trig *trig,
                                                 float strafe, float forward, float friction,
                                                 mc_entity_environment_error *error) {
-    mc_entity_environment_error e = mc_entity_environment_empty_error();
+    mc_entity_environment_error e;
+    mc_entity_environment_error_init(&e);
     if (enter(entity, true, &e)) {
         (void)relative(entity, trig, strafe, forward, friction, &e);
         mc_entity_release(entity);
     }
     if (e.status == MC_ENTITY_OK)
-        e = mc_entity_environment_empty_error();
+        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }

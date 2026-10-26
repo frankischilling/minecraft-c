@@ -54,6 +54,8 @@ typedef struct mc_entity_nbt_error {
     mc_minecart_inventory_context inventory;
 } mc_entity_nbt_error;
 
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_entity_nbt_error_init(mc_entity_nbt_error *error);
 mc_entity_nbt_error mc_entity_nbt_empty_error(void);
 const char *mc_entity_nbt_status_string(mc_entity_nbt_status status);
 

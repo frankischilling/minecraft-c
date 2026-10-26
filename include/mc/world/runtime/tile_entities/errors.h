@@ -104,7 +104,11 @@ const char *mc_tile_entity_status_string(mc_tile_entity_status status);
  * No allocation, class use, owner access, Random, I/O or callback occurs.
  * Do not apply these initializers to erase an already reached failure/caller
  * frame during propagation; initialize once before the source attempt. */
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_tile_entity_error_init(mc_tile_entity_error *error);
 mc_tile_entity_error mc_tile_entity_empty_error(void);
+/* Passive in-place initialization; NULL is a no-op. */
+void mc_live_tile_entities_error_init(mc_live_tile_entity_error *error);
 mc_live_tile_entity_error mc_live_tile_entities_empty_error(void);
 
 #endif

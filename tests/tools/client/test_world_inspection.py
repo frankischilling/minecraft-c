@@ -17,8 +17,6 @@ def main():
     assets = root / 'authored-import'
     resources(assets)
     jar = assets / 'jar'
-    (jar / 'achievement').mkdir()
-    (jar / 'achievement/map.txt').write_bytes(b'')
     (jar / 'lang/stats_US.lang').write_bytes(
         b'stat.mineBlock=Mine %1$s\nstat.useItem=Use %1$s\n'
         b'stat.breakItem=Break %1$s\nstat.craftItem=Craft %1$s\n')

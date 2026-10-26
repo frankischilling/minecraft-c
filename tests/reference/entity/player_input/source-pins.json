@@ -313,8 +313,8 @@
       "sha256": "b2aacaaea4390c66ce2a8b3dadc73d7fba47343a457cfda4bb4119f8ad2807e2"
     },
     "include/mc/entity/player/player.h": {
-      "bytes": 9375,
-      "sha256": "4b9eb9edbbada14bef347ea88435ba12d9dbd117d0fef40b9392c2ddc6f97b3b"
+      "bytes": 9912,
+      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "include/mc/client/input/movement_input.h": {
       "bytes": 6415,

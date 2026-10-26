@@ -146,8 +146,12 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
                                                             int32_t y, int32_t z, bool metadata,
                                                             int32_t *out,
                                                             mc_world_collision_error *error) {
-    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
-    frame.nearby = mc_world_nearby_empty_error();
+    mc_world_collision_error frame;
+    if (error == NULL)
+        mc_world_collision_error_init(&frame);
+    else
+        frame = *error;
+    mc_world_nearby_error_init(&frame.nearby);
     frame.x = x;
     frame.y = y;
     frame.z = z;
@@ -220,7 +224,7 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
     }
     if (status == MC_WORLD_STORAGE_OK) {
         *out = value;
-        frame.nearby = mc_world_nearby_empty_error();
+        mc_world_nearby_error_init(&frame.nearby);
     }
     if (error != NULL)
         *error = frame;
@@ -281,7 +285,7 @@ static bool block_value(const block_context *context, const char *client, const 
      * including the read after acquiring/loading/populating its Chunk. */
     mc_world_storage_error child = {0};
     if (mc_world_runtime_call_enter(context->world, &child) != MC_WORLD_STORAGE_OK) {
-        error->nearby = mc_world_nearby_empty_error();
+        mc_world_nearby_error_init(&error->nearby);
         error->x = x;
         error->y = y;
         error->z = z;
@@ -371,7 +375,8 @@ static mc_world_storage_status moving_piston_tile_entity(const block_context *co
                                                          mc_world_collision_error *error) {
     stage(context, error, "ut", "mz", 5);
     mc_tile_entity *tile_entity = NULL;
-    mc_live_tile_entity_error child = mc_live_tile_entities_empty_error();
+    mc_live_tile_entity_error child;
+    mc_live_tile_entities_error_init(&child);
     const mc_world_storage_status status =
         mc_live_tile_entities_get(context->world, x, y, z, &tile_entity, &child);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -439,7 +444,8 @@ static mc_world_storage_status moving_piston_box(const block_context *context,
     float progress;
     bool extending;
     int32_t carried_id = 0, facing = 0;
-    mc_tile_entity_error lower = mc_tile_entity_empty_error();
+    mc_tile_entity_error lower;
+    mc_tile_entity_error_init(&lower);
     error->piston_bytecode = 21;
     stage(context, error, "ut", "mz", 21);
     mc_tile_entity_status tile_entity_status =
@@ -700,8 +706,12 @@ static mc_world_storage_status block_box_core(mc_world_runtime_classes *code_cla
                                               mc_world_collision_error *error) {
     block_context frame_context = {code_classes, world, legacy_world};
     block_context *const context = &frame_context;
-    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
-    frame.nearby = mc_world_nearby_empty_error();
+    mc_world_collision_error frame;
+    if (error == NULL)
+        mc_world_collision_error_init(&frame);
+    else
+        frame = *error;
+    mc_world_nearby_error_init(&frame.nearby);
     frame.bounds = (mc_entity_bounds_error){0};
     frame.block_class = NULL;
     frame.block_bytecode = 0;
@@ -762,9 +772,13 @@ static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_c
                                                 mc_world_collision_error *error) {
     block_context frame_context = {code_classes, world, legacy_world};
     block_context *const context = &frame_context;
-    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
+    mc_world_collision_error frame;
+    if (error == NULL)
+        mc_world_collision_error_init(&frame);
+    else
+        frame = *error;
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
-    frame.nearby = mc_world_nearby_empty_error();
+    mc_world_nearby_error_init(&frame.nearby);
     frame.bounds = (mc_entity_bounds_error){0};
     frame.shifted_bytecode = 0;
     frame.block_class = NULL;
@@ -893,7 +907,8 @@ static mc_world_storage_status moving_piston_state_shape(const block_context *co
     mc_registry_error child = error->nearby.query.registry;
     const mc_block *carried_block = NULL;
     int32_t carried_id;
-    mc_tile_entity_error lower = mc_tile_entity_empty_error();
+    mc_tile_entity_error lower;
+    mc_tile_entity_error_init(&lower);
     error->piston_bytecode = 16;
     stage(context, error, "ut", "mz", 16);
     if (!piston_registry_result(context, error, mc_registry_block_m_get(registry, &array, &child),
@@ -1240,8 +1255,12 @@ static mc_world_storage_status state_shape_core(mc_world_runtime_classes *code_c
                                                 const mc_block *block, int32_t x, int32_t y,
                                                 int32_t z, mc_world_collision_error *error) {
     block_context context = {code_classes, world, legacy_world};
-    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
-    frame.nearby = mc_world_nearby_empty_error();
+    mc_world_collision_error frame;
+    if (error == NULL)
+        mc_world_collision_error_init(&frame);
+    else
+        frame = *error;
+    mc_world_nearby_error_init(&frame.nearby);
     frame.bounds = (mc_entity_bounds_error){0};
     frame.block_class = NULL;
     frame.block_bytecode = 0;
@@ -1364,8 +1383,12 @@ mc_world_collision_block_contribute_held(mc_world_runtime *world, const mc_block
                                          mc_world_collision_error *error) {
     block_context frame_context = {NULL, world, true};
     block_context *const context = &frame_context;
-    mc_world_collision_error frame = error == NULL ? mc_world_collision_empty_error() : *error;
-    frame.nearby = mc_world_nearby_empty_error();
+    mc_world_collision_error frame;
+    if (error == NULL)
+        mc_world_collision_error_init(&frame);
+    else
+        frame = *error;
+    mc_world_nearby_error_init(&frame.nearby);
     frame.bounds = (mc_entity_bounds_error){0};
     frame.block_class = NULL;
     frame.block_bytecode = 0;

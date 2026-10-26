@@ -41,6 +41,15 @@ typedef mc_item_stack_status (*mc_item_stack_source_allocator)(mc_item_stack **o
  * constructs23, and preserves out on failure and the earlier count store. */
 mc_item_stack_status mc_item_stack_source_count_get(const mc_item_stack *stack, int32_t *out);
 mc_item_stack_status mc_item_stack_source_count_set(mc_item_stack *stack, int32_t count);
+/* Phase-transparent source iz.b(I) field store; provenance/phase unchanged. */
+mc_item_stack_status mc_item_stack_source_damage_set(mc_item_stack *stack, int32_t damage);
+/* Exact live animation field store and iz.a inventory-update prefix. Neither
+ * inserts a constructor/READY gate or touches id/count/damage/provenance.
+ * The prefix rereads positive b and stores b-1 at14 before Item active use.
+ * stored is required, disjoint and published only after a valid owner call. */
+mc_item_stack_status mc_item_stack_source_animation_set(mc_item_stack *stack, int32_t animation);
+mc_item_stack_status mc_item_stack_source_inventory_animation_tick(mc_item_stack *stack,
+                                                                   bool *stored);
 mc_item_stack_status mc_item_stack_source_split(mc_item_stack *stack, int32_t amount,
                                                 mc_item_stack_source_allocator allocate,
                                                 mc_item_stack **out,

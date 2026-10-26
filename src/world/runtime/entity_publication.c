@@ -26,8 +26,16 @@
 #endif
 #include <emmintrin.h>
 
+void mc_world_entity_batch_error_init(mc_world_entity_batch_error *error) {
+    static const mc_world_entity_batch_error empty = {.index = SIZE_MAX};
+    if (error != NULL)
+        *error = empty;
+}
+
 mc_world_entity_batch_error mc_world_entity_batch_empty_error(void) {
-    return (mc_world_entity_batch_error){.index = SIZE_MAX};
+    mc_world_entity_batch_error error;
+    mc_world_entity_batch_error_init(&error);
+    return error;
 }
 
 static mc_world_storage_status entity_result(mc_world_entity_error *out,
@@ -424,7 +432,8 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
                                                            const mc_world_chunk_entity_list *source,
                                                            bool deferred,
                                                            mc_world_entity_batch_error *error) {
-    mc_world_entity_batch_error frame = mc_world_entity_batch_empty_error();
+    mc_world_entity_batch_error frame;
+    mc_world_entity_batch_error_init(&frame);
     bool complete = false;
     if (world == NULL)
         entity_fail(&frame.publication, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World batch receiver");
@@ -464,7 +473,7 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
         }
     }
     if (complete)
-        frame = mc_world_entity_batch_empty_error();
+        mc_world_entity_batch_error_init(&frame);
     if (error != NULL)
         *error = frame;
     return frame.publication.status;
@@ -758,7 +767,7 @@ mc_world_storage_status
 mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
                                mc_world_player_attachment_error *out_error) {
     mc_world_player_attachment_error frame = {0};
-    frame.nbt = mc_entity_nbt_empty_error();
+    mc_entity_nbt_error_init(&frame.nbt);
     bool entered = false;
     mc_world_info_player *tag = NULL;
     if (player != NULL && !mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
@@ -839,7 +848,7 @@ mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
         goto done;
     }
     frame = (mc_world_player_attachment_error){0};
-    frame.nbt = mc_entity_nbt_empty_error();
+    mc_entity_nbt_error_init(&frame.nbt);
 done:
     mc_world_info_player_release(tag);
     if (entered) {

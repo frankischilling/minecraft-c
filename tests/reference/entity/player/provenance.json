@@ -44,8 +44,8 @@
       "sha256": "4c974741ac1622b370702aaf9a7f4b513cfd863eebe0f0a5481152c2f64418ce"
     },
     "include/mc/entity/player/player.h": {
-      "bytes": 9375,
-      "sha256": "4b9eb9edbbada14bef347ea88435ba12d9dbd117d0fef40b9392c2ddc6f97b3b"
+      "bytes": 9912,
+      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "src/entity/classes/classes.c": {
       "bytes": 11581,
@@ -68,12 +68,12 @@
       "sha256": "e495889027bc824732f2212c75d373bd1d1b3c0a683e16df245f2a54a5da397f"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 1599,
-      "sha256": "10fa6b76b05af465d762dee137bf86750e0ee967a8d94a629f262c325c37cef1"
+      "bytes": 1769,
+      "sha256": "fc998e13845a1adbc530fd0faaa3d62f72f236e95f5ce6ca8b2d6e57f1595c75"
     },
     "src/entity/player/session.c": {
-      "bytes": 8894,
-      "sha256": "677625f640b83540eac7e53d7fcc74b53c0583a019fcff2e4bfc09e10be36707"
+      "bytes": 9465,
+      "sha256": "577ebfa4de26e898335ff82a837203484c43df1616f817babee3b30f605a3240"
     },
     "src/entity/player/strings.c": {
       "bytes": 4062,

@@ -73,7 +73,6 @@ struct mc_tile_entity_classes {
 
 struct tile_entity_import_context;
 static mc_registry_error live_empty_registry(void);
-static mc_live_tile_entity_error live_empty_error(void);
 static mc_world_storage_status live_tile_entity_error(mc_live_tile_entity_error *,
                                                       mc_tile_entity_status, const char *);
 static mc_tile_entity_status live_classes_get(mc_world_runtime *world,
@@ -139,11 +138,9 @@ static bool live_graph_has_name(const mc_world_chunk *chunk, const mc_tile_entit
                                 const mc_tile_entity_name *name);
 
 static mc_registry_error live_empty_registry(void) {
-    return mc_tile_entity_empty_error().registry;
-}
-
-static mc_live_tile_entity_error live_empty_error(void) {
-    return mc_live_tile_entities_empty_error();
+    mc_tile_entity_error error;
+    mc_tile_entity_error_init(&error);
+    return error.registry;
 }
 
 static mc_tile_entity_status tile_entity_inventory_result(mc_live_tile_entity_error *error,
@@ -701,7 +698,7 @@ mc_tile_entity_status mc_tile_entity_set_invalid(mc_tile_entity *tile_entity, bo
 mc_tile_entity_status mc_tile_entity_dirty_detailed(mc_tile_entity *tile_entity,
                                                     mc_live_tile_entity_error *error) {
     if (error != NULL)
-        *error = live_empty_error();
+        mc_live_tile_entities_error_init(error);
     const mc_tile_entity_status status = tile_entity_ready(tile_entity);
     if (status != MC_TILE_ENTITY_OK) {
         if (error != NULL)
@@ -793,7 +790,7 @@ mc_tile_entity_status mc_tile_entity_chest_set_detailed(mc_tile_entity *tile_ent
                                                         mc_item_stack *stack,
                                                         mc_live_tile_entity_error *error) {
     if (error != NULL)
-        *error = live_empty_error();
+        mc_live_tile_entities_error_init(error);
     mc_tile_entity_status status = tile_entity_chest_slot(tile_entity, slot);
     if (status != MC_TILE_ENTITY_OK) {
         return tile_entity_inventory_result(error, status, 0);
@@ -860,7 +857,7 @@ mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_
                                                            mc_item_stack **out,
                                                            mc_live_tile_entity_error *error) {
     if (error != NULL)
-        *error = live_empty_error();
+        mc_live_tile_entities_error_init(error);
     if (out == NULL) {
         return tile_entity_inventory_result(error, MC_TILE_ENTITY_INVALID_ARGUMENT, 0);
     }
@@ -1387,7 +1384,8 @@ tile_entity_import_storage_scoped(mc_world_runtime *world, mc_tile_entity_kind r
         return tile_entity_status(error, MC_TILE_ENTITY_LIMIT, NULL, SIZE_MAX);
     }
     if (scope_chunk != NULL) {
-        mc_live_tile_entity_error graph_error = live_empty_error();
+        mc_live_tile_entity_error graph_error;
+        mc_live_tile_entities_error_init(&graph_error);
         size_t graph;
         if (!live_graph_measure(scope_chunk, NULL, context.limits.max_allocation_bytes, &graph,
                                 &graph_error))
@@ -2484,7 +2482,7 @@ static mc_world_storage_status live_tile_entity_error(mc_live_tile_entity_error 
 static mc_world_storage_status live_finish(mc_world_runtime *world, mc_live_tile_entity_error frame,
                                            mc_live_tile_entity_error *error) {
     if (frame.status == MC_WORLD_STORAGE_OK)
-        frame = live_empty_error();
+        mc_live_tile_entities_error_init(&frame);
     if (world != NULL)
         world->last_error = frame.cause;
     if (error != NULL)
@@ -2510,7 +2508,8 @@ static bool live_enter(mc_world_runtime *world, mc_live_tile_entity_error *error
 mc_world_storage_status mc_live_tile_entities_new(mc_world_runtime *world, mc_tile_entity_kind kind,
                                                   mc_tile_entity **out,
                                                   mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity constructor output");
         return live_finish(NULL, frame, error);
@@ -2518,7 +2517,8 @@ mc_world_storage_status mc_live_tile_entities_new(mc_world_runtime *world, mc_ti
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     mc_tile_entity *tile_entity = NULL;
-    mc_tile_entity_error detail = live_empty_error().tile_entity;
+    mc_tile_entity_error detail;
+    mc_tile_entity_error_init(&detail);
     mc_tile_entity_status status = mc_tile_entity_allocate(world, kind, &tile_entity);
     if (status == MC_TILE_ENTITY_OK)
         status = mc_tile_entity_construct_detailed(tile_entity, &detail);
@@ -3571,7 +3571,8 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
         return false;
     }
     mc_tile_entity *tile_entity = NULL;
-    mc_tile_entity_error detail = live_empty_error().tile_entity;
+    mc_tile_entity_error detail;
+    mc_tile_entity_error_init(&detail);
     mc_tile_entity_status status = mc_tile_entity_allocate(world, kind, &tile_entity);
     if (status == MC_TILE_ENTITY_OK)
         status = mc_tile_entity_construct_detailed(tile_entity, &detail);
@@ -3723,7 +3724,8 @@ static bool live_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y, 
 mc_world_storage_status mc_live_tile_entities_get(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, mc_tile_entity **out,
                                                   mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity lookup output");
         return live_finish(NULL, frame, error);
@@ -3740,7 +3742,8 @@ mc_world_storage_status mc_live_tile_entities_get(mc_world_runtime *world, int32
 mc_world_storage_status mc_live_tile_entities_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, mc_tile_entity *tile_entity,
                                                   mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     if (tile_entity != NULL && tile_entity->classes->parent != world->classes) {
@@ -3766,7 +3769,8 @@ mc_world_storage_status mc_live_tile_entities_set(mc_world_runtime *world, int32
 
 mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, int32_t x, int32_t y,
                                                      int32_t z, mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     mc_tile_entity *tile_entity = NULL;
@@ -3809,7 +3813,8 @@ mc_world_storage_status mc_live_tile_entities_block_added(mc_world_runtime *worl
                                                           const mc_block *block, int32_t x,
                                                           int32_t y, int32_t z,
                                                           mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     (void)live_block_added_held(world, block, x, y, z, &frame);
@@ -3944,7 +3949,8 @@ static mc_world_storage_status live_chunk_finish(mc_world_chunk *chunk,
 mc_world_storage_status mc_live_tile_entities_chunk_import(mc_world_chunk *chunk,
                                                            mc_tile_entity *tile_entity,
                                                            mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     mc_world_runtime *world;
     if (!live_chunk_entry(chunk, &world, &frame))
         return live_finish(NULL, frame, error);
@@ -3975,7 +3981,8 @@ mc_world_storage_status mc_live_tile_entities_chunk_import(mc_world_chunk *chunk
 
 mc_world_storage_status mc_live_tile_entities_chunk_register(mc_world_chunk *chunk,
                                                              mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     mc_world_runtime *world;
     if (!live_chunk_entry(chunk, &world, &frame))
         return live_finish(NULL, frame, error);
@@ -3987,7 +3994,8 @@ mc_world_storage_status mc_live_tile_entities_chunk_register(mc_world_chunk *chu
 
 mc_world_storage_status mc_live_tile_entities_chunk_invalidate(mc_world_chunk *chunk,
                                                                mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     /* The caller holds the actual Chunk through this callback-free traversal.
      * Its source body never dereferences d, even when the Map is nonempty. */
     if (!mc_world_chunk_source_enabled(chunk)) {
@@ -4012,7 +4020,8 @@ mc_world_storage_status
 mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, int32_t y,
                                             int32_t z, mc_tile_entity *tile_entity,
                                             mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     bool present = false;
@@ -4086,7 +4095,8 @@ bool mc_world_runtime_tile_entity_dirty(mc_world_runtime *world, int32_t x, int3
 
 mc_world_storage_status mc_live_tile_entities_drain_deferred(mc_world_runtime *world,
                                                              mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     frame.bytecode = 461;
@@ -4147,7 +4157,8 @@ mc_world_storage_status mc_live_tile_entities_drain_deferred(mc_world_runtime *w
                             }
                             if (frame.status == MC_WORLD_STORAGE_OK) {
                                 frame.bytecode = 589;
-                                mc_world_mutation_error observed = mc_world_mutation_empty_error();
+                                mc_world_mutation_error observed;
+                                mc_world_mutation_error_init(&observed);
                                 if (!mc_world_mutation_observe_cell(world, tile_entity->x,
                                                                     tile_entity->y, tile_entity->z,
                                                                     &observed)) {
@@ -4183,7 +4194,8 @@ mc_world_storage_status mc_live_tile_entities_drain_deferred(mc_world_runtime *w
 static mc_world_storage_status live_tile_entities_factory_scoped(
     mc_world_runtime *world, const mc_nbt_tag *compound, const mc_nbt_limits *limits, bool preserve,
     mc_tile_entity **out, mc_live_tile_entity_error *error, const mc_world_chunk *scope_chunk) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity factory output");
         return live_finish(NULL, frame, error);
@@ -4273,7 +4285,8 @@ static mc_world_storage_status live_tile_entities_factory_scoped(
                                                      ? MC_TILE_ENTITY_SPAWNER
                                                      : MC_TILE_ENTITY_PISTON;
                 mc_tile_entity *tile_entity = NULL;
-                mc_tile_entity_error detail = live_empty_error().tile_entity;
+                mc_tile_entity_error detail;
+                mc_tile_entity_error_init(&detail);
                 mc_tile_entity_status status;
                 frame.bytecode = 25;
                 if (preserve) {
@@ -4517,7 +4530,8 @@ mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *wo
                                                             const mc_block *block, int32_t x,
                                                             int32_t y, int32_t z,
                                                             mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     bool base = false;
@@ -4537,7 +4551,8 @@ mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *wo
         /* rw/lb.b: proved base block return6, actual World remove14. This
          * nested wrapper retains its own World and exact fetched TileEntity alias. */
         frame.bytecode = 14;
-        mc_live_tile_entity_error nested = live_empty_error();
+        mc_live_tile_entity_error nested;
+        mc_live_tile_entities_error_init(&nested);
         if (mc_live_tile_entities_remove(world, x, y, z, &nested) != MC_WORLD_STORAGE_OK) {
             /* Preserve the COMPLETE child, including TileEntity/Registry/initializer/
              * Entity/publication data, plus the two actual enclosing calls. */
@@ -4587,7 +4602,8 @@ mc_world_storage_status mc_live_tile_entities_load_records(mc_world_chunk *chunk
                                                            const mc_nbt_tag *records,
                                                            const mc_nbt_limits *requested,
                                                            mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     mc_world_runtime *world;
     if (!live_chunk_entry(chunk, &world, &frame))
         return live_finish(NULL, frame, error);
@@ -4646,7 +4662,8 @@ mc_world_storage_status mc_live_tile_entities_load_records(mc_world_chunk *chunk
                             }
                             frame.bytecode = 338;
                             mc_tile_entity *tile_entity = NULL;
-                            mc_live_tile_entity_error nested = live_empty_error();
+                            mc_live_tile_entity_error nested;
+                            mc_live_tile_entities_error_init(&nested);
                             size_t previous_graph;
                             if (!live_graph_measure(chunk, NULL, ceiling, &previous_graph, &frame))
                                 break;
@@ -4850,7 +4867,8 @@ mc_world_storage_status mc_live_tile_entities_build_records(const mc_world_chunk
                                                             const mc_nbt_limits *requested,
                                                             mc_nbt_tree **out,
                                                             mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     mc_nbt_limits limits;
     if (out == NULL || chunk == NULL || !tile_entity_limits(requested, &limits) ||
         !mc_live_tile_entities_map_valid(chunk)) {
@@ -5184,7 +5202,8 @@ static mc_tile_entity_status tile_entity_import_measure(const mc_tile_entity *ti
                                                         size_t *out) {
     if (context == NULL || context->scope_chunk == NULL)
         return mc_tile_entity_storage_bytes(tile_entity, out);
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (live_graph_measure(context->scope_chunk, (mc_tile_entity *)tile_entity,
                            context->limits.max_allocation_bytes, out, &frame))
         return MC_TILE_ENTITY_OK;
@@ -5201,7 +5220,8 @@ const void *mc_live_tile_entities_name_identity(const mc_tile_entity_name *name)
 mc_world_storage_status mc_live_tile_entities_literal(mc_world_runtime *world, const char *ascii,
                                                       mc_tile_entity_name **out,
                                                       mc_live_tile_entity_error *error) {
-    mc_live_tile_entity_error frame = live_empty_error();
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
     if (ascii == NULL || out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity code literal arguments");
         return live_finish(NULL, frame, error);
