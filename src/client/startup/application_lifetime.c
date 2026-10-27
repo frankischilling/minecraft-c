@@ -34,6 +34,9 @@ mc_client_application_lifetime_retire(client_application *app,
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
                                       "Minecraft native lifetime not registered", NULL, NULL, NULL,
                                       0, 0);
+    if (app->startup != NULL)
+        return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
+                                      "Minecraft attached startup record", NULL, NULL, NULL, 0, 0);
     if (atomic_load_explicit(&app->timer_hack_holds, memory_order_seq_cst) != 0)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
                                       "Minecraft retained by Timer hack owner", NULL, NULL, NULL, 0,

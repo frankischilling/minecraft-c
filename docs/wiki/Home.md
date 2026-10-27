@@ -7,9 +7,11 @@ or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 draws imported resources. A separate fixed-camera inspection renders generated
-terrain. Published `f3de22d` passes 1,115 hosted public/JDK tests: 363 Windows
-and 376 per Linux compiler. Startup/resource owners also pass separate focused
-local checks. [Build and tests](Build-and-tests) records their scope and the
+terrain. Checkpoint `37dc83f` passes 1,127 hosted public/JDK tests: 367 Windows
+and 380 per Linux compiler. It retains all preceding 1,115 cases and adds four
+resource-observer checks per compiler. Startup/resource owners also retain
+separate focused local checks. [Build and tests](Build-and-tests) distinguishes
+that scope, the retained seven-row Windows CPU original comparison and the
 preceding 1,163-case local graphical/World-inspection cohort.
 
 [LocalPlayer NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
@@ -19,6 +21,7 @@ both hosts. These finite component results leave normal World entry, input/tick
 adoption, dynamic rendering and gameplay interactions unfinished. The next
 session milestone is loading one World, walking, changing Blocks and saving/reloading.
 
+- [Client startup](Startup) describes the normal constructor chain and remaining World-entry work.
 - [World simulation](World-simulation) links the plant, Minecart, rail, power,
   Piston, movement and population contracts and their reference evidence.
 - [Build and tests](Build-and-tests) links build instructions and validation scope.

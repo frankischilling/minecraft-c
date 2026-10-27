@@ -35,6 +35,8 @@ arrays. Focused native construction, failure-prefix and retirement checks pass
 on Windows and sanitized Clang/GCC Linux builds; see [development status](../status.md).
 
 The normal executable still follows the menu/inspection startup described here.
+The separate [normal startup owner](normal-startup.md) connects the real
+Display, directory, Settings, Pack, Engine, Font and color-map constructors.
 Adopting the complete source startup, physical input, World entry and the live
 gameplay loop remains unfinished. Unsupported resource branches retain explicit
 frontiers; native owner checks do not establish complete original-game parity.

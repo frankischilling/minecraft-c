@@ -4,20 +4,24 @@
 
 ## Current client runtime integration
 
-Published `e8fcb3a` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40517903395).
-The audited logs contain all 1,115 Start/Passed pairs: 363 Windows, 376 GCC and
-376 Clang cases. All 1,055 preceding cases remain. All four actual checkouts
-use `7a1662b5d6df480cd9929bcb50c6c5c74cf2cc3b`, whose complete tree is
-`409c8bc698b7ec30f7d9fce08166f78ea4efb3ae`, equal to the published code tree.
-Formatting covers 1,024 C/header files. Controller mirrors and 556 positive/
-2,011 negative lifecycle controls pass on every compiler platform.
+Checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686).
+The audited logs contain 1,127 unique Start/Passed pairs: 367 Windows, 380 GCC
+and 380 Clang cases, with no skips or failures. All 1,115 cases from `e8fcb3a`
+remain; each compiler adds four resource-observer checks. All four actual
+checkouts use `5b671b26e8d5922b41e61423a569249c4868b76e`, whose complete tree is
+`fdda932e6f3578c1ec37cde5d0762cbc2601a3ed`, equal to the named checkpoint.
+Independent readback rehashes the raw logs and source archive and verifies all
+2,027 archived blobs against that tree. Formatting covers 1,027 C/header files.
+Controller mirrors and 556 positive/2,011 negative lifecycle controls pass on
+every compiler platform.
 
-New hosted cases cover the standalone null-Applet constructor with authored
-filesystem fixtures, color-array owners, SoundManager construction, loading
-state, source rendering and ZIP controls. Linux also runs the font, floating-point
-and later-owner graphics cases. These are public/native and JDK checks; the
-supplied-original profiles remain opt-in with their recorded local scope.
-The later resource-observer result is recorded separately below.
+The observer option compiles both probes and runs four asset-independent Python
+protocol/admission tests. The existing constructor, array, SoundManager, loading,
+source-rendering and ZIP controls remain; Linux also retains the font,
+floating-point and later-owner graphics cases. These are hosted public/native
+and enabled JDK checks. Supplied-original profiles stay opt-in, and later
+startup source proposals are outside this checkpoint. The earlier native
+producer and retained original result keep their separate scope below.
 
 The startup/resource increment has separate focused local qualification: 48
 logical checks per compiler, comprising 47 CTests and the direct later-owner
@@ -30,7 +34,41 @@ Normal startup adoption, physical input, World entry and gameplay remain unfinis
 The preceding published `4a6b805` [hosted checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40464703757)
 passed 1,055 public/JDK cases: 345 Windows and 355 per Linux compiler. All four
 checkout trees matched `c3c7e45cb8b9b94d86078cea1dd8ac41289c0315`; its formatting
-scope was 936 C/header files. The current hosted run retains every one of those cases.
+scope was 936 C/header files. The `37dc83f` hosted run retains every one of those cases.
+
+## Normal startup owner qualification
+
+The [normal startup owner](client/normal-startup.md) has a later coherent source
+cohort with 2,144 files. All three native compilers build ALL and the graphical
+client. Windows MSVC Debug passes 25 selected CTests plus 42 disjoint regression
+cases, for 67 distinct cases. Clang 18 passes 39 selected cases plus 42 regression
+cases with seven deliberate overlaps, for 81 executions and 74 distinct cases.
+GCC 13 passes the same 39 plus 42 cases, also with seven overlaps and 74 distinct
+cases. None failed or skipped on any compiler. The full configured inventories contain 382 Windows and 384 Linux names;
+those inventory sizes are not full-suite pass counts.
+
+All 699 owned-C recipe variants compile on each Linux compiler. Linux uses the
+existing C17 warnings, strict floating-point policy, ASan, UBSan and leak
+detection. Windows retains its strict C17 warning policy and the default
+1 MiB reserve/4 KiB commit in all 306 built executables. The Linux ELF stack
+policy and 8 MiB process limit remain unchanged. Source, tools, dependency input
+trees and complete configured product maps are checked through runtime.
+
+This selected scope covers save-format ownership, streaming NBT input,
+file attributes, Settings construction, SDK queues/icons, the CPU startup
+boundary and retained constructor/resource regressions. The CPU startup case
+stops before default-directory and device effects. Source assertions and named
+failure frontiers remain separate from successful full application startup.
+
+A later real Windows `window-default-directory` process exited zero with 166
+authored checks. The supplied resource/SDK import and byte-identical resource
+view passed their separate input checks. The process reached the declared
+EntityRenderer frontier and completed its ownership assertions. The aggregate
+runner stopped on its post-process capacity guard before admitting that mode;
+its output grammar also omitted the real achievement and recipe banners.
+Six further window modes remain unrun. The retained partial attempt is not a
+qualified seven-mode matrix, an original run, World entry or gameplay evidence.
+
 
 ## Resource observer producer and later admission policy
 
@@ -50,20 +88,21 @@ The initial failed report remains a failure. Six byte-proved JDK class additions
 and exact unpadded/three-space library tags resolve the reader's missing proof
 and transport refusal; they do not rerun or replace the original producer.
 
-The publication source map and Python/metadata policy are later changes. Their
-normal/-O public parser controls pass without a JDK, JAR or private logs; the
+The publication source map and Python/metadata policy are later than that native
+producer. Their normal/-O parser controls require no JDK, JAR or private logs;
 read-only default admission preserves the old producer and new policy roles.
-This later source proposal has not received a native build or hosted matrix.
-Only the current observer package's own provenance is rebound; prior producer,
+Only the observer package's own provenance is rebound. Prior producer,
 helper-compilation, failed-attempt and successful-review receipts stay immutable.
 
-The proposed CI flag `MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON` compiles both probes
-and registers four public tests: `tools.lookup_observation_normal`,
+At `37dc83f`, `MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON` compiles both probes and
+passes four public tests on each compiler: `tools.lookup_observation_normal`,
 `tools.lookup_observation_optimized`, `tools.lookup_observation_admission_normal`
-and `tools.lookup_observation_admission_optimized`. It does not enable supplied
-originals or require private assets. Existing public JDK checks stay enabled.
-No original ZIP/static/GL, normal startup, World entry or gameplay result is
-claimed. See [resource lookup observations](client/render-engine.md#resource-lookup-observations).
+and `tools.lookup_observation_admission_optimized`. Existing public JDK checks
+stay enabled; supplied-original options stay off and no private resources are
+required by those four checks. This hosted run is not a new complete local
+producer matrix or original comparison. It adds no original ZIP/static/GL,
+normal startup, World entry or gameplay result.
+See [resource lookup observations](client/render-engine.md#resource-lookup-observations).
 
 ## Preceding combined local cohort
 

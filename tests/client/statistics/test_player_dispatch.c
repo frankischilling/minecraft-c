@@ -82,8 +82,8 @@ static bool setup(fixture *f, const char *resources, const char *directory, bool
           MC_CLIENT_STATISTICS_OWNER_OK);
     mc_player_string_release(username);
     mc_player_string_release(session_id);
-    CHECK(mc_client_game_directory_create(directory, NULL, &f->app.game_directory, NULL, NULL) ==
-          MC_CLIENT_GAME_DIRECTORY_OK);
+    CHECK(mc_client_game_directory_create(directory, NULL, &f->app.diagnostic_game_directory, NULL,
+                                          NULL) == MC_CLIENT_GAME_DIRECTORY_OK);
     if (construct_writer) {
         mc_client_stats_options options = mc_client_stats_default_options();
         options.charset = MC_JAVA_READER_UTF8;
@@ -174,7 +174,7 @@ static bool teardown(fixture *f) {
     mc_java_random_profile_free(f->app.profile);
     mc_materials_destroy(f->app.materials);
     mc_resource_files_free(f->app.files);
-    mc_client_game_directory_free(f->app.game_directory);
+    mc_client_game_directory_free(f->app.diagnostic_game_directory);
     return true;
 }
 

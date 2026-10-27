@@ -9,7 +9,10 @@ bool texture_text_equal(mc_texture_pack_text a, mc_texture_pack_text b) {
 
 void texture_string_free(mc_client_texture_string *text) {
     if (text != NULL && --text->holds == 0) {
-        free(text->units);
+        if (text->backing != NULL)
+            mc_world_info_name_release(text->backing);
+        else
+            free(text->units);
         free(text);
     }
 }

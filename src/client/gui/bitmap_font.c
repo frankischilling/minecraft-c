@@ -510,3 +510,19 @@ mc_client_bitmap_font_status mc_client_bitmap_font_release(mc_client_bitmap_font
     *slot = NULL;
     return MC_CLIENT_BITMAP_FONT_OK;
 }
+
+mc_client_bitmap_font_status mc_client_bitmap_font_retire(mc_client_bitmap_font **slot,
+                                                          mc_client_bitmap_font_error *error) {
+    if (slot != NULL && *slot != NULL &&
+        ((*slot)->holds != 1 || (*slot)->active ||
+         (*slot)->phase == MC_CLIENT_BITMAP_FONT_CONSTRUCTING)) {
+        if (error != NULL) {
+            memset(error, 0, sizeof(*error));
+            mc_client_bitmap_font_fail(error, MC_CLIENT_BITMAP_FONT_BUSY,
+                                       "sj strict final native retirement still borrowed/active",
+                                       NULL, NULL, -1, true);
+        }
+        return MC_CLIENT_BITMAP_FONT_BUSY;
+    }
+    return mc_client_bitmap_font_release(slot, error);
+}

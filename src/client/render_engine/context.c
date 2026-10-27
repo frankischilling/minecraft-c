@@ -14,7 +14,7 @@ mc_client_render_engine_status mc_client_render_engine_classes_allocate_context(
     mc_client_render_engine_classes *c = calloc(1, sizeof(*c));
     if (c == NULL)
         return MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED;
-    c->holds = 1;
+    atomic_init(&c->holds, 1);
     c->arena.options = ge == NULL ? mc_client_render_engine_default_options() : *ge;
     c->nw.options =
         nw == NULL ? (mc_client_render_engine_options){20u * 1024u * 1024u, SIZE_MAX} : *nw;

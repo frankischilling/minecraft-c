@@ -34,6 +34,8 @@ typedef struct mc_client_application_construction mc_client_application_construc
 
 typedef struct mc_gui_main_menu mc_gui_main_menu;
 typedef struct mc_client_game_directory mc_client_game_directory;
+typedef struct mc_java_file mc_java_file;
+typedef struct mc_client_application_startup mc_client_application_startup;
 typedef struct mc_client_world_session mc_client_world_session;
 typedef struct mc_client_world_view mc_client_world_view;
 typedef struct mc_player_session_classes mc_player_session_classes;
@@ -70,7 +72,8 @@ struct client_application {
     mc_client_world_session *world_session;
     mc_client_world_view *world_view;
     mc_client_assets *assets;
-    mc_client_game_directory *game_directory;
+    mc_client_game_directory *diagnostic_game_directory; /* native frontend path policy */
+    mc_java_file *game_directory;                        /* canonical actual Z:Ljava/io/File; */
     mc_game_settings *settings;
     mc_gui_main_menu *main_menu;
     mc_java_random title_random;
@@ -154,6 +157,8 @@ struct client_application {
     mc_client_application_constructor_phase constructor_phase;
     mc_client_application_classes *source_namespace;
     bool source_namespace_borrowed;
+    /* Native startup-call lifetime; borrows this actual App until retirement. */
+    mc_client_application_startup *startup;
 };
 
 #endif

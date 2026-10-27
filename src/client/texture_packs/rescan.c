@@ -98,10 +98,11 @@ static size_t find(texture_pack_cache *cache, mc_texture_pack_text key) {
 static bool cache_put(mc_client_texture_pack_list *owner, mc_client_texture_string *key,
                       mc_client_texture_pack *pack, mc_texture_pack_error *e) {
     texture_pack_cache *cache = owner->cached;
+    const unsigned int put_pc = owner->source_files == NULL ? 186u : 184u;
     if (cache->count >= owner->options.max_packs ||
         cache->count >= SIZE_MAX / sizeof(*cache->entries)) {
         texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "ik Map native entry bound", "ik", "a", "()V",
-                          186, 186);
+                          put_pc, put_pc);
         return false;
     }
     if (cache->count == cache->capacity) {
@@ -114,13 +115,13 @@ static bool cache_put(mc_client_texture_pack_list *owner, mc_client_texture_stri
             capacity = owner->options.max_packs;
         if (capacity > SIZE_MAX / sizeof(*cache->entries)) {
             texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "ik Map native byte bound", "ik", "a",
-                              "()V", 186, 186);
+                              "()V", put_pc, put_pc);
             return false;
         }
         void *grown = realloc(cache->entries, capacity * sizeof(*cache->entries));
         if (grown == NULL) {
             texture_pack_fail(e, MC_TEXTURE_PACK_ALLOCATION_FAILED, "ik actual Map storage", "ik",
-                              "a", "()V", 186, 186);
+                              "a", "()V", put_pc, put_pc);
             return false;
         }
         cache->entries = grown;
@@ -128,42 +129,61 @@ static bool cache_put(mc_client_texture_pack_list *owner, mc_client_texture_stri
     }
     if (texture_string_retain(key) != MC_TEXTURE_PACK_OK) {
         texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "ik Map native String hold", "ik", "a", "()V",
-                          186, 186);
+                          put_pc, put_pc);
         return false;
     }
     if (mc_client_texture_pack_retain(pack) != MC_TEXTURE_PACK_OK) {
         texture_string_free(key);
         texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "ik Map native pack hold", "ik", "a", "()V",
-                          186, 186);
+                          put_pc, put_pc);
         return false;
     }
     cache->entries[cache->count++] = (texture_pack_cache_entry){key, pack};
     return true;
 }
 
-static mc_client_texture_string *make_key(const texture_directory_entry *file,
-                                          const mc_texture_pack_options *options,
+static mc_client_texture_string *make_key(mc_client_texture_pack_list *owner,
+                                          const texture_directory_entry *file,
                                           mc_texture_pack_error *e) {
-    texture_file_info info;
-    if (texture_file_stat(file->path, &info, e) != MC_TEXTURE_PACK_OK) {
-        site(e, 120);
-        return NULL;
-    }
-    if (!info.bytes_valid) {
-        texture_pack_fail(e, MC_TEXTURE_PACK_UNSUPPORTED_NATIVE, "ik File.length representation",
-                          "ik", "a", "()V", 120, 120);
-        return NULL;
+    const mc_texture_pack_options *options = &owner->options;
+    texture_file_info info = {0};
+    mc_client_texture_string *name = NULL;
+    const texture_directory_entry *key_file = file;
+    texture_directory_entry typed = {0};
+    if (owner->source_files != NULL) {
+        if (texture_source_scan_name(owner, 107, &name, e) != MC_TEXTURE_PACK_OK)
+            return NULL;
+        typed.name = name;
+        key_file = &typed;
+        if (texture_source_scan_numbers(owner, &info.bytes, &info.modified, e) !=
+            MC_TEXTURE_PACK_OK) {
+            texture_string_free(name);
+            return NULL;
+        }
+    } else {
+        if (texture_file_stat(file->path, &info, e) != MC_TEXTURE_PACK_OK) {
+            site(e, 120);
+            return NULL;
+        }
+        if (!info.bytes_valid) {
+            texture_pack_fail(e, MC_TEXTURE_PACK_UNSUPPORTED_NATIVE,
+                              "ik File.length representation", "ik", "a", "()V", 120, 120);
+            return NULL;
+        }
+        const int64_t bytes = info.bytes;
+        if (texture_file_stat(file->path, &info, e) != MC_TEXTURE_PACK_OK) {
+            site(e, 133);
+            return NULL;
+        }
+        info.bytes = bytes;
+        if (!info.modified_valid) {
+            texture_pack_fail(e, MC_TEXTURE_PACK_UNSUPPORTED_NATIVE,
+                              "ik File.lastModified representation", "ik", "a", "()V", 133, 133);
+            return NULL;
+        }
     }
     const int64_t bytes = info.bytes;
-    if (texture_file_stat(file->path, &info, e) != MC_TEXTURE_PACK_OK) {
-        site(e, 133);
-        return NULL;
-    }
-    if (!info.modified_valid) {
-        texture_pack_fail(e, MC_TEXTURE_PACK_UNSUPPORTED_NATIVE,
-                          "ik File.lastModified representation", "ik", "a", "()V", 133, 133);
-        return NULL;
-    }
+    file = key_file;
     char suffix[48];
     const int count =
         snprintf(suffix, sizeof(suffix), ":%" PRId64 ":%" PRId64, bytes, info.modified);
@@ -172,6 +192,7 @@ static mc_client_texture_string *make_key(const texture_directory_entry *file,
         (size_t)count > options->max_name_units - file->name->length) {
         texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "ik filename/length/mtime String bound", "ik",
                           "a", "()V", 139, 139);
+        texture_string_free(name);
         return NULL;
     }
     const size_t units = file->name->length + (size_t)count;
@@ -179,6 +200,7 @@ static mc_client_texture_string *make_key(const texture_directory_entry *file,
     if (joined == NULL) {
         texture_pack_fail(e, MC_TEXTURE_PACK_ALLOCATION_FAILED, "ik cache-key String storage", "ik",
                           "a", "()V", 139, 139);
+        texture_string_free(name);
         return NULL;
     }
     memcpy(joined, file->name->units, file->name->length * sizeof(uint16_t));
@@ -189,7 +211,26 @@ static mc_client_texture_string *make_key(const texture_directory_entry *file,
     free(joined);
     if (key == NULL)
         site(e, 139);
+    texture_string_free(name);
     return key;
+}
+
+static void finish_key(mc_client_texture_pack_list *owner, mc_client_texture_string *key,
+                       const mc_texture_pack_error *error) {
+    if (owner->source_files != NULL && error->status != MC_TEXTURE_PACK_OK)
+        return;
+    if (owner->source_files != NULL)
+        owner->pending_key = NULL;
+    texture_string_free(key);
+}
+
+static void finish_pack(mc_client_texture_pack_list *owner, mc_client_texture_pack *pack,
+                        const mc_texture_pack_error *error) {
+    if (owner->source_files != NULL && error->status != MC_TEXTURE_PACK_OK)
+        return;
+    if (owner->source_files != NULL)
+        owner->pending_pack = NULL;
+    (void)mc_client_texture_pack_release(pack, NULL);
 }
 
 mc_texture_pack_status texture_pack_rescan_body(mc_client_texture_pack_list *owner,
@@ -202,84 +243,116 @@ mc_texture_pack_status texture_pack_rescan_body(mc_client_texture_pack_list *own
     if (!set_selected(owner, NULL, 10, e) ||
         !append(next, owner->default_pack, owner->options.max_packs, 18, e))
         goto done;
-    texture_file_info info;
-    if (texture_file_stat(owner->directory, &info, e) != MC_TEXTURE_PACK_OK) {
-        site(e, 28);
-        goto done;
-    }
-    if (info.exists) {
+    texture_file_info info = {0};
+    size_t file_count = 0;
+    if (owner->source_files != NULL) {
+        if (texture_source_scan_files(owner, &file_count, e) != MC_TEXTURE_PACK_OK)
+            goto done;
+    } else {
         if (texture_file_stat(owner->directory, &info, e) != MC_TEXTURE_PACK_OK) {
-            site(e, 41);
+            site(e, 28);
             goto done;
         }
-        if (info.directory && texture_directory_read(owner->directory, &owner->options, &files,
-                                                     e) != MC_TEXTURE_PACK_OK)
-            goto done;
+        if (info.exists) {
+            if (texture_file_stat(owner->directory, &info, e) != MC_TEXTURE_PACK_OK) {
+                site(e, 41);
+                goto done;
+            }
+            if (info.directory && texture_directory_read(owner->directory, &owner->options, &files,
+                                                         e) != MC_TEXTURE_PACK_OK)
+                goto done;
+        }
+        file_count = files.count;
     }
-    for (size_t i = 0; i < files.count; ++i) {
-        const texture_directory_entry *file = &files.entries[i];
-        if (texture_file_stat(file->path, &info, e) != MC_TEXTURE_PACK_OK) {
+    for (size_t i = 0; i < file_count; ++i) {
+        owner->scan_index = i;
+        const texture_directory_entry *file =
+            owner->source_files == NULL ? &files.entries[i] : NULL;
+        mc_client_texture_string *source_name = NULL;
+        if (owner->source_files != NULL) {
+            if (texture_source_scan_regular(owner, &info.regular, e) != MC_TEXTURE_PACK_OK)
+                goto done;
+        } else if (texture_file_stat(file->path, &info, e) != MC_TEXTURE_PACK_OK) {
             site(e, 76);
             goto done;
         }
         if (!info.regular)
             continue;
+        if (owner->source_files != NULL &&
+            texture_source_scan_name(owner, 84, &source_name, e) != MC_TEXTURE_PACK_OK)
+            goto done;
         bool zip = false;
-        if (texture_name_zip(text(file->name), &zip, e) != MC_TEXTURE_PACK_OK) {
+        const mc_texture_pack_status named =
+            texture_name_zip(text(source_name != NULL ? source_name : file->name), &zip, e);
+        texture_string_free(source_name);
+        if (named != MC_TEXTURE_PACK_OK) {
             site(e, 87);
             goto done;
         }
         if (!zip)
             continue;
-        mc_client_texture_string *key = make_key(file, &owner->options, e);
+        mc_client_texture_string *key = make_key(owner, file, e);
         if (key == NULL)
             goto done;
+        if (owner->source_files != NULL)
+            owner->pending_key = key;
         size_t at = find(owner->cached, text(key));
         if (at == owner->cached->count) {
             mc_client_texture_pack *created = NULL;
             if (owner->options.max_packs == 0 ||
                 owner->cached->count >= owner->options.max_packs - 1) {
-                texture_string_free(key);
                 texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "ik new ZIP native graph bound", "ik",
                                   "a", "()V", 158, 158);
+                finish_key(owner, key, e);
                 goto done;
             }
             if (texture_pack_new(MC_TEXTURE_PACK_ZIP, owner->resources, &owner->options, &created,
                                  e) != MC_TEXTURE_PACK_OK) {
-                texture_string_free(key);
+                finish_key(owner, key, e);
                 site(e, 158);
                 goto done;
             }
-            if (texture_zip_construct(created, file->path, text(file->name), e) !=
+            if (owner->source_files != NULL)
+                owner->pending_pack = created;
+            if (texture_source_register_pack(owner, created, e) != MC_TEXTURE_PACK_OK) {
+                finish_key(owner, key, e);
+                finish_pack(owner, created, e);
+                site(e, 158);
+                goto done;
+            }
+            if ((owner->source_files != NULL
+                     ? texture_zip_construct_file(created,
+                                                  mc_java_file_array_at(owner->scan_files, i), e)
+                     : texture_zip_construct(created, file->path, text(file->name), e)) !=
                 MC_TEXTURE_PACK_OK) {
-                texture_string_free(key);
-                (void)mc_client_texture_pack_release(created, NULL);
+                finish_key(owner, key, e);
+                finish_pack(owner, created, e);
                 site(e, 164);
                 goto done;
             }
             if (texture_string_retain(key) != MC_TEXTURE_PACK_OK) {
-                texture_string_free(key);
-                (void)mc_client_texture_pack_release(created, NULL);
                 texture_pack_fail(e, MC_TEXTURE_PACK_LIMIT, "vp.d native String hold", "ik", "a",
                                   "()V", 173, 173);
+                finish_key(owner, key, e);
+                finish_pack(owner, created, e);
                 goto done;
             }
             created->cache_key = key; /* Actual same String identity at i.d173. */
             if (!cache_put(owner, key, created, e)) {
-                texture_string_free(key);
-                (void)mc_client_texture_pack_release(created, NULL);
+                finish_key(owner, key, e);
+                finish_pack(owner, created, e);
                 goto done;
             }
             const mc_texture_pack_status loaded = texture_zip_metadata(created, e);
-            (void)mc_client_texture_pack_release(created, NULL);
+            finish_pack(owner, created, e);
             if (loaded != MC_TEXTURE_PACK_OK) {
-                texture_string_free(key);
+                finish_key(owner, key, e);
                 e->ik_pc = 196;
                 goto done;
             }
             at = find(owner->cached, text(key));
         }
-        texture_string_free(key);
+        finish_key(owner, key, e);
         mc_client_texture_pack *pack = owner->cached->entries[at].pack;
         if (pack == NULL || pack->name == NULL) {
             texture_pack_fail(
@@ -343,6 +416,19 @@ mc_texture_pack_status texture_pack_rescan_body(mc_client_texture_pack_list *own
     release_vector(old);
 done:
     texture_directory_free(&files);
+    if (owner->source_files != NULL) {
+        if (e->status == MC_TEXTURE_PACK_OK &&
+            mc_java_file_array_release(&owner->scan_files, &owner->source_failure.file) !=
+                MC_JAVA_FILE_OK)
+            texture_source_file_error(owner->source_failure.file.status,
+                                      &owner->source_failure.file, e, 0);
+        if (e->status != MC_TEXTURE_PACK_OK) {
+            owner->pending_next = next;
+            owner->source_scan_failed = true;
+            owner->source_failure.native = *e;
+            return e->status;
+        }
+    }
     release_vector(next);
     return e->status;
 }

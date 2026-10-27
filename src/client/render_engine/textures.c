@@ -553,6 +553,12 @@ mc_client_render_engine_retire_resources(mc_client_render_engine_classes *classe
     return e.status;
 }
 
+bool mc_client_render_engine_resources_pending(const mc_client_render_engine_classes *classes) {
+    return classes != NULL &&
+           (classes->native_resource_count != 0 || classes->command_range_count != 0 ||
+            classes->font_lease_count != 0 || classes->context_lease != NULL);
+}
+
 bool mc_client_render_engine_registered_image(const mc_client_render_engine *o,
                                               mc_client_texture id, mc_client_argb_image **out) {
     if (o == NULL || out == NULL || o->fields.d == NULL)

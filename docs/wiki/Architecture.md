@@ -14,7 +14,10 @@ source order. The [Minecraft class/worker owner](https://github.com/frankischill
 holds the static arrays and actual atomic J/o, with native cancellation/join
 separate from source stores. The standalone constructor and retained resource
 owners have separate [native coverage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md).
-Normal startup and gameplay adoption remain unfinished.
+The [normal startup owner](Startup) now connects Display, the game directory,
+Settings, selected Pack, RenderEngine, Font and color maps on the same App.
+The executable still uses its title/inspection entry; complete startup and
+gameplay adoption remain unfinished.
 
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
@@ -80,7 +83,12 @@ and WorldInfo lifetimes.
 
 The [RenderEngine](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-engine.md) separates CPU constructor/font state from actual Display resources.
 [Biped construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/biped-construction.md) shares concrete model geometry without aliasing Notice's owner.
-Both pass the current full Windows/Linux matrix; normal App adoption remains unfinished.
+Both retain their scoped native/original comparisons. At checkpoint `37dc83f`,
+the hosted Windows/GCC/Clang matrix also compiles the resource lookup probes and
+passes four pure observer checks per compiler. The separate earlier native
+producer and retained seven-row Windows CPU original result keep their own
+source/admission scope. Supplied-original profiles and later startup source
+proposals are outside that hosted result; normal App adoption remains unfinished.
 
 The [OpenAL backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/audio-backend.md) owns real devices, caches and
 workers; [sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md) retain streams and decoder state.

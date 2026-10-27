@@ -101,6 +101,13 @@ mc_client_bitmap_font_status mc_client_bitmap_font_retain(mc_client_bitmap_font 
  * RETIRING owners cannot acquire a new hold between failed cleanup attempts. */
 mc_client_bitmap_font_status mc_client_bitmap_font_release(mc_client_bitmap_font **,
                                                            mc_client_bitmap_font_error *);
+/* Strict native final retirement. An external hold or actual active call
+ * returns BUSY without dropping this slot/hold or ending its borrowed App,
+ * Settings, Engine, provider or Display lifetime. Otherwise uses the SAME
+ * final occurrence cleanup body as release, including retained retry state.
+ * Does not retire terminal class-owned graphics resources. */
+mc_client_bitmap_font_status mc_client_bitmap_font_retire(mc_client_bitmap_font **,
+                                                          mc_client_bitmap_font_error *);
 bool mc_client_bitmap_font_inspect(const mc_client_bitmap_font *, mc_client_bitmap_font_state *);
 
 mc_client_bitmap_font_status mc_client_bitmap_font_measure(mc_client_bitmap_font *,

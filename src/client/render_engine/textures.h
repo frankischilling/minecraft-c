@@ -75,6 +75,13 @@ mc_client_render_texture_status
 mc_client_render_engine_retire_resources(mc_client_render_engine_classes *,
                                          mc_client_render_texture_error *error);
 
+/* Pure native ownership query over the actual namespace counters/context.
+ * No GL/active use or refcount inference. True means this runtime's outer
+ * namespace owner must coordinate actual terminal retire_resources while its
+ * Display remains alive. False does not grant authority to retire a namespace
+ * or assert general source-call quiescence. Exclusive native access required. */
+bool mc_client_render_engine_resources_pending(const mc_client_render_engine_classes *);
+
 /* Selected actual d.get(Integer) inspection; borrows its counted occurrence. */
 bool mc_client_render_engine_registered_image(const mc_client_render_engine *, mc_client_texture,
                                               mc_client_argb_image **out);

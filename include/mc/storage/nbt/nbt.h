@@ -81,7 +81,11 @@ typedef enum mc_nbt_status {
     MC_NBT_ALLOCATION_FAILED,
     MC_NBT_INVALID_TREE,
     MC_NBT_BUFFER_TOO_SMALL,
-    MC_NBT_ROOT_TYPE
+    MC_NBT_ROOT_TYPE,
+    MC_NBT_INPUT_ERROR,
+    MC_NBT_SOURCE_FAILURE,
+    MC_NBT_STREAM_BUSY,
+    MC_NBT_STREAM_STATE
 } mc_nbt_status;
 
 typedef struct mc_nbt_error {
@@ -113,6 +117,9 @@ const mc_nbt_tag *mc_nbt_document_root(const mc_nbt_document *document);
  * keep their actual decoded document and payload alive until final release.
  * Existing single-owner use still retires the complete document here. NULL is
  * harmless; no public document hold is acquired by obtaining a borrowed root. */
+/* Add one hold on the SAME existing opaque document allocation/counter.
+ * No derived document, registry, reparse, callback or allocation is involved. */
+mc_nbt_status mc_nbt_document_retain(mc_nbt_document *document);
 void mc_nbt_document_free(mc_nbt_document *document);
 
 /* UTF-16 name lookup; NULL name is valid only for length zero. */

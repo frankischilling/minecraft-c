@@ -1,5 +1,8 @@
 #include "display.h"
 #include "gl_internal.h"
+#include "sdk_display_internal.h"
+#include "sdk_mode_internal.h"
+#include "sdk_update.h"
 #include "source_internal.h"
 
 #include <SDL3/SDL_init.h>
@@ -53,7 +56,23 @@ struct mc_client_display {
     size_t texture_count, texture_bytes;
     size_t texture_resource_count, texture_resource_calls;
     mc_client_source_state source;
+    bool native_retiring, native_cleanup_issued, sdk_profile, stage_active, class_initialized,
+        window_created;
+    mc_client_display_phase stage_phase;
+    mc_client_display_mode *initial_mode, *current_mode;
+    mc_player_string *title, *empty_title;
+    mc_client_sdk_icons *icons;
+    mc_client_sdk_window_icons *window_icons;
+    mc_client_sdk_input *inputs;
+    mc_client_sdk_update *updates;
+    mc_client_event_port *events;
+    int32_t source_last_store, native_width, native_height;
+    mc_client_display_stage_error stage_failure;
 };
+
+/* The real source SDK is process-wide and admits one window. Diagnostic
+ * Displays still share the same SDL transport, without invented SDK flags. */
+static mc_client_display *sdk_namespace;
 
 static bool source_generation_leased(const mc_client_display *, uint64_t);
 static void source_gpu_retire(mc_client_display *, bool *, mc_client_display_error *);
@@ -124,10 +143,15 @@ static bool gl_check(mc_client_display *display, const char *operation,
     return true;
 }
 
-static bool current(mc_client_display *display, const char *operation,
-                    mc_client_display_error *error) {
+static bool current_internal(mc_client_display *display, const char *operation,
+                             mc_client_display_error *error, bool cleanup) {
     if (display == NULL)
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation, "null display", 0);
+    if (!cleanup && (display->native_retiring ||
+                     (display->sdk_profile && mc_client_display_sdk_operation_busy(display)) ||
+                     (display->sdk_profile && display->stage_phase != MC_CLIENT_DISPLAY_READY)))
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, operation,
+                    "native Display construction/retirement active", 0);
     if (display->context_lost)
         return fail(error, MC_CLIENT_DISPLAY_CONTEXT_LOST, operation, "OpenGL context was lost",
                     GL_CONTEXT_LOST);
@@ -138,6 +162,11 @@ static bool current(mc_client_display *display, const char *operation,
         !SDL_GL_MakeCurrent(display->window, display->context))
         return sdl_failure(error, operation);
     return true;
+}
+
+static bool current(mc_client_display *display, const char *operation,
+                    mc_client_display_error *error) {
+    return current_internal(display, operation, error, false);
 }
 
 bool mc_client_display_make_current(mc_client_display *display, mc_client_display_error *error) {
@@ -311,23 +340,11 @@ static bool context_check(mc_client_display *display, mc_client_display_error *e
     return gl_check(display, "query OpenGL implementation strings", error);
 }
 
-bool mc_client_display_create(const char *title, int width, int height, bool hidden,
-                              mc_client_display **out, mc_client_display_error *error) {
-    if (title == NULL || title[0] == '\0' || width <= 0 || height <= 0 || out == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "create display", "invalid argument",
-                    0);
-    size_t requested_pixels;
-    if (width > DISPLAY_WINDOW_AXIS || height > DISPLAY_WINDOW_AXIS ||
-        !product((size_t)width, (size_t)height, &requested_pixels) ||
-        requested_pixels > DISPLAY_WINDOW_PIXELS)
-        return fail(error, MC_CLIENT_DISPLAY_LIMIT, "create display", "window request limit", 0);
-    mc_client_display *display = calloc(1, sizeof(*display));
-    if (display == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "create display",
-                    "allocation failed", 0);
-    if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
+static bool native_create_window(mc_client_display *display, const char *title, int width,
+                                 int height, bool hidden, mc_client_display_error *error) {
+    if (!display->video && !SDL_InitSubSystem(SDL_INIT_VIDEO)) {
         sdl_failure(error, "initialize SDL video");
-        goto failed;
+        return false;
     }
     display->video = true;
     SDL_GL_ResetAttributes();
@@ -352,28 +369,63 @@ bool mc_client_display_create(const char *title, int width, int height, bool hid
     for (size_t i = 0; i < sizeof(attributes) / sizeof(attributes[0]); ++i)
         if (!SDL_GL_SetAttribute(attributes[i].attribute, attributes[i].value)) {
             sdl_failure(error, "set OpenGL context attribute");
-            goto failed;
+            return false;
         }
     const SDL_WindowFlags flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
                                   SDL_WINDOW_HIGH_PIXEL_DENSITY | (hidden ? SDL_WINDOW_HIDDEN : 0);
     display->window = SDL_CreateWindow(title, width, height, flags);
     if (display->window == NULL) {
         sdl_failure(error, "create SDL window");
-        goto failed;
+        return false;
     }
     if (!SDL_SetWindowPosition(display->window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)) {
         sdl_failure(error, "center SDL window");
-        goto failed;
+        return false;
     }
+    mc_client_events_error events = {0};
+    if (mc_client_events_attach(display->window, 0, &display->events, &events) !=
+        MC_CLIENT_EVENTS_OK)
+        return fail(error,
+                    events.status == MC_CLIENT_EVENTS_ALLOCATION_FAILED
+                        ? MC_CLIENT_DISPLAY_ALLOCATION_FAILED
+                    : events.status == MC_CLIENT_EVENTS_LIMIT ? MC_CLIENT_DISPLAY_LIMIT
+                                                              : MC_CLIENT_DISPLAY_SDL_ERROR,
+                    events.operation, events.detail, 0);
+    display->native_width = width;
+    display->native_height = height;
+    return true;
+}
+
+static bool native_create_context(mc_client_display *display, mc_client_display_error *error) {
     display->context = SDL_GL_CreateContext(display->window);
     if (display->context == NULL) {
         sdl_failure(error, "create OpenGL context");
-        goto failed;
+        return false;
     }
     if (!load_gl(display, error) || !context_check(display, error) ||
         !renderer_create(display, error))
-        goto failed;
+        return false;
     display->info.swap_interval_zero = SDL_GL_SetSwapInterval(0);
+    return true;
+}
+
+bool mc_client_display_create(const char *title, int width, int height, bool hidden,
+                              mc_client_display **out, mc_client_display_error *error) {
+    if (title == NULL || title[0] == '\0' || width <= 0 || height <= 0 || out == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "create display", "invalid argument",
+                    0);
+    size_t requested_pixels;
+    if (width > DISPLAY_WINDOW_AXIS || height > DISPLAY_WINDOW_AXIS ||
+        !product((size_t)width, (size_t)height, &requested_pixels) ||
+        requested_pixels > DISPLAY_WINDOW_PIXELS)
+        return fail(error, MC_CLIENT_DISPLAY_LIMIT, "create display", "window request limit", 0);
+    mc_client_display *display = calloc(1, sizeof(*display));
+    if (display == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "create display",
+                    "allocation failed", 0);
+    if (!native_create_window(display, title, width, height, hidden, error) ||
+        !native_create_context(display, error))
+        goto failed;
     *out = display;
     return success(error);
 failed:
@@ -981,16 +1033,30 @@ bool mc_client_display_draw_quad_modelview(mc_client_display *display, mc_client
     return draw_quad(display, texture, vertices, modelview, blend, alpha_test, error);
 }
 
-bool mc_client_display_swap(mc_client_display *display, mc_client_display_error *error) {
-    if (!current(display, "swap display buffers", error))
+static bool swap_internal(mc_client_display *display, bool sdk_dispatch, bool *completed,
+                          mc_client_display_error *error) {
+    if (completed != NULL)
+        *completed = false;
+    if (!current_internal(display, "swap display buffers", error, sdk_dispatch))
         return false;
     if (!gl_check(display, "before display swap", error))
         return false;
     if (!SDL_GL_SwapWindow(display->window))
         return sdl_failure(error, "swap display buffers");
+    if (completed != NULL)
+        *completed = true;
     display->frame_started = false;
     display->scene_started = false;
     return gl_check(display, "swap display buffers", error) && success(error);
+}
+
+bool mc_client_display_swap(mc_client_display *display, mc_client_display_error *error) {
+    return swap_internal(display, false, NULL, error);
+}
+
+bool mc_client_display_sdk_swap(mc_client_display *display, bool *completed,
+                                mc_client_display_error *error) {
+    return swap_internal(display, true, completed, error);
 }
 
 bool mc_client_display_capture_rgba(mc_client_display *display, mc_client_capture *out,
@@ -1062,7 +1128,12 @@ static void cleanup_check(mc_client_display *display, const char *operation, boo
     }
 }
 
-bool mc_client_display_destroy(mc_client_display *display, mc_client_display_error *error) {
+static bool destroy_native(mc_client_display *display, bool preserve_context, bool *consumed,
+                           mc_client_display_error *context_error, mc_client_display_error *error) {
+    if (consumed != NULL)
+        *consumed = false;
+    if (context_error != NULL)
+        *context_error = (mc_client_display_error){0};
     if (display != NULL &&
         (display->source.context_holds != 0 || display->source.range_count != 0 ||
          display->source.texture_lease_count != 0 || display->source.active_calls != 0))
@@ -1071,13 +1142,24 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
     if (display != NULL && display->texture_resource_count != 0)
         return fail(error, MC_CLIENT_DISPLAY_BUSY, "destroy display with texture owners",
                     "retire the generated texture resources and retry", 0);
-    if (display == NULL)
+    if (display == NULL) {
+        if (consumed != NULL)
+            *consumed = true;
         return success(error);
+    }
+    mc_client_events_error events = {0};
+    if (mc_client_events_retire(&display->events, &events) != MC_CLIENT_EVENTS_OK)
+        return fail(error,
+                    events.status == MC_CLIENT_EVENTS_BUSY ? MC_CLIENT_DISPLAY_BUSY
+                                                           : MC_CLIENT_DISPLAY_SDL_ERROR,
+                    events.operation, events.detail, 0);
+    display->native_retiring = true;
     bool ok = true;
     mc_client_display_error first = {0};
-    bool can_delete =
-        display->context != NULL && display->functions_ready && !display->context_lost;
-    if (can_delete && !current(display, "make context current for cleanup", &first)) {
+    bool can_delete = display->context != NULL && display->functions_ready &&
+                      !display->context_lost && !display->native_cleanup_issued;
+    if (can_delete &&
+        !current_internal(display, "make context current for cleanup", &first, true)) {
         ok = false;
         can_delete = false;
     }
@@ -1113,22 +1195,45 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
             display->gl.DeleteShader(display->fragment_shader);
             cleanup_check(display, "delete GUI fragment shader", &ok, &first);
         }
+        /* Native terminal cleanup is issued once. A staged context-destroy
+         * failure keeps the actual context/window for retry, without repeating
+         * deletion of names whose first driver result may be uncertain. */
+        display->native_cleanup_issued = true;
     }
     if (display->context != NULL && !SDL_GL_DestroyContext(display->context)) {
+        mc_client_display_error retained = {0};
+        sdl_failure(&retained, "destroy OpenGL context");
+        if (context_error != NULL)
+            *context_error = retained;
         if (ok)
-            sdl_failure(&first, "destroy OpenGL context");
+            first = retained;
         ok = false;
+        if (preserve_context) {
+            if (error != NULL)
+                *error = first;
+            return false;
+        }
     }
     if (display->window != NULL)
         SDL_DestroyWindow(display->window);
     if (display->video)
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
     free(display);
+    if (consumed != NULL)
+        *consumed = true;
     if (ok)
         return success(error);
     if (error != NULL)
         *error = first;
     return false;
+}
+
+bool mc_client_display_destroy(mc_client_display *display, mc_client_display_error *error) {
+    if (display != NULL &&
+        (display->sdk_profile || display->stage_active || display->native_retiring))
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "destroy staged/active Display",
+                    "use the staged terminal owner and preserve its typed children", 0);
+    return destroy_native(display, false, NULL, NULL, error);
 }
 
 /* Implementation includes require helpers in this order. */
@@ -1137,3 +1242,6 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
 #include "texture_leases.inc"
 #include "loading_projection.inc"
 // clang-format on
+
+/* Canonical staged SDK owner uses the same native constructor/destructor. */
+#include "sdk_staged.inc"

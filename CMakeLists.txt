@@ -152,9 +152,28 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_timer_construction STATIC src/client/timer/construction.c)
     target_link_libraries(mc_client_timer_construction PUBLIC mc_client_timer
         PRIVATE mc_platform_time mc_build_options)
+    add_library(mc_client_event_transport STATIC src/client/display/events.c)
+    target_include_directories(mc_client_event_transport PUBLIC src/client/display)
+    target_link_libraries(mc_client_event_transport PUBLIC SDL3::SDL3-static PRIVATE mc_build_options)
+    add_library(mc_client_sdk_runtime STATIC
+        src/client/display/sdk_mode.c src/client/display/sdk_platform.c
+        src/client/display/sdk_input.c src/client/display/sdk_input_events.c
+        src/client/display/sdk_input_poll.c src/client/display/sdk_update.c
+        src/client/display/sdk_window_icons.c)
+    target_include_directories(mc_client_sdk_runtime PUBLIC src/client/display)
+    target_link_libraries(mc_client_sdk_runtime PUBLIC
+        mc_client_sdk_queue mc_client_sdk_icons SDL3::SDL3-static
+        PRIVATE mc_client_event_transport mc_simulation mc_game_settings mc_build_options)
+    if(WIN32)
+        target_link_libraries(mc_client_sdk_runtime PRIVATE user32 gdi32)
+    else()
+        find_package(X11 REQUIRED COMPONENTS Xrandr)
+        target_link_libraries(mc_client_sdk_runtime PRIVATE X11::X11 X11::Xrandr)
+    endif()
     add_library(mc_client_display STATIC src/client/display/display.c)
     target_include_directories(mc_client_display PUBLIC src/client/display)
-    target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static PRIVATE mc_build_options)
+    target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static
+        PRIVATE mc_client_event_transport mc_client_sdk_runtime mc_build_options)
     add_library(mc_client_default_font STATIC src/client/fonts/default_font.c)
     target_include_directories(mc_client_default_font PUBLIC include)
     target_link_libraries(mc_client_default_font PUBLIC freetype PRIVATE mc_build_options)
@@ -289,12 +308,21 @@ add_library(mc_core STATIC
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_c_atomics mc_build_options)
 
+add_library(mc_client_sdk_queue STATIC src/client/display/sdk_queue.c)
+target_include_directories(mc_client_sdk_queue PUBLIC src/client/display)
+target_link_libraries(mc_client_sdk_queue PUBLIC mc_core PRIVATE mc_build_options)
+add_library(mc_client_sdk_icons STATIC src/client/display/sdk_icons.c)
+target_include_directories(mc_client_sdk_icons PUBLIC src/client/display)
+target_link_libraries(mc_client_sdk_icons PUBLIC mc_core PRIVATE mc_build_options)
+
 add_library(mc_game_settings STATIC
     src/client/settings/game_settings.c
     src/client/settings/game_option.c
     src/client/sound/sound_manager.c)
 target_include_directories(mc_game_settings PUBLIC include)
 target_link_libraries(mc_game_settings PUBLIC mc_core mc_client_sound_pool PRIVATE mc_build_options)
+target_sources(mc_game_settings PRIVATE src/client/settings/construction_classes.c)
+target_link_libraries(mc_game_settings PUBLIC mc_java_files PRIVATE mc_platform_text Threads::Threads)
 add_library(mc_movement_input STATIC src/client/input/movement_input.c)
 target_include_directories(mc_movement_input PUBLIC include)
 target_link_libraries(mc_movement_input PUBLIC mc_game_settings PRIVATE mc_build_options)
@@ -335,14 +363,8 @@ if(MC_BUILD_CLIENT_AUDIO)
 endif()
 add_library(mc_client_game_directory STATIC src/client/startup/game_directory.c)
 target_include_directories(mc_client_game_directory PUBLIC src/client/startup)
-target_link_libraries(mc_client_game_directory PUBLIC mc_core PRIVATE mc_build_options)
-if(WIN32)
-    target_link_libraries(mc_client_game_directory PRIVATE shell32 ole32)
-    if(MSVC)
-        target_link_libraries(mc_client_game_directory PRIVATE delayimp)
-        target_link_options(mc_client_game_directory INTERFACE "/DELAYLOAD:shell32.dll")
-    endif()
-endif()
+target_link_libraries(mc_client_game_directory PUBLIC mc_core
+    PRIVATE mc_client_directory_native mc_build_options)
 if(UNIX)
     target_link_libraries(mc_core PRIVATE m)
 endif()
@@ -356,6 +378,8 @@ add_library(mc_storage STATIC
     src/storage/region/region.c
     src/storage/region/writer.c)
 target_link_libraries(mc_storage PUBLIC mc_core PRIVATE mc_build_options ZLIB::ZLIBSTATIC)
+target_sources(mc_storage PRIVATE
+    src/storage/compression/kernel.c src/storage/compression/inflater.c)
 
 add_library(mc_item STATIC src/item/stack/stack.c)
 target_link_libraries(mc_item PUBLIC mc_storage PRIVATE mc_build_options)
@@ -448,6 +472,41 @@ target_link_libraries(mc_inventory PUBLIC mc_registry mc_item PRIVATE mc_build_o
 add_library(mc_world_info STATIC src/world/info/info.c)
 target_include_directories(mc_world_info PRIVATE src/platform/time)
 target_link_libraries(mc_world_info PUBLIC mc_storage PRIVATE mc_platform_time mc_build_options)
+
+# Canonical File/stream/SaveFormat prerequisites; no SDL/device dependency.
+add_library(mc_platform_files STATIC src/platform/files/directory.c)
+target_include_directories(mc_platform_files PUBLIC src/platform/files)
+target_link_libraries(mc_platform_files PRIVATE mc_build_options)
+add_library(mc_client_directory_native STATIC src/client/startup/directory_native.c)
+target_include_directories(mc_client_directory_native PUBLIC src/client/startup)
+target_link_libraries(mc_client_directory_native PUBLIC mc_core
+    PRIVATE mc_platform_files mc_build_options)
+if(WIN32)
+    target_link_libraries(mc_client_directory_native PRIVATE shell32 ole32)
+    if(MSVC)
+        target_link_libraries(mc_client_directory_native PRIVATE delayimp)
+        target_link_options(mc_client_directory_native INTERFACE "/DELAYLOAD:shell32.dll")
+    endif()
+endif()
+add_library(mc_java_files STATIC
+    src/world/storage/java_file.c src/world/storage/java_file_io.c
+    src/world/storage/java_file_list.c src/world/storage/java_file_text.c)
+target_link_libraries(mc_java_files PUBLIC mc_world_info
+    PRIVATE mc_core mc_platform_files mc_build_options)
+add_library(mc_client_directory_inputs STATIC src/client/startup/directory_inputs.c)
+target_include_directories(mc_client_directory_inputs PUBLIC src/client/startup)
+target_link_libraries(mc_client_directory_inputs PUBLIC mc_world_info
+    PRIVATE mc_client_directory_native mc_java_files mc_build_options)
+add_library(mc_math_classes STATIC src/core/math/classes.c)
+target_link_libraries(mc_math_classes PUBLIC mc_core PRIVATE mc_build_options)
+add_library(mc_gzip_input STATIC src/world/storage/gzip_input.c)
+target_link_libraries(mc_gzip_input PUBLIC mc_java_files mc_storage
+    PRIVATE ZLIB::ZLIBSTATIC mc_build_options)
+add_library(mc_client_saves STATIC
+    src/client/saves/owner.c src/client/saves/metadata.c
+    src/client/saves/selection.c src/client/saves/list.c)
+target_link_libraries(mc_client_saves PUBLIC
+    mc_java_files mc_world_info mc_math_classes mc_gzip_input PRIVATE mc_build_options)
 
 add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
 target_link_libraries(mc_region_inspect PRIVATE mc_storage mc_build_options)
@@ -677,6 +736,10 @@ add_library(mc_client_application_owner STATIC
 target_include_directories(mc_client_application_owner PRIVATE src/client src/platform/time)
 target_link_libraries(mc_client_application_owner PUBLIC mc_simulation mc_c_atomics
     PRIVATE Threads::Threads mc_build_options)
+target_sources(mc_client_application_owner PRIVATE
+    src/client/startup/application_directory_classes.c
+    src/client/startup/application_startup_error.c)
+target_link_libraries(mc_client_application_owner PUBLIC mc_java_files)
 
 # The real class namespace/publication API remains in its canonical owner target.
 target_sources(mc_client_application_owner PRIVATE
@@ -694,11 +757,73 @@ if(MC_BUILD_CLIENT)
         PRIVATE mc_platform_time mc_build_options)
 endif()
 
+if(MC_BUILD_CLIENT AND MC_BUILD_CLIENT_AUDIO AND TARGET mc_client_application_constructor)
+    add_library(mc_client_application_startup STATIC
+        src/client/startup/application_startup.c
+        src/client/startup/application_startup_directory.c
+        src/client/startup/application_startup_retirement.c)
+    target_include_directories(mc_client_application_startup PUBLIC src src/client)
+    target_link_libraries(mc_client_application_startup PUBLIC
+        mc_client_application_constructor mc_client_display mc_client_saves
+        mc_client_directory_inputs mc_c_atomics PRIVATE mc_build_options)
+endif()
+
+option(MC_ENABLE_APPLICATION_STARTUP_TESTS "Run genuine source run/startup CPU prefix controls" OFF)
+option(MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS
+    "Run reviewed actual native HOME/APPDATA + imported-icon SDL startup profile" OFF)
+option(MC_ENABLE_SAVE_STREAM_REFERENCE_TESTS "Compare actual ij/as CPU stream bodies" OFF)
+set(MC_CLIENT_ASSET_IMPORT_DIR "" CACHE PATH "Actual imported root with private SDK icon RGBA assets")
+set(MC_APPLICATION_STARTUP_IMPORTED_RESOURCES "" CACHE PATH
+    "Same actual imported resource root for source startup window profiles")
+
 # Native owner controls use explicit class resources or authored filesystem fixtures.
 option(MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS
     "Run actual null-Applet constructor and real later-owner retirement controls" OFF)
 
 include(CTest)
+option(MC_ENABLE_SETTINGS_CAPTURE_ALLOCATION_CONTROL
+    "Compile actual Info body with one failing native metadata allocation" OFF)
+if(MC_ENABLE_SETTINGS_CAPTURE_ALLOCATION_CONTROL)
+    if(NOT TARGET mc_client_application_startup OR NOT BUILD_TESTING)
+        message(FATAL_ERROR "Settings capture control requires the real startup/client/test target")
+    endif()
+    add_library(mc_test_settings_capture_info OBJECT src/world/info/info.c)
+    target_compile_definitions(mc_test_settings_capture_info PRIVATE MC_SETTINGS_CAPTURE_INFO_CONTROL=1)
+    target_include_directories(mc_test_settings_capture_info PRIVATE src/platform/time)
+    target_link_libraries(mc_test_settings_capture_info PRIVATE
+        mc_storage mc_platform_time mc_build_options)
+    if(MSVC)
+        target_compile_options(mc_test_settings_capture_info PRIVATE
+            "/FI${CMAKE_CURRENT_SOURCE_DIR}/tests/client/settings/capture_alloc.h")
+    else()
+        target_compile_options(mc_test_settings_capture_info PRIVATE
+            -include "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/settings/capture_alloc.h")
+    endif()
+    add_executable(mc_test_application_startup_capture
+        tests/client/startup/test_application_startup.c
+        tests/client/settings/capture_alloc.c
+        $<TARGET_OBJECTS:mc_test_settings_capture_info>)
+    target_compile_definitions(mc_test_application_startup_capture PRIVATE
+        MC_SETTINGS_CAPTURE_ALLOCATION_CONTROL=1)
+    target_link_libraries(mc_test_application_startup_capture PRIVATE
+        mc_client_application_startup mc_sound_backend mc_client_assets mc_resources
+        mc_c_atomics mc_build_options)
+    set_property(TARGET mc_test_application_startup_capture PROPERTY LINKER_LANGUAGE CXX)
+    if(MSVC)
+        target_link_options(mc_test_application_startup_capture PRIVATE
+            "/MAP:${CMAKE_CURRENT_BINARY_DIR}/mc_test_application_startup_capture.map")
+    else()
+        target_link_options(mc_test_application_startup_capture PRIVATE
+            "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_application_startup_capture.map")
+    endif()
+    if(WIN32)
+        add_custom_command(TARGET mc_test_application_startup_capture POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_application_startup_capture>")
+    endif()
+endif()
+
+
 if(MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS AND (NOT MC_BUILD_CLIENT OR NOT MC_BUILD_CLIENT_AUDIO OR NOT BUILD_TESTING))
     message(FATAL_ERROR "Lookup observers require actual client/audio/testing owners")
 endif()
@@ -722,6 +847,28 @@ if(MC_ENABLE_CLIENT_LOOKUP_DATA_TESTS)
         endforeach()
     endforeach()
 endif()
+if(MC_ENABLE_APPLICATION_STARTUP_TESTS AND (NOT MC_BUILD_CLIENT OR NOT MC_BUILD_CLIENT_AUDIO OR NOT BUILD_TESTING))
+    message(FATAL_ERROR "Source startup controls require actual client/audio/testing owners")
+endif()
+if(MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
+    if("${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}" STREQUAL "")
+        message(FATAL_ERROR "Actual startup window modes require the explicit SAME imported resource root")
+    endif()
+    file(REAL_PATH "${MC_CLIENT_ASSET_IMPORT_DIR}" _mc_sdk_import_root)
+    file(REAL_PATH "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}" _mc_startup_import_root)
+    if(NOT "${_mc_sdk_import_root}" STREQUAL "${_mc_startup_import_root}")
+        message(FATAL_ERROR "Source startup and SDK icon admission require the SAME actual imported root")
+    endif()
+    unset(_mc_sdk_import_root)
+    unset(_mc_startup_import_root)
+    if(NOT MC_ENABLE_APPLICATION_STARTUP_TESTS OR NOT MC_ENABLE_CLIENT_DISPLAY_TESTS)
+        message(FATAL_ERROR "Default-directory startup requires explicit source startup and real Display profiles")
+    endif()
+    if(NOT EXISTS "${MC_CLIENT_ASSET_IMPORT_DIR}/sdk/lwjgl-icon-16.rgba" OR
+       NOT EXISTS "${MC_CLIENT_ASSET_IMPORT_DIR}/sdk/lwjgl-icon-32.rgba")
+        message(FATAL_ERROR "Default-directory startup requires actual privately imported SDK icons")
+    endif()
+endif()
 if(MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS AND (NOT MC_BUILD_CLIENT OR NOT MC_BUILD_CLIENT_AUDIO OR NOT BUILD_TESTING))
     message(FATAL_ERROR "Application constructor controls require client/audio/testing")
 endif()
@@ -729,6 +876,151 @@ if(MC_ENABLE_RENDER_RESOURCES_REFERENCE_TESTS AND (NOT MC_BUILD_CLIENT OR NOT BU
     message(FATAL_ERROR "Resource CPU original profile requires client and testing targets")
 endif()
 if(BUILD_TESTING)
+    add_executable(mc_test_display_sdk_queue tests/client/display/test_sdk_queue.c)
+    target_link_libraries(mc_test_display_sdk_queue PRIVATE mc_client_sdk_queue mc_build_options)
+    add_executable(mc_test_display_sdk_icons tests/client/display/test_sdk_icons.c)
+    target_link_libraries(mc_test_display_sdk_icons PRIVATE mc_client_sdk_icons mc_resources mc_build_options)
+    foreach(kind IN ITEMS queue icons)
+        add_test(NAME client.display_sdk_${kind} COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_display_sdk.py"
+            --executable "$<TARGET_FILE:mc_test_display_sdk_${kind}>" --kind ${kind}
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/display-sdk-${kind}")
+        set_tests_properties(client.display_sdk_${kind} PROPERTIES
+            LABELS "public;unit;client;ownership" TIMEOUT 240)
+    endforeach()
+    foreach(mode IN ITEMS normal optimized)
+        set(_mc_sdk_python_flags -B)
+        if(mode STREQUAL "optimized")
+            list(APPEND _mc_sdk_python_flags -O)
+        endif()
+        add_test(NAME tools.display_sdk_protocol_${mode} COMMAND Python3::Interpreter
+            ${_mc_sdk_python_flags}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/display_sdk/test_protocol.py")
+        set_tests_properties(tools.display_sdk_protocol_${mode} PROPERTIES
+            LABELS "public;unit;tools;client;ownership" TIMEOUT 60)
+        add_test(NAME tools.import_lwjgl_icons_${mode} COMMAND Python3::Interpreter
+            ${_mc_sdk_python_flags}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/resources/test_lwjgl_icons.py")
+        set_tests_properties(tools.import_lwjgl_icons_${mode} PROPERTIES
+            LABELS "public;unit;tools;resources" TIMEOUT 60)
+    endforeach()
+    unset(_mc_sdk_python_flags)
+    add_executable(mc_test_save_format tests/client/saves/test_save_format.c)
+    target_link_libraries(mc_test_save_format PRIVATE mc_client_saves mc_build_options)
+    if(MINGW)
+        target_link_options(mc_test_save_format PRIVATE -municode)
+    endif()
+    add_library(mc_test_save_close_io OBJECT src/world/storage/java_file_io.c)
+    target_compile_definitions(mc_test_save_close_io PRIVATE
+        MC_JAVA_FILE_NATIVE_CLOSE=mc_test_save_close)
+    target_link_libraries(mc_test_save_close_io PRIVATE
+        mc_world_info mc_core mc_platform_files mc_build_options)
+    add_executable(mc_test_save_format_close tests/client/saves/test_save_format.c
+        $<TARGET_OBJECTS:mc_test_save_close_io>)
+    target_compile_definitions(mc_test_save_format_close PRIVATE MC_SAVE_FILE_CLOSE_CONTROL=1)
+    target_link_libraries(mc_test_save_format_close PRIVATE mc_client_saves mc_build_options)
+    if(MINGW)
+        target_link_options(mc_test_save_format_close PRIVATE -municode)
+    endif()
+    if(MSVC)
+        target_link_options(mc_test_save_format_close PRIVATE
+            "/MAP:${CMAKE_CURRENT_BINARY_DIR}/mc_test_save_format_close.map")
+    else()
+        target_link_options(mc_test_save_format_close PRIVATE
+            "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_save_format_close.map")
+    endif()
+    add_executable(mc_test_source_stream tests/world/storage/test_source_stream.c)
+    target_link_libraries(mc_test_source_stream PRIVATE
+        mc_client_saves mc_client_directory_inputs mc_build_options)
+    add_executable(mc_source_stream_probe tests/world/storage/trace_source_stream.c)
+    target_link_libraries(mc_source_stream_probe PRIVATE mc_gzip_input mc_build_options)
+    add_test(NAME client.save_format.models COMMAND mc_test_save_format)
+    set_tests_properties(client.save_format.models PROPERTIES LABELS "public;unit;client;ownership" TIMEOUT 180)
+    foreach(kind IN ITEMS fixture close)
+        set(_mc_save_target mc_test_save_format)
+        if(kind STREQUAL "close")
+            set(_mc_save_target mc_test_save_format_close)
+        endif()
+        add_test(NAME client.save_format.${kind} COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_save_format.py"
+            --executable "$<TARGET_FILE:${_mc_save_target}>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/save-format-${kind}")
+        set_tests_properties(client.save_format.${kind} PROPERTIES
+            LABELS "public;unit;client;filesystem;ownership" TIMEOUT 240)
+    endforeach()
+    unset(_mc_save_target)
+    add_test(NAME world.source_stream.authored COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_source_stream.py"
+        --executable "$<TARGET_FILE:mc_test_source_stream>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-stream-authored")
+    set_tests_properties(world.source_stream.authored PROPERTIES
+        LABELS "public;unit;world;filesystem;ownership" TIMEOUT 240)
+    foreach(mode IN ITEMS normal optimized)
+        set(_mc_stream_python -B)
+        if(mode STREQUAL "optimized")
+            list(APPEND _mc_stream_python -O)
+        endif()
+        set(_mc_stream_case tools.source_stream_driver)
+        if(mode STREQUAL "optimized")
+            string(APPEND _mc_stream_case "_optimized")
+        endif()
+        add_test(NAME ${_mc_stream_case} COMMAND Python3::Interpreter ${_mc_stream_python}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/saves/test_stream_driver.py")
+        set_tests_properties(${_mc_stream_case} PROPERTIES LABELS "public;unit;tools;storage" TIMEOUT 60)
+    endforeach()
+    unset(_mc_stream_case)
+    unset(_mc_stream_python)
+    add_test(NAME tools.source_stream_probe_inputs COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_source_stream_probe.py"
+        --executable "$<TARGET_FILE:mc_source_stream_probe>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-stream-probe-inputs")
+    set_tests_properties(tools.source_stream_probe_inputs PROPERTIES LABELS "public;unit;tools;storage" TIMEOUT 180)
+    if(MC_ENABLE_SAVE_STREAM_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT Java_VERSION_STRING MATCHES "^17[.]")
+            message(FATAL_ERROR "The selected source-stream observation requires actual JDK17")
+        endif()
+        add_test(NAME reference.source_stream COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/saves/compare_stream.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_source_stream_probe>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-source-stream")
+        set_tests_properties(reference.source_stream PROPERTIES LABELS "local;reference;original;storage" TIMEOUT 900)
+    endif()
+    add_executable(mc_test_game_settings_source tests/client/settings/test_source_construction.c)
+    target_link_libraries(mc_test_game_settings_source PRIVATE mc_game_settings mc_build_options)
+    add_test(NAME client.game_settings_source_construction COMMAND mc_test_game_settings_source cpu)
+    set_tests_properties(client.game_settings_source_construction PROPERTIES
+        LABELS "public;unit;client;settings;constructor;ownership" TIMEOUT 60)
+
+    if(MC_ENABLE_APPLICATION_STARTUP_TESTS)
+        if(NOT "${MC_REFERENCE_CLIENT_RESOURCE_DIR}" STREQUAL "")
+            set(_mc_startup_resource_root "${MC_REFERENCE_CLIENT_RESOURCE_DIR}")
+        else()
+            set(_mc_startup_resource_root "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/startup/fixtures")
+        endif()
+        add_executable(mc_test_application_startup tests/client/startup/test_application_startup.c)
+        target_link_libraries(mc_test_application_startup PRIVATE
+            mc_client_application_startup mc_sound_backend mc_client_assets mc_resources
+            mc_c_atomics mc_build_options)
+        set_property(TARGET mc_test_application_startup PROPERTY LINKER_LANGUAGE CXX)
+        if(WIN32)
+            add_custom_command(TARGET mc_test_application_startup POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_application_startup>")
+        endif()
+        add_test(NAME client.application_startup_prefix COMMAND mc_test_application_startup
+            "${_mc_startup_resource_root}" cpu)
+        set_tests_properties(client.application_startup_prefix PROPERTIES
+            LABELS "public;unit;client;startup;ownership" TIMEOUT 180)
+        if(MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
+            add_test(NAME client.application_startup_default_directory COMMAND mc_test_application_startup
+                "${_mc_startup_resource_root}" window-default-directory "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}")
+            set_tests_properties(client.application_startup_default_directory PROPERTIES
+                LABELS "integration;client;graphics;startup;filesystem;ownership" TIMEOUT 180)
+        endif()
+    endif()
+
     # Private additive qualification of the canonical raw/construct Sound owners.
     add_executable(mc_test_sound_construction tests/client/sound/test_construction.c)
     target_include_directories(mc_test_sound_construction PRIVATE src/core/java)
@@ -1197,7 +1489,8 @@ if(BUILD_TESTING)
         # Link its dependencies without a second mc_client_display body.
         add_executable(mc_test_source_fp tests/client/render_engine/test_source_fp.c)
         target_include_directories(mc_test_source_fp PRIVATE src/client/display)
-        target_link_libraries(mc_test_source_fp PRIVATE mc_image SDL3::SDL3-static mc_build_options)
+        target_link_libraries(mc_test_source_fp PRIVATE mc_image SDL3::SDL3-static
+        mc_client_event_transport mc_client_sdk_runtime mc_build_options)
         if(UNIX)
             target_link_libraries(mc_test_source_fp PRIVATE m)
         endif()
@@ -1434,6 +1727,28 @@ if(BUILD_TESTING)
         add_test(NAME client.timer_construction COMMAND mc_test_timer_construction)
         set_tests_properties(client.timer_construction PROPERTIES
             LABELS "public;unit;client;numeric;ownership" TIMEOUT 180)
+        add_executable(mc_test_display_sdk_transport tests/client/display/test_sdk_transport.c)
+        target_link_libraries(mc_test_display_sdk_transport PRIVATE mc_client_event_transport mc_build_options)
+        add_executable(mc_test_display_sdk_window tests/client/display/test_sdk_window.c)
+        # This test includes exact events.c once, forwards the actual SDL pump,
+        # then invokes the real SDL event-watch API. No second events.o may be
+        # extracted; require the real link-map proof in qualification.
+        target_link_libraries(mc_test_display_sdk_window PRIVATE mc_client_display mc_resources mc_build_options)
+        if(WIN32)
+            target_link_libraries(mc_test_display_sdk_window PRIVATE user32 gdi32)
+        else()
+            target_link_libraries(mc_test_display_sdk_window PRIVATE X11::X11)
+        endif()
+        if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            foreach(kind IN ITEMS transport window)
+                add_test(NAME client.display_sdk_${kind} COMMAND Python3::Interpreter -B
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_display_sdk.py"
+                    --executable "$<TARGET_FILE:mc_test_display_sdk_${kind}>" --kind ${kind}
+                    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/display-sdk-${kind}")
+                set_tests_properties(client.display_sdk_${kind} PROPERTIES
+                    LABELS "public;integration;client;graphics;ownership" TIMEOUT 240)
+            endforeach()
+        endif()
         add_executable(mc_test_client_display tests/client/display/test_display.c)
         target_link_libraries(mc_test_client_display PRIVATE mc_client_display mc_build_options)
         add_executable(mc_test_world_renderer tests/client/world/test_renderer.c)
@@ -4851,3 +5166,159 @@ if(BUILD_TESTING)
             LABELS "reference;original;surface" TIMEOUT 300 SKIP_RETURN_CODE 77)
     endif()
 endif()
+
+
+# Canonical typed Pack and reached Engine/Font startup continuations.
+if(TARGET mc_client_texture_packs)
+    target_sources(mc_client_texture_packs PRIVATE
+        src/client/texture_packs/source_files.c
+        src/client/texture_packs/source_archive.c
+        src/client/texture_packs/source_owner.c)
+    target_link_libraries(mc_client_texture_packs PUBLIC mc_java_files)
+endif()
+if(TARGET mc_client_render_engine)
+    target_link_libraries(mc_client_render_engine PUBLIC mc_c_atomics)
+endif()
+if(TARGET mc_client_application_startup AND TARGET mc_client_application_constructor)
+    target_sources(mc_client_application_startup PRIVATE
+        src/client/startup/application_startup_pack.c
+        src/client/startup/application_startup_render_engine.c
+        src/client/startup/application_startup_font.c
+        src/client/startup/application_startup_colors.c)
+    target_link_libraries(mc_client_application_startup PUBLIC
+        mc_client_texture_packs mc_client_render_engine mc_client_source_resources)
+endif()
+if(TARGET mc_test_render_engine)
+    target_include_directories(mc_test_render_engine PRIVATE src)
+endif()
+
+# PROPOSAL ONLY: append after canonical libraries and existing tests are declared.
+# Production an adds no TU/target; its four native bodies stay canonical.
+if(BUILD_TESTING)
+    add_executable(mc_test_file_attributes tests/world/storage/test_file_attributes.c)
+    target_link_libraries(mc_test_file_attributes PRIVATE mc_java_files mc_build_options)
+    add_library(mc_file_attributes_fault_native OBJECT src/platform/files/directory.c)
+    target_link_libraries(mc_file_attributes_fault_native PRIVATE mc_build_options)
+    if(WIN32)
+        target_compile_definitions(mc_file_attributes_fault_native PRIVATE
+            MC_FILE_NATIVE_GET_TIME=mc_test_file_time
+            MC_FILE_NATIVE_CLOSE_HANDLE=mc_test_file_close)
+    else()
+        target_compile_definitions(mc_file_attributes_fault_native PRIVATE
+            MC_FILE_NATIVE_STAT=mc_test_file_stat)
+    endif()
+    add_executable(mc_test_file_attributes_fault
+        tests/world/storage/test_file_attributes.c
+        $<TARGET_OBJECTS:mc_file_attributes_fault_native>)
+    target_compile_definitions(mc_test_file_attributes_fault PRIVATE MC_FILE_ATTRIBUTE_FAULT_CONTROL=1)
+    target_link_libraries(mc_test_file_attributes_fault PRIVATE mc_java_files mc_build_options)
+    foreach(_mc_attr_kind IN ITEMS ordinary fault)
+        set(_mc_attr_target mc_test_file_attributes)
+        if(_mc_attr_kind STREQUAL "fault")
+            set(_mc_attr_target mc_test_file_attributes_fault)
+        endif()
+        foreach(_mc_attr_mode IN ITEMS normal optimized)
+            set(_mc_attr_flags -B)
+            if(_mc_attr_mode STREQUAL "optimized")
+                list(APPEND _mc_attr_flags -O)
+            endif()
+            add_test(NAME world.file_attributes_${_mc_attr_kind}_${_mc_attr_mode}
+                COMMAND Python3::Interpreter ${_mc_attr_flags}
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_file_attributes.py"
+                    --executable "$<TARGET_FILE:${_mc_attr_target}>"
+                    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/file-attributes-${_mc_attr_kind}-${_mc_attr_mode}")
+            set_tests_properties(world.file_attributes_${_mc_attr_kind}_${_mc_attr_mode} PROPERTIES
+                LABELS "public;unit;storage;filesystem;ownership" TIMEOUT 180)
+        endforeach()
+    endforeach()
+    unset(_mc_attr_kind)
+    unset(_mc_attr_target)
+    unset(_mc_attr_mode)
+    unset(_mc_attr_flags)
+endif()
+
+if(BUILD_TESTING AND MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS AND
+   TARGET mc_client_application_constructor AND TARGET mc_client_application_startup)
+    add_executable(mc_test_texture_pack_file tests/client/texture_packs/test_source_construction.c)
+    target_include_directories(mc_test_texture_pack_file PRIVATE src)
+    target_link_libraries(mc_test_texture_pack_file PRIVATE
+        mc_client_application_constructor mc_game_settings mc_client_texture_packs
+        mc_sound_backend mc_client_assets mc_resources mc_c_atomics mc_build_options)
+    set_property(TARGET mc_test_texture_pack_file PROPERTY LINKER_LANGUAGE CXX)
+    if(WIN32)
+        add_custom_command(TARGET mc_test_texture_pack_file POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_texture_pack_file>")
+    endif()
+endif()
+
+# Explicit fixture profile: generation is a separately admitted runner phase,
+# once into a fresh owned directory. Never execute fixture code at configure.
+option(MC_ENABLE_TEXTURE_PACK_FILE_TESTS "Register actual typed File Pack cases" OFF)
+set(MC_TEXTURE_PACK_FILE_FIXTURE_ROOT "" CACHE PATH "Fresh authored typed Pack fixture root")
+if(MC_ENABLE_TEXTURE_PACK_FILE_TESTS)
+    if(NOT BUILD_TESTING OR NOT MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS OR
+       NOT TARGET mc_test_texture_pack_file OR "${MC_TEXTURE_PACK_FILE_FIXTURE_ROOT}" STREQUAL "")
+        message(FATAL_ERROR "Typed Pack controls require actual constructor/test target and explicit authored fixtures")
+    endif()
+    if(NOT "${MC_REFERENCE_CLIENT_RESOURCE_DIR}" STREQUAL "")
+        set(_mc_pack_constructor_root "${MC_REFERENCE_CLIENT_RESOURCE_DIR}")
+    else()
+        set(_mc_pack_constructor_root "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/startup/fixtures")
+    endif()
+    foreach(_mc_pack_case IN ITEMS empty absent non-directory mkdir-false stored deflated
+            metadata-limit removed null-app null-settings missing-icon bound)
+        set(_mc_pack_resources "${MC_TEXTURE_PACK_FILE_FIXTURE_ROOT}/resources")
+        if(_mc_pack_case STREQUAL "missing-icon")
+            set(_mc_pack_resources "${MC_TEXTURE_PACK_FILE_FIXTURE_ROOT}/missing-resources")
+        endif()
+        add_test(NAME "client.texture_pack_file_${_mc_pack_case}"
+            COMMAND mc_test_texture_pack_file "${_mc_pack_constructor_root}" "${_mc_pack_resources}"
+                "${MC_TEXTURE_PACK_FILE_FIXTURE_ROOT}/${_mc_pack_case}" "${_mc_pack_case}")
+        set_tests_properties("client.texture_pack_file_${_mc_pack_case}" PROPERTIES
+            LABELS "public;integration;client;texture;filesystem;ownership" TIMEOUT 180)
+    endforeach()
+    unset(_mc_pack_constructor_root)
+    unset(_mc_pack_resources)
+    unset(_mc_pack_case)
+endif()
+
+
+if(MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
+    if(NOT TARGET mc_test_application_startup OR NOT TARGET mc_client_application_startup OR
+       NOT MC_ENABLE_CLIENT_DISPLAY_TESTS)
+        message(FATAL_ERROR "Source Engine/Font startup modes require the actual startup and Display targets")
+    endif()
+    foreach(_mc_startup_mode IN ITEMS render-engine-limit render-font-limit bitmap-font-limit font-shared-owner
+            color-lookup-limit colorizer-limit)
+        set(_mc_startup_mode_labels "integration;client;graphics;startup;filesystem;font;ownership")
+        if(_mc_startup_mode STREQUAL "color-lookup-limit" OR _mc_startup_mode STREQUAL "colorizer-limit")
+            set(_mc_startup_mode_labels "integration;client;graphics;startup;filesystem;color;ownership")
+        endif()
+        add_test(NAME "client.application_startup_${_mc_startup_mode}"
+            COMMAND mc_test_application_startup "${_mc_startup_resource_root}"
+                "window-${_mc_startup_mode}" "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}")
+        set_tests_properties("client.application_startup_${_mc_startup_mode}" PROPERTIES
+            LABELS "${_mc_startup_mode_labels}" TIMEOUT 180)
+    endforeach()
+    unset(_mc_startup_mode_labels)
+    unset(_mc_startup_mode)
+endif()
+
+
+# Retain actual native/fault/included-TU link extraction evidence.
+foreach(_mc_map_target IN ITEMS
+        mc_test_file_attributes_fault mc_test_sound_construction_allocation
+        mc_test_sound_allocation mc_test_source_fp mc_probe_render_source_cpu
+        mc_test_render_source_font mc_test_display_sdk_window)
+    if(TARGET ${_mc_map_target})
+        if(MSVC)
+            target_link_options(${_mc_map_target} PRIVATE
+                "/MAP:${CMAKE_CURRENT_BINARY_DIR}/${_mc_map_target}.map")
+        else()
+            target_link_options(${_mc_map_target} PRIVATE
+                "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/${_mc_map_target}.map")
+        endif()
+    endif()
+endforeach()
+unset(_mc_map_target)

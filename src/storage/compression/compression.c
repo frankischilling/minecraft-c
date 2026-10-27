@@ -1,34 +1,11 @@
 #include "mc/storage/compression/compression.h"
 
-#include <zlib.h>
+#include "kernel.h"
 
 #include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* The payload needs the alignment of zlib state and the supported desktop C
- * scalar types. Do not depend on max_align_t, absent from some Windows CRTs. */
-typedef union compression_allocation compression_allocation;
-
-union compression_allocation {
-    struct {
-        compression_allocation *previous;
-        compression_allocation *next;
-        size_t bytes;
-    } bookkeeping;
-
-    z_stream stream_alignment;
-    long double scalar_alignment;
-    void *pointer_alignment;
-};
-
-typedef struct compression_allocator {
-    compression_allocation *allocations;
-    size_t live_bytes;
-    size_t limit;
-    mc_compression_status failure;
-} compression_allocator;
 
 typedef struct compression_output {
     uint8_t *data;
@@ -62,85 +39,6 @@ const char *mc_compression_status_string(mc_compression_status status) {
     return "unknown compression status";
 }
 
-static void compression_allocation_failure(compression_allocator *allocator,
-                                           mc_compression_status failure) {
-    if (allocator->failure == MC_COMPRESSION_OK) {
-        allocator->failure = failure;
-    }
-}
-
-static void *compression_allocate(compression_allocator *allocator, size_t count, size_t size) {
-    if (size != 0 && count > SIZE_MAX / size) {
-        compression_allocation_failure(allocator, MC_COMPRESSION_LIMIT);
-        return NULL;
-    }
-    size_t payload_bytes = count * size;
-    if (payload_bytes > SIZE_MAX - sizeof(compression_allocation)) {
-        compression_allocation_failure(allocator, MC_COMPRESSION_LIMIT);
-        return NULL;
-    }
-    size_t bytes = sizeof(compression_allocation) + payload_bytes;
-    if (bytes > allocator->limit - allocator->live_bytes) {
-        compression_allocation_failure(allocator, MC_COMPRESSION_LIMIT);
-        return NULL;
-    }
-    compression_allocation *allocation = malloc(bytes);
-    if (allocation == NULL) {
-        compression_allocation_failure(allocator, MC_COMPRESSION_ALLOCATION_FAILED);
-        return NULL;
-    }
-    allocation->bookkeeping.previous = NULL;
-    allocation->bookkeeping.next = allocator->allocations;
-    allocation->bookkeeping.bytes = bytes;
-    if (allocator->allocations != NULL) {
-        allocator->allocations->bookkeeping.previous = allocation;
-    }
-    allocator->allocations = allocation;
-    allocator->live_bytes += bytes;
-    void *payload = allocation + 1;
-    memset(payload, 0, payload_bytes);
-    return payload;
-}
-
-static void compression_detach(compression_allocator *allocator,
-                               compression_allocation *allocation) {
-    if (allocation->bookkeeping.previous != NULL) {
-        allocation->bookkeeping.previous->bookkeeping.next = allocation->bookkeeping.next;
-    } else {
-        allocator->allocations = allocation->bookkeeping.next;
-    }
-    if (allocation->bookkeeping.next != NULL) {
-        allocation->bookkeeping.next->bookkeeping.previous = allocation->bookkeeping.previous;
-    }
-    allocator->live_bytes -= allocation->bookkeeping.bytes;
-    allocation->bookkeeping.previous = NULL;
-    allocation->bookkeeping.next = NULL;
-}
-
-static void compression_release(compression_allocator *allocator, void *payload) {
-    if (payload != NULL) {
-        compression_allocation *allocation = (compression_allocation *)payload - 1;
-        compression_detach(allocator, allocation);
-        free(allocation);
-    }
-}
-
-static void compression_release_all(compression_allocator *allocator) {
-    while (allocator->allocations != NULL) {
-        compression_allocation *allocation = allocator->allocations;
-        compression_detach(allocator, allocation);
-        free(allocation);
-    }
-}
-
-static voidpf compression_zalloc(voidpf opaque, uInt count, uInt size) {
-    return compression_allocate(opaque, count, size);
-}
-
-static void compression_zfree(voidpf opaque, voidpf payload) {
-    compression_release(opaque, payload);
-}
-
 void mc_compression_buffer_free(mc_compression_buffer *buffer) {
     if (buffer != NULL) {
         if (buffer->data != NULL) {
@@ -148,20 +46,6 @@ void mc_compression_buffer_free(mc_compression_buffer *buffer) {
         }
         buffer->data = NULL;
         buffer->length = 0;
-    }
-}
-
-static mc_compression_status compression_backend_status(int result,
-                                                        const compression_allocator *allocator) {
-    switch (result) {
-        case Z_DATA_ERROR:
-        case Z_NEED_DICT:
-            return MC_COMPRESSION_INVALID_STREAM;
-        case Z_MEM_ERROR:
-            return allocator->failure == MC_COMPRESSION_OK ? MC_COMPRESSION_ALLOCATION_FAILED
-                                                           : allocator->failure;
-        default:
-            return MC_COMPRESSION_BACKEND_ERROR;
     }
 }
 

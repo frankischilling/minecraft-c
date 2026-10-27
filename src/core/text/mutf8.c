@@ -1,6 +1,8 @@
 #include "mc/core/text/mutf8.h"
+#include "mutf8_input.h"
 
-/* Caller validates the whole payload before decoding to its output buffer. */
+/* Legacy decode validates the whole payload first; the private prefix reader
+ * instead retains completed units from this SAME checked unit kernel. */
 static mc_mutf8_status read_unit(const uint8_t *input, size_t length, size_t *offset,
                                  uint16_t *unit) {
     const uint8_t first = input[*offset];
@@ -158,5 +160,30 @@ mc_mutf8_status mc_mutf8_encode(const uint16_t *input, size_t units, uint8_t *ou
     }
 
     *written = count;
+    return MC_MUTF8_OK;
+}
+
+mc_mutf8_status mc_mutf8_decode_prefix(const uint8_t *input, size_t length, uint16_t *output,
+                                       size_t capacity, mc_mutf8_prefix *progress) {
+    if (progress == NULL || (input == NULL && length != 0) || (output == NULL && capacity != 0))
+        return MC_MUTF8_INVALID_ARGUMENT;
+    *progress = (mc_mutf8_prefix){0};
+    while (progress->input_offset < length) {
+        if (progress->written == capacity)
+            return MC_MUTF8_BUFFER_TOO_SMALL;
+        size_t start = progress->input_offset;
+        uint16_t unit;
+        mc_mutf8_status status = read_unit(input, length, &progress->input_offset, &unit);
+        if (status != MC_MUTF8_OK) {
+            uint8_t first = input[start];
+            size_t width = first >= 0xc0u && first <= 0xdfu   ? 2u
+                           : first >= 0xe0u && first <= 0xefu ? 3u
+                                                              : 1u;
+            progress->partial_character = width > length - start;
+            progress->error_byte = width == 2u ? start + 2u : width == 3u ? start + 2u : start;
+            return status;
+        }
+        output[progress->written++] = unit;
+    }
     return MC_MUTF8_OK;
 }

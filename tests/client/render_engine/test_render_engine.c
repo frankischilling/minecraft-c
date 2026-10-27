@@ -1,3 +1,4 @@
+#include "client/render_engine/internal.h"
 #include "mc/client/render_engine/render_engine.h"
 #include <inttypes.h>
 #include <stdio.h>
@@ -224,9 +225,96 @@ static bool prefixes(void) {
     CHECK(mc_client_argb_image_inspect(s.fields.m, &image) && image.native_holds == 2);
     for (size_t i = 0; i < image.pixel_count; ++i)
         CHECK(image.pixels[i] == UINT32_C(0xffffffff));
-    CHECK(mc_client_render_engine_release(owner) == MC_CLIENT_RENDER_ENGINE_OK &&
-          mc_client_default_font_release(font) == MC_CLIENT_FONT_OK);
+    const mc_client_render_engine_error retained = error;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_OK &&
+          owner == NULL);
+    CHECK(retained.status == MC_CLIENT_RENDER_ENGINE_FONT_FAILED &&
+          retained.font.operation != NULL && retained.font.status == MC_CLIENT_FONT_LIMIT &&
+          retained.ji_pc == 150);
+    CHECK(mc_client_default_font_release(font) == MC_CLIENT_FONT_OK);
     mc_client_render_engine_classes_release(classes);
+    return true;
+}
+
+/* Native admission/occurrence guard fixtures on genuine factory-allocated
+ * storage. These guard assignments are not a running source constructor,
+ * successful child, real GPU resource or concurrency qualification. */
+static bool lifecycle_api(void) {
+    mc_client_render_engine_classes *classes = NULL;
+    mc_client_render_engine *owner = NULL;
+    mc_client_default_font *font = NULL;
+    mc_client_render_engine_error error = {0};
+    mc_client_render_engine_class_state state;
+    CHECK(mc_client_render_engine_classes_create(NULL, &classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_classes_inspect(classes, &state) && !state.ji_ready &&
+          state.ge_phase == MC_CLIENT_RENDER_ENGINE_RAW && state.native_holds == 1);
+    CHECK(mc_client_render_engine_classes_active_use(classes, &error) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_classes_active_use(classes, &error) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_classes_inspect(classes, &state) && state.ji_ready &&
+          !state.ji_a && state.ge_phase == MC_CLIENT_RENDER_ENGINE_RAW && state.ge_a == NULL &&
+          state.ge_b == NULL);
+    CHECK(mc_client_render_engine_allocate(classes, NULL, NULL, &owner) ==
+              MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT &&
+          owner == NULL);
+    CHECK(mc_client_render_engine_classes_inspect(classes, &state) && state.ji_ready &&
+          state.native_holds == 1);
+    CHECK(mc_client_default_font_create(0, &font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_client_render_engine_allocate(classes, font, NULL, &owner) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_retain(owner) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+          owner != NULL);
+    CHECK(mc_client_render_engine_release(owner) == MC_CLIENT_RENDER_ENGINE_OK);
+    owner->active_resource_calls = 1;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+          owner != NULL);
+    owner->active_resource_calls = 0;
+    owner->phase = MC_CLIENT_RENDER_ENGINE_CONSTRUCTING;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+          owner != NULL);
+    owner->phase = MC_CLIENT_RENDER_ENGINE_RAW;
+    classes->active_source_calls = 1; /* Unrelated shared source-call domain. */
+    CHECK(mc_client_render_engine_release(owner) == MC_CLIENT_RENDER_ENGINE_BUSY);
+    CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_BUSY);
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_OK &&
+          owner == NULL);
+    CHECK(atomic_load_explicit(&classes->holds, memory_order_acquire) == 1 &&
+          classes->active_source_calls == 1);
+    CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_BUSY);
+    classes->active_source_calls = 0;
+    CHECK(mc_client_render_engine_classes_retain(classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_classes_inspect(classes, &state) && state.native_holds == 2);
+    CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_classes_inspect(classes, &state) && state.native_holds == 1);
+    CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_release(font) == MC_CLIENT_FONT_OK);
+
+    CHECK(mc_client_render_engine_classes_create(NULL, &classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_create(0, &font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_client_render_engine_allocate(classes, font, NULL, &owner) ==
+          MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_engine_classes_release(classes) ==
+          MC_CLIENT_RENDER_ENGINE_OK); /* Engine owns final class occurrence. */
+    classes->active_source_calls = 1;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+          owner != NULL);
+    CHECK(atomic_load_explicit(&classes->holds, memory_order_acquire) == 1);
+    classes->active_source_calls = 0;
+    classes->active_resource_calls = 1;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+          owner != NULL);
+    classes->active_resource_calls = 0;
+    classes->nw.phase = MC_CLIENT_RENDER_ENGINE_CONSTRUCTING;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_BUSY &&
+          owner != NULL);
+    classes->nw.phase = MC_CLIENT_RENDER_ENGINE_RAW;
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_OK &&
+          owner == NULL);
+    CHECK(mc_client_render_engine_retire(&owner, &error) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_default_font_release(font) == MC_CLIENT_FONT_OK);
+    CHECK(mc_client_render_engine_retire(NULL, &error) == MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT);
     return true;
 }
 
@@ -235,7 +323,7 @@ int main(int argc, char **argv) {
         fputs("RenderEngine input: [--trace-image]\n", stderr);
         return 2;
     }
-    if (!complete(argc == 2) || !prefixes())
+    if (!complete(argc == 2) || !prefixes() || !lifecycle_api())
         return 1;
     printf("RenderEngine constructor: %u checks\n", checks);
     return 0;

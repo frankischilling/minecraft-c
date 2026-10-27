@@ -6,40 +6,40 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/render_engine/render_engine.h": {
-      "bytes": 7681,
-      "sha256": "6782b58e4c0d3e9f1967de09009fbf405174e598a565a829eb7720f6dd5e3cd3"
+      "bytes": 8919,
+      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
     },
     "src/client/display/display.c": {
-      "bytes": 54994,
-      "sha256": "089c8a38027332a6e0368cf2cdbc694f64cd23e407a4809e68743a4399942d26"
+      "bytes": 60047,
+      "sha256": "5f79fd98ce7e3bd8d7edf5ffed66f59bdb09e503f718a08b8622578b0a703ed7"
     },
     "src/client/display/display.h": {
-      "bytes": 13360,
-      "sha256": "d6289bf59b07e89372391b385a8df7972f5e71f4d275e51dde8b39be15ca6c5f"
+      "bytes": 13727,
+      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
     },
     "src/client/fonts/default_font.c": {
       "bytes": 13768,
       "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 3448,
-      "sha256": "ec52282f0073bd4052d4e08e72b1d37c2ab7f09f8afaa3c8737e5cd0a6482b8b"
+      "bytes": 3549,
+      "sha256": "f3586abbff25baa627221a6bdde5740887a6bde41d33ed1e76e80b078b6e0d37"
     },
     "src/client/render_engine/owner.c": {
-      "bytes": 22925,
-      "sha256": "18ccc35906e3b5a912c7177303527f0d720061661a49f4452cf51c95a805a951"
+      "bytes": 27450,
+      "sha256": "9a79bedd2cd625ff32d1822ce14fad6c83c5d2b562d4693dded1e988b1ab7805"
     },
     "src/client/render_engine/textures.c": {
-      "bytes": 25306,
-      "sha256": "87b87dda80f4b01a7276f428576de230b60d447a21afdf9a9bfa095adb49ec97"
+      "bytes": 25603,
+      "sha256": "0990c6a8af54cc1952fa42a235a01ce38c11bbb51d2305b6590d7fbfec44104b"
     },
     "src/client/render_engine/textures.h": {
-      "bytes": 4391,
-      "sha256": "4b29b7844519ad1ede3382cf4bf9babb97cfa786ced935fdd6bb7b000ab90963"
+      "bytes": 4870,
+      "sha256": "72fab24b19d0fa24ec1cf524b13bc53c4414afeeac1a4fb815b336fc988c92cb"
     },
     "tests/client/render_engine/test_render_engine.c": {
-      "bytes": 13811,
-      "sha256": "148890699745bfc30a47a0c33d78b32468dd94e5f026b91bcb188621f9168040"
+      "bytes": 19211,
+      "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
     },
     "tests/client/render_engine/test_textures.c": {
       "bytes": 21208,
@@ -70,8 +70,8 @@
       "sha256": "a920e0b12369bb31c61cd7a90d4e76f1bfe4ec3dd164e2a387355744dbc0ce1c"
     },
     "src/client/gui/bitmap_font.h": {
-      "bytes": 6214,
-      "sha256": "31f96ced8b71cd136d9ff8268ecf94cdbf2145ec786305e5653029dbd949a80e"
+      "bytes": 6753,
+      "sha256": "9f8ee5bc00a4648c899ecb7ff90543a71c012d1ef6b2ad3be0d71f9979a9a85b"
     },
     "src/client/gui/bitmap_font_internal.h": {
       "bytes": 2001,
@@ -114,20 +114,20 @@
       "sha256": "92cfc31b5c559c855ae907ec68f75ef3d738bb211ed23b2c42252c4ad0a94bcc"
     },
     "src/client/gui/loading_screen.c": {
-      "bytes": 19363,
-      "sha256": "e909ffbc252ffb3c8573d43d8a09b22ca633920420f5b540194b001cb94a0f3d"
+      "bytes": 19505,
+      "sha256": "b3cafc825e335fd27a2f702a007d90a4317a68fe3f2f79968669db0d8522e3df"
     },
     "src/client/gui/loading_screen.h": {
-      "bytes": 7541,
-      "sha256": "97070fd8642ab52aad1b48a07ce3a363af605ce0f3057bb0d322e0eafebce09f"
+      "bytes": 7788,
+      "sha256": "1bd5c91e2768b77f26cb15f1e1d161e51b73ecec0b9284fb3f7487afe5174c8e"
     },
     "src/client/gui/scaled_resolution_internal.h": {
       "bytes": 1659,
       "sha256": "925287fcecb4135b6319bbe5f5dcda6e9c0617f40f34e3fb1c353c33ab55792d"
     },
     "src/client/application_state.h": {
-      "bytes": 7089,
-      "sha256": "29ca507af345facee83f2d24c7c17c3002141ded802b37212c0ad66b8e701350"
+      "bytes": 7475,
+      "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
     },
     "src/client/gui/font_renderer.c": {
       "bytes": 11768,
@@ -162,8 +162,8 @@
       "sha256": "a937b5e6b0612ccfd1caf98f27d40e1108f12f43eb280058655e2f9bf2beebd1"
     },
     "src/client/gui/bitmap_font.c": {
-      "bytes": 25639,
-      "sha256": "a34c7b158e36c9c54cfc58fa358d992624c5fab70b75f2ed3077228266892d6b"
+      "bytes": 26407,
+      "sha256": "a610d2aeb359d15098c1f240d080abca3186556c9604319de5addb60c4f12a34"
     },
     "src/client/gui/bitmap_font_draw.c": {
       "bytes": 11312,
@@ -198,8 +198,8 @@
       "sha256": "b81996eefa7e9228de1f12747dcc88356116afaff3c668900a206cf45b6a9135"
     },
     "src/client/render_engine/context.c": {
-      "bytes": 1099,
-      "sha256": "1455b7f57504c691eb4e9abe64884542f9ef017b3b2de953b1316a366202eadf"
+      "bytes": 1112,
+      "sha256": "1d9e2a7ba668430813c0689d3778a8103949841fdd62bd8754bd5ec5fc94742a"
     },
     "src/client/render_engine/context_display.c": {
       "bytes": 1711,
@@ -270,20 +270,20 @@
       "sha256": "497ffc4e1500c727a9bb4217507ea3a940d3e8062cece91337eeb42355f8364e"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 10292,
-      "sha256": "ef62ecfdb2505e15e75b3f3a465a509863bd3c35d1f27cbbc09eebfddde1cfc6"
+      "bytes": 12529,
+      "sha256": "6d36eaa30109666dc843beb8f9b7422d2e963cab79ec4223454249737ede6e8f"
     },
     "src/client/startup/application_lifetime.c": {
-      "bytes": 6049,
-      "sha256": "1df4186525784926c1c965736eb5a7ade3550a7915eb82e72b91b47e1bde5a98"
+      "bytes": 6258,
+      "sha256": "9af056e5ab6f2e1499bc633113d0d2c3bb56a5615d1294d3b11556b88f65eb0e"
     },
     "src/client/startup/application_owner.h": {
-      "bytes": 11443,
-      "sha256": "33fe822ed147bdfd5c8810b2d16e916de3b4b40819fe03a8e527f65ea62864f1"
+      "bytes": 12087,
+      "sha256": "8e857bbe30864344af5d4f98d0142b806d9e52dc0761209a7b91f6f34b599932"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 2744,
-      "sha256": "24b46a789590ae1c51946f5975373b9ed35b15c6293a76d6376a40137e4181fe"
+      "bytes": 3243,
+      "sha256": "7d08a7f6842bd8d1f1ca1761aea06c7dbb87b19409526fe3b53e003cfca8be11"
     },
     "src/client/startup/timer_hack.c": {
       "bytes": 18780,

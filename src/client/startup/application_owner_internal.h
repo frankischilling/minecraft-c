@@ -3,6 +3,7 @@
 
 #include "../application_state.h"
 #include "application_owner.h"
+#include "mc/world/storage/java_file.h"
 
 #include <stdatomic.h>
 #include <threads.h>
@@ -25,7 +26,14 @@ struct mc_client_application_classes {
     int32_t G;
     int64_t H;
     client_application *a;
-    void *af;
+    mc_java_file *af;
+    bool native_retiring;
+    mc_java_file_error file_retirement;
+    mc_player_string *startup_title;
+    mc_player_string *startup_font_resource; /* Lazy actual MC ldc250, namespace-owned. */
+    mc_player_string
+        *startup_color_literals[3]; /* Lazy MC ldc266/278/290, same source identities. */
+    struct application_directory_classes *directory_classes;
     size_t holds, array_bytes, array_allocations, allocation_attempts;
     size_t native_app_borrows;
     mc_player_string *timer_name;
@@ -66,6 +74,8 @@ void application_worker_release(client_application *);
 mc_client_application_owner_status application_static_hold(client_application *,
                                                            mc_client_application_owner_error *);
 void application_static_release(client_application *);
+
+void application_directory_classes_destroy(struct application_directory_classes *);
 
 /* Concrete synchronization used by both the real worker and authored native
  * tests. Signaling without setting interrupt/cancel is a true spurious wake. */

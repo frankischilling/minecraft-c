@@ -15,7 +15,7 @@ mc_client_application_namespace_attach(mc_client_application_classes *classes,
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED,
                                       "Minecraft native namespace borrow lock", NULL, NULL, NULL, 0,
                                       0);
-    if (classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
+    if (classes->native_retiring || classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
         (void)mtx_unlock(&classes->mutex);
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
                                       "Minecraft native namespace ready admission", NULL, NULL,
@@ -77,7 +77,7 @@ mc_client_application_classes_timer_name(mc_client_application_classes *classes,
     if (mtx_lock(&classes->mutex) != thrd_success)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED,
                                       "Minecraft Thread literal lock", NULL, NULL, NULL, 0, 0);
-    if (classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
+    if (classes->native_retiring || classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
         (void)mtx_unlock(&classes->mutex);
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
                                       "Minecraft Thread literal class state", NULL, NULL, NULL, 0,
@@ -113,7 +113,7 @@ static mc_client_application_owner_status applet_literal(mc_client_application_c
     if (mtx_lock(&classes->mutex) != thrd_success)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED,
                                       "Minecraft Applet literal lock", NULL, NULL, NULL, 0, 0);
-    if (classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
+    if (classes->native_retiring || classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
         (void)mtx_unlock(&classes->mutex);
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
                                       "Minecraft Applet literal class state", NULL, NULL, NULL, 0,
@@ -172,7 +172,7 @@ mc_client_application_classes_publish(mc_client_application_classes *classes,
     if (mtx_lock(&classes->mutex) != thrd_success)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED,
                                       "Minecraft a264 namespace lock", NULL, NULL, NULL, 0, 0);
-    if (classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
+    if (classes->native_retiring || classes->phase != MC_CLIENT_APPLICATION_CLASS_READY) {
         (void)mtx_unlock(&classes->mutex);
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
                                       "Minecraft a264 namespace not ready", NULL, NULL, NULL, 0, 0);

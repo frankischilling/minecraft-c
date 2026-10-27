@@ -9,6 +9,8 @@ typedef struct client_application client_application;
 typedef struct mc_player_string mc_player_string;
 typedef struct mc_client_application_classes mc_client_application_classes;
 typedef struct mc_client_timer_hack mc_client_timer_hack;
+typedef struct mc_java_file mc_java_file;
+typedef struct mc_java_file_error mc_java_file_error;
 
 #define MC_CLIENT_APPLICATION_RESERVE_BYTES 10485760u
 #define MC_CLIENT_APPLICATION_HISTORY_LENGTH 512u
@@ -25,7 +27,8 @@ typedef enum mc_client_application_owner_status {
     MC_CLIENT_APPLICATION_OWNER_CLOCK_FAILED,
     MC_CLIENT_APPLICATION_OWNER_STRING_FAILED,
     MC_CLIENT_APPLICATION_OWNER_NULL_THREAD_NAME,
-    MC_CLIENT_APPLICATION_OWNER_CLASS_ERRONEOUS
+    MC_CLIENT_APPLICATION_OWNER_CLASS_ERRONEOUS,
+    MC_CLIENT_APPLICATION_OWNER_FILE_FAILED
 } mc_client_application_owner_status;
 
 typedef struct mc_client_application_owner_site {
@@ -38,6 +41,9 @@ typedef struct mc_client_application_owner_error {
     const char *operation;
     mc_client_application_owner_site site;
     int native_error;
+    /* Complete typed cause retained by the failed namespace; borrowed through
+     * retry and invalidated only on successful final namespace retirement. */
+    const mc_java_file_error *file;
 } mc_client_application_owner_error;
 
 /* Native actual-App constructor state, separate from source J/o and the
@@ -70,7 +76,9 @@ typedef struct mc_client_application_class_state {
     int32_t G;
     int64_t H;
     client_application *a;
-    const void *af; /* Actual nullable File slot; this scope only stores null. */
+    const mc_java_file *af; /* Actual canonical counted nullable File identity. */
+    bool native_retiring;
+    const mc_java_file_error *file_retirement;
     size_t b_length, E_length, F_length;
     size_t native_holds, array_bytes, array_allocations, allocation_attempts;
     unsigned int last_store_pc, last_global_store_pc;
@@ -95,7 +103,10 @@ mc_client_application_classes_active_use(mc_client_application_classes *,
 mc_client_application_owner_status
 mc_client_application_classes_retain(mc_client_application_classes *);
 /* A successful occurrence release always consumes its pointer, including when
- * another native hold remains. BUSY/error preserves the pointer for retry. */
+ * another native hold remains. BUSY/error preserves the pointer for retry.
+ * Final native af File cleanup runs outside the class mutex and can retain a
+ * terminal prefix: native_retiring then rejects new source use/retains, while
+ * inspection and final-release retry stay available. No source af/a/J store. */
 mc_client_application_owner_status
 mc_client_application_classes_release(mc_client_application_classes **,
                                       mc_client_application_owner_error *);

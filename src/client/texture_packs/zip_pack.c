@@ -100,7 +100,7 @@ static void metadata_site(mc_texture_pack_error *error, unsigned int pc) {
 
 static mc_texture_pack_status open_archive(mc_client_texture_pack *pack, texture_zip **out,
                                            mc_texture_pack_error *error) {
-    FILE *file = texture_file_open(pack->file, error);
+    FILE *file = texture_pack_file_open(pack, error);
     if (file == NULL)
         return error->status;
     const texture_zip_limits limits = {

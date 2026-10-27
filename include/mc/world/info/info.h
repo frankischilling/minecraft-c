@@ -78,6 +78,8 @@ const char *mc_world_info_status_string(mc_world_info_status status);
 mc_world_info_status mc_world_info_name_copy(mc_nbt_string text, size_t max_bytes,
                                              mc_world_info_name **out);
 mc_nbt_string mc_world_info_name_text(const mc_world_info_name *name);
+/* Borrowed immutable shared Java empty String identity; retain/release are valid. */
+mc_world_info_name *mc_world_info_name_empty(void);
 mc_world_info_status mc_world_info_name_retain(mc_world_info_name *name);
 void mc_world_info_name_release(mc_world_info_name *name);
 
@@ -114,6 +116,24 @@ void mc_world_info_player_release(mc_world_info_player *player);
  * Failure preserves out. No I/O, clock or gameplay construction occurs. */
 mc_world_info_status mc_world_info_data_copy(const mc_nbt_tag *data, const mc_nbt_limits *limits,
                                              mc_world_info_data **out, mc_world_info_error *error);
+/* Source metadata adoption of a COMPLETED owned decoded document. Selects
+ * the actual inner Data compound; absence creates a distinct concrete empty
+ * Data header, wrong Data type fails. Success transfers/nulls only this owned
+ * document occurrence; failure leaves document/out slots unchanged. Reader's
+ * independent document hold is unaffected. Derived native backing/typed name
+ * handles retain the SAME arena/UTF16/Player children with no reparse or clone.
+ * Infos/copies from this one Data owner share its canonical typed handles.
+ * Distinct independent Data adoptions are distinct native projection owners;
+ * there is no document-wide typed-wrapper interning/registry. The actual tq
+ * route adopts once and reuses/retains that canonical Data owner.
+ * Borrowed generic C tag views are native views, not additional JVM identities.
+ * No input/GZIP callbacks survive in this retained ownership graph. */
+mc_world_info_status mc_world_info_data_adopt_document(mc_nbt_document **owned_document,
+                                                       size_t maximum_wrapper_bytes,
+                                                       mc_world_info_data **out,
+                                                       mc_world_info_error *error);
+/* Nullable borrowed actual document; legacy tree-backed data returns NULL. */
+const mc_nbt_document *mc_world_info_data_document(const mc_world_info_data *data);
 mc_world_info_status mc_world_info_data_retain(mc_world_info_data *data);
 void mc_world_info_data_release(mc_world_info_data *data);
 /* Borrowed typed handles; NULL data or a wrong-typed field returns NULL.
@@ -165,6 +185,15 @@ const mc_nbt_tag *mc_world_info_source(const mc_world_info *info);
  * Any live allocated Info is accepted; null receiver/output preserves out.
  * No snapshot, allocation, clock, normalization or other field read occurs. */
 mc_world_info_status mc_world_info_time_get(const mc_world_info *info, int64_t *out);
+
+/* Actual client ei.k/j/l/g direct field reads. No READY gate, allocation,
+ * snapshots, clock, retained output hold or unrelated field access. name may
+ * return NULL; it borrows the supplying Info. Null receiver/output preserves
+ * out. These operations also expose valid allocated RAW/FAILED fields. */
+mc_world_info_status mc_world_info_version_get(const mc_world_info *info, int32_t *out);
+mc_world_info_status mc_world_info_name_get(const mc_world_info *info, mc_world_info_name **out);
+mc_world_info_status mc_world_info_last_played_get(const mc_world_info *info, int64_t *out);
+mc_world_info_status mc_world_info_size_get(const mc_world_info *info, int64_t *out);
 
 /* Actual client ei.h() Player reference read. No READY gate, copy, retain,
  * cached dimension read or mutation. The nullable output borrows Info's hold. */

@@ -6,48 +6,48 @@
       "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/render_engine/render_engine.h": {
-      "bytes": 7681,
-      "sha256": "6782b58e4c0d3e9f1967de09009fbf405174e598a565a829eb7720f6dd5e3cd3"
+      "bytes": 8919,
+      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
     },
     "src/client/display/display.c": {
-      "bytes": 54994,
-      "sha256": "089c8a38027332a6e0368cf2cdbc694f64cd23e407a4809e68743a4399942d26"
+      "bytes": 60047,
+      "sha256": "5f79fd98ce7e3bd8d7edf5ffed66f59bdb09e503f718a08b8622578b0a703ed7"
     },
     "src/client/display/display.h": {
-      "bytes": 13360,
-      "sha256": "d6289bf59b07e89372391b385a8df7972f5e71f4d275e51dde8b39be15ca6c5f"
+      "bytes": 13727,
+      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
     },
     "src/client/fonts/default_font.c": {
       "bytes": 13768,
       "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 3448,
-      "sha256": "ec52282f0073bd4052d4e08e72b1d37c2ab7f09f8afaa3c8737e5cd0a6482b8b"
+      "bytes": 3549,
+      "sha256": "f3586abbff25baa627221a6bdde5740887a6bde41d33ed1e76e80b078b6e0d37"
     },
     "src/client/render_engine/owner.c": {
-      "bytes": 22925,
-      "sha256": "18ccc35906e3b5a912c7177303527f0d720061661a49f4452cf51c95a805a951"
+      "bytes": 27450,
+      "sha256": "9a79bedd2cd625ff32d1822ce14fad6c83c5d2b562d4693dded1e988b1ab7805"
     },
     "src/client/render_engine/textures.c": {
-      "bytes": 25306,
-      "sha256": "87b87dda80f4b01a7276f428576de230b60d447a21afdf9a9bfa095adb49ec97"
+      "bytes": 25603,
+      "sha256": "0990c6a8af54cc1952fa42a235a01ce38c11bbb51d2305b6590d7fbfec44104b"
     },
     "src/client/render_engine/textures.h": {
-      "bytes": 4391,
-      "sha256": "4b29b7844519ad1ede3382cf4bf9babb97cfa786ced935fdd6bb7b000ab90963"
+      "bytes": 4870,
+      "sha256": "72fab24b19d0fa24ec1cf524b13bc53c4414afeeac1a4fb815b336fc988c92cb"
     },
     "tests/client/render_engine/test_render_engine.c": {
-      "bytes": 13811,
-      "sha256": "148890699745bfc30a47a0c33d78b32468dd94e5f026b91bcb188621f9168040"
+      "bytes": 19211,
+      "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
     },
     "tests/client/render_engine/test_textures.c": {
       "bytes": 21208,
       "sha256": "9e63b92602d15bbe770250d4456ed262750c2582300f840339c698028c1d44a8"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 66929,
-      "sha256": "ab1b6daf6c1ce28e22154a0da6a769fd7a2b644cdc0d8468f4fc603cf1eb6541"
+      "bytes": 94263,
+      "sha256": "8e7262b68713edaf8bcc0edbc789362643e33e026bf2d7babf36b72ce27ad288"
     },
     "tests/reference/client/statistics/support.py": {
       "bytes": 7123,

@@ -31,4 +31,14 @@ mc_text_stdout_status mc_text_stdout_capture(mc_text_stdout *out);
 mc_text_stdout_status mc_text_stdout_println(const mc_text_stdout *stream, const char *ascii,
                                              size_t length, bool *io_failed);
 
+/* The SAME unbuffered native write kernel, accepting counted encoded bytes.
+ * Does not append, encode, flush, capture, own or close the borrowed handle.
+ * Reports real committed prefix, suppressed IO and reached native error on OK; native-control
+ * errors preserve outputs while earlier physical writes remain. Inputs/outputs must be disjoint and
+ * handle/environment/execution exclusive through the call. The UTF16 encoder stays in the existing
+ * core Writer, not a parallel codec. */
+mc_text_stdout_status mc_text_stdout_write(const mc_text_stdout *stream, const uint8_t *bytes,
+                                           size_t length, size_t *committed, bool *io_failed,
+                                           int *system_error);
+
 #endif

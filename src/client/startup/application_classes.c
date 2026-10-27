@@ -10,7 +10,7 @@ application_owner_fail(mc_client_application_owner_error *error,
                        unsigned int pc, int native_error) {
     if (error != NULL)
         *error = (mc_client_application_owner_error){
-            status, operation, {class_name, method, descriptor, pc}, native_error};
+            status, operation, {class_name, method, descriptor, pc}, native_error, NULL};
     return status;
 }
 
@@ -77,6 +77,11 @@ mc_client_application_classes_active_use(mc_client_application_classes *classes,
     if (locked != thrd_success)
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED,
                                       "Minecraft class native lock", NULL, NULL, NULL, 0, locked);
+    if (classes->native_retiring) {
+        (void)mtx_unlock(&classes->mutex);
+        return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE,
+                                      "Minecraft namespace retiring", NULL, NULL, NULL, 0, 0);
+    }
     if (classes->phase == MC_CLIENT_APPLICATION_CLASS_READY) {
         (void)mtx_unlock(&classes->mutex);
         return MC_CLIENT_APPLICATION_OWNER_OK;
@@ -136,7 +141,9 @@ mc_client_application_classes_retain(mc_client_application_classes *classes) {
     if (mtx_lock(&classes->mutex) != thrd_success)
         return MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED;
     mc_client_application_owner_status status = MC_CLIENT_APPLICATION_OWNER_OK;
-    if (classes->holds == SIZE_MAX)
+    if (classes->native_retiring)
+        status = MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE;
+    else if (classes->holds == SIZE_MAX)
         status = MC_CLIENT_APPLICATION_OWNER_LIMIT;
     else
         ++classes->holds;
@@ -171,21 +178,49 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
                                       "Minecraft live App namespace borrows", NULL, NULL, NULL, 0,
                                       0);
     }
-    if (--classes->holds != 0) {
+    if (classes->holds > 1) {
+        --classes->holds;
         (void)mtx_unlock(&classes->mutex);
         *owner = NULL;
         return MC_CLIENT_APPLICATION_OWNER_OK;
     }
+    classes->native_retiring = true;
+    (void)mtx_unlock(&classes->mutex);
+    /* File retirement may fail/BUSY. Keep the final class occurrence and its
+     * exact af identity for retry; no source putstatic af=NULL is performed. */
+    if (classes->af != NULL &&
+        mc_java_file_release(&classes->af, &classes->file_retirement) != MC_JAVA_FILE_OK) {
+        application_owner_fail(error,
+                               classes->file_retirement.status == MC_JAVA_FILE_BUSY
+                                   ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                                   : MC_CLIENT_APPLICATION_OWNER_FILE_FAILED,
+                               "Minecraft native af File retirement", NULL, NULL, NULL, 0, 0);
+        if (error != NULL)
+            error->file = &classes->file_retirement;
+        return error == NULL ? (classes->file_retirement.status == MC_JAVA_FILE_BUSY
+                                    ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                                    : MC_CLIENT_APPLICATION_OWNER_FILE_FAILED)
+                             : error->status;
+    }
+    application_directory_classes_destroy(classes->directory_classes);
     client_application *last_app = classes->a;
     mc_player_string *timer_name = classes->timer_name;
     mc_player_string *applet_true = classes->applet_true;
     mc_player_string *applet_standalone = classes->applet_standalone;
-    (void)mtx_unlock(&classes->mutex);
+    mc_player_string *startup_title = classes->startup_title;
+    mc_player_string *startup_font_resource = classes->startup_font_resource;
+    mc_player_string *startup_color_literals[3] = {classes->startup_color_literals[0],
+                                                   classes->startup_color_literals[1],
+                                                   classes->startup_color_literals[2]};
     free(classes->F);
     free(classes->E);
     free(classes->b);
     mtx_destroy(&classes->mutex);
     free(classes);
+    for (size_t index = 0; index < 3; ++index)
+        mc_player_string_release(startup_color_literals[index]);
+    mc_player_string_release(startup_font_resource);
+    mc_player_string_release(startup_title);
     mc_player_string_release(timer_name);
     mc_player_string_release(applet_true);
     mc_player_string_release(applet_standalone);
@@ -208,6 +243,8 @@ bool mc_client_application_classes_inspect(mc_client_application_classes *classe
         .H = classes->H,
         .a = classes->a,
         .af = classes->af,
+        .native_retiring = classes->native_retiring,
+        .file_retirement = &classes->file_retirement,
         .b_length = classes->b == NULL ? 0 : MC_CLIENT_APPLICATION_RESERVE_BYTES,
         .E_length = classes->E == NULL ? 0 : MC_CLIENT_APPLICATION_HISTORY_LENGTH,
         .F_length = classes->F == NULL ? 0 : MC_CLIENT_APPLICATION_HISTORY_LENGTH,

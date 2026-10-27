@@ -1,15 +1,27 @@
 # Build and tests
 
-Published `f3de22d` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40507780546):
-1,115 public/JDK cases, with 363 Windows and 376 per Linux compiler. All 1,055
-preceding cases remain. The four checkout trees match
-`88016272aeef6f94cc644ac127324c61b2e31324`. Formatting covers 1,024 C/header
-files; controller mirrors and 556 positive/2,011 negative lifecycle controls
-pass per platform. Supplied-original comparisons retain their separate scope.
+Checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686):
+1,127 public/JDK cases, with 367 Windows and 380 per Linux compiler. All 1,115
+preceding cases remain; four public resource-observer checks are added per
+compiler. Actual checkout `5b671b26` matches the checkpoint's
+`fdda932e6f3578c1ec37cde5d0762cbc2601a3ed` tree and all 2,027 archived blobs.
+Independent raw-log readback confirms unique Start/Passed pairs with no skips
+or failures. Formatting covers 1,027 C/header files; controller mirrors and
+556 positive/2,011 negative lifecycle controls pass per platform.
+Supplied-original comparisons and later startup source proposals keep their
+separate scope.
 
-The startup/resource owners also pass 48 focused local cases per compiler,
-including 774 constructor checks and 196,715 array/class checks. This selected
-local run is separate from the complete hosted public/JDK matrix.
+The later normal-startup graph builds ALL on MSVC, Clang and GCC. Windows
+passes 67 distinct selected CTests; Clang and GCC each pass 74 distinct cases
+across 81 executions. None failed or skipped. This focused scope retains
+774 constructor and 196,715 array/class checks and is separate from the
+preceding hosted matrix. A real Windows startup process exited zero with
+166 assertions, but its aggregate window qualification stopped afterward on
+capacity and still has a reader grammar gap; six modes remain unrun.
+[Client startup](Startup) links the exact scope and remaining work.
+
+The earlier startup/resource cohort retains its separate 48 focused local
+checks per compiler. Neither selected matrix establishes a playable session.
 
 The preceding 1,885-file Timer, Minecraft class/worker, rendering and World/Player
 cohort passed 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on each
@@ -26,6 +38,7 @@ individual operation profiles:
 | Operation | Scoped evidence |
 | --- | --- |
 | Standalone App and array owners | 774 constructor and 196,715 array/class checks per compiler in the focused local scope; public constructor/array controls also run in hosted CI |
+| Resource lookup observations | Three native compilers pass six selected CTests plus eleven profiles each; one retained Windows CPU default original attempt matches seven rows after independent read-only admission. The initial refusal remains retained. Hosted `37dc83f` compiles the probes and passes four pure checks per compiler; original ZIP/static/GL and normal startup remain outside these results |
 | Ordered Timer | 1,267 constructor checks per compiler, existing arithmetic/clock controls; separate original eight-rate/ten-field qualification |
 | Minecraft class and kg worker | 225 native checks and 70 normal/optimized controls per compiler; five original class/worker projections on prepared receivers, no instance-constructor claim |
 | RenderEngine | 8,333 CPU/223 device/55 separate trace checks; 19 normal/optimized controls; fresh original 4,096-pixel/ten-glyph comparisons on both hosts and ten original GL rows on Windows |

@@ -300,8 +300,8 @@
   },
   "native_sources": {
     "include/mc/world/info/info.h": {
-      "bytes": 14378,
-      "sha256": "2fb2b252af34b1880b1862adf787009cb68a3ef01756cf8fa59c87ac7784ae60"
+      "bytes": 16610,
+      "sha256": "ce3f532dadb59f3e856b7eed079b7bbad0501a990278ef289429d32828739647"
     },
     "include/mc/world/runtime/entities.h": {
       "bytes": 5111,
@@ -328,8 +328,8 @@
       "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "src/world/info/info.c": {
-      "bytes": 36700,
-      "sha256": "8586eadabd4d98aaf9484b2eb132e1185010bcca1c24b6a7a4c786a8369b44ad"
+      "bytes": 43559,
+      "sha256": "8679d499d1b78adedb6cc6e6f393321ae61f3abca108a6917f50877a905c8265"
     },
     "src/world/runtime/chunk_provider.c": {
       "bytes": 17171,

@@ -97,12 +97,29 @@ static mc_client_direct_int_buffer *int_buffer(mc_client_render_engine *o, unsig
     return buffer;
 }
 
+mc_client_render_engine_status
+mc_client_render_engine_classes_active_use(mc_client_render_engine_classes *c,
+                                           mc_client_render_engine_error *error) {
+    mc_client_render_engine_error e = {0};
+    if (c == NULL || c->resource_retirement_started)
+        fail(&e,
+             c == NULL ? MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT
+                       : MC_CLIENT_RENDER_ENGINE_INVALID_PHASE,
+             "ji class native active-use admission", NULL, 0, 0, NULL, 0);
+    else if (!c->ji_ready) {
+        c->ji_a = false; /* Actual ji.<clinit> putstatic1. */
+        c->ji_ready = true;
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
 static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *packs,
                       mc_game_settings *settings) {
-    if (!o->classes->ji_ready) {
-        o->classes->ji_a = false;
-        o->classes->ji_ready = true;
-    } /* ji literal <clinit>0, once. */
+    if (mc_client_render_engine_classes_active_use(o->classes, &o->failure) !=
+        MC_CLIENT_RENDER_ENGINE_OK)
+        return false;
     o->fields.b = allocate(o, sizeof(mc_client_render_map), "ji", 5, 5, NULL, 0);
     if (o->fields.b == NULL)
         return false;
@@ -212,30 +229,58 @@ mc_client_render_engine_classes_create(const mc_client_render_engine_options *op
     return mc_client_render_engine_classes_allocate_context(options, NULL, NULL, out);
 }
 
+static bool engine_colors_can_retire(const mc_client_render_engine *, bool last_classes);
+
 mc_client_render_engine_status
 mc_client_render_engine_classes_retain(mc_client_render_engine_classes *c) {
     if (c == NULL)
         return MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT;
-    if (c->holds == SIZE_MAX)
-        return MC_CLIENT_RENDER_ENGINE_LIMIT;
-    ++c->holds;
-    return MC_CLIENT_RENDER_ENGINE_OK;
+    size_t observed = atomic_load_explicit(&c->holds, memory_order_acquire);
+    for (;;) {
+        if (observed == 0)
+            return MC_CLIENT_RENDER_ENGINE_INVALID_PHASE;
+        if (observed == SIZE_MAX)
+            return MC_CLIENT_RENDER_ENGINE_LIMIT;
+        if (atomic_compare_exchange_weak_explicit(&c->holds, &observed, observed + 1,
+                                                  memory_order_acq_rel, memory_order_acquire))
+            return MC_CLIENT_RENDER_ENGINE_OK;
+    }
 }
 
-mc_client_render_engine_status
-mc_client_render_engine_classes_release(mc_client_render_engine_classes *c) {
-    if (c == NULL)
-        return MC_CLIENT_RENDER_ENGINE_OK;
-    if (c->active_source_calls != 0 || c->nw.phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING)
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (c->holds == 1 &&
-        (c->native_resource_count != 0 || c->active_resource_calls != 0 ||
-         c->command_range_count != 0 || c->font_lease_count != 0 || c->context_lease != NULL))
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (c->holds == 1 && !mc_client_colorizer_can_retire(c))
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (--c->holds != 0)
-        return MC_CLIENT_RENDER_ENGINE_OK;
+/* Returns a unique final-storage right only for a protected 1->0 drop. A
+ * successful >1 drop can never finalize this shared namespace. No source or
+ * device activity is inferred from this one native occurrence account. */
+static mc_client_render_engine_status classes_drop(mc_client_render_engine_classes *c,
+                                                   bool legacy_policy,
+                                                   const mc_client_render_engine *engine,
+                                                   bool *final) {
+    size_t observed = atomic_load_explicit(&c->holds, memory_order_acquire);
+    for (;;) {
+        if (observed == 0)
+            return MC_CLIENT_RENDER_ENGINE_INVALID_PHASE;
+        if (legacy_policy &&
+            (c->active_source_calls != 0 || c->nw.phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING))
+            return MC_CLIENT_RENDER_ENGINE_BUSY;
+        if (observed == 1) {
+            if (c->active_source_calls != 0 ||
+                c->nw.phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING ||
+                c->native_resource_count != 0 || c->active_resource_calls != 0 ||
+                c->command_range_count != 0 || c->font_lease_count != 0 ||
+                c->context_lease != NULL || !mc_client_colorizer_can_retire(c))
+                return MC_CLIENT_RENDER_ENGINE_BUSY;
+        }
+        if (engine != NULL && !engine_colors_can_retire(engine, observed == 1))
+            return MC_CLIENT_RENDER_ENGINE_BUSY;
+        const bool last = observed == 1;
+        if (atomic_compare_exchange_weak_explicit(&c->holds, &observed, observed - 1,
+                                                  memory_order_acq_rel, memory_order_acquire)) {
+            *final = last;
+            return MC_CLIENT_RENDER_ENGINE_OK;
+        }
+    }
+}
+
+static void destroy_classes(mc_client_render_engine_classes *c) {
     if (c->a != NULL)
         free(c->a->entries);
     if (c->b != NULL)
@@ -247,24 +292,34 @@ mc_client_render_engine_classes_release(mc_client_render_engine_classes *c) {
     mc_client_nw_free_namespace(c);
     mc_client_render_arena_free(&c->arena);
     free(c);
-    return MC_CLIENT_RENDER_ENGINE_OK;
+}
+
+mc_client_render_engine_status
+mc_client_render_engine_classes_release(mc_client_render_engine_classes *c) {
+    if (c == NULL)
+        return MC_CLIENT_RENDER_ENGINE_OK;
+    bool final = false;
+    const mc_client_render_engine_status status = classes_drop(c, true, NULL, &final);
+    if (status == MC_CLIENT_RENDER_ENGINE_OK && final)
+        destroy_classes(c);
+    return status;
 }
 
 bool mc_client_render_engine_classes_inspect(const mc_client_render_engine_classes *c,
                                              mc_client_render_engine_class_state *out) {
     if (c == NULL || out == NULL)
         return false;
-    *out = (mc_client_render_engine_class_state){.native_holds = c->holds,
-                                                 .ji_ready = c->ji_ready,
-                                                 .ji_a = c->ji_a,
-                                                 .ge_phase = c->ge_phase,
-                                                 .ge_a = c->a,
-                                                 .ge_b = c->b,
-                                                 .ge_failure = c->failure,
-                                                 .native_resource_count = c->native_resource_count,
-                                                 .active_resource_calls = c->active_resource_calls,
-                                                 .resource_retirement_started =
-                                                     c->resource_retirement_started};
+    *out = (mc_client_render_engine_class_state){
+        .native_holds = atomic_load_explicit(&c->holds, memory_order_acquire),
+        .ji_ready = c->ji_ready,
+        .ji_a = c->ji_a,
+        .ge_phase = c->ge_phase,
+        .ge_a = c->a,
+        .ge_b = c->b,
+        .ge_failure = c->failure,
+        .native_resource_count = c->native_resource_count,
+        .active_resource_calls = c->active_resource_calls,
+        .resource_retirement_started = c->resource_retirement_started};
     return true;
 }
 
@@ -336,9 +391,8 @@ static size_t color_map_occurrences(const mc_client_render_map *map,
     return count;
 }
 
-static bool engine_colors_can_retire(const mc_client_render_engine *o) {
+static bool engine_colors_can_retire(const mc_client_render_engine *o, bool last_classes) {
     const mc_client_render_map *map = o->fields.c;
-    const bool last_classes = o->classes->holds == 1;
     if (last_classes && !mc_client_colorizer_can_retire(o->classes))
         return false;
     if (map != NULL && map->color_arrays != NULL)
@@ -353,24 +407,7 @@ static bool engine_colors_can_retire(const mc_client_render_engine *o) {
     return true;
 }
 
-mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_engine *o) {
-    if (o == NULL)
-        return MC_CLIENT_RENDER_ENGINE_OK;
-    if (o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING || o->active_resource_calls != 0 ||
-        o->classes->active_source_calls != 0)
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    /* Opaque client-device prefix/policy storage is retired explicitly in its
-     * own layer. CPU ownership never calls Pack/Display or a cleanup callback. */
-    if (o->holds == 1 && o->lookup != NULL)
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (o->holds == 1 && o->classes->holds == 1 &&
-        (o->classes->native_resource_count != 0 || o->classes->command_range_count != 0 ||
-         o->classes->font_lease_count != 0 || o->classes->context_lease != NULL))
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (o->holds == 1 && !engine_colors_can_retire(o))
-        return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (--o->holds != 0)
-        return MC_CLIENT_RENDER_ENGINE_OK;
+static void destroy_engine(mc_client_render_engine *o, bool drop_class) {
     if (o->graphics != NULL) {
         mc_client_argb_image_release(o->graphics->image);
         (void)mc_client_default_font_release(o->graphics->font);
@@ -396,10 +433,76 @@ mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_
                           : (void *)maps[i]->entries);
         }
     mc_client_render_arena_free(&o->arena);
-    mc_client_render_engine_classes_release(o->classes);
+    if (drop_class)
+        (void)mc_client_render_engine_classes_release(o->classes);
     (void)mc_client_default_font_release(o->font);
     free(o);
+}
+
+mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_engine *o) {
+    if (o == NULL)
+        return MC_CLIENT_RENDER_ENGINE_OK;
+    if (o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING || o->active_resource_calls != 0 ||
+        o->classes->active_source_calls != 0)
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    /* Opaque client-device prefix/policy storage is retired explicitly in its
+     * own layer. CPU ownership never calls Pack/Display or a cleanup callback. */
+    if (o->holds == 1 && o->lookup != NULL)
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (o->holds == 1 && atomic_load_explicit(&o->classes->holds, memory_order_acquire) == 1 &&
+        (o->classes->native_resource_count != 0 || o->classes->command_range_count != 0 ||
+         o->classes->font_lease_count != 0 || o->classes->context_lease != NULL))
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (o->holds == 1) {
+        const size_t class_holds = atomic_load_explicit(&o->classes->holds, memory_order_acquire);
+        if (!engine_colors_can_retire(o, class_holds == 1))
+            return MC_CLIENT_RENDER_ENGINE_BUSY;
+    }
+    if (--o->holds != 0)
+        return MC_CLIENT_RENDER_ENGINE_OK;
+    destroy_engine(o, true);
     return MC_CLIENT_RENDER_ENGINE_OK;
+}
+
+mc_client_render_engine_status
+mc_client_render_engine_retire(mc_client_render_engine **slot,
+                               mc_client_render_engine_error *error) {
+    mc_client_render_engine_error e = {0};
+    if (slot == NULL)
+        fail(&e, MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT, "Engine final native occurrence output",
+             NULL, 0, 0, NULL, 0);
+    else if (*slot != NULL) {
+        mc_client_render_engine *o = *slot;
+        /* Constructor is an actual source-call domain independent of resource
+         * counters. Every retained lookup prefix also prevents final release;
+         * registration/lookup calls and font leases hold the actual Engine. */
+        if (o->holds != 1 || o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING ||
+            o->active_resource_calls != 0 || o->lookup != NULL)
+            fail(&e, MC_CLIENT_RENDER_ENGINE_BUSY, "Engine own operation/hold/pending dependency",
+                 NULL, 0, 0, NULL, 0);
+        else {
+            mc_client_render_engine_classes *classes = o->classes;
+            bool final_classes = false;
+            const mc_client_render_engine_status status =
+                classes_drop(classes, false, o, &final_classes);
+            if (status != MC_CLIENT_RENDER_ENGINE_OK)
+                fail(&e, status, "Engine own arrays or actual final class dependency", NULL, 0, 0,
+                     NULL, 0);
+            else {
+                /* Our canonical class occurrence is already dropped. The CPU
+                 * body never touches the namespace; a final right remains
+                 * locally owned until its dependent CPU data is destroyed. */
+                o->holds = 0; /* Consume this exclusive final Engine occurrence once. */
+                destroy_engine(o, false);
+                if (final_classes)
+                    destroy_classes(classes);
+                *slot = NULL;
+            }
+        }
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
 }
 
 bool mc_client_render_engine_inspect(const mc_client_render_engine *o,

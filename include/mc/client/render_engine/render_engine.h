@@ -98,6 +98,12 @@ mc_client_render_engine_options mc_client_render_engine_default_options(void);
 mc_client_render_engine_status
 mc_client_render_engine_classes_create(const mc_client_render_engine_options *ge_options,
                                        mc_client_render_engine_classes **out);
+/* Actual ji literal <clinit>: a=false at1, once. Call before actual new ji
+ * allocation; ge/nw/font/device activity remains lazy. Native accounting is
+ * protected separately; all non-atomic source namespace fields stay exclusive. */
+mc_client_render_engine_status
+mc_client_render_engine_classes_active_use(mc_client_render_engine_classes *,
+                                           mc_client_render_engine_error *);
 mc_client_render_engine_status
 mc_client_render_engine_classes_retain(mc_client_render_engine_classes *);
 mc_client_render_engine_status
@@ -124,6 +130,16 @@ mc_client_render_engine_status mc_client_render_engine_construct(
     mc_game_settings *nullable_settings, mc_client_render_engine_error *);
 mc_client_render_engine_status mc_client_render_engine_retain(mc_client_render_engine *);
 mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_engine *);
+/* Strict final native occurrence for a containing owner. Another Engine hold,
+ * its constructing/resource/pending calls, or its actual final dependencies
+ * yield BUSY without consuming this slot. Nonfinal class occurrence drop uses
+ * the SAME atomic accounting and never retires unrelated shared class state.
+ * Actual final class storage remains guarded by every namespace child/call.
+ * No GL call, Pack/Settings release, source dispose or source field reset.
+ * Keep this Engine and native font provider exclusive; source namespace fields
+ * are not made generally thread safe by the class occurrence counter. */
+mc_client_render_engine_status mc_client_render_engine_retire(mc_client_render_engine **occurrence,
+                                                              mc_client_render_engine_error *);
 bool mc_client_render_engine_inspect(const mc_client_render_engine *,
                                      mc_client_render_engine_state *);
 

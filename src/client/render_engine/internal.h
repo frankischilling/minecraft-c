@@ -4,6 +4,7 @@
 #include "colorizer_internal.h"
 #include "mc/client/render_engine/render_engine.h"
 #include "nw_internal.h"
+#include <stdatomic.h>
 
 typedef struct mc_client_render_map_entry {
     uint32_t key;
@@ -72,7 +73,7 @@ typedef struct render_graphics {
 } render_graphics;
 
 struct mc_client_render_engine_classes {
-    size_t holds;
+    atomic_size_t holds; /* One canonical native occurrence account, initialized in factory. */
     mc_client_render_arena arena;
     bool ji_ready, ji_a;
     mc_client_render_engine_phase ge_phase;

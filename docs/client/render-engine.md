@@ -77,8 +77,8 @@ positive terminal inventories, class/Code origins and before/after product
 hashes are required. Captured helper classes, fonts and raster output are not
 public source payloads.
 
-The combined public matrix passes 389 Windows and 381 tests on each sanitized
-Linux compiler. Every preceding 376/348/348 case remains. Each compiler passes
+Earlier combined local qualification passed 389 Windows and 381 tests on each
+sanitized Linux compiler. Every preceding 376/348/348 case remained. Each compiler passed
 8,333 CPU, 223 device and 55 separate trace checks, plus nineteen controller
 controls normally and under Python optimization. Fresh original CPU comparisons
 match 4,096 ARGB pixels and ten glyph metrics on each host; ten original GL rows
@@ -102,10 +102,13 @@ reader report remains retained. Added exact JDK class/nest proof and the narrow
 library-tag correction change admission only; they are not new producer code.
 Original ZIP, private getRGB, cold-static and texture/GL scope remains separate.
 
-`MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON` compiles the two probes and adds four pure
-public Python tests. The CI proposal enables it on Windows and Linux without
-turning on supplied-original options or adding private resources. This later
-source/workflow/provenance proposal has no new native or hosted qualification.
+At checkpoint `37dc83f`, `MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON` compiles both
+probes in hosted Windows/GCC/Clang builds and passes four pure public Python
+tests per compiler. The complete hosted matrix passes 1,127 public/JDK cases;
+all 1,115 preceding cases remain. Supplied-original options stay off, and the
+four checks require no private resources. This later publication/policy result
+does not rerun the retained native producer or seven-row original attempt and
+does not include later normal-startup source proposals.
 The [observer README](../../tests/reference/client/resource_lookup_common/README.md)
 records capture, actual-origin and producer/policy boundaries.
 

@@ -27,7 +27,11 @@ typedef enum mc_game_settings_status {
     MC_GAME_SETTINGS_NATIVE_IO_ERROR,
     MC_GAME_SETTINGS_DIAGNOSTIC_FAILED,
     MC_GAME_SETTINGS_SOURCE_EXCEPTION,
-    MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY
+    MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY,
+    MC_GAME_SETTINGS_STATE_ERROR,
+    MC_GAME_SETTINGS_FILE_ERROR,
+    MC_GAME_SETTINGS_CLASS_ERRONEOUS,
+    MC_GAME_SETTINGS_THREAD_ERROR
 } mc_game_settings_status;
 
 typedef struct mc_game_settings_error {
@@ -76,8 +80,8 @@ typedef struct mc_game_settings_state {
     size_t binding_count;
     bool bindings_null;
     void *minecraft;           /* borrowed x; never dereferenced by this owner */
-    const char *options_path;  /* owned File-role N; NULL in noarg construction */
-    const void *file_identity; /* native File owner identity, not Java address */
+    const char *options_path;  /* legacy native path; typed N is in source_inspect */
+    const void *file_identity; /* actual typed File or legacy path identity, not Java address */
 } mc_game_settings_state;
 
 typedef enum mc_game_settings_source_exception {
@@ -240,9 +244,11 @@ mc_game_settings_set_binding_code(mc_game_settings *settings, int32_t index, int
                                   const mc_game_settings_diagnostics *diagnostics,
                                   mc_game_settings_binding_action_report *report,
                                   mc_game_settings_error *error);
-/* I/O calls retire their native streams before returning, separately from
- * source close. This releases only memory; no implicit save/flush/source close.
- * NULL *settings is harmless; BUSY preserves the owner. */
+/* Legacy path I/O retires its native streams before returning, separately from
+ * source close. Typed source construction/load can retain unfinished real
+ * reader/FIS/File/class prefixes; retirement releases those with guarded retry.
+ * No implicit save/flush/source close. NULL *settings is harmless; BUSY/error
+ * preserves the still-owned object. See construction.h for the typed lifetime. */
 mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
                                                 mc_game_settings_error *error);
 

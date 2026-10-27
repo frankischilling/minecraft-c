@@ -6,6 +6,7 @@
 typedef struct SDL_Window SDL_Window;
 
 typedef struct mc_client_display mc_client_display;
+typedef struct mc_client_event_port mc_client_event_port;
 typedef uint32_t mc_client_texture; /* Zero selects an untextured colored quad. */
 
 enum { MC_CLIENT_DEFAULT_WIDTH = 854, MC_CLIENT_DEFAULT_HEIGHT = 480 };
@@ -72,6 +73,10 @@ bool mc_client_display_create(const char *title, int width, int height, bool hid
  * No World, input routing, frame timing, background geometry or GUI ownership
  * is supplied by this module. */
 SDL_Window *mc_client_display_window(mc_client_display *display);
+/* Borrowed shared native SDL event port. All queue removal/pumping goes
+ * through events.h; do not pair an explicit pump with SDL_PollEvent's hidden
+ * pump or bypass retained payload/record ownership through SDL GET/flush. */
+mc_client_event_port *mc_client_display_event_port(mc_client_display *display);
 /* Make this owner's context current for another client renderer. The caller
  * must remain on the SDL main/video thread and leave default framebuffer
  * ownership with Display. This does not begin or validate a GUI frame. */

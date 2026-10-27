@@ -233,7 +233,20 @@ mc_client_statistics_owner_status mc_client_application_construct_statistics(
             else {
                 mc_player_session *session = app->session; /* k330, argument evaluation. */
                 const char *directory =
-                    mc_client_game_directory_path(app->game_directory); /* Z334. */
+                    mc_client_game_directory_path(app->diagnostic_game_directory);
+                /* The diagnostic path API is not a typed File adapter. Real
+                 * startup must deepen xi(File) rather than discard Z334. */
+                if (app->game_directory != NULL) {
+                    fail(&error, MC_CLIENT_STATISTICS_OWNER_UNIMPLEMENTED,
+                         "actual xi(File) typed argument adapter", "net/minecraft/client/Minecraft",
+                         "a", "()V", 337);
+                    app->stats_writer_constructing = false;
+                    if (out_report != NULL)
+                        *out_report = report;
+                    if (out != NULL)
+                        *out = error;
+                    return error.status;
+                }
                 if (mc_client_stats_writer_construct(app->stats_writer_retained, session, directory,
                                                      &report, &error.writer) != MC_CLIENT_STATS_OK)
                     fail(&error, MC_CLIENT_STATISTICS_OWNER_WRITER_FAILED,

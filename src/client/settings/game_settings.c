@@ -2,6 +2,8 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 #include "mc/client/settings/game_settings.h"
+#include "construction_internal.h"
+#include "source_access.h"
 
 #include "mc/client/settings/game_option.h"
 #include "mc/client/sound/sound_manager.h"
@@ -60,6 +62,8 @@ typedef struct retained_text {
     mc_game_settings_text view;
 } retained_text;
 
+typedef struct source_load_attempt source_load_attempt;
+
 struct mc_game_settings {
     arena memory;
     mc_game_settings_state state;
@@ -70,6 +74,16 @@ struct mc_game_settings {
     bool active;
     mc_sound_manager *sound_manager;
     bool sound_access, sound_saving;
+    bool source_mode;
+    mc_game_settings_source_phase source_phase;
+    mc_game_settings_classes *source_classes;
+    mc_java_file *source_N, *source_pending_file;
+    mc_key_binding *source_pending_binding;
+    source_load_attempt *source_attempt;
+    mc_game_settings_source_error source_failure, source_retirement;
+    mc_game_settings_report source_load_report;
+    size_t source_stores;
+    int32_t source_store_pcs[64], last_source_store, last_load_pc;
 };
 
 typedef struct file_input {
@@ -77,7 +91,21 @@ typedef struct file_input {
     size_t read;
     int system_error;
     bool limited, pending_error;
+    bool source;
+    mc_java_file_stream *stream;
+    mc_java_file_status file_status;
+    mc_java_file_error file_error;
 } file_input;
+
+struct source_load_attempt {
+    arena memory;
+    file_input input;
+    mc_java_reader *reader;
+};
+
+static mc_game_settings_status source_load(mc_game_settings *, const mc_game_settings_diagnostics *,
+                                           mc_game_settings_report *, mc_game_settings_error *);
+static mc_game_settings_status source_retire(mc_game_settings *, mc_game_settings_error *);
 
 static const uint16_t empty_string[] = {0};
 static const uint16_t default_pack[] = {'D', 'e', 'f', 'a', 'u', 'l', 't'};
@@ -211,6 +239,8 @@ static mc_game_settings_status admit(mc_game_settings *settings, mc_game_setting
         return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0, "GameSettings receiver");
     if (settings->active)
         return result(error, MC_GAME_SETTINGS_BUSY, 0, "GameSettings active operation");
+    if (settings->source_mode && settings->source_phase != MC_GAME_SETTINGS_SOURCE_READY)
+        return result(error, MC_GAME_SETTINGS_STATE_ERROR, 0, "actual kv source phase");
     return MC_GAME_SETTINGS_OK;
 }
 
@@ -236,6 +266,9 @@ static mc_game_settings_status admit_sound(mc_game_settings *settings,
                                            mc_game_settings_error *error) {
     if (settings == NULL || manager == NULL)
         return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0, "SoundManager settings access");
+    if (settings->source_mode && settings->source_phase != MC_GAME_SETTINGS_SOURCE_READY)
+        return result(error, MC_GAME_SETTINGS_STATE_ERROR, 0,
+                      "actual kv SoundManager source phase");
     if (settings->active &&
         (!settings->sound_access || settings->sound_saving || settings->sound_manager != manager))
         return result(error, MC_GAME_SETTINGS_BUSY, 0, "SoundManager settings access");
@@ -346,13 +379,9 @@ mc_game_settings_status mc_game_settings_set_named_binding(mc_game_settings *set
     return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
 }
 
-mc_game_settings_status mc_game_settings_set_binding_array(mc_game_settings *settings,
-                                                           mc_key_binding *const *bindings,
-                                                           size_t count, bool is_null,
-                                                           mc_game_settings_error *error) {
-    mc_game_settings_status status = admit(settings, error);
-    if (status != MC_GAME_SETTINGS_OK)
-        return status;
+static mc_game_settings_status binding_array_admitted(mc_game_settings *settings,
+                                                      mc_key_binding *const *bindings, size_t count,
+                                                      bool is_null, mc_game_settings_error *error) {
     if ((is_null && (bindings != NULL || count != 0)) ||
         (!is_null && count != 0 && bindings == NULL))
         return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0, "KeyBinding array");
@@ -376,6 +405,16 @@ mc_game_settings_status mc_game_settings_set_binding_array(mc_game_settings *set
     return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
 }
 
+mc_game_settings_status mc_game_settings_set_binding_array(mc_game_settings *settings,
+                                                           mc_key_binding *const *bindings,
+                                                           size_t count, bool is_null,
+                                                           mc_game_settings_error *error) {
+    mc_game_settings_status status = admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    return binding_array_admitted(settings, bindings, count, is_null, error);
+}
+
 mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
                                                 mc_game_settings_error *error) {
     if (settings == NULL)
@@ -383,6 +422,11 @@ mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
     if (*settings != NULL) {
         if ((*settings)->active)
             return result(error, MC_GAME_SETTINGS_BUSY, 0, "GameSettings active retirement");
+        if ((*settings)->source_mode) {
+            const mc_game_settings_status status = source_retire(*settings, error);
+            if (status != MC_GAME_SETTINGS_OK)
+                return status;
+        }
         release_arena(&(*settings)->memory);
         free(*settings);
         *settings = NULL;
@@ -390,9 +434,9 @@ mc_game_settings_status mc_game_settings_retire(mc_game_settings **settings,
     return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
 }
 
-mc_game_settings_status mc_game_settings_create_defaults(const mc_game_settings_profile *profile,
-                                                         mc_game_settings **out,
-                                                         mc_game_settings_error *error) {
+static mc_game_settings_status settings_allocate_native(const mc_game_settings_profile *profile,
+                                                        mc_game_settings **out,
+                                                        mc_game_settings_error *error) {
     mc_game_settings_profile selected = {MC_JAVA_READER_DEFAULT,
 #ifdef _WIN32
                                          MC_JAVA_WRITER_CRLF
@@ -411,40 +455,104 @@ mc_game_settings_status mc_game_settings_create_defaults(const mc_game_settings_
         return result(error, MC_GAME_SETTINGS_ALLOCATION_FAILED, 0, "GameSettings constructor");
     settings->memory.limit = MC_GAME_SETTINGS_OWNER_BYTES;
     settings->profile = selected;
-    settings->state.values = (mc_game_settings_values){.music_volume = 1.0f,
-                                                       .sound_volume = 1.0f,
-                                                       .mouse_sensitivity = 0.5f,
-                                                       .view_bobbing = true,
-                                                       .performance_mode = 1,
-                                                       .fancy_graphics = true,
-                                                       .ambient_occlusion = true,
-                                                       .difficulty = 2,
-                                                       .source_G = 1.0f,
-                                                       .source_H = 1.0f};
+    settings->state.values.texture_pack.is_null = true;
+    settings->state.values.last_server.is_null = true;
+    settings->state.bindings_null = true;
+    *out = settings;
+    return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+}
+
+static void source_store(mc_game_settings *settings, int32_t pc) {
+    if (settings->source_mode) {
+        settings->source_store_pcs[settings->source_stores++] = pc;
+        settings->last_source_store = pc;
+    }
+}
+
+static mc_game_settings_status construct_default_fields(mc_game_settings *settings,
+                                                        mc_game_settings_error *error) {
+#define STORE(field, value, pc)                                                                    \
+    do {                                                                                           \
+        settings->state.values.field = (value);                                                    \
+        source_store(settings, pc);                                                                \
+    } while (0)
+    STORE(music_volume, 1.0f, 6);
+    STORE(sound_volume, 1.0f, 11);
+    STORE(mouse_sensitivity, 0.5f, 17);
+    STORE(invert_mouse, false, 22);
+    STORE(render_distance, 0, 27);
+    STORE(view_bobbing, true, 32);
+    STORE(anaglyph, false, 37);
+    STORE(advanced_opengl, false, 42);
+    STORE(performance_mode, 1, 47);
+    STORE(fancy_graphics, true, 52);
+    STORE(ambient_occlusion, true, 57);
     settings->state.values.texture_pack = (mc_game_settings_text){default_pack, 7u, false};
-    settings->state.values.last_server = (mc_game_settings_text){empty_string, 0, false};
+    source_store(settings, 63);
     static const int32_t codes[] = {17, 30, 31, 32, 57, 18, 16, 20, 33, 42};
-    mc_game_settings_status status = MC_GAME_SETTINGS_OK;
-    for (size_t i = 0; status == MC_GAME_SETTINGS_OK && i < MC_GAME_SETTINGS_NAMED_BINDINGS; ++i) {
+    for (size_t index = 0; index < MC_GAME_SETTINGS_NAMED_BINDINGS; ++index) {
         mc_key_binding *binding = allocate(&settings->memory, sizeof(*binding));
         if (binding == NULL) {
-            status = settings->memory.failure;
-            break;
+            if (settings->source_mode)
+                settings->source_failure.site = (mc_game_settings_source_site){
+                    "kv", "<init>", "(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V",
+                    67 + 15 * (int32_t)index};
+            return result(error, settings->memory.failure, 0,
+                          "GameSettings default KeyBinding owner");
         }
-        *binding = (mc_key_binding){settings->owned_bindings, default_binding_names[i], codes[i]};
+        /* Actual raw qb then immutable name6/code11 constructor role. The
+         * existing static UTF16 literals are the SAME legacy identities. */
+        *binding = (mc_key_binding){.next = settings->owned_bindings, .name = {.is_null = true}};
         settings->owned_bindings = binding;
         ++settings->binding_owners;
-        settings->state.named[i] = binding;
+        settings->source_pending_binding = settings->source_mode ? binding : NULL;
+        binding->name = default_binding_names[index];
+        binding->code = codes[index];
+        settings->state.named[index] = binding;
+        settings->source_pending_binding = NULL;
+        source_store(settings, 78 + 15 * (int32_t)index);
     }
-    /* w differs from the m..v field initialization order. */
     mc_key_binding *bindings[MC_GAME_SETTINGS_NAMED_BINDINGS] = {
         settings->state.named[0], settings->state.named[1], settings->state.named[2],
         settings->state.named[3], settings->state.named[4], settings->state.named[9],
         settings->state.named[6], settings->state.named[5], settings->state.named[7],
         settings->state.named[8]};
-    if (status == MC_GAME_SETTINGS_OK)
-        status = mc_game_settings_set_binding_array(settings, bindings,
-                                                    MC_GAME_SETTINGS_NAMED_BINDINGS, false, error);
+    const mc_game_settings_status status =
+        binding_array_admitted(settings, bindings, MC_GAME_SETTINGS_NAMED_BINDINGS, false, error);
+    if (status != MC_GAME_SETTINGS_OK) {
+        if (settings->source_mode)
+            settings->source_failure.site = (mc_game_settings_source_site){
+                "kv", "<init>", "(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V", 219};
+        return status;
+    }
+    source_store(settings, 296);
+    STORE(difficulty, 2, 301);
+    STORE(hide_gui, false, 306);
+    STORE(third_person_view, false, 311);
+    STORE(show_debug_info, false, 316);
+    settings->state.values.last_server = (mc_game_settings_text){empty_string, 0, false};
+    source_store(settings, 322);
+    STORE(source_D, false, 327);
+    STORE(smooth_camera, false, 332);
+    STORE(debug_camera, false, 337);
+    STORE(source_G, 1.0f, 342);
+    STORE(source_H, 1.0f, 347);
+    STORE(gui_scale, 0, 352);
+#undef STORE
+    return MC_GAME_SETTINGS_OK;
+}
+
+mc_game_settings_status mc_game_settings_create_defaults(const mc_game_settings_profile *profile,
+                                                         mc_game_settings **out,
+                                                         mc_game_settings_error *error) {
+    if (out == NULL)
+        return result(error, MC_GAME_SETTINGS_INVALID_ARGUMENT, 0,
+                      "GameSettings constructor profile");
+    mc_game_settings *settings = NULL;
+    mc_game_settings_status status = settings_allocate_native(profile, &settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    status = construct_default_fields(settings, error);
     if (status != MC_GAME_SETTINGS_OK) {
         mc_game_settings_retire(&settings, NULL);
         return result(error, status, 0, "GameSettings default owners");
@@ -453,9 +561,34 @@ mc_game_settings_status mc_game_settings_create_defaults(const mc_game_settings_
     return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
 }
 
-static mc_game_settings_status emit(const mc_game_settings_diagnostics *diagnostics,
+static mc_game_settings_status emit(mc_game_settings *settings,
+                                    const mc_game_settings_diagnostics *diagnostics,
                                     mc_game_settings_diagnostic event,
                                     mc_game_settings_error *error) {
+    if (settings->source_mode) {
+        settings->source_failure.diagnostic_message = event.message;
+        settings->source_failure.source_exception = event.exception;
+        if (event.kind == MC_GAME_SETTINGS_BAD_OPTION)
+            settings->source_failure.exception_class =
+                event.exception == MC_GAME_SETTINGS_SOURCE_NUMBER_FORMAT
+                    ? "java/lang/NumberFormatException"
+                : event.exception == MC_GAME_SETTINGS_SOURCE_MISSING_SPLIT_VALUE
+                    ? "java/lang/ArrayIndexOutOfBoundsException"
+                    : "java/lang/NullPointerException";
+        settings->source_failure.line = (mc_game_settings_text){.is_null = true};
+        const mc_game_settings_status retained =
+            copy_text(settings, event.line, &settings->source_failure.line, false);
+        if (retained != MC_GAME_SETTINGS_OK)
+            return result(error, retained, 0, "actual kv native diagnostic line retention");
+        settings->source_failure.line_number = event.line_number;
+        settings->last_load_pc = event.kind == MC_GAME_SETTINGS_BAD_OPTION ? 477 : 496;
+        const mc_game_settings_status status =
+            settings_class_emit(settings->source_classes, &event, &settings->source_failure);
+        if (status != MC_GAME_SETTINGS_OK) {
+            *error = settings->source_failure.native;
+            return status;
+        }
+    }
     if (diagnostics == NULL || diagnostics->emit == NULL)
         return MC_GAME_SETTINGS_OK;
     mc_game_settings_error cause = {0};
@@ -466,20 +599,40 @@ static mc_game_settings_status emit(const mc_game_settings_diagnostics *diagnost
     return MC_GAME_SETTINGS_OK;
 }
 
-static mc_game_settings_status caught(const mc_game_settings_diagnostics *diagnostics,
+static mc_game_settings_status caught(mc_game_settings *settings,
+                                      const mc_game_settings_diagnostics *diagnostics,
                                       mc_game_settings_report *report, bool saving,
                                       mc_game_settings_source_exception exception, int system_error,
                                       mc_game_settings_error *error) {
     report->outer_exception_caught = true;
     report->outer_exception = exception;
     report->source_system_error = system_error;
+    if (settings->source_mode)
+        settings->source_failure.exception_class =
+            exception == MC_GAME_SETTINGS_SOURCE_FILE_IO
+                ? (settings->last_load_pc == 23 ? "java/io/FileNotFoundException"
+                                                : "java/io/IOException")
+                : "java/lang/NullPointerException";
     const mc_game_settings_diagnostic event = {
         .kind = saving ? MC_GAME_SETTINGS_SAVE_FAILED : MC_GAME_SETTINGS_LOAD_FAILED,
         .message = saving ? "Failed to save options" : "Failed to load options",
         .exception = exception,
         .line = {.is_null = true},
         .system_error = system_error};
-    return emit(diagnostics, event, error);
+    const mc_game_settings_status status = emit(settings, diagnostics, event, error);
+    if (settings->source_mode && status == MC_GAME_SETTINGS_OK) {
+        settings->last_load_pc = 500;
+        if (settings->source_failure.exception_class == NULL)
+            settings->source_failure.exception_class = "java/io/IOException";
+        settings_source_error(&settings->source_failure, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY,
+                              "actual Exception.printStackTrace presentation", "kv", "a", "()V",
+                              500);
+        settings->source_failure.child =
+            (mc_game_settings_source_site){"java/lang/Exception", "printStackTrace", "()V", -1};
+        *error = settings->source_failure.native;
+        return error->status;
+    }
+    return status;
 }
 
 /* Native filename conversion is not the FileReader content charset. */
@@ -570,6 +723,37 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *bytes, size_
                                             size_t *count) {
     file_input *input = context;
     *count = 0;
+    if (input->source) {
+        if (input->file_status != MC_JAVA_FILE_OK)
+            return MC_JAVA_PROPERTIES_IO_ERROR;
+        if (input->read >= MC_GAME_SETTINGS_MAX_INPUT_BYTES) {
+            int byte = -1;
+            input->file_status =
+                mc_java_file_stream_read_byte(input->stream, &byte, &input->file_error);
+            if (input->file_status != MC_JAVA_FILE_OK) {
+                input->system_error = input->file_error.system_error;
+                return MC_JAVA_PROPERTIES_IO_ERROR;
+            }
+            if (byte < 0)
+                return MC_JAVA_PROPERTIES_OK;
+            ++input->read;
+            input->limited = true;
+            return MC_JAVA_PROPERTIES_IO_ERROR;
+        }
+        const size_t room = MC_GAME_SETTINGS_MAX_INPUT_BYTES - input->read;
+        if (capacity > room)
+            capacity = room;
+        mc_java_file_read observed = {0};
+        input->file_status =
+            mc_java_file_stream_read(input->stream, bytes, capacity, &observed, &input->file_error);
+        if (input->file_status != MC_JAVA_FILE_OK) {
+            input->system_error = input->file_error.system_error;
+            return MC_JAVA_PROPERTIES_IO_ERROR;
+        }
+        input->read += observed.count;
+        *count = observed.count;
+        return MC_JAVA_PROPERTIES_OK;
+    }
     if (input->pending_error)
         return MC_JAVA_PROPERTIES_IO_ERROR;
     if (input->read >= MC_GAME_SETTINGS_MAX_INPUT_BYTES) {
@@ -601,6 +785,11 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *bytes, size_
 
 static mc_java_reader_status close_input(void *context) {
     file_input *input = context;
+    if (input->source) {
+        input->file_status = mc_java_file_stream_source_close(input->stream, &input->file_error);
+        input->system_error = input->file_error.system_error;
+        return input->file_status == MC_JAVA_FILE_OK ? MC_JAVA_READER_OK : MC_JAVA_READER_IO_ERROR;
+    }
     if (input->file == NULL)
         return MC_JAVA_READER_OK;
     FILE *file = input->file;
@@ -614,7 +803,24 @@ static mc_java_reader_status close_input(void *context) {
 }
 
 static bool input_ready(void *context) {
-    const file_input *input = context;
+    file_input *input = context;
+    if (input->source) {
+        if (input->file_status != MC_JAVA_FILE_OK)
+            return false;
+        size_t available = 0;
+        mc_java_file_error cause = {0};
+        const mc_java_file_status status =
+            mc_java_file_stream_available(input->stream, &available, &cause);
+        if (status == MC_JAVA_FILE_IO_ERROR)
+            return false; /* StreamDecoder readiness swallows this IOException. */
+        if (status != MC_JAVA_FILE_OK) {
+            input->file_status = status;
+            input->file_error = cause;
+            input->system_error = cause.system_error;
+            return false;
+        }
+        return available != 0;
+    }
     if (input->file == NULL || input->pending_error)
         return false;
 #ifdef _WIN32
@@ -789,6 +995,84 @@ static mc_game_settings_status apply_line(mc_game_settings *settings, mc_game_se
     return MC_GAME_SETTINGS_OK;
 }
 
+static mc_game_settings_status
+read_options_lines(mc_game_settings *settings, mc_java_reader *reader, file_input *input,
+                   arena *temporary, const mc_game_settings_diagnostics *diagnostics,
+                   mc_game_settings_report *report, mc_game_settings_error *error) {
+    mc_game_settings_status status = MC_GAME_SETTINGS_OK;
+    mc_java_reader_status read_status;
+    for (;;) {
+        const mc_java_reader_line *line = NULL;
+        if (settings->source_mode)
+            settings->last_load_pc = 34;
+        read_status = mc_java_reader_read_line(reader, &line);
+        if (input->source)
+            settings->source_failure.file = input->file_error;
+        if (input->source && input->file_status != MC_JAVA_FILE_OK &&
+            input->file_status != MC_JAVA_FILE_IO_ERROR) {
+            settings->source_failure.file = input->file_error;
+            status = result(error, MC_GAME_SETTINGS_FILE_ERROR, input->system_error,
+                            "actual kv FileInputStream native policy/control");
+            break;
+        }
+        if (read_status != MC_JAVA_READER_OK) {
+            if (input->limited || temporary->failure != MC_GAME_SETTINGS_OK)
+                status = result(error, input->limited ? MC_GAME_SETTINGS_LIMIT : temporary->failure,
+                                0, "GameSettings input budget");
+            else if (read_status == MC_JAVA_READER_IO_ERROR)
+                status = caught(settings, diagnostics, report, false,
+                                MC_GAME_SETTINGS_SOURCE_FILE_IO, input->system_error, error);
+            else
+                status =
+                    result(error,
+                           read_status == MC_JAVA_READER_LIMIT ? MC_GAME_SETTINGS_LIMIT
+                                                               : MC_GAME_SETTINGS_INVALID_ARGUMENT,
+                           0, "GameSettings readLine");
+            break;
+        }
+        if (line == NULL) {
+            report->source_close_reached = true;
+            if (settings->source_mode)
+                settings->last_load_pc = 484;
+            const mc_java_reader_status closed = mc_java_reader_close(reader);
+            if (input->source)
+                settings->source_failure.file = input->file_error;
+            if (input->source && input->file_status != MC_JAVA_FILE_OK &&
+                input->file_status != MC_JAVA_FILE_IO_ERROR) {
+                settings->source_failure.file = input->file_error;
+                status = result(error, MC_GAME_SETTINGS_FILE_ERROR, input->system_error,
+                                "actual kv source-close native policy/control");
+            } else if (closed != MC_JAVA_READER_OK)
+                status = caught(settings, diagnostics, report, false,
+                                MC_GAME_SETTINGS_SOURCE_FILE_IO, input->system_error, error);
+            break;
+        }
+        ++report->lines_read;
+        if (line->length > MC_GAME_SETTINGS_MAX_TEXT_UNITS) {
+            status = result(error, MC_GAME_SETTINGS_LIMIT, 0, "GameSettings line units");
+            break;
+        }
+        const mc_game_settings_text text = {line->units, line->length, false};
+        mc_game_settings_source_exception exception = MC_GAME_SETTINGS_SOURCE_NONE;
+        status = apply_line(settings, text, &exception);
+        if (status != MC_GAME_SETTINGS_OK) {
+            result(error, status, 0, "GameSettings option native resource");
+            break;
+        }
+        if (exception != MC_GAME_SETTINGS_SOURCE_NONE) {
+            ++report->bad_options;
+            status = emit(settings, diagnostics,
+                          (mc_game_settings_diagnostic){MC_GAME_SETTINGS_BAD_OPTION,
+                                                        "Skipping bad option: ", exception,
+                                                        report->lines_read, text, 0},
+                          error);
+            if (status != MC_GAME_SETTINGS_OK)
+                break;
+        }
+    }
+    return status;
+}
+
 mc_game_settings_status mc_game_settings_load(mc_game_settings *settings,
                                               const mc_game_settings_diagnostics *diagnostics,
                                               mc_game_settings_report *out,
@@ -796,12 +1080,15 @@ mc_game_settings_status mc_game_settings_load(mc_game_settings *settings,
     mc_game_settings_status status = admit(settings, error);
     if (status != MC_GAME_SETTINGS_OK)
         return status;
+    if (settings->source_mode)
+        return source_load(settings, diagnostics, out, error);
     settings->active = true;
     mc_game_settings_report report = {0};
     arena temporary = {.limit = MC_GAME_SETTINGS_READER_BYTES};
     file_input input = {0};
     if (settings->state.options_path == NULL) {
-        status = caught(diagnostics, &report, false, MC_GAME_SETTINGS_SOURCE_NULL_FILE, 0, error);
+        status = caught(settings, diagnostics, &report, false, MC_GAME_SETTINGS_SOURCE_NULL_FILE, 0,
+                        error);
         goto cleanup;
     }
     status = open_reader_file(settings->state.options_path, &input.file, &report.file_absent,
@@ -809,7 +1096,7 @@ mc_game_settings_status mc_game_settings_load(mc_game_settings *settings,
     if (status != MC_GAME_SETTINGS_OK || report.file_absent)
         goto cleanup;
     if (input.file == NULL) {
-        status = caught(diagnostics, &report, false, MC_GAME_SETTINGS_SOURCE_FILE_IO,
+        status = caught(settings, diagnostics, &report, false, MC_GAME_SETTINGS_SOURCE_FILE_IO,
                         input.system_error, error);
         if (report.native_cleanup_failed && status == MC_GAME_SETTINGS_OK)
             status =
@@ -834,54 +1121,7 @@ mc_game_settings_status mc_game_settings_load(mc_game_settings *settings,
                         0, "GameSettings FileReader admission");
         goto cleanup;
     }
-    for (;;) {
-        const mc_java_reader_line *line = NULL;
-        read_status = mc_java_reader_read_line(reader, &line);
-        if (read_status != MC_JAVA_READER_OK) {
-            if (input.limited || temporary.failure != MC_GAME_SETTINGS_OK)
-                status = result(error, input.limited ? MC_GAME_SETTINGS_LIMIT : temporary.failure,
-                                0, "GameSettings input budget");
-            else if (read_status == MC_JAVA_READER_IO_ERROR)
-                status = caught(diagnostics, &report, false, MC_GAME_SETTINGS_SOURCE_FILE_IO,
-                                input.system_error, error);
-            else
-                status =
-                    result(error,
-                           read_status == MC_JAVA_READER_LIMIT ? MC_GAME_SETTINGS_LIMIT
-                                                               : MC_GAME_SETTINGS_INVALID_ARGUMENT,
-                           0, "GameSettings readLine");
-            break;
-        }
-        if (line == NULL) {
-            report.source_close_reached = true;
-            if (mc_java_reader_close(reader) != MC_JAVA_READER_OK)
-                status = caught(diagnostics, &report, false, MC_GAME_SETTINGS_SOURCE_FILE_IO,
-                                input.system_error, error);
-            break;
-        }
-        ++report.lines_read;
-        if (line->length > MC_GAME_SETTINGS_MAX_TEXT_UNITS) {
-            status = result(error, MC_GAME_SETTINGS_LIMIT, 0, "GameSettings line units");
-            break;
-        }
-        const mc_game_settings_text text = {line->units, line->length, false};
-        mc_game_settings_source_exception exception = MC_GAME_SETTINGS_SOURCE_NONE;
-        status = apply_line(settings, text, &exception);
-        if (status != MC_GAME_SETTINGS_OK) {
-            result(error, status, 0, "GameSettings option native resource");
-            break;
-        }
-        if (exception != MC_GAME_SETTINGS_SOURCE_NONE) {
-            ++report.bad_options;
-            status = emit(diagnostics,
-                          (mc_game_settings_diagnostic){MC_GAME_SETTINGS_BAD_OPTION,
-                                                        "Skipping bad option: ", exception,
-                                                        report.lines_read, text, 0},
-                          error);
-            if (status != MC_GAME_SETTINGS_OK)
-                break;
-        }
-    }
+    status = read_options_lines(settings, reader, &input, &temporary, diagnostics, &report, error);
 cleanup:
     report.bytes_read = input.read;
     if (input.file != NULL) {
@@ -971,8 +1211,15 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
     mc_game_settings_report report = {0};
     mc_java_writer *writer = NULL;
     uint16_t *scratch = NULL;
+    if (settings->source_mode) {
+        settings_source_error(&settings->source_failure, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY,
+                              "actual typed kv FileWriter constructor", "kv", "b", "()V", 12);
+        return result(error, MC_GAME_SETTINGS_UNIMPLEMENTED_DEPENDENCY, 0,
+                      "actual typed kv FileWriter constructor");
+    }
     if (settings->state.options_path == NULL) {
-        status = caught(diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_NULL_FILE, 0, error);
+        status = caught(settings, diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_NULL_FILE, 0,
+                        error);
         goto cleanup;
     }
     const mc_java_writer_profile profile = {settings->profile.charset, MC_JAVA_WRITER_PRINT,
@@ -985,7 +1232,7 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
         report.native_cleanup_system_error = cause.native_cleanup_system_error;
         if (writer_status == MC_JAVA_WRITER_IO_ERROR ||
             writer_status == MC_JAVA_WRITER_INTERRUPTED_IO)
-            status = caught(diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_FILE_IO,
+            status = caught(settings, diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_FILE_IO,
                             cause.system_error, error);
         else
             status = writer_native(writer_status, cause, error);
@@ -1057,7 +1304,7 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
             }
         } else {
             if (settings->state.bindings_null) {
-                status = caught(diagnostics, &report, true,
+                status = caught(settings, diagnostics, &report, true,
                                 MC_GAME_SETTINGS_SOURCE_NULL_BINDING_ARRAY, 0, error);
                 break;
             }
@@ -1071,8 +1318,8 @@ static mc_game_settings_status save_admitted(mc_game_settings *settings,
             }
             const mc_key_binding *binding = settings->state.bindings[binding_index];
             if (binding == NULL) {
-                status = caught(diagnostics, &report, true, MC_GAME_SETTINGS_SOURCE_NULL_BINDING, 0,
-                                error);
+                status = caught(settings, diagnostics, &report, true,
+                                MC_GAME_SETTINGS_SOURCE_NULL_BINDING, 0, error);
                 break;
             }
             appended = append_ascii(&line, "key_") && append_text(&line, binding->name) &&
@@ -1443,4 +1690,313 @@ mc_game_settings_status mc_game_settings_create_file(
     }
     *out = settings;
     return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+}
+
+mc_game_settings_status mc_game_settings_source_allocate(mc_game_settings_classes *classes,
+                                                         const mc_game_settings_profile *profile,
+                                                         mc_game_settings **out,
+                                                         mc_game_settings_source_error *error) {
+    mc_game_settings_source_error local = {0};
+    mc_game_settings_source_error *e = error == NULL ? &local : error;
+    *e = (mc_game_settings_source_error){0};
+    if (out == NULL)
+        return settings_source_error(e, MC_GAME_SETTINGS_INVALID_ARGUMENT,
+                                     "actual new kv native output", NULL, NULL, NULL, -1);
+    mc_game_settings_status status = mc_game_settings_classes_active_use(classes, e);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    status = mc_game_settings_classes_retain(classes, e);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    mc_game_settings *settings = NULL;
+    status = settings_allocate_native(profile, &settings, &e->native);
+    if (status != MC_GAME_SETTINGS_OK) {
+        mc_game_settings_classes *occurrence = classes;
+        (void)mc_game_settings_classes_release(&occurrence, NULL);
+        return status;
+    }
+    settings->source_mode = true;
+    settings->source_classes = classes;
+    settings->source_failure.site.pc = -1;
+    settings->source_failure.line.is_null = true;
+    settings->source_retirement.site.pc = -1;
+    *out = settings;
+    return MC_GAME_SETTINGS_OK;
+}
+
+static mc_game_settings_status source_attempt_dispose(mc_game_settings *settings,
+                                                      mc_game_settings_error *error) {
+    source_load_attempt *attempt = settings->source_attempt;
+    if (attempt == NULL)
+        return MC_GAME_SETTINGS_OK;
+    /* CoreReader borrows the actual FIS through its full native retirement.
+     * Persistent diagnostics were copied into the SAME Settings arena; retire
+     * decoder/line storage first, then release the real descriptor occurrence.
+     * Failed stream cleanup keeps its owner/context for guarded retry. */
+    attempt->reader = NULL;
+    release_arena(&attempt->memory);
+    mc_java_file_stream_state before = {0};
+    mc_java_file_error cause = {0};
+    if (attempt->input.stream != NULL &&
+        mc_java_file_stream_read_state(attempt->input.stream, &before, &cause) == MC_JAVA_FILE_OK &&
+        before.native_open)
+        settings->source_load_report.native_additional_close = true;
+    const mc_java_file_status status = mc_java_file_stream_release(&attempt->input.stream, &cause);
+    if (status != MC_JAVA_FILE_OK) {
+        settings->source_retirement.file = cause;
+        settings->source_load_report.native_cleanup_failed = true;
+        settings->source_load_report.native_cleanup_system_error = cause.system_error;
+        return result(error,
+                      status == MC_JAVA_FILE_BUSY ? MC_GAME_SETTINGS_BUSY
+                                                  : MC_GAME_SETTINGS_FILE_ERROR,
+                      cause.system_error, "actual kv native FIS retirement");
+    }
+    return MC_GAME_SETTINGS_OK;
+}
+
+static void source_attempt_free(mc_game_settings *settings) {
+    source_load_attempt *attempt = settings->source_attempt;
+    if (attempt != NULL) {
+        release_arena(&attempt->memory);
+        free(attempt);
+        settings->source_attempt = NULL;
+    }
+}
+
+static mc_game_settings_status source_load(mc_game_settings *settings,
+                                           const mc_game_settings_diagnostics *diagnostics,
+                                           mc_game_settings_report *out,
+                                           mc_game_settings_error *error) {
+    mc_game_settings_error local = {0};
+    if (error == NULL)
+        error = &local;
+    if (settings->source_attempt != NULL)
+        return result(error, MC_GAME_SETTINGS_BUSY, 0, "actual kv retained unfinished reader");
+    const bool already_active = settings->active;
+    settings->active = true;
+    settings->source_load_report = (mc_game_settings_report){0};
+    mc_game_settings_report *report = &settings->source_load_report;
+    mc_game_settings_status status = MC_GAME_SETTINGS_OK;
+    bool exists = false;
+    settings->last_load_pc = 4;
+    const mc_java_file_status file_status =
+        mc_java_file_exists(settings->source_N, &exists, &settings->source_failure.file);
+    if (file_status != MC_JAVA_FILE_OK) {
+        status =
+            result(error, MC_GAME_SETTINGS_FILE_ERROR, settings->source_failure.file.system_error,
+                   "actual kv N.exists native File operation");
+        goto finished;
+    }
+    if (!exists) {
+        report->file_absent = true;
+        settings->last_load_pc = 10;
+        goto finished;
+    }
+    settings->last_load_pc = 11;
+    settings->source_attempt = calloc(1, sizeof(*settings->source_attempt));
+    if (settings->source_attempt == NULL) {
+        status = result(error, MC_GAME_SETTINGS_ALLOCATION_FAILED, 0,
+                        "actual kv BufferedReader native attempt allocation");
+        goto finished;
+    }
+    source_load_attempt *attempt = settings->source_attempt;
+    attempt->memory.limit = MC_GAME_SETTINGS_READER_BYTES;
+    attempt->input.source = true;
+    settings->last_load_pc = 15;
+    /* FileReader23 owns the actual FIS. The native attempt records the earlier
+     * raw BufferedReader/FileReader allocations without IO or a READY child. */
+    settings->last_load_pc = 23;
+    attempt->input.file_status = mc_java_file_stream_allocate(
+        settings->source_classes->files, &attempt->input.stream, &attempt->input.file_error);
+    if (attempt->input.file_status == MC_JAVA_FILE_OK)
+        attempt->input.file_status = mc_java_file_stream_construct(
+            attempt->input.stream, settings->source_N, &attempt->input.file_error);
+    settings->source_failure.file = attempt->input.file_error;
+    if (attempt->input.file_status != MC_JAVA_FILE_OK) {
+        if (attempt->input.file_status == MC_JAVA_FILE_IO_ERROR)
+            status = caught(settings, diagnostics, report, false, MC_GAME_SETTINGS_SOURCE_FILE_IO,
+                            attempt->input.file_error.system_error, error);
+        else
+            status =
+                result(error, MC_GAME_SETTINGS_FILE_ERROR, attempt->input.file_error.system_error,
+                       "actual kv FileReader/FIS native constructor");
+        goto finished;
+    }
+    report->source_opened = true;
+    const mc_java_properties_allocator allocator = {&attempt->memory, allocate};
+    const mc_java_reader_input input = {{&attempt->input, read_bytes}, input_ready, close_input};
+    const mc_java_reader_status reader_status =
+        mc_java_reader_create(&allocator, &input, settings->profile.charset, &attempt->reader);
+    if (reader_status != MC_JAVA_READER_OK) {
+        status = result(error,
+                        attempt->memory.failure != MC_GAME_SETTINGS_OK ? attempt->memory.failure
+                        : reader_status == MC_JAVA_READER_UNSUPPORTED_CHARSET
+                            ? MC_GAME_SETTINGS_UNSUPPORTED_CHARSET
+                        : reader_status == MC_JAVA_READER_ALLOCATION_FAILED
+                            ? MC_GAME_SETTINGS_ALLOCATION_FAILED
+                            : MC_GAME_SETTINGS_INVALID_ARGUMENT,
+                        0, "actual kv FileReader/BufferedReader native construction");
+        goto finished;
+    }
+    settings->last_load_pc = 26;
+    status = read_options_lines(settings, attempt->reader, &attempt->input, &attempt->memory,
+                                diagnostics, report, error);
+finished:
+    if (settings->source_attempt != NULL) {
+        report->bytes_read = settings->source_attempt->input.read;
+        if (status == MC_GAME_SETTINGS_OK) {
+            status = source_attempt_dispose(settings, error);
+            if (status == MC_GAME_SETTINGS_OK)
+                source_attempt_free(settings);
+        }
+    }
+    if (status != MC_GAME_SETTINGS_OK) {
+        settings->source_failure.native = *error;
+        if (settings->source_failure.site.class_name == NULL)
+            settings->source_failure.site =
+                (mc_game_settings_source_site){"kv", "a", "()V", settings->last_load_pc};
+    }
+    settings->active = already_active;
+    if (out != NULL)
+        *out = *report;
+    if (status == MC_GAME_SETTINGS_OK)
+        result(error, status, 0, NULL);
+    return status;
+}
+
+mc_game_settings_status mc_game_settings_source_construct(
+    mc_game_settings *settings, client_application *minecraft, mc_java_file *directory,
+    const mc_game_settings_diagnostics *diagnostics, mc_game_settings_source_error *out) {
+    mc_game_settings_source_error local = {0};
+    mc_game_settings_source_error *e = out == NULL ? &local : out;
+    *e = (mc_game_settings_source_error){0};
+    if (settings == NULL || !settings->source_mode || settings->active ||
+        settings->source_phase != MC_GAME_SETTINGS_SOURCE_RAW)
+        return settings_source_error(e, MC_GAME_SETTINGS_STATE_ERROR,
+                                     "one-shot actual kv constructor admission", NULL, NULL, NULL,
+                                     -1);
+    settings->active = true;
+    settings->source_phase = MC_GAME_SETTINGS_SOURCE_CONSTRUCTING;
+    mc_game_settings_source_error *failure = &settings->source_failure;
+    mc_game_settings_status status = construct_default_fields(settings, &failure->native);
+    if (status != MC_GAME_SETTINGS_OK)
+        goto failed;
+    settings->state.minecraft = minecraft; /* actual x357, nullable */
+    source_store(settings, 357);
+    status = mc_java_file_allocate(settings->source_classes->files, &settings->source_pending_file,
+                                   &failure->file) == MC_JAVA_FILE_OK
+                 ? MC_GAME_SETTINGS_OK
+                 : MC_GAME_SETTINGS_FILE_ERROR;
+    if (status != MC_GAME_SETTINGS_OK) {
+        settings_source_error(failure, status, "actual kv new options File", "kv", "<init>",
+                              "(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V", 361);
+        goto failed;
+    }
+    mc_world_info_name *name = NULL;
+    status = settings_class_options_name(settings->source_classes, &name, failure);
+    if (status != MC_GAME_SETTINGS_OK)
+        goto failed;
+    if (directory != NULL && mc_java_file_namespace(directory) != settings->source_classes->files) {
+        status = settings_source_error(failure, MC_GAME_SETTINGS_STATE_ERROR,
+                                       "actual kv parent File native namespace mismatch", NULL,
+                                       NULL, NULL, -1);
+        goto failed;
+    }
+    if (mc_java_file_construct_child(settings->source_pending_file, directory, name,
+                                     &failure->file) != MC_JAVA_FILE_OK) {
+        status = settings_source_error(failure, MC_GAME_SETTINGS_FILE_ERROR,
+                                       "actual kv File(File,String) constructor", "kv", "<init>",
+                                       "(Lnet/minecraft/client/Minecraft;Ljava/io/File;)V", 368);
+        goto failed;
+    }
+    settings->source_N = settings->source_pending_file;
+    settings->source_pending_file = NULL;
+    settings->state.file_identity = settings->source_N;
+    source_store(settings, 371);
+    status = source_load(settings, diagnostics, NULL, &failure->native); /* actual virtual375 */
+    if (status != MC_GAME_SETTINGS_OK)
+        goto failed;
+    settings->source_phase = MC_GAME_SETTINGS_SOURCE_READY;
+    settings->active = false;
+    return MC_GAME_SETTINGS_OK;
+failed:
+    settings->source_phase = MC_GAME_SETTINGS_SOURCE_FAILED;
+    settings->active = false;
+    *e = *failure;
+    return status;
+}
+
+bool mc_game_settings_source_inspect(const mc_game_settings *settings,
+                                     mc_game_settings_source_state *out) {
+    if (settings == NULL || out == NULL || !settings->source_mode)
+        return false;
+    *out = (mc_game_settings_source_state){
+        .phase = settings->source_phase,
+        .N = settings->source_N,
+        .pending_file = settings->source_pending_file,
+        .pending_stream =
+            settings->source_attempt == NULL ? NULL : settings->source_attempt->input.stream,
+        .classes = settings->source_classes,
+        .failure = &settings->source_failure,
+        .retirement = &settings->source_retirement,
+        .load_report = &settings->source_load_report,
+        .source_stores = settings->source_stores,
+        .stores = settings->source_store_pcs,
+        .last_store_pc = settings->last_source_store,
+        .last_load_pc = settings->last_load_pc,
+        .active = settings->active,
+        .reader_present =
+            settings->source_attempt != NULL && settings->source_attempt->reader != NULL};
+    return true;
+}
+
+mc_game_option_status mc_game_settings_source_value_key(const mc_game_settings *settings,
+                                                        const mc_game_option *option, int32_t index,
+                                                        mc_game_settings_text *out, bool *handled) {
+    if (settings == NULL || out == NULL || handled == NULL)
+        return MC_GAME_OPTION_INVALID_ARGUMENT;
+    *handled = settings->source_mode;
+    if (!*handled)
+        return MC_GAME_OPTION_OK;
+    mc_game_option_info info;
+    if (option == NULL)
+        return MC_GAME_OPTION_SOURCE_NULL_OPTION;
+    if (!mc_game_option_read(option, &info) ||
+        settings->source_phase != MC_GAME_SETTINGS_SOURCE_READY)
+        return MC_GAME_OPTION_INVALID_ARGUMENT;
+    return settings_class_value_key(settings->source_classes, info.id, index, out);
+}
+
+static mc_game_settings_status source_retire(mc_game_settings *settings,
+                                             mc_game_settings_error *error) {
+    mc_game_settings_error local = {0};
+    if (error == NULL)
+        error = &local;
+    settings->source_phase = MC_GAME_SETTINGS_SOURCE_RETIRING;
+    mc_game_settings_status status = source_attempt_dispose(settings, error);
+    if (status != MC_GAME_SETTINGS_OK) {
+        settings->source_retirement.native = *error;
+        return status;
+    }
+    mc_game_settings_source_error *e = &settings->source_retirement;
+    mc_java_file_status file_status =
+        mc_java_file_release(&settings->source_pending_file, &e->file);
+    if (file_status == MC_JAVA_FILE_OK)
+        file_status = mc_java_file_release(&settings->source_N, &e->file);
+    if (file_status != MC_JAVA_FILE_OK) {
+        settings_source_error(e,
+                              file_status == MC_JAVA_FILE_BUSY ? MC_GAME_SETTINGS_BUSY
+                                                               : MC_GAME_SETTINGS_FILE_ERROR,
+                              "actual kv options File native retirement", NULL, NULL, NULL, -1);
+        const mc_game_settings_status returned =
+            result(error, e->native.status, e->file.system_error, e->native.operation);
+        e->native = *error;
+        return returned;
+    }
+    settings->state.file_identity = NULL; /* Native source view ended on RETIRING. */
+    status = mc_game_settings_classes_release(&settings->source_classes, e);
+    if (status != MC_GAME_SETTINGS_OK)
+        return result(error, status, e->native.system_error, e->native.operation);
+    source_attempt_free(settings);
+    return MC_GAME_SETTINGS_OK;
 }

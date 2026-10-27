@@ -45,14 +45,29 @@ mc_text_stdout_status mc_text_stdout_println(const mc_text_stdout *stream, const
     bytes[total++] = '\r';
 #endif
     bytes[total++] = '\n';
+    size_t committed = 0;
+    int system_error = 0;
+    return mc_text_stdout_write(stream, (const uint8_t *)bytes, total, &committed, io_failed,
+                                &system_error);
+}
+
+mc_text_stdout_status mc_text_stdout_write(const mc_text_stdout *stream, const uint8_t *bytes,
+                                           size_t total, size_t *committed, bool *io_failed,
+                                           int *system_error) {
+    if (stream == NULL || committed == NULL || io_failed == NULL || system_error == NULL ||
+        (bytes == NULL && total != 0))
+        return MC_TEXT_STDOUT_INVALID_ARGUMENT;
     size_t offset = 0;
     bool failed = false;
+    int native_error = 0;
 #ifdef _WIN32
     while (offset < total) {
         DWORD written = 0;
-        if (!WriteFile((HANDLE)stream->handle, bytes + offset, (DWORD)(total - offset), &written,
-                       NULL) ||
-            written == 0) {
+        const BOOL wrote = WriteFile(
+            (HANDLE)stream->handle, bytes + offset,
+            (DWORD)((total - offset) > UINT32_MAX ? UINT32_MAX : total - offset), &written, NULL);
+        if (!wrote || written == 0) {
+            native_error = wrote ? 0 : (int)GetLastError();
             failed = true;
             break;
         }
@@ -79,7 +94,9 @@ mc_text_stdout_status mc_text_stdout_println(const mc_text_stdout *stream, const
         goto restore_mask;
     bool broken_pipe = false;
     while (offset < total) {
-        const ssize_t written = write((int)stream->handle, bytes + offset, total - offset);
+        const ssize_t written =
+            write((int)stream->handle, bytes + offset,
+                  total - offset > (size_t)SSIZE_MAX ? (size_t)SSIZE_MAX : total - offset);
         if (written > 0) {
             if ((size_t)written > total - offset)
                 goto restore_mask;
@@ -87,7 +104,8 @@ mc_text_stdout_status mc_text_stdout_println(const mc_text_stdout *stream, const
         } else if (written < 0 && errno == EINTR) {
             continue;
         } else {
-            broken_pipe = written < 0 && errno == EPIPE;
+            native_error = written < 0 ? errno : 0;
+            broken_pipe = written < 0 && native_error == EPIPE;
             failed = true;
             break;
         }
@@ -109,6 +127,8 @@ restore_mask:
     if (status != MC_TEXT_STDOUT_OK)
         return status;
 #endif
+    *committed = offset;
     *io_failed = failed;
+    *system_error = native_error;
     return MC_TEXT_STDOUT_OK;
 }

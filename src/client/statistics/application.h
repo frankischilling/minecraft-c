@@ -16,7 +16,8 @@ typedef enum mc_client_statistics_owner_status {
     MC_CLIENT_STATISTICS_OWNER_SESSION_FAILED,
     MC_CLIENT_STATISTICS_OWNER_WRITER_FAILED,
     MC_CLIENT_STATISTICS_OWNER_NOTICE_FAILED,
-    MC_CLIENT_STATISTICS_OWNER_WATER_FAILED
+    MC_CLIENT_STATISTICS_OWNER_WATER_FAILED,
+    MC_CLIENT_STATISTICS_OWNER_UNIMPLEMENTED
 } mc_client_statistics_owner_status;
 
 /* Session reaches class/Registry/hold operations, not World or inventory
@@ -72,7 +73,8 @@ mc_client_statistics_owner_status
 mc_client_application_publish_session(client_application *, mc_player_session *,
                                       mc_client_statistics_owner_error *);
 
-/* Read current k and actual game_directory/Z, construct xi privately, publish
+/* Diagnostic path profile: read current k/native diagnostic directory, construct xi
+ * privately. Nonnull actual File Z reaches an explicit typed-adapter frontier. Publish
  * I only on success, then run the existing concrete kh installer. Constructor
  * failures stay privately retained; kh failure keeps already-published I.
  * Actual worker starts normally: no join/service is inserted before kh. One

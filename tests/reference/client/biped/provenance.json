@@ -38,8 +38,8 @@
       "sha256": "8b2e8cee23a21ac7428c93df515f6e0c2e81adb9d16a13ecfd442b371b74dd0e"
     },
     "src/client/application_state.h": {
-      "bytes": 7089,
-      "sha256": "29ca507af345facee83f2d24c7c17c3002141ded802b37212c0ad66b8e701350"
+      "bytes": 7475,
+      "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
     },
     "src/client/gui/achievement_notice.c": {
       "bytes": 9209,

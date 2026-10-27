@@ -5,6 +5,7 @@
 #include "statistics/application.h"
 #include "application_state.h"
 #include "display/display.h"
+#include "display/events.h"
 #include "gui/gui_main_menu.h"
 #include "particles/application.h"
 #include "resources/assets.h"
@@ -182,8 +183,9 @@ static bool initialize_session(client_application *app) {
 
 static bool initialize_settings(client_application *app) {
     mc_client_game_directory_error directory_error = {0};
-    if (mc_client_game_directory_create(app->options.game_directory, NULL, &app->game_directory,
-                                        NULL, &directory_error) != MC_CLIENT_GAME_DIRECTORY_OK) {
+    if (mc_client_game_directory_create(app->options.game_directory, NULL,
+                                        &app->diagnostic_game_directory, NULL,
+                                        &directory_error) != MC_CLIENT_GAME_DIRECTORY_OK) {
         fprintf(stderr, "%s: native error %d\n",
                 directory_error.operation == NULL ? "Select game directory"
                                                   : directory_error.operation,
@@ -192,9 +194,9 @@ static bool initialize_settings(client_application *app) {
     }
     const mc_game_settings_diagnostics diagnostics = {NULL, settings_diagnostic};
     mc_game_settings_error error = {0};
-    mc_game_settings_status status =
-        mc_game_settings_create_file(app, mc_client_game_directory_path(app->game_directory), NULL,
-                                     &diagnostics, &app->settings, NULL, &error);
+    mc_game_settings_status status = mc_game_settings_create_file(
+        app, mc_client_game_directory_path(app->diagnostic_game_directory), NULL, &diagnostics,
+        &app->settings, NULL, &error);
     if (status == MC_GAME_SETTINGS_OK && app->options.gui_scale_override) {
         mc_game_settings_state state = {0};
         if (!mc_game_settings_read_state(app->settings, &state))
@@ -382,16 +384,34 @@ static bool timer_sample(client_application *app, mc_timer_clock_sample *out) {
     return true;
 }
 
-/* Keep pending mouse/keyboard records for the next Timer tick. Window close
- * and other platform events are serviced even between ticks or while there is
- * no drawable. The application owns this SDL event queue. */
+/* This existing native diagnostic loop and the source SDK update share one
+ * real transport. Input remains retained until its actual consumer runs; a
+ * returned SDL event borrows the ticket's deep-copied payload through use. */
+static bool take_event(client_application *app, Uint32 first, Uint32 last,
+                       mc_client_event_record **out) {
+    mc_client_events_error error = {0};
+    if (mc_client_events_take(mc_client_display_event_port(app->display), first, last, false, out,
+                              &error) == MC_CLIENT_EVENTS_OK)
+        return true;
+    fprintf(stderr, "Client event transport: %s (%d): %s\n",
+            error.operation == NULL ? "take" : error.operation, (int)error.status, error.detail);
+    return false;
+}
+
 static bool platform_events(client_application *app) {
     if (app->world_view != NULL) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-            if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED ||
-                (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE))
+        mc_client_event_record *record = NULL;
+        for (;;) {
+            if (!take_event(app, SDL_EVENT_FIRST, SDL_EVENT_LAST, &record))
+                return false;
+            if (record == NULL)
+                break;
+            const SDL_Event *event = mc_client_event_read(record);
+            if (event->type == SDL_EVENT_QUIT || event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED ||
+                (event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE))
                 app->running = false;
+            mc_client_event_release(&record);
+        }
         return true;
     }
 
@@ -402,15 +422,17 @@ static bool platform_events(client_application *app) {
                   {SDL_EVENT_MOUSE_REMOVED + 1, SDL_EVENT_LAST}};
 
     for (size_t i = 0; i < sizeof(ranges) / sizeof(ranges[0]); ++i) {
-        SDL_Event event;
-        int count;
-        while ((count = SDL_PeepEvents(&event, 1, SDL_GETEVENT, ranges[i].first, ranges[i].last)) >
-               0) {
-            if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
+        mc_client_event_record *record = NULL;
+        for (;;) {
+            if (!take_event(app, ranges[i].first, ranges[i].last, &record))
+                return false;
+            if (record == NULL)
+                break;
+            const SDL_Event *event = mc_client_event_read(record);
+            if (event->type == SDL_EVENT_QUIT || event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED)
                 app->running = false;
+            mc_client_event_release(&record);
         }
-        if (count < 0)
-            return false;
     }
     return true;
 }
@@ -442,36 +464,50 @@ static bool finish_window_frame(client_application *app, bool waiting_for_drawab
  * Timer tick. Unused motion/wheel/release and text events are still consumed.
  * GuiMainMenu ignores ordinary keys; its base input path handles F11. */
 static bool gui_tick(client_application *app, int *width, int *height) {
-    SDL_Event event;
-    int count;
-    while ((count = SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_EVENT_MOUSE_MOTION,
-                                   SDL_EVENT_MOUSE_REMOVED)) > 0) {
-        if (event.type != SDL_EVENT_MOUSE_BUTTON_DOWN || event.button.button != SDL_BUTTON_LEFT)
-            continue;
-        mc_gui_mouse_position mouse = {0};
-        if (!mouse_position(app, event.button.x, event.button.y, *width, *height, &mouse))
+    mc_client_event_record *record = NULL;
+    for (;;) {
+        if (!take_event(app, SDL_EVENT_MOUSE_MOTION, SDL_EVENT_MOUSE_REMOVED, &record))
             return false;
-        for (size_t i = 0; i < 5; ++i) {
-            if (!hit(&app->buttons[i], mouse.x, mouse.y))
-                continue;
-            if (app->buttons[i].id == 4)
-                app->running = false;
-            else
-                fprintf(stderr, "Client screen %d is not available\n", app->buttons[i].id);
+        if (record == NULL)
+            break;
+        const SDL_Event *event = mc_client_event_read(record);
+        bool ok = true;
+        if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && event->button.button == SDL_BUTTON_LEFT) {
+            mc_gui_mouse_position mouse = {0};
+            ok = mouse_position(app, event->button.x, event->button.y, *width, *height, &mouse);
+            if (ok)
+                for (size_t i = 0; i < 5; ++i) {
+                    if (!hit(&app->buttons[i], mouse.x, mouse.y))
+                        continue;
+                    if (app->buttons[i].id == 4)
+                        app->running = false;
+                    else
+                        fprintf(stderr, "Client screen %d is not available\n", app->buttons[i].id);
+                }
         }
-    }
-    if (count < 0)
-        return false;
-    while ((count = SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_EVENT_KEY_DOWN,
-                                   SDL_EVENT_SCREEN_KEYBOARD_HIDDEN)) > 0) {
-        if (event.type != SDL_EVENT_KEY_DOWN || event.key.key != SDLK_F11 || event.key.repeat)
-            continue;
-        if (!toggle_fullscreen(app))
+        mc_client_event_release(&record);
+        if (!ok)
             return false;
-        *width = app->display_width;
-        *height = app->display_height;
     }
-    return count >= 0;
+    for (;;) {
+        if (!take_event(app, SDL_EVENT_KEY_DOWN, SDL_EVENT_SCREEN_KEYBOARD_HIDDEN, &record))
+            return false;
+        if (record == NULL)
+            break;
+        const SDL_Event *event = mc_client_event_read(record);
+        bool ok = true;
+        if (event->type == SDL_EVENT_KEY_DOWN && event->key.key == SDLK_F11 && !event->key.repeat) {
+            ok = toggle_fullscreen(app);
+            if (ok) {
+                *width = app->display_width;
+                *height = app->display_height;
+            }
+        }
+        mc_client_event_release(&record);
+        if (!ok)
+            return false;
+    }
+    return true;
 }
 
 static bool service_statistics(client_application *app) {
@@ -621,7 +657,14 @@ int mc_client_application_run(const mc_client_application_options *options) {
             info->renderer);
     app->running = true;
     while (app->running) {
-        SDL_PumpEvents();
+        mc_client_events_error event_error = {0};
+        if (mc_client_events_pump(mc_client_display_event_port(app->display), &event_error) !=
+            MC_CLIENT_EVENTS_OK) {
+            fprintf(stderr, "Client event transport: %s (%d): %s\n",
+                    event_error.operation == NULL ? "pump" : event_error.operation,
+                    (int)event_error.status, event_error.detail);
+            goto cleanup;
+        }
         if (!platform_events(app))
             goto cleanup;
         if (!app->running)
@@ -734,7 +777,7 @@ cleanup:
     mc_client_string_free(&app->splash);
     if (mc_game_settings_retire(&app->settings, NULL) != MC_GAME_SETTINGS_OK)
         result = 1;
-    mc_client_game_directory_free(app->game_directory);
+    mc_client_game_directory_free(app->diagnostic_game_directory);
     if (!mc_client_display_destroy(app->display, &app->display_error))
         result = 1;
     mc_client_assets_free(app->assets);

@@ -1,4 +1,5 @@
 #include "labels.h"
+#include "source_access.h"
 
 #include "mc/core/java/java.h"
 
@@ -260,13 +261,35 @@ mc_game_settings_label_status mc_game_settings_option_label(const mc_game_settin
                 default:
                     return finish(&detail, error, MC_GAME_SETTINGS_LABEL_INVALID_ARGUMENT);
             }
-            const char *key = NULL;
-            if (mc_game_option_value_key(option, index, &key) != MC_GAME_OPTION_OK)
+            mc_game_settings_text actual_key = {0};
+            bool source_key = false;
+            const mc_game_option_status selected = mc_game_settings_source_value_key(
+                settings, option, index, &actual_key, &source_key);
+            if (selected == MC_GAME_OPTION_SOURCE_INDEX_OUT_OF_BOUNDS)
                 return finish(
                     &detail, error,
                     source_failure(&detail, MC_GAME_SETTINGS_LABEL_VALUE_INDEX, source_pc, -1));
-            status = lookup_ascii(assets, key, info.id == MC_GAME_OPTION_FRAMERATE_LIMIT, &suffix,
-                                  &detail, lookup_pc);
+            if (selected != MC_GAME_OPTION_OK)
+                return finish(&detail, error, MC_GAME_SETTINGS_LABEL_INVALID_ARGUMENT);
+            if (source_key) {
+                const mc_font_text text = {actual_key.units, actual_key.length};
+                const mc_client_assets_status translated =
+                    info.id == MC_GAME_OPTION_FRAMERATE_LIMIT
+                        ? mc_client_assets_label_text_wrapper(assets, text, actual_key.is_null,
+                                                              &suffix, &detail.assets)
+                        : mc_client_assets_label_text(assets, text, actual_key.is_null, &suffix,
+                                                      &detail.assets);
+                status = translated == MC_CLIENT_ASSETS_OK ? MC_GAME_SETTINGS_LABEL_OK
+                                                           : assets_failure(&detail, lookup_pc);
+            } else {
+                const char *key = NULL;
+                if (mc_game_option_value_key(option, index, &key) != MC_GAME_OPTION_OK)
+                    return finish(
+                        &detail, error,
+                        source_failure(&detail, MC_GAME_SETTINGS_LABEL_VALUE_INDEX, source_pc, -1));
+                status = lookup_ascii(assets, key, info.id == MC_GAME_OPTION_FRAMERATE_LIMIT,
+                                      &suffix, &detail, lookup_pc);
+            }
         }
     }
     if (status == MC_GAME_SETTINGS_LABEL_OK)

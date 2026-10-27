@@ -3,6 +3,7 @@
 #endif
 #include "../startup/game_directory.h"
 #include "internal.h"
+#include "native_open.h"
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -192,15 +193,11 @@ bool texture_file_mkdirs(const char *path, mc_texture_pack_error *error) {
     return false;
 }
 
-FILE *texture_file_open(const char *path, mc_texture_pack_error *error) {
+FILE *texture_file_open_native(const mc_file_native_char *path, mc_texture_pack_error *error) {
 #ifdef _WIN32
-    wchar_t *wide = wide_path(path, error);
-    if (wide == NULL)
-        return NULL;
     /* Actual Windows JDK ZipFile blocks rename while open. Do not silently
      * grant FILE_SHARE_DELETE and change rescan's real file-handle effects. */
-    FILE *file = _wfsopen(wide, L"rb", _SH_DENYNO);
-    free(wide);
+    FILE *file = _wfsopen(path, L"rb", _SH_DENYNO);
 #else
     FILE *file = fopen(path, "rb");
 #endif
@@ -217,6 +214,19 @@ FILE *texture_file_open(const char *path, mc_texture_pack_error *error) {
         return NULL;
     }
     return file;
+}
+
+FILE *texture_file_open(const char *path, mc_texture_pack_error *error) {
+#ifdef _WIN32
+    wchar_t *wide = wide_path(path, error);
+    if (wide == NULL)
+        return NULL;
+    FILE *file = texture_file_open_native(wide, error);
+    free(wide);
+    return file;
+#else
+    return texture_file_open_native(path, error);
+#endif
 }
 
 void texture_directory_free(texture_directory *directory) {

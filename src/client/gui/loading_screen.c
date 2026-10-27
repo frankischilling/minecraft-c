@@ -113,6 +113,10 @@ mc_client_loading_screen_graphics(const mc_client_loading_screen *p) {
     return p == NULL ? NULL : p->classes->graphics;
 }
 
+mc_client_loading_classes *mc_client_loading_screen_classes(const mc_client_loading_screen *p) {
+    return p == NULL ? NULL : p->classes;
+}
+
 mc_client_loading_status mc_client_loading_screen_allocate(mc_client_loading_classes *classes,
                                                            mc_client_loading_screen **out) {
     if (classes == NULL || out == NULL)

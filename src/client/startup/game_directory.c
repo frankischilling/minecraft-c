@@ -5,6 +5,8 @@
 #endif
 
 #include "game_directory.h"
+#include "../../platform/files/directory.h"
+#include "directory_native.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -19,12 +21,8 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#define INITKNOWNFOLDERS
 #include <windows.h>
 
-#include <knownfolders.h>
-#include <objbase.h>
-#include <shlobj.h>
 #include <wchar.h>
 typedef wchar_t native_char;
 #else
@@ -51,14 +49,54 @@ static directory_status result(directory_error *error, directory_status status, 
     return status;
 }
 
-static directory_status text_length(const char *text, size_t *out, directory_error *error) {
-    for (size_t i = 0; i <= MC_CLIENT_GAME_DIRECTORY_MAX_PATH_BYTES; ++i) {
-        if (text[i] == '\0') {
-            *out = i;
+static directory_status primitive_status(mc_file_io_status s) {
+    switch (s) {
+        case MC_FILE_IO_OK:
             return MC_CLIENT_GAME_DIRECTORY_OK;
-        }
+        case MC_FILE_IO_INVALID_ARGUMENT:
+            return MC_CLIENT_GAME_DIRECTORY_INVALID_ARGUMENT;
+        case MC_FILE_IO_ALLOCATION_FAILED:
+            return MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED;
+        case MC_FILE_IO_LIMIT:
+            return MC_CLIENT_GAME_DIRECTORY_LIMIT;
+        case MC_FILE_IO_UNSUPPORTED_FILENAME_ENCODING:
+            return MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_FILENAME_ENCODING;
+        case MC_FILE_IO_UNSUPPORTED_PATH:
+            return MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH;
+        case MC_FILE_IO_NATIVE_ERROR:
+            return MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR;
+        case MC_FILE_IO_CREATION_FALSE:
+            return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
     }
-    return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0, "game directory path length");
+    return MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR;
+}
+
+static directory_status primitive_result(mc_file_io_status s, const mc_file_io_error *child,
+                                         directory_error *e) {
+    if (e != NULL && child->written)
+        *e = (directory_error){primitive_status(child->status), child->system_error,
+                               child->operation};
+    return primitive_status(s);
+}
+
+static mc_file_io_state primitive_state(const directory_state *s) {
+    return (mc_file_io_state){.exists_calls = s->exists_calls,
+                              .mkdir_calls = s->mkdir_calls,
+                              .canonicalize_calls = s->canonicalize_calls,
+                              .last_native_error = s->last_native_error};
+}
+
+static void primitive_state_copy(directory_state *s, const mc_file_io_state *child) {
+    s->exists_calls = child->exists_calls;
+    s->mkdir_calls = child->mkdir_calls;
+    s->canonicalize_calls = child->canonicalize_calls;
+    s->last_native_error = child->last_native_error;
+}
+
+static directory_status text_length(const char *text, size_t *out, directory_error *error) {
+    mc_file_io_error child = {0};
+    mc_file_io_status status = mc_file_text_length(text, out, &child);
+    return primitive_result(status, &child, error);
 }
 
 /* Strict UTF8 is the existing native File boundary, not Java String storage. */
@@ -126,39 +164,7 @@ static directory_status normalize(const char *input, char **out, directory_error
     if (path == NULL)
         return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
                       "game directory path allocation");
-    size_t read_at = 0, used = 0;
-#ifdef _WIN32
-    size_t leading = 0;
-    while (leading < length && path_separator(input[leading]))
-        ++leading;
-    if (length - leading >= 2u && drive_letter(input[leading]) && input[leading + 1u] == ':') {
-        path[used++] = input[leading];
-        path[used++] = ':';
-        read_at = leading + 2u;
-    } else if (leading >= 2u) {
-        path[used++] = '\\';
-        path[used++] = '\\';
-        read_at = leading;
-    }
-    const char separator = '\\';
-#else
-    const char separator = '/';
-#endif
-    while (read_at < length) {
-        if (!path_separator(input[read_at])) {
-            path[used++] = input[read_at++];
-            continue;
-        }
-        while (read_at < length && path_separator(input[read_at]))
-            ++read_at;
-        if (read_at != length || used == 0u
-#ifdef _WIN32
-            || (used == 2u && path[1] == ':')
-#endif
-        )
-            path[used++] = separator;
-    }
-    path[used] = '\0';
+    (void)mc_file_normalize_bytes(input, length, path);
     *out = path;
     return MC_CLIENT_GAME_DIRECTORY_OK;
 }
@@ -200,19 +206,6 @@ static directory_status child_path(const char *parent, char **out, directory_err
 
 #ifdef _WIN32
 
-static directory_status wide_copy(const wchar_t *text, wchar_t **out, directory_error *error) {
-    const size_t length = wcslen(text);
-    if (length > MC_CLIENT_GAME_DIRECTORY_MAX_PATH_BYTES)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0, "game directory UTF16 length");
-    wchar_t *copy = malloc((length + 1u) * sizeof(*copy));
-    if (copy == NULL)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
-                      "game directory UTF16 allocation");
-    memcpy(copy, text, (length + 1u) * sizeof(*copy));
-    *out = copy;
-    return MC_CLIENT_GAME_DIRECTORY_OK;
-}
-
 static directory_status wide_utf8(const wchar_t *text, char **out, directory_error *error) {
     const size_t length = wcslen(text);
     if (length > (size_t)INT_MAX || length > MC_CLIENT_GAME_DIRECTORY_MAX_PATH_BYTES)
@@ -249,538 +242,78 @@ static directory_status wide_utf8(const wchar_t *text, char **out, directory_err
     return MC_CLIENT_GAME_DIRECTORY_OK;
 }
 
-static directory_status native_path(const char *path, wchar_t **out, directory_error *error) {
-    const size_t length = strlen(path);
-    if (length == 0u)
-        return wide_copy(L"", out, error);
-    const int count =
-        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, NULL, 0);
-    if (count <= 0)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_FILENAME_ENCODING,
-                      (int)GetLastError(), "game directory UTF8 to UTF16");
-    /* Extended-length native File conversion is not implemented by this slice. */
-    if (count >= MAX_PATH - 12)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory extended Windows path");
-    wchar_t *native = malloc(((size_t)count + 1u) * sizeof(*native));
-    if (native == NULL)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
-                      "game directory native path allocation");
-    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, native, count) !=
-        count) {
-        const int failure = (int)GetLastError();
-        free(native);
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_FILENAME_ENCODING, failure,
-                      "game directory UTF8 conversion");
-    }
-    native[count] = L'\0';
-    *out = native;
-    return MC_CLIENT_GAME_DIRECTORY_OK;
-}
-
-static directory_status home_directory(wchar_t **out, directory_state *state,
-                                       directory_error *error) {
-    wchar_t *shell_path = NULL;
-    HRESULT code;
-#ifdef _MSC_VER
-    __try {
-        code = SHGetKnownFolderPath(&FOLDERID_Profile, KF_FLAG_DONT_VERIFY, NULL, &shell_path);
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-        code = E_FAIL;
-    }
-#else
-    code = SHGetKnownFolderPath(&FOLDERID_Profile, KF_FLAG_DONT_VERIFY, NULL, &shell_path);
-#endif
-    state->profile_query_hresult = (int32_t)code;
-    directory_status status;
-    if (SUCCEEDED(code) && shell_path != NULL) {
-        status = wide_copy(shell_path, out, error);
-        CoTaskMemFree(shell_path);
-        state->home_origin = MC_CLIENT_GAME_DIRECTORY_HOME_PROFILE;
-        return status;
-    }
-    CoTaskMemFree(shell_path);
-    wchar_t legacy[MAX_PATH + 1u] = {0};
-    code = SHGetFolderPathW(NULL, CSIDL_PROFILE | CSIDL_FLAG_DONT_VERIFY, NULL, SHGFP_TYPE_CURRENT,
-                            legacy);
-    state->legacy_profile_query_hresult = (int32_t)code;
-    if (SUCCEEDED(code)) {
-        legacy[MAX_PATH] = L'\0';
-        state->home_origin = MC_CLIENT_GAME_DIRECTORY_HOME_LEGACY_PROFILE;
-        return wide_copy(legacy, out, error);
-    }
-    state->home_origin = MC_CLIENT_GAME_DIRECTORY_HOME_WINDOWS_FALLBACK;
-    return wide_copy(L"C:\\", out, error);
-}
-
-static bool appdata_name(const wchar_t *text, size_t length) {
-    static const wchar_t key[] = L"APPDATA";
-    if (length != sizeof(key) / sizeof(key[0]) - 1u)
-        return false;
-    for (size_t i = 0; i < length; ++i) {
-        wchar_t unit = text[i];
-        if (unit >= L'a' && unit <= L'z')
-            unit = (wchar_t)(unit - L'a' + L'A');
-        if (unit != key[i])
-            return false;
-    }
-    return true;
+static directory_status native_path(const char *p, wchar_t **out, directory_error *e) {
+    mc_file_io_error child = {0};
+    mc_file_io_status s = mc_file_native_path(p, out, &child);
+    return primitive_result(s, &child, e);
 }
 
 static directory_status default_path(char **out, const mc_client_game_directory_profile *profile,
                                      directory_state *state, directory_error *error) {
     (void)profile;
-    wchar_t *home = NULL;
-    directory_status status = home_directory(&home, state, error);
+    mc_client_directory_native_home home = {0};
+    mc_client_directory_native_env env = {0};
+    directory_status status = mc_client_directory_native_home_query(&home, NULL, state, error);
     if (status != MC_CLIENT_GAME_DIRECTORY_OK)
         return status;
-    wchar_t *block = GetEnvironmentStringsW();
-    if (block == NULL) {
-        const int failure = (int)GetLastError();
-        free(home);
-        return result(error, MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR, failure,
-                      "game directory environment snapshot");
-    }
-    const wchar_t *parent = home;
-    size_t scanned = 0;
-    const size_t unit_limit = MC_CLIENT_GAME_DIRECTORY_MAX_LOOKUP_BYTES / sizeof(wchar_t);
-    for (const wchar_t *entry = block; *entry != L'\0';) {
-        size_t length = 0;
-        while (entry[length] != L'\0' && scanned + length <= unit_limit)
-            ++length;
-        if (scanned + length > unit_limit) {
-            status =
-                result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0, "game directory environment size");
-            break;
-        }
-        const wchar_t *equals = wcschr(entry + 1, L'=');
-        if (equals != NULL && appdata_name(entry, (size_t)(equals - entry))) {
-            if (state->appdata_present) {
-                status = result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                                "game directory duplicate APPDATA names");
-                break;
-            }
-            state->appdata_present = true;
-            parent = equals + 1;
-        }
-        scanned += length + 1u;
-        entry += length + 1u;
-    }
+    status = mc_client_directory_native_env_open(&env, state, error);
     char *utf8 = NULL;
     if (status == MC_CLIENT_GAME_DIRECTORY_OK)
-        status = wide_utf8(parent, &utf8, error);
-    if (!FreeEnvironmentStringsW(block) && status == MC_CLIENT_GAME_DIRECTORY_OK)
-        status = result(error, MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR, (int)GetLastError(),
-                        "game directory environment release");
-    free(home);
+        status = wide_utf8(env.present ? env.value : home.text, &utf8, error);
+    directory_status closed = mc_client_directory_native_env_close(
+        &env, status == MC_CLIENT_GAME_DIRECTORY_OK ? error : NULL);
+    if (status == MC_CLIENT_GAME_DIRECTORY_OK)
+        status = closed;
+    mc_client_directory_native_home_free(&home);
     if (status == MC_CLIENT_GAME_DIRECTORY_OK)
         status = child_path(utf8, out, error);
     free(utf8);
     return status;
 }
 
-static bool exists_native(const wchar_t *path, directory_state *state) {
-    ++state->exists_calls;
-    if (GetFileAttributesW(path) != INVALID_FILE_ATTRIBUTES)
-        return true;
-    state->last_native_error = (int)GetLastError();
-    return false;
-}
-
-static bool mkdir_native(const wchar_t *path, directory_state *state) {
-    ++state->mkdir_calls;
-    if (CreateDirectoryW(path, NULL))
-        return true;
-    state->last_native_error = (int)GetLastError();
-    return false;
-}
-
-static bool tolerated_find_error(DWORD code) {
-    return code == ERROR_FILE_NOT_FOUND || code == ERROR_DIRECTORY ||
-           code == ERROR_PATH_NOT_FOUND || code == ERROR_BAD_NETPATH ||
-           code == ERROR_BAD_NET_NAME || code == ERROR_ACCESS_DENIED ||
-           code == ERROR_NETWORK_UNREACHABLE || code == ERROR_NETWORK_ACCESS_DENIED ||
-           code == ERROR_NO_MORE_FILES;
-}
-
-static directory_status canonical_native(const wchar_t *input, wchar_t **out,
-                                         directory_state *state, directory_error *error) {
-    ++state->canonicalize_calls;
-    /* These native forms need source-specific canonicalization still. */
-    if (wcspbrk(input, L"*?") != NULL)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory wildcard canonicalization");
-    wchar_t full[MAX_PATH];
-    errno = 0;
-    if (_wfullpath(full, input, MAX_PATH) == NULL) {
-        state->last_native_error = errno;
-        return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
-    }
-    const size_t length = wcslen(full);
-    if (length >= MAX_PATH - 12u)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory extended canonical path");
-    for (size_t i = 0; i < length; ++i) {
-        if (full[i] == L'.' && (i + 1u == length || full[i + 1u] == L'\\'))
-            return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                          "game directory trailing-dot canonicalization");
-    }
-    wchar_t normalized[MAX_PATH];
-    size_t used = 0, next;
-    if (length >= 3u && full[1] == L':' && full[2] == L'\\') {
-        normalized[used++] =
-            full[0] >= L'a' && full[0] <= L'z' ? (wchar_t)(full[0] - L'a' + L'A') : full[0];
-        normalized[used++] = L':';
-        next = 2u;
-    } else if (length >= 2u && full[0] == L'\\' && full[1] == L'\\') {
-        next = 2u;
-        while (next < length && full[next] != L'\\')
-            ++next;
-        if (next == length)
-            return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                          "game directory incomplete UNC canonicalization");
-        ++next;
-        while (next < length && full[next] != L'\\')
-            ++next;
-        memcpy(normalized, full, next * sizeof(*full));
-        used = next;
-    } else {
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory canonical prefix");
-    }
-    while (next < length) {
-        size_t end = next + 1u;
-        while (end < length && full[end] != L'\\')
-            ++end;
-        const wchar_t saved = full[end];
-        full[end] = L'\0';
-        WIN32_FIND_DATAW found;
-        HANDLE search = FindFirstFileW(full, &found);
-        const DWORD failure = search == INVALID_HANDLE_VALUE ? GetLastError() : ERROR_SUCCESS;
-        full[end] = saved;
-        if (search == INVALID_HANDLE_VALUE) {
-            state->last_native_error = (int)failure;
-            if (!tolerated_find_error(failure))
-                return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
-            memcpy(normalized + used, full + next, (length - next) * sizeof(*full));
-            used += length - next;
-            break;
-        }
-        if (!FindClose(search))
-            return result(error, MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR, (int)GetLastError(),
-                          "game directory search close");
-        const size_t component = wcslen(found.cFileName);
-        if (used + component + 1u >= MAX_PATH)
-            return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0,
-                          "game directory canonical component length");
-        normalized[used++] = L'\\';
-        memcpy(normalized + used, found.cFileName, component * sizeof(*full));
-        used += component;
-        next = end;
-    }
-    normalized[used] = L'\0';
-    return wide_copy(normalized, out, error);
-}
-
-static native_char *parent_native(native_char *path) {
-    const size_t length = wcslen(path);
-    wchar_t *separator = wcsrchr(path, L'\\');
-    if (separator == NULL || (length == 3u && path[1] == L':'))
-        return NULL;
-    if (separator == path + 2 && path[1] == L':') {
-        path[3] = L'\0';
-        return path;
-    }
-    if (path[0] == L'\\' && path[1] == L'\\') {
-        wchar_t *server = wcschr(path + 2, L'\\');
-        if (server == NULL || separator == server)
-            return NULL;
-    }
-    *separator = L'\0';
-    return path;
+static bool exists_native(const wchar_t *p, directory_state *state) {
+    mc_file_io_state child = primitive_state(state);
+    bool value = mc_file_native_exists(p, &child);
+    primitive_state_copy(state, &child);
+    return value;
 }
 
 #else
 
-static directory_status native_path(const char *path, char **out, directory_error *error) {
-    const size_t length = strlen(path);
-    char *copy = malloc(length + 1u);
-    if (copy == NULL)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
-                      "game directory native path allocation");
-    memcpy(copy, path, length + 1u);
-    *out = copy;
-    return MC_CLIENT_GAME_DIRECTORY_OK;
+static directory_status native_path(const char *p, char **out, directory_error *e) {
+    mc_file_io_error child = {0};
+    mc_file_io_status s = mc_file_native_path(p, out, &child);
+    return primitive_result(s, &child, e);
 }
 
 static directory_status default_path(char **out, const mc_client_game_directory_profile *profile,
                                      directory_state *state, directory_error *error) {
-    mc_java_reader_charset charset =
-        profile == NULL ? MC_JAVA_READER_DEFAULT : profile->filesystem_charset;
-    if (charset == MC_JAVA_READER_DEFAULT) {
-        const mc_java_reader_status discovered = mc_java_reader_default_charset(&charset);
-        if (discovered != MC_JAVA_READER_OK)
-            return result(error,
-                          discovered == MC_JAVA_READER_ALLOCATION_FAILED
-                              ? MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED
-                              : MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_FILENAME_ENCODING,
-                          0, "game directory native charset");
-    }
-    state->filesystem_charset = charset;
-    long suggested = sysconf(_SC_GETPW_R_SIZE_MAX);
-    size_t capacity =
-        suggested > 0 && (unsigned long)suggested <= MC_CLIENT_GAME_DIRECTORY_MAX_LOOKUP_BYTES
-            ? (size_t)suggested
-            : 1024u;
-    char *buffer = NULL;
-    struct passwd account;
-    struct passwd *found = NULL;
-    const uid_t user = getuid();
-    int code;
-    for (;;) {
-        char *replacement = realloc(buffer, capacity);
-        if (replacement == NULL) {
-            free(buffer);
-            return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
-                          "game directory account buffer");
-        }
-        buffer = replacement;
-        code = getpwuid_r(user, &account, buffer, capacity, &found);
-        if (code != ERANGE)
-            break;
-        if (capacity >= MC_CLIENT_GAME_DIRECTORY_MAX_LOOKUP_BYTES) {
-            free(buffer);
-            return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, code,
-                          "game directory account lookup limit");
-        }
-        capacity = capacity > MC_CLIENT_GAME_DIRECTORY_MAX_LOOKUP_BYTES / 2u
-                       ? MC_CLIENT_GAME_DIRECTORY_MAX_LOOKUP_BYTES
-                       : capacity * 2u;
-    }
-    if (code == 0 && found != NULL && found->pw_dir == NULL) {
-        free(buffer);
-        return result(error, MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR, 0,
-                      "game directory account home unavailable");
-    }
-    const char *home = code == 0 && found != NULL ? found->pw_dir : "?";
-    state->home_origin = code == 0 && found != NULL
-                             ? MC_CLIENT_GAME_DIRECTORY_HOME_ACCOUNT
-                             : MC_CLIENT_GAME_DIRECTORY_HOME_ACCOUNT_FALLBACK;
-    if (code != 0)
-        state->last_native_error = code;
-    size_t length;
-    directory_status status = text_length(home, &length, error);
-    if (status == MC_CLIENT_GAME_DIRECTORY_OK && charset != MC_JAVA_READER_UTF8) {
-        for (size_t i = 0; i < length; ++i) {
-            if ((unsigned char)home[i] >= 0x80u) {
-                status = result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_FILENAME_ENCODING, 0,
-                                "game directory nonUTF8 native File boundary");
-                break;
-            }
-        }
-    }
+    mc_client_directory_native_home home = {0};
+    directory_status status = mc_client_directory_native_home_query(&home, profile, state, error);
     if (status == MC_CLIENT_GAME_DIRECTORY_OK)
-        status = child_path(home, out, error);
-    free(buffer);
+        status = child_path(home.text, out, error);
+    mc_client_directory_native_home_free(&home);
     return status;
 }
 
-static bool exists_native(const char *path, directory_state *state) {
-    struct stat information;
-    ++state->exists_calls;
-    if (stat(path, &information) == 0)
-        return true;
-    state->last_native_error = errno;
-    return false;
-}
-
-static bool mkdir_native(const char *path, directory_state *state) {
-    ++state->mkdir_calls;
-    if (mkdir(path, 0777) == 0)
-        return true;
-    state->last_native_error = errno;
-    return false;
-}
-
-static void collapse_absolute(char *path) {
-    size_t read_at = 1u, used = 1u;
-    while (path[read_at] != '\0') {
-        while (path[read_at] == '/')
-            ++read_at;
-        const size_t start = read_at;
-        while (path[read_at] != '\0' && path[read_at] != '/')
-            ++read_at;
-        const size_t length = read_at - start;
-        if (length == 0u)
-            break;
-        if (length == 1u && path[start] == '.')
-            continue;
-        if (length == 2u && path[start] == '.' && path[start + 1u] == '.') {
-            while (used > 1u && path[used - 1u] != '/')
-                --used;
-            if (used > 1u)
-                --used;
-            continue;
-        }
-        if (used > 1u)
-            path[used++] = '/';
-        memmove(path + used, path + start, length);
-        used += length;
-    }
-    path[used] = '\0';
-}
-
-static directory_status canonical_native(const char *input, char **out, directory_state *state,
-                                         directory_error *error) {
-    ++state->canonicalize_calls;
-    size_t length = strlen(input);
-    if (length > PATH_MAX)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory canonical PATH_MAX");
-    char *absolute = NULL;
-    if (input[0] == '/') {
-        directory_status status = native_path(input, &absolute, error);
-        if (status != MC_CLIENT_GAME_DIRECTORY_OK)
-            return status;
-    } else {
-        char working[PATH_MAX + 1u];
-        if (getcwd(working, sizeof(working)) == NULL) {
-            state->last_native_error = errno;
-            return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
-        }
-        const size_t prefix = strlen(working);
-        if (prefix + length + 1u > PATH_MAX)
-            return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                          "game directory absolute PATH_MAX");
-        absolute = malloc(prefix + length + 2u);
-        if (absolute == NULL)
-            return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
-                          "game directory absolute allocation");
-        memcpy(absolute, working, prefix);
-        absolute[prefix] = '/';
-        memcpy(absolute + prefix + 1u, input, length + 1u);
-    }
-    length = strlen(absolute);
-    errno = 0;
-    char *resolved = realpath(absolute, NULL);
-    if (resolved != NULL) {
-        free(absolute);
-        *out = resolved;
-        return MC_CLIENT_GAME_DIRECTORY_OK;
-    }
-    state->last_native_error = errno;
-    if (errno == ENOMEM) {
-        free(absolute);
-        return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, ENOMEM,
-                      "game directory realpath allocation");
-    }
-    size_t boundary = length;
-    while (boundary > 1u) {
-        --boundary;
-        while (boundary > 0u && absolute[boundary] != '/')
-            --boundary;
-        if (boundary == 0u)
-            break;
-        absolute[boundary] = '\0';
-        resolved = realpath(absolute, NULL);
-        const int failure = errno;
-        absolute[boundary] = '/';
-        if (resolved != NULL)
-            break;
-        state->last_native_error = failure;
-        if (failure == ENOMEM) {
-            free(absolute);
-            return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, failure,
-                          "game directory prefix realpath allocation");
-        }
-        if (failure != ENOENT && failure != ENOTDIR && failure != EACCES) {
-            free(absolute);
-            return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
-        }
-    }
-    if (resolved != NULL) {
-        const size_t prefix = strlen(resolved);
-        size_t suffix = boundary;
-        if (prefix != 0u && resolved[prefix - 1u] == '/' && absolute[suffix] == '/')
-            ++suffix;
-        const size_t tail = length - suffix;
-        if (prefix + tail > PATH_MAX) {
-            free(resolved);
-            free(absolute);
-            return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                          "game directory canonical result PATH_MAX");
-        }
-        char *combined = malloc(prefix + tail + 1u);
-        if (combined == NULL) {
-            free(resolved);
-            free(absolute);
-            return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
-                          "game directory canonical allocation");
-        }
-        memcpy(combined, resolved, prefix);
-        memcpy(combined + prefix, absolute + suffix, tail + 1u);
-        free(resolved);
-        free(absolute);
-        absolute = combined;
-    }
-    collapse_absolute(absolute);
-    *out = absolute;
-    return MC_CLIENT_GAME_DIRECTORY_OK;
-}
-
-static native_char *parent_native(native_char *path) {
-    char *separator = strrchr(path, '/');
-    if (separator == NULL || path[1] == '\0')
-        return NULL;
-    if (separator == path)
-        path[1] = '\0';
-    else
-        *separator = '\0';
-    return path;
+static bool exists_native(const char *p, directory_state *state) {
+    mc_file_io_state child = primitive_state(state);
+    bool value = mc_file_native_exists(p, &child);
+    primitive_state_copy(state, &child);
+    return value;
 }
 
 #endif
 
 /* false is the source mkdirs boolean, distinct from native admission failure.
  * No preflight isDirectory check, rollback or recursive-mkdir substitute. */
-static directory_status mkdirs_native(const native_char *path, size_t depth, bool *created,
-                                      directory_state *state, directory_error *error) {
-    if (depth >= MC_CLIENT_GAME_DIRECTORY_MAX_PARENT_CALLS)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0, "game directory parent depth");
-    *created = false;
-    if (exists_native(path, state))
-        return MC_CLIENT_GAME_DIRECTORY_OK;
-    if (mkdir_native(path, state)) {
-        *created = true;
-        return MC_CLIENT_GAME_DIRECTORY_OK;
-    }
-    native_char *canonical = NULL;
-    directory_status status = canonical_native(path, &canonical, state, error);
-    if (status == MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED)
-        return MC_CLIENT_GAME_DIRECTORY_OK; /* source caught canonical IOException */
-    if (status != MC_CLIENT_GAME_DIRECTORY_OK)
-        return status;
-    native_char *parent_copy = NULL;
-#ifdef _WIN32
-    status = wide_copy(canonical, &parent_copy, error);
-#else
-    status = native_path(canonical, &parent_copy, error);
-#endif
-    if (status != MC_CLIENT_GAME_DIRECTORY_OK) {
-        free(canonical);
-        return status;
-    }
-    native_char *parent = parent_native(parent_copy);
-    if (parent != NULL) {
-        bool parent_created = false;
-        status = mkdirs_native(parent, depth + 1u, &parent_created, state, error);
-        if (status == MC_CLIENT_GAME_DIRECTORY_OK &&
-            (parent_created || exists_native(parent, state)))
-            *created = mkdir_native(canonical, state);
-    }
-    free(parent_copy);
-    free(canonical);
-    return status;
+static directory_status mkdirs_native(const native_char *p, size_t depth, bool *created,
+                                      directory_state *state, directory_error *e) {
+    mc_file_io_state child = primitive_state(state);
+    mc_file_io_error detail = {0};
+    mc_file_io_status s = mc_file_native_mkdirs(p, depth, created, &child, &detail);
+    primitive_state_copy(state, &child);
+    return primitive_result(s, &detail, e);
 }
 
 mc_client_game_directory_status mc_client_game_directory_create(

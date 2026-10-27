@@ -34,6 +34,11 @@ mc_client_application_constructor_retire(client_application **slot,
         }
         return MC_CLIENT_APP_OK;
     }
+    /* The startup record can retain failed unpublished children that borrow
+     * this actual storage. Reject before changing phase/stopping kg/freeing App. */
+    if (app->startup != NULL)
+        return application_constructor_error(out, MC_CLIENT_APP_BUSY, MC_CLIENT_APP_CHILD_NONE, -1,
+                                             "actual App startup record still attached");
     mc_client_application_construction *m = app->construction;
     if (m == NULL)
         return application_constructor_error(
@@ -67,14 +72,14 @@ mc_client_application_constructor_retire(client_application **slot,
         app->h != NULL || app->i != NULL || app->controller != NULL ||
         app->effect_renderer != NULL || app->render_engine != NULL || app->font_renderer != NULL ||
         app->stats_writer != NULL || app->session != NULL || app->game_directory != NULL ||
-        app->settings != NULL || app->D != NULL || app->g != NULL || app->v != NULL ||
-        app->t != NULL || app->U != NULL || app->C != NULL || app->aa != NULL || app->S != NULL ||
-        app->r != NULL || app->l != NULL || app->ab != NULL || app->y != NULL ||
-        app->stats_writer_retained != NULL || app->effect_renderer_retained != NULL ||
-        app->font_renderer_retained != NULL || app->session_classes != NULL ||
-        app->world_session != NULL || app->world_view != NULL || app->main_menu != NULL ||
-        app->assets != NULL || app->files != NULL || app->materials != NULL ||
-        app->world_classes != NULL || app->trig != NULL) {
+        app->diagnostic_game_directory != NULL || app->settings != NULL || app->D != NULL ||
+        app->g != NULL || app->v != NULL || app->t != NULL || app->U != NULL || app->C != NULL ||
+        app->aa != NULL || app->S != NULL || app->r != NULL || app->l != NULL || app->ab != NULL ||
+        app->y != NULL || app->stats_writer_retained != NULL ||
+        app->effect_renderer_retained != NULL || app->font_renderer_retained != NULL ||
+        app->session_classes != NULL || app->world_session != NULL || app->world_view != NULL ||
+        app->main_menu != NULL || app->assets != NULL || app->files != NULL ||
+        app->materials != NULL || app->world_classes != NULL || app->trig != NULL) {
         application_constructor_error(e, MC_CLIENT_APP_UNIMPLEMENTED, MC_CLIENT_APP_CHILD_PLATFORM,
                                       -1,
                                       "later source owners require their own native retirement");

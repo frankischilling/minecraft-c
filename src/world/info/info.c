@@ -41,6 +41,28 @@ struct mc_world_info {
     mc_world_info_data *data;
 };
 
+/* Legacy finite names ALWAYS have inline units, including empty copies;
+ * immortals are excluded explicitly. Source names use a disjoint live document
+ * arena pointer (or NULL for empty), never this derived object's extension. */
+typedef struct info_document_name {
+    mc_world_info_name base;
+    mc_nbt_document *document;
+} info_document_name;
+
+/* tree==NULL is used ONLY by this derived allocation. Both legacy creators
+ * follow successful nonnull tree-copy and publish no RAW backing. */
+typedef struct info_document_backing {
+    info_backing base;
+    mc_nbt_document *document;
+    const mc_nbt_tag *root;
+    bool owns_document;
+    mc_nbt_tag missing_data;
+} info_document_backing;
+
+static const mc_nbt_tag *info_backing_root(const info_backing *backing);
+static mc_world_info_status info_name_document(mc_nbt_string text, mc_nbt_document *document,
+                                               mc_world_info_name **out);
+
 enum { INFO_RECORD_FIELDS = 13, INFO_RECORD_CHILDREN = 14, INFO_KEY_UNITS = 16 };
 
 struct mc_world_info_record {
@@ -139,6 +161,10 @@ mc_world_info_status mc_world_info_name_copy(mc_nbt_string text, size_t max_byte
     return MC_WORLD_INFO_OK;
 }
 
+mc_world_info_name *mc_world_info_name_empty(void) {
+    return &info_empty_name;
+}
+
 mc_nbt_string mc_world_info_name_text(const mc_world_info_name *name) {
     return name == NULL || name->length == 0 ? (mc_nbt_string){NULL, 0}
                                              : (mc_nbt_string){name->units, name->length};
@@ -156,8 +182,12 @@ mc_world_info_status mc_world_info_name_retain(mc_world_info_name *name) {
 }
 
 void mc_world_info_name_release(mc_world_info_name *name) {
-    if (name != NULL && name != &info_empty_name && name != &info_player_name && --name->holds == 0)
+    if (name != NULL && name != &info_empty_name && name != &info_player_name &&
+        --name->holds == 0) {
+        if (name->units != (const uint16_t *)(name + 1))
+            mc_nbt_document_free(((info_document_name *)name)->document);
         free(name);
+    }
 }
 
 static mc_world_info_status info_backing_retain(info_backing *backing) {
@@ -169,12 +199,20 @@ static mc_world_info_status info_backing_retain(info_backing *backing) {
 
 static void info_backing_release(info_backing *backing) {
     if (backing != NULL && --backing->holds == 0) {
-        mc_nbt_tree_free(backing->tree);
+        if (backing->tree != NULL)
+            mc_nbt_tree_free(backing->tree);
+        else {
+            info_document_backing *source = (info_document_backing *)backing;
+            if (source->owns_document)
+                mc_nbt_document_free(source->document);
+        }
         free(backing);
     }
 }
 
 static info_backing *info_backing_create(mc_nbt_tree *tree) {
+    if (tree == NULL)
+        return NULL; /* Never publish an ambiguous legacy sentinel. */
     info_backing *backing = malloc(sizeof(*backing));
     if (backing != NULL) {
         backing->holds = 1;
@@ -199,7 +237,10 @@ static mc_world_info_status info_player_wrap(info_backing *backing, const mc_nbt
     player->name = &info_empty_name;
     if (compound->name.length != 0) {
         const mc_world_info_status named =
-            mc_world_info_name_copy(compound->name, SIZE_MAX, &player->name);
+            backing->tree != NULL
+                ? mc_world_info_name_copy(compound->name, SIZE_MAX, &player->name)
+                : info_name_document(compound->name, ((info_document_backing *)backing)->document,
+                                     &player->name);
         if (named != MC_WORLD_INFO_OK) {
             info_backing_release(backing);
             free(player);
@@ -482,7 +523,7 @@ mc_world_info_status mc_world_info_construct_nbt(mc_world_info *raw, mc_world_in
     if (status != MC_WORLD_INFO_OK)
         return info_status(error, status, NULL);
     raw->data = data;
-    const mc_nbt_tag *root = mc_nbt_tree_root(data->backing->tree);
+    const mc_nbt_tag *root = info_backing_root(data->backing);
     const mc_nbt_tag *tag;
 #define INFO_READ(key, expected_type, member, expression, pc)                                      \
     do {                                                                                           \
@@ -675,7 +716,7 @@ mc_world_info_status mc_world_info_state_get(const mc_world_info *info, mc_world
 }
 
 const mc_nbt_tag *mc_world_info_source(const mc_world_info *info) {
-    return info == NULL || info->data == NULL ? NULL : mc_nbt_tree_root(info->data->backing->tree);
+    return info == NULL || info->data == NULL ? NULL : info_backing_root(info->data->backing);
 }
 
 mc_world_info_status mc_world_info_name_set(mc_world_info *info, mc_world_info_name *name) {
@@ -872,4 +913,121 @@ void mc_world_info_record_release(mc_world_info_record *record) {
         mc_world_info_player_release(record->player);
         free(record);
     }
+}
+
+mc_world_info_status mc_world_info_version_get(const mc_world_info *info, int32_t *out) {
+    if (info == NULL || out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = info->fields.value.version;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_name_get(const mc_world_info *info, mc_world_info_name **out) {
+    if (info == NULL || out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = info->fields.name;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_last_played_get(const mc_world_info *info, int64_t *out) {
+    if (info == NULL || out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = info->fields.value.last_played;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_size_get(const mc_world_info *info, int64_t *out) {
+    if (info == NULL || out == NULL)
+        return MC_WORLD_INFO_INVALID_ARGUMENT;
+    *out = info->fields.value.size_on_disk;
+    return MC_WORLD_INFO_OK;
+}
+
+static const mc_nbt_tag *info_backing_root(const info_backing *backing) {
+    if (backing == NULL)
+        return NULL;
+    return backing->tree != NULL ? mc_nbt_tree_root(backing->tree)
+                                 : ((const info_document_backing *)backing)->root;
+}
+
+static mc_world_info_status info_name_document(mc_nbt_string text, mc_nbt_document *document,
+                                               mc_world_info_name **out) {
+    info_document_name *name = malloc(sizeof(*name));
+    if (name == NULL)
+        return MC_WORLD_INFO_ALLOCATION_FAILED;
+    mc_nbt_status held = mc_nbt_document_retain(document);
+    if (held != MC_NBT_OK) {
+        free(name);
+        return held == MC_NBT_LIMIT ? MC_WORLD_INFO_LIMIT : MC_WORLD_INFO_INVALID_ARGUMENT;
+    }
+    name->base = (mc_world_info_name){1, text.length, text.units};
+    name->document = document;
+    *out = &name->base;
+    return MC_WORLD_INFO_OK;
+}
+
+mc_world_info_status mc_world_info_data_adopt_document(mc_nbt_document **slot, size_t maximum,
+                                                       mc_world_info_data **out,
+                                                       mc_world_info_error *error) {
+    if (slot == NULL || *slot == NULL || out == NULL)
+        return info_status(error, MC_WORLD_INFO_INVALID_ARGUMENT, NULL);
+    mc_nbt_document *document = *slot;
+    const mc_nbt_tag *envelope = mc_nbt_document_root(document);
+    if (envelope == NULL || envelope->type != MC_NBT_COMPOUND)
+        return info_status(error, MC_WORLD_INFO_INVALID_ARGUMENT, "Data");
+    const mc_nbt_tag *root = info_get(envelope, "Data");
+    if (root != NULL && root->type != MC_NBT_COMPOUND)
+        return info_status(error, MC_WORLD_INFO_INVALID_FIELD, "Data");
+    const mc_nbt_tag *name_tag = root == NULL ? NULL : info_get(root, "LevelName"),
+                     *player_tag = root == NULL ? NULL : info_get(root, "Player");
+    size_t bytes = sizeof(info_document_backing);
+    bool fits = info_add_size(&bytes, sizeof(mc_world_info_data));
+    if (name_tag != NULL && name_tag->type == MC_NBT_STRING)
+        fits = fits && info_add_size(&bytes, sizeof(info_document_name));
+    if (player_tag != NULL && player_tag->type == MC_NBT_COMPOUND) {
+        fits = fits && info_add_size(&bytes, sizeof(mc_world_info_player));
+        if (player_tag->name.length != 0)
+            fits = fits && info_add_size(&bytes, sizeof(info_document_name));
+    }
+    if (!fits || bytes > maximum)
+        return info_status(error, MC_WORLD_INFO_LIMIT, NULL);
+    info_document_backing *backing = calloc(1, sizeof(*backing));
+    if (backing == NULL)
+        return info_status(error, MC_WORLD_INFO_ALLOCATION_FAILED, NULL);
+    backing->base.holds = 1;
+    backing->document = document;
+    if (root == NULL) {
+        backing->missing_data.type = MC_NBT_COMPOUND;
+        backing->root = &backing->missing_data;
+    } else
+        backing->root = root;
+    mc_world_info_data *data = calloc(1, sizeof(*data));
+    if (data == NULL) {
+        info_backing_release(&backing->base);
+        return info_status(error, MC_WORLD_INFO_ALLOCATION_FAILED, NULL);
+    }
+    data->holds = 1;
+    data->backing = &backing->base;
+    mc_world_info_status status = MC_WORLD_INFO_OK;
+    if (name_tag == NULL)
+        data->name = &info_empty_name;
+    else if (name_tag->type == MC_NBT_STRING)
+        status = info_name_document(name_tag->value.string, document, &data->name);
+    if (status == MC_WORLD_INFO_OK && player_tag != NULL && player_tag->type == MC_NBT_COMPOUND)
+        status = info_player_wrap(&backing->base, player_tag, &data->player);
+    if (status != MC_WORLD_INFO_OK) {
+        mc_world_info_data_release(data);
+        return info_status(error, status, NULL);
+    }
+    /* No fallible operation follows this one owned-occurrence transfer. */
+    backing->owns_document = true;
+    *slot = NULL;
+    *out = data;
+    return info_status(error, MC_WORLD_INFO_OK, NULL);
+}
+
+const mc_nbt_document *mc_world_info_data_document(const mc_world_info_data *data) {
+    return data == NULL || data->backing->tree != NULL
+               ? NULL
+               : ((const info_document_backing *)data->backing)->document;
 }

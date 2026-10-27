@@ -10,12 +10,12 @@
       "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
     },
     "include/mc/world/info/info.h": {
-      "bytes": 14378,
-      "sha256": "2fb2b252af34b1880b1862adf787009cb68a3ef01756cf8fa59c87ac7784ae60"
+      "bytes": 16610,
+      "sha256": "ce3f532dadb59f3e856b7eed079b7bbad0501a990278ef289429d32828739647"
     },
     "include/mc/storage/nbt/nbt.h": {
-      "bytes": 5096,
-      "sha256": "4af00176f7b5ae614ffeff7a6ec282a07e1f673b8c4aa8f1d979df6ba02796df"
+      "bytes": 5416,
+      "sha256": "c396fcce30ebf0ed9ca85f4108cd0cf6af6c04ed1a1371d85721fe69d006fd22"
     },
     "include/mc/inventory/container.h": {
       "bytes": 3705,
@@ -230,16 +230,16 @@
       "sha256": "ce56580b13a73edea960719d9bc79811ccd10de2adffc8a39ef3e239959e6f04"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 2744,
-      "sha256": "24b46a789590ae1c51946f5975373b9ed35b15c6293a76d6376a40137e4181fe"
+      "bytes": 3243,
+      "sha256": "7d08a7f6842bd8d1f1ca1761aea06c7dbb87b19409526fe3b53e003cfca8be11"
     },
     "src/client/application_state.h": {
-      "bytes": 7089,
-      "sha256": "29ca507af345facee83f2d24c7c17c3002141ded802b37212c0ad66b8e701350"
+      "bytes": 7475,
+      "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
     },
     "src/client/startup/application_owner.h": {
-      "bytes": 11443,
-      "sha256": "33fe822ed147bdfd5c8810b2d16e916de3b4b40819fe03a8e527f65ea62864f1"
+      "bytes": 12087,
+      "sha256": "8e857bbe30864344af5d4f98d0142b806d9e52dc0761209a7b91f6f34b599932"
     },
     "src/client/resources/assets.h": {
       "bytes": 7837,
@@ -294,16 +294,16 @@
       "sha256": "8170f5e3611eced070071a7f99abfba45aa24ee3fb0228d374ce95088b41f303"
     },
     "src/client/display/display.h": {
-      "bytes": 13360,
-      "sha256": "d6289bf59b07e89372391b385a8df7972f5e71f4d275e51dde8b39be15ca6c5f"
+      "bytes": 13727,
+      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
     },
     "src/client/application_access.h": {
       "bytes": 1153,
       "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
     },
     "include/mc/client/settings/game_settings.h": {
-      "bytes": 13882,
-      "sha256": "63019b031ddfe14773b98dc3c6b48edec774eb4c9edb4ec4a263e2f0d748c596"
+      "bytes": 14222,
+      "sha256": "64f77f85ab6deed4ab51174044320aabe516f8176c84c801df251fd2ab47945b"
     },
     "include/mc/core/java/writer.h": {
       "bytes": 7832,
@@ -334,12 +334,12 @@
       "sha256": "1af9cc2c4f3b54532440a38c184fd514f1f74af19dd3093f1966b19333aed162"
     },
     "src/client/startup/application_lifetime.c": {
-      "bytes": 6049,
-      "sha256": "1df4186525784926c1c965736eb5a7ade3550a7915eb82e72b91b47e1bde5a98"
+      "bytes": 6258,
+      "sha256": "9af056e5ab6f2e1499bc633113d0d2c3bb56a5615d1294d3b11556b88f65eb0e"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 10292,
-      "sha256": "ef62ecfdb2505e15e75b3f3a465a509863bd3c35d1f27cbbc09eebfddde1cfc6"
+      "bytes": 12529,
+      "sha256": "6d36eaa30109666dc843beb8f9b7422d2e963cab79ec4223454249737ede6e8f"
     },
     "tests/client/startup/test_application_owner.c": {
       "bytes": 20641,

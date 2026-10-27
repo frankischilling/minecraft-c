@@ -993,7 +993,7 @@ cleanup:
     if (app != NULL) {
         if (mc_game_settings_retire(&app->settings, NULL) != MC_GAME_SETTINGS_OK)
             return 1;
-        mc_client_game_directory_free(app->game_directory);
+        mc_client_game_directory_free(app->diagnostic_game_directory);
         mc_resource_files_free(app->files);
         free(app);
     }

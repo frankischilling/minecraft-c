@@ -81,7 +81,7 @@ static bool nbt_coordinate_cases(fixture *f, client_application *app, mc_entity 
      * It is temporarily the actual App.I input, not a callback/stat substitute. */
     char path[8192];
     const int written = snprintf(path, sizeof path, "%s/coordinate-limit",
-                                 mc_client_game_directory_path(app->game_directory));
+                                 mc_client_game_directory_path(app->diagnostic_game_directory));
     CHECK(written > 0 && (size_t)written < sizeof path);
     CHECK(mc_client_game_directory_create(path, NULL, &directory, NULL, NULL) ==
           MC_CLIENT_GAME_DIRECTORY_OK);

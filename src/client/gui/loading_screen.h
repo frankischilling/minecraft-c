@@ -93,6 +93,9 @@ mc_client_loading_status mc_client_loading_classes_bind_resources(mc_client_load
                                                                   mc_client_loading_error *);
 mc_client_render_engine_classes *
 mc_client_loading_screen_graphics(const mc_client_loading_screen *);
+/* Borrow the SAME GUI namespace retained by this actual mk. No new hold,
+ * activation or resource binding; the mk/App lifetime protects this view. */
+mc_client_loading_classes *mc_client_loading_screen_classes(const mc_client_loading_screen *);
 /* Borrow the one actual canonical empty literal; no allocation, source active
  * use, clock or App access. Caller may retain its own String occurrence at the
  * actual source store. The class owner remains live through this operation. */

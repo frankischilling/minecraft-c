@@ -50,8 +50,8 @@ static bool app_setup(fixture *f, client_application *app, const char *root) {
     char path[8192];
     CHECK(strlen(root) < sizeof(path) - 32 &&
           snprintf(path, sizeof(path), "%s/application", root) > 0);
-    CHECK(mc_client_game_directory_create(path, NULL, &app->game_directory, NULL, NULL) ==
-          MC_CLIENT_GAME_DIRECTORY_OK);
+    CHECK(mc_client_game_directory_create(path, NULL, &app->diagnostic_game_directory, NULL,
+                                          NULL) == MC_CLIENT_GAME_DIRECTORY_OK);
     mc_client_stats_options options = mc_client_stats_default_options();
     options.charset = MC_JAVA_READER_UTF8;
     options.diagnostics.emit = active_quiet;
@@ -765,7 +765,7 @@ cleanup:
     if (app != NULL) {
         if (mc_game_settings_retire(&app->settings, NULL) != MC_GAME_SETTINGS_OK)
             result = 1;
-        mc_client_game_directory_free(app->game_directory);
+        mc_client_game_directory_free(app->diagnostic_game_directory);
         mc_resource_files_free(app->files);
         free(app);
     }
