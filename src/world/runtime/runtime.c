@@ -10,6 +10,7 @@
 #include "mc/world/runtime/population/overworld.h"
 #include "millis.h"
 #include "runtime_internal.h"
+#include "saving/player_metadata_internal.h"
 #include "saving/saving_internal.h"
 
 #include <stdlib.h>
@@ -22,33 +23,37 @@ static mc_world_storage_status runtime_error(mc_world_storage_error *error,
     return status;
 }
 
-static mc_world_runtime_acquisition_error acquisition_empty_error(void) {
-    return (mc_world_runtime_acquisition_error){.status = MC_CHUNK_ACQUIRE_OK,
-                                                .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                                .registry = mc_tile_entity_empty_error().registry,
-                                                .tile_entity = mc_live_tile_entities_empty_error(),
-                                                .load_entity = mc_world_entity_load_empty_error(),
-                                                .batch = mc_world_entity_batch_empty_error()};
+static void acquisition_error_init(mc_world_runtime_acquisition_error *error) {
+    static const mc_world_runtime_acquisition_error zero = {.status = MC_CHUNK_ACQUIRE_OK};
+    *error = zero;
+    mc_live_tile_entities_error_init(&error->tile_entity);
+    error->registry = error->tile_entity.registry;
+    mc_world_entity_load_error_init(&error->load_entity);
+    mc_world_entity_batch_error_init(&error->batch);
 }
 
-static mc_world_runtime_lifecycle_error lifecycle_empty_error(void) {
-    return (mc_world_runtime_lifecycle_error){.status = MC_CHUNK_LIFECYCLE_OK,
-                                              .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                              .save = mc_world_game_save_empty_error(),
-                                              .tile_entity = mc_live_tile_entities_empty_error(),
-                                              .batch = mc_world_entity_batch_empty_error()};
+static void lifecycle_error_init(mc_world_runtime_lifecycle_error *error) {
+    static const mc_world_runtime_lifecycle_error zero = {.status = MC_CHUNK_LIFECYCLE_OK};
+    *error = zero;
+    error->save.entity_slice = SIZE_MAX;
+    error->save.entity_index = SIZE_MAX;
+    mc_entity_nbt_error_init(&error->save.entity);
+    mc_live_tile_entities_error_init(&error->save.tile_entity);
+    mc_world_player_metadata_error_init(&error->save.metadata);
+    mc_live_tile_entities_error_init(&error->tile_entity);
+    mc_world_entity_batch_error_init(&error->batch);
 }
 
 static void lifecycle_cause(mc_world_runtime *runtime, mc_world_storage_error cause) {
     if (runtime->lifecycle_error != NULL) {
-        *runtime->lifecycle_error = lifecycle_empty_error();
+        lifecycle_error_init(runtime->lifecycle_error);
         runtime->lifecycle_error->cause = cause;
     }
 }
 
 static void acquisition_cause(mc_world_runtime *runtime, mc_world_storage_error cause) {
     if (runtime->acquisition_error != NULL) {
-        *runtime->acquisition_error = acquisition_empty_error();
+        acquisition_error_init(runtime->acquisition_error);
         runtime->acquisition_error->cause = cause;
     }
 }
@@ -375,52 +380,28 @@ static mc_chunk_callback_result metadata(void *owner, const mc_world_save_contex
     (void)context;
     mc_world_runtime *runtime = owner;
     if (runtime->construction.mode == MC_WORLD_RUNTIME_GAME) {
-        /* McRegion's list-taking wrapper changes the actual Info before the
-         * serializer reads World.d. Keep that mutation on every later failure.
-         * The outer World metadata method has already checked the session. */
-        if (mc_world_info_version_set(runtime->fields.x, 19132) != MC_WORLD_INFO_OK) {
-            runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "McRegion live Info version setter");
-        } else {
-            const mc_world_reference_list *players = runtime->fields.d;
-            if (players == NULL || players->count > players->capacity ||
-                players->capacity > SIZE_MAX / sizeof(*players->items) ||
-                (players->capacity != 0 && players->items == NULL)) {
-                runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                              "WorldInfo Player List.size receiver");
-            } else if (players->count != 0) {
-                runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                              "WorldInfo live Player serialization");
-            } else {
-                mc_world_info_record *record = NULL;
-                mc_world_info_error detail;
-                mc_world_info_status serialized = mc_world_info_record_create_with_player(
-                    runtime->fields.x, NULL, &record, &detail);
-                if (serialized == MC_WORLD_INFO_OK) {
-                    mc_world_store_write_info_record(runtime->fields.w, runtime->fields.x, record,
-                                                     &runtime->last_error);
-                    mc_world_info_record_release(record);
-                } else {
-                    mc_world_storage_status status =
-                        serialized == MC_WORLD_INFO_LIMIT ? MC_WORLD_STORAGE_LIMIT
-                        : serialized == MC_WORLD_INFO_ALLOCATION_FAILED
-                            ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                        : serialized == MC_WORLD_INFO_INVALID_ARGUMENT
-                            ? MC_WORLD_STORAGE_INVALID_ARGUMENT
-                        : serialized == MC_WORLD_INFO_CLOCK_FAILURE ? MC_WORLD_STORAGE_IO_ERROR
-                        : serialized == MC_WORLD_INFO_INVALID_PHASE
-                            ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
-                            : MC_WORLD_STORAGE_INVALID_DATA;
-                    runtime_error(&runtime->last_error, status,
-                                  detail.field == NULL ? mc_world_info_status_string(serialized)
-                                                       : detail.field);
-                }
-            }
+        /* Capture the active private attempt, not a caller result or another
+         * World's ambient diagnostics. Synchronous nested saves own/restore
+         * their own frames; this local result remains this callback's cause. */
+        mc_world_runtime_lifecycle_error *attempt = runtime->lifecycle_error;
+        mc_world_info *info = runtime->fields.x;
+        mc_world_info_record *record = NULL;
+        mc_world_player_metadata_error detail;
+        mc_world_storage_error cause = {0};
+        mc_world_storage_status status =
+            mc_world_runtime_build_player_metadata(runtime, &record, &detail);
+        if (status == MC_WORLD_STORAGE_OK)
+            status = mc_world_store_write_info_record(runtime->fields.w, info, record, &cause);
+        else
+            cause = (mc_world_storage_error){status, detail.operation, 0};
+        mc_world_info_record_release(record);
+        runtime->last_error = cause;
+        if (status != MC_WORLD_STORAGE_OK && attempt != NULL) {
+            lifecycle_error_init(attempt);
+            attempt->cause = cause;
+            attempt->save.metadata = detail;
         }
-        if (runtime->last_error.status != MC_WORLD_STORAGE_OK)
-            lifecycle_cause(runtime, runtime->last_error);
-        return runtime->last_error.status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK
-                                                                 : MC_CHUNK_CALLBACK_FATAL;
+        return status == MC_WORLD_STORAGE_OK ? MC_CHUNK_CALLBACK_OK : MC_CHUNK_CALLBACK_FATAL;
     }
     if (runtime->fields.x != NULL) {
         runtime_error(&runtime->last_error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -787,7 +768,8 @@ static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_
                                                mc_chunk_state **out,
                                                acquisition_operation operation,
                                                mc_world_runtime_acquisition_error *error) {
-    mc_world_runtime_acquisition_error frame = acquisition_empty_error();
+    mc_world_runtime_acquisition_error frame;
+    acquisition_error_init(&frame);
     frame.status = enter_acquire(runtime, &frame.cause);
     if (frame.status == MC_CHUNK_ACQUIRE_OK) {
         mc_world_runtime_acquisition_error *previous = runtime->acquisition_error;
@@ -813,7 +795,7 @@ static mc_chunk_acquire_status acquire_attempt(mc_world_runtime *runtime, int32_
         --runtime->active_calls;
     }
     if (frame.status == MC_CHUNK_ACQUIRE_OK)
-        frame = acquisition_empty_error();
+        acquisition_error_init(&frame);
     if (error != NULL)
         *error = frame;
     return frame.status;
@@ -877,7 +859,8 @@ static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bo
                                                    int32_t pass, bool *out,
                                                    lifecycle_operation operation,
                                                    mc_world_runtime_lifecycle_error *error) {
-    mc_world_runtime_lifecycle_error frame = lifecycle_empty_error();
+    mc_world_runtime_lifecycle_error frame;
+    lifecycle_error_init(&frame);
     frame.status = enter_lifecycle(runtime, &frame.cause);
     if (frame.status == MC_CHUNK_LIFECYCLE_OK) {
         mc_world_runtime_lifecycle_error *previous = runtime->lifecycle_error;
@@ -922,7 +905,7 @@ static mc_chunk_lifecycle_status lifecycle_attempt(mc_world_runtime *runtime, bo
         --runtime->active_calls;
     }
     if (frame.status == MC_CHUNK_LIFECYCLE_OK)
-        frame = lifecycle_empty_error();
+        lifecycle_error_init(&frame);
     else if (frame.cause.status == MC_WORLD_STORAGE_OK) {
         /* Underlying native validation and external callback results need no
          * ambient diagnostic lookup or fabricated TileEntity child. */

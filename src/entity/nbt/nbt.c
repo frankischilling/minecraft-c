@@ -1,7 +1,11 @@
 #include "mc/entity/nbt/nbt.h"
 
+#include "../../block/registry/registry_internal.h"
+#include "../../block/registry/runtime_internal.h"
 #include "../entity_internal.h"
 #include "../minecart/nbt_internal.h"
+#include "../player/nbt_internal.h"
+#include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 
 #include <float.h>
@@ -191,14 +195,11 @@ static bool read_item(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
     return true;
 }
 
-static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound,
+static bool read_subtype(mc_entity *entity, mc_registry_classes *registry,
+                         const mc_nbt_tag *compound, const mc_nbt_limits *limits,
                          mc_entity_nbt_error *frame) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
-        /* The two actual forwarding bodies perform no earlier field stores.
-         * Preserve the complete sn.e prefix before the missing ls.a body. */
-        frame->local_player_bytecode = 2;
-        frame->player_bytecode = 2;
-        return fail(frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Player NBT Living read dependency");
+        return mc_player_nbt_read_held(entity, registry, compound, limits, frame);
     }
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM))
         return read_item(entity, compound, frame);
@@ -219,7 +220,8 @@ static bool read_subtype(mc_entity *entity, const mc_nbt_tag *compound,
     return fail(frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete read hook");
 }
 
-static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_nbt_error *frame) {
+static bool read_base(mc_entity *entity, mc_registry_classes *registry, const mc_nbt_tag *compound,
+                      const mc_nbt_limits *limits, mc_entity_nbt_error *frame) {
     const mc_nbt_tag *pos, *motion, *rotation, *tag;
     frame->base_bytecode = 3;
     if (!get(compound, pos_name, 3, "Pos", MC_NBT_LIST, &pos, frame))
@@ -308,19 +310,50 @@ static bool read_base(mc_entity *entity, const mc_nbt_tag *compound, mc_entity_n
     entity->base.yaw = fmodf(entity->base.yaw, 360.0f);
     entity->base.aT = fmodf(entity->base.aT, 360.0f);
     frame->base_bytecode = 311;
-    return read_subtype(entity, compound, frame);
+    return read_subtype(entity, registry, compound, limits, frame);
+}
+
+mc_entity_nbt_status mc_entity_read_nbt_in_context(mc_entity *entity, mc_registry_classes *registry,
+                                                   const mc_nbt_tag *compound,
+                                                   const mc_nbt_limits *limits,
+                                                   mc_entity_nbt_error *error) {
+    mc_entity_nbt_error frame;
+    mc_entity_nbt_error_init(&frame);
+    if (!enter(entity, &frame))
+        return publish(&frame, error);
+    bool held = false, admitted = true;
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        mc_entity_nbt_select_player_detail(&frame);
+    if (registry != NULL && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        if (registry->options.side != MC_REGISTRY_CLIENT || registry->entities != entity->classes) {
+            fail(&frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Player NBT actual code namespace");
+            admitted = false;
+        } else {
+            const mc_registry_status status = mc_registry_classes_retain(
+                registry, MC_REGISTRY_CLIENT, registry->options.random_profile,
+                &frame.player_inventory.registry);
+            held = status == MC_REGISTRY_OK;
+            if (!held) {
+                fail(&frame,
+                     status == MC_REGISTRY_LIMIT ? MC_ENTITY_NBT_LIMIT
+                                                 : MC_ENTITY_NBT_REGISTRY_FAILED,
+                     "Player NBT code Registry native hold");
+                admitted = false;
+            }
+        }
+    }
+    const bool completed = admitted && read_base(entity, registry, compound, limits, &frame);
+    if (held && !mc_registry_runtime_borrow_release(registry))
+        fail(&frame, MC_ENTITY_NBT_REGISTRY_FAILED, "Player NBT code Registry hold retirement");
+    mc_entity_release(entity);
+    if (completed && frame.status == MC_ENTITY_NBT_OK)
+        mc_entity_nbt_error_init(&frame);
+    return publish(&frame, error);
 }
 
 mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *compound,
                                         mc_entity_nbt_error *error) {
-    mc_entity_nbt_error frame = mc_entity_nbt_empty_error();
-    if (!enter(entity, &frame))
-        return publish(&frame, error);
-    const bool completed = read_base(entity, compound, &frame);
-    mc_entity_release(entity);
-    if (completed)
-        frame = mc_entity_nbt_empty_error();
-    return publish(&frame, error);
+    return mc_entity_read_nbt_in_context(entity, NULL, compound, NULL, error);
 }
 
 static mc_nbt_string name(const uint16_t *units, size_t length) {
@@ -372,7 +405,7 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
     const mc_nbt_tag *motion_items[3] = {&vector[3], &vector[4], &vector[5]};
     const mc_nbt_tag *rotation_items[2] = {&vector[6], &vector[7]};
     const mc_nbt_tag *item_items[3] = {&stack_fields[0], &stack_fields[1], &stack_fields[2]};
-    const mc_nbt_tag *root_items[11];
+    const mc_nbt_tag *root_items[19];
     for (size_t index = 0; index < 10; ++index)
         root_items[index] = &fields[index];
     mc_nbt_tag root = {.type = MC_NBT_COMPOUND,
@@ -482,6 +515,18 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
         for (size_t index = 0; index < own->value.compound.length; ++index)
             root_items[7 + index] = own->value.compound.items[index];
         root.value.compound.length = 7 + own->value.compound.length;
+    } else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
+        if (!mc_player_nbt_build_fields_held(entity, limits, &minecart_fields, &frame))
+            goto done;
+        const mc_nbt_tag *own = mc_nbt_tree_root(minecart_fields);
+        if (own == NULL || own->type != MC_NBT_COMPOUND ||
+            (own->value.compound.length != 9 && own->value.compound.length != 12)) {
+            fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Player NBT own-field result shape");
+            goto done;
+        }
+        for (size_t index = 0; index < own->value.compound.length; ++index)
+            root_items[7 + index] = own->value.compound.items[index];
+        root.value.compound.length = 7 + own->value.compound.length;
     } else {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT concrete write hook");
         goto done;
@@ -494,7 +539,10 @@ mc_entity_nbt_status mc_entity_build_nbt(mc_entity *entity, const mc_nbt_limits 
         remaining = limits == NULL ? mc_nbt_default_limits() : *limits;
         const size_t retained = mc_nbt_tree_allocation_bytes(minecart_fields);
         if (retained > remaining.max_allocation_bytes) {
-            fail(&frame, MC_ENTITY_NBT_LIMIT, "Entity NBT retained Minecart fields budget");
+            fail(&frame, MC_ENTITY_NBT_LIMIT,
+                 mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
+                     ? "Entity NBT retained Player fields budget"
+                     : "Entity NBT retained Minecart fields budget");
             goto done;
         }
         remaining.max_allocation_bytes -= retained;

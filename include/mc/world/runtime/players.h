@@ -26,9 +26,10 @@ mc_world_storage_status mc_world_runtime_update_player_sleeping(mc_world_runtime
 /* Actual client fd.a(gs), distinct from fd.a(Entity) weather publication.
  * Read the actual Info.Player even when NULL. A nonnull captured tag enters
  * inherited Entity NBT load; only complete success permits Info.Player clear.
- * Current dc.a2 -> gs.a2 reaches the explicit missing Living-read dependency
- * after the completed base load, or an earlier real malformed-tag failure.
- * Never clear that tag or publish after such a failure.
+ * Canonical dc uses the same-owner explicit code Registry for the actual
+ * Inventory read. Sleeping=false loads can finish; Sleeping=true retains the
+ * genuine wake93 frontier after its preceding fields/coordinate stores.
+ * Never clear that tag or publish after an incomplete/failed source read.
  *
  * Actual current ok/jb map-cache provenance makes instanceof kx false. Cache
  * policy, grid storage and coordinates never select centered-grid behavior;

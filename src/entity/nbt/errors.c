@@ -15,6 +15,32 @@ void mc_entity_nbt_error_init(mc_entity_nbt_error *error) {
         *error = empty;
 }
 
+void mc_entity_nbt_select_cart_detail(mc_entity_nbt_error *error) {
+    static const mc_minecart_site site = {0};
+    static const mc_minecart_inventory_context inventory = {0};
+    if (error == NULL || error->late_hook == MC_ENTITY_NBT_LATE_CART)
+        return;
+    error->minecart_read = site;
+    error->minecart_write = site;
+    error->inventory = inventory;
+    error->late_hook = MC_ENTITY_NBT_LATE_CART;
+}
+
+void mc_entity_nbt_select_player_detail(mc_entity_nbt_error *error) {
+    static const mc_inventory_nbt_error inventory = {.index = SIZE_MAX,
+                                                     .slot = -1,
+                                                     .registry = {.initializer_pc = -1,
+                                                                  .constructor_pc = -1,
+                                                                  .block_id = -1,
+                                                                  .item_argument = -1,
+                                                                  .active_initializer_pc = -1}};
+    if (error == NULL || error->late_hook == MC_ENTITY_NBT_LATE_PLAYER)
+        return;
+    error->living_bytecode = 0;
+    error->player_inventory = inventory;
+    error->late_hook = MC_ENTITY_NBT_LATE_PLAYER;
+}
+
 mc_entity_nbt_error mc_entity_nbt_empty_error(void) {
     mc_entity_nbt_error error;
     mc_entity_nbt_error_init(&error);

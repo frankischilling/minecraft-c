@@ -2,9 +2,21 @@
 #define MC_WORLD_RUNTIME_SAVING_ERRORS_H
 
 #include "mc/world/cache/lifecycle.h"
+#include "mc/world/info/info.h"
 #include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/tile_entities/errors.h"
 #include "mc/world/storage/chunk.h"
+
+typedef struct mc_world_player_metadata_error {
+    mc_world_storage_status status;
+    const char *operation;
+    unsigned int wrapper_bytecode, list_bytecode, info_writer_bytecode;
+    size_t player_index;
+    mc_entity_nbt_error entity;
+    mc_world_info_error info;
+} mc_world_player_metadata_error;
+
+void mc_world_player_metadata_error_init(mc_world_player_metadata_error *);
 
 /* Passive per-attempt diagnostics. Region and shared serializer positions are
  * distinct from the complete reached TileEntity/Stack/NBT child. Zero denotes native
@@ -20,6 +32,7 @@ typedef struct mc_world_game_save_error {
     mc_live_tile_entity_error tile_entity;
     mc_stored_chunk_error composition;
     mc_nbt_error encoding;
+    mc_world_player_metadata_error metadata;
 } mc_world_game_save_error;
 
 typedef struct mc_world_runtime_lifecycle_error {

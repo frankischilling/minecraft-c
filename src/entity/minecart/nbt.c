@@ -74,6 +74,7 @@ static bool stack_failure(mc_entity_nbt_error *frame, mc_item_stack_status statu
 
 bool mc_minecart_nbt_read_held(mc_entity *cart, const mc_nbt_tag *compound,
                                mc_entity_nbt_error *frame) {
+    mc_entity_nbt_select_cart_detail(frame);
     frame->minecart_read = own_site(cart, false);
     frame->index = SIZE_MAX;
     const mc_nbt_tag *tag;
@@ -236,6 +237,7 @@ static mc_minecart_stack_array *write_array(mc_entity *cart, size_t index, uint1
 
 bool mc_minecart_nbt_build_fields_held(mc_entity *cart, const mc_nbt_limits *limits,
                                        mc_nbt_tree **out, mc_entity_nbt_error *frame) {
+    mc_entity_nbt_select_cart_detail(frame);
     frame->minecart_write = own_site(cart, true);
     frame->index = SIZE_MAX;
     frame->field = "Type";

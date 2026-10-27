@@ -312,16 +312,16 @@
       "sha256": "d5d95b544f211c8f0d3cac36ebde0ede2f3fa06b3b4e5c54085d35b5c8a0bec7"
     },
     "include/mc/world/runtime/players.h": {
-      "bytes": 2791,
-      "sha256": "08e8d72c957f6efc8822fa69efafc055453f19b90e932cc7937c3aa2104478c6"
+      "bytes": 2880,
+      "sha256": "fea051a7f0d2b44a335bb796b538f170553ca18e4b2536429997d1aebf984b00"
     },
     "include/mc/entity/nbt/errors.h": {
-      "bytes": 2610,
-      "sha256": "223cb8916439eae6ec46c39417a93b7ff66c13d326bf23e07b05a483cf60e043"
+      "bytes": 3635,
+      "sha256": "f559e8eb754602a1894470d6d86feb5a006e0e2abf9ab69056ab6205d381438c"
     },
     "include/mc/entity/nbt/nbt.h": {
-      "bytes": 6080,
-      "sha256": "0efbddaae198997b885e2339abc70b025f0ee6869650f96485eb809f3d4096e1"
+      "bytes": 7044,
+      "sha256": "d5dd284ce82cbe5e8a0c0ab8f216d70fdce71a6aeebb7c1ee0e615b821c46a79"
     },
     "include/mc/entity/player/player.h": {
       "bytes": 9912,
@@ -348,8 +348,8 @@
       "sha256": "75634be271dddf277f60f5c14e2819b8457a046c55f725e5e8842b15d8a09572"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 41538,
-      "sha256": "1458a15d5332fba3d761b2b086d22ee38d209f4f6a6a947f1b748047c58e5c6e"
+      "bytes": 41582,
+      "sha256": "14605c4b2d324a87b26b4d8f018898664c3ad9a84e1cba4075b87fd365023a98"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 2555,
@@ -360,16 +360,16 @@
       "sha256": "81935974adc1d96d0e34d615435ca3a2cd2cb4d96c704b363f39d159a2b0ddf0"
     },
     "src/entity/nbt/nbt.c": {
-      "bytes": 22964,
-      "sha256": "8c0db749de7f9df57a2879148206b8f03bdbb47f61357fd87130cdd6bb6dff8c"
+      "bytes": 25718,
+      "sha256": "40a16d6e0174952c799787ccffff8b960e45d9a1802cc6089084121687ffb5e7"
     },
     "src/entity/player/construction.c": {
-      "bytes": 17742,
-      "sha256": "e495889027bc824732f2212c75d373bd1d1b3c0a683e16df245f2a54a5da397f"
+      "bytes": 17815,
+      "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
     },
     "tests/world/runtime/player_publication/test_publication.c": {
-      "bytes": 19674,
-      "sha256": "b2c053817f3b730206a20549dd3727fdef608c6a989146920643e11cf8a83313"
+      "bytes": 22492,
+      "sha256": "362b42e0f7cfd86f1bb7ce77611659a5b5d6feccbe3bc77755828551932ef3e3"
     },
     "src/world/info/weather_source_internal.h": {
       "bytes": 1212,

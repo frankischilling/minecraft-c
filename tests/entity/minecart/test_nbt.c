@@ -172,6 +172,8 @@ static bool tag_is(const mc_nbt_tag *root, const char *name, mc_nbt_type type) {
 }
 
 static bool read_site(const mc_entity_nbt_error *error, mc_entity_source source, uint16_t pc) {
+    if (error->late_hook != MC_ENTITY_NBT_LATE_CART)
+        return false;
     const mc_minecart_site *s = &error->minecart_read;
     return error->base_bytecode == 311 && s->selected && s->entered && s->declaring_class != NULL &&
            strcmp(s->declaring_class, source == MC_ENTITY_CLIENT ? "yl" : "pr") == 0 &&
@@ -181,6 +183,8 @@ static bool read_site(const mc_entity_nbt_error *error, mc_entity_source source,
 }
 
 static bool write_site(const mc_entity_nbt_error *error, mc_entity_source source, uint16_t pc) {
+    if (error->late_hook != MC_ENTITY_NBT_LATE_CART)
+        return false;
     const mc_minecart_site *s = &error->minecart_write;
     return error->base_bytecode == 145 && s->selected && s->entered && s->declaring_class != NULL &&
            strcmp(s->declaring_class, source == MC_ENTITY_CLIENT ? "yl" : "pr") == 0 &&
@@ -190,12 +194,13 @@ static bool write_site(const mc_entity_nbt_error *error, mc_entity_source source
 }
 
 static bool fresh(const mc_entity_nbt_error *error) {
-    return error->status == MC_ENTITY_NBT_OK && error->operation == NULL && error->field == NULL &&
-           error->index == SIZE_MAX && error->base_bytecode == 0 &&
-           !error->minecart_read.selected && !error->minecart_read.entered &&
-           !error->minecart_write.selected && !error->minecart_write.entered &&
-           error->stack.status == MC_ITEM_STACK_OK && error->stack.field == NULL &&
-           error->construction.status == MC_ENTITY_OK && error->nbt.status == MC_NBT_OK;
+    return error->late_hook == MC_ENTITY_NBT_LATE_NONE && error->status == MC_ENTITY_NBT_OK &&
+           error->operation == NULL && error->field == NULL && error->index == SIZE_MAX &&
+           error->base_bytecode == 0 && !error->minecart_read.selected &&
+           !error->minecart_read.entered && !error->minecart_write.selected &&
+           !error->minecart_write.entered && error->stack.status == MC_ITEM_STACK_OK &&
+           error->stack.field == NULL && error->construction.status == MC_ENTITY_OK &&
+           error->nbt.status == MC_NBT_OK;
 }
 
 static int conditional_types(mc_entity_source source) {
@@ -402,12 +407,16 @@ static int duplicate_and_stack_failures(mc_entity_source source) {
               error.stack_bytecode == stack_pcs[cut]);
         CHECK(error.stack.status == MC_ITEM_STACK_INVALID_FIELD && error.stack.field != NULL &&
               strcmp(error.stack.field, names[cut]) == 0);
-        CHECK(error.inventory.slot_selected && error.inventory.slot == 5);
-        CHECK(error.inventory.stack_cause == MC_MINECART_INVENTORY_STACK_NBT_CONSTRUCTOR);
-        CHECK(error.inventory.stack_constructor.selected &&
+        CHECK(error.late_hook == MC_ENTITY_NBT_LATE_CART && error.inventory.slot_selected &&
+              error.inventory.slot == 5);
+        CHECK(error.late_hook == MC_ENTITY_NBT_LATE_CART &&
+              error.inventory.stack_cause == MC_MINECART_INVENTORY_STACK_NBT_CONSTRUCTOR);
+        CHECK(error.late_hook == MC_ENTITY_NBT_LATE_CART &&
+              error.inventory.stack_constructor.selected &&
               error.inventory.stack_constructor.entered &&
               error.inventory.stack_constructor.bytecode == 11);
-        CHECK(error.inventory.stack_read.selected && error.inventory.stack_read.entered &&
+        CHECK(error.late_hook == MC_ENTITY_NBT_LATE_CART && error.inventory.stack_read.selected &&
+              error.inventory.stack_read.entered &&
               error.inventory.stack_read.bytecode == stack_pcs[cut]);
         CHECK(mc_minecart_entity_get_snapshot(f.cart, &after) == MC_ENTITY_OK);
         CHECK(after.fields.d == 1 && after.inventory_length == 27 &&
@@ -466,7 +475,7 @@ static int list_controls(mc_entity_source source) {
             CHECK(status == (cut == 0 ? MC_ENTITY_NBT_NULL_REFERENCE : MC_ENTITY_NBT_WRONG_TAG));
             CHECK(read_site(&error, source, cut == 1 ? 92 : 101));
             CHECK(error.index == 0);
-            CHECK(!error.inventory.slot_selected);
+            CHECK(error.late_hook == MC_ENTITY_NBT_LATE_CART && !error.inventory.slot_selected);
         }
         CHECK(mc_minecart_entity_get_snapshot(f.cart, &after) == MC_ENTITY_OK);
         CHECK(after.inventory_length == 27);
@@ -714,8 +723,8 @@ static int factory_and_base_frontiers(mc_entity_source source) {
     record_init(&r, 1);
     r.fields[MOTION].value.list.length = 0;
     CHECK(mc_entity_read_nbt(f.cart, &r.root, &error) == MC_ENTITY_NBT_INDEX_OUT_OF_BOUNDS);
-    CHECK(error.base_bytecode == 25 && !error.minecart_read.selected &&
-          !error.minecart_read.entered);
+    CHECK(error.late_hook == MC_ENTITY_NBT_LATE_NONE && error.base_bytecode == 25 &&
+          !error.minecart_read.selected && !error.minecart_read.entered);
     result = 0;
 cleanup:
     mc_item_stack_release(held);
@@ -748,8 +757,8 @@ static int raw_cart_semantic_frontier(mc_entity_source source) {
           after.random == before.random && after.watcher == before.watcher);
     record_init(&r, 1);
     CHECK(mc_entity_read_nbt(raw, &r.root, &error) == MC_ENTITY_NBT_NULL_REFERENCE);
-    CHECK(error.base_bytecode == 294 && !error.minecart_read.selected &&
-          !error.minecart_read.entered);
+    CHECK(error.late_hook == MC_ENTITY_NBT_LATE_NONE && error.base_bytecode == 294 &&
+          !error.minecart_read.selected && !error.minecart_read.entered);
     CHECK(mc_entity_get_snapshot(raw, &after) == MC_ENTITY_OK);
     CHECK(after.phase == MC_ENTITY_RAW && after.base.x == 1.0 && after.base.y == 2.0 &&
           after.base.z == 3.0 && after.bounds == NULL);

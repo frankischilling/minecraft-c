@@ -248,16 +248,56 @@ static bool nbt_prefixes(fixture *f, mc_entity *player) {
     owner = NULL;
     CHECK(mc_world_info_player_copy(&root, NULL, &owner, NULL) == MC_WORLD_INFO_OK);
     CHECK(mc_world_info_player_set(info, owner) == MC_WORLD_INFO_OK);
+    /* Preserve the original base-only input: ordinary source defaults now
+     * complete through the genuine Player bodies and publication. */
+    mc_inventory_player_state old_inventory, new_inventory;
+    CHECK(mc_inventory_player_read_state(player->local_player->fields.player.c, &old_inventory));
+    const uintptr_t old_main = (uintptr_t)old_inventory.main_slots;
+    const uintptr_t old_armor = (uintptr_t)old_inventory.armor_slots;
+    CHECK(mc_world_runtime_attach_player(f->world, player, &error) == MC_WORLD_STORAGE_OK &&
+          error.bytecode == 0 && error.nbt.status == MC_ENTITY_NBT_OK);
+    CHECK(mc_inventory_player_read_state(player->local_player->fields.player.c, &new_inventory));
+    CHECK(player->base.x == 8.5 && player->base.y == 80.0 && player->base.velocity_z == .3 &&
+          player->base.yaw == 90.0f && player->base.aU == 450.0f &&
+          player->local_player->fields.living.Y == 10 &&
+          player->local_player->fields.player.g == 0 && !player->local_player->fields.player.u &&
+          (uintptr_t)new_inventory.main_slots != old_main &&
+          (uintptr_t)new_inventory.armor_slots != old_armor);
+    CHECK(mc_world_info_player_get(info, &current) == MC_WORLD_INFO_OK && current == NULL &&
+          f->world->fields.d->count == before + 1);
+    mc_world_info_player_release(owner);
+    owner = NULL;
+
+    /* A distinct sleeping input reaches the real, unfinished wake invocation.
+     * No source read/clear/publication success is substituted for that body. */
+    const uint16_t sleeping_name[] = {'S', 'l', 'e', 'e', 'p', 'i', 'n', 'g'},
+                   timer_name[] = {'S', 'l', 'e', 'e', 'p', 'T', 'i', 'm', 'e', 'r'},
+                   score_name[] = {'S', 'c', 'o', 'r', 'e'};
+    const mc_nbt_tag sleeping = {.type = MC_NBT_BYTE,
+                                 .name = {sleeping_name, 8},
+                                 .value.byte_value = 1},
+                     timer = {.type = MC_NBT_SHORT,
+                              .name = {timer_name, 10},
+                              .value.short_value = 23},
+                     score = {.type = MC_NBT_INT, .name = {score_name, 5}, .value.int_value = 1234};
+    const mc_nbt_tag *sleep_items[] = {lists, lists + 1, lists + 2, &sleeping, &timer, &score};
+    const mc_nbt_tag sleep_root = {.type = MC_NBT_COMPOUND,
+                                   .value.compound = {.items = sleep_items, .length = 6}};
+    const size_t sleeping_before = f->world->fields.d->count;
+    CHECK(mc_world_info_player_copy(&sleep_root, NULL, &owner, NULL) == MC_WORLD_INFO_OK &&
+          mc_world_info_player_set(info, owner) == MC_WORLD_INFO_OK);
     CHECK(mc_world_runtime_attach_player(f->world, player, &error) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           error.bytecode == 14 && error.nbt.base_bytecode == 311 &&
-          error.nbt.local_player_bytecode == 2 && error.nbt.player_bytecode == 2 &&
+          error.nbt.local_player_bytecode == 2 && error.nbt.player_bytecode == 93 &&
+          error.nbt.late_hook == MC_ENTITY_NBT_LATE_PLAYER && error.nbt.living_bytecode == 55 &&
           error.nbt.status == MC_ENTITY_NBT_UNSUPPORTED_TYPE);
-    CHECK(player->base.x == 8.5 && player->base.y == 80.0 && player->base.velocity_z == .3 &&
-          player->base.yaw == 90.0f && player->base.aU == 450.0f &&
-          player->local_player->fields.living.Y == 20);
+    const mc_player_fields *state = &player->local_player->fields.player;
+    CHECK(state->u && state->private_a == 23 && state->g == 0 && state->v != NULL &&
+          state->v->x == 8 && state->v->y == 80 && state->v->z == 8 &&
+          player->local_player->fields.living.Y == 10);
     CHECK(mc_world_info_player_get(info, &current) == MC_WORLD_INFO_OK && current == owner &&
-          f->world->fields.d->count == before);
+          f->world->fields.d->count == sleeping_before);
     CHECK(mc_world_info_player_set(info, NULL) == MC_WORLD_INFO_OK);
     mc_world_info_player_release(owner);
     return true;

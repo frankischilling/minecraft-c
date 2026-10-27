@@ -1294,32 +1294,51 @@ static bool entity_diagnostic(natural_json *json, const mc_entity_error *error) 
 
 static bool entity_nbt_diagnostic(natural_json *json, const mc_entity_nbt_error *error) {
     const mc_entity_registry_error *r = &error->registry;
+    const bool common =
+        emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
+        string(json, error->operation) && emit(json, ",\"field\":") && string(json, error->field) &&
+        emit(json,
+             ",\"index\":%zu,\"wrapper_bytecode\":%u,\"name_bytecode\":%u,"
+             "\"factory_bytecode\":%u,\"base_bytecode\":%u,\"item_bytecode\":%u,"
+             "\"falling_bytecode\":%u,\"stack_bytecode\":%u,\"initializer_bytecode\":%u,"
+             "\"registration_bytecode\":%u,\"construction\":",
+             error->index, error->wrapper_bytecode, error->name_bytecode, error->factory_bytecode,
+             error->base_bytecode, error->item_bytecode, error->falling_bytecode,
+             error->stack_bytecode, error->initializer_bytecode, error->registration_bytecode) &&
+        entity_diagnostic(json, &error->construction) && emit(json, ",\"stack\":") &&
+        stack_diagnostic(json, &error->stack) && emit(json, ",\"nbt\":") &&
+        nbt_diagnostic(json, &error->nbt) &&
+        emit(json,
+             ",\"registry\":{\"status\":%u,\"cause\":%u,\"operation\":", (unsigned int)r->status,
+             (unsigned int)r->cause) &&
+        string(json, r->operation) &&
+        emit(json,
+             ",\"initializer_bytecode\":%u,\"registration_bytecode\":%u,"
+             "\"class_cause\":%u}",
+             r->initializer_bytecode, r->registration_bytecode, (unsigned int)r->class_cause);
+    if (!common)
+        return false;
+    if (error->late_hook == MC_ENTITY_NBT_LATE_PLAYER) {
+        const mc_inventory_nbt_error *p = &error->player_inventory;
+        return emit(json,
+                    ",\"late_hook\":%u,\"local_player_bytecode\":%u,\"player_bytecode\":%u,"
+                    "\"living_bytecode\":%u,\"player_inventory\":{\"status\":%u,\"operation\":",
+                    (unsigned int)error->late_hook, error->local_player_bytecode,
+                    error->player_bytecode, error->living_bytecode, (unsigned int)p->status) &&
+               string(json, p->operation) && emit(json, ",\"field\":") && string(json, p->field) &&
+               emit(json,
+                    ",\"bytecode\":%u,\"stack_bytecode\":%u,\"index\":%zu,\"slot\":%" PRId32
+                    ",\"stack\":",
+                    p->bytecode, p->stack_bytecode, p->index, p->slot) &&
+               stack_diagnostic(json, &p->stack) && emit(json, ",\"registry\":") &&
+               registry_diagnostic(json, &p->registry) && emit(json, ",\"nbt\":") &&
+               nbt_diagnostic(json, &p->nbt) && emit(json, "}}");
+    }
+    if (error->late_hook != MC_ENTITY_NBT_LATE_NONE && error->late_hook != MC_ENTITY_NBT_LATE_CART)
+        return false;
     const mc_minecart_inventory_context *i = &error->inventory;
-    return emit(json, "{\"status\":%u,\"operation\":", (unsigned int)error->status) &&
-           string(json, error->operation) && emit(json, ",\"field\":") &&
-           string(json, error->field) &&
-           emit(json,
-                ",\"index\":%zu,\"wrapper_bytecode\":%u,\"name_bytecode\":%u,"
-                "\"factory_bytecode\":%u,\"base_bytecode\":%u,\"item_bytecode\":%u,"
-                "\"falling_bytecode\":%u,\"stack_bytecode\":%u,\"initializer_bytecode\":%u,"
-                "\"registration_bytecode\":%u,\"construction\":",
-                error->index, error->wrapper_bytecode, error->name_bytecode,
-                error->factory_bytecode, error->base_bytecode, error->item_bytecode,
-                error->falling_bytecode, error->stack_bytecode, error->initializer_bytecode,
-                error->registration_bytecode) &&
-           entity_diagnostic(json, &error->construction) && emit(json, ",\"stack\":") &&
-           stack_diagnostic(json, &error->stack) && emit(json, ",\"nbt\":") &&
-           nbt_diagnostic(json, &error->nbt) &&
-           emit(json,
-                ",\"registry\":{\"status\":%u,\"cause\":%u,\"operation\":", (unsigned int)r->status,
-                (unsigned int)r->cause) &&
-           string(json, r->operation) &&
-           emit(json,
-                ",\"initializer_bytecode\":%u,\"registration_bytecode\":%u,"
-                "\"class_cause\":%u},\"minecart_read\":",
-                r->initializer_bytecode, r->registration_bytecode, (unsigned int)r->class_cause) &&
-           site_diagnostic(json, &error->minecart_read) && emit(json, ",\"minecart_write\":") &&
-           site_diagnostic(json, &error->minecart_write) &&
+    return emit(json, ",\"minecart_read\":") && site_diagnostic(json, &error->minecart_read) &&
+           emit(json, ",\"minecart_write\":") && site_diagnostic(json, &error->minecart_write) &&
            emit(json, ",\"inventory\":{\"status\":%u,\"operation\":", (unsigned int)i->status) &&
            string(json, i->operation) &&
            emit(json, ",\"slot_selected\":%s,\"slot\":%" PRId32 ",\"stack_cause\":%u,\"current\":",

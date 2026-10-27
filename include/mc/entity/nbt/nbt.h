@@ -8,10 +8,10 @@
 /* Actual sn/lq.e(NBT), followed by the actual hl/ez Item, ju/gl FallingSand
  * or yl/pr Minecart a(NBT) hook selected by this Entity's immutable same-owner
  * canonical Class.
- * LocalPlayer executes the same complete base read, then dc.a2 -> gs.a2
- * stops explicitly before the missing Living read body. Earlier malformed
- * tags retain their ordinary earlier failure sites. No Player tag is cleared
- * and no complete Player NBT load is claimed. Other concrete subclasses
+ * Canonical LocalPlayer executes dc.a -> gs.a -> ls.a, the actual Inventory
+ * read, Player fields and Score. Sleeping=true publishes its bed coordinate
+ * then stops at the genuine unimplemented wake invocation93. Earlier malformed
+ * tags retain their earlier failure sites. Other concrete subclasses
  * require real dispatch and fields before use.
  * No dead/name/factory decision, constructor, READY gate, source preservation,
  * World callback or Random draw is added. A balanced temporary Entity hold
@@ -44,6 +44,15 @@
  * finish, including failure, so input may borrow any old Stack source. Other
  * Type values leave h/push/fuel untouched. No provenance is attached.
  * Caller retains exclusive live owners for the call. error may be NULL. */
+/* Context-aware read uses the explicitly borrowed same-owner code Registry
+ * only at reached Inventory Item lookup. NULL is valid until that operation;
+ * the ordinary wrapper supplies NULL/default limits. Native context admission
+ * performs no class initialization or World-derived namespace substitution.
+ * max_elements bounds reached Inventory iterations without successful truncation. */
+mc_entity_nbt_status mc_entity_read_nbt_in_context(mc_entity *, mc_registry_classes *,
+                                                   const mc_nbt_tag *, const mc_nbt_limits *,
+                                                   mc_entity_nbt_error *);
+
 mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *compound,
                                         mc_entity_nbt_error *error);
 
@@ -53,6 +62,9 @@ mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *com
  * only carried a narrowed int->byte as "Tile" (eight fields), without age/Stack.
  * Minecart emits Type and, for Type1, Items from the actual h length; Type2
  * emits PushX/PushZ/Fuel instead. Its supported totals are8/9/11 fields.
+ * Canonical LocalPlayer adds the actual Living/Inventory/Player/Score fields,
+ * including an optional all-three spawn coordinate (16 or19 total fields).
+ * It remains unnamed in Boolean c save; this direct writer supplies no id.
  * Minecart Stack records use actual fields in every live phase, with no
  * READY-only/provenance builder, ID validation, count clamp or inventory callback.
  * No id/dead/namespace/Boolean c wrapper or retained unknown tags are supplied.
@@ -68,15 +80,15 @@ mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *com
  *
  * NULL limits selects NBT defaults. The complete constructed tree is checked
  * by mc_nbt_tree_copy_compound: output bytes/tags/elements/depth, validator peak
- * and exact new tree allocation. max_input_bytes is unused. Minecart's own
- * independently built field tree stays charged while copying the final
- * base+own result, and is freed on every outcome. No other heap scratch is
- * allocated. Borrowed caller-owned Entity/Stack/old trees, allocator
- * overhead and bounded C-stack views are excluded, as in the tree contract.
- * Those external owners must be separately charged by a combining caller.
- * This is not Java mutable-setter/temporary-allocation/OOME/HashMap-order or
- * original/native floating-remainder qualification. The tree preserves raw
- * representations; later normal codec writing applies its canonicalization.
+ * and exact new tree allocation. max_input_bytes is unused. Minecart/Player
+ * independently built own-field trees stay charged while copying the final
+ * base+own result and are freed on every outcome. Player Inventory uses bounded
+ * heap scratch and holds each actual occurrence until its tree copy finishes. Borrowed caller-owned
+ * Entity/Stack/old trees, allocator overhead and bounded C-stack views are excluded, as in the tree
+ * contract. Those external owners must be separately charged by a combining caller. This is not
+ * Java mutable-setter/temporary-allocation/OOME/HashMap-order or original/native floating-remainder
+ * qualification. The tree preserves raw representations; later normal codec writing applies its
+ * canonicalization.
  *
  * out is required and unchanged on every failure; a successful independent
  * tree is freed with mc_nbt_tree_free. Hold Entity/dependencies exclusively

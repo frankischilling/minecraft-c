@@ -1,3 +1,4 @@
+#include "nbt_internal.h"
 #include "player_internal.h"
 
 #include "../../world/runtime/runtime_internal.h"
@@ -383,6 +384,7 @@ mc_player_status mc_player_is_sleeping(mc_entity *entity, bool *out, mc_player_e
 }
 
 void mc_local_player_dispose(mc_entity *entity) {
+    mc_player_nbt_coordinates_dispose(entity);
     mc_local_player_snapshot *s = &entity->local_player->fields;
     /* Drop this field's native occurrence hold, without a source input reset. */
     (void)mc_movement_input_retire(&s->input, NULL);

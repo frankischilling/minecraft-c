@@ -15,8 +15,11 @@ struct mc_player_session {
     size_t holds;
 };
 
+struct mc_player_nbt_coordinate;
+
 typedef struct mc_local_player_state {
     mc_local_player_snapshot fields;
+    struct mc_player_nbt_coordinate *nbt_coordinates;
 } mc_local_player_state;
 
 typedef struct mc_local_player_object {

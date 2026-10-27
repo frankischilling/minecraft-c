@@ -160,6 +160,7 @@ mc_entity_nbt_status mc_minecart_storage_preserve_source(mc_entity *cart,
     if (!mc_entity_is_kind(cart, MC_ENTITY_CLASS_KIND_MINECART) || compound == NULL ||
         compound->type != MC_NBT_COMPOUND)
         return fail(frame, MC_ENTITY_NBT_INVALID_ARGUMENT, "Minecart storage provenance arguments");
+    mc_entity_nbt_select_cart_detail(frame);
     mc_nbt_limits limits = requested == NULL ? mc_nbt_default_limits() : *requested;
     size_t live;
     if (mc_minecart_storage_native_bytes(cart, &live, frame) != MC_ENTITY_NBT_OK)
@@ -320,6 +321,7 @@ mc_entity_nbt_status mc_minecart_storage_overlay_after_semantic(const mc_entity 
                                                                 const mc_nbt_limits *remaining,
                                                                 mc_nbt_tree **out,
                                                                 mc_entity_nbt_error *frame) {
+    mc_entity_nbt_select_cart_detail(frame);
     const mc_nbt_tag *known = mc_nbt_tree_root(semantic);
     if (known == NULL || known->type != MC_NBT_COMPOUND ||
         !field_type(known, type_name, 4, MC_NBT_INT))

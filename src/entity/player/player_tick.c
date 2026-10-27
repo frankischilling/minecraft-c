@@ -1,4 +1,5 @@
 #include "active_internal.h"
+#include "nbt_internal.h"
 #include "statistics_status_internal.h"
 
 static void at(mc_player_tick_error *e, unsigned int pc) {
@@ -141,8 +142,10 @@ static bool smoothing(mc_active_scope *s, mc_player_tick_error *e) {
     if (mc_local_player_add_statistic(p, statistic, 1, &e->statistic) != MC_PLAYER_STATISTIC_OK)
         return mc_active_fail(e, mc_player_statistic_entity_status(&e->statistic),
                               "Player tick actual play-time statistic descendant");
-    if (p->base.aH == NULL)
-        v->private_bN = NULL;
+    if (p->base.aH == NULL) {
+        v->private_bN = NULL; /* Actual gs.w_ store399. */
+        mc_player_nbt_coordinates_collect_held(p);
+    }
     return true;
 }
 

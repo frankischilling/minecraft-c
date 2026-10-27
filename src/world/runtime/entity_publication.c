@@ -837,8 +837,8 @@ mc_world_runtime_attach_player(mc_world_runtime *world, mc_entity *player,
                             "World attach Player NBT receiver");
             goto done;
         }
-        mc_entity_nbt_status loaded =
-            mc_entity_read_nbt(player, mc_world_info_player_root(tag), &frame.nbt);
+        mc_entity_nbt_status loaded = mc_entity_read_nbt_in_context(
+            player, world->classes->registry, mc_world_info_player_root(tag), NULL, &frame.nbt);
         if (loaded != MC_ENTITY_NBT_OK) {
             attachment_fail(&frame,
                             loaded == MC_ENTITY_NBT_LIMIT ? MC_WORLD_STORAGE_LIMIT

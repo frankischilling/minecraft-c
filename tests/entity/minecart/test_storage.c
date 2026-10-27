@@ -360,7 +360,8 @@ static bool ms_semantic_peaks(mc_entity_source side) {
     limits.max_allocation_bytes = expected - 1u;
     mc_nbt_tree *unchanged = full;
     CHECK(mc_entity_build_nbt(f.cart, &limits, &unchanged, &error) == MC_ENTITY_NBT_LIMIT);
-    CHECK(unchanged == full && error.base_bytecode == 148 && error.minecart_write.selected &&
+    CHECK(error.late_hook == MC_ENTITY_NBT_LATE_CART && unchanged == full &&
+          error.base_bytecode == 148 && error.minecart_write.selected &&
           error.minecart_write.entered && error.minecart_write.bytecode == 137);
     limits.max_allocation_bytes = expected;
     CHECK(mc_entity_build_nbt(f.cart, &limits, &result, &error) == MC_ENTITY_NBT_OK &&
@@ -587,7 +588,8 @@ static bool ms_atomic_peaks(mc_entity_source side) {
               h->storage == old_side && old_side->records[0] == a && old_side->records[1] == b &&
               old->references == 2 &&
               mc_entity_storage_native_bytes(f.cart, &after, NULL) == MC_ENTITY_NBT_OK &&
-              after == L && error.base_bytecode == 0 && !error.minecart_read.selected);
+              after == L && error.base_bytecode == 0 &&
+              error.late_hook == MC_ENTITY_NBT_LATE_CART && !error.minecart_read.selected);
     }
     /* The final prepare request, not just tree validation, must fit. */
     mc_nbt_limits limits = mc_nbt_default_limits();
@@ -691,7 +693,8 @@ static bool ms_generations(mc_entity_source side) {
     ms_winners(&r);
     r.values[1][3].type = MC_NBT_INT;
     CHECK(mc_entity_read_nbt(f.cart, &r.root, &error) == MC_ENTITY_NBT_STACK_FAILED &&
-          error.minecart_read.bytecode == 137 && error.index == 1 && error.stack_bytecode == 24);
+          error.late_hook == MC_ENTITY_NBT_LATE_CART && error.minecart_read.bytecode == 137 &&
+          error.index == 1 && error.stack_bytecode == 24);
     h = f.cart->minecart->fields.h;
     CHECK(h->storage == NULL && f.cart->minecart->root_generation == current &&
           h->elements[0] != NULL && h->elements[1] == NULL);

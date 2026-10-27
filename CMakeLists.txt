@@ -39,6 +39,8 @@ option(MC_ENABLE_POSITION_REFERENCE_TESTS "Compare Entity position arithmetic wi
 option(MC_ENABLE_PARTICLE_REFERENCE_TESTS "Compare pickup particles with supplied client JAR and observed JDK17 constructor inputs" OFF)
 option(MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS "Compare Player statistic dispatch with supplied Windows client" OFF)
 option(MC_ENABLE_WATER_ANIMATION_REFERENCE_TESTS "Compare water texture animation with supplied client JAR" OFF)
+option(MC_ENABLE_LAVA_ANIMATION_REFERENCE_TESTS "Compare Lava texture animation with supplied client JAR" OFF)
+option(MC_ENABLE_PLAYER_NBT_REFERENCE_TESTS "Compare Player NBT with the supplied Windows client" OFF)
 option(MC_ENABLE_NOTICE_REFERENCE_TESTS "Compare achievement notice with supplied Windows client" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
@@ -325,6 +327,7 @@ add_library(mc_client_notice STATIC
     src/client/gui/achievement_notice.c
     src/client/achievements/description.c
     src/client/texture_effects/water.c
+    src/client/texture_effects/lava.c
     src/client/application_access.c)
 target_include_directories(mc_client_notice PUBLIC include PRIVATE src/client src/platform/time)
 target_link_libraries(mc_client_notice PUBLIC mc_registry mc_game_settings
@@ -403,10 +406,12 @@ add_library(mc_simulation STATIC
     src/entity/item/tick.c
     src/entity/item/pushout.c
     src/inventory/runtime/insertion.c
+    src/inventory/runtime/nbt.c
     src/entity/player/tick.c
     src/entity/player/local_tick.c
     src/entity/player/living_tick.c
     src/entity/player/player_tick.c
+    src/entity/player/nbt.c
     src/entity/player/spawn.c
     src/entity/position.c
     src/entity/player/pushout.c
@@ -446,6 +451,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/tile_entities/piston_tick.c
     src/world/runtime/loading/loading.c
     src/world/runtime/saving/saving.c
+    src/world/runtime/saving/player_metadata.c
     src/world/runtime/runtime.c
     src/world/runtime/activation.c
     src/world/runtime/registry.c
@@ -1370,6 +1376,98 @@ if(BUILD_TESTING)
             --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-water-animation")
         set_tests_properties(reference.water_animation PROPERTIES
             LABELS "local;reference;client;texture;numeric;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_lava_animation tests/client/texture_effects/test_lava_animation.c)
+    target_link_libraries(mc_test_lava_animation PRIVATE
+        mc_client_notice mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME client.lava_animation COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_lava_animation.py"
+        --executable "$<TARGET_FILE:mc_test_lava_animation>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/lava-animation-contracts")
+    set_tests_properties(client.lava_animation PROPERTIES
+        LABELS "public;integration;client;texture;ownership;numeric" TIMEOUT 240)
+    add_test(NAME tools.lava_animation_driver COMMAND Python3::Interpreter
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_lava_animation_driver.py")
+    add_test(NAME tools.lava_animation_driver_optimized COMMAND Python3::Interpreter -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_lava_animation_driver.py")
+    set_tests_properties(tools.lava_animation_driver tools.lava_animation_driver_optimized
+        PROPERTIES LABELS "public;unit;tools;client;texture" TIMEOUT 90)
+    if(MC_ENABLE_LAVA_ANIMATION_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR)
+            message(FATAL_ERROR "Lava animation reference tests require MC_REFERENCE_CLIENT_JAR")
+        endif()
+        add_test(NAME reference.lava_animation COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/lava_animation/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --native "$<TARGET_FILE:mc_test_lava_animation>"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-lava-animation")
+        set_tests_properties(reference.lava_animation PROPERTIES
+            LABELS "local;reference;client;texture;numeric;ownership" TIMEOUT 480)
+    endif()
+
+    add_executable(mc_test_player_nbt tests/entity/player/test_nbt.c)
+    target_include_directories(mc_test_player_nbt PRIVATE src/platform/time)
+    target_link_libraries(mc_test_player_nbt PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_executable(mc_test_player_nbt_coordinates tests/entity/player/test_nbt_coordinates.c)
+    target_include_directories(mc_test_player_nbt_coordinates PRIVATE src/platform/time)
+    target_link_libraries(mc_test_player_nbt_coordinates PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_executable(mc_test_player_nbt_errors tests/entity/player/test_nbt_errors.c)
+    target_link_libraries(mc_test_player_nbt_errors PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    foreach(kind IN ITEMS nbt coordinates)
+        if(kind STREQUAL "nbt")
+            set(nbt_target mc_test_player_nbt)
+            set(nbt_case entity.player_nbt)
+        else()
+            set(nbt_target mc_test_player_nbt_coordinates)
+            set(nbt_case entity.player_nbt_coordinates)
+        endif()
+        add_test(NAME "${nbt_case}" COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_nbt.py"
+            --executable "$<TARGET_FILE:${nbt_target}>" --kind "${kind}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-nbt-${kind}-contracts")
+        set_tests_properties("${nbt_case}" PROPERTIES
+            LABELS "public;integration;entity;storage;ownership" TIMEOUT 240)
+    endforeach()
+    add_test(NAME entity.player_nbt_errors COMMAND mc_test_player_nbt_errors)
+    set_tests_properties(entity.player_nbt_errors PROPERTIES
+        LABELS "public;unit;entity;ownership" TIMEOUT 30)
+    foreach(controller IN ITEMS native original compare)
+        if(controller STREQUAL "native")
+            set(nbt_controller "tests/tools/entity/test_player_nbt_controller.py")
+        elseif(controller STREQUAL "original")
+            set(nbt_controller "tests/reference/entity/player_nbt/test_controller.py")
+        else()
+            set(nbt_controller "tests/reference/entity/player_nbt/test_compare.py")
+        endif()
+        add_test(NAME "tools.player_nbt_${controller}" COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/${nbt_controller}")
+        add_test(NAME "tools.player_nbt_${controller}_optimized" COMMAND Python3::Interpreter -O
+            "${CMAKE_CURRENT_SOURCE_DIR}/${nbt_controller}")
+        set_tests_properties("tools.player_nbt_${controller}" "tools.player_nbt_${controller}_optimized"
+            PROPERTIES LABELS "public;unit;tools;entity;storage" TIMEOUT 90)
+    endforeach()
+    if(MC_ENABLE_PLAYER_NBT_REFERENCE_TESTS)
+        if(NOT WIN32)
+            message(FATAL_ERROR "The Player NBT original profile currently requires Windows x64 natives")
+        endif()
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR OR NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+            message(FATAL_ERROR "Player NBT reference tests require the client JAR, SDK library directory and native directory")
+        endif()
+        add_test(NAME reference.player_nbt COMMAND Python3::Interpreter
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/player_nbt/run_reference.py"
+            --executable "$<TARGET_FILE:mc_test_player_nbt>"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}" --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}" --java "${Java_JAVA_EXECUTABLE}"
+            --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-player-nbt")
+        set_tests_properties(reference.player_nbt PROPERTIES
+            LABELS "local;reference;entity;storage;ownership" TIMEOUT 900)
     endif()
 
     add_executable(mc_test_player_statistics tests/client/statistics/test_player_dispatch.c)

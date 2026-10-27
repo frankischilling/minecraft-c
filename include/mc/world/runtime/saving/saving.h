@@ -41,10 +41,12 @@ mc_chunk_lifecycle_status
 mc_world_runtime_save_chunks_detailed(mc_world_runtime *world, bool force, bool *completed,
                                       mc_world_runtime_lifecycle_error *error);
 /* GAME full saves check the session, mutate the actual Info version to19132,
- * serialize its genuinely empty live Player List, save the actual SavedData
- * named List, then save cached Chunks. Named MapData values use their actual
- * dirty fields and names; nonempty Player serialization remains unsupported.
- * Empty Player Lists omit retained Info.Player without mutating
+ * serialize only the first selected live Player via direct Entity data write
+ * (never Boolean named-Entity save), save the actual SavedData named List,
+ * then save cached Chunks. Canonical LocalPlayer emits the complete ordinary
+ * Living/Inventory/Player/Score fields. Unknown Player subtypes remain explicit
+ * dependencies. Named MapData values use actual dirty fields and names.
+ * Empty Lists or a selected null Player omit retained Info.Player without mutating
  * it. Metadata uses its real clock and precedes Chunk SizeOnDisk growth.
  * Native checked transport/unknown-field policies remain in effect; original
  * caught file failures are not qualified. Info-bound COMPOSITION has no live

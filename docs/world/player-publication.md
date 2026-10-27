@@ -59,14 +59,14 @@ cache/pending descriptors, retire World contexts and Chunk headers, release
 external Entities, then free the World and its store/class dependencies. This
 is native cleanup, not source removal, saving or permission to resume gameplay.
 
-Nonnull Info.Player enters the existing inherited Entity NBT reader. Malformed
-tags can fail earlier at their real base getter/list sites. A well-formed base
-tag retains its motion, position, previous fields, angles, scalar and bounds
-stores before `sn.e311 -> dc.a2 -> gs.a2` reaches the explicit missing Living
-read body. No complete Player/Living/inventory NBT load is claimed. The tag is
-not cleared and publication does not continue after that frontier. The existing
-READY-only native Info setter is reached only after a complete load; completing
-the remaining NBT path must also qualify broader source setter prefixes.
+Nonnull Info.Player enters the actual inherited Entity, Living, Inventory and
+Player NBT readers. Complete load success clears Info.Player before ordinary
+publication. Malformed tags retain all preceding stores and leave Info.Player
+uncleared. Sleeping=true reaches the explicit wake dependency at Player read
+bytecode93 after its earlier Living, Inventory and Player stores; native does
+not clear the tag or continue publication after that frontier. The
+[LocalPlayer NBT contract](../entity/player-nbt.md) defines the exact supported
+reads, direct writes, first-Player metadata saves and retained failure effects.
 
 The source attachment wrapper catches `java.lang.Exception` and prints its
 stack at88. The native API returns its explicit reached error/frontier instead
@@ -85,6 +85,9 @@ objects and a genuine registered null WorldAccess. It compares attachment,
 duplicate and null-callback projections without substituting providers or
 method bodies. See the reference README for the precise finite scope.
 
-Player reset/controller actions, input attachment, World/Player ticks, sleeping
-gameplay, full Player NBT, renderer callbacks, startup preparation and rendering
-remain separate work. This increment adds no application Player or tick stub.
+The combined MSVC and sanitized Clang/GCC profiles each pass 169 publication
+checks. The unchanged original comparison retains its three declared
+attachment, duplicate and null-callback projections. NBT has its own 33-case
+original comparison and separate wake93 prefix. Complete application adoption,
+controller actions, source World scheduling, sleeping gameplay, renderer
+callbacks and playable save/reload sessions remain unfinished.

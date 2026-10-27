@@ -4,18 +4,21 @@
 
 ## Current client runtime integration
 
-The combined singleplayer controller, camera, World Entity updates, Player
-spawn/reset and weather source passes 1,032 local CTests: 362 Windows MSVC Debug
-cases and 335 cases on each Clang 18/GCC 13 Debug build with ASan, UBSan and leak
-detection. Every case from the preceding 357/331/331 matrix remains enabled.
+The combined Lava animation, LocalPlayer NBT, singleplayer controller, camera,
+World Entity update, spawn/reset and weather source passes 1,072 local CTests:
+376 Windows MSVC Debug cases and 348 cases on each Clang 18/GCC 13 Debug build
+with ASan, UBSan and leak detection. Every case from the preceding 362/335/335
+matrix remains enabled.
 No case failed, skipped, was disabled or remained unrun.
 
-The frozen build cohort contains 1,788 files and 1,556 non-Markdown inputs.
-All 897 C/header files pass clang-format 18.1.3. Before execution, 211 existing
-native/helper fingerprints and seventeen original class/Code metadata families
+The frozen build cohort contains 1,822 files and 1,586 non-Markdown inputs.
+All 910 C/header files pass clang-format 18.1.3. Before execution, 236 current
+native/helper fingerprints and nineteen original class/Code metadata families
 verify. Source inventories and actual configured artifacts, runtime libraries,
 symbols and compiler/link configuration remain unchanged across each full suite.
-All configured Windows executables retain the default 1 MiB stack reserve.
+All 277 configured Windows executables retain the default 1 MiB stack reserve.
+The subsequent documentation update changes none of those non-Markdown inputs
+or the reference README files pinned by their comparison packages.
 
 Windows includes real OpenGL startup, three executable World inspection captures,
 GPU camera drawing and the original camera comparison. Local Linux coverage is
@@ -29,10 +32,52 @@ the public wrapper; Linux native comparisons retain their Windows-original
 observation scope. The existing World Entity, weather, spawn/reset and camera
 capture audits also pass without changing their declared scenarios.
 
+Each combined compiler product passes 132,659 Lava checks. Fresh unchanged-original
+CPU execution on Windows and Linux matches all 348 array, RGBA and Math records
+across 23 cases and 31 animation calls. This exercises the CPU constructor and
+animation body; application publication, texture registration and GPU upload
+remain unfinished.
+
+LocalPlayer NBT passes 490 checks, coordinate ownership passes 110, the selected
+diagnostic union passes nine and World Player publication passes 169. A fresh
+Windows original run matches 33 cases and 1,302 normal tag nodes. Both current
+Linux executables match those unchanged retained Windows observations through
+the strict receipt comparator. Three LastPlayed values have separate clock
+brackets. The distinct wake93 prefix contains 37 records, including 33 tag nodes;
+native full-wake parity remains unfinished. These results include the actual
+first-Player metadata save and saved Info.Player load/publication paths. They do
+not establish a gameplay save/reload session.
+
 Normal application Player/view publication, complete controller/World entry,
 World time/block scheduling, physical input, dynamic rendering and the playable
 frontend remain unfinished. The scoped method comparisons below describe their
 supported operations and remaining descendants.
+
+## Lava animation and LocalPlayer NBT integration
+
+The corrected native contracts assert all four Living Short getter sites: 4, 29, 39 and 49 in `ls.a(Lnu;)V`. Review found that DeathTime/AttackTime wrong-tag diagnostics pointed at the later field stores 42/52. A fresh native reproduction failed on those two sites before correction and passes afterward. Four native assertions and three added comparator controls retain the correction; the comparator now passes 31 controls normally and under Python optimization. This changes diagnostic locations, without moving source field stores or changing tag values.
+
+`client.lava_animation` runs the native constructor and CPU animation contracts.
+Its driver controls run normally and under Python optimization.
+`MC_ENABLE_LAVA_ANIMATION_REFERENCE_TESTS` adds `reference.lava_animation` with
+the supplied client JAR and explicit matching JDK17 tools. The actual original
+profile is CPU-only and checks its class origins and initialization boundaries.
+See the [reference package](../tests/reference/client/lava_animation/README.md).
+
+`entity.player_nbt`, `entity.player_nbt_coordinates` and
+`entity.player_nbt_errors` cover the concrete read/write hooks, coordinate
+ownership and complete selected child diagnostics. Their native, original-driver
+and comparator controls run normally and under Python optimization without
+requiring a supplied archive.
+
+`MC_ENABLE_PLAYER_NBT_REFERENCE_TESTS` adds the Windows-only
+`reference.player_nbt`. It starts fresh native and original observations and
+compares complete captured receipts. Configure the supplied client JAR, the
+pinned support-library directory and native-library directory through the
+existing `MC_REFERENCE_CLIENT_*` options. Linux comparisons use explicit
+exact-hash mappings for retained original input locations; native executable
+paths and raw captures remain unchanged. See [LocalPlayer NBT](entity/player-nbt.md)
+and its [reproduction guide](../tests/reference/entity/player_nbt/README.md).
 
 ## Singleplayer controller integration
 

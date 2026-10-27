@@ -9,12 +9,15 @@
 #include <stdlib.h>
 
 mc_world_game_save_error mc_world_game_save_empty_error(void) {
-    return (mc_world_game_save_error){.status = MC_WORLD_STORAGE_OK,
-                                      .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
-                                      .entity_slice = SIZE_MAX,
-                                      .entity_index = SIZE_MAX,
-                                      .entity = mc_entity_nbt_empty_error(),
-                                      .tile_entity = mc_live_tile_entities_empty_error()};
+    mc_world_game_save_error error =
+        (mc_world_game_save_error){.status = MC_WORLD_STORAGE_OK,
+                                   .cause = {MC_WORLD_STORAGE_OK, NULL, 0},
+                                   .entity_slice = SIZE_MAX,
+                                   .entity_index = SIZE_MAX,
+                                   .entity = mc_entity_nbt_empty_error(),
+                                   .tile_entity = mc_live_tile_entities_empty_error()};
+    mc_world_player_metadata_error_init(&error.metadata);
+    return error;
 }
 
 static mc_world_storage_status fail(mc_world_game_save_error *frame, mc_world_storage_status status,
