@@ -56,7 +56,13 @@ def main():
         files = {p.relative_to(resources).as_posix(): shared.fingerprint(p) for p in resources.rglob("*") if p.is_file()}
     command = [str(executable), *arguments]
     result = capture.run_bounded(command, work, "native", timeout=180)
-    shared.completed(result.capture_report, result.stdout, result.stderr, executable)
+    try:
+        shared.completed(result.capture_report, result.stdout, result.stderr, executable)
+    except ValueError as error:
+        raise ValueError(
+            f"{error}\nnative stdout tail: {result.stdout[-8192:]!r}"
+            f"\nnative stderr tail: {result.stderr[-8192:]!r}"
+        ) from error
     require(result.capture_report["command"] == command, "exact direct native arguments")
     require(json.loads((work / "native.capture.json").read_text()) == result.capture_report, "actual complete capture receipt")
     require((work / "native.stdout").read_bytes() == result.stdout and

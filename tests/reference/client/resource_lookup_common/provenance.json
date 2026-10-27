@@ -34,8 +34,8 @@
       "sha256": "fbf647db8f1288c19de1f0d80171d20c99a105e13064e4e49384a7de5908297a"
     },
     "cmake/client_dependencies.cmake": {
-      "bytes": 4309,
-      "sha256": "7d38db7bd637b925ecb2099a60db505ced49b46f77c68bfd0c47c764f38041b2"
+      "bytes": 4570,
+      "sha256": "b3a5e178d7ba56cef64e0a1864ae131acbcc8ac5136580cd841ab96ccc779b3e"
     },
     "cmake/font_dependencies.cmake": {
       "bytes": 1515,
@@ -654,8 +654,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 8585,
-      "sha256": "d75f21e3f32fa4c61fc82812a7a88e69ae636bb643f875a85844d1ba316d8747"
+      "bytes": 9143,
+      "sha256": "c6c006c775e5708570f2150270e6bb64217a3d3477a2ce480219e05b420ab2c8"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -678,8 +678,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 211975,
-      "sha256": "9327871768f29cdd6bf8778e0084ad03bc79e50efc75dd761c8173bbf8480dfe"
+      "bytes": 213124,
+      "sha256": "1a9e13df10015d7da2def1da0ec260d7f7c98a0e7f10f8ff03a5e7feba79759d"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 10120,
@@ -2374,8 +2374,8 @@
       "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
     },
     "src/client/display/events.c": {
-      "bytes": 26951,
-      "sha256": "3148af167a4aa90dca6b2725e58b52c7004323d293d2bbef3866bd48b4ec2fef"
+      "bytes": 27227,
+      "sha256": "2dc47ec261bcb0e9c7b23f646d7fccddc34b1f9837d87f0d5af142a65fe7407d"
     },
     "src/client/display/events.h": {
       "bytes": 4374,
@@ -5599,7 +5599,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 46612,
-      "sha256": "abff8122b91fb728e3feda55907cbe1f9db1e627746fa5e45088a88526ee492b"
+      "sha256": "037a4db57cebdc7607815a9775ddc8ba6dd798381d89d0049cee0bc1e5dcc405"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -7582,8 +7582,8 @@
       "sha256": "497ffc4e1500c727a9bb4217507ea3a940d3e8062cece91337eeb42355f8364e"
     },
     "tests/tools/client/test_display_sdk.py": {
-      "bytes": 4473,
-      "sha256": "17e3be3c693af2b34387da8c32429c8f9d940d7ff2e1863fb4872c7f925731b5"
+      "bytes": 4698,
+      "sha256": "8a0781fcf8bae4e636bfeb428b1f899a32d3f23ba26882127fb85d06f19419a8"
     },
     "tests/tools/client/test_first_person.py": {
       "bytes": 1718,

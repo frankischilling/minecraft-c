@@ -6,11 +6,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Older MSVC diagnoses this standard C17 flexible array as extension C4200.
+ * Scope the compatibility guard to this type; keep its allocation layout. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 typedef struct event_memory {
     struct event_memory *next;
     size_t bytes;
     unsigned char data[];
 } event_memory;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 typedef struct event_owner event_owner;
 

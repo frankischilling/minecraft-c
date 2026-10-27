@@ -38,6 +38,23 @@ scope was 936 C/header files. The `37dc83f` hosted run retains every one of thos
 
 ## Normal startup owner qualification
 
+The published `33c777c` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40589053675)
+fails separately from the focused local results below. Windows stops while
+compiling the event allocator: older MSVC treats its C17 flexible array as warning
+C4200 under `/WX`. Both Linux compilers pass 400 of 401 CTests, with only
+`client.display_sdk_transport` failing. Formatting passes.
+
+A fresh Clang 18 diagnostic reproduces 150,060 leaked bytes in 2,736 Xlib
+allocations when SDL dynamically loads and unloads X11. An isolated final
+`SDL_Quit` probe still reports those allocations. Using SDL's supported
+`SDL_X11_SHARED=OFF` option instead makes X11 an ordinary linked dependency;
+the unchanged original transport test exits zero after all 37 checks, with empty
+stderr and ASan, UBSan and leak detection enabled. This is one focused Linux
+result, not a complete corrected CI matrix. Three affected translation units
+compile with the scoped flexible-array compatibility guard on installed MSVC
+14.51; hosted VS2022 validation remains pending. The SDK driver now includes
+bounded stdout/stderr tails when it rejects a failed child.
+
 The [normal startup owner](client/normal-startup.md) has a later coherent source
 cohort with 2,144 files. All three native compilers build ALL and the graphical
 client. Windows MSVC Debug passes 25 selected CTests plus 42 disjoint regression

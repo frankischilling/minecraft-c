@@ -29,6 +29,11 @@ function(mc_add_client_dependencies)
     set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
     set(SDL_DIALOG OFF CACHE BOOL "" FORCE)
     set(SDL_TRAY OFF CACHE BOOL "" FORCE)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        # The native SDK already requires X11 at link time. Give SDL the same
+        # process lifetime for Xlib's global state instead of unloading it.
+        set(SDL_X11_SHARED OFF CACHE BOOL "" FORCE)
+    endif()
     FetchContent_Declare(mc_sdl3
         URL https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz
         URL_HASH SHA256=9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3

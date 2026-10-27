@@ -26,6 +26,14 @@ water/grass/foliage color maps and calls their real setters. The next reached
 boundary is EntityRenderer construction. The default executable continues to
 use its title/inspection path; this owner is not a playable entry point.
 
+Published checkpoint `33c777c` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40589053675).
+Windows stops on an older MSVC flexible-array warning. Each Linux compiler
+passes 400 of 401 tests; the SDK transport test fails during leak checking.
+Formatting passes. The corrections use a scoped MSVC compatibility guard and
+ordinary Linux X11 linkage. The original transport test passes all 37 checks in
+a fresh sanitized Clang build with the latter setting. A complete hosted result
+for the corrections is still pending.
+
 The coherent local source builds ALL and the client on MSVC Debug, Clang 18 and
 GCC 13. Windows passes 67 distinct selected CTests. Clang and GCC each pass 74 distinct
 selected CTests across 81 executions.

@@ -586,8 +586,8 @@
       "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
     },
     "src/client/display/events.c": {
-      "bytes": 26951,
-      "sha256": "3148af167a4aa90dca6b2725e58b52c7004323d293d2bbef3866bd48b4ec2fef"
+      "bytes": 27227,
+      "sha256": "2dc47ec261bcb0e9c7b23f646d7fccddc34b1f9837d87f0d5af142a65fe7407d"
     },
     "src/client/display/events.h": {
       "bytes": 4374,
@@ -1142,8 +1142,8 @@
       "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
     },
     "tests/tools/client/test_display_sdk.py": {
-      "bytes": 4473,
-      "sha256": "17e3be3c693af2b34387da8c32429c8f9d940d7ff2e1863fb4872c7f925731b5"
+      "bytes": 4698,
+      "sha256": "8a0781fcf8bae4e636bfeb428b1f899a32d3f23ba26882127fb85d06f19419a8"
     },
     "tests/tools/resources/test_lwjgl_icons.py": {
       "bytes": 5988,
