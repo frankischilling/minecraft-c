@@ -1,4 +1,4 @@
-#include "mc/client/texture_effects/lava.h"
+#include "lava_construction.h"
 #include "mc/block/registry/runtime.h"
 #include <float.h>
 #include <stdlib.h>
@@ -29,13 +29,13 @@ static mc_lava_texture_status fail(mc_lava_texture_error *out, mc_lava_texture_s
     return status;
 }
 
-mc_lava_texture_status
-mc_client_lava_texture_allocate(mc_registry_classes *registry, mc_java_random_profile *profile,
-                                const mc_math_trig *trig, const mc_lava_texture_options *options,
-                                mc_client_lava_texture_effect **out, mc_lava_texture_error *error) {
+static mc_lava_texture_status
+allocate_actual(mc_registry_classes *registry, mc_java_random_profile *profile,
+                const mc_math_trig *trig, bool require_trig, const mc_lava_texture_options *options,
+                mc_client_lava_texture_effect **out, mc_lava_texture_error *error) {
     if (error != NULL)
         *error = (mc_lava_texture_error){.source_pc = -1, .cg_pc = -1};
-    if (registry == NULL || profile == NULL || trig == NULL || out == NULL)
+    if (registry == NULL || profile == NULL || (require_trig && trig == NULL) || out == NULL)
         return fail(error, MC_LAVA_TEXTURE_INVALID_ARGUMENT,
                     "lava texture native allocation arguments", NULL, -1, -1);
     mc_client_lava_texture_effect *owner = calloc(1, sizeof(*owner));
@@ -57,6 +57,40 @@ mc_client_lava_texture_allocate(mc_registry_classes *registry, mc_java_random_pr
     owner->maximum =
         options == NULL || options->max_array_bytes == 0 ? 5120 : options->max_array_bytes;
     *out = owner;
+    return MC_LAVA_TEXTURE_OK;
+}
+
+mc_lava_texture_status
+mc_client_lava_texture_allocate(mc_registry_classes *registry, mc_java_random_profile *profile,
+                                const mc_math_trig *trig, const mc_lava_texture_options *options,
+                                mc_client_lava_texture_effect **out, mc_lava_texture_error *error) {
+    return allocate_actual(registry, profile, trig, true, options, out, error);
+}
+
+mc_lava_texture_status mc_client_lava_texture_allocate_constructor(
+    mc_registry_classes *registry, mc_java_random_profile *profile,
+    const mc_lava_texture_options *options, mc_client_lava_texture_effect **out,
+    mc_lava_texture_error *error) {
+    return allocate_actual(registry, profile, NULL, false, options, out, error);
+}
+
+mc_lava_texture_status mc_client_lava_texture_bind_trig(mc_client_lava_texture_effect *owner,
+                                                        const mc_math_trig *trig,
+                                                        mc_lava_texture_error *error) {
+    if (error != NULL)
+        *error = (mc_lava_texture_error){.source_pc = -1, .cg_pc = -1};
+    if (owner == NULL || trig == NULL)
+        return fail(error, MC_LAVA_TEXTURE_INVALID_ARGUMENT, "lava native trig binding arguments",
+                    NULL, -1, -1);
+    if (owner->animating || owner->state.phase == MC_LAVA_TEXTURE_CONSTRUCTING)
+        return fail(error, MC_LAVA_TEXTURE_BUSY, "lava native trig binding entered", NULL, -1, -1);
+    if (owner->state.phase != MC_LAVA_TEXTURE_READY)
+        return fail(error, MC_LAVA_TEXTURE_INVALID_PHASE,
+                    "lava native trig binding requires constructed effect", NULL, -1, -1);
+    if (owner->trig != NULL && owner->trig != trig)
+        return fail(error, MC_LAVA_TEXTURE_INVALID_PHASE,
+                    "lava native trig namespace already bound", NULL, -1, -1);
+    owner->trig = trig;
     return MC_LAVA_TEXTURE_OK;
 }
 
@@ -203,6 +237,9 @@ mc_lava_texture_status mc_client_lava_texture_animate(mc_client_lava_texture_eff
         fail(&error, MC_LAVA_TEXTURE_BUSY, "Lava effect operation entered", NULL, -1, -1);
     else if (owner->state.phase != MC_LAVA_TEXTURE_READY)
         fail(&error, MC_LAVA_TEXTURE_INVALID_PHASE, "Lava animation READY receiver", NULL, -1, -1);
+    else if (owner->trig == NULL)
+        fail(&error, MC_LAVA_TEXTURE_INVALID_PHASE, "lava native trig prerequisite unbound", NULL,
+             -1, -1);
     else {
         owner->animating = true;
         mc_lava_texture_fields *f = &owner->state.fields;

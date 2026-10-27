@@ -74,6 +74,7 @@ jobs:
           -DMC_ENABLE_SANITIZERS=ON
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
           -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON
+          -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
       - name: Build
         run: cmake --build build
       - name: Test
@@ -100,6 +101,7 @@ jobs:
         run: >-
           cmake -S . -B build -A x64
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
+          -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
       - name: Build
         run: cmake --build build --config Debug --parallel 4
       - name: Test

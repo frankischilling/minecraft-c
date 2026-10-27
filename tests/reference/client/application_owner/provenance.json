@@ -230,16 +230,16 @@
       "sha256": "ce56580b13a73edea960719d9bc79811ccd10de2adffc8a39ef3e239959e6f04"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 2352,
-      "sha256": "ccb8a9246b3788703172fe673a44e422261bd0fa232b930b92dc15a87f73549f"
+      "bytes": 2744,
+      "sha256": "24b46a789590ae1c51946f5975373b9ed35b15c6293a76d6376a40137e4181fe"
     },
     "src/client/application_state.h": {
-      "bytes": 3863,
-      "sha256": "569ee6612b98eb169060f635a372fdacb6dd93742f18036d6e9c12f9f6399cb2"
+      "bytes": 7089,
+      "sha256": "29ca507af345facee83f2d24c7c17c3002141ded802b37212c0ad66b8e701350"
     },
     "src/client/startup/application_owner.h": {
-      "bytes": 8739,
-      "sha256": "d000c03405b107cb7a612ed23159e80b18e1f58b9aeb867bd9492c7e1243a05c"
+      "bytes": 11443,
+      "sha256": "33fe822ed147bdfd5c8810b2d16e916de3b4b40819fe03a8e527f65ea62864f1"
     },
     "src/client/resources/assets.h": {
       "bytes": 7837,
@@ -294,8 +294,8 @@
       "sha256": "8170f5e3611eced070071a7f99abfba45aa24ee3fb0228d374ce95088b41f303"
     },
     "src/client/display/display.h": {
-      "bytes": 12134,
-      "sha256": "fc92bc2ca5b7321d2aea6bc971fa0ed438183721e6d195c5f257f32ecfec3b59"
+      "bytes": 13360,
+      "sha256": "d6289bf59b07e89372391b385a8df7972f5e71f4d275e51dde8b39be15ca6c5f"
     },
     "src/client/application_access.h": {
       "bytes": 1153,
@@ -334,12 +334,12 @@
       "sha256": "1af9cc2c4f3b54532440a38c184fd514f1f74af19dd3093f1966b19333aed162"
     },
     "src/client/startup/application_lifetime.c": {
-      "bytes": 4206,
-      "sha256": "66ec89ad0297620089860786dc175150e3503754d3bb11f0fd0c16c961e39e8b"
+      "bytes": 6049,
+      "sha256": "1df4186525784926c1c965736eb5a7ade3550a7915eb82e72b91b47e1bde5a98"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 9215,
-      "sha256": "be3267df885a45dc0a75632b73b4e17f1e3e79b5cb67b87b1e1fd6d05b39d0b0"
+      "bytes": 10292,
+      "sha256": "ef62ecfdb2505e15e75b3f3a465a509863bd3c35d1f27cbbc09eebfddde1cfc6"
     },
     "tests/client/startup/test_application_owner.c": {
       "bytes": 20641,

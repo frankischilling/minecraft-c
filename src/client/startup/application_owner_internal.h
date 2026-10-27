@@ -27,6 +27,10 @@ struct mc_client_application_classes {
     client_application *a;
     void *af;
     size_t holds, array_bytes, array_allocations, allocation_attempts;
+    size_t native_app_borrows;
+    mc_player_string *timer_name;
+    mc_player_string *applet_true, *applet_standalone;
+    unsigned int last_global_store_pc;
     mc_client_application_class_options options;
     unsigned int last_store_pc;
     mc_client_application_owner_error failure;
@@ -59,6 +63,9 @@ mc_client_application_owner_status application_owner_fail(mc_client_application_
 mc_client_application_owner_status application_worker_hold(client_application *,
                                                            mc_client_application_owner_error *);
 void application_worker_release(client_application *);
+mc_client_application_owner_status application_static_hold(client_application *,
+                                                           mc_client_application_owner_error *);
+void application_static_release(client_application *);
 
 /* Concrete synchronization used by both the real worker and authored native
  * tests. Signaling without setting interrupt/cancel is a true spurious wake. */

@@ -1,5 +1,10 @@
-#include "textures.h"
+#include "../display/source_surface.h"
+#include "context_internal.h"
+#include "font_lease.h"
+#include "ge.h"
 #include "internal.h"
+#include "texture_calls_internal.h"
+#include "texture_lookup.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -15,29 +20,28 @@ struct mc_client_render_device {
 static const char image_to_int[] = "(Ljava/awt/image/BufferedImage;)I";
 static const char image_and_int[] = "(Ljava/awt/image/BufferedImage;I)V";
 
-static mc_client_render_texture_status fail(mc_client_render_texture_error *e,
-                                            mc_client_render_texture_status status,
-                                            const char *operation, const char *source,
-                                            const char *method, const char *descriptor, unsigned pc,
-                                            unsigned caller) {
+static mc_client_render_texture_status
+fail(mc_client_texture_body_error *e, mc_client_render_texture_status status, const char *operation,
+     const char *source, const char *method, const char *descriptor, unsigned pc) {
     e->status = status;
     e->operation = operation;
     e->source_class = source;
     e->source_method = method;
     e->source_descriptor = descriptor;
     e->source_pc = pc;
-    e->register_pc = caller;
+    if (source == NULL)
+        e->caller = (mc_client_graphics_site){0};
     return status;
 }
 
-static bool device_failed(mc_client_render_texture_error *e, const char *source, const char *method,
-                          const char *descriptor, unsigned pc, unsigned caller) {
+static bool device_failed(mc_client_texture_body_error *e, const char *source, const char *method,
+                          const char *descriptor, unsigned pc) {
     const mc_client_render_texture_status status =
         e->display.status == MC_CLIENT_DISPLAY_BUSY ? MC_CLIENT_RENDER_TEXTURE_BUSY
         : e->display.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL
             ? MC_CLIENT_RENDER_TEXTURE_UNIMPLEMENTED
             : MC_CLIENT_RENDER_TEXTURE_DISPLAY_FAILED;
-    fail(e, status, e->display.operation, source, method, descriptor, pc, caller);
+    fail(e, status, e->display.operation, source, method, descriptor, pc);
     return false;
 }
 
@@ -55,7 +59,7 @@ static bool options_equal(const mc_client_render_texture_options *a,
 
 static bool prepare_device(mc_client_render_engine *o, mc_client_display *display,
                            const mc_client_render_texture_options *requested,
-                           mc_client_render_texture_error *e) {
+                           mc_client_texture_body_error *e) {
     mc_client_render_engine_classes *c = o->classes;
     const mc_client_render_texture_options options =
         requested == NULL
@@ -65,7 +69,7 @@ static bool prepare_device(mc_client_render_engine *o, mc_client_display *displa
         (c->device != NULL && (!options_equal(&options, &c->device->options) ||
                                (c->device->display != NULL && c->device->display != display)))) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT,
-             "RenderEngine resource namespace admission", NULL, NULL, NULL, 0, 0);
+             "RenderEngine resource namespace admission", NULL, NULL, NULL, 0);
         return false;
     }
     if (c->device == NULL) {
@@ -73,7 +77,7 @@ static bool prepare_device(mc_client_render_engine *o, mc_client_display *displa
         if (c->device == NULL) {
             fail(e, MC_CLIENT_RENDER_TEXTURE_ALLOCATION_FAILED,
                  "RenderEngine native resource bookkeeping", "ge", "a", "(Ljava/nio/IntBuffer;)V",
-                 1, 12);
+                 1);
             return false;
         }
         c->device->options = options;
@@ -82,57 +86,44 @@ static bool prepare_device(mc_client_render_engine *o, mc_client_display *displa
 }
 
 static bool append_source_id(mc_client_render_engine *o, mc_client_texture id,
-                             mc_client_render_texture_error *e) {
-    mc_client_render_list *list = o->classes->b;
-    const size_t limit = o->classes->device->options.max_source_ledger_entries;
-    if (list == NULL) {
-        fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE, "ge actual texture List receiver", "ge",
-             "a", "(Ljava/nio/IntBuffer;)V", 28, 12);
+                             mc_client_texture_body_error *e) {
+    mc_client_graphics_error cause = {0};
+    int32_t source_id;
+    memcpy(&source_id, &id, sizeof(source_id));
+    if (!mc_client_ge_append(
+            o->classes->b, source_id, o->classes->device->options.max_source_ledger_entries,
+            (mc_client_graphics_site){"ge", "a", "(Ljava/nio/IntBuffer;)V", 28}, &cause)) {
+        e->resources = cause;
+        const mc_client_render_texture_status status =
+            cause.status == MC_CLIENT_GRAPHICS_NULL_REFERENCE
+                ? MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE
+            : cause.status == MC_CLIENT_GRAPHICS_LIMIT ? MC_CLIENT_RENDER_TEXTURE_LIMIT
+                                                       : MC_CLIENT_RENDER_TEXTURE_ALLOCATION_FAILED;
+        fail(e, status,
+             cause.status == MC_CLIENT_GRAPHICS_NULL_REFERENCE ? "ge actual texture List receiver"
+             : cause.status == MC_CLIENT_GRAPHICS_LIMIT
+                 ? (strcmp(cause.operation, "ge List native byte bound") == 0
+                        ? "ge source texture ledger byte bound"
+                        : "ge source texture ledger native bound")
+                 : "ge source texture ledger growth",
+             "ge", "a", "(Ljava/nio/IntBuffer;)V", 28);
         return false;
     }
-    if (list->count >= limit) {
-        fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "ge source texture ledger native bound", "ge", "a",
-             "(Ljava/nio/IntBuffer;)V", 28, 12);
-        return false;
-    }
-    if (list->count == list->capacity) {
-        size_t capacity = list->capacity == 0 ? 8 : list->capacity;
-        if (capacity > SIZE_MAX / 2)
-            capacity = limit;
-        else if (list->capacity != 0)
-            capacity *= 2;
-        if (capacity > limit)
-            capacity = limit;
-        if (capacity > SIZE_MAX / sizeof(uint32_t)) {
-            fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "ge source texture ledger byte bound", "ge",
-                 "a", "(Ljava/nio/IntBuffer;)V", 28, 12);
-            return false;
-        }
-        void *entries = realloc(list->entries, capacity * sizeof(uint32_t));
-        if (entries == NULL) {
-            fail(e, MC_CLIENT_RENDER_TEXTURE_ALLOCATION_FAILED, "ge source texture ledger growth",
-                 "ge", "a", "(Ljava/nio/IntBuffer;)V", 28, 12);
-            return false;
-        }
-        list->entries = entries;
-        list->capacity = capacity;
-    }
-    ((uint32_t *)(void *)list->entries)[list->count++] = id;
     e->source_ledger_appended = true;
     return true;
 }
 
 static bool parameter(mc_client_texture_resource *resource, mc_client_texture_parameter which,
-                      int32_t value, unsigned pc, mc_client_render_texture_error *e) {
+                      int32_t value, unsigned pc, mc_client_texture_body_error *e) {
     if (!mc_client_display_texture_parameter(resource, which, value, &e->display))
-        return device_failed(e, "ji", "a", image_and_int, pc, 27);
+        return device_failed(e, "ji", "a", image_and_int, pc);
     return true;
 }
 
 static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resource,
-                   mc_client_argb_image *image, mc_client_render_texture_error *e) {
+                   mc_client_argb_image *image, mc_client_texture_body_error *e) {
     if (!mc_client_display_bind_texture(resource, &e->display))
-        return device_failed(e, "ji", "a", image_and_int, 4, 27);
+        return device_failed(e, "ji", "a", image_and_int, 4);
     if (o->classes->ji_a) {
         if (!parameter(resource, MC_CLIENT_TEXTURE_MIN_FILTER, 9986, 22, e) ||
             !parameter(resource, MC_CLIENT_TEXTURE_MAG_FILTER, 9728, 34, e))
@@ -152,7 +143,7 @@ static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resou
         return false;
     if (image == NULL) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE, "BufferedImage getWidth receiver", "ji",
-             "a", image_and_int, 154, 27);
+             "a", image_and_int, 154);
         return false;
     }
     const size_t count = image->count, bytes = count * sizeof(uint32_t);
@@ -162,24 +153,24 @@ static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resou
     bool ok = false;
     if (bytes > scratch_limit) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine int[] scratch bound", "ji", "a",
-             image_and_int, 168, 27);
+             image_and_int, 168);
         goto done;
     }
     argb = malloc(bytes);
     if (argb == NULL) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_ALLOCATION_FAILED, "RenderEngine actual getRGB array",
-             "ji", "a", image_and_int, 168, 27);
+             "ji", "a", image_and_int, 168);
         goto done;
     }
     if (bytes > scratch_limit - bytes) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine byte[] scratch bound", "ji", "a",
-             image_and_int, 178, 27);
+             image_and_int, 178);
         goto done;
     }
     rgba = malloc(bytes);
     if (rgba == NULL) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_ALLOCATION_FAILED, "RenderEngine actual RGBA array", "ji",
-             "a", image_and_int, 178, 27);
+             "a", image_and_int, 178);
         goto done;
     }
     memcpy(argb, image->pixels, bytes); /* Actual TYPE_INT_ARGB getRGB192. */
@@ -193,7 +184,7 @@ static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resou
             mc_game_settings_state settings;
             if (!mc_game_settings_read_state(o->fields.i, &settings)) {
                 fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE,
-                     "RenderEngine anaglyph settings receiver", "ji", "a", image_and_int, 271, 27);
+                     "RenderEngine anaglyph settings receiver", "ji", "a", image_and_int, 271);
                 goto done;
             }
             if (settings.values.anaglyph) {
@@ -213,14 +204,14 @@ static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resou
     mc_client_direct_byte_buffer *buffer = (mc_client_direct_byte_buffer *)(void *)o->fields.f;
     if (buffer == NULL) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE, "RenderEngine transfer buffer receiver",
-             "ji", "a", image_and_int, 401, 27);
+             "ji", "a", image_and_int, 401);
         goto done;
     }
     buffer->position = 0;
     buffer->limit = buffer->capacity; /* clear401 */
     if (bytes > buffer->limit - buffer->position) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_BUFFER_OVERFLOW, "RenderEngine ByteBuffer.put array", "ji",
-             "a", image_and_int, 411, 27);
+             "a", image_and_int, 411);
         goto done;
     }
     memcpy(buffer->data + buffer->position, rgba, bytes);
@@ -230,13 +221,13 @@ static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resou
     const mc_image_view view = {image->width, image->height, (size_t)image->width * 4,
                                 buffer->data};
     if (!mc_client_display_upload_existing_texture(resource, &view, &e->display)) {
-        device_failed(e, "ji", "a", image_and_int, 451, 27);
+        device_failed(e, "ji", "a", image_and_int, 451);
         goto done;
     }
     e->base_uploaded = true;
     if (o->classes->ji_a) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_UNIMPLEMENTED,
-             "RenderEngine actual four-level mipmap body", "ji", "a", image_and_int, 460, 27);
+             "RenderEngine actual four-level mipmap body", "ji", "a", image_and_int, 460);
         goto done;
     }
     ok = true;
@@ -247,11 +238,11 @@ done:
 }
 
 static bool publish_image(mc_client_render_engine *o, mc_client_texture id,
-                          mc_client_argb_image *image, mc_client_render_texture_error *e) {
+                          mc_client_argb_image *image, mc_client_texture_body_error *e) {
     mc_client_render_map *map = (mc_client_render_map *)(void *)o->fields.d;
     if (map == NULL) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE, "RenderEngine image Map receiver", "ji",
-             "a", image_to_int, 39, 39);
+             "a", image_to_int, 39);
         return false;
     }
     size_t at = 0;
@@ -259,7 +250,7 @@ static bool publish_image(mc_client_render_engine *o, mc_client_texture id,
         ++at;
     if (at == map->count && map->count >= o->classes->device->options.max_image_entries) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine image Map native bound", "ji", "a",
-             image_to_int, 39, 39);
+             image_to_int, 39);
         return false;
     }
     if (at == map->count && map->count == map->capacity) {
@@ -273,13 +264,13 @@ static bool publish_image(mc_client_render_engine *o, mc_client_texture id,
             capacity = limit;
         if (capacity > SIZE_MAX / sizeof(mc_client_render_map_entry)) {
             fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine image Map byte bound", "ji", "a",
-                 image_to_int, 39, 39);
+                 image_to_int, 39);
             return false;
         }
         mc_client_render_map_entry *entries = realloc(map->entries, capacity * sizeof(*entries));
         if (entries == NULL) {
             fail(e, MC_CLIENT_RENDER_TEXTURE_ALLOCATION_FAILED, "RenderEngine image Map growth",
-                 "ji", "a", image_to_int, 39, 39);
+                 "ji", "a", image_to_int, 39);
             return false;
         }
         map->entries = entries;
@@ -288,7 +279,7 @@ static bool publish_image(mc_client_render_engine *o, mc_client_texture id,
     e->owner = mc_client_argb_image_retain(image);
     if (e->owner != MC_CLIENT_RENDER_ENGINE_OK) {
         fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine image Map native image hold", "ji",
-             "a", image_to_int, 39, 39);
+             "a", image_to_int, 39);
         return false;
     }
     mc_client_argb_image *old = at < map->count ? map->entries[at].image : NULL;
@@ -300,45 +291,162 @@ static bool publish_image(mc_client_render_engine *o, mc_client_texture id,
     return true;
 }
 
+static void legacy_error(mc_client_render_texture_error *out,
+                         const mc_client_texture_body_error *e) {
+    if (out == NULL)
+        return;
+    *out = (mc_client_render_texture_error){
+        .status = e->status,
+        .operation = e->operation,
+        .source_class = e->source_class,
+        .source_method = e->source_method,
+        .source_descriptor = e->source_descriptor,
+        .source_pc = e->source_pc,
+        .register_pc = e->status == MC_CLIENT_RENDER_TEXTURE_OK ? 0u : (unsigned)e->caller.pc,
+        .display = e->display,
+        .owner = e->owner,
+        .generated_id = e->generated_id,
+        .driver_generated = e->driver_generated,
+        .source_ledger_appended = e->source_ledger_appended,
+        .base_uploaded = e->base_uploaded,
+        .image_published = e->image_published,
+        .resources = e->resources};
+}
+
+mc_client_render_texture_options mc_client_texture_body_options(const mc_client_render_engine *o) {
+    return o != NULL && o->classes->device != NULL ? o->classes->device->options
+                                                   : mc_client_render_texture_default_options();
+}
+
+bool mc_client_texture_body_admit(mc_client_render_engine *o, mc_client_display *display,
+                                  const mc_client_render_texture_options *options,
+                                  mc_client_texture_body_error *e) {
+    if (o == NULL || display == NULL) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT, "texture native receiver/context", NULL,
+             NULL, NULL, 0);
+        return false;
+    }
+    if (o->phase != MC_CLIENT_RENDER_ENGINE_READY || o->classes->resource_retirement_started ||
+        o->lookup_retired) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_INVALID_PHASE, "texture native READY namespace", NULL,
+             NULL, NULL, 0);
+        return false;
+    }
+    if (options != NULL &&
+        (options->max_retained_ids > RENDER_RETAINED_IDS ||
+         (o->classes->device != NULL && !options_equal(options, &o->classes->device->options)))) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT, "texture native resource policy", NULL,
+             NULL, NULL, 0);
+        return false;
+    }
+    if (o->classes->device != NULL && o->classes->device->display != NULL &&
+        o->classes->device->display != display) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT, "texture actual Display namespace", NULL,
+             NULL, NULL, 0);
+        return false;
+    }
+    if (o->active_resource_calls != 0 || o->classes->active_resource_calls != 0 ||
+        o->classes->active_source_calls != 0 || mc_client_texture_lookup_pending(o)) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_BUSY, "texture native operation active", NULL, NULL, NULL,
+             0);
+        return false;
+    }
+    return true;
+}
+
+bool mc_client_texture_generate(mc_client_render_engine *o, mc_client_display *display,
+                                const mc_client_render_texture_options *options,
+                                mc_client_direct_int_buffer *buffer, mc_client_graphics_site caller,
+                                mc_client_texture_generation **out,
+                                mc_client_texture_body_error *e) {
+    e->caller = caller;
+    if (!prepare_device(o, display, options, e))
+        return false;
+    struct mc_client_render_device *device = o->classes->device;
+    if (device->count >= device->options.max_retained_ids) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine native retained texture bound", "ge",
+             "a", "(Ljava/nio/IntBuffer;)V", 1);
+        return false;
+    }
+    if (!mc_client_render_context_bind(
+            o->classes, display, (mc_client_graphics_site){"ge", "a", "(Ljava/nio/IntBuffer;)V", 1},
+            &e->resources)) {
+        e->display = e->resources.display;
+        fail(e,
+             e->resources.status == MC_CLIENT_GRAPHICS_BUSY
+                 ? MC_CLIENT_RENDER_TEXTURE_BUSY
+                 : MC_CLIENT_RENDER_TEXTURE_DISPLAY_FAILED,
+             "RenderEngine actual context hold", "ge", "a", "(Ljava/nio/IntBuffer;)V", 1);
+        return false;
+    }
+    mc_client_texture_generation *generated = &device->records[device->count];
+    const bool generated_ok = mc_client_display_generate_texture(
+        display, (mc_client_texture *)(void *)buffer->bytes->data, generated, &e->display);
+    e->generated_id = generated->buffer_value;
+    e->driver_generated = generated->driver_generated;
+    if (generated->resource != NULL) {
+        ++device->count;
+        ++o->classes->native_resource_count;
+        device->display = display;
+    }
+    if (!generated_ok) {
+        device_failed(e, "ge", "a", "(Ljava/nio/IntBuffer;)V", 1);
+        return false;
+    }
+    if (!append_source_id(o, generated->buffer_value, e))
+        return false;
+    *out = generated;
+    return true;
+}
+
+bool mc_client_texture_upload(mc_client_render_engine *o, mc_client_texture_resource *resource,
+                              mc_client_argb_image *image, mc_client_graphics_site caller,
+                              mc_client_texture_body_error *e) {
+    e->caller = caller;
+    return upload(o, resource, image, e);
+}
+
 mc_client_render_texture_status
 mc_client_render_engine_register_image(mc_client_render_engine *o, mc_client_display *display,
                                        const mc_client_render_texture_options *options,
                                        mc_client_argb_image *image, mc_client_texture *out,
                                        mc_client_render_texture_error *error) {
-    mc_client_render_texture_error e = {0};
+    mc_client_texture_body_error e = {0};
     bool held = false, image_held = false, entered = false;
     if (o == NULL || display == NULL || out == NULL || (image != NULL && !image->constructed)) {
         fail(&e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT,
-             "RenderEngine registration native arguments", NULL, NULL, NULL, 0, 0);
+             "RenderEngine registration native arguments", NULL, NULL, NULL, 0);
         goto done;
     }
-    if (o->phase != MC_CLIENT_RENDER_ENGINE_READY || o->classes->resource_retirement_started) {
+    if (o->phase != MC_CLIENT_RENDER_ENGINE_READY || o->classes->resource_retirement_started ||
+        o->lookup_retired) {
         fail(&e, MC_CLIENT_RENDER_TEXTURE_INVALID_PHASE,
-             "RenderEngine registration READY namespace", NULL, NULL, NULL, 0, 0);
+             "RenderEngine registration READY namespace", NULL, NULL, NULL, 0);
         goto done;
     }
     if (options != NULL &&
         (options->max_retained_ids > RENDER_RETAINED_IDS ||
          (o->classes->device != NULL && !options_equal(options, &o->classes->device->options)))) {
         fail(&e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT,
-             "RenderEngine resource policy admission", NULL, NULL, NULL, 0, 0);
+             "RenderEngine resource policy admission", NULL, NULL, NULL, 0);
         goto done;
     }
     if (o->classes->device != NULL && o->classes->device->display != NULL &&
         o->classes->device->display != display) {
         fail(&e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT, "RenderEngine actual Display namespace",
-             NULL, NULL, NULL, 0, 0);
+             NULL, NULL, NULL, 0);
         goto done;
     }
-    if (o->active_resource_calls != 0 || o->classes->active_resource_calls != 0) {
+    if (o->active_resource_calls != 0 || o->classes->active_resource_calls != 0 ||
+        o->classes->active_source_calls != 0 || mc_client_texture_lookup_pending(o)) {
         fail(&e, MC_CLIENT_RENDER_TEXTURE_BUSY, "RenderEngine resource operation active", NULL,
-             NULL, NULL, 0, 0);
+             NULL, NULL, 0);
         goto done;
     }
     e.owner = mc_client_render_engine_retain(o);
     if (e.owner != MC_CLIENT_RENDER_ENGINE_OK) {
         fail(&e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine registration receiver hold", NULL,
-             NULL, NULL, 0, 0);
+             NULL, NULL, 0);
         goto done;
     }
     held = true;
@@ -346,7 +454,7 @@ mc_client_render_engine_register_image(mc_client_render_engine *o, mc_client_dis
         e.owner = mc_client_argb_image_retain(image);
         if (e.owner != MC_CLIENT_RENDER_ENGINE_OK) {
             fail(&e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine registration argument hold",
-                 NULL, NULL, NULL, 0, 0);
+                 NULL, NULL, NULL, 0);
             goto done;
         }
         image_held = true;
@@ -356,43 +464,38 @@ mc_client_render_engine_register_image(mc_client_render_engine *o, mc_client_dis
     entered = true;
     mc_client_direct_int_buffer *buffer = (mc_client_direct_int_buffer *)(void *)o->fields.e;
     if (buffer == NULL) {
+        e.caller = (mc_client_graphics_site){"ji", "a", image_to_int, 4};
         fail(&e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE, "RenderEngine IntBuffer.clear receiver",
-             "ji", "a", image_to_int, 4, 4);
+             "ji", "a", image_to_int, 4);
         goto done;
     }
     buffer->position = 0;
     buffer->limit = buffer->capacity;
-    if (!prepare_device(o, display, options, &e))
+    mc_client_texture_generation *generated = NULL;
+    if (!mc_client_texture_generate(o, display, options, buffer,
+                                    (mc_client_graphics_site){"ji", "a", image_to_int, 12},
+                                    &generated, &e))
         goto done;
-    struct mc_client_render_device *device = o->classes->device;
-    if (device->count >= device->options.max_retained_ids) {
-        fail(&e, MC_CLIENT_RENDER_TEXTURE_LIMIT, "RenderEngine native retained texture bound", "ge",
-             "a", "(Ljava/nio/IntBuffer;)V", 1, 12);
+    if (!mc_client_texture_upload(o, generated->resource, image,
+                                  (mc_client_graphics_site){"ji", "a", image_to_int, 27}, &e))
         goto done;
-    }
-    mc_client_texture_generation *generated = &device->records[device->count];
-    const bool generated_ok = mc_client_display_generate_texture(
-        display, (mc_client_texture *)(void *)buffer->bytes->data, generated, &e.display);
-    e.generated_id = generated->buffer_value;
-    e.driver_generated = generated->driver_generated;
-    if (generated->resource != NULL) {
-        ++device->count;
-        ++o->classes->native_resource_count;
-        device->display = display;
-    }
-    if (!generated_ok) {
-        device_failed(&e, "ge", "a", "(Ljava/nio/IntBuffer;)V", 1, 12);
-        goto done;
-    }
-    if (!append_source_id(o, generated->buffer_value, &e))
-        goto done;
-    if (!upload(o, generated->resource, image, &e))
-        goto done;
+    e.caller = (mc_client_graphics_site){"ji", "a", image_to_int, 39};
     if (!publish_image(o, generated->buffer_value, image, &e))
         goto done;
     *out = generated->buffer_value;
 done:
     if (entered) {
+        mc_client_graphics_error cleanup = {0};
+        if (!mc_client_render_context_unbind_empty(o->classes, &cleanup)) {
+            if (e.status == MC_CLIENT_RENDER_TEXTURE_OK) {
+                e.resources = cleanup;
+                fail(&e, MC_CLIENT_RENDER_TEXTURE_BUSY, "RenderEngine empty-context release", NULL,
+                     NULL, NULL, 0);
+            } else {
+                e.resources.cleanup_display = cleanup.display;
+                e.resources.cleanup_failed = true;
+            }
+        }
         --o->classes->active_resource_calls;
         --o->active_resource_calls;
     }
@@ -400,23 +503,26 @@ done:
         mc_client_argb_image_release(image);
     if (held)
         (void)mc_client_render_engine_release(o);
-    if (error != NULL)
-        *error = e;
+    legacy_error(error, &e);
     return e.status;
 }
 
 mc_client_render_texture_status
 mc_client_render_engine_retire_resources(mc_client_render_engine_classes *classes,
                                          mc_client_render_texture_error *error) {
-    mc_client_render_texture_error e = {0};
+    mc_client_texture_body_error e = {0};
     if (classes == NULL)
         fail(&e, MC_CLIENT_RENDER_TEXTURE_INVALID_ARGUMENT,
-             "RenderEngine resource retirement receiver", NULL, NULL, NULL, 0, 0);
-    else if (classes->active_resource_calls != 0)
+             "RenderEngine resource retirement receiver", NULL, NULL, NULL, 0);
+    else if (classes->active_resource_calls != 0 || classes->active_source_calls != 0 ||
+             classes->font_lease_count != 0)
         fail(&e, MC_CLIENT_RENDER_TEXTURE_BUSY, "RenderEngine resource operation active", NULL,
-             NULL, NULL, 0, 0);
+             NULL, NULL, 0);
     else {
         classes->resource_retirement_started = true;
+        if (!mc_client_ge_retire_ranges(classes, &e.resources))
+            fail(&e, MC_CLIENT_RENDER_TEXTURE_BUSY, "RenderEngine command range retirement", NULL,
+                 NULL, NULL, 0);
         struct mc_client_render_device *device = classes->device;
         if (device != NULL) {
             for (size_t i = 0; i < device->count; ++i) {
@@ -429,15 +535,21 @@ mc_client_render_engine_retire_resources(mc_client_render_engine_classes *classe
                     --classes->native_resource_count;
                 if (!ok && e.status == MC_CLIENT_RENDER_TEXTURE_OK) {
                     e.display = cause;
-                    device_failed(&e, NULL, NULL, NULL, 0, 0);
+                    device_failed(&e, NULL, NULL, NULL, 0);
                 }
             }
             if (classes->native_resource_count == 0)
                 device->display = NULL;
         }
+        mc_client_graphics_error cleanup = {0};
+        if (!mc_client_render_context_unbind_empty(classes, &cleanup) &&
+            e.status == MC_CLIENT_RENDER_TEXTURE_OK) {
+            e.resources = cleanup;
+            fail(&e, MC_CLIENT_RENDER_TEXTURE_BUSY, "RenderEngine terminal context hold", NULL,
+                 NULL, NULL, 0);
+        }
     }
-    if (error != NULL)
-        *error = e;
+    legacy_error(error, &e);
     return e.status;
 }
 
@@ -454,3 +566,5 @@ bool mc_client_render_engine_registered_image(const mc_client_render_engine *o,
     *out = NULL;
     return true;
 }
+
+#include "font_leases.inc"

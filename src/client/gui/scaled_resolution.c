@@ -1,4 +1,5 @@
 #include "mc/client/gui/scaled_resolution.h"
+#include "scaled_resolution_internal.h"
 
 #include "mc/core/java/java.h"
 
@@ -10,23 +11,9 @@ bool mc_scaled_resolution_init(int32_t display_width, int32_t display_height, in
     if (out == NULL || display_width <= 0 || display_height <= 0)
         return false;
 
-    int32_t factor = 1;
-    const int32_t limit = gui_scale == 0 ? 1000 : gui_scale;
-    /* qq.<init>: limit35, width44, height61, increment78. A successful
-     * increment requires factor <= INT32_MAX/320, so factor+1 cannot overflow
-     * in this positive physical-dimension domain. */
-    while (factor < limit && display_width / (factor + 1) >= 320 &&
-           display_height / (factor + 1) >= 240)
-        ++factor;
-
-    mc_scaled_resolution result = {0};
-    result.scale_factor = factor;
-    result.width_exact = (double)display_width / (double)factor;
-    result.height_exact = (double)display_height / (double)factor;
-    /* qq.<init>126/129 and138/141: Math.ceil followed by Java d2i. */
-    result.width = mc_java_double_to_i32(ceil(result.width_exact));
-    result.height = mc_java_double_to_i32(ceil(result.height_exact));
-    *out = result;
+    const int32_t factor =
+        mc_scaled_resolution_source_factor(display_width, display_height, gui_scale);
+    mc_scaled_resolution_source_finish(display_width, display_height, factor, out);
     return true;
 }
 

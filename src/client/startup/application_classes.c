@@ -1,5 +1,6 @@
 #include "application_owner_internal.h"
 
+#include "mc/entity/player/player.h"
 #include <stdlib.h>
 
 mc_client_application_owner_status
@@ -164,17 +165,32 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
         return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
                                       "Minecraft class initializing", NULL, NULL, NULL, 0, 0);
     }
+    if (classes->holds == 1 && classes->native_app_borrows != 0) {
+        (void)mtx_unlock(&classes->mutex);
+        return application_owner_fail(error, MC_CLIENT_APPLICATION_OWNER_BUSY,
+                                      "Minecraft live App namespace borrows", NULL, NULL, NULL, 0,
+                                      0);
+    }
     if (--classes->holds != 0) {
         (void)mtx_unlock(&classes->mutex);
         *owner = NULL;
         return MC_CLIENT_APPLICATION_OWNER_OK;
     }
+    client_application *last_app = classes->a;
+    mc_player_string *timer_name = classes->timer_name;
+    mc_player_string *applet_true = classes->applet_true;
+    mc_player_string *applet_standalone = classes->applet_standalone;
     (void)mtx_unlock(&classes->mutex);
     free(classes->F);
     free(classes->E);
     free(classes->b);
     mtx_destroy(&classes->mutex);
     free(classes);
+    mc_player_string_release(timer_name);
+    mc_player_string_release(applet_true);
+    mc_player_string_release(applet_standalone);
+    if (last_app != NULL)
+        application_static_release(last_app);
     *owner = NULL;
     return MC_CLIENT_APPLICATION_OWNER_OK;
 }
@@ -200,6 +216,11 @@ bool mc_client_application_classes_inspect(mc_client_application_classes *classe
         .array_allocations = classes->array_allocations,
         .allocation_attempts = classes->allocation_attempts,
         .last_store_pc = classes->last_store_pc,
+        .last_global_store_pc = classes->last_global_store_pc,
+        .native_app_borrows = classes->native_app_borrows,
+        .timer_name = classes->timer_name,
+        .applet_true = classes->applet_true,
+        .applet_standalone = classes->applet_standalone,
         .failure = classes->failure};
     (void)mtx_unlock(&classes->mutex);
     return true;

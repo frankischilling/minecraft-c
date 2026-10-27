@@ -30,6 +30,11 @@ static bool admitted(client_application *app, mc_client_statistics_owner_error *
              NULL, NULL, NULL, 0);
         return false;
     }
+    if (app->constructor_phase == MC_CLIENT_APP_RETIRING) {
+        fail(error, MC_CLIENT_STATISTICS_OWNER_INVALID_PHASE,
+             "actual application source work stopped", NULL, NULL, NULL, 0);
+        return false;
+    }
     if (app->statistics_retired) {
         fail(error, MC_CLIENT_STATISTICS_OWNER_INVALID_PHASE, "application statistics retired",
              NULL, NULL, NULL, 0);

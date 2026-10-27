@@ -1,4 +1,5 @@
 #include "mc/client/gui/font_renderer.h"
+#include "font_kernels.h"
 
 #include "mc/core/java/java.h"
 
@@ -46,30 +47,6 @@ static mc_font_renderer_status mapping_read(const uint16_t *text, size_t length,
     return MC_FONT_RENDERER_OK;
 }
 
-static uint32_t palette_color(unsigned int index, bool anaglyph) {
-    const unsigned int bright = ((index >> 3u) & 1u) * 85u;
-    unsigned int red = ((index >> 2u) & 1u) * 170u + bright;
-    unsigned int green = ((index >> 1u) & 1u) * 170u + bright;
-    unsigned int blue = (index & 1u) * 170u + bright;
-    /* sj.<init>: the gold adjustment applies to index6, not shadow index22. */
-    if (index == 6u)
-        red += 85u;
-    if (anaglyph) {
-        const unsigned int r = (red * 30u + green * 59u + blue * 11u) / 100u;
-        const unsigned int g = (red * 30u + green * 70u) / 100u;
-        const unsigned int b = (red * 30u + blue * 70u) / 100u;
-        red = r;
-        green = g;
-        blue = b;
-    }
-    if (index >= 16u) {
-        red /= 4u;
-        green /= 4u;
-        blue /= 4u;
-    }
-    return UINT32_C(0xff000000) | (red << 16u) | (green << 8u) | blue;
-}
-
 mc_font_renderer_status mc_font_renderer_create(const mc_image_view *atlas,
                                                 const uint16_t *font_txt, size_t units,
                                                 bool anaglyph, mc_font_renderer **out) {
@@ -109,7 +86,7 @@ mc_font_renderer_status mc_font_renderer_create(const mc_image_view *atlas,
         font->advances[glyph] = (uint8_t)(column + 2);
     }
     for (unsigned int index = 0; index < 32u; ++index)
-        font->palette[index] = palette_color(index, anaglyph);
+        font->palette[index] = mc_font_source_palette(index, anaglyph);
     *out = font;
     return MC_FONT_RENDERER_OK;
 }
@@ -165,16 +142,6 @@ static unsigned int color_code(uint16_t unit) {
     return 15u;
 }
 
-static uint32_t initial_color(uint32_t argb, bool shadow) {
-    uint32_t alpha = argb & UINT32_C(0xff000000);
-    uint32_t rgb = argb & UINT32_C(0x00ffffff);
-    if (shadow)
-        rgb = (rgb & UINT32_C(0x00fcfcfc)) >> 2u;
-    if (alpha == 0)
-        alpha = UINT32_C(0xff000000);
-    return alpha | rgb;
-}
-
 typedef struct layout_counts {
     size_t glyphs, commands;
 } layout_counts;
@@ -196,7 +163,7 @@ static layout_counts walk_pass(const mc_font_renderer *font, const mc_font_text 
         return count;
     volatile float cursor = (float)x;
     const float baseline = (float)y;
-    uint32_t color = initial_color(argb, shadow);
+    uint32_t color = mc_font_source_initial_color(argb, shadow);
     command_emit(commands, &count,
                  (mc_font_command){.kind = MC_FONT_COMMAND_BEGIN_PASS,
                                    .value.begin_pass = {(float)x, baseline, color}});

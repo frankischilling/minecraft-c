@@ -11,6 +11,9 @@ option(MC_BUILD_CLIENT_AUDIO "Build the native OpenAL client audio backend" ${MC
 option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop OpenGL context" OFF)
 option(MC_ENABLE_RENDER_ENGINE_REFERENCE_TESTS "Compare default-font constructor with supplied client JAR" OFF)
 option(MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS "Compare image upload with supplied Windows client" OFF)
+option(MC_ENABLE_RENDER_RESOURCES_REFERENCE_TESTS "Run unchanged original ge/nw CPU reference observations" OFF)
+option(MC_ENABLE_CLIENT_LOOKUP_DATA_TESTS "Run genuine Pack/lookup/color authored file profiles" OFF)
+set(MC_CLIENT_LOOKUP_FIXTURE_DIR "" CACHE PATH "Prepared texture/ and color/ lookup fixture roots")
 option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
 option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
 option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
@@ -152,13 +155,67 @@ if(MC_BUILD_CLIENT)
         find_package(Fontconfig REQUIRED)
         target_link_libraries(mc_client_default_font PRIVATE Fontconfig::Fontconfig)
     endif()
-    add_library(mc_client_render_engine STATIC src/client/render_engine/owner.c)
+    add_library(mc_client_render_engine STATIC
+        src/client/render_engine/owner.c src/client/render_engine/arena.c
+        src/client/render_engine/context.c src/client/render_engine/ge.c
+        src/client/render_engine/nw_owner.c)
     target_link_libraries(mc_client_render_engine PUBLIC
         mc_client_default_font mc_game_settings PRIVATE mc_build_options)
-    add_library(mc_client_render_textures STATIC src/client/render_engine/textures.c)
+    target_sources(mc_client_render_engine PRIVATE
+        src/client/render_engine/color_array.c
+        src/client/render_engine/colorizer.c)
+    add_library(mc_client_render_textures STATIC
+        src/client/render_engine/textures.c src/client/render_engine/context_display.c
+        src/client/render_engine/ge_ranges.c src/client/render_engine/nw.c)
     target_include_directories(mc_client_render_textures PUBLIC src/client/render_engine)
     target_link_libraries(mc_client_render_textures PUBLIC
         mc_client_render_engine mc_client_display PRIVATE mc_build_options)
+    # Class-resource and Pack inputs share the scoped ImageIO core. The optional
+    # Pack owners/adapter are not part of this component.
+    add_library(mc_client_image_io STATIC
+        src/client/images/class_stream.c src/client/images/image_io.c)
+    target_link_libraries(mc_client_image_io PUBLIC mc_client_render_engine
+        PRIVATE mc_simulation ZLIB::ZLIBSTATIC mc_build_options)
+
+    # images.c is the exact shared-Pack adapter, never the old second decoder.
+    add_library(mc_client_texture_packs STATIC
+        src/client/texture_packs/default_pack.c
+        src/client/texture_packs/filesystem.c
+        src/client/texture_packs/images.c
+        src/client/texture_packs/owner.c
+        src/client/texture_packs/rescan.c
+        src/client/texture_packs/resources.c
+        src/client/texture_packs/text.c
+        src/client/texture_packs/zip.c
+        src/client/texture_packs/zip_pack.c)
+    target_include_directories(mc_client_texture_packs PUBLIC include
+        PRIVATE src src/platform/time)
+    target_link_libraries(mc_client_texture_packs PUBLIC
+        mc_client_render_engine mc_game_settings mc_client_game_directory
+        PRIVATE mc_client_image_io mc_client_notice mc_simulation mc_resources
+        mc_c_atomics ZLIB::ZLIBSTATIC mc_build_options)
+
+    # Resource calls stay above the CPU owner; compile each body exactly once.
+    target_sources(mc_client_render_textures PRIVATE
+        src/client/render_engine/texture_lookup.c
+        src/client/render_engine/color_lookup.c
+        src/client/render_engine/resource_lookup.c
+        src/client/render_engine/string_key.c)
+    target_link_libraries(mc_client_render_textures PRIVATE mc_client_texture_packs)
+
+    add_library(mc_client_source_resources STATIC
+        src/client/gui/font_mapping.c
+        src/client/gui/bitmap_font.c src/client/gui/bitmap_font_measure.c
+        src/client/gui/bitmap_font_draw.c
+        src/client/gui/loading_screen.c src/client/gui/loading_projection.c
+        src/client/gui/loading_geometry.c src/client/gui/loading_draw.c)
+    target_include_directories(mc_client_source_resources PUBLIC src src/platform/time)
+    target_link_libraries(mc_client_source_resources PUBLIC
+        mc_client_render_textures mc_client_image_io mc_client_gui mc_c_atomics
+        PRIVATE mc_simulation mc_resources mc_platform_time mc_build_options)
+    if(UNIX)
+        target_link_libraries(mc_client_source_resources PRIVATE m)
+    endif()
     add_library(mc_client_world_renderer STATIC src/client/world/renderer.c)
     target_include_directories(mc_client_world_renderer PUBLIC src/client/world)
     target_link_libraries(mc_client_world_renderer PUBLIC mc_client_display PRIVATE mc_build_options)
@@ -186,7 +243,7 @@ if(MC_BUILD_CLIENT)
     target_include_directories(minecraft-client PRIVATE src/client src/platform/time)
     target_link_libraries(minecraft-client PRIVATE mc_client_gui_main_menu mc_client_timer
         mc_client_game_directory mc_game_settings mc_platform_time mc_client_world_session
-        mc_client_world_view mc_client_notice mc_build_options)
+        mc_client_world_view mc_client_notice mc_client_source_resources mc_build_options)
 endif()
 
 add_library(mc_platform_time STATIC src/platform/time/nanotime.c src/platform/time/millis.c)
@@ -612,8 +669,136 @@ target_include_directories(mc_client_application_owner PRIVATE src/client src/pl
 target_link_libraries(mc_client_application_owner PUBLIC mc_simulation mc_c_atomics
     PRIVATE Threads::Threads mc_build_options)
 
+# The real class namespace/publication API remains in its canonical owner target.
+target_sources(mc_client_application_owner PRIVATE
+    src/client/startup/application_publication.c)
+
+if(MC_BUILD_CLIENT)
+    add_library(mc_client_application_constructor STATIC
+        src/client/startup/application_construction.c
+        src/client/startup/application_construction_retirement.c)
+    target_include_directories(mc_client_application_constructor PUBLIC
+        src src/client src/platform/time)
+    target_link_libraries(mc_client_application_constructor PUBLIC
+        mc_client_application_owner mc_client_source_resources mc_client_notice
+        mc_client_timer_construction mc_game_settings mc_c_atomics
+        PRIVATE mc_platform_time mc_build_options)
+endif()
+
+# Native owner controls use explicit class resources or authored filesystem fixtures.
+option(MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS
+    "Run actual null-Applet constructor and real later-owner retirement controls" OFF)
+
 include(CTest)
+if(MC_ENABLE_CLIENT_LOOKUP_DATA_TESTS)
+    if(NOT MC_BUILD_CLIENT OR NOT BUILD_TESTING)
+        message(FATAL_ERROR "Lookup data profiles require client/testing targets")
+    endif()
+    foreach(kind IN ITEMS texture color)
+        foreach(part IN ITEMS resources default zip)
+            if(NOT IS_DIRECTORY "${MC_CLIENT_LOOKUP_FIXTURE_DIR}/${kind}/${part}")
+                message(FATAL_ERROR "Prepare actual lookup fixture directories before configuration")
+            endif()
+        endforeach()
+    endforeach()
+endif()
+if(MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS AND (NOT MC_BUILD_CLIENT OR NOT MC_BUILD_CLIENT_AUDIO OR NOT BUILD_TESTING))
+    message(FATAL_ERROR "Application constructor controls require client/audio/testing")
+endif()
+if(MC_ENABLE_RENDER_RESOURCES_REFERENCE_TESTS AND (NOT MC_BUILD_CLIENT OR NOT BUILD_TESTING))
+    message(FATAL_ERROR "Resource CPU original profile requires client and testing targets")
+endif()
 if(BUILD_TESTING)
+    # Private additive qualification of the canonical raw/construct Sound owners.
+    add_executable(mc_test_sound_construction tests/client/sound/test_construction.c)
+    target_include_directories(mc_test_sound_construction PRIVATE src/core/java)
+    target_link_libraries(mc_test_sound_construction PRIVATE
+        mc_game_settings mc_c_atomics mc_build_options)
+    add_test(NAME client.sound_construction COMMAND mc_test_sound_construction)
+    set_tests_properties(client.sound_construction PROPERTIES
+        LABELS "public;unit;client;constructor;ownership" TIMEOUT 60)
+
+    # Compile the same two canonical owner bodies with allocation-only controls.
+    # The executable definitions satisfy all manager/pool symbols; normal lower
+    # archives remain ordinary selective dependencies, never whole-archive copies.
+    add_library(mc_sound_constructor_failure_manager OBJECT src/client/sound/sound_manager.c)
+    target_include_directories(mc_sound_constructor_failure_manager PRIVATE include)
+    target_compile_definitions(mc_sound_constructor_failure_manager PRIVATE
+        MC_SOUND_MANAGER_CALLOC=mc_test_manager_calloc)
+    target_link_libraries(mc_sound_constructor_failure_manager PRIVATE mc_core mc_build_options)
+    add_library(mc_sound_constructor_failure_pool OBJECT src/client/sound/sound_pool.c)
+    target_include_directories(mc_sound_constructor_failure_pool PRIVATE include)
+    target_compile_definitions(mc_sound_constructor_failure_pool PRIVATE
+        MC_SOUND_POOL_CALLOC=mc_test_pool_calloc)
+    target_link_libraries(mc_sound_constructor_failure_pool PRIVATE mc_client_sound_files mc_build_options)
+    add_executable(mc_test_sound_construction_allocation
+        tests/client/sound/test_construction_allocation.c
+        $<TARGET_OBJECTS:mc_sound_constructor_failure_manager>
+        $<TARGET_OBJECTS:mc_sound_constructor_failure_pool>)
+    target_include_directories(mc_test_sound_construction_allocation PRIVATE src/core/java)
+    target_link_libraries(mc_test_sound_construction_allocation PRIVATE
+        mc_game_settings mc_c_atomics mc_build_options)
+    add_test(NAME client.sound_construction_allocation COMMAND mc_test_sound_construction_allocation)
+    set_tests_properties(client.sound_construction_allocation PROPERTIES
+        LABELS "public;unit;client;constructor;ownership;allocation" TIMEOUT 60)
+
+    if(MC_BUILD_CLIENT_AUDIO)
+        add_executable(mc_test_sound_construction_backend tests/client/sound/test_construction_backend.c)
+        target_include_directories(mc_test_sound_construction_backend PRIVATE src/core/java)
+        target_link_libraries(mc_test_sound_construction_backend PRIVATE
+            mc_sound_backend mc_c_atomics mc_build_options)
+        set_property(TARGET mc_test_sound_construction_backend PROPERTY LINKER_LANGUAGE CXX)
+        if(WIN32)
+            add_custom_command(TARGET mc_test_sound_construction_backend POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_sound_construction_backend>")
+        endif()
+        add_test(NAME client.sound_construction_backend COMMAND mc_test_sound_construction_backend)
+        set_tests_properties(client.sound_construction_backend PROPERTIES
+            LABELS "public;integration;client;constructor;audio;ownership" TIMEOUT 60)
+    endif()
+
+
+    if(MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS)
+        if(NOT "${MC_REFERENCE_CLIENT_RESOURCE_DIR}" STREQUAL "")
+            set(_mc_application_constructor_resource_root "${MC_REFERENCE_CLIENT_RESOURCE_DIR}")
+        else()
+            set(_mc_application_constructor_resource_root
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/startup/fixtures")
+        endif()
+        add_executable(mc_test_application_construction
+            tests/client/startup/test_application_construction.c)
+        target_include_directories(mc_test_application_construction PRIVATE src/core/java)
+        target_link_libraries(mc_test_application_construction PRIVATE
+            mc_client_application_constructor mc_sound_backend mc_client_assets
+            mc_resources mc_c_atomics mc_build_options)
+        set_property(TARGET mc_test_application_construction PROPERTY LINKER_LANGUAGE CXX)
+        add_test(NAME client.application_construction
+            COMMAND mc_test_application_construction "${_mc_application_constructor_resource_root}")
+        set_tests_properties(client.application_construction PROPERTIES
+            LABELS "public;unit;client;constructor;ownership" TIMEOUT 180)
+        if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.application_construction_later_owners
+                COMMAND mc_test_application_construction "${_mc_application_constructor_resource_root}" later-owners)
+            set_tests_properties(client.application_construction_later_owners PROPERTIES
+                LABELS "public;integration;client;graphics;ownership" TIMEOUT 180)
+        endif()
+
+        # Public constructor keeps only the corrected real-owner control.
+        foreach(target IN ITEMS mc_test_application_construction)
+            if(MSVC)
+                target_link_options(${target} PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/${target}.map")
+            else()
+                target_link_options(${target} PRIVATE "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/${target}.map")
+            endif()
+            if(WIN32)
+                add_custom_command(TARGET ${target} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:${target}>")
+            endif()
+        endforeach()
+    endif()
+
     add_executable(mc_test_application_owner tests/client/startup/test_application_owner.c)
     target_include_directories(mc_test_application_owner PRIVATE src src/client src/platform/time)
     target_link_libraries(mc_test_application_owner PRIVATE
@@ -951,6 +1136,175 @@ if(BUILD_TESTING)
             set_tests_properties(reference.render_textures PROPERTIES
                 LABELS "reference;original;client;graphics" TIMEOUT 1200)
         endif()
+        add_executable(mc_test_loading_source_flag tests/client/gui/test_loading_source_flag.c)
+        target_link_libraries(mc_test_loading_source_flag PRIVATE
+            mc_client_source_resources mc_client_application_owner mc_c_atomics mc_build_options)
+        add_test(NAME client.loading_source_flag COMMAND mc_test_loading_source_flag)
+        set_tests_properties(client.loading_source_flag PROPERTIES
+            LABELS "public;unit;client;ownership" TIMEOUT 120)
+
+        add_executable(mc_test_source_resources tests/client/render_engine/test_source_resources.c)
+        target_link_libraries(mc_test_source_resources PRIVATE mc_client_source_resources mc_build_options)
+        add_test(NAME client.render_source_resources COMMAND mc_test_source_resources)
+        set_tests_properties(client.render_source_resources PROPERTIES
+            LABELS "public;unit;client;ownership" TIMEOUT 120)
+
+        add_executable(mc_test_source_close_callbacks tests/client/render_engine/test_close_callbacks.c)
+        target_link_libraries(mc_test_source_close_callbacks PRIVATE
+            mc_client_source_resources mc_resources mc_build_options)
+        foreach(mode IN ITEMS normal optimized)
+            set(_mc_source_python_flags -B)
+            if(mode STREQUAL "optimized")
+                list(APPEND _mc_source_python_flags -O)
+            endif()
+            add_test(NAME tools.render_source_close_${mode} COMMAND Python3::Interpreter
+                ${_mc_source_python_flags}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/run_close_callbacks.py"
+                --executable "$<TARGET_FILE:mc_test_source_close_callbacks>"
+                --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-close-${mode}")
+            set_tests_properties(tools.render_source_close_${mode} PROPERTIES
+                LABELS "public;tools;client;ownership" TIMEOUT 120)
+            add_test(NAME tools.render_source_close_parser_${mode} COMMAND Python3::Interpreter
+                ${_mc_source_python_flags}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_close_callbacks_driver.py")
+            set_tests_properties(tools.render_source_close_parser_${mode} PROPERTIES
+                LABELS "public;tools;client;ownership" TIMEOUT 60)
+        endforeach()
+        unset(_mc_source_python_flags)
+
+        # The test includes the exact Display TU for access to the real GL table.
+        # Link its dependencies without a second mc_client_display body.
+        add_executable(mc_test_source_fp tests/client/render_engine/test_source_fp.c)
+        target_include_directories(mc_test_source_fp PRIVATE src/client/display)
+        target_link_libraries(mc_test_source_fp PRIVATE mc_image SDL3::SDL3-static mc_build_options)
+        if(UNIX)
+            target_link_libraries(mc_test_source_fp PRIVATE m)
+        endif()
+        if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.render_source_fp COMMAND mc_test_source_fp)
+            set_tests_properties(client.render_source_fp PROPERTIES
+                LABELS "public;integration;client;graphics;ownership" TIMEOUT 180)
+        endif()
+        add_executable(mc_probe_render_source_cpu tests/client/render_engine/source_cpu_probe.c)
+        # The probe includes exact nw.c. The ordinary static archive remains a link
+        # dependency; its nw.o must not be extracted, because all nw exports are
+        # already defined by that exact included TU. Verify the actual link map.
+        target_link_libraries(mc_probe_render_source_cpu PRIVATE
+            mc_client_render_textures mc_build_options)
+        add_test(NAME client.render_source_cpu COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_source_cpu.py"
+            --executable "$<TARGET_FILE:mc_probe_render_source_cpu>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-cpu-controls")
+        set_tests_properties(client.render_source_cpu PROPERTIES
+            LABELS "public;integration;client;ownership" TIMEOUT 240)
+
+        add_executable(mc_test_render_source_font tests/client/render_engine/test_source_font.c)
+        # This executable includes exact Display.c once. Its definitions satisfy all
+        # Display imports before archive extraction; no second Display.o is allowed
+        # in the actual executable's link map. All intercepted GL functions forward.
+        target_link_libraries(mc_test_render_source_font PRIVATE
+            mc_client_source_resources mc_client_application_owner mc_resources
+            mc_c_atomics mc_build_options)
+        if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.render_source_font COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_source_font.py"
+                --executable "$<TARGET_FILE:mc_test_render_source_font>"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-font-controls")
+            set_tests_properties(client.render_source_font PROPERTIES
+                LABELS "public;integration;client;graphics;ownership" TIMEOUT 300)
+        endif()
+        foreach(mode IN ITEMS normal optimized)
+            set(_mc_resource_protocol_flags -B)
+            if(mode STREQUAL "optimized")
+                list(APPEND _mc_resource_protocol_flags -O)
+            endif()
+            add_test(NAME tools.render_source_protocol_${mode} COMMAND Python3::Interpreter
+                ${_mc_resource_protocol_flags}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/render_resources/test_protocol.py")
+            set_tests_properties(tools.render_source_protocol_${mode} PROPERTIES
+                LABELS "public;unit;tools;client;ownership" TIMEOUT 60)
+        endforeach()
+        unset(_mc_resource_protocol_flags)
+
+        # The matching option declaration is a separate global insertion. The selected
+        # original profile initially retains its recorded Windows/JDK17 scope.
+        if(MC_ENABLE_RENDER_RESOURCES_REFERENCE_TESTS)
+            if(NOT WIN32)
+                message(FATAL_ERROR "Original resource CPU profile requires qualified Windows x64")
+            endif()
+            if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+                message(FATAL_ERROR "Original resource CPU profile requires explicit JAR and libraries")
+            endif()
+            find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+            add_test(NAME reference.render_source_cpu COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/render_resources/compare.py"
+                --executable "$<TARGET_FILE:mc_probe_render_source_cpu>"
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+                --lwjgl "${MC_REFERENCE_CLIENT_LIBRARY_DIR}/lwjgl-2.9.0.jar"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-cpu-original")
+            set_tests_properties(reference.render_source_cpu PROPERTIES
+                LABELS "local;reference;original;client;ownership" TIMEOUT 420)
+        endif()
+
+        add_executable(mc_test_color_arrays tests/client/render_engine/test_color_arrays.c)
+        target_include_directories(mc_test_color_arrays PRIVATE src)
+        target_link_libraries(mc_test_color_arrays PRIVATE mc_client_render_engine mc_build_options)
+        add_test(NAME client.color_arrays COMMAND mc_test_color_arrays)
+        set_tests_properties(client.color_arrays PROPERTIES
+            LABELS "public;unit;client;ownership" TIMEOUT 120)
+
+        add_executable(mc_test_texture_zip tests/client/texture_packs/test_zip.c)
+        target_include_directories(mc_test_texture_zip PRIVATE src/client/texture_packs)
+        target_link_libraries(mc_test_texture_zip PRIVATE mc_client_texture_packs mc_build_options)
+        foreach(mode IN ITEMS normal optimized)
+            set(_mc_lookup_flags -B)
+            if(mode STREQUAL "optimized")
+                list(APPEND _mc_lookup_flags -O)
+            endif()
+            add_test(NAME tools.texture_zip_native_${mode} COMMAND Python3::Interpreter
+                ${_mc_lookup_flags}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_texture_zip.py"
+                --executable "$<TARGET_FILE:mc_test_texture_zip>"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/texture-zip-${mode}")
+            set_tests_properties(tools.texture_zip_native_${mode} PROPERTIES
+                LABELS "public;integration;client;ownership" TIMEOUT 180)
+            add_test(NAME tools.texture_zip_parser_${mode} COMMAND Python3::Interpreter
+                ${_mc_lookup_flags}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/texture_packs/test_driver.py")
+            set_tests_properties(tools.texture_zip_parser_${mode} PROPERTIES
+                LABELS "public;unit;tools;client;ownership" TIMEOUT 60)
+        endforeach()
+        unset(_mc_lookup_flags)
+
+        add_executable(mc_test_texture_lookup tests/client/render_engine/test_texture_lookup.c)
+        target_include_directories(mc_test_texture_lookup PRIVATE src src/client src/platform/time)
+        target_link_libraries(mc_test_texture_lookup PRIVATE
+            mc_client_render_textures mc_client_application_owner mc_client_notice
+            mc_resources mc_simulation mc_c_atomics mc_build_options)
+        add_executable(mc_test_color_lookup tests/client/render_engine/test_color_lookup.c)
+        target_include_directories(mc_test_color_lookup PRIVATE src src/client src/platform/time)
+        target_link_libraries(mc_test_color_lookup PRIVATE
+            mc_client_render_textures mc_client_application_owner mc_client_notice
+            mc_resources mc_simulation mc_c_atomics mc_build_options)
+        if(MC_ENABLE_CLIENT_LOOKUP_DATA_TESTS)
+            foreach(kind IN ITEMS default zip)
+                add_test(NAME client.color_lookup_${kind} COMMAND mc_test_color_lookup
+                    "${MC_CLIENT_LOOKUP_FIXTURE_DIR}/color/resources"
+                    "${MC_CLIENT_LOOKUP_FIXTURE_DIR}/color/${kind}" "${kind}")
+                set_tests_properties(client.color_lookup_${kind} PROPERTIES
+                    LABELS "local;integration;client;ownership" TIMEOUT 180)
+                if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+                    add_test(NAME client.texture_lookup_${kind} COMMAND mc_test_texture_lookup
+                        "${MC_CLIENT_LOOKUP_FIXTURE_DIR}/texture/resources"
+                        "${MC_CLIENT_LOOKUP_FIXTURE_DIR}/texture/${kind}" "${kind}")
+                    set_tests_properties(client.texture_lookup_${kind} PROPERTIES
+                        LABELS "local;integration;client;graphics;ownership" TIMEOUT 240)
+                endif()
+            endforeach()
+        endif()
+
         add_executable(mc_test_image tests/resources/image/test_image.c)
         target_link_libraries(mc_test_image PRIVATE mc_image ZLIB::ZLIBSTATIC mc_build_options)
         add_test(NAME resources.image COMMAND mc_test_image)

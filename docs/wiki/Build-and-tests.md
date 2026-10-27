@@ -39,19 +39,22 @@ World gameplay loop, fog, normal RenderEngine startup, drawing or a playable
 client. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
 [pickup/effects](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) and [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md).
 
-The preceding published `9318923`
-[hosted matrix](https://github.com/frankischilling/minecraft-c/actions/runs/40452503725)
-passed all four jobs and 1,043 public/JDK cases: 341 Windows and 351 per Linux
-compiler. All 1,016 preceding cases remained. All four checkout trees matched
-the reviewed `d5ac89ab96384b1bfc2e5e5991cbf85c958a4a8c` tree. Formatting checks 926 C/header files,
-controller mirrors and 556 positive/2,011 negative lifecycle controls passed
-per platform. Hosted validation of the new Timer/class/worker integration is
-pending publication; original-archive comparisons retain their local scope.
+Published `4a6b805`
+[hosted validation](https://github.com/frankischilling/minecraft-c/actions/runs/40464703757)
+passed all four jobs and 1,055 public/JDK cases: 345 Windows and 355 per Linux
+compiler. All 1,043 preceding cases remained. All four checkout trees matched
+the reviewed `c3c7e45cb8b9b94d86078cea1dd8ac41289c0315` tree. Formatting checks
+936 C/header files, controller mirrors and 556 positive/2,011 negative lifecycle
+controls passed per platform. Original-archive comparisons retain their local
+scope. The later startup/resource owner increment has separate
+[focused local validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md);
+it has no new hosted result yet.
 
 CI runs two CTests concurrently and allows four parallel Windows build jobs.
-At `9318923`, both Linux jobs restored 9,538,264 cache bytes and downloaded 1,789 kB
-of 11.4 MB required package archives. Dependency installation took eleven/twelve
-seconds; package indexes were still updated. All compiler, sanitizer, graphics,
+At `4a6b805`, both Linux jobs restored 11,318,434 cache bytes and downloaded no
+additional package archives from the required 11.4 MB. Dependency installation
+took eleven/twelve seconds; each package-index update still fetched 12.6 MB.
+All compiler, sanitizer, graphics,
 formatting and controller checks remained enabled. These observations do not
 establish a controlled whole-run speedup. The earlier
 [scheduling comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#continuous-integration-scheduling)

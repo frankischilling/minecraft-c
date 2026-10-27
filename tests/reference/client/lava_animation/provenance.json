@@ -88,8 +88,8 @@
       "sha256": "128ab3c15215208ec5e66987896d69ebeefec68265019f85205e3b6ab7964392"
     },
     "src/client/texture_effects/lava.c": {
-      "bytes": 18091,
-      "sha256": "5c2b215cb360576e2c142a0a2facbfaa6c7e36412922d1abaeeb738df6358528"
+      "bytes": 20128,
+      "sha256": "ef781403b5a76058d2258db6d143edaafa18dbf0867d137da2d62c4a66cf3839"
     },
     "tests/client/texture_effects/test_lava_animation.c": {
       "bytes": 18844,

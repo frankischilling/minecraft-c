@@ -20,7 +20,8 @@ typedef enum mc_client_display_status {
     MC_CLIENT_DISPLAY_GL_ERROR,
     MC_CLIENT_DISPLAY_CONTEXT_LOST,
     MC_CLIENT_DISPLAY_NOT_DRAWABLE,
-    MC_CLIENT_DISPLAY_BUSY
+    MC_CLIENT_DISPLAY_BUSY,
+    MC_CLIENT_DISPLAY_UNSUPPORTED_FP
 } mc_client_display_status;
 
 typedef struct mc_client_display_error {
@@ -207,5 +208,24 @@ void mc_client_capture_free(mc_client_capture *capture);
  * follow detected context loss. NULL succeeds. A cleanup failure is reported after all remaining
  * independent SDL/native releases have been attempted. */
 bool mc_client_display_destroy(mc_client_display *display, mc_client_display_error *error);
+
+/* Actual mk projection surface. This performs only source depth clear,
+ * projection100/300 and modelview-200. Inherited clear/mask/raster state stays
+ * live. It does not begin generic GUI state, load a texture, draw, or present.
+ * stage reports the reached native operation for the caller's exact source PC.
+ * A completed clear can change FP controls. ORTHO reports a subsequent strict
+ * FP admission failure before projection/modelview publication; loading_ready
+ * remains false and earlier GL effects remain. No control state is restored.
+ * Ordinary generic GUI methods preserve their existing behavior. */
+typedef enum mc_client_loading_projection_stage {
+    MC_CLIENT_LOADING_PROJECTION_DEPTH_CLEAR,
+    MC_CLIENT_LOADING_PROJECTION_ORTHO,
+    MC_CLIENT_LOADING_PROJECTION_MODELVIEW
+} mc_client_loading_projection_stage;
+
+bool mc_client_display_loading_projection(mc_client_display *, double exact_width,
+                                          double exact_height, mc_client_loading_projection_stage *,
+                                          mc_client_display_error *);
+bool mc_client_display_loading_clear_color_depth(mc_client_display *, mc_client_display_error *);
 
 #endif

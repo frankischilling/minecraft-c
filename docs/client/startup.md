@@ -25,6 +25,20 @@ SDL creates a resizable 854-by-480 window by default. `--width` and `--height`
 set its initial dimensions; physical pixels can differ on a high-DPI display.
 F11 toggles fullscreen. Window close and the title's Quit Game button exit.
 
+## Source owner construction
+
+Separate source-owner modules implement the standalone Minecraft constructor and
+its retained Timer, loading-screen, achievement, Biped, SoundManager, water/lava
+and statistics prerequisites. The resource graph supplies selected Default/ZIP
+packs, shared image loading, bitmap fonts, texture lookups and mutable color
+arrays. Focused native construction, failure-prefix and retirement checks pass
+on Windows and sanitized Clang/GCC Linux builds; see [development status](../status.md).
+
+The normal executable still follows the menu/inspection startup described here.
+Adopting the complete source startup, physical input, World entry and the live
+gameplay loop remains unfinished. Unsupported resource branches retain explicit
+frontiers; native owner checks do not establish complete original-game parity.
+
 ## Settings at startup
 
 The App now owns the [achievement notice/model constructor graph](achievement-notice.md)

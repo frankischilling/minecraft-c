@@ -1,27 +1,41 @@
 #ifndef MC_CLIENT_RENDER_ENGINE_INTERNAL_H
 #define MC_CLIENT_RENDER_ENGINE_INTERNAL_H
+#include "arena.h"
+#include "colorizer_internal.h"
 #include "mc/client/render_engine/render_engine.h"
-
-typedef struct render_allocation {
-    struct render_allocation *next;
-
-    union {
-        long double align;
-        void *pointer;
-        uint64_t integer;
-        size_t bytes;
-    } payload;
-} render_allocation;
+#include "nw_internal.h"
 
 typedef struct mc_client_render_map_entry {
     uint32_t key;
     mc_client_argb_image *image;
 } mc_client_render_map_entry;
 
+typedef struct mc_client_render_string_id_entry {
+    uint16_t *units;
+    size_t length;
+    bool is_null;
+    uint32_t id; /* Exact Integer payload bits, not a texture ownership hold. */
+} mc_client_render_string_id_entry;
+
+typedef struct mc_client_render_color_array_entry {
+    uint16_t *units;
+    size_t length;
+    bool is_null;
+    mc_client_color_array *array;
+} mc_client_render_color_array_entry;
+
 struct mc_client_render_map {
     size_t count, capacity;
-    mc_client_render_map_entry *entries;
+
+    union {
+        mc_client_render_map_entry *entries;              /* Existing d image table. */
+        mc_client_render_string_id_entry *string_ids;     /* Actual b table. */
+        mc_client_render_color_array_entry *color_arrays; /* Actual c table. */
+    }; /* One source Map table pointer; preserves the old constructor charge. */
 };
+
+_Static_assert(sizeof(struct mc_client_render_map) == 2 * sizeof(size_t) + sizeof(void *),
+               "native x64 Map table union preserves constructor charge");
 
 struct mc_client_render_list {
     size_t count, capacity;
@@ -34,6 +48,11 @@ struct mc_client_direct_byte_buffer {
 };
 
 struct mc_client_direct_int_buffer {
+    size_t position, limit, capacity;
+    mc_client_direct_byte_buffer *bytes;
+};
+
+struct mc_client_direct_float_buffer {
     size_t position, limit, capacity;
     mc_client_direct_byte_buffer *bytes;
 };
@@ -53,30 +72,39 @@ typedef struct render_graphics {
 } render_graphics;
 
 struct mc_client_render_engine_classes {
-    size_t holds, bytes, allocations;
+    size_t holds;
+    mc_client_render_arena arena;
     bool ji_ready, ji_a;
     mc_client_render_engine_phase ge_phase;
-    mc_client_render_engine_options options;
     mc_client_render_list *a, *b;
     mc_client_render_engine_error failure;
     struct mc_client_render_device *device;
     size_t native_resource_count, active_resource_calls;
     bool resource_retirement_started;
+    mc_client_graphics_cause ge_failure;
+    mc_client_nw_namespace nw;
+    mc_client_graphics_limits limits;
+    size_t active_source_calls, font_lease_count, command_range_count;
+    mc_client_command_range *command_ranges;
+    struct mc_client_display_context_lease *context_lease;
+    mc_client_display *bound_display;
+    mc_client_colorizer_namespace colorizers; /* Three independent cold source classes. */
 };
 
 struct mc_client_render_engine {
-    size_t holds, bytes, allocations;
+    size_t holds;
+    mc_client_render_arena arena;
     mc_client_render_engine_classes *classes;
     mc_client_default_font *font;
     mc_client_render_engine_phase phase;
-    mc_client_render_engine_options options;
     mc_client_render_engine_fields fields;
-    render_allocation *arena;
     mc_client_argb_image *candidate;
     render_graphics *graphics;
     unsigned int last_store_pc;
     size_t active_resource_calls;
     mc_client_render_engine_error failure;
+    struct mc_client_texture_lookup_native *lookup; /* Bounded native attempt, no cache mirror. */
+    bool lookup_retired; /* Explicit final native source stop, not a ji field. */
 };
 
 #endif

@@ -1,4 +1,6 @@
+#include "ge.h"
 #include "internal.h"
+#include "nw.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -22,29 +24,24 @@ mc_client_render_engine_options mc_client_render_engine_default_options(void) {
 
 static void *allocate(mc_client_render_engine *o, size_t bytes, const char *source, unsigned pc,
                       unsigned ji_pc, const char *ge_method, unsigned ge_pc) {
-    if (bytes > SIZE_MAX - sizeof(render_allocation) ||
-        sizeof(render_allocation) + bytes > o->options.max_constructor_bytes - o->bytes ||
-        o->allocations >= o->options.max_constructor_allocations) {
-        fail(&o->failure, MC_CLIENT_RENDER_ENGINE_LIMIT, "RenderEngine native constructor limit",
+    mc_client_graphics_error cause = {0};
+    const mc_client_graphics_site site = {source, ge_method, NULL, (int32_t)pc};
+    void *value = mc_client_render_arena_allocate(&o->arena, bytes, site, &cause);
+    if (value == NULL)
+        fail(&o->failure,
+             cause.status == MC_CLIENT_GRAPHICS_LIMIT ? MC_CLIENT_RENDER_ENGINE_LIMIT
+                                                      : MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED,
+             cause.status == MC_CLIENT_GRAPHICS_LIMIT ? "RenderEngine native constructor limit"
+                                                      : "RenderEngine constructor allocation",
              source, pc, ji_pc, ge_method, ge_pc);
-        return NULL;
-    }
-    render_allocation *a = calloc(1, sizeof(*a) + bytes);
-    if (a == NULL) {
-        fail(&o->failure, MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED,
-             "RenderEngine constructor allocation", source, pc, ji_pc, ge_method, ge_pc);
-        return NULL;
-    }
-    a->next = o->arena;
-    o->arena = a;
-    o->bytes += sizeof(*a) + bytes;
-    ++o->allocations;
-    return a + 1;
+    return value;
 }
 
 static bool charge_external(mc_client_render_engine *o, size_t bytes, unsigned pc) {
-    if (bytes > o->options.max_constructor_bytes - o->bytes ||
-        o->allocations >= o->options.max_constructor_allocations) {
+    mc_client_graphics_error cause = {0};
+    if (!mc_client_render_arena_check(
+            &o->arena, bytes, (mc_client_graphics_site){"ji", "<init>", "(Lik;Lkv;)V", (int32_t)pc},
+            &cause)) {
         fail(&o->failure, MC_CLIENT_RENDER_ENGINE_LIMIT, "RenderEngine image constructor limit",
              "ji", pc, pc, NULL, 0);
         return false;
@@ -52,56 +49,52 @@ static bool charge_external(mc_client_render_engine *o, size_t bytes, unsigned p
     return true;
 }
 
-static bool ge_initialize(mc_client_render_engine *o) {
-    mc_client_render_engine_classes *c = o->classes;
-    if (c->ge_phase == MC_CLIENT_RENDER_ENGINE_READY)
-        return true;
-    if (c->ge_phase == MC_CLIENT_RENDER_ENGINE_FAILED) {
-        o->failure = c->failure;
-        o->failure.cause_status = c->failure.status;
+static void ge_failure(mc_client_render_engine *o, const mc_client_graphics_error *e,
+                       unsigned ji_pc) {
+    if (e->status == MC_CLIENT_GRAPHICS_CLASS_FAILED) {
+        o->failure = o->classes->failure;
+        o->failure.cause_status = o->classes->failure.status;
         o->failure.status = MC_CLIENT_RENDER_ENGINE_CLASS_FAILED;
         o->failure.operation = "RenderEngine previous ge initialization failure";
-        o->failure.ji_pc = 39;
+        o->failure.ji_pc = ji_pc;
         o->failure.source_class = "ji";
-        o->failure.source_pc = 39;
-        return false;
+        o->failure.source_pc = ji_pc;
+        return;
     }
-    c->ge_phase = MC_CLIENT_RENDER_ENGINE_CONSTRUCTING;
-    const unsigned pcs[2] = {0, 10};
-    mc_client_render_list **slots[2] = {&c->a, &c->b};
-    for (size_t i = 0; i < 2; ++i) {
-        if (sizeof(mc_client_render_list) > c->options.max_constructor_bytes - c->bytes ||
-            c->allocations >= c->options.max_constructor_allocations) {
-            fail(&c->failure, MC_CLIENT_RENDER_ENGINE_LIMIT, "ge List native constructor limit",
-                 "ge", pcs[i], 39, "<clinit>", pcs[i]);
-            goto failed;
-        }
-        mc_client_render_list *list = calloc(1, sizeof(*list));
-        if (list == NULL) {
-            fail(&c->failure, MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED,
-                 "ge actual List allocation", "ge", pcs[i], 39, "<clinit>", pcs[i]);
-            goto failed;
-        }
-        c->bytes += sizeof(*list);
-        ++c->allocations;
-        *slots[i] = list;
-    }
-    c->ge_phase = MC_CLIENT_RENDER_ENGINE_READY;
-    return true;
-failed:
-    c->ge_phase = MC_CLIENT_RENDER_ENGINE_FAILED;
-    o->failure = c->failure;
-    return false;
+    const mc_client_render_engine_status status = e->status == MC_CLIENT_GRAPHICS_LIMIT
+                                                      ? MC_CLIENT_RENDER_ENGINE_LIMIT
+                                                      : MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED;
+    const bool initializer = e->site.method != NULL && strcmp(e->site.method, "<clinit>") == 0;
+    fail(&o->failure, status,
+         initializer
+             ? (status == MC_CLIENT_RENDER_ENGINE_LIMIT ? "ge List native constructor limit"
+                                                        : "ge actual List allocation")
+             : (status == MC_CLIENT_RENDER_ENGINE_LIMIT ? "RenderEngine native constructor limit"
+                                                        : "RenderEngine constructor allocation"),
+         e->site.class_name, (unsigned)e->site.pc, ji_pc, e->site.method, (unsigned)e->site.pc);
+    if (initializer)
+        o->classes->failure = o->failure;
 }
 
 static mc_client_direct_byte_buffer *byte_buffer(mc_client_render_engine *o, size_t bytes,
                                                  unsigned ji_pc) {
-    mc_client_direct_byte_buffer *b = allocate(o, sizeof(*b) + bytes, "ge", 1, ji_pc, "c", 1);
-    if (b != NULL) {
-        b->limit = b->capacity = bytes;
-        b->data = (uint8_t *)(b + 1);
-    }
-    return b;
+    mc_client_graphics_error cause = {0};
+    mc_client_direct_byte_buffer *buffer = NULL;
+    if (!mc_client_ge_c(o->classes, &o->arena, (int32_t)bytes,
+                        (mc_client_graphics_site){"ji", "<init>", "(Lik;Lkv;)V", (int32_t)ji_pc},
+                        &buffer, &cause))
+        ge_failure(o, &cause, ji_pc);
+    return buffer;
+}
+
+static mc_client_direct_int_buffer *int_buffer(mc_client_render_engine *o, unsigned ji_pc) {
+    mc_client_graphics_error cause = {0};
+    mc_client_direct_int_buffer *buffer = NULL;
+    if (!mc_client_ge_d(o->classes, &o->arena, 1,
+                        (mc_client_graphics_site){"ji", "<init>", "(Lik;Lkv;)V", (int32_t)ji_pc},
+                        &buffer, &cause))
+        ge_failure(o, &cause, ji_pc);
+    return buffer;
 }
 
 static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *packs,
@@ -113,25 +106,21 @@ static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *p
     o->fields.b = allocate(o, sizeof(mc_client_render_map), "ji", 5, 5, NULL, 0);
     if (o->fields.b == NULL)
         return false;
+    ((mc_client_render_map *)(void *)o->fields.b)->string_ids = NULL; /* Native typed b role. */
     o->last_store_pc = 12;
     o->fields.c = allocate(o, sizeof(mc_client_render_map), "ji", 16, 16, NULL, 0);
     if (o->fields.c == NULL)
         return false;
+    ((mc_client_render_map *)(void *)o->fields.c)->color_arrays = NULL; /* Actual c int[] role. */
     o->last_store_pc = 23;
     o->fields.d = allocate(o, sizeof(mc_client_render_map), "ji", 27, 27, NULL, 0);
     if (o->fields.d == NULL)
         return false;
+    ((mc_client_render_map *)(void *)o->fields.d)->entries = NULL; /* Existing image role. */
     o->last_store_pc = 34;
-    if (!ge_initialize(o))
-        return false;
-    mc_client_direct_byte_buffer *underlying = byte_buffer(o, 4, 39);
-    if (underlying == NULL)
-        return false;
-    mc_client_direct_int_buffer *ints = allocate(o, sizeof(*ints), "ge", 6, 39, "d", 6);
+    mc_client_direct_int_buffer *ints = int_buffer(o, 39);
     if (ints == NULL)
         return false;
-    ints->limit = ints->capacity = 1;
-    ints->bytes = underlying;
     o->fields.e = ints;
     o->last_store_pc = 42;
     o->fields.f = byte_buffer(o, 1048576, 48);
@@ -145,6 +134,7 @@ static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *p
     o->fields.h = allocate(o, sizeof(mc_client_render_map), "ji", 66, 66, NULL, 0);
     if (o->fields.h == NULL)
         return false;
+    ((mc_client_render_map *)(void *)o->fields.h)->entries = NULL; /* Empty h role. */
     o->last_store_pc = 73;
     o->fields.j = false;
     o->last_store_pc = 78;
@@ -158,8 +148,8 @@ static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *p
              "ji", 87, 87, NULL, 0);
         return false;
     }
-    o->bytes += sizeof(*o->candidate);
-    ++o->allocations;
+    o->arena.bytes += sizeof(*o->candidate);
+    ++o->arena.allocations;
     o->candidate->holds = 1;
     if (!charge_external(o, 64u * 64u * sizeof(uint32_t), 96))
         return false;
@@ -169,8 +159,8 @@ static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *p
              "BufferedImage native ARGB plane", "ji", 96, 96, NULL, 0);
         return false;
     }
-    o->bytes += 64u * 64u * sizeof(uint32_t);
-    ++o->allocations;
+    o->arena.bytes += 64u * 64u * sizeof(uint32_t);
+    ++o->arena.allocations;
     o->candidate->width = o->candidate->height = 64;
     o->candidate->count = 4096;
     o->candidate->constructed = true;
@@ -219,15 +209,7 @@ static bool construct(mc_client_render_engine *o, mc_client_texture_pack_list *p
 mc_client_render_engine_status
 mc_client_render_engine_classes_create(const mc_client_render_engine_options *options,
                                        mc_client_render_engine_classes **out) {
-    if (out == NULL)
-        return MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT;
-    mc_client_render_engine_classes *c = calloc(1, sizeof(*c));
-    if (c == NULL)
-        return MC_CLIENT_RENDER_ENGINE_ALLOCATION_FAILED;
-    c->holds = 1;
-    c->options = options == NULL ? mc_client_render_engine_default_options() : *options;
-    *out = c;
-    return MC_CLIENT_RENDER_ENGINE_OK;
+    return mc_client_render_engine_classes_allocate_context(options, NULL, NULL, out);
 }
 
 mc_client_render_engine_status
@@ -244,7 +226,13 @@ mc_client_render_engine_status
 mc_client_render_engine_classes_release(mc_client_render_engine_classes *c) {
     if (c == NULL)
         return MC_CLIENT_RENDER_ENGINE_OK;
-    if (c->holds == 1 && (c->native_resource_count != 0 || c->active_resource_calls != 0))
+    if (c->active_source_calls != 0 || c->nw.phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING)
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (c->holds == 1 &&
+        (c->native_resource_count != 0 || c->active_resource_calls != 0 ||
+         c->command_range_count != 0 || c->font_lease_count != 0 || c->context_lease != NULL))
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (c->holds == 1 && !mc_client_colorizer_can_retire(c))
         return MC_CLIENT_RENDER_ENGINE_BUSY;
     if (--c->holds != 0)
         return MC_CLIENT_RENDER_ENGINE_OK;
@@ -255,6 +243,9 @@ mc_client_render_engine_classes_release(mc_client_render_engine_classes *c) {
     free(c->a);
     free(c->b);
     free(c->device);
+    mc_client_colorizer_free_namespace(c);
+    mc_client_nw_free_namespace(c);
+    mc_client_render_arena_free(&c->arena);
     free(c);
     return MC_CLIENT_RENDER_ENGINE_OK;
 }
@@ -299,7 +290,7 @@ mc_client_render_engine_allocate(mc_client_render_engine_classes *c, mc_client_d
     o->holds = 1;
     o->classes = c;
     o->font = font;
-    o->options = options == NULL ? mc_client_render_engine_default_options() : *options;
+    o->arena.options = options == NULL ? mc_client_render_engine_default_options() : *options;
     *out = o;
     return MC_CLIENT_RENDER_ENGINE_OK;
 }
@@ -312,7 +303,8 @@ mc_client_render_engine_construct(mc_client_render_engine *o, mc_client_texture_
     if (o == NULL)
         fail(&e, MC_CLIENT_RENDER_ENGINE_INVALID_ARGUMENT, "RenderEngine receiver", "ji", 0, 0,
              NULL, 0);
-    else if (o->phase != MC_CLIENT_RENDER_ENGINE_RAW || o->classes->resource_retirement_started)
+    else if (o->phase != MC_CLIENT_RENDER_ENGINE_RAW || o->classes->resource_retirement_started ||
+             o->lookup_retired)
         fail(&e, MC_CLIENT_RENDER_ENGINE_INVALID_PHASE, "RenderEngine RAW constructor admission",
              "ji", 0, 0, NULL, 0);
     else {
@@ -335,12 +327,47 @@ mc_client_render_engine_status mc_client_render_engine_retain(mc_client_render_e
     return MC_CLIENT_RENDER_ENGINE_OK;
 }
 
+static size_t color_map_occurrences(const mc_client_render_map *map,
+                                    const mc_client_color_array *array) {
+    size_t count = 0;
+    if (map != NULL && map->color_arrays != NULL && array != NULL)
+        for (size_t i = 0; i < map->count; ++i)
+            count += map->color_arrays[i].array == array ? 1u : 0u;
+    return count;
+}
+
+static bool engine_colors_can_retire(const mc_client_render_engine *o) {
+    const mc_client_render_map *map = o->fields.c;
+    const bool last_classes = o->classes->holds == 1;
+    if (last_classes && !mc_client_colorizer_can_retire(o->classes))
+        return false;
+    if (map != NULL && map->color_arrays != NULL)
+        for (size_t i = 0; i < map->count; ++i) {
+            const mc_client_color_array *array = map->color_arrays[i].array;
+            size_t count = color_map_occurrences(map, array);
+            if (last_classes)
+                count += mc_client_colorizer_occurrences(o->classes, array);
+            if (!mc_client_color_array_can_release_occurrences(array, count))
+                return false;
+        }
+    return true;
+}
+
 mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_engine *o) {
     if (o == NULL)
         return MC_CLIENT_RENDER_ENGINE_OK;
-    if (o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING || o->active_resource_calls != 0)
+    if (o->phase == MC_CLIENT_RENDER_ENGINE_CONSTRUCTING || o->active_resource_calls != 0 ||
+        o->classes->active_source_calls != 0)
         return MC_CLIENT_RENDER_ENGINE_BUSY;
-    if (o->holds == 1 && o->classes->holds == 1 && o->classes->native_resource_count != 0)
+    /* Opaque client-device prefix/policy storage is retired explicitly in its
+     * own layer. CPU ownership never calls Pack/Display or a cleanup callback. */
+    if (o->holds == 1 && o->lookup != NULL)
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (o->holds == 1 && o->classes->holds == 1 &&
+        (o->classes->native_resource_count != 0 || o->classes->command_range_count != 0 ||
+         o->classes->font_lease_count != 0 || o->classes->context_lease != NULL))
+        return MC_CLIENT_RENDER_ENGINE_BUSY;
+    if (o->holds == 1 && !engine_colors_can_retire(o))
         return MC_CLIENT_RENDER_ENGINE_BUSY;
     if (--o->holds != 0)
         return MC_CLIENT_RENDER_ENGINE_OK;
@@ -353,16 +380,22 @@ mc_client_render_engine_status mc_client_render_engine_release(mc_client_render_
     const mc_client_render_map *maps[4] = {o->fields.b, o->fields.c, o->fields.d, o->fields.h};
     for (size_t i = 0; i < 4; ++i)
         if (maps[i] != NULL) {
-            for (size_t j = 0; j < maps[i]->count; ++j)
-                mc_client_argb_image_release(maps[i]->entries[j].image);
-            free(maps[i]->entries);
+            if (i > 1 && maps[i]->entries != NULL)
+                for (size_t j = 0; j < maps[i]->count; ++j)
+                    mc_client_argb_image_release(maps[i]->entries[j].image);
+            if (i == 0 && maps[i]->string_ids != NULL)
+                for (size_t j = 0; j < maps[i]->count; ++j)
+                    free(maps[i]->string_ids[j].units);
+            if (i == 1 && maps[i]->color_arrays != NULL)
+                for (size_t j = 0; j < maps[i]->count; ++j) {
+                    free(maps[i]->color_arrays[j].units);
+                    (void)mc_client_color_array_release(&maps[i]->color_arrays[j].array, NULL);
+                }
+            free(i == 0   ? (void *)maps[i]->string_ids
+                 : i == 1 ? (void *)maps[i]->color_arrays
+                          : (void *)maps[i]->entries);
         }
-    render_allocation *a = o->arena;
-    while (a != NULL) {
-        render_allocation *next = a->next;
-        free(a);
-        a = next;
-    }
+    mc_client_render_arena_free(&o->arena);
     mc_client_render_engine_classes_release(o->classes);
     (void)mc_client_default_font_release(o->font);
     free(o);
@@ -376,8 +409,8 @@ bool mc_client_render_engine_inspect(const mc_client_render_engine *o,
     *out = (mc_client_render_engine_state){
         .phase = o->phase,
         .native_holds = o->holds,
-        .constructor_bytes = o->bytes,
-        .constructor_allocations = o->allocations,
+        .constructor_bytes = o->arena.bytes,
+        .constructor_allocations = o->arena.allocations,
         .last_store_pc = o->last_store_pc,
         .graphics_created = o->graphics != NULL,
         .graphics_disposed = o->graphics != NULL && o->graphics->disposed,

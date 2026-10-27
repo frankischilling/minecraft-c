@@ -40,6 +40,16 @@ typedef struct mc_client_application_owner_error {
     int native_error;
 } mc_client_application_owner_error;
 
+/* Native actual-App constructor state, separate from source J/o and the
+ * component frontend. Source operations are unavailable in RETIRING. */
+typedef enum mc_client_application_constructor_phase {
+    MC_CLIENT_APP_RAW = 0,
+    MC_CLIENT_APP_CONSTRUCTING,
+    MC_CLIENT_APP_READY,
+    MC_CLIENT_APP_FAILED,
+    MC_CLIENT_APP_RETIRING
+} mc_client_application_constructor_phase;
+
 typedef enum mc_client_application_class_phase {
     MC_CLIENT_APPLICATION_CLASS_COLD,
     MC_CLIENT_APPLICATION_CLASS_INITIALIZING,
@@ -63,7 +73,9 @@ typedef struct mc_client_application_class_state {
     const void *af; /* Actual nullable File slot; this scope only stores null. */
     size_t b_length, E_length, F_length;
     size_t native_holds, array_bytes, array_allocations, allocation_attempts;
-    unsigned int last_store_pc;
+    unsigned int last_store_pc, last_global_store_pc;
+    size_t native_app_borrows;
+    const mc_player_string *timer_name, *applet_true, *applet_standalone;
     mc_client_application_owner_error failure;
 } mc_client_application_class_state;
 
@@ -98,7 +110,7 @@ typedef enum mc_client_application_lifetime_phase {
 
 typedef struct mc_client_application_volatile_state {
     bool J, o;
-    size_t native_worker_holds;
+    size_t native_worker_holds, native_static_holds;
 } mc_client_application_volatile_state;
 
 /* Register the unique real App storage before any atomic access. The App may
@@ -117,6 +129,36 @@ mc_client_application_owner_status
 mc_client_application_lifetime_retire(client_application *, mc_client_application_owner_error *);
 bool mc_client_application_volatile_inspect(const client_application *,
                                             mc_client_application_volatile_state *);
+
+/* Native namespace borrows are NOT counted class ownership. Every actual
+ * RAW/READY/FAILED App keeps one until RETIRING ends all source/worker use.
+ * Final class release stays BUSY (without consuming its final occurrence) while
+ * any borrow remains, including a displaced earlier App. External runtime keeps
+ * the namespace through all source work; caller operations are exclusive. */
+mc_client_application_owner_status
+mc_client_application_namespace_attach(mc_client_application_classes *, client_application *,
+                                       mc_client_application_owner_error *);
+mc_client_application_owner_status
+mc_client_application_namespace_detach(client_application *, mc_client_application_owner_error *);
+/* Borrow the one lazily resolved class literal at actual ldc211. No Thread,
+ * source App field, clock, Random or general String intern table is created. */
+mc_client_application_owner_status
+mc_client_application_classes_timer_name(mc_client_application_classes *, mc_player_string **out,
+                                         mc_client_application_owner_error *);
+/* Same class-literal namespace, reached only on actual nonnull-Applet branch.
+ * Resolve immutable 'true'244 then 'stand-alone'247 in that source order. */
+mc_client_application_owner_status
+mc_client_application_classes_applet_true(mc_client_application_classes *, mc_player_string **out,
+                                          mc_client_application_owner_error *);
+mc_client_application_owner_status mc_client_application_classes_applet_standalone(
+    mc_client_application_classes *, mc_player_string **out, mc_client_application_owner_error *);
+/* Actual Minecraft.<init> putstatic a264. Acquire new real App static hold,
+ * store, then release only old static hold (same identity included). Earlier
+ * failures preserve old a. Only the real constructing registered App on this
+ * namespace is admitted. No native teardown writes source a=NULL or J=false. */
+mc_client_application_owner_status
+mc_client_application_classes_publish(mc_client_application_classes *, client_application *,
+                                      mc_client_application_owner_error *);
 
 typedef enum mc_client_timer_hack_phase {
     MC_CLIENT_TIMER_HACK_RAW,

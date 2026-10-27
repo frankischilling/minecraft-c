@@ -1,4 +1,6 @@
-#include "mc/client/sound/sound_manager.h"
+#include "mc/client/sound/construction.h"
+
+#include "pool_construction.h"
 
 #include "../settings/sound_access.h"
 
@@ -24,6 +26,13 @@ struct mc_sound_manager {
     mc_game_settings *settings;
     int32_t counter, delay;
     bool active;
+    mc_sound_manager_phase phase;
+    mc_sound_pool *pending_pool;
+    mc_sound_pool_constructor_prefix pool_prefixes[MC_SOUND_MANAGER_POOL_COUNT], pending_prefix;
+    int32_t pending_pool_index, last_store_pc;
+    unsigned published_pool_mask;
+    bool counter_published, random_published, delay_published;
+    mc_sound_manager_constructor_error constructor_failure;
 };
 
 static mc_sound_status result(mc_sound_error *error, mc_sound_status status, const char *operation,
@@ -38,6 +47,8 @@ static mc_sound_status admit(mc_sound_manager *manager, mc_sound_error *error) {
         return result(error, MC_SOUND_INVALID_ARGUMENT, "SoundManager receiver", -1);
     if (manager->active || manager->shared->active)
         return result(error, MC_SOUND_BUSY, "SoundManager active operation", -1);
+    if (manager->phase != MC_SOUND_MANAGER_READY)
+        return result(error, MC_SOUND_INVALID_ARGUMENT, "SoundManager unconstructed operation", -1);
     manager->active = true;
     manager->shared->active = true;
     return MC_SOUND_OK;
@@ -274,46 +285,177 @@ mc_sound_status mc_sound_manager_shared_retire(mc_sound_manager_shared **owner,
     return result(error, MC_SOUND_OK, NULL, -1);
 }
 
-mc_sound_status mc_sound_manager_create(mc_sound_manager_shared *shared,
-                                        mc_java_random_profile *profile,
-                                        size_t pool_allocation_bytes, mc_sound_manager **out,
-                                        mc_sound_error *error) {
-    if (shared == NULL || profile == NULL || out == NULL)
+/* A separately compiled allocation-fault control can wrap the exact owner
+ * allocation. Production has no runtime allocator callback or alternate body. */
+#if defined(MC_SOUND_MANAGER_CALLOC)
+extern void *MC_SOUND_MANAGER_CALLOC(size_t, size_t);
+#else
+#define MC_SOUND_MANAGER_CALLOC calloc
+#endif
+
+mc_sound_status mc_sound_manager_allocate(mc_sound_manager_shared *shared, mc_sound_manager **out,
+                                          mc_sound_error *error) {
+    if (shared == NULL || out == NULL)
         return result(error, MC_SOUND_INVALID_ARGUMENT, "SoundManager construction", -1);
     if (shared->active)
         return result(error, MC_SOUND_BUSY, "SoundManager shared owner active", -1);
     if (shared->managers == SIZE_MAX)
         return result(error, MC_SOUND_LIMIT, "SoundManager owner count", -1);
-    mc_sound_manager *manager = calloc(1, sizeof(*manager));
+    mc_sound_manager *manager = MC_SOUND_MANAGER_CALLOC(1, sizeof(*manager));
     if (manager == NULL)
         return result(error, MC_SOUND_ALLOCATION_FAILED, "SoundManager owner", -1);
+    manager->shared = shared;
+    manager->pending_pool_index = -1;
+    manager->last_store_pc = -1;
+    manager->pending_prefix.last_store_pc = -1;
+    manager->constructor_failure.pool_index = -1;
+    for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i)
+        manager->pool_prefixes[i].last_store_pc = -1;
+    ++shared->managers; /* Native lifetime includes RAW and retained failures. */
+    *out = manager;
+    return result(error, MC_SOUND_OK, NULL, -1);
+}
+
+static mc_sound_status construction_error(mc_sound_manager_constructor_error *out,
+                                          mc_sound_status status, const char *operation,
+                                          int32_t yo_pc, int32_t hr_pc, int32_t index,
+                                          const mc_sound_error *cause) {
+    if (out != NULL) {
+        *out = (mc_sound_manager_constructor_error){
+            .status = status, .operation = operation, .native_policy = true, .pool_index = index};
+        if (yo_pc >= 0)
+            out->frames[out->frame_count++] =
+                (mc_sound_constructor_site){"yo", "<init>", "()V", yo_pc};
+        if (hr_pc >= 0)
+            out->frames[out->frame_count++] =
+                (mc_sound_constructor_site){"hr", "<init>", "()V", hr_pc};
+        if (cause != NULL)
+            out->cause = *cause;
+        else
+            result(&out->cause, status, operation, -1);
+    }
+    return status;
+}
+
+mc_sound_status mc_sound_manager_construct(mc_sound_manager *manager,
+                                           mc_java_random_profile *profile,
+                                           size_t pool_allocation_bytes,
+                                           mc_sound_manager_constructor_error *error) {
+    if (manager == NULL || profile == NULL)
+        return construction_error(error, MC_SOUND_INVALID_ARGUMENT,
+                                  "SoundManager constructor arguments", -1, -1, -1, NULL);
+    if (manager->active || manager->shared->active)
+        return construction_error(error, MC_SOUND_BUSY, "SoundManager active constructor", -1, -1,
+                                  -1, NULL);
+    if (manager->phase != MC_SOUND_MANAGER_RAW)
+        return construction_error(error, MC_SOUND_INVALID_ARGUMENT,
+                                  "SoundManager constructor phase", -1, -1, -1, NULL);
+    manager->active = true;
+    manager->shared->active = true;
+    manager->phase = MC_SOUND_MANAGER_CONSTRUCTING;
+    static const int32_t new_pcs[MC_SOUND_MANAGER_POOL_COUNT] = {5, 16, 27};
+    static const int32_t call_pcs[MC_SOUND_MANAGER_POOL_COUNT] = {9, 20, 31};
+    static const int32_t store_pcs[MC_SOUND_MANAGER_POOL_COUNT] = {12, 23, 34};
+    mc_sound_error cause = {0};
     mc_sound_status status = MC_SOUND_OK;
     for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i) {
-        status = mc_sound_pool_create(profile, pool_allocation_bytes, &manager->pools[i], error);
-        if (status != MC_SOUND_OK)
+        manager->pending_pool_index = (int32_t)i;
+        status = mc_sound_pool_allocate_raw(pool_allocation_bytes, &manager->pending_pool, &cause);
+        if (status != MC_SOUND_OK) {
+            construction_error(&manager->constructor_failure, status,
+                               "SoundManager pool native allocation", new_pcs[i], -1, (int32_t)i,
+                               &cause);
             goto failed;
+        }
+        status = mc_sound_pool_construct_raw(manager->pending_pool, profile,
+                                             &manager->pending_prefix, &cause);
+        if (status != MC_SOUND_OK) {
+            construction_error(&manager->constructor_failure, status,
+                               "SoundManager pool constructor", call_pcs[i], cause.source_pc,
+                               (int32_t)i, &cause);
+            goto failed;
+        }
+        manager->pools[i] = manager->pending_pool;
+        manager->pool_prefixes[i] = manager->pending_prefix;
+        manager->published_pool_mask |= 1u << i;
+        manager->last_store_pc = store_pcs[i];
+        manager->pending_pool = NULL;
+        manager->pending_pool_index = -1;
+        manager->pending_prefix = (mc_sound_pool_constructor_prefix){.last_store_pc = -1};
     }
+    manager->counter = 0;
+    manager->counter_published = true;
+    manager->last_store_pc = 39;
     const mc_java_random_profile_status random_status =
         mc_java_random_construct_default(profile, &manager->random);
     if (random_status != MC_JAVA_RANDOM_PROFILE_OK) {
-        status = result(error, MC_SOUND_RANDOM_FAILED, "SoundManager default Random", 47);
-        if (error != NULL)
-            error->random_status = random_status;
+        status = result(&cause, MC_SOUND_RANDOM_FAILED, "SoundManager default Random", 47);
+        cause.random_status = random_status;
+        construction_error(&manager->constructor_failure, status,
+                           "SoundManager fourth Random constructor", 47, -1, -1, &cause);
         goto failed;
     }
+    manager->random_published = true;
+    manager->last_store_pc = 50;
     if (!mc_java_random_next_bounded(&manager->random, 12000, &manager->delay)) {
-        status = result(error, MC_SOUND_RANDOM_FAILED, "SoundManager initial music delay", 61);
+        status = result(&cause, MC_SOUND_RANDOM_FAILED, "SoundManager initial music delay", 61);
+        construction_error(&manager->constructor_failure, status,
+                           "SoundManager initial music delay", 61, -1, -1, &cause);
         goto failed;
     }
-    manager->shared = shared;
-    ++shared->managers;
+    manager->delay_published = true;
+    manager->last_store_pc = 64;
+    manager->phase = MC_SOUND_MANAGER_READY;
+    manager->active = false;
+    manager->shared->active = false;
+    if (error != NULL)
+        *error = (mc_sound_manager_constructor_error){.pool_index = -1};
+    return MC_SOUND_OK;
+failed:
+    manager->phase = MC_SOUND_MANAGER_FAILED;
+    manager->active = false;
+    manager->shared->active = false;
+    if (error != NULL)
+        *error = manager->constructor_failure;
+    return status;
+}
+
+mc_sound_status mc_sound_manager_create(mc_sound_manager_shared *shared,
+                                        mc_java_random_profile *profile,
+                                        size_t pool_allocation_bytes, mc_sound_manager **out,
+                                        mc_sound_error *error) {
+    /* Preserve the original factory admission before allocating anything. */
+    if (shared == NULL || profile == NULL || out == NULL)
+        return result(error, MC_SOUND_INVALID_ARGUMENT, "SoundManager construction", -1);
+    mc_sound_manager *manager = NULL;
+    mc_sound_status status = mc_sound_manager_allocate(shared, &manager, error);
+    if (status != MC_SOUND_OK)
+        return status;
+    mc_sound_manager_constructor_error construction;
+    status = mc_sound_manager_construct(manager, profile, pool_allocation_bytes, &construction);
+    if (status != MC_SOUND_OK) {
+        if (error != NULL)
+            *error = construction.cause;
+        /* Canonical constructors cannot publish an active registration. The
+         * candidate is freed before completed pools, matching the old eager
+         * hr-factory failure cleanup followed by the old yo cleanup loop. */
+        (void)mc_sound_manager_retire(&manager, NULL);
+        return status;
+    }
     *out = manager;
     return result(error, MC_SOUND_OK, NULL, 67);
-failed:
-    for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i)
-        mc_sound_pool_free(manager->pools[i], NULL);
-    free(manager);
-    return status;
+}
+
+static mc_sound_status pool_retirement_admit(mc_sound_pool *pool, mc_sound_error *error) {
+    if (pool == NULL)
+        return MC_SOUND_OK;
+    mc_sound_pool_state state;
+    const mc_sound_status status = mc_sound_pool_read_state(pool, &state, error);
+    if (status != MC_SOUND_OK)
+        return status;
+    return state.registration_active
+               ? result(error, MC_SOUND_BUSY, "SoundManager active pool retirement", -1)
+               : MC_SOUND_OK;
 }
 
 mc_sound_status mc_sound_manager_retire(mc_sound_manager **owner, mc_sound_error *error) {
@@ -324,17 +466,39 @@ mc_sound_status mc_sound_manager_retire(mc_sound_manager **owner, mc_sound_error
         return result(error, MC_SOUND_OK, NULL, -1);
     if (manager->active || manager->shared->active)
         return result(error, MC_SOUND_BUSY, "SoundManager active retirement", -1);
-    for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i)
-        mc_sound_pool_free(manager->pools[i], NULL);
+    mc_sound_status status = pool_retirement_admit(manager->pending_pool, error);
+    if (status != MC_SOUND_OK)
+        return status;
+    for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i) {
+        status = pool_retirement_admit(manager->pools[i], error);
+        if (status != MC_SOUND_OK)
+            return status;
+    }
+    manager->phase = MC_SOUND_MANAGER_RETIRING;
+    manager->active = true;
+    manager->shared->active = true;
+    status = mc_sound_pool_free(manager->pending_pool, error);
+    if (status != MC_SOUND_OK)
+        goto retained;
+    manager->pending_pool = NULL;
+    for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i) {
+        status = mc_sound_pool_free(manager->pools[i], error);
+        if (status != MC_SOUND_OK)
+            goto retained;
+        manager->pools[i] = NULL;
+    }
     --manager->shared->managers;
+    manager->shared->active = false;
     free(manager);
     *owner = NULL;
     return result(error, MC_SOUND_OK, NULL, -1);
+retained:
+    manager->active = false;
+    manager->shared->active = false;
+    return status;
 }
 
-bool mc_sound_manager_read_state(const mc_sound_manager *manager, mc_sound_manager_state *out) {
-    if (manager == NULL || out == NULL)
-        return false;
+static void state_values(const mc_sound_manager *manager, mc_sound_manager_state *out) {
     *out = (mc_sound_manager_state){.shared_initialized = manager->shared->initialized,
                                     .backend_present = manager->shared->backend != NULL,
                                     .active = manager->active,
@@ -342,12 +506,42 @@ bool mc_sound_manager_read_state(const mc_sound_manager *manager, mc_sound_manag
                                     .music_delay = manager->delay,
                                     .random = manager->random,
                                     .settings = manager->settings};
+}
+
+bool mc_sound_manager_read_construction(const mc_sound_manager *manager,
+                                        mc_sound_manager_constructor_state *out) {
+    if (manager == NULL || out == NULL)
+        return false;
+    *out = (mc_sound_manager_constructor_state){.phase = manager->phase,
+                                                .active = manager->active,
+                                                .last_store_pc = manager->last_store_pc,
+                                                .published_pool_mask = manager->published_pool_mask,
+                                                .pending_pool = manager->pending_pool,
+                                                .pending_pool_index = manager->pending_pool_index,
+                                                .pending_prefix = manager->pending_prefix,
+                                                .counter_published = manager->counter_published,
+                                                .random_published = manager->random_published,
+                                                .delay_published = manager->delay_published,
+                                                .failure = manager->constructor_failure};
+    state_values(manager, &out->values);
+    for (size_t i = 0; i < MC_SOUND_MANAGER_POOL_COUNT; ++i) {
+        out->pools[i] = manager->pools[i];
+        out->pool_prefixes[i] = manager->pool_prefixes[i];
+    }
+    return true;
+}
+
+bool mc_sound_manager_read_state(const mc_sound_manager *manager, mc_sound_manager_state *out) {
+    if (manager == NULL || out == NULL || manager->phase != MC_SOUND_MANAGER_READY)
+        return false;
+    state_values(manager, out);
     return true;
 }
 
 const mc_sound_pool *mc_sound_manager_pool(const mc_sound_manager *manager,
                                            mc_sound_manager_pool_kind kind) {
-    if (manager == NULL || kind < MC_SOUND_MANAGER_EFFECTS || kind >= MC_SOUND_MANAGER_POOL_COUNT)
+    if (manager == NULL || manager->phase == MC_SOUND_MANAGER_RETIRING ||
+        kind < MC_SOUND_MANAGER_EFFECTS || kind >= MC_SOUND_MANAGER_POOL_COUNT)
         return NULL;
     return manager->pools[(size_t)kind];
 }

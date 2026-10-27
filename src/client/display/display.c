@@ -1,5 +1,6 @@
 #include "display.h"
 #include "gl_internal.h"
+#include "source_internal.h"
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
@@ -28,6 +29,8 @@ struct mc_client_texture_resource {
     mc_client_display *display;
     GLuint id;
     bool active;
+    uint64_t generation;
+    bool live, driver_generated, deletion_right;
 };
 
 typedef struct display_vertex {
@@ -49,7 +52,11 @@ struct mc_client_display {
     display_texture textures[DISPLAY_TEXTURES];
     size_t texture_count, texture_bytes;
     size_t texture_resource_count, texture_resource_calls;
+    mc_client_source_state source;
 };
+
+static bool source_generation_leased(const mc_client_display *, uint64_t);
+static void source_gpu_retire(mc_client_display *, bool *, mc_client_display_error *);
 
 static void text_copy(char *out, size_t capacity, const char *text) {
     if (capacity == 0)
@@ -594,7 +601,8 @@ static bool resource_enter(mc_client_texture_resource *resource, const char *ope
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
                     "no generated texture resource", 0);
     mc_client_display *display = resource->display;
-    if (resource->active || display->texture_resource_calls != 0)
+    if (resource->active || display->texture_resource_calls != 0 ||
+        (display->source.active_calls != 0 && !display->source.internal_resource_bind))
         return fail(error, MC_CLIENT_DISPLAY_BUSY, operation, "texture operation active", 0);
     resource->active = true;
     ++display->texture_resource_calls;
@@ -632,19 +640,23 @@ bool mc_client_display_generate_texture(mc_client_display *display,
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "generate owned texture",
                     "invalid generation arguments", 0);
     *out = (mc_client_texture_generation){0};
-    if (display->texture_resource_calls != 0)
+    if (display->texture_resource_calls != 0 || display->source.active_calls != 0)
         return fail(error, MC_CLIENT_DISPLAY_BUSY, "generate owned texture",
                     "texture operation active", 0);
     if (!current(display, "generate owned texture", error))
         return false;
     if (display->texture_count >= DISPLAY_TEXTURES)
         return fail(error, MC_CLIENT_DISPLAY_LIMIT, "generate owned texture", "texture limit", 0);
+    if (display->source.next_texture_generation == UINT64_MAX)
+        return fail(error, MC_CLIENT_DISPLAY_LIMIT, "generate owned texture",
+                    "generation identity exhausted", 0);
     mc_client_texture_resource *resource = calloc(1, sizeof(*resource));
     if (resource == NULL)
         return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "reserve texture resource",
                     "allocation failed", 0);
     resource->display = display;
     resource->active = true;
+    resource->generation = ++display->source.next_texture_generation;
     const size_t index = display->texture_count++;
     display->textures[index] = (display_texture){.resource = resource};
     ++display->texture_resource_count;
@@ -664,6 +676,9 @@ bool mc_client_display_generate_texture(mc_client_display *display,
         ok = fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "generate owned texture",
                   duplicate ? "duplicate generated texture ID" : "zero generated texture ID", 0);
     out->driver_generated = ok;
+    resource->driver_generated = ok;
+    resource->live = ok;
+    resource->deletion_right = resource->id != 0;
     resource_leave(resource);
     return ok ? success(error) : false;
 }
@@ -772,9 +787,13 @@ bool mc_client_display_retire_texture(mc_client_texture_resource **owner,
         return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "retire owned texture",
                     "unregistered resource", 0);
     mc_client_display *display = resource->display;
-    if (resource->active || display->texture_resource_calls != 0)
+    if (resource->active || display->texture_resource_calls != 0 ||
+        display->source.active_calls != 0)
         return fail(error, MC_CLIENT_DISPLAY_BUSY, "retire owned texture",
                     "texture operation active", 0);
+    if (source_generation_leased(display, resource->generation))
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "retire owned texture",
+                    "font generation lease remains live", 0);
     bool ok = true;
     if (display->context_lost)
         ok = fail(error, MC_CLIENT_DISPLAY_CONTEXT_LOST, "retire owned texture",
@@ -784,7 +803,7 @@ bool mc_client_display_retire_texture(mc_client_texture_resource **owner,
             return false; /* Preserve the owner for retry. */
         resource->active = true;
         ++display->texture_resource_calls;
-        if (resource->id != 0) {
+        if (resource->id != 0 && resource->deletion_right) {
             display->gl.DeleteTextures(1, &resource->id);
             ok = gl_check(display, "retire owned texture", error);
         }
@@ -1044,6 +1063,11 @@ static void cleanup_check(mc_client_display *display, const char *operation, boo
 }
 
 bool mc_client_display_destroy(mc_client_display *display, mc_client_display_error *error) {
+    if (display != NULL &&
+        (display->source.context_holds != 0 || display->source.range_count != 0 ||
+         display->source.texture_lease_count != 0 || display->source.active_calls != 0))
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "destroy display with source owners",
+                    "retire native context/range/generation holds first", 0);
     if (display != NULL && display->texture_resource_count != 0)
         return fail(error, MC_CLIENT_DISPLAY_BUSY, "destroy display with texture owners",
                     "retire the generated texture resources and retry", 0);
@@ -1064,6 +1088,7 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
         display->gl.ActiveTexture(GL_TEXTURE0);
         display->gl.BindTexture(GL_TEXTURE_2D, 0);
         cleanup_check(display, "unbind GUI objects for cleanup", &ok, &first);
+        source_gpu_retire(display, &ok, &first);
         for (size_t i = 0; i < display->texture_count && !display->context_lost; ++i) {
             display->gl.DeleteTextures(1, &display->textures[i].id);
             cleanup_check(display, "delete display texture", &ok, &first);
@@ -1105,3 +1130,10 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
         *error = first;
     return false;
 }
+
+/* Implementation includes require helpers in this order. */
+// clang-format off
+#include "source_surface.inc"
+#include "texture_leases.inc"
+#include "loading_projection.inc"
+// clang-format on

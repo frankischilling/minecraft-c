@@ -3,6 +3,7 @@
 
 #include "../display/display.h"
 #include "mc/client/render_engine/render_engine.h"
+#include "source.h"
 
 typedef enum mc_client_render_texture_status {
     MC_CLIENT_RENDER_TEXTURE_OK,
@@ -30,6 +31,7 @@ typedef struct mc_client_render_texture_error {
     mc_client_render_engine_status owner;
     mc_client_texture generated_id;
     bool driver_generated, source_ledger_appended, base_uploaded, image_published;
+    mc_client_graphics_error resources;
 } mc_client_render_texture_error;
 
 mc_client_render_texture_options mc_client_render_texture_default_options(void);

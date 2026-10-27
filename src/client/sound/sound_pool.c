@@ -1,5 +1,7 @@
 #include "mc/client/sound/sound_pool.h"
 
+#include "pool_construction.h"
+
 #include "mc/client/sound/sound_file.h"
 #include "mc/core/java/integer_parse.h"
 
@@ -181,32 +183,90 @@ static mc_sound_status grow(mc_sound_pool *pool, const mc_sound_pool_entry ***en
     return MC_SOUND_OK;
 }
 
-mc_sound_status mc_sound_pool_create(mc_java_random_profile *profile, size_t max_allocation_bytes,
-                                     mc_sound_pool **out, mc_sound_error *error) {
-    if (profile == NULL || out == NULL)
+/* Test builds may name a separately linked allocator around this same body.
+ * Production always uses the original calloc, never a runtime callback. */
+#if defined(MC_SOUND_POOL_CALLOC)
+extern void *MC_SOUND_POOL_CALLOC(size_t, size_t);
+#else
+#define MC_SOUND_POOL_CALLOC calloc
+#endif
+
+mc_sound_status mc_sound_pool_allocate_raw(size_t max_allocation_bytes, mc_sound_pool **out,
+                                           mc_sound_error *error) {
+    if (out == NULL)
         return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool constructor arguments", -1,
                     MC_SOUND_EXCEPTION_NONE);
     if (max_allocation_bytes < sizeof(mc_sound_pool) ||
         max_allocation_bytes > MC_SOUND_POOL_MAX_ALLOCATION_BYTES)
         return fail(error, MC_SOUND_LIMIT, "SoundPool allocation budget", -1,
                     MC_SOUND_EXCEPTION_NONE);
-    mc_sound_pool *pool = calloc(1, sizeof(*pool));
+    mc_sound_pool *pool = MC_SOUND_POOL_CALLOC(1, sizeof(*pool));
     if (pool == NULL)
         return fail(error, MC_SOUND_ALLOCATION_FAILED, "SoundPool owner", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    /* Native charge is real even if the source constructor later fails. This
+     * does not publish the embedded source Map/List or Random. */
+    pool->allocation_bytes = sizeof(*pool);
+    pool->allocation_limit = max_allocation_bytes;
+    *out = pool;
+    return success(error);
+}
+
+mc_sound_status mc_sound_pool_construct_raw(mc_sound_pool *pool, mc_java_random_profile *profile,
+                                            mc_sound_pool_constructor_prefix *out,
+                                            mc_sound_error *error) {
+    mc_sound_pool_constructor_prefix prefix = {.last_store_pc = -1};
+    if (pool == NULL || profile == NULL)
+        return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool constructor arguments", -1,
                     MC_SOUND_EXCEPTION_NONE);
     const mc_java_random_profile_status random =
         mc_java_random_construct_default(profile, &pool->random);
     if (random != MC_JAVA_RANDOM_PROFILE_OK) {
-        free(pool);
         fail(error, MC_SOUND_RANDOM_FAILED, "SoundPool Random constructor", 9,
              MC_SOUND_EXCEPTION_NONE);
         if (error != NULL)
             error->random_status = random;
+        if (out != NULL)
+            *out = prefix;
         return MC_SOUND_RANDOM_FAILED;
     }
+    prefix.random_published = true;
+    prefix.last_store_pc = 12;
+    /* The actual native containers are embedded, not extra Java object
+     * headers. Their empty representation becomes source-ready at23/34. */
+    pool->groups = pool->last_group = NULL;
+    pool->group_count = 0;
+    prefix.map_published = true;
+    prefix.last_store_pc = 23;
+    pool->entries = NULL;
+    pool->entry_count = pool->entry_capacity = 0;
+    prefix.list_published = true;
+    prefix.last_store_pc = 34;
+    pool->count = 0;
+    prefix.count_published = true;
+    prefix.last_store_pc = 39;
     pool->strip_digits = true;
-    pool->allocation_bytes = sizeof(*pool);
-    pool->allocation_limit = max_allocation_bytes;
+    prefix.strip_digits_published = true;
+    prefix.last_store_pc = 44;
+    if (out != NULL)
+        *out = prefix;
+    return success(error);
+}
+
+mc_sound_status mc_sound_pool_create(mc_java_random_profile *profile, size_t max_allocation_bytes,
+                                     mc_sound_pool **out, mc_sound_error *error) {
+    if (profile == NULL || out == NULL)
+        return fail(error, MC_SOUND_INVALID_ARGUMENT, "SoundPool constructor arguments", -1,
+                    MC_SOUND_EXCEPTION_NONE);
+    mc_sound_pool *pool = NULL;
+    mc_sound_status status = mc_sound_pool_allocate_raw(max_allocation_bytes, &pool, error);
+    if (status != MC_SOUND_OK)
+        return status;
+    status = mc_sound_pool_construct_raw(pool, profile, NULL, error);
+    if (status != MC_SOUND_OK) {
+        (void)mc_sound_pool_free(pool, NULL);
+        return status;
+    }
     *out = pool;
     return success(error);
 }

@@ -1,4 +1,5 @@
 #include "gui_main_menu.h"
+#include "../display/matrix_source.h"
 
 #include "mc/core/math/math.h"
 
@@ -84,30 +85,9 @@ static bool quad(mc_gui_main_menu *menu, mc_client_texture image, double x, doub
 
 /* Keep each source binary32 product/add as a separate rounded operation.
  * Volatile stores also prevent a contracted multiply-add across helpers. */
-static float model_product(float left, float right) {
-    volatile float rounded = left * right;
-    return rounded;
-}
-
-static float model_sum(float left, float right) {
-    volatile float rounded = left + right;
-    return rounded;
-}
-
-static void model_translate(mc_client_modelview *matrix, float x, float y, float z) {
-    for (size_t row = 0; row < 4; ++row) {
-        const float px = model_product(matrix->column_major[row], x);
-        const float py = model_product(matrix->column_major[4 + row], y);
-        const float pz = model_product(matrix->column_major[8 + row], z);
-        const float xy = model_sum(px, py);
-        const float xyz = model_sum(xy, pz);
-        matrix->column_major[12 + row] = model_sum(xyz, matrix->column_major[12 + row]);
-    }
-}
-
 static mc_client_modelview model_base(void) {
     mc_client_modelview matrix = {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
-    model_translate(&matrix, 0.0f, 0.0f, -2000.0f);
+    mc_client_source_translate(&matrix, 0.0f, 0.0f, -2000.0f);
     return matrix;
 }
 
@@ -117,12 +97,12 @@ static void model_rotate_z(mc_client_modelview *matrix, float degrees) {
     const float sine = (float)sin((double)radians);
     for (size_t row = 0; row < 4; ++row) {
         const float x = matrix->column_major[row], y = matrix->column_major[4 + row];
-        const float xc = model_product(x, cosine);
-        const float ys = model_product(y, sine);
-        const float column_x = model_sum(xc, ys);
-        const float xns = model_product(x, -sine);
-        const float yc = model_product(y, cosine);
-        const float column_y = model_sum(xns, yc);
+        const float xc = mc_client_source_product(x, cosine);
+        const float ys = mc_client_source_product(y, sine);
+        const float column_x = mc_client_source_sum(xc, ys);
+        const float xns = mc_client_source_product(x, -sine);
+        const float yc = mc_client_source_product(y, cosine);
+        const float column_y = mc_client_source_sum(xns, yc);
         matrix->column_major[row] = column_x;
         matrix->column_major[4 + row] = column_y;
     }
@@ -133,7 +113,7 @@ static void model_scale(mc_client_modelview *matrix, float x, float y, float z) 
     for (size_t column = 0; column < 3; ++column)
         for (size_t row = 0; row < 4; ++row)
             matrix->column_major[4 * column + row] =
-                model_product(matrix->column_major[4 * column + row], scale[column]);
+                mc_client_source_product(matrix->column_major[4 * column + row], scale[column]);
 }
 
 static bool glyph_list(mc_gui_main_menu *menu, uint16_t index, uint32_t color,
@@ -141,8 +121,8 @@ static bool glyph_list(mc_gui_main_menu *menu, uint16_t index, uint32_t color,
     const float extent = MC_FONT_RENDERER_GLYPH_EXTENT;
     const float atlas_x = (float)(index % 16u * MC_FONT_RENDERER_CELL_SIZE);
     const float atlas_y = (float)(index / 16u * MC_FONT_RENDERER_CELL_SIZE);
-    const float left = atlas_x / 128.0f, right = model_sum(atlas_x, extent) / 128.0f;
-    const float top = atlas_y / 128.0f, bottom = model_sum(atlas_y, extent) / 128.0f;
+    const float left = atlas_x / 128.0f, right = mc_client_source_sum(atlas_x, extent) / 128.0f;
+    const float top = atlas_y / 128.0f, bottom = mc_client_source_sum(atlas_y, extent) / 128.0f;
     const mc_client_vertex vertices[4] = {{0, extent, left, bottom, color},
                                           {extent, extent, right, bottom, color},
                                           {extent, 0, right, top, color},
@@ -225,8 +205,8 @@ static bool text(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x, i
                 if (active)
                     goto invalid_command;
                 pass = entry;
-                model_translate(&pass, command->value.begin_pass.x, command->value.begin_pass.y,
-                                0.0f);
+                mc_client_source_translate(&pass, command->value.begin_pass.x,
+                                           command->value.begin_pass.y, 0.0f);
                 current_color = command->value.begin_pass.argb;
                 active = true;
                 break;
@@ -242,7 +222,8 @@ static bool text(mc_gui_main_menu *menu, const mc_font_text *value, int32_t x, i
                                 error))
                     goto failure;
                 /* Blank/transparent glyphs still execute their source advance. */
-                model_translate(&pass, (float)command->value.glyph_list.advance, 0.0f, 0.0f);
+                mc_client_source_translate(&pass, (float)command->value.glyph_list.advance, 0.0f,
+                                           0.0f);
                 break;
             case MC_FONT_COMMAND_END_PASS:
                 if (!active)
@@ -375,7 +356,7 @@ bool mc_gui_main_menu_draw(mc_gui_main_menu *menu, const mc_gui_main_menu_frame 
               45.0f / 256.0f, 155.0f / 256.0f, 44.0f / 256.0f, UINT32_C(0xffffffff), error))
         return false;
     mc_client_modelview splash = model_base();
-    model_translate(&splash, (float)mc_java_i32_add(scale->width / 2, 90), 70.0f, 0.0f);
+    mc_client_source_translate(&splash, (float)mc_java_i32_add(scale->width / 2, 90), 70.0f, 0.0f);
     model_rotate_z(&splash, -20.0f);
     int64_t millis = 0;
     if (!read_millis(clock_context, &millis))
