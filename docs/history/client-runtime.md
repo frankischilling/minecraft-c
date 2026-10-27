@@ -610,3 +610,57 @@ See [testing](../testing.md), the [parity matrix](../parity.md) and
 [roadmap](../roadmap.md) for current requirements. Detailed earlier results remain
 in the [population and runtime history](../history/population.md) and
 [earlier integration history](../history.md).
+
+
+## LocalPlayer NBT and Lava checkpoint
+
+At `0a330b2`, before RenderEngine/Biped integration:
+
+The combined Lava animation, LocalPlayer NBT, singleplayer controller, camera,
+World Entity update, spawn/reset and weather source passes 1,072 local CTests:
+376 Windows MSVC Debug cases and 348 cases on each Clang 18/GCC 13 Debug build
+with ASan, UBSan and leak detection. Every case from the preceding 362/335/335
+matrix remains enabled.
+No case failed, skipped, was disabled or remained unrun.
+
+The frozen build cohort contains 1,822 files and 1,586 non-Markdown inputs.
+All 910 C/header files pass clang-format 18.1.3. Before execution, 236 current
+native/helper fingerprints and nineteen original class/Code metadata families
+verify. Source inventories and actual configured artifacts, runtime libraries,
+symbols and compiler/link configuration remain unchanged across each full suite.
+All 277 configured Windows executables retain the default 1 MiB stack reserve.
+The subsequent documentation update changes none of those non-Markdown inputs
+or the reference README files pinned by their comparison packages.
+
+Windows includes real OpenGL startup, three executable World inspection captures,
+GPU camera drawing and the original camera comparison. Local Linux coverage is
+headless; the CPU controller and camera closures have no SDL, OpenGL or FreeType
+dependency. Hosted public/JDK checks run separately.
+
+Independent readback verifies 230 ordinary and 256 allocation checks for the
+singleplayer controller on each compiler. Each native target matches twenty
+unchanged-original records. Windows runs a fresh original comparison through
+the public wrapper; Linux native comparisons retain their Windows-original
+observation scope. The existing World Entity, weather, spawn/reset and camera
+capture audits also pass without changing their declared scenarios.
+
+Each combined compiler product passes 132,659 Lava checks. Fresh unchanged-original
+CPU execution on Windows and Linux matches all 348 array, RGBA and Math records
+across 23 cases and 31 animation calls. This exercises the CPU constructor and
+animation body; application publication, texture registration and GPU upload
+remain unfinished.
+
+LocalPlayer NBT passes 490 checks, coordinate ownership passes 110, the selected
+diagnostic union passes nine and World Player publication passes 169. A fresh
+Windows original run matches 33 cases and 1,302 normal tag nodes. Both current
+Linux executables match those unchanged retained Windows observations through
+the strict receipt comparator. Three LastPlayed values have separate clock
+brackets. The distinct wake93 prefix contains 37 records, including 33 tag nodes;
+native full-wake parity remains unfinished. These results include the actual
+first-Player metadata save and saved Info.Player load/publication paths. They do
+not establish a gameplay save/reload session.
+
+Normal application Player/view publication, complete controller/World entry,
+World time/block scheduling, physical input, dynamic rendering and the playable
+frontend remain unfinished. The scoped method comparisons below describe their
+supported operations and remaining descendants.

@@ -6,14 +6,17 @@ terrain generation and parts of World simulation. There is no playable client
 or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
-draws imported resources on Windows and Linux. Timer, GUI layout, font,
-resource and actual OpenGL tests pass on MSVC and sanitized GCC/Clang.
-Child screens, options persistence, audio and gameplay remain unfinished.
+draws imported resources. A separate fixed-camera inspection renders generated
+terrain. The combined RenderEngine/Biped source passes 1,151 local tests:
+389 Windows and 381 per sanitized Linux compiler. All three profiles exercise
+real graphical startup and fixed-camera World inspection.
 
-Plant lifecycle callbacks, farmland and World light queries are implemented.
-Local MSVC/GCC/Clang suites pass, including 59 matching prepared plant cases per
-original side on each compiler. The original fixture uses prepared World
-services; natural population and original World/Chunk acceptance remain open.
+[LocalPlayer NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+now reaches actual Inventory hooks, first-Player metadata saving and saved
+Info.Player attachment. Lava CPU animation also matches fresh original runs on
+both hosts. These finite component results leave normal World entry, input/tick
+adoption, dynamic rendering and gameplay interactions unfinished. The next
+session milestone is loading one World, walking, changing Blocks and saving/reloading.
 
 - [World simulation](World-simulation) links the plant, Minecart, rail, power,
   Piston, movement and population contracts and their reference evidence.

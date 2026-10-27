@@ -1,13 +1,25 @@
 # Storage and original references
 
+[LocalPlayer NBT and World metadata](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+use the actual Player/Inventory owners. Full detailed World saving selects only
+the first live Player occurrence; a completed saved Info.Player load clears that
+tag before ordinary publication. Failures preserve earlier stores and the tag.
+Each combined compiler product passes 490 NBT, 110 coordinate, nine diagnostic
+and 169 publication checks. Thirty-three Windows original cases match 1,302
+normal tag nodes; current Linux executables match the retained Windows captures.
+Three LastPlayed fields have separate clock brackets. The separate wake93
+prefix contains 37 records, including 33 tags; full wake, gameplay save/reload
+and broader persistence acceptance remain unfinished.
+
 The [GameSettings reference](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/game-settings.md)
 records all 40 declared fields, 15 saved keys, ten distinct KeyBindings and
 three original persistence profiles. It preserves charset differences,
 caught failures and the lossy empty texture-pack reload. The shared
 [output writer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/core/java-writer.md)
 implements counted encoding and PrintWriter policy with native stream/file
-tests. Original/native writer comparison, native settings persistence,
-options screens and audio/rendering effects remain unfinished.
+tests. The finite Windows writer comparison and declared settings-persistence
+profiles have their own qualified scope. Options screens, broader file-failure
+behavior and complete audio/rendering effects remain unfinished.
 
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
 uses genuine original constructors and the production GAME implementation for

@@ -1,0 +1,34 @@
+FreeType 2.13.2
+
+Source: https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.xz
+SHA-256: 12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d
+Project: https://www.freetype.org/
+
+This software is based in part on the work of the FreeType Team.
+Portions of this software are copyright © 2023 The FreeType Project
+(www.freetype.org). All rights reserved.
+
+The FreeType License (FTL) option is selected for this dependency.
+FTL.TXT retains that complete upstream license unaltered. LICENSE.TXT retains
+the upstream license-selection and component notes. The project's MIT license
+does not replace these notices. The upstream source is built unmodified;
+cmake/font_dependencies.cmake sets build options and sanitizer instrumentation.
+
+The contributed components retain their separate notices:
+
+- LICENSE-BDF.txt: BDF driver license and credits from src/bdf/README.
+- LICENSE-PCF.txt: PCF driver license and credits from src/pcf/README.
+- LICENSE-FTHASH.txt: copyright and permission from src/base/fthash.c, also
+  present in include/freetype/internal/fthash.h.
+- LICENSE-GZIP.txt: bundled gzip/zlib copyright and permission from src/gzip/zlib.h.
+- LICENSE-HARFBUZZ.txt: copyright and permission from src/autofit/ft-hb.c/.h.
+
+Disabling external zlib selects FreeType's bundled gzip implementation; it does
+not remove that implementation's notice. External HarfBuzz is disabled. Its
+compatibility-source notice is retained here as well.
+
+Keep these notices with source or executable distributions containing FreeType,
+and retain upstream copyright and permission headers with copied upstream files.
+No system font, original-game resource or generated missing-texture raster is
+included. Linux Fontconfig is a system dependency, not a bundled replacement;
+distributions that additionally package system libraries retain their notices.

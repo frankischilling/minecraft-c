@@ -19,7 +19,8 @@ typedef enum mc_client_display_status {
     MC_CLIENT_DISPLAY_UNSUPPORTED_GL,
     MC_CLIENT_DISPLAY_GL_ERROR,
     MC_CLIENT_DISPLAY_CONTEXT_LOST,
-    MC_CLIENT_DISPLAY_NOT_DRAWABLE
+    MC_CLIENT_DISPLAY_NOT_DRAWABLE,
+    MC_CLIENT_DISPLAY_BUSY
 } mc_client_display_status;
 
 typedef struct mc_client_display_error {
@@ -102,6 +103,53 @@ bool mc_client_display_upload_texture(mc_client_display *display, const mc_image
                                       bool anaglyph, mc_client_texture *out,
                                       mc_client_display_error *error);
 
+typedef struct mc_client_texture_resource mc_client_texture_resource;
+
+typedef struct mc_client_texture_generation {
+    mc_client_texture_resource *resource;
+    mc_client_texture buffer_value;
+    bool driver_generated;
+} mc_client_texture_generation;
+
+typedef enum mc_client_texture_parameter {
+    MC_CLIENT_TEXTURE_MIN_FILTER,
+    MC_CLIENT_TEXTURE_MAG_FILTER,
+    MC_CLIENT_TEXTURE_WRAP_S,
+    MC_CLIENT_TEXTURE_WRAP_T
+} mc_client_texture_parameter;
+
+/* Ordered RenderEngine operations. These do not combine generation/upload,
+ * restore bindings, or delete generated names on a later failure. Reserve a
+ * real descriptor/Display-context hold BEFORE glGenTextures; the actual driver
+ * writes the supplied IntBuffer element. Generation publishes its descriptor
+ * before GL and reports the actual buffer value even on later native error.
+ * A nonnull returned resource is owned and must be explicitly retired. A name
+ * observed with a GL error is conservatively retained, never acknowledged as
+ * successful driver generation. Existing tracked names are not adopted twice.
+ * Inputs, result and errors must be disjoint; keep the real buffer live.
+ *
+ * Each resource keeps Display destruction BUSY until retirement. Bind and each
+ * parameter are distinct actual GL operations. Parameters/upload require that
+ * same resource to be bound on the current texture unit; they never bind it
+ * implicitly or reset unpack/PBO state. GL_CLAMP is an explicit unsupported
+ * core-context dependency. Upload admits canonical tightly packed RGBA unpack
+ * state, conservatively reserves its raw-input budget before GL, and keeps a
+ * failed upload's ID/accounting. These are native policies, not Java GL errors.
+ *
+ * Retirement preserves the pointer on BUSY or temporary context-current
+ * failure. Otherwise it consumes the native owner, including detected context
+ * loss (no GL calls after loss; Display context destruction retires remaining
+ * driver state). Its pointer is then NULL even if cleanup reports an error.
+ * Retiring no resource succeeds. All operations use the actual SDL video thread. */
+bool mc_client_display_generate_texture(mc_client_display *, mc_client_texture *buffer_element,
+                                        mc_client_texture_generation *, mc_client_display_error *);
+bool mc_client_display_bind_texture(mc_client_texture_resource *, mc_client_display_error *);
+bool mc_client_display_texture_parameter(mc_client_texture_resource *, mc_client_texture_parameter,
+                                         int32_t value, mc_client_display_error *);
+bool mc_client_display_upload_existing_texture(mc_client_texture_resource *, const mc_image_view *,
+                                               mc_client_display_error *);
+bool mc_client_display_retire_texture(mc_client_texture_resource **, mc_client_display_error *);
+
 /* Begin uses physical drawable pixels for the viewport and derives binary32
  * projection coefficients from the exact scaled doubles. The vertex shader
  * applies those coefficients to binary32 logical coordinates. It clears depth only to1, enables
@@ -151,7 +199,9 @@ bool mc_client_display_capture_rgba(mc_client_display *display, mc_client_captur
                                     mc_client_display_error *error);
 void mc_client_capture_free(mc_client_capture *capture);
 
-/* Always retires native ownership, including after a partial creation failure.
+/* Retires native ownership, including after a partial creation failure. Live
+ * external texture resources return BUSY without changing this owner; retire
+ * them and retry. Existing convenience textures have no external hold.
  * If a lost/noncurrent context cannot be used, GL deletion calls are skipped;
  * context destruction retires those driver objects. No GL function-table calls
  * follow detected context loss. NULL succeeds. A cleanup failure is reported after all remaining

@@ -1,5 +1,13 @@
 # Systems and subsystems
 
+The [LocalPlayer NBT path](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
+dispatches through actual Entity, Living, Inventory and Player owners. Metadata
+saving holds the first selected Player; saved Info.Player attachment clears its
+tag only after complete load success. Complete selected child diagnostics share
+a tagged late-hook union. This reduces Windows stack use without truncating
+causes or changing the default 1 MiB executable reserve. Full wake and normal
+gameplay adoption remain unfinished.
+
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
 scenarios and remaining behavior.
@@ -61,6 +69,10 @@ and Slot graphs. [Registry](https://github.com/frankischilling/minecraft-c/blob/
 classes retain shared identities and initialization prefixes. [SavedData](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saved-data.md)
 keeps named MapData, ID counters and mutable color handles separate from Store
 and WorldInfo lifetimes.
+
+The [RenderEngine](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/render-engine.md) separates CPU constructor/font state from actual Display resources.
+[Biped construction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/biped-construction.md) shares concrete model geometry without aliasing Notice's owner.
+Both pass the current full Windows/Linux matrix; normal App adoption remains unfinished.
 
 The [OpenAL backend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/audio-backend.md) owns real devices, caches and
 workers; [sound resources](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/sound.md) retain streams and decoder state.

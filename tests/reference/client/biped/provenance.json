@@ -1,0 +1,139 @@
+{
+  "scope": "Source fingerprints for the normal-zero Biped CPU constructor, its authored probe/control and unchanged original observer. Coherent compilation/product closure is a separate qualification gate.",
+  "native_sources": {
+    "include/mc/client/render/biped.h": {
+      "bytes": 2992,
+      "sha256": "cb3e8f634138187dd9f46c0bc72c63a1e29433750509d3880899ac2e4a901de5"
+    },
+    "src/client/render/biped.c": {
+      "bytes": 5714,
+      "sha256": "91e370e5041d6cae4f4ec05d1d762e8cd1ba3fbc85ff0631bfe4ec6d24a3cfd7"
+    },
+    "src/client/render/biped_internal.h": {
+      "bytes": 431,
+      "sha256": "ad48002075913c6db865c2474bbbc4b121055ef689ef6d9040e575624ce10cd8"
+    },
+    "src/client/render/model.c": {
+      "bytes": 7917,
+      "sha256": "921d7715e77273a347b3227e71440f15d1e2837cd276763db4802399a1333e15"
+    },
+    "src/client/render/model_graph.c": {
+      "bytes": 11291,
+      "sha256": "29555077d74d44a4c2c5c98eb7409c748f910e50e9910f1832ac6a59bbe76709"
+    },
+    "src/client/render/model_graph_internal.h": {
+      "bytes": 1221,
+      "sha256": "6a1bdf5f36813259b7472d410729403587e8430dfee7eaacb12cdd14c62c9bdc"
+    },
+    "src/client/render/model_graph_trace.inc": {
+      "bytes": 2643,
+      "sha256": "5de2549200a4622a541a264febdc1dd92884291fe10c5aaa3789d3640d06b586"
+    },
+    "tests/client/render/biped_fp.c": {
+      "bytes": 4365,
+      "sha256": "c5005427502e93160993fa4461fb72cbb1daf6d12efb32919fdb62c8bbb435b0"
+    },
+    "tests/client/render/test_biped.c": {
+      "bytes": 15859,
+      "sha256": "8b2e8cee23a21ac7428c93df515f6e0c2e81adb9d16a13ecfd442b371b74dd0e"
+    },
+    "src/client/application_state.h": {
+      "bytes": 3360,
+      "sha256": "08891526c24cba9fd49f60b998e1d6054dfea2458e1d3b4b86775f162e47782e"
+    },
+    "src/client/gui/achievement_notice.c": {
+      "bytes": 9209,
+      "sha256": "1257d61ecf59477bd22736881c300255cd1d428238269109ce1a3196406afdec"
+    },
+    "include/mc/client/gui/achievement_notice.h": {
+      "bytes": 6188,
+      "sha256": "8df61d7ae5db1432d6b7f2fceac2983eced90eb9beb71eafe7f69a07924475c2"
+    },
+    "include/mc/client/render/model.h": {
+      "bytes": 4446,
+      "sha256": "e8f1bd481c71d491fe4b2aee3c5485c135e2c0ba45ec9a47d1cf82bb3eb0a189"
+    },
+    "include/mc/entity/vector/vector.h": {
+      "bytes": 2799,
+      "sha256": "f51b84f8049db8603db2ddece1b9243fbee28285628cac471a3d11f4d3055006"
+    },
+    "src/entity/vector/vector.c": {
+      "bytes": 18065,
+      "sha256": "847b1afc22e3029d8324325790766ed996fc48ff5f0db1b07c0152d742d95e29"
+    },
+    "src/entity/vector/vector_internal.h": {
+      "bytes": 1097,
+      "sha256": "911f2ff2543b56b7a1ec1646fe28266fa5e7b1c08c3131fdfb77e0c18c69445d"
+    },
+    "include/mc/entity/classes/classes.h": {
+      "bytes": 6476,
+      "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+    },
+    "src/entity/classes/classes_internal.h": {
+      "bytes": 2535,
+      "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
+    },
+    "include/mc/core/java/random_profile.h": {
+      "bytes": 4172,
+      "sha256": "db0b1dd483d1c76a96ecd1fd7167b4ac23495f7002ce90ec0aaf58aa922a31d8"
+    },
+    "src/core/java/random_profile.c": {
+      "bytes": 14027,
+      "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+    },
+    "src/core/java/random_profile_internal.h": {
+      "bytes": 5196,
+      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+    },
+    "tests/client/gui/notice_probe.c": {
+      "bytes": 18554,
+      "sha256": "9e4ded6ae9d518997e927a215f8a5060ae0510f5cbce08b9f589afc6f11c787c"
+    }
+  },
+  "reference_files": {
+    "tests/reference/client/biped/BipedObservation.java": {
+      "bytes": 7080,
+      "sha256": "b8addb7362e663ae3d5362274dc1126bfe223d4c2a8f03c49ab76c5542d154f7"
+    },
+    "tests/reference/client/biped/protocol.py": {
+      "bytes": 2706,
+      "sha256": "a84476874a75591bba353f7590376c59c29e123687966ddc4fa41925d9b7f910"
+    },
+    "tests/reference/client/biped/source-pins.json": {
+      "bytes": 50621,
+      "sha256": "7cb35acd0e03005db7a32fc14d58417da186045ac86ea631cf51bc012e2848da"
+    }
+  },
+  "controller_files": {
+    "tests/reference/client/biped/support.py": {
+      "bytes": 3549,
+      "sha256": "f8f22a41ebfb351e0ec9c2d474f02c095b631b6ae4c0face34789a395753afd3"
+    },
+    "tests/reference/client/biped/run_native.py": {
+      "bytes": 2290,
+      "sha256": "e406895c1251eeac84e47c0022104405bd0aed19f62060e382e36bf473af1c73"
+    },
+    "tests/reference/client/biped/compare.py": {
+      "bytes": 7804,
+      "sha256": "51cb55bd927af4731d858349960f3ac26f69138dd84c5a29fad1e08eba31b20e"
+    },
+    "tests/tools/client/test_biped_driver.py": {
+      "bytes": 4321,
+      "sha256": "ceed39ac2897507860a2a6dbf6028e0424c90e59c1536a2cc765a6d7dfb527ec"
+    }
+  },
+  "shared_helpers": {
+    "tests/reference/client/notice/capture.py": {
+      "bytes": 5247,
+      "sha256": "4355d5e1f253355d239c6938762f05235b47059b4c3e8beb6e8306b4b34381e2"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "tests/reference/client/notice/test_capture.py": {
+      "bytes": 3175,
+      "sha256": "f45c7f2dba9023e812a6d8ec475049e637609bb5e82d919e805370dc93ab470a"
+    }
+  }
+}

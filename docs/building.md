@@ -20,10 +20,14 @@ For Ubuntu/Debian client builds, install the X11/OpenGL and audio development
 headers used by SDL:
 
 ```sh
-sudo apt-get install pkg-config libasound2-dev libpulse-dev \
+sudo apt-get install pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
   libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
   libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev
 ```
+
+Fontconfig development headers and a real sans font support the native default-font
+constructor. These are system inputs; the project downloads its pinned FreeType
+source separately. See [font dependency and license setup](dependencies.md#native-default-font-rasterizer).
 
 The list follows [SDL's Linux build notes](https://github.com/libsdl-org/SDL/blob/release-3.4.18/docs/README-linux.md).
 Other distributions use their corresponding packages. Configure and build with:

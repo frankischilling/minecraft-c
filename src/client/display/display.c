@@ -21,7 +21,14 @@ enum {
 typedef struct display_texture {
     GLuint id;
     size_t bytes;
+    mc_client_texture_resource *resource;
 } display_texture;
+
+struct mc_client_texture_resource {
+    mc_client_display *display;
+    GLuint id;
+    bool active;
+};
 
 typedef struct display_vertex {
     GLfloat x, y, u, v;
@@ -41,6 +48,7 @@ struct mc_client_display {
     double exact_width, exact_height;
     display_texture textures[DISPLAY_TEXTURES];
     size_t texture_count, texture_bytes;
+    size_t texture_resource_count, texture_resource_calls;
 };
 
 static void text_copy(char *out, size_t capacity, const char *text) {
@@ -570,6 +578,230 @@ bool mc_client_display_upload_texture(mc_client_display *display, const mc_image
     return success(error);
 }
 
+static display_texture *resource_slot(mc_client_texture_resource *resource) {
+    if (resource == NULL || resource->display == NULL)
+        return NULL;
+    mc_client_display *display = resource->display;
+    for (size_t i = 0; i < display->texture_count; ++i)
+        if (display->textures[i].resource == resource)
+            return &display->textures[i];
+    return NULL;
+}
+
+static bool resource_enter(mc_client_texture_resource *resource, const char *operation,
+                           mc_client_display_error *error) {
+    if (resource_slot(resource) == NULL || resource->id == 0)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
+                    "no generated texture resource", 0);
+    mc_client_display *display = resource->display;
+    if (resource->active || display->texture_resource_calls != 0)
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, operation, "texture operation active", 0);
+    resource->active = true;
+    ++display->texture_resource_calls;
+    if (!current(display, operation, error)) {
+        --display->texture_resource_calls;
+        resource->active = false;
+        return false;
+    }
+    return true;
+}
+
+static void resource_leave(mc_client_texture_resource *resource) {
+    --resource->display->texture_resource_calls;
+    resource->active = false;
+}
+
+static bool resource_bound(mc_client_texture_resource *resource, const char *operation,
+                           mc_client_display_error *error) {
+    mc_client_display *display = resource->display;
+    GLint bound = 0;
+    display->gl.GetIntegerv(GL_TEXTURE_BINDING_2D, &bound);
+    if (!gl_check(display, operation, error))
+        return false;
+    if ((GLuint)bound != resource->id)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, operation,
+                    "texture resource is not bound", 0);
+    return true;
+}
+
+bool mc_client_display_generate_texture(mc_client_display *display,
+                                        mc_client_texture *buffer_element,
+                                        mc_client_texture_generation *out,
+                                        mc_client_display_error *error) {
+    if (display == NULL || buffer_element == NULL || out == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "generate owned texture",
+                    "invalid generation arguments", 0);
+    *out = (mc_client_texture_generation){0};
+    if (display->texture_resource_calls != 0)
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "generate owned texture",
+                    "texture operation active", 0);
+    if (!current(display, "generate owned texture", error))
+        return false;
+    if (display->texture_count >= DISPLAY_TEXTURES)
+        return fail(error, MC_CLIENT_DISPLAY_LIMIT, "generate owned texture", "texture limit", 0);
+    mc_client_texture_resource *resource = calloc(1, sizeof(*resource));
+    if (resource == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "reserve texture resource",
+                    "allocation failed", 0);
+    resource->display = display;
+    resource->active = true;
+    const size_t index = display->texture_count++;
+    display->textures[index] = (display_texture){.resource = resource};
+    ++display->texture_resource_count;
+    ++display->texture_resource_calls;
+    out->resource = resource;
+    /* The actual source IntBuffer storage is the driver's output location.
+     * A nonzero untracked value is retained conservatively even on GL error. */
+    display->gl.GenTextures(1, buffer_element);
+    out->buffer_value = *buffer_element;
+    const bool duplicate = out->buffer_value != 0 && texture_known(display, out->buffer_value);
+    if (!duplicate) {
+        resource->id = out->buffer_value;
+        display->textures[index].id = resource->id;
+    }
+    bool ok = gl_check(display, "generate owned texture", error);
+    if (ok && (resource->id == 0 || duplicate))
+        ok = fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "generate owned texture",
+                  duplicate ? "duplicate generated texture ID" : "zero generated texture ID", 0);
+    out->driver_generated = ok;
+    resource_leave(resource);
+    return ok ? success(error) : false;
+}
+
+bool mc_client_display_bind_texture(mc_client_texture_resource *resource,
+                                    mc_client_display_error *error) {
+    if (!resource_enter(resource, "bind owned texture", error))
+        return false;
+    mc_client_display *display = resource->display;
+    display->gl.BindTexture(GL_TEXTURE_2D, resource->id);
+    const bool ok = gl_check(display, "bind owned texture", error);
+    resource_leave(resource);
+    return ok ? success(error) : false;
+}
+
+bool mc_client_display_texture_parameter(mc_client_texture_resource *resource,
+                                         mc_client_texture_parameter parameter, int32_t value,
+                                         mc_client_display_error *error) {
+    if ((unsigned int)parameter > (unsigned int)MC_CLIENT_TEXTURE_WRAP_T)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "owned texture parameter",
+                    "invalid parameter selector", 0);
+    if (!resource_enter(resource, "owned texture parameter", error))
+        return false;
+    const GLenum names[] = {GL_TEXTURE_MIN_FILTER, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_WRAP_S,
+                            GL_TEXTURE_WRAP_T};
+    mc_client_display *display = resource->display;
+    bool ok = resource_bound(resource, "owned texture parameter binding", error);
+    if (ok && (parameter == MC_CLIENT_TEXTURE_WRAP_S || parameter == MC_CLIENT_TEXTURE_WRAP_T) &&
+        value == GL_CLAMP)
+        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "legacy GL_CLAMP texture parameter",
+                  "source legacy clamp requires a compatible texture sampling implementation", 0);
+    if (ok) {
+        display->gl.TexParameteri(GL_TEXTURE_2D, names[(unsigned int)parameter], value);
+        ok = gl_check(display, "owned texture parameter", error);
+    }
+    resource_leave(resource);
+    return ok ? success(error) : false;
+}
+
+bool mc_client_display_upload_existing_texture(mc_client_texture_resource *resource,
+                                               const mc_image_view *image,
+                                               mc_client_display_error *error) {
+    if (image == NULL || image->pixels == NULL || image->width == 0 || image->height == 0 ||
+        image->width > INT32_MAX || image->height > INT32_MAX)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "upload owned texture",
+                    "invalid RGBA view", 0);
+    size_t stride, bytes;
+    if (!product((size_t)image->width, 4u, &stride) ||
+        !product(stride, (size_t)image->height, &bytes) || image->stride != stride)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "upload owned texture",
+                    "invalid packed RGBA extent", 0);
+    if (!resource_enter(resource, "upload owned texture", error))
+        return false;
+    mc_client_display *display = resource->display;
+    display_texture *slot = resource_slot(resource);
+    bool ok = resource_bound(resource, "owned texture upload binding", error);
+    if (ok &&
+        (image->width > (uint32_t)display->max_texture_size ||
+         image->height > (uint32_t)display->max_texture_size || bytes > DISPLAY_TEXTURE_BYTES ||
+         (bytes > slot->bytes &&
+          bytes - slot->bytes > DISPLAY_TOTAL_TEXTURE_BYTES - display->texture_bytes)))
+        ok = fail(error, MC_CLIENT_DISPLAY_LIMIT, "upload owned texture", "texture limit", 0);
+    if (ok) {
+        GLint pbo = 0, alignment = 0, row_length = 0, skip_pixels = 0, skip_rows = 0;
+        display->gl.GetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, &pbo);
+        display->gl.GetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+        display->gl.GetIntegerv(GL_UNPACK_ROW_LENGTH, &row_length);
+        display->gl.GetIntegerv(GL_UNPACK_SKIP_PIXELS, &skip_pixels);
+        display->gl.GetIntegerv(GL_UNPACK_SKIP_ROWS, &skip_rows);
+        ok = gl_check(display, "owned texture unpack state", error);
+        if (ok && (pbo != 0 || row_length != 0 || skip_pixels != 0 || skip_rows != 0 ||
+                   alignment <= 0 || stride % (size_t)alignment != 0))
+            ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "owned texture unpack state",
+                      "source upload requires tightly packed client memory and disabled unpack PBO",
+                      0);
+    }
+    if (ok) {
+        /* Reserve the larger raw-input amount before issuing GL. On native
+         * failure keep that conservative charge until explicit retirement. */
+        if (bytes > slot->bytes) {
+            display->texture_bytes += bytes - slot->bytes;
+            slot->bytes = bytes;
+        }
+        display->gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)image->width,
+                               (GLsizei)image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
+        ok = gl_check(display, "upload owned texture", error);
+        if (ok && bytes < slot->bytes) {
+            display->texture_bytes -= slot->bytes - bytes;
+            slot->bytes = bytes;
+        }
+    }
+    resource_leave(resource);
+    return ok ? success(error) : false;
+}
+
+bool mc_client_display_retire_texture(mc_client_texture_resource **owner,
+                                      mc_client_display_error *error) {
+    if (owner == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "retire owned texture",
+                    "null owner pointer", 0);
+    mc_client_texture_resource *resource = *owner;
+    if (resource == NULL)
+        return success(error);
+    display_texture *slot = resource_slot(resource);
+    if (slot == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "retire owned texture",
+                    "unregistered resource", 0);
+    mc_client_display *display = resource->display;
+    if (resource->active || display->texture_resource_calls != 0)
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "retire owned texture",
+                    "texture operation active", 0);
+    bool ok = true;
+    if (display->context_lost)
+        ok = fail(error, MC_CLIENT_DISPLAY_CONTEXT_LOST, "retire owned texture",
+                  "context destruction retires remaining driver state", GL_CONTEXT_LOST);
+    else {
+        if (!current(display, "retire owned texture", error))
+            return false; /* Preserve the owner for retry. */
+        resource->active = true;
+        ++display->texture_resource_calls;
+        if (resource->id != 0) {
+            display->gl.DeleteTextures(1, &resource->id);
+            ok = gl_check(display, "retire owned texture", error);
+        }
+        resource_leave(resource);
+    }
+    const size_t index = (size_t)(slot - display->textures);
+    display->texture_bytes -= slot->bytes;
+    --display->texture_resource_count;
+    --display->texture_count;
+    memmove(&display->textures[index], &display->textures[index + 1],
+            (display->texture_count - index) * sizeof(display->textures[0]));
+    memset(&display->textures[display->texture_count], 0, sizeof(display->textures[0]));
+    *owner = NULL;
+    free(resource);
+    return ok ? success(error) : false;
+}
+
 bool mc_client_display_begin(mc_client_display *display, double exact_width, double exact_height,
                              mc_client_display_error *error) {
     if (display != NULL) {
@@ -812,6 +1044,9 @@ static void cleanup_check(mc_client_display *display, const char *operation, boo
 }
 
 bool mc_client_display_destroy(mc_client_display *display, mc_client_display_error *error) {
+    if (display != NULL && display->texture_resource_count != 0)
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "destroy display with texture owners",
+                    "retire the generated texture resources and retry", 0);
     if (display == NULL)
         return success(error);
     bool ok = true;

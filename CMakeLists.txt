@@ -9,6 +9,8 @@ option(MC_BUILD_CLIENT "Build the native graphical client" ON)
 option(MC_BUILD_CLIENT_SOUND "Build client sound decoding modules" ${MC_BUILD_CLIENT})
 option(MC_BUILD_CLIENT_AUDIO "Build the native OpenAL client audio backend" ${MC_BUILD_CLIENT})
 option(MC_ENABLE_CLIENT_DISPLAY_TESTS "Run client tests requiring a desktop OpenGL context" OFF)
+option(MC_ENABLE_RENDER_ENGINE_REFERENCE_TESTS "Compare default-font constructor with supplied client JAR" OFF)
+option(MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS "Compare image upload with supplied Windows client" OFF)
 option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
 option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
 option(MC_ENABLE_RENDERING_REFERENCE_TESTS "Compare CPU block meshes with the supplied client" OFF)
@@ -41,6 +43,7 @@ option(MC_ENABLE_PLAYER_STATISTICS_REFERENCE_TESTS "Compare Player statistic dis
 option(MC_ENABLE_WATER_ANIMATION_REFERENCE_TESTS "Compare water texture animation with supplied client JAR" OFF)
 option(MC_ENABLE_LAVA_ANIMATION_REFERENCE_TESTS "Compare Lava texture animation with supplied client JAR" OFF)
 option(MC_ENABLE_PLAYER_NBT_REFERENCE_TESTS "Compare Player NBT with the supplied Windows client" OFF)
+option(MC_ENABLE_BIPED_REFERENCE_TESTS "Compare normal-zero Biped CPU construction with supplied client JAR" OFF)
 option(MC_ENABLE_NOTICE_REFERENCE_TESTS "Compare achievement notice with supplied Windows client" OFF)
 option(MC_ENABLE_PROPAGATION_REFERENCE_TESTS "Compare real World lighting with supplied client JAR" OFF)
 option(MC_ENABLE_STARTUP_GRID_REFERENCE_TESTS "Compare expensive 289-point World preparation profiles" OFF)
@@ -76,6 +79,15 @@ set(MC_REFERENCE_TESTED_COMMIT "" CACHE STRING "Exact source commit for local re
 set(MC_REGION_CAPTURE_MANIFEST "" CACHE FILEPATH "Local recorded region observation manifest")
 if(MC_ENABLE_RENDERING_REFERENCE_TESTS AND NOT MC_BUILD_CLIENT)
     message(FATAL_ERROR "MC_ENABLE_RENDERING_REFERENCE_TESTS requires MC_BUILD_CLIENT")
+endif()
+
+if((MC_ENABLE_RENDER_ENGINE_REFERENCE_TESTS OR MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS)
+   AND NOT MC_BUILD_CLIENT)
+    message(FATAL_ERROR "RenderEngine reference tests require MC_BUILD_CLIENT")
+endif()
+if(MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS AND
+   (NOT WIN32 OR NOT MC_ENABLE_CLIENT_DISPLAY_TESTS))
+    message(FATAL_ERROR "Render texture reference tests require Windows and MC_ENABLE_CLIENT_DISPLAY_TESTS")
 endif()
 
 # Strict diagnostics apply to project-owned code; dependencies share sanitizers only.
@@ -115,6 +127,7 @@ target_link_libraries(zlibstatic PRIVATE mc_sanitizers)
 
 if(MC_BUILD_CLIENT)
     include(cmake/client_dependencies.cmake)
+    include(cmake/font_dependencies.cmake)
     add_library(mc_image STATIC src/resources/image/image.c)
     target_include_directories(mc_image PUBLIC include)
     target_link_libraries(mc_image PRIVATE mc_build_options png_static)
@@ -127,6 +140,22 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_display STATIC src/client/display/display.c)
     target_include_directories(mc_client_display PUBLIC src/client/display)
     target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static PRIVATE mc_build_options)
+    add_library(mc_client_default_font STATIC src/client/fonts/default_font.c)
+    target_include_directories(mc_client_default_font PUBLIC include)
+    target_link_libraries(mc_client_default_font PUBLIC freetype PRIVATE mc_build_options)
+    if(WIN32)
+        target_link_libraries(mc_client_default_font PRIVATE gdi32)
+    else()
+        find_package(Fontconfig REQUIRED)
+        target_link_libraries(mc_client_default_font PRIVATE Fontconfig::Fontconfig)
+    endif()
+    add_library(mc_client_render_engine STATIC src/client/render_engine/owner.c)
+    target_link_libraries(mc_client_render_engine PUBLIC
+        mc_client_default_font mc_game_settings PRIVATE mc_build_options)
+    add_library(mc_client_render_textures STATIC src/client/render_engine/textures.c)
+    target_include_directories(mc_client_render_textures PUBLIC src/client/render_engine)
+    target_link_libraries(mc_client_render_textures PUBLIC
+        mc_client_render_engine mc_client_display PRIVATE mc_build_options)
     add_library(mc_client_world_renderer STATIC src/client/world/renderer.c)
     target_include_directories(mc_client_world_renderer PUBLIC src/client/world)
     target_link_libraries(mc_client_world_renderer PUBLIC mc_client_display PRIVATE mc_build_options)
@@ -324,6 +353,8 @@ target_link_libraries(mc_registry PUBLIC mc_block mc_core mc_item mc_world mc_en
 target_sources(mc_registry PRIVATE src/client/achievements/description_registry.c)
 add_library(mc_client_notice STATIC
     src/client/render/model.c
+    src/client/render/model_graph.c
+    src/client/render/biped.c
     src/client/gui/achievement_notice.c
     src/client/achievements/description.c
     src/client/texture_effects/water.c
@@ -736,6 +767,46 @@ if(BUILD_TESTING)
             LABELS "local;reference;client;graphics;entity;world;math" TIMEOUT 480)
     endif()
 
+    add_executable(mc_biped_probe tests/client/render/test_biped.c)
+    target_include_directories(mc_biped_probe PRIVATE src src/core/java)
+    target_link_libraries(mc_biped_probe PRIVATE mc_client_notice mc_c_atomics mc_build_options)
+    add_executable(mc_biped_fp tests/client/render/biped_fp.c)
+    target_include_directories(mc_biped_fp PRIVATE src/core/java)
+    target_link_libraries(mc_biped_fp PRIVATE mc_client_notice mc_c_atomics mc_build_options)
+    add_test(NAME client.biped_construction COMMAND mc_biped_probe contracts)
+    add_test(NAME client.biped_item_fp COMMAND mc_biped_fp item)
+    add_test(NAME client.biped_fp COMMAND mc_biped_fp biped)
+    add_test(NAME tools.biped_native COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/biped/run_native.py"
+        --native-probe "$<TARGET_FILE:mc_biped_probe>" --fp-probe "$<TARGET_FILE:mc_biped_fp>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/biped-native-contracts")
+    add_test(NAME tools.biped_driver COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_biped_driver.py"
+        --native-probe "$<TARGET_FILE:mc_biped_probe>" --fp-probe "$<TARGET_FILE:mc_biped_fp>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/biped-driver-contracts")
+    add_test(NAME tools.biped_driver_optimized COMMAND Python3::Interpreter -B -O
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_biped_driver.py"
+        --native-probe "$<TARGET_FILE:mc_biped_probe>" --fp-probe "$<TARGET_FILE:mc_biped_fp>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/biped-driver-optimized-contracts")
+    set_tests_properties(client.biped_construction client.biped_item_fp client.biped_fp
+        tools.biped_native tools.biped_driver tools.biped_driver_optimized PROPERTIES
+        LABELS "public;integration;client;ownership;entity;math" TIMEOUT 180)
+    if(MC_ENABLE_BIPED_REFERENCE_TESTS)
+        find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+        if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+            message(FATAL_ERROR "Biped reference tests require explicit client JAR and pinned library archives")
+        endif()
+        add_test(NAME reference.biped_construction COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/biped/compare.py"
+            --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+            --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+            --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+            --native-probe "$<TARGET_FILE:mc_biped_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-biped-construction")
+        set_tests_properties(reference.biped_construction PROPERTIES
+            LABELS "local;reference;client;ownership;entity;math" TIMEOUT 600)
+    endif()
+
     add_executable(mc_notice_probe tests/client/gui/notice_probe.c)
     target_include_directories(mc_notice_probe PRIVATE src/client src/core/java src/platform/time)
     target_link_libraries(mc_notice_probe PRIVATE mc_client_notice mc_resources
@@ -775,6 +846,69 @@ if(BUILD_TESTING)
     endif()
 
     if(MC_BUILD_CLIENT)
+        add_executable(mc_test_render_engine tests/client/render_engine/test_render_engine.c)
+        target_link_libraries(mc_test_render_engine PRIVATE mc_client_render_engine mc_build_options)
+        add_test(NAME client.render_engine COMMAND mc_test_render_engine)
+        set_tests_properties(client.render_engine PROPERTIES
+            LABELS "public;unit;client;font;ownership" TIMEOUT 180)
+        add_executable(mc_test_render_textures tests/client/render_engine/test_textures.c)
+        target_link_libraries(mc_test_render_textures PRIVATE mc_client_render_textures mc_build_options)
+        if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.render_textures COMMAND mc_test_render_textures)
+            set_tests_properties(client.render_textures PROPERTIES
+                LABELS "public;integration;client;graphics;ownership" TIMEOUT 180)
+            foreach(mode IN ITEMS normal optimized)
+                set(_mc_render_python_flags -B)
+                if(mode STREQUAL "optimized")
+                    list(APPEND _mc_render_python_flags -O)
+                endif()
+                add_test(NAME tools.render_engine_${mode} COMMAND Python3::Interpreter
+                    ${_mc_render_python_flags}
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_render_engine.py"
+                    --constructor "$<TARGET_FILE:mc_test_render_engine>"
+                    --textures "$<TARGET_FILE:mc_test_render_textures>"
+                    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/render-engine-${mode}")
+                set_tests_properties(tools.render_engine_${mode} PROPERTIES
+                    LABELS "public;tools;client;graphics;ownership" TIMEOUT 900)
+            endforeach()
+            unset(_mc_render_python_flags)
+        endif()
+        if(MC_ENABLE_RENDER_ENGINE_REFERENCE_TESTS OR MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS)
+            if(NOT MC_REFERENCE_CLIENT_JAR OR NOT MC_REFERENCE_CLIENT_LIBRARY_DIR)
+                message(FATAL_ERROR "RenderEngine reference tests require explicit client JAR and libraries")
+            endif()
+            find_package(Java 17 REQUIRED COMPONENTS Runtime Development)
+            if(NOT Java_VERSION_MAJOR EQUAL 17)
+                message(FATAL_ERROR "RenderEngine reference tests require matching JDK17 java and javac")
+            endif()
+        endif()
+        if(MC_ENABLE_RENDER_ENGINE_REFERENCE_TESTS)
+            add_test(NAME reference.render_engine COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/render_engine/compare.py"
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+                --constructor "$<TARGET_FILE:mc_test_render_engine>"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-render-engine")
+            set_tests_properties(reference.render_engine PROPERTIES
+                LABELS "reference;original;client;font" TIMEOUT 900)
+        endif()
+        if(MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS)
+            if(NOT MC_REFERENCE_CLIENT_NATIVE_DIR)
+                message(FATAL_ERROR "Render texture reference tests require explicit Windows native libraries")
+            endif()
+            add_test(NAME reference.render_textures COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/render_engine/compare.py"
+                --client-jar "${MC_REFERENCE_CLIENT_JAR}"
+                --constructor "$<TARGET_FILE:mc_test_render_engine>"
+                --textures "$<TARGET_FILE:mc_test_render_textures>"
+                --java "${Java_JAVA_EXECUTABLE}" --javac "${Java_JAVAC_EXECUTABLE}"
+                --libraries "${MC_REFERENCE_CLIENT_LIBRARY_DIR}"
+                --native-dir "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-render-textures")
+            set_tests_properties(reference.render_textures PROPERTIES
+                LABELS "reference;original;client;graphics" TIMEOUT 1200)
+        endif()
         add_executable(mc_test_image tests/resources/image/test_image.c)
         target_link_libraries(mc_test_image PRIVATE mc_image ZLIB::ZLIBSTATIC mc_build_options)
         add_test(NAME resources.image COMMAND mc_test_image)

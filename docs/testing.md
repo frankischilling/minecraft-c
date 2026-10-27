@@ -4,26 +4,39 @@
 
 ## Current client runtime integration
 
-The combined Lava animation, LocalPlayer NBT, singleplayer controller, camera,
-World Entity update, spawn/reset and weather source passes 1,072 local CTests:
-376 Windows MSVC Debug cases and 348 cases on each Clang 18/GCC 13 Debug build
-with ASan, UBSan and leak detection. Every case from the preceding 362/335/335
-matrix remains enabled.
-No case failed, skipped, was disabled or remained unrun.
+The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, singleplayer
+controller, camera, World Entity update, spawn/reset and weather source passes
+1,151 local CTests: 389 Windows MSVC Debug cases and 381 cases on each Clang18/
+GCC13 Debug build with ASan, UBSan and leak detection. Every preceding
+376/348/348 case remains enabled. None failed, skipped, was disabled or remained
+unrun. Windows adds thirteen Renderer/Biped cases. Each Linux profile adds
+twelve Renderer/Biped cases, twenty full-client public cases and the supported
+original CPU rendering comparison to its earlier headless matrix.
 
-The frozen build cohort contains 1,822 files and 1,586 non-Markdown inputs.
-All 910 C/header files pass clang-format 18.1.3. Before execution, 236 current
-native/helper fingerprints and nineteen original class/Code metadata families
-verify. Source inventories and actual configured artifacts, runtime libraries,
-symbols and compiler/link configuration remain unchanged across each full suite.
-All 277 configured Windows executables retain the default 1 MiB stack reserve.
-The subsequent documentation update changes none of those non-Markdown inputs
-or the reference README files pinned by their comparison packages.
+The frozen cohort contains 1,867 files and 1,627 non-Markdown inputs. All 926
+C/header files and the separate shared-model trace include pass clang-format
+18.1.3. Before execution, 292 current source/helper fingerprints and twenty-one
+original class/Code families verify. Source inventories, every configured
+artifact, runtime library, symbol and compiler/link configuration remain
+unchanged. Each Linux profile binds 1,830 product/configuration files and 334
+actual targets, including extensionless executables and all built objects.
+All 281 Windows primary executables retain the default 1 MiB stack reserve.
+Subsequent documentation edits preserve non-Markdown inputs and pinned
+reference text.
 
-Windows includes real OpenGL startup, three executable World inspection captures,
-GPU camera drawing and the original camera comparison. Local Linux coverage is
-headless; the CPU controller and camera closures have no SDL, OpenGL or FreeType
-dependency. Hosted public/JDK checks run separately.
+All three profiles enable the graphical client, display tests, sound and audio.
+They exercise actual OpenGL startup, title and three World inspection captures.
+Linux uses private authenticated abstract-local Xvfb displays, Mesa llvmpipe
+OpenGL4.5 core, and the real production Display. Both owned servers terminate
+cleanly. Actual recipes instrument all 42 FreeType compilation units and 593
+strict project C17 recipes per Linux compiler. The 833 unmodified FreeType
+source files match the pinned official archive before and after execution.
+
+Separate fresh Windows production-client and headless ALL builds pass with
+BUILD_TESTING disabled and Java/Python package discovery disabled. The headless
+graph excludes font, display and audio dependency targets. The production-client
+mode check disables optional sound/audio; the full matrix independently enables
+both. Hosted public/JDK checks run separately.
 
 Independent readback verifies 230 ordinary and 256 allocation checks for the
 singleplayer controller on each compiler. Each native target matches twenty
@@ -52,6 +65,37 @@ Normal application Player/view publication, complete controller/World entry,
 World time/block scheduling, physical input, dynamic rendering and the playable
 frontend remain unfinished. The scoped method comparisons below describe their
 supported operations and remaining descendants.
+
+## RenderEngine and Biped integration
+
+The combined products each pass 8,333 RenderEngine CPU checks, 223 real-context
+texture checks and 55 separate source/device trace checks. Nineteen controller
+controls pass normally and with Python optimization. Fresh unchanged-original
+CPU execution matches every one of the 4,096 ARGB pixels and ten glyph metrics
+on each actual host. Windows additionally matches ten original compatibility-GL
+generation, parameter, cache, device and transfer rows. Linux runs no original
+GL profile. See [RenderEngine](client/render-engine.md) for build options,
+ownership and remaining pack/String/mipmap/GL_CLAMP boundaries.
+
+Each Biped product passes 4,381 checks and 435 allocation prefixes. Its bounded
+driver passes 128 controls normally and with Python optimization. Fresh original
+execution matches all 838 constructor/alias/continuation records on each host.
+The shared model graph is compiled once; the standalone Biped is distinct from
+Notice's model. The existing Notice APIs and default-Random continuation retain
+their earlier behaviour. See [Biped construction](client/biped-construction.md).
+
+The full native suites passed without a runtime correction. A Windows audit
+stopped before tests because it counted EXE plus PDB as two primary executables;
+the corrected audit selects one EXE and retains both artifacts. The same graph
+then completed, without reconfiguration or rebuilding. Raw post-suite audits
+also retain their two obsolete receipt-layout failures: one used host mirror
+copy time, another expected an old combined phase list. Both now read the actual
+terminal phase receipts. No source, native capture, original record or game
+field was rewritten to make an audit pass.
+
+App.p/App.x publication, normal bootstrap, model animation and gameplay remain
+unfinished. These finite methods and actual frontend scenes do not establish a
+connected playable session.
 
 ## Lava animation and LocalPlayer NBT integration
 

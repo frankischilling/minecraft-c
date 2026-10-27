@@ -79,6 +79,40 @@ zlib notice with any future executable containing these static libraries.
 The project's MIT license does not replace them. Original Minecraft resources
 remain separately supplied through the local asset importer.
 
+## Native default-font rasterizer
+
+Client builds add the exact official [FreeType2.13.2 source archive](https://download.savannah.gnu.org/releases/freetype/freetype-2.13.2.tar.xz),
+SHA-256 `12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d`.
+It is built unmodified as a static C library. Windows uses real GDI (`gdi32`)
+for the selected registered Arial profile; Linux uses real
+`Fontconfig::Fontconfig` for the selected sans profile. Runtime font bytes come
+from the operating system. No font file or generated raster is distributed.
+
+Use `-DFETCHCONTENT_SOURCE_DIR_MC_FREETYPE=<absolute unpacked source>` offline.
+As with the other source overrides, this bypasses archive hashing; verify the
+source yourself and use a fresh build directory when changing it. No arbitrary
+installed FreeType package replaces the pinned rasterizer. Linux still needs
+the system Fontconfig development package and its platform dependencies.
+
+External FreeType Zlib/BZip2/PNG/HarfBuzz/Brotli features are disabled for this
+finite default-font profile. `FT_DISABLE_ZLIB` selects upstream's bundled gzip
+code, rather than the separate project zlib. The real TrueType interpreter and
+monochrome rasterizer remain active. Sanitizer builds instrument the actual
+FreeType objects and link the final owners with the existing sanitizer flags.
+The CMake4 compatibility admission is scoped to the upstream subdirectory.
+
+The FreeType License option is selected. [FreeType notices](../licenses/freetype/NOTICE.txt)
+retain the complete FTL and contributed-component permissions, including the
+required credit that this software is based in part on the work of the FreeType
+Team. Include them with distributions containing FreeType. Fontconfig/GDI are
+real system providers; logical-font/script fallback beyond the selected profile
+is not implemented. See the [RenderEngine boundary](client/render-engine.md).
+
+These targets are enabled only with `MC_BUILD_CLIENT`. The simulation/server
+graph and fresh headless configuration do not acquire FreeType, Fontconfig,
+GDI, SDL or OpenGL through this increment. The constructor CPU target has no
+SDL/OpenGL dependency; image registration has a separate Display target.
+
 ## Sound codecs
 
 `MC_BUILD_CLIENT_SOUND` enables static libogg 1.3.6 and libvorbis 1.3.7.

@@ -1,0 +1,97 @@
+{
+  "scope": "actual ji constructor/default font and selected real texture prefixes; explicit unfinished startup/pack/effect/mipmap/clamp descendants",
+  "native_sources": {
+    "include/mc/client/fonts/default_font.h": {
+      "bytes": 3570,
+      "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
+    },
+    "include/mc/client/render_engine/render_engine.h": {
+      "bytes": 7681,
+      "sha256": "6782b58e4c0d3e9f1967de09009fbf405174e598a565a829eb7720f6dd5e3cd3"
+    },
+    "src/client/display/display.c": {
+      "bytes": 53301,
+      "sha256": "18c26351c210553a4b4830836958dcfd1b574302dab041842c18696d6c857157"
+    },
+    "src/client/display/display.h": {
+      "bytes": 12134,
+      "sha256": "fc92bc2ca5b7321d2aea6bc971fa0ed438183721e6d195c5f257f32ecfec3b59"
+    },
+    "src/client/fonts/default_font.c": {
+      "bytes": 13768,
+      "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
+    },
+    "src/client/render_engine/internal.h": {
+      "bytes": 2089,
+      "sha256": "3705b3a8d0fd0398c180b22f2c9d7620af958aa57bb2d8c68b03d9268a14819a"
+    },
+    "src/client/render_engine/owner.c": {
+      "bytes": 19921,
+      "sha256": "5b8aab5e6526e4dfa02b0e4b383124251ad111cbca967ed8133a65f82639ec5a"
+    },
+    "src/client/render_engine/textures.c": {
+      "bytes": 19783,
+      "sha256": "57af3509cdcea3ad902490798dad9d4d47637869f18a9a1228e243f40cac745f"
+    },
+    "src/client/render_engine/textures.h": {
+      "bytes": 4331,
+      "sha256": "3582919ed9ce3e293b8238b667b95684c62a8f63de3953bb0e75c120cd599e70"
+    },
+    "tests/client/render_engine/test_render_engine.c": {
+      "bytes": 13811,
+      "sha256": "148890699745bfc30a47a0c33d78b32468dd94e5f026b91bcb188621f9168040"
+    },
+    "tests/client/render_engine/test_textures.c": {
+      "bytes": 21208,
+      "sha256": "9e63b92602d15bbe770250d4456ed262750c2582300f840339c698028c1d44a8"
+    },
+    "src/client/settings/game_settings.c": {
+      "bytes": 66929,
+      "sha256": "ab1b6daf6c1ce28e22154a0da6a769fd7a2b644cdc0d8468f4fc603cf1eb6541"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    }
+  },
+  "reference_files": {
+    "compare.py": {
+      "bytes": 10568,
+      "sha256": "e9da0d8c814d8f759d5fd1ee4b9efe991d9c6247426fec0d1c006cf02fa06607"
+    },
+    "FontObservation.java": {
+      "bytes": 4965,
+      "sha256": "97c158d1b7c9d3b355b10e0272b994e5ad8c53bf1e25f4c908934ba2edfa3939"
+    },
+    "README.md": {
+      "bytes": 5880,
+      "sha256": "64f9ef3e5439b4906a8795da8d234bb3dfba3ced20aa715270a877ace42c043a"
+    },
+    "source-pins.json": {
+      "bytes": 19198,
+      "sha256": "0d408a1b1d7882aad6551c2743f8190683daf8f26e37acc91f34089e8b0b2071"
+    },
+    "support.py": {
+      "bytes": 3720,
+      "sha256": "b6e9207bc992821f9d9fc82b9c856a02ba285ff610d08c8a75cb6d95e84361d9"
+    },
+    "TextureObservation.java": {
+      "bytes": 4527,
+      "sha256": "087ae3aa5446be0a052ebe3f0a96dd13c034f470e0567bc80b5974016ea3aa9a"
+    }
+  },
+  "controller_files": {
+    "tests/tools/client/test_render_engine.py": {
+      "bytes": 3872,
+      "sha256": "c7290c786e0a3ec78b26c83512ccc61f7607909c9a9ec1fe7d5f7ab22119509a"
+    }
+  },
+  "font_dependency": {
+    "archive_sha256": "12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d",
+    "version": "2.13.2"
+  }
+}

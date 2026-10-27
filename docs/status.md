@@ -7,18 +7,26 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
-The combined Lava animation, LocalPlayer NBT, controller, camera and World
-update source passes 1,072 local CTests: 376 Windows MSVC Debug cases and 348
-cases on each Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection.
-Every preceding 362/335/335 case remains enabled; none failed, skipped, was
-disabled or remained unrun. Windows includes actual OpenGL startup and three
-World inspection captures. The local Linux matrix is headless.
+The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, controller,
+camera and World update source passes 1,151 local CTests: 389 Windows MSVC Debug
+cases and 381 cases on each Clang 18/GCC 13 Debug build with ASan, UBSan and leak
+detection. Every preceding 376/348/348 case remains enabled. No case failed,
+skipped, was disabled or remained unrun. All three profiles exercise real OpenGL
+startup, title and three fixed-camera World inspection captures.
 
-The tested cohort contains 1,822 files and 1,586 non-Markdown inputs. All 910
+The tested cohort contains 1,867 files and 1,627 non-Markdown inputs. All 926
 C/header files pass clang-format 18.1.3. Source inventories and configured build
-products remain unchanged through execution; all 277 Windows executables retain
-their default 1 MiB stack reserve. Subsequent documentation edits preserve the
-non-Markdown inputs and pinned reference README files.
+products remain unchanged through the suites; all 281 Windows executables keep
+their default 1 MiB stack reserve. Documentation edits preserve non-Markdown
+inputs and reference text bound by the comparison packages.
+
+[RenderEngine construction](client/render-engine.md) passes 8,333 CPU and 223
+device checks, with 55 separate texture-trace checks. Fresh original CPU runs
+match all 4,096 ARGB pixels and ten glyph metrics on Windows and Linux; the
+selected original GL profile has ten exact Windows rows. [Biped construction](client/biped-construction.md)
+passes 4,381 checks and 435 allocation prefixes, with 838 fresh original records
+per compiler. Normal application publication, animation and drawing remain
+unfinished.
 
 [LocalPlayer NBT](entity/player-nbt.md) now executes the actual Living, Player
 and Inventory read/write hooks, first-Player World metadata save and saved

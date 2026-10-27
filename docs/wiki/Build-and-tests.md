@@ -1,19 +1,23 @@
 # Build and tests
 
-The combined singleplayer controller, camera, World Entity updates, Player
-spawn/reset and weather source passes 1,032 local CTests: 362 Windows MSVC Debug
-cases and 335 cases on each sanitized Clang/GCC Debug build with leak detection.
-Every preceding 357/331/331 case remains enabled, without skips or failures.
-Windows includes OpenGL startup, World inspection and camera comparisons; local
-Linux coverage is headless. Formatting passes for 897 C/header files. Source
-inventories and configured build products stay unchanged through each full suite.
-Hosted public/JDK checks run separately.
+The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, controller,
+camera and World update source passes 1,151 local CTests: 389 Windows MSVC Debug
+cases and 381 cases on each sanitized Clang/GCC Debug build with leak detection.
+Every preceding 376/348/348 case remains enabled, with no skip or failure.
+All three profiles exercise real OpenGL startup, title and World inspection.
+Formatting passes for 926 C/header files. The tested cohort has 1,867 files and
+1,627 non-Markdown inputs. Source and all configured products stay unchanged;
+all 281 Windows executables retain their default 1 MiB stack reserve.
 
 The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) separates the complete matrix from
 individual operation profiles:
 
 | Operation | Scoped evidence |
 | --- | --- |
+| RenderEngine | 8,333 CPU/223 device/55 separate trace checks; 19 normal/optimized controls; fresh original 4,096-pixel/ten-glyph comparisons on both hosts and ten original GL rows on Windows |
+| Biped construction | 4,381 checks/435 allocation prefixes; 128 normal/optimized driver controls and 838 fresh original records per compiler |
+| LocalPlayer NBT and first-Player metadata | 490 NBT, 110 coordinate, nine diagnostic and 169 publication checks per compiler; 33 original cases and 1,302 normal tags. Fresh Windows originals, retained Windows observations for current Linux executables; separate 37-record wake prefix contains 33 tags, with full wake unfinished |
+| Lava CPU animation | 132,659 native checks per compiler; fresh Windows/Linux originals match all 348 records across 23 cases and 31 calls |
 | Singleplayer controller | 230 normal and 256 allocator checks per compiler; twenty original records per target, with fresh original execution on Windows |
 | World Entity/TileEntity updates | 881 native checks and 54 exact original records per compiler |
 | Weather method | 473 native checks, unchanged 8,565-check Info regression and 68 exact original records per compiler |
@@ -33,11 +37,15 @@ World gameplay loop, fog, normal RenderEngine startup, drawing or a playable
 client. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
 [pickup/effects](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) and [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md).
 
-At the preceding published checkpoint `2f65ade`, all 1,019 local cases pass:
-357 Windows and 331 per sanitized Linux compiler. Its separately retained
-[hosted matrix](https://github.com/frankischilling/minecraft-c/actions/runs/40395106185)
-passes 968 public/JDK cases: 318 Windows and 325 per Linux compiler. Those dated
-results predate the current controller integration.
+The preceding `0a330b2` [hosted matrix](https://github.com/frankischilling/minecraft-c/actions/runs/40435604059)
+passes all four jobs and 1,016 public/JDK cases: 334 Windows and 341 per Linux
+compiler. Every prior 980 case remains, with twelve new public Lava/NBT cases
+per platform. All four checkout trees equal the reviewed
+`78391e129eb8dca8453711bc6a4305d05c394e74` tree. Formatting checks 910 C/header
+files; controller mirrors and all 556 positive/2,011 negative lifecycle interval
+controls pass on each platform. Original-archive comparisons retain their
+separate local scope. Hosted validation of the newer RenderEngine/Biped
+integration is pending publication.
 
 CI runs two CTests concurrently and allows four parallel Windows build jobs.
 Linux build jobs cache downloaded APT package archives, then still install the
