@@ -1,19 +1,21 @@
 # Build and tests
 
-The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, controller,
-camera and World update source passes 1,151 local CTests: 389 Windows MSVC Debug
-cases and 381 cases on each sanitized Clang/GCC Debug build with leak detection.
-Every preceding 376/348/348 case remains enabled, with no skip or failure.
-All three profiles exercise real OpenGL startup, title and World inspection.
-Formatting passes for 926 C/header files. The tested cohort has 1,867 files and
-1,627 non-Markdown inputs. Source and all configured products stay unchanged;
-all 281 Windows executables retain their default 1 MiB stack reserve.
+The combined Timer, Minecraft class/worker, rendering and World/Player source
+passes 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on each
+sanitized Clang/GCC Debug build with leak detection. Every preceding 389/381/381
+case remains enabled, with no skip or failure. All profiles exercise real
+OpenGL startup, title and World inspection. Formatting passes for 936 C/header
+files; the tested cohort contains 1,885 files and 1,643 non-Markdown inputs.
+Source and all products remain unchanged; all 283 Windows executables retain
+their default 1 MiB stack. Documentation updates preserve pinned inputs.
 
 The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) separates the complete matrix from
 individual operation profiles:
 
 | Operation | Scoped evidence |
 | --- | --- |
+| Ordered Timer | 1,267 constructor checks per compiler, existing arithmetic/clock controls; separate original eight-rate/ten-field qualification |
+| Minecraft class and kg worker | 225 native checks and 70 normal/optimized controls per compiler; five original class/worker projections on prepared receivers, no instance-constructor claim |
 | RenderEngine | 8,333 CPU/223 device/55 separate trace checks; 19 normal/optimized controls; fresh original 4,096-pixel/ten-glyph comparisons on both hosts and ten original GL rows on Windows |
 | Biped construction | 4,381 checks/435 allocation prefixes; 128 normal/optimized driver controls and 838 fresh original records per compiler |
 | LocalPlayer NBT and first-Player metadata | 490 NBT, 110 coordinate, nine diagnostic and 169 publication checks per compiler; 33 original cases and 1,302 normal tags. Fresh Windows originals, retained Windows observations for current Linux executables; separate 37-record wake prefix contains 33 tags, with full wake unfinished |
@@ -37,23 +39,21 @@ World gameplay loop, fog, normal RenderEngine startup, drawing or a playable
 client. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
 [pickup/effects](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) and [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md).
 
-The preceding `0a330b2` [hosted matrix](https://github.com/frankischilling/minecraft-c/actions/runs/40435604059)
-passes all four jobs and 1,016 public/JDK cases: 334 Windows and 341 per Linux
-compiler. Every prior 980 case remains, with twelve new public Lava/NBT cases
-per platform. All four checkout trees equal the reviewed
-`78391e129eb8dca8453711bc6a4305d05c394e74` tree. Formatting checks 910 C/header
-files; controller mirrors and all 556 positive/2,011 negative lifecycle interval
-controls pass on each platform. Original-archive comparisons retain their
-separate local scope. Hosted validation of the newer RenderEngine/Biped
-integration is pending publication.
+The preceding published `9318923`
+[hosted matrix](https://github.com/frankischilling/minecraft-c/actions/runs/40452503725)
+passed all four jobs and 1,043 public/JDK cases: 341 Windows and 351 per Linux
+compiler. All 1,016 preceding cases remained. All four checkout trees matched
+the reviewed `d5ac89ab96384b1bfc2e5e5991cbf85c958a4a8c` tree. Formatting checks 926 C/header files,
+controller mirrors and 556 positive/2,011 negative lifecycle controls passed
+per platform. Hosted validation of the new Timer/class/worker integration is
+pending publication; original-archive comparisons retain their local scope.
 
 CI runs two CTests concurrently and allows four parallel Windows build jobs.
-Linux build jobs cache downloaded APT package archives, then still install the
-packages and run every compiler, sanitizer, graphics, formatting and controller
-check. At `2f65ade`, both Linux jobs restored the cache, needed zero package-archive
-download bytes and spent eleven seconds on dependency installation. Package
-indexes were still updated. These observed timings do not establish a controlled
-whole-run speedup. The earlier
+At `9318923`, both Linux jobs restored 9,538,264 cache bytes and downloaded 1,789 kB
+of 11.4 MB required package archives. Dependency installation took eleven/twelve
+seconds; package indexes were still updated. All compiler, sanitizer, graphics,
+formatting and controller checks remained enabled. These observations do not
+establish a controlled whole-run speedup. The earlier
 [scheduling comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#continuous-integration-scheduling)
 retains its separate measurements.
 

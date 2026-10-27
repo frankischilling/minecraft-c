@@ -7,8 +7,8 @@ or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 draws imported resources. A separate fixed-camera inspection renders generated
-terrain. The combined RenderEngine/Biped source passes 1,151 local tests:
-389 Windows and 381 per sanitized Linux compiler. All three profiles exercise
+terrain. The combined Timer, Minecraft class/worker and rendering source passes
+1,163 local tests: 393 Windows and 385 per sanitized Linux compiler. All three profiles exercise
 real graphical startup and fixed-camera World inspection.
 
 [LocalPlayer NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)

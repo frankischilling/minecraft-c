@@ -4,39 +4,36 @@
 
 ## Current client runtime integration
 
-The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, singleplayer
-controller, camera, World Entity update, spawn/reset and weather source passes
-1,151 local CTests: 389 Windows MSVC Debug cases and 381 cases on each Clang18/
-GCC13 Debug build with ASan, UBSan and leak detection. Every preceding
-376/348/348 case remains enabled. None failed, skipped, was disabled or remained
-unrun. Windows adds thirteen Renderer/Biped cases. Each Linux profile adds
-twelve Renderer/Biped cases, twenty full-client public cases and the supported
-original CPU rendering comparison to its earlier headless matrix.
+The combined ordered Timer, Minecraft class/worker, RenderEngine, Biped and
+World/Player source passes 1,163 local CTests: 393 Windows MSVC Debug cases and
+385 cases on each Clang18/GCC13 Debug build with ASan, UBSan and leak detection.
+Every preceding 389/381/381 case remains enabled. None failed, skipped, was
+disabled or remained unrun. Four new public cases per compiler cover ordered
+Timer construction and native application-owner contracts/driver controls.
 
-The frozen cohort contains 1,867 files and 1,627 non-Markdown inputs. All 926
+The frozen cohort contains 1,885 files and 1,643 non-Markdown inputs. All 936
 C/header files and the separate shared-model trace include pass clang-format
-18.1.3. Before execution, 292 current source/helper fingerprints and twenty-one
-original class/Code families verify. Source inventories, every configured
-artifact, runtime library, symbol and compiler/link configuration remain
-unchanged. Each Linux profile binds 1,830 product/configuration files and 334
-actual targets, including extensionless executables and all built objects.
-All 281 Windows primary executables retain the default 1 MiB stack reserve.
-Subsequent documentation edits preserve non-Markdown inputs and pinned
-reference text.
+18.1.3. Before execution, 388 current source/helper fingerprints and twenty-three
+original class/Code families verify. Source, configured artifacts, runtime
+libraries, symbols and compiler/link configuration remain unchanged. Each Linux
+profile binds 1,844 product/configuration files and 338 targets, including actual
+extensionless executables and built objects. All 283 Windows primary executables
+retain their default 1 MiB stack. Subsequent documentation updates preserve
+non-Markdown inputs and pinned reference text.
 
 All three profiles enable the graphical client, display tests, sound and audio.
-They exercise actual OpenGL startup, title and three World inspection captures.
-Linux uses private authenticated abstract-local Xvfb displays, Mesa llvmpipe
-OpenGL4.5 core, and the real production Display. Both owned servers terminate
-cleanly. Actual recipes instrument all 42 FreeType compilation units and 593
-strict project C17 recipes per Linux compiler. The 833 unmodified FreeType
-source files match the pinned official archive before and after execution.
+They exercise real OpenGL startup, title and World inspection. Each Linux
+compiler also closes separate imported-resource title and fresh seed23 captures.
+Four authenticated abstract-local Xvfb servers terminate cleanly. Actual Display
+identity is Mesa llvmpipe OpenGL4.5 core. Compilation recipes instrument all 42
+FreeType units and 599 strict project C17 units per Linux compiler. The 833
+FreeType source files match the pinned official archive before and after use.
 
-Separate fresh Windows production-client and headless ALL builds pass with
-BUILD_TESTING disabled and Java/Python package discovery disabled. The headless
-graph excludes font, display and audio dependency targets. The production-client
-mode check disables optional sound/audio; the full matrix independently enables
-both. Hosted public/JDK checks run separately.
+Fresh Windows production-client and headless ALL builds also pass with tests
+and Java/Python package discovery disabled. The headless graph excludes font,
+display and audio dependency targets. Its production-client companion disables
+optional sound/audio; the complete test matrix independently enables both.
+Hosted public/JDK checks remain a separate gate.
 
 Independent readback verifies 230 ordinary and 256 allocation checks for the
 singleplayer controller on each compiler. Each native target matches twenty
@@ -66,6 +63,39 @@ World time/block scheduling, physical input, dynamic rendering and the playable
 frontend remain unfinished. The scoped method comparisons below describe their
 supported operations and remaining descendants.
 
+## Ordered Timer and Minecraft class/worker integration
+
+The same combined products pass 1,267 Timer-constructor checks, preserving the
+existing supplied-clock API and arithmetic regression. Actual render partial
+`c` remains distinct from accumulator `e`. Source wall25/g28 precedes native
+nanotime32/h39, including its late floating-point prerequisite. A failed
+candidate remains inspectable and cannot retry. Earlier isolated qualification
+retains eight fresh original constructors/all ten fields on each host, with
+independent clock windows rather than an invented exact raw nanoTime sample.
+See [Timer](client/timer.md).
+
+Each compiler passes 225 Minecraft class/worker contracts and 70 driver controls
+normally and with Python optimization. The source initializer owns its real
+10 MiB byte array and distinct 512-entry long arrays. Actual J/o use one atomic
+location each. A genuine joinable native kg worker captures that same App and
+preserves its long sleep, interrupt and source-stop behavior. Native cancellation
+joins without storing J=false. Each current Linux product matches five fresh
+unchanged-original class/worker rows. Windows retains the qualified original
+observations and matching current native five-row profile.
+
+The original observer prepares the actual concrete kq with Unsafe, executes the
+real Minecraft initializer and creates genuine kg workers. It runs neither the
+Minecraft nor kq instance constructor. Its original abstract-Minecraft allocation
+failure is retained; the observer-only correction selects the actual concrete
+subclass and binds its complete class/Code and origin. This changed no C body.
+See [class activation and worker ownership](client/application-owner.md).
+
+The combined freeze initially found one stale transitive Timer-header fingerprint
+in the new application reference metadata. Only that current leaf was updated
+before compilation. All native suites and post-suite semantic readers then
+passed without a runtime correction. The separate older RenderEngine/Biped
+qualification failures below retain their original checkpoint scope.
+
 ## RenderEngine and Biped integration
 
 The combined products each pass 8,333 RenderEngine CPU checks, 223 real-context
@@ -84,7 +114,7 @@ The shared model graph is compiled once; the standalone Biped is distinct from
 Notice's model. The existing Notice APIs and default-Random continuation retain
 their earlier behaviour. See [Biped construction](client/biped-construction.md).
 
-The full native suites passed without a runtime correction. A Windows audit
+The preceding RenderEngine/Biped suites passed without a runtime correction. A Windows audit
 stopped before tests because it counted EXE plus PDB as two primary executables;
 the corrected audit selects one EXE and retains both artifacts. The same graph
 then completed, without reconfiguration or rebuilding. Raw post-suite audits

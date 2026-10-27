@@ -7,18 +7,26 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
-The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, controller,
-camera and World update source passes 1,151 local CTests: 389 Windows MSVC Debug
-cases and 381 cases on each Clang 18/GCC 13 Debug build with ASan, UBSan and leak
-detection. Every preceding 376/348/348 case remains enabled. No case failed,
-skipped, was disabled or remained unrun. All three profiles exercise real OpenGL
-startup, title and three fixed-camera World inspection captures.
+The combined Timer, Minecraft class/worker, RenderEngine, Biped and World/Player
+source passes 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on
+each Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection. Every
+preceding 389/381/381 case remains enabled. None failed, skipped, was disabled
+or remained unrun. All three profiles exercise real OpenGL startup, title and
+fixed-camera World inspection.
 
-The tested cohort contains 1,867 files and 1,627 non-Markdown inputs. All 926
-C/header files pass clang-format 18.1.3. Source inventories and configured build
-products remain unchanged through the suites; all 281 Windows executables keep
-their default 1 MiB stack reserve. Documentation edits preserve non-Markdown
-inputs and reference text bound by the comparison packages.
+The tested cohort contains 1,885 files and 1,643 non-Markdown inputs. All 936
+C/header files pass clang-format 18.1.3. Source and configured products remain
+unchanged through execution; all 283 Windows executables keep their default
+1 MiB stack. Documentation updates preserve non-Markdown inputs and pinned
+reference text.
+
+[Ordered Timer construction](client/timer.md) passes 1,267 checks per compiler,
+including retained clock-failure prefixes and independent render-partial storage.
+[Minecraft class activation and the Timer hack worker](client/application-owner.md)
+pass 225 checks and 70 controls in each normal/optimized Python run. Five original
+class/worker projections retain their declared prepared-receiver scope. These
+owners are startup prerequisites; the complete application constructor and normal
+World entry remain unfinished.
 
 [RenderEngine construction](client/render-engine.md) passes 8,333 CPU and 223
 device checks, with 55 separate texture-trace checks. Fresh original CPU runs

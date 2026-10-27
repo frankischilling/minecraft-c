@@ -8,6 +8,13 @@ a tagged late-hook union. This reduces Windows stack use without truncating
 causes or changing the default 1 MiB executable reserve. Full wake and normal
 gameplay adoption remain unfinished.
 
+The [ordered Timer](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/timer.md)
+keeps render partials separate from its accumulator and samples real clocks in
+source order. The [Minecraft class/worker owner](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/application-owner.md)
+holds the static arrays and actual atomic J/o, with native cancellation/join
+separate from source stores. Complete constructor and gameplay adoption remain
+unfinished.
+
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
 scenarios and remaining behavior.

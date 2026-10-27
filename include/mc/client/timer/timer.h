@@ -8,7 +8,7 @@ typedef struct mc_timer mc_timer;
 
 /* Values from one source-order pair: currentTimeMillis first, nanoTime second.
  * nano_time is the raw signed nanosecond sample, not a converted duration.
- * The caller owns sampling/order; this module never queries an OS clock. */
+ * The caller owns sampling/order; these supplied-sample APIs never query an OS clock. */
 typedef struct mc_timer_clock_sample {
     int64_t wall_millis;
     int64_t nano_time;
@@ -37,15 +37,18 @@ void mc_timer_free(mc_timer *timer); /* NULL is harmless. */
  * Elapsed seconds are clamped to [0,1]; tick rate/speed/remainder are not clamped.
  * The float remainder subtracts the uncapped Java f2i result before ticks are
  * capped above at 10. Negative ticks and nonfinite partials are real results.
- * NULL fails without mutation; otherwise no allocation or native failure.
+ * NULL or an unconstructed private candidate fails without mutation; otherwise
+ * no allocation or native failure.
  * Calls on one owner require exclusive access. */
 bool mc_timer_update(mc_timer *timer, mc_timer_clock_sample clocks);
 
 /* Source field d assignment: every binary32 value is admitted. Existing ticks,
- * remainder and clock synchronization state are preserved. NULL fails. */
+ * remainder and clock synchronization state are preserved. NULL or an
+ * unconstructed private candidate fails. */
 bool mc_timer_set_speed(mc_timer *timer, float speed);
 
-/* Read without advancing clocks/ticks. NULL arguments fail and preserve out.
+/* Read without advancing clocks/ticks. NULL arguments or an unconstructed private
+ * candidate fail and preserve out.
  * out must be disjoint from owner storage. Pause handling belongs to the caller:
  * preserve its render partial outside Timer while Timer continues updating. */
 bool mc_timer_view_get(const mc_timer *timer, mc_timer_view *out);

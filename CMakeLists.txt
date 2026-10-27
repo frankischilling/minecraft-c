@@ -137,6 +137,9 @@ if(MC_BUILD_CLIENT)
     add_library(mc_client_timer STATIC src/client/timer/timer.c)
     target_include_directories(mc_client_timer PUBLIC include)
     target_link_libraries(mc_client_timer PUBLIC mc_core PRIVATE mc_build_options)
+    add_library(mc_client_timer_construction STATIC src/client/timer/construction.c)
+    target_link_libraries(mc_client_timer_construction PUBLIC mc_client_timer
+        PRIVATE mc_platform_time mc_build_options)
     add_library(mc_client_display STATIC src/client/display/display.c)
     target_include_directories(mc_client_display PUBLIC src/client/display)
     target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static PRIVATE mc_build_options)
@@ -595,8 +598,47 @@ add_library(mc_client_world_session STATIC src/client/world/session.c)
 target_include_directories(mc_client_world_session PUBLIC src/client/world PRIVATE src/platform/time)
 target_link_libraries(mc_client_world_session PUBLIC mc_simulation PRIVATE mc_platform_time mc_build_options)
 
+# The real private App layout now contains actual C17 atomic fields.
+target_link_libraries(mc_client_notice PUBLIC mc_c_atomics)
+foreach(target IN ITEMS mc_simulation mc_client_first_person mc_client_singleplayer_controller)
+    target_link_libraries(${target} PRIVATE mc_c_atomics)
+endforeach()
+
+add_library(mc_client_application_owner STATIC
+    src/client/startup/application_classes.c
+    src/client/startup/application_lifetime.c
+    src/client/startup/timer_hack.c)
+target_include_directories(mc_client_application_owner PRIVATE src/client src/platform/time)
+target_link_libraries(mc_client_application_owner PUBLIC mc_simulation mc_c_atomics
+    PRIVATE Threads::Threads mc_build_options)
+
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(mc_test_application_owner tests/client/startup/test_application_owner.c)
+    target_include_directories(mc_test_application_owner PRIVATE src src/client src/platform/time)
+    target_link_libraries(mc_test_application_owner PRIVATE
+        mc_client_application_owner mc_c_atomics mc_build_options)
+    add_test(NAME client.application_owner COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/application_owner/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_application_owner>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/application-owner-contracts")
+    set_tests_properties(client.application_owner PROPERTIES
+        LABELS "public;unit;client;ownership;thread" TIMEOUT 120)
+    foreach(mode IN ITEMS normal optimized)
+        set(_mc_owner_python_flags -B)
+        if(mode STREQUAL "optimized")
+            list(APPEND _mc_owner_python_flags -O)
+        endif()
+        add_test(NAME tools.application_owner_${mode} COMMAND Python3::Interpreter
+            ${_mc_owner_python_flags}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_application_owner_driver.py"
+            --executable "$<TARGET_FILE:mc_test_application_owner>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/application-owner-${mode}")
+        set_tests_properties(tools.application_owner_${mode} PROPERTIES
+            LABELS "public;tools;client;ownership;thread" TIMEOUT 240)
+    endforeach()
+    unset(_mc_owner_python_flags)
+
     add_executable(mc_test_singleplayer_controller tests/client/controller/test_singleplayer.c)
     target_include_directories(mc_test_singleplayer_controller PRIVATE src/platform/time)
     target_link_libraries(mc_test_singleplayer_controller PRIVATE
@@ -942,6 +984,13 @@ if(BUILD_TESTING)
         target_link_libraries(mc_test_timer PRIVATE mc_client_timer mc_build_options)
         add_test(NAME client.timer COMMAND mc_test_timer)
         set_tests_properties(client.timer PROPERTIES LABELS "public;unit;client;numeric" TIMEOUT 60)
+        add_executable(mc_test_timer_construction tests/client/timer/test_construction.c)
+        target_include_directories(mc_test_timer_construction PRIVATE src)
+        target_link_libraries(mc_test_timer_construction PRIVATE
+            mc_client_timer_construction mc_platform_time mc_build_options)
+        add_test(NAME client.timer_construction COMMAND mc_test_timer_construction)
+        set_tests_properties(client.timer_construction PROPERTIES
+            LABELS "public;unit;client;numeric;ownership" TIMEOUT 180)
         add_executable(mc_test_client_display tests/client/display/test_display.c)
         target_link_libraries(mc_test_client_display PRIVATE mc_client_display mc_build_options)
         add_executable(mc_test_world_renderer tests/client/world/test_renderer.c)

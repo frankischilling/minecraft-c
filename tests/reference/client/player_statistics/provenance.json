@@ -168,8 +168,8 @@
       "sha256": "c0459e59987816af23e7cfc6313c336faa2b6588174dbe50e166575d9512c377"
     },
     "src/client/application_state.h": {
-      "bytes": 3360,
-      "sha256": "08891526c24cba9fd49f60b998e1d6054dfea2458e1d3b4b86775f162e47782e"
+      "bytes": 3863,
+      "sha256": "569ee6612b98eb169060f635a372fdacb6dd93742f18036d6e9c12f9f6399cb2"
     },
     "src/client/application_access.h": {
       "bytes": 1153,

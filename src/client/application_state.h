@@ -9,6 +9,9 @@
 #include "mc/world/runtime/entities.h"
 #include "nanotime.h"
 #include "resources/assets.h"
+#include "startup/application_owner.h"
+
+#include <stdatomic.h>
 
 typedef struct mc_gui_main_menu mc_gui_main_menu;
 typedef struct mc_client_game_directory mc_client_game_directory;
@@ -74,6 +77,13 @@ struct client_application {
     mc_client_render_engine *render_engine;
     mc_client_effect_renderer *effect_renderer, *effect_renderer_retained;
     bool effect_renderer_constructing;
+    /* Actual source volatile J/o storage. Existing running/captured above
+     * remain native component-loop/capture flags; they are not source mirrors.
+     * Register this unique App lifetime before any atomic access. Native worker
+     * holds require the caller to keep this actual storage live through join. */
+    atomic_bool J, o;
+    atomic_size_t timer_hack_holds;
+    mc_client_application_lifetime_phase native_lifetime_phase;
 };
 
 #endif

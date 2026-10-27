@@ -1,0 +1,395 @@
+{
+  "scope": "Actual Minecraft static initializer/default slots, real atomic App J/o and normal kg owner; coherent build/native/original qualification is a separate gate",
+  "native_sources": {
+    "src/client/startup/timer_hack.c": {
+      "bytes": 18780,
+      "sha256": "bdac1c11f14c63cc2bce38fe270efccd445fb744765bd1b0fae9f92f5459f4f0"
+    },
+    "include/mc/entity/player/player.h": {
+      "bytes": 9912,
+      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+    },
+    "include/mc/world/info/info.h": {
+      "bytes": 14378,
+      "sha256": "2fb2b252af34b1880b1862adf787009cb68a3ef01756cf8fa59c87ac7784ae60"
+    },
+    "include/mc/storage/nbt/nbt.h": {
+      "bytes": 5096,
+      "sha256": "4af00176f7b5ae614ffeff7a6ec282a07e1f673b8c4aa8f1d979df6ba02796df"
+    },
+    "include/mc/inventory/container.h": {
+      "bytes": 3705,
+      "sha256": "da782572246de8a01310530578fce781a54d8f969973e22157021e88c9dce040"
+    },
+    "include/mc/inventory/result.h": {
+      "bytes": 2440,
+      "sha256": "3909e334b81f135ef7ea95af8cb1dd24c14e893c0e41587f7dc3d08f2200f45a"
+    },
+    "include/mc/inventory/errors.h": {
+      "bytes": 1452,
+      "sha256": "dc79d1c8c87ca683eb6c2778a276129610c76e7a6f9c84e7b9793e213e15aca6"
+    },
+    "include/mc/item/recipes/recipes.h": {
+      "bytes": 4490,
+      "sha256": "448de7ee48c17c9e0603832ded747177d9e7071dd479599416f4ef40419abe4d"
+    },
+    "include/mc/item/stack/stack.h": {
+      "bytes": 9525,
+      "sha256": "b35c433b81d757718ca9a0b2abe1564e206a346e7a10f7ba693709cf15bacff8"
+    },
+    "include/mc/item/registry/registry.h": {
+      "bytes": 2500,
+      "sha256": "7268ddf5f53429905bc2beb813188eeecf7a640a1dd7cc568720388bdc5757fc"
+    },
+    "include/mc/block/registry/registry.h": {
+      "bytes": 7950,
+      "sha256": "db4dec4547b63592bdecd00e5b1af5165acb788c578663eac5afca57a3c70ef0"
+    },
+    "include/mc/core/java/random_profile.h": {
+      "bytes": 4172,
+      "sha256": "db0b1dd483d1c76a96ecd1fd7167b4ac23495f7002ce90ec0aaf58aa922a31d8"
+    },
+    "include/mc/core/java/java.h": {
+      "bytes": 3573,
+      "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
+    },
+    "include/mc/core/java/format.h": {
+      "bytes": 3373,
+      "sha256": "a7b048c191e537a4fa2f6772de0f267ddf54c3f8bd52c1f43a4a56d609fecf19"
+    },
+    "include/mc/block/material/material.h": {
+      "bytes": 4557,
+      "sha256": "7f64d63d51f8ecf7f7aae81fb4ed78edf6f185f7dd821bc5d29a6e91ab9b132b"
+    },
+    "include/mc/inventory/player.h": {
+      "bytes": 2933,
+      "sha256": "8fe473af0cdb6060856bd5fd6505b5eddcbc8f40b0ef95001b7baa73c82fe5ef"
+    },
+    "include/mc/inventory/crafting.h": {
+      "bytes": 3510,
+      "sha256": "31fc7004d4bdaff99e3611be9b6b7aedba7c1278e262ee15e22d989e4bf278ef"
+    },
+    "include/mc/entity/entity.h": {
+      "bytes": 8689,
+      "sha256": "2efbee4630c8e9a20ba0fbb071d9482bac4e3215b8413b1354c98df8102ec2ac"
+    },
+    "include/mc/world/runtime/runtime.h": {
+      "bytes": 12283,
+      "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+    },
+    "include/mc/world/storage/store.h": {
+      "bytes": 20327,
+      "sha256": "21d205621c786a5e10a127b1ca4f2ecc16e492c336c5bbe2412152011d1a3a4d"
+    },
+    "include/mc/world/storage/regions.h": {
+      "bytes": 4655,
+      "sha256": "4233b34b793eca6cc8a2b324af46badd762e2617feffa13b61fef679890dce72"
+    },
+    "include/mc/world/storage/status.h": {
+      "bytes": 857,
+      "sha256": "3a1b750e2d969a44d15d263dbc33b7d0ed9417ecb223843297b7d104cccd2054"
+    },
+    "include/mc/storage/region/writer.h": {
+      "bytes": 5234,
+      "sha256": "25312fb383d2c3383297cf84db88f15ed6a026e8da6841062bb3fe16c24c6b19"
+    },
+    "include/mc/storage/compression/compression.h": {
+      "bytes": 3188,
+      "sha256": "e74504fa58c2b02867d6696fc623c1a201a814c0c596ba76fd22a7964f2139a1"
+    },
+    "include/mc/world/storage/chunk.h": {
+      "bytes": 5539,
+      "sha256": "f58c096313fd841d0ce1a4436e520251497a1b72318d04b68f29bafa2f62091b"
+    },
+    "include/mc/world/chunk/state.h": {
+      "bytes": 1133,
+      "sha256": "4eadb829176da3e8a9609b13447e87803c8a8c95aa834d60ffa0e0819f6b3418"
+    },
+    "include/mc/world/chunk/data.h": {
+      "bytes": 2193,
+      "sha256": "837c683716ef46818a002237aec2441dc186946e0191e009da094619bf5280c8"
+    },
+    "include/mc/world/chunk/nibbles.h": {
+      "bytes": 1388,
+      "sha256": "3169c22153b888ff9df9e8a746bad5bad7009dcd6ef7dd4be39e7bee274158b9"
+    },
+    "include/mc/world/cache/acquire.h": {
+      "bytes": 11225,
+      "sha256": "c0d8e604db9302bb0c8ca971bae2921b167a4e95e3340ba2ea7a4ca5c0167423"
+    },
+    "include/mc/world/chunk/references.h": {
+      "bytes": 857,
+      "sha256": "eebab4eda381828090672a75f87196b1e84a7d5bd1a720af39c063cb699551d8"
+    },
+    "include/mc/world/cache/cache.h": {
+      "bytes": 2170,
+      "sha256": "9dcd13256748b675be22a21373f2de80d2586fa2a1a5bd54b7aaafb866af5035"
+    },
+    "include/mc/core/java/int_set.h": {
+      "bytes": 5032,
+      "sha256": "cc09767e77dcf687d0ebb819b1d2809fba7e94fc251557354262c5e2a245be5d"
+    },
+    "include/mc/storage/level/level.h": {
+      "bytes": 4818,
+      "sha256": "1183fde34d59004697aa81a8ca1c376cd17099523a15adc61ceb8afd8f2886c0"
+    },
+    "include/mc/world/runtime/construction.h": {
+      "bytes": 11962,
+      "sha256": "5a20cf55f40ed6f1b30dd6837ebe805321ad7bf909cd038cfe902800e81d0031"
+    },
+    "include/mc/world/schedule/ordered.h": {
+      "bytes": 6579,
+      "sha256": "30d6f6e102df2a6c9b3d69074c86ebff20e66c86e1f00660303fdf424efcd574"
+    },
+    "include/mc/world/schedule/entry.h": {
+      "bytes": 4126,
+      "sha256": "b04e86d701c46a2c2ca54fe716375b44aedeef992244cefcb074ad6f9e2164db"
+    },
+    "include/mc/world/schedule/membership.h": {
+      "bytes": 6458,
+      "sha256": "352e1723d638d4666de2d23de427df785c3a6a424e5de636dad772ffdd3b495e"
+    },
+    "include/mc/world/saved_data/storage.h": {
+      "bytes": 10538,
+      "sha256": "0d3ffa541cff0d12d83a26cef7b639be5c617daf9cdbe349a7398f9cf2cbe131"
+    },
+    "include/mc/world/saved_data/value.h": {
+      "bytes": 7412,
+      "sha256": "61015d8df4d5cfd2744e9fbabb9745dfcdba0eeb0b268a534e1b3bdd9c87de81"
+    },
+    "include/mc/storage/nbt/array.h": {
+      "bytes": 2944,
+      "sha256": "d54a1cb89a9d8c22528bee410c11ef83d29782a8b4d41c629f06f3fccddc46ae"
+    },
+    "include/mc/server/runtime/construction.h": {
+      "bytes": 4596,
+      "sha256": "02c0dfe8049cac2da01571c78eb4d0fab67bde75a429ae5febc4151f36807bf2"
+    },
+    "include/mc/core/math/math.h": {
+      "bytes": 1885,
+      "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
+    },
+    "include/mc/world/generation/overworld.h": {
+      "bytes": 8326,
+      "sha256": "bb4255b4acde85197a952568a2a54b5f51608d39f68f8ad69f3a12f18571bf14"
+    },
+    "include/mc/world/terrain/surface.h": {
+      "bytes": 4520,
+      "sha256": "136bbaea9ae88b1ccb246dc151e5832f5ab33924f403769121925b788f67b44e"
+    },
+    "include/mc/world/terrain/terrain.h": {
+      "bytes": 5511,
+      "sha256": "5986855871d5e5ad8707c2c62ed690e1fbc93aec993c8bf749d82ba9734097d2"
+    },
+    "include/mc/world/noise/noise.h": {
+      "bytes": 3444,
+      "sha256": "e92663715cf47d382d6f539acc57f2c88a4fb75693decda046823844cf6194c3"
+    },
+    "include/mc/world/terrain/caves.h": {
+      "bytes": 1309,
+      "sha256": "ea9c019261057b7ff34ec0c9d9e415e062316dea2263821a57abedf291e10a08"
+    },
+    "include/mc/world/chunk/finish.h": {
+      "bytes": 1783,
+      "sha256": "31742ef140c6f63941b927eb97806846eb96a7ef6eae4836f8d46ce1bd24d9d9"
+    },
+    "include/mc/world/lighting/world.h": {
+      "bytes": 1957,
+      "sha256": "937bf47165b0c31ebd7d3bf5e81e9a8aa9984fbc5dc1c78a30635cf5a73ee89a"
+    },
+    "include/mc/world/lighting/queue.h": {
+      "bytes": 2841,
+      "sha256": "85cef424fa8ccb243990867bdb1d49d25eefd29b71211d637d5d91de0424282b"
+    },
+    "include/mc/world/biome/biome.h": {
+      "bytes": 7548,
+      "sha256": "2a1b176c4812cf4b5e06a51dcfef899fa4411cc7518ad7dcafedfd2bb2e73478"
+    },
+    "include/mc/world/noise/simplex.h": {
+      "bytes": 3636,
+      "sha256": "179994d0eced05039f371ddc4a61c267ad4e7276a4bb38228c9331e5176b47b6"
+    },
+    "include/mc/world/cache/lifecycle.h": {
+      "bytes": 9529,
+      "sha256": "1f0b07423e4cfbf7e4ab7ee42b27f39fddb22c3910c707331322a4e19f77140f"
+    },
+    "include/mc/entity/errors.h": {
+      "bytes": 1058,
+      "sha256": "3c577b81c1dc664d3ea5d858238c04533c168a95a196b1d6cb78a93d4b3ef511"
+    },
+    "include/mc/entity/minecart/sites.h": {
+      "bytes": 419,
+      "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
+    },
+    "include/mc/entity/classes/classes.h": {
+      "bytes": 6476,
+      "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+    },
+    "include/mc/entity/bounds/bounds.h": {
+      "bytes": 7264,
+      "sha256": "ce56580b13a73edea960719d9bc79811ccd10de2adffc8a39ef3e239959e6f04"
+    },
+    "src/client/startup/application_owner_internal.h": {
+      "bytes": 2352,
+      "sha256": "ccb8a9246b3788703172fe673a44e422261bd0fa232b930b92dc15a87f73549f"
+    },
+    "src/client/application_state.h": {
+      "bytes": 3863,
+      "sha256": "569ee6612b98eb169060f635a372fdacb6dd93742f18036d6e9c12f9f6399cb2"
+    },
+    "src/client/startup/application_owner.h": {
+      "bytes": 8739,
+      "sha256": "d000c03405b107cb7a612ed23159e80b18e1f58b9aeb867bd9492c7e1243a05c"
+    },
+    "src/client/resources/assets.h": {
+      "bytes": 7837,
+      "sha256": "68e9d96b80e9513a0e0defc1627c77124d0ecc3e7ba7f1f9138b67ccd0fe5c00"
+    },
+    "include/mc/resources/translation/translation.h": {
+      "bytes": 3830,
+      "sha256": "d2de6ac9e076186cebbfc00182d971b235181600982a58fdcc61b45819b5523e"
+    },
+    "include/mc/core/java/properties.h": {
+      "bytes": 4344,
+      "sha256": "b266c2f3124fc5e81671b49f06ba4257d7ec56461b5cde9c7bc4d9a1cc50761d"
+    },
+    "include/mc/core/java/reader.h": {
+      "bytes": 3059,
+      "sha256": "d606f35402ee028d5ea7e5ce12e4c41525b189e5d66b0f44f0e17db0234a8ea9"
+    },
+    "include/mc/client/gui/font_renderer.h": {
+      "bytes": 6943,
+      "sha256": "5cec2bc41e8a9782c6c01f033c3a60ba19104999c4ca494051d431ab33a751ce"
+    },
+    "include/mc/resources/image/image.h": {
+      "bytes": 2891,
+      "sha256": "110d8024394fbb99fb3a769281b28803d6a4b50f9dfac12e3eb7a68a0652c0d8"
+    },
+    "src/platform/time/nanotime.h": {
+      "bytes": 3933,
+      "sha256": "88db116e2f3f6044f3a6d3faac4bf87134ee833a13b5b24bda8260d653e516f7"
+    },
+    "include/mc/world/runtime/entities.h": {
+      "bytes": 5111,
+      "sha256": "bb0517cf7861399a7af9da443369804d22224af5fa465fcf050073e88067df5c"
+    },
+    "include/mc/world/runtime/entity_errors.h": {
+      "bytes": 1976,
+      "sha256": "d5d95b544f211c8f0d3cac36ebde0ede2f3fa06b3b4e5c54085d35b5c8a0bec7"
+    },
+    "include/mc/world/chunk/object.h": {
+      "bytes": 3353,
+      "sha256": "05ec5a4ef2ee0cb0c6b8f9a9d09679cd5c0c5a34ae50a465c8b0f877b0b4313f"
+    },
+    "include/mc/resources/files/files.h": {
+      "bytes": 1174,
+      "sha256": "50b7eac8b11b5a0973838dd09e89ecf0bdf5e0f084dfc32396b1b9d29fce29fa"
+    },
+    "include/mc/client/timer/timer.h": {
+      "bytes": 3077,
+      "sha256": "463426c3e36059e173f4352339538f28bacbfbccc7670efdb9b08248a1b0f1b5"
+    },
+    "include/mc/client/gui/scaled_resolution.h": {
+      "bytes": 1727,
+      "sha256": "8170f5e3611eced070071a7f99abfba45aa24ee3fb0228d374ce95088b41f303"
+    },
+    "src/client/display/display.h": {
+      "bytes": 12134,
+      "sha256": "fc92bc2ca5b7321d2aea6bc971fa0ed438183721e6d195c5f257f32ecfec3b59"
+    },
+    "src/client/application_access.h": {
+      "bytes": 1153,
+      "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
+    },
+    "include/mc/client/settings/game_settings.h": {
+      "bytes": 13882,
+      "sha256": "63019b031ddfe14773b98dc3c6b48edec774eb4c9edb4ec4a263e2f0d748c596"
+    },
+    "include/mc/core/java/writer.h": {
+      "bytes": 7832,
+      "sha256": "82c41fadeb4cd551e4a53e63ffb850cc19f700ba913ec52fc31d5498d9ecba37"
+    },
+    "include/mc/client/gui/achievement_notice.h": {
+      "bytes": 6188,
+      "sha256": "8df61d7ae5db1432d6b7f2fceac2983eced90eb9beb71eafe7f69a07924475c2"
+    },
+    "include/mc/statistics/achievements/achievements.h": {
+      "bytes": 1693,
+      "sha256": "3bf272dcdb0347ced1cf31b34b1ca59dcf8e2d0625e1ba6a53deffa4b7aee88d"
+    },
+    "include/mc/statistics/registry/registry.h": {
+      "bytes": 5705,
+      "sha256": "bcbf7c97ec348d4b6cd4a679c62f064b91f30e3b5b86ac9e1419238d852bc650"
+    },
+    "include/mc/client/render/model.h": {
+      "bytes": 4446,
+      "sha256": "e8f1bd481c71d491fe4b2aee3c5485c135e2c0ba45ec9a47d1cf82bb3eb0a189"
+    },
+    "include/mc/entity/vector/vector.h": {
+      "bytes": 2799,
+      "sha256": "f51b84f8049db8603db2ddece1b9243fbee28285628cac471a3d11f4d3055006"
+    },
+    "src/client/application.h": {
+      "bytes": 573,
+      "sha256": "1af9cc2c4f3b54532440a38c184fd514f1f74af19dd3093f1966b19333aed162"
+    },
+    "src/client/startup/application_lifetime.c": {
+      "bytes": 4206,
+      "sha256": "66ec89ad0297620089860786dc175150e3503754d3bb11f0fd0c16c961e39e8b"
+    },
+    "src/client/startup/application_classes.c": {
+      "bytes": 9215,
+      "sha256": "be3267df885a45dc0a75632b73b4e17f1e3e79b5cb67b87b1e1fd6d05b39d0b0"
+    },
+    "tests/client/startup/test_application_owner.c": {
+      "bytes": 20641,
+      "sha256": "483532d4c6559405fae28d23dfaa277613874ca1650d84bd8d16adc62ac5f15f"
+    },
+    "src/entity/player/strings.c": {
+      "bytes": 4062,
+      "sha256": "5eada78cac15c7c12b22dbe932b0dfdae8fe4d15de526cd7e254160ff2173cd6"
+    },
+    "src/entity/player/player_internal.h": {
+      "bytes": 1857,
+      "sha256": "0555675757288070ccfff4fe9fe9945f5af01cc33791a91a60d7b97d8f895f3a"
+    }
+  },
+  "reference_files": {
+    "tests/reference/client/application_owner/README.md": {
+      "bytes": 3932,
+      "sha256": "83d63c19220a30869cc1a79c9c7ec9ad05b188ed4d12aeadde86be254e2a1db0"
+    },
+    "tests/reference/client/application_owner/source-pins.json": {
+      "bytes": 24090,
+      "sha256": "b12804caaf32f5131a28c44a373c8de2e74b1ab37c223d8e6fa8ff9eea462867"
+    },
+    "tests/reference/client/application_owner/ApplicationOwnerObservation.java": {
+      "bytes": 4771,
+      "sha256": "41b7fe4cdc55be9fcd32e5619389fcc9b882a801155886f1ad07411004449b4e"
+    }
+  },
+  "controller_files": {
+    "tests/reference/client/application_owner/support.py": {
+      "bytes": 3452,
+      "sha256": "74217d499ec39ad7568ad459fa85e27bedc693e5bcf0c68bee21808e33b601e0"
+    },
+    "tests/reference/client/application_owner/run_native.py": {
+      "bytes": 2027,
+      "sha256": "c796529292aeceda9a7d6ac167faddc8a19feb728a3d245fec810f6ed70e4fbc"
+    },
+    "tests/tools/client/test_application_owner_driver.py": {
+      "bytes": 4899,
+      "sha256": "856b1ef3ee6228b9ff21bc318031ec3e4c6edaf01bf3955b5d8e87cf6b5fa67d"
+    }
+  },
+  "shared_helpers": {
+    "tests/reference/client/notice/capture.py": {
+      "bytes": 5247,
+      "sha256": "4355d5e1f253355d239c6938762f05235b47059b4c3e8beb6e8306b4b34381e2"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    }
+  }
+}

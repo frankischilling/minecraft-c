@@ -1,4 +1,4 @@
-#include "mc/client/timer/timer.h"
+#include "timer_internal.h"
 
 #include "mc/core/java/java.h"
 
@@ -9,13 +9,6 @@
 _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128,
                "Timer requires IEEE binary32");
 _Static_assert(DBL_MANT_DIG == 53 && DBL_MAX_EXP == 1024, "Timer requires IEEE binary64");
-
-struct mc_timer {
-    float ticks_per_second, speed, remainder;
-    int32_t ticks;
-    double last_high_seconds, adjustment;
-    int64_t last_wall_millis, last_high_millis, accumulated_wall_millis;
-};
 
 /* Java d2f overflows to infinity, including the half-ulp tie above FLT_MAX.
  * Avoid C17 casts outside the finite float range. Ordinary in-range casts use
@@ -44,7 +37,11 @@ bool mc_timer_create(float ticks_per_second, mc_timer_clock_sample clocks, mc_ti
                         .speed = 1.0f,
                         .adjustment = 1.0,
                         .last_wall_millis = clocks.wall_millis,
-                        .last_high_millis = clocks.nano_time / INT64_C(1000000)};
+                        .last_high_millis = clocks.nano_time / INT64_C(1000000),
+                        .native = {.phase = MC_TIMER_NATIVE_READY,
+                                   .origin = MC_TIMER_ORIGIN_LEGACY_SAMPLES,
+                                   .last_store_pc = -1,
+                                   .failure = {.py_pc = -1}}};
     *out = timer;
     return true;
 }
@@ -54,7 +51,7 @@ void mc_timer_free(mc_timer *timer) {
 }
 
 bool mc_timer_update(mc_timer *timer, mc_timer_clock_sample clocks) {
-    if (timer == NULL)
+    if (timer == NULL || timer->native.phase != MC_TIMER_NATIVE_READY)
         return false;
     const int64_t wall_delta = mc_java_i64_sub(clocks.wall_millis, timer->last_wall_millis);
     const int64_t high_millis = clocks.nano_time / INT64_C(1000000);
@@ -98,21 +95,22 @@ bool mc_timer_update(mc_timer *timer, mc_timer_clock_sample clocks) {
     volatile float remainder = timer->remainder - whole;
     timer->remainder = remainder;
     timer->ticks = ticks > 10 ? 10 : ticks;
+    timer->partial_ticks = timer->remainder; /* Actual py.a() c=e at261. */
     return true;
 }
 
 bool mc_timer_set_speed(mc_timer *timer, float speed) {
-    if (timer == NULL)
+    if (timer == NULL || timer->native.phase != MC_TIMER_NATIVE_READY)
         return false;
     timer->speed = speed;
     return true;
 }
 
 bool mc_timer_view_get(const mc_timer *timer, mc_timer_view *out) {
-    if (timer == NULL || out == NULL)
+    if (timer == NULL || out == NULL || timer->native.phase != MC_TIMER_NATIVE_READY)
         return false;
     *out = (mc_timer_view){.ticks = timer->ticks,
-                           .partial_ticks = timer->remainder,
+                           .partial_ticks = timer->partial_ticks,
                            .ticks_per_second = timer->ticks_per_second,
                            .speed = timer->speed};
     return true;

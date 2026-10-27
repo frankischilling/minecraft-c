@@ -1,9 +1,46 @@
 # Earlier client runtime status
 
-This archived status snapshot predates the combined Lava and LocalPlayer NBT
-integration. Its results and unfinished-work statements retain their original
-checkpoint scope. See [current development status](../status.md) and the
-[testing record](../testing.md) for later results.
+Earlier checkpoint records retain their original result and unfinished-work
+scope. See [current status](../status.md) and [testing](../testing.md) for the
+latest integrated matrix.
+
+## RenderEngine/Biped matrix before ordered Timer and class/worker adoption
+
+The combined RenderEngine, Biped, Lava animation, LocalPlayer NBT, singleplayer
+controller, camera, World Entity update, spawn/reset and weather source passes
+1,151 local CTests: 389 Windows MSVC Debug cases and 381 cases on each Clang18/
+GCC13 Debug build with ASan, UBSan and leak detection. Every preceding
+376/348/348 case remains enabled. None failed, skipped, was disabled or remained
+unrun. Windows adds thirteen Renderer/Biped cases. Each Linux profile adds
+twelve Renderer/Biped cases, twenty full-client public cases and the supported
+original CPU rendering comparison to its earlier headless matrix.
+
+The frozen cohort contains 1,867 files and 1,627 non-Markdown inputs. All 926
+C/header files and the separate shared-model trace include pass clang-format
+18.1.3. Before execution, 292 current source/helper fingerprints and twenty-one
+original class/Code families verify. Source inventories, every configured
+artifact, runtime library, symbol and compiler/link configuration remain
+unchanged. Each Linux profile binds 1,830 product/configuration files and 334
+actual targets, including extensionless executables and all built objects.
+All 281 Windows primary executables retain the default 1 MiB stack reserve.
+Subsequent documentation edits preserve non-Markdown inputs and pinned
+reference text.
+
+All three profiles enable the graphical client, display tests, sound and audio.
+They exercise actual OpenGL startup, title and three World inspection captures.
+Linux uses private authenticated abstract-local Xvfb displays, Mesa llvmpipe
+OpenGL4.5 core, and the real production Display. Both owned servers terminate
+cleanly. Actual recipes instrument all 42 FreeType compilation units and 593
+strict project C17 recipes per Linux compiler. The 833 unmodified FreeType
+source files match the pinned official archive before and after execution.
+
+Separate fresh Windows production-client and headless ALL builds pass with
+BUILD_TESTING disabled and Java/Python package discovery disabled. The headless
+graph excludes font, display and audio dependency targets. The production-client
+mode check disables optional sound/audio; the full matrix independently enables
+both. Hosted public/JDK checks run separately.
+
+## Earlier movement and runtime checkpoint
 
 [LocalPlayer movement](../entity/player-movement.md) and the
 [Entity environment helpers](../entity/environment.md) now use the real World,
