@@ -7,10 +7,10 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
-Published `f3de22d` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40507780546):
+Published `e8fcb3a` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40517903395):
 1,115 public/JDK cases, comprising 363 Windows, 376 GCC and 376 Clang cases.
 All 1,055 preceding cases remain. Every checkout matches the reviewed
-`88016272aeef6f94cc644ac127324c61b2e31324` tree. Formatting covers 1,024 C/header
+`409c8bc698b7ec30f7d9fce08166f78ea4efb3ae` tree. Formatting covers 1,024 C/header
 files with clang-format 18.1.3; controller mirrors and 556 positive/2,011 negative
 lifecycle controls pass on each platform. This matrix excludes supplied-original
 comparisons.
@@ -26,6 +26,25 @@ The Windows source precedes one POSIX-only unused-parameter annotation found by
 Clang; both Linux runs use the corrected source. These are focused owner and
 resource results. The executable still uses the existing menu/inspection startup;
 normal startup adoption, World entry and the playable loop remain unfinished.
+
+## Resource observer source successor
+
+A separate observer producer cohort builds ALL and passes six selected CTests
+plus eleven native-only profiles on MSVC Debug and sanitized Clang 18/GCC 13.
+It retains 774 constructor and 196,715 array/class checks. These finite profiles
+preserve unfinished native frontiers and are separate from a complete local suite.
+
+One retained Windows CPU default attempt now has independently reviewed origin,
+capture, input, source and product admission. All seven supplied-original color
+rows match, including full arrays and cache identity. The initial reader refusal
+remains retained; exact added JDK class proof and a two-pattern log-tag correction
+admit the same captured attempt without rerunning the game. ZIP, cold-static and
+original texture/GL observations remain outside that result.
+
+The later reader, metadata, CI and documentation proposal has pure parser controls
+and read-only admission checks; it has no new native build or hosted matrix.
+Enabling the observer option in CI compiles the probes and runs four public pure
+checks. Supplied-original profiles stay off. See the [resource observation scope](client/render-engine.md#resource-lookup-observations).
 
 ## Preceding local cohort
 

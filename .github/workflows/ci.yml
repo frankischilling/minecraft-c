@@ -75,6 +75,7 @@ jobs:
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
           -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON
           -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
+          -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
       - name: Build
         run: cmake --build build
       - name: Test
@@ -102,6 +103,7 @@ jobs:
           cmake -S . -B build -A x64
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
           -DMC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS=ON
+          -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
       - name: Build
         run: cmake --build build --config Debug --parallel 4
       - name: Test

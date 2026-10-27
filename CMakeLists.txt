@@ -13,6 +13,15 @@ option(MC_ENABLE_RENDER_ENGINE_REFERENCE_TESTS "Compare default-font constructor
 option(MC_ENABLE_RENDER_TEXTURE_REFERENCE_TESTS "Compare image upload with supplied Windows client" OFF)
 option(MC_ENABLE_RENDER_RESOURCES_REFERENCE_TESTS "Run unchanged original ge/nw CPU reference observations" OFF)
 option(MC_ENABLE_CLIENT_LOOKUP_DATA_TESTS "Run genuine Pack/lookup/color authored file profiles" OFF)
+option(MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS "Build genuine full-owner resource observation probes" OFF)
+option(MC_ENABLE_COLOR_LOOKUP_REFERENCE_TESTS "Observe unchanged original CPU color calls" OFF)
+option(MC_ENABLE_TEXTURE_LOOKUP_REFERENCE_TESTS "Observe unchanged original String texture calls on real Display" OFF)
+set(MC_LOOKUP_OBSERVATION_INPUT_DIR "" CACHE PATH "Privately prepared texture/ and color/ real input roots")
+set(MC_LOOKUP_NATIVE_PRODUCT_DIR "" CACHE PATH "Actual color.json and texture.json cohort-artifact maps")
+foreach(role IN ITEMS GAME SDK NESTS RUNTIME)
+    set(MC_LOOKUP_AUTHORITY_${role} "" CACHE FILEPATH "Exact existing original ${role} metadata")
+endforeach()
+set(MC_LOOKUP_NATIVE_ARCHIVE "" CACHE FILEPATH "Authenticated versioned LWJGL native archive")
 set(MC_CLIENT_LOOKUP_FIXTURE_DIR "" CACHE PATH "Prepared texture/ and color/ lookup fixture roots")
 option(MC_ENABLE_SOUND_REFERENCE_TESTS "Compare Vorbis page policy with the supplied client" OFF)
 option(MC_ENABLE_WAV_REFERENCE_TESTS "Compare WAV source policy with the supplied client" OFF)
@@ -690,6 +699,17 @@ option(MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS
     "Run actual null-Applet constructor and real later-owner retirement controls" OFF)
 
 include(CTest)
+if(MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS AND (NOT MC_BUILD_CLIENT OR NOT MC_BUILD_CLIENT_AUDIO OR NOT BUILD_TESTING))
+    message(FATAL_ERROR "Lookup observers require actual client/audio/testing owners")
+endif()
+if(MC_ENABLE_COLOR_LOOKUP_REFERENCE_TESTS OR MC_ENABLE_TEXTURE_LOOKUP_REFERENCE_TESTS)
+    if(NOT MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS)
+        message(FATAL_ERROR "Original lookup observations require their actual native probes")
+    endif()
+endif()
+if(MC_ENABLE_TEXTURE_LOOKUP_REFERENCE_TESTS AND NOT MC_ENABLE_CLIENT_DISPLAY_TESTS)
+    message(FATAL_ERROR "Original texture lookup requires an actual display test profile")
+endif()
 if(MC_ENABLE_CLIENT_LOOKUP_DATA_TESTS)
     if(NOT MC_BUILD_CLIENT OR NOT BUILD_TESTING)
         message(FATAL_ERROR "Lookup data profiles require client/testing targets")
@@ -1246,6 +1266,75 @@ if(BUILD_TESTING)
                 --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-cpu-original")
             set_tests_properties(reference.render_source_cpu PROPERTIES
                 LABELS "local;reference;original;client;ownership" TIMEOUT 420)
+        endif()
+
+        if(MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS)
+            foreach(kind IN ITEMS color texture)
+                add_executable(mc_observe_${kind}_lookup
+                    tests/client/render_engine/observe_${kind}_lookup.c)
+                target_include_directories(mc_observe_${kind}_lookup PRIVATE src src/client src/platform/time)
+                target_link_libraries(mc_observe_${kind}_lookup PRIVATE
+                    mc_client_application_constructor mc_sound_backend mc_client_render_textures
+                    mc_resources mc_c_atomics mc_build_options)
+                set_property(TARGET mc_observe_${kind}_lookup PROPERTY LINKER_LANGUAGE CXX)
+                if(WIN32)
+                    add_custom_command(TARGET mc_observe_${kind}_lookup POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                            "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_observe_${kind}_lookup>")
+                endif()
+            endforeach()
+            foreach(mode IN ITEMS normal optimized)
+                set(_mc_observation_flags -B)
+                if(mode STREQUAL "optimized")
+                    list(APPEND _mc_observation_flags -O)
+                endif()
+                add_test(NAME tools.lookup_observation_${mode} COMMAND Python3::Interpreter
+                    ${_mc_observation_flags}
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/resource_lookup_common/test_protocol.py")
+                set_tests_properties(tools.lookup_observation_${mode} PROPERTIES
+                    LABELS "public;unit;tools;client;ownership" TIMEOUT 120)
+                add_test(NAME tools.lookup_observation_admission_${mode} COMMAND Python3::Interpreter
+                    ${_mc_observation_flags}
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/resource_lookup_common/test_admission.py"
+                    --implementation "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/resource_lookup_common")
+                set_tests_properties(tools.lookup_observation_admission_${mode} PROPERTIES
+                    LABELS "public;unit;tools;client;ownership" TIMEOUT 120)
+            endforeach()
+            unset(_mc_observation_flags)
+            foreach(kind IN ITEMS color texture)
+                if((kind STREQUAL "color" AND MC_ENABLE_COLOR_LOOKUP_REFERENCE_TESTS) OR
+                   (kind STREQUAL "texture" AND MC_ENABLE_TEXTURE_LOOKUP_REFERENCE_TESTS))
+                    set(_mc_lookup_profiles default zip priority frontiers)
+                    if(kind STREQUAL "color")
+                        list(APPEND _mc_lookup_profiles helpers statics first-setter)
+                    endif()
+                    foreach(profile IN LISTS _mc_lookup_profiles)
+                        set(_mc_lookup_directory default)
+                        if(profile STREQUAL "zip")
+                            set(_mc_lookup_directory zip)
+                        endif()
+                        set(_mc_lookup_extra)
+                        if(kind STREQUAL "texture")
+                            list(APPEND _mc_lookup_extra --natives "${MC_REFERENCE_CLIENT_NATIVE_DIR}"
+                                --native-archive "${MC_LOOKUP_NATIVE_ARCHIVE}")
+                        endif()
+                        add_test(NAME reference.${kind}_lookup_${profile} COMMAND Python3::Interpreter -B
+                            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/client/${kind}_lookup/compare.py"
+                            --root "${CMAKE_CURRENT_SOURCE_DIR}"
+                            --resources "${MC_LOOKUP_OBSERVATION_INPUT_DIR}/${kind}/resources"
+                            --directory "${MC_LOOKUP_OBSERVATION_INPUT_DIR}/${kind}/${_mc_lookup_directory}"
+                            --profile "${profile}" --native "$<TARGET_FILE:mc_observe_${kind}_lookup>"
+                            --native-products "${MC_LOOKUP_NATIVE_PRODUCT_DIR}/${kind}.json"
+                            --native-products-gate "${MC_LOOKUP_NATIVE_PRODUCT_DIR}/${kind}-gate.json"
+                            --authority-game "${MC_LOOKUP_AUTHORITY_GAME}" --authority-sdk "${MC_LOOKUP_AUTHORITY_SDK}"
+                            --authority-nests "${MC_LOOKUP_AUTHORITY_NESTS}" --authority-runtime "${MC_LOOKUP_AUTHORITY_RUNTIME}"
+                            ${_mc_lookup_extra}
+                            --output "${CMAKE_CURRENT_BINARY_DIR}/reference-${kind}-lookup-${profile}")
+                        set_tests_properties(reference.${kind}_lookup_${profile} PROPERTIES
+                            LABELS "local;reference;original;client;ownership" TIMEOUT 900)
+                    endforeach()
+                endif()
+            endforeach()
         endif()
 
         add_executable(mc_test_color_arrays tests/client/render_engine/test_color_arrays.c)

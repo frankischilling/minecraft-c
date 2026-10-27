@@ -85,11 +85,35 @@ match 4,096 ARGB pixels and ten glyph metrics on each host; ten original GL rows
 match on Windows. Actual source, configured products and official FreeType
 sources remain unchanged. Separate production/headless build-mode checks pass.
 
+## Resource lookup observations
+
+The selected-Pack String lookup and CPU color-array owners use the actual b/c
+Maps and shared ImageIO input path. Their supported Default/ZIP/cache/missing
+paths retain source order, array identity and failed prefixes. Native stop points
+for strip conversion, diagnostic continuation, unsupported providers, GL_CLAMP
+and mipmaps remain explicit; none becomes a completed lower call.
+
+A retained producer cohort passes ALL, six selected CTests and eleven native-only
+profiles on MSVC Debug and sanitized Clang 18/GCC 13. The later Python publication
+policy has separate normal/-O parser controls. One retained Windows JDK17 CPU
+default attempt has independently verified read-only admission and matches seven
+original rows, including whole arrays and cache identity. Its original failed
+reader report remains retained. Added exact JDK class/nest proof and the narrow
+library-tag correction change admission only; they are not new producer code.
+Original ZIP, private getRGB, cold-static and texture/GL scope remains separate.
+
+`MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON` compiles the two probes and adds four pure
+public Python tests. The CI proposal enables it on Windows and Linux without
+turning on supplied-original options or adding private resources. This later
+source/workflow/provenance proposal has no new native or hosted qualification.
+The [observer README](../../tests/reference/client/resource_lookup_common/README.md)
+records capture, actual-origin and producer/policy boundaries.
+
 ## Remaining source boundary
 
 There is no App.p publication or normal bootstrap adoption in this component.
-Actual selected-pack/String/ImageIO lookup, FontRenderer, effects registration
-and update/subimage upload remain separate operations. The mipmap path stops
+Startup adoption of the selected-pack/String/ImageIO and FontRenderer owners,
+effects registration and update/subimage upload remain separate work. The mipmap path stops
 at its first unimplemented body after level zero; source GL_CLAMP stops at its
 first incompatible parameter instead of silently becoming CLAMP_TO_EDGE.
 Dynamic textures, source ge cleanup and full scene rendering remain unfinished.

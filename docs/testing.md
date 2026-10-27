@@ -4,11 +4,11 @@
 
 ## Current client runtime integration
 
-Published `f3de22d` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40507780546).
+Published `e8fcb3a` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40517903395).
 The audited logs contain all 1,115 Start/Passed pairs: 363 Windows, 376 GCC and
 376 Clang cases. All 1,055 preceding cases remain. All four actual checkouts
-use `e1fd9a7bb7ffaf59b2945e13c3bc2552c9be4870`, whose complete tree is
-`88016272aeef6f94cc644ac127324c61b2e31324`, equal to the published code tree.
+use `7a1662b5d6df480cd9929bcb50c6c5c74cf2cc3b`, whose complete tree is
+`409c8bc698b7ec30f7d9fce08166f78ea4efb3ae`, equal to the published code tree.
 Formatting covers 1,024 C/header files. Controller mirrors and 556 positive/
 2,011 negative lifecycle controls pass on every compiler platform.
 
@@ -17,7 +17,7 @@ filesystem fixtures, color-array owners, SoundManager construction, loading
 state, source rendering and ZIP controls. Linux also runs the font, floating-point
 and later-owner graphics cases. These are public/native and JDK checks; the
 supplied-original profiles remain opt-in with their recorded local scope.
-The new String/color supplied-client observations remain unqualified.
+The later resource-observer result is recorded separately below.
 
 The startup/resource increment has separate focused local qualification: 48
 logical checks per compiler, comprising 47 CTests and the direct later-owner
@@ -31,6 +31,39 @@ The preceding published `4a6b805` [hosted checkpoint](https://github.com/frankis
 passed 1,055 public/JDK cases: 345 Windows and 355 per Linux compiler. All four
 checkout trees matched `c3c7e45cb8b9b94d86078cea1dd8ac41289c0315`; its formatting
 scope was 936 C/header files. The current hosted run retains every one of those cases.
+
+## Resource observer producer and later admission policy
+
+The retained y producer snapshot has fresh Windows MSVC Debug, Clang 18 and
+GCC 13 ALL builds. Each compiler passes six selected CTests and eleven fresh
+native-only observations: seven color profiles and four real-Display texture
+profiles. Clang/GCC use ASan, UBSan and leak detection; Windows executables keep
+the default 1 MiB/4 KiB stack. Source, concrete inputs and complete configured
+product maps remain unchanged through those runs. This is not a full local suite.
+
+One actual Windows JDK17 CPU default attempt is separately admitted read-only
+against the unchanged native producer. The seven water/cache/grass/foliage/
+missing/clamp/blur rows match complete arrays, cache identity and selected state.
+Independent review rechecks the actual original capture and helper/Code origins,
+all 31 hosted JDK origins, source/input pins and closed native product gate.
+The initial failed report remains a failure. Six byte-proved JDK class additions
+and exact unpadded/three-space library tags resolve the reader's missing proof
+and transport refusal; they do not rerun or replace the original producer.
+
+The publication source map and Python/metadata policy are later changes. Their
+normal/-O public parser controls pass without a JDK, JAR or private logs; the
+read-only default admission preserves the old producer and new policy roles.
+This later source proposal has not received a native build or hosted matrix.
+Only the current observer package's own provenance is rebound; prior producer,
+helper-compilation, failed-attempt and successful-review receipts stay immutable.
+
+The proposed CI flag `MC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON` compiles both probes
+and registers four public tests: `tools.lookup_observation_normal`,
+`tools.lookup_observation_optimized`, `tools.lookup_observation_admission_normal`
+and `tools.lookup_observation_admission_optimized`. It does not enable supplied
+originals or require private assets. Existing public JDK checks stay enabled.
+No original ZIP/static/GL, normal startup, World entry or gameplay result is
+claimed. See [resource lookup observations](client/render-engine.md#resource-lookup-observations).
 
 ## Preceding combined local cohort
 
