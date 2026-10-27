@@ -4,36 +4,66 @@
 
 ## Current client runtime integration
 
-The combined ordered Timer, Minecraft class/worker, RenderEngine, Biped and
-World/Player source passes 1,163 local CTests: 393 Windows MSVC Debug cases and
+Published `f3de22d` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40507780546).
+The audited logs contain all 1,115 Start/Passed pairs: 363 Windows, 376 GCC and
+376 Clang cases. All 1,055 preceding cases remain. All four actual checkouts
+use `e1fd9a7bb7ffaf59b2945e13c3bc2552c9be4870`, whose complete tree is
+`88016272aeef6f94cc644ac127324c61b2e31324`, equal to the published code tree.
+Formatting covers 1,024 C/header files. Controller mirrors and 556 positive/
+2,011 negative lifecycle controls pass on every compiler platform.
+
+New hosted cases cover the standalone null-Applet constructor with authored
+filesystem fixtures, color-array owners, SoundManager construction, loading
+state, source rendering and ZIP controls. Linux also runs the font, floating-point
+and later-owner graphics cases. These are public/native and JDK checks; the
+supplied-original profiles remain opt-in with their recorded local scope.
+The new String/color supplied-client observations remain unqualified.
+
+The startup/resource increment has separate focused local qualification: 48
+logical checks per compiler, comprising 47 CTests and the direct later-owner
+regression. Each passes 774 constructor checks and 196,715 array/class checks.
+The Linux profiles use ASan, UBSan and leak detection. Windows precedes the
+POSIX-only unused-parameter annotation; both Linux profiles use that correction.
+This selected scope is not a new complete local suite or an original-game run.
+Normal startup adoption, physical input, World entry and gameplay remain unfinished.
+
+The preceding published `4a6b805` [hosted checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40464703757)
+passed 1,055 public/JDK cases: 345 Windows and 355 per Linux compiler. All four
+checkout trees matched `c3c7e45cb8b9b94d86078cea1dd8ac41289c0315`; its formatting
+scope was 936 C/header files. The current hosted run retains every one of those cases.
+
+## Preceding combined local cohort
+
+The preceding ordered Timer, Minecraft class/worker, RenderEngine, Biped and
+World/Player cohort passed 1,163 local CTests: 393 Windows MSVC Debug cases and
 385 cases on each Clang18/GCC13 Debug build with ASan, UBSan and leak detection.
-Every preceding 389/381/381 case remains enabled. None failed, skipped, was
+Every preceding 389/381/381 case remained enabled. None failed, skipped, was
 disabled or remained unrun. Four new public cases per compiler cover ordered
 Timer construction and native application-owner contracts/driver controls.
 
-The frozen cohort contains 1,885 files and 1,643 non-Markdown inputs. All 936
-C/header files and the separate shared-model trace include pass clang-format
+The frozen cohort contained 1,885 files and 1,643 non-Markdown inputs. All 936
+C/header files and the separate shared-model trace include file passed clang-format
 18.1.3. Before execution, 388 current source/helper fingerprints and twenty-three
-original class/Code families verify. Source, configured artifacts, runtime
-libraries, symbols and compiler/link configuration remain unchanged. Each Linux
-profile binds 1,844 product/configuration files and 338 targets, including actual
+original class/Code families verified. Source, configured artifacts, runtime
+libraries, symbols and compiler/link configuration remained unchanged. Each Linux
+profile bound 1,844 product/configuration files and 338 targets, including actual
 extensionless executables and built objects. All 283 Windows primary executables
-retain their default 1 MiB stack. Subsequent documentation updates preserve
+retained their default 1 MiB stack. Subsequent documentation updates preserve
 non-Markdown inputs and pinned reference text.
 
-All three profiles enable the graphical client, display tests, sound and audio.
-They exercise real OpenGL startup, title and World inspection. Each Linux
-compiler also closes separate imported-resource title and fresh seed23 captures.
+All three profiles enabled the graphical client, display tests, sound and audio.
+They exercised real OpenGL startup, title and World inspection. Each Linux
+compiler also closed separate imported-resource title and fresh seed23 captures.
 Four authenticated abstract-local Xvfb servers terminate cleanly. Actual Display
 identity is Mesa llvmpipe OpenGL4.5 core. Compilation recipes instrument all 42
 FreeType units and 599 strict project C17 units per Linux compiler. The 833
 FreeType source files match the pinned official archive before and after use.
 
-Fresh Windows production-client and headless ALL builds also pass with tests
+Fresh Windows production-client and headless ALL builds also passed with tests
 and Java/Python package discovery disabled. The headless graph excludes font,
 display and audio dependency targets. Its production-client companion disables
 optional sound/audio; the complete test matrix independently enables both.
-Hosted public/JDK checks remain a separate gate.
+Those local checks are separate from both hosted checkpoints above.
 
 Independent readback verifies 230 ordinary and 256 allocation checks for the
 singleplayer controller on each compiler. Each native target matches twenty
@@ -42,11 +72,11 @@ the public wrapper; Linux native comparisons retain their Windows-original
 observation scope. The existing World Entity, weather, spawn/reset and camera
 capture audits also pass without changing their declared scenarios.
 
-Each combined compiler product passes 132,659 Lava checks. Fresh unchanged-original
+Each preceding combined compiler product passes 132,659 Lava checks. Fresh unchanged-original
 CPU execution on Windows and Linux matches all 348 array, RGBA and Math records
 across 23 cases and 31 animation calls. This exercises the CPU constructor and
-animation body; application publication, texture registration and GPU upload
-remain unfinished.
+animation body; that profile did not include application publication, texture
+registration or GPU upload.
 
 LocalPlayer NBT passes 490 checks, coordinate ownership passes 110, the selected
 diagnostic union passes nine and World Player publication passes 169. A fresh
@@ -65,7 +95,7 @@ supported operations and remaining descendants.
 
 ## Ordered Timer and Minecraft class/worker integration
 
-The same combined products pass 1,267 Timer-constructor checks, preserving the
+The preceding combined local products pass 1,267 Timer-constructor checks, preserving the
 existing supplied-clock API and arithmetic regression. Actual render partial
 `c` remains distinct from accumulator `e`. Source wall25/g28 precedes native
 nanotime32/h39, including its late floating-point prerequisite. A failed
@@ -123,9 +153,10 @@ copy time, another expected an old combined phase list. Both now read the actual
 terminal phase receipts. No source, native capture, original record or game
 field was rewritten to make an audit pass.
 
-App.p/App.x publication, normal bootstrap, model animation and gameplay remain
-unfinished. These finite methods and actual frontend scenes do not establish a
-connected playable session.
+Those local suites did not cover App.p/App.x publication or normal bootstrap.
+The later standalone-constructor checks include App.x publication; App.p adoption,
+normal bootstrap, model animation and gameplay remain unfinished. These finite
+methods and actual frontend scenes do not establish a connected playable session.
 
 ## Lava animation and LocalPlayer NBT integration
 

@@ -7,30 +7,38 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
+Published `f3de22d` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40507780546):
+1,115 public/JDK cases, comprising 363 Windows, 376 GCC and 376 Clang cases.
+All 1,055 preceding cases remain. Every checkout matches the reviewed
+`88016272aeef6f94cc644ac127324c61b2e31324` tree. Formatting covers 1,024 C/header
+files with clang-format 18.1.3; controller mirrors and 556 positive/2,011 negative
+lifecycle controls pass on each platform. This matrix excludes supplied-original
+comparisons.
+
 The new startup/resource owner graph includes the standalone Minecraft
 constructor, bitmap fonts, SoundManager construction, selected texture packs,
-shared image loading, texture lookups and mutable color arrays. Its focused
-Windows validation passes 48 logical checks: 47 CTests and the direct later-owner
-regression. Clang 18 and GCC 13 pass the same focused scope with ASan, UBSan and
-leak detection. Each passes 774 constructor checks and 196,715 array/class checks.
-All 1,024 C/header files pass clang-format 18.1.3.
+shared image loading, texture lookups and mutable color arrays. Separate focused
+local validation passes 48 logical checks per compiler: 47 CTests and the direct
+later-owner regression. Each passes 774 constructor checks and 196,715 array/class
+checks; Clang 18 and GCC 13 use ASan, UBSan and leak detection.
 
 The Windows source precedes one POSIX-only unused-parameter annotation found by
 Clang; both Linux runs use the corrected source. These are focused owner and
 resource results. The executable still uses the existing menu/inspection startup;
 normal startup adoption, World entry and the playable loop remain unfinished.
-The new combined source has not completed a full hosted matrix.
 
-The preceding combined Timer, Minecraft class/worker, RenderEngine, Biped and World/Player
-source passes 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on
+## Preceding local cohort
+
+The preceding Timer, Minecraft class/worker, RenderEngine, Biped and World/Player
+cohort passed 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on
 each Clang 18/GCC 13 Debug build with ASan, UBSan and leak detection. Every
-preceding 389/381/381 case remains enabled. None failed, skipped, was disabled
-or remained unrun. All three profiles exercise real OpenGL startup, title and
+preceding 389/381/381 case remained enabled. None failed, skipped, was disabled
+or remained unrun. All three profiles exercised real OpenGL startup, title and
 fixed-camera World inspection.
 
-The tested cohort contains 1,885 files and 1,643 non-Markdown inputs. All 936
-C/header files pass clang-format 18.1.3. Source and configured products remain
-unchanged through execution; all 283 Windows executables keep their default
+The tested cohort contained 1,885 files and 1,643 non-Markdown inputs. All 936
+C/header files passed clang-format 18.1.3. Source and configured products remained
+unchanged through execution; all 283 Windows executables kept their default
 1 MiB stack. Documentation updates preserve non-Markdown inputs and pinned
 reference text.
 
@@ -59,8 +67,8 @@ including 33 tag nodes. Full wake remains unfinished.
 
 [Lava CPU animation](../tests/reference/client/lava_animation/README.md) passes
 132,659 checks per compiler. Fresh Windows and Linux original CPU runs match all
-348 records across 23 cases and 31 calls. Application publication, texture
-registration and GPU upload remain unfinished.
+348 records across 23 cases and 31 calls. That isolated profile did not include
+application publication, texture registration or GPU upload.
 
 The [singleplayer controller](client/singleplayer-controller.md),
 [camera methods](client/first-person.md),
@@ -70,6 +78,10 @@ The [singleplayer controller](client/singleplayer-controller.md),
 comparisons in this combined matrix. These are finite method/owner results.
 They do not establish a connected playable session. Full evidence and
 reproduction options are in the [testing record](testing.md#current-public-runtime-integration).
+
+The preceding published `4a6b805` [hosted checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40464703757)
+passed 1,055 public/JDK cases: 345 Windows and 355 per Linux compiler. Its hosted
+scope and the 1,163-case local cohort remain separate from the current results.
 
 ## First playable singleplayer session
 

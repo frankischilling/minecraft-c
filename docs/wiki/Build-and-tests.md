@@ -1,12 +1,23 @@
 # Build and tests
 
-The combined Timer, Minecraft class/worker, rendering and World/Player source
-passes 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on each
+Published `f3de22d` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40507780546):
+1,115 public/JDK cases, with 363 Windows and 376 per Linux compiler. All 1,055
+preceding cases remain. The four checkout trees match
+`88016272aeef6f94cc644ac127324c61b2e31324`. Formatting covers 1,024 C/header
+files; controller mirrors and 556 positive/2,011 negative lifecycle controls
+pass per platform. Supplied-original comparisons retain their separate scope.
+
+The startup/resource owners also pass 48 focused local cases per compiler,
+including 774 constructor checks and 196,715 array/class checks. This selected
+local run is separate from the complete hosted public/JDK matrix.
+
+The preceding 1,885-file Timer, Minecraft class/worker, rendering and World/Player
+cohort passed 1,163 local CTests: 393 Windows MSVC Debug cases and 385 cases on each
 sanitized Clang/GCC Debug build with leak detection. Every preceding 389/381/381
-case remains enabled, with no skip or failure. All profiles exercise real
-OpenGL startup, title and World inspection. Formatting passes for 936 C/header
-files; the tested cohort contains 1,885 files and 1,643 non-Markdown inputs.
-Source and all products remain unchanged; all 283 Windows executables retain
+case remained enabled, with no skip or failure. All profiles exercised real
+OpenGL startup, title and World inspection. Formatting passed for 936 C/header
+files; that cohort had 1,643 non-Markdown inputs.
+Source and all products remained unchanged; all 283 Windows executables retained
 their default 1 MiB stack. Documentation updates preserve pinned inputs.
 
 The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) separates the complete matrix from
@@ -14,6 +25,7 @@ individual operation profiles:
 
 | Operation | Scoped evidence |
 | --- | --- |
+| Standalone App and array owners | 774 constructor and 196,715 array/class checks per compiler in the focused local scope; public constructor/array controls also run in hosted CI |
 | Ordered Timer | 1,267 constructor checks per compiler, existing arithmetic/clock controls; separate original eight-rate/ten-field qualification |
 | Minecraft class and kg worker | 225 native checks and 70 normal/optimized controls per compiler; five original class/worker projections on prepared receivers, no instance-constructor claim |
 | RenderEngine | 8,333 CPU/223 device/55 separate trace checks; 19 normal/optimized controls; fresh original 4,096-pixel/ten-glyph comparisons on both hosts and ten original GL rows on Windows |
@@ -39,16 +51,15 @@ World gameplay loop, fog, normal RenderEngine startup, drawing or a playable
 client. See [active Player ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-active-tick.md),
 [pickup/effects](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) and [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md).
 
-Published `4a6b805`
+The preceding published `4a6b805`
 [hosted validation](https://github.com/frankischilling/minecraft-c/actions/runs/40464703757)
 passed all four jobs and 1,055 public/JDK cases: 345 Windows and 355 per Linux
 compiler. All 1,043 preceding cases remained. All four checkout trees matched
 the reviewed `c3c7e45cb8b9b94d86078cea1dd8ac41289c0315` tree. Formatting checks
 936 C/header files, controller mirrors and 556 positive/2,011 negative lifecycle
-controls passed per platform. Original-archive comparisons retain their local
-scope. The later startup/resource owner increment has separate
-[focused local validation](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md);
-it has no new hosted result yet.
+controls passed per platform. Its original-archive comparisons retain their local
+scope. Current owner and gameplay limits are in
+[development status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md).
 
 CI runs two CTests concurrently and allows four parallel Windows build jobs.
 At `4a6b805`, both Linux jobs restored 11,318,434 cache bytes and downloaded no

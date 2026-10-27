@@ -7,9 +7,10 @@ or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 draws imported resources. A separate fixed-camera inspection renders generated
-terrain. The combined Timer, Minecraft class/worker and rendering source passes
-1,163 local tests: 393 Windows and 385 per sanitized Linux compiler. All three profiles exercise
-real graphical startup and fixed-camera World inspection.
+terrain. Published `f3de22d` passes 1,115 hosted public/JDK tests: 363 Windows
+and 376 per Linux compiler. Startup/resource owners also pass separate focused
+local checks. [Build and tests](Build-and-tests) records their scope and the
+preceding 1,163-case local graphical/World-inspection cohort.
 
 [LocalPlayer NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 now reaches actual Inventory hooks, first-Player metadata saving and saved
