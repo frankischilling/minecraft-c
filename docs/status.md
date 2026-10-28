@@ -7,6 +7,14 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
+The corrected `bd8d7f1` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40635329070)
+passes Windows and formatting. Each Linux compiler passes 413 of 414 cases.
+The remaining Font test omitted terminal lookup-metadata cleanup and correctly
+received BUSY from final Engine release. The test now invokes that existing
+cleanup API; a focused Clang/GCC run passes all 625 checks with empty sanitizer
+stderr. No production Font or GPU behavior changed. Current input preflight
+now runs before native configuration; full native tests remain enabled.
+
 Checkpoint `cd346b0` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40632949338).
 Both Linux builds complete and each passes 406 of 414 cases. Eight cases reject
 stale current-source bindings in the App owner, Biped and source-rendering

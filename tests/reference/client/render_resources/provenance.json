@@ -322,12 +322,12 @@
       "sha256": "482e06e3d1da41359235f5c973a500a3a5340afd3355b21b83830cab05c29626"
     },
     "tests/client/render_engine/test_source_font.c": {
-      "bytes": 22373,
-      "sha256": "4243fbe8ee1a12e5ffd0aff052f66d9059c6c64aab3c004f5bc2c875582ab110"
+      "bytes": 22965,
+      "sha256": "a64d4a0a890e17ca394ccb6461d0bd07b90258da4491f62666c4dbb2a693af1d"
     },
     "tests/reference/client/render_resources/capture.py": {
-      "bytes": 3027,
-      "sha256": "ace8a633841733b9d1befc3d7e06307aa5c398d100c4f7208b3f657874985cd5"
+      "bytes": 3469,
+      "sha256": "52144546c7485b39a7e2414b442003a06a5e4f8c3ef189bc263b3adfa212a941"
     },
     "tests/reference/client/render_resources/compare.py": {
       "bytes": 8578,
@@ -918,5 +918,21 @@
       }
     }
   },
-  "source_suppliers_role": "Historical package ancestry of the earlier selected inputs; these labels do not assert that the current source_files bytes were compiled or observed in those packages. Newly included project headers/fragments belong to the current admission closure."
+  "source_suppliers_role": "Historical package ancestry of the earlier selected inputs; these labels do not assert that the current source_files bytes were compiled or observed in those packages. Newly included project headers/fragments belong to the current admission closure.",
+  "current_binding_updates": [
+    {
+      "from_commit": "bd8d7f1cbc889dbb352fe24e3c38f6e86cad9e67",
+      "role": "Test-owned terminal lookup metadata cleanup and bounded failure diagnostics; production runtime unchanged. Historical input hashes remain below.",
+      "previous": {
+        "tests/client/render_engine/test_source_font.c": {
+          "bytes": 22373,
+          "sha256": "4243fbe8ee1a12e5ffd0aff052f66d9059c6c64aab3c004f5bc2c875582ab110"
+        },
+        "tests/reference/client/render_resources/capture.py": {
+          "bytes": 3027,
+          "sha256": "ace8a633841733b9d1befc3d7e06307aa5c398d100c4f7208b3f657874985cd5"
+        }
+      }
+    }
+  ]
 }

@@ -3514,8 +3514,8 @@
       "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
     },
     "tests/client/render_engine/test_source_font.c": {
-      "bytes": 22373,
-      "sha256": "4243fbe8ee1a12e5ffd0aff052f66d9059c6c64aab3c004f5bc2c875582ab110"
+      "bytes": 22965,
+      "sha256": "a64d4a0a890e17ca394ccb6461d0bd07b90258da4491f62666c4dbb2a693af1d"
     },
     "tests/client/render_engine/test_source_fp.c": {
       "bytes": 10879,

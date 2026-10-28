@@ -47,6 +47,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Validate current source bindings
+        run: python -B scripts/development/check_source_bindings.py
       - name: Select dependency download cache
         id: apt-cache
         run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
@@ -99,6 +101,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Validate current source bindings
+        run: python -B scripts/development/check_source_bindings.py
       - name: Configure
         run: >-
           cmake -S . -B build -A x64

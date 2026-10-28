@@ -38,6 +38,17 @@ scope was 936 C/header files. The `37dc83f` hosted run retains every one of thos
 
 ## Normal startup owner qualification
 
+The corrected `bd8d7f1` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40635329070)
+passes Windows and formatting, and each Linux compiler passes 413 of 414 cases.
+The Font child now executes but stops at its final Engine release assertion:
+the test retained lookup policy metadata after retiring its pending call.
+Its BUSY refusal is correct. Explicit terminal metadata cleanup fixes the test;
+all 625 checks and eleven ordered rows pass on Clang/GCC with empty ASan/UBSan/
+leak output. The original failed executable, assertion and leak report remain
+retained. Production Font/Engine behavior is unchanged. Capture rejection now
+includes bounded stdout/stderr tails from the same process. A current-input
+preflight precedes native configuration in CI and leaves the full suite enabled.
+
 The later `cd346b0` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40632949338)
 builds both Linux clients. Each compiler passes 406 of 414 cases; the eight
 failures are current-source binding checks in App-owner, Biped and source

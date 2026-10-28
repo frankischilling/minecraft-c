@@ -43,7 +43,14 @@ def native(executable, arguments, work, root, mode):
     binary = fingerprint(executable)
     command = [str(executable), *map(str, arguments)]
     result = owner(root)(command, work, "native", timeout=180)
-    completed(result.capture_report, result.stdout, result.stderr, executable)
+    try:
+        completed(result.capture_report, result.stdout, result.stderr, executable)
+    except ValueError as error:
+        # Keep admission strict while exposing bounded diagnostics from the
+        # already captured child; never rerun a failed process for its output.
+        stdout = result.stdout[-8192:].decode("utf-8", errors="replace")
+        stderr = result.stderr[-8192:].decode("utf-8", errors="replace")
+        raise ValueError(f"{error}\nstdout tail:\n{stdout}\nstderr tail:\n{stderr}") from error
     require(result.capture_report["command"] == command, "exact native arguments")
     parsed = cpu_rows(result.stdout) if mode == "cpu" else font_rows(result.stdout)
     require(source_inventory(root) == before, "source unchanged through real child")

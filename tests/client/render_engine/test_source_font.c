@@ -360,6 +360,10 @@ int main(int argc, char **argv) {
             display->source.texture_lease_count == 0);
     REQUIRE(mc_client_loading_classes_release(gui) == MC_CLIENT_LOADING_OK);
     gui = NULL;
+    REQUIRE(engine->holds == 1 && engine->lookup != NULL &&
+            !mc_client_texture_lookup_pending(engine));
+    REQUIRE(mc_client_render_engine_release(engine) == MC_CLIENT_RENDER_ENGINE_BUSY);
+    REQUIRE(mc_client_texture_lookup_free_metadata(engine) && engine->lookup == NULL);
     REQUIRE(mc_client_render_engine_release(engine) == MC_CLIENT_RENDER_ENGINE_OK);
     engine = NULL;
     REQUIRE(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
@@ -398,8 +402,13 @@ done:
         (void)mc_client_bitmap_font_release(&failed, error);
     if (ready != NULL)
         (void)mc_client_bitmap_font_release(&ready, error);
+    bool resources_retired = classes == NULL;
     if (classes != NULL)
-        (void)mc_client_render_engine_retire_resources(classes, &texture_error);
+        resources_retired = mc_client_render_engine_retire_resources(classes, &texture_error) ==
+                            MC_CLIENT_RENDER_TEXTURE_OK;
+    if (engine != NULL && ready == NULL && failed == NULL && other == NULL && alias == NULL &&
+        resources_retired)
+        (void)mc_client_texture_lookup_free_metadata(engine);
     if (gui != NULL)
         (void)mc_client_loading_classes_release(gui);
     if (engine != NULL)

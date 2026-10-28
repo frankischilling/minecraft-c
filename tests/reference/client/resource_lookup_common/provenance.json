@@ -10,8 +10,8 @@
       "sha256": "c060aa90caaf23a3309a36249ba727d64b2db36788028345cd453a8221348c5c"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 4585,
-      "sha256": "95d069d7c109b7c997b28dab0e130cf919f7f893550ff1edc88b08c72ec56218"
+      "bytes": 4815,
+      "sha256": "fc78e8e3467bb1789152e51cbb76bcdad343e6b59fb5881ba340c9d2376ee6eb"
     },
     ".gitignore": {
       "bytes": 282,
@@ -666,8 +666,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 10730,
-      "sha256": "bdc97fc58975a0bb9c6fa4a6e4dd3fead1b15d5923610584545aaec89f0a47a0"
+      "bytes": 11300,
+      "sha256": "7eb8452c40ef35dde0691d9fa716a61b64f82a9c71e096da05f11ccea3043a72"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -690,8 +690,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 217318,
-      "sha256": "9d8928b24ae3dd90d5fde69ed9348575a02ec107e4b5d459d4ccaa916201eaa4"
+      "bytes": 218133,
+      "sha256": "92378a6d131af82f8f01b5e58e62a40a3db9ebb26a33f8100b77a503daa56679"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 10192,
@@ -1840,6 +1840,10 @@
     "licenses/zlib.txt": {
       "bytes": 1002,
       "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+    },
+    "scripts/development/check_source_bindings.py": {
+      "bytes": 2585,
+      "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
       "bytes": 2847,
@@ -4970,8 +4974,8 @@
       "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
     },
     "tests/client/render_engine/test_source_font.c": {
-      "bytes": 22373,
-      "sha256": "4243fbe8ee1a12e5ffd0aff052f66d9059c6c64aab3c004f5bc2c875582ab110"
+      "bytes": 22965,
+      "sha256": "a64d4a0a890e17ca394ccb6461d0bd07b90258da4491f62666c4dbb2a693af1d"
     },
     "tests/client/render_engine/test_source_fp.c": {
       "bytes": 10879,
@@ -5871,7 +5875,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 188266,
-      "sha256": "b3dff621b03bdbcadab7870f8a31170a0261253f6daa1b97ed3bada1b6b27e12"
+      "sha256": "6c829b7e943e355a165bc8c3909b3f17d65c7918ed1d7b1d81f434c25f6e0aad"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -5990,8 +5994,8 @@
       "sha256": "f8b4dc8e532a0619c64b36b9b729d6cc4427557b00068c1bf79726d8ad2043a9"
     },
     "tests/reference/client/render_resources/capture.py": {
-      "bytes": 3027,
-      "sha256": "ace8a633841733b9d1befc3d7e06307aa5c398d100c4f7208b3f657874985cd5"
+      "bytes": 3469,
+      "sha256": "52144546c7485b39a7e2414b442003a06a5e4f8c3ef189bc263b3adfa212a941"
     },
     "tests/reference/client/render_resources/compare.py": {
       "bytes": 8578,
@@ -6002,8 +6006,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 39375,
-      "sha256": "8825b37408e525988cb4450a6870c9eb952cc42a31af57c791c8c20d85e27221"
+      "bytes": 40047,
+      "sha256": "e0e70b8730b45e36a0a28751fa42f02c33450cfb183f8193b7ced4559f9530e3"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
