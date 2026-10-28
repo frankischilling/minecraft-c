@@ -108,7 +108,11 @@ int main(int argc, char **argv) {
     CHECK(clear_calls == 1 && stage == MC_CLIENT_LOADING_PROJECTION_ORTHO &&
           !display->source.loading_ready);
     CHECK((clear_controls & 0xffc0u) == (callback_controls & 0xffc0u));
-    CHECK(memcmp(projection, display->source.projection, sizeof projection) == 0 &&
+    /* Actual mk102/105 select PROJECTION and load identity before glOrtho126. */
+    const float identity[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    CHECK(memcmp(identity, display->source.projection, sizeof identity) == 0 &&
+          memcmp(projection, display->source.projection, sizeof projection) != 0 &&
+          display->source.matrix_mode == GL_PROJECTION &&
           memcmp(&modelview, &display->source.modelview, sizeof modelview) == 0);
     CHECK(display->exact_width == 64 && display->exact_height == 64 &&
           display->source.active_calls == 0);

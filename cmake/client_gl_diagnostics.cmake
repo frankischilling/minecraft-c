@@ -7,3 +7,10 @@ if(TARGET mc_client_display)
     target_link_libraries(mc_client_gl_diagnostics PUBLIC mc_client_display mc_core
         PRIVATE mc_build_options)
 endif()
+
+if(TARGET mc_client_gl_diagnostics)
+    target_sources(mc_client_gl_diagnostics PRIVATE
+        src/client/startup/diagnostic_builder.c
+        src/client/startup/application_gl_output.c)
+    target_link_libraries(mc_client_gl_diagnostics PUBLIC mc_simulation)
+endif()

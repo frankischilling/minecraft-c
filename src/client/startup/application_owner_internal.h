@@ -4,6 +4,7 @@
 #include "../application_state.h"
 #include "application_owner.h"
 #include "mc/client/statistics/writer.h"
+#include "mc/core/java/print_stream.h"
 #include "mc/world/storage/java_file.h"
 
 #include <stdatomic.h>
@@ -32,6 +33,12 @@ struct mc_client_application_classes {
     mc_java_file_error file_retirement;
     mc_client_stats_classes *startup_stats_classes; /* SAME outer xi literal namespace. */
     mc_client_stats_error stats_retirement;
+    /* One selected System-output bootstrap per actual native class namespace.
+     * This is a native service association, never Minecraft's source clinit. */
+    mc_java_system_output *system_output;
+    bool system_output_attempted;
+    mc_java_print_error system_output_failure, output_retirement;
+    mc_player_string *startup_gl_labels[2]; /* Actual MC ldc395 and ldc464. */
     mc_player_string *startup_title;
     mc_player_string *startup_font_resource; /* Lazy actual MC ldc250, namespace-owned. */
     mc_player_string *startup_logo_resource; /* Lazy actual MC.x ldc119, namespace-owned. */

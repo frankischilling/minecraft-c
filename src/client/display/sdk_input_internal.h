@@ -14,6 +14,9 @@ typedef struct mc_client_sdk_empty_list {
     void **entries;
 } mc_client_sdk_empty_list;
 
+struct mc_client_sdk_controller_environment;
+struct mc_client_sdk_controller_attempt;
+
 struct mc_client_sdk_input {
     mc_client_display *display;
     SDL_Window *window;
@@ -26,6 +29,12 @@ struct mc_client_sdk_input {
     mc_client_sdk_platform platform;
     mc_client_sdk_name_map button_map, key_map;
     mc_client_sdk_empty_list *controllers, *controller_events;
+    int32_t controller_count; /* Actual Source default0; never SDL device ID. */
+    void *controller_event;   /* Actual nullable Controllers.event. */
+    int32_t controllers_last_clinit_store, controllers_last_create_pc;
+    bool controllers_native_retired;
+    struct mc_client_sdk_controller_environment *controller_environment;
+    struct mc_client_sdk_controller_attempt *controller_attempt;
     mc_client_sdk_bytes *buttons, *key_down, *mouse_read, *keyboard_read;
     int32_t *coordinates;
     void *current_cursor;

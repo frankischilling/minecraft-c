@@ -1,4 +1,5 @@
 #include "mc/client/settings/game_option.h"
+#include "sdk_controllers_internal.h"
 #include "sdk_display_internal.h"
 #include "sdk_input_internal.h"
 
@@ -88,6 +89,8 @@ mc_client_sdk_input_status mc_client_sdk_input_allocate(mc_client_display *displ
                                      "initControls", "()V", -1, true);
         else {
             o->display = display;
+            o->controllers_last_clinit_store = -1;
+            o->controllers_last_create_pc = -1;
             o->window = mc_client_display_window(display);
             o->events = events;
             o->last_mouse_store = o->last_keyboard_store = -1;
@@ -414,7 +417,10 @@ mc_client_sdk_input_status mc_client_sdk_input_retire(mc_client_sdk_input **slot
         } else {
             o->phase = MC_CLIENT_SDK_INPUT_RETIRING;
             o->active = true;
-            if (o->backend_grabbed && !SDL_SetWindowRelativeMouseMode(o->window, false)) {
+            if (mc_client_sdk_controllers_native_cleanup(o, &e) != MC_CLIENT_SDK_INPUT_OK) {
+                o->active = false;
+                o->failure = e;
+            } else if (o->backend_grabbed && !SDL_SetWindowRelativeMouseMode(o->window, false)) {
                 o->active = false;
                 mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_PLATFORM_FAILED,
                                          "SDK actual native grab retirement", NULL, NULL, NULL, -1,

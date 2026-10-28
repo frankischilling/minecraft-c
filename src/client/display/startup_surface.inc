@@ -25,6 +25,7 @@ bool mc_client_display_startup_projection(mc_client_display *display, double wid
         return source_leave(display, false, error);
     display->frame_started = true;
     *stage = MC_CLIENT_STARTUP_PROJECTION_ORTHO;
+    display->source.matrix_mode = GL_PROJECTION; /* Actual MatrixMode29. */
     const float identity[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     memcpy(display->source.projection, identity, sizeof(identity)); /* Actual identity32. */
     if (!source_fp_admit("startup ortho FP after clear", error))
@@ -47,6 +48,7 @@ bool mc_client_display_startup_projection(mc_client_display *display, double wid
                                   1};
     memcpy(display->source.projection, projection, sizeof(projection));
     *stage = MC_CLIENT_STARTUP_PROJECTION_MODELVIEW;
+    display->source.matrix_mode = GL_MODELVIEW; /* Actual MatrixMode57. */
     display->source.modelview =
         (mc_client_modelview){{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2000, 1}};
     display->source.loading_ready = true;

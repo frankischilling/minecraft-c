@@ -2,6 +2,7 @@
  * their earlier endpoint and do not credit an omitted normal caller. */
 #include "client/achievements/description_registry.h"
 #include "client/startup/application_logo.h"
+#include "client/startup/application_startup_graphics.h"
 
 static int statistics_session(client_application *app) {
     static const uint16_t username[] = {'S', 't', 'a', 'r', 't', 'u', 'p',
@@ -174,7 +175,8 @@ static int statistics_null_z(const char *resources) {
     return 0;
 }
 
-static int statistics_session_window(const char *resources, const char *assets, bool foreign) {
+static int statistics_session_window(const char *resources, const char *assets, bool foreign,
+                                     bool gl_error) {
     fixture f;
     startup_fixture startup;
     CHECK(fixture_open(&f, resources) == 0);
@@ -192,6 +194,12 @@ static int statistics_session_window(const char *resources, const char *assets, 
     CHECK(mc_client_application_startup_allocate(app, &startup.services, &options, &attempt,
                                                  startup.error) == MC_CLIENT_STARTUP_OK);
     CHECK(app->source_namespace->startup_stats_classes == NULL);
+#ifdef MC_STARTUP_CONTROLLER_BOUNDARY
+    if (gl_error)
+        CHECK(mc_test_controller_boundary_arm());
+#else
+    CHECK(!gl_error); /* This mode requires the separately mapped real-body observer target. */
+#endif
     const mc_client_startup_status result =
         mc_client_application_run_prefix(attempt, startup.error);
     if (foreign) {
@@ -220,8 +228,38 @@ static int statistics_session_window(const char *resources, const char *assets, 
                   MC_CLIENT_STARTUP_OK &&
               attempt == NULL);
     } else {
-        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->caller.pc == 383 &&
-              startup.error->child.pc == 383 && attempt->last_startup_store == 380 &&
+        mc_client_sdk_controllers_state controllers = {0};
+        CHECK(mc_client_sdk_controllers_inspect(mc_client_display_inputs(app->display),
+                                                &controllers));
+        if (controllers.native_count != 0) {
+            CHECK(result == MC_CLIENT_STARTUP_INPUT_FAILED && startup.error->caller.pc == 383 &&
+                  attempt->input != NULL && !attempt->input->controllers_call_completed &&
+                  attempt->input->input.status == MC_CLIENT_SDK_INPUT_UNSUPPORTED_PROFILE &&
+                  attempt->input->input.site.pc == 12 && !controllers.created &&
+                  attempt->graphics == NULL && app->source_namespace->system_output == NULL);
+            fprintf(stderr,
+                    "Genuine nonempty Controllers native count%d: SDK Native12; "
+                    "normal470 not reached; no Source391 completion\n",
+                    controllers.native_count);
+        }
+        CHECK(controllers.native_count == 0); /* Never replace physical discovery with empty. */
+#ifdef MC_STARTUP_CONTROLLER_BOUNDARY
+        if (gl_error) {
+            mc_test_controller_boundary_state observed = {0};
+            CHECK(mc_test_controller_boundary_inspect(&observed));
+            mc_test_controller_boundary_disarm();
+            if (!observed.injected)
+                fprintf(stderr, "Controller boundary injection failure: %s\n",
+                        observed.lookup_error);
+            CHECK(observed.create_calls == 1 && observed.invalid_enum_calls == 1 &&
+                  observed.create_status == MC_CLIENT_SDK_INPUT_OK && observed.injected &&
+                  observed.injection_attempted && !observed.missing_gl_function &&
+                  observed.input == mc_client_display_inputs(app->display) &&
+                  observed.display == app->display);
+        }
+#endif
+        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->caller.pc == 470 &&
+              startup.error->child.pc == 470 && attempt->last_startup_store == 380 &&
               attempt->last_manager_pc == 321);
         const mc_client_startup_stats_call *call = attempt->statistics;
         CHECK(call != NULL && call->source_calls_completed && call->callback_installed &&
@@ -243,15 +281,68 @@ static int statistics_session_window(const char *resources, const char *assets, 
               attempt->logo->literal == app->source_namespace->startup_logo_resource);
         CHECK(attempt->input != NULL && attempt->input->keyboard_call_completed &&
               attempt->input->mouse_call_completed && attempt->input->C_stored &&
-              attempt->input->last_pc == 380 && app->C == attempt->input->candidate &&
-              app->C != NULL);
+              attempt->input->controllers_call_completed && attempt->input->last_pc == 383 &&
+              app->C == attempt->input->candidate && app->C != NULL);
         mc_client_mouse_helper_state mouse;
         CHECK(mc_client_mouse_helper_inspect(app->C, &mouse) &&
               mouse.phase == MC_CLIENT_MOUSE_HELPER_READY && mouse.last_store_pc == 57 &&
               mouse.source_c == app->m && mouse.source_d != NULL);
         mc_client_sdk_input_state input;
         CHECK(mc_client_sdk_input_inspect(mc_client_display_inputs(app->display), &input) &&
-              input.keyboard_created && input.mouse_created && !input.controllers_created);
+              input.keyboard_created && input.mouse_created && input.controllers_created);
+        CHECK(controllers.created && controllers.last_create_pc == 143 &&
+              controllers.init_calls == 1 && controllers.enumeration_calls == 1 &&
+              controllers.controllers_count == 0 && controllers.events_count == 0 &&
+              controllers.controller_count == 0 && controllers.event_identity == NULL &&
+              controllers.controllers_identity != controllers.events_identity &&
+              controllers.environment_identity != NULL && !controllers.create_attempt_retained);
+        const mc_client_startup_graphics_call *graphics = attempt->graphics;
+        CHECK(graphics != NULL && graphics->entered && graphics->setup_completed &&
+              !graphics->active && !graphics->retired && graphics->setup_calls_completed == 11 &&
+              graphics->diagnostic_calls_completed == 2 && graphics->last_pc == 466 &&
+              graphics->namespace_identity == app->source_namespace->system_output &&
+              app->source_namespace->system_output_attempted &&
+              graphics->labels[0] == app->source_namespace->startup_gl_labels[0] &&
+              graphics->labels[1] == app->source_namespace->startup_gl_labels[1] &&
+              graphics->labels[0] != NULL && graphics->labels[1] != NULL &&
+              graphics->labels[0] != graphics->labels[1]);
+        mc_java_system_output_state system = {0};
+        CHECK(mc_java_system_output_inspect(graphics->namespace_identity, &system) &&
+              system.phase == MC_JAVA_PRINT_READY && system.out != NULL);
+        for (size_t index = 0; index < 2; ++index) {
+            mc_client_gl_output_state diagnostic = {0};
+            CHECK(mc_client_gl_output_inspect(graphics->diagnostics[index], &diagnostic) &&
+                  diagnostic.started && !diagnostic.active && !diagnostic.retiring &&
+                  diagnostic.error->status == MC_CLIENT_GL_OUTPUT_OK &&
+                  diagnostic.error->source_returned && diagnostic.error->site.pc == 75 &&
+                  diagnostic.error->prefix.query_completed && graphics->snapshots[index].valid);
+            const bool printed = gl_error && index == 0;
+            CHECK(diagnostic.error->prefix.gl_error == (printed ? GL_INVALID_ENUM : GL_NO_ERROR) &&
+                  diagnostic.captured_receivers == (printed ? 3u : 0u) &&
+                  diagnostic.normal_println_returns == (printed ? 3u : 0u));
+            if (printed) {
+#ifdef _WIN32
+                static const char printed_bytes[] = "########## GL ERROR ##########\r\n"
+                                                    "@ Pre startup\r\n"
+                                                    "1280: Invalid enum\r\n";
+#else
+                static const char printed_bytes[] = "########## GL ERROR ##########\n"
+                                                    "@ Pre startup\n"
+                                                    "1280: Invalid enum\n";
+#endif
+                for (size_t receiver = 0; receiver < 3; ++receiver)
+                    CHECK(diagnostic.receivers[receiver] == system.out &&
+                          graphics->snapshots[index].receiver_valid[receiver] &&
+                          graphics->snapshots[index].receivers[receiver].println_returns == 3 &&
+                          graphics->snapshots[index].receivers[receiver].physical_bytes_known &&
+                          graphics->snapshots[index].receivers[receiver].physical_bytes ==
+                              sizeof(printed_bytes) - 1 &&
+                          !graphics->snapshots[index].receivers[receiver].trouble);
+                CHECK(diagnostic.results[0] != NULL && diagnostic.results[1] != NULL);
+            }
+        }
+        uint8_t diagnostic_snapshots[sizeof(graphics->snapshots)];
+        memcpy(diagnostic_snapshots, graphics->snapshots, sizeof(diagnostic_snapshots));
         mc_client_events_state events;
         CHECK(mc_client_events_inspect(mc_client_display_event_port(app->display), &events) &&
               events.pump_generation == 0 && atomic_load(&app->J) && !atomic_load(&app->o));
@@ -277,6 +368,15 @@ static int statistics_session_window(const char *resources, const char *assets, 
               app->statistics_retired && app->font_renderer == external_font &&
               app->display != NULL && app->C == NULL && attempt->input->retired && call->I_stored &&
               call->callback_installed);
+        CHECK(attempt->graphics == graphics && graphics->retired &&
+              graphics->diagnostics[0] == NULL && graphics->diagnostics[1] == NULL &&
+              graphics->namespace_identity == NULL && graphics->labels[0] == NULL &&
+              graphics->labels[1] == NULL &&
+              memcmp(graphics->snapshots, diagnostic_snapshots, sizeof(diagnostic_snapshots)) ==
+                  0 &&
+              app->source_namespace->system_output != NULL &&
+              app->source_namespace->startup_gl_labels[0] != NULL &&
+              app->source_namespace->startup_gl_labels[1] != NULL);
         CHECK(mc_client_render_manager_retire_hands(manager, &startup.error->manager) ==
               MC_CLIENT_MANAGER_OK);
         CHECK(mc_client_render_manager_classes_retire(&manager, &startup.error->manager) ==

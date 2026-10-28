@@ -1,4 +1,4 @@
-# Java output encoding and PrintWriter
+# Java output encoding, PrintWriter and PrintStream
 
 The [writer interface](../../include/mc/core/java/writer.h) implements the
 selected `FileWriter` / `OutputStreamWriter` / `PrintWriter(Writer)` chain needed
@@ -156,3 +156,34 @@ The [GameSettings persistence owner](../client/game-settings.md) uses this
 interface for saving. Its native integration and original comparisons have
 their own scope; menus, effectful option setters and complete client behavior
 remain unfinished.
+
+## System.out and base PrintStream
+
+The separate [PrintStream interface](../../include/mc/core/java/print_stream.h)
+owns the selected System.out bootstrap and base-class println/flush pipeline.
+A counted namespace publishes one stream after successful construction and
+retains failed candidates separately. Every field read captures its current
+value, retaining a nonnull stream and preserving NULL. Rebinding publishes the
+new field before retiring the old occurrence; failed cleanup keeps its pending
+owner for retry.
+
+The pipeline uses a 128-byte output buffer, an 8,192-unit text buffer and the
+[shared source encoder](../reference/source-encoder.md). Ordinary I/O failure
+sets sticky trouble and may still return normally, while physical byte progress
+remains separate or explicitly unknown. The source monitor permits its private
+nested encoder dispatch; public reentry and final retirement contention return
+BUSY. Final native release neither flushes pending text nor closes process
+stdout. A successful nonfinal release consumes only its own occurrence.
+
+Default construction selects the real native stdout/default-charset profile.
+Windows observes the console/default code page; POSIX uses native locale
+discovery. UTF-8, windows-1252, ISO-8859-1 and US-ASCII share the existing codec
+kernel. A valid unsupported charset returns a typed failure instead of a fixed
+UTF-8 fallback. Java charset-provider/property overrides, subclasses and the
+unimplemented Java interruption child remain outside this finite interface.
+
+The [startup diagnostics](../client/display-sdk.md#startup-gl-setup-and-diagnostics)
+now use this owner for nonzero output. Focused Core and real-device results
+belong to the [startup-tail testing scope](../testing.md#startup-tail-through-gl-diagnostics).
+They do not expand the older Writer/PrintWriter original comparison into a
+PrintStream or whole-System original-JDK result.

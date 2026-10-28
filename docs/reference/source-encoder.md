@@ -26,6 +26,7 @@ object. Linux uses ASan, UBSan and leak detection; Windows retains strict C17
 diagnostics and default 1 MiB executable stacks.
 
 This qualification uses a headless, client/audio-disabled target-only graph.
-It does not establish a full client build, original JDK execution or a complete
-System.out/PrintStream implementation. The latter remains required by nonzero
-Minecraft GL diagnostics.
+It does not establish a full client build or original JDK execution. The later
+[System.out and base PrintStream owner](../core/java-writer.md#systemout-and-base-printstream)
+uses this same encoder in the native GL diagnostic continuation. Its Core and
+device qualification retain their separate source and execution scopes.

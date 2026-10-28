@@ -15,12 +15,16 @@ bool mc_client_display_loading_projection(mc_client_display *display, double wid
     if (!gl_check(display, "LoadingScreen source depth clear", error))
         return source_leave(display, false, error);
     *stage = MC_CLIENT_LOADING_PROJECTION_ORTHO;
+    display->source.matrix_mode = GL_PROJECTION; /* Actual mk102. */
+    const float identity[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    memcpy(display->source.projection, identity, sizeof(identity)); /* Actual mk105. */
     if (!source_fp_admit("LoadingScreen ortho FP after depth clear", error))
         return source_leave(display, false, error);
     const float projection[16] = {(float)(2.0 / width), 0, 0, 0, 0, (float)(-2.0 / height), 0, 0,
                                   0, 0, (float)(-2.0 / 200.0), 0, -1, 1, -2, 1};
     memcpy(display->source.projection, projection, sizeof(projection));
     *stage = MC_CLIENT_LOADING_PROJECTION_MODELVIEW;
+    display->source.matrix_mode = GL_MODELVIEW; /* Actual mk132. */
     display->source.modelview = (mc_client_modelview){{1, 0, 0, 0, 0, 1, 0, 0,
                                                       0, 0, 1, 0, 0, 0, -200, 1}};
     display->source.loading_ready = true;

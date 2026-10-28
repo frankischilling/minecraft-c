@@ -53,6 +53,10 @@
       "bytes": 3573,
       "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
     },
+    "include/mc/core/java/print_stream.h": {
+      "bytes": 7399,
+      "sha256": "59cbbfedd019bf16ecf3cca0d6456991ed9cbb2d7e0c62fe241a00d58747a1ed"
+    },
     "include/mc/core/java/properties.h": {
       "bytes": 4344,
       "sha256": "b266c2f3124fc5e81671b49f06ba4257d7ec56461b5cde9c7bc4d9a1cc50761d"
@@ -64,6 +68,10 @@
     "include/mc/core/java/reader.h": {
       "bytes": 3059,
       "sha256": "d606f35402ee028d5ea7e5ce12e4c41525b189e5d66b0f44f0e17db0234a8ea9"
+    },
+    "include/mc/core/java/source_encoder.h": {
+      "bytes": 3989,
+      "sha256": "fd793f7ce5d13419235c5ae5286fbda886d32a1f40c329623fcc310a118db292"
     },
     "include/mc/core/java/writer.h": {
       "bytes": 7832,
@@ -330,8 +338,20 @@
       "sha256": "68e9d96b80e9513a0e0defc1627c77124d0ecc3e7ba7f1f9138b67ccd0fe5c00"
     },
     "src/client/startup/application_owner.h": {
-      "bytes": 12283,
-      "sha256": "8d647ff14a379adefb633c98abb7137a162ba493177f6f980671563af3577cc6"
+      "bytes": 12435,
+      "sha256": "82b3e5faf64cd5b0d1427e7bf34037cc25faa8c38409bd3be34051b6f5429dbf"
+    },
+    "src/core/java/print_stream.c": {
+      "bytes": 20421,
+      "sha256": "3181cc0eb2c0518077c39a27e43cc12d9facb861211c8cc10b98d34f9d659a7f"
+    },
+    "src/core/java/print_stream_internal.h": {
+      "bytes": 1920,
+      "sha256": "b19019a4ad5f8f008e3db0fb09476140ea45bb2a1965a70d6009ee2c10771a29"
+    },
+    "src/core/java/print_stream_native.c": {
+      "bytes": 4540,
+      "sha256": "161364bb3c034fa7f5f06900e613ef5092c5fa444cb6669155a63223ac86e68e"
     },
     "src/core/java/random_profile.c": {
       "bytes": 14027,
@@ -340,6 +360,10 @@
     "src/core/java/random_profile_internal.h": {
       "bytes": 5196,
       "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+    },
+    "src/core/java/system_output.c": {
+      "bytes": 7492,
+      "sha256": "2dd90dc597040fa7cc4834943fdf788db29b063add11cdaf14cd77b56d8d64f8"
     },
     "src/entity/classes/classes_internal.h": {
       "bytes": 2535,
@@ -356,6 +380,10 @@
     "src/entity/vector/vector_internal.h": {
       "bytes": 1097,
       "sha256": "911f2ff2543b56b7a1ec1646fe28266fa5e7b1c08c3131fdfb77e0c18c69445d"
+    },
+    "src/platform/text/stdout.h": {
+      "bytes": 2129,
+      "sha256": "d3b291d9b32f1e68dec1115188c73da6930c1a91e9c00bde83324c775ed30641"
     },
     "src/platform/time/millis.h": {
       "bytes": 1796,
@@ -487,6 +515,46 @@
           "removed_paths": []
         }
       }
+    },
+    {
+      "role": "Current unqualified composed-source admission only; all prior products and original/JDK observations keep their historical bindings.",
+      "parent_public_source_map": {
+        "sha256": "528a56f56dd4b4888c1f1a101dd3b54c59a43722a4c1a0f5e4bb84d2f7f8dd3b",
+        "files": 2252,
+        "commit": "6249a64de2113a9c1c84272df5237a4a4427998a"
+      },
+      "previous_metadata": {
+        "bytes": 19256,
+        "sha256": "59ae0e53026d244dc874a5fe2efe3edff289b79be116de17e48f726b8f25db2a"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 346148,
+        "sha256": "cb6ebe63c35026e125ea06e28711d20e144211df29c7e8465638a6fed164fa65"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 94,
+          "after_count": 101,
+          "previous": {
+            "src/client/startup/application_owner.h": {
+              "bytes": 12283,
+              "sha256": "8d647ff14a379adefb633c98abb7137a162ba493177f6f980671563af3577cc6"
+            }
+          },
+          "added_paths": [
+            "include/mc/core/java/print_stream.h",
+            "include/mc/core/java/source_encoder.h",
+            "src/core/java/print_stream.c",
+            "src/core/java/print_stream_internal.h",
+            "src/core/java/print_stream_native.c",
+            "src/core/java/system_output.c",
+            "src/platform/text/stdout.h"
+          ],
+          "removed_paths": []
+        }
+      },
+      "admitted_path_scope": "complete current declared source closure",
+      "preserved_unrelated_producer_rows": false
     }
   ]
 }

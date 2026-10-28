@@ -14,7 +14,8 @@ application_owner_fail(mc_client_application_owner_error *error,
                                                      .site = {class_name, method, descriptor, pc},
                                                      .native_error = native_error,
                                                      .file = NULL,
-                                                     .statistics = NULL};
+                                                     .statistics = NULL,
+                                                     .standard_output = NULL};
     return status;
 }
 
@@ -218,6 +219,18 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
             error->statistics = &classes->stats_retirement;
         return status;
     }
+    if (mc_java_system_output_release(&classes->system_output, &classes->output_retirement) !=
+        MC_JAVA_PRINT_OK) {
+        const mc_client_application_owner_status status =
+            classes->output_retirement.status == MC_JAVA_PRINT_BUSY
+                ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                : MC_CLIENT_APPLICATION_OWNER_OUTPUT_FAILED;
+        application_owner_fail(error, status, "Minecraft native System-output association release",
+                               NULL, NULL, NULL, 0, 0);
+        if (error != NULL)
+            error->standard_output = &classes->output_retirement;
+        return status;
+    }
     application_directory_classes_destroy(classes->directory_classes);
     client_application *last_app = classes->a;
     mc_player_string *timer_name = classes->timer_name;
@@ -226,6 +239,8 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     mc_player_string *startup_title = classes->startup_title;
     mc_player_string *startup_font_resource = classes->startup_font_resource;
     mc_player_string *startup_logo_resource = classes->startup_logo_resource;
+    mc_player_string *startup_gl_labels[2] = {classes->startup_gl_labels[0],
+                                              classes->startup_gl_labels[1]};
     mc_player_string *startup_color_literals[3] = {classes->startup_color_literals[0],
                                                    classes->startup_color_literals[1],
                                                    classes->startup_color_literals[2]};
@@ -238,6 +253,8 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
         mc_player_string_release(startup_color_literals[index]);
     mc_player_string_release(startup_font_resource);
     mc_player_string_release(startup_logo_resource);
+    for (size_t index = 0; index < 2; ++index)
+        mc_player_string_release(startup_gl_labels[index]);
     mc_player_string_release(startup_title);
     mc_player_string_release(timer_name);
     mc_player_string_release(applet_true);

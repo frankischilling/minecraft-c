@@ -61,6 +61,7 @@ struct mc_client_application_startup {
     mc_client_startup_logo_call *logo;
     mc_client_startup_stats_call *statistics;
     mc_client_startup_input_call *input;
+    mc_client_startup_graphics_call *graphics;
 };
 
 mc_client_startup_status application_startup_fail(mc_client_startup_error *,
@@ -78,6 +79,8 @@ mc_client_startup_status application_startup_statistics(mc_client_application_st
 mc_client_startup_status application_startup_statistics_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_input(mc_client_application_startup *);
 mc_client_startup_status application_startup_input_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_graphics(mc_client_application_startup *);
+mc_client_startup_status application_startup_graphics_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_font(mc_client_application_startup *);
 mc_client_startup_status application_startup_render_engine(mc_client_application_startup *);
 mc_client_startup_status application_startup_pack(mc_client_application_startup *);

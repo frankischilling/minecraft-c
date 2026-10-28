@@ -14,6 +14,8 @@ typedef struct mc_java_file_error mc_java_file_error;
 
 typedef struct mc_client_stats_error mc_client_stats_error;
 
+typedef struct mc_java_print_error mc_java_print_error;
+
 #define MC_CLIENT_APPLICATION_RESERVE_BYTES 10485760u
 #define MC_CLIENT_APPLICATION_HISTORY_LENGTH 512u
 #define MC_CLIENT_TIMER_HACK_SLEEP_MILLIS UINT32_C(2147483647)
@@ -31,7 +33,8 @@ typedef enum mc_client_application_owner_status {
     MC_CLIENT_APPLICATION_OWNER_NULL_THREAD_NAME,
     MC_CLIENT_APPLICATION_OWNER_CLASS_ERRONEOUS,
     MC_CLIENT_APPLICATION_OWNER_FILE_FAILED,
-    MC_CLIENT_APPLICATION_OWNER_STATS_FAILED
+    MC_CLIENT_APPLICATION_OWNER_STATS_FAILED,
+    MC_CLIENT_APPLICATION_OWNER_OUTPUT_FAILED
 } mc_client_application_owner_status;
 
 typedef struct mc_client_application_owner_site {
@@ -48,6 +51,7 @@ typedef struct mc_client_application_owner_error {
      * retry and invalidated only on successful final namespace retirement. */
     const mc_java_file_error *file;
     const mc_client_stats_error *statistics;
+    const mc_java_print_error *standard_output;
 } mc_client_application_owner_error;
 
 /* Native actual-App constructor state, separate from source J/o and the

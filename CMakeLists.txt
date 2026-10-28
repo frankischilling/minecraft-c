@@ -170,6 +170,7 @@ if(MC_BUILD_CLIENT)
         find_package(X11 REQUIRED COMPONENTS Xrandr)
         target_link_libraries(mc_client_sdk_runtime PRIVATE X11::X11 X11::Xrandr)
     endif()
+    include(cmake/client_controllers.cmake)
     add_library(mc_client_display STATIC src/client/display/display.c)
     target_include_directories(mc_client_display PUBLIC src/client/display)
     target_link_libraries(mc_client_display PUBLIC mc_image SDL3::SDL3-static
@@ -310,6 +311,11 @@ add_library(mc_core STATIC
     src/core/text/mutf8.c)
 target_include_directories(mc_core PUBLIC include)
 target_link_libraries(mc_core PRIVATE mc_platform_time mc_platform_text Threads::Threads mc_c_atomics mc_build_options)
+
+target_sources(mc_core PRIVATE
+    src/core/java/print_stream.c
+    src/core/java/system_output.c
+    src/core/java/print_stream_native.c)
 
 add_library(mc_client_sdk_queue STATIC src/client/display/sdk_queue.c)
 target_include_directories(mc_client_sdk_queue PUBLIC src/client/display)
@@ -784,6 +790,7 @@ if(MC_BUILD_CLIENT)
     include(cmake/client_rendering.cmake)
     include(cmake/client_input.cmake)
     include(cmake/client_gl_diagnostics.cmake)
+    include(cmake/client_startup_graphics.cmake)
 endif()
 
 option(MC_ENABLE_APPLICATION_STARTUP_TESTS "Run genuine source run/startup CPU prefix controls" OFF)
@@ -5355,6 +5362,16 @@ if(BUILD_TESTING)
     include(cmake/tests/client_input.cmake)
     include(cmake/tests/client_gl_diagnostics.cmake)
     if(MC_BUILD_CLIENT)
+        include(cmake/tests/client_controllers.cmake)
+        include(cmake/tests/client_gl_setup.cmake)
+    endif()
+    if(MC_BUILD_CLIENT)
         include(cmake/tests/client_rendering.cmake)
     endif()
 endif()
+
+# Canonical base PrintStream and selected diagnostic builder controls.
+include(cmake/tests/java_print_stream.cmake)
+
+# Reviewed startup-tail boundary observer after ordinary target links.
+include(cmake/tests/client_startup_tail_boundary.cmake)

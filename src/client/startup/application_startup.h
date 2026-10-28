@@ -21,6 +21,8 @@ typedef struct mc_client_startup_stats_call mc_client_startup_stats_call;
 
 typedef struct mc_client_startup_input_call mc_client_startup_input_call;
 
+typedef struct mc_client_startup_graphics_call mc_client_startup_graphics_call;
+
 typedef enum mc_client_startup_status {
     MC_CLIENT_STARTUP_OK,
     MC_CLIENT_STARTUP_INVALID_ARGUMENT,
@@ -44,7 +46,8 @@ typedef enum mc_client_startup_status {
     MC_CLIENT_STARTUP_MANAGER_FAILED,
     MC_CLIENT_STARTUP_LOGO_FAILED,
     MC_CLIENT_STARTUP_STATISTICS_FAILED,
-    MC_CLIENT_STARTUP_INPUT_FAILED
+    MC_CLIENT_STARTUP_INPUT_FAILED,
+    MC_CLIENT_STARTUP_GRAPHICS_FAILED
 } mc_client_startup_status;
 
 typedef enum mc_client_startup_phase {
@@ -90,6 +93,7 @@ typedef struct mc_client_startup_error {
     const mc_client_startup_logo_call *logo;        /* Borrowed through next startup mutation. */
     const mc_client_startup_stats_call *statistics; /* Same call-record lifetime as logo. */
     const mc_client_startup_input_call *input;
+    const mc_client_startup_graphics_call *graphics;
     mc_client_entity_renderer_error entity_renderer;
     mc_client_manager_error manager;
 } mc_client_startup_error;

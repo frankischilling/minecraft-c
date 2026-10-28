@@ -300,39 +300,6 @@ mc_client_sdk_input_status mc_client_sdk_mouse_set_grabbed(mc_client_sdk_input *
     return mc_client_sdk_input_leave(o, &e, out);
 }
 
-mc_client_sdk_input_status mc_client_sdk_controllers_is_created(mc_client_sdk_input *o,
-                                                                bool *result,
-                                                                mc_client_sdk_input_error *out) {
-    mc_client_sdk_input_error e = {0};
-    if (result == NULL ||
-        !mc_client_sdk_input_enter(o, "org/lwjgl/input/Controllers", "isCreated", "()Z", &e)) {
-        if (result == NULL)
-            mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_INVALID_ARGUMENT,
-                                     "Controllers native output", "org/lwjgl/input/Controllers",
-                                     "isCreated", "()Z", -1, true);
-        if (out != NULL)
-            *out = e;
-        return e.status;
-    }
-    if (o->controllers == NULL) {
-        o->controllers = calloc(1, sizeof(*o->controllers));
-        if (o->controllers == NULL)
-            mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_ALLOCATION_FAILED,
-                                     "actual Controllers first ArrayList",
-                                     "org/lwjgl/input/Controllers", "<clinit>", "()V", 0, true);
-    }
-    if (e.status == MC_CLIENT_SDK_INPUT_OK && o->controller_events == NULL) {
-        o->controller_events = calloc(1, sizeof(*o->controller_events));
-        if (o->controller_events == NULL)
-            mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_ALLOCATION_FAILED,
-                                     "actual Controllers second ArrayList",
-                                     "org/lwjgl/input/Controllers", "<clinit>", "()V", 10, true);
-    }
-    if (e.status == MC_CLIENT_SDK_INPUT_OK)
-        *result = o->controllers_created;
-    return mc_client_sdk_input_leave(o, &e, out);
-}
-
 static uint32_t u32(const uint8_t *p) {
     return ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16) | ((uint32_t)p[2] << 8) | p[3];
 }

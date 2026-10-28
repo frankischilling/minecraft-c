@@ -37,6 +37,8 @@ typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei 
                                                       GLsizei height, GLenum format, GLenum type,
                                                       GLvoid *pixels);
 
+typedef void(GLAPIENTRY *mc_client_gl_cull_face_fn)(GLenum mode);
+
 /* SDL returns a generic function pointer. The loader converts directly between
  * function-pointer types and calls only through each exact GL declaration. */
 #define MC_CLIENT_GL_FUNCTIONS(X)                                                                  \
@@ -90,7 +92,8 @@ typedef void(GLAPIENTRY *mc_client_gl_read_pixels_fn)(GLint x, GLint y, GLsizei 
     X(PFNGLVERTEXATTRIBPOINTERPROC, VertexAttribPointer, "glVertexAttribPointer")                  \
     X(mc_client_gl_draw_arrays_fn, DrawArrays, "glDrawArrays")                                     \
     X(mc_client_gl_read_buffer_fn, ReadBuffer, "glReadBuffer")                                     \
-    X(mc_client_gl_read_pixels_fn, ReadPixels, "glReadPixels")
+    X(mc_client_gl_read_pixels_fn, ReadPixels, "glReadPixels")                                     \
+    X(mc_client_gl_cull_face_fn, CullFace, "glCullFace")
 
 typedef struct mc_client_gl {
 #define MC_CLIENT_GL_FIELD(type, field, name) type field;

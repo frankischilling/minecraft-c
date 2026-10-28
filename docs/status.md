@@ -7,7 +7,12 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
-Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
+Published checkpoint `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
+407 Windows, 423 GCC and 423 Clang cases, 1,253 total, without failures or skips.
+The focused startup-tail results below use a later local source snapshot and
+remain separate from that hosted suite.
+
+Earlier checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
 398 Windows, 414 GCC and 414 Clang cases, 1,226 total. None fail or skip.
 Formatting checks 1,164 files. The native jobs check current input bindings
 before configuration and retain their complete test suites. This checkpoint
@@ -47,8 +52,21 @@ water/grass/foliage color maps and calls their real setters. It now also
 constructs EntityRenderer and RenderManager with their distinct held-item
 renderers. The newer source continues through the real statistics writer and
 callback, startup logo, keyboard/mouse creation and MouseHelper publication.
-Its next unexecuted call is Controllers.create at offset 383.
+It now completes the admitted empty-Controllers path, the first GL diagnostic,
+GL setup through offset 460 and the second diagnostic at 466. The next
+unexecuted operation is the `cx` allocation at offset 470; the last App field
+publication remains MouseHelper `C380`.
 The default executable continues to use title/inspection startup.
+
+The current focused source passes 47 Windows cases. Nine Core output cases
+retain their separate earlier Windows test-header source. Clang 18 and GCC 13
+each pass 53 selected cases: 41 CPU/protocol and twelve real-device cases,
+with ASan, UBSan and leak detection. Fresh Windows normal and real-GL-error
+startup profiles pass 103 and 109 checks. These results do not rerun the full
+suite or qualify Linux default-directory/Session startup, original-JVM or
+visual correspondence, World entry or gameplay. A separate Release headless
+build links the region-inspection utility with client, sound, audio and
+testing disabled. No utility runtime or server behavior was tested.
 
 Published checkpoint `33c777c` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40589053675).
 Windows stops on an older MSVC flexible-array warning. Each Linux compiler

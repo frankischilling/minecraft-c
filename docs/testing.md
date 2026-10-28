@@ -4,7 +4,11 @@
 
 ## Current client runtime integration
 
-Checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686).
+Published `6249a64` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
+407 Windows, 423 GCC and 423 Clang cases, 1,253 total, without failure or skip.
+The later focused startup-tail results below retain a separate source scope.
+
+Earlier checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686).
 The audited logs contain 1,127 unique Start/Passed pairs: 367 Windows, 380 GCC
 and 380 Clang cases, with no skips or failures. All 1,115 cases from `e8fcb3a`
 remain; each compiler adds four resource-observer checks. All four actual
@@ -37,6 +41,38 @@ checkout trees matched `c3c7e45cb8b9b94d86078cea1dd8ac41289c0315`; its formattin
 scope was 936 C/header files. The `37dc83f` hosted run retains every one of those cases.
 
 ## Normal startup owner qualification
+
+### Startup tail through GL diagnostics
+
+The focused startup-tail source builds the client and passes 47 selected
+Windows cases without failure or skip. Nine Core output cases retain their
+separate preceding Windows test-header source. Clang 18 and GCC 13 each pass
+53 selected cases: 41 CPU/protocol and twelve real-device cases, with ASan,
+UBSan and leak detection. These are selected runs, not complete local suites.
+
+Fresh Windows normal and real-GL-error Session profiles pass 103 and 109
+checks. They reach Controllers.create383, diagnostic397, GL setup through460
+and diagnostic466. The last App publication is C380 and the next unexecuted
+operation is cx470. Output checks use the real System.out/PrintStream pipeline;
+the nonzero diagnostic does not consume an extra GL error. Physical nonempty
+Controller mapping remains the SDK Native12 frontier. Official SDL HIDAPI and
+virtual joystick drivers are enabled for the actual driver-backed controls.
+
+Source, tools, dependency inputs and configured products retain their recorded
+before/after checks. Windows keeps the default 1 MiB executable stacks. Linux
+device cases use owned Xvfb contexts. Linux default-directory/Session startup,
+original/JVM observations, a complete local test suite and playable World entry
+are not covered. A separate Release headless build completes all 372 build
+steps and links `mc_region_inspect` with `MC_BUILD_CLIENT`,
+`MC_BUILD_CLIENT_SOUND`, `MC_BUILD_CLIENT_AUDIO` and `BUILD_TESTING` disabled.
+No runtime tests ran in that graph; utility linkage does not qualify server
+behavior.
+
+Published `6249a64` separately passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40692181754):
+407 Windows, 423 GCC and 423 Clang cases, 1,253 total. That published suite does
+not include this later startup-tail source.
+
+### Earlier scoped results
 
 The [source OutputStream encoder](reference/source-encoder.md) has a separate
 target-only qualification: fifteen selected cases pass on each MSVC, Clang 18
@@ -1106,6 +1142,8 @@ observed-JDK and 49,532 model-derived groups. The
 65,536-unit alphabet comparison per compiler. Its original controller reports
 retain their footer-parser failure; separate file-only audits verify the actual
 tests and rows and complete read-only binary checks without native reruns.
+
+<a id="startup-settings-and-game-directory"></a>
 
 ## Startup settings and GameDirectory
 

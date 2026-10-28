@@ -1,4 +1,4 @@
-# MouseHelper and native cursor
+# MouseHelper, native cursor and Controllers
 
 The source MouseHelper (`vy`) and SDK Cursor use the existing Display/input
 namespace. The normal constructor receives the live Minecraft.m value after
@@ -24,6 +24,18 @@ source reruns the two affected window/pixel cases, retaining their 65 and
 6,169 checks. These are native contract and integration results, with no
 unchanged-original execution or original visual-parity claim.
 
-Keyboard and mouse creation use their genuine warm state after Display
-construction. They do not reset queues or add another event pump. Controllers
-creation and the connected input/tick/gameplay loop remain unfinished.
+Keyboard and mouse creation use their existing state after Display
+construction. They do not reset queues or add another event pump.
+
+Controllers construction now uses the same SDK input owner, its canonical
+lists and a real SDL joystick reference. Empty discovery completes; repeated
+create is idempotent. A nonempty physical discovery retains its native prefix
+and stops at SDK Native12 before concrete Controller mapping. The official
+SDL HIDAPI and virtual joystick drivers are enabled. The controls use real
+virtual-device attach/detach; they do not supply replacement IDs or a fake
+created flag. Polling does not pump or remove shared transport events.
+
+The [startup-tail qualification](normal-startup.md#validation-and-remaining-work)
+contains Windows and sanitized Linux CPU/device results. Complete physical
+Controller behavior, input timing and the connected input/tick/gameplay loop
+remain unfinished.

@@ -36,8 +36,8 @@
       "sha256": "27ff592a8f737a20885d893bd2becc9f0c4b250bef1c3179a2e8c43eff44e12c"
     },
     "include/mc/entity/player/player.h": {
-      "bytes": 9912,
-      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+      "bytes": 10280,
+      "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "src/block/registry/registry_internal.h": {
       "bytes": 13672,
@@ -116,8 +116,8 @@
       "sha256": "577ebfa4de26e898335ff82a837203484c43df1616f817babee3b30f605a3240"
     },
     "src/entity/player/strings.c": {
-      "bytes": 4062,
-      "sha256": "5eada78cac15c7c12b22dbe932b0dfdae8fe4d15de526cd7e254160ff2173cd6"
+      "bytes": 4199,
+      "sha256": "691694658b3ee310a7d8f9626d3bd69949ed5a0842790426828b1f33f79abc6a"
     },
     "src/statistics/achievements/achievements.c": {
       "bytes": 26180,
@@ -261,5 +261,48 @@
     }
   },
   "helper_class": "PlayerStatisticsObservation.class; freshly compiled hash and immutable helper-only inventory retained per run report",
-  "scope": "Genuine aw/vs water constructor119/ad122 -> jl186, real App Session/xi/I/kh adoption, and actual dc.a statistic dispatch. Full startup, vs animation and ji registration510 remain incomplete."
+  "scope": "Genuine aw/vs water constructor119/ad122 -> jl186, real App Session/xi/I/kh adoption, and actual dc.a statistic dispatch. Full startup, vs animation and ji registration510 remain incomplete.",
+  "current_binding_updates": [
+    {
+      "role": "Current unqualified composed-source admission only; all prior products and original/JDK observations keep their historical bindings.",
+      "parent_public_source_map": {
+        "sha256": "528a56f56dd4b4888c1f1a101dd3b54c59a43722a4c1a0f5e4bb84d2f7f8dd3b",
+        "files": 2252,
+        "commit": "6249a64de2113a9c1c84272df5237a4a4427998a"
+      },
+      "previous_metadata": {
+        "bytes": 10299,
+        "sha256": "ddb55c754f289a8a4f840a9831154d8003ecf3bf454bb7d5160f26fe4c75b758"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 346148,
+        "sha256": "cb6ebe63c35026e125ea06e28711d20e144211df29c7e8465638a6fed164fa65"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 57,
+          "after_count": 57,
+          "previous": {
+            "include/mc/entity/player/player.h": {
+              "bytes": 9912,
+              "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+            },
+            "src/entity/player/strings.c": {
+              "bytes": 4062,
+              "sha256": "5eada78cac15c7c12b22dbe932b0dfdae8fe4d15de526cd7e254160ff2173cd6"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "admitted_path_scope": {
+        "native_sources": [
+          "include/mc/entity/player/player.h",
+          "src/entity/player/strings.c"
+        ]
+      },
+      "preserved_unrelated_producer_rows": true
+    }
+  ]
 }

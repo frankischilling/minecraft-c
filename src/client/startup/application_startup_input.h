@@ -10,6 +10,7 @@ typedef struct mc_client_startup_input_call mc_client_startup_input_call;
  * occurrence, and the remaining state is passive progress/error metadata. */
 struct mc_client_startup_input_call {
     bool active, keyboard_call_completed, mouse_call_completed, C_stored, retired;
+    bool controllers_call_completed;
     unsigned int last_pc;
     mc_client_source_vy *candidate;
     mc_client_sdk_input_error input;

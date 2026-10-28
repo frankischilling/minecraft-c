@@ -19,8 +19,11 @@ after their constructors return. Startup then constructs the real statistics
 writer from the live Session and game directory, publishes Minecraft.I and
 installs its achievement-description callback. It invokes the startup logo,
 creates the actual keyboard and mouse state, constructs MouseHelper and
-publishes Minecraft.C. The next unexecuted call is Controllers.create at
-Minecraft offset 383.
+publishes Minecraft.C at offset 380. It then runs Controllers.create383.
+The admitted empty-device path continues through the first GL diagnostic397,
+GL setup through460 and the second diagnostic466. The next unexecuted
+operation is `new cx470`. No later capability-checker publication, sound bind
+or texture-effect registration is credited by this checkpoint.
 
 A null Session fails in the genuine statistics constructor at `xi337/cj48`;
 it cannot reach the logo or input setup. The successful Session profile starts
@@ -41,6 +44,22 @@ environment. Windows applies the source APPDATA selection. A controlled window
 test gives each child process its own APPDATA directory while preserving its
 real home and all other inherited environment entries. Normal startup does not
 use a temporary-directory or asset-directory fallback.
+
+## Controllers and GL diagnostics
+
+Controllers uses the shared SDK input owner and a real SDL joystick subsystem
+reference. Its source-created flag follows successful construction; repeated
+create returns without another discovery. Empty discovery completes. Nonempty
+physical-device mapping stops at the explicit SDK Native12 frontier. The
+official SDL HIDAPI and virtual joystick drivers are enabled; controls attach
+and detach real virtual devices. Polling adds no event pump or FIFO removal.
+
+The two diagnostics call `Minecraft.c(String)` over the same Display. Each
+invocation consumes exactly one glGetError result. Zero returns immediately;
+nonzero maps GLU text and performs three fresh System.out reads before their
+arguments and println calls. The counted PrintStream pipeline retains source
+return separately from physical output and ordinary swallowed I/O failures.
+See [the GL and output scope](display-sdk.md#startup-gl-setup-and-diagnostics).
 
 ## Failure and retirement
 
@@ -65,12 +84,27 @@ keeps its App alive until that occurrence retires. Dropping the Minecraft
 static occurrence alone cannot free an App still referenced by that callback.
 Foreign or previously retired statistics owners are rejected before adoption.
 
+A retained diagnostic owns its consumed query result, evaluated Strings and
+captured PrintStream occurrences until native retirement. BUSY preserves those
+occurrences for cleanup retry; it does not replay the source query or output.
+
 The [MouseHelper and cursor](input.md) use the same Display/input namespace.
 Native retirement releases the candidate's counted occurrence before graphics
 and Display teardown. An external MouseHelper or cursor hold preserves its
 actual Display lease and makes final teardown retryable.
 
 ## Validation and remaining work
+
+The current startup-tail source passes 47 selected Windows cases; nine Core
+output cases retain their preceding Windows source scope. Clang 18 and GCC 13
+each pass 41 CPU/protocol and twelve real-device cases with ASan, UBSan and
+leak detection. Fresh Windows normal and real-GL-error Session profiles pass
+103 and 109 checks through the cx470 boundary. Linux default-directory/Session
+startup and original-JVM or visual correspondence are outside those results.
+A separate Release headless build links the region-inspection utility with
+client, sound, audio and testing disabled. It does not run the utility or
+qualify server behavior. The following earlier results retain their own source
+snapshots.
 
 The [testing record](../testing.md#normal-startup-owner-qualification) separates
 the earlier cohorts from the later native checks. Nine fresh Windows window
@@ -99,6 +133,6 @@ The later test record also retains failed-statistics/shared-Font cleanup,
 five prepared logo profiles and cursor controls. Wider Linux qualification is
 still recorded separately from the Windows default-directory profile.
 
-Controllers discovery, later graphics/audio setup, screen transitions,
-World/Player publication, frame/tick scheduling and the live game loop remain
-unfinished. The default executable continues to use title/inspection startup.
+Nonempty physical Controllers mapping, cx construction and later startup
+audio/effects, screen transitions, World/Player publication, frame/tick
+scheduling and the live game loop remain unfinished. The default executable continues to use title/inspection startup.

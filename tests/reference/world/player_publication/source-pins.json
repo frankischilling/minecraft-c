@@ -324,8 +324,8 @@
       "sha256": "d5dd284ce82cbe5e8a0c0ab8f216d70fdce71a6aeebb7c1ee0e615b821c46a79"
     },
     "include/mc/entity/player/player.h": {
-      "bytes": 9912,
-      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+      "bytes": 10280,
+      "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "src/world/info/info.c": {
       "bytes": 43559,
@@ -390,5 +390,43 @@
       "sha256": "5114e4584c14c366372b03dca7863a3b0a36b4bdb66dba14400a46ee3924cf90"
     }
   },
-  "scope": "Finite unchanged client fd.a(gs), Player-positive fd.b(sn), awake/empty fd.y, duplicate identities and genuine registered NULL WorldAccess failure after publications. Actual fd/wy/rh/gr/dc/ok/lm owners and CPU chunk acquisition; no Player NBT success, entering a bed, renderer callback, tick/input/render/network/audio or full-startup parity claim. Native authored controls additionally test callback reentry/error, zero provider capacity, typed holds/retirement, actual sleeping cells and failed NBT base prefixes."
+  "scope": "Finite unchanged client fd.a(gs), Player-positive fd.b(sn), awake/empty fd.y, duplicate identities and genuine registered NULL WorldAccess failure after publications. Actual fd/wy/rh/gr/dc/ok/lm owners and CPU chunk acquisition; no Player NBT success, entering a bed, renderer callback, tick/input/render/network/audio or full-startup parity claim. Native authored controls additionally test callback reentry/error, zero provider capacity, typed holds/retirement, actual sleeping cells and failed NBT base prefixes.",
+  "current_binding_updates": [
+    {
+      "role": "Current unqualified composed-source admission only; all prior products and original/JDK observations keep their historical bindings.",
+      "parent_public_source_map": {
+        "sha256": "528a56f56dd4b4888c1f1a101dd3b54c59a43722a4c1a0f5e4bb84d2f7f8dd3b",
+        "files": 2252,
+        "commit": "6249a64de2113a9c1c84272df5237a4a4427998a"
+      },
+      "previous_metadata": {
+        "bytes": 14370,
+        "sha256": "7181b7fcb1cd501067afe37c2ae817490c8555fecc15e59752c61295832b25c8"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 346148,
+        "sha256": "cb6ebe63c35026e125ea06e28711d20e144211df29c7e8465638a6fed164fa65"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 19,
+          "after_count": 19,
+          "previous": {
+            "include/mc/entity/player/player.h": {
+              "bytes": 9912,
+              "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "admitted_path_scope": {
+        "native_sources": [
+          "include/mc/entity/player/player.h"
+        ]
+      },
+      "preserved_unrelated_producer_rows": true
+    }
+  ]
 }

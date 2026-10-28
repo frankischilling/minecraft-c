@@ -42,6 +42,11 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
          (startup->statistics == NULL || !startup->statistics->entered)))
         return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
                                "later source children still borrow startup resources", out);
+    const mc_client_startup_status graphics = application_startup_graphics_retire(startup);
+    if (graphics != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, graphics,
+                               "startup retained GL diagnostic calls before Display retirement",
+                               out);
     const mc_client_startup_status input = application_startup_input_retire(startup);
     if (input != MC_CLIENT_STARTUP_OK)
         return cleanup_failure(startup, input, "startup actual vy/Cursor native retirement", out);
@@ -345,6 +350,8 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->statistics = NULL;
     free(startup->input);
     startup->input = NULL;
+    free(startup->graphics);
+    startup->graphics = NULL;
     app->startup = NULL;
     /* No source f/J/o mutation and no kg join: constructor retirement owns
      * native worker cancellation after this actual borrowed App is detached. */

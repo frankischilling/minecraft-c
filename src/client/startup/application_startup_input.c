@@ -48,13 +48,14 @@ mc_client_startup_status application_startup_input(mc_client_application_startup
     call->C_stored = true;
     call->last_pc = 380;
     startup->last_startup_store = 380;
+    startup->failure.caller.pc = 383;
+    if (mc_client_sdk_controllers_create(input, &call->input) != MC_CLIENT_SDK_INPUT_OK)
+        goto input_failure;
+    call->controllers_call_completed = true;
+    call->last_pc = 383;
     call->active = false;
     startup->active = outer_active;
-    startup->failure.caller.pc = 383;
-    return application_startup_fail(
-        &startup->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-        "next unexecuted Controllers.create; no handler/frame/tick body entered", MC_CLASS, "a",
-        "()V", 383);
+    return application_startup_graphics(startup);
 input_failure:
     call->active = false;
     startup->active = outer_active;

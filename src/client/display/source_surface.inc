@@ -17,6 +17,7 @@ static void source_initialize(mc_client_display *display) {
     const mc_client_modelview identity = {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
     s->modelview = identity;
     memcpy(s->projection, identity.column_major, sizeof(s->projection));
+    s->matrix_mode = GL_MODELVIEW;
     s->next_list_base = 1;
     s->initialized = true;
 }
@@ -34,6 +35,41 @@ static bool source_enter(mc_client_display *display, const char *operation, mc_c
 static bool source_leave(mc_client_display *display, bool ok, mc_client_display_error *error) {
     --display->source.active_calls;
     return ok ? success(error) : false;
+}
+
+static bool source_setting_enter(mc_client_display *display, const char *operation,
+                                 mc_client_display_error *error) {
+    if (!source_enter(display, operation, error))
+        return false;
+    if (display->source.compiling != NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                 "compiled selected-state path", 0),
+                            error);
+    return true;
+}
+
+static void source_matrix_copy(const mc_client_source_state *state, mc_client_modelview *matrix) {
+    if (state->matrix_mode == GL_PROJECTION)
+        memcpy(matrix->column_major, state->projection, sizeof(state->projection));
+    else
+        *matrix = state->modelview;
+}
+
+static void source_matrix_store(mc_client_source_state *state, const mc_client_modelview *matrix) {
+    if (state->matrix_mode == GL_PROJECTION)
+        memcpy(state->projection, matrix->column_major, sizeof(state->projection));
+    else
+        state->modelview = *matrix;
+}
+
+/* Called only after the existing reached FP admission. Copy through the real
+ * matrix value type, never alias-cast projection's float-array storage. */
+static void source_matrix_translate(mc_client_source_state *state, float x, float y, float z) {
+    mc_client_modelview matrix;
+    source_matrix_copy(state, &matrix);
+    mc_client_source_translate(&matrix, x, y, z);
+    source_matrix_store(state, &matrix);
 }
 
 bool mc_client_display_source_get_error(mc_client_display *display, uint32_t *value,
@@ -439,7 +475,8 @@ bool mc_client_display_source_translate(mc_client_display *display, float x, flo
         if (ok) { command->value.vector[0] = x; command->value.vector[1] = y; command->value.vector[2] = z; }
     } else {
         ok = source_fp_admit("source matrix translation FP", error);
-        if (ok) mc_client_source_translate(&display->source.modelview, x, y, z);
+        if (ok)
+            source_matrix_translate(&display->source, x, y, z);
     }
     return source_leave(display, ok, error);
 }
@@ -447,10 +484,14 @@ bool mc_client_display_source_translate(mc_client_display *display, float x, flo
 bool mc_client_display_source_push(mc_client_display *display, mc_client_display_error *error) {
     if (!source_enter(display, "source matrix push", error)) return false;
     bool ok = false;
-    if (display->source.compiling != NULL || display->source.depth >= SOURCE_MATRIX_DEPTH) {
+    mc_client_source_state *state = &display->source;
+    size_t *depth = state->matrix_mode == GL_PROJECTION ? &state->projection_depth : &state->depth;
+    mc_client_modelview *stack =
+        state->matrix_mode == GL_PROJECTION ? state->projection_stack : state->stack;
+    if (state->compiling != NULL || *depth >= SOURCE_MATRIX_DEPTH) {
         fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix push", "compiled push/stack limit", 0);
     } else {
-        display->source.stack[display->source.depth++] = display->source.modelview;
+        source_matrix_copy(state, &stack[(*depth)++]);
         ok = true;
     }
     return source_leave(display, ok, error);
@@ -459,10 +500,14 @@ bool mc_client_display_source_push(mc_client_display *display, mc_client_display
 bool mc_client_display_source_pop(mc_client_display *display, mc_client_display_error *error) {
     if (!source_enter(display, "source matrix pop", error)) return false;
     bool ok = false;
-    if (display->source.compiling != NULL || display->source.depth == 0) {
+    mc_client_source_state *state = &display->source;
+    size_t *depth = state->matrix_mode == GL_PROJECTION ? &state->projection_depth : &state->depth;
+    mc_client_modelview *stack =
+        state->matrix_mode == GL_PROJECTION ? state->projection_stack : state->stack;
+    if (state->compiling != NULL || *depth == 0) {
         fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix pop", "compiled pop/stack underflow", 0);
     } else {
-        display->source.modelview = display->source.stack[--display->source.depth];
+        source_matrix_store(state, &stack[--(*depth)]);
         ok = true;
     }
     return source_leave(display, ok, error);
@@ -483,6 +528,115 @@ bool mc_client_display_source_alpha_test(mc_client_display *display, bool enable
     if (display->source.compiling != NULL)
         return source_leave(display, fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source alpha test", "compiled alpha path", 0), error);
     display->source.alpha_test = enabled;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_shade_model(mc_client_display *display, int32_t mode,
+                                          mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glShadeModel", error))
+        return false;
+    if (mode != GL_SMOOTH)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glShadeModel",
+                                 "only actual smooth shader profile is supported", 0),
+                            error);
+    /* The existing source shader already supplies smooth interpolation. */
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_clear_depth(mc_client_display *display, double depth,
+                                          mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glClearDepth", error))
+        return false;
+    uint64_t bits;
+    memcpy(&bits, &depth, sizeof(bits));
+    if (bits != UINT64_C(0x3ff0000000000000) || display->gl.ClearDepth == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glClearDepth",
+                                 "depth1 and actual function address required", 0),
+                            error);
+    display->gl.ClearDepth(depth);
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_depth_test(mc_client_display *display, bool enabled,
+                                         mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source depth-test enable", error))
+        return false;
+    if ((enabled && display->gl.Enable == NULL) || (!enabled && display->gl.Disable == NULL))
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL,
+                                 "source depth-test enable", "actual function address unavailable",
+                                 0),
+                            error);
+    if (enabled)
+        display->gl.Enable(GL_DEPTH_TEST);
+    else
+        display->gl.Disable(GL_DEPTH_TEST);
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_depth_function(mc_client_display *display, int32_t function,
+                                             mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glDepthFunc", error))
+        return false;
+    if (function != GL_LEQUAL || display->gl.DepthFunc == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glDepthFunc",
+                                 "LEQUAL and actual function address required", 0),
+                            error);
+    display->gl.DepthFunc((GLenum)function);
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_alpha_function(mc_client_display *display, int32_t function,
+                                             float reference, mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glAlphaFunc", error))
+        return false;
+    uint32_t bits;
+    memcpy(&bits, &reference, sizeof(bits));
+    if (function != GL_GREATER || bits != UINT32_C(0x3dcccccd))
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glAlphaFunc",
+                                 "only actual GREATER/float0.1 shader profile is supported", 0),
+                            error);
+    /* The existing alphaTest uniform gates that real fragment comparison.
+     * No new program, uniform, floating arithmetic or GL error query occurs. */
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_cull_face(mc_client_display *display, int32_t mode,
+                                        mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glCullFace", error))
+        return false;
+    if (mode != GL_BACK || display->gl.CullFace == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCullFace",
+                                 "BACK and actual function address required", 0),
+                            error);
+    display->gl.CullFace((GLenum)mode);
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_matrix_mode(mc_client_display *display, int32_t mode,
+                                          mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glMatrixMode", error))
+        return false;
+    if (mode != GL_MODELVIEW && mode != GL_PROJECTION)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glMatrixMode",
+                                 "only actual MODELVIEW/PROJECTION matrices are supported", 0),
+                            error);
+    display->source.matrix_mode = mode;
+    return source_leave(display, true, error);
+}
+
+bool mc_client_display_source_load_identity(mc_client_display *display,
+                                            mc_client_display_error *error) {
+    if (!source_setting_enter(display, "source glLoadIdentity", error))
+        return false;
+    const mc_client_modelview identity = {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
+    source_matrix_store(&display->source, &identity);
     return source_leave(display, true, error);
 }
 
@@ -508,7 +662,9 @@ bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids
                 display->source.color_known = true;
             } else if (command->kind == SOURCE_COMMAND_TRANSLATE) {
                 ok = source_fp_admit("source list matrix translation FP", error);
-                if (ok) mc_client_source_translate(&display->source.modelview, command->value.vector[0], command->value.vector[1], command->value.vector[2]);
+                if (ok)
+                    source_matrix_translate(&display->source, command->value.vector[0],
+                                            command->value.vector[1], command->value.vector[2]);
             } else {
                 ok = source_execute_batch(display, command->value.draw.bytes, command->value.draw.size,
                                            command->value.draw.count, command->value.draw.mode,

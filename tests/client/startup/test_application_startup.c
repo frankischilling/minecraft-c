@@ -8,6 +8,9 @@
 #include "client/startup/application_startup_statistics.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
+#ifdef MC_STARTUP_CONTROLLER_BOUNDARY
+#include "controller_boundary_observer.h"
+#endif
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_video.h>
@@ -982,7 +985,7 @@ static int real_window_prefix(const char *resources, const char *imported_resour
     }
     /* These copied diagnostic pointers were traced to static source text,
      * not Engine/Pack/array-owned views; exercise their lifetime after actual
-     * parent/namespace/resource retirement in these UNRUN controls. */
+     * parent/namespace/resource retirement in these native controls. */
     if (retained_lookup != NULL && retained_lookup->operation != NULL)
         CHECK(strlen(retained_lookup->operation) != 0);
     if (retained_setter != NULL && retained_setter->operation != NULL)
@@ -1122,10 +1125,12 @@ int main(int argc, char **argv) {
         CHECK(argc == 3);
         CHECK(statistics_null_z(argv[1]) == 0);
     } else if (strcmp(argv[2], "window-session") == 0 ||
+               strcmp(argv[2], "window-session-gl-error") == 0 ||
                strcmp(argv[2], "window-statistics-foreign-ready") == 0) {
         CHECK(argc == 4);
-        CHECK(statistics_session_window(
-                  argv[1], argv[3], strcmp(argv[2], "window-statistics-foreign-ready") == 0) == 0);
+        CHECK(statistics_session_window(argv[1], argv[3],
+                                        strcmp(argv[2], "window-statistics-foreign-ready") == 0,
+                                        strcmp(argv[2], "window-session-gl-error") == 0) == 0);
     } else {
         CHECK(strcmp(argv[2], "window-default-directory") == 0 ||
               strcmp(argv[2], "window-render-engine-limit") == 0 ||

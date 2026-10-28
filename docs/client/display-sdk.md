@@ -60,12 +60,35 @@ matrix passes the SDK queue/icon and protocol/importer controls; see the exact
 [qualification scope](../testing.md#normal-startup-owner-qualification). Complete
 physical input, SDK window/update behavior and original correspondence remain
 unqualified. The finite source profile excludes created-window mode
-reconfiguration, fullscreen/AWT parents, JInput construction, explicit animated
-Cursor, nondefault SDK properties, IME preedit, other window drivers and complete
+reconfiguration, fullscreen/AWT parents, nonempty physical Controller mapping,
+explicit animated Cursor, nondefault SDK properties, IME preedit, other window drivers and complete
 Java SDK reflection/shutdown/exception behavior. SDL transport timestamps retain
 SDL's origin; raw Windows/X11 event, timestamp, coalescing and pixel parity are
 not claimed. The verified game mouse filter uses wall time and App `P`, so no
 unjustified epoch conversion is introduced.
+
+## Startup GL setup and diagnostics
+
+The normal startup caller now performs its selected GL setup through offset
+460 and both surrounding diagnostics. Depth/alpha and projection/modelview
+operations use this same Display and source surface. The current source path
+stops before cx470; broader rendering, lighting/fog and the game loop have
+their own unfinished methods.
+
+Each `Minecraft.c(String)` call performs one glGetError, without a pre-drain,
+post-drain or frame reset. A nonzero result uses the finite GLU mapping and
+three independently captured System.out receivers. StringBuilder text/int
+formatting preserves counted UTF-16 and argument order, including arguments
+evaluated before a null receiver fails at its println invocation. The call
+retains completed effects and full child errors until explicit native cleanup.
+The [Core output owner](../core/java-writer.md#systemout-and-base-printstream)
+supplies real buffered output; the caller does not substitute PrintWriter or
+write a cached global stdout pointer directly.
+
+Fresh Windows normal and nonzero-error startup profiles pass 103 and 109
+checks. Focused Linux device tests use real Display contexts with ASan, UBSan
+and leak detection. Neither result establishes original GL/SDK pixel, event
+or timestamp correspondence, or Linux default-directory/Session startup.
 
 The old diagnostic frontend consumes the same retained event transport, with
 its existing menu and inspection behavior. Loading draw still stops at the

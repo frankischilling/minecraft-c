@@ -49,6 +49,10 @@
       "bytes": 3573,
       "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
     },
+    "include/mc/core/java/print_stream.h": {
+      "bytes": 7399,
+      "sha256": "59cbbfedd019bf16ecf3cca0d6456991ed9cbb2d7e0c62fe241a00d58747a1ed"
+    },
     "include/mc/core/java/properties.h": {
       "bytes": 4344,
       "sha256": "b266c2f3124fc5e81671b49f06ba4257d7ec56461b5cde9c7bc4d9a1cc50761d"
@@ -60,6 +64,10 @@
     "include/mc/core/java/reader.h": {
       "bytes": 3059,
       "sha256": "d606f35402ee028d5ea7e5ce12e4c41525b189e5d66b0f44f0e17db0234a8ea9"
+    },
+    "include/mc/core/java/source_encoder.h": {
+      "bytes": 3989,
+      "sha256": "fd793f7ce5d13419235c5ae5286fbda886d32a1f40c329623fcc310a118db292"
     },
     "include/mc/core/java/writer.h": {
       "bytes": 7832,
@@ -90,8 +98,8 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/player/player.h": {
-      "bytes": 9912,
-      "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+      "bytes": 10280,
+      "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
     },
     "include/mc/entity/registry/registry.h": {
       "bytes": 3167,
@@ -334,24 +342,40 @@
       "sha256": "68e9d96b80e9513a0e0defc1627c77124d0ecc3e7ba7f1f9138b67ccd0fe5c00"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 13654,
-      "sha256": "35fa3b19bc3ae60d20bb3c9ab9455084437b6a08cdef3d651c9ebc8fb3d19c46"
+      "bytes": 14633,
+      "sha256": "1de0aa84246fba4da1945fe7487b56d450744b2b8a4adbe79f71cedcb02b28ec"
     },
     "src/client/startup/application_lifetime.c": {
       "bytes": 6707,
       "sha256": "b328d61297b2df99578415c650418b152146b1c24cf60111219949b45dfcfb73"
     },
     "src/client/startup/application_owner.h": {
-      "bytes": 12283,
-      "sha256": "8d647ff14a379adefb633c98abb7137a162ba493177f6f980671563af3577cc6"
+      "bytes": 12435,
+      "sha256": "82b3e5faf64cd5b0d1427e7bf34037cc25faa8c38409bd3be34051b6f5429dbf"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 3512,
-      "sha256": "12ff407d96947199722c39ff121e0dc553883fd50631fc14e97ccb6a50757c3e"
+      "bytes": 3932,
+      "sha256": "6a7e7205f53f812ac40e9a87af6b4a1cb376efa31b4d36f89e4132028ef98476"
     },
     "src/client/startup/timer_hack.c": {
       "bytes": 18780,
       "sha256": "bdac1c11f14c63cc2bce38fe270efccd445fb744765bd1b0fae9f92f5459f4f0"
+    },
+    "src/core/java/print_stream.c": {
+      "bytes": 20421,
+      "sha256": "3181cc0eb2c0518077c39a27e43cc12d9facb861211c8cc10b98d34f9d659a7f"
+    },
+    "src/core/java/print_stream_internal.h": {
+      "bytes": 1920,
+      "sha256": "b19019a4ad5f8f008e3db0fb09476140ea45bb2a1965a70d6009ee2c10771a29"
+    },
+    "src/core/java/print_stream_native.c": {
+      "bytes": 4540,
+      "sha256": "161364bb3c034fa7f5f06900e613ef5092c5fa444cb6669155a63223ac86e68e"
+    },
+    "src/core/java/system_output.c": {
+      "bytes": 7492,
+      "sha256": "2dd90dc597040fa7cc4834943fdf788db29b063add11cdaf14cd77b56d8d64f8"
     },
     "src/entity/classes/classes_internal.h": {
       "bytes": 2535,
@@ -366,12 +390,16 @@
       "sha256": "0555675757288070ccfff4fe9fe9945f5af01cc33791a91a60d7b97d8f895f3a"
     },
     "src/entity/player/strings.c": {
-      "bytes": 4062,
-      "sha256": "5eada78cac15c7c12b22dbe932b0dfdae8fe4d15de526cd7e254160ff2173cd6"
+      "bytes": 4199,
+      "sha256": "691694658b3ee310a7d8f9626d3bd69949ed5a0842790426828b1f33f79abc6a"
     },
     "src/entity/registry/registry_internal.h": {
       "bytes": 951,
       "sha256": "b1b7604e84a809e2cdd5406b357808474a2ec880f177dd13e2ed795d91388cff"
+    },
+    "src/platform/text/stdout.h": {
+      "bytes": 2129,
+      "sha256": "d3b291d9b32f1e68dec1115188c73da6930c1a91e9c00bde83324c775ed30641"
     },
     "src/platform/time/nanotime.h": {
       "bytes": 3933,
@@ -523,6 +551,62 @@
           "removed_paths": []
         }
       }
+    },
+    {
+      "role": "Current unqualified composed-source admission only; all prior products and original/JDK observations keep their historical bindings.",
+      "parent_public_source_map": {
+        "sha256": "528a56f56dd4b4888c1f1a101dd3b54c59a43722a4c1a0f5e4bb84d2f7f8dd3b",
+        "files": 2252,
+        "commit": "6249a64de2113a9c1c84272df5237a4a4427998a"
+      },
+      "previous_metadata": {
+        "bytes": 20768,
+        "sha256": "d7b63a739f78d0e9c7f046202caf6c0a80a1f91c799d51d05d88d1aafca37d70"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 346148,
+        "sha256": "cb6ebe63c35026e125ea06e28711d20e144211df29c7e8465638a6fed164fa65"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 95,
+          "after_count": 102,
+          "previous": {
+            "include/mc/entity/player/player.h": {
+              "bytes": 9912,
+              "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+            },
+            "src/client/startup/application_classes.c": {
+              "bytes": 13654,
+              "sha256": "35fa3b19bc3ae60d20bb3c9ab9455084437b6a08cdef3d651c9ebc8fb3d19c46"
+            },
+            "src/client/startup/application_owner.h": {
+              "bytes": 12283,
+              "sha256": "8d647ff14a379adefb633c98abb7137a162ba493177f6f980671563af3577cc6"
+            },
+            "src/client/startup/application_owner_internal.h": {
+              "bytes": 3512,
+              "sha256": "12ff407d96947199722c39ff121e0dc553883fd50631fc14e97ccb6a50757c3e"
+            },
+            "src/entity/player/strings.c": {
+              "bytes": 4062,
+              "sha256": "5eada78cac15c7c12b22dbe932b0dfdae8fe4d15de526cd7e254160ff2173cd6"
+            }
+          },
+          "added_paths": [
+            "include/mc/core/java/print_stream.h",
+            "include/mc/core/java/source_encoder.h",
+            "src/core/java/print_stream.c",
+            "src/core/java/print_stream_internal.h",
+            "src/core/java/print_stream_native.c",
+            "src/core/java/system_output.c",
+            "src/platform/text/stdout.h"
+          ],
+          "removed_paths": []
+        }
+      },
+      "admitted_path_scope": "complete current declared source closure",
+      "preserved_unrelated_producer_rows": false
     }
   ]
 }

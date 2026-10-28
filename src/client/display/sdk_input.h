@@ -56,6 +56,43 @@ typedef struct mc_client_sdk_input_error {
     char detail[256];
 } mc_client_sdk_input_error;
 
+typedef enum mc_client_sdk_controller_environment_phase {
+    MC_CLIENT_SDK_CONTROLLER_ENV_COLD,
+    MC_CLIENT_SDK_CONTROLLER_ENV_ALLOCATED,
+    MC_CLIENT_SDK_CONTROLLER_ENV_INITIALIZING,
+    MC_CLIENT_SDK_CONTROLLER_ENV_SUBSYSTEM,
+    MC_CLIENT_SDK_CONTROLLER_ENV_ENUMERATED,
+    MC_CLIENT_SDK_CONTROLLER_ENV_FAILED,
+    MC_CLIENT_SDK_CONTROLLER_ENV_RETIRING
+} mc_client_sdk_controller_environment_phase;
+
+typedef enum mc_client_sdk_controller_backend {
+    MC_CLIENT_SDK_CONTROLLER_LINUX = 1u,
+    MC_CLIENT_SDK_CONTROLLER_RAWINPUT = 2u,
+    MC_CLIENT_SDK_CONTROLLER_DINPUT = 4u,
+    MC_CLIENT_SDK_CONTROLLER_XINPUT = 8u,
+    MC_CLIENT_SDK_CONTROLLER_WGI = 16u,
+    MC_CLIENT_SDK_CONTROLLER_GAMEINPUT = 32u,
+    MC_CLIENT_SDK_CONTROLLER_VIRTUAL = 64u
+} mc_client_sdk_controller_backend;
+
+typedef struct mc_client_sdk_controllers_state {
+    const void *controllers_identity, *events_identity, *event_identity;
+    size_t controllers_count, events_count;
+    int32_t controller_count, last_clinit_store_pc, last_create_pc;
+    bool created, create_attempt_retained;
+    const void *returned_array_identity, *filtered_list_identity, *iterator_identity;
+    const void *environment_identity;
+    mc_client_sdk_controller_environment_phase environment_phase;
+    bool native_active, native_retired, subsystem_reference_owned, initialization_attempted,
+        enumeration_returned;
+    int native_count;
+    const uint32_t *native_ids;
+    size_t init_calls, enumeration_calls, quit_calls;
+    uint32_t configured_backend_mask;
+    const mc_client_sdk_input_error *environment_failure;
+} mc_client_sdk_controllers_state;
+
 typedef struct mc_client_sdk_key_event {
     int32_t key;
     uint32_t character;
@@ -92,7 +129,8 @@ typedef struct mc_client_sdk_input_state {
  * created flag. construct_default performs real native platform/window/input
  * binding, owned maps/Strings/buffers and once-only Mouse->Keyboard creation.
  * Default SDK properties and null explicit cursor are the admitted profile;
- * JInput create/animated Cursor/nondefault-property adapters are not invented.
+ * Animated Cursor/nondefault-property adapters remain explicit. Controllers use
+ * the separately bounded genuine discovery entries below.
  * Physical-device presence is observed, not used as a fake created=false. A
  * logical OS/window attachment can exist without a connected physical HID.
  * The actual SDL port/window stays borrowed and live until native retirement. */
@@ -117,6 +155,25 @@ mc_client_sdk_input_status mc_client_sdk_mouse_set_grabbed(mc_client_sdk_input *
                                                            mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_keyboard_poll(mc_client_sdk_input *,
                                                        mc_client_sdk_input_error *);
+/* Actual Controllers.create/poll on this SAME SDK namespace. Discovery owns
+ * a real SDL joystick subsystem occurrence and enumeration. Only an observed
+ * nonnull count0 array completes this increment. Nonempty hardware remains a
+ * retained native mapping dependency at create12, not an empty environment or
+ * caught Java exception. created is published only at125 after real temporary
+ * array/list/cursor construction. Repeated create returns6 without discovery.
+ * poll has no Source created guard and does not pump/remove SDL events.
+ * The full physical target/component/event/rumbler branch remains required.
+ * Error/view/context storage is live and disjoint; all calls are main-thread.
+ * Source Controllers.destroy remains its separate literal no-op; native final
+ * retirement is performed only by the existing input owner retirement. */
+mc_client_sdk_input_status mc_client_sdk_controllers_create(mc_client_sdk_input *,
+                                                            mc_client_sdk_input_error *);
+mc_client_sdk_input_status mc_client_sdk_controllers_poll(mc_client_sdk_input *,
+                                                          mc_client_sdk_input_error *);
+/* Borrowed main-thread snapshot; pointers stay live only under the actual
+ * owner lifetime/exclusive domain. Inspection does not initialize or poll. */
+bool mc_client_sdk_controllers_inspect(const mc_client_sdk_input *,
+                                       mc_client_sdk_controllers_state *);
 mc_client_sdk_input_status mc_client_sdk_controllers_is_created(mc_client_sdk_input *, bool *out,
                                                                 mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_mouse_take_dx(mc_client_sdk_input *, int32_t *out,

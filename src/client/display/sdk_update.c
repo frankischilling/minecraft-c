@@ -160,12 +160,11 @@ static bool devices(mc_client_sdk_update *o, mc_client_sdk_update_error *e) {
         mc_client_sdk_input_caller(&e->input, "org/lwjgl/opengl/Display", "pollDevices", "()V", 21);
         goto failed;
     }
-    input->parent_dispatch = false;
-    if (controllers) {
-        failure(e, MC_CLIENT_SDK_UPDATE_UNSUPPORTED_PROFILE,
-                "actual created JInput controller poll", "pollDevices", "()V", 27);
-        return false;
+    if (controllers && mc_client_sdk_controllers_poll(input, &e->input) != MC_CLIENT_SDK_INPUT_OK) {
+        mc_client_sdk_input_caller(&e->input, "org/lwjgl/opengl/Display", "pollDevices", "()V", 27);
+        goto failed;
     }
+    input->parent_dispatch = false;
     return true;
 failed:
     input->parent_dispatch = false;

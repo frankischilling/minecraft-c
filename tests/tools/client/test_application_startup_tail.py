@@ -1,7 +1,9 @@
 """Finite actual startup statistics/input controls; no original/JVM execution.
 
-Only window-session credits the genuine normal prefix through App.C380 and
-the next unexecuted Controllers383. Other modes test explicit native admission
+Only window-session and its real GL-error boundary mode credit the genuine
+normal prefix through actual GL setup/diagnostics to the next unexecuted cx470.
+Nonempty Controllers discovery remains an honest SDK Native12 refusal.
+Other modes test explicit native admission
 or private-helper ownership over genuine, partially constructed owners.
 """
 import argparse
@@ -17,7 +19,7 @@ import tempfile
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[3]
 MODES = ("statistics-admission", "statistics-null-z", "window-session",
-         "window-statistics-foreign-ready")
+         "window-statistics-foreign-ready", "window-session-gl-error")
 
 
 def require(value, message):
@@ -67,7 +69,20 @@ def admit(capture, stdout, stderr, executable, mode):
     footer = re.fullmatch(rb"Actual source startup authored contracts: ([1-9][0-9]*) checks\r?\n",
                           lines[-1])
     require(footer is not None, "exact native assertion footer")
-    for line in lines[:-1]:
+    banners = lines[:-1]
+    if mode == "window-session-gl-error":
+        header = rb"########## GL ERROR ##########\r?\n"
+        starts = [index for index, line in enumerate(banners) if re.fullmatch(header, line)]
+        require(len(starts) == 1, "exact one complete real GL diagnostic block")
+        index = starts[0]
+        require(index + 3 <= len(banners) and
+                re.fullmatch(rb"@ Pre startup\r?\n", banners[index + 1]) is not None and
+                re.fullmatch(rb"1280: Invalid enum\r?\n", banners[index + 2]) is not None,
+                "exact genuine three println results")
+        # Preserve the raw stream. Native PrintStream and C printf banners
+        # have separate buffering; do not insert a flush or reorder output.
+        banners = banners[:index] + banners[index + 3:]
+    for line in banners:
         require(re.fullmatch(rb"[1-9][0-9]* (?:achievements|recipes)\r?\n", line) is not None,
                 "preserved complete genuine constructor banner")
     return int(footer[1])
@@ -130,8 +145,11 @@ def main():
               "appdata": None if appdata is None else str(appdata),
               "child_environment_overrides": [] if appdata is None else ["APPDATA"],
               "native_default_home_on_POSIX": os.name != "nt",
-              "normal_source_through_C380": args.mode == "window-session",
-              "next_unexecuted_MC383": args.mode == "window-session",
+              "normal_source_through_C380": args.mode in ("window-session", "window-session-gl-error"),
+              "normal_source_through_GL460_and_diagnostic466": args.mode in
+                  ("window-session", "window-session-gl-error"),
+              "next_unexecuted_MC470": args.mode in ("window-session", "window-session-gl-error"),
+              "real_controller_boundary_invalid_enum": args.mode == "window-session-gl-error",
               "original_JVM_or_visual_parity": False}
     (work / "report.json").write_text(json.dumps(record, indent=2) + "\n")
     print(work)

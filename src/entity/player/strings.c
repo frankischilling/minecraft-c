@@ -10,6 +10,11 @@ static const mc_player_string texture = {SIZE_MAX, sizeof(texture_units) / sizeo
                                          texture_units};
 static const mc_player_string model = {SIZE_MAX, sizeof(model_units) / sizeof(model_units[0]),
                                        model_units};
+static const mc_player_string empty = {SIZE_MAX, 0, NULL};
+
+const mc_player_string *mc_player_empty_literal(void) {
+    return &empty;
+}
 
 void mc_player_error_clear(mc_player_error *error) {
     if (error != NULL)

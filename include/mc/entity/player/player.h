@@ -59,6 +59,12 @@ mc_player_status mc_player_string_retain(mc_player_string *string);
 void mc_player_string_release(mc_player_string *string);
 bool mc_player_string_read(const mc_player_string *string, mc_player_string_view *out);
 
+/* Canonical immutable empty literal, with the same eternal SIZE_MAX owner
+ * convention as the texture/model literals. Borrowed; retaining/releasing an
+ * occurrence uses the existing literal convention and never frees it. Ordinary
+ * mc_player_string_create(NULL,0) still allocates a distinct empty String. */
+const mc_player_string *mc_player_empty_literal(void);
+
 typedef enum mc_player_session_phase {
     MC_PLAYER_SESSION_COLD,
     MC_PLAYER_SESSION_INITIALIZING,

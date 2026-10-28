@@ -84,5 +84,8 @@ typedef struct mc_client_source_state {
     int projection_uniform, modelview_uniform, textured_uniform, alpha_uniform;
     size_t vbo_bytes;
     bool vbo_capacity_uncertain;
+    int32_t matrix_mode;
+    mc_client_modelview projection_stack[SOURCE_MATRIX_DEPTH];
+    size_t projection_depth;
 } mc_client_source_state;
 #endif

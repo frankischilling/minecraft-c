@@ -64,6 +64,29 @@ bool mc_client_display_source_texture_enable(mc_client_display *, bool enabled,
                                              mc_client_display_error *);
 bool mc_client_display_source_alpha_test(mc_client_display *, bool enabled,
                                          mc_client_display_error *);
+/* Selected MC.a400..460 source profile on the same current Display. Admit only
+ * SMOOTH, depth1, LEQUAL, GREATER/reference bits0x3dcccccd, BACK and the two
+ * PROJECTION/MODELVIEW modes. Unsupported profiles and compiled setter paths
+ * fail natively; they do not synthesize a Java/GL error or acknowledge success.
+ * Direct GL operations do not query/drain errors, clear, pump, swap, repair FP,
+ * or reset unrelated state. Smooth/alpha use the existing actual source shader.
+ * Matrix identity affects only the selected matrix; each has its own stack.
+ * Existing compiled translations use the mode selected at list execution. */
+bool mc_client_display_source_shade_model(mc_client_display *, int32_t mode,
+                                          mc_client_display_error *);
+bool mc_client_display_source_clear_depth(mc_client_display *, double depth,
+                                          mc_client_display_error *);
+bool mc_client_display_source_depth_test(mc_client_display *, bool enabled,
+                                         mc_client_display_error *);
+bool mc_client_display_source_depth_function(mc_client_display *, int32_t function,
+                                             mc_client_display_error *);
+bool mc_client_display_source_alpha_function(mc_client_display *, int32_t function, float reference,
+                                             mc_client_display_error *);
+bool mc_client_display_source_cull_face(mc_client_display *, int32_t mode,
+                                        mc_client_display_error *);
+bool mc_client_display_source_matrix_mode(mc_client_display *, int32_t mode,
+                                          mc_client_display_error *);
+bool mc_client_display_source_load_identity(mc_client_display *, mc_client_display_error *);
 bool mc_client_display_source_bind_id(mc_client_display *, mc_client_texture,
                                       mc_client_display_error *);
 
