@@ -4,6 +4,7 @@
 #include "sdk_mode_internal.h"
 #include "sdk_update.h"
 #include "source_internal.h"
+#include "startup_surface.h"
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
@@ -1241,6 +1242,7 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
 #include "source_surface.inc"
 #include "texture_leases.inc"
 #include "loading_projection.inc"
+#include "startup_surface.inc"
 // clang-format on
 
 /* Canonical staged SDK owner uses the same native constructor/destructor. */

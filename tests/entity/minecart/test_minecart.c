@@ -215,8 +215,10 @@ static const uint16_t previous_pcs[31] = {0,   2,   8,   28,  47,  51,  71,  90,
 _Static_assert(MC_ENTITY_CLASS_KIND_MINECART == 22 && MC_ENTITY_CLASS_KIND_BOAT == 23 &&
                    MC_ENTITY_CLASS_KIND_ENTITY == 24 && MC_ENTITY_CLASS_KIND_PLAYER == 25 &&
                    MC_ENTITY_CLASS_KIND_LOCAL_PLAYER == 26 && MC_ENTITY_CLASS_KIND_PARTICLE == 27 &&
-                   MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE == 28 && MC_ENTITY_CLASS_KIND_COUNT == 29,
-               "canonical selectors stay stable when appending client particles");
+                   MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE == 28 && MC_ENTITY_CLASS_KIND_VV == 29 &&
+                   MC_ENTITY_CLASS_KIND_CF == 30 && MC_ENTITY_CLASS_KIND_LX == 31 &&
+                   MC_ENTITY_CLASS_KIND_C == 32 && MC_ENTITY_CLASS_KIND_COUNT == 33,
+               "canonical selectors stay stable when appending client renderer classes");
 _Static_assert(COUNT(shapes) == 10 && COUNT(allocation_pcs) == 31 && COUNT(previous_pcs) == 31,
                "complete literal Minecart initializer");
 

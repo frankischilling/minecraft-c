@@ -117,8 +117,5 @@ mc_client_startup_status application_startup_colors(mc_client_application_startu
                                             "native returned color argument occurrence drop", NULL,
                                             NULL, NULL, 0);
     }
-    startup->failure.caller = (mc_client_application_owner_site){MC_CLASS, "a", "()V", 298};
-    return application_startup_fail(&startup->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-                                    "next unexecuted MC298 before px new299/constructor304/t307",
-                                    MC_CLASS, "a", "()V", 298);
+    return application_startup_entity_renderer(startup);
 }

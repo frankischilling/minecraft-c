@@ -92,6 +92,13 @@ mc_nbt_status mc_nbt_stream_allocate(size_t maximum_owner_bytes, mc_nbt_stream *
                                      mc_nbt_stream_error *error);
 mc_nbt_status mc_nbt_stream_construct(mc_nbt_stream *raw, const mc_nbt_byte_input *actual_input,
                                       const mc_nbt_limits *limits, mc_nbt_stream_error *error);
+/* Actual DataInputStream.readLong over the SAME constructed input/scratch.
+ * Uses the parser's canonical readFully/read_buffer8 kernel without a tag,
+ * document, memory input or decode copy. READY/exclusive only. A primitive
+ * return or read failure leaves the constructed stream READY and retains its
+ * actual partial intake/error; readLong does not poison a DataInputStream.
+ * Output is unchanged on failure; source close remains a separate caller step. */
+mc_nbt_status mc_nbt_stream_read_long(mc_nbt_stream *, int64_t *, mc_nbt_stream_error *);
 mc_nbt_status mc_nbt_stream_parse(mc_nbt_stream *stream, bool require_compound,
                                   mc_nbt_document **out, mc_nbt_stream_error *error);
 mc_nbt_status mc_nbt_stream_source_close(mc_nbt_stream *stream, mc_nbt_stream_error *error);

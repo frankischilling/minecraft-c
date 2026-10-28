@@ -124,4 +124,10 @@ mc_client_bitmap_font_status mc_client_bitmap_font_draw(mc_client_bitmap_font *,
                                                         const mc_player_string *nullable_text,
                                                         int32_t x, int32_t y, uint32_t argb,
                                                         bool shadow, mc_client_bitmap_font_error *);
+/* Native identity check only: no activation, resource/GL call, hold or source
+ * receiver admission. A RAW font has no Display yet. The caller preserves
+ * the actual nullable source operand order before requesting this check. */
+bool mc_client_bitmap_font_uses_context(const mc_client_bitmap_font *,
+                                        const mc_client_loading_classes *,
+                                        const mc_client_display *);
 #endif

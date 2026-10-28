@@ -214,6 +214,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source VBO capacity", "prior upload allocation is uncertain", 0);
     if (!s->loading_ready)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source projection state", "actual source projection surface not prepared", 0);
+    if (s->lighting_enabled || s->fog_enabled)
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source shading state", "enabled lighting/fog requires its renderer", 0);
     if (count < 0 || mode != GL_TRIANGLES || (arrays & vertex_bit) == 0 ||
         (size_t)count > bytes / 32u || (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw", "unsupported mode/span/client vertex state", 0);

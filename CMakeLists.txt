@@ -236,7 +236,8 @@ if(MC_BUILD_CLIENT)
         src/client/gui/bitmap_font.c src/client/gui/bitmap_font_measure.c
         src/client/gui/bitmap_font_draw.c
         src/client/gui/loading_screen.c src/client/gui/loading_projection.c
-        src/client/gui/loading_geometry.c src/client/gui/loading_draw.c)
+        src/client/gui/loading_geometry.c src/client/gui/loading_draw.c
+        src/client/startup/application_quad.c)
     target_include_directories(mc_client_source_resources PUBLIC src src/platform/time)
     target_link_libraries(mc_client_source_resources PUBLIC
         mc_client_render_textures mc_client_image_io mc_client_gui mc_c_atomics
@@ -300,8 +301,10 @@ add_library(mc_core STATIC
     src/core/java/properties.c
     src/core/java/reader.c
     src/core/java/writer.c
+    src/core/java/logging.c
     src/core/java/random_profile.c
     src/core/math/math.c
+    src/core/math/trig_double.c
     src/core/math/strict.c
     src/core/math/fdlibm/log.c
     src/core/text/mutf8.c)
@@ -474,9 +477,10 @@ target_include_directories(mc_world_info PRIVATE src/platform/time)
 target_link_libraries(mc_world_info PUBLIC mc_storage PRIVATE mc_platform_time mc_build_options)
 
 # Canonical File/stream/SaveFormat prerequisites; no SDL/device dependency.
-add_library(mc_platform_files STATIC src/platform/files/directory.c)
+add_library(mc_platform_files STATIC src/platform/files/directory.c src/platform/files/byte_output.c)
 target_include_directories(mc_platform_files PUBLIC src/platform/files)
 target_link_libraries(mc_platform_files PRIVATE mc_build_options)
+target_link_libraries(mc_core PRIVATE mc_platform_files)
 add_library(mc_client_directory_native STATIC src/client/startup/directory_native.c)
 target_include_directories(mc_client_directory_native PUBLIC src/client/startup)
 target_link_libraries(mc_client_directory_native PUBLIC mc_core
@@ -493,6 +497,10 @@ add_library(mc_java_files STATIC
     src/world/storage/java_file_list.c src/world/storage/java_file_text.c)
 target_link_libraries(mc_java_files PUBLIC mc_world_info
     PRIVATE mc_core mc_platform_files mc_build_options)
+add_library(mc_java_outputs STATIC
+    src/world/storage/java_output.c src/world/storage/java_data_output.c)
+target_link_libraries(mc_java_outputs PUBLIC mc_java_files
+    PRIVATE mc_core mc_platform_files Threads::Threads mc_build_options)
 add_library(mc_client_directory_inputs STATIC src/client/startup/directory_inputs.c)
 target_include_directories(mc_client_directory_inputs PUBLIC src/client/startup)
 target_link_libraries(mc_client_directory_inputs PUBLIC mc_world_info
@@ -506,7 +514,7 @@ add_library(mc_client_saves STATIC
     src/client/saves/owner.c src/client/saves/metadata.c
     src/client/saves/selection.c src/client/saves/list.c)
 target_link_libraries(mc_client_saves PUBLIC
-    mc_java_files mc_world_info mc_math_classes mc_gzip_input PRIVATE mc_build_options)
+    mc_java_files mc_world_info mc_math_classes mc_gzip_input mc_persistence PRIVATE mc_build_options)
 
 add_executable(mc_region_inspect src/tools/storage/region_inspect.c)
 target_link_libraries(mc_region_inspect PRIVATE mc_storage mc_build_options)
@@ -544,7 +552,8 @@ add_library(mc_persistence STATIC
     src/world/storage/regions.c
     src/world/storage/store.c
     src/world/storage/chunk.c)
-target_link_libraries(mc_persistence PUBLIC mc_world mc_storage mc_world_info PRIVATE mc_build_options)
+target_link_libraries(mc_persistence PUBLIC mc_world mc_storage mc_world_info mc_java_outputs
+    mc_gzip_input PRIVATE mc_platform_time mc_build_options)
 
 add_library(mc_world_saved_data STATIC
     src/world/saved_data/storage.c
@@ -733,7 +742,7 @@ add_library(mc_client_application_owner STATIC
     src/client/startup/application_classes.c
     src/client/startup/application_lifetime.c
     src/client/startup/timer_hack.c)
-target_include_directories(mc_client_application_owner PRIVATE src/client src/platform/time)
+target_include_directories(mc_client_application_owner PUBLIC src PRIVATE src/client src/platform/time)
 target_link_libraries(mc_client_application_owner PUBLIC mc_simulation mc_c_atomics
     PRIVATE Threads::Threads mc_build_options)
 target_sources(mc_client_application_owner PRIVATE
@@ -766,6 +775,10 @@ if(MC_BUILD_CLIENT AND MC_BUILD_CLIENT_AUDIO AND TARGET mc_client_application_co
     target_link_libraries(mc_client_application_startup PUBLIC
         mc_client_application_constructor mc_client_display mc_client_saves
         mc_client_directory_inputs mc_c_atomics PRIVATE mc_build_options)
+endif()
+
+if(MC_BUILD_CLIENT)
+    include(cmake/client_rendering.cmake)
 endif()
 
 option(MC_ENABLE_APPLICATION_STARTUP_TESTS "Run genuine source run/startup CPU prefix controls" OFF)
@@ -1460,6 +1473,12 @@ if(BUILD_TESTING)
         add_test(NAME client.render_source_resources COMMAND mc_test_source_resources)
         set_tests_properties(client.render_source_resources PROPERTIES
             LABELS "public;unit;client;ownership" TIMEOUT 120)
+
+        add_executable(mc_test_application_quad tests/client/startup/test_application_quad.c)
+        target_link_libraries(mc_test_application_quad PRIVATE mc_client_source_resources mc_build_options)
+        add_test(NAME client.application_textured_rectangle_cpu COMMAND mc_test_application_quad)
+        set_tests_properties(client.application_textured_rectangle_cpu PROPERTIES
+            LABELS "public;unit;client;geometry" TIMEOUT 120)
 
         add_executable(mc_test_source_close_callbacks tests/client/render_engine/test_close_callbacks.c)
         target_link_libraries(mc_test_source_close_callbacks PRIVATE
@@ -5322,3 +5341,10 @@ foreach(_mc_map_target IN ITEMS
     endif()
 endforeach()
 unset(_mc_map_target)
+
+if(BUILD_TESTING)
+    include(cmake/tests/java_storage.cmake)
+    if(MC_BUILD_CLIENT)
+        include(cmake/tests/client_rendering.cmake)
+    endif()
+endif()

@@ -1,4 +1,5 @@
 #include "mc/core/java/writer.h"
+#include "../../platform/files/byte_output.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -466,32 +467,28 @@ static mc_java_writer_status file_write(void *context, const uint8_t *bytes, siz
     mc_java_writer *writer = context;
     if (writer->file == NULL)
         return result(error, MC_JAVA_WRITER_IO_ERROR, 0, "FileOutputStream closed");
-    errno = 0;
-    *committed = fwrite(bytes, 1, length, writer->file);
-    const int saved = errno;
-    if (*committed != length && (ferror(writer->file) || *committed == 0))
-        return result(error, MC_JAVA_WRITER_IO_ERROR, saved, "FileOutputStream write");
-    return result(error, MC_JAVA_WRITER_OK, 0, NULL);
+    mc_byte_output_error cause;
+    const bool ok = mc_byte_output_write(writer->file, bytes, length, committed, &cause);
+    return result(error, ok ? MC_JAVA_WRITER_OK : MC_JAVA_WRITER_IO_ERROR, cause.system_error,
+                  ok ? NULL : "FileOutputStream write");
 }
 
-/* FileOutputStream inherits OutputStream.flush's actual no-op. _IONBF ensures
- * that C has no hidden bytes to flush. This is not fsync/FlushFileBuffers. */
 static mc_java_writer_status file_flush(void *context, mc_java_writer_error *error) {
     const mc_java_writer *writer = context;
+    /* Keep the legacy adapter's closed admission; the shared native flush is
+     * the actual OutputStream no-op, also used by the binary source owner. */
+    if (writer->file != NULL)
+        mc_byte_output_flush(writer->file);
     return result(error, writer->file == NULL ? MC_JAVA_WRITER_IO_ERROR : MC_JAVA_WRITER_OK, 0,
                   writer->file == NULL ? "FileOutputStream closed" : NULL);
 }
 
 static mc_java_writer_status file_close(void *context, mc_java_writer_error *error) {
     mc_java_writer *writer = context;
-    FILE *file = writer->file;
-    writer->file = NULL;
-    if (file == NULL)
-        return result(error, MC_JAVA_WRITER_OK, 0, NULL);
-    errno = 0;
-    const int code = fclose(file);
-    return result(error, code == 0 ? MC_JAVA_WRITER_OK : MC_JAVA_WRITER_IO_ERROR,
-                  code == 0 ? 0 : errno, code == 0 ? NULL : "FileOutputStream close");
+    mc_byte_output_error cause;
+    const bool ok = mc_byte_output_close(&writer->file, &cause);
+    return result(error, ok ? MC_JAVA_WRITER_OK : MC_JAVA_WRITER_IO_ERROR, cause.system_error,
+                  ok ? NULL : "FileOutputStream close");
 }
 
 mc_java_writer_status mc_java_file_writer_open(const char *path,
@@ -511,7 +508,8 @@ mc_java_writer_status mc_java_file_writer_open(const char *path,
     if (status != MC_JAVA_WRITER_OK)
         return status;
     FILE *file = NULL;
-    int code = 0;
+    mc_byte_output_error native_error;
+    bool opened;
 #ifdef _WIN32
     const int count =
         MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, (int)length, NULL, 0);
@@ -531,30 +529,23 @@ mc_java_writer_status mc_java_file_writer_open(const char *path,
         return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "FileWriter UTF8 conversion");
     }
     native[count] = L'\0';
-    /* FileOutputStream permits concurrent read/write handles on Windows. */
-    errno = 0;
-    file = _wfsopen(native, L"wb", _SH_DENYNO);
-    code = errno;
+    opened = mc_byte_output_open(native, &file, &native_error);
     free(native);
 #else
-    errno = 0;
-    file = fopen(path, "wb");
-    code = errno;
+    opened = mc_byte_output_open(path, &file, &native_error);
 #endif
-    if (file == NULL) {
+    if (!opened) {
         free(writer);
-        return result(error, MC_JAVA_WRITER_IO_ERROR, code, "FileWriter open/create/truncate");
+        return result(error, MC_JAVA_WRITER_IO_ERROR, native_error.system_error,
+                      "FileWriter open/create/truncate");
     }
-    if (setvbuf(file, NULL, _IONBF, 0) != 0) {
-        const int saved = errno;
-        errno = 0;
-        const bool close_failed = fclose(file) != 0;
-        const int close_error = errno;
+    if (!mc_byte_output_unbuffered(&file, &native_error)) {
         free(writer);
-        result(error, MC_JAVA_WRITER_IO_ERROR, saved, "FileWriter unbuffered admission");
+        result(error, MC_JAVA_WRITER_IO_ERROR, native_error.system_error,
+               "FileWriter unbuffered admission");
         if (error != NULL) {
-            error->native_cleanup_failed = close_failed;
-            error->native_cleanup_system_error = close_failed ? close_error : 0;
+            error->native_cleanup_failed = native_error.cleanup_failed;
+            error->native_cleanup_system_error = native_error.cleanup_system_error;
         }
         return MC_JAVA_WRITER_IO_ERROR;
     }

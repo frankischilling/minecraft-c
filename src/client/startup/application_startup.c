@@ -13,7 +13,10 @@ mc_client_startup_options mc_client_application_startup_default_options(void) {
                                        .render_engine = mc_client_render_engine_default_options(),
                                        .bitmap_font = mc_client_render_engine_default_options(),
                                        .color_lookup = mc_client_color_lookup_default_options(),
-                                       .colorizers = mc_client_colorizer_default_options()};
+                                       .colorizers = mc_client_colorizer_default_options(),
+                                       .entity_renderer =
+                                           mc_client_entity_renderer_default_options(),
+                                       .manager = mc_client_render_manager_default_options()};
 }
 
 static bool app_ready(const client_application *app) {
@@ -100,6 +103,7 @@ mc_client_startup_status mc_client_application_startup_allocate(
     startup->app = app;
     startup->services = *services;
     startup->options = selected;
+    startup->last_manager_pc = -1;
     app->startup = startup;
     *out = startup; /* Retain any later native admission-failure prefix. */
     if (mc_java_files_retain(services->files, &startup->failure.file) != MC_JAVA_FILE_OK) {
@@ -299,6 +303,14 @@ bool mc_client_application_startup_inspect(const mc_client_application_startup *
         .font_classes = startup->font_classes,
         .font_resource = startup->font_resource,
         .q_stored = startup->q_stored,
+        .entity_renderer_candidate = startup->entity_renderer_candidate,
+        .manager_classes = startup->manager_classes,
+        .manager_capture = startup->manager_capture,
+        .manager_hand_candidate = startup->manager_hand_candidate,
+        .manager_consumer_attached = startup->manager_consumer.attached,
+        .manager_f_stored = startup->manager_f_stored,
+        .last_manager_pc = startup->last_manager_pc,
+        .t_stored = startup->t_stored,
         .color_argument = startup->color_argument,
         .color_results = {startup->color_results[0], startup->color_results[1],
                           startup->color_results[2]},

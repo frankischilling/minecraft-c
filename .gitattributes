@@ -9,9 +9,12 @@
 *.json text eol=lf
 *.tsv text eol=lf
 *.commands text eol=lf
+*.cmake text eol=lf
+*.plan text eol=lf
 *.java text eol=lf
 *.txt text eol=lf
 .gitattributes text eol=lf
+.gitignore text eol=lf
 .clang-format text eol=lf
 LICENSE text eol=lf
 licenses/openal-soft/* text eol=lf

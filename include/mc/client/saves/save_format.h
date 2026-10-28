@@ -3,6 +3,7 @@
 #include "mc/core/math/classes.h"
 #include "mc/world/storage/gzip_input.h"
 #include "mc/world/storage/java_file.h"
+#include "mc/world/storage/source_handler.h"
 #include "mc/world/storage/store.h"
 
 typedef struct mc_client_save_formats mc_client_save_formats;
@@ -23,7 +24,8 @@ typedef enum mc_client_save_status {
     MC_CLIENT_SAVE_FILE_ERROR,
     MC_CLIENT_SAVE_INFO_ERROR,
     MC_CLIENT_SAVE_MATH_ERROR,
-    MC_CLIENT_SAVE_UNIMPLEMENTED_DEPENDENCY
+    MC_CLIENT_SAVE_UNIMPLEMENTED_DEPENDENCY,
+    MC_CLIENT_SAVE_HANDLER_ERROR
 } mc_client_save_status;
 
 typedef struct mc_client_save_site {
@@ -44,6 +46,7 @@ typedef struct mc_client_save_error {
     mc_nbt_stream_error stream, close;
     mc_client_save_site cause_frames[4];
     size_t cause_frame_count;
+    const mc_world_source_error *handler; /* Borrowed complete native prefix from format. */
 } mc_client_save_error;
 
 typedef enum mc_client_save_phase {
@@ -95,6 +98,8 @@ typedef struct mc_client_save_format_state {
     mc_client_save_selection *pending_selection;
     mc_world_info *pending_info;
     mc_world_info_name *pending_name;
+    mc_world_store *pending_handler;
+    const mc_world_source_error *handler_error; /* Read-state fills from the same owner. */
 } mc_client_save_format_state;
 
 typedef struct mc_client_save_selection_fields {
@@ -114,6 +119,14 @@ mc_client_save_status mc_client_save_formats_create(mc_java_files *files, mc_mat
                                                     const mc_client_save_options *options,
                                                     mc_client_save_formats **out,
                                                     mc_client_save_error *error);
+/* Explicit cold native service binding. SAME File namespace; no class
+ * activation, source clock or filesystem effect. Bind once before hi.open;
+ * existing unbound callers retain their actual new0 frontier. No fallback.
+ * Every format error.handler borrows the format's retained full child error
+ * until its next mutation/cleanup/retirement; copy it while this owner is live. */
+mc_client_save_status mc_client_save_formats_bind_handlers(mc_client_save_formats *,
+                                                           mc_world_store_source_classes *,
+                                                           mc_client_save_error *);
 mc_client_save_status mc_client_save_formats_retain(mc_client_save_formats *classes,
                                                     mc_client_save_error *error);
 mc_client_save_status mc_client_save_formats_release(mc_client_save_formats **occurrence,
@@ -157,9 +170,10 @@ mc_client_save_status mc_client_save_format_list(mc_client_save_format *format,
 mc_client_save_status mc_client_save_format_needs_conversion(mc_client_save_format *format,
                                                              mc_world_info_name *folder, bool *out,
                                                              mc_client_save_error *error);
-/* Actual wt/mx/fm construction is a separate INSIDE-Store seam. This operation
- * retains its FIRST missing new-mx/constructor dependency and never calls the
- * effectful generic Store.open in its place. Out stays unchanged. */
+/* Actual hi new0 -> fm class activation -> SAME mx/fm Store constructor.
+ * A bound class context is a native prerequisite. Success alone transfers at13;
+ * failure preserves out and retains the candidate/full cause until cleanup.
+ * Source IOException printing remains an honest57 frontier. No generic open. */
 mc_client_save_status mc_client_save_format_open(mc_client_save_format *format,
                                                  mc_world_info_name *folder, bool create_players,
                                                  mc_world_store **out, mc_client_save_error *error);

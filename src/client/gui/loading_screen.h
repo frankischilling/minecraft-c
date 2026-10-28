@@ -28,7 +28,9 @@ typedef enum mc_client_loading_status {
     MC_CLIENT_LOADING_DISPLAY_FAILED,
     MC_CLIENT_LOADING_FONT_FAILED,
     MC_CLIENT_LOADING_TEXTURE_FAILED,
-    MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY
+    MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY,
+    MC_CLIENT_LOADING_CLEANUP_FAILED,
+    MC_CLIENT_LOADING_GRAPHICS_FAILED
 } mc_client_loading_status;
 
 typedef enum mc_client_loading_phase {
@@ -42,6 +44,17 @@ typedef struct mc_client_loading_site {
     const char *class_name, *method, *descriptor;
     int32_t pc;
 } mc_client_loading_site;
+
+typedef struct mc_client_texture_lookup_error mc_client_texture_lookup_error;
+typedef struct mc_client_sdk_update_error mc_client_sdk_update_error;
+
+typedef struct mc_client_loading_cleanup_error {
+    mc_client_loading_status status;
+    mc_client_render_engine_status engine;
+    mc_client_bitmap_font_error fonts[4];
+    bool font_retained[4], engine_retained;
+    const mc_client_texture_lookup_error *lookup;
+} mc_client_loading_cleanup_error;
 
 /* Private drawing diagnostics are retained by the concrete lower owner and
  * copied through its typed interface. This record is the complete mk layer:
@@ -60,7 +73,34 @@ typedef struct mc_client_loading_error {
     mc_client_render_texture_error texture;
     int32_t qq_width, qq_height, qq_factor;
     bool stopped_allowed, sampled_clock_committed;
+    /* Complete typed child records live in the actual retained heap call.
+     * These borrowed views expire on successful retire_call or final release.
+     * No new source call is admitted while that retained call exists. */
+    const mc_client_texture_lookup_error *lookup;
+    const mc_client_loading_cleanup_error *cleanup;
+    mc_player_status literal;
+    mc_player_status captured_string;
+    mc_client_bitmap_font_status captured_font;
+    mc_client_render_engine_status captured_engine;
+    bool draw_prefix_completed;
+    /* Source return is independent of native occurrence finalization. A BUSY
+     * temporary-owner cleanup after a real return must be retired, not replayed.
+     * update is borrowed from a retained failed call; never points into a
+     * successfully finalized frame. Successful flags are copied values. */
+    const mc_client_sdk_update_error *update;
+    bool update_completed, swapped, messages_pumped, yield_completed;
+    bool source_returned, native_finalized;
 } mc_client_loading_error;
+
+typedef struct mc_client_loading_call_state {
+    bool retained, lookup_failed, update_failed;
+    bool source_returned;
+    const mc_client_render_engine *engine;
+    const mc_client_bitmap_font *fonts[4];
+    const mc_player_string *strings[5];
+    const mc_client_loading_error *failure;
+    const mc_client_loading_cleanup_error *cleanup;
+} mc_client_loading_call_state;
 
 typedef struct mc_client_loading_fields {
     const mc_player_string *a;
@@ -125,6 +165,24 @@ mc_client_loading_status mc_client_loading_screen_retain(mc_client_loading_scree
  * namespace GPU resources after ending font calls/leases, then retry. */
 mc_client_loading_status mc_client_loading_screen_release(mc_client_loading_screen *);
 bool mc_client_loading_screen_inspect(const mc_client_loading_screen *, mc_client_loading_state *);
+
+/* Native-only allocation-free retained-call retirement. Caller keeps App and
+ * captured dependencies live/exclusive, including every retained failure.
+ * Actual pending lookup cleanup uses the existing lower interface and never
+ * credits source close/delete, update, swap or return. It does not stop/free
+ * shared lookup metadata or retire namespace resources. If its captured Engine
+ * is last and those owners are still live, BUSY preserves it for the concrete
+ * final-owner retirement policy, then this operation can be retried. Successful
+ * retirement invalidates borrowed diagnostic/identity views; returned success
+ * error contains no pointers into the retired frame. Every failure preserves
+ * the mk occurrence and each remaining child slot. Successful native
+ * retirement reports the preceding source_returned value and native_finalized
+ * without replaying draw/update/yield or changing source d/e/J. A subsequent
+ * progress/message call is admitted after this canonical retirement. */
+mc_client_loading_status mc_client_loading_screen_retire_call(mc_client_loading_screen *,
+                                                              mc_client_loading_error *);
+bool mc_client_loading_screen_call_inspect(const mc_client_loading_screen *,
+                                           mc_client_loading_call_state *);
 
 mc_client_loading_status mc_client_loading_screen_start(mc_client_loading_screen *,
                                                         mc_player_string *nullable_text,

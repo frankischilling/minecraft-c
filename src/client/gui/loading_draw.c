@@ -1,10 +1,10 @@
 #include "../application_state.h"
+#include "../render_engine/font_lease.h"
 #include "../render_engine/nw.h"
 #include "loading_internal.h"
 
 mc_client_loading_status mc_client_loading_draw(mc_client_loading_screen *p, int32_t progress,
                                                 mc_client_loading_error *error) {
-    (void)progress; /* Bar work follows the genuine unfinished ji String lookup. */
     mc_scaled_resolution resolution;
     mc_client_loading_status status =
         mc_client_loading_resolution(p->fields.b, &resolution, error, 74);
@@ -42,14 +42,55 @@ mc_client_loading_status mc_client_loading_draw(mc_client_loading_screen *p, int
                                           : MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY,
                                       "LoadingScreen actual nw active use", "a", "(I)V", 151);
     }
-    (void)tessellator; /* The actual singleton is initialized, not yet begun. */
-    mc_client_render_engine *engine = p->fields.b->render_engine; /* App.p160 */
+    client_application *app = p->fields.b;
+    if (app == NULL)
+        return mc_client_loading_fail(error, MC_CLIENT_LOADING_NULL_REFERENCE,
+                                      "LoadingScreen actual App.p receiver", "a", "(I)V", 160);
+    mc_client_display *display = app->display; /* Borrowed actual native Display, not a new one. */
+    mc_client_render_engine *engine = app->render_engine; /* Captured actual App.p160. */
+    if (!mc_client_loading_call_engine(p, engine, 160))
+        return error->status;
+    const mc_player_string *literal;
+    if (!mc_client_loading_background_literal(p, &literal)) /* actual ldc163 before invoke165 */
+        return error->status;
     if (engine == NULL)
         return mc_client_loading_fail(error, MC_CLIENT_LOADING_NULL_REFERENCE,
                                       "LoadingScreen actual ji.b(String) receiver", "a", "(I)V",
                                       165);
-    error->child = (mc_client_loading_site){"ji", "b", "(Ljava/lang/String;)I", 0};
-    return mc_client_loading_fail(
-        error, MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY,
-        "actual selected-Pack/String-cache ji.b lookup for /gui/background.png", "a", "(I)V", 165);
+    if (mc_client_render_engine_class_identity(engine) != p->classes->graphics)
+        return mc_client_loading_fail(error, MC_CLIENT_LOADING_INVALID_ARGUMENT,
+                                      "LoadingScreen captured Engine native namespace", "a", "(I)V",
+                                      165);
+    mc_player_string_view key;
+    if (!mc_player_string_read(literal, &key))
+        return mc_client_loading_fail(error, MC_CLIENT_LOADING_INVALID_ARGUMENT,
+                                      "LoadingScreen literal immutable native view", "a", "(I)V",
+                                      163);
+    mc_client_texture id = 0;
+    p->call->lookup_called = true;
+    const mc_client_texture_lookup_status lookup = mc_client_render_engine_texture(
+        engine, display, NULL, (mc_texture_pack_text){key.units, key.length, false}, &id,
+        &p->call->lookup);
+    if (lookup != MC_CLIENT_LOOKUP_OK) {
+        p->call->lookup_failed = true;
+        error->lookup = &p->call->lookup;
+        error->child =
+            (mc_client_loading_site){p->call->lookup.site.class_name, p->call->lookup.site.method,
+                                     p->call->lookup.site.descriptor, p->call->lookup.site.pc};
+        const bool unsupported_fp =
+            p->call->lookup.buffer.status == MC_CLIENT_GRAPHICS_UNSUPPORTED_FP ||
+            p->call->lookup.texture.display.status == MC_CLIENT_DISPLAY_UNSUPPORTED_FP ||
+            p->call->lookup.texture.resources.status == MC_CLIENT_GRAPHICS_UNSUPPORTED_FP;
+        return mc_client_loading_fail(
+            error,
+            unsupported_fp                                 ? MC_CLIENT_LOADING_UNSUPPORTED_FP
+            : lookup == MC_CLIENT_LOOKUP_NULL_REFERENCE    ? MC_CLIENT_LOADING_NULL_REFERENCE
+            : lookup == MC_CLIENT_LOOKUP_ALLOCATION_FAILED ? MC_CLIENT_LOADING_ALLOCATION_FAILED
+            : lookup == MC_CLIENT_LOOKUP_LIMIT             ? MC_CLIENT_LOADING_LIMIT
+            : lookup == MC_CLIENT_LOOKUP_BUSY              ? MC_CLIENT_LOADING_BUSY
+            : lookup == MC_CLIENT_LOOKUP_UNIMPLEMENTED ? MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY
+                                                       : MC_CLIENT_LOADING_TEXTURE_FAILED,
+            "LoadingScreen actual selected-Pack ji.b child", "a", "(I)V", 165);
+    }
+    return mc_client_loading_draw_body(p, tessellator, display, &resolution, progress, id, error);
 }

@@ -7,12 +7,11 @@ or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 draws imported resources. A separate fixed-camera inspection renders generated
-terrain. Checkpoint `37dc83f` passes 1,127 hosted public/JDK tests: 367 Windows
-and 380 per Linux compiler. It retains all preceding 1,115 cases and adds four
-resource-observer checks per compiler. Startup/resource owners also retain
-separate focused local checks. [Build and tests](Build-and-tests) distinguishes
-that scope, the retained seven-row Windows CPU original comparison and the
-preceding 1,163-case local graphical/World-inspection cohort.
+terrain. Checkpoint `f37a96f` passes 1,188 hosted public/JDK tests: 386 Windows
+and 401 per Linux compiler. Later native startup checks reach EntityRenderer
+and RenderManager construction; the next source call is statistics startup.
+[Build and tests](Build-and-tests) separates hosted coverage, local graphical
+startup, component checks and finite original comparisons.
 
 [LocalPlayer NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 now reaches actual Inventory hooks, first-Player metadata saving and saved

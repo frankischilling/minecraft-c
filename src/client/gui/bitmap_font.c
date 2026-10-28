@@ -526,3 +526,10 @@ mc_client_bitmap_font_status mc_client_bitmap_font_retire(mc_client_bitmap_font 
     }
     return mc_client_bitmap_font_release(slot, error);
 }
+
+bool mc_client_bitmap_font_uses_context(const mc_client_bitmap_font *font,
+                                        const mc_client_loading_classes *classes,
+                                        const mc_client_display *display) {
+    return font != NULL && font->gui == classes &&
+           (font->display == NULL || font->display == display);
+}

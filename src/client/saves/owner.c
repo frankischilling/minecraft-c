@@ -120,6 +120,17 @@ mc_client_save_status mc_client_save_formats_release(mc_client_save_formats **sl
     }
     c->retiring = true;
     c->active = true;
+    mc_world_source_error *handler_error = &c->handler_cleanup;
+    mc_world_source_status hs = mc_world_store_source_classes_release(&c->handlers, handler_error);
+    if (hs != MC_WORLD_SOURCE_OK) {
+        c->active = false;
+        save_result(e,
+                    hs == MC_WORLD_SOURCE_BUSY ? MC_CLIENT_SAVE_BUSY : MC_CLIENT_SAVE_HANDLER_ERROR,
+                    "SaveFormat handler class retirement", NULL, NULL, -1);
+        if (e != NULL)
+            e->handler = handler_error;
+        return hs == MC_WORLD_SOURCE_BUSY ? MC_CLIENT_SAVE_BUSY : MC_CLIENT_SAVE_HANDLER_ERROR;
+    }
     mc_math_class_error me;
     mc_math_class_status ms = mc_math_classes_release(&c->math, &me);
     if (ms != MC_MATH_CLASS_OK) {
@@ -235,7 +246,8 @@ mc_client_save_status mc_client_save_format_retain(mc_client_save_format *f,
 }
 
 bool save_pending(const mc_client_save_format *f) {
-    return f->state.pending_reader != NULL || f->state.pending_document != NULL ||
+    return f->state.pending_handler != NULL || f->handler_failure.status != MC_WORLD_SOURCE_OK ||
+           f->state.pending_reader != NULL || f->state.pending_document != NULL ||
            f->state.pending_data != NULL || f->state.pending_gzip != NULL ||
            f->state.pending_argument != NULL || f->state.pending_world != NULL ||
            f->state.pending_metadata != NULL || f->state.pending_candidate != NULL ||
@@ -260,6 +272,12 @@ mc_client_save_status save_ready(mc_client_save_format *f, mc_client_save_error 
 }
 
 mc_client_save_status save_clear(mc_client_save_format *f, mc_client_save_error *e) {
+    mc_world_source_status hs =
+        mc_world_store_source_release(&f->state.pending_handler, &f->handler_cleanup);
+    if (hs != MC_WORLD_SOURCE_OK)
+        return save_handler_error(f, hs, &f->handler_cleanup, -1, e);
+    memset(&f->handler_failure, 0, sizeof(f->handler_failure));
+    memset(&f->handler_cleanup, 0, sizeof(f->handler_cleanup));
     mc_client_save_status decoded = save_clear_decode(f, e);
     if (decoded != MC_CLIENT_SAVE_OK)
         return decoded;
@@ -352,6 +370,7 @@ mc_client_save_status mc_client_save_format_read_state(const mc_client_save_form
     if (f == NULL || out == NULL)
         return save_result(e, MC_CLIENT_SAVE_INVALID_ARGUMENT, "SaveFormat state", NULL, NULL, -1);
     *out = f->state;
+    out->handler_error = &f->handler_failure;
     return save_result(e, MC_CLIENT_SAVE_OK, NULL, NULL, NULL, -1);
 }
 
@@ -398,4 +417,59 @@ mc_client_save_status mc_client_save_format_name(mc_client_save_format *f, mc_wo
         save_push(e, "hi", "a()Ljava/lang/String;", 0);
     f->state.active = false;
     return s == MC_CLIENT_SAVE_OK ? save_result(e, s, NULL, NULL, NULL, -1) : s;
+}
+
+mc_client_save_status save_handler_error(mc_client_save_format *f, mc_world_source_status status,
+                                         const mc_world_source_error *child, int pc,
+                                         mc_client_save_error *e) {
+    (void)f;
+    mc_client_save_status result =
+        status == MC_WORLD_SOURCE_BUSY         ? MC_CLIENT_SAVE_BUSY
+        : status == MC_WORLD_SOURCE_LIMIT      ? MC_CLIENT_SAVE_LIMIT
+        : status == MC_WORLD_SOURCE_ALLOCATION ? MC_CLIENT_SAVE_ALLOCATION_FAILED
+        : status == MC_WORLD_SOURCE_SOURCE_EXCEPTION
+            ? (child->exception_class != NULL &&
+                       strcmp(child->exception_class, "java/lang/NullPointerException") == 0
+                   ? MC_CLIENT_SAVE_SOURCE_NULL_REFERENCE
+                   : MC_CLIENT_SAVE_SOURCE_EXCEPTION)
+        : status == MC_WORLD_SOURCE_UNIMPLEMENTED ? MC_CLIENT_SAVE_UNIMPLEMENTED_DEPENDENCY
+        : status == MC_WORLD_SOURCE_STATE || status == MC_WORLD_SOURCE_ARGUMENT
+            ? MC_CLIENT_SAVE_STATE_ERROR
+            : MC_CLIENT_SAVE_HANDLER_ERROR;
+    save_result(e, result, child->operation, pc < 0 ? NULL : "hi",
+                pc < 0 ? NULL : "a(Ljava/lang/String;Z)Lwt;", pc);
+    if (e != NULL) {
+        e->handler = child;
+        e->caught_exception = child->caught_io;
+    }
+    return result;
+}
+
+mc_client_save_status mc_client_save_formats_bind_handlers(mc_client_save_formats *c,
+                                                           mc_world_store_source_classes *handlers,
+                                                           mc_client_save_error *e) {
+    if (c == NULL || handlers == NULL)
+        return save_result(e, MC_CLIENT_SAVE_INVALID_ARGUMENT, "SaveFormat cold handler binding",
+                           NULL, NULL, -1);
+    if (c->active || c->retiring)
+        return save_result(e, MC_CLIENT_SAVE_BUSY, "SaveFormat active/retiring handler binding",
+                           NULL, NULL, -1);
+    if (c->handlers != NULL)
+        return save_result(e, MC_CLIENT_SAVE_STATE_ERROR,
+                           "SaveFormat handler namespace already bound", NULL, NULL, -1);
+    mc_world_source_class_state state;
+    if (!mc_world_store_source_classes_inspect(handlers, &state) || state.files != c->files)
+        return save_result(e, MC_CLIENT_SAVE_STATE_ERROR,
+                           "SaveFormat actual File namespace binding", NULL, NULL, -1);
+    mc_world_source_status s = mc_world_store_source_classes_retain(handlers, &c->handler_cleanup);
+    if (s != MC_WORLD_SOURCE_OK) {
+        save_result(e,
+                    s == MC_WORLD_SOURCE_BUSY ? MC_CLIENT_SAVE_BUSY : MC_CLIENT_SAVE_HANDLER_ERROR,
+                    "SaveFormat handler context hold", NULL, NULL, -1);
+        if (e != NULL)
+            e->handler = &c->handler_cleanup;
+        return s == MC_WORLD_SOURCE_BUSY ? MC_CLIENT_SAVE_BUSY : MC_CLIENT_SAVE_HANDLER_ERROR;
+    }
+    c->handlers = handlers;
+    return save_result(e, MC_CLIENT_SAVE_OK, NULL, NULL, NULL, -1);
 }

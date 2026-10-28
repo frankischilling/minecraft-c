@@ -7,6 +7,10 @@ struct mc_client_render_classes {
     mc_java_random_profile *profile;
     size_t owners;
     bool cv_ready, cv_a;
+    bool px_ready, px_a; /* Actual px clinit cells, not an instance mirror. */
+    int32_t px_b;
+    bool th_retired; /* Explicit terminal association cannot be rebound in this namespace. */
+    struct mc_client_render_manager_classes *th; /* Same actual native class namespace. */
 };
 
 typedef struct model_allocation {
@@ -28,6 +32,26 @@ typedef struct mc_client_model_graph {
 } mc_client_model_graph;
 
 void *mc_client_model_graph_allocate(mc_client_model_graph *, size_t, const char *, int32_t);
+mc_client_render_blocks *mc_client_model_graph_blocks(mc_client_model_graph *, const char *,
+                                                      int32_t);
+mc_client_model_part *mc_client_model_graph_part_allocate(mc_client_model_graph *, const char *,
+                                                          int32_t);
+void mc_client_model_graph_part_construct(mc_client_model_part *, int32_t, int32_t);
+bool mc_client_model_graph_box(mc_client_model_graph *, mc_client_model_part *, float, float, float,
+                               int32_t, int32_t, int32_t, float);
+void mc_client_model_graph_pivot(mc_client_model_part *, float, float, float);
+
+/* Borrowed slots of the real BW subobject; no copied source BW. */
+typedef struct mc_client_bw_slots {
+    mc_client_biped_model **model;
+    mc_client_render_blocks **blocks;
+    float *shadow_size, *shadow_opacity;
+} mc_client_bw_slots;
+
+void mc_client_model_graph_bw_set_manager(const void **actual_slot, const void *manager);
+bool mc_client_model_graph_bw_construct(mc_client_model_graph *, const mc_client_bw_slots *);
+bool mc_client_model_graph_fill_biped(mc_client_model_graph *, mc_client_biped_model *, float,
+                                      float);
 bool mc_client_model_graph_fill_zero(mc_client_model_graph *, mc_client_biped_model *);
 mc_client_model_status mc_client_model_graph_retire(mc_client_model_graph *,
                                                     mc_client_model_error *);

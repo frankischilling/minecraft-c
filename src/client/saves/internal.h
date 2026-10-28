@@ -7,6 +7,8 @@ struct mc_client_save_formats {
     bool active, retiring;
     mc_java_files *files;
     mc_math_classes *math;
+    mc_world_store_source_classes *handlers;
+    mc_world_source_error handler_cleanup;
     mc_world_info_name *label, *current_name, *old_name;
     mc_client_save_options options;
 };
@@ -14,6 +16,7 @@ struct mc_client_save_formats {
 struct mc_client_source_nl {
     mc_client_save_formats *classes;
     mc_client_save_format_state state;
+    mc_world_source_error handler_failure, handler_cleanup;
 };
 
 struct mc_client_save_selection {
@@ -37,6 +40,9 @@ mc_client_save_status save_file_error(mc_client_save_error *e, mc_java_file_stat
 mc_client_save_status save_ready(mc_client_save_format *f, mc_client_save_error *e);
 bool save_pending(const mc_client_save_format *f);
 mc_client_save_status save_clear(mc_client_save_format *f, mc_client_save_error *e);
+mc_client_save_status save_handler_error(mc_client_save_format *, mc_world_source_status,
+                                         const mc_world_source_error *, int,
+                                         mc_client_save_error *);
 mc_client_save_status save_literal(mc_client_save_formats *c, const char *ascii,
                                    mc_world_info_name **slot, mc_client_save_error *e);
 mc_client_save_status save_clear_decode(mc_client_save_format *format, mc_client_save_error *error);

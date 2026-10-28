@@ -88,6 +88,32 @@ failed:
     return status;
 }
 
+mc_nbt_status mc_nbt_stream_read_long(mc_nbt_stream *s, int64_t *out, mc_nbt_stream_error *error) {
+    if (s == NULL || out == NULL)
+        return nbt_stream_result(error, MC_NBT_INVALID_ARGUMENT, 0, NULL, NULL, -1);
+    if (s->active)
+        return nbt_stream_result(error, MC_NBT_STREAM_BUSY, s->position, NULL, NULL, -1);
+    if (s->phase != MC_NBT_STREAM_READY)
+        return nbt_stream_result(error, MC_NBT_STREAM_STATE, s->position, NULL, NULL, -1);
+    s->active = true;
+    s->error = (mc_nbt_stream_error){0};
+    nbt_reader reader = {.limits = s->limits,
+                         .position = s->position,
+                         .error = {MC_NBT_OK, s->position},
+                         .stream = s};
+    nbt_stream_context(&reader, "java/io/DataInputStream", "readLong()J", 8);
+    uint64_t bits;
+    if (!nbt_read_u64(&reader, &bits)) {
+        s->active = false;
+        if (error != NULL)
+            *error = s->error;
+        return s->error.parse.status;
+    }
+    *out = bits <= INT64_MAX ? (int64_t)bits : -1 - (int64_t)(UINT64_MAX - bits);
+    s->active = false;
+    return nbt_stream_result(error, MC_NBT_OK, s->position, NULL, NULL, -1);
+}
+
 mc_nbt_status mc_nbt_stream_parse(mc_nbt_stream *s, bool compound, mc_nbt_document **out,
                                   mc_nbt_stream_error *error) {
     if (s == NULL || out == NULL)

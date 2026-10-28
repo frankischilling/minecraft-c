@@ -101,6 +101,7 @@ mc_client_loading_status mc_client_loading_classes_release(mc_client_loading_cla
         if (mc_client_render_engine_classes_release(c->graphics) != MC_CLIENT_RENDER_ENGINE_OK)
             return MC_CLIENT_LOADING_BUSY;
         (void)mc_client_font_mapping_release(c->mapping);
+        mc_player_string_release(c->background_literal);
         mc_player_string_release(c->empty);
         free(c);
     } else
@@ -154,6 +155,9 @@ mc_client_loading_status mc_client_loading_screen_release(mc_client_loading_scre
         --p->holds;
         return MC_CLIENT_LOADING_OK;
     }
+    const mc_client_loading_status retired = mc_client_loading_screen_retire_call(p, NULL);
+    if (retired != MC_CLIENT_LOADING_OK)
+        return retired;
     const mc_client_loading_status status = mc_client_loading_classes_release(p->classes);
     if (status != MC_CLIENT_LOADING_OK)
         return status;
@@ -340,14 +344,16 @@ static mc_client_loading_status invoke(mc_client_loading_screen *p, loading_call
                                        mc_player_string *text, int32_t value,
                                        mc_client_loading_error *error) {
     mc_client_loading_error admission = {0};
-    if (p == NULL || p->active || p->phase != MC_CLIENT_LOADING_READY)
+    if (p == NULL || p->active || p->call != NULL || p->phase != MC_CLIENT_LOADING_READY)
         return finish(mc_client_loading_fail(&admission,
-                                             p == NULL   ? MC_CLIENT_LOADING_NULL_REFERENCE
-                                             : p->active ? MC_CLIENT_LOADING_BUSY
-                                                         : MC_CLIENT_LOADING_INVALID_PHASE,
+                                             p == NULL ? MC_CLIENT_LOADING_NULL_REFERENCE
+                                             : (p->active || p->call != NULL)
+                                                 ? MC_CLIENT_LOADING_BUSY
+                                                 : MC_CLIENT_LOADING_INVALID_PHASE,
                                              "LoadingScreen invocation admission", NULL, NULL, -1),
                       &admission, error);
-    mc_client_loading_error *e = calloc(1, sizeof(*e));
+    mc_client_loading_call *call_frame = mc_client_loading_call_create();
+    mc_client_loading_error *e = call_frame == NULL ? NULL : &call_frame->error;
     if (e == NULL)
         return finish(mc_client_loading_fail(&admission, MC_CLIENT_LOADING_ALLOCATION_FAILED,
                                              "LoadingScreen native call diagnostics", NULL, NULL,
@@ -355,11 +361,12 @@ static mc_client_loading_status invoke(mc_client_loading_screen *p, loading_call
                       &admission, error);
     mc_client_loading_status status = mc_client_loading_screen_retain(p);
     if (status != MC_CLIENT_LOADING_OK) {
-        free(e);
+        free(call_frame);
         return finish(mc_client_loading_fail(&admission, status, "LoadingScreen native call hold",
                                              NULL, NULL, -1),
                       &admission, error);
     }
+    p->call = call_frame;
     p->active = true;
     switch (call) {
         case CALL_START:
@@ -405,10 +412,9 @@ static mc_client_loading_status invoke(mc_client_loading_screen *p, loading_call
             status = progress(p, value, e);
             break;
     }
+    status = mc_client_loading_call_finish(p, status, error);
     p->active = false;
     (void)mc_client_loading_screen_release(p);
-    finish(status, e, error);
-    free(e);
     return status;
 }
 

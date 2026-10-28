@@ -27,29 +27,9 @@ static void *allocate(mc_client_item_renderer *o, size_t bytes, const char *sour
     return mc_client_model_graph_allocate(&ledger, bytes, source, pc);
 }
 
-static mc_client_biped_model *biped(mc_client_item_renderer *o) {
-    mc_client_biped_model *m = allocate(o, sizeof(*m), "bw", 5);
-    if (m == NULL)
-        return NULL;
-    mc_client_model_graph ledger = graph(o);
-    return mc_client_model_graph_fill_zero(&ledger, m) ? m : NULL;
-}
-
 static mc_client_render_blocks *blocks(mc_client_item_renderer *o, const char *source, int32_t pc) {
-    if (!o->classes->cv_ready) {
-        o->classes->cv_a = true;
-        o->classes->cv_ready = true;
-    }
-    mc_client_render_blocks *p = allocate(o, sizeof(*p), source, pc);
-    if (p != NULL) {
-        p->d = -1;
-        p->e = false;
-        p->f = false;
-        p->b = true;
-        p->g = p->h = p->i = p->j = p->k = p->l = 0;
-        p->O = 1;
-    }
-    return p;
+    mc_client_model_graph ledger = graph(o);
+    return mc_client_model_graph_blocks(&ledger, source, pc);
 }
 
 mc_client_model_status mc_client_render_classes_create(mc_entity_classes *entities,
@@ -73,7 +53,7 @@ mc_client_model_status mc_client_render_classes_create(mc_entity_classes *entiti
 mc_client_model_status mc_client_render_classes_free(mc_client_render_classes *p) {
     if (p == NULL)
         return MC_CLIENT_MODEL_OK;
-    if (p->owners != 0)
+    if (p->owners != 0 || p->th != NULL)
         return MC_CLIENT_MODEL_BUSY;
     if (mc_entity_classes_release(p->entities) != MC_ENTITY_OK)
         return MC_CLIENT_MODEL_BUSY;
@@ -133,15 +113,11 @@ mc_client_model_status mc_client_item_renderer_construct(mc_client_item_renderer
     if (o->phase != MC_CLIENT_MODEL_RAW)
         return MC_CLIENT_MODEL_INVALID_PHASE;
     o->phase = MC_CLIENT_MODEL_CONSTRUCTING;
-    mc_client_biped_model *model = biped(o);
-    if (model == NULL)
+    mc_client_model_graph ledger = graph(o);
+    const mc_client_bw_slots slots = {&o->fields.base_model, &o->fields.base_blocks,
+                                      &o->fields.shadow_size, &o->fields.shadow_opacity};
+    if (!mc_client_model_graph_bw_construct(&ledger, &slots))
         goto failure;
-    o->fields.base_model = model;
-    o->fields.base_blocks = blocks(o, "bw", 16);
-    if (o->fields.base_blocks == NULL)
-        goto failure;
-    o->fields.shadow_size = 0.0f;
-    o->fields.shadow_opacity = 1.0f;
     o->fields.e = blocks(o, "bb", 5);
     if (o->fields.e == NULL)
         goto failure;
@@ -218,4 +194,12 @@ mc_client_model_status mc_client_item_renderer_draw(mc_client_item_renderer *p,
                                          .source_class = "bb",
                                          .source_pc = 0};
     return MC_CLIENT_MODEL_UNIMPLEMENTED_DEPENDENCY;
+}
+
+mc_client_model_status mc_client_item_renderer_bind_manager(mc_client_item_renderer *o,
+                                                            const void *manager) {
+    if (o == NULL || o->phase != MC_CLIENT_MODEL_READY)
+        return MC_CLIENT_MODEL_INVALID_PHASE;
+    mc_client_model_graph_bw_set_manager(&o->fields.render_manager, manager);
+    return MC_CLIENT_MODEL_OK;
 }

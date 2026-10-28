@@ -1,17 +1,23 @@
 # Build and tests
 
-Checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686):
-1,127 public/JDK cases, with 367 Windows and 380 per Linux compiler. All 1,115
-preceding cases remain; four public resource-observer checks are added per
-compiler. Actual checkout `5b671b26` matches the checkpoint's
-`fdda932e6f3578c1ec37cde5d0762cbc2601a3ed` tree and all 2,027 archived blobs.
-Independent raw-log readback confirms unique Start/Passed pairs with no skips
-or failures. Formatting covers 1,027 C/header files; controller mirrors and
-556 positive/2,011 negative lifecycle controls pass per platform.
-Supplied-original comparisons and later startup source proposals keep their
-separate scope.
+Checkpoint `f37a96f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
+1,188 public/JDK cases, with 386 Windows and 401 per Linux compiler. None failed
+or skipped. Formatting covers 1,115 C/header files. This checkpoint fixes the
+preceding Windows flexible-array diagnostic and Linux SDL X11 transport load
+failure; their failed results remain in the testing record. Supplied-original
+comparisons and later startup additions retain their separate scope.
 
-The later normal-startup graph builds ALL on MSVC, Clang and GCC. Windows
+Later focused native coverage includes nineteen Windows loading-screen drawing
+profiles with 888 checks and nine Windows startup profiles with 173,090 checks
+across twelve actual Apps. Startup reaches EntityRenderer and RenderManager
+construction, then stops before statistics startup at offset 324. A combined
+source snapshot also passes 29 selected CTests on both sanitized Clang and GCC
+builds and links the native client. These selected runs do not establish a
+playable session. The separate SaveHandler metadata/session cohort passes 27
+selected tests per Linux compiler, with native Windows coverage recorded in
+the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+An earlier normal-startup graph builds ALL on MSVC, Clang and GCC. Windows
 passes 67 distinct selected CTests; Clang and GCC each pass 74 distinct cases
 across 81 executions. None failed or skipped. This focused scope retains
 774 constructor and 196,715 array/class checks and is separate from the

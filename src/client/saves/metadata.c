@@ -392,17 +392,39 @@ mc_client_save_status mc_client_save_format_open(mc_client_save_format *f,
     mc_client_save_status s = save_ready(f, e);
     if (s != MC_CLIENT_SAVE_OK)
         return s;
-    (void)folder;
-    (void)players;
-    return save_result(e, MC_CLIENT_SAVE_UNIMPLEMENTED_DEPENDENCY,
-                       "actual mx/fm Source owner allocation/constructor inside WorldStore", "hi",
-                       "a(Ljava/lang/String;Z)Lwt;", 0);
+    if (f->classes->handlers == NULL) {
+        (void)folder;
+        (void)players;
+        return save_result(e, MC_CLIENT_SAVE_UNIMPLEMENTED_DEPENDENCY,
+                           "actual mx/fm Source owner allocation/constructor inside WorldStore",
+                           "hi", "a(Ljava/lang/String;Z)Lwt;", 0);
+    }
+    f->state.active = true;
+    mc_world_source_status hs = mc_world_store_source_allocate(
+        f->classes->handlers, &f->state.pending_handler, &f->handler_failure);
+    if (hs != MC_WORLD_SOURCE_OK) {
+        f->state.active = false;
+        return save_handler_error(f, hs, &f->handler_failure, 0, e);
+    }
+    /* Actual hi.a File capture5 and nullable String argument8 follow NEW0. The
+     * enclosing caller holds both through construct; no eager folder checks. */
+    hs = mc_world_store_source_construct(f->state.pending_handler, f->state.source_a, folder,
+                                         players, &f->handler_failure);
+    if (hs != MC_WORLD_SOURCE_OK) {
+        f->state.active = false;
+        return save_handler_error(f, hs, &f->handler_failure, 10, e);
+    }
+    mc_world_store *completed = f->state.pending_handler;
+    f->state.pending_handler = NULL;
+    f->state.active = false;
+    *out = completed; /* Actual returned identity at13, no copy/alternate Store. */
+    return save_result(e, MC_CLIENT_SAVE_OK, NULL, NULL, NULL, -1);
 }
 
 mc_client_save_method_state mc_client_save_format_method_state(mc_client_save_method method) {
     static const mc_client_save_method_state methods[MC_CLIENT_SAVE_METHOD_COUNT] = {
         {"a()Ljava/lang/String;", "hi", true, NULL, -1},
-        {"a(Ljava/lang/String;Z)Lwt;", "hi", false, "actual mx/fm Source owner", 0},
+        {"a(Ljava/lang/String;Z)Lwt;", "hi", false, "caught IOException.printStackTrace", 57},
         {"b()Ljava/util/List;", "hi", false, "tq caught diagnostic descendant", 59},
         {"c()V", "hi", false, "actual shared rj region namespace flush", 0},
         {"b(Ljava/lang/String;)Lei;", "tq", false,

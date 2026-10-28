@@ -11,9 +11,12 @@ The startup record performs the source `run` flag store, staged Display and
 input setup, default game-directory selection, save-format manager creation,
 Settings loading, Default/selected texture-pack construction, RenderEngine and
 bitmap Font construction. It then performs the actual water, grass and foliage
-resource lookups and color-array setters. Source fields publish only after
-their constructors return. The current boundary is before EntityRenderer's
-allocation at Minecraft offset 299.
+resource lookups and color-array setters. It then constructs EntityRenderer and
+its distinct held-item renderer, publishes the actual App field, updates the
+loading title and initializes RenderManager. RenderManager retains its separate
+held-item renderer and the real renderer/model map. Source fields publish only
+after their constructors return. The current normal-startup boundary is before
+statistics startup at Minecraft offset 324.
 
 Resource loading uses the existing File, Pack, ImageIO and UTF-16 String owners.
 It retains the actual Settings/Pack/Engine/Font identities rather than creating
@@ -21,7 +24,9 @@ replacement objects for each call. The ordinary imported-resource profile needs
 `pack.png`, `font/default.png` and the three `misc/*color.png` resources at the
 class-resource root. SDK icons live below `sdk/`. This namespace differs from
 the importer's enclosing directory with its `jar/` child; the provider must be
-rooted at the actual resource layout.
+rooted at the actual resource layout. The window controls retain two filesystem
+providers: the import root for SDK icons, and its `jar/` child for class resources.
+Both providers outlive their GUI and graphics users.
 
 The default directory provider queries the real native home/profile and
 environment. Windows applies the source APPDATA selection. A controlled window
@@ -42,12 +47,29 @@ resource authority retires shared graphics resources with the same Display
 still alive. An App does not retire somebody else's namespace. A consumed
 child slot remains consumed even if cleanup reports an earlier device error.
 Native worker cancellation and teardown do not synthesize source stop stores.
+Application retirement detaches its RenderManager consumer before shared
+renderer resources retire. Shared or externally held Font/renderers keep their
+actual dependencies live through a BUSY result and retry.
 
 ## Validation and remaining work
 
 The [testing record](../testing.md#normal-startup-owner-qualification) separates
-the selected native CTests, full builds and the retained partial Windows window
-attempt. It does not claim full startup, original comparison or gameplay.
-EntityRenderer/RenderManager, later render/audio owners, screen transitions,
-World/Player publication, input/tick scheduling and the live frame loop still
-need integration and end-to-end validation.
+the earlier cohorts from the later native checks. Nine fresh Windows window
+profiles exercise twelve actual Apps and pass 173,090 checks. The default and
+shared-Font profiles reach the explicit offset-324 boundary. Nineteen separate
+loading-screen drawing profiles pass 888 checks. These are native integration
+results, without an original-game comparison.
+
+The separate startup-logo callee passes five real Windows profiles and 414
+checks over owners constructed by this genuine prefix. It performs actual
+texture lookup, two draws, swap and complete retirement. Null-receiver and
+floating-point failure profiles retain their reached effects. These prepared
+calls do not credit the intervening statistics or callback calls. They have no
+original-game or visual-parity result. The opt-in test requires the explicit
+default-directory option; Windows isolates APPDATA, while POSIX uses the real
+native home and remains unqualified for this profile.
+
+The next integration connects the concrete statistics/File startup path and
+its callback lifetime, then invokes the logo from the actual caller. Later input/render/audio setup, screen transitions,
+World/Player publication, frame/tick scheduling and the live game loop remain
+unfinished. The default executable continues to use title/inspection startup.

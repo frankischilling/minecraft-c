@@ -209,6 +209,7 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     mc_player_string *applet_standalone = classes->applet_standalone;
     mc_player_string *startup_title = classes->startup_title;
     mc_player_string *startup_font_resource = classes->startup_font_resource;
+    mc_player_string *startup_logo_resource = classes->startup_logo_resource;
     mc_player_string *startup_color_literals[3] = {classes->startup_color_literals[0],
                                                    classes->startup_color_literals[1],
                                                    classes->startup_color_literals[2]};
@@ -220,6 +221,7 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     for (size_t index = 0; index < 3; ++index)
         mc_player_string_release(startup_color_literals[index]);
     mc_player_string_release(startup_font_resource);
+    mc_player_string_release(startup_logo_resource);
     mc_player_string_release(startup_title);
     mc_player_string_release(timer_name);
     mc_player_string_release(applet_true);

@@ -16,6 +16,12 @@ mc_client_render_engine_class_identity(const mc_client_render_engine *);
 bool mc_client_render_engine_font_lease(mc_client_render_engine *, mc_client_display *,
                                         mc_client_texture id, mc_client_graphics_site,
                                         mc_client_font_lease **out, mc_client_graphics_error *);
+/* Same native immutable generation owner for iy, not a source sj. Historical
+ * font_lease_count accounts for every such native draw user and guards global
+ * retirement identically. Caller captures after actual iy ID store42. */
+bool mc_client_render_engine_image_lease(mc_client_render_engine *, mc_client_display *,
+                                         mc_client_texture, mc_client_graphics_site,
+                                         mc_client_font_lease **out, mc_client_graphics_error *);
 bool mc_client_font_lease_begin(mc_client_font_lease *, mc_client_graphics_error *);
 bool mc_client_font_lease_bind(mc_client_font_lease *, mc_client_graphics_error *);
 bool mc_client_font_lease_end(mc_client_font_lease *, mc_client_graphics_error *);

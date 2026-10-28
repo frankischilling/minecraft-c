@@ -107,6 +107,9 @@ const mc_client_item_renderer_fields *
 mc_client_item_renderer_fields_get(const mc_client_item_renderer *);
 size_t mc_client_item_renderer_allocation_bytes(const mc_client_item_renderer *);
 mc_client_model_status mc_client_item_renderer_free(mc_client_item_renderer **);
+/* Same inherited BW setter, used only by the actual TH constructor loop. */
+mc_client_model_status mc_client_item_renderer_bind_manager(mc_client_item_renderer *,
+                                                            const void *);
 /* GL icon/model rendering remains a precise failed dependency. */
 mc_client_model_status mc_client_item_renderer_draw(mc_client_item_renderer *,
                                                     mc_client_model_error *);

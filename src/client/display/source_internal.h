@@ -61,6 +61,7 @@ typedef struct mc_client_source_gpu_vertex {
 typedef struct mc_client_source_state {
     bool initialized, loading_ready, texture_enabled, alpha_test, color_known,
         internal_resource_bind;
+    bool lighting_enabled, fog_enabled;
     unsigned arrays, pointers;
     const void *array_buffers[4];
     uint64_t array_contexts[4];

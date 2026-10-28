@@ -8,11 +8,14 @@
 #include "../render_engine/colorizer.h"
 #include "application_owner.h"
 #include "directory_inputs.h"
+#include "mc/client/render/manager/manager.h"
 #include "mc/client/saves/save_format.h"
 #include "mc/client/settings/construction.h"
 #include "mc/client/texture_packs/construction.h"
+#include "mc/client/world/entity_renderer.h"
 
 typedef struct mc_client_application_startup mc_client_application_startup;
+typedef struct mc_client_startup_logo_call mc_client_startup_logo_call;
 
 typedef enum mc_client_startup_status {
     MC_CLIENT_STARTUP_OK,
@@ -32,7 +35,10 @@ typedef enum mc_client_startup_status {
     MC_CLIENT_STARTUP_PACK_FAILED,
     MC_CLIENT_STARTUP_RENDER_ENGINE_FAILED,
     MC_CLIENT_STARTUP_BITMAP_FONT_FAILED,
-    MC_CLIENT_STARTUP_COLORS_FAILED
+    MC_CLIENT_STARTUP_COLORS_FAILED,
+    MC_CLIENT_STARTUP_ENTITY_RENDERER_FAILED,
+    MC_CLIENT_STARTUP_MANAGER_FAILED,
+    MC_CLIENT_STARTUP_LOGO_FAILED
 } mc_client_startup_status;
 
 typedef enum mc_client_startup_phase {
@@ -75,6 +81,9 @@ typedef struct mc_client_startup_error {
     mc_client_color_lookup_error colors;
     mc_client_colorizer_error colorizer;
     mc_client_color_array_error color_argument;
+    const mc_client_startup_logo_call *logo; /* Borrowed through next startup mutation. */
+    mc_client_entity_renderer_error entity_renderer;
+    mc_client_manager_error manager;
 } mc_client_startup_error;
 
 typedef struct mc_client_startup_services {
@@ -96,6 +105,8 @@ typedef struct mc_client_startup_options {
     mc_client_render_engine_options bitmap_font; /* Separate native sj constructor quota. */
     mc_client_color_lookup_options color_lookup;
     mc_client_colorizer_options colorizers;
+    mc_client_entity_renderer_options entity_renderer;
+    mc_client_manager_options manager;
 } mc_client_startup_options;
 
 typedef struct mc_client_startup_state {
@@ -115,6 +126,13 @@ typedef struct mc_client_startup_state {
     const mc_client_loading_classes *font_classes;
     const mc_player_string *font_resource;
     bool q_stored;
+    const mc_client_source_px *entity_renderer_candidate;
+    bool t_stored;
+    const mc_client_render_manager_classes *manager_classes; /* Borrow expires on detach. */
+    const mc_client_render_manager *manager_capture;
+    const mc_client_held_item *manager_hand_candidate;
+    bool manager_consumer_attached, manager_f_stored;
+    int32_t last_manager_pc; /* Separate static/other-receiver progress; App last store stays307. */
     const mc_client_color_array *color_argument;
     const mc_client_color_array *color_results[MC_CLIENT_COLORIZER_COUNT];
     const mc_player_string *color_literals[MC_CLIENT_COLORIZER_COUNT];
@@ -157,7 +175,11 @@ bool mc_client_application_startup_inspect(const mc_client_application_startup *
 /* Native terminal cleanup has no source J/o store. BUSY/error retains pointer
  * and all still-owned children. External operations are exclusive; source f
  * may be called serially while the retained stopped attempt remains live.
- * Strict font retirement precedes Engine/Pack/Settings/Display. Once that font
+ * Native manager consumer detaches before waiting on global F dependencies.
+ * Only actual outer authority retires global manager/hands/resources.
+ * Strict px retirement precedes its actual sj/Engine/Settings dependencies;
+ * an external px occurrence blocks startup and App retirement. Strict font
+ * retirement then precedes Engine/Pack/Settings/Display. Once that font
  * releases its leases, actual class-owned graphics/context resources can still
  * return BUSY, preserving those dependencies. The actual outer namespace owner
  * must explicitly coordinate retire_resources with Display alive; this App

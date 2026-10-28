@@ -34,10 +34,42 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     client_application *app = startup->app;
     /* Do not consume unrelated later children. Until their actual caller and
      * retirement route exist they keep this App and its startup services live. */
-    if (app->t != NULL || app->g != NULL || app->C != NULL || app->active_world != NULL ||
-        app->stats_writer != NULL)
+    if (app->g != NULL || app->C != NULL || app->active_world != NULL || app->stats_writer != NULL)
         return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
                                "later source children still borrow startup resources", out);
+    /* End this actual App's source admission BEFORE any global F dependency
+     * can block sj/Engine/App. No counted App<->TH ownership cycle exists. */
+    if (mc_client_render_manager_consumer_detach(
+            &startup->manager_consumer, &startup->retirement.manager) != MC_CLIENT_MANAGER_OK)
+        return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
+                               "startup actual manager consumer detach", out);
+    startup->manager_capture = NULL;
+    startup->manager_classes = NULL;
+    const mc_client_entity_renderer_status local_hand = mc_client_held_item_retire(
+        &startup->manager_hand_candidate, &startup->retirement.entity_renderer);
+    if (local_hand != MC_CLIENT_ENTITY_RENDERER_OK)
+        return cleanup_failure(startup,
+                               local_hand == MC_CLIENT_ENTITY_RENDERER_BUSY
+                                   ? MC_CLIENT_STARTUP_BUSY
+                                   : MC_CLIENT_STARTUP_ENTITY_RENDERER_FAILED,
+                               "startup unpublished actual RA strict retirement", out);
+    if ((startup->t_stored && app->t != startup->entity_renderer_candidate) ||
+        (!startup->t_stored && app->t != NULL))
+        return cleanup_failure(startup, MC_CLIENT_STARTUP_INVALID_PHASE,
+                               "startup actual t identity changed outside owner", out);
+    const mc_client_entity_renderer_status renderer_status = mc_client_entity_renderer_retire(
+        &startup->entity_renderer_candidate, &startup->retirement.entity_renderer);
+    if (startup->entity_renderer_candidate == NULL && startup->t_stored) {
+        app->t = NULL; /* Native source view ended, no source putfield. */
+        startup->t_stored = false;
+    }
+    if (renderer_status != MC_CLIENT_ENTITY_RENDERER_OK)
+        return cleanup_failure(startup,
+                               renderer_status == MC_CLIENT_ENTITY_RENDERER_BUSY
+                                   ? MC_CLIENT_STARTUP_BUSY
+                                   : MC_CLIENT_STARTUP_ENTITY_RENDERER_FAILED,
+                               "startup actual px strict retirement before sj/Engine/Settings",
+                               out);
     if (app->font_renderer_constructing || app->font_renderer_retained != startup->font_candidate ||
         (startup->q_stored && app->font_renderer != startup->font_candidate) ||
         (!startup->q_stored && app->font_renderer != NULL))
@@ -295,6 +327,8 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
      * now expire with this final record, never with earlier Settings cleanup. */
     mc_world_info_name_release(startup->settings_error_line);
     startup->settings_error_line = NULL;
+    free(startup->logo);
+    startup->logo = NULL;
     app->startup = NULL;
     /* No source f/J/o mutation and no kg join: constructor retirement owns
      * native worker cancellation after this actual borrowed App is detached. */

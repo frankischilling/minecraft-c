@@ -15,7 +15,8 @@ holds the static arrays and actual atomic J/o, with native cancellation/join
 separate from source stores. The standalone constructor and retained resource
 owners have separate [native coverage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md).
 The [normal startup owner](Startup) now connects Display, the game directory,
-Settings, selected Pack, RenderEngine, Font and color maps on the same App.
+Settings, selected Pack, RenderEngine, Font, color maps, EntityRenderer and
+RenderManager on the same App. Its next source call is statistics startup.
 The executable still uses its title/inspection entry; complete startup and
 gameplay adoption remain unfinished.
 
@@ -37,8 +38,8 @@ sound, the concrete Player notification and the later Item death check.
 [Pickup particles](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/particles.md) own em construction/ticking and the
 four dn effect Lists. The application captures its manager before constructing
 the effect and checks a null manager afterward. The selected manager startup
-body is implemented; normal RenderEngine (ji) startup and particle drawing
-remain unfinished. [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md) supplies the actual
+body is implemented and adopted by the reached normal startup prefix;
+particle drawing remains unfinished. [Item ticking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/item-tick.md) supplies the actual
 Item environment, push-out, movement, friction and aging body. The
 [client World Entity pass](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/entity-update.md)
 now invokes genuine Player/Item updates through live lists, removals, Chunk
@@ -97,7 +98,7 @@ The shared simulation and server graph initializes no graphics or audio device.
 See [dependencies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/dependencies.md) for source pins and notices.
 
 Application World entry, complete World time/block scheduling, Map tracking and
-terrain updates, remaining wake/hurt/GUI operations, fog, normal RenderEngine startup and drawing still prevent a
+terrain updates, remaining wake/hurt/GUI operations, fog and normal frame drawing still prevent a
 playable client. Dedicated-server startup and ticking remain separate work.
 [Test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) distinguishes the current full integration
 from earlier full matrices and isolated module comparisons.

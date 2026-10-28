@@ -1,3 +1,4 @@
+#include "../../../src/client/render_engine/texture_lookup.h"
 /* Compile the exact production Display TU once. This white-box control forwards
  * every intercepted GL call to its genuine function before testing reentry.
  * Do not also link another display.c object into this executable. */
@@ -300,11 +301,19 @@ int main(int argc, char **argv) {
     app->constructor_phase = MC_CLIENT_APP_RAW;
     puts("FONT actual-App-d-e-J-lifetime PASS");
     REQUIRE(mc_client_loading_screen_message(screen, text, loading_error) ==
-                MC_CLIENT_LOADING_UNIMPLEMENTED_DEPENDENCY &&
-            loading_error->site.pc == 165 && loading_error->child.pc == 0 &&
+                MC_CLIENT_LOADING_NULL_REFERENCE &&
+            loading_error->site.pc == 165 && loading_error->child.pc == 4 &&
             strcmp(loading_error->child.class_name, "ji") == 0 &&
-            strcmp(loading_error->child.method, "b") == 0 &&
+            strcmp(loading_error->child.method, "b") == 0 && loading_error->lookup != NULL &&
+            loading_error->lookup->status == MC_CLIENT_LOOKUP_NULL_REFERENCE &&
+            loading_error->lookup->site.pc == 4 &&
+            !loading_error->lookup->texture.driver_generated &&
             loading_error->sampled_clock_committed);
+    mc_client_loading_call_state pending_call;
+    REQUIRE(mc_client_loading_screen_call_inspect(screen, &pending_call) && pending_call.retained &&
+            pending_call.lookup_failed && pending_call.engine == engine);
+    REQUIRE(mc_client_loading_screen_retire_call(screen, loading_error) == MC_CLIENT_LOADING_OK);
+    REQUIRE(mc_client_loading_screen_call_inspect(screen, &pending_call) && !pending_call.retained);
     REQUIRE(mc_client_loading_screen_release(screen) == MC_CLIENT_LOADING_OK);
     screen = NULL;
     REQUIRE(mc_client_application_lifetime_retire(app, &app_error) ==

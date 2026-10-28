@@ -34,6 +34,14 @@ struct mc_client_application_startup {
     mc_player_string
         *font_resource; /* Borrowed lazy MC literal occurrence, no extra source field. */
     bool q_stored;
+    mc_client_source_px *entity_renderer_candidate;
+    bool t_stored;
+    mc_client_render_manager_classes *manager_classes;
+    mc_client_render_manager *manager_capture;
+    mc_client_manager_consumer manager_consumer;
+    mc_client_held_item *manager_hand_candidate;
+    bool manager_f_stored;
+    int32_t last_manager_pc;
     mc_client_color_array *color_argument; /* One actual returned/incoming occurrence. */
     mc_client_color_array *color_results[MC_CLIENT_COLORIZER_COUNT]; /* Borrowed Engine.c traces. */
     mc_player_string *color_literals[MC_CLIENT_COLORIZER_COUNT]; /* Borrowed actual MC literals. */
@@ -50,13 +58,20 @@ struct mc_client_application_startup {
     mc_java_file *published_Z; /* Native identity guard, not another source field/hold. */
     application_directory_builder *builder;
     mc_client_startup_error failure, retirement;
+    mc_client_startup_logo_call *logo;
 };
 
 mc_client_startup_status application_startup_fail(mc_client_startup_error *,
                                                   mc_client_startup_status, const char *,
                                                   const char *, const char *, const char *,
                                                   unsigned int);
+mc_client_startup_status application_startup_manager(mc_client_application_startup *);
+mc_client_startup_status application_startup_entity_renderer(mc_client_application_startup *);
 mc_client_startup_status application_startup_colors(mc_client_application_startup *);
+/* Actual x()V callee over these real already-constructed owners. A direct
+ * prepared-receiver control does not credit intervening a324..354 calls.
+ * One retained call record; no source a749/run32 completion or event pump. */
+mc_client_startup_status application_startup_logo(mc_client_application_startup *);
 mc_client_startup_status application_startup_font(mc_client_application_startup *);
 mc_client_startup_status application_startup_render_engine(mc_client_application_startup *);
 mc_client_startup_status application_startup_pack(mc_client_application_startup *);

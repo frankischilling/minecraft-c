@@ -93,8 +93,8 @@ static mc_client_model_quad *quad(mc_client_model_graph *o, mc_client_model_vert
     return q;
 }
 
-static bool box(mc_client_model_graph *o, mc_client_model_part *p, float x, float y, float z,
-                int32_t w, int32_t h, int32_t d, float inflate) {
+bool mc_client_model_graph_box(mc_client_model_graph *o, mc_client_model_part *p, float x, float y,
+                               float z, int32_t w, int32_t h, int32_t d, float inflate) {
     p->j = mc_client_model_graph_allocate(o, 8 * sizeof(*p->j), "ps", 3);
     if (p->j == NULL)
         return false;
@@ -176,27 +176,36 @@ static bool box(mc_client_model_graph *o, mc_client_model_part *p, float x, floa
     return true;
 }
 
+mc_client_model_part *mc_client_model_graph_part_allocate(mc_client_model_graph *o,
+                                                          const char *source, int32_t pc) {
+    return mc_client_model_graph_allocate(o, sizeof(mc_client_model_part), source, pc);
+}
+
+void mc_client_model_graph_part_construct(mc_client_model_part *p, int32_t u, int32_t v) {
+    p->n = false;
+    p->o = 0;
+    p->g = false;
+    p->h = true;
+    p->i = false;
+    p->l = u;
+    p->m = v;
+}
+
 static mc_client_model_part *part(mc_client_model_graph *o, int32_t u, int32_t v, int32_t pc) {
-    mc_client_model_part *p = mc_client_model_graph_allocate(o, sizeof(*p), "fh", pc);
-    if (p != NULL) {
-        p->n = false;
-        p->o = 0;
-        p->g = false;
-        p->h = true;
-        p->i = false;
-        p->l = u;
-        p->m = v;
-    }
+    mc_client_model_part *p = mc_client_model_graph_part_allocate(o, "fh", pc);
+    if (p != NULL)
+        mc_client_model_graph_part_construct(p, u, v);
     return p;
 }
 
-static void pivot(mc_client_model_part *p, float x, float y, float z) {
+void mc_client_model_graph_pivot(mc_client_model_part *p, float x, float y, float z) {
     p->a = x;
     p->b = y;
     p->c = z;
 }
 
-bool mc_client_model_graph_fill_zero(mc_client_model_graph *o, mc_client_biped_model *m) {
+bool mc_client_model_graph_fill_biped(mc_client_model_graph *o, mc_client_biped_model *m,
+                                      float inflate, float height) {
     m->n = false;
     root_store(o, "ko", 6);
     m->j = false;
@@ -209,42 +218,42 @@ bool mc_client_model_graph_fill_zero(mc_client_model_graph *o, mc_client_biped_m
     m->i = part(o, 0, 0, 20);
     if (m->i != NULL)
         root_store(o, "fh", 29);
-    if (m->i == NULL || !box(o, m->i, -5, 0, -1, 10, 16, 1, 0))
+    if (m->i == NULL || !mc_client_model_graph_box(o, m->i, -5, 0, -1, 10, 16, 1, inflate))
         return false;
     current_part(o, 'h');
     m->h = part(o, 24, 0, 51);
     if (m->h != NULL)
         root_store(o, "fh", 61);
-    if (m->h == NULL || !box(o, m->h, -3, -6, -1, 6, 6, 1, 0))
+    if (m->h == NULL || !mc_client_model_graph_box(o, m->h, -3, -6, -1, 6, 6, 1, inflate))
         return false;
     current_part(o, 'a');
     m->a = part(o, 0, 0, 84);
     if (m->a != NULL)
         root_store(o, "fh", 93);
-    if (m->a == NULL || !box(o, m->a, -4, -8, -4, 8, 8, 8, 0))
+    if (m->a == NULL || !mc_client_model_graph_box(o, m->a, -4, -8, -4, 8, 8, 8, inflate))
         return false;
-    pivot(m->a, 0, 0.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->a, 0, 0.0f + height, 0);
     current_part(o, 'b');
     m->b = part(o, 32, 0, 129);
     if (m->b != NULL)
         root_store(o, "fh", 139);
-    if (m->b == NULL || !box(o, m->b, -4, -8, -4, 8, 8, 8, 0.0f + 0.5f))
+    if (m->b == NULL || !mc_client_model_graph_box(o, m->b, -4, -8, -4, 8, 8, 8, inflate + 0.5f))
         return false;
-    pivot(m->b, 0, 0.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->b, 0, 0.0f + height, 0);
     current_part(o, 'c');
     m->c = part(o, 16, 16, 178);
     if (m->c != NULL)
         root_store(o, "fh", 189);
-    if (m->c == NULL || !box(o, m->c, -4, 0, -2, 8, 12, 4, 0))
+    if (m->c == NULL || !mc_client_model_graph_box(o, m->c, -4, 0, -2, 8, 12, 4, inflate))
         return false;
-    pivot(m->c, 0, 0.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->c, 0, 0.0f + height, 0);
     current_part(o, 'd');
     m->d = part(o, 40, 16, 223);
     if (m->d != NULL)
         root_store(o, "fh", 234);
-    if (m->d == NULL || !box(o, m->d, -3, -2, -2, 4, 12, 4, 0))
+    if (m->d == NULL || !mc_client_model_graph_box(o, m->d, -3, -2, -2, 4, 12, 4, inflate))
         return false;
-    pivot(m->d, -5, 2.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->d, -5, 2.0f + height, 0);
     current_part(o, 'e');
     m->e = part(o, 40, 16, 269);
     if (m->e != NULL)
@@ -252,16 +261,16 @@ bool mc_client_model_graph_fill_zero(mc_client_model_graph *o, mc_client_biped_m
     if (m->e == NULL)
         return false;
     m->e->g = true;
-    if (!box(o, m->e, -1, -2, -2, 4, 12, 4, 0))
+    if (!mc_client_model_graph_box(o, m->e, -1, -2, -2, 4, 12, 4, inflate))
         return false;
-    pivot(m->e, 5, 2.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->e, 5, 2.0f + height, 0);
     current_part(o, 'f');
     m->f = part(o, 0, 16, 323);
     if (m->f != NULL)
         root_store(o, "fh", 333);
-    if (m->f == NULL || !box(o, m->f, -2, 0, -2, 4, 12, 4, 0))
+    if (m->f == NULL || !mc_client_model_graph_box(o, m->f, -2, 0, -2, 4, 12, 4, inflate))
         return false;
-    pivot(m->f, -2, 12.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->f, -2, 12.0f + height, 0);
     current_part(o, 'g');
     m->g = part(o, 0, 16, 368);
     if (m->g != NULL)
@@ -269,9 +278,26 @@ bool mc_client_model_graph_fill_zero(mc_client_model_graph *o, mc_client_biped_m
     if (m->g == NULL)
         return false;
     m->g->g = true;
-    if (!box(o, m->g, -2, 0, -2, 4, 12, 4, 0))
+    if (!mc_client_model_graph_box(o, m->g, -2, 0, -2, 4, 12, 4, inflate))
         return false;
-    pivot(m->g, 2, 12.0f + 0.0f, 0);
+    mc_client_model_graph_pivot(m->g, 2, 12.0f + height, 0);
+    return true;
+}
+
+bool mc_client_model_graph_fill_zero(mc_client_model_graph *o, mc_client_biped_model *m) {
+    return mc_client_model_graph_fill_biped(o, m, 0.0f, 0.0f);
+}
+
+bool mc_client_model_graph_bw_construct(mc_client_model_graph *o, const mc_client_bw_slots *slots) {
+    mc_client_biped_model *model = mc_client_model_graph_allocate(o, sizeof(*model), "bw", 5);
+    if (model == NULL || !mc_client_model_graph_fill_zero(o, model))
+        return false;
+    *slots->model = model; /* BW.a12, after completed FH. */
+    *slots->blocks = mc_client_model_graph_blocks(o, "bw", 16);
+    if (*slots->blocks == NULL)
+        return false;
+    *slots->shadow_size = 0.0f;
+    *slots->shadow_opacity = 1.0f;
     return true;
 }
 
@@ -301,4 +327,26 @@ mc_client_model_status mc_client_model_graph_retire(mc_client_model_graph *o,
     if (error != NULL)
         *error = (mc_client_model_error){0};
     return MC_CLIENT_MODEL_OK;
+}
+
+mc_client_render_blocks *mc_client_model_graph_blocks(mc_client_model_graph *o, const char *source,
+                                                      int32_t pc) {
+    if (!o->classes->cv_ready) {
+        o->classes->cv_a = true;
+        o->classes->cv_ready = true;
+    }
+    mc_client_render_blocks *p = mc_client_model_graph_allocate(o, sizeof(*p), source, pc);
+    if (p != NULL) {
+        p->d = -1;
+        p->e = false;
+        p->f = false;
+        p->b = true;
+        p->g = p->h = p->i = p->j = p->k = p->l = 0;
+        p->O = 1;
+    }
+    return p;
+}
+
+void mc_client_model_graph_bw_set_manager(const void **actual_slot, const void *manager) {
+    *actual_slot = manager; /* Actual BW.a(TH)V putfield b2, no owned backedge. */
 }

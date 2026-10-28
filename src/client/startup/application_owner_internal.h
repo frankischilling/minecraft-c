@@ -31,6 +31,7 @@ struct mc_client_application_classes {
     mc_java_file_error file_retirement;
     mc_player_string *startup_title;
     mc_player_string *startup_font_resource; /* Lazy actual MC ldc250, namespace-owned. */
+    mc_player_string *startup_logo_resource; /* Lazy actual MC.x ldc119, namespace-owned. */
     mc_player_string
         *startup_color_literals[3]; /* Lazy MC ldc266/278/290, same source identities. */
     struct application_directory_classes *directory_classes;

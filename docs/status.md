@@ -7,34 +7,51 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
-Checkpoint `37dc83f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686):
-1,127 public/JDK cases, comprising 367 Windows, 380 GCC and 380 Clang cases.
-All 1,115 preceding cases remain, with four observer checks added per compiler.
-The actual checkout `5b671b26` matches the checkpoint's
-`fdda932e6f3578c1ec37cde5d0762cbc2601a3ed` tree; all 2,027 archived source blobs
-match. Independent log readback confirms every Start/Passed pair, with no skips
-or failures. Formatting covers 1,027 C/header files with clang-format 18.1.3;
-controller mirrors and lifecycle controls pass on each platform. This matrix
-excludes supplied-original comparisons and later startup source proposals.
+Checkpoint `f37a96f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
+1,188 public/JDK cases, comprising 386 Windows, 401 GCC and 401 Clang cases.
+None failed or skipped. Formatting checks 1,115 files. Both Linux SDK transport
+cases pass with sanitizer checks enabled. This result is separate from later
+renderer, SaveHandler and startup source work. The preceding `37dc83f`
+[hosted checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/40544932686)
+passes its 1,127-case scope.
 
 ## Normal startup integration
 
 The separate [normal startup owner](client/normal-startup.md) now constructs
 Display, the default game directory, save-format manager, Settings, selected
 texture pack, RenderEngine and bitmap Font in source order. It loads the three
-water/grass/foliage color maps and calls their real setters. The next reached
-boundary is EntityRenderer construction. The default executable continues to
-use its title/inspection path; this owner is not a playable entry point.
+water/grass/foliage color maps and calls their real setters. It now also
+constructs EntityRenderer and RenderManager with their distinct held-item
+renderers. Normal source startup stops before statistics at offset 324.
+The default executable continues to use title/inspection startup.
 
 Published checkpoint `33c777c` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40589053675).
 Windows stops on an older MSVC flexible-array warning. Each Linux compiler
 passes 400 of 401 tests; the SDK transport test fails during leak checking.
 Formatting passes. The corrections use a scoped MSVC compatibility guard and
-ordinary Linux X11 linkage. The original transport test passes all 37 checks in
-a fresh sanitized Clang build with the latter setting. A complete hosted result
-for the corrections is still pending.
+ordinary Linux X11 linkage. The unchanged transport test passes all 37 checks in
+a fresh sanitized Clang build. The corrected `f37a96f` hosted result above is green.
 
-The coherent local source builds ALL and the client on MSVC Debug, Clang 18 and
+The later renderer/loading composition passes its eight selected Windows CPU
+and protocol cases. Nine real Windows startup-window profiles pass 173,090
+checks across twelve actual Apps, including shared-owner retirement and failure
+limits. Nineteen loading-screen drawing profiles pass 888 checks. A combined
+source also builds the client and passes 29 selected cases on each Linux
+compiler with sanitizers. These scopes remain distinct from the hosted suite.
+
+The startup-logo callee also passes five prepared-receiver Windows profiles,
+414 checks, including actual drawing, swap and complete teardown. Normal
+startup still stops at offset 324; its statistics/callback connection and the
+actual caller's logo invocation remain unfinished. No original visual parity
+is claimed from the prepared callee.
+
+The [source SaveHandler](world/save-handler.md) now constructs actual world
+directories and session output, reads metadata through the real stream/NBT/Info
+owners, and checks matching session tokens. Its constructor and later read
+cohorts have selected native Windows/Clang/GCC results. World entry and complete
+save/reload sessions remain unfinished.
+
+The earlier local source builds ALL and the client on MSVC Debug, Clang 18 and
 GCC 13. Windows passes 67 distinct selected CTests. Clang and GCC each pass 74 distinct
 selected CTests across 81 executions.
 Linux uses ASan, UBSan and leak detection. These focused results retain 774

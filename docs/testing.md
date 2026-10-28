@@ -38,6 +38,12 @@ scope was 936 C/header files. The `37dc83f` hosted run retains every one of thos
 
 ## Normal startup owner qualification
 
+Published `f37a96f` [passes all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
+386 Windows, 401 GCC and 401 Clang cases, 1,188 total, with no failures or skips.
+The formatter checks 1,115 selected files. Exact-head checkout and complete
+Start/finish inventories are verified from the actual job logs. The Linux
+transport case passes on both compilers with sanitizer checks enabled.
+
 The published `33c777c` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40589053675)
 fails separately from the focused local results below. Windows stops while
 compiling the event allocator: older MSVC treats its C17 flexible array as warning
@@ -52,11 +58,57 @@ the unchanged original transport test exits zero after all 37 checks, with empty
 stderr and ASan, UBSan and leak detection enabled. This is one focused Linux
 result, not a complete corrected CI matrix. Three affected translation units
 compile with the scoped flexible-array compatibility guard on installed MSVC
-14.51; hosted VS2022 validation remains pending. The SDK driver now includes
+14.51; the later hosted VS2022 build and tests also pass. The SDK driver includes
 bounded stdout/stderr tails when it rejects a failed child.
 
-The [normal startup owner](client/normal-startup.md) has a later coherent source
-cohort with 2,144 files. All three native compilers build ALL and the graphical
+The later EntityRenderer/RenderManager/loading composition has eight selected
+Windows CPU/protocol case results, including 1,673 RenderManager checks. Its
+test successor preserves the actual cold Item-first initialization failure and
+uses genuine Block-first and Statistics-first entry for successful construction.
+Production initialization does not prewarm a Registry to avoid that failure.
+The separate Minecraft textured-rectangle CPU helper passes 146 checks for
+wrapped coordinates, binary32 UV conversion and retained failure prefixes.
+
+Real Windows graphical coverage adds nineteen loading-draw modes (888 checks)
+and nine normal-startup profiles (twelve actual Apps, 173,090 checks). Default
+and shared-Font startup reach the explicit offset-324 boundary. The startup
+fixture uses the import root for SDK resources and its real `jar/` child for
+class resources, retaining both providers through their dependent owners.
+One reader correction admits the already captured UTF16 directory trace; the
+default native child is not rerun. Imported assets remain private. These runs
+do not execute the original game or prove original visual parity.
+
+The separate prepared startup-logo callee passes five real Windows modes:
+success (102 checks), null Settings, null Engine, initial FP refusal and FP
+refusal after the actual clear (78 each), 414 total. The real coordinator first
+stops at offset 324. The control verifies two actual draws, resource/literal
+identity, viewport/alpha/swap, reentry refusal and complete outer retirement.
+The initial cleanup-harness failure remains retained; its correction invokes
+the existing held-item retirement API before RenderManager class retirement.
+The public driver's later source scan excludes private/build trees and uses
+the existing default-directory opt-in. Its unchanged result admission reads
+the same five complete captures without rerunning native children. Normal
+startup adoption, Linux graphical execution and original visual parity remain
+outside this result.
+
+A combined 2,198-file source builds the actual client and passes 29 selected
+cases on each Clang 18/GCC 13 profile, with strict C17/FP and ASan/UBSan/leaks.
+Those tests combine twenty File/Logger/output/SaveHandler controls, the eight
+renderer/startup CPU/protocol cases and the rectangle helper. A separate
+headless configuration with testing disabled contains zero test targets.
+This source snapshot predates the later metadata/session and logo additions;
+its result is not a full-suite or current-window qualification.
+
+The later [SaveHandler read cohort](world/save-handler.md) passes a 27-case scope
+per compiler. Windows combines 26 original passing rows with the corrected
+affected handler case; each Linux compiler runs all 27 on the final source.
+Only the old assertions that metadata/session methods were unfinished changed.
+The real new read/close controls pass 257/283 checks. Existing NBT/Info and
+File/Writer/Store regressions remain enabled. These scopes do not establish
+World entry, complete persistence or gameplay.
+
+The earlier [normal startup owner](client/normal-startup.md) cohort contains
+2,144 files. All three native compilers build ALL and the graphical
 client. Windows MSVC Debug passes 25 selected CTests plus 42 disjoint regression
 cases, for 67 distinct cases. Clang 18 passes 39 selected cases plus 42 regression
 cases with seven deliberate overlaps, for 81 executions and 74 distinct cases.

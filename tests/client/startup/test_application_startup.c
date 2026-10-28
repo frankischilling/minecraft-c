@@ -6,6 +6,7 @@
 #include "client/startup/application_startup_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
+#include <SDL3/SDL_init.h>
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_video.h>
 #include <stdio.h>
@@ -83,6 +84,7 @@ typedef struct startup_fixture {
     mc_client_startup_services services;
     mc_client_startup_error *error;
     mc_resource_files *imported_files;
+    mc_resource_files *texture_files; /* Actual jar-child class-resource provider. */
 } startup_fixture;
 
 static int startup_services_options(startup_fixture *f,
@@ -112,15 +114,22 @@ static int startup_icons(startup_fixture *f, const char *imported_resources) {
                                        &f->error->icons) == MC_CLIENT_SDK_ICONS_OK);
     CHECK(mc_client_sdk_icons_construct(f->services.icons, &f->error->icons) ==
           MC_CLIENT_SDK_ICONS_OK);
-    f->services.texture_resources = mc_resource_files_source(f->imported_files);
+    const size_t length = strlen(imported_resources);
+    CHECK(length <= SIZE_MAX - 5);
+    char *jar_root = malloc(length + 5);
+    CHECK(jar_root != NULL);
+    memcpy(jar_root, imported_resources, length);
+    memcpy(jar_root + length, "/jar", 5);
+    const mc_registry_status class_source = mc_resource_files_create(jar_root, &f->texture_files);
+    free(jar_root);
+    CHECK(class_source == MC_REGISTRY_OK);
+    f->services.texture_resources = mc_resource_files_source(f->texture_files);
     return 0;
 }
 
-static int startup_services_close(startup_fixture *f) {
+static int startup_services_close(startup_fixture *f, fixture *runtime) {
     CHECK(mc_client_sdk_icons_release(&f->services.icons, &f->error->icons) ==
           MC_CLIENT_SDK_ICONS_OK);
-    if (f->imported_files != NULL)
-        CHECK(mc_resource_files_free(f->imported_files) == MC_REGISTRY_OK);
     CHECK(mc_game_settings_classes_release(&f->services.settings_classes, &f->error->settings) ==
           MC_GAME_SETTINGS_OK);
     CHECK(mc_client_directory_inputs_release(&f->services.directory_inputs, &f->error->directory) ==
@@ -128,6 +137,17 @@ static int startup_services_close(startup_fixture *f) {
     CHECK(mc_client_save_formats_release(&f->services.save_formats, &f->error->save) ==
           MC_CLIENT_SAVE_OK);
     CHECK(mc_java_files_release(&f->services.files, &f->error->file) == MC_JAVA_FILE_OK);
+    /* GUI/ge class owners borrow the class provider through final retirement.
+     * End the actual runtime owners before consuming either provider. */
+    CHECK(fixture_close(runtime) == 0);
+    if (f->texture_files != NULL) {
+        CHECK(mc_resource_files_free(f->texture_files) == MC_REGISTRY_OK);
+        f->texture_files = NULL;
+    }
+    if (f->imported_files != NULL) {
+        CHECK(mc_resource_files_free(f->imported_files) == MC_REGISTRY_OK);
+        f->imported_files = NULL;
+    }
     free(f->error);
     return 0;
 }
@@ -140,6 +160,80 @@ static int actual_app(fixture *f, bool fullscreen, client_application **out) {
     CHECK(mc_client_application_constructor_construct(*out, &arguments, f->error) ==
           MC_CLIENT_APP_OK);
     CHECK((*out)->constructor_phase == MC_CLIENT_APP_READY);
+    return 0;
+}
+
+static int entity_renderer_cpu(const char *resources) {
+    fixture f;
+    CHECK(fixture_open(&f, resources) == 0);
+    client_application *app = NULL;
+    CHECK(actual_app(&f, false, &app) == 0);
+    CHECK(app->font_renderer == NULL && app->settings == NULL && app->render_engine == NULL &&
+          app->t == NULL);
+    mc_client_entity_renderer_error *error = calloc(1, sizeof(*error));
+    CHECK(error != NULL);
+    const mc_client_entity_renderer_services services = {f.services.render_classes, f.graphics,
+                                                         f.services.profile, NULL};
+    CHECK(mc_client_entity_renderer_class_active_use(f.services.render_classes, error) ==
+          MC_CLIENT_ENTITY_RENDERER_OK);
+    for (unsigned case_id = 0; case_id < 4; ++case_id) {
+        mc_client_entity_renderer_options options = mc_client_entity_renderer_default_options();
+        if (case_id == 1)
+            options.model_bytes = 0;
+        if (case_id == 2)
+            options.map_array.max_allocations = 0;
+        if (case_id == 3)
+            options.image_bytes = 0;
+        mc_client_source_px *owner = NULL;
+        CHECK(mc_client_entity_renderer_allocate(&services, &options, &owner, error) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(mc_client_entity_renderer_construct(owner, app, error) !=
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        mc_client_entity_renderer_state state;
+        CHECK(mc_client_entity_renderer_inspect(owner, &state));
+        CHECK(state.fields.j == app && state.fields.c == NULL && state.last_store_pc == 201 &&
+              state.pending_ra != NULL && state.fields.J != NULL && state.fields.f != NULL &&
+              app->t == NULL);
+        if (case_id == 1) {
+            CHECK(error->status == MC_CLIENT_ENTITY_RENDERER_MODEL_FAILED && error->ra_pc == 20 &&
+                  state.ra_last_store_pc == 16 && state.ra_blocks == NULL &&
+                  state.pending_iy == NULL);
+        } else {
+            CHECK(state.ra_last_store_pc == 37 && state.ra_app == app && state.ra_blocks != NULL &&
+                  state.pending_iy != NULL && state.map_font == NULL &&
+                  state.map_settings == NULL && state.map_engine == NULL && !state.map_lease &&
+                  state.map_zero_stores == 0);
+            if (case_id == 2) {
+                CHECK(error->status == MC_CLIENT_ENTITY_RENDERER_ARRAY_FAILED &&
+                      error->iy_pc == 8 && state.iy_last_store_pc == -1 &&
+                      state.map_array == NULL && state.map_image == NULL);
+            } else if (case_id == 3) {
+                CHECK(error->status == MC_CLIENT_ENTITY_RENDERER_IMAGE_FAILED &&
+                      error->iy_pc == 36 && state.iy_last_store_pc == 20 &&
+                      state.map_array != NULL && state.map_image == NULL);
+            } else {
+                CHECK(error->status == MC_CLIENT_ENTITY_RENDERER_NULL_REFERENCE &&
+                      error->iy_pc == 39 && state.iy_last_store_pc == 20 &&
+                      state.map_array != NULL && state.map_image != NULL);
+                mc_client_argb_image_state image;
+                mc_client_color_array_state array;
+                CHECK(mc_client_argb_image_inspect(state.map_image, &image));
+                CHECK(mc_client_color_array_inspect(state.map_array, &array));
+                CHECK(image.width == 128 && image.height == 128 && image.type == 2 &&
+                      image.pixel_count == 16384 && array.length == 16384 &&
+                      array.bits != image.pixels);
+            }
+        }
+        CHECK(mc_client_entity_renderer_retire(&owner, error) == MC_CLIENT_ENTITY_RENDERER_OK &&
+              owner == NULL);
+    }
+    free(error);
+    CHECK(SDL_WasInit(0) == 0);
+    CHECK(mc_client_application_constructor_retire(&app, f.error) == MC_CLIENT_APP_BUSY);
+    CHECK(mc_client_application_classes_release(&f.services.application_classes, NULL) ==
+          MC_CLIENT_APPLICATION_OWNER_OK);
+    CHECK(mc_client_application_constructor_retire(&app, f.error) == MC_CLIENT_APP_OK);
+    CHECK(fixture_close(&f) == 0);
     return 0;
 }
 
@@ -177,8 +271,7 @@ static int cpu_source_prefix(const char *resources) {
     CHECK(mc_client_application_classes_release(&f.services.application_classes, NULL) ==
           MC_CLIENT_APPLICATION_OWNER_OK);
     CHECK(mc_client_application_constructor_retire(&app, f.error) == MC_CLIENT_APP_OK);
-    CHECK(startup_services_close(&startup) == 0);
-    CHECK(fixture_close(&f) == 0);
+    CHECK(startup_services_close(&startup, &f) == 0);
     return 0;
 }
 
@@ -199,6 +292,8 @@ static int real_window_prefix(const char *resources, const char *imported_resour
     const bool shared_font = strcmp(kind, "window-font-shared-owner") == 0;
     const bool color_limit = strcmp(kind, "window-color-lookup-limit") == 0;
     const bool colorizer_limit = strcmp(kind, "window-colorizer-limit") == 0;
+    const bool map_array_limit = strcmp(kind, "window-entity-map-array-limit") == 0;
+    const bool map_image_limit = strcmp(kind, "window-entity-map-image-limit") == 0;
     mc_client_color_array *independent_color = NULL;
     size_t independent_length = 0;
     mc_client_color_lookup_error *retained_lookup = NULL;
@@ -223,6 +318,10 @@ static int real_window_prefix(const char *resources, const char *imported_resour
             options.color_lookup.arrays.max_allocations = 0;
         if (colorizer_limit)
             options.colorizers.initial_array[MC_CLIENT_COLORIZER_WATER].max_allocations = 0;
+        if (map_array_limit)
+            options.entity_renderer.map_array.max_allocations = 0;
+        if (map_image_limit)
+            options.entity_renderer.image_bytes = 0;
         CHECK(mc_client_application_startup_allocate(app, &startup.services, &options, &attempt,
                                                      startup.error) == MC_CLIENT_STARTUP_OK);
         const mc_client_startup_status result =
@@ -440,8 +539,41 @@ static int real_window_prefix(const char *resources, const char *imported_resour
                   attempt == NULL);
             continue;
         }
-        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->child.pc == 298 &&
-              startup.error->caller.pc == 298 &&
+        if (map_array_limit || map_image_limit) {
+            CHECK(result == MC_CLIENT_STARTUP_ENTITY_RENDERER_FAILED &&
+                  startup.error->caller.pc == 304);
+            mc_client_startup_state failed;
+            mc_client_entity_renderer_state px;
+            CHECK(mc_client_application_startup_inspect(attempt, &failed));
+            CHECK(!failed.t_stored && app->t == NULL && failed.last_startup_store == 259 &&
+                  failed.entity_renderer_candidate != NULL && failed.q_stored && failed.p_stored);
+            CHECK(mc_client_entity_renderer_inspect(failed.entity_renderer_candidate, &px));
+            CHECK(px.phase == MC_CLIENT_ENTITY_RENDERER_FAILED && px.last_store_pc == 201 &&
+                  px.fields.c == NULL && px.pending_ra != NULL && px.ra_last_store_pc == 37 &&
+                  px.ra_app == app && px.ra_blocks != NULL && px.pending_iy != NULL);
+            CHECK(px.iy_last_store_pc == (map_array_limit ? -1 : 20) &&
+                  px.failure->site.pc == (map_array_limit ? 8 : 36) &&
+                  strcmp(px.failure->site.class_name, "iy") == 0 && !px.map_lease &&
+                  px.map_image == NULL && px.map_zero_stores == 0);
+            CHECK((px.map_array == NULL) == map_array_limit);
+            CHECK(mc_client_application_constructor_retire(&apps[index], f.error) ==
+                  MC_CLIENT_APP_BUSY);
+            CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+                  MC_CLIENT_STARTUP_BUSY);
+            CHECK(attempt != NULL && attempt->entity_renderer_candidate == NULL &&
+                  app->font_renderer == NULL && app->render_engine != NULL && app->display != NULL);
+            mc_client_render_texture_error *terminal = calloc(1, sizeof(*terminal));
+            CHECK(terminal != NULL);
+            CHECK(mc_client_render_engine_retire_resources(f.graphics, terminal) ==
+                  MC_CLIENT_RENDER_TEXTURE_OK);
+            free(terminal);
+            CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+                      MC_CLIENT_STARTUP_OK &&
+                  attempt == NULL && app->startup == NULL && app->display == NULL);
+            continue;
+        }
+        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->child.pc == 324 &&
+              startup.error->caller.pc == 324 &&
               strcmp(startup.error->child.class_name, "net/minecraft/client/Minecraft") == 0 &&
               strcmp(startup.error->child.method, "a") == 0 &&
               strcmp(startup.error->child.descriptor, "()V") == 0);
@@ -450,7 +582,7 @@ static int real_window_prefix(const char *resources, const char *imported_resour
         mc_client_startup_state state;
         CHECK(mc_client_application_startup_inspect(attempt, &state));
         CHECK(state.display_created && state.Z_stored && state.aa_stored &&
-              state.last_startup_store == 259 && state.z_stored && state.D_stored &&
+              state.last_startup_store == 307 && state.z_stored && state.D_stored &&
               state.p_stored && state.q_stored && app->startup == attempt);
         CHECK(app->display == state.display && app->game_directory != NULL && app->aa != NULL);
         CHECK(app->diagnostic_game_directory == NULL && app->settings == state.settings_candidate &&
@@ -486,7 +618,7 @@ static int real_window_prefix(const char *resources, const char *imported_resour
               state.color_argument == NULL && state.color_lookups_completed == 3 &&
               state.color_setters_completed == 3 && state.color_lookup_source_returned &&
               state.last_color_lookup_pc == 292 && state.last_color_setter_pc == 295 &&
-              app->t == NULL);
+              state.t_stored && app->t == state.entity_renderer_candidate && app->t != NULL);
         static const mc_client_colorizer_kind kinds[] = {
             MC_CLIENT_COLORIZER_WATER, MC_CLIENT_COLORIZER_GRASS, MC_CLIENT_COLORIZER_FOLIAGE};
         for (size_t at = 0; at < MC_CLIENT_COLORIZER_COUNT; ++at) {
@@ -516,6 +648,153 @@ static int real_window_prefix(const char *resources, const char *imported_resour
             for (size_t other = 0; other < at; ++other)
                 CHECK(state.color_results[other] != cached);
         }
+        mc_client_entity_renderer_state px;
+        CHECK(mc_client_entity_renderer_inspect(app->t, &px));
+        CHECK(px.phase == MC_CLIENT_ENTITY_RENDERER_READY && px.last_store_pc == 213 &&
+              px.ra_phase == MC_CLIENT_ENTITY_RENDERER_READY && px.ra_last_store_pc == 60 &&
+              px.iy_phase == MC_CLIENT_ENTITY_RENDERER_READY && px.iy_last_store_pc == 42 &&
+              px.fields.j == app && px.ra_app == app && px.fields.c == px.pending_ra &&
+              px.ra_blocks != NULL && px.fields.f != NULL && px.fields.J != NULL &&
+              px.map_font == app->font_renderer && px.map_settings == app->settings &&
+              px.map_engine == app->render_engine && px.map_lease && px.map_zero_stores == 16384);
+        CHECK(state.manager_consumer_attached && state.manager_f_stored &&
+              state.last_manager_pc == 321 && state.manager_classes != NULL &&
+              state.manager_capture != NULL && state.manager_hand_candidate == NULL);
+        mc_client_render_manager_classes *global_manager = attempt->manager_classes;
+        mc_client_manager_state manager;
+        CHECK(mc_client_render_manager_inspect(global_manager, &manager));
+        CHECK(manager.a == state.manager_capture && manager.entries == 28 &&
+              manager.completed_bw_stores == 28 && manager.hand_occurrence != NULL &&
+              manager.fields.f != NULL && manager.fields.f != px.fields.c);
+        mc_client_held_item_state global_hand;
+        CHECK(mc_client_held_item_inspect(manager.hand_occurrence, &global_hand));
+        CHECK(global_hand.pending_ra == manager.fields.f && global_hand.ra_app == app &&
+              global_hand.map_font == app->font_renderer &&
+              global_hand.map_engine == app->render_engine &&
+              global_hand.map_settings == app->settings &&
+              global_hand.pending_ra != px.pending_ra && global_hand.map_image != px.map_image &&
+              global_hand.map_array != px.map_array && global_hand.ra_blocks != px.ra_blocks &&
+              global_hand.map_lease && global_hand.map_zero_stores == 16384 &&
+              global_hand.ra_last_store_pc == 60);
+        CHECK(mc_client_render_manager_classes_retire(&global_manager, &startup.error->manager) ==
+              MC_CLIENT_MANAGER_BUSY);
+        /* Real completed RA followed by a null captured receiver: failure is
+         * late putfield321, no earlier dummy child or fake successful source. */
+        const mc_client_entity_renderer_services hand_services = {
+            f.services.render_classes, f.graphics, f.services.profile, app->display};
+        mc_client_held_item *late_null = NULL;
+        CHECK(mc_client_held_item_allocate(&hand_services, NULL, &late_null,
+                                           &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(mc_client_held_item_construct(late_null, app, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        const mc_client_source_ra *late_identity = mc_client_held_item_identity(late_null);
+        CHECK(mc_client_render_manager_publish_hand(global_manager, NULL, &late_null,
+                                                    &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_NULL_REFERENCE &&
+              startup.error->manager.pc == 321 && late_null != NULL &&
+              mc_client_held_item_identity(late_null) == late_identity);
+        CHECK(mc_client_held_item_retire(&late_null, &startup.error->entity_renderer) ==
+                  MC_CLIENT_ENTITY_RENDERER_OK &&
+              late_null == NULL);
+        /* Another genuine RA over this real App, using the SAME body, replaces
+         * global F and retains the old identity for native terminal cleanup.
+         * This arranged direct-call control is not a second whole startup. */
+        mc_client_held_item *replacement = NULL;
+        CHECK(mc_client_held_item_allocate(&hand_services, NULL, &replacement,
+                                           &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(mc_client_held_item_construct(replacement, app, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        const mc_client_source_ra *replacement_identity = mc_client_held_item_identity(replacement);
+        CHECK(mc_client_render_manager_publish_hand(global_manager, attempt->manager_capture,
+                                                    &replacement, &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_OK &&
+              replacement == NULL);
+        CHECK(mc_client_render_manager_inspect(global_manager, &manager) &&
+              manager.fields.f == replacement_identity && manager.displaced_hands == 1);
+        mc_client_held_item *same = manager.hand_occurrence;
+        CHECK(mc_client_held_item_retain(same, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(mc_client_render_manager_publish_hand(global_manager, attempt->manager_capture, &same,
+                                                    &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_OK &&
+              same == NULL);
+        CHECK(mc_client_render_manager_inspect(global_manager, &manager) &&
+              manager.fields.f == replacement_identity && manager.displaced_hands == 1);
+        CHECK(mc_client_held_item_inspect(manager.hand_occurrence, &global_hand) &&
+              global_hand.holds == 1);
+        mc_client_held_item *external_global = manager.hand_occurrence;
+        CHECK(mc_client_held_item_retain(external_global, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        mc_client_color_array_state map_array;
+        mc_client_argb_image_state map_image;
+        CHECK(mc_client_color_array_inspect(px.map_array, &map_array));
+        CHECK(mc_client_argb_image_inspect(px.map_image, &map_image));
+        CHECK(map_array.length == 16384 && map_image.width == 128 && map_image.height == 128 &&
+              map_image.type == 2 && map_image.pixel_count == 16384 &&
+              map_array.bits != map_image.pixels);
+        for (size_t at = 0; at < 16384; ++at)
+            CHECK(map_array.bits[at] == 0 && map_image.pixels[at] == 0);
+        mc_client_texture map_id;
+        memcpy(&map_id, &px.map_texture, sizeof(map_id));
+        mc_client_argb_image *map_registered = NULL;
+        CHECK(
+            mc_client_render_engine_registered_image(app->render_engine, map_id, &map_registered) &&
+            map_registered == px.map_image);
+        GLint bound = 0, width = 0, height = 0;
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound);
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+        mc_client_texture current_map_id;
+        memcpy(&current_map_id, &global_hand.map_texture, sizeof(current_map_id));
+        CHECK((uint32_t)bound == current_map_id && width == 128 && height == 128 &&
+              glGetError() == GL_NO_ERROR);
+        uint8_t *uploaded = malloc(16384u * 4u);
+        CHECK(uploaded != NULL);
+        memset(uploaded, 0xa5, 16384u * 4u);
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, uploaded);
+        CHECK(glGetError() == GL_NO_ERROR);
+        for (size_t at = 0; at < 16384u * 4u; ++at)
+            CHECK(uploaded[at] == 0);
+        free(uploaded);
+        mc_client_source_px *external_px = app->t;
+        CHECK(mc_client_entity_renderer_retain(external_px, &startup.error->entity_renderer) ==
+              MC_CLIENT_ENTITY_RENDERER_OK);
+        CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
+              MC_CLIENT_STARTUP_BUSY);
+        CHECK(app->t == external_px && app->font_renderer != NULL &&
+              app->display == state.display && attempt->entity_renderer_candidate == external_px);
+        CHECK(mc_client_application_constructor_retire(&apps[index], f.error) ==
+              MC_CLIENT_APP_BUSY);
+        CHECK(mc_client_entity_renderer_release(&external_px, &startup.error->entity_renderer) ==
+                  MC_CLIENT_ENTITY_RENDERER_OK &&
+              external_px == NULL);
+        CHECK(!attempt->manager_consumer.attached && attempt->manager_classes == NULL &&
+              attempt->manager_capture == NULL);
+        CHECK(mc_client_render_manager_retire_hands(global_manager, &startup.error->manager) ==
+              MC_CLIENT_MANAGER_BUSY);
+        CHECK(mc_client_render_manager_inspect(global_manager, &manager) &&
+              manager.phase == MC_CLIENT_MANAGER_RETIRING && !manager.source_views_available);
+        mc_client_render_manager *rejected = NULL;
+        CHECK(mc_client_render_manager_static_get(global_manager, &rejected,
+                                                  &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_INVALID_PHASE &&
+              rejected == NULL);
+        CHECK(mc_client_held_item_identity(external_global) == replacement_identity);
+        CHECK(app->font_renderer != NULL && app->render_engine != NULL &&
+              app->display == state.display);
+        CHECK(mc_client_held_item_release(&external_global, &startup.error->entity_renderer) ==
+                  MC_CLIENT_ENTITY_RENDERER_OK &&
+              external_global == NULL);
+        /* Actual fixture/runtime authority ends global RA ownership with the
+         * real Display/Settings/App still alive, then ends this TH namespace.
+         * This is never called by the per-App retirement implementation. */
+        CHECK(mc_client_render_manager_retire_hands(global_manager, &startup.error->manager) ==
+              MC_CLIENT_MANAGER_OK);
+        CHECK(mc_client_render_manager_classes_retire(&global_manager, &startup.error->manager) ==
+                  MC_CLIENT_MANAGER_OK &&
+              global_manager == NULL);
         mc_client_bitmap_font_state font;
         CHECK(mc_client_bitmap_font_inspect(app->font_renderer, &font));
         CHECK(font.phase == MC_CLIENT_BITMAP_FONT_READY && font.widths_completed == 256 &&
@@ -525,7 +804,8 @@ static int real_window_prefix(const char *resources, const char *imported_resour
         mc_client_texture texture;
         memcpy(&texture, &font.fields.a, sizeof(texture));
         CHECK(mc_client_render_engine_registered_image(app->render_engine, texture, &registered) &&
-              registered == font.retained_image && registered != NULL);
+              registered == font.retained_image && registered != NULL &&
+              registered != px.map_image);
         mc_client_font_mapping_state mapping;
         CHECK(mc_client_font_mapping_inspect(f.services.gui_classes->mapping, &mapping) &&
               mapping.phase == MC_REGISTRY_COLD && mapping.a == NULL && mapping.b == NULL);
@@ -533,7 +813,8 @@ static int real_window_prefix(const char *resources, const char *imported_resour
         CHECK(mc_client_bitmap_font_retain(external_font) == MC_CLIENT_BITMAP_FONT_OK);
         CHECK(mc_client_application_startup_retire(&attempt, startup.error) ==
               MC_CLIENT_STARTUP_BUSY);
-        CHECK(attempt != NULL && app->font_renderer == external_font &&
+        CHECK(attempt != NULL && app->t == NULL && !attempt->t_stored &&
+              attempt->entity_renderer_candidate == NULL && app->font_renderer == external_font &&
               app->font_renderer_retained == external_font &&
               app->render_engine == state.engine_candidate && app->D == state.pack_candidate &&
               app->settings == state.settings_candidate && app->display == state.display);
@@ -662,8 +943,7 @@ static int real_window_prefix(const char *resources, const char *imported_resour
     CHECK(mc_client_application_classes_release(&f.services.application_classes, NULL) ==
           MC_CLIENT_APPLICATION_OWNER_OK);
     CHECK(mc_client_application_constructor_retire(&apps[current], f.error) == MC_CLIENT_APP_OK);
-    CHECK(startup_services_close(&startup) == 0);
-    CHECK(fixture_close(&f) == 0);
+    CHECK(startup_services_close(&startup, &f) == 0);
     if (independent_color != NULL) {
         mc_client_color_array_state array;
         CHECK(mc_client_color_array_inspect(independent_color, &array) &&
@@ -789,14 +1069,15 @@ static int prepared_line_lifetime(const char *resources, const char *imported,
     CHECK(mc_client_application_classes_release(&f.services.application_classes, NULL) ==
           MC_CLIENT_APPLICATION_OWNER_OK);
     CHECK(mc_client_application_constructor_retire(&app, f.error) == MC_CLIENT_APP_OK);
-    CHECK(startup_services_close(&startup) == 0);
-    CHECK(fixture_close(&f) == 0);
+    CHECK(startup_services_close(&startup, &f) == 0);
     return 0;
 }
 
 int main(int argc, char **argv) {
     CHECK(argc >= 3);
-    if (strcmp(argv[2], "cpu") == 0)
+    if (strcmp(argv[2], "entity-renderer-cpu") == 0)
+        CHECK(entity_renderer_cpu(argv[1]) == 0);
+    else if (strcmp(argv[2], "cpu") == 0)
         CHECK(cpu_source_prefix(argv[1]) == 0);
     else if (strcmp(argv[2], "lifetime-output-limit") == 0 ||
              strcmp(argv[2], "lifetime-read-limit") == 0) {
@@ -810,7 +1091,9 @@ int main(int argc, char **argv) {
               strcmp(argv[2], "window-bitmap-font-limit") == 0 ||
               strcmp(argv[2], "window-font-shared-owner") == 0 ||
               strcmp(argv[2], "window-color-lookup-limit") == 0 ||
-              strcmp(argv[2], "window-colorizer-limit") == 0);
+              strcmp(argv[2], "window-colorizer-limit") == 0 ||
+              strcmp(argv[2], "window-entity-map-array-limit") == 0 ||
+              strcmp(argv[2], "window-entity-map-image-limit") == 0);
         CHECK(argc == 4);
         CHECK(real_window_prefix(argv[1], argv[3], argv[2]) == 0);
     }
