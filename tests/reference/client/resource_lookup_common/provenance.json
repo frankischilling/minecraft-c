@@ -8046,8 +8046,8 @@
       "sha256": "cb131e250fa25f114284a52621f94c43dd094e33398f8982adaf430574419eec"
     },
     "tests/tools/chunk/test_data_reference.py": {
-      "bytes": 20459,
-      "sha256": "b2285006ac9e2e6221efba4b6cf049844617000e254a247fd0330e71e7396a0e"
+      "bytes": 21272,
+      "sha256": "13bf68776a58a13657b647482e61790f502a5677290aa7d3d605154275b42b58"
     },
     "tests/tools/chunk/test_finish_interop.py": {
       "bytes": 3160,
@@ -10241,6 +10241,29 @@
             ".github/workflows/ci.yml": {
               "bytes": 4815,
               "sha256": "fc78e8e3467bb1789152e51cbb76bcdad343e6b59fb5881ba340c9d2376ee6eb"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      }
+    },
+    {
+      "role": "Current owned-child inventory handshake admission only; no native or original result transferred.",
+      "parent_source_map": {
+        "bytes": 348140,
+        "sha256": "3602ec30aae6cc1da9714a604a6696b9228b960f88664b3247141645f2f8222d"
+      },
+      "previous_metadata": {
+        "bytes": 417328,
+        "sha256": "f6f0f374b481cbf190a5019e0b18deee26853cdabf0031143e4ef8a8cbbcb3d9"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/chunk/test_data_reference.py": {
+              "bytes": 20459,
+              "sha256": "b2285006ac9e2e6221efba4b6cf049844617000e254a247fd0330e71e7396a0e"
             }
           },
           "added_paths": [],
