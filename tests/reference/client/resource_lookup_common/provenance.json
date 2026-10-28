@@ -11,7 +11,7 @@
     },
     ".github/workflows/ci.yml": {
       "bytes": 4815,
-      "sha256": "fc78e8e3467bb1789152e51cbb76bcdad343e6b59fb5881ba340c9d2376ee6eb"
+      "sha256": "ea3a7592405b21083ee5305eaa310d22c2b3393118f5d5b474e19d4e59414f19"
     },
     ".gitignore": {
       "bytes": 282,
@@ -10222,6 +10222,29 @@
               "sha256": "35edbf95118a3a7997df08aa0a9d3dd6c99da1862ae67c3f3ff1e8e800c631a9"
             }
           }
+        }
+      }
+    },
+    {
+      "role": "Current CTest worker-count experiment input admission only; no native or hosted result transferred.",
+      "parent_source_map": {
+        "bytes": 348140,
+        "sha256": "5310b49df8df2f96c0bae8564675ec974a2164c52df6532a91a82145a45b689f"
+      },
+      "previous_metadata": {
+        "bytes": 416568,
+        "sha256": "b7c4c95df85b144d7856d02915332674afdfa970087f3728e9c96ae3d81f3d23"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".github/workflows/ci.yml": {
+              "bytes": 4815,
+              "sha256": "fc78e8e3467bb1789152e51cbb76bcdad343e6b59fb5881ba340c9d2376ee6eb"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
         }
       }
     }
