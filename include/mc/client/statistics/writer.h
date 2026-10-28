@@ -5,8 +5,10 @@
 #include "mc/core/java/writer.h"
 #include "mc/entity/player/player.h"
 #include "mc/statistics/achievements/achievements.h"
+#include "mc/world/storage/java_file.h"
 
 typedef struct mc_client_stats_writer mc_client_stats_writer;
+typedef struct mc_client_stats_classes mc_client_stats_classes;
 typedef struct mc_client_stats_map mc_client_stats_map;
 typedef struct mc_client_stats_text mc_client_stats_text;
 
@@ -23,7 +25,8 @@ typedef enum mc_client_stats_status {
     MC_CLIENT_STATS_BUSY,
     MC_CLIENT_STATS_UNSUPPORTED_PROFILE,
     MC_CLIENT_STATS_SOURCE_EXCEPTION,
-    MC_CLIENT_STATS_DIAGNOSTIC_FAILED
+    MC_CLIENT_STATS_DIAGNOSTIC_FAILED,
+    MC_CLIENT_STATS_UNIMPLEMENTED_DEPENDENCY
 } mc_client_stats_status;
 
 typedef enum mc_client_stats_exception {
@@ -37,6 +40,22 @@ typedef enum mc_client_stats_exception {
     MC_CLIENT_STATS_INDEX_OUT_OF_BOUNDS,
     MC_CLIENT_STATS_SOURCE_IO
 } mc_client_stats_exception;
+
+/* A stable nonrecursive child snapshot for a reached diagnostic frontier. */
+typedef struct mc_client_stats_source_cause {
+    mc_client_stats_status status;
+    mc_client_stats_exception exception;
+    const char *operation, *class_name, *method, *descriptor;
+    unsigned int bytecode;
+    int system_error;
+    mc_java_reader_status reader;
+    mc_java_file_error file;
+} mc_client_stats_source_cause;
+
+typedef struct mc_client_stats_site {
+    const char *class_name, *method, *descriptor;
+    unsigned int bytecode;
+} mc_client_stats_site;
 
 typedef struct mc_client_stats_error {
     mc_client_stats_status status;
@@ -111,6 +130,16 @@ typedef struct mc_client_stats_report {
     mc_client_stats_error caught;
 } mc_client_stats_report;
 
+/* Source-only native diagnostic snapshot, never embedded in the legacy
+ * charged writer/worker error/report layout. Stored in stats_source backing. */
+typedef struct mc_client_stats_file_error {
+    mc_client_stats_error base;
+    mc_java_file_error file;
+    mc_client_stats_source_cause caught;
+    mc_client_stats_site callers[4];
+    size_t caller_count;
+} mc_client_stats_file_error;
+
 typedef enum mc_client_stats_phase {
     MC_CLIENT_STATS_RAW,
     MC_CLIENT_STATS_CONSTRUCTING,
@@ -127,7 +156,9 @@ typedef struct mc_client_stats_state {
     bool dirty, busy;
     const void *pending_main_identity, *pending_other_identity;
     int32_t delay, other_delay;
-    /* e/f/i/j/g/h constructor declaration order, all actual distinct objects. */
+    /* e/f/i/j/g/h constructor order. Legacy path mode exposes its native
+     * wrappers/UTF8 paths; typed mode exposes actual File identities and leaves
+     * UTF8 views NULL. Identity observation does not admit handed-File mutation. */
     const void *file_identities[6];
     const char *file_paths_utf8[6];
     const mc_player_session *session;
@@ -135,6 +166,64 @@ typedef struct mc_client_stats_state {
     mc_client_stats_error last_worker_error;
     mc_client_stats_report last_worker_report;
 } mc_client_stats_state;
+
+typedef struct mc_client_stats_classes_state {
+    size_t holds;
+    bool active, resolved, failed, retiring;
+    const mc_world_info_name *stats_literal;
+    const mc_client_stats_error *failure;
+} mc_client_stats_classes_state;
+
+/* Cold native xi constant-pool lifetime, not a fabricated xi clinit. The
+ * outer application class/runtime owns ONE shared scope across its writers.
+ * Only the reached xi ldc36 resolves its real counted "stats" String.
+ * All class/name occurrence mutations are on the foreground thread. No parser,
+ * Registry, worker, clock, output or device is initialized by create. */
+mc_client_stats_status mc_client_stats_classes_create(size_t max_string_bytes,
+                                                      mc_client_stats_classes **,
+                                                      mc_client_stats_error *);
+mc_client_stats_status mc_client_stats_classes_retain(mc_client_stats_classes *,
+                                                      mc_client_stats_error *);
+mc_client_stats_status mc_client_stats_classes_release(mc_client_stats_classes **,
+                                                       mc_client_stats_error *);
+/* Strict outer retirement: a live writer's retained scope causes BUSY. */
+mc_client_stats_status mc_client_stats_classes_retire(mc_client_stats_classes **,
+                                                      mc_client_stats_error *);
+bool mc_client_stats_classes_read_state(const mc_client_stats_classes *,
+                                        mc_client_stats_classes_state *);
+
+typedef struct mc_client_stats_file_state {
+    const mc_client_stats_classes *classes;
+    const mc_java_files *files;
+    const mc_java_file *parent, *directory, *children[6], *pending_file;
+    const mc_java_file_array *listing;
+    size_t listing_index;
+    const mc_world_info_name *pending_name;
+    const mc_java_file_stream *pending_stream;
+    bool pending_builder, pending_reader, retiring;
+    const mc_client_stats_file_error *failure, *cleanup_failure;
+} mc_client_stats_file_state;
+
+/* The same canonical constructor schedule with concrete File transport.
+ * files/classes are existing shared cold services, never created per writer.
+ * Parent and Session retain actual null/source identity. All partial candidates
+ * stay privately owned. The real constructor worker starts without a join.
+ * Source diagnostics/unfinished typed write bodies stop at their real call.
+ * This additive mode preserves the legacy path API below and its allocation
+ * ledger; source backing is separately charged. */
+mc_client_stats_status
+mc_client_stats_writer_construct_file(mc_client_stats_writer *, mc_client_stats_classes *,
+                                      mc_player_session *, mc_java_files *, mc_java_file *,
+                                      mc_client_stats_report *, mc_client_stats_error *);
+/* Borrowed identities only, after worker quiescence/join; does not force a join.
+ * No borrowed view authorizes concurrent mutation/inspection of a handed File. */
+bool mc_client_stats_writer_read_file_state(mc_client_stats_writer *, mc_client_stats_file_state *);
+
+/* Same canonical native retirement with an optional stable typed child copy.
+ * It remains valid when successful cleanup consumes the failed writer. Legacy
+ * retire below keeps its exact old result/slot behavior and old error layout. */
+mc_client_stats_status mc_client_stats_writer_retire_file(mc_client_stats_writer **,
+                                                          mc_client_stats_file_error *);
 
 mc_client_stats_limits mc_client_stats_default_limits(void);
 mc_client_stats_options mc_client_stats_default_options(void);

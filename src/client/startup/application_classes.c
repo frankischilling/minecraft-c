@@ -9,8 +9,12 @@ application_owner_fail(mc_client_application_owner_error *error,
                        const char *class_name, const char *method, const char *descriptor,
                        unsigned int pc, int native_error) {
     if (error != NULL)
-        *error = (mc_client_application_owner_error){
-            status, operation, {class_name, method, descriptor, pc}, native_error, NULL};
+        *error = (mc_client_application_owner_error){.status = status,
+                                                     .operation = operation,
+                                                     .site = {class_name, method, descriptor, pc},
+                                                     .native_error = native_error,
+                                                     .file = NULL,
+                                                     .statistics = NULL};
     return status;
 }
 
@@ -201,6 +205,18 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
                                     ? MC_CLIENT_APPLICATION_OWNER_BUSY
                                     : MC_CLIENT_APPLICATION_OWNER_FILE_FAILED)
                              : error->status;
+    }
+    if (mc_client_stats_classes_release(&classes->startup_stats_classes,
+                                        &classes->stats_retirement) != MC_CLIENT_STATS_OK) {
+        const mc_client_application_owner_status status =
+            classes->stats_retirement.status == MC_CLIENT_STATS_BUSY
+                ? MC_CLIENT_APPLICATION_OWNER_BUSY
+                : MC_CLIENT_APPLICATION_OWNER_STATS_FAILED;
+        application_owner_fail(error, status, "Minecraft native xi literal scope release", NULL,
+                               NULL, NULL, 0, 0);
+        if (error != NULL)
+            error->statistics = &classes->stats_retirement;
+        return status;
     }
     application_directory_classes_destroy(classes->directory_classes);
     client_application *last_app = classes->a;

@@ -520,11 +520,101 @@ static bool clock_and_reload_controls(fixture *f) {
 }
 #endif
 
+#ifndef MC_PLAYER_STATISTICS_FAULT_TEST
+static bool typed_file_owner(const char *resources) {
+    mc_java_files *files = NULL;
+    mc_client_stats_classes *classes = NULL;
+    CHECK(mc_java_files_create(NULL, &files, NULL) == MC_JAVA_FILE_OK);
+    CHECK(mc_client_stats_classes_create(0, &classes, NULL) == MC_CLIENT_STATS_OK);
+    const char *const paths[3] = {"typed-app", "typed-app-null-session", "typed-app-kh-failure"};
+    for (size_t mode = 0; mode < 3; ++mode) {
+        fixture *f = calloc(1, sizeof(*f));
+        CHECK(f != NULL);
+        CHECK(setup(f, resources, paths[mode], false));
+        uint16_t units[64];
+        const size_t length = strlen(paths[mode]);
+        CHECK(length < 64);
+        for (size_t i = 0; i < length; ++i)
+            units[i] = (uint16_t)(unsigned char)paths[mode][i];
+        mc_world_info_name *path = NULL;
+        CHECK(mc_world_info_name_copy((mc_nbt_string){units, length}, SIZE_MAX, &path) ==
+              MC_WORLD_INFO_OK);
+        CHECK(mc_java_file_allocate(files, &f->app.game_directory, NULL) == MC_JAVA_FILE_OK);
+        CHECK(mc_java_file_construct_string(f->app.game_directory, path, NULL) == MC_JAVA_FILE_OK);
+        mc_world_info_name_release(path);
+        if (mode == 1)
+            CHECK(mc_client_application_publish_session(&f->app, NULL, NULL) ==
+                  MC_CLIENT_STATISTICS_OWNER_OK);
+        const size_t quota = f->app.registry->options.max_allocation_bytes;
+        if (mode == 2)
+            f->app.registry->options.max_allocation_bytes =
+                f->app.registry->allocation_bytes + f->app.registry->managed_current_bytes;
+        mc_client_stats_options options = mc_client_stats_default_options();
+        options.charset = MC_JAVA_READER_UTF8;
+        mc_client_statistics_owner_error error;
+        const mc_client_statistics_owner_status expected =
+            mode == 0   ? MC_CLIENT_STATISTICS_OWNER_OK
+            : mode == 1 ? MC_CLIENT_STATISTICS_OWNER_WRITER_FAILED
+                        : MC_CLIENT_STATISTICS_OWNER_NOTICE_FAILED;
+        CHECK(mc_client_application_construct_statistics_file(&f->app, classes, files, &options,
+                                                              NULL, &error) == expected);
+        CHECK(f->app.stats_writer_retained != NULL && !f->app.stats_writer_constructing);
+        mc_client_stats_state state;
+        CHECK(mc_client_stats_writer_read_state(f->app.stats_writer_retained, &state));
+        if (mode == 1) {
+            CHECK(error.site.pc == 337 && error.writer.bytecode == 48 &&
+                  f->app.stats_writer == NULL &&
+                  state.phase == MC_CLIENT_STATS_FAILED_CONSTRUCTION &&
+                  state.workers_started == 0 && error.source_writer.base.bytecode == 48 &&
+                  error.source_writer.caller_count == 1 &&
+                  error.source_writer.callers[0].bytecode == 182);
+        } else {
+            CHECK(f->app.stats_writer == f->app.stats_writer_retained &&
+                  state.phase == MC_CLIENT_STATS_READY && state.workers_started == 1 &&
+                  state.workers_joined == 0);
+            if (mode == 0)
+                CHECK(mc_statistic_achievement_fields_get(f->root)->client_callback != NULL);
+            else
+                CHECK(error.site.pc == 351 &&
+                      mc_statistic_achievement_fields_get(f->root)->client_callback == NULL);
+            CHECK(mc_client_stats_writer_join(f->app.stats_writer, NULL) == MC_CLIENT_STATS_OK);
+        }
+        CHECK(mc_client_stats_classes_retire(&classes, NULL) == MC_CLIENT_STATS_BUSY &&
+              classes != NULL);
+        f->app.registry->options.max_allocation_bytes = quota;
+        CHECK(mc_client_application_construct_statistics_file(&f->app, classes, files, &options,
+                                                              NULL, NULL) ==
+              MC_CLIENT_STATISTICS_OWNER_INVALID_PHASE);
+        CHECK(mc_client_application_retire_statistics(&f->app, NULL) ==
+              MC_CLIENT_STATISTICS_OWNER_OK);
+        CHECK(mc_java_file_release(&f->app.game_directory, NULL) == MC_JAVA_FILE_OK);
+        CHECK(teardown(f));
+        free(f);
+    }
+    CHECK(mc_client_stats_classes_retire(&classes, NULL) == MC_CLIENT_STATS_OK);
+    CHECK(mc_java_files_release(&files, NULL) == MC_JAVA_FILE_OK);
+    return true;
+}
+#endif
+
 int main(int argc, char **argv) {
-    if (argc != 3 || CD(argv[2]) != 0 || !mc_math_trig_init(&trig)) {
+#ifndef MC_PLAYER_STATISTICS_FAULT_TEST
+    const bool typed_profile = argc == 4 && strcmp(argv[3], "--typed-files") == 0;
+#else
+    const bool typed_profile = false;
+#endif
+    if ((argc != 3 && !typed_profile) || CD(argv[2]) != 0 || !mc_math_trig_init(&trig)) {
         fputs("Player statistics input: resources work-directory\n", stderr);
         return 2;
     }
+#ifndef MC_PLAYER_STATISTICS_FAULT_TEST
+    if (typed_profile) {
+        if (!typed_file_owner(argv[1]))
+            return 1;
+        printf("Stats source App: %zu checks\n", checks);
+        return 0;
+    }
+#endif
     fixture *f = calloc(1, sizeof(*f));
     if (f == NULL)
         return 1;

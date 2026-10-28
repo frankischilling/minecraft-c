@@ -32,6 +32,7 @@ if(TARGET mc_client_application_startup)
     target_sources(mc_client_application_startup PRIVATE
         src/client/startup/application_startup_entity_renderer.c
         src/client/startup/application_startup_manager.c
+        src/client/startup/application_startup_statistics.c
         src/client/startup/application_logo.c)
     target_link_libraries(mc_client_application_startup PUBLIC
         mc_client_entity_renderer mc_client_render_manager_hands)

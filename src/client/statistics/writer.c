@@ -1,20 +1,30 @@
 #include "internal.h"
 #include <string.h>
 
-bool stats_enter(mc_client_stats_writer *writer, mc_client_stats_error *error) {
+static bool stats_admit(mc_client_stats_writer *writer, mc_client_stats_error *error,
+                        bool retirement) {
     if (writer == NULL) {
         stats_fail(error, MC_CLIENT_STATS_INVALID_ARGUMENT, "Stats native null writer", NULL, NULL,
                    NULL, 0);
         return false;
     }
     (void)mtx_lock(&writer->mutex);
-    if (writer->entered || writer->retiring || writer->diagnostic_depth != 0) {
+    if (writer->entered || writer->retiring || writer->diagnostic_depth != 0 ||
+        (!retirement && writer->memory->source != NULL && writer->memory->source->retiring)) {
         (void)mtx_unlock(&writer->mutex);
         stats_fail(error, MC_CLIENT_STATS_BUSY, "Stats native entered writer", NULL, NULL, NULL, 0);
         return false;
     }
     writer->entered = true;
     return true; /* Recursive mutex stays held until leave; explicit joins/sleeps release it. */
+}
+
+bool stats_enter(mc_client_stats_writer *writer, mc_client_stats_error *error) {
+    return stats_admit(writer, error, false);
+}
+
+bool stats_enter_retirement(mc_client_stats_writer *writer, mc_client_stats_error *error) {
+    return stats_admit(writer, error, true);
 }
 
 void stats_leave(mc_client_stats_writer *writer) {
@@ -108,14 +118,17 @@ mc_client_stats_status stats_apply_map(mc_client_stats_writer *writer,
     return status;
 }
 
-mc_client_stats_status mc_client_stats_writer_construct(mc_client_stats_writer *writer,
-                                                        mc_player_session *session,
-                                                        const char *directory,
-                                                        mc_client_stats_report *out_report,
-                                                        mc_client_stats_error *out_error) {
+static mc_client_stats_status construct(mc_client_stats_writer *writer, mc_player_session *session,
+                                        const char *directory, mc_client_stats_classes *classes,
+                                        mc_java_files *files, mc_java_file *parent,
+                                        bool source_mode, mc_client_stats_report *out_report,
+                                        mc_client_stats_error *out_error) {
     mc_client_stats_error error;
     stats_error_clear(&error);
     mc_client_stats_report report = {0};
+    stats_source_error_scope source_diagnostic;
+    if (source_mode)
+        stats_source_scope_open(&source_diagnostic, &error);
     if (stats_enter(writer, &error)) {
         if (writer->phase != MC_CLIENT_STATS_RAW)
             stats_fail(&error, MC_CLIENT_STATS_INVALID_PHASE, "Stats constructor native phase",
@@ -127,6 +140,9 @@ mc_client_stats_status mc_client_stats_writer_construct(mc_client_stats_writer *
             writer->phase = MC_CLIENT_STATS_CONSTRUCTING;
             char *path = NULL;
             mc_player_session *temporary = NULL;
+            if (source_mode &&
+                stats_source_begin(writer, classes, files, parent, &error) != MC_CLIENT_STATS_OK)
+                goto finish;
             if (session != NULL) {
                 const mc_player_status ps = mc_player_session_retain(session);
                 if (ps != MC_PLAYER_OK) {
@@ -147,34 +163,72 @@ mc_client_stats_status mc_client_stats_writer_construct(mc_client_stats_writer *
             writer->pc = 23;
             writer->dirty = false;
             writer->pc = 28;
-            if (stats_directory(writer, directory, &path, &report, &error) != MC_CLIENT_STATS_OK)
+            if ((source_mode ? stats_source_directory(writer, &report, &error)
+                             : stats_directory(writer, directory, &path, &report, &error)) !=
+                MC_CLIENT_STATS_OK)
                 goto finish;
             writer->retained_syncher =
                 stats_alloc(writer->memory, sizeof(*writer->retained_syncher), &error);
-            if (writer->retained_syncher == NULL)
+            if (writer->retained_syncher == NULL) {
+                if (source_mode) {
+                    error.class_name = "xi";
+                    error.method = "<init>";
+                    error.descriptor = "(Lgr;Ljava/io/File;)V";
+                    error.bytecode = 175;
+                }
                 goto finish;
+            }
             *writer->retained_syncher = (stats_syncher){.pc = 26};
-            if (stats_make_files(writer, session, path, &error) != MC_CLIENT_STATS_OK)
+            if ((source_mode
+                     ? stats_source_make_files(writer, session, &error)
+                     : stats_make_files(writer, session, path, &error)) != MC_CLIENT_STATS_OK) {
+                if (source_mode)
+                    stats_source_frame(&error, "xi", "<init>", "(Lgr;Ljava/io/File;)V", 182);
                 goto finish;
+            }
             writer->retained_syncher->pc = 516;
             writer->retained_syncher->session = temporary;
             temporary = NULL;
             writer->retained_syncher->pc = 521;
-            const bool unsent_exists =
-                stats_file_exists(writer->retained_syncher->files[0], &error);
-            if (error.status != MC_CLIENT_STATS_OK)
+            const bool unsent_exists = stats_owner_file_exists(writer, 0, &error);
+            if (error.status != MC_CLIENT_STATS_OK) {
+                if (source_mode) {
+                    error.class_name = "cj";
+                    error.method = "<init>";
+                    error.descriptor = "(Lgr;Lxi;Ljava/io/File;)V";
+                    error.bytecode = 528;
+                    stats_source_frame(&error, "xi", "<init>", "(Lgr;Ljava/io/File;)V", 182);
+                }
                 goto finish;
+            }
             if (unsent_exists) {
                 mc_client_stats_map *map = NULL;
-                if (stats_read_file_set(writer, 0, &map, &report, &error) != MC_CLIENT_STATS_OK)
+                if (stats_read_file_set(writer, 0, &map, &report, &error) != MC_CLIENT_STATS_OK) {
+                    if (source_mode) {
+                        stats_source_frame(&error, "cj", "<init>", "(Lgr;Lxi;Ljava/io/File;)V",
+                                           548);
+                        stats_source_frame(&error, "xi", "<init>", "(Lgr;Ljava/io/File;)V", 182);
+                    }
                     goto finish;
+                }
                 const mc_client_stats_status status = stats_apply_map(writer, map, 0, &error);
                 mc_client_stats_map_retire(&map);
-                if (status != MC_CLIENT_STATS_OK)
+                if (status != MC_CLIENT_STATS_OK) {
+                    if (source_mode) {
+                        stats_source_frame(&error, "cj", "<init>", "(Lgr;Lxi;Ljava/io/File;)V",
+                                           551);
+                        stats_source_frame(&error, "xi", "<init>", "(Lgr;Ljava/io/File;)V", 182);
+                    }
                     goto finish;
+                }
             }
-            if (stats_start_worker(writer, false, NULL, &error) != MC_CLIENT_STATS_OK)
+            if (stats_start_worker(writer, false, NULL, &error) != MC_CLIENT_STATS_OK) {
+                if (source_mode) {
+                    stats_source_frame(&error, "cj", "<init>", "(Lgr;Lxi;Ljava/io/File;)V", 555);
+                    stats_source_frame(&error, "xi", "<init>", "(Lgr;Ljava/io/File;)V", 182);
+                }
                 goto finish;
+            }
             writer->retained_syncher->pc = 558;
             writer->syncher = writer->retained_syncher;
             writer->pc = 185;
@@ -184,6 +238,8 @@ mc_client_stats_status mc_client_stats_writer_construct(mc_client_stats_writer *
             writer->phase = error.status == MC_CLIENT_STATS_OK
                                 ? MC_CLIENT_STATS_READY
                                 : MC_CLIENT_STATS_FAILED_CONSTRUCTION;
+            if (source_mode && writer->memory->source != NULL && error.status != MC_CLIENT_STATS_OK)
+                stats_source_publish_failure(writer, &error);
         }
         stats_leave(writer);
     }
@@ -191,7 +247,58 @@ mc_client_stats_status mc_client_stats_writer_construct(mc_client_stats_writer *
         *out_report = report;
     if (out_error != NULL)
         *out_error = error;
+    if (source_mode)
+        stats_source_scope_close(&source_diagnostic);
     return error.status;
+}
+
+mc_client_stats_status mc_client_stats_writer_construct(mc_client_stats_writer *writer,
+                                                        mc_player_session *session,
+                                                        const char *directory,
+                                                        mc_client_stats_report *report,
+                                                        mc_client_stats_error *error) {
+    return construct(writer, session, directory, NULL, NULL, NULL, false, report, error);
+}
+
+mc_client_stats_status mc_client_stats_writer_construct_file(
+    mc_client_stats_writer *writer, mc_client_stats_classes *classes, mc_player_session *session,
+    mc_java_files *files, mc_java_file *parent, mc_client_stats_report *report,
+    mc_client_stats_error *error) {
+    return construct(writer, session, NULL, classes, files, parent, true, report, error);
+}
+
+bool mc_client_stats_writer_read_file_state(mc_client_stats_writer *writer,
+                                            mc_client_stats_file_state *out) {
+    if (writer == NULL || out == NULL || mtx_lock(&writer->mutex) != thrd_success)
+        return false;
+    stats_source *source = writer->memory->source;
+    if (source == NULL || writer->entered || writer->workers_started != writer->workers_joined) {
+        (void)mtx_unlock(&writer->mutex);
+        return false;
+    }
+    mc_client_stats_file_state result = {
+        .classes = source->classes,
+        .files = source->files,
+        .parent = source->parent,
+        .directory = source->directory,
+        .pending_file = source->pending_file,
+        .listing = source->listing,
+        .listing_index = source->listing_index,
+        .pending_name = source->pending_name,
+        .pending_builder = source->builder != NULL,
+        .pending_reader = source->current_reader != NULL && source->current_reader->reader != NULL,
+        .pending_stream =
+            source->current_reader == NULL ? NULL : source->current_reader->input.file,
+        .retiring = source->retiring,
+        .failure = &source->failure,
+        .cleanup_failure = &source->cleanup_failure};
+    for (size_t i = 0; i < 6; ++i)
+        result.children[i] = source->children[i];
+    const int unlocked = mtx_unlock(&writer->mutex);
+    if (unlocked != thrd_success)
+        return false;
+    *out = result;
+    return true;
 }
 
 bool mc_client_stats_writer_read_state(mc_client_stats_writer *writer, mc_client_stats_state *out) {
@@ -221,11 +328,14 @@ bool mc_client_stats_writer_read_state(mc_client_stats_writer *writer, mc_client
         out->delay = syncher->delay;
         out->other_delay = syncher->other_delay;
         out->session = syncher->session;
-        for (size_t i = 0; i < 6; ++i)
-            if (syncher->files[i] != NULL) {
+        for (size_t i = 0; i < 6; ++i) {
+            if (writer->memory->source != NULL)
+                out->file_identities[i] = writer->memory->source->children[i];
+            else if (syncher->files[i] != NULL) {
                 out->file_identities[i] = syncher->files[i];
                 out->file_paths_utf8[i] = syncher->files[i]->path;
             }
+        }
     }
     (void)mtx_unlock(&writer->mutex);
     return true;
@@ -444,6 +554,10 @@ mc_client_stats_status mc_client_stats_writer_save(mc_client_stats_writer *write
     stats_error_clear(&error);
     mc_client_stats_report report = {0};
     if (stats_enter(writer, &error)) {
+        const bool source_mode = writer->memory->source != NULL;
+        stats_source_error_scope source_diagnostic;
+        if (source_mode)
+            stats_source_scope_open(&source_diagnostic, &error);
         {
             mc_client_stats_map *copy = NULL;
             if (writer->unsent == NULL)
@@ -483,12 +597,19 @@ mc_client_stats_status mc_client_stats_writer_save(mc_client_stats_writer *write
                         status = stats_catch(writer, &report, &error);
                     (void)status;
                     (void)mtx_lock(&writer->mutex);
-                    writer->syncher->busy = false;
+                    if (writer->memory->source == NULL || error.status == MC_CLIENT_STATS_OK)
+                        writer->syncher->busy = false;
+                    else {
+                        stats_source_frame(&error, "cj", "b", "(Ljava/util/Map;)V", 53);
+                        stats_source_publish_failure(writer, &error);
+                    }
                 }
             }
         saved:
             mc_client_stats_map_retire(&copy);
         }
+        if (source_mode)
+            stats_source_scope_close(&source_diagnostic);
         stats_leave(writer);
     }
     if (out_report != NULL)

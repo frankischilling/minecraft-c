@@ -7,6 +7,13 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
+Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
+398 Windows, 414 GCC and 414 Clang cases, 1,226 total. None fail or skip.
+Formatting checks 1,164 files. The native jobs check current input bindings
+before configuration and retain their complete test suites. This checkpoint
+includes the terminal Font metadata cleanup described below; newer statistics,
+cursor and startup integration have separate focused local results.
+
 The corrected `bd8d7f1` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40635329070)
 passes Windows and formatting. Each Linux compiler passes 413 of 414 cases.
 The remaining Font test omitted terminal lookup-metadata cleanup and correctly
@@ -38,7 +45,9 @@ Display, the default game directory, save-format manager, Settings, selected
 texture pack, RenderEngine and bitmap Font in source order. It loads the three
 water/grass/foliage color maps and calls their real setters. It now also
 constructs EntityRenderer and RenderManager with their distinct held-item
-renderers. Normal source startup stops before statistics at offset 324.
+renderers. The newer source continues through the real statistics writer and
+callback, startup logo, keyboard/mouse creation and MouseHelper publication.
+Its next unexecuted call is Controllers.create at offset 383.
 The default executable continues to use title/inspection startup.
 
 Published checkpoint `33c777c` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40589053675).
@@ -55,11 +64,22 @@ limits. Nineteen loading-screen drawing profiles pass 888 checks. A combined
 source also builds the client and passes 29 selected cases on each Linux
 compiler with sanitizers. These scopes remain distinct from the hosted suite.
 
-The startup-logo callee also passes five prepared-receiver Windows profiles,
+The earlier startup-logo callee passes five prepared-receiver Windows profiles,
 414 checks, including actual drawing, swap and complete teardown. Normal
-startup still stops at offset 324; its statistics/callback connection and the
-actual caller's logo invocation remain unfinished. No original visual parity
-is claimed from the prepared callee.
+startup at that checkpoint stops at offset 324. The later Session startup
+profile invokes the logo from its genuine caller and passes 92 checks through
+the offset-383 frontier. No original visual parity is claimed from either
+native profile.
+
+The newer Windows source builds the full client. Its focused qualification
+passes 26 CTests and two direct window profiles; the original build and later
+strict-warning source refresh retain their separate scopes. Clang builds the
+client and passes 56 selected CPU cases plus six real graphics cases with
+ASan, UBSan and leak detection. After correcting a signed/unsigned trace
+assignment, GCC builds the client and passes the same 56 CPU and six graphics
+cases on the successor source. Minimal affected Clang checks and the Windows
+92-check Session profile also pass on that successor. These selected cases
+do not establish a full-suite result or a playable session.
 
 The [source SaveHandler](world/save-handler.md) now constructs actual world
 directories and session output, reads metadata through the real stream/NBT/Info

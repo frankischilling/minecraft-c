@@ -36,6 +36,23 @@ static bool source_leave(mc_client_display *display, bool ok, mc_client_display_
     return ok ? success(error) : false;
 }
 
+bool mc_client_display_source_get_error(mc_client_display *display, uint32_t *value,
+                                        mc_client_display_error *error) {
+    if (value == NULL)
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source glGetError output",
+                    "null output", 0);
+    if (!source_enter(display, "source glGetError", error))
+        return false;
+    if (display->gl.GetError == NULL)
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glGetError",
+                                 "actual function address unavailable", 0),
+                            error);
+    const uint32_t result = (uint32_t)display->gl.GetError();
+    *value = result;
+    return source_leave(display, true, error);
+}
+
 bool mc_client_display_context_acquire(mc_client_display *display,
                                        mc_client_display_context_lease **out,
                                        mc_client_display_error *error) {

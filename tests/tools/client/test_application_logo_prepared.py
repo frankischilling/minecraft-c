@@ -1,7 +1,7 @@
 """Opt-in real-window PREPARED-CALLEE MC.x controls; no original/JVM execution.
 
-Every receiver is produced by the genuine native prefix throughMC324. These
-callee calls do not credit the skipped normal-startup324..354 instructions.
+Every receiver retains the genuine failed xi constructor at MC337/CJ48. These
+callee calls do not credit Statistics completion or the later normal caller.
 Windows uses child-only APPDATA. POSIX uses the real native home; registration
 requires the explicit default-directory test option on both platforms.
 """
@@ -59,7 +59,7 @@ def admit(capture, stdout, stderr, executable, mode):
     lines = stdout.splitlines(keepends=True)
     require(bool(lines), "complete native output")
     footer = re.fullmatch(rb"PREPARED-CALLEE MC.x " + re.escape(mode.encode("ascii")) +
-                         rb": ([1-9][0-9]*) checks; coordinator stopped324; no skipped calls\r?\n",
+                         rb": ([1-9][0-9]*) checks; retained XI failure cj48; no Stats success\r?\n",
                          lines[-1])
     require(footer is not None, "exact prepared-callee completion/scope footer")
     for line in lines[:-1]:
@@ -108,7 +108,13 @@ def main():
                                      env=env)
         report = result.capture_report
         (case / "process.json").write_text(json.dumps(report, indent=2) + "\n")
-        checks = admit(report, result.stdout, result.stderr, executable, mode)
+        try:
+            checks = admit(report, result.stdout, result.stderr, executable, mode)
+        except Exception as error:
+            stdout_tail = result.stdout[-8192:].decode("utf-8", errors="replace")
+            stderr_tail = result.stderr[-8192:].decode("utf-8", errors="replace")
+            raise ValueError(f"{error}\nstdout tail (at most 8192 bytes):\n{stdout_tail}"
+                             f"\nstderr tail (at most 8192 bytes):\n{stderr_tail}") from error
         require(pin(executable) == binary_before and tree(assets) == assets_before,
                 "real binary/imported bytes unchanged")
         require(source_bindings() == sources_before, "complete actual source/capture unchanged")
@@ -118,14 +124,15 @@ def main():
                   "appdata": None if appdata is None else str(appdata),
                   "child_environment_overrides": ["APPDATA"] if appdata is not None else [],
                   "native_default_home_on_POSIX": os.name != "nt", "command": command,
-                  "MC324_to354_executed": False, "original_JVM_or_visual_parity": False}
+                  "MC324_to337_attempted": True, "MC340_to354_completed": False,
+                  "retained_XI_failure": "cj:<init>:48", "original_JVM_or_visual_parity": False}
         (case / "report.json").write_text(json.dumps(record, indent=2) + "\n")
         results.append(record)
     require(tuple(x["mode"] for x in results) == selected, "all selected exact modes once")
     (work / "report.json").write_text(json.dumps({"status": "PASS_PREPARED_CALLEE_ONLY",
         "modes": list(selected), "results": results, "binary": binary_before,
         "source_bindings": sources_before, "assets": assets_before,
-        "scope": "Private MC.x callee over actual owners from genuine prefix324; no skipped caller proof"},
+        "scope": "Private MC.x callee over actual owners retaining failed XI; no Statistics success"},
         indent=2) + "\n")
     print(work)
 

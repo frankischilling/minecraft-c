@@ -25,44 +25,148 @@ mc_java_file_status mc_file_name_hold(mc_world_info_name *name, mc_java_file_err
                      "File String hold", 0);
 }
 
+/* Lifetime entrants already own/protect a real counted occurrence. No weak
+ * pointer is rescued by this guard. The mutex is ONLY the lazy name cache. */
+typedef struct namespace_cache_scope {
+    mc_java_files *files;
+    struct namespace_cache_scope *previous;
+} namespace_cache_scope;
+#ifdef _MSC_VER
+static __declspec(thread) namespace_cache_scope *cache_scope;
+#else
+static _Thread_local namespace_cache_scope *cache_scope;
+#endif
+
+static bool own_cache(const mc_java_files *files) {
+    for (namespace_cache_scope *scope = cache_scope; scope != NULL; scope = scope->previous)
+        if (scope->files == files)
+            return true;
+    return false;
+}
+
+static void namespace_leave(mc_java_files *files) {
+    atomic_fetch_sub_explicit(&files->native_calls, 1, memory_order_release);
+}
+
+static mc_java_file_status namespace_enter(mc_java_files *files, bool allow_quarantine,
+                                           mc_java_file_error *e) {
+    size_t calls = atomic_load_explicit(&files->native_calls, memory_order_acquire);
+    do {
+        if (calls == SIZE_MAX)
+            return mc_file_result(e, MC_JAVA_FILE_LIMIT, "File namespace entered-call bound", 0);
+    } while (!atomic_compare_exchange_weak_explicit(&files->native_calls, &calls, calls + 1,
+                                                    memory_order_acq_rel, memory_order_acquire));
+    if (own_cache(files) || atomic_load_explicit(&files->retiring, memory_order_acquire)) {
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File namespace reentry/terminal", 0);
+    }
+    if (!allow_quarantine && atomic_load_explicit(&files->quarantined, memory_order_acquire)) {
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File namespace cache quarantine",
+                              files->native_failure);
+    }
+    return MC_JAVA_FILE_OK;
+}
+
+mc_java_file_status mc_file_namespace_admit(mc_java_files *files, mc_java_file_error *e) {
+    const mc_java_file_status status = namespace_enter(files, true, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    namespace_leave(files);
+    return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+}
+
 mc_java_file_status mc_java_files_create(const mc_java_file_options *options, mc_java_files **out,
                                          mc_java_file_error *e) {
     if (out == NULL)
         return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File namespace output", 0);
-    mc_java_files *f = calloc(1, sizeof(*f));
-    if (f == NULL)
+    mc_java_files *files = calloc(1, sizeof(*files));
+    if (files == NULL)
         return mc_file_result(e, MC_JAVA_FILE_ALLOCATION_FAILED, "File namespace allocation", 0);
-    f->holds = 1;
-    f->options = options == NULL ? mc_java_file_default_options() : *options;
-    *out = f;
+    atomic_init(&files->holds, 1);
+    atomic_init(&files->native_calls, 0);
+    atomic_init(&files->active, false);
+    atomic_init(&files->retiring, false);
+    atomic_init(&files->quarantined, false);
+    files->options = options == NULL ? mc_java_file_default_options() : *options;
+    const int initialized = mtx_init(&files->mutex, mtx_recursive);
+    if (initialized != thrd_success) {
+        free(files);
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File namespace cache mutex",
+                              initialized);
+    }
+    *out = files;
     return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
 }
 
-mc_java_file_status mc_java_files_retain(mc_java_files *f, mc_java_file_error *e) {
-    if (f == NULL)
+mc_java_file_status mc_java_files_retain(mc_java_files *files, mc_java_file_error *e) {
+    if (files == NULL)
         return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File namespace retain", 0);
-    if (f->active || f->retiring)
-        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File namespace terminal/active hold", 0);
-    if (f->holds == SIZE_MAX)
-        return mc_file_result(e, MC_JAVA_FILE_LIMIT, "File namespace holds", 0);
-    ++f->holds;
-    return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    mc_java_file_status status = namespace_enter(files, false, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    size_t holds = atomic_load_explicit(&files->holds, memory_order_acquire);
+    for (;;) {
+        if (holds == 0 || holds == SIZE_MAX) {
+            status = mc_file_result(e, holds == 0 ? MC_JAVA_FILE_STATE_ERROR : MC_JAVA_FILE_LIMIT,
+                                    "File namespace holds", 0);
+            break;
+        }
+        if (atomic_compare_exchange_weak_explicit(&files->holds, &holds, holds + 1,
+                                                  memory_order_acq_rel, memory_order_acquire))
+            break;
+    }
+    namespace_leave(files);
+    return status == MC_JAVA_FILE_OK ? mc_file_result(e, status, NULL, 0) : status;
 }
 
 mc_java_file_status mc_java_files_release(mc_java_files **slot, mc_java_file_error *e) {
     if (slot == NULL)
         return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File namespace slot", 0);
-    mc_java_files *f = *slot;
-    if (f == NULL)
+    mc_java_files *files = *slot;
+    if (files == NULL)
         return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
-    if (f->active || f->retiring)
-        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File namespace active retirement", 0);
-    *slot = NULL;
-    if (--f->holds == 0) {
-        f->retiring = true;
-        mc_world_info_name_release(f->default_parent);
-        free(f);
+    mc_java_file_status status = namespace_enter(files, true, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    size_t holds = atomic_load_explicit(&files->holds, memory_order_acquire);
+    while (holds > 1) {
+        if (atomic_compare_exchange_weak_explicit(&files->holds, &holds, holds - 1,
+                                                  memory_order_acq_rel, memory_order_acquire)) {
+            namespace_leave(files);
+            *slot = NULL;
+            return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+        }
     }
+    if (holds == 0) {
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File namespace zero occurrence", 0);
+    }
+    if (atomic_load_explicit(&files->quarantined, memory_order_acquire)) {
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File namespace final cache quarantine",
+                              files->native_failure);
+    }
+    bool expected = false;
+    if (!atomic_compare_exchange_strong_explicit(&files->retiring, &expected, true,
+                                                 memory_order_acq_rel, memory_order_acquire)) {
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File namespace final retry", 0);
+    }
+    const size_t calls = atomic_load_explicit(&files->native_calls, memory_order_acquire);
+    const bool active = atomic_load_explicit(&files->active, memory_order_acquire);
+    const size_t current = atomic_load_explicit(&files->holds, memory_order_acquire);
+    if (calls != 1 || active || current != 1) {
+        atomic_store_explicit(&files->retiring, false, memory_order_release);
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File namespace final entered/waiter retry", 0);
+    }
+    atomic_store_explicit(&files->holds, 0, memory_order_release);
+    namespace_leave(files);
+    mc_world_info_name_release(files->default_parent);
+    mtx_destroy(&files->mutex);
+    free(files);
+    *slot = NULL;
     return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
 }
 
@@ -138,22 +242,49 @@ static mc_java_file_status name_copy(mc_java_files *files, const uint16_t *u, si
 
 static mc_java_file_status default_parent(mc_java_files *files, mc_world_info_name **out,
                                           mc_java_file_error *e) {
+    mc_java_file_status status = namespace_enter(files, false, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    const int locked = mtx_lock(&files->mutex);
+    if (locked != thrd_success) {
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File default-parent mutex lock",
+                              locked);
+    }
+    if (atomic_load_explicit(&files->quarantined, memory_order_acquire)) {
+        (void)mtx_unlock(&files->mutex);
+        namespace_leave(files);
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File default-parent cache quarantine",
+                              files->native_failure);
+    }
+    namespace_cache_scope scope = {files, cache_scope};
+    cache_scope = &scope;
+    atomic_store_explicit(&files->active, true, memory_order_release);
     if (files->default_parent == NULL) {
 #ifdef _WIN32
         const uint16_t root = '\\';
 #else
         const uint16_t root = '/';
 #endif
-        files->active = true;
-        mc_java_file_status s = name_copy(files, &root, 1, &files->default_parent, e);
-        files->active = false;
-        if (s != MC_JAVA_FILE_OK)
-            return s;
+        status = name_copy(files, &root, 1, &files->default_parent, e);
     }
-    mc_java_file_status s = mc_file_name_hold(files->default_parent, e);
-    if (s == MC_JAVA_FILE_OK)
+    if (status == MC_JAVA_FILE_OK)
+        status = mc_file_name_hold(files->default_parent, e);
+    const bool held = status == MC_JAVA_FILE_OK;
+    atomic_store_explicit(&files->active, false, memory_order_release);
+    const int unlocked = mtx_unlock(&files->mutex);
+    if (unlocked != thrd_success) {
+        files->native_failure = unlocked;
+        if (held)
+            files->failed_default_parent_hold = true;
+        atomic_store_explicit(&files->quarantined, true, memory_order_release);
+        status = mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File uncertain default-parent unlock",
+                                unlocked);
+    } else if (held)
         *out = files->default_parent;
-    return s;
+    cache_scope = scope.previous;
+    namespace_leave(files);
+    return status;
 }
 
 static mc_java_file_status normalize(mc_java_files *files, mc_world_info_name *input,
@@ -429,21 +560,26 @@ mc_java_file_status mc_java_file_release(mc_java_file **slot, mc_java_file_error
         *slot = NULL;
         return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
     }
-    if (f->files->active || f->files->retiring)
-        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File namespace active final retirement", 0);
+    mc_java_file_status namespace_status = mc_file_namespace_admit(f->files, e);
+    if (namespace_status != MC_JAVA_FILE_OK)
+        return namespace_status;
     f->state.phase = MC_JAVA_FILE_RETIRING;
     mc_java_file_status s = mc_java_file_clear_failure(f, e);
     if (s != MC_JAVA_FILE_OK)
         return s;
     f->state.phase = MC_JAVA_FILE_RETIRING;
     f->state.active = true;
+    s = mc_java_files_release(&f->files, e);
+    if (s != MC_JAVA_FILE_OK) {
+        f->state.active = false;
+        return s;
+    }
     mc_world_info_name_release(f->state.path);
     mc_world_info_name_release(f->pending_input);
     mc_world_info_name_release(f->pending_parent);
-    mc_java_files *files = f->files;
     *slot = NULL;
     free(f);
-    return mc_java_files_release(&files, e);
+    return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
 }
 
 mc_java_file_status mc_java_file_read_state(const mc_java_file *f, mc_java_file_state *out,

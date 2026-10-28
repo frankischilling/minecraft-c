@@ -6,6 +6,8 @@ mc_client_stats_status stats_emit(mc_client_stats_writer *writer,
                                   const mc_client_stats_options *options,
                                   const mc_client_stats_diagnostic *event,
                                   mc_client_stats_report *report, mc_client_stats_error *error) {
+    if (writer != NULL && writer->memory->source != NULL)
+        return stats_source_diagnostic(writer, event, report, error);
     if (report != NULL) {
         ++report->diagnostics;
         if (event->kind == MC_CLIENT_STATS_UNKNOWN_STATISTIC)

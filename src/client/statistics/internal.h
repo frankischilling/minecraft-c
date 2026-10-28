@@ -7,12 +7,39 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/core/java/integer_parse.h"
+#include <stdio.h>
 #include <threads.h>
+
+typedef struct stats_source stats_source;
+
+/* Stack-only typed error dispatch around existing canonical error signatures.
+ * No pointer to this scope survives into source backing; worker/foreground
+ * scopes are independent native TLS call chains, with no allocation/callback. */
+typedef struct stats_source_error_scope {
+    struct stats_source_error_scope *previous;
+    mc_client_stats_error *base;
+    mc_client_stats_file_error value;
+} stats_source_error_scope;
+
+void stats_source_scope_open(stats_source_error_scope *, mc_client_stats_error *);
+void stats_source_scope_close(stats_source_error_scope *);
+mc_client_stats_file_error stats_source_snapshot(const mc_client_stats_error *);
+void stats_source_child(mc_client_stats_error *, mc_java_file_error);
+void stats_source_cause_set(mc_client_stats_error *, const mc_client_stats_error *);
+void stats_source_publish_failure(mc_client_stats_writer *, const mc_client_stats_error *);
+
+struct mc_client_stats_classes {
+    size_t holds, max_string_bytes;
+    bool active, failed, retiring;
+    mc_world_info_name *stats_literal;
+    mc_client_stats_error failure;
+};
 
 typedef struct stats_memory {
     mtx_t mutex;
     size_t holds, bytes, maximum;
     mc_registry_classes *registry; /* One main-admitted hold for the shared graph. */
+    stats_source *source; /* Source-only backing; owner itself is uncharged legacy storage. */
 } stats_memory;
 
 typedef struct stats_entry {
@@ -59,6 +86,40 @@ typedef struct stats_arena {
     stats_arena_block *blocks;
     mc_client_stats_status failure;
 } stats_arena;
+
+/* Concrete byte transport state, never a completed Reader/map callback. */
+typedef struct stats_read_stream {
+    FILE *stream;
+    int system_error;
+    bool source;
+    mc_java_file_stream *file;
+    mc_java_file_status file_status;
+    mc_java_file_error file_error;
+} stats_read_stream;
+
+typedef struct stats_source_reader {
+    struct stats_source_reader *next;
+    stats_read_stream input;
+    stats_arena arena;
+    mc_java_reader *reader;
+    stats_builder text;
+    mc_client_stats_map *result;
+    bool source_local_published;
+} stats_source_reader;
+
+struct stats_source {
+    mc_client_stats_classes *classes;
+    mc_java_files *files;
+    mc_java_file *parent, *directory, *children[6], *pending_file;
+    mc_java_file_array *listing;
+    size_t listing_index;
+    mc_world_info_name *pending_name;
+    stats_builder *builder;
+    stats_source_reader *readers, *current_reader;
+    mc_client_stats_map *parse_candidate;
+    bool retiring;
+    mc_client_stats_file_error failure, cleanup_failure;
+};
 
 typedef struct stats_file {
     char *path;
@@ -181,4 +242,28 @@ mc_client_stats_status stats_apply_map(mc_client_stats_writer *writer,
                                        const mc_client_stats_map *map, int operation,
                                        mc_client_stats_error *error);
 
+void stats_source_frame(mc_client_stats_error *, const char *, const char *, const char *,
+                        unsigned int);
+mc_client_stats_status stats_source_begin(mc_client_stats_writer *, mc_client_stats_classes *,
+                                          mc_java_files *, mc_java_file *, mc_client_stats_error *);
+mc_client_stats_status stats_source_directory(mc_client_stats_writer *, mc_client_stats_report *,
+                                              mc_client_stats_error *);
+mc_client_stats_status stats_source_make_files(mc_client_stats_writer *, mc_player_session *,
+                                               mc_client_stats_error *);
+mc_client_stats_status stats_source_file_error(mc_client_stats_error *, mc_java_file_status,
+                                               mc_java_file_error, const char *, const char *,
+                                               const char *, unsigned int);
+bool stats_owner_file_exists(mc_client_stats_writer *, size_t, mc_client_stats_error *);
+mc_client_stats_status stats_source_retire(mc_client_stats_writer *, mc_client_stats_error *);
+mc_client_stats_status stats_source_diagnostic(mc_client_stats_writer *,
+                                               const mc_client_stats_diagnostic *,
+                                               mc_client_stats_report *, mc_client_stats_error *);
+mc_client_stats_status stats_source_worker_caught(mc_client_stats_writer *,
+                                                  mc_client_stats_report *,
+                                                  mc_client_stats_error *);
+mc_client_stats_status stats_source_caught(mc_client_stats_writer *, mc_client_stats_report *,
+                                           mc_client_stats_error *, unsigned int);
+bool stats_enter_retirement(mc_client_stats_writer *, mc_client_stats_error *);
+mc_client_stats_status stats_classes_literal(mc_client_stats_classes *, mc_world_info_name **,
+                                             mc_client_stats_error *);
 #endif

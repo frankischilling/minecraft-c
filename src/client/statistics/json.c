@@ -465,6 +465,9 @@ mc_client_stats_status stats_parse(mc_registry_classes *registry, stats_memory *
                                    mc_client_stats_writer *writer, mc_client_stats_string json,
                                    mc_client_stats_map **out, mc_client_stats_report *report,
                                    mc_client_stats_error *error) {
+    if (memory->source != NULL && memory->source->parse_candidate != NULL)
+        return stats_fail(error, MC_CLIENT_STATS_BUSY, "Stats prior parsed candidate retained",
+                          NULL, NULL, NULL, 0);
     mc_client_stats_map *map = NULL;
     mc_client_stats_status status = stats_map_make(registry, memory, options, &map, error);
     if (status != MC_CLIENT_STATS_OK)
@@ -622,6 +625,14 @@ finish:
     if (status == MC_CLIENT_STATS_OK) {
         *out = map;
         stats_error_clear(error);
+    } else if (writer != NULL && memory->source != NULL &&
+               status == MC_CLIENT_STATS_UNIMPLEMENTED_DEPENDENCY) {
+        /* The actual local Map already exists at the unfinished print call.
+         * Retain that native candidate; never replace it with an empty result. */
+        if (memory->source->parse_candidate == NULL)
+            memory->source->parse_candidate = map;
+        else
+            mc_client_stats_map_retire(&map);
     } else
         mc_client_stats_map_retire(&map);
     return status;

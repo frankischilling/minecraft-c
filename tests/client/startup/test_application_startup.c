@@ -3,7 +3,9 @@
 #include "client/startup/application_directory_classes.h"
 #include "client/startup/application_owner_internal.h"
 #include "client/startup/application_startup.h"
+#include "client/startup/application_startup_input.h"
 #include "client/startup/application_startup_internal.h"
+#include "client/startup/application_startup_statistics.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/resources/files/files.h"
 #include <SDL3/SDL_init.h>
@@ -13,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* SOURCE-ONLY authored tests; not executed. All Apps come from the actual
+/* All Apps come from the actual
  * whole constructor. No fabricated READY App, successful child or provider. */
 static unsigned checks;
 #define CHECK(x)                                                                                   \
@@ -72,7 +74,8 @@ static int fixture_close(fixture *f) {
     CHECK(mc_sound_backend_retire(&f->services.sound_backend, NULL) == MC_SOUND_BACKEND_OK);
     CHECK(mc_client_render_classes_free(f->services.render_classes) == MC_CLIENT_MODEL_OK);
     CHECK(mc_entity_classes_free(f->services.entities) == MC_ENTITY_OK);
-    CHECK(mc_registry_classes_free(f->services.registry, NULL) == MC_REGISTRY_OK);
+    if (f->services.registry != NULL)
+        CHECK(mc_registry_classes_free(f->services.registry, NULL) == MC_REGISTRY_OK);
     CHECK(mc_resource_files_free(f->files) == MC_REGISTRY_OK);
     mc_materials_destroy(f->materials);
     mc_java_random_profile_free(f->services.profile);
@@ -572,11 +575,27 @@ static int real_window_prefix(const char *resources, const char *imported_resour
                   attempt == NULL && app->startup == NULL && app->display == NULL);
             continue;
         }
-        CHECK(result == MC_CLIENT_STARTUP_UNIMPLEMENTED && startup.error->child.pc == 324 &&
-              startup.error->caller.pc == 324 &&
-              strcmp(startup.error->child.class_name, "net/minecraft/client/Minecraft") == 0 &&
-              strcmp(startup.error->child.method, "a") == 0 &&
-              strcmp(startup.error->child.descriptor, "()V") == 0);
+        CHECK(result == MC_CLIENT_STARTUP_STATISTICS_FAILED && startup.error->caller.pc == 337 &&
+              startup.error->child.pc == 48 && strcmp(startup.error->child.class_name, "cj") == 0 &&
+              strcmp(startup.error->child.method, "<init>") == 0 &&
+              strcmp(startup.error->child.descriptor, "(Lgr;Lxi;Ljava/io/File;)V") == 0);
+        const mc_client_startup_stats_call *stats_call = attempt->statistics;
+        CHECK(app->session == NULL && stats_call != NULL && stats_call->entered &&
+              !stats_call->active && !stats_call->I_stored && !stats_call->callback_installed &&
+              !stats_call->source_calls_completed && app->stats_writer == NULL &&
+              app->stats_writer_retained == stats_call->candidate &&
+              stats_call->candidate != NULL && stats_call->published == NULL &&
+              stats_call->failure.writer.exception == MC_CLIENT_STATS_NULL_REFERENCE &&
+              stats_call->failure.source_writer.base.bytecode == 48 && attempt->logo == NULL &&
+              attempt->input == NULL && app->C == NULL);
+        mc_client_stats_state stats_state;
+        mc_client_stats_file_state stats_files;
+        CHECK(mc_client_stats_writer_read_state(app->stats_writer_retained, &stats_state) &&
+              stats_state.phase == MC_CLIENT_STATS_FAILED_CONSTRUCTION &&
+              stats_state.workers_started == 0 && stats_state.workers_joined == 0);
+        CHECK(mc_client_stats_writer_read_file_state(app->stats_writer_retained, &stats_files) &&
+              stats_files.parent == app->game_directory && stats_files.pending_file != NULL &&
+              stats_files.pending_builder && stats_files.children[0] == NULL);
         CHECK(app->startup->settings_error_line == NULL &&
               startup.error->settings.line.units == NULL);
         mc_client_startup_state state;
@@ -765,6 +784,11 @@ static int real_window_prefix(const char *resources, const char *imported_resour
               MC_CLIENT_STARTUP_BUSY);
         CHECK(app->t == external_px && app->font_renderer != NULL &&
               app->display == state.display && attempt->entity_renderer_candidate == external_px);
+        CHECK(attempt->statistics == stats_call && stats_call->retired &&
+              stats_call->candidate == NULL && stats_call->published == NULL &&
+              app->stats_writer == NULL && app->stats_writer_retained == NULL &&
+              app->statistics_retired && stats_call->failure.source_writer.base.bytecode == 48 &&
+              strcmp(stats_call->failure.source_writer.base.class_name, "cj") == 0);
         CHECK(mc_client_application_constructor_retire(&apps[index], f.error) ==
               MC_CLIENT_APP_BUSY);
         CHECK(mc_client_entity_renderer_release(&external_px, &startup.error->entity_renderer) ==
@@ -818,6 +842,11 @@ static int real_window_prefix(const char *resources, const char *imported_resour
               app->font_renderer_retained == external_font &&
               app->render_engine == state.engine_candidate && app->D == state.pack_candidate &&
               app->settings == state.settings_candidate && app->display == state.display);
+        CHECK(attempt->statistics == stats_call && stats_call->retired &&
+              stats_call->candidate == NULL && stats_call->published == NULL &&
+              stats_call->failure.source_writer.base.bytecode == 48 &&
+              stats_call->failure.source_writer.base.operation != NULL &&
+              strcmp(stats_call->failure.source_writer.base.class_name, "cj") == 0);
         CHECK(mc_client_bitmap_font_release(&external_font, &startup.error->bitmap_font) ==
                   MC_CLIENT_BITMAP_FONT_OK &&
               external_font == NULL);
@@ -1073,6 +1102,8 @@ static int prepared_line_lifetime(const char *resources, const char *imported,
     return 0;
 }
 
+#include "application_startup_statistics_controls.inc"
+
 int main(int argc, char **argv) {
     CHECK(argc >= 3);
     if (strcmp(argv[2], "entity-renderer-cpu") == 0)
@@ -1084,6 +1115,17 @@ int main(int argc, char **argv) {
         CHECK(argc == 5);
         CHECK(prepared_line_lifetime(argv[1], argv[3], argv[4],
                                      strcmp(argv[2], "lifetime-output-limit") == 0) == 0);
+    } else if (strcmp(argv[2], "statistics-admission") == 0) {
+        CHECK(argc == 3);
+        CHECK(statistics_admission_profiles(argv[1]) == 0);
+    } else if (strcmp(argv[2], "statistics-null-z") == 0) {
+        CHECK(argc == 3);
+        CHECK(statistics_null_z(argv[1]) == 0);
+    } else if (strcmp(argv[2], "window-session") == 0 ||
+               strcmp(argv[2], "window-statistics-foreign-ready") == 0) {
+        CHECK(argc == 4);
+        CHECK(statistics_session_window(
+                  argv[1], argv[3], strcmp(argv[2], "window-statistics-foreign-ready") == 0) == 0);
     } else {
         CHECK(strcmp(argv[2], "window-default-directory") == 0 ||
               strcmp(argv[2], "window-render-engine-limit") == 0 ||

@@ -15,8 +15,16 @@ resource lookups and color-array setters. It then constructs EntityRenderer and
 its distinct held-item renderer, publishes the actual App field, updates the
 loading title and initializes RenderManager. RenderManager retains its separate
 held-item renderer and the real renderer/model map. Source fields publish only
-after their constructors return. The current normal-startup boundary is before
-statistics startup at Minecraft offset 324.
+after their constructors return. Startup then constructs the real statistics
+writer from the live Session and game directory, publishes Minecraft.I and
+installs its achievement-description callback. It invokes the startup logo,
+creates the actual keyboard and mouse state, constructs MouseHelper and
+publishes Minecraft.C. The next unexecuted call is Controllers.create at
+Minecraft offset 383.
+
+A null Session fails in the genuine statistics constructor at `xi337/cj48`;
+it cannot reach the logo or input setup. The successful Session profile starts
+the statistics read worker without joining or servicing it during startup.
 
 Resource loading uses the existing File, Pack, ImageIO and UTF-16 String owners.
 It retains the actual Settings/Pack/Engine/Font identities rather than creating
@@ -51,6 +59,17 @@ Application retirement detaches its RenderManager consumer before shared
 renderer resources retire. Shared or externally held Font/renderers keep their
 actual dependencies live through a BUSY result and retry.
 
+Statistics retirement joins its actual worker before releasing its files,
+Session or Registry. The Registry owns the installed callback occurrence and
+keeps its App alive until that occurrence retires. Dropping the Minecraft
+static occurrence alone cannot free an App still referenced by that callback.
+Foreign or previously retired statistics owners are rejected before adoption.
+
+The [MouseHelper and cursor](input.md) use the same Display/input namespace.
+Native retirement releases the candidate's counted occurrence before graphics
+and Display teardown. An external MouseHelper or cursor hold preserves its
+actual Display lease and makes final teardown retryable.
+
 ## Validation and remaining work
 
 The [testing record](../testing.md#normal-startup-owner-qualification) separates
@@ -69,7 +88,17 @@ original-game or visual-parity result. The opt-in test requires the explicit
 default-directory option; Windows isolates APPDATA, while POSIX uses the real
 native home and remains unqualified for this profile.
 
-The next integration connects the concrete statistics/File startup path and
-its callback lifetime, then invokes the logo from the actual caller. Later input/render/audio setup, screen transitions,
+The later Windows Session profile passes 92 checks through actual Stats, callback,
+logo, keyboard/mouse and MouseHelper publication, stopping before Controllers383.
+Its separate admission/null-argument controls pass 170 and 65 checks. These
+results belong to the initial source snapshot. The final strict-warning
+successor passes the genuine 92-check Session profile again after a minimal
+input-unit/archive/test refresh. Both actual processes keep their source
+bindings.
+The later test record also retains failed-statistics/shared-Font cleanup,
+five prepared logo profiles and cursor controls. Wider Linux qualification is
+still recorded separately from the Windows default-directory profile.
+
+Controllers discovery, later graphics/audio setup, screen transitions,
 World/Player publication, frame/tick scheduling and the live game loop remain
 unfinished. The default executable continues to use title/inspection startup.

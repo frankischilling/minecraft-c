@@ -68,6 +68,17 @@ typedef struct mc_java_file_stream_state {
  * any unfinished encoding is reported at reached native operation. No IO or
  * default-directory selection occurs here. Options use separate per-string,
  * per-path and enumeration bounds, not a process-wide heap budget. */
+/* Namespace lifetime may overlap on distinct already-held occurrences. Its
+ * counters/terminal flags are atomic; ordinary nonfinal retain/release has no
+ * fallible mutex call. A legitimate worker is not rejected by unrelated
+ * foreground construction. Only same-thread lazy-cache reentry reports BUSY.
+ * The real mutex protects lazy default-parent/name publication. Entrants and
+ * waiters must already have an external counted occurrence: leases cannot
+ * rescue stale raw pointers. Same File/array/stream mutation stays exclusive;
+ * Stats joins before foreground final File/name destruction. Generic concurrent
+ * InfoName/Data operations are not admitted. Cache-unlock uncertainty keeps
+ * the unique final namespace slot quarantined; nonfinal releases still consume
+ * their occurrence without pretending final cleanup or source success. */
 mc_java_file_options mc_java_file_default_options(void);
 mc_java_file_status mc_java_files_create(const mc_java_file_options *options, mc_java_files **out,
                                          mc_java_file_error *error);
@@ -116,6 +127,12 @@ mc_java_file_status mc_java_file_last_modified(mc_java_file *file, int64_t *out,
                                                mc_java_file_error *error);
 mc_java_file_status mc_java_file_is_directory(mc_java_file *file, bool *out,
                                               mc_java_file_error *error);
+/* Separate reached Java operations. mkdir makes one native attempt only.
+ * Ordinary false is successful source completion; native bounds/providers
+ * preserve out. rename borrows both same-namespace READY Files exclusively. */
+mc_java_file_status mc_java_file_mkdir(mc_java_file *file, bool *out, mc_java_file_error *error);
+mc_java_file_status mc_java_file_rename_to(mc_java_file *file, mc_java_file *destination, bool *out,
+                                           mc_java_file_error *error);
 mc_java_file_status mc_java_file_mkdirs(mc_java_file *file, bool *out, mc_java_file_error *error);
 /* NULL is real File.listFiles failure/non-directory; nonnull empty array has a
  * distinct identity. OS enumeration order is retained. Native failure leaves

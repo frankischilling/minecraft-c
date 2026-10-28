@@ -1,5 +1,6 @@
-﻿/* QUALIFICATION ONLY: PREPARED-CALLEE MC.x()V. The real coordinator remains at
- * its actual MC324 frontier. No skipped324..354 call is credited. Compile the
+﻿/* PREPARED-CALLEE MC.x()V over the real default-Session failure at
+ * MC337/CJ48. This control credits no Statistics completion or later normal
+ * caller. Compile the
  * exact production Display TU once, matching the existing loading/font
  * controls; every intercepted GL operation forwards to the actual function
  * first. */
@@ -77,12 +78,19 @@ static int prepared_logo_control(const char *resources, const char *assets, cons
     CHECK(mc_client_application_startup_allocate(app, &startup.services, &options, &attempt,
                                                  startup.error) == MC_CLIENT_STARTUP_OK);
     CHECK(mc_client_application_run_prefix(attempt, startup.error) ==
-          MC_CLIENT_STARTUP_UNIMPLEMENTED);
-    CHECK(startup.error->caller.pc == 324 && attempt->last_startup_store == 307 &&
-          attempt->last_manager_pc == 321 && attempt->manager_f_stored && app->t != NULL &&
+          MC_CLIENT_STARTUP_STATISTICS_FAILED);
+    CHECK(startup.error->caller.pc == 337 && startup.error->child.pc == 48 &&
+          strcmp(startup.error->child.class_name, "cj") == 0 &&
+          attempt->last_startup_store == 307 && attempt->last_manager_pc == 321 &&
+          attempt->manager_f_stored && app->t != NULL &&
           app->render_engine == attempt->engine_candidate &&
           app->settings == attempt->settings_candidate &&
           app->font_renderer == attempt->font_candidate);
+    const mc_client_startup_stats_call *statistics = attempt->statistics;
+    CHECK(statistics != NULL && statistics->candidate == app->stats_writer_retained &&
+          statistics->candidate != NULL && app->stats_writer == NULL && !statistics->I_stored &&
+          !statistics->callback_installed && !statistics->source_calls_completed &&
+          statistics->failure.writer.bytecode == 48);
     const mc_client_startup_phase prefix_phase = attempt->phase;
     const bool j_before = atomic_load_explicit(&app->J, memory_order_seq_cst);
     const bool o_before = atomic_load_explicit(&app->o, memory_order_seq_cst);
@@ -190,7 +198,10 @@ static int prepared_logo_control(const char *resources, const char *assets, cons
     mc_client_render_manager_classes *manager = attempt->manager_classes;
     CHECK(manager != NULL);
     CHECK(mc_client_application_startup_retire(&attempt, startup.error) == MC_CLIENT_STARTUP_BUSY);
-    CHECK(attempt != NULL && attempt->logo == call && app->display != NULL);
+    CHECK(attempt != NULL && attempt->logo == call && app->display != NULL &&
+          attempt->statistics == statistics && statistics->retired &&
+          statistics->candidate == NULL && statistics->published == NULL &&
+          statistics->failure.source_writer.base.bytecode == 48);
     CHECK(mc_client_render_manager_retire_hands(manager, &startup.error->manager) ==
           MC_CLIENT_MANAGER_OK);
     CHECK(mc_client_render_manager_classes_retire(&manager, &startup.error->manager) ==
@@ -215,8 +226,8 @@ static int prepared_logo_control(const char *resources, const char *assets, cons
     CHECK(startup_services_close(&startup, &f) == 0);
     free(probe);
     _mm_setcsr(saved_fp);
-    printf("PREPARED-CALLEE MC.x %s: %u checks; coordinator stopped324; no "
-           "skipped calls\n",
+    printf("PREPARED-CALLEE MC.x %s: %u checks; retained XI failure cj48; no "
+           "Stats success\n",
            mode, checks);
     return 0;
 }

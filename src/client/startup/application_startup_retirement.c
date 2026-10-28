@@ -1,4 +1,6 @@
+#include "application_startup_input.h"
 #include "application_startup_internal.h"
+#include "application_startup_statistics.h"
 
 #include <stdlib.h>
 
@@ -34,9 +36,19 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     client_application *app = startup->app;
     /* Do not consume unrelated later children. Until their actual caller and
      * retirement route exist they keep this App and its startup services live. */
-    if (app->g != NULL || app->C != NULL || app->active_world != NULL || app->stats_writer != NULL)
+    if (app->g != NULL || app->active_world != NULL ||
+        (app->C != NULL && (startup->input == NULL || !startup->input->C_stored)) ||
+        ((app->stats_writer != NULL || app->stats_writer_retained != NULL) &&
+         (startup->statistics == NULL || !startup->statistics->entered)))
         return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
                                "later source children still borrow startup resources", out);
+    const mc_client_startup_status input = application_startup_input_retire(startup);
+    if (input != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, input, "startup actual vy/Cursor native retirement", out);
+    const mc_client_startup_status statistics = application_startup_statistics_retire(startup);
+    if (statistics != MC_CLIENT_STARTUP_OK)
+        return cleanup_failure(startup, statistics,
+                               "startup actual xi worker/File/Session retirement", out);
     /* End this actual App's source admission BEFORE any global F dependency
      * can block sj/Engine/App. No counted App<->TH ownership cycle exists. */
     if (mc_client_render_manager_consumer_detach(
@@ -329,6 +341,10 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
     startup->settings_error_line = NULL;
     free(startup->logo);
     startup->logo = NULL;
+    free(startup->statistics);
+    startup->statistics = NULL;
+    free(startup->input);
+    startup->input = NULL;
     app->startup = NULL;
     /* No source f/J/o mutation and no kg join: constructor retirement owns
      * native worker cancellation after this actual borrowed App is detached. */

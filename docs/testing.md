@@ -38,6 +38,63 @@ scope was 936 C/header files. The `37dc83f` hosted run retains every one of thos
 
 ## Normal startup owner qualification
 
+The [source OutputStream encoder](reference/source-encoder.md) has a separate
+target-only qualification: fifteen selected cases pass on each MSVC, Clang 18
+and GCC 13 build, 45 executions total. Each new contract case passes 91 checks.
+Actual inventories contain 354/356/356 cases; those inventory counts are not
+pass counts. All selected cases run without failure or skip, Linux sanitizers
+remain enabled, and link maps exclude a second Writer archive object. This
+headless scope does not claim a full client or System.out implementation.
+
+Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371).
+Actual job logs contain 398 Windows, 414 GCC and 414 Clang Start/Passed pairs:
+1,226 total, with no failure, skip or disabled case. Formatting checks 1,164
+files. Early input preflight checks 4,085 entries covering 2,209 distinct files
+on each native job before configuration; the native tests remain enabled.
+This checkpoint fixes the Font test's terminal lookup-metadata cleanup.
+
+The newer startup composition contains 2,247 files. Its initial full Windows
+build completes 1,587 steps and links the client. New statistics admission and
+null-Z controls pass 170 and 65 checks. The genuine Session window profile
+passes 92 checks through statistics publication/callback, actual logo caller,
+keyboard/mouse creation and App.C380, then stops at Controllers383. It starts
+one real read worker and performs no startup join. The callback keeps its App
+alive until the actual Registry-owned occurrence retires. This process belongs
+to the initial source, before two later strict-warning corrections.
+
+The first correction explicitly initializes the appended statistics-error
+pointer, satisfying Clang's missing-field diagnostic. The Windows incremental
+refresh recompiles one owner translation unit and relinks thirteen dependent
+executables. The corrected source passes the foreign-ready admission profile
+(78 checks), default/shared-Font failure profiles (82,137/82,142), five prepared
+logo modes (419 total), nineteen selected CPU CTests and two cursor cases
+(65/6,169). Across the two retained source phases, 26 actual CTests and two
+direct window profiles pass. All 327 built executables retain the default
+1 MiB stack; 758 owned C recipe groups retain strict C17 diagnostics/FP.
+
+Clang 18 builds the client and passes 56 selected CPU CTests plus six real
+graphics cases under ASan, UBSan and leak detection on that first correction.
+The authenticated Xvfb display is verified by `xdpyinfo`; its supported abstract
+Unix transport does not require a filesystem socket. Two WorldInfo controllers
+copy C/header inputs for binding checks and execute the actual sanitized CMake
+binaries. Those copied inputs are recorded separately from build products;
+they are not standalone native compilations.
+
+GCC 13 subsequently detects a signed/unsigned intermediate in the input trace
+assignment. Splitting the two exact constant-380 stores preserves runtime and
+ABI behavior. Its four-leaf source/metadata successor has current preflight
+4,219 entries/2,246 distinct files. The same GCC graph completes its remaining
+802 build steps, links the client and passes 56 CPU plus six authenticated
+graphics cases. All 2,608 products remain unchanged through execution and
+Xvfb retires normally. The minimal Clang refresh recompiles one input unit,
+updates its archive and relinks two tests. All six affected startup, MouseHelper
+and SDK queue/icon cases pass. A matching minimal Windows refresh passes the
+genuine 92-check Session window profile again. These runs are justified by the
+changed trace unit; the earlier full selections are not repeated. Earlier
+passing products keep their original source
+bindings. Windows default-directory/Session coverage does not credit a POSIX
+home-directory or original visual-parity profile.
+
 The corrected `bd8d7f1` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40635329070)
 passes Windows and formatting, and each Linux compiler passes 413 of 414 cases.
 The Font child now executes but stops at its final Engine release assertion:
@@ -57,7 +114,7 @@ under the older hosted MSVC C4200 diagnostic. Formatting passes. The scoped type
 guard preserves the declaration and layout; all five affected C files compile
 under installed MSVC with the existing C17, warning/error and strict-FP flags.
 Refreshed bindings describe the current test inputs without relabeling older
-native products or original captures. Corrected hosted results are pending.
+native products or original captures. The later `671c003` result above passes.
 
 Published `f37a96f` [passes all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
 386 Windows, 401 GCC and 401 Clang cases, 1,188 total, with no failures or skips.

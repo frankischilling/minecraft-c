@@ -495,8 +495,8 @@ endif()
 add_library(mc_java_files STATIC
     src/world/storage/java_file.c src/world/storage/java_file_io.c
     src/world/storage/java_file_list.c src/world/storage/java_file_text.c)
-target_link_libraries(mc_java_files PUBLIC mc_world_info
-    PRIVATE mc_core mc_platform_files mc_build_options)
+target_link_libraries(mc_java_files PUBLIC mc_world_info mc_c_atomics
+    PRIVATE mc_core mc_platform_files Threads::Threads mc_build_options)
 add_library(mc_java_outputs STATIC
     src/world/storage/java_output.c src/world/storage/java_data_output.c)
 target_link_libraries(mc_java_outputs PUBLIC mc_java_files
@@ -563,6 +563,9 @@ target_link_libraries(mc_world_saved_data PUBLIC mc_persistence PRIVATE mc_build
 
 add_library(mc_simulation STATIC
     src/client/statistics/application.c
+    src/client/statistics/source_classes.c
+    src/client/statistics/source_diagnostics.c
+    src/client/statistics/source_files.c
     src/entity/player/statistics.c
     src/entity/action/action.c
     src/entity/action/common.c
@@ -714,7 +717,7 @@ add_library(mc_simulation STATIC
     src/entity/minecart/nbt.c
     src/entity/minecart/storage.c)
 target_include_directories(mc_simulation PRIVATE src/platform/time)
-target_link_libraries(mc_simulation PUBLIC mc_persistence mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input
+target_link_libraries(mc_simulation PUBLIC mc_persistence mc_java_files mc_world_saved_data mc_item mc_registry mc_inventory mc_movement_input
     PRIVATE mc_client_notice mc_client_game_directory mc_platform_time mc_platform_text Threads::Threads mc_build_options)
 
 add_library(mc_client_first_person STATIC src/client/world/first_person.c)
@@ -779,6 +782,8 @@ endif()
 
 if(MC_BUILD_CLIENT)
     include(cmake/client_rendering.cmake)
+    include(cmake/client_input.cmake)
+    include(cmake/client_gl_diagnostics.cmake)
 endif()
 
 option(MC_ENABLE_APPLICATION_STARTUP_TESTS "Run genuine source run/startup CPU prefix controls" OFF)
@@ -927,7 +932,7 @@ if(BUILD_TESTING)
     target_compile_definitions(mc_test_save_close_io PRIVATE
         MC_JAVA_FILE_NATIVE_CLOSE=mc_test_save_close)
     target_link_libraries(mc_test_save_close_io PRIVATE
-        mc_world_info mc_core mc_platform_files mc_build_options)
+        mc_world_info mc_core mc_platform_files mc_c_atomics mc_build_options)
     add_executable(mc_test_save_format_close tests/client/saves/test_save_format.c
         $<TARGET_OBJECTS:mc_test_save_close_io>)
     target_compile_definitions(mc_test_save_format_close PRIVATE MC_SAVE_FILE_CLOSE_CONTROL=1)
@@ -5344,6 +5349,11 @@ unset(_mc_map_target)
 
 if(BUILD_TESTING)
     include(cmake/tests/java_storage.cmake)
+    include(cmake/tests/java_source_encoder.cmake)
+    include(cmake/tests/statistics.cmake)
+    include(cmake/tests/application_ownership.cmake)
+    include(cmake/tests/client_input.cmake)
+    include(cmake/tests/client_gl_diagnostics.cmake)
     if(MC_BUILD_CLIENT)
         include(cmake/tests/client_rendering.cmake)
     endif()

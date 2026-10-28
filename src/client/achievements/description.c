@@ -30,6 +30,9 @@ mc_client_notice_status mc_client_achievement_description(mc_registry_classes *c
     if (mc_client_inventory_callback_client(c, fields->client_callback, &app, &registry) !=
         MC_REGISTRY_OK)
         goto registry_failure;
+    if (mc_client_inventory_callback_is_owned(c, fields->client_callback) &&
+        !mc_client_application_callback_dispatch_admitted(app))
+        return result(error, MC_CLIENT_NOTICE_INVALID_PHASE, NULL, -1);
     if (app == NULL)
         return result(error, MC_CLIENT_NOTICE_SOURCE_EXCEPTION, "kh", 11);
     mc_game_settings *settings = mc_client_application_live_settings(app);

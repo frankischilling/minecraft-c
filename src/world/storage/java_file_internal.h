@@ -2,13 +2,19 @@
 #define MC_WORLD_STORAGE_JAVA_FILE_INTERNAL_H
 #include "../../platform/files/directory.h"
 #include "mc/world/storage/java_file.h"
+#include <stdatomic.h>
 #include <stdio.h>
+#include <threads.h>
 
 struct mc_java_files {
-    size_t holds;
+    atomic_size_t holds, native_calls;
+    atomic_bool quarantined;
+    mtx_t mutex;
+    int native_failure;
+    bool failed_default_parent_hold;
     mc_java_file_options options;
     mc_world_info_name *default_parent;
-    bool active, retiring;
+    atomic_bool active, retiring;
 };
 
 struct mc_java_file {
@@ -41,6 +47,11 @@ struct mc_java_file_stream {
     bool active, source_close_reached, source_close_succeeded;
 };
 
+/* Entrants/waiters must already have an externally live counted occurrence.
+ * These guards cannot make a stale borrowed pointer safe. Same File/stream/
+ * array mutation remains exclusively handed off; only namespace lifetime and
+ * lazy cache publication cross the Stats worker/foreground boundary. */
+mc_java_file_status mc_file_namespace_admit(mc_java_files *, mc_java_file_error *);
 mc_java_file_status mc_file_result(mc_java_file_error *e, mc_java_file_status s, const char *op,
                                    int code);
 mc_java_file_status mc_file_name_hold(mc_world_info_name *name, mc_java_file_error *e);

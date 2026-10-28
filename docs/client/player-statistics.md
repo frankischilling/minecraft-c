@@ -17,6 +17,12 @@ inventory achievement-description object. Startup does not join the worker.
 Native retirement joins outstanding workers before releasing Session classes,
 Registry, resources or the application.
 
+The [normal startup coordinator](normal-startup.md) now performs that same
+sequence on its actual App and then invokes the logo and input constructors.
+The installed callback is owned by the Registry and retains its App. Its
+finalizer drops that occurrence only after Registry retirement is admitted;
+dropping the Minecraft static alone cannot free callback-referenced storage.
+
 The Session accepts counted UTF-16 text. The current statistics filename profile
 supports English ASCII usernames and reports other names at the reached
 lowercasing dependency. This is an explicit remaining compatibility limit;

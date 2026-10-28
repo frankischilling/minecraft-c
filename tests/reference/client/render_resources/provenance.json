@@ -1,370 +1,6 @@
 {
   "scope": "Source-only authored CPU20/font/list/real-App controls, not compiled/native/original qualification",
   "source_files": {
-    "include/mc/client/fonts/default_font.h": {
-      "bytes": 3570,
-      "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
-    },
-    "include/mc/client/render_engine/render_engine.h": {
-      "bytes": 8919,
-      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
-    },
-    "src/client/display/display.c": {
-      "bytes": 60107,
-      "sha256": "5b4e4a7d5c28ba6ccbf4cfeb12b20fa4f3fbbec64bbcb51cab791929314c9ff1"
-    },
-    "src/client/display/display.h": {
-      "bytes": 13727,
-      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
-    },
-    "src/client/fonts/default_font.c": {
-      "bytes": 13768,
-      "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
-    },
-    "src/client/render_engine/internal.h": {
-      "bytes": 3549,
-      "sha256": "f3586abbff25baa627221a6bdde5740887a6bde41d33ed1e76e80b078b6e0d37"
-    },
-    "src/client/render_engine/owner.c": {
-      "bytes": 27450,
-      "sha256": "9a79bedd2cd625ff32d1822ce14fad6c83c5d2b562d4693dded1e988b1ab7805"
-    },
-    "src/client/render_engine/textures.c": {
-      "bytes": 25603,
-      "sha256": "0990c6a8af54cc1952fa42a235a01ce38c11bbb51d2305b6590d7fbfec44104b"
-    },
-    "src/client/render_engine/textures.h": {
-      "bytes": 4870,
-      "sha256": "72fab24b19d0fa24ec1cf524b13bc53c4414afeeac1a4fb815b336fc988c92cb"
-    },
-    "tests/client/render_engine/test_render_engine.c": {
-      "bytes": 19211,
-      "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
-    },
-    "tests/client/render_engine/test_textures.c": {
-      "bytes": 21208,
-      "sha256": "9e63b92602d15bbe770250d4456ed262750c2582300f840339c698028c1d44a8"
-    },
-    "tests/reference/client/render_engine/FontObservation.java": {
-      "bytes": 4965,
-      "sha256": "97c158d1b7c9d3b355b10e0272b994e5ad8c53bf1e25f4c908934ba2edfa3939"
-    },
-    "tests/reference/client/render_engine/TextureObservation.java": {
-      "bytes": 4527,
-      "sha256": "087ae3aa5446be0a052ebe3f0a96dd13c034f470e0567bc80b5974016ea3aa9a"
-    },
-    "tests/reference/client/render_engine/compare.py": {
-      "bytes": 10568,
-      "sha256": "e9da0d8c814d8f759d5fd1ee4b9efe991d9c6247426fec0d1c006cf02fa06607"
-    },
-    "tests/reference/client/render_engine/support.py": {
-      "bytes": 3720,
-      "sha256": "b6e9207bc992821f9d9fc82b9c856a02ba285ff610d08c8a75cb6d95e84361d9"
-    },
-    "tests/tools/client/test_render_engine.py": {
-      "bytes": 3872,
-      "sha256": "c7290c786e0a3ec78b26c83512ccc61f7607909c9a9ec1fe7d5f7ab22119509a"
-    },
-    "src/client/display/loading_projection.inc": {
-      "bytes": 2669,
-      "sha256": "a920e0b12369bb31c61cd7a90d4e76f1bfe4ec3dd164e2a387355744dbc0ce1c"
-    },
-    "src/client/gui/bitmap_font.h": {
-      "bytes": 7198,
-      "sha256": "0d7e880e6850fe4a98778fd1a20a102271a887015e02fd201400d99246aaf3f1"
-    },
-    "src/client/gui/bitmap_font_internal.h": {
-      "bytes": 2001,
-      "sha256": "691cfd49aebf5c114937fae49ccef8cc2efd600c7b4d14c63e79e9d212a54024"
-    },
-    "src/client/gui/bitmap_font_measure.c": {
-      "bytes": 3395,
-      "sha256": "4075ba142b0c93d3ecd51f892389e250799f2b0b3b9bbae584af84edbaa0b52c"
-    },
-    "src/client/gui/font_kernels.h": {
-      "bytes": 1487,
-      "sha256": "71e4677fcacbc8808555b001e048d7e11fd7953558b483ffcae50423d3e2aa80"
-    },
-    "src/client/gui/font_mapping.c": {
-      "bytes": 13410,
-      "sha256": "1e6767455654170518323de20d35a9c02efb68322ecc90c478a35859433495cd"
-    },
-    "src/client/gui/font_mapping.h": {
-      "bytes": 3616,
-      "sha256": "5f49bfecd6964f3806c9cb78fd25573a66c6406fcb1a5ebe0a29611876305dd9"
-    },
-    "src/client/gui/loading_draw.c": {
-      "bytes": 6016,
-      "sha256": "8cda6b2c8edb8b4471d818ac50fb6490f17cb6aec57ec745e92e79f521c9c452"
-    },
-    "src/client/gui/loading_geometry.c": {
-      "bytes": 1603,
-      "sha256": "030e2c7988d37a8a13ca6e08555f9bff7aff441607ad7b7885302be3f0a18201"
-    },
-    "src/client/gui/loading_geometry.h": {
-      "bytes": 671,
-      "sha256": "4dd9c82923cb285da951dbf787197fdb1526e491179b623c8fbe28b1d639c03a"
-    },
-    "src/client/gui/loading_internal.h": {
-      "bytes": 4112,
-      "sha256": "a497bc3c28cd82c5657aced1f6a7ccafd5519554bc268769750b58a48457e56a"
-    },
-    "src/client/gui/loading_projection.c": {
-      "bytes": 1953,
-      "sha256": "92cfc31b5c559c855ae907ec68f75ef3d738bb211ed23b2c42252c4ad0a94bcc"
-    },
-    "src/client/gui/loading_screen.c": {
-      "bytes": 19951,
-      "sha256": "988b9023364023b46025ca8bc02b3dbbbbbabda2dfea64e06354db7a42f460e5"
-    },
-    "src/client/gui/loading_screen.h": {
-      "bytes": 11031,
-      "sha256": "185ad79437d088367d43affb68602744760c327fa15ab8341419f369d01ac742"
-    },
-    "src/client/gui/scaled_resolution_internal.h": {
-      "bytes": 1659,
-      "sha256": "925287fcecb4135b6319bbe5f5dcda6e9c0617f40f34e3fb1c353c33ab55792d"
-    },
-    "src/client/application_state.h": {
-      "bytes": 7475,
-      "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
-    },
-    "src/client/gui/font_renderer.c": {
-      "bytes": 11768,
-      "sha256": "080fcf9026c26d2274dbe4d777e0ab6301048a613ed11ce02c818b087bd70505"
-    },
-    "src/client/gui/scaled_resolution.c": {
-      "bytes": 1608,
-      "sha256": "63498887ad96fd111958fe74ab3a5a66acf9783ab3c8b86ee72b592842cb99b5"
-    },
-    "src/client/display/gl_internal.h": {
-      "bytes": 8308,
-      "sha256": "41ec32ecf70d1066d2f0b8ec9c7ac88f414f7280ce74b2282ffddae9365bf03c"
-    },
-    "src/client/display/matrix_source.h": {
-      "bytes": 1122,
-      "sha256": "eff14e139a5599e2a8eba6609d79d29525469f30c6e3d7c795ea8792f5baa78a"
-    },
-    "src/client/display/source_internal.h": {
-      "bytes": 2718,
-      "sha256": "df47d3c5f82faf18581b97017d98eaa311bc2dcec129580158dbd952f84091a8"
-    },
-    "src/client/display/source_surface.h": {
-      "bytes": 4693,
-      "sha256": "ad7520a7a2645acc92bf1a6f46560db0d5f7da5f37e6d20b0a22b1e3165c4e60"
-    },
-    "src/client/display/source_surface.inc": {
-      "bytes": 29852,
-      "sha256": "be2e10147fa6ddf814f8d4e33c93d2b0f206fde73be14a8e002168d3c551b6cb"
-    },
-    "src/client/display/texture_leases.inc": {
-      "bytes": 6599,
-      "sha256": "a937b5e6b0612ccfd1caf98f27d40e1108f12f43eb280058655e2f9bf2beebd1"
-    },
-    "src/client/gui/bitmap_font.c": {
-      "bytes": 26758,
-      "sha256": "9665a1529cc40eefe00c93999596aee94eeea09266c99ac1211d14569e8f9a09"
-    },
-    "src/client/gui/bitmap_font_draw.c": {
-      "bytes": 11312,
-      "sha256": "cbfe6c719cd62e8dcd3f46f85e28f8e6bfb3774b90c06a3be970ebd49387efae"
-    },
-    "src/client/gui/gui_main_menu.c": {
-      "bytes": 19198,
-      "sha256": "5b3aed7523e9af9acdef30a9edb2fa3056fa9afc5864c75f6e25e00095562a99"
-    },
-    "src/client/images/class_stream.c": {
-      "bytes": 8599,
-      "sha256": "3c0d7a9d712bc585de8f4f4a4c9e555c71e6359b538b2aca1845c6c8f5a5cc4a"
-    },
-    "src/client/images/class_stream.h": {
-      "bytes": 2854,
-      "sha256": "93dd6854719b0ba39dd37f125cacff74ba31efb78b73d68bb0a9cb5dc36911eb"
-    },
-    "src/client/images/image_io.c": {
-      "bytes": 20691,
-      "sha256": "a8a37dbe3c8991d558cdf176ee01146149edfb2d478ef2de8443a4ad20be8cc0"
-    },
-    "src/client/images/image_io.h": {
-      "bytes": 2789,
-      "sha256": "4a308bc84d1dc1f4aec704476fcc6bb2fb7c5d0fb71612a5adff4b95790a5f48"
-    },
-    "src/client/render_engine/arena.c": {
-      "bytes": 1790,
-      "sha256": "6f87c8a16b9b13762baa63472ee9c4eb2bc407889d3d1d31048e72b04b731dcf"
-    },
-    "src/client/render_engine/arena.h": {
-      "bytes": 1413,
-      "sha256": "b81996eefa7e9228de1f12747dcc88356116afaff3c668900a206cf45b6a9135"
-    },
-    "src/client/render_engine/context.c": {
-      "bytes": 1112,
-      "sha256": "1d9e2a7ba668430813c0689d3778a8103949841fdd62bd8754bd5ec5fc94742a"
-    },
-    "src/client/render_engine/context_display.c": {
-      "bytes": 1711,
-      "sha256": "ed77429c41bbf4b880e02a658c10b7bd1aa06dac82108b3a998c305b2e092983"
-    },
-    "src/client/render_engine/context_internal.h": {
-      "bytes": 763,
-      "sha256": "7c39389314866b6b78063d17d08ec6765ab2a32afaaa68e330551f5f8c12d9b7"
-    },
-    "src/client/render_engine/font_lease.h": {
-      "bytes": 2156,
-      "sha256": "469e9d22df44bc7f2784dd6ff912f2429fef596c5b37a9a505968f5ff47c9f90"
-    },
-    "src/client/render_engine/font_leases.inc": {
-      "bytes": 9663,
-      "sha256": "ac932cc7d26f25d1d1efe2be7bea9fbad475f546e2bbcd6c88a7666c8be8e40e"
-    },
-    "src/client/render_engine/ge.c": {
-      "bytes": 11342,
-      "sha256": "bde36ff2b6381e13b689d41abc68cbe893686ef7b0059fde8d830d2ffcfe9537"
-    },
-    "src/client/render_engine/ge.h": {
-      "bytes": 4067,
-      "sha256": "237940baa0a13a3dd86d6df5df6b68153c36435cf8193672221456c6c8b10202"
-    },
-    "src/client/render_engine/ge_ranges.c": {
-      "bytes": 7272,
-      "sha256": "afea1fc77e43e745b354a231e4a6801406d69873fcca700bf50270a8b1c7814e"
-    },
-    "src/client/render_engine/nw.c": {
-      "bytes": 18663,
-      "sha256": "1e30d1d8962f7be6694a9e7c08e9e6961125ed0d8332f976efdcd9b55f93e855"
-    },
-    "src/client/render_engine/nw.h": {
-      "bytes": 2974,
-      "sha256": "dd5f5e9a1ad60b47cf20719871e9f818f9f70b33bbe7c73d981fb40ea56bcbfe"
-    },
-    "src/client/render_engine/nw_internal.h": {
-      "bytes": 591,
-      "sha256": "3b28e3123a062064fe41228dbc021395839aa0b4ac866f4185764a8ca24a238d"
-    },
-    "src/client/render_engine/nw_owner.c": {
-      "bytes": 6569,
-      "sha256": "3078ed2a789c1bda87c1dc487d5eaab80eaf251fabc0781f6a2b0758e55845a9"
-    },
-    "src/client/render_engine/source.h": {
-      "bytes": 1970,
-      "sha256": "7e998b4f53170d585ba520638d3a4b1f6d8a0ebe593014532e0b0573ce3ff88b"
-    },
-    "tests/client/render_engine/test_source_resources.c": {
-      "bytes": 10406,
-      "sha256": "e713d1790ca8a3232c19fde0bbf03d80ba26c3d75a796d899bd4d6657681be46"
-    },
-    "tests/client/render_engine/test_source_fp.c": {
-      "bytes": 10879,
-      "sha256": "c54874f8b016f335534700fdc112f597478b2825a2d0b6b46dda9185f78406a8"
-    },
-    "tests/client/render_engine/test_close_callbacks.c": {
-      "bytes": 12107,
-      "sha256": "70dc1aa47a267bb2c77153eac07e36ea880a9682841fc5b3b176810693352ae6"
-    },
-    "tests/tools/client/test_close_callbacks.py": {
-      "bytes": 6161,
-      "sha256": "240a4c8e1e40aff4da544677e8f90e3cc76d3eba0a8db4ac9f57af6a06ac34ba"
-    },
-    "tests/tools/client/test_close_callbacks_driver.py": {
-      "bytes": 4435,
-      "sha256": "497ffc4e1500c727a9bb4217507ea3a940d3e8062cece91337eeb42355f8364e"
-    },
-    "src/client/startup/application_classes.c": {
-      "bytes": 12660,
-      "sha256": "b53b4fb72f4d53f3e7c9edd51f7ccb3ec7d81240b7ffbf92b403c361b3c0bfcd"
-    },
-    "src/client/startup/application_lifetime.c": {
-      "bytes": 6258,
-      "sha256": "9af056e5ab6f2e1499bc633113d0d2c3bb56a5615d1294d3b11556b88f65eb0e"
-    },
-    "src/client/startup/application_owner.h": {
-      "bytes": 12087,
-      "sha256": "8e857bbe30864344af5d4f98d0142b806d9e52dc0761209a7b91f6f34b599932"
-    },
-    "src/client/startup/application_owner_internal.h": {
-      "bytes": 3336,
-      "sha256": "d41f3f94d584879b712daf2be90d71e6063b870d01a30075ed0b8b913b5f1e18"
-    },
-    "src/client/startup/timer_hack.c": {
-      "bytes": 18780,
-      "sha256": "bdac1c11f14c63cc2bce38fe270efccd445fb744765bd1b0fae9f92f5459f4f0"
-    },
-    "tests/client/startup/test_application_owner.c": {
-      "bytes": 20641,
-      "sha256": "483532d4c6559405fae28d23dfaa277613874ca1650d84bd8d16adc62ac5f15f"
-    },
-    "tests/reference/client/application_owner/ApplicationOwnerObservation.java": {
-      "bytes": 4771,
-      "sha256": "41b7fe4cdc55be9fcd32e5619389fcc9b882a801155886f1ad07411004449b4e"
-    },
-    "tests/reference/client/application_owner/run_native.py": {
-      "bytes": 2027,
-      "sha256": "c796529292aeceda9a7d6ac167faddc8a19feb728a3d245fec810f6ed70e4fbc"
-    },
-    "tests/reference/client/application_owner/support.py": {
-      "bytes": 3452,
-      "sha256": "74217d499ec39ad7568ad459fa85e27bedc693e5bcf0c68bee21808e33b601e0"
-    },
-    "tests/tools/client/test_application_owner_driver.py": {
-      "bytes": 4899,
-      "sha256": "856b1ef3ee6228b9ff21bc318031ec3e4c6edaf01bf3955b5d8e87cf6b5fa67d"
-    },
-    "tests/tools/client/run_close_callbacks.py": {
-      "bytes": 2347,
-      "sha256": "67ba29a5171cb8b93d86f5e050b112e65d8b38a4c0f5d9babed6ef0f607993c2"
-    },
-    "tests/client/gui/test_loading_source_flag.c": {
-      "bytes": 10314,
-      "sha256": "2be654560abed3470bcb49cd55d6d6ad4637b159d7723dda381789418ca087db"
-    },
-    "tests/client/render_engine/source_cpu_probe.c": {
-      "bytes": 10876,
-      "sha256": "482e06e3d1da41359235f5c973a500a3a5340afd3355b21b83830cab05c29626"
-    },
-    "tests/client/render_engine/test_source_font.c": {
-      "bytes": 22965,
-      "sha256": "a64d4a0a890e17ca394ccb6461d0bd07b90258da4491f62666c4dbb2a693af1d"
-    },
-    "tests/reference/client/render_resources/capture.py": {
-      "bytes": 3469,
-      "sha256": "52144546c7485b39a7e2414b442003a06a5e4f8c3ef189bc263b3adfa212a941"
-    },
-    "tests/reference/client/render_resources/compare.py": {
-      "bytes": 8578,
-      "sha256": "aff2abed4cd97d59e78ab132405e9b61ab5a91e9b0d2c615b84ac6bb9eaba7be"
-    },
-    "tests/reference/client/render_resources/GeNwCpuReference.java": {
-      "bytes": 5746,
-      "sha256": "a4824755a9a32f2bd0e4574812c55b3c88d5fc2bb7849556c89c849a05cf3f67"
-    },
-    "tests/reference/client/render_resources/protocol.py": {
-      "bytes": 6741,
-      "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
-    },
-    "tests/reference/client/render_resources/source-pins.json": {
-      "bytes": 30431,
-      "sha256": "94f63b9325550594f61848527c950f04634f33aeaf88266d925fcbdba1e383f6"
-    },
-    "tests/reference/client/render_resources/test_protocol.py": {
-      "bytes": 6496,
-      "sha256": "b5bcfce5b2778c4d2a74c7b41002f4e082f99c7783d9828f6d8c54793c56a5bb"
-    },
-    "tests/tools/client/test_source_cpu.py": {
-      "bytes": 774,
-      "sha256": "c5409546bf2f703dc573243f7c2b39951c2fd6c275288fb3f2a1eecf7dfe7aff"
-    },
-    "tests/tools/client/test_source_font.py": {
-      "bytes": 2255,
-      "sha256": "32381465ee9ab2710e4d7b9ca259856c985baae5805c51cb3c221957d2f9adda"
-    },
-    "tests/reference/client/statistics/support.py": {
-      "bytes": 7123,
-      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
-    },
-    "tests/reference/client/notice/classfile.py": {
-      "bytes": 2803,
-      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
-    },
     "include/mc/block/material/material.h": {
       "bytes": 4557,
       "sha256": "7f64d63d51f8ecf7f7aae81fb4ed78edf6f185f7dd821bc5d29a6e91ab9b132b"
@@ -372,6 +8,10 @@
     "include/mc/block/registry/registry.h": {
       "bytes": 7950,
       "sha256": "db4dec4547b63592bdecd00e5b1af5165acb788c578663eac5afca57a3c70ef0"
+    },
+    "include/mc/client/fonts/default_font.h": {
+      "bytes": 3570,
+      "sha256": "92c369c867f422806331d3a2efa27defcf7b3908c57c6f1c36e586d130476b62"
     },
     "include/mc/client/gui/achievement_notice.h": {
       "bytes": 6188,
@@ -389,9 +29,17 @@
       "bytes": 4685,
       "sha256": "ba0d657f72c807d42d8a39a3229bd59c9198cd8287b4141316c01db820ee1436"
     },
+    "include/mc/client/render_engine/render_engine.h": {
+      "bytes": 8919,
+      "sha256": "52358dfa80bb708ea01b3a1c7ee54a2368f1b63d406a7a7b14de56dc137390a6"
+    },
     "include/mc/client/settings/game_settings.h": {
       "bytes": 14222,
       "sha256": "64f77f85ab6deed4ab51174044320aabe516f8176c84c801df251fd2ab47945b"
+    },
+    "include/mc/client/statistics/writer.h": {
+      "bytes": 18531,
+      "sha256": "dfac5a05d802908a5100382c1152918cfdcbc899f3f8d1f4d430b7dfe97bd06f"
     },
     "include/mc/client/texture_packs/texture_packs.h": {
       "bytes": 7579,
@@ -642,8 +290,8 @@
       "sha256": "f58c096313fd841d0ce1a4436e520251497a1b72318d04b68f29bafa2f62091b"
     },
     "include/mc/world/storage/java_file.h": {
-      "bytes": 9762,
-      "sha256": "90f055fdf01d9e04eb1d0881492868968ab4fab814fd29b5bcf8d8360eedba67"
+      "bytes": 11112,
+      "sha256": "c8448fbb8d6d27110ffaf3f992c9ea22fe1c16313ee977ee310b44160dcfa50c"
     },
     "include/mc/world/storage/regions.h": {
       "bytes": 4655,
@@ -674,12 +322,36 @@
       "sha256": "1af9cc2c4f3b54532440a38c184fd514f1f74af19dd3093f1966b19333aed162"
     },
     "src/client/application_access.h": {
-      "bytes": 1153,
-      "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
+      "bytes": 1583,
+      "sha256": "a6e1b6a8b8201870ec3e0b2f9f0690b0900eb0b57dc230634562cc2dac6902e2"
+    },
+    "src/client/application_state.h": {
+      "bytes": 7570,
+      "sha256": "6613a0cce9773e58af9cc621c77daa2f3d4e6a4a0411643465ef52da4c585366"
+    },
+    "src/client/display/display.c": {
+      "bytes": 60107,
+      "sha256": "5b4e4a7d5c28ba6ccbf4cfeb12b20fa4f3fbbec64bbcb51cab791929314c9ff1"
+    },
+    "src/client/display/display.h": {
+      "bytes": 13727,
+      "sha256": "26a76c514949f22879211d37492996b79b11d779e4b85ea1b4d96a50c256bb18"
     },
     "src/client/display/events.h": {
       "bytes": 4374,
       "sha256": "0898f275df390472bb18f7f01cab729b2efb7468c479a7e05388214a01c54ab4"
+    },
+    "src/client/display/gl_internal.h": {
+      "bytes": 8308,
+      "sha256": "41ec32ecf70d1066d2f0b8ec9c7ac88f414f7280ce74b2282ffddae9365bf03c"
+    },
+    "src/client/display/loading_projection.inc": {
+      "bytes": 2669,
+      "sha256": "a920e0b12369bb31c61cd7a90d4e76f1bfe4ec3dd164e2a387355744dbc0ce1c"
+    },
+    "src/client/display/matrix_source.h": {
+      "bytes": 1122,
+      "sha256": "eff14e139a5599e2a8eba6609d79d29525469f30c6e3d7c795ea8792f5baa78a"
     },
     "src/client/display/sdk_display_internal.h": {
       "bytes": 1507,
@@ -690,8 +362,8 @@
       "sha256": "fe00d9b80cd18cc92d4ee16f43a289045cd730d68768b4da0d688e2c3f916697"
     },
     "src/client/display/sdk_input.h": {
-      "bytes": 8251,
-      "sha256": "0cb4bf9b7952a203d26fec7e7cece6ff48ba6aaa5cea1c3e3704ca1a06e11df7"
+      "bytes": 8897,
+      "sha256": "41cf37500e71d0be55052ecd326253b2c2ff11b28efd4e29e65dda775fa18b73"
     },
     "src/client/display/sdk_mode_internal.h": {
       "bytes": 458,
@@ -713,6 +385,18 @@
       "bytes": 4357,
       "sha256": "52167761c818678b56ed3d2a6282830c362633fbf83f8fef5213ab54de29b8af"
     },
+    "src/client/display/source_internal.h": {
+      "bytes": 2718,
+      "sha256": "df47d3c5f82faf18581b97017d98eaa311bc2dcec129580158dbd952f84091a8"
+    },
+    "src/client/display/source_surface.h": {
+      "bytes": 5224,
+      "sha256": "8a9e41c216112e0f627821d4bfcb578c885dd771868e3d82b17eafb157e764d3"
+    },
+    "src/client/display/source_surface.inc": {
+      "bytes": 30661,
+      "sha256": "14dc2dedd4e9958a39e68f27d8cabf0024465abbeccf7e5affcecf0ec4876dfe"
+    },
     "src/client/display/staged.h": {
       "bytes": 6053,
       "sha256": "bc08d38a8d697b5d7e07c261c4af79956c58b96b126e7fe63022653aa467da50"
@@ -725,9 +409,117 @@
       "bytes": 6015,
       "sha256": "ef723e16a1a1f88e63752962fba959fd5e0e03b5ce730647290b45b8bee20875"
     },
+    "src/client/display/texture_leases.inc": {
+      "bytes": 6599,
+      "sha256": "a937b5e6b0612ccfd1caf98f27d40e1108f12f43eb280058655e2f9bf2beebd1"
+    },
+    "src/client/fonts/default_font.c": {
+      "bytes": 13768,
+      "sha256": "b4f850b175e4a1032a1812f78d7b2acf8e13277453401db249e76f49bc80eb66"
+    },
+    "src/client/gui/bitmap_font.c": {
+      "bytes": 26758,
+      "sha256": "9665a1529cc40eefe00c93999596aee94eeea09266c99ac1211d14569e8f9a09"
+    },
+    "src/client/gui/bitmap_font.h": {
+      "bytes": 7198,
+      "sha256": "0d7e880e6850fe4a98778fd1a20a102271a887015e02fd201400d99246aaf3f1"
+    },
+    "src/client/gui/bitmap_font_draw.c": {
+      "bytes": 11312,
+      "sha256": "cbfe6c719cd62e8dcd3f46f85e28f8e6bfb3774b90c06a3be970ebd49387efae"
+    },
+    "src/client/gui/bitmap_font_internal.h": {
+      "bytes": 2001,
+      "sha256": "691cfd49aebf5c114937fae49ccef8cc2efd600c7b4d14c63e79e9d212a54024"
+    },
+    "src/client/gui/bitmap_font_measure.c": {
+      "bytes": 3395,
+      "sha256": "4075ba142b0c93d3ecd51f892389e250799f2b0b3b9bbae584af84edbaa0b52c"
+    },
+    "src/client/gui/font_kernels.h": {
+      "bytes": 1487,
+      "sha256": "71e4677fcacbc8808555b001e048d7e11fd7953558b483ffcae50423d3e2aa80"
+    },
+    "src/client/gui/font_mapping.c": {
+      "bytes": 13410,
+      "sha256": "1e6767455654170518323de20d35a9c02efb68322ecc90c478a35859433495cd"
+    },
+    "src/client/gui/font_mapping.h": {
+      "bytes": 3616,
+      "sha256": "5f49bfecd6964f3806c9cb78fd25573a66c6406fcb1a5ebe0a29611876305dd9"
+    },
+    "src/client/gui/font_renderer.c": {
+      "bytes": 11768,
+      "sha256": "080fcf9026c26d2274dbe4d777e0ab6301048a613ed11ce02c818b087bd70505"
+    },
+    "src/client/gui/gui_main_menu.c": {
+      "bytes": 19198,
+      "sha256": "5b3aed7523e9af9acdef30a9edb2fa3056fa9afc5864c75f6e25e00095562a99"
+    },
     "src/client/gui/gui_main_menu.h": {
       "bytes": 4554,
       "sha256": "11272906207c76f6065e7b1b73577a8cd82a47a45a2b56f6d041bbece5d8abe9"
+    },
+    "src/client/gui/loading_draw.c": {
+      "bytes": 6016,
+      "sha256": "8cda6b2c8edb8b4471d818ac50fb6490f17cb6aec57ec745e92e79f521c9c452"
+    },
+    "src/client/gui/loading_geometry.c": {
+      "bytes": 1603,
+      "sha256": "030e2c7988d37a8a13ca6e08555f9bff7aff441607ad7b7885302be3f0a18201"
+    },
+    "src/client/gui/loading_geometry.h": {
+      "bytes": 671,
+      "sha256": "4dd9c82923cb285da951dbf787197fdb1526e491179b623c8fbe28b1d639c03a"
+    },
+    "src/client/gui/loading_internal.h": {
+      "bytes": 4112,
+      "sha256": "a497bc3c28cd82c5657aced1f6a7ccafd5519554bc268769750b58a48457e56a"
+    },
+    "src/client/gui/loading_projection.c": {
+      "bytes": 1953,
+      "sha256": "92cfc31b5c559c855ae907ec68f75ef3d738bb211ed23b2c42252c4ad0a94bcc"
+    },
+    "src/client/gui/loading_screen.c": {
+      "bytes": 19951,
+      "sha256": "988b9023364023b46025ca8bc02b3dbbbbbabda2dfea64e06354db7a42f460e5"
+    },
+    "src/client/gui/loading_screen.h": {
+      "bytes": 11031,
+      "sha256": "185ad79437d088367d43affb68602744760c327fa15ab8341419f369d01ac742"
+    },
+    "src/client/gui/scaled_resolution.c": {
+      "bytes": 1608,
+      "sha256": "63498887ad96fd111958fe74ab3a5a66acf9783ab3c8b86ee72b592842cb99b5"
+    },
+    "src/client/gui/scaled_resolution_internal.h": {
+      "bytes": 1659,
+      "sha256": "925287fcecb4135b6319bbe5f5dcda6e9c0617f40f34e3fb1c353c33ab55792d"
+    },
+    "src/client/images/class_stream.c": {
+      "bytes": 8599,
+      "sha256": "3c0d7a9d712bc585de8f4f4a4c9e555c71e6359b538b2aca1845c6c8f5a5cc4a"
+    },
+    "src/client/images/class_stream.h": {
+      "bytes": 2854,
+      "sha256": "93dd6854719b0ba39dd37f125cacff74ba31efb78b73d68bb0a9cb5dc36911eb"
+    },
+    "src/client/images/image_io.c": {
+      "bytes": 20691,
+      "sha256": "a8a37dbe3c8991d558cdf176ee01146149edfb2d478ef2de8443a4ad20be8cc0"
+    },
+    "src/client/images/image_io.h": {
+      "bytes": 2789,
+      "sha256": "4a308bc84d1dc1f4aec704476fcc6bb2fb7c5d0fb71612a5adff4b95790a5f48"
+    },
+    "src/client/render_engine/arena.c": {
+      "bytes": 1790,
+      "sha256": "6f87c8a16b9b13762baa63472ee9c4eb2bc407889d3d1d31048e72b04b731dcf"
+    },
+    "src/client/render_engine/arena.h": {
+      "bytes": 1413,
+      "sha256": "b81996eefa7e9228de1f12747dcc88356116afaff3c668900a206cf45b6a9135"
     },
     "src/client/render_engine/color_array.h": {
       "bytes": 4737,
@@ -741,6 +533,66 @@
       "bytes": 1115,
       "sha256": "41fcc49cff7a68adf8db3f19dafd13093fec281cc88caf69a882482cd7b21aa3"
     },
+    "src/client/render_engine/context.c": {
+      "bytes": 1112,
+      "sha256": "1d9e2a7ba668430813c0689d3778a8103949841fdd62bd8754bd5ec5fc94742a"
+    },
+    "src/client/render_engine/context_display.c": {
+      "bytes": 1711,
+      "sha256": "ed77429c41bbf4b880e02a658c10b7bd1aa06dac82108b3a998c305b2e092983"
+    },
+    "src/client/render_engine/context_internal.h": {
+      "bytes": 763,
+      "sha256": "7c39389314866b6b78063d17d08ec6765ab2a32afaaa68e330551f5f8c12d9b7"
+    },
+    "src/client/render_engine/font_lease.h": {
+      "bytes": 2156,
+      "sha256": "469e9d22df44bc7f2784dd6ff912f2429fef596c5b37a9a505968f5ff47c9f90"
+    },
+    "src/client/render_engine/font_leases.inc": {
+      "bytes": 9663,
+      "sha256": "ac932cc7d26f25d1d1efe2be7bea9fbad475f546e2bbcd6c88a7666c8be8e40e"
+    },
+    "src/client/render_engine/ge.c": {
+      "bytes": 11342,
+      "sha256": "bde36ff2b6381e13b689d41abc68cbe893686ef7b0059fde8d830d2ffcfe9537"
+    },
+    "src/client/render_engine/ge.h": {
+      "bytes": 4067,
+      "sha256": "237940baa0a13a3dd86d6df5df6b68153c36435cf8193672221456c6c8b10202"
+    },
+    "src/client/render_engine/ge_ranges.c": {
+      "bytes": 7272,
+      "sha256": "afea1fc77e43e745b354a231e4a6801406d69873fcca700bf50270a8b1c7814e"
+    },
+    "src/client/render_engine/internal.h": {
+      "bytes": 3549,
+      "sha256": "f3586abbff25baa627221a6bdde5740887a6bde41d33ed1e76e80b078b6e0d37"
+    },
+    "src/client/render_engine/nw.c": {
+      "bytes": 18663,
+      "sha256": "1e30d1d8962f7be6694a9e7c08e9e6961125ed0d8332f976efdcd9b55f93e855"
+    },
+    "src/client/render_engine/nw.h": {
+      "bytes": 2974,
+      "sha256": "dd5f5e9a1ad60b47cf20719871e9f818f9f70b33bbe7c73d981fb40ea56bcbfe"
+    },
+    "src/client/render_engine/nw_internal.h": {
+      "bytes": 591,
+      "sha256": "3b28e3123a062064fe41228dbc021395839aa0b4ac866f4185764a8ca24a238d"
+    },
+    "src/client/render_engine/nw_owner.c": {
+      "bytes": 6569,
+      "sha256": "3078ed2a789c1bda87c1dc487d5eaab80eaf251fabc0781f6a2b0758e55845a9"
+    },
+    "src/client/render_engine/owner.c": {
+      "bytes": 27450,
+      "sha256": "9a79bedd2cd625ff32d1822ce14fad6c83c5d2b562d4693dded1e988b1ab7805"
+    },
+    "src/client/render_engine/source.h": {
+      "bytes": 1970,
+      "sha256": "7e998b4f53170d585ba520638d3a4b1f6d8a0ebe593014532e0b0573ce3ff88b"
+    },
     "src/client/render_engine/texture_calls_internal.h": {
       "bytes": 2396,
       "sha256": "92695aec96cd548a6847c19cac813160a7fd7cab3706a68c4abe913084ed5372"
@@ -749,9 +601,37 @@
       "bytes": 5537,
       "sha256": "ac9b240eed12325dd459e2a12677f1d96e07b84ecba13356e8c831c42e8b5a57"
     },
+    "src/client/render_engine/textures.c": {
+      "bytes": 25603,
+      "sha256": "0990c6a8af54cc1952fa42a235a01ce38c11bbb51d2305b6590d7fbfec44104b"
+    },
+    "src/client/render_engine/textures.h": {
+      "bytes": 4870,
+      "sha256": "72fab24b19d0fa24ec1cf524b13bc53c4414afeeac1a4fb815b336fc988c92cb"
+    },
     "src/client/resources/assets.h": {
       "bytes": 7837,
       "sha256": "68e9d96b80e9513a0e0defc1627c77124d0ecc3e7ba7f1f9138b67ccd0fe5c00"
+    },
+    "src/client/startup/application_classes.c": {
+      "bytes": 13654,
+      "sha256": "35fa3b19bc3ae60d20bb3c9ab9455084437b6a08cdef3d651c9ebc8fb3d19c46"
+    },
+    "src/client/startup/application_lifetime.c": {
+      "bytes": 6707,
+      "sha256": "b328d61297b2df99578415c650418b152146b1c24cf60111219949b45dfcfb73"
+    },
+    "src/client/startup/application_owner.h": {
+      "bytes": 12283,
+      "sha256": "8d647ff14a379adefb633c98abb7137a162ba493177f6f980671563af3577cc6"
+    },
+    "src/client/startup/application_owner_internal.h": {
+      "bytes": 3512,
+      "sha256": "12ff407d96947199722c39ff121e0dc553883fd50631fc14e97ccb6a50757c3e"
+    },
+    "src/client/startup/timer_hack.c": {
+      "bytes": 18780,
+      "sha256": "bdac1c11f14c63cc2bce38fe270efccd445fb744765bd1b0fae9f92f5459f4f0"
     },
     "src/platform/time/millis.h": {
       "bytes": 1796,
@@ -760,6 +640,130 @@
     "src/platform/time/nanotime.h": {
       "bytes": 3933,
       "sha256": "88db116e2f3f6044f3a6d3faac4bf87134ee833a13b5b24bda8260d653e516f7"
+    },
+    "tests/client/gui/test_loading_source_flag.c": {
+      "bytes": 10314,
+      "sha256": "2be654560abed3470bcb49cd55d6d6ad4637b159d7723dda381789418ca087db"
+    },
+    "tests/client/render_engine/source_cpu_probe.c": {
+      "bytes": 10876,
+      "sha256": "482e06e3d1da41359235f5c973a500a3a5340afd3355b21b83830cab05c29626"
+    },
+    "tests/client/render_engine/test_close_callbacks.c": {
+      "bytes": 12107,
+      "sha256": "70dc1aa47a267bb2c77153eac07e36ea880a9682841fc5b3b176810693352ae6"
+    },
+    "tests/client/render_engine/test_render_engine.c": {
+      "bytes": 19211,
+      "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
+    },
+    "tests/client/render_engine/test_source_font.c": {
+      "bytes": 22965,
+      "sha256": "a64d4a0a890e17ca394ccb6461d0bd07b90258da4491f62666c4dbb2a693af1d"
+    },
+    "tests/client/render_engine/test_source_fp.c": {
+      "bytes": 10879,
+      "sha256": "c54874f8b016f335534700fdc112f597478b2825a2d0b6b46dda9185f78406a8"
+    },
+    "tests/client/render_engine/test_source_resources.c": {
+      "bytes": 10406,
+      "sha256": "e713d1790ca8a3232c19fde0bbf03d80ba26c3d75a796d899bd4d6657681be46"
+    },
+    "tests/client/render_engine/test_textures.c": {
+      "bytes": 21208,
+      "sha256": "9e63b92602d15bbe770250d4456ed262750c2582300f840339c698028c1d44a8"
+    },
+    "tests/client/startup/test_application_owner.c": {
+      "bytes": 20641,
+      "sha256": "483532d4c6559405fae28d23dfaa277613874ca1650d84bd8d16adc62ac5f15f"
+    },
+    "tests/reference/client/application_owner/ApplicationOwnerObservation.java": {
+      "bytes": 4771,
+      "sha256": "41b7fe4cdc55be9fcd32e5619389fcc9b882a801155886f1ad07411004449b4e"
+    },
+    "tests/reference/client/application_owner/run_native.py": {
+      "bytes": 2027,
+      "sha256": "c796529292aeceda9a7d6ac167faddc8a19feb728a3d245fec810f6ed70e4fbc"
+    },
+    "tests/reference/client/application_owner/support.py": {
+      "bytes": 3452,
+      "sha256": "74217d499ec39ad7568ad459fa85e27bedc693e5bcf0c68bee21808e33b601e0"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "tests/reference/client/render_engine/FontObservation.java": {
+      "bytes": 4965,
+      "sha256": "97c158d1b7c9d3b355b10e0272b994e5ad8c53bf1e25f4c908934ba2edfa3939"
+    },
+    "tests/reference/client/render_engine/TextureObservation.java": {
+      "bytes": 4527,
+      "sha256": "087ae3aa5446be0a052ebe3f0a96dd13c034f470e0567bc80b5974016ea3aa9a"
+    },
+    "tests/reference/client/render_engine/compare.py": {
+      "bytes": 10568,
+      "sha256": "e9da0d8c814d8f759d5fd1ee4b9efe991d9c6247426fec0d1c006cf02fa06607"
+    },
+    "tests/reference/client/render_engine/support.py": {
+      "bytes": 3720,
+      "sha256": "b6e9207bc992821f9d9fc82b9c856a02ba285ff610d08c8a75cb6d95e84361d9"
+    },
+    "tests/reference/client/render_resources/GeNwCpuReference.java": {
+      "bytes": 5746,
+      "sha256": "a4824755a9a32f2bd0e4574812c55b3c88d5fc2bb7849556c89c849a05cf3f67"
+    },
+    "tests/reference/client/render_resources/capture.py": {
+      "bytes": 3469,
+      "sha256": "52144546c7485b39a7e2414b442003a06a5e4f8c3ef189bc263b3adfa212a941"
+    },
+    "tests/reference/client/render_resources/compare.py": {
+      "bytes": 8578,
+      "sha256": "aff2abed4cd97d59e78ab132405e9b61ab5a91e9b0d2c615b84ac6bb9eaba7be"
+    },
+    "tests/reference/client/render_resources/protocol.py": {
+      "bytes": 6741,
+      "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
+    },
+    "tests/reference/client/render_resources/source-pins.json": {
+      "bytes": 30431,
+      "sha256": "94f63b9325550594f61848527c950f04634f33aeaf88266d925fcbdba1e383f6"
+    },
+    "tests/reference/client/render_resources/test_protocol.py": {
+      "bytes": 6496,
+      "sha256": "b5bcfce5b2778c4d2a74c7b41002f4e082f99c7783d9828f6d8c54793c56a5bb"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    },
+    "tests/tools/client/run_close_callbacks.py": {
+      "bytes": 2347,
+      "sha256": "67ba29a5171cb8b93d86f5e050b112e65d8b38a4c0f5d9babed6ef0f607993c2"
+    },
+    "tests/tools/client/test_application_owner_driver.py": {
+      "bytes": 4899,
+      "sha256": "856b1ef3ee6228b9ff21bc318031ec3e4c6edaf01bf3955b5d8e87cf6b5fa67d"
+    },
+    "tests/tools/client/test_close_callbacks.py": {
+      "bytes": 6161,
+      "sha256": "240a4c8e1e40aff4da544677e8f90e3cc76d3eba0a8db4ac9f57af6a06ac34ba"
+    },
+    "tests/tools/client/test_close_callbacks_driver.py": {
+      "bytes": 4435,
+      "sha256": "497ffc4e1500c727a9bb4217507ea3a940d3e8062cece91337eeb42355f8364e"
+    },
+    "tests/tools/client/test_render_engine.py": {
+      "bytes": 3872,
+      "sha256": "c7290c786e0a3ec78b26c83512ccc61f7607909c9a9ec1fe7d5f7ab22119509a"
+    },
+    "tests/tools/client/test_source_cpu.py": {
+      "bytes": 774,
+      "sha256": "c5409546bf2f703dc573243f7c2b39951c2fd6c275288fb3f2a1eecf7dfe7aff"
+    },
+    "tests/tools/client/test_source_font.py": {
+      "bytes": 2255,
+      "sha256": "32381465ee9ab2710e4d7b9ca259856c985baae5805c51cb3c221957d2f9adda"
     }
   },
   "source_suppliers": {
@@ -931,6 +935,99 @@
         "tests/reference/client/render_resources/capture.py": {
           "bytes": 3027,
           "sha256": "ace8a633841733b9d1befc3d7e06307aa5c398d100c4f7208b3f657874985cd5"
+        }
+      }
+    },
+    {
+      "role": "Current source admission only; older products, original/JDK observations and captures keep their historical bindings.",
+      "previous_metadata": {
+        "bytes": 40047,
+        "sha256": "e0e70b8730b45e36a0a28751fa42f02c33450cfb183f8193b7ced4559f9530e3"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 341457,
+        "sha256": "5728181bf39336c139f77d2d9f0ce5d060294d03d22a06afaa76b2413213e6a8"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 190,
+          "after_count": 191,
+          "previous": {
+            "src/client/application_state.h": {
+              "bytes": 7475,
+              "sha256": "f6afdba462d626da467bd8e7e063c73941dc1df91be64f12f06cbc90a30d4f23"
+            },
+            "src/client/display/source_surface.h": {
+              "bytes": 4693,
+              "sha256": "ad7520a7a2645acc92bf1a6f46560db0d5f7da5f37e6d20b0a22b1e3165c4e60"
+            },
+            "src/client/display/source_surface.inc": {
+              "bytes": 29852,
+              "sha256": "be2e10147fa6ddf814f8d4e33c93d2b0f206fde73be14a8e002168d3c551b6cb"
+            },
+            "src/client/startup/application_classes.c": {
+              "bytes": 12660,
+              "sha256": "b53b4fb72f4d53f3e7c9edd51f7ccb3ec7d81240b7ffbf92b403c361b3c0bfcd"
+            },
+            "src/client/startup/application_lifetime.c": {
+              "bytes": 6258,
+              "sha256": "9af056e5ab6f2e1499bc633113d0d2c3bb56a5615d1294d3b11556b88f65eb0e"
+            },
+            "src/client/startup/application_owner.h": {
+              "bytes": 12087,
+              "sha256": "8e857bbe30864344af5d4f98d0142b806d9e52dc0761209a7b91f6f34b599932"
+            },
+            "src/client/startup/application_owner_internal.h": {
+              "bytes": 3336,
+              "sha256": "d41f3f94d584879b712daf2be90d71e6063b870d01a30075ed0b8b913b5f1e18"
+            },
+            "include/mc/world/storage/java_file.h": {
+              "bytes": 9762,
+              "sha256": "90f055fdf01d9e04eb1d0881492868968ab4fab814fd29b5bcf8d8360eedba67"
+            },
+            "src/client/application_access.h": {
+              "bytes": 1153,
+              "sha256": "13e72e08e958fb3e1ee2da0967ee59a0c78e1dece3abac41f66e98b68313ca4a"
+            },
+            "src/client/display/sdk_input.h": {
+              "bytes": 8251,
+              "sha256": "0cb4bf9b7952a203d26fec7e7cece6ff48ba6aaa5cea1c3e3704ca1a06e11df7"
+            }
+          },
+          "added_paths": [
+            "include/mc/client/statistics/writer.h"
+          ],
+          "removed_paths": []
+        }
+      }
+    },
+    {
+      "role": "Current source admission only; older products, original/JDK observations and captures keep their historical bindings.",
+      "parent_frozen_source_map": {
+        "sha256": "f03a8cf768a43fec0236334911fd8c75de9a0602152ef02ca17bec17927239f1",
+        "archive_sha256": "57b05898bf6a7bae967d77a581f9622a19802aca6ef5f99168fa1cbff33c6bb7",
+        "files": 2247
+      },
+      "previous_metadata": {
+        "bytes": 42841,
+        "sha256": "b76bf0672f2c238b9e2bfbe4f3d62e985886c282a734c319072d8f0202ad417d"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 341457,
+        "sha256": "8f0337bb1b0a9d1a219c9cc5f8ca1d200d7a34dad0df842b07b9da6cad094e33"
+      },
+      "groups": {
+        "source_files": {
+          "before_count": 191,
+          "after_count": 191,
+          "previous": {
+            "src/client/startup/application_classes.c": {
+              "bytes": 13327,
+              "sha256": "2faab4144526c0e194c29b8d97354ba4a8c08e8c9a8d36ee48006867286b2fe5"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
         }
       }
     }

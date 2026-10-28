@@ -59,6 +59,8 @@ struct mc_client_application_startup {
     application_directory_builder *builder;
     mc_client_startup_error failure, retirement;
     mc_client_startup_logo_call *logo;
+    mc_client_startup_stats_call *statistics;
+    mc_client_startup_input_call *input;
 };
 
 mc_client_startup_status application_startup_fail(mc_client_startup_error *,
@@ -72,6 +74,10 @@ mc_client_startup_status application_startup_colors(mc_client_application_startu
  * prepared-receiver control does not credit intervening a324..354 calls.
  * One retained call record; no source a749/run32 completion or event pump. */
 mc_client_startup_status application_startup_logo(mc_client_application_startup *);
+mc_client_startup_status application_startup_statistics(mc_client_application_startup *);
+mc_client_startup_status application_startup_statistics_retire(mc_client_application_startup *);
+mc_client_startup_status application_startup_input(mc_client_application_startup *);
+mc_client_startup_status application_startup_input_retire(mc_client_application_startup *);
 mc_client_startup_status application_startup_font(mc_client_application_startup *);
 mc_client_startup_status application_startup_render_engine(mc_client_application_startup *);
 mc_client_startup_status application_startup_pack(mc_client_application_startup *);

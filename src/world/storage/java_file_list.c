@@ -288,8 +288,9 @@ mc_java_file_status mc_java_file_array_release(mc_java_file_array **slot, mc_jav
         *slot = NULL;
         return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
     }
-    if (a->files->active || a->files->retiring)
-        return mc_file_result(e, MC_JAVA_FILE_BUSY, "File[] namespace active retirement", 0);
+    mc_java_file_status namespace_status = mc_file_namespace_admit(a->files, e);
+    if (namespace_status != MC_JAVA_FILE_OK)
+        return namespace_status;
     a->retiring = true;
     a->active = true;
     mc_java_file_status status = mc_java_file_release(&a->pending_file, e);
@@ -304,13 +305,17 @@ mc_java_file_status mc_java_file_array_release(mc_java_file_array **slot, mc_jav
             return status;
         }
     }
+    status = mc_java_files_release(&a->files, e);
+    if (status != MC_JAVA_FILE_OK) {
+        a->active = false;
+        return status;
+    }
     for (size_t i = 0; i < a->names_count; ++i)
         mc_world_info_name_release(a->names[i]);
     free(a->names);
     free(a->items);
     a->retiring = true;
-    mc_java_files *files = a->files;
     *slot = NULL;
     free(a);
-    return mc_java_files_release(&files, e);
+    return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
 }

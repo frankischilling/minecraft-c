@@ -6,6 +6,7 @@
 #include "directory.h"
 #include <errno.h>
 #include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef _WIN32
@@ -39,6 +40,7 @@ typedef mc_file_native_char native_char;
 #define native_path mc_file_native_path
 #define exists_native mc_file_native_exists
 #define mkdirs_native mc_file_native_mkdirs
+#define mkdir_native mc_file_native_mkdir
 #define wide_copy mc_file_native_wide_copy
 
 static directory_status result(directory_error *e, directory_status s, int code, const char *op) {
@@ -146,7 +148,7 @@ bool exists_native(const wchar_t *path, directory_state *state) {
     return false;
 }
 
-static bool mkdir_native(const wchar_t *path, directory_state *state) {
+bool mkdir_native(const wchar_t *path, directory_state *state) {
     ++state->mkdir_calls;
     if (CreateDirectoryW(path, NULL))
         return true;
@@ -289,7 +291,7 @@ bool exists_native(const char *path, directory_state *state) {
     return file_stat(path, &information, state);
 }
 
-static bool mkdir_native(const char *path, directory_state *state) {
+bool mkdir_native(const char *path, directory_state *state) {
     ++state->mkdir_calls;
     if (mkdir(path, 0777) == 0)
         return true;
@@ -638,4 +640,28 @@ mc_file_io_status mc_file_native_attribute(const mc_file_native_char *path,
 #endif
     *out = value;
     return MC_FILE_IO_OK;
+}
+
+/* Shared single native rename attempt. Ordinary false remains a Java boolean;
+ * callers own path conversion, source invocation order and diagnostic policy. */
+bool mc_file_native_rename(const mc_file_native_char *from, const mc_file_native_char *to,
+                           int *system_error) {
+#ifdef _WIN32
+    if (MoveFileW(from, to)) {
+        if (system_error != NULL)
+            *system_error = 0;
+        return true;
+    }
+    if (system_error != NULL)
+        *system_error = (int)GetLastError();
+#else
+    if (rename(from, to) == 0) {
+        if (system_error != NULL)
+            *system_error = 0;
+        return true;
+    }
+    if (system_error != NULL)
+        *system_error = errno;
+#endif
+    return false;
 }

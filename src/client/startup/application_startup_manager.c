@@ -47,10 +47,15 @@ mc_client_startup_status application_startup_manager(mc_client_application_start
     s->last_manager_pc = 321;
     /* Source field is TH.f, not App.t or PX.c. App last store remains307. */
     s->failure.caller.pc = 324;
-    return application_startup_fail(
-        &s->failure, MC_CLIENT_STARTUP_UNIMPLEMENTED,
-        "next unexecuted MC324; no Registry/loader/frame/draw body entered", MC_CLASS, "a", "()V",
-        324);
+    const mc_client_startup_status statistics = application_startup_statistics(s);
+    if (statistics != MC_CLIENT_STARTUP_OK)
+        return statistics;
+    s->failure.caller.pc = 359;
+    const mc_client_startup_status logo = application_startup_logo(s);
+    if (logo != MC_CLIENT_STARTUP_OK)
+        return logo;
+    s->failure.caller.pc = 362;
+    return application_startup_input(s);
 hand_failure:
     return application_startup_fail(
         &s->failure, MC_CLIENT_STARTUP_ENTITY_RENDERER_FAILED,

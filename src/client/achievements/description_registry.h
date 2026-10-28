@@ -17,4 +17,16 @@ mc_registry_status mc_client_achievement_get_title(mc_registry_classes *,
                                                    mc_registry_error *);
 mc_registry_status mc_client_notice_registry_retire_admit(const mc_registry_classes *,
                                                           mc_registry_error *);
+/* Private concrete owned-kh lifetime. Allocate before acquiring the App borrow.
+ * Finish transfers exactly one existing App borrow and cannot call the hook.
+ * The only hook is the real App native decrement, never source dispatch/free. */
+mc_registry_status mc_client_inventory_callback_owned_allocate(
+    mc_registry_classes *, const mc_achievement_description_callback **, mc_registry_error *);
+mc_registry_status mc_client_inventory_callback_owned_finish(
+    mc_registry_classes *, const mc_achievement_description_callback *, client_application *,
+    void (*release)(client_application *), mc_registry_error *);
+bool mc_client_inventory_callback_is_owned(const mc_registry_classes *,
+                                           const mc_achievement_description_callback *);
+/* Final Registry retirement only, after all admission; includes unpublished kh. */
+void mc_client_inventory_callbacks_retire(mc_registry_classes *);
 #endif

@@ -10,6 +10,37 @@ struct mc_achievement_description_callback {
     client_application *a;
 };
 
+struct mc_client_owned_inventory_callback {
+    mc_achievement_description_callback source;
+    struct mc_client_owned_inventory_callback *next;
+    void (*release)(client_application *);
+};
+
+static struct mc_client_owned_inventory_callback *
+owned_callback(const mc_registry_classes *c, const mc_achievement_description_callback *callback) {
+    for (struct mc_client_owned_inventory_callback *node = c->owned_inventory_callbacks;
+         node != NULL; node = node->next)
+        if (&node->source == callback)
+            return node;
+    return NULL;
+}
+
+bool mc_client_inventory_callback_is_owned(const mc_registry_classes *c,
+                                           const mc_achievement_description_callback *callback) {
+    return c != NULL && callback != NULL && owned_callback(c, callback) != NULL;
+}
+
+void mc_client_inventory_callbacks_retire(mc_registry_classes *c) {
+    while (c->owned_inventory_callbacks != NULL) {
+        struct mc_client_owned_inventory_callback *node = c->owned_inventory_callbacks;
+        c->owned_inventory_callbacks = node->next;
+        void (*release)(client_application *) = node->release;
+        node->release = NULL;
+        if (release != NULL)
+            release(node->source.a);
+    }
+}
+
 mc_registry_status mc_client_notice_registry_retire_admit(const mc_registry_classes *c,
                                                           mc_registry_error *e) {
     return mc_registry_runtime_borrow_release_admit(c, e);
@@ -63,6 +94,40 @@ mc_client_inventory_callback_create(mc_registry_classes *c, client_application *
     p->classes = c;
     p->a = client;
     *out = p;
+    return result(e, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_client_inventory_callback_owned_allocate(
+    mc_registry_classes *c, const mc_achievement_description_callback **out, mc_registry_error *e) {
+    mc_registry_status status = admit(c, e);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    if (out == NULL)
+        return result(e, MC_REGISTRY_INVALID_ARGUMENT, "owned kh allocation output");
+    struct mc_client_owned_inventory_callback *node = mc_registry_allocate(c, sizeof(*node));
+    if (node == NULL) {
+        if (e != NULL)
+            *e = c->last_error;
+        return c->last_error.status;
+    }
+    node->source.classes = c;
+    node->next = c->owned_inventory_callbacks;
+    c->owned_inventory_callbacks = node;
+    *out = &node->source;
+    return result(e, MC_REGISTRY_OK, NULL);
+}
+
+mc_registry_status mc_client_inventory_callback_owned_finish(
+    mc_registry_classes *c, const mc_achievement_description_callback *callback,
+    client_application *client, void (*release)(client_application *), mc_registry_error *e) {
+    mc_registry_status status = admit(c, e);
+    if (status != MC_REGISTRY_OK)
+        return status;
+    struct mc_client_owned_inventory_callback *node = owned_callback(c, callback);
+    if (node == NULL || client == NULL || release == NULL || node->release != NULL)
+        return result(e, MC_REGISTRY_INVALID_ARGUMENT, "owned kh native borrow transfer");
+    node->release = release;
+    node->source.a = client; /* Actual kh constructor's a store. */
     return result(e, MC_REGISTRY_OK, NULL);
 }
 

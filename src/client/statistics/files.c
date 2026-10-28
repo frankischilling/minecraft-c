@@ -1,6 +1,7 @@
 #ifndef _WIN32
 #define _POSIX_C_SOURCE 200809L
 #endif
+#include "../../platform/files/directory.h"
 #include "internal.h"
 #include <errno.h>
 #include <stdio.h>
@@ -82,12 +83,14 @@ static void mkdir_path(const char *path, mc_client_stats_error *error) {
 #ifdef _WIN32
     wchar_t *wide = wide_path(path, error);
     if (wide != NULL) {
-        (void)CreateDirectoryW(wide, NULL);
+        mc_file_io_state state = {0};
+        (void)mc_file_native_mkdir(wide, &state);
         free(wide);
     }
 #else
     (void)error;
-    (void)mkdir(path, 0777);
+    mc_file_io_state state = {0};
+    (void)mc_file_native_mkdir(path, &state);
 #endif
 }
 
@@ -95,12 +98,12 @@ static void rename_path(const char *from, const char *to, mc_client_stats_error 
 #ifdef _WIN32
     wchar_t *first = wide_path(from, error), *second = first == NULL ? NULL : wide_path(to, error);
     if (first != NULL && second != NULL)
-        (void)MoveFileW(first, second);
+        (void)mc_file_native_rename(first, second, NULL);
     free(first);
     free(second);
 #else
     (void)error;
-    (void)rename(from, to);
+    (void)mc_file_native_rename(from, to, NULL);
 #endif
 }
 
@@ -474,14 +477,22 @@ mc_client_stats_status stats_catch(mc_client_stats_writer *writer, mc_client_sta
     return status;
 }
 
-typedef struct stats_read_stream {
-    FILE *stream;
-    int system_error;
-} stats_read_stream;
-
 static mc_java_properties_status read_bytes(void *context, uint8_t *bytes, size_t capacity,
                                             size_t *count) {
     stats_read_stream *stream = context;
+    if (stream->source) {
+        *count = 0;
+        if (stream->file_status != MC_JAVA_FILE_OK)
+            return MC_JAVA_PROPERTIES_IO_ERROR;
+        mc_java_file_read observed = {0};
+        stream->file_status =
+            mc_java_file_stream_read(stream->file, bytes, capacity, &observed, &stream->file_error);
+        stream->system_error = stream->file_error.system_error;
+        if (stream->file_status != MC_JAVA_FILE_OK)
+            return MC_JAVA_PROPERTIES_IO_ERROR;
+        *count = observed.count;
+        return MC_JAVA_PROPERTIES_OK;
+    }
     *count = fread(bytes, 1, capacity, stream->stream);
     if (ferror(stream->stream)) {
         stream->system_error = errno;
@@ -492,6 +503,11 @@ static mc_java_properties_status read_bytes(void *context, uint8_t *bytes, size_
 
 static mc_java_reader_status close_stream(void *context) {
     stats_read_stream *stream = context;
+    if (stream->source) {
+        stream->file_status = mc_java_file_stream_source_close(stream->file, &stream->file_error);
+        stream->system_error = stream->file_error.system_error;
+        return stream->file_status == MC_JAVA_FILE_OK ? MC_JAVA_READER_OK : MC_JAVA_READER_IO_ERROR;
+    }
     const int status = fclose(stream->stream);
     stream->stream = NULL;
     if (status != 0) {
@@ -501,94 +517,217 @@ static mc_java_reader_status close_stream(void *context) {
     return MC_JAVA_READER_OK;
 }
 
+static bool source_ready(void *context) {
+    stats_read_stream *stream = context;
+    if (stream->file_status != MC_JAVA_FILE_OK)
+        return false;
+    size_t available = 0;
+    mc_java_file_error cause = {0};
+    const mc_java_file_status status =
+        mc_java_file_stream_available(stream->file, &available, &cause);
+    if (status == MC_JAVA_FILE_IO_ERROR)
+        return false; /* Actual StreamDecoder readiness catch. */
+    if (status != MC_JAVA_FILE_OK) {
+        stream->file_status = status;
+        stream->file_error = cause;
+        stream->system_error = cause.system_error;
+        return false;
+    }
+    return available != 0;
+}
+
 mc_client_stats_status stats_read_file_set(mc_client_stats_writer *writer, size_t dat_index,
                                            mc_client_stats_map **out,
                                            mc_client_stats_report *report,
                                            mc_client_stats_error *error) {
+    stats_source *source = writer->memory->source;
+    const bool typed = source != NULL;
     stats_syncher *syncher = writer->retained_syncher;
-    const stats_file *selected = NULL;
-    for (size_t i = dat_index; i < 6; i += 2) {
-        if (stats_file_exists(syncher->files[i], error)) {
-            selected = syncher->files[i];
+    size_t selected = SIZE_MAX, selected_order = 0;
+    static const size_t source_order[3] = {0, 4, 2}; /* Actual CJ dat/tmp/old order, BOTH APIs. */
+    static const unsigned int exists_pc[3] = {1, 14, 27}, read_pc[3] = {9, 22, 35};
+    for (size_t order = 0; order < 3; ++order) {
+        const size_t index = dat_index + source_order[order];
+        const bool exists = stats_owner_file_exists(writer, index, error);
+        if (error->status != MC_CLIENT_STATS_OK) {
+            if (typed) {
+                error->class_name = "cj";
+                error->method = "a";
+                error->descriptor = "(Ljava/io/File;Ljava/io/File;Ljava/io/File;)Ljava/util/Map;";
+                error->bytecode = exists_pc[order];
+            }
+            return error->status;
+        }
+        if (exists) {
+            selected = index;
+            selected_order = order;
             break;
         }
-        if (error->status != MC_CLIENT_STATS_OK)
-            return error->status;
     }
-    if (error->status != MC_CLIENT_STATS_OK)
-        return error->status;
-    if (selected == NULL) {
+    if (selected == SIZE_MAX) {
         *out = NULL;
         return MC_CLIENT_STATS_OK;
     }
-    stats_read_stream stream = {.stream = open_read(selected->path, error)};
-    if (error->status != MC_CLIENT_STATS_OK)
-        return error->status;
-    if (stream.stream == NULL) {
-        stats_exception(error, MC_CLIENT_STATS_SOURCE_IO, "Stats FileReader open", "cj", "a",
-                        "(Ljava/io/File;)Ljava/util/Map;", 11);
-        error->system_error = errno;
-        const mc_client_stats_status status = stats_catch(writer, report, error);
-        if (status == MC_CLIENT_STATS_OK)
-            *out = NULL;
-        return status;
+    stats_read_stream local_stream = {0};
+    stats_arena local_arena = {.memory = writer->memory};
+    stats_builder local_text = {.memory = writer->memory,
+                                .maximum = writer->options.limits.max_text_units};
+    mc_java_reader *local_reader = NULL;
+    stats_source_reader *owned = NULL;
+    stats_read_stream *stream = &local_stream;
+    stats_arena *arena = &local_arena;
+    stats_builder *text = &local_text;
+    mc_java_reader **reader = &local_reader;
+    if (typed) {
+        owned = stats_alloc(writer->memory, sizeof(*owned), error);
+        if (owned == NULL)
+            return error->status;
+        *owned = (stats_source_reader){
+            .next = source->readers,
+            .input = {.source = true},
+            .arena = {.memory = writer->memory},
+            .text = {.memory = writer->memory, .maximum = writer->options.limits.max_text_units}};
+        source->readers = owned;
+        source->current_reader = owned;
+        stream = &owned->input;
+        arena = &owned->arena;
+        text = &owned->text;
+        reader = &owned->reader;
+        mc_java_file_error child = {0};
+        mc_java_file_status fs = mc_java_file_stream_allocate(source->files, &stream->file, &child);
+        if (fs == MC_JAVA_FILE_OK)
+            fs = mc_java_file_stream_construct(stream->file, source->children[selected], &child);
+        stream->file_status = fs;
+        stream->file_error = child;
+        stream->system_error = child.system_error;
+        if (fs != MC_JAVA_FILE_OK) {
+            stats_source_child(error, child);
+            error->system_error = child.system_error;
+            if (fs == MC_JAVA_FILE_IO_ERROR) {
+                stats_exception(error, MC_CLIENT_STATS_SOURCE_IO, "Stats actual FileReader open",
+                                "cj", "a", "(Ljava/io/File;)Ljava/util/Map;", 11);
+                stats_source_caught(writer, report, error, 82);
+            } else
+                stats_source_file_error(error, fs, child, "cj", "a",
+                                        "(Ljava/io/File;)Ljava/util/Map;", 11);
+            stats_source_frame(error, "cj", "a",
+                               "(Ljava/io/File;Ljava/io/File;Ljava/io/File;)Ljava/util/Map;",
+                               read_pc[selected_order]);
+            return error->status;
+        }
+    } else {
+        stream->stream = open_read(syncher->files[selected]->path, error);
+        if (error->status != MC_CLIENT_STATS_OK)
+            return error->status;
+        if (stream->stream == NULL) {
+            stats_exception(error, MC_CLIENT_STATS_SOURCE_IO, "Stats FileReader open", "cj", "a",
+                            "(Ljava/io/File;)Ljava/util/Map;", 11);
+            error->system_error = errno;
+            const mc_client_stats_status status = stats_catch(writer, report, error);
+            if (status == MC_CLIENT_STATS_OK)
+                *out = NULL;
+            return status;
+        }
     }
-    stats_arena arena = {.memory = writer->memory};
-    const mc_java_properties_allocator allocator = {&arena, stats_arena_allocate};
-    const mc_java_reader_input input = {.bytes = {&stream, read_bytes}, .close = close_stream};
-    mc_java_reader *reader = NULL;
+    const mc_java_properties_allocator allocator = {arena, stats_arena_allocate};
+    const mc_java_reader_input input = {
+        .bytes = {stream, read_bytes}, .ready = typed ? source_ready : NULL, .close = close_stream};
     mc_java_reader_status rs =
-        mc_java_reader_create(&allocator, &input, writer->options.charset, &reader);
-    stats_builder text = {.memory = writer->memory,
-                          .maximum = writer->options.limits.max_text_units};
+        mc_java_reader_create(&allocator, &input, writer->options.charset, reader);
+    if (typed && rs == MC_JAVA_READER_OK)
+        owned->source_local_published = true; /* astore17. */
     mc_client_stats_status status = MC_CLIENT_STATS_OK;
     if (rs == MC_JAVA_READER_OK) {
         for (;;) {
             const mc_java_reader_line *line = NULL;
-            rs = mc_java_reader_read_line(reader, &line);
+            rs = mc_java_reader_read_line(*reader, &line);
+            /* A non-IO availability policy fault must not apply another line. */
+            if (typed && stream->file_status != MC_JAVA_FILE_OK)
+                break;
             if (rs != MC_JAVA_READER_OK || line == NULL)
                 break;
-            status = stats_append(&text, line->units, line->length, error);
+            status = stats_append(text, line->units, line->length, error);
             if (status != MC_CLIENT_STATS_OK)
                 break;
         }
     }
     mc_client_stats_map *map = NULL;
-    if (status == MC_CLIENT_STATS_OK && rs == MC_JAVA_READER_OK)
+    if (typed && stream->file_status != MC_JAVA_FILE_OK &&
+        stream->file_status != MC_JAVA_FILE_IO_ERROR)
+        status = stats_source_file_error(error, stream->file_status, stream->file_error, "cj", "a",
+                                         "(Ljava/io/File;)Ljava/util/Map;", 31);
+    else if (status == MC_CLIENT_STATS_OK && rs == MC_JAVA_READER_OK &&
+             (!typed || stream->file_status == MC_JAVA_FILE_OK)) {
         status = stats_parse(writer->registry, writer->memory, &writer->options, writer,
-                             (mc_client_stats_string){text.units, text.length, false}, &map, report,
-                             error);
-    else if (status == MC_CLIENT_STATS_OK) {
+                             (mc_client_stats_string){text->units, text->length, false}, &map,
+                             report, error);
+        if (typed && status != MC_CLIENT_STATS_OK)
+            stats_source_frame(error, "cj", "a", "(Ljava/io/File;)Ljava/util/Map;", 54);
+    } else if (status == MC_CLIENT_STATS_OK) {
         error->reader = rs;
-        if (rs == MC_JAVA_READER_IO_ERROR) {
+        if (rs == MC_JAVA_READER_IO_ERROR ||
+            (typed && stream->file_status == MC_JAVA_FILE_IO_ERROR)) {
             stats_exception(error, MC_CLIENT_STATS_SOURCE_IO, "Stats BufferedReader read", "cj",
                             "a", "(Ljava/io/File;)Ljava/util/Map;", 31);
-            error->system_error = stream.system_error;
+            error->system_error = stream->system_error;
+            if (typed)
+                stats_source_child(error, stream->file_error);
         } else
             stats_fail(error,
-                       arena.failure != MC_CLIENT_STATS_OK ? arena.failure
-                                                           : MC_CLIENT_STATS_UNSUPPORTED_PROFILE,
+                       arena->failure != MC_CLIENT_STATS_OK ? arena->failure
+                                                            : MC_CLIENT_STATS_UNSUPPORTED_PROFILE,
                        "Stats native Reader", "cj", "a", "(Ljava/io/File;)Ljava/util/Map;", 14);
         status = error->status;
+    }
+    if (typed) {
+        owned->result = map;
+        if (status == MC_CLIENT_STATS_SOURCE_EXCEPTION)
+            status = stats_source_caught(writer, report, error, 82);
+        if (status == MC_CLIENT_STATS_OK) {
+            const mc_java_reader_status closed = mc_java_reader_close(*reader);
+            if (stream->file_status != MC_JAVA_FILE_OK &&
+                stream->file_status != MC_JAVA_FILE_IO_ERROR)
+                status = stats_source_file_error(error, stream->file_status, stream->file_error,
+                                                 "cj", "a", "(Ljava/io/File;)Ljava/util/Map;", 64);
+            else if (closed != MC_JAVA_READER_OK) {
+                stats_exception(error, MC_CLIENT_STATS_SOURCE_IO,
+                                "Stats actual BufferedReader close", "cj", "a",
+                                "(Ljava/io/File;)Ljava/util/Map;", 64);
+                error->system_error = stream->system_error;
+                stats_source_child(error, stream->file_error);
+                status = stats_source_caught(writer, report, error, 74);
+            }
+        }
+        if (status == MC_CLIENT_STATS_OK) {
+            *out = owned->result;
+            owned->result = NULL;
+        } else {
+            stats_source_frame(error, "cj", "a",
+                               "(Ljava/io/File;Ljava/io/File;Ljava/io/File;)Ljava/util/Map;",
+                               read_pc[selected_order]);
+        }
+        /* Native retention defers all extra cleanup to joined retirement. A
+         * missing caught diagnostic never grants a later source finally/close. */
+        return status;
     }
     if (status == MC_CLIENT_STATS_SOURCE_EXCEPTION)
         status = stats_catch(writer, report, error);
     mc_client_stats_error close_error;
     stats_error_clear(&close_error);
     const mc_java_reader_status closed =
-        reader != NULL ? mc_java_reader_close(reader) : close_stream(&stream);
+        *reader != NULL ? mc_java_reader_close(*reader) : close_stream(stream);
     if (closed != MC_JAVA_READER_OK) {
         stats_exception(&close_error, MC_CLIENT_STATS_SOURCE_IO, "Stats BufferedReader close", "cj",
                         "a", "(Ljava/io/File;)Ljava/util/Map;", 64);
-        close_error.system_error = stream.system_error;
+        close_error.system_error = stream->system_error;
         const mc_client_stats_status close_status = stats_catch(writer, report, &close_error);
         if (status == MC_CLIENT_STATS_OK && close_status != MC_CLIENT_STATS_OK) {
             status = close_status;
             *error = close_error;
         }
     }
-    stats_builder_clear(&text);
-    stats_arena_clear(&arena);
+    stats_builder_clear(text);
+    stats_arena_clear(arena);
     if (status == MC_CLIENT_STATS_OK)
         *out = map;
     else
@@ -600,6 +739,10 @@ mc_client_stats_status stats_write_file_set(mc_client_stats_writer *writer,
                                             const mc_client_stats_map *map, size_t dat_index,
                                             mc_client_stats_report *report,
                                             mc_client_stats_error *error) {
+    if (writer->memory->source != NULL)
+        return stats_fail(error, MC_CLIENT_STATS_UNIMPLEMENTED_DEPENDENCY,
+                          "actual raw PrintWriter/FileWriter construction dependency", "cj", "a",
+                          "(Ljava/util/Map;Ljava/io/File;Ljava/io/File;Ljava/io/File;)V", 0);
     stats_syncher *syncher = writer->retained_syncher;
     const stats_file *dat = syncher->files[dat_index], *old = syncher->files[dat_index + 2u],
                      *temporary = syncher->files[dat_index + 4u];

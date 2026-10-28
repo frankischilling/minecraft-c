@@ -538,8 +538,9 @@ mc_java_file_status mc_java_file_stream_release(mc_java_file_stream **slot, mc_j
         *slot = NULL;
         return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
     }
-    if (s->files->active || s->files->retiring)
-        return mc_file_result(e, MC_JAVA_FILE_BUSY, "FileInputStream namespace retirement", 0);
+    mc_java_file_status namespace_status = mc_file_namespace_admit(s->files, e);
+    if (namespace_status != MC_JAVA_FILE_OK)
+        return namespace_status;
     s->phase = MC_JAVA_FILE_RETIRING;
     s->active = true;
     if (s->armed) {
@@ -559,10 +560,14 @@ mc_java_file_status mc_java_file_stream_release(mc_java_file_stream **slot, mc_j
         s->active = false;
         return status;
     }
-    mc_java_files *files = s->files;
+    status = mc_java_files_release(&s->files, e);
+    if (status != MC_JAVA_FILE_OK) {
+        s->active = false;
+        return status;
+    }
     *slot = NULL;
     free(s);
-    return mc_java_files_release(&files, e);
+    return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
 }
 
 mc_java_file_status mc_java_file_stream_read_state(const mc_java_file_stream *s,
@@ -581,4 +586,68 @@ mc_java_file_status mc_java_file_stream_read_state(const mc_java_file_stream *s,
                                        s->byte_read_calls,
                                        s->native_bytes_read};
     return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+}
+
+mc_java_file_status mc_java_file_mkdir(mc_java_file *file, bool *out, mc_java_file_error *e) {
+    if (out == NULL)
+        return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File mkdir output", 0);
+    mc_java_file_status status = mc_file_ready(file, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    if (mc_file_invalid(file)) {
+        *out = false;
+        return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    file->state.active = true;
+    mc_file_native_char *path = NULL;
+    status = mc_file_native(file, &path, e);
+    if (status == MC_JAVA_FILE_OK) {
+        mc_file_io_state state = state_in(file);
+        const bool created = mc_file_native_mkdir(path, &state);
+        state_out(file, &state);
+        *out = created;
+        mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    free(path);
+    file->state.active = false;
+    return status;
+}
+
+mc_java_file_status mc_java_file_rename_to(mc_java_file *file, mc_java_file *destination, bool *out,
+                                           mc_java_file_error *e) {
+    if (out == NULL)
+        return mc_file_result(e, MC_JAVA_FILE_INVALID_ARGUMENT, "File rename output", 0);
+    mc_java_file_status status = mc_file_ready(file, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    if (destination == NULL)
+        return mc_file_result(e, MC_JAVA_FILE_SOURCE_NULL_FILE, "File rename null destination", 0);
+    status = mc_file_ready(destination, e);
+    if (status != MC_JAVA_FILE_OK)
+        return status;
+    if (file->files != destination->files)
+        return mc_file_result(e, MC_JAVA_FILE_STATE_ERROR, "File rename namespace", 0);
+    if (mc_file_invalid(file) || mc_file_invalid(destination)) {
+        *out = false;
+        return mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    file->state.active = true;
+    destination->state.active = true;
+    mc_file_native_char *from = NULL, *to = NULL;
+    status = mc_file_native(file, &from, e);
+    if (status == MC_JAVA_FILE_OK)
+        status = mc_file_native(destination, &to, e);
+    if (status == MC_JAVA_FILE_OK) {
+        int system_error = 0;
+        const bool renamed = mc_file_native_rename(from, to, &system_error);
+        if (!renamed)
+            file->state.last_native_error = system_error;
+        *out = renamed;
+        mc_file_result(e, MC_JAVA_FILE_OK, NULL, 0);
+    }
+    free(to);
+    free(from);
+    destination->state.active = false;
+    file->state.active = false;
+    return status;
 }

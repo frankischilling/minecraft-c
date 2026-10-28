@@ -101,6 +101,14 @@ mc_client_sdk_input_status mc_client_sdk_input_allocate(mc_client_display *, mc_
                                                         mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_input_construct_default(mc_client_sdk_input *,
                                                                  mc_client_sdk_input_error *);
+/* Actual public create() entries at Minecraft.a362/365 on the same completed
+ * default SDK owner. Display.isCreated6 and the actual implementation identity
+ * precede the overload's created0/return6. No queue, grab, buffer or input state
+ * is reset. Cold recreation/nondefault-property paths remain unsupported. */
+mc_client_sdk_input_status mc_client_sdk_keyboard_create(mc_client_sdk_input *,
+                                                         mc_client_sdk_input_error *);
+mc_client_sdk_input_status mc_client_sdk_mouse_create(mc_client_sdk_input *,
+                                                      mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_mouse_poll(mc_client_sdk_input *,
                                                     mc_client_sdk_input_error *);
 mc_client_sdk_input_status mc_client_sdk_mouse_update_cursor(mc_client_sdk_input *,

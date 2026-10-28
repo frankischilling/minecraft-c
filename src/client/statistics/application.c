@@ -211,9 +211,10 @@ mc_client_application_create_session(client_application *app, mc_player_string *
     return error.status;
 }
 
-mc_client_statistics_owner_status mc_client_application_construct_statistics(
-    client_application *app, const mc_client_stats_options *options,
-    mc_client_stats_report *out_report, mc_client_statistics_owner_error *out) {
+static mc_client_statistics_owner_status
+construct_statistics(client_application *app, mc_client_stats_classes *classes,
+                     mc_java_files *files, bool source_mode, const mc_client_stats_options *options,
+                     mc_client_stats_report *out_report, mc_client_statistics_owner_error *out) {
     mc_client_statistics_owner_error error = {0};
     mc_client_stats_report report = {0};
     if (admitted(app, &error)) {
@@ -231,12 +232,14 @@ mc_client_statistics_owner_status mc_client_application_construct_statistics(
                 fail(&error, MC_CLIENT_STATISTICS_OWNER_WRITER_FAILED,
                      "application xi native allocation", NULL, NULL, NULL, 0);
             else {
-                mc_player_session *session = app->session; /* k330, argument evaluation. */
+                mc_player_session *session = app->session;  /* k330, argument evaluation. */
+                mc_java_file *parent = app->game_directory; /* Z334, after k330. */
                 const char *directory =
-                    mc_client_game_directory_path(app->diagnostic_game_directory);
-                /* The diagnostic path API is not a typed File adapter. Real
-                 * startup must deepen xi(File) rather than discard Z334. */
-                if (app->game_directory != NULL) {
+                    source_mode ? NULL
+                                : mc_client_game_directory_path(app->diagnostic_game_directory);
+                /* The legacy diagnostic caller keeps its old explicit boundary.
+                 * Source adoption never substitutes that path for actual Z. */
+                if (!source_mode && parent != NULL) {
                     fail(&error, MC_CLIENT_STATISTICS_OWNER_UNIMPLEMENTED,
                          "actual xi(File) typed argument adapter", "net/minecraft/client/Minecraft",
                          "a", "()V", 337);
@@ -247,12 +250,25 @@ mc_client_statistics_owner_status mc_client_application_construct_statistics(
                         *out = error;
                     return error.status;
                 }
-                if (mc_client_stats_writer_construct(app->stats_writer_retained, session, directory,
-                                                     &report, &error.writer) != MC_CLIENT_STATS_OK)
+                const mc_client_stats_status constructed =
+                    source_mode
+                        ? mc_client_stats_writer_construct_file(app->stats_writer_retained, classes,
+                                                                session, files, parent, &report,
+                                                                &error.writer)
+                        : mc_client_stats_writer_construct(app->stats_writer_retained, session,
+                                                           directory, &report, &error.writer);
+                if (constructed != MC_CLIENT_STATS_OK) {
+                    if (source_mode) {
+                        error.source_writer.base = error.writer;
+                        mc_client_stats_file_state source_state;
+                        if (mc_client_stats_writer_read_file_state(app->stats_writer_retained,
+                                                                   &source_state))
+                            error.source_writer = *source_state.failure;
+                    }
                     fail(&error, MC_CLIENT_STATISTICS_OWNER_WRITER_FAILED,
                          "Minecraft startup xi constructor", "net/minecraft/client/Minecraft", "a",
                          "()V", 337);
-                else {
+                } else {
                     app->stats_writer = app->stats_writer_retained; /* I340, before kh. */
                     if (mc_client_application_install_inventory_callback(app, &error.notice) !=
                         MC_CLIENT_NOTICE_OK)
@@ -273,6 +289,19 @@ mc_client_statistics_owner_status mc_client_application_construct_statistics(
     return error.status;
 }
 
+mc_client_statistics_owner_status mc_client_application_construct_statistics(
+    client_application *app, const mc_client_stats_options *options, mc_client_stats_report *report,
+    mc_client_statistics_owner_error *error) {
+    return construct_statistics(app, NULL, NULL, false, options, report, error);
+}
+
+mc_client_statistics_owner_status mc_client_application_construct_statistics_file(
+    client_application *app, mc_client_stats_classes *classes, mc_java_files *files,
+    const mc_client_stats_options *options, mc_client_stats_report *report,
+    mc_client_statistics_owner_error *error) {
+    return construct_statistics(app, classes, files, true, options, report, error);
+}
+
 mc_client_statistics_owner_status
 mc_client_application_retire_statistics(client_application *app,
                                         mc_client_statistics_owner_error *out) {
@@ -291,7 +320,8 @@ mc_client_application_retire_statistics(client_application *app,
         app->statistics_retiring = true;
         mc_client_stats_writer *previous = app->stats_writer_retained;
         const mc_client_stats_status status =
-            mc_client_stats_writer_retire(&app->stats_writer_retained, &error.writer);
+            mc_client_stats_writer_retire_file(&app->stats_writer_retained, &error.source_writer);
+        error.writer = error.source_writer.base;
         if (status != MC_CLIENT_STATS_OK)
             fail(&error, MC_CLIENT_STATISTICS_OWNER_WRITER_FAILED,
                  "application writer joined retirement", NULL, NULL, NULL, 0);

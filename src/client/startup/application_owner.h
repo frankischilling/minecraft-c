@@ -12,6 +12,8 @@ typedef struct mc_client_timer_hack mc_client_timer_hack;
 typedef struct mc_java_file mc_java_file;
 typedef struct mc_java_file_error mc_java_file_error;
 
+typedef struct mc_client_stats_error mc_client_stats_error;
+
 #define MC_CLIENT_APPLICATION_RESERVE_BYTES 10485760u
 #define MC_CLIENT_APPLICATION_HISTORY_LENGTH 512u
 #define MC_CLIENT_TIMER_HACK_SLEEP_MILLIS UINT32_C(2147483647)
@@ -28,7 +30,8 @@ typedef enum mc_client_application_owner_status {
     MC_CLIENT_APPLICATION_OWNER_STRING_FAILED,
     MC_CLIENT_APPLICATION_OWNER_NULL_THREAD_NAME,
     MC_CLIENT_APPLICATION_OWNER_CLASS_ERRONEOUS,
-    MC_CLIENT_APPLICATION_OWNER_FILE_FAILED
+    MC_CLIENT_APPLICATION_OWNER_FILE_FAILED,
+    MC_CLIENT_APPLICATION_OWNER_STATS_FAILED
 } mc_client_application_owner_status;
 
 typedef struct mc_client_application_owner_site {
@@ -44,6 +47,7 @@ typedef struct mc_client_application_owner_error {
     /* Complete typed cause retained by the failed namespace; borrowed through
      * retry and invalidated only on successful final namespace retirement. */
     const mc_java_file_error *file;
+    const mc_client_stats_error *statistics;
 } mc_client_application_owner_error;
 
 /* Native actual-App constructor state, separate from source J/o and the
@@ -121,7 +125,7 @@ typedef enum mc_client_application_lifetime_phase {
 
 typedef struct mc_client_application_volatile_state {
     bool J, o;
-    size_t native_worker_holds, native_static_holds;
+    size_t native_worker_holds, native_static_holds, native_callback_holds;
 } mc_client_application_volatile_state;
 
 /* Register the unique real App storage before any atomic access. The App may
@@ -134,7 +138,7 @@ typedef struct mc_client_application_volatile_state {
 mc_client_application_owner_status
 mc_client_application_lifetime_register(client_application *, mc_client_application_owner_error *);
 /* No source J/o store. BUSY preserves the registered App while a retained kg
- * owner can still access it. Successful retirement is one-shot and allocation
+ * owner or Registry-owned kh can still access it. Successful retirement is one-shot and allocation
  * free; source field values remain inspectable in their live atomic storage. */
 mc_client_application_owner_status
 mc_client_application_lifetime_retire(client_application *, mc_client_application_owner_error *);

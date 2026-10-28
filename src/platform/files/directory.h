@@ -45,6 +45,10 @@ size_t mc_file_normalize_units(const uint16_t *input, size_t length, uint16_t *o
 mc_file_io_status mc_file_native_path(const char *utf8, mc_file_native_char **out,
                                       mc_file_io_error *error);
 bool mc_file_native_exists(const mc_file_native_char *path, mc_file_io_state *state);
+/* Exactly one mkdir/rename attempt; no parent creation or path reconstruction. */
+bool mc_file_native_mkdir(const mc_file_native_char *path, mc_file_io_state *state);
+bool mc_file_native_rename(const mc_file_native_char *from, const mc_file_native_char *to,
+                           int *system_error);
 mc_file_io_status mc_file_native_mkdirs(const mc_file_native_char *path, size_t depth,
                                         bool *created, mc_file_io_state *state,
                                         mc_file_io_error *error);

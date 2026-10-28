@@ -1,5 +1,6 @@
 #include "mc/core/java/writer.h"
 #include "../../platform/files/byte_output.h"
+#include "mc/core/java/source_encoder.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -31,6 +32,12 @@ struct mc_java_writer {
     size_t position, limit;
     uint8_t bytes[BYTE_CAPACITY];
     FILE *file;
+};
+
+struct mc_java_source_encoder {
+    mc_java_writer *writer;
+    mc_java_source_encoder_output output;
+    mc_java_source_write_result last_write;
 };
 
 static mc_java_writer_status result(mc_java_writer_error *out, mc_java_writer_status status,
@@ -83,9 +90,48 @@ static mc_java_writer_status record_policy(mc_java_writer *writer, mc_java_write
 /* OutputStream.write is a void operation. Short native successes finish that
  * operation, but an exception must leave ByteBuffer flipped with position0,
  * even if the sink has already committed a prefix. clear is success-only. */
-static mc_java_writer_status drain(mc_java_writer *writer, mc_java_writer_error *error) {
+static mc_java_writer_status drain(mc_java_writer *writer, mc_java_source_encoder *source,
+                                   mc_java_writer_error *error) {
     writer->limit = writer->position;
     writer->position = 0;
+    if (source != NULL) {
+        if (writer->limit == 0) {
+            writer->limit = BYTE_CAPACITY;
+            return result(error, MC_JAVA_WRITER_OK, 0, NULL);
+        }
+        mc_java_source_write_result observed = {0};
+        mc_java_writer_error cause = {0};
+        const mc_java_writer_status status = source->output.write(
+            source->output.context, writer->bytes, writer->limit, &observed, &cause);
+        source->last_write = observed;
+        source->last_write.outcome_rejected = false;
+        source->last_write.rejected_source_returned = false;
+        source->last_write.rejected_swallowed_io = false;
+        if ((unsigned int)status > MC_JAVA_WRITER_BUSY ||
+            (status == MC_JAVA_WRITER_OK && !observed.source_returned) ||
+            (status != MC_JAVA_WRITER_OK && (observed.source_returned || observed.swallowed_io)) ||
+            (observed.swallowed_io &&
+             (!observed.source_returned || !io_error(observed.swallowed_error.status))) ||
+            (!observed.swallowed_io && observed.swallowed_error.status != MC_JAVA_WRITER_OK)) {
+            /* A malformed callback cannot certify normal source return.
+             * Preserve its reported flags/cause and physical-progress facts
+             * separately, while the actual byte buffer stays flipped. */
+            source->last_write.outcome_rejected = true;
+            source->last_write.rejected_source_returned = observed.source_returned;
+            source->last_write.rejected_swallowed_io = observed.swallowed_io;
+            source->last_write.source_returned = false;
+            source->last_write.swallowed_io = false;
+            return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0,
+                          "source OutputStream void-result contract");
+        }
+        if (status != MC_JAVA_WRITER_OK)
+            return result(error, status, cause.system_error, cause.operation);
+        /* The source call returned normally. Clear exactly as StreamEncoder
+         * does, even if that call swallowed IO after fewer physical bytes.
+         * Never feed a fictional physical committed count to legacy sinks. */
+        writer->limit = BYTE_CAPACITY;
+        return result(error, MC_JAVA_WRITER_OK, 0, NULL);
+    }
     size_t sent = 0;
     while (sent < writer->limit) {
         size_t committed = 0;
@@ -137,14 +183,15 @@ static uint8_t single_byte(mc_java_reader_charset charset, uint16_t unit) {
 /* Encode up to an incomplete last high surrogate. ISO/1252 array encoders
  * test destination room before inspecting it; ASCII/UTF8 inspect that input
  * first. This affects overflow callbacks at an exact8192-byte boundary. */
-static mc_java_writer_status encode(mc_java_writer *writer, const uint16_t *units, size_t length,
-                                    size_t *offset, bool final, mc_java_writer_error *error) {
+static mc_java_writer_status encode(mc_java_writer *writer, mc_java_source_encoder *source,
+                                    const uint16_t *units, size_t length, size_t *offset,
+                                    bool final, mc_java_writer_error *error) {
     while (*offset < length) {
         const uint16_t unit = units[*offset];
         const size_t room = writer->limit - writer->position;
         if (room == 0 && (writer->state.charset == MC_JAVA_READER_WINDOWS1252 ||
                           writer->state.charset == MC_JAVA_READER_ISO8859_1)) {
-            mc_java_writer_status status = drain(writer, error);
+            mc_java_writer_status status = drain(writer, source, error);
             if (status != MC_JAVA_WRITER_OK)
                 return status;
             continue;
@@ -188,7 +235,7 @@ static mc_java_writer_status encode(mc_java_writer *writer, const uint16_t *unit
             encoded[3] = (uint8_t)(0x80u | (point & 0x3fu));
         }
         if (room < width) {
-            mc_java_writer_status status = drain(writer, error);
+            mc_java_writer_status status = drain(writer, source, error);
             if (status != MC_JAVA_WRITER_OK)
                 return status;
             continue;
@@ -203,8 +250,9 @@ static mc_java_writer_status encode(mc_java_writer *writer, const uint16_t *unit
 /* The first incoming unit is taken into the two-unit leftover buffer before
  * encoding/callbacks. Failure retains the old haveLeftoverChar/leftoverChar
  * fields until the exact success/underflow points below. */
-static mc_java_writer_status leftovers(mc_java_writer *writer, const uint16_t *units, size_t length,
-                                       size_t *offset, bool final, mc_java_writer_error *error) {
+static mc_java_writer_status leftovers(mc_java_writer *writer, mc_java_source_encoder *source,
+                                       const uint16_t *units, size_t length, size_t *offset,
+                                       bool final, mc_java_writer_error *error) {
     if (!writer->leftover && !final)
         return MC_JAVA_WRITER_OK;
     uint16_t pair[2];
@@ -215,7 +263,7 @@ static mc_java_writer_status leftovers(mc_java_writer *writer, const uint16_t *u
         pair[count++] = units[(*offset)++];
     for (;;) {
         size_t used = 0;
-        mc_java_writer_status status = encode(writer, pair, count, &used, final, error);
+        mc_java_writer_status status = encode(writer, source, pair, count, &used, final, error);
         if (status != MC_JAVA_WRITER_OK)
             return status;
         if (used != count) {
@@ -233,17 +281,18 @@ static mc_java_writer_status leftovers(mc_java_writer *writer, const uint16_t *u
     }
 }
 
-static mc_java_writer_status write_units(mc_java_writer *writer, const uint16_t *units,
-                                         size_t length, mc_java_writer_error *error) {
+static mc_java_writer_status write_units(mc_java_writer *writer, mc_java_source_encoder *source,
+                                         const uint16_t *units, size_t length,
+                                         mc_java_writer_error *error) {
     if (writer->state.encoder_closed ||
         (writer->profile.mode == MC_JAVA_WRITER_PRINT && !writer->state.print_writer_out_present))
         return result(error, MC_JAVA_WRITER_IO_ERROR, 0, "Stream closed");
     if (length == 0)
         return result(error, MC_JAVA_WRITER_OK, 0, NULL);
     size_t offset = 0;
-    mc_java_writer_status status = leftovers(writer, units, length, &offset, false, error);
+    mc_java_writer_status status = leftovers(writer, source, units, length, &offset, false, error);
     if (status == MC_JAVA_WRITER_OK)
-        status = encode(writer, units, length, &offset, false, error);
+        status = encode(writer, source, units, length, &offset, false, error);
     if (status == MC_JAVA_WRITER_OK && offset < length) {
         writer->leftover = true;
         writer->high = units[offset];
@@ -255,7 +304,7 @@ static mc_java_writer_status flush_encoder(mc_java_writer *writer, mc_java_write
     if (writer->state.encoder_closed)
         return result(error, MC_JAVA_WRITER_IO_ERROR, 0, "Stream closed");
     if (writer->position != 0) {
-        mc_java_writer_status status = drain(writer, error);
+        mc_java_writer_status status = drain(writer, NULL, error);
         if (status != MC_JAVA_WRITER_OK)
             return status;
     }
@@ -269,9 +318,9 @@ static mc_java_writer_status close_encoder(mc_java_writer *writer, mc_java_write
         return result(error, MC_JAVA_WRITER_OK, 0, NULL);
     size_t offset = 0;
     mc_java_writer_error primary = {0};
-    mc_java_writer_status status = leftovers(writer, NULL, 0, &offset, true, &primary);
+    mc_java_writer_status status = leftovers(writer, NULL, NULL, 0, &offset, true, &primary);
     if (status == MC_JAVA_WRITER_OK && writer->position != 0)
-        status = drain(writer, &primary);
+        status = drain(writer, NULL, &primary);
     if (status == MC_JAVA_WRITER_OK) {
         mc_java_writer_error cause = {0};
         status = writer->output.flush(writer->output.context, &cause);
@@ -293,15 +342,9 @@ static bool valid_units(const uint16_t *units, size_t length) {
     return units != NULL || length == 0;
 }
 
-mc_java_writer_status mc_java_writer_create(const mc_java_writer_output *output,
-                                            const mc_java_writer_profile *profile,
-                                            mc_java_writer **out, mc_java_writer_error *error) {
-    if (output == NULL || output->write == NULL || output->flush == NULL || output->close == NULL ||
-        profile == NULL || out == NULL ||
-        (unsigned int)profile->charset > MC_JAVA_READER_US_ASCII ||
-        (unsigned int)profile->mode > MC_JAVA_WRITER_PRINT ||
-        (unsigned int)profile->lines > MC_JAVA_WRITER_CRLF)
-        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "Writer construction");
+static mc_java_writer_status construct_writer(const mc_java_writer_output *output,
+                                              const mc_java_writer_profile *profile,
+                                              mc_java_writer **out, mc_java_writer_error *error) {
     mc_java_reader_charset selected = profile->charset;
     if (selected == MC_JAVA_READER_DEFAULT) {
         const mc_java_reader_status found = mc_java_reader_default_charset(&selected);
@@ -322,6 +365,18 @@ mc_java_writer_status mc_java_writer_create(const mc_java_writer_output *output,
     return result(error, MC_JAVA_WRITER_OK, 0, NULL);
 }
 
+mc_java_writer_status mc_java_writer_create(const mc_java_writer_output *output,
+                                            const mc_java_writer_profile *profile,
+                                            mc_java_writer **out, mc_java_writer_error *error) {
+    if (output == NULL || output->write == NULL || output->flush == NULL || output->close == NULL ||
+        profile == NULL || out == NULL ||
+        (unsigned int)profile->charset > MC_JAVA_READER_US_ASCII ||
+        (unsigned int)profile->mode > MC_JAVA_WRITER_PRINT ||
+        (unsigned int)profile->lines > MC_JAVA_WRITER_CRLF)
+        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "Writer construction");
+    return construct_writer(output, profile, out, error);
+}
+
 mc_java_writer_status mc_java_writer_write(mc_java_writer *writer, const uint16_t *units,
                                            size_t length, mc_java_writer_error *error) {
     if (!valid_units(units, length))
@@ -332,7 +387,7 @@ mc_java_writer_status mc_java_writer_write(mc_java_writer *writer, const uint16_
     if (status != MC_JAVA_WRITER_OK)
         return status;
     mc_java_writer_error cause = {0};
-    status = write_units(writer, units, length, &cause);
+    status = write_units(writer, NULL, units, length, &cause);
     status = record_policy(writer, status, cause, true, error);
     writer->active = false;
     return status;
@@ -354,10 +409,10 @@ static mc_java_writer_status print_text(mc_java_writer *writer,
     if (status != MC_JAVA_WRITER_OK)
         return status;
     mc_java_writer_error cause = {0};
-    status = write_units(writer, units, length, &cause);
+    status = write_units(writer, NULL, units, length, &cause);
     status = record_policy(writer, status, cause, true, error);
     if (status == MC_JAVA_WRITER_OK && newline) {
-        status = write_units(writer, writer->profile.lines == MC_JAVA_WRITER_LF ? lf : crlf,
+        status = write_units(writer, NULL, writer->profile.lines == MC_JAVA_WRITER_LF ? lf : crlf,
                              writer->profile.lines == MC_JAVA_WRITER_LF ? 1u : 2u, &cause);
         status = record_policy(writer, status, cause, true, error);
     }
@@ -459,6 +514,131 @@ mc_java_writer_status mc_java_writer_retire(mc_java_writer **owner, mc_java_writ
     *owner = NULL;
     if (out != NULL)
         *out = retired;
+    return result(error, status, cause.system_error, cause.operation);
+}
+
+static mc_java_writer_status source_flush_result(mc_java_writer_status status,
+                                                 mc_java_writer_error cause,
+                                                 mc_java_writer_error *error) {
+    if ((unsigned int)status > MC_JAVA_WRITER_BUSY)
+        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0,
+                      "source OutputStream status contract");
+    return result(error, status, status == MC_JAVA_WRITER_OK ? 0 : cause.system_error,
+                  status == MC_JAVA_WRITER_OK ? NULL : cause.operation);
+}
+
+mc_java_writer_status mc_java_source_encoder_create(const mc_java_source_encoder_output *output,
+                                                    mc_java_reader_charset charset,
+                                                    mc_java_source_encoder **out,
+                                                    mc_java_writer_error *error) {
+    if (output == NULL || output->write == NULL || output->flush == NULL ||
+        output->retire == NULL || out == NULL || (unsigned int)charset > MC_JAVA_READER_US_ASCII)
+        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "source encoder construction");
+    mc_java_source_encoder *source = malloc(sizeof(*source));
+    if (source == NULL)
+        return result(error, MC_JAVA_WRITER_ALLOCATION_FAILED, 0,
+                      "source encoder wrapper allocation");
+    *source = (mc_java_source_encoder){.output = *output};
+    const mc_java_writer_profile profile = {charset, MC_JAVA_WRITER_OUTPUT_STREAM,
+                                            MC_JAVA_WRITER_LF};
+    /* No legacy sink callback is installed or invoked. The writer pointer is
+     * private to this wrapper; every data-plane call passes source explicitly. */
+    const mc_java_writer_output unused_legacy_output = {0};
+    const mc_java_writer_status status =
+        construct_writer(&unused_legacy_output, &profile, &source->writer, error);
+    if (status != MC_JAVA_WRITER_OK) {
+        free(source);
+        return status;
+    }
+    *out = source;
+    return result(error, MC_JAVA_WRITER_OK, 0, NULL);
+}
+
+mc_java_writer_status mc_java_source_encoder_write(mc_java_source_encoder *source,
+                                                   const uint16_t *units, size_t length,
+                                                   mc_java_writer_error *error) {
+    if (source == NULL || !valid_units(units, length))
+        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "source encoder UTF16 input");
+    if (length > INT32_MAX)
+        return result(error, MC_JAVA_WRITER_LIMIT, 0, "source encoder UTF16 length");
+    mc_java_writer *writer = source->writer;
+    mc_java_writer_status status = enter(writer, error);
+    if (status != MC_JAVA_WRITER_OK)
+        return status;
+    mc_java_writer_error cause = {0};
+    status = write_units(writer, source, units, length, &cause);
+    status = record_policy(writer, status, cause, true, error);
+    writer->active = false;
+    return status;
+}
+
+static mc_java_writer_status source_flush(mc_java_source_encoder *source, bool full,
+                                          mc_java_writer_error *error) {
+    if (source == NULL)
+        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "source encoder flush owner");
+    mc_java_writer *writer = source->writer;
+    mc_java_writer_status status = enter(writer, error);
+    if (status != MC_JAVA_WRITER_OK)
+        return status;
+    mc_java_writer_error cause = {0};
+    if (writer->state.encoder_closed)
+        status = result(&cause, MC_JAVA_WRITER_IO_ERROR, 0, "Stream closed");
+    else if (writer->position != 0)
+        status = drain(writer, source, &cause);
+    if (status == MC_JAVA_WRITER_OK && full) {
+        mc_java_writer_error callback_error = {0};
+        status = source->output.flush(source->output.context, &callback_error);
+        status = source_flush_result(status, callback_error, &cause);
+    }
+    status = record_policy(writer, status, cause, false, error);
+    writer->active = false;
+    return status;
+}
+
+mc_java_writer_status mc_java_source_encoder_flush_buffer(mc_java_source_encoder *source,
+                                                          mc_java_writer_error *error) {
+    return source_flush(source, false, error);
+}
+
+mc_java_writer_status mc_java_source_encoder_flush(mc_java_source_encoder *source,
+                                                   mc_java_writer_error *error) {
+    return source_flush(source, true, error);
+}
+
+bool mc_java_source_encoder_read_state(const mc_java_source_encoder *source,
+                                       mc_java_writer_state *out,
+                                       mc_java_source_write_result *last_write) {
+    if (source == NULL || out == NULL || source->writer->active)
+        return false;
+    *out = source->writer->state;
+    if (last_write != NULL)
+        *last_write = source->last_write;
+    return true;
+}
+
+mc_java_writer_status mc_java_source_encoder_retire(mc_java_source_encoder **slot,
+                                                    mc_java_writer_error *error) {
+    if (slot == NULL)
+        return result(error, MC_JAVA_WRITER_INVALID_ARGUMENT, 0, "source encoder retirement slot");
+    mc_java_source_encoder *source = *slot;
+    if (source == NULL)
+        return result(error, MC_JAVA_WRITER_OK, 0, NULL);
+    mc_java_writer *writer = source->writer;
+    mc_java_writer_status status = enter(writer, error);
+    if (status != MC_JAVA_WRITER_OK)
+        return status;
+    mc_java_writer_error cause = {0};
+    status = source->output.retire(source->output.context, &cause);
+    status = source_flush_result(status, cause, &cause);
+    if (status == MC_JAVA_WRITER_BUSY) {
+        writer->active = false;
+        return result(error, status, cause.system_error, cause.operation);
+    }
+    /* Retire contract: BUSY preserves the borrowed context; every other
+     * result has detached it. Never synthesize close/flush/final replacement. */
+    free(writer);
+    free(source);
+    *slot = NULL;
     return result(error, status, cause.system_error, cause.operation);
 }
 

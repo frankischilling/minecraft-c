@@ -113,3 +113,36 @@ if(BUILD_TESTING AND TARGET mc_client_application_startup AND TARGET mc_sound_ba
             "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_application_logo_prepared.map")
     endif()
 endif()
+
+if(BUILD_TESTING AND TARGET mc_test_application_startup)
+    foreach(_mc_tail_mode IN ITEMS statistics-admission statistics-null-z)
+        string(REPLACE "-" "_" _mc_tail_name "${_mc_tail_mode}")
+        add_test(NAME "client.application_startup_${_mc_tail_name}"
+            COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_application_startup_tail.py"
+                --executable "$<TARGET_FILE:mc_test_application_startup>"
+                --resources "${_mc_startup_resource_root}"
+                --work-dir "${CMAKE_CURRENT_BINARY_DIR}/startup-tail-${_mc_tail_mode}"
+                --mode "${_mc_tail_mode}")
+        set_tests_properties("client.application_startup_${_mc_tail_name}" PROPERTIES
+            LABELS "public;integration;client;startup;statistics;ownership" TIMEOUT 240)
+    endforeach()
+    if(MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
+        foreach(_mc_tail_mode IN ITEMS window-session window-statistics-foreign-ready)
+            string(REGEX REPLACE "^window-" "" _mc_tail_name "${_mc_tail_mode}")
+            string(REPLACE "-" "_" _mc_tail_name "${_mc_tail_name}")
+            add_test(NAME "client.application_startup_${_mc_tail_name}"
+                COMMAND Python3::Interpreter -B
+                    "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_application_startup_tail.py"
+                    --executable "$<TARGET_FILE:mc_test_application_startup>"
+                    --resources "${_mc_startup_resource_root}"
+                    --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+                    --work-dir "${CMAKE_CURRENT_BINARY_DIR}/startup-tail-${_mc_tail_mode}"
+                    --mode "${_mc_tail_mode}")
+            set_tests_properties("client.application_startup_${_mc_tail_name}" PROPERTIES
+                LABELS "integration;client;startup;statistics;input;window;ownership" TIMEOUT 240)
+        endforeach()
+    endif()
+    unset(_mc_tail_mode)
+    unset(_mc_tail_name)
+endif()

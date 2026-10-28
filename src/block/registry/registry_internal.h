@@ -269,6 +269,8 @@ struct mc_registry_classes {
     mc_registry_initializer *initializer;
     mc_registry_allocation *allocations;
     mc_registry_managed_allocation *managed_allocations;
+    /* Native owned-kh list. Legacy borrowed callbacks and their charges stay unchanged. */
+    struct mc_client_owned_inventory_callback *owned_inventory_callbacks;
     mc_registry_redstone_set *redstone_sets;
     size_t redstone_snapshot_count;
     struct mc_registry_stack_allocation *item_stacks;

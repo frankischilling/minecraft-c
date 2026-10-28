@@ -20,6 +20,14 @@ typedef enum mc_client_source_array {
     MC_CLIENT_SOURCE_NORMAL_ARRAY
 } mc_client_source_array;
 
+/* Exactly one source GL11.glGetError query on the canonical live Display.
+ * A nonzero GL enum is returned as source data, not a native GL failure.
+ * No gl_check, pre-drain, post-drain, frame reset, swap or pump is added.
+ * Ordinary native context/active/function admission can fail before querying;
+ * failure preserves value. Keep owner/value/error storage live and disjoint. */
+bool mc_client_display_source_get_error(mc_client_display *, uint32_t *value,
+                                        mc_client_display_error *);
+
 bool mc_client_display_context_acquire(mc_client_display *, mc_client_display_context_lease **,
                                        mc_client_display_error *);
 bool mc_client_display_context_release(mc_client_display_context_lease **,

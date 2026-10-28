@@ -1,11 +1,11 @@
 # Build and tests
 
-Checkpoint `f37a96f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
-1,188 public/JDK cases, with 386 Windows and 401 per Linux compiler. None failed
-or skipped. Formatting covers 1,115 C/header files. This checkpoint fixes the
-preceding Windows flexible-array diagnostic and Linux SDL X11 transport load
-failure; their failed results remain in the testing record. Supplied-original
-comparisons and later startup additions retain their separate scope.
+Checkpoint `671c003` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40639713371):
+1,226 public/JDK cases, with 398 Windows and 414 per Linux compiler. None failed
+or skipped. Formatting covers 1,164 files. Native jobs check current source
+bindings before configuration and retain the complete test suites. The Font
+cleanup correction and preceding failed runs remain in the testing record.
+Supplied-original comparisons and newer startup additions keep separate scopes.
 
 Later focused native coverage includes nineteen Windows loading-screen drawing
 profiles with 888 checks and nine Windows startup profiles with 173,090 checks
@@ -16,6 +16,15 @@ builds and links the native client. These selected runs do not establish a
 playable session. The separate SaveHandler metadata/session cohort passes 27
 selected tests per Linux compiler, with native Windows coverage recorded in
 the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+The newer statistics/callback/logo/input composition reaches Controllers383
+on the genuine Windows Session path (92 checks). Its Windows qualification
+retains 26 actual CTests and two direct profiles over separately recorded
+source phases. Clang and GCC each build the client and pass 56 selected CPU
+plus six real graphics cases; the GCC source includes the later strict-warning
+correction. A separate headless encoder scope passes fifteen selected cases
+per compiler, including 91 new checks. These are focused native results;
+World entry and a connected playable session remain unfinished.
 
 An earlier normal-startup graph builds ALL on MSVC, Clang and GCC. Windows
 passes 67 distinct selected CTests; Clang and GCC each pass 74 distinct cases

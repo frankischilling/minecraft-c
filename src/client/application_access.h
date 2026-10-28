@@ -15,4 +15,9 @@ mc_client_achievement_notice *
 mc_client_application_live_achievement_notice(const client_application *);
 mc_client_notice_status mc_client_application_install_inventory_callback(client_application *,
                                                                          mc_client_notice_error *);
+/* Concrete native owned kh, with allocation before actual App borrow acquisition.
+ * App/Registry stay exclusive; failed create preserves output and reached RAW kh. */
+mc_client_notice_status mc_client_application_inventory_callback_create_owned(
+    client_application *, const mc_achievement_description_callback **, mc_client_notice_error *);
+bool mc_client_application_callback_dispatch_admitted(const client_application *);
 #endif

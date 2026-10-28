@@ -40,6 +40,8 @@ typedef struct mc_client_statistics_owner_error {
     mc_client_stats_error writer;
     mc_client_notice_error notice;
     mc_water_texture_error water;
+    /* Native typed-File child snapshot; not embedded in the old Stats objects. */
+    mc_client_stats_file_error source_writer;
 } mc_client_statistics_owner_error;
 
 /* Genuine earlier Minecraft119 vs/aw constructor, actual B active use and
@@ -83,6 +85,15 @@ mc_client_statistics_owner_status
 mc_client_application_construct_statistics(client_application *, const mc_client_stats_options *,
                                            mc_client_stats_report *,
                                            mc_client_statistics_owner_error *);
+
+/* Genuine source File caller: MC new325, live k330 then live Z334, ctor337,
+ * I340, existing ep/kh/ny354. classes is the SAME outer xi literal service and
+ * files is the actual File namespace; neither is allocated here. Success ends
+ * before next unexecuted MC358/x359. No worker join/service or logo is added.
+ * Failed writer stays private; kh failure keeps the already-published I. */
+mc_client_statistics_owner_status mc_client_application_construct_statistics_file(
+    client_application *, mc_client_stats_classes *, mc_java_files *,
+    const mc_client_stats_options *, mc_client_stats_report *, mc_client_statistics_owner_error *);
 
 /* Native retirement only, called while the complete app/resources/Registry,
  * descriptor callbacks and diagnostic context remain live. Join/free writer

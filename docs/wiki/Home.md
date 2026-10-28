@@ -7,9 +7,10 @@ or dedicated server yet; the C runtime requires no JVM.
 
 The [native title frontend](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/startup.md)
 draws imported resources. A separate fixed-camera inspection renders generated
-terrain. Checkpoint `f37a96f` passes 1,188 hosted public/JDK tests: 386 Windows
-and 401 per Linux compiler. Later native startup checks reach EntityRenderer
-and RenderManager construction; the next source call is statistics startup.
+terrain. Checkpoint `671c003` passes 1,226 hosted public/JDK tests: 398 Windows
+and 414 per Linux compiler. Later native startup checks reach actual Stats,
+callback installation, logo drawing and MouseHelper publication. The next
+unexecuted source call is Controllers.create at offset 383.
 [Build and tests](Build-and-tests) separates hosted coverage, local graphical
 startup, component checks and finite original comparisons.
 

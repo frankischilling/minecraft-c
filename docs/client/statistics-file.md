@@ -68,9 +68,12 @@ startup installs the separate description callback. Public writer mutations
 are exclusive; passive state inspection uses the native mutex. Diagnostic
 transport may inspect but cannot mutate/reenter/retire the same writer.
 
-This module does not implement the Minecraft application/tick, notice GUI,
-full Player award/stat path or the separate V==6000 legacy HTTPS session check.
-Those remain concrete owners/dependencies for application integration.
+The [normal startup owner](normal-startup.md) now adopts the real writer and
+callback before invoking the logo and input setup. It does not join or service
+the read worker between constructor return and callback installation. Startup
+retirement joins before releasing dependent storage. The complete Minecraft
+tick, notice GUI, full Player award path and separate V==6000 legacy HTTPS
+session check remain unfinished.
 
 The POSIX path adapter treats only slash as a separator. A valid parent ending
 in a literal backslash receives an inserted slash before stats, as Java File

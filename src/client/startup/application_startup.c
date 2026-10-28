@@ -86,7 +86,9 @@ mc_client_startup_status mc_client_application_startup_allocate(
         app->game_directory != NULL || app->aa != NULL || app->settings != NULL || app->D != NULL ||
         app->render_engine != NULL || app->font_renderer != NULL ||
         app->font_renderer_retained != NULL || app->font_renderer_constructing ||
-        app->diagnostic_game_directory != NULL)
+        app->stats_writer != NULL || app->stats_writer_retained != NULL ||
+        app->stats_writer_constructing || app->statistics_retiring || app->statistics_retired ||
+        app->C != NULL || app->diagnostic_game_directory != NULL)
         return application_startup_fail(
             error == NULL ? &failure : error, MC_CLIENT_STARTUP_INVALID_PHASE,
             "startup genuine constructor READY App admission", NULL, NULL, NULL, 0);

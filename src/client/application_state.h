@@ -113,6 +113,7 @@ struct client_application {
     atomic_bool J, o;
     atomic_size_t timer_hack_holds;
     atomic_size_t source_static_holds;
+    atomic_size_t callback_holds; /* Native Registry-owned kh borrows, not a Registry hold. */
     mc_client_application_lifetime_phase native_lifetime_phase;
     /* Remaining actual Minecraft instance fields. Canonical fields above are
      * their sole T/f/j/k/p/q/s/u/z/Z/I/ad storage. Native display/options/loop
