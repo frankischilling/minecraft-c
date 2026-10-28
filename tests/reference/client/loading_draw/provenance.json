@@ -1242,8 +1242,8 @@
       "sha256": "4d86e1ef941ca0a86571856bcc315d623e091a7dd054479665a0af6cf8897c03"
     },
     "src/client/render/manager/internal.h": {
-      "bytes": 5003,
-      "sha256": "4b7b00616f924bb74c21c5db538cad61ba221162e111acd9ed134e00f7fc49f6"
+      "bytes": 5270,
+      "sha256": "4188f98fe49b63a25577b1d2bd6c643463f459241f15839fb338337b5c7b17e4"
     },
     "src/client/render/manager/map.c": {
       "bytes": 3909,

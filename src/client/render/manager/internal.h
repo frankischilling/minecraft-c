@@ -4,10 +4,19 @@
 #include "mc/client/render/manager/manager.h"
 #include "mc/item/registry/runtime.h"
 
+/* Older MSVC diagnoses this C17 flexible array as extension C4200.
+ * Limit the compatibility guard to this type; its layout stays unchanged. */
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 typedef struct manager_part_array {
     int32_t length;
     mc_client_model_part *elements[];
 } manager_part_array;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 typedef struct manager_model {
     struct manager_model *next;

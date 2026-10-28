@@ -7,6 +7,14 @@ dynamic rendering and complete gameplay interactions remain unfinished.
 
 ## Current integration
 
+Checkpoint `cd346b0` has a [failed hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40632949338).
+Both Linux builds complete and each passes 406 of 414 cases. Eight cases reject
+stale current-source bindings in the App owner, Biped and source-rendering
+controls. Windows stops on an older MSVC C4200 diagnostic for RenderManager's
+C17 flexible array. Formatting passes. The correction scopes the compatibility
+guard to that one type and refreshes the affected current input bindings;
+original authorities and historical qualification scopes remain unchanged.
+
 Checkpoint `f37a96f` passes [all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
 1,188 public/JDK cases, comprising 386 Windows, 401 GCC and 401 Clang cases.
 None failed or skipped. Formatting checks 1,115 files. Both Linux SDK transport

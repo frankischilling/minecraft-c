@@ -38,6 +38,16 @@ scope was 936 C/header files. The `37dc83f` hosted run retains every one of thos
 
 ## Normal startup owner qualification
 
+The later `cd346b0` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40632949338)
+builds both Linux clients. Each compiler passes 406 of 414 cases; the eight
+failures are current-source binding checks in App-owner, Biped and source
+rendering controls. Windows stops at RenderManager's flexible-array declaration
+under the older hosted MSVC C4200 diagnostic. Formatting passes. The scoped type
+guard preserves the declaration and layout; all five affected C files compile
+under installed MSVC with the existing C17, warning/error and strict-FP flags.
+Refreshed bindings describe the current test inputs without relabeling older
+native products or original captures. Corrected hosted results are pending.
+
 Published `f37a96f` [passes all four hosted jobs](https://github.com/frankischilling/minecraft-c/actions/runs/40599463192):
 386 Windows, 401 GCC and 401 Clang cases, 1,188 total, with no failures or skips.
 The formatter checks 1,115 selected files. Exact-head checkout and complete

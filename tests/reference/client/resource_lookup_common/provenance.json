@@ -666,8 +666,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 10147,
-      "sha256": "923da1932215a1a9f1ec6cad8c1a859df9f1323d8849a7a059867d003667ff74"
+      "bytes": 10730,
+      "sha256": "bdc97fc58975a0bb9c6fa4a6e4dd3fead1b15d5923610584545aaec89f0a47a0"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -690,8 +690,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 216590,
-      "sha256": "03d35170f0ce95855d5d9e6d611a826318b3fc2e80dbe8284081f6016beb0bb4"
+      "bytes": 217318,
+      "sha256": "9d8928b24ae3dd90d5fde69ed9348575a02ec107e4b5d459d4ccaa916201eaa4"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 10192,
@@ -2698,8 +2698,8 @@
       "sha256": "4d86e1ef941ca0a86571856bcc315d623e091a7dd054479665a0af6cf8897c03"
     },
     "src/client/render/manager/internal.h": {
-      "bytes": 5003,
-      "sha256": "4b7b00616f924bb74c21c5db538cad61ba221162e111acd9ed134e00f7fc49f6"
+      "bytes": 5270,
+      "sha256": "4188f98fe49b63a25577b1d2bd6c643463f459241f15839fb338337b5c7b17e4"
     },
     "src/client/render/manager/map.c": {
       "bytes": 3909,
@@ -5674,8 +5674,8 @@
       "sha256": "83d63c19220a30869cc1a79c9c7ec9ad05b188ed4d12aeadde86be254e2a1db0"
     },
     "tests/reference/client/application_owner/provenance.json": {
-      "bytes": 15280,
-      "sha256": "c973d216b3d46326851a2b655d79083622457329ed7d25209b3ae10468dd34cb"
+      "bytes": 17387,
+      "sha256": "c294ab989e242154a3b8162b4112ab88ef6d7f8b6b34fb5f34b4b22f84c371cd"
     },
     "tests/reference/client/application_owner/run_native.py": {
       "bytes": 2027,
@@ -5706,8 +5706,8 @@
       "sha256": "a84476874a75591bba353f7590376c59c29e123687966ddc4fa41925d9b7f910"
     },
     "tests/reference/client/biped/provenance.json": {
-      "bytes": 5346,
-      "sha256": "eff7b72cb7ce7103975a60277c44d3928c8868b5841343f2a7a1a3b8e86445ad"
+      "bytes": 17790,
+      "sha256": "a89829d9fe5a0af57e2a88464b88bc3ea7b01d16ac08a3b0beabb22e7319388b"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -5871,7 +5871,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 188266,
-      "sha256": "43334223a8b3e72b339ccf75f623a18e344719882908d8b525b475d13ded86f2"
+      "sha256": "b3dff621b03bdbcadab7870f8a31170a0261253f6daa1b97ed3bada1b6b27e12"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6002,8 +6002,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 20968,
-      "sha256": "a94c9513b814ff57030a6cb7ba36de217f76166309da15d220ade71d14808b4b"
+      "bytes": 39375,
+      "sha256": "8825b37408e525988cb4450a6870c9eb952cc42a31af57c791c8c20d85e27221"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,

@@ -222,16 +222,16 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/classes/classes.h": {
-      "bytes": 6476,
-      "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+      "bytes": 6811,
+      "sha256": "bc267b43e9dad1419ef11ace17e39814c608513d267682b0f972f1a36845c1ad"
     },
     "include/mc/entity/bounds/bounds.h": {
       "bytes": 7264,
       "sha256": "ce56580b13a73edea960719d9bc79811ccd10de2adffc8a39ef3e239959e6f04"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 3243,
-      "sha256": "7d08a7f6842bd8d1f1ca1761aea06c7dbb87b19409526fe3b53e003cfca8be11"
+      "bytes": 3336,
+      "sha256": "d41f3f94d584879b712daf2be90d71e6063b870d01a30075ed0b8b913b5f1e18"
     },
     "src/client/application_state.h": {
       "bytes": 7475,
@@ -322,8 +322,8 @@
       "sha256": "bcbf7c97ec348d4b6cd4a679c62f064b91f30e3b5b86ac9e1419238d852bc650"
     },
     "include/mc/client/render/model.h": {
-      "bytes": 4446,
-      "sha256": "e8f1bd481c71d491fe4b2aee3c5485c135e2c0ba45ec9a47d1cf82bb3eb0a189"
+      "bytes": 4685,
+      "sha256": "ba0d657f72c807d42d8a39a3229bd59c9198cd8287b4141316c01db820ee1436"
     },
     "include/mc/entity/vector/vector.h": {
       "bytes": 2799,
@@ -338,8 +338,8 @@
       "sha256": "9af056e5ab6f2e1499bc633113d0d2c3bb56a5615d1294d3b11556b88f65eb0e"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 12529,
-      "sha256": "6d36eaa30109666dc843beb8f9b7422d2e963cab79ec4223454249737ede6e8f"
+      "bytes": 12660,
+      "sha256": "b53b4fb72f4d53f3e7c9edd51f7ccb3ec7d81240b7ffbf92b403c361b3c0bfcd"
     },
     "tests/client/startup/test_application_owner.c": {
       "bytes": 20641,
@@ -352,6 +352,30 @@
     "src/entity/player/player_internal.h": {
       "bytes": 1857,
       "sha256": "0555675757288070ccfff4fe9fe9945f5af01cc33791a91a60d7b97d8f895f3a"
+    },
+    "include/mc/entity/registry/registry.h": {
+      "bytes": 3167,
+      "sha256": "db51043f16cc3fdb1ec115a0d7b554ec310c9af975bd34661437108bb0dbf160"
+    },
+    "include/mc/storage/nbt/tree.h": {
+      "bytes": 3055,
+      "sha256": "5051ba448beef4cb5dcac46df4e4d02eb936a7b67964dac64fce13ee94ac5bde"
+    },
+    "include/mc/world/storage/java_file.h": {
+      "bytes": 9762,
+      "sha256": "90f055fdf01d9e04eb1d0881492868968ab4fab814fd29b5bcf8d8360eedba67"
+    },
+    "src/entity/classes/classes_internal.h": {
+      "bytes": 2535,
+      "sha256": "1b9d2b90eaaca62865a3106ca63fe90500c0dad32073c1f3e94c7d40b0a73dd8"
+    },
+    "src/entity/entity_internal.h": {
+      "bytes": 3435,
+      "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
+    },
+    "src/entity/registry/registry_internal.h": {
+      "bytes": 951,
+      "sha256": "b1b7604e84a809e2cdd5406b357808474a2ec880f177dd13e2ed795d91388cff"
     }
   },
   "reference_files": {
@@ -390,6 +414,28 @@
     "tests/reference/client/notice/classfile.py": {
       "bytes": 2803,
       "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    }
+  },
+  "current_binding_scope": "Current selected native/control sources and their quoted project header/fragment closure for fresh admission. These hashes do not rebind older compiled products, captures or original observations; coherent current compilation and execution remain separate gates.",
+  "previous_current_bindings": {
+    "role": "Superseded admission entries retained as byte provenance only; no historical product or observation is requalified by the current table.",
+    "entries": {
+      "include/mc/entity/classes/classes.h": {
+        "bytes": 6476,
+        "sha256": "d52f7274eb36411cc4a5173c958bdc1cb4d47ad503e7f2af5949819131611236"
+      },
+      "src/client/startup/application_owner_internal.h": {
+        "bytes": 3243,
+        "sha256": "7d08a7f6842bd8d1f1ca1761aea06c7dbb87b19409526fe3b53e003cfca8be11"
+      },
+      "include/mc/client/render/model.h": {
+        "bytes": 4446,
+        "sha256": "e8f1bd481c71d491fe4b2aee3c5485c135e2c0ba45ec9a47d1cf82bb3eb0a189"
+      },
+      "src/client/startup/application_classes.c": {
+        "bytes": 12529,
+        "sha256": "6d36eaa30109666dc843beb8f9b7422d2e963cab79ec4223454249737ede6e8f"
+      }
     }
   }
 }
