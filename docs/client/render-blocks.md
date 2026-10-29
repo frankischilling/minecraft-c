@@ -111,7 +111,10 @@ Their native runners compare the declared fields and vertex words exactly.
 
 All six focused MSVC CTests pass, including all the finite rows above and
 the native DK controls. The loaded UI passes 702 checks, preserves resources and
-saves, and retains all 72 focus histories. The new code has not yet completed
-a full ALL build or hosted CI qualification. Historical suite totals qualify their
-earlier checkpoints. See [ChunkRenderer compilation](chunk-compilation.md)
+saves, and retains all 72 focus histories. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passes all four jobs and 1,490 tests: Windows 478/GCC 506/Clang 506, zero failures
+or skips and no preceding hosted test names dropped. The current runtime and
+test sources remain that qualified checkpoint; later record edits update
+documentation and file bindings. Historical suite totals qualify their earlier
+checkpoints. See [ChunkRenderer compilation](chunk-compilation.md)
 for the selector and cache ownership that this geometry path uses.

@@ -37,8 +37,10 @@ The [standard Block increment](client/render-blocks.md) passes six focused MSVC
 CTests, including 1,680 face/color rows, 25 flat rows, 48 AO rows and 25 Block
 color plus seven static AO-query rows. The native one-stone DK section publishes
 a 36-vertex list. The loaded UI passes 702 checks, preserves saves/resources and
-all 72 focus histories, and reaches the separate terrain-submission child at486.
-This increment has not yet completed a full ALL or hosted platform suite.
+all 72 focus histories, and reaches the separate terrain-submission child at 486.
+Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797) passes all four jobs and 1,490 tests:
+Windows 478/GCC 506/Clang 506, zero failures/skips. Every preceding hosted
+test name remains, with five additions per platform.
 
 The [source frame extension](client/renderer-frames.md) connects real SDK motion,
 CU smoothing, Player turning, OZ transitions and the initial World-render/fog

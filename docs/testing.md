@@ -24,22 +24,41 @@ saves, and retains all 72 original focus histories. Actual standard Block lists
 are defined before the frame reaches missing terrain submission at
 `px.a(FJ)V:486`. Its inspected 854 by 480 back buffer still shows Sky without
 terrain or HUD. No matched original whole-frame or playable-client result is
-claimed. The eight selected Windows targets build; this increment's full ALL
-and hosted Windows/Linux qualification remain pending. Local Linux checks are
-strict syntax checks, with runtime validation reserved for hosted CI while the
-host disk has limited space.
+claimed. The eight selected Windows targets build locally. Hosted ALL builds and
+platform runtime suites pass as recorded below. Local Linux checks are strict
+syntax checks; the current Linux runtime evidence comes from hosted CI while
+the host disk has limited space.
 
 Final verification rebuilds all eight selected Windows targets. The six
 focused tests and four current-file binding checks pass together: ten tests in
 3.51 seconds, zero failures/skips. Strict Clang18 and GCC13 syntax checks pass
 for the production geometry and focused native helpers. Pinned clang-format18
-checks 1,557 source/header/fragment files. Full-suite execution remains reserved
-for hosted CI; a CTest inventory comparison confirms all 512 preceding selected
+checks 1,557 source/header/fragment files. Full-suite execution runs in
+hosted CI; a CTest inventory comparison confirms all 512 preceding selected
 names remain, with five new geometry/query tests. The final loaded-UI repeat
 passes 702 checks; an earlier successful repeat passes 713. These real-clock
 profiles retain their recorded frame/tick counts and the same required 72
 focus histories. Lossless NTFS compression preserves all 16 checked final
 executable/PDB hashes and recovers about 210 MB without deleting files.
+
+Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797) is terminal SUCCESS in all four jobs:
+
+| Hosted profile | Passed tests | Test time (seconds) |
+| --- | ---: | ---: |
+| Windows | 478 | 338.57 |
+| GCC | 506 | 200.46 |
+| Clang | 506 | 365.99 |
+
+All 1,490 tests pass without failures or skips. Comparing actual passed-name
+inventories with 91da6e2 finds no dropped names and exactly five additions on
+each platform: client.application_queries, client.render_block_colors,
+client.render_blocks_ao, client.render_blocks_faces and client.render_blocks_flat.
+Formatting checks all 1,557 files. The Windows hosted profile still excludes
+the device-only client.chunk_compile; local Windows and both Linux software-GL
+profiles execute it. Linux runtime passes are hosted evidence, separate from
+local syntax checks and earlier disk-repair builds. This qualification-record
+update changes documentation and current file bindings; runtime and test
+sources remain exactly 6ccdc82.
 
 ## ChunkCache and compilation qualification
 

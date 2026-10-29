@@ -76,8 +76,12 @@ The new [standard Block geometry](https://github.com/frankischilling/minecraft-c
 passes six focused MSVC tests, including 1,680 face/color rows, 25 flat rows,
 48 AO rows, 25 Block colors and seven actual static AO queries. The loaded UI
 passes 702 checks and preserves resources, saves and all 72 focus histories
-before terrain submission at486. Its full ALL and hosted platform qualification
-remain pending; the suite totals below describe earlier checkpoints.
+before terrain submission at 486. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passes all four jobs and 1,490 tests (Windows 478/GCC 506/Clang 506), zero failures
+or skips. Every preceding hosted name remains; five new geometry/query tests
+run on each platform. The current runtime/test sources match that qualified
+checkpoint; subsequent record edits change documentation and file bindings.
+The remaining suite totals below describe earlier checkpoints.
 
 The selected Windows cache/compiler/callback/lighting/sort checks and all 72
 focus histories on the loaded graph pass. After the lease fix, Windows Debug

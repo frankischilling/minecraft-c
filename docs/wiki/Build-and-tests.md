@@ -7,9 +7,13 @@ actual static AO queries. Native DK controls publish one draw with 36 expanded
 vertices and preserve that list across a following specialized-family failure.
 The loaded UI passes 702 checks, preserves saves/resources and all 72 focus
 histories, and reaches terrain submission at `px.a(FJ)V:486`. Its inspected back
-buffer still shows Sky without terrain or HUD. The new source has not yet
-completed a full ALL or hosted platform suite; the totals below qualify the
-earlier cache/compiler checkpoint.
+buffer still shows Sky without terrain or HUD. Hosted [source checkpoint 6ccdc82](https://github.com/frankischilling/minecraft-c/actions/runs/40947497797)
+passes all four jobs and 1,490 tests: Windows 478 in 338.57 seconds, GCC 506
+in 200.46 seconds and Clang 506 in 365.99 seconds. There are zero failures/skips,
+no dropped preceding test names and five additions per platform. Formatting
+checks 1,557 files. Runtime/test sources remain that qualified checkpoint;
+subsequent record edits change only documentation and current bindings. The
+remaining totals below qualify the earlier cache/compiler checkpoint.
 
 The preceding [cache/compiler checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
 passes selected Windows checks for 950 original ChunkCache rows, 42 whole
