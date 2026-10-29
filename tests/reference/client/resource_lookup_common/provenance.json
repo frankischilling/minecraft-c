@@ -11708,6 +11708,10 @@
     "tests/tools/client/test_chunk_compile.py": {
       "bytes": 2047,
       "sha256": "14f56f6d24ae093f04533c5b9f85e7f3066ae16fbfbaec5d0b069f75e1862373"
+    },
+    "tests/reference/client/sky_changed/README.md": {
+      "bytes": 1060,
+      "sha256": "ba4e3d3a5e84a4c77f4fef67aaf01fd1ac863f0207290301ad2c1949536d6e16"
     }
   },
   "self_metadata_excluded": true,
