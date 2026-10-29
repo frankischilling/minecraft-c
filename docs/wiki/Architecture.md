@@ -43,6 +43,14 @@ matches 2,926 JDK17 vectors on Windows and Linux; other profiles fail explicitly
 [Build and tests](Build-and-tests) separates these focused results from the
 preceding complete hosted scopes.
 
+Linux graphical CI uses one owned Xvfb server for its four CTest workers.
+A private pinned-SDL reproduction fails during init/window/quit repetition
+with default last-client resets, while three `-noreset` runs complete all
+2,400 window cycles. CI now disables that automatic reset without changing
+the default screen or test selection. SDL refusal diagnostics remain real
+failures. [Build and tests](Build-and-tests) records the matched controls,
+the distinct hosted refusals and pending complete verification.
+
 The runtime uses C17 libraries with explicit ownership. The [architecture](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/architecture.md)
 describes the module boundaries; [parity](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md) records the qualified
 scenarios and remaining behavior.

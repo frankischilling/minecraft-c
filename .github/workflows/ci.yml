@@ -89,7 +89,7 @@ jobs:
           key: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-${{ github.sha }}
           restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-
       - name: Test
-        run: xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
+        run: xvfb-run -a -s "-screen 0 1280x1024x24 -noreset" env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds

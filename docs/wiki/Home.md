@@ -32,6 +32,15 @@ launch in its executable fingerprint guard. The current streaming-hash
 correction passes its public Windows/Linux regression. Full results and the
 unmeasured original-artifact size are recorded in [Build and tests](Build-and-tests).
 
+The later [`d71bd94` run](https://github.com/frankischilling/minecraft-c/actions/runs/40815149868)
+again passes Windows and Clang, with one GCC SDL video-init failure in SDK
+transport. A private pinned-SDL reproduction captures `x11 not available`
+under default Xvfb; adding only `-noreset` passes 2,400 repeated window cycles.
+Linux CI now preserves its server between clients, keeping four workers and
+all tests. The SDK test retains actual SDL refusal details. The
+[matched evidence](Build-and-tests) keeps these local results separate from
+the pending complete hosted verification.
+
 The earlier `8288290` [hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40792366222)
 passes all 452 GCC cases, but Clang has one Display-creation failure and Windows
 stops on a compiler warning. Those results and the newer Windows menu checks

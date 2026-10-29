@@ -3842,8 +3842,8 @@
       "sha256": "afdf6b5f206a65e3177786b5a3f69d24bd52bbf72f3af56ff08a5e5d4f88cb76"
     },
     "tests/client/display/test_sdk_transport.c": {
-      "bytes": 6636,
-      "sha256": "1ebc8f71fec0878f6e24326c7bbad6edc183a2f8bd32f62eefeefb88eaefbced"
+      "bytes": 6815,
+      "sha256": "6ffd3eb6447411c552ed46b3dfe79a39b2935d45ebaf28415e0b4dc9045967e3"
     },
     "tests/client/display/test_sdk_window.c": {
       "bytes": 15717,

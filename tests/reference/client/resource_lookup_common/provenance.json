@@ -10,8 +10,8 @@
       "sha256": "c060aa90caaf23a3309a36249ba727d64b2db36788028345cd453a8221348c5c"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 5663,
-      "sha256": "b639be3de45334d4836b2b36650c9d990dae39329f3f7b64110d7fde69f1586e"
+      "bytes": 5700,
+      "sha256": "bd51d1930a6b88a8de732be587ab5b726a8c2d21537460cf3e3e54da2fa1c98b"
     },
     ".gitignore": {
       "bytes": 282,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 21030,
-      "sha256": "f8e672ef228a03bd53c4e30dc117259099e059f6797c352ed9edc762d4d9709d"
+      "bytes": 22088,
+      "sha256": "9177fdadf3d7a80065fffd1492e87b118779b57e3036784c312cba08015f2948"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,28 +826,28 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 239162,
-      "sha256": "5b725a073e4d5a129c22cf981381d7045cd73d19833021e6fd44ea2b5de4784d"
+      "bytes": 241916,
+      "sha256": "b8a7edd6bf714dd8a71873ef8bf36e6bb862d6d6d2628d6993063ce1fa468ace"
     },
     "docs/wiki/Architecture.md": {
-      "bytes": 12182,
-      "sha256": "10b4782bd5e9c2f61c332acffed1fc2d9e48e9dc580d37dd759a4a8a87a0ba22"
+      "bytes": 12694,
+      "sha256": "23fde93f6d7beec8da19616e51ace57c6da27bcf9c9025dc462a6ca6e56848f1"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 19656,
-      "sha256": "d15991c31a29eac3271080d5f8a8002a631925d2ae4f985037bd6dac1a4e1ab8"
+      "bytes": 21470,
+      "sha256": "ff842ba65da1fa479c3933beed3c4228179bf0b6d35b602eeeda4efb88c6098e"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 4932,
-      "sha256": "bae3435a90eb83d5e13ec76b68758a30d0244b12150ca6ffa94dba2dda55d0c2"
+      "bytes": 5519,
+      "sha256": "e28160d55db81575427ef017cdbfbb297e362f31d79e7f0e53ea14c1de12753d"
     },
     "docs/wiki/Startup.md": {
-      "bytes": 5554,
-      "sha256": "09eed2749a9f53e646934bb486b0d5af6ee591e84e8baa48e0e523700abafa4a"
+      "bytes": 6267,
+      "sha256": "81b043824849e273867bc661a2322fed9d38adc5e82196355d24849197b4efb2"
     },
     "docs/wiki/Storage-and-reference.md": {
       "bytes": 7959,
@@ -5322,8 +5322,8 @@
       "sha256": "afdf6b5f206a65e3177786b5a3f69d24bd52bbf72f3af56ff08a5e5d4f88cb76"
     },
     "tests/client/display/test_sdk_transport.c": {
-      "bytes": 6636,
-      "sha256": "1ebc8f71fec0878f6e24326c7bbad6edc183a2f8bd32f62eefeefb88eaefbced"
+      "bytes": 6815,
+      "sha256": "6ffd3eb6447411c552ed46b3dfe79a39b2935d45ebaf28415e0b4dc9045967e3"
     },
     "tests/client/display/test_sdk_window.c": {
       "bytes": 15717,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 141864,
-      "sha256": "a6416f6b7fd62622101df0e3709a07743fa20bfc8ddd2194f82956190bb59150"
+      "sha256": "7f21c4f335c573d4df39eee88af37f6900c4463c42b9d4eaee026399fa6f4f0f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 275078,
-      "sha256": "d26ac53199cfea35f99f7d7f725c335c830bbe8e763c2f31e1742b72fc7e2023"
+      "sha256": "94048390bb3460fadb89a0e0be41562d10000d5dfc21b181c7413c58ea0cb809"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,

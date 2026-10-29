@@ -33,9 +33,25 @@ was not printed, so its cause remains undiagnosed. A diagnostic-only follow-up
 prints those captured fields without changing failures or assertions. Both
 optional constructor profiles pass separately on Windows after enabling them;
 this is separate from the complete 468-case selection above. Formatting passes
-for 1,356 files; all checkout trees match the tested head. Startup and its
-fingerprint regression pass on all three hosts. See the
+for 1,356 files; all checkout trees match the tested head. The fingerprint
+regression passes on all three hosts; `client.startup` passes on both Linux
+compilers. See the
 [hosted record](testing.md#hosted-world-selection-checkpoint-1334db5).
+
+The later [`d71bd94` run](https://github.com/frankischilling/minecraft-c/actions/runs/40815149868)
+passes Windows 440/440 and Clang 461/461; GCC passes 460/461, now failing SDK
+transport at actual SDL video initialization. The previous later-owner case
+passes. All test names remain, with zero skips and matching checkout trees;
+formatting passes for 1,356 files. The hosted error string is absent.
+
+A private pinned-SDL3.4.18 reproduction captures `x11 not available` during
+parallel window/init/quit cycles under default Xvfb. Three of four default
+runs fail; the passing run is retained. Changing only `-noreset` passes 2,400
+cycles across three servers and twelve processes. Linux CI now supplies that
+server flag while retaining the default screen, four workers and full suite.
+The SDK test also preserves failed-init error text without changing its checks.
+The [matched evidence](testing.md#sdl-initialization-and-xvfb-lifetime) supports
+the environment correction; complete hosted verification remains pending.
 
 The corrected runtime [hosted run at `de4290b`](https://github.com/frankischilling/minecraft-c/actions/runs/40802203908)
 passes all 435 Windows tests in 329.63 seconds and all 454 Clang tests in 189.45

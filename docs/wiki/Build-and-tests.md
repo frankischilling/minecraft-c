@@ -25,8 +25,9 @@ give the focused checks and remaining dependencies.
 The [exact World-selection run at `1334db5`](https://github.com/frankischilling/minecraft-c/actions/runs/40813601193)
 is terminal: Windows 440/440 pass in 243.78 seconds, Clang 461/461 pass in
 370.74 seconds and GCC 460/461 pass in 193.30 seconds. Formatting passes for
-1,356 files, with matching checkout trees and zero skips. Startup and its
-fingerprint regression pass on all three hosts. GCC's sole failure is a real
+1,356 files, with matching checkout trees and zero skips. The fingerprint
+regression passes on all three hosts; `client.startup` passes in both Linux
+selections. GCC's sole failure is a real
 Display creation refusal in the third later-owner constructor profile. Its
 cleanup succeeds, but the captured SDL operation/detail was not printed and
 the cause remains undiagnosed. A diagnostic-only follow-up prints those fields
@@ -34,6 +35,32 @@ without changing assertions or runtime behavior. Both optional constructor
 profiles and the additional inventory callback-ownership case pass separately
 on Windows in 0.89 seconds. The complete 468-case run had these optional
 profiles disabled, so this is not a complete 471-case rerun.
+
+The later [`d71bd94` run](https://github.com/frankischilling/minecraft-c/actions/runs/40815149868)
+passes Windows 440/440 in 278.67 seconds and Clang 461/461 in 372.76 seconds.
+GCC passes 460/461 in 348.97 seconds, now failing SDK transport at actual
+`SDL_InitSubSystem(SDL_INIT_VIDEO)`. The later-owner case passes. All unique
+starts/results match, with zero skips, unchanged test-name sets, matching
+checkout trees and restored timing caches. Formatting passes for 1,356 files.
+The hosted SDL error string is absent; the SDK test now prints it immediately
+on refusal while preserving its checks and cleanup.
+
+A private WSL test links pinned SDL3.4.18 with `SDL_X11_SHARED=OFF` and repeats
+real video init, hidden-window creation/destruction and quit on Xvfb. Three of
+four default-server runs fail: six child processes report `x11 not available`
+and one exits on SIGPIPE. The passing default run is retained. Single-process
+window repetition and parallel init/quit without windows pass. Changing only
+`-noreset` passes all 2,400 window cycles across three fresh servers and twelve
+processes. This establishes a reproduced reset failure pattern, while the
+historical hosted error strings remain unavailable.
+
+Linux CI now adds `-noreset`, preserving the default 1280 by 1024 screen,
+four workers and complete suite. The actual SDK transport test passes its
+37 checks in the private sanitized Linux build; an unsupported-driver refusal
+verifies the diagnostic without turning failure into success. The
+[detailed evidence](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#sdl-initialization-and-xvfb-lifetime)
+includes the controls and X.Org flag contract. Complete hosted verification
+of this environment correction is pending.
 
 The preceding default source menu passes four focused Windows MSVC Debug CTests:
 GuiIngame, texture uploads, source screen events and the native menu loop.

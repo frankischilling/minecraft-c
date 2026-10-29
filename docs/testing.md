@@ -55,8 +55,8 @@ The [exact World-selection run](https://github.com/frankischilling/minecraft-c/a
 is terminal with one failure. Windows passes 440/440 in 243.78 seconds and
 Clang passes 461/461 in 370.74 seconds. GCC passes 460/461 in 193.30 seconds.
 Formatting passes for 1,356 files. All unique test starts/results match, with
-zero skips; every checkout tree matches `1334db5`. Startup and its new
-fingerprint regression pass on all three hosts.
+zero skips; every checkout tree matches `1334db5`. The fingerprint regression
+passes on all three hosts; `client.startup` passes in both Linux selections.
 
 GCC's sole failure is `client.application_construction_later_owners`: the third
 profile reports `MC_CLIENT_DISPLAY_SDL_ERROR` while creating its real Display.
@@ -65,7 +65,50 @@ completes. The log does not contain the captured SDL operation or detail, so
 the underlying cause remains undiagnosed. A diagnostic-only follow-up prints
 those existing error fields before cleanup, without changing the failure,
 assertions or runtime behavior. Its two native Windows constructor profiles
-and strict GCC/Clang syntax checks pass; another hosted run is required.
+and strict GCC/Clang syntax checks pass. The later hosted result follows below.
+
+## SDL initialization and Xvfb lifetime
+
+The [exact `d71bd94` run](https://github.com/frankischilling/minecraft-c/actions/runs/40815149868)
+is terminal with one failure. Windows passes 440/440 in 278.67 seconds and
+Clang passes 461/461 in 372.76 seconds. GCC passes 460/461 in 348.97 seconds.
+Formatting passes for 1,356 files. Every unique test start has one result,
+with zero skips and matching checkout trees. The test-name sets are unchanged
+from `1334db5`; all three timing caches restore. The preceding diagnostic-only
+run is cancelled by the configured supersession policy.
+
+GCC's sole failure is now `client.display_sdk_transport`. Its native child
+fails `SDL_InitSubSystem(SDL_INIT_VIDEO)` in `pending_failure`, before the
+pending-event assertions. The supervisor correctly rejects its nonzero exit.
+The later-owner case passes in both Linux selections. Neither hosted refusal
+retains SDL's underlying error string, so their exact causes remain unrecorded.
+The SDK test now prints `SDL_GetError` immediately on failed initialization,
+preserving the single call, failure, checks and cleanup.
+
+A bounded private WSL reproduction uses the pinned static SDL3.4.18 library
+(`SDL-release-3.4.18-0-g829a65d76`, `SDL_X11_SHARED=OFF`) with the X11 driver and
+the same default Xvfb screen. Four processes each repeat actual video init,
+hidden-window creation/destruction and video quit up to 200 times. Across four
+fresh default servers, three runs fail: six processes report
+`x11 not available` at the real SDL init call and one exits on SIGPIPE. One
+default run passes; it is retained in the result. Single-process repetition
+passes 200 window cycles, and four processes without windows pass 800 init/quit
+cycles.
+
+Changing only the Xvfb server argument to `-noreset` passes all 2,400 window
+cycles across three fresh servers and twelve processes. Each such server log
+contains one keymap initialization block; default logs contain repeated blocks.
+X.Org documents that
+[`-noreset` prevents reset after the last client disconnects](https://cgit.freedesktop.org/xorg/xserver/tree/doc/Xserver.man.pre?id=ca5ebe3971d8ebcfed00c5ebcd026cdd0ce0c6ba).
+These matched runs identify automatic reset as a cause of the reproduced
+failure pattern. They do not recover the missing error strings from hosted CI.
+
+Linux CI now keeps that owned Xvfb server alive between clients with
+`-screen 0 1280x1024x24 -noreset`. It retains four CTest workers and the complete
+suite. The actual SDK transport test passes all 37 checks in the private
+sanitized Linux build; a real unsupported-driver refusal confirms the new
+diagnostic and still exits with failure. Complete hosted verification of this
+environment correction is pending.
 
 ## Default source menu runtime
 

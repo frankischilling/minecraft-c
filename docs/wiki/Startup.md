@@ -66,6 +66,16 @@ for 1,356 files. Hosted CI and original-game correspondence retain their source 
 Full source run/PX rendering and `Minecraft.d()` shutdown parity are unproven;
 native cleanup is a separate implementation.
 
+The later [`d71bd94` hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/40815149868)
+passes Windows and Clang; GCC has one SDK transport refusal at SDL video
+initialization. A private pinned-SDL reproduction identifies default Xvfb's
+last-client reset as a cause of the same failure pattern. Three default runs
+fail and one passes; three `-noreset` runs complete all 2,400 window cycles.
+Linux CI now keeps the server between clients, with its default screen, four
+workers and suite unchanged. SDK initialization failures now print the actual
+SDL error. [Build and tests](Build-and-tests) records the controls and pending
+hosted verification; the old hosted error strings remain unrecorded.
+
 [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
 and the [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
 separate the newer Windows results, the `de4290b` executable-fingerprint failure,

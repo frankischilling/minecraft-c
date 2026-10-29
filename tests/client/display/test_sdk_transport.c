@@ -21,6 +21,13 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
+static bool initialize_video(void) {
+    if (SDL_InitSubSystem(SDL_INIT_VIDEO))
+        return true;
+    fprintf(stderr, "SDL_InitSubSystem(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
+    return false;
+}
+
 static bool lifetime(void) {
     bool ok = false, video = false;
     SDL_Window *a = NULL, *b = NULL;
@@ -28,7 +35,7 @@ static bool lifetime(void) {
     mc_client_event_record *first = NULL, *second = NULL, *key = NULL;
     mc_client_events_error error;
     mc_client_events_state state;
-    CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO));
+    CHECK(initialize_video());
     video = true;
     a = SDL_CreateWindow("owned event A", 160, 120, SDL_WINDOW_HIDDEN);
     b = SDL_CreateWindow("owned event B", 160, 120, SDL_WINDOW_HIDDEN);
@@ -100,7 +107,7 @@ static bool pending_failure(bool opaque) {
     SDL_Window *window = NULL;
     mc_client_event_port *port = NULL;
     mc_client_events_error error;
-    CHECK(SDL_InitSubSystem(SDL_INIT_VIDEO));
+    CHECK(initialize_video());
     video = true;
     window = SDL_CreateWindow("owned pending head", 160, 120, SDL_WINDOW_HIDDEN);
     CHECK(window != NULL);
