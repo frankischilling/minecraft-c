@@ -33,8 +33,20 @@ static bool menu(mc_client_display_screen_call *call, mc_client_source_da *scree
     return true;
 }
 
+static mc_client_display_screen_status focus_fail(mc_client_display_screen_call *call,
+                                                  mc_client_display_screen_status status,
+                                                  const char *operation, unsigned int pc,
+                                                  bool direct) {
+    if (!direct)
+        return fail(call, status, operation, 165);
+    call->status = status;
+    call->operation = operation;
+    call->site = (mc_client_screen_site){MC_CLASS, "g", "()V", pc};
+    return status;
+}
+
 static mc_client_display_screen_status focus(mc_client_display_screen_call *call,
-                                             mc_client_screen_classes *classes) {
+                                             mc_client_screen_classes *classes, bool direct) {
     client_application *app = call->app;
     call->focus_pc = 0;
     if (mc_client_sdk_display_active(mc_client_display_update_owner(app->display),
@@ -43,7 +55,8 @@ static mc_client_display_screen_status focus(mc_client_display_screen_call *call
         call->child = (mc_client_screen_site){
             call->update.site.class_name, call->update.site.method, call->update.site.descriptor,
             call->update.site.pc < 0 ? 0u : (unsigned int)call->update.site.pc};
-        return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->update.operation, 165);
+        return focus_fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->update.operation, 0,
+                          direct);
     }
     if (!call->display_active) {
         call->focus_pc = 6;
@@ -60,15 +73,16 @@ static mc_client_display_screen_status focus(mc_client_display_screen_call *call
     call->focus_pc = 24;
     if (app->C == NULL) {
         call->child = (mc_client_screen_site){MC_CLASS, "g", "()V", 24};
-        return fail(call, MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE,
-                    "actual focus MouseHelper null receiver", 165);
+        return focus_fail(call, MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE,
+                          "actual focus MouseHelper null receiver", 24, direct);
     }
     if (mc_client_mouse_helper_grab(app->C, mc_client_display_inputs(app->display), &call->mouse) !=
         MC_CLIENT_MOUSE_HELPER_OK) {
         call->child = (mc_client_screen_site){
             call->mouse.site.class_name, call->mouse.site.method, call->mouse.site.descriptor,
             call->mouse.site.pc < 0 ? 0u : (unsigned int)call->mouse.site.pc};
-        return fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->mouse.operation, 165);
+        return focus_fail(call, MC_CLIENT_DISPLAY_SCREEN_CHILD_FAILED, call->mouse.operation, 24,
+                          direct);
     }
     call->mouse_grabbed = true;
     call->focus_pc = 29;
@@ -78,10 +92,10 @@ static mc_client_display_screen_status focus(mc_client_display_screen_call *call
         call->child = call->focus_display == NULL
                           ? (mc_client_screen_site){MC_CLASS, "g", "()V", 29}
                           : call->focus_display->site;
-        return fail(call, status,
-                    call->focus_display == NULL ? "actual recursive display call allocation"
-                                                : call->focus_display->operation,
-                    165);
+        return focus_fail(call, status,
+                          call->focus_display == NULL ? "actual recursive display call allocation"
+                                                      : call->focus_display->operation,
+                          29, direct);
     }
     app->W = 10000;
     app->ag = mc_java_i32_add(app->V, 10000);
@@ -168,7 +182,7 @@ static mc_client_display_screen_status run(mc_client_display_screen_call *call,
     app->r = call->target; /* Actual putfield106, before focus/qq/initialization. */
     call->r_stored = true;
     if (call->target == NULL) {
-        const mc_client_display_screen_status status = focus(call, classes);
+        const mc_client_display_screen_status status = focus(call, classes, false);
         if (status != MC_CLIENT_DISPLAY_SCREEN_OK)
             return status;
         call->source_returned = true;
@@ -242,6 +256,27 @@ mc_client_display_screen_status mc_client_display_screen_run(client_application 
     call->active = true;
     const mc_client_display_screen_status result = run(call, classes);
     call->active = false;
+    return result;
+}
+
+mc_client_display_screen_status mc_client_display_focus_run(client_application *app,
+                                                            mc_client_screen_classes *classes,
+                                                            mc_client_display_screen_call **out) {
+    if (app == NULL || classes == NULL || out == NULL || *out != NULL)
+        return MC_CLIENT_DISPLAY_SCREEN_ARGUMENT;
+    mc_client_display_screen_call *call = calloc(1, sizeof(*call));
+    if (call == NULL)
+        return MC_CLIENT_DISPLAY_SCREEN_ALLOCATION;
+    *out = call;
+    call->app = app;
+    call->site = (mc_client_screen_site){MC_CLASS, "g", "()V", 0};
+    call->active = true;
+    const mc_client_display_screen_status result = focus(call, classes, true);
+    call->active = false;
+    if (result == MC_CLIENT_DISPLAY_SCREEN_OK) {
+        call->source_returned = true;
+        call->site.pc = call->focus_pc;
+    }
     return result;
 }
 

@@ -399,6 +399,11 @@ bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *r,
     return true;
 }
 
+mc_client_screen_classes *
+mc_client_screen_transitions_classes(const mc_client_screen_transitions *r) {
+    return r == NULL ? NULL : r->classes;
+}
+
 mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_transitions **slot,
                                                             mc_client_screen_error *e) {
     if (slot == NULL || e == NULL)

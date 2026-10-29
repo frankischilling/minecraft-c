@@ -2174,3 +2174,5 @@ static mc_game_settings_status source_retire(mc_game_settings *settings,
     source_attempt_free(settings);
     return MC_GAME_SETTINGS_OK;
 }
+
+#include "source_input.inc"

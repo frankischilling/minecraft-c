@@ -294,32 +294,48 @@ static mc_client_screen_status finish(mc_client_source_da *o, bool returned,
     return e->screen.status;
 }
 
-mc_client_screen_status mc_client_screen_mouse_event(mc_client_source_da *o,
-                                                     const mc_client_sdk_mouse_event *event,
-                                                     mc_client_screen_event_report *r,
-                                                     mc_client_screen_event_error *e) {
+mc_client_screen_status mc_client_screen_mouse_event_with_transitions(
+    mc_client_source_da *o, const mc_client_sdk_mouse_event *event,
+    mc_client_screen_transitions *router, mc_client_screen_event_report *r,
+    mc_client_screen_event_error *e) {
     if (e == NULL || r == NULL || event == NULL)
         return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
     *e = (mc_client_screen_event_error){0};
     *r = (mc_client_screen_event_report){0};
     if (!admit(o, e))
         return e->screen.status;
+    o->transitions = router;
     r->mouse_events = 1;
     return finish(o, mouse(o, event, r, e), r, e);
+}
+
+mc_client_screen_status mc_client_screen_mouse_event(mc_client_source_da *o,
+                                                     const mc_client_sdk_mouse_event *event,
+                                                     mc_client_screen_event_report *r,
+                                                     mc_client_screen_event_error *e) {
+    return mc_client_screen_mouse_event_with_transitions(o, event, NULL, r, e);
+}
+
+mc_client_screen_status mc_client_screen_key_event_with_transitions(
+    mc_client_source_da *o, const mc_client_sdk_key_event *event,
+    mc_client_screen_transitions *router, mc_client_screen_event_report *r,
+    mc_client_screen_event_error *e) {
+    if (e == NULL || r == NULL || event == NULL)
+        return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+    *e = (mc_client_screen_event_error){0};
+    *r = (mc_client_screen_event_report){0};
+    if (!admit(o, e))
+        return e->screen.status;
+    o->transitions = router;
+    r->keyboard_events = 1;
+    return finish(o, key(o, event, r, e), r, e);
 }
 
 mc_client_screen_status mc_client_screen_key_event(mc_client_source_da *o,
                                                    const mc_client_sdk_key_event *event,
                                                    mc_client_screen_event_report *r,
                                                    mc_client_screen_event_error *e) {
-    if (e == NULL || r == NULL || event == NULL)
-        return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
-    *e = (mc_client_screen_event_error){0};
-    *r = (mc_client_screen_event_report){0};
-    if (!admit(o, e))
-        return e->screen.status;
-    r->keyboard_events = 1;
-    return finish(o, key(o, event, r, e), r, e);
+    return mc_client_screen_key_event_with_transitions(o, event, NULL, r, e);
 }
 
 mc_client_screen_status mc_client_screen_handle_input_with_transitions(

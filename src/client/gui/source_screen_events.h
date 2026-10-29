@@ -75,15 +75,25 @@ mc_client_screen_status mc_client_screen_handle_input_with_transitions(
 mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_error *);
 /* Prepared-current-event controls and source callees. They do not claim SDK
  * next/poll completion. Mouse scaling reads actual da.c/d and App.d/e, with
- * Java wrapping multiplication, integer division and inverted Y. */
+ * Java wrapping multiplication, integer division and inverted Y. The transition
+ * variants use the supplied live router for the same virtual screen actions;
+ * wrappers without a router retain the existing unresolved-action behavior. */
 mc_client_screen_status mc_client_screen_mouse_event(mc_client_source_da *,
                                                      const mc_client_sdk_mouse_event *,
                                                      mc_client_screen_event_report *,
                                                      mc_client_screen_event_error *);
+mc_client_screen_status mc_client_screen_mouse_event_with_transitions(
+    mc_client_source_da *, const mc_client_sdk_mouse_event *, mc_client_screen_transitions *,
+    mc_client_screen_event_report *, mc_client_screen_event_error *);
 mc_client_screen_status mc_client_screen_key_event(mc_client_source_da *,
                                                    const mc_client_sdk_key_event *,
                                                    mc_client_screen_event_report *,
                                                    mc_client_screen_event_error *);
+mc_client_screen_status mc_client_screen_key_event_with_transitions(mc_client_source_da *,
+                                                                    const mc_client_sdk_key_event *,
+                                                                    mc_client_screen_transitions *,
+                                                                    mc_client_screen_event_report *,
+                                                                    mc_client_screen_event_error *);
 /* Actual ke.c(Minecraft,II)Z ignores visibility h and tests enabled g with
  * source integer-add wrap at right/bottom bounds. App is not read by ke.c. */
 mc_client_screen_status mc_client_screen_button_hit(mc_client_source_ke *, int32_t x, int32_t y,

@@ -438,8 +438,8 @@
       "sha256": "dc79d1c8c87ca683eb6c2778a276129610c76e7a6f9c84e7b9793e213e15aca6"
     },
     "include/mc/inventory/player.h": {
-      "bytes": 2933,
-      "sha256": "8fe473af0cdb6060856bd5fd6505b5eddcbc8f40b0ef95001b7baa73c82fe5ef"
+      "bytes": 4669,
+      "sha256": "5f3aaa7ea220ecb639dbb7782891742a45bfbd2a7daf986abaaf5dd4e036ba3f"
     },
     "include/mc/inventory/result.h": {
       "bytes": 2440,

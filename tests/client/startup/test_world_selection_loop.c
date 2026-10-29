@@ -9,6 +9,7 @@
 #include "client/gui/source_world_list.h"
 #include "client/gui/source_world_selection_drawing.h"
 #include "client/gui/source_world_selection_internal.h"
+#include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
 #include "client/startup/application_startup.h"
 #include "client/world/load_world.h"
@@ -319,6 +320,109 @@ static int world_display_controls(fixture *f, mc_client_screen_classes *classes)
     return 0;
 }
 
+static int gameplay_key(fixture *f, SDL_Scancode code, bool down) {
+    SDL_Event event = {0};
+    event.type = down ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
+    event.key.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
+    event.key.scancode = code;
+    event.key.key = SDL_GetKeyFromScancode(code, SDL_KMOD_NONE, true);
+    event.key.down = down;
+    CHECK(SDL_PushEvent(&event));
+    return 0;
+}
+
+static int gameplay_poll(fixture *f) {
+    mc_client_sdk_update_error error;
+    CHECK(mc_client_sdk_display_process_messages(mc_client_display_update_owner(f->app->display),
+                                                 &error) == MC_CLIENT_SDK_UPDATE_OK);
+    return 0;
+}
+
+static int gameplay_wheel(fixture *f, float wheel) {
+    SDL_Event event = {0};
+    event.type = SDL_EVENT_MOUSE_WHEEL;
+    event.wheel.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
+    event.wheel.y = wheel;
+    CHECK(SDL_PushEvent(&event));
+    return 0;
+}
+
+static int gameplay_controls(fixture *f) {
+    mc_client_gameplay_input *call = calloc(1, sizeof(*call));
+    CHECK(call != NULL);
+    mc_local_player_snapshot player;
+    mc_movement_input_state movement;
+    mc_inventory_player_state slots;
+    mc_game_settings_state before, after;
+    CHECK(mc_local_player_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          mc_game_settings_read_state(f->app->settings, &before));
+    mc_client_sdk_input *input = mc_client_display_inputs(f->app->display);
+    mc_client_sdk_input_error input_error;
+    bool down;
+    CHECK(mc_client_sdk_mouse_button_down(input, 0, &down, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK &&
+          !down);
+    CHECK(mc_client_sdk_mouse_button_down(input, 1, &down, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK &&
+          !down);
+    CHECK(gameplay_key(f, SDL_SCANCODE_W, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_9, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_9, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F1, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F1, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F3, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F3, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F5, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F5, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F8, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F8, false) == 0 && gameplay_poll(f) == 0);
+    f->app->W = 17;
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->returned && !call->failed && call->source_pc == 1073 &&
+          call->keyboard_events == 11 && call->hotbar_stores == 1 && f->app->W == 0);
+    CHECK(mc_movement_input_read_state(player.input, &movement) && movement.keys[0] &&
+          movement.fields.forward == 0.0f); /* Key dispatch does not run lr.a(Player). */
+    CHECK(mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 8);
+    CHECK(mc_game_settings_read_state(f->app->settings, &after) &&
+          after.values.hide_gui != before.values.hide_gui &&
+          after.values.show_debug_info != before.values.show_debug_info &&
+          after.values.third_person_view != before.values.third_person_view &&
+          after.values.smooth_camera != before.values.smooth_camera);
+    CHECK(gameplay_key(f, SDL_SCANCODE_W, false) == 0 && gameplay_poll(f) == 0);
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->keyboard_events == 1 && mc_movement_input_read_state(player.input, &movement) &&
+          !movement.keys[0]);
+    CHECK(gameplay_wheel(f, 1.0f) == 0 && gameplay_poll(f) == 0);
+    CHECK(mc_platform_current_time_millis(&f->app->P) == MC_PLATFORM_MILLIS_OK);
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->mouse_events >= 1 && call->stale_mouse_events == 0 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
+    CHECK(gameplay_wheel(f, -1.0f) == 0 && gameplay_poll(f) == 0);
+    f->app->P = 0; /* Actual elapsed-wall-time branch discards the entire event. */
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->stale_mouse_events >= 1 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
+    CHECK(gameplay_key(f, SDL_SCANCODE_ESCAPE, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_3, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_3, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_ESCAPE, false) == 0 && gameplay_poll(f) == 0);
+    CHECK(!mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) && call->failed &&
+          call->keyboard_events == 1 && call->site.pc == 618 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
+    const char *operation = call->operation;
+    CHECK(mc_client_gameplay_input_retire(call) && call->failed && call->site.pc == 618 &&
+          call->operation == operation); /* Preserve diagnostics through cleanup. */
+    memset(call, 0, sizeof(*call));
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->keyboard_events == 3 && call->hotbar_stores == 1 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 2);
+    CHECK(mc_client_gameplay_input_retire(call));
+    free(call);
+    printf("GAMEPLAY_INPUT sdk=1 movement-press-release=1 hotbar=1 toggles=4 wheel=1 "
+           "stale-wheel=1 failure-preserves-tail=1 reset=1 returned=1073\n");
+    return 0;
+}
+
 static int large_drag(fixture *f, mc_client_source_rq *rq, const char *capture_path) {
     mc_client_world_list_fields *list = &rq->fields.o->fields;
     CHECK(mc_client_save_list_size(rq->fields.n) == 16 && list->m == 0.0f && list->k == -1.0f);
@@ -590,8 +694,11 @@ int main(int argc, char **argv) {
                   mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display), &input) &&
                   input.grabbed == f.app->N && player.living.Y > 0);
             CHECK(strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
-                  strcmp(f.state.source_method, "k") == 0 && f.state.source_pc == 337);
+                  strcmp(f.state.source_method, "k") == 0 && f.state.source_pc == 1074 &&
+                  f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
+                  f.state.gameplay_input->source_pc == 1073);
             CHECK(world_display_controls(&f, initial->classes) == 0);
+            CHECK(gameplay_controls(&f) == 0);
             mc_entity_vector_snapshot before_pick, after_pick;
             CHECK(mc_entity_vector_get_snapshot(f.app->entities, &before_pick) == MC_ENTITY_OK);
             mc_client_entity_renderer_pick_call *pick = NULL;
@@ -610,7 +717,8 @@ int main(int argc, char **argv) {
             CHECK(mc_client_entity_renderer_pick_retire(&pick) == MC_CLIENT_PICK_OK &&
                   pick == NULL);
             printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
-                   "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 next=k337\n");
+                   "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 "
+                   "input=1073 next=k1074\n");
         } else {
             CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
                   load.player == NULL && !load.world_published);

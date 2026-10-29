@@ -39,6 +39,11 @@ mc_client_screen_status mc_client_screen_transitions_select(mc_client_screen_tra
                                                             mc_client_screen_error *);
 bool mc_client_screen_transitions_inspect(const mc_client_screen_transitions *,
                                           mc_client_screen_transition_state *);
+/* Passive native borrow of this owner's SAME retained screen namespace.
+ * NULL-safe; keep the transition owner live until every use of the borrow and
+ * its retained source-call prefixes has ended. No source operation runs. */
+mc_client_screen_classes *
+mc_client_screen_transitions_classes(const mc_client_screen_transitions *);
 /* Native terminal cleanup, with no source close/save/r rollback. External
  * descendants or active calls preserve the whole remaining dependency graph. */
 mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_transitions **,

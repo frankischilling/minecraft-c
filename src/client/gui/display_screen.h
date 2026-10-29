@@ -56,6 +56,15 @@ mc_client_display_screen_status mc_client_display_screen_run(client_application 
                                                              mc_client_screen_classes *,
                                                              mc_client_source_da *,
                                                              mc_client_display_screen_call **);
+/* Actual Minecraft.g(), starting with Display.isActive0. Uses the SAME focus
+ * body as a(NULL), without an enclosing display call. Direct entry errors use
+ * g0/24/29 and returns use g6/14/51; the retained recursive a(NULL)29 and its
+ * children remain inspectable through focus_display. The caller keeps App and
+ * this exact class namespace live and exclusive through checked retirement.
+ * Out must start NULL. Retire with mc_client_display_screen_retire. */
+mc_client_display_screen_status mc_client_display_focus_run(client_application *,
+                                                            mc_client_screen_classes *,
+                                                            mc_client_display_screen_call **);
 mc_client_display_screen_status mc_client_display_screen_retire(mc_client_display_screen_call **);
 
 #endif

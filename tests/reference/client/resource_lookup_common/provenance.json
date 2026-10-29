@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 330387,
-      "sha256": "31550fe5f4e9b5d07e54bbf17545bd1aa4ca23d22b2ba39d4e5eab6dd067d814"
+      "bytes": 330472,
+      "sha256": "abd722a5adf0367f1cafd8b4776ab6372a09c9e861bf851964726dd36d952d93"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -30,8 +30,8 @@
       "sha256": "c7e2191bf446d08265569f77b4ef8c21bed969109b9682834fa902bf7651e5d1"
     },
     "README.md": {
-      "bytes": 2282,
-      "sha256": "b137f254eaf4247992acad73964a59058a5bd8c2147fd4fcb36f566996b44b05"
+      "bytes": 2349,
+      "sha256": "18cc8df18e814745dda0bdbdc4d51be76e9df873422cbda8012adba84ebb9b9c"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -466,8 +466,8 @@
       "sha256": "93226a41c97403c4e3e61a23f633b553fc6c96c3058e44d362bf01409dfdaff9"
     },
     "docs/parity.md": {
-      "bytes": 106732,
-      "sha256": "6fc9ff58e2cb5283ce6a06132e0fcc08d630d539db99a570fa3e8e5ad8782d0c"
+      "bytes": 107656,
+      "sha256": "7d975e0838d30065dd6d7debf48b9474711d31b435314619751a5d73a0d027dc"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 24876,
-      "sha256": "0f4f3fd86024aed09571d11fabd026d818ba711a37d66c76bcefcf25e1366d0a"
+      "bytes": 25852,
+      "sha256": "d8b7b603c2ce1f69c71d9c4352e32cfe1ad589128f4d7a04ca69029ce48b07ee"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,28 +826,28 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 253440,
-      "sha256": "ed77ace0b489f750cb8a97e4839d30b8f22bdec7dcea9653ca7f1237c4cc5bf2"
+      "bytes": 255423,
+      "sha256": "1f7a09e7827c79bf30e964a79d089348b69c5f10cb3b4b4e1e7c43bf16369d5b"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 13800,
       "sha256": "d24c8a61577faf8dbbfdb7b701268d8562221172c55f0c77576b8b47c50aea26"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 24579,
-      "sha256": "dff715ca9061a3c65adbf7633adf6d8e9b57955fdd618f68ff7c7de63a9b4e64"
+      "bytes": 25391,
+      "sha256": "8512b44a6a1837282718cf9e435853a950fa5aeca77740083fc3ce35e165b17d"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,
       "sha256": "3c215b221963d328333a1f5efa7c766b2ad1b8fb1fd7dd787501cec11cf46a66"
     },
     "docs/wiki/Home.md": {
-      "bytes": 3055,
-      "sha256": "dc0e6daf3e600f97cc641014ed22f8142f48c02d5d61a19c3ca90da93a33bd95"
+      "bytes": 3473,
+      "sha256": "effa40c543510b790e0f32424de3eac43214601fdd1fe07790557618aa37bb99"
     },
     "docs/wiki/Startup.md": {
-      "bytes": 7264,
-      "sha256": "7dcc72a4b14afda31dff87b5070edae0ca00911fe1b7747c4dbb537668a4abc4"
+      "bytes": 7419,
+      "sha256": "96855efa614d4a01c3d12c7e2367d712a87f208873d0a4c51194a4cbaec6385f"
     },
     "docs/wiki/Storage-and-reference.md": {
       "bytes": 7959,
@@ -1466,8 +1466,8 @@
       "sha256": "dc79d1c8c87ca683eb6c2778a276129610c76e7a6f9c84e7b9793e213e15aca6"
     },
     "include/mc/inventory/player.h": {
-      "bytes": 2933,
-      "sha256": "8fe473af0cdb6060856bd5fd6505b5eddcbc8f40b0ef95001b7baa73c82fe5ef"
+      "bytes": 4669,
+      "sha256": "5f3aaa7ea220ecb639dbb7782891742a45bfbd2a7daf986abaaf5dd4e036ba3f"
     },
     "include/mc/inventory/result.h": {
       "bytes": 2440,
@@ -2006,8 +2006,8 @@
       "sha256": "9578e0cc7995e343ef20fb20ba5176b0a88c63648ca9a719329a465acfd1231e"
     },
     "scripts/development/format_code.py": {
-      "bytes": 3037,
-      "sha256": "92ddb04c52e385468e9d38570877134075ce3f1747835c58f53e483dde99989d"
+      "bytes": 3094,
+      "sha256": "e4bad3756d3cd89bf8aeb3cdbe8427acd696191990bc797a72e4b421921c1bb6"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -3178,8 +3178,8 @@
       "sha256": "04250c23f22fba151654e1106a764d03cd5fdf5227504ca4fc7e828c9b1ea4da"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 103551,
-      "sha256": "516162eb9cf264efc437fe3ee297f2f5572ba418f86617701c3fe7408f8d1795"
+      "bytes": 103580,
+      "sha256": "4d8f6cd87602ff9ba29462b453ea42c939ae6dced18750b4d51dc0ea7dc801ce"
     },
     "src/client/settings/labels.c": {
       "bytes": 15759,
@@ -6275,7 +6275,7 @@
     },
     "tests/reference/client/application_owner/provenance.json": {
       "bytes": 28719,
-      "sha256": "e9d9e11c0aec8650d9064c0d65b9e7a2d413951ca3546091236dec2a217ab9a9"
+      "sha256": "64d6d4dd086fa5ba182f29be82257126810a40e39adf526337ec473b31df084e"
     },
     "tests/reference/client/application_owner/run_native.py": {
       "bytes": 2027,
@@ -6307,7 +6307,7 @@
     },
     "tests/reference/client/biped/provenance.json": {
       "bytes": 26935,
-      "sha256": "883f6f1a8fd48feabd545636ac37f13a0186131847f7f25676eaf70c449fc65d"
+      "sha256": "170d926c206243403452f989af1f8264c33defd0d377bc197d43d2ae4ec00407"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -6335,7 +6335,7 @@
     },
     "tests/reference/client/camera/provenance.json": {
       "bytes": 11229,
-      "sha256": "0ed61a030b7f5aafe2cd9114dd98399c4b86ce6dd2e34d206b0bc6774a706838"
+      "sha256": "60a6c6c48078be606f7a8ce7f85fd13d019f8ba8a12199c8f7e8d9ac87c29db0"
     },
     "tests/reference/client/camera/source-pins.json": {
       "bytes": 324755,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 160899,
-      "sha256": "7d8f5535ff24ef6b6d844e50e9796ed1901ca72019d0bd10828f9f4142b21e1c"
+      "bytes": 163658,
+      "sha256": "30da29f8979076b894ed1773250ca8164f8a8558702ea419956817d8775d89da"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 288561,
-      "sha256": "37d9a622c19f7e20f96d41ae237bf22f4f6328f0e2e6e3ad082754f14f903ffa"
+      "bytes": 290310,
+      "sha256": "0ec9521b6a1320b6ee93964d5eb814cb82314ae2436871b7d86c90ea056b8e9f"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6571,7 +6571,7 @@
     },
     "tests/reference/client/render_engine/provenance.json": {
       "bytes": 3575,
-      "sha256": "eb1bf175b265106c33c4e0046e9581f2026634804ead3ded91206deb5ffdb423"
+      "sha256": "20cfdbc2ac6de490b79b2805a3245e7986440b0e7903dd5d44a2f540a67581a1"
     },
     "tests/reference/client/render_engine/source-pins.json": {
       "bytes": 19198,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 156099,
-      "sha256": "e12d9661e0f93fe6ad2503b77e8ba33f7c055f6318decdf073c54d8e2c9cc76c"
+      "bytes": 158858,
+      "sha256": "85d86a6b7752c19fa13011a596513fc828c4b807e79f8c018552791cb1b3b628"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9722,12 +9722,12 @@
       "sha256": "5c149f8eca4636197c0d3eadfd3c7c99b59d0be61adfa9ed7c8b64d2e50423a3"
     },
     "src/client/gui/display_screen.c": {
-      "bytes": 13195,
-      "sha256": "3040592710a2652a8629cabe3187fd15a3338220ce33ffb0fc188bb66ad7f93c"
+      "bytes": 14824,
+      "sha256": "a147132d63e4068a105202b563590caa60e62c5e209ef895c9fcf52cfeb6beb5"
     },
     "src/client/gui/display_screen.h": {
-      "bytes": 3029,
-      "sha256": "9df18a3c2d8b8bd6e3489e1a8d8ecba0065f97ce6f1f94abedf9a1ecd9285ef1"
+      "bytes": 3758,
+      "sha256": "28d262220ce6bec7a0a3206ae613edf26eb9ebc489a984118ec56f1283b5ba70"
     },
     "src/client/startup/application_startup_gui_ingame.c": {
       "bytes": 6220,
@@ -9750,8 +9750,8 @@
       "sha256": "78321bb335d5f90fc5e419fa97ead8dd8ac486dc148be73f3abf4dab4ebf6253"
     },
     "cmake/client_runtime.cmake": {
-      "bytes": 2517,
-      "sha256": "50d8fc17d1e5d2183fc06c19dfd23d8766a5d2c717fdf54faa9660c0b78b1281"
+      "bytes": 2561,
+      "sha256": "98a41983626117e9a21549fca728bcc32f5bc6d8751a0053434c9fd01d7121f6"
     },
     "cmake/client_source_screen_drawing.cmake": {
       "bytes": 589,
@@ -9766,8 +9766,8 @@
       "sha256": "8252109ad38050a87780d39190b84c14a8c41f91bd3c772fea5ca7f90cad54cf"
     },
     "docs/client/menu-runtime.md": {
-      "bytes": 5301,
-      "sha256": "bcda28c7e5041d82fc465bce5098a0ed62169a3f42fd58686145aec44629907e"
+      "bytes": 5433,
+      "sha256": "0d2c69168bb79c4231ad5043fa4deb6ebd639c6f6d5f5116da410937d26a7c86"
     },
     "src/client/display/source_texture_update.h": {
       "bytes": 1017,
@@ -9786,12 +9786,12 @@
       "sha256": "63b2a4dbf4781d950f91a210ed3f763afa428abf7fb591b8ccde02a457734d1a"
     },
     "src/client/gui/source_screen_events.c": {
-      "bytes": 22174,
-      "sha256": "562c143fdd7b2af0f4d22f3ba0f593f13a3601a772bb05ae57ac7f074ffdd30e"
+      "bytes": 22900,
+      "sha256": "7cecbf1ca4d26a67c03658b155fcbd8da6bd3a017ce3d58896df21ce2fc0e912"
     },
     "src/client/gui/source_screen_events.h": {
-      "bytes": 5415,
-      "sha256": "44b515e3145bdd1ecbd80f85e62383724c0a2984e150862ec51da5902a1092a7"
+      "bytes": 6314,
+      "sha256": "9ad9a5a426b1c8c4e1b0b4ead02d28a5f18613c90a936d87389e1192a5389294"
     },
     "src/client/render_engine/chunk_statistics.c": {
       "bytes": 4230,
@@ -9818,12 +9818,12 @@
       "sha256": "d822200c474ebc43042e49b2ecabe83d703ad0ff1b2119627b1f0871ddd79df8"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 28493,
-      "sha256": "5a49b3c0daea3c2c49cff7e4e6de9a4300478cf06d159dbb37b10a33c389c6cd"
+      "bytes": 36250,
+      "sha256": "70dc3aec1b63d23cd7c82b5149a48ee2055c83bbd853857a0c2dd8521ecfdb24"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 1998,
-      "sha256": "82156dc82fa3d6bd5efc1b63b63b6d860da6f3f90673d36480ed219e97dcd204"
+      "bytes": 2436,
+      "sha256": "347266d52518f349771966ea4d5c76ecfc78723f7d96596db6f1da3e4bcebf97"
     },
     "tests/client/gui/test_source_screen_events.c": {
       "bytes": 11463,
@@ -9878,12 +9878,12 @@
       "sha256": "d7d295a61cc4177ee26f6de4cd2cb31e0c21c80ede8c05543424014f7bf6a665"
     },
     "src/client/gui/source_screen_transitions.c": {
-      "bytes": 21086,
-      "sha256": "1653ff0531caa07049a90f142bf8c6de39148b5988f1da1360f697cca99df04c"
+      "bytes": 21236,
+      "sha256": "d4ae7a8ac223b1c95f27015239fd51a7bd07ce45f3a1978bc03cf89eac882a7a"
     },
     "src/client/gui/source_screen_transitions.h": {
-      "bytes": 2920,
-      "sha256": "e39259b5dad1f97632a7e9f718fef1336f755dd79d84bf4fd238ca3e92436df7"
+      "bytes": 3252,
+      "sha256": "4d009b701b8a1b299b262fe5a6c9affa0e87edf401bc1cfadc370efb8d2210f1"
     },
     "src/client/gui/source_world_list.c": {
       "bytes": 7402,
@@ -9926,8 +9926,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 39095,
-      "sha256": "ca946ed67cb9dec6499dbda7f5cb8e45f48b63449ff90efbb26d60ca07894fb0"
+      "bytes": 45041,
+      "sha256": "b07824c55efb4ba5728b0a62d4fef87e8315f2790ab3e5bfb9f53a09f5ce60fb"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -10440,6 +10440,102 @@
     "tests/world/runtime/collision/test_raytrace.c": {
       "bytes": 21992,
       "sha256": "8aafab49dc82f43ccf4c061fbd91f6c47b1649f477d49ab1b7f3d121bbbdfdc6"
+    },
+    "cmake/client_controller_tick.cmake": {
+      "bytes": 1335,
+      "sha256": "99f487024ebae36decb76cc73a3765074e1d7fe3e8eaf62fc73451f6f283ac07"
+    },
+    "cmake/client_input_fields.cmake": {
+      "bytes": 1101,
+      "sha256": "de7b5ec420b2321b6967b59f40767e7febf0227d2c606a7f527d273a2f08b370"
+    },
+    "docs/client/gameplay-input.md": {
+      "bytes": 4478,
+      "sha256": "6d874054f5eab7121e2e8df96b443adb44bac29a7ec70d2c8ef853e10ae17b99"
+    },
+    "include/mc/client/controller/singleplayer_tick.h": {
+      "bytes": 4708,
+      "sha256": "87fb6f0fd61d2b16ae8ccd4c67f48e863133b9355d6882b41c9f34cc4defe0d6"
+    },
+    "src/client/controller/singleplayer_tick.c": {
+      "bytes": 7833,
+      "sha256": "e6a2a5c24e712a61178ec29dc2bca195e24a96d15b89608279f92f07a909813b"
+    },
+    "src/client/runtime/gameplay_input.c": {
+      "bytes": 14576,
+      "sha256": "8164030b7c82b15701b019b8181874c672d091bba4dca22247295e3c3e7efd74"
+    },
+    "src/client/runtime/gameplay_input.h": {
+      "bytes": 2348,
+      "sha256": "4e9c7793429355ac5030be3c9fdcae4f33118321a4d65b4b1e0de16bbd9539d6"
+    },
+    "src/client/settings/source_input.h": {
+      "bytes": 2183,
+      "sha256": "a296fd9504f29d4e75c0560afe7a3c05ac82557edb2b36eaa9134f3725a8f816"
+    },
+    "src/client/settings/source_input.inc": {
+      "bytes": 4774,
+      "sha256": "3daf0de7062ffa72df490af71ac708ee0f28df9b16ad228b00e2b372de774adf"
+    },
+    "src/inventory/player_selection.c": {
+      "bytes": 3279,
+      "sha256": "3c51d1453864d741d89708b8b90bc60c048c28b7fe33a8745134d6d7db935e53"
+    },
+    "tests/client/controller/test_singleplayer_tick.c": {
+      "bytes": 23204,
+      "sha256": "3f27007bc7864f1db64be928ad7d5db2a5bd6016fc19e315eb959f01d674e5a8"
+    },
+    "tests/client/settings/test_input_fields.c": {
+      "bytes": 10920,
+      "sha256": "0154bab744029eee94c4c00dbab6c12489ac359208c123458bcebd2980156228"
+    },
+    "tests/reference/client/controller_tick/ControllerTickObservation.java": {
+      "bytes": 6620,
+      "sha256": "1fbb426f33f3deb1b3f82718745e31110f7bdafc0768a7ba3db8da275cdcd814"
+    },
+    "tests/reference/client/controller_tick/README.md": {
+      "bytes": 2644,
+      "sha256": "1448a6d0e082eacbeae61dea8183f82f25e62e43723269f0c478951940b1861e"
+    },
+    "tests/reference/client/controller_tick/capture_reference.py": {
+      "bytes": 7225,
+      "sha256": "5682552664a49b1156a29967778adc7e8b4c7c014f8c13064c6609d3a4f2a68a"
+    },
+    "tests/reference/client/controller_tick/finite.json": {
+      "bytes": 3109,
+      "sha256": "483879a151e531bd77ad2338fd37de51ba6f89e4de374291927753edbfc0e325"
+    },
+    "tests/reference/client/controller_tick/run_native.py": {
+      "bytes": 2537,
+      "sha256": "ace0c83905c1d5a7bc0cec75a73bc354b80b14c32f573ab44d5ebb548694d3bb"
+    },
+    "tests/reference/client/controller_tick/source-pins.json": {
+      "bytes": 25019,
+      "sha256": "f50da7591266393e8e6832b0e0997511d2a919e0d08c19b59fd4f4e2a5384d9d"
+    },
+    "tests/reference/client/input_fields/README.md": {
+      "bytes": 2679,
+      "sha256": "7357b2135f8b122e29930c55ee27af49eff5196ea191af608fa0a5a684f468f4"
+    },
+    "tests/reference/client/input_fields/SelectionObservation.java": {
+      "bytes": 2518,
+      "sha256": "6056e07e2c43fbd5f44bd8b5bb1ad2057bea99dd1eeb99290667243617821c4d"
+    },
+    "tests/reference/client/input_fields/capture_reference.py": {
+      "bytes": 6135,
+      "sha256": "0fb40346377fcd2ce3e28390ca3027a272eda9a76f7fd9b31442e7d24e57a515"
+    },
+    "tests/reference/client/input_fields/finite.json": {
+      "bytes": 1539,
+      "sha256": "790574afb9c3f861799b6487b3526fb7d261547648dfb8df6c4111a4c99167ec"
+    },
+    "tests/reference/client/input_fields/run_native.py": {
+      "bytes": 2150,
+      "sha256": "bb558b82a8a5fbd5ac54ae6c5361d09f14a19160f8048fa514c42b52e1c110a9"
+    },
+    "tests/reference/client/input_fields/source-pins.json": {
+      "bytes": 1206,
+      "sha256": "91534747e75344b9f8095271e39e0e8ea859e67cf76f5159d0b0c50b5ed4b6b9"
     }
   },
   "self_metadata_excluded": true,

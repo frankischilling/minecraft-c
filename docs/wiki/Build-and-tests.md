@@ -1,6 +1,17 @@
 # Build and tests
 
-The current picking cohort passes the complete Windows Debug ALL build and
+The current input/controller extension passes the complete Windows Debug ALL
+build and all 488 selected CTests in 212.09 seconds, with zero failures or skips.
+Both new public replays pass on MSVC, GCC13 and Clang18; Linux uses ASan/UBSan
+and leak detection. Fresh original captures reproduce 63 inventory-wheel rows
+and 60 controller rows. The loaded World-selection graph reaches input
+return1073, then direct segment checks exercise movement keys, hotbar, toggles,
+wheel input, stale events and failure tails. World ticks and complete frames
+remain unfinished. Formatting checks 1,432 files. The
+[current scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#gameplay-input-and-controller-ticks)
+distinguishes runtime, compile and original-reference evidence.
+
+The preceding picking cohort passes the complete Windows Debug ALL build and
 486 selected CTests in 263.68 seconds, with zero failures or skips. There are
 532 configured cases, with 46 reference-label profiles excluded and all three
 optional constructor cases included. Headless Release and both actual Linux

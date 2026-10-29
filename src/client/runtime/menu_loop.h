@@ -11,6 +11,13 @@ typedef struct mc_client_menu_loop_state {
     bool failed, running;
     const char *operation, *source_class, *source_method;
     int64_t source_pc; /* Source unsigned PCs and native -1 both retain their value. */
+    /* Borrowed child diagnostics remain live until this loop retires. Gameplay
+     * value diagnostics survive cleanup retry; released focus/monitor views
+     * end with their successful native cleanup. */
+    const struct mc_singleplayer_tick_state *controller_tick;
+    const struct mc_client_display_screen_call *display_call;
+    const struct mc_player_error *player;
+    const struct mc_client_gameplay_input *gameplay_input;
 } mc_client_menu_loop_state;
 
 /* Native frame composition for the genuine constructed, initialized no-World
@@ -18,7 +25,7 @@ typedef struct mc_client_menu_loop_state {
  * It uses the actual
  * App Timer, SDK, screen, statistics, sound and texture-effect owners. The
  * existing OpenGL3.3 GUI kernels present source-owned screen records. Unsupported
- * World/controller/focus/fullscreen/debug/screenshot routes retain a reached
+ * World-tick/gameplay-action/fullscreen/debug/screenshot routes retain a reached
  * diagnostic rather than entering the old inspection scene.
  *
  * Calls and callbacks require exclusive use of this whole graph on the video

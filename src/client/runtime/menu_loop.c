@@ -1,5 +1,7 @@
 #include "menu_loop.h"
+#include "gameplay_input.h"
 
+#include "../../world/runtime/chunk_provider_internal.h"
 #include "../application_state.h"
 #include "../display/sdk_update.h"
 #include "../display/source_surface.h"
@@ -14,12 +16,16 @@
 #include "../startup/application_gl_diagnostics.h"
 #include "../startup/application_startup.h"
 #include "../world/entity_renderer/internal.h"
+#include "mc/client/controller/singleplayer_tick.h"
 #include "mc/client/gui/gui_ingame.h"
+#include "mc/client/sound/sound_manager.h"
 #include "mc/client/statistics/writer.h"
 #include "mc/client/world/picking.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/bounds/bounds.h"
+#include "mc/entity/player/player.h"
 #include "mc/entity/vector/vector.h"
+#include "mc/world/runtime/construction.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
@@ -38,6 +44,17 @@ struct mc_client_menu_loop {
     mc_client_entity_renderer_pick_call *pick;
     mc_client_entity_renderer_pick_state pick_state;
     mc_client_entity_renderer_pick_error pick_cleanup;
+    mc_singleplayer_tick_call *controller_tick;
+    mc_singleplayer_tick_state controller_state;
+    mc_singleplayer_tick_error controller_failure, controller_cleanup;
+    mc_singleplayer_tick_error controller_failure_copy;
+    mc_sound_error controller_sound_copy;
+    mc_sound_manager_report controller_sound_report_copy;
+    mc_client_display_screen_call *screen_display;
+    mc_client_display_screen_call screen_display_copy;
+    mc_local_player_snapshot player_snapshot;
+    mc_player_error player_error;
+    mc_client_gameplay_input gameplay;
     bool active, retiring;
     mc_client_menu_loop_state state;
     int64_t last_second;
@@ -128,6 +145,97 @@ static bool texture_tick(mc_client_menu_loop *loop) {
     return true;
 }
 
+static bool provider_tick(mc_client_menu_loop *loop) {
+    client_application *app = loop->app;
+    if (app->h == NULL)
+        return true;
+    if (app->active_world == NULL)
+        return stop(loop, "actual fd.w null World receiver", "net/minecraft/client/Minecraft", "k",
+                    47);
+    mc_world_runtime_fields world;
+    if (mc_world_runtime_fields_get(app->active_world, &world) != MC_WORLD_STORAGE_OK)
+        return stop(loop, "native actual fd.v field access", "net/minecraft/client/Minecraft", "k",
+                    47);
+    /* Actual fd.w() reads v1/returns4. Neither NULL nor the constructed ok
+     * map-cache owner is kx. The unrelated SaveHandler w is not read here. */
+    switch (mc_chunk_provider_concrete_kind_of(world.v)) {
+        case MC_CHUNK_PROVIDER_NULL:
+        case MC_CHUNK_PROVIDER_MAP_CACHE:
+            return true;
+        default:
+            return stop(loop, "native unresolved actual ChunkProvider class provenance",
+                        "net/minecraft/client/Minecraft", "k", 52);
+    }
+}
+
+static bool controller_tick(mc_client_menu_loop *loop) {
+    if (loop->app->controller == NULL)
+        return stop(loop, "actual ob.c null controller receiver", "net/minecraft/client/Minecraft",
+                    "k", 119);
+    const mc_singleplayer_tick_status status = mc_client_singleplayer_controller_tick_begin(
+        loop->app->controller, &loop->controller_tick, &loop->controller_failure);
+    if (loop->controller_tick != NULL) {
+        (void)mc_client_singleplayer_controller_tick_inspect(loop->controller_tick,
+                                                             &loop->controller_state);
+        loop->state.controller_tick = &loop->controller_state;
+    }
+    if (status != MC_SINGLEPLAYER_TICK_OK) {
+        const mc_singleplayer_tick_error *e = loop->controller_tick == NULL
+                                                  ? &loop->controller_failure
+                                                  : loop->controller_state.error;
+        return stop(loop, e->operation, e->site.class_name, e->site.method, e->site.pc);
+    }
+    if (mc_client_singleplayer_controller_tick_retire(
+            &loop->controller_tick, &loop->controller_cleanup) != MC_SINGLEPLAYER_TICK_OK)
+        return stop(loop, loop->controller_cleanup.operation, "os", "c", 18);
+    loop->state.controller_tick = NULL;
+    loop->controller_state = (mc_singleplayer_tick_state){0};
+    return true;
+}
+
+static bool health_tick(mc_client_menu_loop *loop) {
+    client_application *app = loop->app;
+    if (app->r != NULL || app->h == NULL)
+        return true;
+    if (mc_local_player_get_snapshot(app->h, &loop->player_snapshot) != MC_ENTITY_OK)
+        return stop(loop, "native actual dc.Y field access", "net/minecraft/client/Minecraft", "k",
+                    169);
+    if (loop->player_snapshot.living.Y <= 0) {
+        const mc_client_display_screen_status status = mc_client_display_screen_run(
+            app, mc_client_screen_transitions_classes(loop->transitions), NULL,
+            &loop->screen_display);
+        loop->state.display_call = loop->screen_display;
+        if (status != MC_CLIENT_DISPLAY_SCREEN_OK) {
+            if (loop->screen_display == NULL)
+                return stop(loop, "actual display(NULL) native admission",
+                            "net/minecraft/client/Minecraft", "k", 177);
+            return stop(loop, loop->screen_display->operation,
+                        loop->screen_display->site.class_name, loop->screen_display->site.method,
+                        loop->screen_display->site.pc);
+        }
+        if (mc_client_display_screen_retire(&loop->screen_display) != MC_CLIENT_DISPLAY_SCREEN_OK)
+            return stop(loop, "actual display(NULL) native retirement",
+                        "net/minecraft/client/Minecraft", "k", 177);
+        loop->state.display_call = NULL;
+        return true;
+    }
+    bool sleeping;
+    if (mc_player_is_sleeping(app->h, &sleeping, &loop->player_error) != MC_PLAYER_OK) {
+        loop->state.player = &loop->player_error;
+        return stop(loop, loop->player_error.operation, "gs", "N", 1);
+    }
+    if (sleeping && app->active_world != NULL) {
+        mc_world_runtime_fields world;
+        if (mc_world_runtime_fields_get(app->active_world, &world) != MC_WORLD_STORAGE_OK)
+            return stop(loop, "native actual fd.B field access", "net/minecraft/client/Minecraft",
+                        "k", 204);
+        if (world.B)
+            return stop(loop, "actual gh sleeping-screen allocation is not connected",
+                        "net/minecraft/client/Minecraft", "k", 211);
+    }
+    return true;
+}
+
 static bool tick(mc_client_menu_loop *loop) {
     client_application *app = loop->app;
     /* Approved account-authentication exclusion: k11 would start kp, whose
@@ -154,12 +262,10 @@ static bool tick(mc_client_menu_loop *loop) {
     }
     if (mc_client_entity_renderer_pick_retire(&loop->pick) != MC_CLIENT_PICK_OK)
         return stop(loop, "actual PX picking native call retirement", "px", "a", 452);
-    if (app->h != NULL)
-        return stop(loop, "actual Player chunk-provider tick is not connected",
-                    "net/minecraft/client/Minecraft", "k", 47);
-    if (!atomic_load(&app->o) && app->active_world != NULL)
-        return stop(loop, "actual controller World tick is not connected",
-                    "net/minecraft/client/Minecraft", "k", 119);
+    if (!provider_tick(loop))
+        return false;
+    if (!atomic_load(&app->o) && app->active_world != NULL && !controller_tick(loop))
+        return false;
     static const uint16_t terrain[] = {'/', 't', 'e', 'r', 'r', 'a', 'i', 'n', '.', 'p', 'n', 'g'};
     mc_client_texture id = 0;
     if (mc_client_render_engine_texture(
@@ -170,6 +276,8 @@ static bool tick(mc_client_menu_loop *loop) {
     if (!mc_client_display_source_bind_id(app->display, id, &loop->display))
         return stop(loop, loop->display.operation, "net/minecraft/client/Minecraft", "k", 134);
     if (!atomic_load(&app->o) && !texture_tick(loop))
+        return false;
+    if (!health_tick(loop))
         return false;
     if (app->r != NULL) {
         app->W = 10000;
@@ -192,15 +300,23 @@ static bool tick(mc_client_menu_loop *loop) {
                 return screen_failure(loop);
         }
     }
-    if (app->r == NULL)
-        return stop(loop, "actual gameplay input is not connected",
-                    "net/minecraft/client/Minecraft", "k", 337);
-    mc_client_screen_state state;
-    if (!screen_state(loop, &state))
-        return false;
-    if (state.da.f)
-        return stop(loop, "actual pass-through gameplay input is not connected",
-                    "net/minecraft/client/Minecraft", "k", 337);
+    bool gameplay = app->r == NULL;
+    if (!gameplay) {
+        mc_client_screen_state state;
+        if (!screen_state(loop, &state))
+            return false;
+        gameplay = state.da.f;
+    }
+    if (gameplay) {
+        const bool returned = mc_client_gameplay_input_run(app, loop->transitions, &loop->gameplay);
+        loop->state.gameplay_input = &loop->gameplay;
+        loop->state.mouse_events += loop->gameplay.mouse_events;
+        loop->state.keyboard_events += loop->gameplay.keyboard_events;
+        if (!returned) {
+            const mc_client_screen_site *site = &loop->gameplay.site;
+            return stop(loop, loop->gameplay.operation, site->class_name, site->method, site->pc);
+        }
+    }
     if (app->active_world != NULL)
         return stop(loop, "native menu profile does not admit the reached World tick branch",
                     "net/minecraft/client/Minecraft", "k", 1074);
@@ -534,6 +650,45 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
     if (loop->active)
         return false;
     loop->retiring = true;
+    if (!mc_client_gameplay_input_retire(&loop->gameplay))
+        return false;
+    if (loop->controller_tick != NULL) {
+        const bool failed = loop->controller_state.status != MC_SINGLEPLAYER_TICK_OK;
+        if (failed) {
+            loop->controller_failure_copy = *loop->controller_state.error;
+            if (loop->controller_state.sound != NULL) {
+                loop->controller_sound_copy = *loop->controller_state.sound;
+                loop->controller_failure_copy.sound = &loop->controller_sound_copy;
+            }
+            if (loop->controller_state.sound_report != NULL) {
+                loop->controller_sound_report_copy = *loop->controller_state.sound_report;
+                loop->controller_failure_copy.sound_report = &loop->controller_sound_report_copy;
+            }
+        }
+        if (mc_client_singleplayer_controller_tick_retire(
+                &loop->controller_tick, &loop->controller_cleanup) != MC_SINGLEPLAYER_TICK_OK)
+            return false;
+        if (failed) {
+            loop->controller_state.error = &loop->controller_failure_copy;
+            loop->controller_state.sound = loop->controller_failure_copy.sound;
+            loop->controller_state.sound_report = loop->controller_failure_copy.sound_report;
+            loop->controller_state.controller = NULL; /* Child's occurrence ended. */
+        } else {
+            loop->state.controller_tick = NULL;
+            loop->controller_state = (mc_singleplayer_tick_state){0};
+        }
+    }
+    if (loop->screen_display != NULL) {
+        /* The health branch reaches NEW ch82, or its preceding Stats failure,
+         * before any fallback/focus owner. Preserve that exact value record if
+         * later renderer/World cleanup refuses retirement. */
+        if (loop->screen_display->fallback != NULL || loop->screen_display->focus_display != NULL)
+            return false;
+        loop->screen_display_copy = *loop->screen_display;
+        if (mc_client_display_screen_retire(&loop->screen_display) != MC_CLIENT_DISPLAY_SCREEN_OK)
+            return false;
+        loop->state.display_call = &loop->screen_display_copy;
+    }
     if (mc_client_entity_renderer_pick_retire(&loop->pick) != MC_CLIENT_PICK_OK ||
         mc_client_entity_renderer_pick_detach(loop->app->t, &loop->pick_cleanup) !=
             MC_CLIENT_PICK_OK)

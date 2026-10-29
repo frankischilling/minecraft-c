@@ -58,11 +58,13 @@ Cancel returns to the same parent. Source input retains its original receiver
 through the trailing input even after App.r changes. Quit and window close clear
 the actual App run flag. Select constructs the actual controller and enters the
 [source World loader](world-loading.md). Version-zero saves stop at conversion;
-an existing-save load can publish the World, Player and movement input before
-the renderer attachment dependency. Create, Rename and Delete retain the precise
+an existing-save load publishes the World, Player and movement input, attaches
+the renderer and completes picking. Its healthy no-screen path now executes
+[gameplay input](gameplay-input.md) through1073 before the unfinished World tick.
+Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
-Fullscreen, source F2 screenshots, debug timing, connection screens and gameplay
-input also retain explicit dependencies. Native `--capture` is a separate
+Fullscreen, source F2 screenshots, debug timing, connection screens and several
+gameplay actions retain explicit dependencies. Native `--capture` is a separate
 observation option.
 
 The FPS path reads and resets the real `dk.b` counter. First use initializes its
@@ -86,5 +88,5 @@ establish the original `Minecraft.d()` shutdown sequence.
 
 The full `Minecraft.run`, `Minecraft.k`, EntityRenderer/PX rendering and shutdown
 methods are not qualified as complete original equivalents. World simulation,
-dynamic terrain rendering, remaining menus and all gameplay still require
+dynamic terrain rendering, remaining menus and gameplay actions still require
 integration. A rendered interactive menu does not establish a playable client.

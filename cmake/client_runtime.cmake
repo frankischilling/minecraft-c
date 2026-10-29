@@ -1,7 +1,8 @@
 if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawing AND
    TARGET mc_client_source_screen_events AND TARGET mc_sound_backend)
     add_library(mc_client_runtime STATIC
-        src/client/runtime/bootstrap.c src/client/runtime/menu_loop.c)
+        src/client/runtime/bootstrap.c src/client/runtime/menu_loop.c
+        src/client/runtime/gameplay_input.c)
     target_include_directories(mc_client_runtime PUBLIC src/client/runtime
         PRIVATE src src/client src/platform/time)
     target_link_libraries(mc_client_runtime PUBLIC mc_client_application_startup

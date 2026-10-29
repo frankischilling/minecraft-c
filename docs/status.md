@@ -9,14 +9,28 @@ Empty, populated and bottom-scroll captures were inspected. Select now enters th
 controller. The existing-save profile reaches `READY`, all 289 terrain samples
 renderer/particle attachment, real Player insertion and view publication.
 World loading and healthy null-screen/focus handling return; the same tick
-then reaches gameplay input `Minecraft.k:337`.
+then executes [gameplay input](client/gameplay-input.md) through `Minecraft.k:1073`
+before the unfinished World tick at1074.
 The same READY renderer completes [picking](client/picking.md) through
-`px.a(F):452`. Existing-World ticks invoke it at `k:33`; World maintenance,
-controller ticking and connected input still require further implementation.
+`px.a(F):452`. Existing-World ticks invoke it at `k:33`; the admitted provider
+branch, controller music tick and healthy screen checks also execute. Input
+dispatch updates movement keys, hotbar and Settings; Player movement, World
+ticks and gameplay actions still require further implementation.
 Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain the
 diagnostic title and fixed-camera World inspection.
 
 ## Current integration
+
+Gameplay input and controller ticks pass the complete Windows MSVC Debug ALL
+build and all 488 selected CTests in 212.09 seconds, with zero failures or skips.
+The selection excludes reference-label profiles. All five native World-selection
+profiles pass, including existing-save entry and direct input-segment controls
+on the same loaded graph. The two new public replays compare 63 original
+inventory-wheel rows and 60 original controller rows. Both also pass GCC13 and
+Clang18 ASan/UBSan with leak detection. The runtime input and loop files pass
+strict syntax checks with both compilers; this is not a new Linux graphical
+runtime qualification. Formatting checks 1,432 files. See
+[input qualification](testing.md#gameplay-input-and-controller-ticks).
 
 Picking now compares 26 prepared original singleplayer cases exactly on
 Windows, GCC and Clang, including target order, hit-result fields and every used

@@ -54,8 +54,8 @@
       "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 103551,
-      "sha256": "516162eb9cf264efc437fe3ee297f2f5572ba418f86617701c3fe7408f8d1795"
+      "bytes": 103580,
+      "sha256": "4d8f6cd87602ff9ba29462b453ea42c939ae6dced18750b4d51dc0ea7dc801ce"
     },
     "src/client/world/first_person.c": {
       "bytes": 20028,

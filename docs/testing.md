@@ -1,5 +1,37 @@
 # Test scope and reproduction
 
+## Gameplay input and controller ticks
+
+The Windows MSVC Debug ALL build passes for the gameplay-input extension.
+All 488 selected CTests pass in 212.09 seconds with zero failures or skips;
+reference-label profiles are excluded. The five native World-selection profiles
+pass, including real existing-save loading, input return1073 and the explicit
+next World-tick dependency at1074. Direct input-segment calls on the same loaded
+graph check movement key press/release, one number-key hotbar store, four GUI
+toggles, wheel selection, stale-wheel rejection and preserved unread keyboard
+events after a pause dependency. These checks do not resume the failed loop or
+establish a complete World tick/frame. Native save/resource preservation and
+cleanup checks remain in the same profile.
+
+`client.singleplayer_tick` reproduces 60 original controller tick/reset rows.
+`client.input_fields` reproduces 63 original inventory-wheel rows. Both pass on
+MSVC, GCC13 and Clang18; both Linux selections use ASan/UBSan and leak detection.
+Fresh original captures reproduce both fixtures exactly. Each public replay
+requires successful native completion and exact row comparison. Controller
+tests also cover the actual SoundManager, per-call diagnostics, reentry,
+foreign holds and rejection of an occupied output slot before effects.
+Settings tests check untouched fields, literal toggles, exact wheel arithmetic
+and refusal before arithmetic under unsupported floating controls. Settings
+and input composition are authored/bytecode-derived checks, separate from the
+original observed rows.
+
+Both GCC13 and Clang18 accept the input segment and loop with C17,
+`-Wall -Wextra -Wpedantic -Werror -fsyntax-only`. This is compile evidence,
+not a new complete Linux graphical build or runtime result. Formatting checks
+1,432 source/header/fragment files. The [input contract](client/gameplay-input.md)
+records untested branches and unfinished gameplay. No whole-client or server
+completion is claimed.
+
 ## Picking body and geometry qualification
 
 The complete Windows MSVC Debug ALL build and all 486 selected CTests pass,
