@@ -2,6 +2,7 @@
 
 #include "../../../world/runtime/chunk_provider_internal.h"
 #include "../../application_state.h"
+#include "../../display/fog_surface.h"
 #include "../../display/source_surface.h"
 #include "../../display/world_frame_surface.h"
 #include "../../view_slot.h"
@@ -9,6 +10,10 @@
 #include "mc/core/java/java.h"
 #include "renderer_camera_internal.h"
 #include "renderer_fog_internal.h"
+#include "renderer_fog_state_internal.h"
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+#include "../render_global_sky_internal.h"
+#endif
 
 #include <emmintrin.h>
 #include <stdlib.h>
@@ -35,6 +40,19 @@ struct mc_client_world_frame_call {
     mc_client_renderer_camera_call *camera_setup;
     mc_client_renderer_camera_state camera_state;
     mc_client_renderer_camera_error camera_error, camera_cleanup;
+    mc_client_renderer_fog_state_call *fog_setup[2];
+    mc_client_renderer_fog_state_view fog_setup_state[2];
+    mc_client_renderer_fog_state_error fog_setup_error[2], fog_setup_cleanup[2];
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    mc_client_render_global_sky_call *sky;
+    mc_client_render_global_sky_state sky_state;
+    mc_client_render_global_sky_error sky_error, sky_cleanup;
+    mc_client_source_frustum *culler;
+    mc_client_source_frustum_state culler_state;
+    mc_client_culling_call *culling;
+    mc_client_culling_state culling_state;
+    mc_client_culling_error culling_error, culling_cleanup;
+#endif
     bool owner_held, camera_held;
 };
 
@@ -127,6 +145,146 @@ static bool fog_body(mc_client_world_frame_call *call, mc_math_classes *math) {
     call->state.source_pc = 263;
     return false;
 }
+
+static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index, int32_t pass,
+                           unsigned int pc) {
+    const mc_client_renderer_fog_state_status status =
+        entity_renderer_fog_state_entered(call->state.owner, pass, call->state.partial,
+                                          &call->fog_setup[index], &call->fog_setup_error[index]);
+    if (call->fog_setup[index] != NULL) {
+        (void)mc_client_entity_renderer_fog_state_inspect(call->fog_setup[index],
+                                                          &call->fog_setup_state[index]);
+        if (index == 0)
+            call->state.sky_fog = &call->fog_setup_state[index];
+        else
+            call->state.terrain_fog = &call->fog_setup_state[index];
+    }
+    if (status == MC_CLIENT_RENDERER_FOG_STATE_OK) {
+        if (index == 0)
+            call->state.sky_fog_returned = true;
+        else
+            call->state.terrain_fog_returned = true;
+        return true;
+    }
+    const mc_client_renderer_fog_state_error *error = &call->fog_setup_error[index];
+    call->failure.fog_setup =
+        call->fog_setup[index] == NULL ? error : call->fog_setup_state[index].failure;
+    call->failure.status = status == MC_CLIENT_RENDERER_FOG_STATE_SOURCE_NULL
+                               ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                           : status == MC_CLIENT_RENDERER_FOG_STATE_UNSUPPORTED_FP
+                               ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                               : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+    call->failure.operation = error->operation;
+    call->failure.native_policy = error->native_policy;
+    call->failure.site = error->site;
+    call->failure.child = error->child;
+    call->state.source_pc = pc;
+    return false;
+}
+
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+static void sky_views_expired(mc_client_world_frame_call *call) {
+    call->sky_state.sky_vector = NULL;
+    call->sky_state.sunrise = NULL;
+    call->sky_state.failure = NULL;
+    call->sky_state.cleanup = NULL;
+}
+
+static bool sky_body(mc_client_world_frame_call *call, mc_math_classes *math) {
+    if (call->state.render_global == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual World-frame RenderGlobal sky receiver", 312, false);
+    const mc_client_render_global_status status = mc_client_render_global_sky_begin(
+        call->state.render_global, math, call->state.partial, &call->sky, &call->sky_error);
+    if (call->sky != NULL) {
+        (void)mc_client_render_global_sky_inspect(call->sky, &call->sky_state);
+        call->state.sky = &call->sky_state;
+    }
+    if (status != MC_CLIENT_RENDER_GLOBAL_OK) {
+        call->failure.sky = call->sky == NULL ? &call->sky_error : call->sky_state.failure;
+        call->failure.status = status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                                   ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                               : status == MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP
+                                   ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                                   : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+        call->failure.operation = call->sky_error.operation;
+        call->failure.native_policy = call->sky_error.native_policy;
+        call->failure.site = call->sky_error.site;
+        call->failure.child = call->sky_error.child;
+        call->state.source_pc = 312;
+        return false;
+    }
+    call->state.sky_returned = true;
+    /* End the completed native child before the next N method. Its copied
+     * scalars remain; actual pool/array views and error borrows end here. */
+    if (mc_client_render_global_sky_retire(&call->sky, &call->sky_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->sky != NULL)
+            (void)mc_client_render_global_sky_inspect(call->sky, &call->sky_state);
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                          "World-frame completed sky native retirement", 312, true);
+    }
+    sky_views_expired(call);
+    return true;
+}
+
+static bool culling_fail(mc_client_world_frame_call *call, mc_client_frustum_status status,
+                         unsigned int pc) {
+    call->failure.culling = &call->culling_error;
+    call->failure.child = call->culling_error.site;
+    return outer_fail(call,
+                      status == MC_CLIENT_FRUSTUM_SOURCE_NULL ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                      : status == MC_CLIENT_FRUSTUM_UNSUPPORTED_FP
+                          ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                          : MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+                      call->culling_error.operation, pc, call->culling_error.native_policy);
+}
+
+static bool culling_body(mc_client_world_frame_call *call, mc_math_classes *math) {
+    mc_client_source_px *owner = call->state.owner;
+    mc_client_frustum_status status = mc_client_source_frustum_begin(
+        owner->services.models, owner->services.graphics, owner->services.display, math,
+        &call->culler, &call->culling_error);
+    if (call->culler != NULL) {
+        (void)mc_client_source_frustum_inspect(call->culler, &call->culler_state);
+        call->state.culler = &call->culler_state;
+    }
+    if (status != MC_CLIENT_FRUSTUM_OK)
+        return culling_fail(call, status, 350);
+    call->state.frustum_constructed = true;
+    status =
+        mc_client_source_frustum_recenter(call->culler, call->state.render_x, call->state.render_y,
+                                          call->state.render_z, &call->culling_error);
+    (void)mc_client_source_frustum_inspect(call->culler, &call->culler_state);
+    if (status != MC_CLIENT_FRUSTUM_OK)
+        return culling_fail(call, status, 363);
+    call->state.frustum_recentered = true;
+    client_application *app = app_at(call, 372, "a", "(FJ)V");
+    if (app == NULL)
+        return false;
+    if (app->g == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual post-camera RenderGlobal cull receiver", 378, false);
+    status = mc_client_render_global_cull_begin(app->g, call->culler, call->state.partial,
+                                                &call->culling, &call->culling_error);
+    if (call->culling != NULL) {
+        (void)mc_client_render_global_cull_inspect(call->culling, &call->culling_state);
+        call->state.culling = &call->culling_state;
+    }
+    if (status != MC_CLIENT_FRUSTUM_OK)
+        return culling_fail(call, status, 378);
+    call->state.culling_returned = true;
+    app = app_at(call, 390, "a", "(FJ)V");
+    if (app == NULL)
+        return false;
+    if (app->g == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual ChunkRenderer compilation receiver", 396, false);
+    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lls;Z)Z", 0};
+    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
+                      "actual ChunkRenderer compilation child is not connected", 396, true);
+}
+#endif
 
 static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
     mc_client_source_px *owner = call->state.owner;
@@ -328,15 +486,45 @@ static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
     call->state.fog_distance_branch_read = true;
     call->state.post_camera_render_distance = settings.values.render_distance;
     if (settings.values.render_distance < 2) {
-        call->failure.child = (mc_client_graphics_site){"px", "a", "(IF)V", 0};
+        if (!fog_setup_body(call, 0, -1, 306))
+            return false;
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+        if (!sky_body(call, math))
+            return false;
+#else
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                          "actual sky-pass fog-state child is not connected", 306, true);
+                          "RenderGlobal sky unavailable in this native build graph", 312, true);
+#endif
     }
-    /* Skipped sky branch first reaches the currently absent GL3 fog shader
-     * state. Do not skip its enable318 to claim the later fog-state324. */
-    call->failure.child = (mc_client_graphics_site){"org/lwjgl/opengl/GL11", "glEnable", "(I)V", 0};
+    if (!display_result(
+            call, mc_client_display_source_fog_enable(display, true, &call->failure.display), 318))
+        return false;
+    call->state.fog_enabled = true;
+    if (!fog_setup_body(call, 1, 1, 324))
+        return false;
+    app = app_at(call, 331, "a", "(FJ)V");
+    if (app == NULL)
+        return false;
+    if (!mc_game_settings_read_state(app->settings, &settings))
+        return outer_fail(call,
+                          app->settings == NULL ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                                                : MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                          "actual ambient-occlusion Settings receiver", 334, app->settings != NULL);
+    call->state.ambient_occlusion_read = true;
+    call->state.ambient_occlusion = settings.values.ambient_occlusion;
+    if (settings.values.ambient_occlusion) {
+        if (!display_result(
+                call, mc_client_display_source_shade_model(display, 7425, &call->failure.display),
+                343))
+            return false;
+        call->state.smooth_shade_set = true;
+    }
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    return culling_body(call, math);
+#else
     return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual GL_FOG enable bridge is not connected", 318, true);
+                      "RenderGlobal culling unavailable in this native build graph", 350, true);
+#endif
 }
 
 static mc_client_world_frame_status result(mc_client_world_frame_error *error,
@@ -398,6 +586,52 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
         return result(error, MC_CLIENT_WORLD_FRAME_OK, NULL);
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
+#ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (mc_client_render_global_cull_retire(&call->culling, &call->culling_cleanup) !=
+        MC_CLIENT_FRUSTUM_OK) {
+        if (call->culling != NULL)
+            (void)mc_client_render_global_cull_inspect(call->culling, &call->culling_state);
+        if (call->culler != NULL)
+            (void)mc_client_source_frustum_inspect(call->culler, &call->culler_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame culling retirement");
+    }
+    call->state.culling = NULL;
+    call->failure.culling = NULL;
+    if (mc_client_source_frustum_retire(&call->culler, &call->culling_cleanup) !=
+        MC_CLIENT_FRUSTUM_OK) {
+        if (call->culler != NULL)
+            (void)mc_client_source_frustum_inspect(call->culler, &call->culler_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame culler retirement");
+    }
+    call->state.culler = NULL;
+    if (mc_client_render_global_sky_retire(&call->sky, &call->sky_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->sky != NULL)
+            (void)mc_client_render_global_sky_inspect(call->sky, &call->sky_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame sky retirement");
+    }
+    sky_views_expired(call);
+    call->state.sky = NULL;
+    call->failure.sky = NULL;
+#endif
+    for (unsigned int i = 0; i < 2; ++i) {
+        const mc_client_renderer_fog_state_error *failure = call->fog_setup_state[i].failure;
+        if (mc_client_entity_renderer_fog_state_retire(&call->fog_setup[i],
+                                                       &call->fog_setup_cleanup[i]) !=
+            MC_CLIENT_RENDERER_FOG_STATE_OK) {
+            if (call->fog_setup[i] != NULL)
+                (void)mc_client_entity_renderer_fog_state_inspect(call->fog_setup[i],
+                                                                  &call->fog_setup_state[i]);
+            return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame fog setup retirement");
+        }
+        if (i == 0)
+            call->state.sky_fog = NULL;
+        else
+            call->state.terrain_fog = NULL;
+        call->fog_setup_state[i].failure = NULL;
+        if (call->failure.fog_setup == failure)
+            call->failure.fog_setup = NULL;
+    }
     if (mc_client_entity_renderer_pick_retire(&call->pick) != MC_CLIENT_PICK_OK) {
         if (call->pick != NULL)
             (void)mc_client_entity_renderer_pick_inspect(call->pick, &call->pick_state);

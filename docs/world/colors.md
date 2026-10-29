@@ -30,5 +30,6 @@ weather ticks or frames. Both public native replays require normal completion
 and additionally check failure ordering, ownership and unchanged source state.
 
 The [source renderer](../client/renderer-frames.md) consumes these methods in
-its complete `px.h(F)` clear-color body. Further fog-state and terrain drawing
-remain unfinished.
+its complete `px.h(F)` clear-color body and actual Sky draw. Further
+[World/provider sky leaves](sky.md) supply celestial, rain, star and sunrise
+values. Terrain compilation and drawing remain unfinished.

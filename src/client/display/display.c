@@ -1262,6 +1262,7 @@ bool mc_client_display_destroy(mc_client_display *display, mc_client_display_err
 #include "source_surface.inc"
 #include "world_frame_surface.inc"
 #include "camera_surface.inc"
+#include "fog_surface.inc"
 #include "source_world_list_surface.inc"
 #include "texture_leases.inc"
 #include "source_texture_update.inc"

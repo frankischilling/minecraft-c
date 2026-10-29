@@ -2,8 +2,9 @@
 
 The default client now executes focused mouse look and opens the source pause
 screen. Its World draw enters the real `px.a(FJ)V` pipeline and stops at the
-missing sky-pass fog-state setup at `px.a(FJ)V:306`. Sky/fog colors, camera
-transforms and frustum extraction execute before that frontier. Terrain meshes,
+missing ChunkRenderer compilation at `px.a(FJ)V:396`. Colors, fog state, sky
+drawing, camera transforms and ChunkRenderer culling execute before that frontier.
+Terrain meshes,
 HUD composition and a playable frame remain unfinished.
 
 ## Focused mouse input
@@ -87,12 +88,67 @@ calls or outstanding owners before retiring it. Matrix reads preserve the
 original clear/flip/limit/get cursor effects. Box tests use the original plane
 and corner order.
 
-For render distance below2 the next missing child is `px.a(IF):306`, before
-RenderGlobal sky drawing at 312. Other distances stop at the missing GL3 fog-enable
-bridge at 318. Neither branch skips ahead to terrain. The performance deadline uses
-the source 200/120/40 target and Java long wrapping. A retained frame owns its
-native children and prevents another invocation until retirement. Failure
-preserves completed colors, matrices, fields and source effects.
+For render distance below 2 the frame invokes actual fog setup 306 and
+RenderGlobal sky 312. It then enables fog 318, performs terrain fog setup 324,
+reads ambient occlusion and applies smooth shading343 when selected. The real
+SR constructor350 calls W again; recenter 363 stores the interpolated camera
+position before the fresh App.g culling call378. The first eye then stops at
+missing ChunkRenderer compilation `n.a(Entity,boolean)` at396. Terrain, Entities,
+particles, HUD and hand work are not skipped.
+
+The performance deadline uses the source 200/120/40 target and Java long
+wrapping. Retained frames preserve completed fields, matrices, GL state and
+complete child diagnostics. A successful Sky child retires before the next N
+method; its scalar receipt remains while pool/array/error views expire. Cleanup
+refusal refreshes every surviving child view. The existing successful World
+attachment may remain retained during drawing; active or failed attachments
+still block overlapping native operations.
+
+## Fog state and source shader
+
+Actual `px.a(IF)` clears the same PX.f FloatBuffer, writes g/h/i/1 and flips to
+position 0/limit 4/capacity 16 before setting fog color. Current normal becomes
+(0,-1,0) and current color becomes white. Cloud and water select EXP/.1; lava
+selects EXP/2. Air selects LINEAR with start k*.25 and end k; a negative pass
+changes those to 0 and k*.8. Actual context capability controls the radial
+distance selector, and a fresh World Dimension read can set the start to 0.
+Every branch enables FRONT/AMBIENT ColorMaterial. The partial argument is never
+loaded. Anaglyph's unused local arithmetic still executes in exponential paths,
+retaining its Settings/null/FP order and earlier state effects.
+
+The existing GL3 source program now consumes this same fog ledger. It supports
+LINEAR/EXP/EXP2, absolute/signed eye-plane and radial distance, RGB fog mixing
+and source triangle fans. It retains inherited framebuffer, viewport, depth,
+blend, texture and matrix state. It does not enter the diagnostic scene renderer.
+GL_FLAT is admitted for the existing constant-color primitive profile; varying
+flat colors retain an explicit dependency.
+
+The original NVIDIA driver starts with absolute eye-plane distance 34140 and
+selects radial 34139 on the first air call. Controlled pixels distinguish
+vertex-distance interpolation from fragment Euclidean distance on that profile.
+The source shader follows the observed vertex-distance behavior. This does not
+claim that every OpenGL driver uses the same allowed approximation. The
+[fog fixture](../../tests/reference/client/renderer_fog_state/README.md)
+records normative specification links, driver identity and capability limits.
+
+## Sky and ChunkRenderer culling
+
+Actual `n.a(F)` uses its constructor-compiled upper, star and lower source lists.
+It reads the genuine World sky vector and draws the fogged upper list before
+disabling fog/alpha, enabling blend and disabling standard lighting. The
+provider's actual sunrise array supplies a smooth triangle fan; its rim retains
+the raw RGB even when anaglyph changes the center. Real Engine texture lookups
+draw sun and moon, followed by stars, horizon tint and the lower list. Depth
+writes and the source texture/alpha/blend/fog states follow the original order.
+The initial Nether flag returns before any GL, Math or Tessellator operation.
+[World sky leaves](../world/sky.md) provide the real scalar/array children.
+
+The source SR wrapper owns the actual W result and live b/c/d camera origin.
+Box tests subtract that origin before calling DR. N culling rereads its live
+ChunkRenderer array, honors real DK empty-pass flags and the `(index+j)&15`
+visibility throttle, tests actual DK bounds, then stores visibility. Its wrapping
+j counter increments after the whole loop. No terrain mesh or always-visible
+substitute supplies these results.
 
 ## Evidence and limits
 
@@ -117,8 +173,26 @@ matrix/plane bits, buffer cursors and box results. Its finite inputs do not
 establish arbitrary cross-driver matrix generation. Native tests also cover
 all 28 allocation boundaries, partial stores, FP refusal and namespace cleanup.
 
-The genuine loaded Windows graph completes fog, camera and W before stopping
-at 306. These observations establish neither a terrain frame nor original-pixel
-equivalence. GL3 fog state, sky, Chunk culling/compilation, terrain, Entities,
-particles, HUD and hand composition remain unfinished. The separate diagnostic
+New source fixtures separately cover 366 World/provider sky rows, 48 fog-state
+rows, 30 authored GPU pixels, eight SR/N/DK culling rows, four early N sky outcomes
+and 48 whole-sky post-call states. The Windows NV-present fog context matches all
+48 state rows exactly. NV-absent Linux contexts compare common original fields
+separately from the bytecode-derived skipped-selector branch; no original
+false-capability observation is claimed. All 30 authored GPU samples match exactly
+on Windows NVIDIA and Linux Mesa. These are controlled shader probes rather
+than complete sky/frame pixel comparisons.
+
+The whole-sky native device fixture uses genuine App/startup and N list
+construction with explicitly prepared World/camera operands. Its actual lower
+list GPU vertex/color record is checked independently. Original Engine cache-hit
+operands and authored native sun/moon textures bound that comparison. See the
+[sky fixture](../../tests/reference/client/render_global_sky/README.md) and
+[culling fixture](../../tests/reference/client/frustum_culling/README.md).
+
+The genuine loaded Windows graph reaches396 with sky, both fog setups and real
+ChunkRenderer culling complete. Its854 by 480 back-buffer capture was inspected;
+it shows the reached sky passes. Terrain and HUD are absent. Neither that capture
+nor the finite body/state comparisons establish a matched original gameplay
+frame. Compilation, terrain drawing, Entities, particles, HUD, hand composition
+and extended play remain unfinished or unqualified. The separate diagnostic
 World renderer remains outside the default source path.

@@ -14,6 +14,13 @@ static void source_initialize(mc_client_display *display) {
     if (s->initialized) return;
     s->color[0] = s->color[1] = s->color[2] = s->color[3] = 1.0f;
     s->color_known = true;
+    s->fog.mode = GL_EXP;
+    s->fog.distance_mode = 34140; /* GL_EYE_PLANE_ABSOLUTE_NV. */
+    s->fog.density = 1.0f;
+    s->fog.end = 1.0f;
+    s->fog.normal[2] = 1.0f;
+    s->fog.material_face = GL_FRONT_AND_BACK;
+    s->fog.material_mode = GL_AMBIENT_AND_DIFFUSE;
     const mc_client_modelview identity = {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
     s->modelview = identity;
     memcpy(s->projection, identity.column_major, sizeof(s->projection));
@@ -191,13 +198,24 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     static const char vertex[] =
         "#version 330 core\nlayout(location=0) in vec3 position;\n"
         "layout(location=1) in vec2 uv;layout(location=2) in vec4 color;\n"
-        "uniform mat4 projection;uniform mat4 modelview;out vec2 texUV;out vec4 tint;\n"
-        "void main(){vec4 eye=modelview*vec4(position,1.0);gl_Position=projection*eye;texUV=uv;tint=color;}\n";
+        "uniform mat4 projection;uniform mat4 modelview;uniform int fogDistance;\n"
+        "out vec2 texUV;out vec4 tint;out float fogCoordinate;\n"
+        "void main(){vec4 eye=modelview*vec4(position,1.0);gl_Position=projection*eye;"
+        "texUV=uv;tint=color;fogCoordinate=fogDistance==34139?length(eye.xyz):"
+        "(fogDistance==9474?eye.z:abs(eye.z));}\n";
     static const char fragment[] =
-        "#version 330 core\nin vec2 texUV;in vec4 tint;layout(location=0) out vec4 outputColor;\n"
+        "#version 330 core\nin vec2 texUV;in vec4 tint;in float fogCoordinate;\n"
+        "layout(location=0) out vec4 outputColor;\n"
         "uniform sampler2D image;uniform int textured;uniform int alphaTest;\n"
+        "uniform int fogEnabled;uniform int fogMode;uniform vec4 fogColor;\n"
+        "uniform float fogDensity;uniform float fogStart;uniform float fogEnd;\n"
         "void main(){vec4 value=tint;if(textured!=0)value*=texture(image,texUV);"
-        "if(alphaTest!=0 && value.a<=0.1)discard;outputColor=value;}\n";
+        "if(alphaTest!=0 && value.a<=0.1)discard;"
+        "if(fogEnabled!=0){float f;"
+        "if(fogMode==9729)f=(fogEnd-fogCoordinate)/(fogEnd-fogStart);"
+        "else if(fogMode==2049){float d=fogDensity*fogCoordinate;f=exp(-d*d);}"
+        "else f=exp(-fogDensity*fogCoordinate);"
+        "value.rgb=mix(fogColor.rgb,value.rgb,clamp(f,0.0,1.0));}outputColor=value;}\n";
     if (!shader(display, GL_VERTEX_SHADER, vertex, &s->vertex_shader, error) ||
         !shader(display, GL_FRAGMENT_SHADER, fragment, &s->fragment_shader, error)) return false;
     s->program = display->gl.CreateProgram();
@@ -221,10 +239,21 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     s->modelview_uniform = display->gl.GetUniformLocation(s->program, "modelview");
     s->textured_uniform = display->gl.GetUniformLocation(s->program, "textured");
     s->alpha_uniform = display->gl.GetUniformLocation(s->program, "alphaTest");
+    s->fog_enabled_uniform = display->gl.GetUniformLocation(s->program, "fogEnabled");
+    s->fog_mode_uniform = display->gl.GetUniformLocation(s->program, "fogMode");
+    s->fog_distance_uniform = display->gl.GetUniformLocation(s->program, "fogDistance");
+    s->fog_color_uniform = display->gl.GetUniformLocation(s->program, "fogColor");
+    s->fog_density_uniform = display->gl.GetUniformLocation(s->program, "fogDensity");
+    s->fog_start_uniform = display->gl.GetUniformLocation(s->program, "fogStart");
+    s->fog_end_uniform = display->gl.GetUniformLocation(s->program, "fogEnd");
     const GLint image = display->gl.GetUniformLocation(s->program, "image");
     if (!gl_check(display, "source GPU uniforms", error)) return false;
     if (s->projection_uniform < 0 || s->modelview_uniform < 0 || s->textured_uniform < 0 || s->alpha_uniform < 0 || image < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU uniforms", "missing uniform", 0);
+    if (s->fog_enabled_uniform < 0 || s->fog_mode_uniform < 0 || s->fog_distance_uniform < 0 ||
+        s->fog_color_uniform < 0 || s->fog_density_uniform < 0 || s->fog_start_uniform < 0 ||
+        s->fog_end_uniform < 0)
+        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU fog uniforms", "missing uniform", 0);
     display->gl.Uniform1i(image, 0);
     display->gl.GenVertexArrays(1, &s->vao);
     display->gl.GenBuffers(1, &s->vbo);
@@ -268,11 +297,12 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     const unsigned color_bit = 1u << MC_CLIENT_SOURCE_COLOR_ARRAY;
     if (s->vbo_capacity_uncertain)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source VBO capacity", "prior upload allocation is uncertain", 0);
-    if (!s->loading_ready)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source projection state", "actual source projection surface not prepared", 0);
-    if (s->lighting_enabled || s->fog_enabled)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source shading state", "enabled lighting/fog requires its renderer", 0);
-    if (count < 0 || mode != GL_TRIANGLES || (arrays & vertex_bit) == 0 ||
+    /* source_enter initialized the actual projection/modelview defaults.
+     * Camera matrix calls replace that same ledger; drawing does not require
+     * the unrelated loading-screen projection method to have run first. */
+    if (s->lighting_enabled)
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source shading state", "enabled lighting requires its renderer", 0);
+    if (count < 0 || (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN) || (arrays & vertex_bit) == 0 ||
         (size_t)count > bytes / 32u || (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw", "unsupported mode/span/client vertex state", 0);
     if ((arrays & color_bit) == 0 && !s->color_known)
@@ -283,12 +313,17 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
      * constant for that primitive when all its RGBA bytes agree; independent
      * triangles may have different colors. Incomplete trailing vertices create
      * no primitive and do not require a flat interpolation shader. */
-    if (s->shade_flat && (arrays & color_bit) != 0)
+    if (s->shade_flat && (arrays & color_bit) != 0 && mode == GL_TRIANGLES)
         for (size_t first = 0; first + 2u < (size_t)count; first += 3u)
             for (size_t i = first + 1u; i < first + 3u; ++i)
                 if (memcmp(data + first * 32u + 20, data + i * 32u + 20, 4) != 0)
                     return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT vertex colors",
                                 "varying-color flat source primitive requires its shader profile", 0);
+    if (s->shade_flat && (arrays & color_bit) != 0 && mode == GL_TRIANGLE_FAN)
+        for (size_t i = 1; i < (size_t)count; ++i)
+            if (memcmp(data + 20, data + i * 32u + 20, 4) != 0)
+                return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT fan colors",
+                            "varying-color flat source fan requires its shader profile", 0);
     if (s->texture_enabled && (arrays & uv_bit) == 0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current texture coordinate", "nonarray textured-coordinate path", 0);
     if (!source_fp_admit("source native draw conversion FP", error)) return false;
@@ -333,8 +368,15 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE, s->modelview.column_major);
         display->gl.Uniform1i(s->textured_uniform, s->texture_enabled ? 1 : 0);
         display->gl.Uniform1i(s->alpha_uniform, s->alpha_test ? 1 : 0);
+        display->gl.Uniform1i(s->fog_enabled_uniform, s->fog_enabled ? 1 : 0);
+        display->gl.Uniform1i(s->fog_mode_uniform, s->fog.mode);
+        display->gl.Uniform1i(s->fog_distance_uniform, s->fog.distance_mode);
+        display->gl.Uniform4fv(s->fog_color_uniform, 1, s->fog.color);
+        display->gl.Uniform1f(s->fog_density_uniform, s->fog.density);
+        display->gl.Uniform1f(s->fog_start_uniform, s->fog.start);
+        display->gl.Uniform1f(s->fog_end_uniform, s->fog.end);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
-        display->gl.DrawArrays(GL_TRIANGLES, 0, count);
+        display->gl.DrawArrays((GLenum)mode, 0, count);
         if ((arrays & color_bit) != 0) s->color_known = false;
         ok = gl_check(display, "source interleaved draw", error);
         if (ok) display->frame_started = true;
@@ -584,13 +626,13 @@ bool mc_client_display_source_shade_model(mc_client_display *display, int32_t mo
                                           mc_client_display_error *error) {
     if (!source_setting_enter(display, "source glShadeModel", error))
         return false;
-    if (mode != GL_SMOOTH)
+    if (mode != GL_SMOOTH && mode != GL_FLAT)
         return source_leave(display,
                             fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glShadeModel",
-                                 "only actual smooth shader profile is supported", 0),
+                                 "only actual smooth/flat source modes are supported", 0),
                             error);
     /* The existing source shader already supplies smooth interpolation. */
-    display->source.shade_flat = false;
+    display->source.shade_flat = mode == GL_FLAT;
     return source_leave(display, true, error);
 }
 

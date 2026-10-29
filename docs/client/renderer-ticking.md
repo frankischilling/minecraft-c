@@ -66,8 +66,8 @@ remainder and clock state to advance.
 
 The native loaded-World profile now opens the source pause screen when inactive
 for more than 500 ms. Focused mouse look is connected. Both paths enter the
-[World frame](renderer-frames.md), completing colors, camera and frustum before
-missing fog-state setup at `px.a:306`. Direct segment checks on the same graph
+[World frame](renderer-frames.md), completing colors, camera, fog state, sky
+and ChunkRenderer culling before missing compilation at `px.a:396`. Direct segment checks on the same graph
 separately exercise the paused refresh and unpaused renderer/entity/weather/
 spawn-selection sequence through the Mob constructor frontier. None of
 these component controls establish a rendered gameplay frame.

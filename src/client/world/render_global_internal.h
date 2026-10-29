@@ -63,6 +63,8 @@ struct mc_client_render_global {
     mc_client_render_global_error failure, retirement;
     mc_render_global_access *access; /* Native stable interface for this SAME n. */
     mc_client_render_global_world_call *world_call;
+    struct mc_client_render_global_sky_call *sky_call;
+    struct mc_client_culling_call *cull_call;
     mc_world_runtime *world_occurrence;         /* Independent occurrence backing actual k. */
     mc_world_runtime *manager_world_occurrence; /* Captured TH publication cleanup right. */
     mc_client_render_manager *world_manager;

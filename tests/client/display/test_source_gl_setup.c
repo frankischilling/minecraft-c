@@ -261,10 +261,14 @@ int main(int argc, char **argv) {
     CHECK(display->source.modelview.column_major[12] == 5 &&
           display->source.modelview.column_major[14] == -1993);
 
+    CHECK(mc_client_display_source_shade_model(display, GL_FLAT, &error) &&
+          display->source.shade_flat);
+    CHECK(mc_client_display_source_shade_model(display, GL_SMOOTH, &error) &&
+          !display->source.shade_flat);
     /* Invalid profiles/function admission cannot publish a new state. */
     memcpy(snapshot, &display->source, sizeof(snapshot));
     const unsigned before_dispatch = dispatch_count;
-    UNSUPPORTED(mc_client_display_source_shade_model(display, GL_FLAT, &error));
+    UNSUPPORTED(mc_client_display_source_shade_model(display, 0, &error));
     UNSUPPORTED(mc_client_display_source_clear_depth(display, 0.5, &error));
     UNSUPPORTED(mc_client_display_source_depth_function(display, GL_LESS, &error));
     UNSUPPORTED(

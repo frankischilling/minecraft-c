@@ -1,30 +1,29 @@
 # Build and tests
 
-The current color/camera/frustum/spawn extension passes Windows Debug ALL
-and all 502 selected CTests in 321.45 seconds, retaining all preceding 498.
-Both audio-enabled Linux client ALL graphs pass with ASan/UBSan. Initial
-full runs take 625.31/627.01 seconds: 479 passes and six mounted-source
-helper timeouts per compiler, zero skips. All six helpers pass on a byte-identical
-ext4 snapshot with unchanged test cases, deadlines and existing probe binaries.
-Source paths relocate to ext4.
-These are full-run plus targeted-rerun results, not single clean 485-case runs.
-Leak detection, Xvfb/software GL and the null OpenAL driver remain enabled.
-`-LE reference` excludes 46 of 548 Windows cases and six of 491 per Linux graph.
+The source fog/Sky/culling extension passes Windows Debug ALL and all 506
+selected CTests in 304.44 seconds, retaining all 502 preceding cases.
+Fresh ext4 GCC13/Clang18 audio-enabled sanitizer ALL builds pass; all 489 selected
+public tests pass in 286.34/290.68 seconds, respectively. Six additional
+JDK-reference cases pass per compiler. All final runs have zero failures/skips.
+Windows has 553 configured cases and 47 reference-label exclusions; each Linux
+graph has 495 cases, with six JDK-reference cases executed separately.
 
-New replays cover 386 exact sky leaves, 432 World colors, 96 original full-fog
-rows, 36 camera profiles plus 36 exact scalar rows, four exact frustum profiles
-and eleven scheduler observations. Camera matrices use the explicit absolute
-2e-6 coefficient policy; the observed Windows maximum is 4.76837158203125e-7.
-The genuine loaded Windows graph retains all 72 exact focus histories, reaches
-fog setup 306 and, in direct unpaused controls, concrete Mob construction 773.
-Formatting checks 1504 files. [Qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#world-colors-camera-frustum-and-spawn-selection-qualification)
-records original/prepared/native scopes and unfinished frames/gameplay.
+New fixtures cover 366 World/provider sky rows, 48 fog-state rows, 30 exact
+authored GPU pixels, eight culling rows, four early Sky outcomes and 48 whole-Sky
+post-call states. The local Windows Sky-device profile uses real startup and
+compiled N lists with declared prepared World/camera operands. NV-absent Linux
+replays compare common original fields separately from source-derived skipped
+selector behavior. No complete original NV-false profile is claimed.
+[Qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-fog-sky-and-chunk-culling-qualification)
+preserves the initial stale GL_FLAT assertion failure and the final full passes.
+The correction verifies real FLAT/SMOOTH state and keeps invalid-mode admission
+checks. Formatting checks 1524 files. Full terrain frames remain unfinished.
 
-The preceding [b1bb968 run 40886849939](https://github.com/frankischilling/minecraft-c/actions/runs/40886849939)
-is terminal: Windows/formatting pass; GCC/Clang builds fail at the missing
-RenderGlobal sky-callback initializer. Explicit named slots fix that diagnostic
-in both full local Linux builds. The concrete sky callback remains absent.
-Hosted results for the new extension remain pending.
+Published [`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
+passes all four hosted jobs and 1,448 tests: Windows 466/GCC 491/Clang 491, without
+failures or skips. It precedes this fog/Sky/culling extension; new hosted results
+remain pending. The older b1bb968 initializer failure is retained in repository
+history and was fixed before that green checkpoint.
 
 Windows CI uses Ninja Debug with the x64 MSVC environment, explicit selected
 JDK17 and the same four build/test workers and full suite. A local VS18 Ninja

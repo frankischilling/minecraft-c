@@ -386,8 +386,8 @@ mc_client_render_global_world_begin(mc_client_render_global *o, mc_world_runtime
                                     mc_client_render_global_world_call **out) {
     if (o == NULL || out == NULL || *out != NULL)
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
-    if (o->active || o->world_retiring || o->world_call != NULL ||
-        o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
+    if (o->active || o->world_retiring || o->world_call != NULL || o->sky_call != NULL ||
+        o->cull_call != NULL || o->phase != MC_CLIENT_RENDER_GLOBAL_READY)
         return MC_CLIENT_RENDER_GLOBAL_BUSY;
     if (world != NULL) {
         mc_world_runtime_construction construction;
@@ -472,7 +472,8 @@ mc_client_render_global_world_detach(mc_client_render_global *o, mc_client_rende
     if (o == NULL || e == NULL)
         return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
     memset(e, 0, sizeof(*e));
-    if (o->active || o->holds != 1 || o->world_call != NULL)
+    if (o->active || o->holds != 1 || o->world_call != NULL || o->sky_call != NULL ||
+        o->cull_call != NULL)
         return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "RenderGlobal World terminal admission", NULL, NULL,
                                             NULL, 0, true);

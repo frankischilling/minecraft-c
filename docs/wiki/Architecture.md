@@ -38,8 +38,8 @@ native selection tick executes gameplay input through 1073 and the admitted
 World/frame segment. Direct same-graph checks execute renderer/entity updates
 through weather and weighted Biome spawn selection before concrete Mob
 construction 773. Source focused mouse look and pause entry are connected.
-World-frame rendering completes sky/fog/cloud colors, clear color, canonical
-camera and W frustum state before missing fog setup 306. The Display owns its
+World-frame rendering completes colors, fog state, canonical camera, actual
+Sky programs and W/SR/DK culling before missing ChunkRenderer compilation 396. The Display owns its
 ordered matrix ledger; RenderModels owns the checked static-frustum lifetime.
 Complete presentation remains unfinished.
 The canonical HitResult and pooled geometry now connect Living eye/look,

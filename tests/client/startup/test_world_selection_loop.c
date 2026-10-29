@@ -835,12 +835,27 @@ int main(int argc, char **argv) {
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "a") == 0 &&
-                  (f.state.source_pc == 306 || f.state.source_pc == 318) &&
+                  strcmp(f.state.source_method, "a") == 0 && f.state.source_pc == 396 &&
                   f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
                   f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
                   f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
-                  f.state.world_frame->frustum_returned);
+                  f.state.world_frame->frustum_returned && f.state.world_frame->sky_fog_returned &&
+                  f.state.world_frame->sky_returned && f.state.world_frame->sky != NULL &&
+                  f.state.world_frame->sky->cleanup == NULL &&
+                  f.state.world_frame->terrain_fog_returned &&
+                  f.state.world_frame->frustum_constructed &&
+                  f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
+            /* Observe the actual failed World frame's back buffer before
+             * separate component controls change its inherited GL state. */
+            const size_t prefix_length = strlen(argv[3]);
+            static const char prefix_suffix[] = ".world-prefix.png";
+            CHECK(prefix_length <= SIZE_MAX - sizeof(prefix_suffix));
+            char *prefix_path = malloc(prefix_length + sizeof(prefix_suffix));
+            CHECK(prefix_path != NULL);
+            memcpy(prefix_path, argv[3], prefix_length);
+            memcpy(prefix_path + prefix_length, prefix_suffix, sizeof(prefix_suffix));
+            CHECK(capture(&f, prefix_path) == 0);
+            free(prefix_path);
             if (!display_active)
                 CHECK(f.app->r != NULL && f.app->r->kind == MC_CLIENT_SCREEN_PAUSE);
             CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&

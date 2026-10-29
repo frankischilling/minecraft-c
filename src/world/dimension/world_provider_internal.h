@@ -3,6 +3,9 @@
 
 #include "mc/world/dimension/world_provider.h"
 
+/* Actual private xa.h storage, never an independent color array. */
+float *mc_world_provider_sunrise_storage(mc_world_provider *);
+
 /* The actual virtual light-table operation, also called by final bind after
  * biome setup. Requires a READY owner with its constructor-created f storage
  * and the strict FP environment. Fills that same array in source index order;

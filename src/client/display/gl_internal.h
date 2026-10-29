@@ -83,6 +83,8 @@ typedef void(GLAPIENTRY *mc_client_gl_cull_face_fn)(GLenum mode);
     X(PFNGLUSEPROGRAMPROC, UseProgram, "glUseProgram")                                             \
     X(PFNGLGETUNIFORMLOCATIONPROC, GetUniformLocation, "glGetUniformLocation")                     \
     X(PFNGLUNIFORM1IPROC, Uniform1i, "glUniform1i")                                                \
+    X(PFNGLUNIFORM1FPROC, Uniform1f, "glUniform1f")                                                \
+    X(PFNGLUNIFORM4FVPROC, Uniform4fv, "glUniform4fv")                                             \
     X(PFNGLUNIFORM2FPROC, Uniform2f, "glUniform2f")                                                \
     X(PFNGLUNIFORMMATRIX4FVPROC, UniformMatrix4fv, "glUniformMatrix4fv")                           \
     X(PFNGLGENVERTEXARRAYSPROC, GenVertexArrays, "glGenVertexArrays")                              \

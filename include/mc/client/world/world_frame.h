@@ -2,9 +2,12 @@
 #define MC_CLIENT_WORLD_WORLD_FRAME_H
 
 #include "mc/client/world/frustum.h"
+#include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
+#include "mc/client/world/render_global_sky.h"
 #include "mc/client/world/renderer_camera.h"
 #include "mc/client/world/renderer_fog.h"
+#include "mc/client/world/renderer_fog_state.h"
 #include "mc/core/math/classes.h"
 
 typedef struct mc_client_world_frame_call mc_client_world_frame_call;
@@ -30,6 +33,9 @@ typedef struct mc_client_world_frame_error {
     const mc_client_entity_renderer_error *owner;
     const mc_client_renderer_fog_error *fog;
     const mc_client_renderer_camera_error *camera;
+    const mc_client_renderer_fog_state_error *fog_setup;
+    const mc_client_render_global_sky_error *sky;
+    const mc_client_culling_error *culling;
     mc_client_display_error display;
     mc_entity_status entity;
     mc_client_frustum_error frustum;
@@ -42,6 +48,9 @@ typedef struct mc_client_world_frame_state {
     bool fog_returned, buffers_cleared, post_fog_cull_enabled;
     bool camera_returned;
     bool frustum_returned, fog_distance_branch_read;
+    bool sky_fog_returned, sky_returned, fog_enabled, terrain_fog_returned;
+    bool ambient_occlusion_read, ambient_occlusion, smooth_shade_set;
+    bool frustum_constructed, frustum_recentered, culling_returned;
     int32_t post_camera_render_distance;
     mc_client_frustum_state frustum;
     unsigned int source_pc, eye;
@@ -59,6 +68,10 @@ typedef struct mc_client_world_frame_state {
     const mc_client_entity_renderer_pick_state *picking;
     const mc_client_renderer_fog_state *fog;
     const mc_client_renderer_camera_state *camera_setup;
+    const mc_client_renderer_fog_state_view *sky_fog, *terrain_fog;
+    const mc_client_render_global_sky_state *sky;
+    const mc_client_source_frustum_state *culler;
+    const mc_client_culling_state *culling;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the

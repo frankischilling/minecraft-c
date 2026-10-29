@@ -14,8 +14,8 @@ The default client runs the constructed source App and its
 Cancel. Existing-save loading reaches World and Player/input publication;
 renderer attachment, picking, gameplay input and
 [focused mouse look](docs/client/renderer-frames.md) run. Pause entry and ordered
-World ticks reach concrete Mob construction. World drawing completes sky/fog colors,
-camera transforms and frustum extraction before missing fog-state setup; dynamic
+World ticks reach concrete Mob construction. World drawing now completes fog,
+sky, camera and ChunkRenderer culling before missing terrain compilation; dynamic
 terrain drawing remains unfinished. A separate
 [generated-world inspection](docs/client/world-renderer.md) remains available.
 

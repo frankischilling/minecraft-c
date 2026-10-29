@@ -1,6 +1,82 @@
 # Test scope and reproduction
 
+## Source fog, sky and Chunk culling qualification
+
+Windows MSVC Debug ALL and all 506 selected CTests pass in 304.44 seconds,
+with zero failures or skips. Every preceding 502 test remains; four additions
+are `world.sky`, `client.renderer_fog_state`, `client.render_global_sky_cpu` and
+`client.frustum_culling`. The 553-case configuration excludes 47 reference-label
+profiles. The additional local/imported-resource `client.render_global_sky_device`
+case passes separately and matches 48 original Sky post-call states; it is not
+part of the 506-case selection. Six additional Windows JDK-reference cases also
+pass separately.
+
+Fresh audio-enabled GCC13/Clang18 client ALL builds pass against a byte-verified
+ext4 source snapshot, using the same disconnected dependencies and JDK17. Each
+graph has 495 registered tests and passes all 489 selected public cases in
+286.34/290.68 seconds, respectively, under ASan/UBSan, leak detection,
+Xvfb/software GL and the null OpenAL driver. Six asset-independent JDK-reference
+cases also pass per compiler. All final runs have zero failures or skips. The
+new source snapshot and manifests preserve the preceding mounted-filesystem
+qualification; no source/test/deadline guard is removed to avoid those earlier
+metadata delays.
+
+The new finite comparisons are distinct:
+
+- [World/provider sky](../tests/reference/world/sky/README.md): 366 exact rows
+  for angle/rain/stars/horizon and actual sunrise array identity/contents.
+- [PX fog state](../tests/reference/client/renderer_fog_state/README.md): 48
+  exact scalar/cursor rows on the NV-present Windows context. NV-absent Linux
+  contexts compare the same common original fields, then separately check48
+  source-derived skipped-selector outcomes. They do not claim an observed
+  original false-capability profile or complete original NV-false state parity.
+- The same fixture's six authored shader profiles compare30 exact RGBA pixels
+  across LINEAR/EXP/EXP2 and radial/absolute distance. Channel error is zero on
+  Windows NVIDIA and Linux Mesa25.2.8 llvmpipe/LLVM20.1.2/OpenGL4.5. These are
+  controlled GPU probes, not complete World-frame screenshots.
+- [SR/N/DK culling](../tests/reference/client/frustum_culling/README.md):eight
+  exact original rows for constructor/recenter, actual bounds/empty-pass flags,
+  visibility throttling and counter wrap.
+- [N sky](../tests/reference/client/render_global_sky/README.md):four original
+  early outcomes and 48 complete original Sky-call post-state rows. The native
+  device uses real App/startup/N construction, declared prepared World/camera
+  slots, actual cached texture calls and an independently read lower-list GPU
+  record. Authored native sun/moon texture pixels bound that state comparison.
+
+The original Sky and fog captures repeat exactly. Public replays require native
+completion, preserve every recorded row and verify their input fingerprints.
+Current Math/provider/World sharing preserves the prior432 World-color rows.
+Prepared operands, source-null and strict-FP controls remain separately declared
+from original constructor and complete-frame claims.
+
+The genuine loaded Windows graph now completes fog 306, actual Sky 312, fog 318/324,
+SR 350/recenter 363 and live N/DK culling 378 before missing ChunkRenderer
+compilation 396. The same retained successful World attachment is admitted.
+All 72 SDK focus histories remain exact; the 707-check loaded profile preserves
+save/resource bytes and cleans up native owners. A source back-buffer854 by 480
+capture was inspected; it shows the reached sky passes without terrain or HUD.
+It is not a matched original gameplay image. Direct unpaused World work still
+stops at the selected Mob constructor773.
+
+Initial full runs caught one stale assertion on all three compilers: the older
+startup-device test expected GL_FLAT rejection. The completed source Sky needs
+that mode. The test now positively checks FLAT and SMOOTH, then uses invalid
+enum 0 for its unchanged no-publication contract. The failing runs remain
+recorded; the final full suites pass after that correction. Earlier build
+checks also caught a missing SSE2 include, a test link dependency, a runner's
+self-pin filename and the native World class container's required trig table.
+Fixes retain all original rows. Review corrected completed-Sky cleanup views
+and partial-retirement refreshes; the loaded profile checks the released
+cleanup pointer is null.
+
+Formatting checks 1524 C/header/fragment files. GL3 fog uses the same source
+matrix/state/list owners and performs no diagnostic scene entry. Whole terrain
+compilation/drawing, Entities, particles, HUD/hand, ordinary World ticks, Canvas,
+extended play, multiplayer and the server remain unfinished or unqualified.
+
 ## World colors, camera, frustum and spawn selection qualification
+
+This preceding checkpoint retains its original validation scope and frontiers.
 
 Windows MSVC Debug ALL passes. All 502 selected CTests pass in 321.45
 seconds, retaining every preceding 498 case and adding `world.sky_leaves`,

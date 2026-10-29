@@ -57,6 +57,8 @@ bool mc_client_ge_float_clear(mc_client_direct_float_buffer *, mc_client_graphic
                               mc_client_graphics_error *);
 bool mc_client_ge_float_flip(mc_client_direct_float_buffer *, mc_client_graphics_site,
                              mc_client_graphics_error *);
+bool mc_client_ge_float_put(mc_client_direct_float_buffer *, float, mc_client_graphics_site,
+                            mc_client_graphics_error *);
 bool mc_client_ge_float_limit(mc_client_direct_float_buffer *, int32_t, mc_client_graphics_site,
                               mc_client_graphics_error *);
 bool mc_client_ge_float_get_array(mc_client_direct_float_buffer *, float *, size_t,

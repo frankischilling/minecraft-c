@@ -222,6 +222,11 @@ static bool frame_controls(picking_fixture *f, const char *directory) {
               call == NULL && f->px->holds == holds);
     }
 #ifdef MC_TEST_HAS_RENDER_GLOBAL
+    mc_client_graphics_error graphics;
+    CHECK(mc_client_ge_e(
+        f->graphics, &f->px->arena, 16,
+        (mc_client_graphics_site){"px", "<init>", "(Lnet/minecraft/client/Minecraft;)V", 193},
+        &f->px->fields.f, &graphics));
     mc_client_render_global *global = NULL;
     CHECK(mc_client_render_global_allocate(f->graphics, NULL, &global, NULL) ==
           MC_CLIENT_RENDER_GLOBAL_OK);
@@ -237,12 +242,23 @@ static bool frame_controls(picking_fixture *f, const char *directory) {
         CHECK(mc_entity_bounds_pool_reset(f->base.entities, NULL) == MC_ENTITY_OK);
         CHECK(mc_entity_vector_pool_reset(f->base.entities, NULL) == MC_ENTITY_OK);
         CHECK(mc_client_entity_renderer_world_frame_begin(f->px, f->math, 0.5f, 0, &call, &error) ==
-                  MC_CLIENT_WORLD_FRAME_DEPENDENCY &&
+                  MC_CLIENT_WORLD_FRAME_SOURCE_NULL &&
               call != NULL && mc_client_entity_renderer_world_frame_inspect(call, &state));
         CHECK(state.camera_returned && state.frustum_returned && state.frustum.initialized &&
               state.frustum.normalized_planes == 6 && state.fog_distance_branch_read &&
-              state.post_camera_render_distance == distance && error.native_policy &&
-              error.site.pc == (distance == 0 ? 306 : 318));
+              state.post_camera_render_distance == distance && !error.native_policy);
+        if (distance == 0) {
+            CHECK(state.sky_fog_returned && state.sky_fog != NULL &&
+                  state.sky_fog->buffer_puts == 4 && state.sky != NULL && !state.sky_returned &&
+                  state.source_pc == 312 && strcmp(error.site.class_name, "n") == 0 &&
+                  error.site.pc == 4);
+        } else {
+            CHECK(!state.sky_fog_returned && state.fog_enabled && state.terrain_fog_returned &&
+                  state.frustum_constructed && state.frustum_recentered &&
+                  !state.culling_returned && state.source_pc == 378 && error.site.pc == 378 &&
+                  error.culling != NULL && error.child.pc == 7 &&
+                  strcmp(error.child.class_name, "n") == 0);
+        }
         if (frustum_identity == NULL)
             frustum_identity = state.frustum.singleton;
         CHECK(state.frustum.singleton == frustum_identity);

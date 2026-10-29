@@ -134,6 +134,8 @@ const char *mc_world_provider_status_string(mc_world_provider_status status) {
             return "unsupported floating-point environment";
         case MC_WORLD_PROVIDER_REGISTRY_FAILED:
             return "block registry failed";
+        case MC_WORLD_PROVIDER_MATH_FAILED:
+            return "MathHelper class failed";
     }
     return "unknown dimension status";
 }
@@ -252,6 +254,10 @@ mc_world_provider_status mc_world_provider_retain(mc_world_provider *dimension) 
         return MC_WORLD_PROVIDER_LIMIT;
     ++dimension->holds;
     return MC_WORLD_PROVIDER_OK;
+}
+
+float *mc_world_provider_sunrise_storage(mc_world_provider *dimension) {
+    return dimension == NULL ? NULL : dimension->h;
 }
 
 void mc_world_provider_release(mc_world_provider *dimension) {

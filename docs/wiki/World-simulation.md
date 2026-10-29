@@ -12,8 +12,11 @@ Chunk work and complete ordinary World ticks remain unfinished.
 The [World color services](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/colors.md)
 now supply actual raw temperature, virtual Biome sky, Dimension fog and cloud
 colors to the source renderer. Exact public replays compare 386 leaf and 432
-World-color observations across all three Dimensions. Their prepared-receiver
-scopes remain separate from complete frames and gameplay.
+World-color observations across all three Dimensions. Further
+[sky leaves](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/sky.md)
+add 366 exact celestial/rain/star/horizon/sunrise rows, including actual provider
+array identity. These prepared-receiver scopes remain separate from complete
+World construction, frames and gameplay.
 
 The [WorldAccess interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/world-access.md)
 dispatches six shared callback slots plus client sky change with live-list iteration and retained receiver

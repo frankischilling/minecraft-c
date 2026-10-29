@@ -1,5 +1,6 @@
 #ifndef MC_CLIENT_DISPLAY_SOURCE_INTERNAL_H
 #define MC_CLIENT_DISPLAY_SOURCE_INTERNAL_H
+#include "fog_surface.h"
 #include "matrix_source.h"
 #include "source_surface.h"
 
@@ -68,6 +69,8 @@ typedef struct mc_client_source_state {
     bool initialized, loading_ready, texture_enabled, alpha_test, color_known,
         internal_resource_bind;
     bool lighting_enabled, fog_enabled;
+    mc_client_source_fog_state fog;
+    uint64_t fog_capability_generation;
     bool shade_flat; /* Source GL_FLAT admits constant color within each decoded primitive. */
     unsigned arrays, pointers;
     const void *array_buffers[4];
@@ -89,6 +92,8 @@ typedef struct mc_client_source_state {
     unsigned gpu_phase;
     mc_client_display_error gpu_failure;
     int projection_uniform, modelview_uniform, textured_uniform, alpha_uniform;
+    int fog_enabled_uniform, fog_mode_uniform, fog_distance_uniform;
+    int fog_color_uniform, fog_density_uniform, fog_start_uniform, fog_end_uniform;
     size_t vbo_bytes;
     bool vbo_capacity_uncertain;
     int32_t matrix_mode;

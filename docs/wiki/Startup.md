@@ -55,20 +55,19 @@ updates, weather and actual weighted Biome spawn selection before the missing
 concrete Mob constructor at `cq.a:773`.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
-constructs OZ; actual World drawing completes colors, camera and W before
-missing fog-state setup at `px.a:306`.
+constructs OZ; actual World drawing completes fog, camera, Sky and real
+ChunkRenderer culling before missing compilation at `px.a:396`.
 Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
 Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-The current extension passes all 502 selected Windows CTests. Both Linux
-audio-enabled sanitizer ALL builds pass. Their full suites each have479 passes
-and six helper timeouts on the mounted source tree; the six helpers pass from
-a byte-identical ext4 snapshot with unchanged deadlines.
-Original color, full-fog, camera, frustum and spawn-prefix fixtures retain
-their declared finite scopes and matrix precision policy.
+The current extension passes all 506 selected Windows CTests and 489 public
+cases per Linux sanitizer graph, plus six JDK-reference cases per compiler.
+Windows/GCC13/Clang18 ALL builds pass. Original World/provider, fog, Sky and
+culling fixtures retain their declared finite scopes. Six source-shader GPU
+profiles match all 30 pixels exactly on Windows NVIDIA and Linux Mesa.
 Existing-save entry checks paused and direct unpaused segments, source failure
 frontiers, save/resource preservation and cleanup. The preceding generated-
 terrain entry result retains its separate scope.

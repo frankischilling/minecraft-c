@@ -167,3 +167,16 @@ bool mc_client_display_list_pending_batch(mc_client_display *display, int32_t id
     return list != NULL && list->pending != NULL &&
            source_inspect_batch(list->pending->first, index, out);
 }
+bool mc_client_display_source_draw_inspect(const mc_client_display *display,
+                                           mc_client_source_draw_state *out) {
+    if (display == NULL || out == NULL || !display->source.initialized ||
+        display->source.active_calls != 0)
+        return false;
+    memcpy(out->color, display->source.color, sizeof(out->color));
+    out->color_known = display->source.color_known;
+    out->texture_enabled = display->source.texture_enabled;
+    out->alpha_test = display->source.alpha_test;
+    out->shade_flat = display->source.shade_flat;
+    out->lighting_enabled = display->source.lighting_enabled;
+    return true;
+}

@@ -33,7 +33,8 @@ typedef enum mc_world_provider_status {
     MC_WORLD_PROVIDER_WORLD_FAILED,
     MC_WORLD_CHUNK_MANAGER_FAILED,
     MC_WORLD_PROVIDER_UNSUPPORTED_FP,
-    MC_WORLD_PROVIDER_REGISTRY_FAILED
+    MC_WORLD_PROVIDER_REGISTRY_FAILED,
+    MC_WORLD_PROVIDER_MATH_FAILED
 } mc_world_provider_status;
 
 typedef struct mc_world_provider_error {

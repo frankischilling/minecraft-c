@@ -20,6 +20,15 @@ typedef enum mc_client_source_array {
     MC_CLIENT_SOURCE_NORMAL_ARRAY
 } mc_client_source_array;
 
+typedef struct mc_client_source_draw_state {
+    float color[4];
+    bool color_known, texture_enabled, alpha_test, shade_flat, lighting_enabled;
+} mc_client_source_draw_state;
+
+/* Passive source state used by the draw program. No GL query or initialization. */
+bool mc_client_display_source_draw_inspect(const mc_client_display *,
+                                           mc_client_source_draw_state *);
+
 /* Exactly one source GL11.glGetError query on the canonical live Display.
  * A nonzero GL enum is returned as source data, not a native GL failure.
  * No gl_check, pre-drain, post-drain, frame reset, swap or pump is added.

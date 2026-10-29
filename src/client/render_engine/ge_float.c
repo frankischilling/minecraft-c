@@ -28,6 +28,22 @@ bool mc_client_ge_float_flip(mc_client_direct_float_buffer *buffer, mc_client_gr
     return true;
 }
 
+bool mc_client_ge_float_put(mc_client_direct_float_buffer *buffer, float value,
+                            mc_client_graphics_site site, mc_client_graphics_error *error) {
+    void *storage;
+    size_t remaining;
+    if (!mc_client_ge_float_writable_remaining(buffer, &storage, &remaining, site, error))
+        return false;
+    if (remaining == 0) {
+        mc_client_graphics_fail(error, MC_CLIENT_GRAPHICS_BUFFER_OVERFLOW,
+                                "actual FloatBuffer.put overflow", site, false);
+        return false;
+    }
+    memcpy(storage, &value, sizeof(value));
+    ++buffer->position;
+    return true;
+}
+
 bool mc_client_ge_float_limit(mc_client_direct_float_buffer *buffer, int32_t limit,
                               mc_client_graphics_site site, mc_client_graphics_error *error) {
     if (!receiver(buffer, site, error))
