@@ -31,8 +31,9 @@ Display creation refusal in the third later-owner constructor profile. Its
 cleanup succeeds, but the captured SDL operation/detail was not printed and
 the cause remains undiagnosed. A diagnostic-only follow-up prints those fields
 without changing assertions or runtime behavior. Both optional constructor
-profiles pass separately on Windows in 0.74 seconds; the complete 468-case run
-had those two profiles disabled, so this is not a complete 470-case rerun.
+profiles and the additional inventory callback-ownership case pass separately
+on Windows in 0.89 seconds. The complete 468-case run had these optional
+profiles disabled, so this is not a complete 471-case rerun.
 
 The preceding default source menu passes four focused Windows MSVC Debug CTests:
 GuiIngame, texture uploads, source screen events and the native menu loop.

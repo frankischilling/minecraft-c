@@ -826,16 +826,16 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 239104,
-      "sha256": "22c5fffb0ab693802933c73a5e3f274a9e99ceff352a4888763c4004140bcfd0"
+      "bytes": 239162,
+      "sha256": "5b725a073e4d5a129c22cf981381d7045cd73d19833021e6fd44ea2b5de4784d"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 12182,
       "sha256": "10b4782bd5e9c2f61c332acffed1fc2d9e48e9dc580d37dd759a4a8a87a0ba22"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 19598,
-      "sha256": "7c3e4f73268bd0e0a54e0a050440a74a9be01a87b24b8a54b421409f800ba924"
+      "bytes": 19656,
+      "sha256": "d15991c31a29eac3271080d5f8a8002a631925d2ae4f985037bd6dac1a4e1ab8"
     },
     "docs/wiki/History.md": {
       "bytes": 26029,

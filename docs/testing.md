@@ -45,9 +45,9 @@ under WSL; those checks are separate from a complete Linux build and suite.
 Earlier local and hosted checkpoints below retain their source scopes.
 
 The complete 468-case selection had the optional application-constructor
-profiles disabled. Enabling them adds two cases; both pass separately in
-0.74 seconds after the diagnostic-only change described below. That is not a
-complete 470-case rerun.
+profiles disabled. Enabling them adds two constructor cases and an inventory
+callback-ownership case. All three pass separately in 0.89 seconds after the
+diagnostic-only change described below. That is not a complete 471-case rerun.
 
 ## Hosted World-selection checkpoint 1334db5
 
