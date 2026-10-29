@@ -128,8 +128,9 @@ struct client_application {
     int32_t d, e;
     mc_client_source_cx *S;
     mc_client_render_global *g;
-    mc_entity *h; /* dc LocalPlayer; distinct from i, published only later */
-    mc_entity *i; /* ls LivingEntity view; no World/inspection inference */
+    mc_entity *h;               /* dc LocalPlayer; distinct from i, published only later */
+    mc_entity *i;               /* ls LivingEntity view; no World/inspection inference */
+    mc_entity *view_occurrence; /* Native hold for actual i, shared by source stores. */
     mc_player_string *l;
     mc_client_source_canvas *m;
     bool n;

@@ -278,6 +278,7 @@ static int test_invalid(void) {
     REQUIRE(!mc_timer_view_get(timer, NULL));
     REQUIRE(!mc_timer_update(NULL, (mc_timer_clock_sample){INT64_MAX, INT64_MIN}));
     REQUIRE(!mc_timer_set_speed(NULL, NAN));
+    REQUIRE(!mc_timer_set_partial_ticks(NULL, NAN));
     REQUIRE(outcome(timer, 0, 0));
     result = 0;
 cleanup:
@@ -286,10 +287,47 @@ cleanup:
     return result;
 }
 
+static int test_partial_restore(void) {
+    int result = 1;
+    mc_timer *timer = NULL;
+    mc_timer_view paused, updated;
+    REQUIRE(mc_timer_create(20.0f, (mc_timer_clock_sample){0, 0}, &timer));
+    REQUIRE(mc_timer_update(timer, (mc_timer_clock_sample){25, 25000000}) &&
+            mc_timer_view_get(timer, &paused) &&
+            bits(paused.partial_ticks) == UINT32_C(0x3f000000));
+    REQUIRE(mc_timer_update(timer, (mc_timer_clock_sample){100, 100000000}) &&
+            outcome(timer, 2, 0));
+    REQUIRE(mc_timer_set_partial_ticks(timer, paused.partial_ticks) &&
+            outcome(timer, 2, UINT32_C(0x3f000000)) && mc_timer_view_get(timer, &updated) &&
+            updated.speed == paused.speed && updated.ticks_per_second == paused.ticks_per_second);
+    /* Restoring c must leave e and the updated synchronization clocks alone:
+     * the next 25ms starts from the actual zero remainder and reaches half. */
+    REQUIRE(mc_timer_update(timer, (mc_timer_clock_sample){125, 125000000}) &&
+            outcome(timer, 0, UINT32_C(0x3f000000)));
+    static const uint32_t values[] = {0,
+                                      UINT32_C(0x80000000),
+                                      1,
+                                      UINT32_C(0x7f800000),
+                                      UINT32_C(0xff800000),
+                                      UINT32_C(0x7fc12345),
+                                      UINT32_C(0xffa54321)};
+    for (size_t index = 0; index < COUNT(values); ++index) {
+        float value;
+        memcpy(&value, &values[index], sizeof(value));
+        REQUIRE(mc_timer_set_partial_ticks(timer, value) && outcome(timer, 0, values[index]));
+    }
+    REQUIRE(mc_timer_update(timer, (mc_timer_clock_sample){150, 150000000}) &&
+            outcome(timer, 1, 0));
+    result = 0;
+cleanup:
+    mc_timer_free(timer);
+    return result;
+}
+
 int main(void) {
     if (test_initial_and_fractions() || test_resets_and_clamps() ||
         test_truncation_and_long_wrap() || test_drift() || test_speed_and_nonfinite() ||
-        test_invalid())
+        test_invalid() || test_partial_restore())
         return 1;
     printf("PASS: %u Timer native source-contract checks\n", checks);
     return 0;

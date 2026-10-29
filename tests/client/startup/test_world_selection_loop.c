@@ -1,5 +1,6 @@
 /* Genuine native bootstrap/menu composition with authored SDL transport events. */
 #include "../world/test_load_world_foreign_loading.h"
+#include "../world/test_refresh_entity.h"
 #include "client/application_state.h"
 #include "client/display/sdk_input.h"
 #include "client/display/staged.h"
@@ -11,6 +12,7 @@
 #include "client/gui/source_world_selection_internal.h"
 #include "client/runtime/gameplay_input.h"
 #include "client/runtime/menu_loop.h"
+#include "client/runtime/world_tick.h"
 #include "client/startup/application_startup.h"
 #include "client/world/load_world.h"
 #include "client/world/prepare_world.h"
@@ -423,6 +425,48 @@ static int gameplay_controls(fixture *f) {
     return 0;
 }
 
+static int world_tick_controls(fixture *f) {
+    mc_client_world_tick *call = calloc(1, sizeof(*call));
+    CHECK(call != NULL);
+    const bool paused = atomic_load(&f->app->o);
+    const int32_t counter = f->app->ah;
+    atomic_store(&f->app->o, true);
+    f->app->ah = 29;
+    CHECK(mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call) &&
+          call->returned && call->counter_stored && call->counter_reset && f->app->ah == 0 &&
+          call->refresh_state.returned && call->refresh_state.chunk_returns == 25 &&
+          call->refresh_state.contains && !call->refresh_state.appended &&
+          !call->renderer_returned && !call->entities_returned);
+    CHECK(mc_client_world_tick_cleanup(call));
+    atomic_store(&f->app->o, false);
+    memset(call, 0, sizeof(*call));
+    const bool returned =
+        mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call);
+    if (!returned && call->site.pc != 1260) {
+        fprintf(stderr, "World segment reached %s.%s:%d: %s; renderer=%d entities=%d\n",
+                call->site.class_name, call->site.method, call->site.pc, call->operation,
+                call->renderer_returned, call->entities_returned);
+        if (call->site.pc == 1216)
+            fprintf(stderr, "Entity child %s.%s:%u kind=%d op=%s\n", call->entities.source_class,
+                    call->entities.source_method, call->entities.bytecode,
+                    (int)call->entities.child, call->entities.operation);
+    }
+    CHECK(!returned && call->failed && call->site.pc == 1260 && call->counter_stored &&
+          !call->counter_reset && call->difficulty_stored && call->renderer_returned &&
+          call->render_global_returned && call->entities_returned && call->spawn_flags_stored &&
+          call->renderer_state.source_returned && call->renderer_state.source_pc == 186 &&
+          call->renderer_state.interpolation_stores == 6 &&
+          call->renderer_state.brightness_returned && call->renderer_state.held_item_returned &&
+          call->renderer_state.rain_returned && call->renderer_state.rain->returned);
+    CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 1260);
+    atomic_store(&f->app->o, paused);
+    f->app->ah = counter;
+    free(call);
+    printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
+           "entities=1 spawn-flags=1 next=k1260\n");
+    return 0;
+}
+
 static int large_drag(fixture *f, mc_client_source_rq *rq, const char *capture_path) {
     mc_client_world_list_fields *list = &rq->fields.o->fields;
     CHECK(mc_client_save_list_size(rq->fields.n) == 16 && list->m == 0.0f && list->k == -1.0f);
@@ -693,12 +737,30 @@ int main(int argc, char **argv) {
             CHECK(f.app->r == NULL &&
                   mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display), &input) &&
                   input.grabbed == f.app->N && player.living.Y > 0);
-            CHECK(strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
-                  strcmp(f.state.source_method, "k") == 0 && f.state.source_pc == 1074 &&
-                  f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
-                  f.state.gameplay_input->source_pc == 1073);
+            bool display_active;
+            mc_client_sdk_update_error update;
+            CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f.app->display),
+                                               &display_active,
+                                               &update) == MC_CLIENT_SDK_UPDATE_OK);
+            if (!display_active) {
+                mc_client_entity_renderer_state renderer;
+                int64_t now;
+                CHECK(mc_client_entity_renderer_inspect(f.app->t, &renderer) &&
+                      mc_platform_current_time_millis(&now) == MC_PLATFORM_MILLIS_OK &&
+                      mc_java_i64_sub(now, renderer.fields.H) > 500 &&
+                      strcmp(f.state.source_class, "net/minecraft/client/Minecraft") == 0 &&
+                      strcmp(f.state.source_method, "i") == 0 && f.state.source_pc == 9);
+            } else
+                CHECK(strcmp(f.state.source_class, "px") == 0 &&
+                      strcmp(f.state.source_method, "b") == 0 &&
+                      f.state.source_pc == (f.app->N ? 55 : 339));
+            CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
+                  f.state.gameplay_input->source_pc == 1073 && f.state.world_tick != NULL &&
+                  f.state.world_tick->returned && !f.state.world_tick->failed);
             CHECK(world_display_controls(&f, initial->classes) == 0);
             CHECK(gameplay_controls(&f) == 0);
+            CHECK(mc_test_world_refresh_entity(f.app) == 0);
+            CHECK(world_tick_controls(&f) == 0);
             mc_entity_vector_snapshot before_pick, after_pick;
             CHECK(mc_entity_vector_get_snapshot(f.app->entities, &before_pick) == MC_ENTITY_OK);
             mc_client_entity_renderer_pick_call *pick = NULL;
@@ -718,7 +780,8 @@ int main(int argc, char **argv) {
                   pick == NULL);
             printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
                    "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 "
-                   "input=1073 next=k1074\n");
+                   "input=1073 paused-tick=1328 frame-frontier=%s.%s:%" PRId64 "\n",
+                   f.state.source_class, f.state.source_method, f.state.source_pc);
         } else {
             CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
                   load.player == NULL && !load.world_published);

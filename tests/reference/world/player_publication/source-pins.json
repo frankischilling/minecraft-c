@@ -348,12 +348,12 @@
       "sha256": "5cb07b743beb47414e5856ecc5cd10ed5fb91a890fb853310bb333373628de0b"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 38361,
-      "sha256": "5d6e21a47bd18987105235c8372d7d619945a8572691a0f0a869adf4df190dce"
+      "bytes": 38477,
+      "sha256": "36d0aa9b01be7182bfc6b6dec80c2362b8060dc5fb5880144910cdcee44ec52d"
     },
     "src/world/runtime/entity_publication_internal.h": {
-      "bytes": 2555,
-      "sha256": "713607ffce5ef00899cf3052b7fa026162d48f149aeb846debbe2946eb43b213"
+      "bytes": 3048,
+      "sha256": "93fc7fed8d27f252685e13f59243d7195c98686e54fd8b86520ae8212657b748"
     },
     "src/world/runtime/runtime_internal.h": {
       "bytes": 5992,

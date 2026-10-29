@@ -80,5 +80,6 @@ block marker, same-App Player/input, renderer/effect attachment, actual Player
 insertion, view publication and checked cleanup. The profile reads authored region files and allows the actual new
 session lock while preserving pre-existing save and resource bytes. Creation,
 rename, deletion, dynamic rendering and gameplay remain unfinished. Healthy
-null-screen handling returns; the same native tick next stops at gameplay
-input `Minecraft.k:337`.
+null-screen handling returns; the same native tick executes gameplay input
+through1073 and the admitted [World/frame segment](renderer-ticking.md).
+Whole scheduling and dynamic terrain frames remain unfinished.

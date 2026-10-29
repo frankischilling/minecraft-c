@@ -8,6 +8,7 @@
 #include "../startup/application_owner_internal.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
+#include "../view_slot.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/client/saves/save_format.h"
@@ -301,7 +302,10 @@ static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime 
                     "earlier LivingEntity occurrence outside selected closure", 16);
         return false;
     }
-    app->i = NULL;
+    if (mc_client_view_slot_store(app, NULL) != MC_ENTITY_OK) {
+        change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY, "actual i16 native occurrence", 16);
+        return false;
+    }
     prefix->i_stored = true;
     if (index == 0)
         call->state.initial_i_cleared = true;
@@ -644,12 +648,11 @@ static bool change_world(mc_client_world_load_call *call, mc_world_runtime *worl
         return false;
     }
     call->state.last_change_pc = 347;
-    if (app->h != NULL && mc_entity_retain(app->h) != MC_ENTITY_OK) {
+    if (mc_client_view_slot_store(app, app->h) != MC_ENTITY_OK) {
         change_fail(call, MC_CLIENT_WORLD_LOAD_BUSY, "actual i347 native occurrence", 347);
         return false;
     }
     call->i_occurrence = app->h;
-    app->i = app->h;
     call->state.view_published = true;
     ++call->state.gc_requests;
     app->P = 0;
@@ -1130,8 +1133,9 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
         if (app->i != call->i_occurrence)
             return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
                                 "actual owned App.i occurrence changed");
-        app->i = NULL;
-        mc_entity_release(call->i_occurrence);
+        if (mc_client_view_slot_store(app, NULL) != MC_ENTITY_OK)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual App.i native occurrence cleanup");
         call->i_occurrence = NULL;
     }
     if (call->h_occurrence != NULL) {

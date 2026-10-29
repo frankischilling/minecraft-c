@@ -9,19 +9,36 @@ Empty, populated and bottom-scroll captures were inspected. Select now enters th
 controller. The existing-save profile reaches `READY`, all 289 terrain samples
 renderer/particle attachment, real Player insertion and view publication.
 World loading and healthy null-screen/focus handling return; the same tick
-then executes [gameplay input](client/gameplay-input.md) through `Minecraft.k:1073`
-before the unfinished World tick at1074.
+then executes [gameplay input](client/gameplay-input.md) through `Minecraft.k:1073`.
+The [World segment](client/renderer-ticking.md) handles paused ticks and connects
+renderer/entity updates before unfinished scheduling at1260. The hidden-window
+profile then reaches the inactive pause-screen dependency; direct unpaused
+checks on that same graph reach the scheduler dependency.
 The same READY renderer completes [picking](client/picking.md) through
 `px.a(F):452`. Existing-World ticks invoke it at `k:33`; the admitted provider
 branch, controller music tick and healthy screen checks also execute. Input
-dispatch updates movement keys, hotbar and Settings; Player movement, World
-ticks and gameplay actions still require further implementation.
+dispatch updates movement keys, hotbar and Settings. World entity ticking can
+invoke Player movement descendants; whole World ticks, dynamic frames and
+gameplay actions still require further implementation.
 Dynamic terrain rendering and gameplay remain unfinished. Explicit flags retain the
 diagnostic title and fixed-camera World inspection.
 
 ## Current integration
 
-Gameplay input and controller ticks pass the complete Windows MSVC Debug ALL
+Renderer/World-tick composition passes the complete Windows MSVC Debug ALL
+build and all 494 selected CTests in 213.50 seconds, with zero failures or skips.
+Five public replays compare 267 original body observations on MSVC, GCC13 and
+Clang18. Both Linux profiles pass the six new tests plus Timer under ASan/UBSan
+with leak detection. Windows loaded-World checks distinguish the actual paused
+frame from direct same-graph unpaused renderer/entity work. Whole scheduling
+and a complete terrain frame remain unfinished. See the
+[qualification](testing.md#renderer-and-world-tick-qualification).
+
+Published input checkpoint [`94dcfca`](https://github.com/frankischilling/minecraft-c/actions/runs/40869607435)
+passes all four hosted jobs and 1,409 tests: Windows 455, GCC 477 and Clang 477,
+without failures or skips. It precedes this renderer/World-tick extension.
+
+The preceding gameplay-input/controller cohort passes the Windows MSVC Debug ALL
 build and all 488 selected CTests in 212.09 seconds, with zero failures or skips.
 The selection excludes reference-label profiles. All five native World-selection
 profiles pass, including existing-save entry and direct input-segment controls

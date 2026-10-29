@@ -1,3 +1,4 @@
+#include "../view_slot.h"
 #include "application_startup_effects.h"
 #include "application_startup_gui_ingame.h"
 #include "application_startup_input.h"
@@ -104,6 +105,9 @@ mc_client_startup_status mc_client_application_startup_retire(mc_client_applicat
         (!startup->t_stored && app->t != NULL))
         return cleanup_failure(startup, MC_CLIENT_STARTUP_INVALID_PHASE,
                                "startup actual t identity changed outside owner", out);
+    if (app->view_occurrence != NULL && mc_client_view_slot_store(app, NULL) != MC_ENTITY_OK)
+        return cleanup_failure(startup, MC_CLIENT_STARTUP_BUSY,
+                               "startup actual view occurrence cleanup", out);
     const mc_client_entity_renderer_status renderer_status = mc_client_entity_renderer_retire(
         &startup->entity_renderer_candidate, &startup->retirement.entity_renderer);
     if (startup->entity_renderer_candidate == NULL && startup->t_stored) {

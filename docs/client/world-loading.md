@@ -63,11 +63,12 @@ null and runs the actual focus operation: Display activity and `N` guards,
 The recursive call returns through the now-true `N` guard. Null Player and
 death-screen paths preserve their reached source boundaries.
 
-The native selection profile next stops at gameplay input `Minecraft.k:337`
-in the same tick. The real READY renderer also completes the
+The native selection profile executes gameplay input through1073 in that same
+tick, then the admitted [World/frame segment](renderer-ticking.md). The real READY renderer also completes the
 [picking body](picking.md) through `px.a(F):452`. Later ticks invoke that body
-at `Minecraft.k:33`, then reach the next unresolved World-maintenance branch.
-World ticking and a frame still require sound, controller and terrain-render integration.
+at `Minecraft.k:33`. Renderer/entity ticking, sound listener, lighting and
+controller interpolation are connected; whole World scheduling and terrain
+frames remain unfinished.
 Loading a World is therefore still not a playable session.
 
 ## Native lifetime and errors

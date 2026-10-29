@@ -59,6 +59,18 @@ mc_game_settings_source_input_toggle_smooth_camera(mc_game_settings *settings,
 }
 
 mc_game_settings_status
+mc_game_settings_source_render_clear_third_person(mc_game_settings *settings,
+                                                  mc_game_settings_error *error) {
+    const mc_game_settings_status status = admit(settings, error);
+    if (status != MC_GAME_SETTINGS_OK)
+        return status;
+    settings->active = true;
+    settings->state.values.third_person_view = false;
+    settings->active = false;
+    return result(error, MC_GAME_SETTINGS_OK, 0, NULL);
+}
+
+mc_game_settings_status
 mc_game_settings_source_input_wheel(mc_game_settings *settings, int32_t wheel,
                                     mc_game_settings_source_input_wheel_report *out,
                                     mc_game_settings_error *error) {

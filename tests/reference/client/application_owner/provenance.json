@@ -34,8 +34,8 @@
       "sha256": "d67c860882eee759f1cef7fe12f0a9609bcc7e043bb569bf30bd92369fb87a64"
     },
     "include/mc/client/timer/timer.h": {
-      "bytes": 3077,
-      "sha256": "463426c3e36059e173f4352339538f28bacbfbccc7670efdb9b08248a1b0f1b5"
+      "bytes": 3604,
+      "sha256": "c497eff36c3ba600383fecb235af6334c30f962e7fdbf1ef2957dcbff7945b63"
     },
     "include/mc/core/java/format.h": {
       "bytes": 3373,
@@ -330,8 +330,8 @@
       "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
     },
     "src/client/application_state.h": {
-      "bytes": 8085,
-      "sha256": "b4a01cca03eb6b3fbb8e00a153c81aed9c189cbad6cede332500301668362e2c"
+      "bytes": 8202,
+      "sha256": "d66b9477b8e8b24e14e02fddf89c052af35240ab782e8d4d0f32ed2e0ce45c02"
     },
     "src/client/display/display.h": {
       "bytes": 13727,

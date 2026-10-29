@@ -1,6 +1,28 @@
 # Build and tests
 
-The current input/controller extension passes the complete Windows Debug ALL
+The current renderer/World-tick extension passes the Windows Debug ALL build
+and all 494 selected CTests in 213.50 seconds, with zero failures or skips.
+Five exact replays compare 267 original observations: brightness 12, equip 120,
+rain 20, renderer 43 and interpolation 72. Both GCC13 and Clang18 pass six new
+tests plus Timer with ASan/UBSan and leak detection. These are selected client-
+library builds with audio disabled, not complete Linux graphical qualification.
+The loaded Windows graph checks the genuine paused frame and direct unpaused
+renderer/entity sequence through the scheduler dependency at1260. The
+[current scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#renderer-and-world-tick-qualification)
+records remaining frames, scheduling and gameplay.
+
+Windows CI uses Ninja Debug with the x64 MSVC environment, explicit selected
+JDK17 and the same four build/test workers and full suite. A local VS18 Ninja
+ALL graph and all 461 asset-independent tests pass, with zero failures or
+skips. This qualifies that local generator profile; hosted VS17 results and
+any timing improvement require the current hosted run. No compiler/build tree
+cache or omitted test replaces the existing source and dependency checks.
+
+Published input checkpoint [`94dcfca`](https://github.com/frankischilling/minecraft-c/actions/runs/40869607435)
+passes all four jobs and 1,409 tests: Windows 455, GCC 477 and Clang 477, with
+zero failures or skips. That hosted result precedes the renderer extension.
+
+The preceding input/controller extension passes the complete Windows Debug ALL
 build and all 488 selected CTests in 212.09 seconds, with zero failures or skips.
 Both new public replays pass on MSVC, GCC13 and Clang18; Linux uses ASan/UBSan
 and leak detection. Fresh original captures reproduce 63 inventory-wheel rows
@@ -45,7 +67,8 @@ same-parent Cancel, original-receiver trailing input and retained-old-RQ cleanup
 Select constructs the actual controller and enters the retained source World
 loader. The existing-save profile completes all 289 samples, renderer/particle
 attachment, real Player insertion, view publication and healthy null-screen
-focus. It then reaches gameplay input `Minecraft.k:337`. The current separate
+focus. Gameplay input now continues through1073 and the admitted World/frame
+segment; whole scheduling and terrain frames remain unfinished. The preceding separate
 generated-terrain Release profile also reaches full World-load return and
 cleanup under a 300-second process bound.
 Version-zero conversion stops at 52.

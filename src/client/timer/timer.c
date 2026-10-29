@@ -5,6 +5,7 @@
 #include <float.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128,
                "Timer requires IEEE binary32");
@@ -103,6 +104,13 @@ bool mc_timer_set_speed(mc_timer *timer, float speed) {
     if (timer == NULL || timer->native.phase != MC_TIMER_NATIVE_READY)
         return false;
     timer->speed = speed;
+    return true;
+}
+
+bool mc_timer_set_partial_ticks(mc_timer *timer, float partial_ticks) {
+    if (timer == NULL || timer->native.phase != MC_TIMER_NATIVE_READY)
+        return false;
+    memcpy(&timer->partial_ticks, &partial_ticks, sizeof(timer->partial_ticks));
     return true;
 }
 

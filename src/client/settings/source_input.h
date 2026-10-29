@@ -20,6 +20,9 @@ mc_game_settings_source_input_toggle_third_person(mc_game_settings *,
 mc_game_settings_status
 mc_game_settings_source_input_toggle_smooth_camera(mc_game_settings *,
                                                    mc_game_settings_error *); /* E, k758 */
+/* Literal run299 A=false after actual Player.L() succeeds. */
+mc_game_settings_status mc_game_settings_source_render_clear_third_person(mc_game_settings *,
+                                                                          mc_game_settings_error *);
 
 typedef struct mc_game_settings_source_input_wheel_report {
     bool D_read, D, G_read, G_stored;

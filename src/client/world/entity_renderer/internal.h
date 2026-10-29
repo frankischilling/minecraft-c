@@ -25,7 +25,8 @@ struct mc_client_source_ra {
     mc_client_entity_renderer_phase phase;
     int32_t last_store;
     client_application *a;
-    const void *b; /* Actual nullable iz; constructor leaves NULL. */
+    mc_item_stack *b;            /* Actual nullable iz; constructor leaves NULL. */
+    mc_item_stack *b_occurrence; /* Independent native hold for published b. */
     float c, d;
     mc_client_render_blocks *e;
     mc_client_source_iy *f, *pending_iy;
@@ -48,6 +49,7 @@ struct mc_client_source_px {
     mc_client_held_item *pending_ra;
     mc_client_entity_renderer_error failure, retirement;
     mc_client_entity_renderer_pick_call *pick_call;
+    struct mc_client_entity_renderer_tick_call *tick_call;
     mc_entity *pick_m_occurrence;
     bool pick_m_published;
     struct mc_entity_hit_result *pick_y_occurrence;

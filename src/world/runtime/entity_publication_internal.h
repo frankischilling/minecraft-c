@@ -7,6 +7,12 @@
  * independently of replaceable source projections. NULL typed occurrences own
  * no hold. Never reinterpret an unknown void* collection as Entity ownership. */
 bool mc_world_runtime_entity_list_valid(const mc_world_runtime *world);
+/* Canonical typed List append shared by source publication and fd.g(sn).
+ * Caller owns an entered World and live Entity. This performs only the exact
+ * List append and its independent native occurrence; no source callback. */
+bool mc_world_runtime_entity_append_owned(mc_world_runtime *, mc_world_reference_list *,
+                                          mc_world_entity_list_ledger *, struct mc_entity *,
+                                          unsigned int, mc_world_entity_error *);
 /* Current d may be its captured owner, NULL or a shaped empty borrowed List. */
 bool mc_world_runtime_player_list_retirement_valid(const mc_world_runtime *world);
 bool mc_world_runtime_weather_list_retirement_valid(const mc_world_runtime *world);

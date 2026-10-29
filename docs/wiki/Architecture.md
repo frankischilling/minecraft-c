@@ -34,7 +34,9 @@ controller and invokes the actual retained World-load call. Existing-save
 loading constructs the canonical source World, completes all 289 terrain
 samples, attaches its renderer and particles, inserts the real Player and
 publishes the view entity. Healthy null-screen/focus handling returns; the
-native selection tick next stops at gameplay input `Minecraft.k:337`.
+native selection tick executes gameplay input through1073 and the admitted
+World/frame segment. Direct same-graph checks execute renderer/entity updates
+before unfinished whole scheduling at1260; frame presentation remains unfinished.
 The canonical HitResult and pooled geometry now connect Living eye/look,
 source World block traversal and Entity queries to the real PX picking body.
 Owned target occurrences detach before their World; foreign holds retain the

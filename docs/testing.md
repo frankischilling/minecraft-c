@@ -1,8 +1,68 @@
 # Test scope and reproduction
 
+## Renderer and World tick qualification
+
+The Windows MSVC Debug ALL build passes. All 494 selected CTests pass in
+213.50 seconds, with zero failures or skips. There are 540 configured tests;
+46 reference-label profiles are excluded. This retains the preceding 488-case
+selection and adds brightness, held-item tick, rain tick, renderer tick,
+controller interpolation and World tick-state tests. The existing Timer test
+also checks paused partial restoration without rolling back clocks/remainder.
+
+Five exact public replays compare 267 pinned-original observations: brightness 12,
+held-item 120, rain 20, renderer 43 and interpolation 72. Fresh original captures
+establish those finite fixtures; their README files distinguish genuine
+constructors from prepared original receivers. Ordinary replays need no JAR,
+JVM or imported assets. Both GCC13 and Clang18 pass the six new tests plus Timer
+with ASan/UBSan and leak detection, 14 successful executions total. Those Linux
+graphs build the selected targets and their client libraries with audio disabled;
+they are not complete graphical-client ALL builds or interactive play tests.
+Both compilers also accept the runtime World segment and loop under C17,
+`-Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror -fsyntax-only`.
+
+The loaded-World Windows profile completes its paused tick and the real frame
+listener, lighting, suffocation and controller-interpolation calls. Its hidden
+inactive window reaches the exact pause-screen allocation dependency at
+`Minecraft.i:9`; the test verifies Display inactivity and the 500 ms clock guard.
+An active-window path instead reaches the existing focused-camera/World-drawing
+frontier. Direct segment calls on the same loaded graph separately verify the
+paused every-30 refresh, all 25 ordered Chunk getters, source Entity-ID membership,
+renderer return186, RenderGlobal counter, real entity tick, spawn flags and
+unfinished whole-World scheduler at1260. No failed source frame is replayed to
+resume it. Save/resource preservation and complete native cleanup pass.
+
+Formatting checks 1,458 source/header/fragment files. Source view/Stack holds,
+captured Dimension lifetime, partial field stores, retained failures and cleanup
+admission have separate native controls. The [ticking contract](client/renderer-ticking.md)
+records unimplemented precipitation particles, scheduling, camera/terrain frames
+and other remaining gameplay. These checks do not establish a playable client.
+
+Windows CI selects an x64 MSVC developer environment and Ninja Debug, retaining
+four build/test workers, ALL targets, the full suite and existing test-timing
+cache. Java and Javac explicitly use the JDK selected by setup. The separate
+local VS18/MSVC14.51 Ninja graph passes ALL and all 461 asset-independent tests
+under JDK17 in 182.30 seconds, with zero failures or skips. It retains every
+455-case Windows hosted test and adds the six new cases. All 480 required
+native/runtime artifacts and 1,563 C/header/CMake inputs remain unchanged
+during that test phase. The first ALL build has 2,069 steps and takes154.43s;
+local sources/toolchain/cache conditions differ from hosted VS17, so this is
+generator qualification rather than a causal hosted speedup measurement.
+A preliminary graph selected JDK21 and failed its three explicit JDK17 guards;
+those cases pass in the complete JDK17 qualification. Product guards account
+for legitimate codec rebuilds during reconfiguration and optional outputs that
+are not reachable from ALL. Preliminary failures remain outside the passing
+qualification. The workflow's four-variable MSVC environment handoff also
+passes a separate clean-process C17/C++20/Windows-SDK Ninja build and test.
+
+Published input checkpoint [`94dcfca`](https://github.com/frankischilling/minecraft-c/actions/runs/40869607435)
+passes all four hosted jobs and 1,409 tests: Windows 455, GCC 477 and Clang 477,
+with zero failures or skips. Formatting checks 1,432 files and each source-binding
+preflight checks 5,899 entries across 2,634 files. That hosted result precedes
+the renderer/World-tick extension described above.
+
 ## Gameplay input and controller ticks
 
-The Windows MSVC Debug ALL build passes for the gameplay-input extension.
+The preceding Windows MSVC Debug ALL build passes for the gameplay-input extension.
 All 488 selected CTests pass in 212.09 seconds with zero failures or skips;
 reference-label profiles are excluded. The five native World-selection profiles
 pass, including real existing-save loading, input return1073 and the explicit

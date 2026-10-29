@@ -85,6 +85,9 @@ bool entity_renderer_ra_retire(entity_renderer_context *o, mc_client_source_ra *
         return false;
     ra->pending_iy = NULL;
     ra->f = NULL;
+    mc_item_stack_release(ra->b_occurrence);
+    ra->b_occurrence = NULL;
+    ra->b = NULL; /* Native borrowed view ends, with no source field rollback. */
     mc_client_model_graph graph = {o->services->models,
                                    &ra->allocations,
                                    &ra->bytes,

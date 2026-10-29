@@ -1,5 +1,6 @@
 #include "menu_loop.h"
 #include "gameplay_input.h"
+#include "world_tick.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
 #include "../application_state.h"
@@ -16,6 +17,7 @@
 #include "../startup/application_gl_diagnostics.h"
 #include "../startup/application_startup.h"
 #include "../world/entity_renderer/internal.h"
+#include "mc/client/controller/render_interpolation.h"
 #include "mc/client/controller/singleplayer_tick.h"
 #include "mc/client/gui/gui_ingame.h"
 #include "mc/client/sound/sound_manager.h"
@@ -24,8 +26,10 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/bounds/bounds.h"
 #include "mc/entity/player/player.h"
+#include "mc/entity/tick/environment.h"
 #include "mc/entity/vector/vector.h"
 #include "mc/world/runtime/construction.h"
+#include "mc/world/runtime/propagation.h"
 
 #include <SDL3/SDL.h>
 #include <inttypes.h>
@@ -55,6 +59,12 @@ struct mc_client_menu_loop {
     mc_local_player_snapshot player_snapshot;
     mc_player_error player_error;
     mc_client_gameplay_input gameplay;
+    mc_client_world_tick world_tick;
+    mc_world_light_operation_error world_light;
+    mc_entity_tick_error suffocation;
+    mc_game_settings_error frame_settings;
+    mc_singleplayer_render_interpolation_report interpolation;
+    mc_singleplayer_render_interpolation_error interpolation_error;
     bool active, retiring;
     mc_client_menu_loop_state state;
     int64_t last_second;
@@ -317,9 +327,17 @@ static bool tick(mc_client_menu_loop *loop) {
             return stop(loop, loop->gameplay.operation, site->class_name, site->method, site->pc);
         }
     }
-    if (app->active_world != NULL)
-        return stop(loop, "native menu profile does not admit the reached World tick branch",
-                    "net/minecraft/client/Minecraft", "k", 1074);
+    if (app->active_world != NULL) {
+        const bool returned = mc_client_world_tick_run(app, loop->math, &loop->world_tick);
+        loop->state.world_tick = &loop->world_tick;
+        if (!returned) {
+            const mc_client_graphics_site *site = &loop->world_tick.site;
+            return stop(loop, loop->world_tick.operation, site->class_name, site->method, site->pc);
+        }
+        if (!mc_client_world_tick_cleanup(&loop->world_tick))
+            return stop(loop, "client World tick native child cleanup",
+                        "net/minecraft/client/Minecraft", "k", 1328);
+    }
     if (!millis(NULL, &app->P))
         return stop(loop, "actual tick currentTimeMillis query", "net/minecraft/client/Minecraft",
                     "k", 1329);
@@ -522,12 +540,17 @@ static bool frame_body(mc_client_menu_loop *loop) {
         if (close && mc_client_application_source_stop(app, NULL) != MC_CLIENT_STARTUP_OK)
             return run_stop(loop, "actual source f stop", 85);
     }
-    if (atomic_load(&app->o) && app->active_world != NULL)
-        return run_stop(loop, "actual paused World frame is not connected", 115);
+    const bool paused_world = atomic_load(&app->o) && app->active_world != NULL;
+    mc_timer_view previous_timer = {0};
+    if (paused_world && !mc_timer_view_get(app->timer, &previous_timer))
+        return run_stop(loop, "actual paused Timer partial field", 106);
     mc_timer_clock_sample clocks;
-    if (!millis(NULL, &clocks.wall_millis) || !nanoseconds(loop, &clocks.nano_time, 134) ||
+    const unsigned int timer_pc = paused_world ? 115u : 134u;
+    if (!millis(NULL, &clocks.wall_millis) || !nanoseconds(loop, &clocks.nano_time, timer_pc) ||
         !mc_timer_update(app->timer, clocks))
-        return run_stop(loop, "actual Timer update", 134);
+        return run_stop(loop, "actual Timer update", timer_pc);
+    if (paused_world && !mc_timer_set_partial_ticks(app->timer, previous_timer.partial_ticks))
+        return run_stop(loop, "actual paused Timer partial restore", 124);
     int64_t tick_start, tick_end;
     if (!nanoseconds(loop, &tick_start, 137))
         return false;
@@ -549,21 +572,48 @@ static bool frame_body(mc_client_menu_loop *loop) {
     if (!mc_game_settings_read_state(app->settings, &settings))
         return run_stop(loop, "actual Settings receiver", 221);
     app->render_classes->cv_a = settings.values.fancy_graphics;
-    if (app->h != NULL)
-        return run_stop(loop, "actual Player sound listener is not connected", 242);
-    if (mc_sound_manager_listener_update(app->B, NULL, timer.partial_ticks, NULL, NULL,
+    mc_sound_manager_listener listener;
+    const mc_sound_manager_listener *listener_argument = NULL;
+    if (app->h != NULL) {
+        mc_entity_snapshot player;
+        if (mc_entity_get_snapshot(app->h, &player) != MC_ENTITY_OK)
+            return run_stop(loop, "actual sound-listener Player fields", 242);
+        listener = (mc_sound_manager_listener){player.base.aU, player.base.yaw, player.base.aJ,
+                                               player.base.aK, player.base.aL,  player.base.x,
+                                               player.base.y,  player.base.z};
+        listener_argument = &listener;
+    }
+    if (mc_sound_manager_listener_update(app->B, listener_argument, timer.partial_ticks,
+                                         mc_math_classes_table(loop->math), NULL,
                                          &loop->sound) != MC_SOUND_OK)
         return run_stop(loop, loop->sound.operation, 242);
     if (!mc_client_display_source_texture_enable(app->display, true, &loop->display))
         return run_stop(loop, loop->display.operation, 248);
-    if (app->active_world != NULL)
-        return run_stop(loop, "actual World pre-render service is not connected", 262);
+    if (app->active_world != NULL) {
+        bool more;
+        if (mc_world_runtime_light_drain(app->active_world, 0, &more, &loop->world_light) !=
+            MC_WORLD_STORAGE_OK)
+            return run_stop(loop, loop->world_light.operation, 262);
+    }
     bool f7;
     if (!key_down(loop, 65, &f7, 268) || (!f7 && !display_update(loop, 274)))
         return false;
+    if (app->h != NULL) {
+        bool suffocating;
+        if (mc_entity_tick_suffocating(app->h, &suffocating, &loop->suffocation) != MC_ENTITY_OK)
+            return run_stop(loop, loop->suffocation.operation, 288);
+        if (suffocating && mc_game_settings_source_render_clear_third_person(
+                               app->settings, &loop->frame_settings) != MC_GAME_SETTINGS_OK)
+            return run_stop(loop, loop->frame_settings.operation, 299);
+    }
     if (!app->w) {
-        if (app->controller != NULL)
-            return run_stop(loop, "actual controller render interpolation is not connected", 327);
+        if (app->controller != NULL &&
+            mc_client_singleplayer_controller_render_interpolation(
+                app->controller, timer.partial_ticks, &loop->interpolation,
+                &loop->interpolation_error) != MC_SINGLEPLAYER_RENDER_INTERPOLATION_OK)
+            return stop(loop, loop->interpolation_error.operation,
+                        loop->interpolation_error.site.class_name,
+                        loop->interpolation_error.site.method, loop->interpolation_error.site.pc);
         if (!render_menu(loop, timer.partial_ticks))
             return false;
     }
@@ -606,9 +656,16 @@ static bool frame_body(mc_client_menu_loop *loop) {
         MC_CLIENT_GL_DIAGNOSTIC_OK)
         return run_stop(loop, "actual Post render GL diagnostic", 521);
     loop->second_frames = mc_java_i32_add(loop->second_frames, 1);
-    /* Actual l(): no World -> false. Admitted FU inherits da.c() == true. */
+    /* Actual !l() short-circuits before the screen pause virtual. */
     bool pauses = false;
-    if (app->r != NULL) {
+    bool remote = false;
+    if (app->active_world != NULL) {
+        mc_world_runtime_fields world;
+        if (mc_world_runtime_fields_get(app->active_world, &world) != MC_WORLD_STORAGE_OK)
+            return run_stop(loop, "actual pause World multiplayer field", 535);
+        remote = world.B;
+    }
+    if (!remote && app->r != NULL) {
         mc_client_screen_state screen;
         if (!screen_state(loop, &screen))
             return false;
@@ -650,6 +707,8 @@ bool mc_client_menu_loop_retire(mc_client_menu_loop **slot) {
     if (loop->active)
         return false;
     loop->retiring = true;
+    if (!mc_client_world_tick_cleanup(&loop->world_tick))
+        return false;
     if (!mc_client_gameplay_input_retire(&loop->gameplay))
         return false;
     if (loop->controller_tick != NULL) {

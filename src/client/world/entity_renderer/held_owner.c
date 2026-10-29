@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 /* Fixed native occurrence metadata is deliberately separate from the source
- * arena. In the PX path no source owner/layout/arena request changes size. */
+ * arena. The PX path accounts for its canonical RA allocation in that arena;
+ * the native occurrence handle remains separate. */
 mc_client_held_item *entity_renderer_held_borrowed(entity_renderer_context *context, const char *cl,
                                                    int32_t pc) {
     mc_client_held_item *o = calloc(1, sizeof(*o));

@@ -181,9 +181,9 @@ void mc_world_runtime_entity_list_release(mc_world_runtime *world) {
     entity_ledger_release(world, &world->weather_membership);
 }
 
-static bool append_owned_entity(mc_world_runtime *world, mc_world_reference_list *list,
-                                mc_world_entity_list_ledger *ledger, mc_entity *entity,
-                                unsigned int pc, mc_world_entity_error *frame) {
+bool mc_world_runtime_entity_append_owned(mc_world_runtime *world, mc_world_reference_list *list,
+                                          mc_world_entity_list_ledger *ledger, mc_entity *entity,
+                                          unsigned int pc, mc_world_entity_error *frame) {
     frame->bytecode = pc;
     if (!mc_world_runtime_entity_list_valid(world) || list == NULL || list != ledger->list)
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -255,8 +255,8 @@ static bool append_owned_entity(mc_world_runtime *world, mc_world_reference_list
 
 static bool append_entity(mc_world_runtime *world, mc_entity *entity,
                           mc_world_entity_error *frame) {
-    return append_owned_entity(world, world->fields.b, &world->entity_membership, entity, 95,
-                               frame);
+    return mc_world_runtime_entity_append_owned(world, world->fields.b, &world->entity_membership,
+                                                entity, 95, frame);
 }
 
 static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
@@ -675,8 +675,8 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
         frame->presence_bytecode = 0;
     }
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
-        if (!append_owned_entity(world, world->fields.d, &world->player_membership, entity, 70,
-                                 frame))
+        if (!mc_world_runtime_entity_append_owned(world, world->fields.d, &world->player_membership,
+                                                  entity, 70, frame))
             return false;
         frame->bytecode = 77;
         mc_world_player_sleep_error sleep = {.index = SIZE_MAX};
@@ -739,8 +739,8 @@ mc_world_storage_status mc_world_runtime_add_weather_entity(mc_world_runtime *wo
     }
     if (!enter_entity(world, entity, &frame))
         return entity_result(error, &frame);
-    const bool completed =
-        append_owned_entity(world, world->fields.e, &world->weather_membership, entity, 5, &frame);
+    const bool completed = mc_world_runtime_entity_append_owned(
+        world, world->fields.e, &world->weather_membership, entity, 5, &frame);
     if (completed)
         *out = true;
     return finish_entity(world, entity, completed, &frame, error);

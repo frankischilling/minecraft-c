@@ -47,10 +47,18 @@ bool mc_timer_update(mc_timer *timer, mc_timer_clock_sample clocks);
  * unconstructed private candidate fails. */
 bool mc_timer_set_speed(mc_timer *timer, float speed);
 
+/* Actual Minecraft.run restore of public py.c at124 after a paused-World
+ * Timer update. Copy every binary32 bit pattern without arithmetic, including
+ * signed zero and NaN payloads. Only c changes: tick count, fractional e,
+ * rate/speed and synchronization clocks keep their current values. NULL or an
+ * unconstructed private candidate fails without mutation. Exclusive access
+ * and disjoint input/owner storage follow the other Timer operations. */
+bool mc_timer_set_partial_ticks(mc_timer *timer, float partial_ticks);
+
 /* Read without advancing clocks/ticks. NULL arguments or an unconstructed private
  * candidate fail and preserve out.
  * out must be disjoint from owner storage. Pause handling belongs to the caller:
- * preserve its render partial outside Timer while Timer continues updating. */
+ * capture its render partial before updating, then restore c when paused. */
 bool mc_timer_view_get(const mc_timer *timer, mc_timer_view *out);
 
 /* Floating contract: IEEE binary32/binary64, round-to-nearest ties-to-even,

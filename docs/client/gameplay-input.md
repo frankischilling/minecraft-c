@@ -3,8 +3,9 @@
 The default source loop executes `Minecraft.k` through picking, the admitted
 chunk-provider branch, the single-player controller tick and healthy Player
 screen checks. With no screen, it executes gameplay input through bytecode
-1073. The next World-tick branch remains unfinished at1074. Dynamic terrain
-drawing and a playable frame remain unfinished.
+1073. The [World segment](renderer-ticking.md) now handles paused ticks and
+composes renderer/entity work before unfinished scheduling at1260. Dynamic
+terrain drawing and a playable frame remain unfinished.
 
 ## Source order
 
@@ -67,11 +68,13 @@ input composition have bytecode-derived and authored integration checks;
 they are not observations of a complete original `Minecraft.k` execution.
 
 The Windows World-selection profile loads a disposable saved World. The loop
-reaches input return1073 and stops at the next World dependency. Direct calls
+reaches input return1073 and continues into the admitted World/frame segment.
+Direct calls
 of that input segment on the same live graph then check actual SDK key
 press/release, hotbar stores, all four toggles, wheel
 selection, stale-wheel rejection and unread keyboard events after a pause
-dependency. It checks input return1073 and the explicit next World dependency.
+dependency. The [ticking contract](renderer-ticking.md) records the later
+paused-frame and unpaused-scheduler dependencies.
 The profile preserves save/resource files and completes native cleanup. Focus,
 held-click and pass-through-screen routing lack direct new integration checks. These
 finite checks do not establish movement, mining, full-frame rendering, extended

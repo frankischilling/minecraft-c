@@ -45,20 +45,26 @@ for the remaining input. Select constructs and publishes the actual `os`, then
 enters the source World loader. Existing-save loading constructs the canonical
 World, completes 289 terrain samples, attaches renderer/particles and inserts
 the real Player. View publication and healthy null-screen/focus handling also
-return; the same tick now executes gameplay input through `Minecraft.k:1073`
-before the unfinished World tick at1074.
+return; the same tick executes gameplay input through `Minecraft.k:1073`
+and the admitted World/frame segment.
 The actual READY renderer also completes picking through `px.a(F):452`.
 Existing-World ticks invoke that body at `k:33`. The admitted provider branch,
 controller music tick, movement-key dispatch, hotbar and Settings input also
-run. Player movement, World ticking and gameplay actions remain unfinished.
+run. Direct same-graph checks also execute renderer/equip and real entity
+updates before unfinished scheduling at1260. Frame sound, lighting,
+suffocation and controller interpolation are connected; the inactive hidden
+profile reaches the pause-screen dependency. Whole World ticks, terrain frames
+and gameplay actions remain unfinished.
 Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-The current extension passes all 486 selected Windows CTests, 42 strict
-compiler checks and eight new Linux sanitizer executions. Existing-save and
-generated-terrain entry both reach World-load return, picking452 and cleanup.
+The current extension passes all 494 selected Windows CTests and 14 selected
+Linux sanitizer executions. It compares 267 new original body observations.
+Existing-save entry checks paused and direct unpaused segments, source failure
+frontiers, save/resource preservation and cleanup. The preceding generated-
+terrain entry result retains its separate scope.
 The [testing scope](Build-and-tests) separates native, private CPU-wrapper and
 finite original-image results from complete playability.
 

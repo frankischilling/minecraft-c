@@ -60,7 +60,9 @@ the actual App run flag. Select constructs the actual controller and enters the
 [source World loader](world-loading.md). Version-zero saves stop at conversion;
 an existing-save load publishes the World, Player and movement input, attaches
 the renderer and completes picking. Its healthy no-screen path now executes
-[gameplay input](gameplay-input.md) through1073 before the unfinished World tick.
+[gameplay input](gameplay-input.md) through1073 and the admitted
+[World/frame segment](renderer-ticking.md). Whole World scheduling and terrain
+frames remain unfinished.
 Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
 Fullscreen, source F2 screenshots, debug timing, connection screens and several
