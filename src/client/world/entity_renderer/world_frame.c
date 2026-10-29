@@ -7,9 +7,10 @@
 #include "../../view_slot.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
+#include "renderer_camera_internal.h"
+#include "renderer_fog_internal.h"
 
 #include <emmintrin.h>
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,9 +29,13 @@ struct mc_client_world_frame_call {
     mc_client_entity_renderer_pick_call *pick;
     mc_client_entity_renderer_pick_state pick_state;
     mc_entity_snapshot camera;
-    mc_world_runtime *fog_world;
-    mc_entity *fog_camera;
-    bool owner_held, camera_held, fog_world_held, fog_camera_held;
+    mc_client_renderer_fog_call *fog;
+    mc_client_renderer_fog_state fog_state;
+    mc_client_renderer_fog_error fog_error, fog_cleanup;
+    mc_client_renderer_camera_call *camera_setup;
+    mc_client_renderer_camera_state camera_state;
+    mc_client_renderer_camera_error camera_error, camera_cleanup;
+    bool owner_held, camera_held;
 };
 
 static bool fail(mc_client_world_frame_call *call, mc_client_world_frame_status status,
@@ -93,58 +98,34 @@ static double interpolate(double previous, double current, float partial) {
     return _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(previous), scaled));
 }
 
-static bool fog_prefix(mc_client_world_frame_call *call) {
-    client_application *app = app_at(call, 4, "h", "(F)V");
-    if (app == NULL)
-        return false;
-    call->fog_world = app->active_world; /* Actual captured fd local2 at7. */
-    call->state.fog_world_captured = true;
-    if (call->fog_world != NULL) {
-        if (!mc_world_runtime_binding_retain(call->fog_world))
-            return fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
-                        "World-frame fog World occurrence", "h", "(F)V", 7, true);
-        call->fog_world_held = true;
+static bool fog_body(mc_client_world_frame_call *call, mc_math_classes *math) {
+    const mc_client_renderer_fog_status status = entity_renderer_fog_entered(
+        call->state.owner, math, call->state.partial, &call->fog, &call->fog_error);
+    if (call->fog != NULL) {
+        (void)mc_client_entity_renderer_fog_inspect(call->fog, &call->fog_state);
+        call->state.fog = &call->fog_state;
+        call->state.fog_world_captured = call->fog_state.world_captured;
+        call->state.fog_camera_captured = call->fog_state.camera_captured;
+        call->state.fog_distance_read = call->fog_state.distance_read;
+        call->state.fog_blend_computed = call->fog_state.blend_computed;
+        call->state.fog_render_distance = call->fog_state.render_distance;
+        call->state.fog_distance_blend = call->fog_state.distance_blend;
     }
-    app = app_at(call, 12, "h", "(F)V");
-    if (app == NULL)
-        return false;
-    call->fog_camera = app->i; /* Actual independently captured ls local3 at15. */
-    call->state.fog_camera_captured = true;
-    if (!capture_entity(call, call->fog_camera, &call->fog_camera_held, 15, "h", "(F)V"))
-        return false;
-    app = app_at(call, 22, "h", "(F)V");
-    if (app == NULL)
-        return false;
-    mc_game_settings_state settings;
-    if (!mc_game_settings_read_state(app->settings, &settings))
-        return fail(call,
-                    app->settings == NULL ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
-                                          : MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
-                    "actual fog render-distance Settings receiver", "h", "(F)V", 25,
-                    app->settings != NULL);
-    call->state.fog_distance_read = true;
-    call->state.fog_render_distance = settings.values.render_distance;
-    if (!fp(call, "h", "(F)V", 29))
-        return false;
-    const int32_t denominator = mc_java_i32_sub(4, settings.values.render_distance);
-    const __m128 converted = _mm_cvtsi32_ss(_mm_setzero_ps(), denominator);
-    const float fraction = _mm_cvtss_f32(_mm_div_ss(_mm_set_ss(1.0f), converted));
-    const double powered = pow((double)fraction, 0.25);
-    const float power = _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(powered)));
-    call->state.fog_distance_blend = _mm_cvtss_f32(_mm_sub_ss(_mm_set_ss(1.0f), _mm_set_ss(power)));
-    call->state.fog_blend_computed = true;
-    /* Actual App/i arguments are reloaded at49/52 before the captured fd56
-     * invocation. A NULL Entity is passed to that method without preflight. */
-    app = app_at(call, 52, "h", "(F)V");
-    if (app == NULL)
-        return false;
-    (void)app->i;
-    if (call->fog_world == NULL)
-        return fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL, "actual fog sky-color World receiver",
-                    "h", "(F)V", 56, false);
-    call->failure.child = (mc_client_graphics_site){"fd", "a", "(Lsn;F)Lbt;", 0};
-    return fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                "actual World sky-color query is not connected", "h", "(F)V", 56, true);
+    if (status == MC_CLIENT_RENDERER_FOG_OK) {
+        call->state.fog_returned = true;
+        return true;
+    }
+    call->failure.fog = call->fog == NULL ? &call->fog_error : call->fog_state.failure;
+    call->failure.status =
+        status == MC_CLIENT_RENDERER_FOG_SOURCE_NULL      ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+        : status == MC_CLIENT_RENDERER_FOG_UNSUPPORTED_FP ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                                                          : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+    call->failure.operation = call->fog_error.operation;
+    call->failure.native_policy = call->fog_error.native_policy;
+    call->failure.site = call->fog_error.site;
+    call->failure.child = call->fog_error.child;
+    call->state.source_pc = 263;
+    return false;
 }
 
 static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
@@ -285,7 +266,77 @@ static bool body(mc_client_world_frame_call *call, mc_math_classes *math) {
                         258))
         return false;
     call->state.viewport_set = true;
-    return fog_prefix(call); /* Actual h invocation at263. */
+    if (!fog_body(call, math)) /* Actual h invocation at263. */
+        return false;
+    if (!display_result(
+            call, mc_client_display_source_clear(display, 16640, &call->failure.display), 269))
+        return false;
+    call->state.buffers_cleared = true;
+    if (!display_result(
+            call, mc_client_display_source_cull_test(display, true, &call->failure.display), 275))
+        return false;
+    call->state.post_fog_cull_enabled = true;
+    const mc_client_renderer_camera_status camera_status = entity_renderer_camera_entered(
+        owner, math, call->state.partial, 0, &call->camera_setup, &call->camera_error);
+    if (call->camera_setup != NULL) {
+        (void)mc_client_entity_renderer_camera_inspect(call->camera_setup, &call->camera_state);
+        call->state.camera_setup = &call->camera_state;
+    }
+    if (camera_status != MC_CLIENT_RENDERER_CAMERA_OK) {
+        call->failure.camera =
+            call->camera_setup == NULL ? &call->camera_error : call->camera_state.error;
+        call->failure.status = camera_status == MC_CLIENT_RENDERER_CAMERA_SOURCE_NULL
+                                   ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                               : camera_status == MC_CLIENT_RENDERER_CAMERA_UNSUPPORTED_FP
+                                   ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                               : camera_status == MC_CLIENT_RENDERER_CAMERA_DEPENDENCY
+                                   ? MC_CLIENT_WORLD_FRAME_DEPENDENCY
+                                   : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+        call->failure.operation = call->camera_error.operation;
+        call->failure.native_policy = call->camera_error.native_policy;
+        call->failure.site = call->camera_error.site;
+        call->failure.child = call->camera_error.child;
+        call->state.source_pc = 282;
+        return false;
+    }
+    call->state.camera_returned = true;
+    const mc_client_source_dr *frustum = NULL;
+    const mc_client_frustum_status frustum_status =
+        mc_client_frustum_update(owner->services.models, owner->services.graphics, display, math,
+                                 &frustum, &call->failure.frustum);
+    (void)mc_client_frustum_inspect(owner->services.models, &call->state.frustum);
+    if (frustum_status != MC_CLIENT_FRUSTUM_OK) {
+        call->failure.child = call->failure.frustum.site;
+        return outer_fail(
+            call,
+            frustum_status == MC_CLIENT_FRUSTUM_SOURCE_NULL ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+            : frustum_status == MC_CLIENT_FRUSTUM_UNSUPPORTED_FP
+                ? MC_CLIENT_WORLD_FRAME_UNSUPPORTED_FP
+                : MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+            call->failure.frustum.operation, 285, call->failure.frustum.native_policy);
+    }
+    call->state.frustum_returned = true; /* Actual returned dr is popped288. */
+    app = app_at(call, 293, "a", "(FJ)V");
+    if (app == NULL)
+        return false;
+    if (!mc_game_settings_read_state(app->settings, &settings))
+        return outer_fail(call,
+                          app->settings == NULL ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                                                : MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                          "actual post-frustum render-distance Settings receiver", 296,
+                          app->settings != NULL);
+    call->state.fog_distance_branch_read = true;
+    call->state.post_camera_render_distance = settings.values.render_distance;
+    if (settings.values.render_distance < 2) {
+        call->failure.child = (mc_client_graphics_site){"px", "a", "(IF)V", 0};
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
+                          "actual sky-pass fog-state child is not connected", 306, true);
+    }
+    /* Skipped sky branch first reaches the currently absent GL3 fog shader
+     * state. Do not skip its enable318 to claim the later fog-state324. */
+    call->failure.child = (mc_client_graphics_site){"org/lwjgl/opengl/GL11", "glEnable", "(I)V", 0};
+    return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
+                      "actual GL_FOG enable bridge is not connected", 318, true);
 }
 
 static mc_client_world_frame_status result(mc_client_world_frame_error *error,
@@ -354,17 +405,25 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     }
     call->state.picking = NULL;
     call->failure.picking = NULL;
-    if (call->fog_camera_held) {
-        mc_entity_release(call->fog_camera);
-        call->fog_camera_held = false;
+    if (mc_client_entity_renderer_camera_retire(&call->camera_setup, &call->camera_cleanup) !=
+        MC_CLIENT_RENDERER_CAMERA_OK) {
+        if (call->camera_setup != NULL)
+            (void)mc_client_entity_renderer_camera_inspect(call->camera_setup, &call->camera_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame camera retirement");
     }
+    call->state.camera_setup = NULL;
+    call->failure.camera = NULL;
+    if (mc_client_entity_renderer_fog_retire(&call->fog, &call->fog_cleanup) !=
+        MC_CLIENT_RENDERER_FOG_OK) {
+        if (call->fog != NULL)
+            (void)mc_client_entity_renderer_fog_inspect(call->fog, &call->fog_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame fog retirement");
+    }
+    call->state.fog = NULL;
+    call->failure.fog = NULL;
     if (call->camera_held) {
         mc_entity_release(call->state.camera);
         call->camera_held = false;
-    }
-    if (call->fog_world_held) {
-        mc_world_runtime_binding_release(call->fog_world);
-        call->fog_world_held = false;
     }
     if (call->owner_held) {
         mc_client_source_px *owner = call->state.owner;

@@ -4,6 +4,7 @@
 #include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/saving/errors.h"
 #include "mc/world/runtime/scheduling.h"
+#include "mc/world/runtime/spawning.h"
 #include "mc/world/runtime/weather.h"
 #include "mc/world/runtime/world_access_error.h"
 
@@ -52,6 +53,7 @@ typedef struct mc_world_tick_error {
     const mc_world_runtime_lifecycle_error *lifecycle;
     const mc_world_scheduled_drain_error *scheduled;
     const mc_world_chunk_manager_error *biome;
+    const mc_world_spawn_pick_error *spawning;
     mc_world_access_failure world_access;
 } mc_world_tick_error;
 
@@ -61,6 +63,11 @@ typedef struct mc_world_tick_state {
     unsigned int source_pc;
     size_t spawn_chunk_count, random_chunk_count, sky_callbacks;
     int32_t spawn_category, spawn_chunk_x, spawn_chunk_z;
+    size_t spawn_candidates_visited, spawn_random_calls;
+    mc_world_spawn_pick spawn_pick;
+    const mc_entity_class_literal *spawn_class;
+    int32_t spawn_initial_x, spawn_initial_y, spawn_initial_z;
+    int32_t spawn_trial_x, spawn_trial_y, spawn_trial_z, spawn_group, spawn_attempt;
     int64_t next_time;
     mc_world_runtime *world;
     const mc_world_tick_error *error;
@@ -68,11 +75,13 @@ typedef struct mc_world_tick_state {
 
 /* Ordered actual fd.l prefix and completed reachable branches. Missing source
  * descendants stop explicitly; returned is true only after actual return198.
- * Weather, sleeping predicate, spawn candidate gathering/count/first biome,
+ * Weather, sleeping predicate, real spawn candidate/count/weighted selection,
  * one concrete provider maintenance pass, sky callback loop, save/time stores,
  * whole scheduled drain and random-work candidate gathering run in source order.
- * Spawn-list selection/mob construction, sleeping wake transitions and nonempty
- * random Chunk work remain reached dependencies, never successful no-ops.
+ * Spawn support/material/nearest-player/distance gates and all3x4 trial loops
+ * run before concrete Mob initialization/construction, which remains a reached
+ * dependency. Sleeping wake transitions and nonempty random Chunk work remain
+ * separate dependencies, never successful no-ops.
  * Both false spawn flags return before touching its shared candidate Set.
  *
  * A published call independently binds the World and retains complete typed

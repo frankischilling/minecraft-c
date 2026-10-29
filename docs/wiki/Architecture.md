@@ -34,11 +34,14 @@ controller and invokes the actual retained World-load call. Existing-save
 loading constructs the canonical source World, completes all 289 terrain
 samples, attaches its renderer and particles, inserts the real Player and
 publishes the view entity. Healthy null-screen/focus handling returns; the
-native selection tick executes gameplay input through1073 and the admitted
+native selection tick executes gameplay input through 1073 and the admitted
 World/frame segment. Direct same-graph checks execute renderer/entity updates
-through weather/spawn scheduling before missing Biome spawn-list selection.
-Source focused mouse look and pause entry are connected. World-frame rendering
-reaches the missing sky-color query at `px.h:56`; complete presentation remains unfinished.
+through weather and weighted Biome spawn selection before concrete Mob
+construction 773. Source focused mouse look and pause entry are connected.
+World-frame rendering completes sky/fog/cloud colors, clear color, canonical
+camera and W frustum state before missing fog setup 306. The Display owns its
+ordered matrix ledger; RenderModels owns the checked static-frustum lifetime.
+Complete presentation remains unfinished.
 The canonical HitResult and pooled geometry now connect Living eye/look,
 source World block traversal and Entity queries to the real PX picking body.
 Owned target occurrences detach before their World; foreign holds retain the

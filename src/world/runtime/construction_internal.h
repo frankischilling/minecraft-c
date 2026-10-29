@@ -8,6 +8,7 @@ struct mc_world_active_chunks {
     void *entries;
     size_t count, capacity;
     mc_java_int_set *order;
+    uint32_t version;
 };
 
 struct mc_world_reference_list {

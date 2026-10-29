@@ -1,6 +1,7 @@
 include_guard(GLOBAL)
 target_sources(mc_simulation PRIVATE
     src/world/runtime/world_tick.c
+    src/world/runtime/world_tick_spawn.c
     src/world/runtime/world_tick_scheduled.c)
 
 if(BUILD_TESTING)

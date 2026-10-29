@@ -2,7 +2,8 @@
 
 The default client now executes focused mouse look and opens the source pause
 screen. Its World draw enters the real `px.a(FJ)V` pipeline and stops at the
-missing sky-color query in `px.h(F)V:56`. Terrain meshes, fog/camera completion,
+missing sky-pass fog-state setup at `px.a(FJ)V:306`. Sky/fog colors, camera
+transforms and frustum extraction execute before that frontier. Terrain meshes,
 HUD composition and a playable frame remain unfinished.
 
 ## Focused mouse input
@@ -64,16 +65,60 @@ screen admission, Back to game and key-release failure order.
 view fallback if needed and invokes the existing picker. It captures the actual
 camera, World, RenderGlobal and particle manager in source order, interpolates
 camera coordinates, checks the actual provider class, and applies the first
-anaglyph eye's mask and viewport. Its fog entry computes the render-distance
-blend before reaching the missing `fd.a(Entity,F)` sky-color query.
+anaglyph eye's mask and viewport.
 
-The performance deadline uses the source 200/120/40 target and Java long
-wrapping. No timing, HUD or later camera/frustum/terrain operation is reported
-complete after the reached failure. A retained call owns its native child
-occurrences and prevents another World-frame invocation until retirement.
+Actual `px.h(F)` now reads [World sky, fog and cloud colors](../world/colors.md),
+camera immersion, rain/thunder/lightning and PX brightness fields. It stores
+canonical PX RGB, applies the original anaglyph operations and calls the real
+GL clear-color bridge. Color/depth clear and culling precede actual camera at 282.
 
-The [World-frame controls](../../tests/reference/client/world_frame/README.md)
-use real GL and the same loaded GAME World/picker fixture. Eight finite math
-vectors come from an actual JDK17 helper and pinned original method bodies;
-they are not runtime observations of the complete original PX World renderer.
-The separate diagnostic World renderer remains outside the default source path.
+The canonical camera executes `px.a(FI)` and its FOV, hurt/death, bob and
+orientation children. This includes portal rotation using actual Player.l,
+E/F/G zoom, sleeping, debug and ordinary third person. The ordinary third-person
+path makes all eight original World rays. The final RenderGlobal cloud query
+uses its actual literal-false body and stores PX.D. Every child reloads its
+source App fields at the reached operation. Native transforms update the same
+Display projection/modelview ledger in source order.
+
+At 285 the canonical W singleton reads those matrices into its three actual
+Ge buffers, computes the combined matrix and normalizes six frustum planes.
+The RenderModels namespace owns its static lifetime; teardown refuses active
+calls or outstanding owners before retiring it. Matrix reads preserve the
+original clear/flip/limit/get cursor effects. Box tests use the original plane
+and corner order.
+
+For render distance below2 the next missing child is `px.a(IF):306`, before
+RenderGlobal sky drawing at 312. Other distances stop at the missing GL3 fog-enable
+bridge at 318. Neither branch skips ahead to terrain. The performance deadline uses
+the source 200/120/40 target and Java long wrapping. A retained frame owns its
+native children and prevents another invocation until retirement. Failure
+preserves completed colors, matrices, fields and source effects.
+
+## Evidence and limits
+
+The [full-fog fixture](../../tests/reference/client/world_frame/README.md)
+contains 96 executions of unchanged original `px.h(F)` with real LWJGL clear-color
+queries. Prepared PX/App/World/Player fields and authored block/metadata
+transport bound this body comparison. Original World color and immersion
+methods remain unchanged. Eight earlier JDK expression vectors separately
+qualify the render-distance blend; they do not execute an original PX method.
+
+The [camera fixture](../../tests/reference/client/renderer_camera/README.md)
+contains 36 mode/partial profiles plus 36 scalar field rows. FOV, k/D and E/F/G
+compare exactly. Projection/modelview coefficients use an explicit absolute
+`2e-6` limit; the observed Windows maximum is `4.76837158203125e-7`.
+Prepared original receivers and air/water transport do not qualify bypassed
+constructors, actual Chunk transport or complete frames. Native collision-wall
+and failure/ownership controls have separate scope.
+
+The [frustum fixture](../../tests/reference/client/frustum/README.md) compares
+four controlled original GL profiles, actual constructor/static identity,
+matrix/plane bits, buffer cursors and box results. Its finite inputs do not
+establish arbitrary cross-driver matrix generation. Native tests also cover
+all 28 allocation boundaries, partial stores, FP refusal and namespace cleanup.
+
+The genuine loaded Windows graph completes fog, camera and W before stopping
+at 306. These observations establish neither a terrain frame nor original-pixel
+equivalence. GL3 fog state, sky, Chunk culling/compilation, terrain, Entities,
+particles, HUD and hand composition remain unfinished. The separate diagnostic
+World renderer remains outside the default source path.

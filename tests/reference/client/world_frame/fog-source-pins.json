@@ -1,0 +1,159 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "px": {
+      "class_bytes": 17104,
+      "class_sha256": "18055a199b913c956e5f816be5195fd86814927a93299b3ca1b913d6070c90fa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "h",
+          "descriptor": "(F)V",
+          "access": 2,
+          "code_bytes": 572,
+          "code_sha256": "b2c57638b761f556829b0e34d4e01a844f9ce20652d06648b82a9fb04cc759ae"
+        }
+      ]
+    },
+    "fd": {
+      "class_bytes": 33396,
+      "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lsn;F)Lbt;",
+          "access": 1,
+          "code_bytes": 425,
+          "code_sha256": "030d993d1d0b7e267d2a095bfada3cb6a889f44dcaab6253b4282173bf5debca"
+        },
+        {
+          "name": "b",
+          "descriptor": "(F)F",
+          "access": 1,
+          "code_bytes": 16,
+          "code_sha256": "df16b315fdfddd7a7149382844c25818cde6192836a2b14397b015b40de6e8c0"
+        },
+        {
+          "name": "c",
+          "descriptor": "(F)Lbt;",
+          "access": 1,
+          "code_bytes": 314,
+          "code_sha256": "48d3a2c115b67df9a0d65145aa30eacf6a9020a8f6dba7d74ff2e6a4f9a3c409"
+        },
+        {
+          "name": "d",
+          "descriptor": "(F)Lbt;",
+          "access": 1,
+          "code_bytes": 16,
+          "code_sha256": "3d4e2f444b4bd787ecc20d1a04cb65e8bda40b263aa6ef3465672e6452b25304"
+        },
+        {
+          "name": "f",
+          "descriptor": "(F)F",
+          "access": 1,
+          "code_bytes": 23,
+          "code_sha256": "881f22c28c1f09f07110cb9e7dddbe7327bb8dc010577e2fab0603e7db8d479f"
+        },
+        {
+          "name": "g",
+          "descriptor": "(F)F",
+          "access": 1,
+          "code_bytes": 17,
+          "code_sha256": "f118626a874991bae9a70c9f3105359591008fe5d9e4be5c670a0a2c5aa1716c"
+        }
+      ]
+    },
+    "xa": {
+      "class_bytes": 2050,
+      "class_sha256": "8b72b6ce0a7b402b5177623251a38ff305573f16f3172efa3290bb45b8fe3afa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(JF)F",
+          "access": 1,
+          "code_bytes": 88,
+          "code_sha256": "47b3b195bc211d5ac367d476f664849eee112211b2b571f28602d76fd8881770"
+        },
+        {
+          "name": "b",
+          "descriptor": "(FF)Lbt;",
+          "access": 1,
+          "code_bytes": 91,
+          "code_sha256": "13b5a052b82c9e29294720adf11212830be5e0d54b808354e203e78c1e700211"
+        }
+      ]
+    },
+    "xv": {
+      "class_bytes": 1964,
+      "class_sha256": "2d6974e40ffc09c47b58ae1149dd9587513aa97dd89f569640b13603836901ee",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(II)Lkd;",
+          "access": 1,
+          "code_bytes": 11,
+          "code_sha256": "c485f623b5cd60128999ec6159bd9baf98717f09c42ccfc08d6b3a6cec127f28"
+        },
+        {
+          "name": "b",
+          "descriptor": "(II)D",
+          "access": 1,
+          "code_bytes": 37,
+          "code_sha256": "0084355bfb8cb7c1784bf36020754aaffb3824e1cf5d5cdbeb1e5d831bb77e6e"
+        }
+      ]
+    },
+    "kd": {
+      "class_bytes": 3803,
+      "class_sha256": "0457caac86b92eb1aec91a7135e1c02648c9f79275657a23257de704418cc48f",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(F)I",
+          "access": 1,
+          "code_bytes": 45,
+          "code_sha256": "bbec4d56294057fa34607110d491088a3b9604458fb78c0d8308c8a1b3549fe2"
+        }
+      ]
+    },
+    "sn": {
+      "class_bytes": 17172,
+      "class_sha256": "b53107a5bdd5ff92637582aaed4fd49366443a11cba96cef0a6ad719e197b7be",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lln;)Z",
+          "access": 1,
+          "code_bytes": 119,
+          "code_sha256": "c1c4fe9dc63040e1172d21648e505ee754de75bb2b8f7561ececf29dcbdc4b3c"
+        }
+      ]
+    },
+    "gs": {
+      "class_bytes": 13351,
+      "class_sha256": "52e2d97748d9a306703e018822fece7d0ef9ca8ddf3448a1d0e568f2fbe29202",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "w",
+          "descriptor": "()F",
+          "access": 1,
+          "code_bytes": 3,
+          "code_sha256": "644266dfaeb68957f1e3926bf0c92dd1e9c8daff0174390e66af10478bc628c9"
+        }
+      ]
+    }
+  }
+}

@@ -538,16 +538,24 @@ static int world_tick_controls(fixture *f) {
           call->renderer_state.interpolation_stores == 6 &&
           call->renderer_state.brightness_returned && call->renderer_state.held_item_returned &&
           call->renderer_state.rain_returned && call->renderer_state.rain->returned);
-    CHECK(call->scheduler_state.weather_returned &&
-          call->scheduler_state.spawn_chunk_count == 289 &&
-          call->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
-          call->scheduler_error.child_bytecode == 290);
+    if (call->scheduler_error.child_bytecode != 773)
+        fprintf(stderr, "Spawn child=%u descendant=%u operation=%s\n",
+                call->scheduler_error.child_bytecode, call->scheduler_error.descendant_bytecode,
+                call->scheduler_error.operation);
+    CHECK(
+        call->scheduler_state.weather_returned && call->scheduler_state.spawn_chunk_count == 289 &&
+        call->scheduler_error.child == MC_WORLD_TICK_CHILD_SPAWNING &&
+        call->scheduler_error.child_bytecode == 773 && call->scheduler_state.spawn_class != NULL &&
+        call->scheduler_state.spawn_pick.entry != NULL &&
+        call->scheduler_state.spawn_candidates_visited > 0 &&
+        call->scheduler_state.spawn_random_calls >= 10 &&
+        call->scheduler_state.spawn_pick.total_weight > 0);
     CHECK(mc_client_world_tick_cleanup(call) && call->failed && call->site.pc == 80);
     atomic_store(&f->app->o, paused);
     f->app->ah = counter;
     free(call);
     printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
-           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=cq.a290\n");
+           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 next=cq.a773\n");
     return 0;
 }
 
@@ -827,9 +835,12 @@ int main(int argc, char **argv) {
                                                &display_active,
                                                &update) == MC_CLIENT_SDK_UPDATE_OK);
             CHECK(strcmp(f.state.source_class, "px") == 0 &&
-                  strcmp(f.state.source_method, "h") == 0 && f.state.source_pc == 56 &&
+                  strcmp(f.state.source_method, "a") == 0 &&
+                  (f.state.source_pc == 306 || f.state.source_pc == 318) &&
                   f.state.world_frame != NULL && f.state.world_frame->picking_returned &&
-                  f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed);
+                  f.state.world_frame->viewport_set && f.state.world_frame->fog_blend_computed &&
+                  f.state.world_frame->fog_returned && f.state.world_frame->camera_returned &&
+                  f.state.world_frame->frustum_returned);
             if (!display_active)
                 CHECK(f.app->r != NULL && f.app->r->kind == MC_CLIENT_SCREEN_PAUSE);
             CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&

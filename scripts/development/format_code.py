@@ -59,6 +59,7 @@ def main():
                  "src/storage/nbt/stream_owner.inc",
                  "src/client/display/source_world_list_surface.inc",
                  "src/client/display/world_frame_surface.inc",
+                 "src/client/display/camera_surface.inc",
                  "src/client/settings/source_input.inc",
                  "src/world/saved_data/source_storage.inc",
                  "src/world/storage/source_game_stage.inc"}

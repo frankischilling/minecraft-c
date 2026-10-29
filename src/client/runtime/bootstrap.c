@@ -6,6 +6,7 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/client/world/frustum.h"
 #include "mc/core/java/logging.h"
 #include "mc/core/math/classes.h"
 #include "mc/world/runtime/entities.h"
@@ -538,6 +539,10 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
         CLOSE_OWNER(mc_client_loading_classes_release(constructor->gui_classes),
                     MC_CLIENT_LOADING_OK, MC_CLIENT_LOADING_BUSY, "GUI namespace retirement");
         constructor->gui_classes = NULL;
+    }
+    if (constructor->render_classes != NULL) {
+        CLOSE_OWNER(mc_client_frustum_namespace_retire(constructor->render_classes, NULL),
+                    MC_CLIENT_FRUSTUM_OK, MC_CLIENT_FRUSTUM_BUSY, "Frustum namespace retirement");
     }
     if (context->graphics != NULL) {
         CLOSE_OWNER(mc_client_render_engine_classes_release(context->graphics),

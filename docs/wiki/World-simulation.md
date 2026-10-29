@@ -2,11 +2,18 @@
 
 The [ordered client scheduler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ticking.md)
 now connects weather, spawning prefixes, provider maintenance, sky callbacks,
-time/autosave and scheduled drain in reached source order. Ten original
+time/autosave and scheduled drain in reached source order. Eleven original
 observations match native MSVC/GCC/Clang replays. Empty Player/candidate branches
-can return. The loaded Player path gathers 289 spawn candidates before missing
-Biome spawn-list selection at `cq.a:290`. Mob construction, nonempty random
+can return. The loaded Player path gathers 289 spawn candidates, selects the
+real weighted Biome entry and completes trial/support/distance gates before
+missing concrete Mob construction at `cq.a:773`. Mob construction, nonempty random
 Chunk work and complete ordinary World ticks remain unfinished.
+
+The [World color services](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/colors.md)
+now supply actual raw temperature, virtual Biome sky, Dimension fog and cloud
+colors to the source renderer. Exact public replays compare 386 leaf and 432
+World-color observations across all three Dimensions. Their prepared-receiver
+scopes remain separate from complete frames and gameplay.
 
 The [WorldAccess interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/world-access.md)
 dispatches six shared callback slots plus client sky change with live-list iteration and retained receiver
@@ -65,7 +72,7 @@ finite state. The fresh reference workflow captures and audits the supplied
 original before comparing a new native run. The
 [clean checkpoint](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/dedicated-world-construction.md#committed-checkpoint)
 at `9c87827` passes 622 local tests on MSVC/GCC/Clang and 601 hosted public/JDK
-tests. Fresh schema-2 audits and comparisons pass for seed23, seventeen calls,
+tests. Fresh schema-2 audits and comparisons pass for seed 23, seventeen calls,
 eighteen boundaries and fifteen interned original states, including population,
 full saves, protected and distant drops, maintenance and reload. All eighteen
 actual Store-token boundaries match on each side. The fixture retains its
@@ -75,7 +82,7 @@ general scheduling, nonempty behavior and unrestricted unload/restart remain
 unfinished.
 
 The [fresh World population comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/natural-population.md)
-matches seed23 origin and ring profiles on client/base-server sides. The
+matches seed 23 origin and ring profiles on client/base-server sides. The
 ten-call ring includes negative coordinates, nine normal Chunks, four populated
 Chunks and 6,968 final ordered light regions. Both profiles check complete
 retained arrays, cache/light ordering, provider numerical state, array aliases

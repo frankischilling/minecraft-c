@@ -13,9 +13,10 @@ then executes [gameplay input](client/gameplay-input.md) through `Minecraft.k:10
 The [World segment](client/renderer-ticking.md) handles paused ticks and connects
 renderer/entity updates and the ordered scheduler's weather/spawn prefix.
 Focused mouse look and source pause entry now run. The hidden-window profile
-opens OZ and enters actual World drawing, reaching missing sky color at
-`px.h:56`. Direct unpaused checks on that graph reach Biome spawn-list selection
-at `cq.a:290` after gathering 289 candidate Chunks.
+opens OZ and completes World colors, fog clear color, camera transforms and W
+frustum extraction before missing fog-state setup at `px.a:306`. Direct unpaused
+checks on that graph select an actual Biome spawn entry and reach the concrete
+Mob constructor at `cq.a:773` after gathering 289 candidate Chunks.
 The same READY renderer completes [picking](client/picking.md) through
 `px.a(F):452`. Existing-World ticks invoke it at `k:33`; the admitted provider
 branch, controller music tick and healthy screen checks also execute. Input
@@ -29,16 +30,29 @@ diagnostic title and fixed-camera World inspection.
 
 The [source frame extension](client/renderer-frames.md) connects real SDK motion,
 CU smoothing, Player turning, OZ transitions and the initial World-render/fog
-pipeline. The [ordered World scheduler](world/ticking.md) connects weather,
+pipeline, including portal/third-person camera and source frustum state.
+The [ordered World scheduler](world/ticking.md) connects weather,
 spawning prefixes, provider maintenance, sky callbacks, time/autosave and scheduled
 drain in reached source order. Its no-Player branches can return; ordinary
 spawning and random Chunk work retain concrete missing descendants.
 
-Windows Debug ALL and all 498 selected tests pass in 205.32 seconds, with zero
-failures or skips. The four new tests pass on GCC13 and Clang18 with ASan/UBSan,
-leak detection and real GL. New original fixtures cover 246 observations; eight
-separate JDK fog-expression vectors retain their narrower scope. See
-[qualification](testing.md#source-frame-pause-and-world-scheduler-qualification).
+Windows Debug ALL and all 502 selected tests pass in 321.45 seconds.
+Both audio-enabled Linux client ALL builds pass. Each full Linux suite has
+479 passes and six helper timeouts on the Windows-mounted source filesystem.
+Those six helpers pass from a byte-identical ext4 snapshot with unchanged
+timeouts. ASan/UBSan, leak detection and real GL remain enabled. Windows and
+these reruns have zero failures or skips. New exact comparisons cover 386 sky leaves, 432 World
+color rows, 96 full fog rows, 36 camera profiles with 36 scalar rows, four frustum
+profiles and an eleventh scheduler observation. Camera matrices use the explicit
+`2e-6` coefficient policy. See the [qualification](testing.md#world-colors-camera-frustum-and-spawn-selection-qualification).
+
+The preceding `b1bb968` hosted run
+[40886849939](https://github.com/frankischilling/minecraft-c/actions/runs/40886849939)
+is terminal: Windows and formatting pass; GCC/Clang fail on a missing
+RenderGlobal sky-callback initializer. The initializer now names every slot,
+with the still-unimplemented concrete sky callback explicitly absent. Both
+complete local Linux graphs include that fix. Hosted results for the new
+extension remain pending.
 
 Published renderer-tick checkpoint
 [`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)

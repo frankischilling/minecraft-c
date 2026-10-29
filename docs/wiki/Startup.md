@@ -51,18 +51,24 @@ The actual READY renderer also completes picking through `px.a(F):452`.
 Existing-World ticks invoke that body at `k:33`. The admitted provider branch,
 controller music tick, movement-key dispatch, hotbar and Settings input also
 run. Direct same-graph checks also execute renderer/equip and real entity
-updates, weather and 289 spawn candidates before the missing Biome spawn list.
+updates, weather and actual weighted Biome spawn selection before the missing
+concrete Mob constructor at `cq.a:773`.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
-constructs OZ; actual World drawing then reaches missing sky color at `px.h:56`.
+constructs OZ; actual World drawing completes colors, camera and W before
+missing fog-state setup at `px.a:306`.
 Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
 Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-The current extension passes all 498 selected Windows CTests and eight new
-Linux sanitizer executions. New fixtures compare 246 original observations.
+The current extension passes all 502 selected Windows CTests. Both Linux
+audio-enabled sanitizer ALL builds pass. Their full suites each have479 passes
+and six helper timeouts on the mounted source tree; the six helpers pass from
+a byte-identical ext4 snapshot with unchanged deadlines.
+Original color, full-fog, camera, frustum and spawn-prefix fixtures retain
+their declared finite scopes and matrix precision policy.
 Existing-save entry checks paused and direct unpaused segments, source failure
 frontiers, save/resource preservation and cleanup. The preceding generated-
 terrain entry result retains its separate scope.

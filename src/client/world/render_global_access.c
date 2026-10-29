@@ -579,8 +579,14 @@ mc_render_global_access_create(mc_client_render_global *owner, mc_render_global_
     if (access == NULL)
         return fail(error, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
                     "RenderGlobal interface allocation", NULL, NULL, 0, true);
-    const mc_world_access_source_callbacks callbacks = {
-        cell, range, sound, particle, entity_added, tile_entity_dirty, entity_removed};
+    const mc_world_access_source_callbacks callbacks = {.cell = cell,
+                                                        .range = range,
+                                                        .sound = sound,
+                                                        .particle = particle,
+                                                        .entity_added = entity_added,
+                                                        .tile_entity_dirty = tile_entity_dirty,
+                                                        .entity_removed = entity_removed,
+                                                        .sky_changed = NULL};
     mc_world_storage_status status =
         mc_world_access_source_create(&callbacks, access, &access->identity, &error->world);
     if (status != MC_WORLD_STORAGE_OK) {

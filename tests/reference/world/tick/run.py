@@ -32,7 +32,7 @@ def digest(path):
 
 def projection(text):
     rows = [line for line in text.splitlines() if line.startswith(("TICK ", "DRAIN ", "SPAWN "))]
-    need(len(rows) == 10 and len({tuple(row.split()[:2]) for row in rows}) == 10,
+    need(len(rows) == 11 and len({tuple(row.split()[:2]) for row in rows}) == 11,
          "scheduler observation inventory")
     return sorted(rows)
 
@@ -69,7 +69,7 @@ def main():
 
     try:
         expected = sorted(json.loads((HERE / "observations.json").read_text())["rows"])
-        need(len(expected) == 10, "captured observation inventory")
+        need(len(expected) == 11, "captured observation inventory")
         if args.client_jar is not None:
             need(args.library_dir is not None, "--library-dir required with original replay")
             jar = args.client_jar.resolve()
@@ -108,16 +108,19 @@ def main():
                  HERE / "SchedulerObservation.java"], "compile", 30)
             helper_before = {path.name: digest(path) for path in classes.glob("*.class")}
             need(set(helper_before) == {"SchedulerObservation.class",
-                "SchedulerObservation$StopBiome.class", "SchedulerObservation$ProbeManager.class"},
+                "SchedulerObservation$StopBiome.class", "SchedulerObservation$ProbeManager.class",
+                "SchedulerObservation$FlatWorld.class", "SchedulerObservation$RecordingRandom.class",
+                "SchedulerObservation$StopSpawn.class"},
                 "unexpected helper inventory")
             report["helper_before_sha256"] = helper_before
-            original = run([java, "-Xint", "-Xverify:all", "-classpath", cp,
+            original = run([java, "--add-opens", "java.base/java.util=ALL-UNNAMED",
+                "-Xint", "-Xverify:all", "-classpath", cp,
                 "SchedulerObservation", output / "original-worlds", jar], "original")
             left = original.stdout.decode("ascii", "strict")
             origins = [line.split(" ", 2) for line in left.splitlines() if line.startswith("ORIGIN ")]
             need([line[1] for line in origins] == list(pins["classes"]), "original class inventory")
             need(all(Path(line[2]).resolve().samefile(jar) for line in origins), "foreign game class")
-            need(left.splitlines()[-1] == "Original World scheduler: 3 tick states, 6 drain states, 1 spawn prefix",
+            need(left.splitlines()[-1] == "Original World scheduler: 3 tick states, 6 drain states, 2 spawn prefixes",
                  "original completion marker")
             need(projection(left) == expected, "original observations changed")
             report["original"] = original.capture_report
@@ -127,7 +130,7 @@ def main():
         need(text.splitlines() and re.fullmatch(r"World scheduler: [1-9][0-9]* checks", text.splitlines()[-1]),
              "native completion marker")
         need(projection(text) == expected, "native observations differ from original capture")
-        report.update(status="PASS", native=native.capture_report, observations=10,
+        report.update(status="PASS", native=native.capture_report, observations=11,
                       original_replay=args.client_jar is not None)
     except BaseException as exc:
         report["error"] = {"type": type(exc).__name__, "message": str(exc)}
@@ -145,7 +148,7 @@ def main():
         report["products"] = {path.name: digest(path) for path in output.iterdir() if path.is_file()}
         (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     need(report["status"] == "PASS", "scheduler replay input integrity")
-    print(f"World scheduler: 10 observations; report {output / 'report.json'}")
+    print(f"World scheduler: 11 observations; report {output / 'report.json'}")
 
 
 if __name__ == "__main__":

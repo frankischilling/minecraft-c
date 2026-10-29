@@ -150,8 +150,8 @@
       "sha256": "20255320186c2fdfc2fdf3ca5d14c712b37966c5cc221db9e236ce9497aab12b"
     },
     "src/world/runtime/construction_internal.h": {
-      "bytes": 1337,
-      "sha256": "1f110854f51cee4624d3273d4f5a21d80fc4e00bb19849f8f6df9e537fca90eb"
+      "bytes": 1359,
+      "sha256": "d7f624a2431e421a44057defb73b2434cc29b68532bafc896625b23b52f1f253"
     },
     "src/world/runtime/world_access.c": {
       "bytes": 32036,

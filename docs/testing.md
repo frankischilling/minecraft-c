@@ -1,6 +1,81 @@
 # Test scope and reproduction
 
+## World colors, camera, frustum and spawn selection qualification
+
+Windows MSVC Debug ALL passes. All 502 selected CTests pass in 321.45
+seconds, retaining every preceding 498 case and adding `world.sky_leaves`,
+`world.colors`, `client.renderer_camera` and `client.source_frustum`. The 548-case
+configuration excludes 46 reference-label profiles. Both audio-enabled Linux
+client ALL graphs pass with GCC13/Clang18 and ASan/UBSan. Each graph selects 485
+of 491 tests with `-LE reference`. Initial full runs take 625.31/627.01
+seconds, respectively: 479 pass, six existing helper tests time out, zero skip.
+All six then pass from a byte-identical ext4 source snapshot with unchanged
+test cases, deadlines and existing probe binaries; source paths relocate to ext4. This is a full-run plus
+targeted-rerun result, rather than one clean 485-case run on the mounted tree.
+Leak detection, Xvfb/software GL and the null OpenAL driver remain enabled.
+The six excluded reference tests retain their opt-in scope.
+
+The initial timeouts are `tools.world_storage_reference`,
+`tools.chunk_storage_reference`, `tools.level_reference`,
+`tools.acquire_reference`, `tools.callbacks_reference` and `tools.region_live`.
+At a stalled callback snapshot, the Python processes wait in `p9_client_rpc`,
+CPU use is 9% across 20 available CPUs, and about 22 GiB memory remains available.
+A bounded isolated guard trace and the ext4 replay distinguish mounted-source
+metadata delay from a runtime assertion failure. The failed runs remain part
+of the qualification record; no assertion or timeout is relaxed.
+
+The new original fixtures and acceptance rules are:
+
+- [Sky leaves](../tests/reference/world/sky_leaves/README.md): 386 exact raw
+  temperature, Biome/HSB and fixed-manager rows.
+- [World colors](../tests/reference/world/colors/README.md): 432 exact sky,
+  fog and cloud vector/pool rows across all three Dimensions.
+- [Full fog](../tests/reference/client/world_frame/README.md): 96 actual original
+  `px.h(F)` executions with real GL clear-color queries. Eight older JDK blend
+  expression vectors remain separate from these original-method observations.
+- [Camera](../tests/reference/client/renderer_camera/README.md): 36 prepared
+  mode/partial profiles and 36 scalar field rows. Scalar bits compare exactly;
+  matrix coefficients use absolute tolerance `2e-6`. The observed Windows
+  maximum coefficient error is `4.76837158203125e-7`. Replays retain per-case
+  and overall errors rather than claiming cross-driver bit equality.
+- [Frustum](../tests/reference/client/frustum/README.md): four controlled real-GL
+  profiles with exact input/combined matrices, planes, cursors and box results.
+  Actual original W/DR construction and static identity run without prepared
+  receivers. Native controls cover 28 allocation boundaries and retirement.
+- [World scheduler](../tests/reference/world/tick/README.md): eleven rows,
+  including one new selected-Pig prefix through ten bounded Random calls and
+  state `98aeeda4389e`. Native execution stops at concrete construction 773;
+  the original snapshot precedes yaw and insertion.
+
+Prepared original receivers and authored block/meta transport are declared in
+each fixture. These comparisons do not qualify bypassed constructors, complete
+World/PX rendering, pixels, successful Mob insertion or gameplay. Repeat original
+fog, camera and frustum captures match their retained fixtures. Fresh leaf,
+World-color and scheduler captures also pass with pinned tools and originals.
+
+The loaded Windows App/World/Player/SDK graph completes colors, actual camera
+and W before reaching `px.a:306`. Its direct unpaused component call reaches
+`cq.a:773`, retaining the real selected class/entry and progress. All 72 preceding
+focus histories remain exact; save/resource preservation and checked cleanup
+pass. The terminal enclosing frame is not replayed to resume source work.
+
+Preliminary checks caught the original Sky Biome constant override, missing
+authored test resources, a buffered output banner, explicit C++ test-link
+requirements, a spawn-diagnostic type collision and an MSVC float conversion.
+Fixes preserve all original rows and their acceptance rules. The preceding
+`b1bb968` hosted run 40886849939 failed both Linux builds at the new missing
+RenderGlobal sky-callback initializer; Windows and formatting passed. Named
+callback slots now compile in both full local Linux graphs, with the concrete
+sky callback still absent. New hosted results remain pending.
+
+Formatting checks 1504 C/header/fragment files. Explicit LF formatting keeps
+raw-byte source pins stable. GL3 fog setup, sky/terrain drawing, concrete Mobs,
+ordinary full World ticks, native Canvas, extended play and server work remain
+unfinished or unqualified.
+
 ## Source frame, pause and World scheduler qualification
+
+This preceding checkpoint retains its original validation scope and frontiers.
 
 The Windows MSVC Debug ALL build passes. All 498 selected CTests pass in
 205.32 seconds, with zero failures or skips. All preceding 494 tests are retained;

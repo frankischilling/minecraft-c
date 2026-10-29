@@ -27,22 +27,6 @@ struct mc_biome_spawn {
     mc_biome_spawn_fields fields;
 };
 
-typedef enum biome_construction_phase {
-    BIOME_RAW,
-    BIOME_CONSTRUCTING,
-    BIOME_CONSTRUCTED,
-    BIOME_FAILED
-} biome_construction_phase;
-
-struct mc_biome {
-    mc_registry_classes *classes;
-    mc_biome_kind kind;
-    biome_construction_phase phase;
-    const char *constructor_class;
-    int32_t constructor_pc;
-    mc_biome_fields fields;
-};
-
 static const char *const client_classes[MC_BIOME_KIND_COUNT] = {"kd", "fs", "tf", "t",
                                                                 "ry", "yj", "rb", "g"};
 static const char *const server_classes[MC_BIOME_KIND_COUNT] = {"gs", "dw", "ma", "m",
@@ -688,6 +672,15 @@ mc_biome_kind mc_biome_kind_get(const mc_biome *biome) {
 
 const mc_biome_fields *mc_biome_fields_get(const mc_biome *biome) {
     return biome == NULL ? NULL : &biome->fields;
+}
+
+const mc_biome_spawn_list *mc_biome_spawn_list_get(const mc_biome *biome, int32_t category) {
+    if (biome == NULL)
+        return NULL;
+    return category == 0   ? biome->fields.s
+           : category == 1 ? biome->fields.t
+           : category == 2 ? biome->fields.u
+                           : NULL;
 }
 
 size_t mc_biome_spawn_list_size(const mc_biome_spawn_list *list) {

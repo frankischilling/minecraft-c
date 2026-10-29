@@ -1,7 +1,10 @@
 #ifndef MC_CLIENT_WORLD_WORLD_FRAME_H
 #define MC_CLIENT_WORLD_WORLD_FRAME_H
 
+#include "mc/client/world/frustum.h"
 #include "mc/client/world/picking.h"
+#include "mc/client/world/renderer_camera.h"
+#include "mc/client/world/renderer_fog.h"
 #include "mc/core/math/classes.h"
 
 typedef struct mc_client_world_frame_call mc_client_world_frame_call;
@@ -25,14 +28,22 @@ typedef struct mc_client_world_frame_error {
     bool native_policy;
     const mc_client_entity_renderer_pick_error *picking;
     const mc_client_entity_renderer_error *owner;
+    const mc_client_renderer_fog_error *fog;
+    const mc_client_renderer_camera_error *camera;
     mc_client_display_error display;
     mc_entity_status entity;
+    mc_client_frustum_error frustum;
 } mc_client_world_frame_error;
 
 typedef struct mc_client_world_frame_state {
     bool active, returned, cull_enabled, depth_enabled, view_stored, picking_returned;
     bool provider_read, anaglyph_read, anaglyph, eye_stored, color_masked, viewport_set;
     bool fog_world_captured, fog_camera_captured, fog_distance_read, fog_blend_computed;
+    bool fog_returned, buffers_cleared, post_fog_cull_enabled;
+    bool camera_returned;
+    bool frustum_returned, fog_distance_branch_read;
+    int32_t post_camera_render_distance;
+    mc_client_frustum_state frustum;
     unsigned int source_pc, eye;
     float partial, fog_distance_blend;
     int32_t fog_render_distance, width, height;
@@ -46,13 +57,17 @@ typedef struct mc_client_world_frame_state {
     struct mc_client_effect_renderer *effects;
     const mc_client_world_frame_error *failure;
     const mc_client_entity_renderer_pick_state *picking;
+    const mc_client_renderer_fog_state *fog;
+    const mc_client_renderer_camera_state *camera_setup;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the
  * same Display, source view, picker, provider and PX class namespace; it never
  * invokes the separate inspection renderer. It retains reached source/GL
- * effects and exact child failures. The unfinished h(F) sky-color descendant
- * remains explicit; camera/frustum/terrain/HUD are not silently skipped.
+ * effects and exact child failures. Actual h(F) supplies World sky/fog colors,
+ * canonical PX RGB stores and GL clear color before the reached buffer clear
+ * and camera invoke. The canonical frustum then extracts those matrices;
+ * reached fog-state/sky/terrain/HUD descendants remain explicit.
  *
  * App and its complete graph stay live/exclusive on the video thread through
  * retirement. Out starts NULL; an allocated terminal call is returned even on

@@ -7,6 +7,107 @@
 #include "../../../src/world/runtime/entity_publication_internal.h"
 #include "mc/entity/player/player.h"
 #include "mc/world/runtime/world_tick.h"
+#include <inttypes.h>
+
+static bool flat_chunk(fixture *f) {
+    bool ok = false;
+    fixture_record *r = calloc(1, sizeof(*r));
+    uint8_t *encoded = NULL;
+    size_t length = 0, written = 0;
+    const char *const names[] = {
+        "xPos",       "zPos",      "LastUpdate",       "Blocks",   "Data",        "SkyLight",
+        "BlockLight", "HeightMap", "TerrainPopulated", "Entities", "TileEntities"};
+    const mc_nbt_type types[] = {MC_NBT_INT,        MC_NBT_INT,        MC_NBT_LONG,
+                                 MC_NBT_BYTE_ARRAY, MC_NBT_BYTE_ARRAY, MC_NBT_BYTE_ARRAY,
+                                 MC_NBT_BYTE_ARRAY, MC_NBT_BYTE_ARRAY, MC_NBT_BYTE,
+                                 MC_NBT_LIST,       MC_NBT_LIST};
+    const size_t lengths[] = {MC_CHUNK_BLOCKS, MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_NIBBLE_BYTES,
+                              MC_CHUNK_NIBBLE_BYTES, MC_CHUNK_HEIGHTMAP_BYTES};
+    CHECK(r != NULL);
+    r->root.type = r->level.type = MC_NBT_COMPOUND;
+    r->level.name = ascii("Level", r->names[11]);
+    for (size_t i = 0; i < COUNT(names); ++i) {
+        r->fields[i].type = types[i];
+        r->fields[i].name = ascii(names[i], r->names[i]);
+        r->level_fields[i] = &r->fields[i];
+    }
+    r->fields[0].value.int_value = r->fields[1].value.int_value = -3;
+    r->fields[8].value.byte_value = 1;
+    for (size_t i = 0; i < COUNT(lengths); ++i) {
+        r->fields[i + 3].value.byte_array.data = r->arrays[i];
+        r->fields[i + 3].value.byte_array.length = lengths[i];
+    }
+    for (size_t x = 0; x < 16; ++x)
+        for (size_t z = 0; z < 16; ++z) {
+            r->arrays[0][x * 2048 + z * 128 + 63] = 2; /* Actual grass, air above. */
+            r->arrays[4][z * 16 + x] = 64;
+        }
+    r->fields[9].value.list.element_type = r->fields[10].value.list.element_type = MC_NBT_COMPOUND;
+    r->level.value.compound.items = r->level_fields;
+    r->level.value.compound.length = COUNT(r->level_fields);
+    r->root_fields[0] = &r->level;
+    r->root.value.compound.items = r->root_fields;
+    r->root.value.compound.length = 1;
+    CHECK(mc_nbt_measure(&r->root, NULL, &length, NULL) == MC_NBT_OK);
+    encoded = malloc(length);
+    CHECK(encoded != NULL &&
+          mc_nbt_write(&r->root, NULL, encoded, length, &written, NULL) == MC_NBT_OK &&
+          written == length);
+    uint32_t growth;
+    CHECK(mc_world_regions_write(f->regions, mc_world_store_root(f->stores[0]), -3, -3, encoded,
+                                 length, fixture_timestamp, &growth, NULL) == MC_WORLD_STORAGE_OK);
+    ok = true;
+cleanup:
+    free(encoded);
+    free(r);
+    return ok;
+}
+
+static bool spawn_seed(mc_world_runtime *world, int32_t *seed) {
+    mc_world_provider_fields dimension;
+    const mc_biome *biome;
+    if (mc_world_provider_fields_get(world->fields.t, &dimension) != MC_WORLD_PROVIDER_OK ||
+        mc_world_chunk_manager_chunk(dimension.b, -3, -3, &biome, NULL) != MC_WORLD_PROVIDER_OK)
+        return false;
+    const mc_biome_spawn_list *list = mc_biome_spawn_list_get(biome, 1);
+    for (int32_t candidate = 0; candidate < 1000000; ++candidate) {
+        mc_java_random random;
+        mc_java_random_seed(&random, candidate);
+        int32_t sum = 0, ticket;
+        for (size_t i = 0; i < mc_biome_spawn_list_size(list); ++i)
+            sum += mc_biome_spawn_fields_get(mc_biome_spawn_list_at(list, i))->b;
+        if (!mc_java_random_next_bounded(&random, sum, &ticket))
+            return false;
+        const mc_biome_spawn_fields *selected = NULL;
+        for (size_t i = 0; i < mc_biome_spawn_list_size(list); ++i) {
+            selected = mc_biome_spawn_fields_get(mc_biome_spawn_list_at(list, i));
+            ticket -= selected->b;
+            if (ticket < 0)
+                break;
+        }
+        if (strcmp(mc_biome_entity_class_name(selected->a, MC_REGISTRY_CLIENT), "wh") != 0)
+            continue;
+        int32_t x, y, z, a, b;
+        (void)mc_java_random_next_bounded(&random, 16, &x);
+        (void)mc_java_random_next_bounded(&random, 128, &y);
+        (void)mc_java_random_next_bounded(&random, 16, &z);
+        if (y != 64)
+            continue;
+        (void)mc_java_random_next_bounded(&random, 6, &a);
+        (void)mc_java_random_next_bounded(&random, 6, &b);
+        x += a - b;
+        (void)mc_java_random_next_bounded(&random, 1, &a);
+        (void)mc_java_random_next_bounded(&random, 1, &b);
+        (void)mc_java_random_next_bounded(&random, 6, &a);
+        (void)mc_java_random_next_bounded(&random, 6, &b);
+        z += a - b;
+        if (x >= 0 && x < 16 && z >= 0 && z < 16) {
+            *seed = candidate;
+            return true;
+        }
+    }
+    return false;
+}
 
 static bool tick_world_create(fixture *f, const char *root) {
     bool ok = false;
@@ -197,6 +298,8 @@ static bool tick_cases(fixture *f) {
     const size_t baseline_bindings = w->persistent_bindings;
     const size_t baseline_calls = w->active_calls;
     mc_world_access *a = NULL, *b = NULL, *missing = NULL;
+    char *flat_path = NULL;
+    mc_ws_file_bytes flat_before = {0}, flat_after = {0};
     mc_entity *player = NULL;
     mc_world_entity_error publication;
     const mc_world_access_callbacks callbacks = {.sky_changed = changed};
@@ -285,19 +388,47 @@ static bool tick_cases(fixture *f) {
     CHECK(appended);
     w->fields.N = false;
     w->fields.O = true;
+    int32_t selected_seed = 0;
+    CHECK(flat_chunk(f) && spawn_seed(w, &selected_seed));
+    CHECK(mc_ws_path_join(mc_world_store_root(f->stores[0]), "region/r.-1.-1.mcr", &flat_path,
+                          NULL) == MC_WORLD_STORAGE_OK &&
+          mc_ws_read_file(flat_path, 1024u * 1024u, &flat_before, NULL) == MC_WORLD_STORAGE_OK);
+    mc_java_random_reseed(w->fields.r, selected_seed);
+    CHECK(mc_world_info_source_rain_time_set(w->fields.x, 20) == MC_WORLD_INFO_OK &&
+          mc_world_info_source_thunder_time_set(w->fields.x, 30) == MC_WORLD_INFO_OK);
     CHECK(mc_world_runtime_tick_begin(w, &call, NULL) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           mc_world_runtime_tick_inspect(call, &state) && state.source_pc == 80 &&
           state.weather_returned && !state.spawning_returned && !state.provider_returned &&
           state.spawn_chunk_count == 289 && state.spawn_category == 1 &&
-          state.error->child_bytecode == 290 && state.error->native_policy &&
+          state.error->child_bytecode == 773 && state.error->native_policy &&
           state.spawn_chunk_x == -3 && state.spawn_chunk_z == -3 &&
-          strcmp(state.error->operation, "World spawn actual Biome spawn-list selection") == 0);
+          state.spawn_candidates_visited == 1 && state.spawn_random_calls == 10 &&
+          state.spawn_class != NULL &&
+          strcmp(state.error->operation,
+                 "World spawn concrete Mob class initialization/constructor") == 0);
+    mc_entity_class_literal_view selected_class = {0};
+    CHECK(mc_entity_class_literal_inspect(state.spawn_class, &selected_class) == MC_ENTITY_OK &&
+          selected_class.kind == MC_ENTITY_CLASS_KIND_PIG && f->providers[0].cache->count == 1 &&
+          f->providers[0].cache->insertion_count == 1);
+    CHECK(mc_ws_read_file(flat_path, 1024u * 1024u, &flat_after, NULL) == MC_WORLD_STORAGE_OK &&
+          flat_before.length == flat_after.length &&
+          memcmp(flat_before.data, flat_after.data, flat_before.length) == 0 &&
+          w->entity_membership.count == 0 && w->player_membership.count == 1 &&
+          w->local_leases == 0);
+    f->states[0] = f->providers[0].cache->entries[0].chunk;
     printf("SPAWN prefix %zu %d %d\n", state.spawn_chunk_count, state.spawn_chunk_x,
            state.spawn_chunk_z);
+    printf("SPAWN constructor %d %d %d %s %d %d %d %d %d %d %zu %012" PRIx64 "\n", selected_seed,
+           state.spawn_pick.total_weight, state.spawn_pick.ticket, selected_class.client_name,
+           state.spawn_initial_x, state.spawn_initial_y, state.spawn_initial_z, state.spawn_trial_x,
+           state.spawn_trial_y, state.spawn_trial_z, state.spawn_random_calls, w->fields.r->state);
     CHECK(mc_world_runtime_tick_retire(&call, NULL) == MC_WORLD_STORAGE_OK &&
           w->active_calls == baseline_calls && w->persistent_bindings == baseline_bindings);
     ok = true;
 cleanup:
+    free(flat_path);
+    mc_ws_free_file_bytes(&flat_before);
+    mc_ws_free_file_bytes(&flat_after);
     (void)mc_world_runtime_tick_retire(&call, NULL);
     (void)mc_world_runtime_tick_retire(&earlier, NULL);
     if (a != NULL)

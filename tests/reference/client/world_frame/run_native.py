@@ -37,10 +37,13 @@ def main():
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
     picker.authored_world(out / "world")
+    fogs = module("world_frame_fog_vectors", HERE / "capture_fog.py")
+    fog_expected = json.loads((HERE / "fog-vectors.json").read_text())["rows"]
+    fogs.rows("\n".join(fog_expected))
     expected = json.loads((HERE / "math-vectors.json").read_text())["rows"]
     maths.rows("\n".join(expected))
     inputs = [executable, picker_path, HERE / "run_native.py", HERE / "capture_math.py",
-              HERE / "math-vectors.json", HERE.parent / "controller/capture.py",
+              HERE / "math-vectors.json", HERE / "capture_fog.py", HERE / "fog-vectors.json", HERE.parent / "controller/capture.py",
               HERE.parent / "controller/classfile.py"]
     before = {str(path.resolve()): digest(path) for path in inputs}
     report = {"status": "FAIL", "input_before_sha256": before}
@@ -50,10 +53,11 @@ def main():
         require_success(result, empty_stderr=True)
         text = (out / result["stdout_file"]).read_text()
         ensure(maths.rows(text) == expected, "native/JDK fog blend vectors differ")
-        ensure(re.fullmatch(r"Source World frame: [1-9][0-9]* checks; fog sky-color dependency retained",
+        ensure(fogs.rows(text) == fog_expected, "native/original full fog rows differ")
+        ensure(re.fullmatch(r"Source World frame: [1-9][0-9]* checks; full fog and camera source prefix retained",
                             text.splitlines()[-1]), "native World-frame completion missing")
-        report.update(status="PASS", math_vectors=8, native=result,
-                      scope="ordered native GL/picker prefix; no original full-frame/visual claim")
+        report.update(status="PASS", math_vectors=8, fog_vectors=96, native=result,
+                      scope="ordered native GL/picker/fog prefix and 96 original full-h numeric rows; no full-frame/visual claim")
     finally:
         report["input_after_sha256"] = {str(path.resolve()): digest(path) for path in inputs}
         same = before == report["input_after_sha256"]
@@ -62,7 +66,7 @@ def main():
         (out / "run.json").write_text(json.dumps(report, indent=2) + "\n",
                                       encoding="utf-8", newline="\n")
         ensure(same, "native World-frame inputs changed")
-    print("Source World-frame prefix and 8 JDK math vectors passed; " + str(out / "run.json"))
+    print("Source World-frame prefix, 96 original full fog and 8 JDK math vectors passed; " + str(out / "run.json"))
 
 
 if __name__ == "__main__":

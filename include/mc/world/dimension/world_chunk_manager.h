@@ -79,4 +79,17 @@ mc_world_provider_status mc_world_chunk_manager_chunk(mc_world_chunk_manager *bi
                                                       const mc_biome **out,
                                                       mc_world_chunk_manager_error *error);
 
+/* Actual client xv.b(II)D. Samples the constructed temperature noise at
+ * (double)0.025f scales, frequency factor .5, then publishes the same raw a
+ * array at27 and returns element0 at36. A retained longer a is reused and its
+ * whole span cleared. b/c/d, biome classes and processed-temperature mixing
+ * are never reached. Actual fixed hd.b(II)D instead returns current f at4,
+ * without sampling, touching arrays or requiring floating arithmetic.
+ * Holds this manager through the call. Ordinary out is unchanged on failure;
+ * completed reused-array writes remain. Requires the strict x86-64 FP profile,
+ * live exclusive owners and disjoint output/error storage. */
+mc_world_provider_status mc_world_chunk_manager_temperature_raw(mc_world_chunk_manager *, int32_t x,
+                                                                int32_t z, double *out,
+                                                                mc_world_chunk_manager_error *);
+
 #endif

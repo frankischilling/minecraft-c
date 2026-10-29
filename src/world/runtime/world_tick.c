@@ -1,5 +1,6 @@
 #include "mc/world/runtime/world_tick.h"
 
+#include "../../block/registry/registry_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../../entity/player/player_internal.h"
 #include "../info/tick_source_internal.h"
@@ -29,6 +30,7 @@ struct mc_world_tick_call {
     mc_world_runtime_lifecycle_error lifecycle;
     mc_world_scheduled_drain_error scheduled;
     mc_world_chunk_manager_error biome;
+    mc_world_spawn_pick_error spawning;
     bool world_held;
 };
 
@@ -141,6 +143,7 @@ static bool set_prepare(mc_world_tick_call *c, mc_world_active_chunks *set, unsi
     }
     mc_java_int_set_clear(set->order);
     set->count = 0;
+    ++set->version; /* HashMap.clear increments modCount even when empty. */
     return true;
 }
 
@@ -188,6 +191,7 @@ static bool set_add(mc_world_tick_call *c, mc_world_active_chunks *set, int32_t 
         return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick candidate Set key ledger",
                     true);
     entries[set->count++] = (candidate){x, z, hash};
+    ++set->version;
     return true;
 }
 
@@ -335,10 +339,208 @@ static bool entity_count(mc_world_tick_call *c, int32_t category, int32_t *out) 
     }
 }
 
+static bool spawn_error(mc_world_tick_call *c, unsigned int pc, const char *operation, bool native,
+                        const char *exception) {
+    c->error.child_bytecode = pc;
+    c->error.spawning = &c->spawning;
+    c->spawning.status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    c->spawning.operation = operation;
+    c->spawning.bytecode = pc;
+    c->spawning.native_policy = native;
+    c->spawning.exception_class = c->error.exception_class = exception;
+    c->spawning.cause = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation, 0};
+    return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation, native);
+}
+
+static bool spawn_draw(mc_world_tick_call *c, int32_t bound, unsigned int pc,
+                       unsigned int helper_pc, int32_t *out) {
+    c->error.child_bytecode = pc;
+    c->error.descendant_bytecode = helper_pc;
+    mc_java_random *random = c->state.world->fields.r;
+    if (random == NULL)
+        return spawn_error(c, pc, "World spawn null Random receiver", false,
+                           "java/lang/NullPointerException");
+    if (!mc_java_random_next_bounded(random, bound, out))
+        return spawn_error(c, pc, "World spawn Random nonpositive bound", false,
+                           "java/lang/IllegalArgumentException");
+    ++c->state.spawn_random_calls;
+    return true;
+}
+
+static bool spawn_solid(mc_world_tick_call *c, int32_t x, int32_t y, int32_t z, unsigned int pc,
+                        unsigned int helper_pc, bool *out) {
+    c->error.child_bytecode = pc;
+    c->error.descendant_bytecode = helper_pc;
+    if (mc_world_runtime_solid_support_get(c->state.world, x, y, z, out, &c->spawning.solid) ==
+        MC_WORLD_STORAGE_OK)
+        return true;
+    c->error.spawning = &c->spawning;
+    c->spawning.bytecode = pc;
+    c->spawning.helper_bytecode = helper_pc;
+    c->spawning.status = c->spawning.solid.status;
+    c->spawning.cause = c->spawning.solid.cause;
+    c->spawning.operation = c->spawning.solid.operation;
+    c->error.native_policy = c->spawning.native_policy = true;
+    return cause(c, c->spawning.cause);
+}
+
+static bool spawn_material(mc_world_tick_call *c, int32_t x, int32_t y, int32_t z, unsigned int pc,
+                           unsigned int helper_pc, mc_material **out) {
+    c->error.child_bytecode = pc;
+    c->error.descendant_bytecode = helper_pc;
+    if (mc_world_runtime_material_get_detailed(c->state.world, x, y, z, out,
+                                               &c->spawning.material) == MC_WORLD_STORAGE_OK)
+        return true;
+    c->error.spawning = &c->spawning;
+    c->spawning.bytecode = pc;
+    c->spawning.helper_bytecode = helper_pc;
+    c->spawning.status = c->spawning.material.status;
+    c->spawning.cause = c->spawning.material.cause;
+    c->spawning.operation = c->spawning.material.operation;
+    c->error.native_policy = c->spawning.native_policy = true;
+    return cause(c, c->spawning.cause);
+}
+
+static bool spawn_position(mc_world_tick_call *c, int32_t category, int32_t x, int32_t y, int32_t z,
+                           bool *out) {
+    bool solid;
+    mc_material *material;
+    *out = false;
+    if (category == 2) {
+        if (!spawn_material(c, x, y, z, 636, 15, &material))
+            return false;
+        if (material == NULL)
+            return spawn_error(c, 636, "World water spawn null Material receiver", false,
+                               "java/lang/NullPointerException");
+        if (!mc_material_d(material))
+            return true;
+        if (!spawn_solid(c, x, mc_java_i32_add(y, 1), z, 636, 31, &solid))
+            return false;
+        *out = !solid;
+        return true;
+    }
+    if (!spawn_solid(c, x, mc_java_i32_sub(y, 1), z, 636, 50, &solid))
+        return false;
+    if (!solid)
+        return true;
+    if (!spawn_solid(c, x, y, z, 636, 61, &solid))
+        return false;
+    if (solid)
+        return true;
+    if (!spawn_material(c, x, y, z, 636, 72, &material))
+        return false;
+    if (material == NULL)
+        return spawn_error(c, 636, "World land spawn null Material receiver", false,
+                           "java/lang/NullPointerException");
+    if (mc_material_d(material))
+        return true;
+    if (!spawn_solid(c, x, mc_java_i32_add(y, 1), z, 636, 88, &solid))
+        return false;
+    *out = !solid;
+    return true;
+}
+
+static bool spawn_player_near(mc_world_tick_call *c, double x, double y, double z, bool *out) {
+    mc_world_runtime *w = c->state.world;
+    double best = -1.0;
+    bool found = false;
+    for (size_t i = 0;; ++i) {
+        size_t size;
+        c->error.descendant_bytecode = 17;
+        if (!list_size(c, w->fields.d, &w->player_membership, 676, &size))
+            return false;
+        if (i >= size) {
+            *out = found;
+            return true;
+        }
+        mc_entity *player;
+        c->error.descendant_bytecode = 31;
+        if (!list_get(c, w->fields.d, &w->player_membership, i, 676, 676, true, &player))
+            return false;
+        c->error.descendant_bytecode = 47;
+        if (player == NULL)
+            return spawn_error(c, 676, "World spawn nearest null Player receiver", false,
+                               "java/lang/NullPointerException");
+        if (!fp(c, 676))
+            return false;
+        const double dx = wt_sub(player->base.x, x), dy = wt_sub(player->base.y, y);
+        const double dz = wt_sub(player->base.z, z);
+        const double distance = wt_add(wt_add(wt_mul(dx, dx), wt_mul(dy, dy)), wt_mul(dz, dz));
+        if (distance < 576.0 && (best == -1.0 || distance < best)) {
+            found = true;
+            best = distance;
+        }
+    }
+}
+
+static float spawn_fmul(float a, float b) {
+    return _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(a), _mm_set_ss(b)));
+}
+
+static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t spawn[3],
+                         int32_t initial_x, int32_t initial_y, int32_t initial_z) {
+    for (int32_t group = 0; group < 3; ++group) {
+        c->state.spawn_group = group;
+        int32_t x = initial_x, y = initial_y, z = initial_z;
+        for (int32_t attempt = 0; attempt < 4; ++attempt) {
+            c->state.spawn_attempt = attempt;
+            int32_t a, b;
+            if (!spawn_draw(c, 6, 565, 0, &a) || !spawn_draw(c, 6, 574, 0, &b))
+                return false;
+            x = mc_java_i32_add(x, mc_java_i32_sub(a, b));
+            c->state.spawn_trial_x = x;
+            if (!spawn_draw(c, 1, 588, 0, &a) || !spawn_draw(c, 1, 596, 0, &b))
+                return false;
+            y = mc_java_i32_add(y, mc_java_i32_sub(a, b));
+            c->state.spawn_trial_y = y;
+            if (!spawn_draw(c, 6, 611, 0, &a) || !spawn_draw(c, 6, 620, 0, &b))
+                return false;
+            z = mc_java_i32_add(z, mc_java_i32_sub(a, b));
+            c->state.spawn_trial_z = z;
+            bool permitted;
+            if (!spawn_position(c, category, x, y, z, &permitted))
+                return false;
+            if (!permitted)
+                continue;
+            if (!fp(c, 647))
+                return false;
+            const float fx = wt_fadd(wt_i2f(x), 0.5f), fy = wt_i2f(y);
+            const float fz = wt_fadd(wt_i2f(z), 0.5f);
+            bool nearby;
+            if (!spawn_player_near(c, wt_widen(fx), wt_widen(fy), wt_widen(fz), &nearby))
+                return false;
+            if (nearby)
+                continue;
+            const float dx = wt_fsub(fx, wt_i2f(spawn[0]));
+            const float dy = wt_fsub(fy, wt_i2f(spawn[1]));
+            const float dz = wt_fsub(fz, wt_i2f(spawn[2]));
+            const float distance =
+                wt_fadd(wt_fadd(spawn_fmul(dx, dx), spawn_fmul(dy, dy)), spawn_fmul(dz, dz));
+            if (distance < 576.0f)
+                continue;
+            c->error.child_bytecode = 750;
+            const mc_biome_spawn_fields *entry =
+                mc_biome_spawn_fields_get(c->state.spawn_pick.entry);
+            if (entry == NULL)
+                return spawn_error(c, 750, "World spawn null chosen entry", false,
+                                   "java/lang/NullPointerException");
+            mc_registry_classes *registry = mc_world_runtime_registry(c->state.world);
+            if (mc_biome_entity_class_canonical(registry, entry->a, &c->state.spawn_class,
+                                                &c->spawning.registry) != MC_REGISTRY_OK) {
+                c->error.spawning = &c->spawning;
+                return spawn_error(c, 750, "World spawn canonical Mob Class binding", true, NULL);
+            }
+            return spawn_error(c, 773, "World spawn concrete Mob class initialization/constructor",
+                               true, NULL);
+        }
+    }
+    return true;
+}
+
 static bool spawning(mc_world_tick_call *c, bool hostile, bool peaceful) {
     mc_world_runtime *w = c->state.world;
     mc_world_active_chunks *set = &w->classes->spawning_chunks;
-    w->classes->spawning_initialized = true; /* cq.<clinit>: Set and class literals. */
+    w->classes->spawning_initialized = true;
     if (!hostile && !peaceful)
         return true;
     if (!set_prepare(c, set, 13) || !candidates(c, set, true))
@@ -352,7 +554,6 @@ static bool spawning(mc_world_tick_call *c, bool hostile, bool peaceful) {
             return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World spawn Info point receiver",
                         false);
     }
-    (void)spawn;
     static const int32_t caps[] = {70, 15, 5};
     for (int32_t category = 0; category < 3; ++category) {
         if ((category != 0 && !peaceful) || (category == 0 && !hostile))
@@ -364,49 +565,131 @@ static bool spawning(mc_world_tick_call *c, bool hostile, bool peaceful) {
         const int32_t cap = mc_java_i32_mul(caps[category], (int32_t)set->count) / 256;
         if (count > cap || set->count == 0)
             continue;
-        int32_t first;
-        c->error.child_bytecode = 265;
-        if (mc_java_int_set_first(set->order, &first) != MC_JAVA_INT_SET_OK)
-            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World spawn candidate iterator",
+        /* A native iterator inventory preserves the already-captured Set order.
+         * Each source next checks the captured Java-wrapping modCount first;
+         * callbacks may alter the shared Set, but cannot silently retarget it. */
+        const size_t length = set->count;
+        const uint32_t version = set->version;
+        int32_t *order = malloc(length * sizeof(*order));
+        c->error.child_bytecode = 246;
+        if (order == NULL)
+            return fail(c, MC_WORLD_STORAGE_ALLOCATION_FAILED, "World spawn iterator storage",
                         true);
-        candidate *entries = set->entries;
-        const candidate *selected = NULL;
-        for (size_t i = 0; i < set->count; ++i)
-            if (entries[i].hash == first) {
-                selected = &entries[i];
+        size_t written;
+        if (mc_java_int_set_copy_order(set->order, order, length, &written) != MC_JAVA_INT_SET_OK ||
+            written != length) {
+            free(order);
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World spawn iterator inventory",
+                        true);
+        }
+        bool ok = true;
+        for (size_t index = 0; index < length; ++index) {
+            if (set->version != version) {
+                ok = spawn_error(c, 265, "World spawn candidate iterator modified", false,
+                                 "java/util/ConcurrentModificationException");
                 break;
             }
-        if (selected == NULL)
-            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World spawn candidate key ledger",
-                        true);
-        c->state.spawn_chunk_x = selected->x;
-        c->state.spawn_chunk_z = selected->z;
-        c->error.child_bytecode = 276;
-        c->error.descendant_bytecode = 4;
-        mc_world_provider_fields dimension;
-        if (mc_world_provider_fields_get(w->fields.t, &dimension) != MC_WORLD_PROVIDER_OK)
-            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World spawn WorldProvider receiver",
-                        false);
-        c->error.child_bytecode = 281;
-        c->error.biome = &c->biome;
-        const mc_biome *biome = NULL;
-        if (mc_world_chunk_manager_chunk(dimension.b, selected->x, selected->z, &biome,
-                                         &c->biome) != MC_WORLD_PROVIDER_OK) {
-            c->error.descendant_bytecode = c->biome.bytecode;
-            const mc_world_storage_status status =
-                c->biome.status == MC_WORLD_PROVIDER_ALLOCATION_FAILED
-                    ? MC_WORLD_STORAGE_ALLOCATION_FAILED
-                : c->biome.status == MC_WORLD_PROVIDER_LIMIT ? MC_WORLD_STORAGE_LIMIT
-                                                             : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-            return fail(c, status, "World spawn actual biome chunk lookup", dimension.b != NULL);
+            candidate *entries = set->entries;
+            candidate selected = {0};
+            bool found = false;
+            for (size_t i = 0; i < set->count; ++i)
+                if (entries[i].hash == order[index]) {
+                    selected = entries[i];
+                    found = true;
+                    break;
+                }
+            if (!found) {
+                ok = spawn_error(c, 265, "World spawn candidate key ledger", true, NULL);
+                break;
+            }
+            ++c->state.spawn_candidates_visited;
+            c->state.spawn_chunk_x = selected.x;
+            c->state.spawn_chunk_z = selected.z;
+            c->error.child_bytecode = 276;
+            c->error.descendant_bytecode = 4;
+            mc_world_provider_fields dimension;
+            if (mc_world_provider_fields_get(w->fields.t, &dimension) != MC_WORLD_PROVIDER_OK) {
+                ok = spawn_error(c, 276, "World spawn WorldProvider receiver", false,
+                                 "java/lang/NullPointerException");
+                break;
+            }
+            c->error.child_bytecode = 281;
+            c->error.biome = &c->biome;
+            const mc_biome *biome = NULL;
+            if (mc_world_chunk_manager_chunk(dimension.b, selected.x, selected.z, &biome,
+                                             &c->biome) != MC_WORLD_PROVIDER_OK) {
+                c->error.descendant_bytecode = c->biome.bytecode;
+                const mc_world_storage_status status =
+                    c->biome.status == MC_WORLD_PROVIDER_ALLOCATION_FAILED
+                        ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                    : c->biome.status == MC_WORLD_PROVIDER_LIMIT
+                        ? MC_WORLD_STORAGE_LIMIT
+                        : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+                ok = fail(c, status, "World spawn actual biome chunk lookup", dimension.b != NULL);
+                break;
+            }
+            c->error.biome = NULL;
+            c->error.child_bytecode = 290;
+            c->error.descendant_bytecode = 0;
+            if (mc_world_runtime_pick_spawn_entry(w, biome, category, &c->state.spawn_pick,
+                                                  &c->spawning) != MC_WORLD_STORAGE_OK) {
+                c->error.spawning = &c->spawning;
+                c->error.child_bytecode = c->spawning.bytecode;
+                c->error.native_policy = c->spawning.native_policy;
+                c->error.exception_class = c->spawning.exception_class;
+                ok = cause(c, c->spawning.cause);
+                break;
+            }
+            if (c->state.spawn_pick.entry == NULL)
+                continue;
+            ++c->state.spawn_random_calls;
+            int32_t x, y, z, offset;
+            if (!spawn_draw(c, 16, 457, 7, &offset)) {
+                ok = false;
+                break;
+            }
+            x = mc_java_i32_add(mc_java_i32_mul(selected.x, 16), offset);
+            c->state.spawn_initial_x = x;
+            if (!spawn_draw(c, 128, 457, 19, &y)) {
+                ok = false;
+                break;
+            }
+            c->state.spawn_initial_y = y;
+            if (!spawn_draw(c, 16, 457, 31, &offset)) {
+                ok = false;
+                break;
+            }
+            z = mc_java_i32_add(mc_java_i32_mul(selected.z, 16), offset);
+            c->state.spawn_initial_z = z;
+            bool solid;
+            if (!spawn_solid(c, x, y, z, 490, 0, &solid)) {
+                ok = false;
+                break;
+            }
+            if (solid)
+                continue;
+            mc_material *material;
+            if (!spawn_material(c, x, y, z, 506, 0, &material)) {
+                ok = false;
+                break;
+            }
+            mc_registry_classes *registry = mc_world_runtime_registry(w);
+            if (registry == NULL) {
+                ok = spawn_error(c, 511, "World spawn category Material binding", true, NULL);
+                break;
+            }
+            mc_material *expected = mc_materials_get(registry->options.materials,
+                                                     category == 2 ? MC_MATERIAL_g : MC_MATERIAL_a);
+            if (material != expected)
+                continue;
+            if (!spawn_trials(c, category, spawn, x, y, z)) {
+                ok = false;
+                break;
+            }
         }
-        c->error.biome = NULL;
-        c->error.child_bytecode = 290;
-        c->error.descendant_bytecode = 0;
-        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                    biome == NULL ? "World spawn null Biome receiver"
-                                  : "World spawn actual Biome spawn-list selection",
-                    biome != NULL);
+        free(order);
+        if (!ok)
+            return false;
     }
     c->error.child_bytecode = 888;
     return true;

@@ -51,6 +51,21 @@ bool mc_client_ge_int_limit(mc_client_direct_int_buffer *, int32_t, mc_client_gr
 bool mc_client_ge_int_writable_remaining(mc_client_direct_int_buffer *, void **storage,
                                          size_t *remaining, mc_client_graphics_site,
                                          mc_client_graphics_error *);
+/* Actual unmarked direct FloatBuffer operations used by w's own ge.e(16)
+ * buffers. Native GL writes through the span never advance position. */
+bool mc_client_ge_float_clear(mc_client_direct_float_buffer *, mc_client_graphics_site,
+                              mc_client_graphics_error *);
+bool mc_client_ge_float_flip(mc_client_direct_float_buffer *, mc_client_graphics_site,
+                             mc_client_graphics_error *);
+bool mc_client_ge_float_limit(mc_client_direct_float_buffer *, int32_t, mc_client_graphics_site,
+                              mc_client_graphics_error *);
+bool mc_client_ge_float_get_array(mc_client_direct_float_buffer *, float *, size_t,
+                                  mc_client_graphics_site, mc_client_graphics_error *);
+bool mc_client_ge_float_writable_remaining(mc_client_direct_float_buffer *, void **storage,
+                                           size_t *remaining, mc_client_graphics_site,
+                                           mc_client_graphics_error *);
+bool mc_client_ge_float_inspect(const mc_client_direct_float_buffer *,
+                                mc_client_direct_buffer_state *);
 
 /* Actual List.add kernel used on the same a/b List identities. Source valueOf
  * integers are represented by their exact int32 payload, as in the existing

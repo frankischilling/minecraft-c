@@ -51,10 +51,10 @@ ID-based equality is absent. This is neither insertion nor Chunk membership.
 Difficulty, lightning countdown and spawn flags use their canonical World cells.
 
 An unpaused segment executes renderer tick, RenderGlobal's wrapping counter
-and the existing World entity tick before reaching unfinished whole-World
-scheduling at `k1260`. The entity tick receives the same Registry and MathHelper
+and the existing World entity tick, then invokes the retained World scheduler
+at `k1260`. The loaded graph reaches the selected Mob constructor at `cq.a:773`. The entity tick receives the same Registry and MathHelper
 table and can invoke genuine Player input/action/travel descendants. Paused
-single-player segments skip those calls and return through1328; the outer tick
+single-player segments skip those calls and return through 1328; the outer tick
 then performs the actual wall-clock App.P store.
 
 The frame supplies actual Player fields to the existing SoundManager listener,
@@ -66,9 +66,10 @@ remainder and clock state to advance.
 
 The native loaded-World profile now opens the source pause screen when inactive
 for more than 500 ms. Focused mouse look is connected. Both paths enter the
-[World frame](renderer-frames.md), reaching the missing sky-color query at
-`px.h:56`. Direct segment checks on the same graph separately exercise the paused
-refresh and unpaused renderer/entity/weather/spawn-candidate sequence. None of
+[World frame](renderer-frames.md), completing colors, camera and frustum before
+missing fog-state setup at `px.a:306`. Direct segment checks on the same graph
+separately exercise the paused refresh and unpaused renderer/entity/weather/
+spawn-selection sequence through the Mob constructor frontier. None of
 these component controls establish a rendered gameplay frame.
 
 ## Evidence
@@ -82,5 +83,5 @@ They contain 12, 120, 20, 43 and 72 rows respectively. Prepared receivers qualif
 only their recorded bodies and prefixes; their constructors and a complete
 original frame are outside those observation scopes. Native loaded-World checks
 use the genuine startup/loading graph and preserve save/resource files through
-cleanup. Full scheduling, precipitation particles, camera/terrain presentation,
+cleanup. Full scheduling, precipitation particles, terrain presentation,
 extended play, multiplayer and the server remain unfinished or unqualified.

@@ -2,8 +2,9 @@
 
 The source client invokes `fd.l()V` after renderer and entity ticking. The new
 retained scheduler executes reached children in their original order. The
-ordinary loaded Player path now completes weather and gathers 289 mob-spawn
-candidate chunks before stopping at Biome spawn-list selection in `cq.a:290`.
+ordinary loaded Player path completes weather, gathers 289 mob-spawn candidate
+Chunks, selects a real Biome entry and reaches concrete Mob construction at
+`cq.a:773`.
 A complete ordinary tick and gameplay remain unfinished.
 
 The scheduler calls weather, tests sleeping Players, runs spawning, maintains
@@ -16,8 +17,21 @@ after a failure. Empty candidate/player branches can return at `fd.l:198`.
 The candidate Sets retain canonical World/class ownership. The modeled JDK17
 traversal is bounded to its qualified integer-hash domain; collisions or native
 capacity limits report an explicit frontier rather than changing iteration order
-or discarding candidates. General mob construction, sleeping wake transitions,
+or discarding candidates. Actual s/t/u spawn Lists, wrapping weight totals,
+weighted World Random selection, candidate/count gates, initial point draws,
+all three-by-four trial loops, material/support checks, nearest-Player scan and
+float spawn-distance gate run before 773. Both `nextInt(1)` calls consume Random.
+Selected Entity class/entry, candidate progress and Random state remain visible
+in retained diagnostics. General Mob construction, sleeping wake transitions,
 and nonempty random Chunk work remain unfinished.
+
+The [eleven original observations](../../tests/reference/world/tick/README.md)
+include one new selected-Pig prefix: seed 529, ticket 18 of 40, initial point
+(-40,64,-36), trial(-39,64,-37), ten bounded draws and state `98aeeda4389e`.
+The original invokes the actual Pig constructor and stops at authored insertion;
+the compared snapshot precedes yaw. Native execution reaches 773 on a real
+stored flat Chunk, preserves region bytes and leases, and performs no insertion.
+This qualifies the prefix, not a successful spawn or complete ordinary tick.
 
 Scheduled drain implements actual `fd.a(Z)Z`. It checks the ordered/membership
 queue sizes, processes at most 1,000 entries, honors due times unless forced,

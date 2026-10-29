@@ -12,10 +12,10 @@ inserts the real Player and publishes that Player as the view entity. Healthy
 null-screen handling and mouse focus also run. The native selection profile
 then executes gameplay input through `Minecraft.k:1073` and the admitted
 World/frame segment. Direct unpaused checks on that same graph execute renderer,
-held-item/entity ticking, weather and 289 mob-spawn candidates before missing
-Biome spawn-list selection. Focused mouse look and source pause entry now run.
-The hidden inactive frame opens OZ and enters actual World drawing, reaching
-the missing sky-color query at `px.h:56`. Terrain drawing and gameplay actions
+held-item/entity ticking, weather and real Biome spawn selection before missing
+concrete Mob construction at `cq.a:773`. Focused mouse look and source pause
+entry run. The hidden inactive frame opens OZ and completes World colors, fog
+clear color, camera transforms and W frustum before missing fog-state setup 306. Terrain drawing and gameplay actions
 remain unfinished. See the
 [source frame scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/renderer-frames.md).
 The real READY renderer also
@@ -33,12 +33,17 @@ Canvas integration, gameplay, multiplayer interoperability and the standalone
 server remain unfinished or unqualified. Diagnostic title and fixed-camera
 terrain inspection remain explicit options.
 
-All 498 selected Windows CTests pass after the Debug ALL build, with zero
-failures or skips. New fixtures compare 246 original mouse-filter, focused-frame,
-pause-screen and scheduler observations. All four new component tests pass on
-GCC13 and Clang18 with ASan/UBSan and leak detection, including real GL. Complete
-World rendering and play remain unfinished. [Qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-frame-pause-and-world-scheduler-qualification)
-separates original bodies, prepared components and incomplete frames.
+All 502 selected Windows CTests pass after Debug ALL. Audio-enabled Linux
+GCC13/Clang18 ALL builds pass under ASan/UBSan. Each full suite has 479 passes
+and six mounted-filesystem helper timeouts; all six pass from a byte-identical
+ext4 snapshot with unchanged deadlines. Leak detection and real GL remain
+enabled. Windows and the reruns have zero failures or skips.
+[Qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#world-colors-camera-frustum-and-spawn-selection-qualification)
+separates 386 sky leaves, 432 World-color rows, 96 full-fog rows, 36 camera
+profiles/36 scalar rows, four frustum profiles and eleven scheduler observations.
+Camera matrices use the explicit 2e-6 coefficient policy. Full frames and play
+remain unfinished. The preceding b1bb968 hosted Linux initializer failure is
+fixed in both complete local Linux graphs; new hosted results remain pending.
 
 Published [`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)
 passes all four hosted jobs and 1,427 tests: Windows 461, GCC 483 and Clang 483,

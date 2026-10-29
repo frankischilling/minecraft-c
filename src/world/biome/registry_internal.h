@@ -3,6 +3,22 @@
 
 #include "mc/world/biome/registry.h"
 
+typedef enum biome_construction_phase {
+    BIOME_RAW,
+    BIOME_CONSTRUCTING,
+    BIOME_CONSTRUCTED,
+    BIOME_FAILED
+} biome_construction_phase;
+
+struct mc_biome {
+    mc_registry_classes *classes;
+    mc_biome_kind kind;
+    biome_construction_phase phase;
+    const char *constructor_class;
+    int32_t constructor_pc;
+    mc_biome_fields fields;
+};
+
 struct mc_biome_entity_class {
     const char *client_name;
     const char *server_name;

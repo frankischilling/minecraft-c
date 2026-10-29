@@ -87,6 +87,11 @@ mc_registry_status mc_biome_table_rebuild(mc_registry_classes *classes, mc_regis
  * These diagnostic conventions do not model Java List.get exceptions. */
 mc_biome_kind mc_biome_kind_get(const mc_biome *biome);
 const mc_biome_fields *mc_biome_fields_get(const mc_biome *biome);
+/* Actual kd.a(lk) selector: 0=hostile,1=creature,2=water, any other enum
+ * identity returns NULL. No class initialization, allocation or list copy.
+ * Require a live nonnull Biome; a null receiver fails at the caller invocation.
+ * Returned nullable List borrows this Biome's existing Registry lifetime. */
+const mc_biome_spawn_list *mc_biome_spawn_list_get(const mc_biome *, int32_t category);
 size_t mc_biome_spawn_list_size(const mc_biome_spawn_list *list);
 const mc_biome_spawn *mc_biome_spawn_list_at(const mc_biome_spawn_list *list, size_t index);
 const mc_biome_spawn_fields *mc_biome_spawn_fields_get(const mc_biome_spawn *spawn);

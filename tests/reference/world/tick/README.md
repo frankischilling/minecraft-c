@@ -1,11 +1,11 @@
 # World scheduler observations
 
-`world.tick` checks ten captured observations from the unchanged client JAR.
+`world.tick` checks eleven captured observations from the unchanged client JAR.
 The native contracts also exercise callback reentry, active-call retirement,
 live WorldAccess list changes, retained diagnostics, and queue ownership.
 
 The capture uses Temurin17.0.17 with `-Xint -Xverify:all`. `source-pins.json`
-pins the complete bytes of twelve original classes. The replay checks their
+pins the complete bytes of seventeen original classes. The replay checks their
 actual code origins, the JAR and library hashes, the matching Java/Javac
 version, and input/helper hashes before and after execution. It saves bounded
 stdout/stderr and a JSON receipt under the requested work directory.
@@ -25,15 +25,32 @@ The observations cover these source paths:
   candidate Chunks; its first HashSet element is (-3,-3). The Java fixture
   installs an authored `xv` subclass that throws at the first biome lookup.
   The original `cq` method performs the candidate construction, category gate,
-  Entity count, and iterator selection. The native path executes the real
-  biome sampler and then reports the missing spawn-list selection at PC290.
+  Entity count, and iterator selection.
+- A second spawn fixture reaches the selected Pig constructor. Seed 529 selects
+  weight ticket 18 of 40, initial point (-40,64,-36), and first trial (-39,64,-37).
+  The ten bounded World Random calls leave state `98aeeda4389e`. This includes
+  both `nextInt(1)` calls. The Java fixture uses authored flat World predicates,
+  lets the unchanged `cq` invoke the actual Pig constructor, records World
+  Random state immediately before the yaw draw at 808, and throws at insertion.
+  That constructor performs no World Random calls. Entity construction effects
+  and the later yaw draw are outside the compared prefix.
+
+The native constructor fixture reads an authored, populated grass-layer Chunk
+through the actual Store/provider path. It checks one cache publication, no
+Entity insertion, no leaked Chunk lease, and unchanged region-file bytes after
+the reached constructor frontier at 773. The source biome and weighted Lists
+remain real; the fixture does not replace them with empty Lists or a no-spawn
+result.
 
 The C scheduler reports success only when the reached source path returns.
-Mob spawn-list selection/construction, sleeping Player wake transitions, and
+Concrete Mob initialization/construction, sleeping Player wake transitions, and
 nonempty random Chunk work remain explicit dependencies. The reusable
 scheduled drain dispatches through the existing concrete Block tick kernel;
 unimplemented Block descendants still fail at their reached entry. These
-observations do not qualify a complete loaded-player World tick.
+observations do not qualify a complete loaded-player World tick. Spawn-list
+selection, all candidate/group loops, support/material checks, nearest-player
+lookup, and the float spawn-distance test execute in source order before that
+frontier. Iterator reentry checks the captured wrapping modification count.
 
 The candidate sets reuse the captured JDK17 HashSet ordering for distinct
 `yy.hashCode()` values. A distinct coordinate pair with an already-used hash

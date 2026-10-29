@@ -9,8 +9,8 @@ App now drives the no-World source menu and genuine
 [World-selection screen](client/world-selection.md). The
 [selected World loader](client/world-loading.md) constructs the canonical source
 SaveHandler/World and publishes a real Player and movement input after terrain
-preparation. Renderer attachment, remaining child menus and gameplay remain
-unfinished. A separate
+preparation. Renderer/particle attachment and real Player publication run.
+Remaining child menus and gameplay remain unfinished. A separate
 [World inspection](client/world-renderer.md) owns actual World construction,
 finite CPU section meshes and independent GPU buffers. It retains no Chunk view
 after meshing and does not substitute a camera for a Player.
@@ -33,9 +33,11 @@ their own scope. Full source run/PX/render/shutdown parity remains unproven.
 
 The [first-person component](client/first-person.md) reads genuine Player state
 and the actual App's late Settings/World fields. Its finite view can draw copied
-section geometry through those matrices while retaining its real World. Normal
-App Player publication, render tick, source fog and gameplay adoption remain
-unfinished.
+section geometry through those matrices while retaining its real World. The
+source-frame camera now has its own canonical implementation, including
+portal/third-person and the W frustum namespace. [World colors](world/colors.md)
+feed full source clear-color work; [fog-state and terrain drawing](client/renderer-frames.md)
+remain unfinished. The inspection component retains its separate finite scope.
 
 The [achievement notice](client/achievement-notice.md) constructs its actual
 Item renderer, Biped, direct Vec3 positions and two distinct RenderBlocks owners.
