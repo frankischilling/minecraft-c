@@ -14,7 +14,9 @@ The [World segment](client/renderer-ticking.md) handles paused ticks and connect
 renderer/entity updates and the ordered scheduler's weather/spawn prefix.
 Focused mouse look and source pause entry now run. The hidden-window profile
 opens OZ and completes colors, fog, camera, W/SR frustum work, actual sky
-drawing and ChunkRenderer culling before missing compilation at `px.a:396`.
+drawing, ChunkRenderer culling and [dirty-chunk selection](client/chunk-compilation.md).
+Actual ChunkCache/list compilation reaches missing RenderBlocks geometry at
+`n.a:442`, retaining `dk.a:464` under frame `px.a:396`.
 Direct unpaused
 checks on that graph select an actual Biome spawn entry and reach the concrete
 Mob constructor at `cq.a:773` after gathering 289 candidate Chunks.
@@ -37,7 +39,22 @@ spawning prefixes, provider maintenance, sky callbacks, time/autosave and schedu
 drain in reached source order. Its no-Player branches can return; ordinary
 spawning and random Chunk work retain concrete missing descendants.
 
-Windows Debug ALL and all 506 selected tests pass in 304.44 seconds,
+The compilation increment passes Windows MSVC Debug ALL and all 512 selected
+tests in 215.93 seconds, with zero failures/skips. Every preceding 506 test name
+is retained, with six additions. Original comparisons cover 950 cache rows,
+42 whole selector profiles, a complete empty DK call, eight sky-change profiles
+and three lighting profiles. The loaded UI reaches the real nonair geometry
+frontier while preserving saves, resources and all 72 focus histories. A final
+lease-refusal regression verifies that unpublished cache cells stay NULL.
+
+Linux runtime qualification is pending hosted CI. The pre-fix local Clang build
+and current repaired GCC build pass, but no local Linux tests execute after
+host-disk exhaustion.
+Sources and dependencies remain byte-identical after recovery. See the
+[qualification record](testing.md#chunkcache-and-compilation-qualification-in-progress)
+for the failure, repair and remaining platform scope.
+
+The preceding fog/Sky/culling checkpoint's Windows Debug ALL and all 506 selected tests pass in 304.44 seconds,
 retaining all 502 preceding cases. Audio-enabled GCC13/Clang18 sanitizer ALL
 builds and their 489 selected public tests pass in 286.34/290.68 seconds;
 six additional JDK-reference cases pass per compiler. The separate local Windows
@@ -46,12 +63,11 @@ failures or skips. See the [qualification](testing.md#source-fog-sky-and-chunk-c
 for 366 sky leaves, 48 fog states, 30 exact GPU samples and eight culling rows,
 including the distinct Linux capability scope and the corrected stale GL_FLAT test.
 
-Published color/camera checkpoint
-[`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
-passes all four hosted jobs and 1,448 tests: Windows 466, GCC 491 and Clang 491,
-with zero failures or skips. Formatting checks 1504 files. That result precedes
-the fog/sky/culling extension above. Hosted results for the new extension remain
-pending.
+Published fog/Sky/culling checkpoint
+[`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
+passes all four hosted jobs and 1,458 tests: Windows 468, GCC 495 and Clang 495,
+with zero failures or skips. Hosted test times are 346.10/198.39/367.95 seconds.
+This result precedes the compilation increment now under qualification.
 
 Published renderer-tick checkpoint
 [`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)

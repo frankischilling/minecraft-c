@@ -19,8 +19,35 @@ array identity. These prepared-receiver scopes remain separate from complete
 World construction, frames and gameplay.
 
 The [WorldAccess interface](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/world-access.md)
-dispatches six shared callback slots plus client sky change with live-list iteration and retained receiver
-ownership. Native controls pass 295 checks on MSVC and sanitized GCC/Clang,
+uses live-list iteration and retained receiver ownership. The concrete
+RenderGlobal sky-change receiver now executes the whole `n.e()V`: it rereads
+the live DK array, tests A and !u, appends that same DK to the dirty List, then
+marks it dirty. Eight prepared original profiles compare the flags, duplicate
+identities, queue order and source failure prefixes. Native allocation failures
+retain the append-before-dirty boundary and typed callback receipts.
+
+The [client compiler](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
+now reads those actual dirty identities, acquires the padded EW cache and
+starts the real DK list/NW prefix. Empty sections complete. The loaded Windows
+frame stops at missing RenderBlocks geometry, `n.a(Lls;Z)Z:442` with child
+`dk.a()V:464`, under frame `px.a(FJ)V:396`. Source queue mutations and completed
+cache/list effects survive the failed child. Shared U class active use also
+precedes the source lighting disables.
+
+Selected Windows checks pass 950 original cache rows, the complete empty DK
+call, eight sky-change profiles, three lighting rows and 108 JDK17 sort
+histories. The loaded graph preserves all 72 focus histories. The final Windows
+Debug ALL build and all 512 selected CTests pass after the lease-publication fix
+in 215.93 seconds. All 506 prior test names remain, with six additions; seven
+separate JDK/Sky device cases also pass. No local Linux tests ran for this
+increment. Linux runtime qualification remains pending hosted CI, separate from
+the local Clang/GCC build results in [Build and tests](Build-and-tests).
+The preceding fog/Sky/culling
+checkpoint retains 506 Windows and 489 public cases per Linux compiler;
+published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558) passes four hosted jobs and 1,458 tests
+(Windows 468/GCC 495/Clang 495), before this increment.
+
+The earlier WorldAccess controls pass 295 checks on MSVC and sanitized GCC/Clang,
 including redstone reentry across Worlds sharing the defining Registry. The redstone
 probe's declared constructor-input route passes 52 native controls per compiler.
 Original nonempty WorldAccess traces, concrete presentation/tracking receivers and
@@ -116,7 +143,7 @@ which scenarios have been compared with the original programs, and which
 dependencies remain unfinished.
 
 Plant lifecycle callbacks, farmland and World block-light queries are
-implemented. Complete local MSVC/GCC/Clang suites pass. On each compiler, all 59
+implemented. At that checkpoint, complete local MSVC/GCC/Clang suites pass. On each compiler, all 59
 prepared original cases per side match block/metadata maps, both Random streams
 and ordered deterministic drops. Those dependency fixtures do not establish
 original World/Chunk construction, general notification or natural population.

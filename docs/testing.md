@@ -1,5 +1,80 @@
 # Test scope and reproduction
 
+## ChunkCache and compilation qualification in progress
+
+The current source increment reaches real dirty-chunk selection and padded
+cache/list/NW construction. The loaded Windows frame retains missing RenderBlocks
+geometry at n442/dk464 under frame396. Its source back buffer was inspected and
+still contains Sky without terrain or HUD. Save/resource bytes, checked cleanup
+and all 72 earlier SDK focus histories pass. Whole terrain frames remain open.
+
+Focused MSVC checks compare 950 unchanged-original cache rows, a complete empty
+DK call, eight sky-change profiles and three lighting-class profiles. Cache
+tests also check independent Chunk leases, lazy Chest identity, nested source
+PCs and failed-constructor outputs. The initial cache teardown assertion omitted
+the lazy Chest's legitimate World hold; the corrected check measures the cache's
+own release against the immediate pre-retirement count. This changed the test,
+not source lifetime behavior.
+
+Review found that the preceding Sky path inlined standard-lighting disables
+without U class initialization. Sky and the terrain path now invoke the same
+canonical U helper. The new three-row fixture covers the shared Ge float buffer
+and terminal class failure that the earlier Sky post-state comparison did not
+observe. Its native allocation limits remain distinct from Java OOM timing.
+
+The authored object-sort regression compares all calls and final/interrupted
+arrays in 108 JDK17 cases: 40 completed sorts, 65 interrupted comparisons and
+three contract failures. A fresh linked native/JDK run passes. These authored
+comparators have separate scope from actual game MD/selector observations.
+The earlier generic insertion kernel was replaced after review demonstrated
+different large equal-ordinal order. No failed comparator or contract result
+is presented as a completed compilation.
+
+The separate unchanged-game selector fixture matches 42 whole-call profiles
+exactly in the linked MSVC executable, with 8,097 native ownership and prefix
+checks. Original JDI receipts identify real DK calls at N442/519, EW112 under
+DK159, and the genuine TimSort contract failure before any compilation. Fourteen
+additional original direct-sort and eight comparator profiles are retained as
+original research; the 42-row native replay does not claim to execute them.
+
+The first full Windows MSVC Debug ALL build and all 512 selected CTests pass
+in 225.39 seconds, with zero failures/skips. All 506 preceding selected names
+are retained, with six additions. Six JDK references and the separate Sky device
+replay also pass in 18.58 seconds. Final review then found a native lease-refusal
+prefix bug: a failed cache cell could expose the getter result before its lease
+was admitted. Publication now waits for successful lease admission. A real Store
+lease-limit regression verifies the failed cell stays NULL, earlier cells stay
+leased, block reads return zero and metadata failure preserves its output. The
+950 original rows still pass. This fix requires a new final qualification phase.
+
+The pre-fix Linux Clang ALL build completes 2,233 steps in 168.659 seconds. GCC stops
+after 154.884 seconds with an I/O error because the host disk becomes full;
+no Linux tests execute in that run. The source/archive and dependency manifests
+remain exact after recovery. Lossless NTFS compression preserves all checked
+Windows binary hashes and restores disk space. Neither the incomplete GCC run
+nor the untested Clang build is reported as Linux parity qualification.
+
+After the lease fix, Windows MSVC Debug ALL and all 512 selected tests pass
+again in 215.93 seconds, with zero failures or skips. The six added names are
+`client.sky_changed`, `client.chunk_cache`, `client.chunk_compile`,
+`client.render_global_update_sort`, `client.render_global_update` and
+`client.lighting`; every preceding 506 selected name remains present.
+
+WSL recovery verifies the frozen source, all nine dependency copies and prior
+authority manifests. The resumed GCC build finds one zero-byte FreeType object
+left by the earlier disk failure; its exact object/archive are preserved before
+regenerating the object. GCC then completes the remaining 422 actions in 73.015
+seconds. Delayed VHD writes leave insufficient host headroom for local runtime
+qualification, so no Linux tests are launched. Hosted Linux results remain
+pending; successful builds alone do not establish runtime parity.
+
+The published
+fog/Sky/culling checkpoint e65860c passes all four hosted jobs and 1,458 tests:
+Windows468/GCC495/Clang495, zero failures or skips. Its hosted test times were
+346.10/198.39/367.95 seconds. Those results precede the current source changes.
+See the [compilation contract](client/chunk-compilation.md) for source order,
+ownership, finite comparisons and remaining geometry dependencies.
+
 ## Source fog, sky and Chunk culling qualification
 
 Windows MSVC Debug ALL and all 506 selected CTests pass in 304.44 seconds,

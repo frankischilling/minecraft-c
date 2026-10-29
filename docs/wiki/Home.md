@@ -15,15 +15,23 @@ World/frame segment. Direct unpaused checks on that same graph execute renderer,
 held-item/entity ticking, weather and real Biome spawn selection before missing
 concrete Mob construction at `cq.a:773`. Focused mouse look and source pause
 entry run. The hidden inactive frame opens OZ and completes colors, fog, camera,
-actual Sky drawing and W/SR/ChunkRenderer culling before missing compilation 396. Terrain drawing and gameplay actions
-remain unfinished. See the
+actual Sky drawing and W/SR/ChunkRenderer culling. It now enters the dirty-chunk
+selector, constructs the real ChunkCache and starts the source list and
+Tessellator before missing RenderBlocks geometry at `dk.a()V:464`, retained by
+`n.a(Lls;Z)Z:442` under frame `px.a(FJ)V:396`. Terrain drawing and gameplay
+actions remain unfinished. See the
 [source frame scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/renderer-frames.md).
 The real READY renderer also
 completes [picking](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md)
 through return452; existing-World ticks call it at `k:33`.
 
 Renderer attachment creates the source ChunkRenderer grid and bounding-box
-lists. It does not compile terrain meshes. Skin and cloak requests use actual
+lists. Empty sections now complete source compilation; nonair geometry and
+terrain submission remain unfinished. The concrete sky-change callback runs
+the whole `n.e()V`, and standard lighting includes the shared U class's actual
+buffer initialization. The [chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
+records source effects, retained failures and remaining children. Skin and cloak
+requests use actual
 asynchronous image owners, with separate factory and worker results. Native
 cleanup retains dependencies through worker stop/join and refuses retirement
 while external owners remain.
@@ -33,8 +41,19 @@ Canvas integration, gameplay, multiplayer interoperability and the standalone
 server remain unfinished or unqualified. Diagnostic title and fixed-camera
 terrain inspection remain explicit options.
 
-All 506 selected Windows CTests pass after Debug ALL. Audio-enabled Linux
-GCC13/Clang18 ALL builds and 489 selected public tests each pass with sanitizers,
+Selected Windows checks pass 950 original cache rows, a complete empty DK call,
+eight sky-change profiles, three lighting rows and 108 JDK17 sort histories.
+The loaded graph reaches the geometry frontier and preserves all 72 focus
+histories. After the lease-publication fix, Windows Debug ALL and all 512
+selected CTests pass in 215.93 seconds, retaining all 506 prior test names and
+adding six. Seven separate JDK/Sky device cases also pass. Local Linux builds
+have separate evidence; no local Linux tests ran for this increment. Linux
+runtime qualification is pending hosted CI. [Build and tests](Build-and-tests)
+records the compiler and host-disk details.
+
+At the preceding fog/Sky/culling checkpoint, all 506 selected Windows CTests
+pass after Debug ALL. Audio-enabled Linux GCC13/Clang18 ALL builds and 489
+selected public tests each pass with sanitizers,
 leak detection and real GL. Six JDK-reference cases pass per compiler. The
 separate local Windows Sky device replay matches 48 original post-call states.
 [Qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#source-fog-sky-and-chunk-culling-qualification)
@@ -43,10 +62,13 @@ culling rows and four Sky prefix outcomes. NV-absent Linux state comparisons
 retain their source-derived selector scope. Terrain frames and play remain
 unfinished.
 
-Published [`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
+Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
+passes all four jobs and 1,458 tests: Windows 468/GCC 495/Clang 495, with zero
+failures or skips. It precedes the new compilation and callback work.
+
+Earlier published [`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
 passes all four jobs and 1,448 tests: Windows 466/GCC 491/Clang 491, zero failures
-or skips. It precedes the current fog/Sky/culling extension; new hosted results
-remain pending.
+or skips. It precedes the fog/Sky/culling checkpoint.
 
 Published [`07e41f6`](https://github.com/frankischilling/minecraft-c/actions/runs/40879213780)
 passes all four hosted jobs and 1,427 tests: Windows 461, GCC 483 and Clang 483,

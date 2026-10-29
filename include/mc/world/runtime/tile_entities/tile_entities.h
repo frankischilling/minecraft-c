@@ -408,6 +408,15 @@ const void *mc_live_tile_entities_name_identity(const mc_tile_entity_name *name)
 mc_world_storage_status mc_live_tile_entities_get(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, mc_tile_entity **out,
                                                   mc_live_tile_entity_error *error);
+/* Actual normal lm.d(III) on this exact held canonical Chunk. Coordinates are
+ * already local X/Z operands; no World getter, masking or Y gate is inserted.
+ * Executes the SAME Map/Block/factory path as the acquiring World route.
+ * A nullable result owns one independent TileEntity hold. Keep supplying
+ * World/Store/Chunk live and exclusive; native entry adds its own temporary
+ * World call/Chunk lease and preserves every reached effect on failure. */
+mc_world_storage_status mc_live_tile_entities_chunk_get(mc_world_chunk *chunk, int32_t x, int32_t y,
+                                                        int32_t z, mc_tile_entity **out,
+                                                        mc_live_tile_entity_error *error);
 mc_world_storage_status mc_live_tile_entities_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, mc_tile_entity *tile_entity,
                                                   mc_live_tile_entity_error *error);

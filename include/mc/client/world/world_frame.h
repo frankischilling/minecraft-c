@@ -5,12 +5,15 @@
 #include "mc/client/world/frustum_culling.h"
 #include "mc/client/world/picking.h"
 #include "mc/client/world/render_global_sky.h"
+#include "mc/client/world/render_global_update.h"
 #include "mc/client/world/renderer_camera.h"
 #include "mc/client/world/renderer_fog.h"
 #include "mc/client/world/renderer_fog_state.h"
 #include "mc/core/math/classes.h"
+#include "nanotime.h"
 
 typedef struct mc_client_world_frame_call mc_client_world_frame_call;
+typedef struct mc_client_texture_lookup_error mc_client_texture_lookup_error;
 
 typedef enum mc_client_world_frame_status {
     MC_CLIENT_WORLD_FRAME_OK,
@@ -36,6 +39,10 @@ typedef struct mc_client_world_frame_error {
     const mc_client_renderer_fog_state_error *fog_setup;
     const mc_client_render_global_sky_error *sky;
     const mc_client_culling_error *culling;
+    const mc_client_render_global_error *update;
+    const mc_client_texture_lookup_error *texture;
+    const mc_client_graphics_error *lighting;
+    mc_platform_nanotime_status clock;
     mc_client_display_error display;
     mc_entity_status entity;
     mc_client_frustum_error frustum;
@@ -51,6 +58,9 @@ typedef struct mc_client_world_frame_state {
     bool sky_fog_returned, sky_returned, fog_enabled, terrain_fog_returned;
     bool ambient_occlusion_read, ambient_occlusion, smooth_shade_set;
     bool frustum_constructed, frustum_recentered, culling_returned;
+    bool updates_returned, draw_fog_returned, terrain_texture_bound, lighting_disabled;
+    size_t update_calls;
+    int64_t last_clock, deadline_remaining;
     int32_t post_camera_render_distance;
     mc_client_frustum_state frustum;
     unsigned int source_pc, eye;
@@ -72,6 +82,8 @@ typedef struct mc_client_world_frame_state {
     const mc_client_render_global_sky_state *sky;
     const mc_client_source_frustum_state *culler;
     const mc_client_culling_state *culling;
+    const mc_client_render_global_update_state *update;
+    const mc_client_renderer_fog_state_view *draw_fog;
 } mc_client_world_frame_state;
 
 /* Actual px.a(FJ) World draw entry, invoked from px.b's World branch. Uses the

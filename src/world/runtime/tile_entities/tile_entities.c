@@ -3947,6 +3947,24 @@ static mc_world_storage_status live_chunk_finish(mc_world_chunk *chunk,
     return live_finish(world, frame, error);
 }
 
+mc_world_storage_status mc_live_tile_entities_chunk_get(mc_world_chunk *chunk, int32_t x, int32_t y,
+                                                        int32_t z, mc_tile_entity **out,
+                                                        mc_live_tile_entity_error *error) {
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
+    if (out == NULL) {
+        live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity Chunk lookup output");
+        return live_finish(NULL, frame, error);
+    }
+    mc_world_runtime *world;
+    if (!live_chunk_entry(chunk, &world, &frame))
+        return live_finish(NULL, frame, error);
+    mc_tile_entity *value = NULL;
+    if (live_chunk_get_held(chunk, x, y, z, &value, &frame))
+        *out = value;
+    return live_chunk_finish(chunk, frame, error);
+}
+
 mc_world_storage_status mc_live_tile_entities_chunk_import(mc_world_chunk *chunk,
                                                            mc_tile_entity *tile_entity,
                                                            mc_live_tile_entity_error *error) {

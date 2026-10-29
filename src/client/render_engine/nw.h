@@ -49,6 +49,9 @@ bool mc_client_nw_inspect(const mc_client_render_engine_classes *, mc_client_nw_
 bool mc_client_nw_begin(mc_client_tessellator *, int32_t mode, mc_client_graphics_error *);
 bool mc_client_nw_begin_quads(mc_client_tessellator *, mc_client_graphics_error *);
 bool mc_client_nw_uv(mc_client_tessellator *, double u, double v, mc_client_graphics_error *);
+/* Actual nw.b(DDD)V: raw source offset stores, including outside a begin/draw. */
+bool mc_client_nw_translation(mc_client_tessellator *, double x, double y, double z,
+                              mc_client_graphics_error *);
 bool mc_client_nw_color(mc_client_tessellator *, int32_t red, int32_t green, int32_t blue,
                         int32_t alpha, mc_client_graphics_error *);
 bool mc_client_nw_rgb(mc_client_tessellator *, int32_t packed_rgb, mc_client_graphics_error *);

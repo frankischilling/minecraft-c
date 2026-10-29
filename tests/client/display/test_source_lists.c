@@ -74,6 +74,163 @@ static bool bbox_vertices(const mc_client_source_batch_view *batch) {
     return true;
 }
 
+static bool chunk_matrix_prefix(mc_client_display *display, mc_client_display_error *error) {
+    /* Actual DK.a264..332 for a 16-cube at its local origin. */
+    return mc_client_display_source_push(display, error) &&
+           mc_client_display_source_translate(display, -8, -8, -8, error) &&
+           mc_client_display_source_scale(display, (double)1.000001f, (double)1.000001f,
+                                          (double)1.000001f, error) &&
+           mc_client_display_source_translate(display, 8, 8, 8, error);
+}
+
+static bool matrix_controls(mc_client_display *display, mc_client_display_context_lease *lease,
+                            uint8_t bytes[96], mc_client_display_error *error) {
+    bool result = false;
+    mc_client_display_list_range *range = NULL, *limited = NULL;
+    int32_t base = 0, limited_id = 0;
+    mc_client_capture immediate = {0}, compiled = {0};
+    mc_client_source_list_state list;
+    const mc_client_modelview before = display->source.modelview;
+    float projection[16];
+    memcpy(projection, display->source.projection, sizeof(projection));
+    const unsigned before_queries = queries;
+    CHECK(display->source.depth == 0 && display->source.projection_depth == 0);
+    CHECK(mc_client_display_lists_generate(display, 5, 64, &range, &base, error));
+    CHECK(mc_client_display_lists_begin(display, base, error));
+    CHECK(chunk_matrix_prefix(display, error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, 96, 3, GL_TRIANGLES, error));
+    CHECK(mc_client_display_source_pop(display, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_list_inspect(display, base, &list) && list.commands == 6 &&
+          list.draws == 1 && list.vertices == 3);
+    CHECK(display->source.depth == 0 && display->source.projection_depth == 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0 &&
+          memcmp(display->source.projection, projection, sizeof(projection)) == 0 &&
+          queries == before_queries);
+    CHECK(mc_client_display_loading_clear_color_depth(display, error));
+    CHECK(chunk_matrix_prefix(display, error));
+    const mc_client_modelview transformed = display->source.modelview;
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, 96, 3, GL_TRIANGLES, error));
+    CHECK(mc_client_display_source_pop(display, error));
+    CHECK(mc_client_display_capture_rgba(display, &immediate, error));
+    CHECK(mc_client_display_loading_clear_color_depth(display, error));
+    CHECK(mc_client_display_lists_call(display, &base, 1, error));
+    CHECK(mc_client_display_capture_rgba(display, &compiled, error));
+    CHECK(immediate.width == compiled.width && immediate.height == compiled.height &&
+          immediate.stride == compiled.stride &&
+          memcmp(immediate.pixels, compiled.pixels, immediate.stride * (size_t)immediate.height) ==
+              0 &&
+          color_pixels(&compiled, 0) && display->source.depth == 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0);
+
+    /* Compilation does not evaluate its current stack, selected matrix or FP
+     * controls. The selected matrix and reached stack errors belong to replay. */
+    int32_t prefix_id = base + 1, pop_id = base + 2, underflow_id = base + 3, scale_id = base + 4;
+    CHECK(mc_client_display_lists_begin(display, prefix_id, error));
+    _mm_setcsr(0x9fc0u);
+    const bool recorded = chunk_matrix_prefix(display, error);
+    _mm_setcsr(0x1f80u);
+    CHECK(recorded && mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_lists_begin(display, pop_id, error));
+    CHECK(mc_client_display_source_pop(display, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_lists_begin(display, scale_id, error));
+    CHECK(mc_client_display_source_push(display, error));
+    CHECK(mc_client_display_source_scale(display, 2, 3, 4, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_lists_call(display, &prefix_id, 1, error) &&
+          display->source.depth == 1 &&
+          memcmp(&display->source.modelview, &transformed, sizeof(transformed)) == 0);
+    CHECK(mc_client_display_lists_call(display, &pop_id, 1, error) && display->source.depth == 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0);
+    CHECK(mc_client_display_source_matrix_mode(display, GL_PROJECTION, error));
+    CHECK(mc_client_display_lists_call(display, &prefix_id, 1, error) &&
+          display->source.projection_depth == 1 && display->source.depth == 0 &&
+          memcmp(display->source.projection, projection, sizeof(projection)) != 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0);
+    CHECK(mc_client_display_lists_call(display, &pop_id, 1, error) &&
+          display->source.projection_depth == 0 &&
+          memcmp(display->source.projection, projection, sizeof(projection)) == 0);
+    CHECK(mc_client_display_source_matrix_mode(display, GL_MODELVIEW, error));
+    CHECK(mc_client_display_lists_begin(display, underflow_id, error));
+    CHECK(mc_client_display_source_color(display, 0.25f, 0.5f, 0.75f, 1, error));
+    CHECK(mc_client_display_source_pop(display, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(!mc_client_display_lists_call(display, &underflow_id, 1, error) &&
+          error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && display->source.depth == 0 &&
+          display->source.color[0] == 0.25f && display->source.color[1] == 0.5f &&
+          display->source.color[2] == 0.75f && display->source.active_calls == 0);
+    /* Native stack admission happens on replay; a preceding push remains when
+     * later arithmetic rejects changed controls. No list or matrix rollback. */
+    _mm_setcsr(0x9fc0u);
+    const bool replayed = mc_client_display_lists_call(display, &scale_id, 1, error);
+    _mm_setcsr(0x1f80u);
+    CHECK(!replayed && error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_FP &&
+          display->source.depth == 1 && display->source.active_calls == 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0);
+    CHECK(mc_client_display_lists_call(display, &pop_id, 1, error));
+    for (size_t index = 0; index < SOURCE_MATRIX_DEPTH; ++index)
+        CHECK(mc_client_display_source_push(display, error));
+    CHECK(!mc_client_display_lists_call(display, &prefix_id, 1, error) &&
+          error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          display->source.depth == SOURCE_MATRIX_DEPTH && display->source.active_calls == 0);
+    for (size_t index = 0; index < SOURCE_MATRIX_DEPTH; ++index)
+        CHECK(mc_client_display_source_pop(display, error));
+
+    /* Independently captured real compatibility-GL operands from the authored
+     * DK sequence. Exact bits qualify this finite profile, not generic driver
+     * matrix precision or execution of the full original DK compiler. */
+    static const uint32_t original_matrix[16] = {
+        0x3f800008u, 0, 0,           0, 0,           0x3f800008u, 0,           0,
+        0,           0, 0x3f800008u, 0, 0x40400020u, 0xc09ffff0u, 0x40e00010u, 0x3f800000u};
+    const int32_t modes[2] = {GL_MODELVIEW, GL_PROJECTION};
+    for (size_t index = 0; index < 2; ++index) {
+        CHECK(mc_client_display_source_matrix_mode(display, modes[index], error));
+        CHECK(mc_client_display_source_push(display, error));
+        CHECK(mc_client_display_source_load_identity(display, error));
+        CHECK(mc_client_display_source_translate(display, 3, -5, 7, error));
+        CHECK(mc_client_display_lists_call(display, &prefix_id, 1, error));
+        float actual[16];
+        if (modes[index] == GL_MODELVIEW)
+            memcpy(actual, display->source.modelview.column_major, sizeof(actual));
+        else
+            memcpy(actual, display->source.projection, sizeof(actual));
+        CHECK(memcmp(actual, original_matrix, sizeof(actual)) == 0);
+        CHECK(mc_client_display_lists_call(display, &pop_id, 1, error));
+        CHECK(mc_client_display_source_pop(display, error));
+    }
+    CHECK(mc_client_display_source_matrix_mode(display, GL_MODELVIEW, error));
+    CHECK(display->source.depth == 0 && display->source.projection_depth == 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0 &&
+          memcmp(display->source.projection, projection, sizeof(projection)) == 0);
+
+    CHECK(mc_client_display_lists_generate(display, 1, 2, &limited, &limited_id, error));
+    CHECK(mc_client_display_lists_begin(display, limited_id, error));
+    CHECK(mc_client_display_source_color(display, 1, 1, 1, 1, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_lists_begin(display, limited_id, error));
+    CHECK(mc_client_display_source_push(display, error));
+    CHECK(!mc_client_display_source_scale(display, 2, 3, 4, error) &&
+          error->status == MC_CLIENT_DISPLAY_LIMIT);
+    CHECK(mc_client_display_list_inspect(display, limited_id, &list) && list.defined &&
+          list.building && list.commands == 1 && list.pending_commands == 1 &&
+          display->source.depth == 0 &&
+          memcmp(&display->source.modelview, &before, sizeof(before)) == 0);
+    CHECK(mc_client_display_lists_abort(display, limited_id, error));
+    CHECK(mc_client_display_lists_call(display, &limited_id, 1, error) &&
+          display->source.color[0] == 1 && display->source.depth == 0);
+    result = true;
+cleanup:
+    _mm_setcsr(0x1f80u);
+    mc_client_capture_free(&immediate);
+    mc_client_capture_free(&compiled);
+    if (!mc_client_display_lists_retire(&limited, error))
+        result = false;
+    if (!mc_client_display_lists_retire(&range, error))
+        result = false;
+    return result;
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -113,6 +270,7 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_lists_generate(display, 1, 8, &range, &id, &error));
     triangle(bytes, 0);
     memcpy(red, bytes, sizeof(red));
+    CHECK(matrix_controls(display, lease, bytes, &error));
     const unsigned before_queries = queries;
     display->gl.Enable((GLenum)UINT32_MAX); /* Genuine sticky GL error. */
     CHECK(mc_client_display_lists_begin(display, id, &error));

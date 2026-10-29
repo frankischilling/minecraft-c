@@ -9,7 +9,10 @@ enum { SOURCE_RANGES = 128, SOURCE_COMMAND_BYTES = 32 * 1024 * 1024, SOURCE_MATR
 typedef enum mc_client_source_command_kind {
     SOURCE_COMMAND_DRAW,
     SOURCE_COMMAND_COLOR,
-    SOURCE_COMMAND_TRANSLATE
+    SOURCE_COMMAND_TRANSLATE,
+    SOURCE_COMMAND_PUSH,
+    SOURCE_COMMAND_POP,
+    SOURCE_COMMAND_SCALE
 } mc_client_source_command_kind;
 
 typedef struct mc_client_source_command {
@@ -26,6 +29,7 @@ typedef struct mc_client_source_command {
         } draw;
 
         float vector[4];
+        double scale[3];
     } value;
 } mc_client_source_command;
 

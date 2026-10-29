@@ -4,7 +4,9 @@
 /* Ordered GL3.3 source-matrix operations on the canonical selected matrix.
  * Each checks context and FP immediately before native matrix work, retains
  * previous effects on failure, and performs no error query/reset/frame work.
- * Matrix storage/composition uses the existing native binary32 profile. */
+ * Matrix storage/composition uses the existing native binary32 profile. Scale
+ * also supports GL_COMPILE: raw arguments are retained and work is deferred
+ * until replay, using the same selected matrix and arithmetic as immediate. */
 bool mc_client_display_source_rotate(mc_client_display *, float, float, float, float,
                                      mc_client_display_error *);
 bool mc_client_display_source_scale(mc_client_display *, double, double, double,

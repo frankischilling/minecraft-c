@@ -195,7 +195,8 @@ if(MC_BUILD_CLIENT)
         src/client/render_engine/colorizer.c)
     add_library(mc_client_render_textures STATIC
         src/client/render_engine/textures.c src/client/render_engine/context_display.c
-        src/client/render_engine/ge_ranges.c src/client/render_engine/nw.c)
+        src/client/render_engine/ge_ranges.c src/client/render_engine/nw.c
+        src/client/render_engine/lighting.c)
     target_include_directories(mc_client_render_textures PUBLIC src/client/render_engine)
     target_link_libraries(mc_client_render_textures PUBLIC
         mc_client_render_engine mc_client_display PRIVATE mc_build_options)

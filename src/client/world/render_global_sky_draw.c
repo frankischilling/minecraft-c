@@ -6,6 +6,7 @@
 #include "../display/camera_surface.h"
 #include "../display/fog_surface.h"
 #include "../display/startup_surface.h"
+#include "../render_engine/lighting.h"
 #include "../render_engine/nw.h"
 #include "render_global_internal.h"
 
@@ -485,14 +486,13 @@ static bool body(mc_client_render_global_sky_call *c) {
     if (!gl(c, mc_client_display_source_fog_enable(d, false, &c->failure.display), 175) ||
         !gl(c, mc_client_display_source_alpha_test(d, false, &c->failure.display), 181) ||
         !gl(c, mc_client_display_source_blend_enable(d, true, &c->failure.display), 187) ||
-        !gl(c, mc_client_display_source_blend_function(d, 770, 771, &c->failure.display), 196) ||
-        !gl(c,
-            mc_client_display_source_disable_unlit_feature(d, MC_CLIENT_SOURCE_LIGHTING,
-                                                           &c->failure.display),
-            199) ||
-        !gl(c, mc_client_display_source_light_enable(d, 0, false, &c->failure.display), 199) ||
-        !gl(c, mc_client_display_source_light_enable(d, 1, false, &c->failure.display), 199) ||
-        !gl(c, mc_client_display_source_color_material_enable(d, false, &c->failure.display), 199))
+        !gl(c, mc_client_display_source_blend_function(d, 770, 771, &c->failure.display), 196))
+        return false;
+    const bool disabled = mc_client_lighting_disable(
+        c->owner->classes, d, (mc_client_graphics_site){"n", "a", "(F)V", 199},
+        &c->failure.graphics);
+    c->state.gl_calls += (unsigned int)c->failure.graphics.retained_count;
+    if (!graphics(c, disabled, 199))
         return false;
     c->state.lighting_disabled = true;
     if (!sunrise(c) || !celestial(c))
@@ -552,7 +552,8 @@ mc_client_render_global_sky_begin(mc_client_render_global *owner, mc_math_classe
         (mc_client_render_global_world_inspect(owner->world_call, &attachment) &&
          !attachment.active && attachment.source_returned);
     if (owner->active || owner->world_retiring || !attachment_ready || owner->sky_call != NULL ||
-        owner->cull_call != NULL || owner->phase == MC_CLIENT_RENDER_GLOBAL_CONSTRUCTING ||
+        owner->cull_call != NULL || owner->update_call != NULL ||
+        owner->phase == MC_CLIENT_RENDER_GLOBAL_CONSTRUCTING ||
         owner->phase == MC_CLIENT_RENDER_GLOBAL_RETIRING)
         return admission(error, MC_CLIENT_RENDER_GLOBAL_BUSY,
                          "sky native entered/pending/retiring owner");

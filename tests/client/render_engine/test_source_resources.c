@@ -18,9 +18,12 @@ static unsigned checks;
 
 static const mc_client_graphics_site caller = {"native-test", "source", "()V", -1};
 
+#include "test_lighting.h"
+
 int main(void) {
     const unsigned initial_fp = _mm_getcsr();
     _mm_setcsr(0x1f80u);
+    CHECK(lighting_controls() == 0);
     mc_client_render_engine_classes *classes = NULL;
     CHECK(mc_client_render_engine_classes_allocate_context(NULL, NULL, NULL, &classes) ==
           MC_CLIENT_RENDER_ENGINE_OK);
@@ -96,14 +99,46 @@ int main(void) {
     CHECK(state.fields.e->bytes == state.fields.d && state.fields.f->bytes == state.fields.d);
     CHECK((const void *)state.fields.g != (const void *)state.fields.d->data &&
           classes->bound_display == NULL);
+    /* Unchanged original nw.b(DDD) stores arbitrary binary64 values without
+     * arithmetic, a begin predicate, buffer work or FP-control admission. */
+    static const uint64_t offsets[][3] = {
+        {0, UINT64_C(0x8000000000000000), 1},
+        {UINT64_C(0x8000000000000001), UINT64_C(0x0010000000000000), UINT64_C(0x8010000000000000)},
+        {UINT64_C(0x7ff0000000000000), UINT64_C(0xfff0000000000000), UINT64_C(0x7ff8000000001234)},
+        {UINT64_C(0xfff8000000005678), UINT64_C(0x7ff0000000001234), UINT64_C(0xfff0000000005678)},
+        {UINT64_C(0x4170000000000000), UINT64_C(0xc050200000000000), UINT64_C(0xc070000000000000)}};
+    for (size_t row = 0; row < sizeof(offsets) / sizeof(offsets[0]); ++row) {
+        double values[3];
+        memcpy(values, offsets[row], sizeof(values));
+        _mm_setcsr(0x9fc0u);
+        const bool stored = mc_client_nw_translation(nw, values[0], values[1], values[2], &error);
+        const unsigned after_controls = _mm_getcsr();
+        _mm_setcsr(0x1f80u);
+        CHECK(stored && after_controls == 0x9fc0u && mc_client_nw_inspect(classes, &state));
+        CHECK(memcmp(&state.fields.s, &offsets[row][0], sizeof(double)) == 0 &&
+              memcmp(&state.fields.t, &offsets[row][1], sizeof(double)) == 0 &&
+              memcmp(&state.fields.u, &offsets[row][2], sizeof(double)) == 0 &&
+              state.last_store_pc == 13 && !state.fields.w && state.fields.h == 0 &&
+              state.fields.o == 0 && state.fields.p == 0 && !state.fields.m && !state.fields.l &&
+              !state.fields.n && state.fields.d->position == 0 && state.fields.e->position == 0 &&
+              state.fields.f->position == 0 && classes->active_source_calls == 0 &&
+              classes->bound_display == NULL);
+    }
     CHECK(mc_client_nw_begin_quads(nw, &error));
+    CHECK(mc_client_nw_inspect(classes, &state) &&
+          memcmp(&state.fields.s, &offsets[4][0], sizeof(double)) == 0 &&
+          memcmp(&state.fields.t, &offsets[4][1], sizeof(double)) == 0 &&
+          memcmp(&state.fields.u, &offsets[4][2], sizeof(double)) == 0);
     CHECK(!mc_client_nw_begin_quads(nw, &error) &&
           error.status == MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE && error.site.pc == 16);
     CHECK(mc_client_nw_rgb(nw, 0x123456, &error));
     CHECK(mc_client_nw_inspect(classes, &state) && (uint32_t)state.fields.k == 0xff563412u);
     CHECK(mc_client_nw_color(nw, -1, 300, 17, 0, &error));
     CHECK(mc_client_nw_inspect(classes, &state) && (uint32_t)state.fields.k == 0x0011ff00u);
-    CHECK(mc_client_nw_vertex_uv(nw, 0, 7.99f, 0, 0, 7.99f / 128.0f, &error));
+    CHECK(mc_client_nw_vertex_uv(nw, -16777215.75, 65.0, 256.75, 0, 7.99f / 128.0f, &error));
+    CHECK(mc_client_nw_inspect(classes, &state) && (uint32_t)state.fields.g[0] == 0x3e800000u &&
+          (uint32_t)state.fields.g[1] == 0x3f000000u && (uint32_t)state.fields.g[2] == 0x3f400000u);
+    CHECK(mc_client_nw_translation(nw, 0, 0, 0, &error));
     CHECK(mc_client_nw_vertex_uv(nw, 7.99f, 7.99f, 0, 7.99f / 128.0f, 7.99f / 128.0f, &error));
     CHECK(mc_client_nw_vertex_uv(nw, 7.99f, 0, 0, 7.99f / 128.0f, 0, &error));
     CHECK(mc_client_nw_vertex_uv(nw, 0, 0, 0, 0, 0, &error));

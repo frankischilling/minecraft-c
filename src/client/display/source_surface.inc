@@ -1,17 +1,22 @@
 /* Compiled in the real Display translation unit. It uses the single actual
  * owner and GL table; no second Display layout or provider is admitted. */
+#include <emmintrin.h>
 #include <xmmintrin.h>
+
 /* Native arithmetic admission is reached after effectful context/GL calls.
  * Bits0..5 are sticky exception flags, not unsupported control state. Never
  * repair a driver/callback's controls or roll back its completed GL effects. */
 static bool source_fp_admit(const char *operation, mc_client_display_error *error) {
-    if ((_mm_getcsr() & 0xffc0u) == 0x1f80u) return true;
+    if ((_mm_getcsr() & 0xffc0u) == 0x1f80u)
+        return true;
     return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_FP, operation,
                 "strict native FP control state required; prior GL effects retained", 0);
 }
+
 static void source_initialize(mc_client_display *display) {
     mc_client_source_state *s = &display->source;
-    if (s->initialized) return;
+    if (s->initialized)
+        return;
     s->color[0] = s->color[1] = s->color[2] = s->color[3] = 1.0f;
     s->color_known = true;
     s->fog.mode = GL_EXP;
@@ -29,11 +34,14 @@ static void source_initialize(mc_client_display *display) {
     s->initialized = true;
 }
 
-static bool source_enter(mc_client_display *display, const char *operation, mc_client_display_error *error) {
+static bool source_enter(mc_client_display *display, const char *operation,
+                         mc_client_display_error *error) {
     if (display == NULL || display->source.active_calls != 0)
-        return fail(error, display == NULL ? MC_CLIENT_DISPLAY_INVALID_ARGUMENT : MC_CLIENT_DISPLAY_BUSY,
+        return fail(error,
+                    display == NULL ? MC_CLIENT_DISPLAY_INVALID_ARGUMENT : MC_CLIENT_DISPLAY_BUSY,
                     operation, "source context operation active/null", 0);
-    if (!current(display, operation, error)) return false;
+    if (!current(display, operation, error))
+        return false;
     source_initialize(display);
     ++display->source.active_calls;
     return true;
@@ -79,6 +87,43 @@ static void source_matrix_translate(mc_client_source_state *state, float x, floa
     source_matrix_store(state, &matrix);
 }
 
+/* Immediate execution and list replay share the actual selected matrix and
+ * stacks. GL_COMPILE records these operations without reading either stack. */
+static bool source_matrix_push(mc_client_source_state *state, mc_client_display_error *error) {
+    size_t *depth = state->matrix_mode == GL_PROJECTION ? &state->projection_depth : &state->depth;
+    mc_client_modelview *stack =
+        state->matrix_mode == GL_PROJECTION ? state->projection_stack : state->stack;
+    if (*depth >= SOURCE_MATRIX_DEPTH)
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix push", "stack limit",
+                    0);
+    source_matrix_copy(state, &stack[(*depth)++]);
+    return true;
+}
+
+static bool source_matrix_pop(mc_client_source_state *state, mc_client_display_error *error) {
+    size_t *depth = state->matrix_mode == GL_PROJECTION ? &state->projection_depth : &state->depth;
+    mc_client_modelview *stack =
+        state->matrix_mode == GL_PROJECTION ? state->projection_stack : state->stack;
+    if (*depth == 0)
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix pop", "stack underflow",
+                    0);
+    source_matrix_store(state, &stack[--(*depth)]);
+    return true;
+}
+
+static void source_matrix_scale(mc_client_source_state *state, double x, double y, double z) {
+    mc_client_modelview matrix;
+    source_matrix_copy(state, &matrix);
+    const float scale[3] = {_mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(x))),
+                            _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(y))),
+                            _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(z)))};
+    for (size_t col = 0; col < 3; ++col)
+        for (size_t row = 0; row < 4; ++row)
+            matrix.column_major[col * 4 + row] =
+                mc_client_source_product(matrix.column_major[col * 4 + row], scale[col]);
+    source_matrix_store(state, &matrix);
+}
+
 bool mc_client_display_source_get_error(mc_client_display *display, uint32_t *value,
                                         mc_client_display_error *error) {
     if (value == NULL)
@@ -100,15 +145,20 @@ bool mc_client_display_context_acquire(mc_client_display *display,
                                        mc_client_display_context_lease **out,
                                        mc_client_display_error *error) {
     if (out == NULL || display == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "graphics context lease", "null argument", 0);
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "graphics context lease",
+                    "null argument", 0);
     if (display->source.active_calls != 0)
-        return fail(error, MC_CLIENT_DISPLAY_BUSY, "graphics context lease", "source operation active", 0);
-    if (!current(display, "graphics context lease", error)) return false;
-    if (display->source.context_holds == SIZE_MAX || display->source.next_context_generation == UINT64_MAX)
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "graphics context lease",
+                    "source operation active", 0);
+    if (!current(display, "graphics context lease", error))
+        return false;
+    if (display->source.context_holds == SIZE_MAX ||
+        display->source.next_context_generation == UINT64_MAX)
         return fail(error, MC_CLIENT_DISPLAY_LIMIT, "graphics context lease", "hold limit", 0);
     mc_client_display_context_lease *lease = calloc(1, sizeof(*lease));
     if (lease == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "graphics context lease", "allocation failed", 0);
+        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "graphics context lease",
+                    "allocation failed", 0);
     lease->display = display;
     lease->generation = ++display->source.next_context_generation;
     ++display->source.context_holds;
@@ -119,7 +169,8 @@ bool mc_client_display_context_acquire(mc_client_display *display,
 bool mc_client_display_context_release(mc_client_display_context_lease **slot,
                                        mc_client_display_error *error) {
     if (slot == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "release graphics context lease", "null slot", 0);
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "release graphics context lease",
+                    "null slot", 0);
     if (*slot != NULL) {
         for (unsigned i = 0; i < 4; ++i)
             if ((*slot)->display->source.array_contexts[i] == (*slot)->generation)
@@ -131,14 +182,18 @@ bool mc_client_display_context_release(mc_client_display_context_lease **slot,
     return success(error);
 }
 
-bool mc_client_display_source_pointer(mc_client_display_context_lease *lease, mc_client_source_array array,
-                                      const void *buffer, size_t offset, mc_client_display_error *error) {
+bool mc_client_display_source_pointer(mc_client_display_context_lease *lease,
+                                      mc_client_source_array array, const void *buffer,
+                                      size_t offset, mc_client_display_error *error) {
     if (lease == NULL || buffer == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source client pointer", "actual context/buffer required", 0);
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source client pointer",
+                    "actual context/buffer required", 0);
     mc_client_display *display = lease->display;
     if ((unsigned)array > (unsigned)MC_CLIENT_SOURCE_NORMAL_ARRAY)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source client pointer", "invalid selector", 0);
-    if (!source_enter(display, "source client pointer", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source client pointer",
+                    "invalid selector", 0);
+    if (!source_enter(display, "source client pointer", error))
+        return false;
     /* Pointer offsets/types are the genuine nw32-byte layout. Host pointers
      * remain borrowed only by the following batch call, never retained. */
     display->source.pointers |= 1u << (unsigned)array;
@@ -151,11 +206,15 @@ bool mc_client_display_source_pointer(mc_client_display_context_lease *lease, mc
 bool mc_client_display_source_array(mc_client_display *display, mc_client_source_array array,
                                     bool enabled, mc_client_display_error *error) {
     if ((unsigned)array > (unsigned)MC_CLIENT_SOURCE_NORMAL_ARRAY)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source client array", "invalid selector", 0);
-    if (!source_enter(display, "source client array", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source client array",
+                    "invalid selector", 0);
+    if (!source_enter(display, "source client array", error))
+        return false;
     const unsigned mask = 1u << (unsigned)array;
-    if (enabled) display->source.arrays |= mask;
-    else display->source.arrays &= ~mask;
+    if (enabled)
+        display->source.arrays |= mask;
+    else
+        display->source.arrays &= ~mask;
     return source_leave(display, true, error);
 }
 
@@ -167,19 +226,23 @@ static mc_client_source_command *source_append(mc_client_display *display,
     if (bytes > SIZE_MAX - sizeof(mc_client_source_command) ||
         sizeof(mc_client_source_command) + bytes > SOURCE_COMMAND_BYTES - s->command_bytes ||
         range->command_count >= range->max_commands) {
-        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source command definition", "command byte/count limit", 0);
+        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source command definition",
+             "command byte/count limit", 0);
         return NULL;
     }
     mc_client_source_command *command = calloc(1, sizeof(*command) + bytes);
     if (command == NULL) {
-        fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source command definition", "allocation failed", 0);
+        fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source command definition",
+             "allocation failed", 0);
         return NULL;
     }
     command->kind = kind;
     command->charge = sizeof(*command) + bytes;
     mc_client_source_definition *pending = s->compiling->pending;
-    if (pending->last == NULL) pending->first = command;
-    else pending->last->next = command;
+    if (pending->last == NULL)
+        pending->first = command;
+    else
+        pending->last->next = command;
     pending->last = command;
     ++pending->commands;
     pending->bytes += command->charge;
@@ -190,11 +253,14 @@ static mc_client_source_command *source_append(mc_client_display *display,
 
 static bool source_gpu_construct(mc_client_display *display, mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
-    if (s->program != 0 && s->vao != 0 && s->vbo != 0) return true;
+    if (s->program != 0 && s->vao != 0 && s->vbo != 0)
+        return true;
     /* A failed lazy GPU constructor retains its real partial names for native
      * Display cleanup. It is not retried over a retained partial program. */
-    if (s->vertex_shader != 0 || s->fragment_shader != 0 || s->program != 0 || s->vao != 0 || s->vbo != 0)
-        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU constructor", "previous partial GPU constructor", 0);
+    if (s->vertex_shader != 0 || s->fragment_shader != 0 || s->program != 0 || s->vao != 0 ||
+        s->vbo != 0)
+        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU constructor",
+                    "previous partial GPU constructor", 0);
     static const char vertex[] =
         "#version 330 core\nlayout(location=0) in vec3 position;\n"
         "layout(location=1) in vec2 uv;layout(location=2) in vec4 color;\n"
@@ -217,21 +283,26 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
         "else f=exp(-fogDensity*fogCoordinate);"
         "value.rgb=mix(fogColor.rgb,value.rgb,clamp(f,0.0,1.0));}outputColor=value;}\n";
     if (!shader(display, GL_VERTEX_SHADER, vertex, &s->vertex_shader, error) ||
-        !shader(display, GL_FRAGMENT_SHADER, fragment, &s->fragment_shader, error)) return false;
+        !shader(display, GL_FRAGMENT_SHADER, fragment, &s->fragment_shader, error))
+        return false;
     s->program = display->gl.CreateProgram();
-    if (!gl_check(display, "create source GPU program", error)) return false;
-    if (s->program == 0) return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "create source GPU program", "zero name", 0);
+    if (!gl_check(display, "create source GPU program", error))
+        return false;
+    if (s->program == 0)
+        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "create source GPU program", "zero name", 0);
     display->gl.AttachShader(s->program, s->vertex_shader);
     display->gl.AttachShader(s->program, s->fragment_shader);
     display->gl.LinkProgram(s->program);
     GLint linked = GL_FALSE;
     display->gl.GetProgramiv(s->program, GL_LINK_STATUS, &linked);
-    if (!gl_check(display, "link source GPU program", error)) return false;
+    if (!gl_check(display, "link source GPU program", error))
+        return false;
     if (linked != GL_TRUE) {
         char log[256] = {0};
         display->gl.GetProgramInfoLog(s->program, (GLsizei)sizeof(log), NULL, log);
         log[sizeof(log) - 1] = '\0';
-        if (!gl_check(display, "source GPU link diagnostic", error)) return false;
+        if (!gl_check(display, "source GPU link diagnostic", error))
+            return false;
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "link source GPU program", log, 0);
     }
     display->gl.UseProgram(s->program);
@@ -247,66 +318,82 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
     s->fog_start_uniform = display->gl.GetUniformLocation(s->program, "fogStart");
     s->fog_end_uniform = display->gl.GetUniformLocation(s->program, "fogEnd");
     const GLint image = display->gl.GetUniformLocation(s->program, "image");
-    if (!gl_check(display, "source GPU uniforms", error)) return false;
-    if (s->projection_uniform < 0 || s->modelview_uniform < 0 || s->textured_uniform < 0 || s->alpha_uniform < 0 || image < 0)
+    if (!gl_check(display, "source GPU uniforms", error))
+        return false;
+    if (s->projection_uniform < 0 || s->modelview_uniform < 0 || s->textured_uniform < 0 ||
+        s->alpha_uniform < 0 || image < 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU uniforms", "missing uniform", 0);
     if (s->fog_enabled_uniform < 0 || s->fog_mode_uniform < 0 || s->fog_distance_uniform < 0 ||
         s->fog_color_uniform < 0 || s->fog_density_uniform < 0 || s->fog_start_uniform < 0 ||
         s->fog_end_uniform < 0)
-        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU fog uniforms", "missing uniform", 0);
+        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU fog uniforms", "missing uniform",
+                    0);
     display->gl.Uniform1i(image, 0);
     display->gl.GenVertexArrays(1, &s->vao);
     display->gl.GenBuffers(1, &s->vbo);
-    if (!gl_check(display, "source GPU vertex storage", error)) return false;
+    if (!gl_check(display, "source GPU vertex storage", error))
+        return false;
     if (s->vao == 0 || s->vbo == 0)
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU vertex storage", "zero name", 0);
     display->gl.BindVertexArray(s->vao);
     display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
     const GLsizei stride = (GLsizei)sizeof(mc_client_source_gpu_vertex);
     display->gl.EnableVertexAttribArray(0);
-    display->gl.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (const void *)offsetof(mc_client_source_gpu_vertex, position));
+    display->gl.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, position));
     display->gl.EnableVertexAttribArray(1);
-    display->gl.VertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (const void *)offsetof(mc_client_source_gpu_vertex, uv));
+    display->gl.VertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, uv));
     display->gl.EnableVertexAttribArray(2);
-    display->gl.VertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride, (const void *)offsetof(mc_client_source_gpu_vertex, color));
+    display->gl.VertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, color));
     return gl_check(display, "source GPU vertex layout", error);
 }
 
 static bool source_gpu_create(mc_client_display *display, mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
-    if (s->gpu_phase == 2) return true;
+    if (s->gpu_phase == 2)
+        return true;
     if (s->gpu_phase == 3) {
-        if (error != NULL) *error = s->gpu_failure;
+        if (error != NULL)
+            *error = s->gpu_failure;
         return false;
     }
     s->gpu_phase = 1;
     mc_client_display_error detail = {0};
     const bool ok = source_gpu_construct(display, &detail);
     s->gpu_phase = ok ? 2u : 3u;
-    if (!ok) s->gpu_failure = detail;
-    if (error != NULL) *error = detail;
+    if (!ok)
+        s->gpu_failure = detail;
+    if (error != NULL)
+        *error = detail;
     return ok;
 }
 
 static bool source_execute_batch(mc_client_display *display, const uint8_t *data, size_t bytes,
-                                  int32_t count, int32_t mode, unsigned arrays,
-                                  mc_client_display_error *error) {
+                                 int32_t count, int32_t mode, unsigned arrays,
+                                 mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
     const unsigned vertex_bit = 1u << MC_CLIENT_SOURCE_VERTEX_ARRAY;
     const unsigned uv_bit = 1u << MC_CLIENT_SOURCE_UV_ARRAY;
     const unsigned color_bit = 1u << MC_CLIENT_SOURCE_COLOR_ARRAY;
     if (s->vbo_capacity_uncertain)
-        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source VBO capacity", "prior upload allocation is uncertain", 0);
+        return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source VBO capacity",
+                    "prior upload allocation is uncertain", 0);
     /* source_enter initialized the actual projection/modelview defaults.
      * Camera matrix calls replace that same ledger; drawing does not require
      * the unrelated loading-screen projection method to have run first. */
     if (s->lighting_enabled)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source shading state", "enabled lighting requires its renderer", 0);
-    if (count < 0 || (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN) || (arrays & vertex_bit) == 0 ||
-        (size_t)count > bytes / 32u || (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw", "unsupported mode/span/client vertex state", 0);
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source shading state",
+                    "enabled lighting requires its renderer", 0);
+    if (count < 0 || (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN) ||
+        (arrays & vertex_bit) == 0 || (size_t)count > bytes / 32u ||
+        (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw",
+                    "unsupported mode/span/client vertex state", 0);
     if ((arrays & color_bit) == 0 && !s->color_known)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color", "unspecified color after prior color-array draw", 0);
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color",
+                    "unspecified color after prior color-array draw", 0);
     /* nw has already expanded its default quads before sending mode4. The
      * selected bridge admits only decoded GL_TRIANGLES above, so each complete
      * group of three is one actual primitive. Smooth interpolation is exactly
@@ -317,35 +404,45 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         for (size_t first = 0; first + 2u < (size_t)count; first += 3u)
             for (size_t i = first + 1u; i < first + 3u; ++i)
                 if (memcmp(data + first * 32u + 20, data + i * 32u + 20, 4) != 0)
-                    return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT vertex colors",
-                                "varying-color flat source primitive requires its shader profile", 0);
+                    return fail(
+                        error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT vertex colors",
+                        "varying-color flat source primitive requires its shader profile", 0);
     if (s->shade_flat && (arrays & color_bit) != 0 && mode == GL_TRIANGLE_FAN)
         for (size_t i = 1; i < (size_t)count; ++i)
             if (memcmp(data + 20, data + i * 32u + 20, 4) != 0)
                 return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source GL_FLAT fan colors",
                             "varying-color flat source fan requires its shader profile", 0);
     if (s->texture_enabled && (arrays & uv_bit) == 0)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current texture coordinate", "nonarray textured-coordinate path", 0);
-    if (!source_fp_admit("source native draw conversion FP", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current texture coordinate",
+                    "nonarray textured-coordinate path", 0);
+    if (!source_fp_admit("source native draw conversion FP", error))
+        return false;
     GLint unit = 0;
     display->gl.GetIntegerv(GL_ACTIVE_TEXTURE, &unit);
-    if (!gl_check(display, "source active texture unit", error)) return false;
+    if (!gl_check(display, "source active texture unit", error))
+        return false;
     if (unit != GL_TEXTURE0)
-        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source active texture unit", "nondefault unit path", 0);
-    if (!source_fp_admit("source native draw conversion FP after texture query", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source active texture unit",
+                    "nondefault unit path", 0);
+    if (!source_fp_admit("source native draw conversion FP after texture query", error))
+        return false;
     const size_t allocation = (size_t)count * sizeof(mc_client_source_gpu_vertex);
     mc_client_source_gpu_vertex *vertices = allocation == 0 ? NULL : malloc(allocation);
     if (allocation != 0 && vertices == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source draw conversion", "allocation failed", 0);
+        return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source draw conversion",
+                    "allocation failed", 0);
     for (size_t i = 0; i < (size_t)count; ++i) {
         const uint8_t *raw = data + i * 32u;
         memcpy(vertices[i].position, raw, 3u * sizeof(float));
-        if ((arrays & uv_bit) != 0) memcpy(vertices[i].uv, raw + 12, 2u * sizeof(float));
-        else vertices[i].uv[0] = vertices[i].uv[1] = 0;
+        if ((arrays & uv_bit) != 0)
+            memcpy(vertices[i].uv, raw + 12, 2u * sizeof(float));
+        else
+            vertices[i].uv[0] = vertices[i].uv[1] = 0;
         if ((arrays & color_bit) != 0)
             for (size_t channel = 0; channel < 4; ++channel)
                 vertices[i].color[channel] = (float)raw[20 + channel] / 255.0f;
-        else memcpy(vertices[i].color, s->color, sizeof(s->color));
+        else
+            memcpy(vertices[i].color, s->color, sizeof(s->color));
     }
     bool ok = source_gpu_create(display, error);
     if (ok) {
@@ -353,11 +450,13 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.BindVertexArray(s->vao);
         display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
         if (allocation > s->vbo_bytes) {
-            display->gl.BufferData(GL_ARRAY_BUFFER, (GLsizeiptr)allocation, vertices, GL_STREAM_DRAW);
+            display->gl.BufferData(GL_ARRAY_BUFFER, (GLsizeiptr)allocation, vertices,
+                                   GL_STREAM_DRAW);
             if (!gl_check(display, "source VBO allocation/upload", error)) {
                 s->vbo_capacity_uncertain = true;
                 ok = false;
-            } else s->vbo_bytes = allocation;
+            } else
+                s->vbo_bytes = allocation;
         } else if (allocation != 0) {
             display->gl.BufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)allocation, vertices);
             ok = gl_check(display, "source VBO upload", error);
@@ -377,36 +476,44 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.Uniform1f(s->fog_end_uniform, s->fog.end);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
         display->gl.DrawArrays((GLenum)mode, 0, count);
-        if ((arrays & color_bit) != 0) s->color_known = false;
+        if ((arrays & color_bit) != 0)
+            s->color_known = false;
         ok = gl_check(display, "source interleaved draw", error);
-        if (ok) display->frame_started = true;
+        if (ok)
+            display->frame_started = true;
     }
     free(vertices);
     return ok;
 }
 
 bool mc_client_display_source_batch(mc_client_display_context_lease *lease, const void *buffer,
-                                    const uint8_t *bytes, size_t size,
-                                    int32_t count, int32_t mode, mc_client_display_error *error) {
+                                    const uint8_t *bytes, size_t size, int32_t count, int32_t mode,
+                                    mc_client_display_error *error) {
     if (lease == NULL || buffer == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source interleaved batch", "actual context/buffer required", 0);
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source interleaved batch",
+                    "actual context/buffer required", 0);
     mc_client_display *display = lease->display;
     if ((bytes == NULL && size != 0) || count < 0 || (size_t)count > size / 32u)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source interleaved batch", "invalid data/count", 0);
-    if (!source_enter(display, "source interleaved batch", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source interleaved batch",
+                    "invalid data/count", 0);
+    if (!source_enter(display, "source interleaved batch", error))
+        return false;
     mc_client_source_state *s = &display->source;
     bool ok;
     bool pointers_match = (s->arrays & ~s->pointers) == 0;
     static const size_t offsets[4] = {0, 12, 20, 24};
     for (unsigned i = 0; i < 4; ++i)
         if ((s->arrays & (1u << i)) != 0 &&
-            (s->array_buffers[i] != buffer || s->array_contexts[i] != lease->generation || s->array_offsets[i] != offsets[i]))
+            (s->array_buffers[i] != buffer || s->array_contexts[i] != lease->generation ||
+             s->array_offsets[i] != offsets[i]))
             pointers_match = false;
     if (!pointers_match) {
-        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source client pointers", "enabled array is expired, foreign or has a different layout", 0);
+        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source client pointers",
+                  "enabled array is expired, foreign or has a different layout", 0);
     } else if (s->compiling != NULL) {
         const size_t needed = (size_t)count * 32u;
-        mc_client_source_command *command = source_append(display, SOURCE_COMMAND_DRAW, needed, error);
+        mc_client_source_command *command =
+            source_append(display, SOURCE_COMMAND_DRAW, needed, error);
         ok = command != NULL;
         if (ok) {
             command->value.draw.bytes = (uint8_t *)(command + 1);
@@ -414,7 +521,8 @@ bool mc_client_display_source_batch(mc_client_display_context_lease *lease, cons
             command->value.draw.count = count;
             command->value.draw.mode = mode;
             command->value.draw.arrays = s->arrays;
-            if (needed != 0) memcpy(command->value.draw.bytes, bytes, needed);
+            if (needed != 0)
+                memcpy(command->value.draw.bytes, bytes, needed);
         }
     } else {
         ok = source_execute_batch(display, bytes, size, count, mode, s->arrays, error);
@@ -422,32 +530,38 @@ bool mc_client_display_source_batch(mc_client_display_context_lease *lease, cons
     return source_leave(display, ok, error);
 }
 
-bool mc_client_display_lists_generate(mc_client_display *display, int32_t count, size_t max_commands,
-                                      mc_client_display_list_range **out, int32_t *base,
-                                      mc_client_display_error *error) {
+bool mc_client_display_lists_generate(mc_client_display *display, int32_t count,
+                                      size_t max_commands, mc_client_display_list_range **out,
+                                      int32_t *base, mc_client_display_error *error) {
     if (out == NULL || base == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source list range", "null output", 0);
-    if (!source_enter(display, "source list range", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source list range", "null output",
+                    0);
+    if (!source_enter(display, "source list range", error))
+        return false;
     mc_client_source_state *s = &display->source;
     bool ok = false;
     if (count <= 0) {
-        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source list range", "nonpositive/GL-zero path", 0);
+        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source list range",
+             "nonpositive/GL-zero path", 0);
         goto done;
     }
     if (s->range_count >= SOURCE_RANGES || (uint32_t)count > INT32_MAX - s->next_list_base ||
         (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_list)) {
-        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source list range", "context range/name/allocation limit", 0);
+        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source list range",
+             "context range/name/allocation limit", 0);
         goto done;
     }
     mc_client_display_list_range *range = calloc(1, sizeof(*range));
     if (range == NULL) {
-        fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source list range", "range allocation failed", 0);
+        fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source list range",
+             "range allocation failed", 0);
         goto done;
     }
     range->lists = calloc((size_t)count, sizeof(*range->lists));
     if (range->lists == NULL) {
         free(range);
-        fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source list range", "definition storage failed", 0);
+        fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source list range",
+             "definition storage failed", 0);
         goto done;
     }
     range->display = display;
@@ -467,16 +581,18 @@ done:
 
 static mc_client_source_list *source_find_list(mc_client_display *display, int32_t id,
                                                mc_client_display_list_range **owner) {
-    for (mc_client_display_list_range *range = display->source.ranges; range != NULL; range = range->next)
+    for (mc_client_display_list_range *range = display->source.ranges; range != NULL;
+         range = range->next)
         if (id >= range->base && (uint32_t)(id - range->base) < (uint32_t)range->count) {
-            if (owner != NULL) *owner = range;
+            if (owner != NULL)
+                *owner = range;
             return &range->lists[id - range->base];
         }
     return NULL;
 }
 
 static void source_free_commands(mc_client_display_list_range *range,
-                                  mc_client_source_command *command) {
+                                 mc_client_source_command *command) {
     while (command != NULL) {
         mc_client_source_command *next = command->next;
         range->display->source.command_bytes -= command->charge;
@@ -486,22 +602,26 @@ static void source_free_commands(mc_client_display_list_range *range,
     }
 }
 
-bool mc_client_display_lists_begin(mc_client_display *display, int32_t id, mc_client_display_error *error) {
-    if (!source_enter(display, "source glNewList", error)) return false;
+bool mc_client_display_lists_begin(mc_client_display *display, int32_t id,
+                                   mc_client_display_error *error) {
+    if (!source_enter(display, "source glNewList", error))
+        return false;
     bool ok = false;
     mc_client_display_list_range *range = NULL;
     mc_client_source_list *list = source_find_list(display, id, &range);
     if (display->source.compiling != NULL || list == NULL || list->building) {
-        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glNewList", "unregistered/interrupted/nested list path", 0);
+        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glNewList",
+             "unregistered/interrupted/nested list path", 0);
     } else if (sizeof(mc_client_source_definition) >
                SOURCE_COMMAND_BYTES - display->source.command_bytes) {
-        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source glNewList", "pending definition byte limit", 0);
+        fail(error, MC_CLIENT_DISPLAY_LIMIT, "source glNewList", "pending definition byte limit",
+             0);
     } else {
         mc_client_source_definition *pending = calloc(1, sizeof(*pending));
         if (pending == NULL)
             return source_leave(display,
-                                fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED,
-                                     "source glNewList", "pending definition allocation failed", 0),
+                                fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source glNewList",
+                                     "pending definition allocation failed", 0),
                                 error);
         /* GL_COMPILE preserves the current definition until the matching
          * EndList. Old and pending commands both remain owned and charged. */
@@ -516,10 +636,12 @@ bool mc_client_display_lists_begin(mc_client_display *display, int32_t id, mc_cl
 }
 
 bool mc_client_display_lists_end(mc_client_display *display, mc_client_display_error *error) {
-    if (!source_enter(display, "source glEndList", error)) return false;
+    if (!source_enter(display, "source glEndList", error))
+        return false;
     bool ok = false;
     if (display->source.compiling == NULL) {
-        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glEndList", "no source definition active", 0);
+        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glEndList",
+             "no source definition active", 0);
     } else {
         mc_client_source_list *list = display->source.compiling;
         mc_client_display_list_range *range = display->source.compiling_range;
@@ -542,13 +664,15 @@ bool mc_client_display_lists_end(mc_client_display *display, mc_client_display_e
 
 bool mc_client_display_source_color(mc_client_display *display, float r, float g, float b, float a,
                                     mc_client_display_error *error) {
-    if (!source_enter(display, "source color", error)) return false;
+    if (!source_enter(display, "source color", error))
+        return false;
     const float color[4] = {r, g, b, a};
     bool ok = true;
     if (display->source.compiling != NULL) {
         mc_client_source_command *command = source_append(display, SOURCE_COMMAND_COLOR, 0, error);
         ok = command != NULL;
-        if (ok) memcpy(command->value.vector, color, sizeof(color));
+        if (ok)
+            memcpy(command->value.vector, color, sizeof(color));
     } else {
         memcpy(display->source.color, color, sizeof(color));
         display->source.color_known = true;
@@ -558,12 +682,18 @@ bool mc_client_display_source_color(mc_client_display *display, float r, float g
 
 bool mc_client_display_source_translate(mc_client_display *display, float x, float y, float z,
                                         mc_client_display_error *error) {
-    if (!source_enter(display, "source matrix translation", error)) return false;
+    if (!source_enter(display, "source matrix translation", error))
+        return false;
     bool ok = true;
     if (display->source.compiling != NULL) {
-        mc_client_source_command *command = source_append(display, SOURCE_COMMAND_TRANSLATE, 0, error);
+        mc_client_source_command *command =
+            source_append(display, SOURCE_COMMAND_TRANSLATE, 0, error);
         ok = command != NULL;
-        if (ok) { command->value.vector[0] = x; command->value.vector[1] = y; command->value.vector[2] = z; }
+        if (ok) {
+            command->value.vector[0] = x;
+            command->value.vector[1] = y;
+            command->value.vector[2] = z;
+        }
     } else {
         ok = source_fp_admit("source matrix translation FP", error);
         if (ok)
@@ -573,51 +703,45 @@ bool mc_client_display_source_translate(mc_client_display *display, float x, flo
 }
 
 bool mc_client_display_source_push(mc_client_display *display, mc_client_display_error *error) {
-    if (!source_enter(display, "source matrix push", error)) return false;
-    bool ok = false;
-    mc_client_source_state *state = &display->source;
-    size_t *depth = state->matrix_mode == GL_PROJECTION ? &state->projection_depth : &state->depth;
-    mc_client_modelview *stack =
-        state->matrix_mode == GL_PROJECTION ? state->projection_stack : state->stack;
-    if (state->compiling != NULL || *depth >= SOURCE_MATRIX_DEPTH) {
-        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix push", "compiled push/stack limit", 0);
-    } else {
-        source_matrix_copy(state, &stack[(*depth)++]);
-        ok = true;
-    }
+    if (!source_enter(display, "source matrix push", error))
+        return false;
+    const bool ok = display->source.compiling != NULL
+                        ? source_append(display, SOURCE_COMMAND_PUSH, 0, error) != NULL
+                        : source_matrix_push(&display->source, error);
     return source_leave(display, ok, error);
 }
 
 bool mc_client_display_source_pop(mc_client_display *display, mc_client_display_error *error) {
-    if (!source_enter(display, "source matrix pop", error)) return false;
-    bool ok = false;
-    mc_client_source_state *state = &display->source;
-    size_t *depth = state->matrix_mode == GL_PROJECTION ? &state->projection_depth : &state->depth;
-    mc_client_modelview *stack =
-        state->matrix_mode == GL_PROJECTION ? state->projection_stack : state->stack;
-    if (state->compiling != NULL || *depth == 0) {
-        fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source matrix pop", "compiled pop/stack underflow", 0);
-    } else {
-        source_matrix_store(state, &stack[--(*depth)]);
-        ok = true;
-    }
+    if (!source_enter(display, "source matrix pop", error))
+        return false;
+    const bool ok = display->source.compiling != NULL
+                        ? source_append(display, SOURCE_COMMAND_POP, 0, error) != NULL
+                        : source_matrix_pop(&display->source, error);
     return source_leave(display, ok, error);
 }
 
 bool mc_client_display_source_texture_enable(mc_client_display *display, bool enabled,
                                              mc_client_display_error *error) {
-    if (!source_enter(display, "source texture enable", error)) return false;
+    if (!source_enter(display, "source texture enable", error))
+        return false;
     if (display->source.compiling != NULL)
-        return source_leave(display, fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source texture enable", "compiled enable path", 0), error);
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source texture enable",
+                                 "compiled enable path", 0),
+                            error);
     display->source.texture_enabled = enabled;
     return source_leave(display, true, error);
 }
 
 bool mc_client_display_source_alpha_test(mc_client_display *display, bool enabled,
                                          mc_client_display_error *error) {
-    if (!source_enter(display, "source alpha test", error)) return false;
+    if (!source_enter(display, "source alpha test", error))
+        return false;
     if (display->source.compiling != NULL)
-        return source_leave(display, fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source alpha test", "compiled alpha path", 0), error);
+        return source_leave(display,
+                            fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source alpha test",
+                                 "compiled alpha path", 0),
+                            error);
     display->source.alpha_test = enabled;
     return source_leave(display, true, error);
 }
@@ -735,20 +859,25 @@ bool mc_client_display_source_load_identity(mc_client_display *display,
 bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids, size_t count,
                                   mc_client_display_error *error) {
     if (ids == NULL && count != 0)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source glCallLists", "null input span", 0);
-    if (!source_enter(display, "source glCallLists", error)) return false;
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "source glCallLists",
+                    "null input span", 0);
+    if (!source_enter(display, "source glCallLists", error))
+        return false;
     bool ok = true;
     if (display->source.compiling != NULL) {
-        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists", "compiled/nested-call path", 0);
+        ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
+                  "compiled/nested-call path", 0);
         goto done;
     }
     for (size_t i = 0; i < count && ok; ++i) {
         mc_client_source_list *list = source_find_list(display, ids[i], NULL);
         if (list == NULL || !list->defined) {
-            ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists", "undefined/deleted/unregistered name path", 0);
+            ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
+                      "undefined/deleted/unregistered name path", 0);
             break;
         }
-        for (const mc_client_source_command *command = list->first; command != NULL && ok; command = command->next) {
+        for (const mc_client_source_command *command = list->first; command != NULL && ok;
+             command = command->next) {
             if (command->kind == SOURCE_COMMAND_COLOR) {
                 memcpy(display->source.color, command->value.vector, sizeof(display->source.color));
                 display->source.color_known = true;
@@ -757,10 +886,23 @@ bool mc_client_display_lists_call(mc_client_display *display, const int32_t *ids
                 if (ok)
                     source_matrix_translate(&display->source, command->value.vector[0],
                                             command->value.vector[1], command->value.vector[2]);
+            } else if (command->kind == SOURCE_COMMAND_PUSH) {
+                ok = source_matrix_push(&display->source, error);
+            } else if (command->kind == SOURCE_COMMAND_POP) {
+                ok = source_matrix_pop(&display->source, error);
+            } else if (command->kind == SOURCE_COMMAND_SCALE) {
+                ok = source_fp_admit("source list matrix scale FP", error);
+                if (ok)
+                    source_matrix_scale(&display->source, command->value.scale[0],
+                                        command->value.scale[1], command->value.scale[2]);
+            } else if (command->kind == SOURCE_COMMAND_DRAW) {
+                ok = source_execute_batch(display, command->value.draw.bytes,
+                                          command->value.draw.size, command->value.draw.count,
+                                          command->value.draw.mode, command->value.draw.arrays,
+                                          error);
             } else {
-                ok = source_execute_batch(display, command->value.draw.bytes, command->value.draw.size,
-                                           command->value.draw.count, command->value.draw.mode,
-                                           command->value.draw.arrays, error);
+                ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glCallLists",
+                          "unrecognized native list command", 0);
             }
         }
     }
@@ -768,21 +910,26 @@ done:
     return source_leave(display, ok, error);
 }
 
-bool mc_client_display_lists_retire(mc_client_display_list_range **slot, mc_client_display_error *error) {
+bool mc_client_display_lists_retire(mc_client_display_list_range **slot,
+                                    mc_client_display_error *error) {
     if (slot == NULL)
-        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "retire native source range", "null slot", 0);
+        return fail(error, MC_CLIENT_DISPLAY_INVALID_ARGUMENT, "retire native source range",
+                    "null slot", 0);
     mc_client_display_list_range *range = *slot;
-    if (range == NULL) return success(error);
+    if (range == NULL)
+        return success(error);
     mc_client_display *display = range->display;
     if (display->source.active_calls != 0)
-        return fail(error, MC_CLIENT_DISPLAY_BUSY, "retire native source range", "source call active", 0);
+        return fail(error, MC_CLIENT_DISPLAY_BUSY, "retire native source range",
+                    "source call active", 0);
     if (display->source.compiling_range == range) {
         /* Native terminal abort, never a source successful glEndList. */
         display->source.compiling = NULL;
         display->source.compiling_range = NULL;
     }
     mc_client_display_list_range **link = &display->source.ranges;
-    while (*link != range) link = &(*link)->next;
+    while (*link != range)
+        link = &(*link)->next;
     *link = range->next;
     for (int32_t i = 0; i < range->count; ++i) {
         mc_client_source_list *list = &range->lists[i];
@@ -800,12 +947,29 @@ bool mc_client_display_lists_retire(mc_client_display_list_range **slot, mc_clie
     return success(error);
 }
 
-static void source_gpu_retire(mc_client_display *display, bool *ok, mc_client_display_error *first) {
+static void source_gpu_retire(mc_client_display *display, bool *ok,
+                              mc_client_display_error *first) {
     mc_client_source_state *s = &display->source;
-    if (display->context_lost) return;
-    if (s->vbo != 0) { display->gl.DeleteBuffers(1, &s->vbo); cleanup_check(display, "delete source VBO", ok, first); }
-    if (!display->context_lost && s->vao != 0) { display->gl.DeleteVertexArrays(1, &s->vao); cleanup_check(display, "delete source VAO", ok, first); }
-    if (!display->context_lost && s->program != 0) { display->gl.DeleteProgram(s->program); cleanup_check(display, "delete source program", ok, first); }
-    if (!display->context_lost && s->vertex_shader != 0) { display->gl.DeleteShader(s->vertex_shader); cleanup_check(display, "delete source vertex shader", ok, first); }
-    if (!display->context_lost && s->fragment_shader != 0) { display->gl.DeleteShader(s->fragment_shader); cleanup_check(display, "delete source fragment shader", ok, first); }
+    if (display->context_lost)
+        return;
+    if (s->vbo != 0) {
+        display->gl.DeleteBuffers(1, &s->vbo);
+        cleanup_check(display, "delete source VBO", ok, first);
+    }
+    if (!display->context_lost && s->vao != 0) {
+        display->gl.DeleteVertexArrays(1, &s->vao);
+        cleanup_check(display, "delete source VAO", ok, first);
+    }
+    if (!display->context_lost && s->program != 0) {
+        display->gl.DeleteProgram(s->program);
+        cleanup_check(display, "delete source program", ok, first);
+    }
+    if (!display->context_lost && s->vertex_shader != 0) {
+        display->gl.DeleteShader(s->vertex_shader);
+        cleanup_check(display, "delete source vertex shader", ok, first);
+    }
+    if (!display->context_lost && s->fragment_shader != 0) {
+        display->gl.DeleteShader(s->fragment_shader);
+        cleanup_check(display, "delete source fragment shader", ok, first);
+    }
 }

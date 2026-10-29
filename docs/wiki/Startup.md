@@ -56,15 +56,31 @@ concrete Mob constructor at `cq.a:773`.
 Frame sound, lighting, suffocation and controller interpolation are connected.
 Focused mouse look uses the actual SDK/CU/Player fields. Inactive pause entry
 constructs OZ; actual World drawing completes fog, camera, Sky and real
-ChunkRenderer culling before missing compilation at `px.a:396`.
+ChunkRenderer culling. It now runs the dirty-chunk selector, constructs the
+actual ChunkCache and starts the source list/Tessellator. The reached failure
+is missing RenderBlocks geometry at `dk.a()V:464`, retained under
+`n.a(Lls;Z)Z:442`; the enclosing frame remains at `px.a(FJ)V:396`.
+Empty sections complete source compilation. The whole `n.e()V` sky-change
+callback and shared U class active use are connected. See the
+[chunk-compilation contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md).
 Whole ordinary World ticks, terrain frames and gameplay actions remain unfinished.
 Version-zero conversion stops at 52.
 Create/Rename stop at `NEW162`/`NEW189`; Delete stops at preparation 21 without
 skipping its prefix. Complete World entry and gameplay remain unfinished. See the
 [World-selection contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/world-selection.md).
 
-The current extension passes all 506 selected Windows CTests and 489 public
-cases per Linux sanitizer graph, plus six JDK-reference cases per compiler.
+Selected Windows checks pass 950 original cache rows, a complete empty DK call,
+eight sky-change profiles, three lighting rows and 108 JDK17 sort histories.
+The loaded UI reaches the nested geometry failure while preserving saves,
+resources and all 72 focus histories. The final Windows Debug ALL build and all
+512 selected CTests pass after the lease-publication fix in 215.93 seconds.
+All 506 prior test names remain, with six additions; seven separate JDK/Sky
+device cases also pass. No local Linux tests ran for this increment. Linux
+runtime qualification remains pending hosted CI; [Build and tests](Build-and-tests)
+separates the local Clang/GCC build evidence from runtime results.
+
+The preceding fog/Sky/culling checkpoint passes all 506 selected Windows CTests
+and 489 public cases per Linux sanitizer graph, plus six JDK-reference cases per compiler.
 Windows/GCC13/Clang18 ALL builds pass. Original World/provider, fog, Sky and
 culling fixtures retain their declared finite scopes. Six source-shader GPU
 profiles match all 30 pixels exactly on Windows NVIDIA and Linux Mesa.
@@ -73,6 +89,10 @@ frontiers, save/resource preservation and cleanup. The preceding generated-
 terrain entry result retains its separate scope.
 The [testing scope](Build-and-tests) separates native, private CPU-wrapper and
 finite original-image results from complete playability.
+
+Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
+passes all four hosted jobs and 1,458 tests: Windows 468, GCC 495 and Clang 495,
+with zero failures or skips. It precedes the new compilation/callback increment.
 
 The preceding startup/menu-initialization Windows MSVC Debug source passes all
 460 selected CTests without failures or skips. The selected normal Session and GL-error startup profiles
@@ -111,7 +131,7 @@ separate the newer Windows results, the `de4290b` executable-fingerprint failure
 the failed `8288290` hosted run, earlier green hosted baselines, focused
 GL-diagnostic profiles and original comparisons. The earlier Windows 47-case and
 Linux 53-case scopes remain recorded in [Build and tests](Build-and-tests).
-Neither these component comparisons nor the current local checks establish
-original-JVM or visual correspondence, World entry or gameplay.
-The next session milestone remains loading one World, walking, changing Blocks,
-and saving and reloading.
+These component comparisons and local checks do not establish complete original
+frames or playable gameplay. Existing-save loading now completes; walking,
+changing Blocks, and saving and reloading through the normal session remain
+required.

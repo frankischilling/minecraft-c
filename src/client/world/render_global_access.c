@@ -9,6 +9,7 @@
 #include "mc/entity/appearance.h"
 #include "mc/world/runtime/runtime.h"
 #include "render_global_internal.h"
+#include "source_chunk_renderer_internal.h"
 
 #include <emmintrin.h>
 #include <stdlib.h>
@@ -249,6 +250,89 @@ static mc_world_storage_status range(void *context, mc_world_runtime *world, int
         return error->status;
     if (call->error.status == MC_CLIENT_RENDER_GLOBAL_OK)
         (void)mc_render_global_mark_range(access->owner, x0, y0, z0, x1, y1, z1, &call->error);
+    return call_end(access, call, error, failure);
+}
+
+static mc_client_source_dk *sky_chunk(mc_client_render_global *owner, access_call *call,
+                                      size_t index, unsigned int array_pc, unsigned int field_pc) {
+    mc_client_source_dk **array = owner->fields.o; /* Fresh actual n.o at each source read. */
+    if (array == NULL) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+             "actual sky-change null DK array", "e", "()V", array_pc, false);
+        return NULL;
+    }
+    if (index >= owner->o_length) {
+        call->source_exception_class = "java/lang/ArrayIndexOutOfBoundsException";
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+             "actual sky-change DK array index", "e", "()V", array_pc, false);
+        return NULL;
+    }
+    mc_client_source_dk *chunk = array[index];
+    if (chunk == NULL && field_pc != 0) {
+        fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+             "actual sky-change null DK receiver", "e", "()V", field_pc, false);
+        return NULL;
+    }
+    if (chunk == NULL)
+        return NULL; /* A nullable List.add argument is not dereferenced by aaload. */
+    for (mc_client_source_dk *owned = owner->chunk_owners; owned != NULL; owned = owned->next)
+        if (owned == chunk)
+            return chunk;
+    fail(&call->error, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT,
+         "sky-change native DK occurrence provenance", "e", "()V", array_pc, true);
+    return NULL;
+}
+
+static mc_world_storage_status sky_changed(void *context, mc_world_runtime *world,
+                                           mc_world_storage_error *error,
+                                           mc_world_access_failure *failure) {
+    (void)world; /* Actual n.e() has no World argument or World field read. */
+    mc_render_global_access *access = context;
+    access_call *call = call_begin(access, "()V", error, failure);
+    if (call == NULL)
+        return error->status;
+    if (call->error.status != MC_CLIENT_RENDER_GLOBAL_OK) {
+        call->error.source_method = "e";
+        return call_end(access, call, error, failure);
+    }
+    mc_client_render_global *owner = access->owner;
+    for (size_t index = 0;; ++index) {
+        if (owner->fields.o == NULL) {
+            fail(&call->error, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+                 "actual sky-change null DK array length", "e", "()V", 7, false);
+            break;
+        }
+        if (owner->o_length > INT32_MAX) {
+            fail(&call->error, MC_CLIENT_RENDER_GLOBAL_LIMIT, "sky-change native DK array extent",
+                 "e", "()V", 7, true);
+            break;
+        }
+        if (index >= owner->o_length) {
+            call->error.source_returned = true;
+            break;
+        }
+        mc_client_source_dk *chunk = sky_chunk(owner, call, index, 16, 17);
+        if (chunk == NULL)
+            break;
+        if (!chunk->fields.A)
+            continue;
+        chunk = sky_chunk(owner, call, index, 28, 29);
+        if (chunk == NULL)
+            break;
+        if (chunk->fields.u)
+            continue;
+        mc_client_render_list *list = owner->fields.m; /* Receiver captured before o argument. */
+        chunk = sky_chunk(owner, call, index, 44, 0);
+        if (call->error.status != MC_CLIENT_RENDER_GLOBAL_OK)
+            break;
+        if (!mc_render_global_pointer_append(
+                owner, list, chunk, (mc_client_graphics_site){"n", "e", "()V", 45}, &call->error))
+            break;
+        chunk = sky_chunk(owner, call, index, 56, 57);
+        if (chunk == NULL)
+            break;
+        mc_source_dk_dirty(chunk); /* Actual dk.f stores u2, returns5; after List.add45. */
+    }
     return call_end(access, call, error, failure);
 }
 
@@ -586,7 +670,7 @@ mc_render_global_access_create(mc_client_render_global *owner, mc_render_global_
                                                         .entity_added = entity_added,
                                                         .tile_entity_dirty = tile_entity_dirty,
                                                         .entity_removed = entity_removed,
-                                                        .sky_changed = NULL};
+                                                        .sky_changed = sky_changed};
     mc_world_storage_status status =
         mc_world_access_source_create(&callbacks, access, &access->identity, &error->world);
     if (status != MC_WORLD_STORAGE_OK) {

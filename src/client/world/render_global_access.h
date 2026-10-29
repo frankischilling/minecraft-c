@@ -26,9 +26,9 @@ typedef struct mc_render_global_callback_state {
 /* One native interface identity belongs to the actual n receiver. This owns no
  * counted self occurrence. The caller keeps n and all its actual dependencies
  * alive until checked retirement succeeds. Creation runs no source callback. */
-/* The seven presently implemented World caller slots enter their actual n
+/* The eight presently implemented World caller slots enter their actual n
  * methods. Reached particle/appearance descendants retain explicit missing
- * bodies. The other three pm slots remain separate World caller work. */
+ * bodies. The other two pm slots remain separate World caller work. */
 mc_client_render_global_status mc_render_global_access_create(mc_client_render_global *,
                                                               mc_render_global_access **,
                                                               mc_client_render_global_error *);

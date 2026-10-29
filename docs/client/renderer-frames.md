@@ -189,8 +189,9 @@ operands and authored native sun/moon textures bound that comparison. See the
 [sky fixture](../../tests/reference/client/render_global_sky/README.md) and
 [culling fixture](../../tests/reference/client/frustum_culling/README.md).
 
-The genuine loaded Windows graph reaches396 with sky, both fog setups and real
-ChunkRenderer culling complete. Its854 by 480 back-buffer capture was inspected;
+The genuine loaded Windows graph now enters [ChunkRenderer compilation](chunk-compilation.md)
+at396 after sky, both fog setups and real culling. Selection and the genuine
+cache/list/NW prefix reach missing block geometry at n442/dk464. Its854 by 480 back-buffer capture was inspected;
 it shows the reached sky passes. Terrain and HUD are absent. Neither that capture
 nor the finite body/state comparisons establish a matched original gameplay
 frame. Compilation, terrain drawing, Entities, particles, HUD, hand composition

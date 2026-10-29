@@ -4,7 +4,9 @@
 #include "../../application_state.h"
 #include "../../display/fog_surface.h"
 #include "../../display/source_surface.h"
+#include "../../display/startup_surface.h"
 #include "../../display/world_frame_surface.h"
+#include "../../render_engine/lighting.h"
 #include "../../view_slot.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
@@ -12,6 +14,7 @@
 #include "renderer_fog_internal.h"
 #include "renderer_fog_state_internal.h"
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+#include "../render_global_internal.h"
 #include "../render_global_sky_internal.h"
 #endif
 
@@ -40,9 +43,9 @@ struct mc_client_world_frame_call {
     mc_client_renderer_camera_call *camera_setup;
     mc_client_renderer_camera_state camera_state;
     mc_client_renderer_camera_error camera_error, camera_cleanup;
-    mc_client_renderer_fog_state_call *fog_setup[2];
-    mc_client_renderer_fog_state_view fog_setup_state[2];
-    mc_client_renderer_fog_state_error fog_setup_error[2], fog_setup_cleanup[2];
+    mc_client_renderer_fog_state_call *fog_setup[3];
+    mc_client_renderer_fog_state_view fog_setup_state[3];
+    mc_client_renderer_fog_state_error fog_setup_error[3], fog_setup_cleanup[3];
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
     mc_client_render_global_sky_call *sky;
     mc_client_render_global_sky_state sky_state;
@@ -52,6 +55,13 @@ struct mc_client_world_frame_call {
     mc_client_culling_call *culling;
     mc_client_culling_state culling_state;
     mc_client_culling_error culling_error, culling_cleanup;
+    mc_client_render_global_update_call *update;
+    mc_client_render_global_update_state update_state;
+    mc_client_render_global_error update_error, update_cleanup;
+    mc_client_render_engine *terrain_engine;
+    mc_client_texture_lookup_error terrain_texture_error, terrain_texture_cleanup;
+    mc_client_graphics_error lighting_error;
+    mc_platform_nanotime update_clock;
 #endif
     bool owner_held, camera_held;
 };
@@ -156,14 +166,18 @@ static bool fog_setup_body(mc_client_world_frame_call *call, unsigned int index,
                                                           &call->fog_setup_state[index]);
         if (index == 0)
             call->state.sky_fog = &call->fog_setup_state[index];
-        else
+        else if (index == 1)
             call->state.terrain_fog = &call->fog_setup_state[index];
+        else
+            call->state.draw_fog = &call->fog_setup_state[index];
     }
     if (status == MC_CLIENT_RENDERER_FOG_STATE_OK) {
         if (index == 0)
             call->state.sky_fog_returned = true;
-        else
+        else if (index == 1)
             call->state.terrain_fog_returned = true;
+        else
+            call->state.draw_fog_returned = true;
         return true;
     }
     const mc_client_renderer_fog_state_error *error = &call->fog_setup_error[index];
@@ -274,15 +288,127 @@ static bool culling_body(mc_client_world_frame_call *call, mc_math_classes *math
     if (status != MC_CLIENT_FRUSTUM_OK)
         return culling_fail(call, status, 378);
     call->state.culling_returned = true;
-    app = app_at(call, 390, "a", "(FJ)V");
+    if (mc_client_render_global_cull_retire(&call->culling, &call->culling_cleanup) !=
+        MC_CLIENT_FRUSTUM_OK) {
+        if (call->culling != NULL)
+            (void)mc_client_render_global_cull_inspect(call->culling, &call->culling_state);
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_BUSY, "completed N culling native retirement",
+                          378, true);
+    }
+    call->culling_state.failure = NULL;
+    for (;;) {
+        app = app_at(call, 390, "a", "(FJ)V");
+        if (app == NULL)
+            return false;
+        if (app->g == NULL)
+            return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                              "actual ChunkRenderer compilation receiver", 396, false);
+        const mc_client_render_global_status updated = mc_client_render_global_update_begin(
+            app->g, call->state.camera, false, &call->update, &call->update_error);
+        ++call->state.update_calls;
+        if (call->update != NULL) {
+            (void)mc_client_render_global_update_inspect(call->update, &call->update_state);
+            call->state.update = &call->update_state;
+        }
+        if (updated != MC_CLIENT_RENDER_GLOBAL_OK) {
+            call->failure.update =
+                call->update == NULL ? &call->update_error : call->update_state.failure;
+            call->failure.status = updated == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                                       ? MC_CLIENT_WORLD_FRAME_SOURCE_NULL
+                                   : updated == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY
+                                       ? MC_CLIENT_WORLD_FRAME_DEPENDENCY
+                                       : MC_CLIENT_WORLD_FRAME_CHILD_FAILED;
+            call->failure.operation = call->update_error.operation;
+            call->failure.native_policy = call->update_error.native_policy;
+            call->failure.site = (mc_client_graphics_site){
+                call->update_error.source_class, call->update_error.source_method,
+                call->update_error.source_descriptor, (int32_t)call->update_error.source_pc};
+            call->failure.child = call->update_error.child;
+            call->state.source_pc = 396;
+            return false;
+        }
+        const bool done = call->update_state.result;
+        if (mc_client_render_global_update_retire(&call->update, &call->update_cleanup) !=
+            MC_CLIENT_RENDER_GLOBAL_OK) {
+            if (call->update != NULL)
+                (void)mc_client_render_global_update_inspect(call->update, &call->update_state);
+            return outer_fail(call, MC_CLIENT_WORLD_FRAME_BUSY,
+                              "completed N update native retirement", 396, true);
+        }
+        call->update_state.near_chunks = NULL;
+        call->update_state.compile_order = NULL;
+        call->update_state.compilation = NULL;
+        call->update_state.failure = call->update_state.cleanup = NULL;
+        if (done || call->state.deadline == 0)
+            break;
+        if (!call->update_clock.initialized) {
+            call->failure.clock = mc_platform_nanotime_init(&call->update_clock);
+            if (call->failure.clock != MC_PLATFORM_NANOTIME_OK)
+                return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                                  "World-frame monotonic clock initialization", 415, true);
+        }
+        call->failure.clock =
+            mc_platform_nanotime_sample(&call->update_clock, &call->state.last_clock);
+        if (call->failure.clock != MC_PLATFORM_NANOTIME_OK)
+            return outer_fail(call, MC_CLIENT_WORLD_FRAME_NATIVE_FAILED,
+                              "World-frame monotonic clock sample", 415, true);
+        call->state.deadline_remaining =
+            mc_java_i64_sub(call->state.deadline, call->state.last_clock);
+        if (call->state.deadline_remaining < 0 ||
+            call->state.deadline_remaining > INT64_C(1000000000))
+            break;
+    }
+    call->state.updates_returned = true;
+    if (!fog_setup_body(call, 2, 0, 449) ||
+        !display_result(call,
+                        mc_client_display_source_fog_enable(owner->services.display, true,
+                                                            &call->failure.display),
+                        455))
+        return false;
+    app = app_at(call, 465, "a", "(FJ)V");
     if (app == NULL)
         return false;
-    if (app->g == NULL)
+    mc_client_render_engine *engine = app->render_engine;
+    if (engine == NULL)
         return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
-                          "actual ChunkRenderer compilation receiver", 396, false);
-    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lls;Z)Z", 0};
+                          "actual terrain texture Engine receiver", 470, false);
+    if (mc_client_render_engine_retain(engine) != MC_CLIENT_RENDER_ENGINE_OK)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_BUSY, "terrain Engine native occurrence", 470,
+                          true);
+    call->terrain_engine = engine;
+    static const uint16_t terrain[] = {'/', 't', 'e', 'r', 'r', 'a', 'i', 'n', '.', 'p', 'n', 'g'};
+    mc_client_texture texture;
+    const mc_texture_pack_text key = {terrain, sizeof terrain / sizeof(*terrain), false};
+    if (mc_client_render_engine_texture(engine, owner->services.display, NULL, key, &texture,
+                                        &call->terrain_texture_error) != MC_CLIENT_LOOKUP_OK) {
+        call->failure.texture = &call->terrain_texture_error;
+        call->failure.child = call->terrain_texture_error.site;
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_CHILD_FAILED,
+                          call->terrain_texture_error.operation, 470,
+                          call->terrain_texture_error.native_policy);
+    }
+    if (!display_result(call,
+                        mc_client_display_source_bind_id(owner->services.display, texture,
+                                                         &call->failure.display),
+                        473))
+        return false;
+    call->state.terrain_texture_bound = true;
+    mc_client_display *d = owner->services.display;
+    if (!mc_client_lighting_disable(owner->services.graphics, d,
+                                    (mc_client_graphics_site){"px", "a", "(FJ)V", 476},
+                                    &call->lighting_error)) {
+        call->failure.lighting = &call->lighting_error;
+        call->failure.child = call->lighting_error.site;
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_CHILD_FAILED, call->lighting_error.operation,
+                          476, call->lighting_error.native_policy);
+    }
+    call->state.lighting_disabled = true;
+    if (call->state.render_global == NULL)
+        return outer_fail(call, MC_CLIENT_WORLD_FRAME_SOURCE_NULL,
+                          "actual captured terrain RenderGlobal receiver", 486, false);
+    call->failure.child = (mc_client_graphics_site){"n", "a", "(Lls;ID)I", 0};
     return outer_fail(call, MC_CLIENT_WORLD_FRAME_DEPENDENCY,
-                      "actual ChunkRenderer compilation child is not connected", 396, true);
+                      "actual ChunkRenderer terrain submission child is not connected", 486, true);
 }
 #endif
 
@@ -587,6 +713,24 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     if (call->state.active || call->state.owner->active)
         return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame active retirement");
 #ifdef MC_SOURCE_HAS_RENDER_GLOBAL
+    if (mc_client_render_global_update_retire(&call->update, &call->update_cleanup) !=
+        MC_CLIENT_RENDER_GLOBAL_OK) {
+        if (call->update != NULL)
+            (void)mc_client_render_global_update_inspect(call->update, &call->update_state);
+        return result(error, MC_CLIENT_WORLD_FRAME_BUSY, "World-frame N update retirement");
+    }
+    call->state.update = NULL;
+    call->failure.update = NULL;
+    if (call->terrain_engine != NULL) {
+        if (mc_client_render_engine_retire_lookup(
+                call->terrain_engine, &call->terrain_texture_cleanup) != MC_CLIENT_LOOKUP_OK)
+            return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "World-frame terrain lookup retirement");
+        if (mc_client_render_engine_release(call->terrain_engine) != MC_CLIENT_RENDER_ENGINE_OK)
+            return result(error, MC_CLIENT_WORLD_FRAME_BUSY,
+                          "World-frame terrain Engine retirement");
+        call->terrain_engine = NULL;
+    }
     if (mc_client_render_global_cull_retire(&call->culling, &call->culling_cleanup) !=
         MC_CLIENT_FRUSTUM_OK) {
         if (call->culling != NULL)
@@ -614,7 +758,7 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
     call->state.sky = NULL;
     call->failure.sky = NULL;
 #endif
-    for (unsigned int i = 0; i < 2; ++i) {
+    for (unsigned int i = 0; i < 3; ++i) {
         const mc_client_renderer_fog_state_error *failure = call->fog_setup_state[i].failure;
         if (mc_client_entity_renderer_fog_state_retire(&call->fog_setup[i],
                                                        &call->fog_setup_cleanup[i]) !=
@@ -626,8 +770,10 @@ mc_client_entity_renderer_world_frame_retire(mc_client_world_frame_call **slot,
         }
         if (i == 0)
             call->state.sky_fog = NULL;
-        else
+        else if (i == 1)
             call->state.terrain_fog = NULL;
+        else
+            call->state.draw_fog = NULL;
         call->fog_setup_state[i].failure = NULL;
         if (call->failure.fog_setup == failure)
             call->failure.fog_setup = NULL;

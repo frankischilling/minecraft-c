@@ -1,15 +1,40 @@
 # Build and tests
 
-The source fog/Sky/culling extension passes Windows Debug ALL and all 506
-selected CTests in 304.44 seconds, retaining all 502 preceding cases.
+The current [chunk-compilation increment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
+passes selected Windows checks for 950 original ChunkCache rows, a complete
+empty DK compiler call, eight sky-change profiles, three lighting rows and 108
+JDK17 sort histories. The loaded App/World/Player graph reaches the real
+RenderBlocks geometry failure at `dk.a()V:464`, retained by
+`n.a(Lls;Z)Z:442` under frame `px.a(FJ)V:396`. Save/resource checks and all 72
+focus histories pass.
+
+The final Windows MSVC Debug ALL build passes after the lease-publication fix.
+All 512 selected CTests pass in 215.93 seconds, retaining every one of the 506
+prior test names and adding six. Seven separate JDK/Sky device cases also pass.
+
+Local Linux build evidence is separate. The phase 1 Clang full build completed
+2,233 actions in 168.659 seconds. The current GCC full build also passes after
+regenerating a zero-byte FreeType object caused by host-disk EIO. No local Linux
+tests ran for this increment. Linux runtime qualification is pending hosted CI.
+
+Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558)
+passes all four hosted jobs and 1,458 tests: Windows 468, GCC 495 and Clang 495,
+with zero failures or skips. Test times are 346.10/198.39/367.95 seconds,
+respectively. This hosted checkpoint precedes the current compilation/callback
+increment.
+
+## Previous full checkpoint: fog, Sky and culling
+
+The preceding source fog/Sky/culling extension passes Windows Debug ALL and all
+506 selected CTests in 304.44 seconds, retaining all 502 preceding cases.
 Fresh ext4 GCC13/Clang18 audio-enabled sanitizer ALL builds pass; all 489 selected
 public tests pass in 286.34/290.68 seconds, respectively. Six additional
 JDK-reference cases pass per compiler. All final runs have zero failures/skips.
 Windows has 553 configured cases and 47 reference-label exclusions; each Linux
 graph has 495 cases, with six JDK-reference cases executed separately.
 
-New fixtures cover 366 World/provider sky rows, 48 fog-state rows, 30 exact
-authored GPU pixels, eight culling rows, four early Sky outcomes and 48 whole-Sky
+That checkpoint's fixtures cover 366 World/provider sky rows, 48 fog-state rows,
+30 exact authored GPU pixels, eight culling rows, four early Sky outcomes and 48 whole-Sky
 post-call states. The local Windows Sky-device profile uses real startup and
 compiled N lists with declared prepared World/camera operands. NV-absent Linux
 replays compare common original fields separately from source-derived skipped
@@ -19,11 +44,13 @@ preserves the initial stale GL_FLAT assertion failure and the final full passes.
 The correction verifies real FLAT/SMOOTH state and keeps invalid-mode admission
 checks. Formatting checks 1524 files. Full terrain frames remain unfinished.
 
-Published [`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
+Earlier published [`06aa85f`](https://github.com/frankischilling/minecraft-c/actions/runs/40902957232)
 passes all four hosted jobs and 1,448 tests: Windows 466/GCC 491/Clang 491, without
-failures or skips. It precedes this fog/Sky/culling extension; new hosted results
-remain pending. The older b1bb968 initializer failure is retained in repository
-history and was fixed before that green checkpoint.
+failures or skips. It precedes the fog/Sky/culling extension. The older b1bb968
+initializer failure is retained in repository history and was fixed before that
+green checkpoint.
+
+## Earlier build and runtime results
 
 Windows CI uses Ninja Debug with the x64 MSVC environment, explicit selected
 JDK17 and the same four build/test workers and full suite. A local VS18 Ninja

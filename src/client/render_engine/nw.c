@@ -118,6 +118,19 @@ bool mc_client_nw_uv(mc_client_tessellator *o, double u, double v, mc_client_gra
     return leave(o, true, e);
 }
 
+bool mc_client_nw_translation(mc_client_tessellator *o, double x, double y, double z,
+                              mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    memcpy(&o->fields.s, &x, sizeof(x));
+    o->last_store_pc = 2;
+    memcpy(&o->fields.t, &y, sizeof(y));
+    o->last_store_pc = 7;
+    memcpy(&o->fields.u, &z, sizeof(z));
+    o->last_store_pc = 13;
+    return leave(o, true, e);
+}
+
 bool mc_client_nw_color(mc_client_tessellator *o, int32_t r, int32_t g, int32_t b, int32_t a,
                         mc_client_graphics_error *e) {
     if (!enter(o, e))

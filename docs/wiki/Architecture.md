@@ -39,20 +39,47 @@ World/frame segment. Direct same-graph checks execute renderer/entity updates
 through weather and weighted Biome spawn selection before concrete Mob
 construction 773. Source focused mouse look and pause entry are connected.
 World-frame rendering completes colors, fog state, canonical camera, actual
-Sky programs and W/SR/DK culling before missing ChunkRenderer compilation 396. The Display owns its
-ordered matrix ledger; RenderModels owns the checked static-frustum lifetime.
+Sky programs and W/SR/DK culling. The dirty-chunk selector now constructs the
+real EW cache and begins the DK list and shared NW before missing CV geometry
+at `dk.a()V:464`, retained by `n.a(Lls;Z)Z:442` under frame `px.a(FJ)V:396`.
+The Display owns its ordered matrix ledger; RenderModels owns the checked
+static-frustum lifetime.
 Complete presentation remains unfinished.
+
+The [compilation owners](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/chunk-compilation.md)
+retain the exact N, camera, World and Store Chunk occurrences. Near selection
+clears the original dirty List slots before compilation; a failed child keeps
+that prefix. The lease-publication fix keeps a normal cache cell NULL until its
+exact Store lease succeeds, so a failed getter, binding or lease preserves a
+valid partial cache. DK.u clears only after the same compiler returns. Empty sections
+complete, while nonair geometry and TileEntity rendering remain explicit
+children. Checked cleanup releases native occurrences without replaying source
+calls or compacting a failed queue. The whole sky-change callback rereads the
+live DK array, appends the same DK when A is true and u is false, then marks it dirty.
+Sky and the later frame lighting call share the actual U class buffer and its
+terminal initialization failure in the canonical Ge namespace.
 The canonical HitResult and pooled geometry now connect Living eye/look,
 source World block traversal and Entity queries to the real PX picking body.
 Owned target occurrences detach before their World; foreign holds retain the
 actual graph for cleanup retry. See the
 [picking contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/picking.md).
 Version-zero conversion stops at 52. Empty, populated, scrolling and double-click native Windows profiles
-pass. All 482 selected Windows CTests and formatting for 1,405 files pass.
+pass. The preceding renderer-attachment checkpoint passes all 482 selected
+Windows CTests and formatting for 1,405 files.
 Thirty selected Linux sanitizer cases and 86 strict compiler checks also pass;
 the private CPU-wrapper scope is recorded in [Build and tests](Build-and-tests).
 Full source run/PX rendering, shutdown
 and gameplay adoption remain unqualified.
+
+The selected Windows cache/compiler/callback/lighting/sort checks and all 72
+focus histories on the loaded graph pass. After the lease fix, Windows Debug
+ALL and all 512 selected CTests pass in 215.93 seconds, with all 506 prior names
+retained and six additions. Seven separate JDK/Sky device cases pass. Local
+Clang/GCC build evidence is recorded in [Build and tests](Build-and-tests); no
+local Linux tests ran for this increment, and Linux runtime qualification is
+pending hosted CI. The previous fog/Sky/culling checkpoint retains its 506 Windows and
+489 public cases per Linux compiler. Published [`e65860c`](https://github.com/frankischilling/minecraft-c/actions/runs/40920088558) passes four hosted jobs
+and 1,458 tests (Windows 468/GCC 495/Clang 495), before the new increment.
 
 The save manager uses the same shared MathHelper class owner as the App. Its
 DateFormat captures the actual default profile, including for an empty List.
@@ -107,8 +134,9 @@ The [singleplayer controller](https://github.com/frankischilling/minecraft-c/blo
 constructs genuine LocalPlayers from the live Session and World provider,
 preserves failed candidates and applies yaw preparation. Its World and final
 Player hooks use the actual empty bodies. Selected existing-save loading now
-publishes the actual App Player and movement input. View publication, controller
-updates, mining, item use and complete World entry remain unfinished.
+publishes the actual App Player, movement input and view. Controller ticks and
+the admitted input body run; mining, item use and playable World interaction
+remain unfinished.
 
 The water owner has its CPU animation body on the existing arrays and shared
 Math profile. Its [comparison guide](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/water_animation/README.md)
@@ -122,8 +150,8 @@ constructed GAME World with leased CPU meshes and owned GL buffers. It does not
 run the Player/World gameplay loop. The separate
 [first-person camera](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/first-person.md)
 reads genuine Player state and late App Settings/World fields; finite geometry
-can consume those matrices. Normal App h/i publication and render scheduling
-remain unfinished. [Lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md),
+can consume those matrices. Normal App h/i publication and the admitted source
+frame path now run; complete frames remain unfinished. [Lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/light-propagation.md),
 [Player publication](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/player-publication.md), [World queries](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/queries.md),
 [storage](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/storage.md) and [saving](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/saving.md) have their own
 source-order and lifetime contracts. [Input attachment](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/player-input.md)
@@ -152,8 +180,8 @@ Original device correspondence and complete gameplay audio remain unfinished.
 The shared simulation and server graph initializes no graphics or audio device.
 See [dependencies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/dependencies.md) for source pins and notices.
 
-Application World entry, complete World time/block scheduling, Map tracking and
-terrain updates, remaining wake/hurt/GUI operations, fog and dynamic World drawing still prevent a
+Complete World time/block scheduling, Map tracking and terrain updates,
+remaining wake/hurt/GUI operations and dynamic World drawing still prevent a
 playable client. Dedicated-server startup and ticking remain separate work.
 [Test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md) distinguishes the current full integration
 from earlier full matrices and isolated module comparisons.

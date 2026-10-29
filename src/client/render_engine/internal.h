@@ -104,6 +104,9 @@ struct mc_client_render_engine_classes {
     mc_client_tessellator *dk_D; /* Actual dk.D, borrowed same-namespace nw.a. */
     int32_t dk_b;                /* Actual dk.b chunk update count. */
     mc_client_graphics_error dk_failure;
+    mc_client_render_engine_phase u_phase;
+    mc_client_direct_float_buffer *u_a; /* Actual u.a, borrowed same class arena. */
+    mc_client_graphics_error u_failure;
 };
 
 struct mc_client_render_engine {

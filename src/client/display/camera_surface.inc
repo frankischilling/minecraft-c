@@ -34,19 +34,23 @@ bool mc_client_display_camera_matrices_inspect(const mc_client_display *display,
 
 bool mc_client_display_source_scale(mc_client_display *display, double x, double y, double z,
                                     mc_client_display_error *error) {
-    if (!source_setting_enter(display, "source camera scale", error))
+    if (!source_enter(display, "source camera scale", error))
         return false;
-    if (!source_fp_admit("source camera scale FP", error))
-        return source_leave(display, false, error);
-    mc_client_modelview matrix;
-    source_matrix_copy(&display->source, &matrix);
-    const float scale[3] = {camera_narrow(x), camera_narrow(y), camera_narrow(z)};
-    for (size_t col = 0; col < 3; ++col)
-        for (size_t row = 0; row < 4; ++row)
-            matrix.column_major[col * 4 + row] =
-                mc_client_source_product(matrix.column_major[col * 4 + row], scale[col]);
-    source_matrix_store(&display->source, &matrix);
-    return source_leave(display, true, error);
+    bool ok;
+    if (display->source.compiling != NULL) {
+        mc_client_source_command *command = source_append(display, SOURCE_COMMAND_SCALE, 0, error);
+        ok = command != NULL;
+        if (ok) {
+            memcpy(&command->value.scale[0], &x, sizeof(x));
+            memcpy(&command->value.scale[1], &y, sizeof(y));
+            memcpy(&command->value.scale[2], &z, sizeof(z));
+        }
+    } else {
+        ok = source_fp_admit("source camera scale FP", error);
+        if (ok)
+            source_matrix_scale(&display->source, x, y, z);
+    }
+    return source_leave(display, ok, error);
 }
 
 bool mc_client_display_source_rotate(mc_client_display *display, float angle, float x, float y,

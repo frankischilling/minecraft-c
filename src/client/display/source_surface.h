@@ -106,6 +106,9 @@ bool mc_client_display_source_color(mc_client_display *, float red, float green,
                                     float alpha, mc_client_display_error *);
 bool mc_client_display_source_translate(mc_client_display *, float x, float y, float z,
                                         mc_client_display_error *);
+/* Push/Pop and the camera surface's Scale join Translate as recorded commands.
+ * Compilation copies arguments without inspecting the current matrix/stack;
+ * replay uses the selected matrix and reached native stack/FP admission. */
 bool mc_client_display_source_push(mc_client_display *, mc_client_display_error *);
 bool mc_client_display_source_pop(mc_client_display *, mc_client_display_error *);
 bool mc_client_display_source_texture_enable(mc_client_display *, bool enabled,
@@ -119,7 +122,7 @@ bool mc_client_display_source_alpha_test(mc_client_display *, bool enabled,
  * Direct GL operations do not query/drain errors, clear, pump, swap, repair FP,
  * or reset unrelated state. Smooth/alpha use the existing actual source shader.
  * Matrix identity affects only the selected matrix; each has its own stack.
- * Existing compiled translations use the mode selected at list execution. */
+ * Compiled matrix operations use the mode selected at list execution. */
 bool mc_client_display_source_shade_model(mc_client_display *, int32_t mode,
                                           mc_client_display_error *);
 bool mc_client_display_source_clear_depth(mc_client_display *, double depth,

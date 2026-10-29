@@ -11,6 +11,8 @@
 #include "mc/world/runtime/presentation.h"
 #include "world/runtime/world_access_internal.h"
 
+#include "test_sky_changed.h"
+
 /* Real GAME Worlds and a genuine cold native n owner exercise interface
  * lifetime, without pretending the n graphics constructor has completed. The
  * sound method's actual NULL App failure needs no window or audio operation. */
@@ -82,6 +84,7 @@ int main(int argc, char **argv) {
     const uint64_t owned_first = world->world_accesses.identities[0];
     CHECK(identity != NULL && world->fields.u->count == 1 &&
           world->persistent_bindings == baseline_bindings + 1u);
+    CHECK(sky_changed_controls(render_classes, world, f->entity_classes[0]));
     CHECK(mc_world_runtime_add_world_access(world, identity, NULL) == MC_WORLD_STORAGE_OK);
     CHECK(world->persistent_bindings == baseline_bindings + 1u && world->fields.u->count == 2);
     const uint64_t foreign = world->world_accesses.identities[1];

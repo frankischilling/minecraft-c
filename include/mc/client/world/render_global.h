@@ -33,7 +33,8 @@ typedef enum mc_client_render_global_status {
     MC_CLIENT_RENDER_GLOBAL_CX_FAILED,
     MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP,
     MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-    MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED
+    MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+    MC_CLIENT_RENDER_GLOBAL_SOURCE_ILLEGAL_ARGUMENT
 } mc_client_render_global_status;
 
 /* These are the actual n fields, not diagnostic world-renderer storage.
